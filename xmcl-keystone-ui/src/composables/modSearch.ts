@@ -121,13 +121,11 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     }
 
     if (!hasOptifine) {
-      if (runtime.value.optifine) {
+      const hasOptifine = keyword.value.toLowerCase().includes('optifine')
+      if (hasOptifine && runtime.value.optifine) {
         _installed.push(getOptifineAsMod())
-      } else {
-        const hasOptifine = keyword.value.toLowerCase().includes('optifine')
-        if (hasOptifine) {
-          _all.push(getOptifineAsMod())
-        }
+      } else if (hasOptifine) {
+        _all.push(getOptifineAsMod())
       }
     }
 

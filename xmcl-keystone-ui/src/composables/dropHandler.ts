@@ -1,3 +1,4 @@
+import { injection } from '@/util/inject'
 import { InjectionKey } from 'vue'
 
 export const kDropHandler: InjectionKey<ReturnType<typeof useDropHandler>> = Symbol('DropHandle')
@@ -6,6 +7,16 @@ export interface DropHandler {
   onEnter: () => void
   onDrop: (data: DataTransfer) => Promise<void>
   onLeave: () => void
+}
+
+export function useDrop(onEnter: () => void, onDrop: (data: DataTransfer) => Promise<void>, onLeave: () => void) {
+  const { registerHandler, dragover } = injection(kDropHandler)
+  let dispose = () => {}
+  onMounted(() => {
+    dispose = registerHandler(onEnter, onDrop, onLeave)
+  })
+  onUnmounted(() => dispose())
+  return { dragover }
 }
 
 export function useDropHandler() {

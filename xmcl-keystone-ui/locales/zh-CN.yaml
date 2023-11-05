@@ -1210,6 +1210,7 @@ shaderPack:
   enable: 使用了 {name} 作为光影包
   filter: 筛选光影包
   internal: 内置
+  dropHint: 导入光影包
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项
   manage: 管理光影包
   name: 光影包

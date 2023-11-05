@@ -1,5 +1,6 @@
 <template>
   <MarketBase
+    v-dragover
     :plans="plans"
     :items="items"
     :item-height="91"
@@ -67,8 +68,15 @@
     <template
       #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }"
     >
+      <Hint
+        v-if="dragover"
+        icon="save_alt"
+        :text="
+          t('mod.dropHint')"
+        class="h-full"
+      />
       <MarketProjectDetailModrinth
-        v-if="shouldShowModrinth(selectedItem, selectedModrinthId, selectedCurseforgeId)"
+        v-else-if="shouldShowModrinth(selectedItem, selectedModrinthId, selectedCurseforgeId)"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
@@ -128,6 +136,7 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'
+import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
@@ -135,10 +144,11 @@ import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { vDragover } from '@/directives/dragover'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceModsServiceKey, Resource } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
@@ -237,6 +247,24 @@ const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
+
+// Reset all filter
+onMounted(() => {
+  modrinthCategories.value = []
+  curseforgeCategory.value = undefined
+})
+
+// Drop
+const { resolveResources } = useService(ResourceServiceKey)
+const { dragover } = useDrop(() => {}, async (t) => {
+  const paths = [] as string[]
+  for (const f of t.files) {
+    paths.push(f.path)
+  }
+  const resources = await resolveResources(paths.map(p => ({ path: p, domain: ResourceDomain.Mods })))
+  await install({ path: path.value, mods: resources })
+}, () => {})
+
 </script>
 
 <style scoped>

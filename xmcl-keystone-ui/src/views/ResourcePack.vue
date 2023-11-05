@@ -1,5 +1,6 @@
 <template>
   <MarketBase
+    v-dragover
     :items="displayItems"
     :item-height="76"
     :plans="{}"
@@ -26,8 +27,15 @@
       />
     </template>
     <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
+      <Hint
+        v-if="dragover"
+        icon="save_alt"
+        :text="
+          t('resourcepack.dropHint')"
+        class="h-full"
+      />
       <MarketProjectDetailModrinth
-        v-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
+        v-else-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
         :modrinth="selectedItem.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem.installed"
@@ -64,7 +72,6 @@
       />
       <Hint
         v-else
-        v-dragover
         icon="playlist_add"
         :text="
           t('resourcepack.selectSearchHint')"
@@ -75,22 +82,24 @@
 </template>
 
 <script lang=ts setup>
+import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import { useService } from '@/composables'
+import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { usePresence } from '@/composables/presence'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { vDragover } from '@/directives/dragover'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
-import { useService } from '@/composables'
-import Hint from '@/components/Hint.vue'
 
 const { runtime } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
@@ -138,6 +147,7 @@ const modrinthLoaders = computed(() => {
   return result
 })
 
+// Enable disable install uninstall
 const { removeResources } = useService(ResourceServiceKey)
 const onInstall = (r: Resource[]) => {
   enable(r.map(r => `file/${r.fileName}`))
@@ -163,6 +173,14 @@ const onDrop = (item: ResourcePackProject, id: string) => {
 
 const toggleCategory = useToggleCategories(modrinthCategories)
 
+// Reset all filter
+onMounted(() => {
+  keyword.value = ''
+  modrinthCategories.value = []
+  curseforgeCategory.value = undefined
+})
+
+// Presence
 const { t } = useI18n()
 const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.resourcePack', { instance: name.value })))
@@ -172,6 +190,18 @@ const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
+
+// Drop
+const { importResources } = useService(ResourceServiceKey)
+const { dragover } = useDrop(() => {}, async (t) => {
+  const paths = [] as string[]
+  for (const f of t.files) {
+    paths.push(f.path)
+  }
+  const resources = await importResources(paths.map(p => ({ path: p, domain: ResourceDomain.ResourcePacks })))
+  enable(resources.map(r => `file/${r.fileName}`))
+}, () => {})
+
 </script>
 
 <style scoped>
@@ -188,10 +218,6 @@ onMounted(() => {
 
 .list {
   @apply h-full overflow-y-auto flex flex-col;
-}
-
-.dragover {
-  @apply border-4 border-dashed border-yellow-400;
 }
 
 .transition-list {

@@ -1001,7 +1001,6 @@ refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
 resourcepack:
-  searchHint: Search reosurce pack
   available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -1024,6 +1023,7 @@ resourcepack:
     {actual}.
   manage: Manage Resource Packs
   name: Resource Pack | Resource Packs
+  searchHint: Search reosurce pack
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Search and select resource pack
@@ -1243,6 +1243,7 @@ setup:
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
+  dropHint: Import Shader Pack
   empty: No shader pack allocated
   enable: Using {name} shader pack
   filter: Filter Shader Packs

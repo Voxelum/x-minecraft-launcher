@@ -63,7 +63,7 @@
 import ErrorView from '@/components/ErrorView.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import { UpgradePlan } from '@/composables/modUpgrade'
-import { ProjectEntry, ProjectFile } from '@/util/search'
+import { ProjectEntry } from '@/util/search'
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
@@ -74,6 +74,7 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
   (event: 'load'): void
+  (event: 'drop', e: DragEvent): void
 }>()
 
 const { replace } = useRouter()
