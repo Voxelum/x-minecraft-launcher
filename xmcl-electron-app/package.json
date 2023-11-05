@@ -44,7 +44,7 @@
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/task": "workspace:*",
         "@xmcl/windows-utils": "^0.0.15",
-        "better-sqlite3": "^8.5.1",
+        "better-sqlite3": "8.6.0",
         "builtin-modules": "^3.3.0",
         "chalk": "^4.1.2",
         "create-desktop-shortcuts": "^1.10.1",
