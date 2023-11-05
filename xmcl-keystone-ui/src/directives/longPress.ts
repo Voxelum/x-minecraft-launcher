@@ -1,7 +1,8 @@
 import { FunctionDirective } from 'vue'
 
-export const vLongPress: FunctionDirective<HTMLElement, (...args: any[]) => void> = (el, bindings) => {
+export const vLongPress: FunctionDirective<HTMLElement, (...args: any[]) => void> = (el, bindings, n, prevN) => {
   let timeout: ReturnType<typeof setTimeout>
+  if (prevN.tag) return
   el.addEventListener('mousedown', (e) => {
     timeout = setTimeout(() => {
       bindings.value.call(undefined, e)

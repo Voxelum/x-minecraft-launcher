@@ -22,11 +22,6 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   ) {
     super(app)
     resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
-      // await this.editGameSetting({
-        // instancePath,
-        // TODO: implement this
-        // addResourcePack: [relative(resource.path, instancePath)],
-      // })
     })
 
     resourceService.registerInstaller(ResourceDomain.ShaderPacks, async (resource, instancePath) => {
@@ -46,7 +41,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       const loadShaderOptions = async (path: string) => {
         try {
           const result = await this.getShaderOptions(path)
-          state.shaderPack = result.shaderPack
+          state.shaderPackSet(result.shaderPack)
         } catch (e) {
           if (isSystemError(e)) {
             this.warn(`An error ocurred during load shader options of ${path}.`)
@@ -58,7 +53,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       const loadOptions = async (path: string) => {
         try {
           const result = await this.getGameOptions(path)
-          Object.assign(state, result)
+          state.gameOptionsSet(result)
         } catch (e) {
           if (isSystemError(e)) {
             this.warn(`An error ocurred during parse game options of ${path}.`)
@@ -106,6 +101,25 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     }
 
     return result
+  }
+
+  async editIrisShaderOptions(options: EditShaderOptions): Promise<void> {
+    const instancePath = options.instancePath
+    const pack = options.shaderPack
+    const current = await this.getIrisShaderOptions(instancePath)
+    current.shaderPack = pack
+    const configFile = join(instancePath, 'config', 'iris.properties')
+    await writeFile(configFile, Object.entries(current).map(([k, v]) => `${k}=${v}`).join('\n') + '\n')
+  }
+
+  async getIrisShaderOptions(instancePath: string): Promise<Record<string, string>> {
+    const filePath = join(instancePath, 'config', 'iris.properties')
+    if (await missing(filePath)) return {}
+
+    const content = await readFile(filePath, 'utf-8')
+    const lines = content.split('\n').map(l => l.split('=').map(s => s.trim()))
+    const options = lines.reduce((a, b) => Object.assign(a, { [b[0]]: b[1] }), {}) as Record<string, string>
+    return options
   }
 
   async editShaderOptions(options: EditShaderOptions): Promise<void> {

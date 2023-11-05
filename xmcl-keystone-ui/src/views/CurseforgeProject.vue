@@ -27,7 +27,6 @@
           v-if="project"
           :project="project"
           :from="destination"
-          :type="type"
           :upstream="upstream && upstream.upstream && upstream.upstream.type === 'curseforge-modpack' ? upstream.upstream : undefined"
         />
       </div>
@@ -108,14 +107,14 @@
 
 <script lang=ts setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { useService } from '@/composables'
 import { kLatestCurseforgeResource, useLatestCurseforgeResource } from '@/composables/curseforgeResource'
 import { kImageDialog } from '@/composables/imageDialog'
+import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { File } from '@xmcl/curseforge'
-import { InstanceServiceKey, ProjectType } from '@xmcl/runtime-api'
+import { ProjectType } from '@xmcl/runtime-api'
 import { kCurseforgeFiles, useCurseforgeProject } from '../composables/curseforge'
 import { kCurseforgeInstall, useCurseforgeInstall } from '../composables/curseforgeInstall'
 import CurseforgeProjectDescription from './CurseforgeProjectDescription.vue'
@@ -124,7 +123,6 @@ import CurseforgeProjectHeader from './CurseforgeProjectHeader.vue'
 import CurseforgeProjectImages from './CurseforgeProjectImages.vue'
 import CurseforgeProjectRecentFiles from './CurseforgeProjectRecentFiles.vue'
 import CurseforgeUpstreamCard from './CurseforgeUpstreamCard.vue'
-import { kInstance } from '@/composables/instance'
 
 const props = withDefaults(defineProps<{
   type: ProjectType

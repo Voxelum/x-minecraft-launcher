@@ -6,66 +6,7 @@
       <div
         class="flex flex-grow-0 flex-row items-center justify-center gap-1"
       >
-        <AvatarItem
-          responsive
-          :avatar="'image://builtin/minecraft'"
-          title="Minecraft"
-          :text="`${version.minecraft}`"
-        />
-        <v-divider
-          v-if="version.forge"
-          vertical
-        />
-        <AvatarItem
-          v-if="version.forge"
-          responsive
-          :avatar="'image://builtin/forge'"
-          title="Forge"
-          :text="`${version.forge}`"
-        />
-        <v-divider
-          v-if="version.fabricLoader"
-          vertical
-        />
-        <AvatarItem
-          v-if="version.fabricLoader"
-          responsive
-          :avatar="'image://builtin/fabric'"
-          title="Fabric"
-          :text="`${version.fabricLoader}`"
-        />
-        <v-divider
-          v-if="version.quiltLoader"
-          vertical
-        />
-        <AvatarItem
-          v-if="version.quiltLoader"
-          responsive
-          :avatar="'image://builtin/quilt'"
-          title="Quilt"
-          :text="`${version.quiltLoader}`"
-        />
-        <v-divider
-          v-if="version.optifine"
-          vertical
-        />
-        <AvatarItem
-          v-if="version.optifine"
-          responsive
-          :avatar="'image://builtin/optifine'"
-          title="Optifine"
-          :text="`${version.optifine}`"
-        />
-        <!-- <v-divider
-          v-if="version.optifine"
-          vertical
-        /> -->
-        <!-- <AvatarItem
-          responsive
-          icon="folder_zip"
-          :title="t('mod.name', { count: 2 })"
-          :text="t('mod.enabled', { count: modCount })"
-        /> -->
+        <AvatarItemList :items="extensionItems" />
       </div>
       <div class="flex-grow" />
       <div
@@ -109,86 +50,55 @@
             />
           </v-btn>
         </v-btn-toggle>
-        <v-text-field
-          ref="searchTextField"
-          v-model="_keyword"
-          class="max-w-80 min-w-70"
+        <MarketTextFieldWithMenu
           :placeholder="t('mod.search')"
-          small
-          hide-details
-          outlined
-          filled
-          dense
-          prepend-inner-icon="search"
-          @focus="searchTextFieldFocused = true"
-          @blur="searchTextFieldFocused = false"
+          :keyword.sync="_keyword"
+          :curseforge-category.sync="curseforgeCategory"
+          :modrinth-categories.sync="modrinthCategories"
+          curseforge-category-filter="mc-mods"
+          modrinth-category-filter="mod"
         />
       </div>
     </div>
-    <v-tabs
-      v-model="tab"
-      class="mt-3"
-      centered
-      background-color="transparent"
-    >
-      <v-tab>
-        <v-icon left>
-          all_inclusive
-        </v-icon>
-        {{ t('modSearchType.all') }}
-        <div
-          class="v-badge__badge primary static ml-1 w-[unset]"
-        >
-          {{ cachedMods.length + curseforgeCount + modrinthCount }}
-        </div>
-      </v-tab>
-      <v-tab :disabled="cachedMods.length === 0">
-        <v-icon left>
-          storage
-        </v-icon>
-        {{ t('modSearchType.local') }}
-        <div
-          class="v-badge__badge primary static ml-1 w-[unset]"
-        >
-          {{ cachedMods.length }}
-        </div>
-      </v-tab>
-      <v-tab :disabled="curseforge.length === 0">
-        <v-icon
-          :size="28"
-          left
-        >
-          $vuetify.icons.curseforge
-        </v-icon>
-        Curseforge
-        <div
-          class="v-badge__badge primary static ml-1 w-[unset]"
-        >
-          {{ curseforgeCount }}
-        </div>
-      </v-tab>
-      <v-tab :disabled="modrinth.length === 0">
-        <v-icon left>
-          $vuetify.icons.modrinth
-        </v-icon>
-        Modrinth
-        <div
-          class="v-badge__badge primary static ml-1 w-[unset]"
-        >
-          {{ modrinthCount }}
-        </div>
-      </v-tab>
-    </v-tabs>
+    <MarketExtensions
+      :tab.sync="tab"
+      :modrinth="modrinthCount"
+      :curseforge="curseforgeCount"
+      :local="cachedMods.length"
+    />
   </div>
 </template>
 
 <script lang=ts setup>
-import AvatarItem from '@/components/AvatarItem.vue'
+import AvatarItemList from '@/components/AvatarItemList.vue'
+import MarketExtensions from '@/components/MarketExtensions.vue'
+import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kModsSearch } from '@/composables/modSearch'
-import { kMods } from '@/composables/mods'
+import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
+
+const { runtime: version } = injection(kInstance)
+const { tab, modrinth, curseforge, instanceMods, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories } = injection(kModsSearch)
+const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
+const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
+const { t } = useI18n()
+
+watch(curseforgeCategory, (v) => {
+  if (v) {
+    tab.value = 2
+  } else {
+    tab.value = 0
+  }
+})
+watch(modrinthCategories, (v) => {
+  if (v.length > 0) {
+    tab.value = 3
+  } else {
+    tab.value = 0
+  }
+})
 
 const search = debounce((v: string | undefined) => {
   if (v !== route.query.keyword) {
@@ -202,39 +112,13 @@ const _keyword = computed({
   set: (v) => { search(v) },
 })
 
-const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, cachedMods, modLoaderFilters } = injection(kModsSearch)
-const { tab } = injection(kMods)
-const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
-const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
-const { t } = useI18n()
+const extensionItems = computed(() => [
+  {
+    icon: 'folder_zip',
+    title: t('mod.name', { count: 2 }),
+    text: t('mod.enabled', { count: instanceMods.value.length }),
+  },
+  ...getExtensionItemsFromRuntime(version.value),
+])
 
-const searchTextField = ref(undefined as any | undefined)
-const searchTextFieldFocused = ref(false)
-const onKeyPress = (e: KeyboardEvent) => {
-  // ctrl+f
-  if (e.ctrlKey && e.key === 'f') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.focus()
-  }
-  // ctrl+a
-  if (searchTextFieldFocused.value && e.ctrlKey && e.key === 'a') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.$el.querySelector('input')?.select()
-  }
-  // esc
-  if (searchTextFieldFocused.value && e.key === 'Escape') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.blur()
-  }
-}
-onMounted(() => {
-  document.addEventListener('keydown', onKeyPress, { capture: true })
-})
-onUnmounted(() => {
-  document.removeEventListener('keydown', onKeyPress)
-})
 </script>

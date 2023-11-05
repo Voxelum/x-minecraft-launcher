@@ -8,7 +8,10 @@ import FTBIcon from '@/components/FTBIcon.vue'
 import JarFileIcon from '@/components/JarFileIcon.vue'
 import ModrinthIcon from '@/components/ModrinthIcon.vue'
 import PackageFileIcon from '@/components/PackageFileIcon.vue'
+import OptifineIcon from '@/components/OptifineIcon.vue'
+import IrisIcon from '@/components/IrisIcon.vue'
 import ZipFileIcon from '@/components/ZipFileIcon.vue'
+
 import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
 import ru from 'vuetify/src/locale/ru'
@@ -61,6 +64,12 @@ export const vuetify = new Vuetify({
       },
       neoForged: {
         component: NeoForgedIcon,
+      },
+      optifine: {
+        component: OptifineIcon,
+      },
+      iris: {
+        component: IrisIcon,
       },
     },
   },

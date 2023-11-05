@@ -1,34 +1,47 @@
 <template>
-  <div class="mx-5 flex flex-col pb-4">
-    <v-progress-linear
-      class="absolute left-0 top-0 z-10 m-0 p-0"
-      :active="loading"
-      height="3"
-      :indeterminate="true"
-    />
-    <div
-      class="flex h-full flex-col px-3"
-      @dragover.prevent
-    >
-      <transition-group
-        name="transition-list"
-      >
-        <ShaderPackCard
-          v-for="pack in items"
-          :key="pack.value"
-          :pack="pack"
-          @select="onSelect"
-          @dragstart="onDragStart"
-          @dragend="onDragEnd"
-          @enable="pack.enabled = $event"
-          @update:name="pack.name = $event"
-          @tags="pack.tags = $event"
-        />
-      </transition-group>
-      <DeleteButton
-        :visible="!!draggingPack"
-        :drop="onDelete"
+  <MarketBase
+    :items="items"
+    :item-height="80"
+    :plans="{}"
+    :error="modrinthError"
+    :loading="loading"
+  >
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+      <ShaderPackItem
+        :pack="item"
+        :selection-mode="selectionMode"
+        :selected="selected"
+        :has-update="hasUpdate"
+        :checked="checked"
+        @click="on.click"
       />
+    </template>
+    <template #content="{ selectedModrinthId, selectedItem }">
+      <MarketProjectDetailModrinth
+        v-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem.modrinth"
+        :project-id="selectedModrinthId"
+        :installed="selectedItem.installed"
+        :loaders="shaderLoaderFilters"
+        :categories="modrinthCategories"
+        :runtime="runtime"
+        :all-files="shaderProjectFiles"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem.curseforgeProjectId"
+        @install="onInstall"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall"
+        @category="toggleCategory"
+      />
+      <ShaderPackDetailResource
+        v-else-if="isShaderPackProject(selectedItem)"
+        :shader-pack="selectedItem"
+        :installed="selectedItem.files?.map(i => i.resource) || []"
+        :runtime="runtime"
+      />
+    </template>
+  </MarketBase>
+  <!--
       <DeleteDialog
         :title="t('shaderPack.deletion') "
         :width="400"
@@ -43,62 +56,50 @@
         </div>
       </DeleteDialog>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts" setup>
-import { useFilterCombobox } from '@/composables'
+import MarketBase from '@/components/MarketBase.vue'
+import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { kInstance } from '@/composables/instance'
 import { usePresence } from '@/composables/presence'
-import { useRefreshable } from '@/composables/refreshable'
+import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { injection } from '@/util/inject'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { useDialog } from '../composables/dialog'
-import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
-import ShaderPackCard from './ShaderPackCard.vue'
-import DeleteButton from './ShaderPackDeleteButton.vue'
+import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
+import ShaderPackItem from './ShaderPackItem.vue'
+import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { Resource } from '@xmcl/runtime-api'
+import { ProjectEntry, ProjectFile } from '@/util/search'
+import { useToggleCategories } from '@/composables/toggleCategories'
 
-const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
-const draggingPack = ref(undefined as undefined | ShaderPackItem)
-const deletingPack = ref(undefined as undefined | ShaderPackItem)
-const { show } = useDialog('deletion')
+const {
+  modrinthError,
+  loading,
+  items,
+  shaderProjectFiles,
+  shaderLoaderFilters,
+  modrinthCategories,
+} = injection(kShaderPackSearch)
+const { runtime } = injection(kInstance)
+
+const toggleCategory = useToggleCategories(modrinthCategories)
+
 const { t } = useI18n()
 
-function onSelect(pack: ShaderPackItem) {
-  selectedShaderPack.value = pack.value
-}
-function onDragStart(pack: ShaderPackItem) {
-  if (pack.enabled) return
-  if (!pack.path) return
-  draggingPack.value = pack
-}
-function onDragEnd() {
-  draggingPack.value = undefined
-}
-const { refresh: onConfirmDeleted, refreshing: deleting } = useRefreshable(async () => {
-  if (deletingPack.value) {
-    await removeShaderPack(deletingPack.value)
-    deletingPack.value = undefined
-  }
-})
-function onCancelDelete() {
-  deletingPack.value = undefined
-}
-function onDelete() {
-  if (draggingPack.value !== undefined) {
-    deletingPack.value = draggingPack.value
-    show()
-  }
-}
+const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
-const filterOptions = computed(() => shaderPacks.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-function getFilterOptions(item: ShaderPackItem) {
-  return [
-    ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
-  ]
+const { shaderPack } = injection(kInstanceShaderPacks)
+
+const onInstall = (r: Resource[]) => {
+  shaderPack.value = r[0].fileName
 }
-const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
-const items = computed(() => filter(shaderPacks.value))
+const onUninstall = () => {
+  shaderPack.value = ''
+}
+const onEnable = (f: ProjectFile) => {
+  shaderPack.value = f.resource.fileName
+}
 
 const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))

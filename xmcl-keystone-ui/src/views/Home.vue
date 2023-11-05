@@ -1,7 +1,7 @@
 <template>
   <div
     ref="containerRef"
-    class="home-page visible-scroll relative flex max-h-full flex-1 flex-col"
+    class="home-page visible-scroll relative flex max-h-full flex-1 flex-col overflow-x-hidden"
     :style="{ overflow: 'overlay' }"
     @wheel="onScroll"
   >
@@ -22,9 +22,11 @@
     <transition
       name="fade-transition"
       mode="out-in"
+      @after-leave="onAfterTransition"
     >
       <router-view />
     </transition>
+
     <!-- </template> -->
 
     <HomeLogDialog />
@@ -47,6 +49,7 @@ import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
+import { useSharedTooltip, useSharedTooltipData } from '@/composables/sharedTooltip'
 
 const router = useRouter()
 
@@ -79,6 +82,14 @@ usePresence(computed(() => t('presence.instance', {
 const compact = ref(false)
 provide(kCompact, compact)
 const onScroll = useCompactScroll(compact)
+
+const { isShown, stack } = useSharedTooltipData()
+const onAfterTransition = () => {
+  isShown.value = false
+  while (stack.length) {
+    stack.pop()
+  }
+}
 
 </script>
 

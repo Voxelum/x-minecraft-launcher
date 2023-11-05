@@ -68,6 +68,56 @@ export function useModrinthTags() {
 //     }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
 // }
 
+export function getFacatsText(
+  gameVersion: string,
+  license: string,
+  category: string[],
+  modLoader: string,
+  projectType: string,
+  environment: string,
+) {
+  const facets: string[][] = []
+  if (gameVersion && gameVersion !== 'null') {
+    facets.push([`versions:${gameVersion}`])
+  }
+  if (license) {
+    facets.push([`license:${license}`])
+  }
+  if (modLoader) {
+    facets.push([`categories:${modLoader}`])
+  }
+  if (category) {
+    for (const cat of category) {
+      facets.push([`categories:${cat}`])
+    }
+  }
+  if (projectType) {
+    facets.push([`project_type:${projectType}`])
+  }
+  if (environment) {
+    if (environment === 'server') {
+      facets.push(['client_side:optional', 'client_side:unsupported'], ['server_side:optional', 'server_side:required'])
+    } else {
+      facets.push(['client_side:optional', 'client_side:required'], ['server_side:optional', 'server_side:unsupported'])
+    }
+  }
+  let facetsText = undefined as string | undefined
+  if (facets.length > 0) {
+    facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
+  }
+  return facetsText
+}
+
+export function getModrinthSearchUrl(
+  query: string,
+  limit: number,
+  offset: number,
+  sortBy: string,
+  facetsText: string | undefined,
+) {
+  return `/modrinth/search?query=${query}&limit=${limit}&offset=${(offset)}&index=${sortBy}&facets=${facetsText}`
+}
+
 export function useModrinth(props: ModrinthOptions) {
   const { t } = useI18n()
   const { replace } = useRouter()
@@ -169,40 +219,9 @@ export function useModrinth(props: ModrinthOptions) {
 
   const refs = toRefs(data)
 
-  const facetsText = computed(() => {
-    const facets: string[][] = []
-    if (gameVersion.value && gameVersion.value !== 'null') {
-      facets.push([`versions:${gameVersion.value}`])
-    }
-    if (license.value) {
-      facets.push([`license:${license.value}`])
-    }
-    if (modLoader.value) {
-      facets.push([`categories:${modLoader.value}`])
-    }
-    if (category.value) {
-      for (const cat of category.value) {
-        facets.push([`categories:${cat}`])
-      }
-    }
-    if (projectType.value) {
-      facets.push([`project_type:${projectType.value}`])
-    }
-    if (environment.value) {
-      if (environment.value === 'server') {
-        facets.push(['client_side:optional', 'client_side:unsupported'], ['server_side:optional', 'server_side:required'])
-      } else {
-        facets.push(['client_side:optional', 'client_side:required'], ['server_side:optional', 'server_side:unsupported'])
-      }
-    }
-    let facetsText = undefined as string | undefined
-    if (facets.length > 0) {
-      facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
-    }
-    return facetsText
-  })
+  const facetsText = computed(() => getFacatsText(gameVersion.value, license.value, category.value, modLoader.value, projectType.value, environment.value))
   const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV(
-    computed(() => `/modrinth/search?query=${props.query}&limit=${data.pageSize}&offset=${(props.page - 1) * data.pageSize}&index=${sortBy.value}&facets=${facetsText.value}`),
+    computed(() => getModrinthSearchUrl(query.value, data.pageSize, (props.page - 1) * data.pageSize, sortBy.value, facetsText.value)),
     () => clientModrinthV2.searchProjects({
       query: props.query,
       limit: data.pageSize,
