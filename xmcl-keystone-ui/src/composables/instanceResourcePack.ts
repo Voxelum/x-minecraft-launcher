@@ -116,10 +116,14 @@ function getResourcePackItemFromGameSettingName(resourcePackName: string): Insta
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
-  const { link } = useService(InstanceResourcePacksServiceKey)
-  watch(path, (v) => {
-    link(v)
-  }, { immediate: true })
+  const { link, scan } = useService(InstanceResourcePacksServiceKey)
+  async function mount(path: string) {
+    const linked = await link(path)
+    if (!linked) {
+      await scan(path)
+    }
+  }
+  watch(path, mount, { immediate: true })
 
   const { resources, refresh, refreshing } = useDomainResources(ResourceDomain.ResourcePacks)
 
