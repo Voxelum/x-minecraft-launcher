@@ -1001,6 +1001,7 @@ refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
 resourcepack:
+  searchHint: Search reosurce pack
   available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -1025,6 +1026,7 @@ resourcepack:
   name: Resource Pack | Resource Packs
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
   showFile: Show resource pack in folder {file}
   showInCurseforge: Show {name} in curseforge
@@ -1252,6 +1254,8 @@ shaderPack:
   name: Shader Pack
   'off': 'Off'
   offDescription: Turn off the shader
+  searchHint: Search Shader Pack
+  selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 summery: Summery

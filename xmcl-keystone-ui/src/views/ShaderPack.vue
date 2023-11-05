@@ -39,6 +39,14 @@
         :installed="selectedItem.files?.map(i => i.resource) || []"
         :runtime="runtime"
       />
+      <Hint
+        v-else
+        v-dragover
+        icon="playlist_add"
+        :text="
+          t('shaderPack.selectSearchHint')"
+        class="h-full"
+      />
     </template>
   </MarketBase>
   <!--
@@ -72,6 +80,7 @@ import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { Resource } from '@xmcl/runtime-api'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import Hint from '@/components/Hint.vue'
 
 const {
   modrinthError,

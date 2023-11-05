@@ -62,6 +62,14 @@
         :installed="selectedItem.installed"
         :runtime="runtime"
       />
+      <Hint
+        v-else
+        v-dragover
+        icon="playlist_add"
+        :text="
+          t('resourcepack.selectSearchHint')"
+        class="h-full"
+      />
     </template>
   </MarketBase>
 </template>
@@ -82,6 +90,7 @@ import { Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 import { useService } from '@/composables'
+import Hint from '@/components/Hint.vue'
 
 const { runtime } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)

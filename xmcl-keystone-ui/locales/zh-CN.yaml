@@ -993,6 +993,7 @@ refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
 resourcepack:
+  searchHint: 搜索资源包
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
@@ -1011,6 +1012,7 @@ resourcepack:
   name: 资源包 | 资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: 查看选择的资源包
   selected: 已选资源包
   showFile: 在文件夹中显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
@@ -1213,6 +1215,8 @@ shaderPack:
   name: 光影包
   'off': 无
   offDescription: 关闭 shader 引擎
+  searchHint: 搜索光影包
+  selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此 shader pack
 summery: 简介

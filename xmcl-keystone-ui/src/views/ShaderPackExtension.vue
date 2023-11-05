@@ -37,7 +37,7 @@
     </v-btn-toggle>
     <MarketTextFieldWithMenu
       :keyword.sync="keyword"
-      :placeholder="t('search.placeholder')"
+      :placeholder="t('shaderPack.searchHint')"
       :modrinth-categories.sync="modrinthCategories"
       modrinth-category-filter="shader"
     />

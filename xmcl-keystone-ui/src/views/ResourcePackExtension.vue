@@ -11,7 +11,7 @@
       <div class="flex-grow" />
       <MarketTextFieldWithMenu
         :keyword.sync="keyword"
-        :placeholder="t('search.placeholder')"
+        :placeholder="t('resourcepack.searchHint')"
         :modrinth-categories.sync="modrinthCategories"
         modrinth-category-filter="resourcepack"
         :curseforge-category.sync="curseforgeCategory"
