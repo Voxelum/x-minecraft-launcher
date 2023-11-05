@@ -86,7 +86,7 @@ const model = computed(() => {
 
 const updating = useModDetailUpdate()
 
-const { shaderPack } = injection(kInstanceShaderPacks)
+const { shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
 const { removeResources } = useService(ResourceServiceKey)
 const onDelete = async () => {
   updating.value = true
@@ -95,11 +95,11 @@ const onDelete = async () => {
 
 const onEnable = (v: boolean) => {
   const file = props.installed.find(f => f.path === selectedVersion.value?.id)
-  shaderPack.value = v ? file?.fileName : ''
+  selectedShaderPack.value = v ? file?.fileName : ''
 }
 
-const enabled = computed(() => props.installed[0].fileName === shaderPack.value)
-watch(shaderPack, (v) => {
+const enabled = computed(() => props.installed[0].fileName === selectedShaderPack.value)
+watch(selectedShaderPack, (v) => {
   console.log(v)
 })
 
