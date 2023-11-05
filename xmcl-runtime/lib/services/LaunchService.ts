@@ -14,15 +14,33 @@ import { JavaService } from './JavaService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
 
-export interface LaunchPlugin {
-  onBeforeLaunch(input: LaunchOptions, output: ResolvedLaunchOptions): Promise<void>
+export interface LaunchMiddleware {
+  onBeforeLaunch(input: LaunchOptions, output: ResolvedLaunchOptions, context: Record<string, any>): Promise<void>
+  onAfterLaunch?(result: {
+    /**
+         * The code of the process exit. This is the nodejs child process "exit" event arg.
+         */
+    code: number
+    /**
+         * The signal of the process exit. This is the nodejs child process "exit" event arg.
+         */
+    signal: string
+    /**
+         * The crash report content
+         */
+    crashReport: string
+    /**
+         * The location of the crash report
+         */
+    crashReportLocation: string
+  }, output: ResolvedLaunchOptions, context: Record<string, any>): void
 }
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
   private processes: Record<number, GameProcess & { process: ChildProcess }> = {}
 
-  private plugins: LaunchPlugin[] = []
+  private plugins: LaunchMiddleware[] = []
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstallService) private installService: InstallService,
@@ -34,7 +52,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     super(app)
   }
 
-  registerPlugin(plugin: LaunchPlugin) {
+  registerMiddleware(plugin: LaunchMiddleware) {
     this.plugins.push(plugin)
   }
 
@@ -200,9 +218,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
       const launchOptions = this.#generateOptions(options, version, accessToken)
+      const context = {}
       for (const plugin of this.plugins) {
         try {
-          await plugin.onBeforeLaunch(options, launchOptions)
+          await plugin.onBeforeLaunch(options, launchOptions, context)
         } catch (e) {
           this.warn('Fail to run plugin')
           this.error(e as any)
@@ -281,6 +300,14 @@ export class LaunchService extends AbstractService implements ILaunchService {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
         Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
+          for (const plugin of this.plugins) {
+            try {
+              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation }, launchOptions, context)
+            } catch (e) {
+              this.warn('Fail to run plugin')
+              this.error(e as any)
+            }
+          }
           this.emit('minecraft-exit', {
             pid: process.pid,
             ...options,

@@ -15,7 +15,7 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
   const options = await app.registry.get(InstanceOptionsService)
   const getPath = await app.registry.get(kGameDataPath)
 
-  launchService.registerPlugin({
+  launchService.registerMiddleware({
     async onBeforeLaunch(input, output) {
       const path = output.gamePath
       const linked = await resourcePackService.link(path)

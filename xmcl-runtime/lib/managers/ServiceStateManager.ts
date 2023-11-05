@@ -151,6 +151,10 @@ export default class ServiceStateManager extends Manager {
     }) as MutableState<T>
   }
 
+  get<T extends State<T>>(id: string): T | undefined {
+    return this.containers[id]?.state
+  }
+
   async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void]>): Promise<MutableState<T>> {
     if (this.containers[id]) {
       const container = this.containers[id]

@@ -1,11 +1,14 @@
-import { PartialResourceHash, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { LaunchService as ILaunchService, InstanceModsState, PartialResourceHash, Resource, ResourceDomain, ResourceMetadata, getInstanceModStateKey } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { kClientToken } from '../entities/clientToken'
+import { kFlights } from '../entities/flights'
 import { kSettings } from '../entities/settings'
 import { APP_INSIGHT_KEY, parseStack } from '../entities/telemetry'
+import { InstanceService } from '../services/InstanceService'
+import { JavaService } from '../services/JavaService'
 import { LaunchService } from '../services/LaunchService'
 import { NatService } from '../services/NatService'
 import { PeerService } from '../services/PeerService'
@@ -20,6 +23,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const sessionId = randomUUID()
 
   const clientSession = await app.registry.get(kClientToken)
+  const flights = await app.registry.get(kFlights)
 
   appInsight.setup(APP_INSIGHT_KEY)
     .setDistributedTracingMode(appInsight.DistributedTracingModes.AI_AND_W3C)
@@ -89,9 +93,18 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       /* no-op */
     })
 
+    let javaService: JavaService | undefined
+    app.registry.get(JavaService).then(service => {
+      javaService = service
+    })
+    let instanceService: InstanceService | undefined
+    app.registry.get(InstanceService).then(service => {
+      instanceService = service
+    })
+
     // Track game start and end
-    app.registry.get(LaunchService).then(service => {
-      service.on('minecraft-start', (options) => {
+    app.registry.get(LaunchService).then((service: LaunchService) => {
+      (service as ILaunchService).on('minecraft-start', (options) => {
         if (settings.disableTelemetry) return
         client.trackEvent({
           name: 'minecraft-start',
@@ -117,6 +130,48 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           })
         }
       })
+
+      if (!flights.disableMinecraftRunLog) {
+        service.registerMiddleware({
+          async onBeforeLaunch(_, { gamePath }, ctx) {
+            const state = app.serviceStateManager.get<InstanceModsState>(getInstanceModStateKey(gamePath))
+            const mods = state?.mods.map(m => {
+              const payload = getPayload(m.hash, m.metadata, m.name, m.domain)
+              delete payload.name
+              delete payload.domain
+              return payload
+            })
+            const runtime = instanceService?.state.all[gamePath]?.runtime
+            if (mods) {
+              ctx.mods = mods
+              ctx.runtime = runtime
+            }
+          },
+          async onAfterLaunch(result, opts, ctx) {
+            if (result.code !== 0) {
+              return
+            }
+            if (ctx.mods) {
+              client.trackEvent({
+                name: 'minecraft-run-record',
+                properties: {
+                  mods: ctx.mods,
+                  runtime: ctx.runtime,
+                  java: await javaService?.getJavaState().then((javaState) => {
+                    const javaVersion = javaState.all.find(s => s.path === opts.javaPath)
+                    if (javaVersion) {
+                      return {
+                        majorVersion: javaVersion.majorVersion,
+                        version: javaVersion.version,
+                      }
+                    }
+                  }),
+                },
+              })
+            }
+          },
+        })
+      }
     })
 
     process.on('uncaughtException', (e) => {
