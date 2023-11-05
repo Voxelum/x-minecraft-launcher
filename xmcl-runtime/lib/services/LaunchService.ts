@@ -305,7 +305,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } }, e.message, { cause: e })
+      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } }, (e as any).message, { cause: e })
     }
   }
 
