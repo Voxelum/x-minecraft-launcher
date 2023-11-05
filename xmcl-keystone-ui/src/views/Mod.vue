@@ -249,7 +249,7 @@ onMounted(() => {
 })
 
 // Reset all filter
-onMounted(() => {
+onUnmounted(() => {
   modrinthCategories.value = []
   curseforgeCategory.value = undefined
 })

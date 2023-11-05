@@ -174,7 +174,7 @@ const onDrop = (item: ResourcePackProject, id: string) => {
 const toggleCategory = useToggleCategories(modrinthCategories)
 
 // Reset all filter
-onMounted(() => {
+onUnmounted(() => {
   keyword.value = ''
   modrinthCategories.value = []
   curseforgeCategory.value = undefined

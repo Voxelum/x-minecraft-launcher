@@ -122,7 +122,7 @@ const onEnable = (f: ProjectFile) => {
 }
 
 // Reset all filter
-onMounted(() => {
+onUnmounted(() => {
   keyword.value = ''
   modrinthCategories.value = []
 })

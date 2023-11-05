@@ -66,7 +66,7 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
         })
       }
     } else {
-      await installFile({ file, type: type.value, icon: project.value?.logo.url })
+      await installFile({ file, type: type.value, icon: project.value?.logo.url, instancePath: from.value })
     }
   }
   return {

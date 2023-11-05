@@ -163,10 +163,10 @@ if (upstream) {
   const latestFileIndex = computed(() => project.value?.latestFilesIndexes.find(f => f.gameVersion === upstream.value.minecraft))
   const current = useLatestCurseforgeResource(modId, latestFileIndex)
   provide(kLatestCurseforgeResource, current)
-  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, destination, computed(() => props.type), current.resource))
+  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, path, computed(() => props.type), current.resource))
 } else {
   // Common Curseforge install function
-  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, destination, computed(() => props.type), computed(() => undefined)))
+  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, path, computed(() => props.type), computed(() => undefined)))
 }
 
 const gameVersions = computed(() => {
