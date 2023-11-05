@@ -1,4 +1,3 @@
-
 <template>
   <MarketItem
     :item="pack"

@@ -137,7 +137,13 @@ const onDelete = () => {
     uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.resource) })
   }
 }
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.mod.installed), updating)
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+  selectedVersion,
+  computed(() => props.mod.installed),
+  updating,
+  () => { },
+  () => { },
+)
 
 </script>
 <template>

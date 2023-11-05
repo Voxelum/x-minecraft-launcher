@@ -34,7 +34,7 @@
         @category="toggleCategory"
       />
       <ShaderPackDetailResource
-        v-else-if="selectedItem"
+        v-else-if="isShaderPackProject(selectedItem)"
         :shader-pack="selectedItem"
         :installed="selectedItem.files?.map(i => i.resource) || []"
         :runtime="runtime"
@@ -64,13 +64,13 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { kInstance } from '@/composables/instance'
 import { usePresence } from '@/composables/presence'
-import { kShaderPackSearch } from '@/composables/shaderPackSearch'
+import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { injection } from '@/util/inject'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { Resource } from '@xmcl/runtime-api'
-import { ProjectFile } from '@/util/search'
+import { ProjectEntry, ProjectFile } from '@/util/search'
 import { useToggleCategories } from '@/composables/toggleCategories'
 
 const {
@@ -86,6 +86,8 @@ const { runtime } = injection(kInstance)
 const toggleCategory = useToggleCategories(modrinthCategories)
 
 const { t } = useI18n()
+
+const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
 const { shaderPack } = injection(kInstanceShaderPacks)
 
