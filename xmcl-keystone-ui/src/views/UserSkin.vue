@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex flex-col items-center justify-center gap-2 "
+    class="relative flex flex-col items-center justify-center gap-2"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
@@ -20,7 +20,6 @@
       </v-fab-transition>
     </div>
     <SkinView
-      class="rounded shadow-md"
       :paused="paused"
       :skin="skin"
       :slim="inferModelType ? undefined : slim"

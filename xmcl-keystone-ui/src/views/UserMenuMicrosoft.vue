@@ -7,7 +7,7 @@
     >
       <div class="flex justify-center">
         <UserSkin
-          class="z-5 relative flex items-center justify-center overflow-auto"
+          class="z-5 min-w-50 relative flex items-center justify-center overflow-auto overflow-x-hidden"
           inspect
           :user="user"
           :profile="gameProfile"
@@ -70,6 +70,7 @@
             v-model="capeModel"
             mandatory
             show-arrows
+            class="max-w-[400px] overflow-x-auto"
           >
             <v-slide-item
               v-slot="{ active, toggle }"
