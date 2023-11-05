@@ -41,7 +41,7 @@ winget install CI010.XMinecraftLauncher
 ```
 
 
-[English README](./README.md)
+[English README](./README.md) [Українська README](README.uk.md)
 
 ## 特性
 
@@ -89,6 +89,8 @@ winget install CI010.XMinecraftLauncher
 [GodLeaveMe](https://github.com/GodLeaveMe), 维护 AUR package registry.
 
 [0xc0000142](https://github.com/0xc0000142), 维护 winget.
+
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), 完全创建了乌克兰语翻译!
 
 [vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
 
