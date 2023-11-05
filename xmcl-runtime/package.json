@@ -48,7 +48,7 @@
         "applicationinsights": "^2.7.0",
         "atomically": "^2.0.0",
         "better-sqlite3": "^8.5.1",
-        "classic-level": "^1.2.0",
+        "classic-level": "1.2.0",
         "fast-json-stringify": "^5.8.0",
         "fast-xml-parser": "^4.0.12",
         "file-type": "^16.5.4",
