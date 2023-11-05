@@ -41,7 +41,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       const loadShaderOptions = async (path: string) => {
         try {
           const result = await this.getShaderOptions(path)
-          state.shaderPack = result.shaderPack
+          state.shaderPackSet(result.shaderPack)
         } catch (e) {
           if (isSystemError(e)) {
             this.warn(`An error ocurred during load shader options of ${path}.`)
@@ -53,7 +53,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       const loadOptions = async (path: string) => {
         try {
           const result = await this.getGameOptions(path)
-          Object.assign(state, result)
+          state.gameOptionsSet(result)
         } catch (e) {
           if (isSystemError(e)) {
             this.warn(`An error ocurred during parse game options of ${path}.`)
