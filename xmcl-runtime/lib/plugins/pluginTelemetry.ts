@@ -8,6 +8,7 @@ import { kSettings } from '../entities/settings'
 import { APP_INSIGHT_KEY, parseStack } from '../entities/telemetry'
 import { LaunchService } from '../services/LaunchService'
 import { NatService } from '../services/NatService'
+import { PeerService } from '../services/PeerService'
 import { ResourceService } from '../services/ResourceService'
 import { UserService } from '../services/UserService'
 
@@ -35,13 +36,41 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
 
-  appInsight.defaultClient.trackEvent({
+  const createExceptionDetails = (msg?: string, name?: string, stack?: string) => {
+    const d = new appInsight.Contracts.ExceptionDetails()
+    d.message = msg?.substring(0, 32768) || ''
+    d.typeName = name?.substring(0, 1024) || ''
+    d.parsedStack = parseStack(stack) as any
+    d.hasFullStack = (d.parsedStack instanceof Array) && d.parsedStack.length > 0
+    return d
+  }
+
+  const client = appInsight.defaultClient
+
+  client.addTelemetryProcessor((envelope, contextObjects) => {
+    if (contextObjects?.error) {
+      const exception = envelope.data.baseData as Contracts.ExceptionData
+      const e = contextObjects?.error
+      if (e instanceof Error) {
+        if (e.cause instanceof Error) {
+          exception.exceptions.push(createExceptionDetails(e.cause.message, e.cause.name, e.cause.stack))
+        } else if (e instanceof AggregateError) {
+          for (const cause of e.errors) {
+            exception.exceptions.push(createExceptionDetails(cause.message, cause.name, cause.stack))
+          }
+        }
+      }
+    }
+    return true
+  })
+
+  client.trackEvent({
     name: 'app-start',
     properties: { },
   })
 
   app.registryDisposer(async () => {
-    appInsight.defaultClient.flush()
+    client.flush()
   })
 
   app.on('engine-ready', async () => {
@@ -60,28 +89,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       /* no-op */
     })
 
-    process.on('uncaughtException', (e) => {
-      if (settings.disableTelemetry) return
-      if (appInsight.defaultClient) {
-        appInsight.defaultClient.trackException({
-          exception: e,
-          properties: e ? { ...e } : undefined,
-        })
-      }
-    })
-    process.on('unhandledRejection', (e) => {
-      if (settings.disableTelemetry) return
-      if (appInsight.defaultClient) {
-        appInsight.defaultClient.trackException({
-          exception: e as any, // the applicationinsights will convert it to error automatically
-          properties: e ? { ...e } : undefined,
-        })
-      }
-    })
+    // Track game start and end
     app.registry.get(LaunchService).then(service => {
       service.on('minecraft-start', (options) => {
         if (settings.disableTelemetry) return
-        appInsight.defaultClient.trackEvent({
+        client.trackEvent({
           name: 'minecraft-start',
           properties: options,
         })
@@ -91,11 +103,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         const normalExit = code === 0
         const crashed = crashReport && crashReport.length > 0
         if (normalExit) {
-          appInsight.defaultClient.trackEvent({
+          client.trackEvent({
             name: 'minecraft-exit',
           })
         } else {
-          appInsight.defaultClient.trackEvent({
+          client.trackEvent({
             name: 'minecraft-exit',
             properties: {
               code,
@@ -107,35 +119,27 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
-    const createExceptionDetails = (msg?: string, name?: string, stack?: string) => {
-      const d = new appInsight.Contracts.ExceptionDetails()
-      d.message = msg?.substring(0, 32768) || ''
-      d.typeName = name?.substring(0, 1024) || ''
-      d.parsedStack = parseStack(stack) as any
-      d.hasFullStack = (d.parsedStack instanceof Array) && d.parsedStack.length > 0
-      return d
-    }
-
-    appInsight.defaultClient.addTelemetryProcessor((envelope, contextObjects) => {
-      if (contextObjects?.error) {
-        const exception = envelope.data.baseData as Contracts.ExceptionData
-        const e = contextObjects?.error
-        if (e instanceof Error) {
-          if (e.cause instanceof Error) {
-            exception.exceptions.push(createExceptionDetails(e.cause.message, e.cause.name, e.cause.stack))
-          } else if (e instanceof AggregateError) {
-            for (const cause of e.errors) {
-              exception.exceptions.push(createExceptionDetails(cause.message, cause.name, cause.stack))
-            }
-          }
-        }
+    process.on('uncaughtException', (e) => {
+      if (settings.disableTelemetry) return
+      if (client) {
+        client.trackException({
+          exception: e,
+          properties: e ? { ...e } : undefined,
+        })
       }
-      return true
     })
-
+    process.on('unhandledRejection', (e) => {
+      if (settings.disableTelemetry) return
+      if (client) {
+        client.trackException({
+          exception: e as any, // the applicationinsights will convert it to error automatically
+          properties: e ? { ...e } : undefined,
+        })
+      }
+    })
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
-      appInsight.defaultClient.trackException({
+      client.trackException({
         exception: e,
         properties: e ? { ...e } : undefined,
         contextObjects: {
@@ -209,10 +213,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       return trace
     }
 
+    // Collect resource metadata
     app.registry.get(ResourceService).then((resourceService) => {
       resourceService.on('resourceAdd', (res: Resource) => {
         if (settings.disableTelemetry) return
-        appInsight.defaultClient.trackEvent({
+        client.trackEvent({
           name: 'resource-metadata-v2',
           properties: getPayload(res.hash, res.metadata, res.name, res.domain),
         })
@@ -220,7 +225,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       resourceService.on('resourceUpdate', (res: PartialResourceHash) => {
         if (settings.disableTelemetry) return
         if (res.metadata) {
-          appInsight.defaultClient.trackEvent({
+          client.trackEvent({
             name: 'resource-metadata-v2',
             properties: getPayload(res.hash, res.metadata, res.name),
           })
@@ -228,14 +233,33 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
+    // Track user authority
     app.registry.get(UserService).then(service => {
       service.on('user-login', (authority) => {
         if (settings.disableTelemetry) return
-        appInsight.defaultClient.trackEvent({
+        client.trackEvent({
           name: 'user-login',
           properties: {
             authService: authority,
           },
+        })
+      })
+    })
+
+    // Track peer connection quality
+    app.registry.get(PeerService).then(service => {
+      service.getPeerState().then(state => {
+        state.subscribe('connectionStateChange', (state) => {
+          if (state.connectionState === 'connected') {
+            client.trackEvent({
+              name: 'peer-connection-connected',
+            })
+          }
+        })
+        state.subscribe('connectionAdd', (conn) => {
+          client.trackEvent({
+            name: 'peer-connection-add',
+          })
         })
       })
     })
