@@ -12,7 +12,7 @@
       {{ t('shaderPack.name', 2) }}
     </v-card-title>
     <v-card-text
-      class="flex-grow"
+      class="flex-grow overflow-hidden"
     >
       {{ shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty') }}
     </v-card-text>
