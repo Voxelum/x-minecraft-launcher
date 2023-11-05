@@ -70,13 +70,11 @@
 import { kCurseforgeInstall } from '@/composables/curseforgeInstall'
 import { injection } from '@/util/inject'
 import { FileIndex, FileModLoaderType, Mod } from '@xmcl/curseforge'
-import { ProjectType } from '@xmcl/runtime-api'
 import CurseforgeProjectFileItem from './CurseforgeProjectFileItem.vue'
 
 const props = defineProps<{
   project: Mod
   from: string
-  type: ProjectType
   upstream?: {
     modId: number
     fileId: number
@@ -94,7 +92,7 @@ const modLoaders = {
 
 const { t } = useI18n()
 
-const { install, isDownloaded } = injection(kCurseforgeInstall)
+const { install } = injection(kCurseforgeInstall)
 
 const grouped = computed(() => {
   if (!props.project.latestFilesIndexes) return {}

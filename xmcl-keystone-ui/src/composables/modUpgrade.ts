@@ -1,16 +1,17 @@
-import { Mod, ModFile } from '@/util/mod'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { InjectionKey, Ref } from 'vue'
-import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { swrvGet } from '@/util/swrvGet'
 import { injection } from '@/util/inject'
-import { kSWRVConfig } from './swrvConfig'
-import { FileModLoaderType, File } from '@xmcl/curseforge'
+import { ModFile } from '@/util/mod'
+import { ProjectEntry } from '@/util/search'
+import { swrvGet } from '@/util/swrvGet'
+import { File, FileModLoaderType } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { useRefreshable } from './refreshable'
+import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InjectionKey, Ref } from 'vue'
 import { useCurseforgeInstallModFile } from './curseforgeInstall'
 import { useModrinthInstallVersion } from './modrinthInstall'
+import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { kSWRVConfig } from './swrvConfig'
 
 export type UpgradePlan = {
   /**
@@ -18,7 +19,7 @@ export type UpgradePlan = {
    */
   file: File
 
-  mod: Mod
+  mod: ProjectEntry<ModFile>
 
   updating: boolean
 } | {
@@ -27,14 +28,14 @@ export type UpgradePlan = {
    */
   version: ProjectVersion
 
-  mod: Mod
+  mod: ProjectEntry<ModFile>
 
   updating: boolean
 }
 
 export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbol('kModUpgrade')
 
-export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<Mod[]>) {
+export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ProjectEntry<ModFile>[]>) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = ref({} as Record<string, UpgradePlan>)
   const checked = ref(false)
@@ -105,9 +106,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     checked.value = true
   })
 
-  const installCurseforgeFile = useCurseforgeInstallModFile(path)
+  const { uninstall: uninstallMod, install } = useService(InstanceModsServiceKey)
+  const installCurseforgeFile = useCurseforgeInstallModFile(path, (r) => {
+    install({ path: path.value, mods: r })
+  })
   const installModrinthVersion = useModrinthInstallVersion(path)
-  const { uninstall: uninstallMod } = useService(InstanceModsServiceKey)
   const { refresh: upgrade, refreshing: upgrading, error: upgradeError } = useRefreshable(async () => {
     for (const plan of Object.values(plans.value)) {
       if ('file' in plan) {

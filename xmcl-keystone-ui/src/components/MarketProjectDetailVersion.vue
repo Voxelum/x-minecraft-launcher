@@ -83,13 +83,13 @@ import { getColorForReleaseType } from '@/util/color'
 import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{
-  version: ModVersion
+  version: ProjectVersion
   showChangelog: boolean
 }>()
 
 const emit = defineEmits(['install', 'click'])
 
-export interface ModVersion {
+export interface ProjectVersion {
   id: string
   name: string
   version: string
@@ -110,6 +110,8 @@ const loaders = computed(() => props.version.loaders.map(l => {
   if (l.toLowerCase() === 'fabric') return { icon: '$vuetify.icons.fabric', loader: l }
   if (l.toLowerCase() === 'quilt') return { icon: '$vuetify.icons.quilt', loader: l }
   if (l.toLowerCase() === 'neoforge') return { icon: '$vuetify.icons.neoForged', loader: l }
+  if (l.toLowerCase() === 'iris') return { icon: '$vuetify.icons.iris', loader: l }
+  if (l.toLowerCase() === 'optifine') return { icon: '$vuetify.icons.optifine', loader: l }
   return { loader: l }
 }))
 const { getColorCode } = useVuetifyColor()

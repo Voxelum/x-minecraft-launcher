@@ -1,239 +1,168 @@
 <template>
-  <div class="resource-pack-page">
-    <v-progress-linear
-      class="absolute left-0 top-0 z-10 m-0 p-0"
-      :active="refreshing || isValidating"
-      height="3"
-      :indeterminate="true"
-    />
-    <v-card
-      color="transparent"
-      flat
-      class="list invisible-scroll"
-      @dragover.prevent
-      @drop="onDropToSide(false, dragging)"
-    >
-      <v-subheader class="list-title">
-        {{
-          t("resourcepack.unselected")
-        }}
-      </v-subheader>
-      <Hint
-        v-if="unselectedItems.length === 0 || isValidating"
-        v-dragover
-        icon="save_alt"
-        :text="
-          t('resourcepack.dropHint')"
-        class="h-full"
-      />
-      <TransitionGroup
-        v-else
-        class="transition-list"
-        name="transition-list"
-        tag="div"
+  <MarketBase
+    :items="displayItems"
+    :item-height="76"
+    :plans="{}"
+    :error="modrinthError"
+    :loading="loading"
+  >
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+      <v-subheader
+        v-if="typeof item === 'string'"
+        class="h-[76px]"
       >
-        <ResourcePackCard
-          v-for="item in unselectedItems"
-          :key="item.resourcePack.path"
-          :pack="item"
-          :minecraft="minecraft"
-          :is-selected="false"
-          @tags="item.tags = $event"
-          @dragstart="startDragging(item)"
-          @dragend="stopDragging()"
-          @mouseup="stopDragging()"
-          @drop="onDropToCard(false, item, dragging); stopDragging()"
-        />
-      </TransitionGroup>
-    </v-card>
-
-    <v-card
-      color="transparent"
-      flat
-      class="list invisible-scroll"
-      @dragover.prevent
-      @drop="onDropToSide(true, dragging)"
-    >
-      <v-subheader class="list-title">
-        {{
-          t("resourcepack.selected")
-        }}
+        {{ item === 'enabled' ? t("resourcepack.selected") : t("resourcepack.unselected") }}
       </v-subheader>
-      <Hint
-        v-if="selectedItems.length === 0 || isValidating"
-        v-dragover
-        icon="save_alt"
-        :text="t('resourcepack.dropHint')"
-        class="h-full"
+      <ResourcePackItem
+        v-else-if="(typeof item === 'object')"
+        :pack="item"
+        :draggable="allMode && !item.disabled"
+        :selection-mode="selectionMode"
+        :selected="selected"
+        :has-update="hasUpdate"
+        :checked="checked"
+        @drop="onDrop(item, $event)"
+        @click="on.click"
       />
-      <TransitionGroup
-        v-else
-        name="transition-list"
-        tag="div"
-        class="transition-list"
-      >
-        <template
-          v-for="item in selectedItems"
-        >
-          <ResourcePackCard
-            :key="item.resourcePack.path"
-            :pack="item"
-            :minecraft="minecraft"
-            :is-selected="true"
-            @delete="startDelete(item)"
-            @dragstart="startDragging(item)"
-            @dragend="stopDragging()"
-            @mouseup="stopDragging()"
-            @drop="onDropToCard(true, item, dragging); stopDragging()"
-          />
-        </template>
-      </TransitionGroup>
-    </v-card>
-
-    <v-fab-transition>
-      <div class="item-center absolute bottom-5 flex w-full justify-center">
-        <v-btn
-          v-if="dragging"
-          class="bottom-3"
-          large
-          fab
-          bottom
-          color="error"
-          @dragover.prevent
-          @drop="onDropDeleteButton"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
-      </div>
-    </v-fab-transition>
-    <DeleteDialog
-      :title="t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' })"
-      :width="400"
-      persistent
-      @cancel="stopDelete()"
-      @confirm="confirmDeletingPack"
-    >
-      <div>{{ t("resourcepack.deletionHint") }}</div>
-      <span class="text-gray-500">
-        {{ deletingPack ? deletingPack.resourcePack.resource ? deletingPack.resourcePack.resource.path : '' : '' }}
-      </span>
-    </DeleteDialog>
-  </div>
+    </template>
+    <template #content="{ selectedModrinthId, selectedItem, selectedCurseforgeId }">
+      <MarketProjectDetailModrinth
+        v-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem.modrinth"
+        :project-id="selectedModrinthId"
+        :installed="selectedItem.installed"
+        :loaders="modrinthLoaders"
+        :categories="modrinthCategories"
+        :runtime="runtime"
+        :all-files="files"
+        @install="onInstall"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onDisable"
+        @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforge
+        v-else-if="selectedItem && selectedCurseforgeId"
+        :curseforge="selectedItem.curseforge"
+        :curseforge-id="selectedItem.curseforge?.id || selectedCurseforgeId"
+        :installed="selectedItem.installed"
+        :loaders="[]"
+        :category="curseforgeCategory"
+        :runtime="runtime"
+        :all-files="files"
+        @install="onInstall"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onDisable"
+        @category="curseforgeCategory = $event"
+      />
+      <ResourcePackDetailResource
+        v-else-if="isLocalFile(selectedItem)"
+        :resource-pack="selectedItem"
+        :installed="selectedItem.installed"
+        :runtime="runtime"
+      />
+    </template>
+  </MarketBase>
 </template>
 
 <script lang=ts setup>
-import Hint from '@/components/Hint.vue'
-import { useFilterCombobox, useService } from '@/composables'
+import MarketBase from '@/components/MarketBase.vue'
+import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
+import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { kInstance } from '@/composables/instance'
-import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
-import { ResourcePackItem, useInstanceResourcePackItem } from '@/composables/instanceResourcePackItem'
-import { kInstanceVersion } from '@/composables/instanceVersion'
+import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { usePresence } from '@/composables/presence'
+import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
-import { vDragover } from '@/directives/dragover'
+import { useToggleCategories } from '@/composables/toggleCategories'
 import { injection } from '@/util/inject'
-import { ResourceServiceKey } from '@xmcl/runtime-api'
-import { Ref, computed, ref } from 'vue'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { useDialog } from '../composables/dialog'
-import ResourcePackCard from './ResourcePackCard.vue'
-import { kInstanceOptions } from '@/composables/instanceOptions'
+import { ProjectEntry, ProjectFile } from '@/util/search'
+import { Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
+import ResourcePackItem from './ResourcePackItem.vue'
+import { useService } from '@/composables'
 
-function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
-  function getFilterOptions(item: ResourcePackItem) {
+const { runtime } = injection(kInstance)
+const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
+const {
+  items,
+  modrinthError,
+  loading,
+  modrinthCategories,
+  curseforgeCategory,
+  enabled,
+  disabled,
+  keyword,
+} = injection(kResourcePackSearch)
+
+const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
+
+const allMode = computed(() => !keyword.value && modrinthCategories.value.length === 0 && !curseforgeCategory.value)
+
+const displayItems = computed(() => {
+  if (allMode.value) {
     return [
-      ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
-    ]
+      'enabled' as string,
+      ...enabled.value,
+      'disabled' as string,
+      ...disabled.value,
+    ] as (string | ResourcePackProject)[]
   }
-  const filterOptions = computed(() => disabled.value.map(getFilterOptions).concat(enabled.value.map(getFilterOptions)).reduce((a, b) => [...a, ...b], []))
-  const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => `${i.name} ${i.resourcePack.description}`)
-  const selectedItems = computed(() => filter(enabled.value))
-  const unselectedItems = computed(() => filter(disabled.value))
+  return items.value
+})
 
-  return {
-    filterOptions,
-    selectedItems,
-    unselectedItems,
+const modrinthLoaders = computed(() => {
+  const result = [
+    'minecraft',
+    'datapack',
+  ] as string[]
+  if (runtime.value.forge || runtime.value.neoForged) {
+    result.push('forge', 'neoforged')
+  }
+  if (runtime.value.fabric) {
+    result.push('fabric')
+  }
+  if (runtime.value.quiltLoader) {
+    result.push('quilt')
+  }
+  return result
+})
+
+const { removeResources } = useService(ResourceServiceKey)
+const onInstall = (r: Resource[]) => {
+  enable(r.map(r => `file/${r.fileName}`))
+}
+const onUninstall = (v: ProjectFile[]) => {
+  const packs = v as InstanceResourcePack[]
+  removeResources(v.map(f => f.resource.hash))
+  disable(packs)
+}
+const onEnable = (f: ProjectFile) => {
+  enable([f as InstanceResourcePack])
+}
+const onDisable = (f: ProjectFile) => {
+  disable([f as InstanceResourcePack])
+}
+const onDrop = (item: ResourcePackProject, id: string) => {
+  const target = enabled.value.indexOf(item)
+  const from = enabled.value.findIndex(e => e.id === id)
+  if (target !== -1 && from !== -1) {
+    insert(from, target)
   }
 }
 
+const toggleCategory = useToggleCategories(modrinthCategories)
+
+const { t } = useI18n()
+const { name } = injection(kInstance)
+usePresence(computed(() => t('presence.resourcePack', { instance: name.value })))
+
+// Page compact
 const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
-
-watch(compact, (c) => {
-  if (!c) {
-    compact.value = true
-  }
-})
-
-const { path } = injection(kInstance)
-const { minecraft } = injection(kInstanceVersion)
-const { isValidating } = injection(kInstanceOptions)
-const { refreshing, enabled: enabled_, disabled: disabled_ } = injection(kInstanceResourcePacks)
-const { enabled, disabled, enable, disable } = useInstanceResourcePackItem(path, minecraft, enabled_, disabled_)
-const { t } = useI18n()
-const { show } = useDialog('deletion')
-
-// Dragging pack
-const dragging = ref(undefined as ResourcePackItem | undefined)
-function stopDragging() {
-  dragging.value = undefined
-}
-function startDragging(item: ResourcePackItem) {
-  dragging.value = item
-}
-
-// Drop to card or side
-function onDropToCard(right: boolean, target: ResourcePackItem, item: ResourcePackItem | undefined) {
-  if (!item) return
-  if (right) {
-    // Enable the pack
-    enable(item, target)
-  } else {
-    disable(item, target)
-  }
-}
-function onDropToSide(right: boolean, item: ResourcePackItem | undefined) {
-  if (!item) return
-  if (right) {
-    // Enable the pack
-    enable(item)
-  } else {
-    disable(item)
-  }
-}
-
-const { unselectedItems, selectedItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
-
-// Delete
-const { removeResources } = useService(ResourceServiceKey)
-const deletingPack = ref(undefined as ResourcePackItem | undefined)
-async function confirmDeletingPack() {
-  removeResources([deletingPack.value!.resourcePack.id])
-  deletingPack.value = undefined
-}
-function startDelete(item: ResourcePackItem) {
-  deletingPack.value = item
-  show()
-}
-function stopDelete() {
-  deletingPack.value = undefined
-}
-function onDropDeleteButton() {
-  if (dragging.value && !enabled.value.includes(dragging.value)) {
-    startDelete(dragging.value)
-  }
-}
-
-const { push } = useRouter()
-function goPreview() {
-  push('/resource-pack-preview')
-}
-
-const { name } = injection(kInstance)
-usePresence(computed(() => t('presence.resourcePack', { instance: name.value })))
 </script>
 
 <style scoped>

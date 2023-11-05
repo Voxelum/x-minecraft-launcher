@@ -13,16 +13,16 @@ import { useService } from './service'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
-export function useCurseforgeInstallModFile(path: Ref<string>) {
+export function useCurseforgeInstallModFile(path: Ref<string>, install: (r: Resource[]) => void) {
   const { getResourcesByUris } = useService(ResourceServiceKey)
-  const { install: installMod } = useService(InstanceModsServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
   const installCurseforgeFile = async (v: File, icon?: string) => {
     const resources = await getResourcesByUris([getCurseforgeFileUri(v)])
     if (resources.length > 0) {
-      await installMod({ mods: resources, path: path.value })
+      install(resources)
     } else {
-      await installFile({ file: v, icon, type: 'mc-mods', instancePath: path.value })
+      const { resource } = await installFile({ file: v, icon, type: 'mc-mods', instancePath: path.value })
+      install([resource])
     }
   }
   return installCurseforgeFile

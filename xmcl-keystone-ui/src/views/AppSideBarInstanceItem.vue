@@ -54,7 +54,7 @@
         </v-list-item>
       </div>
     </template>
-    {{ instance.name }}
+    {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
     <div>
       <v-avatar
         size="28"
