@@ -24,11 +24,12 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
 
   const shaderProjectFiles = computed(() => {
     return shaderFiles.value.map(s => {
-      const file: ProjectFile = reactive({
+      const enabled = shaderPack.value === s.fileName
+      const file: ProjectFile = markRaw({
         path: s.path,
         version: '',
         resource: s,
-        enabled: computed(() => shaderPack.value === s.fileName),
+        enabled,
         modrinth: s.metadata.modrinth,
         curseforge: s.metadata.curseforge,
       })
@@ -63,13 +64,14 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
       if (obj) {
         obj.installed?.push(m)
         obj.files?.push(m)
+        obj.disabled = m.enabled ? false : obj.disabled
       } else {
-        const proj: ShaderPackProject = ({
+        const proj: ShaderPackProject = markRaw({
           id: name,
           author: '',
           icon: '',
           title: name,
-          disabled: false,
+          disabled: !m.enabled,
           description: name,
           installed: [m],
           downloadCount: 0,
