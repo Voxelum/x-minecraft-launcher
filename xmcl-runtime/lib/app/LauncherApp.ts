@@ -168,7 +168,11 @@ export class LauncherApp extends EventEmitter {
     this.launcherAppManager = new LauncherAppManager(this)
 
     for (const plugin of plugins.concat(_plugins)) {
-      plugin(this, builtinAppManifest, services)
+      try {
+        plugin(this, builtinAppManifest, services)
+      } catch {
+        this.logger.warn(`Fail to load plugin ${plugin.name}`)
+      }
     }
 
     this.managers = [this.taskManager, this.serviceStateManager, this.semaphoreManager, this.launcherAppManager]
