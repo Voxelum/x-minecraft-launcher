@@ -65,6 +65,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       const curseforgeId = m.resource.metadata.curseforge?.projectId
       const modrinthId = m.resource.metadata.modrinth?.projectId
       const name = m.name
+      const id = modrinthId || curseforgeId?.toString() || name
       const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.files?.push(m)
@@ -74,7 +75,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
         }
       } else {
         const mod: ProjectEntry<ModFile> = markRaw({
-          id: name,
+          id,
           author: m.authors[0] ?? '',
           icon: m.icon,
           title: name,
