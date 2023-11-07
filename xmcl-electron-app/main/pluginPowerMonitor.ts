@@ -24,7 +24,7 @@ export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
   log(`Detected GPUs [${gpus.join(', ')}]. Trying to assign Minecraft JVM to high performance GPU`)
 
   app.registry.get(LaunchService).then((servi) => {
-    servi.registerPlugin({
+    servi.registerMiddleware({
       async onBeforeLaunch(input, output) {
         const javaPath = output.javaPath
         try {
