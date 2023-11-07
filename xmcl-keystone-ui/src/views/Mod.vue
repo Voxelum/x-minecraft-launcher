@@ -1,11 +1,13 @@
 <template>
   <MarketBase
-    v-dragover
     :plans="plans"
     :items="items"
     :item-height="91"
     :loading="loading"
     :error="error"
+    :class="{
+      dragover,
+    }"
     @load="onLoad"
   >
     <template #actions>

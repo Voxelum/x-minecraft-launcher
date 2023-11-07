@@ -1,9 +1,11 @@
 <template>
   <MarketBase
-    v-dragover
     :items="displayItems"
     :item-height="76"
     :plans="{}"
+    :class="{
+      dragover,
+    }"
     :error="modrinthError"
     :loading="loading"
   >

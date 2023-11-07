@@ -1,10 +1,12 @@
 <template>
   <MarketBase
-    v-dragover
     :items="items"
     :item-height="80"
     :plans="{}"
     :error="modrinthError"
+    :class="{
+      dragover,
+    }"
     :loading="loading"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
