@@ -1,3 +1,4 @@
+import { clientCurseforgeV1Locale, clientModrinchV2Locale } from '@/util/clients'
 import { Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { Framework } from 'vuetify'
@@ -14,6 +15,13 @@ export function useI18nSync(framework: Framework, state: Ref<Settings | undefine
       lang.current = 'ru'
     } else {
       lang.current = 'en'
+    }
+
+    clientModrinchV2Locale.headers = {
+      'Accept-Language': newValue,
+    }
+    clientCurseforgeV1Locale.headers = {
+      'Accept-Language': newValue,
     }
   })
 }
