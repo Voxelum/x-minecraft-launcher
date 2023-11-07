@@ -993,7 +993,6 @@ refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
 resourcepack:
-  searchHint: 搜索资源包
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
@@ -1010,6 +1009,7 @@ resourcepack:
   incompatible: 不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。
   manage: 管理资源包
   name: 资源包 | 资源包
+  searchHint: 搜索资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
   searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: 查看选择的资源包
@@ -1159,6 +1159,9 @@ setting:
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   location: 数据存储位置
+  maunalUpdateHint: |-
+    版本无法自动更新。
+    请从网站重新下载启动器！
   maxSockets: (每个网站)最大连接数
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
   maxSocketsTitle: 最大 HTTP 连接数量
@@ -1206,11 +1209,11 @@ setup:
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
+  dropHint: 导入光影包
   empty: 没有启用光影包
   enable: 使用了 {name} 作为光影包
   filter: 筛选光影包
   internal: 内置
-  dropHint: 导入光影包
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项
   manage: 管理光影包
   name: 光影包

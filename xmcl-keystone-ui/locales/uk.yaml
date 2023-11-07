@@ -151,7 +151,9 @@ curseforge:
     name: Світи
 curseforgeCard:
   currentFile: Поточний файл модпакету
-  projectHint: Цей екземпляр створено проектом curseforge {mod} з ідентифікатором файлу = {file}.
+  projectHint: >-
+    Цей екземпляр створено проектом curseforge {mod} з ідентифікатором файлу =
+    {file}.
   projectLastFile: Останній файл модпаку
 dataMigration:
   apply: Застосувати налаштування
@@ -187,7 +189,7 @@ diagnosis:
   corruptedAssets:
     message: Лаунчер встановить assets замість вас
     name: >-
- 
+
       Пошкоджено asset: {name} | Пошкоджено asset {name} | Assets пошкоджено:
       {count}
   corruptedAssetsIndex:
@@ -257,16 +259,17 @@ error:
   name: Помилка | Помилки
 errors:
   BadForgeInstallerJarError: >-
-    Не вдається розібрати jar-файл інсталятора forge. Можливо, у forge новий формат файлу інсталятора
-    формат файлу інсталятора? Зверніться до розробників, якщо ця проблема не зникла.
+    Не вдається розібрати jar-файл інсталятора forge. Можливо, у forge новий
+    формат файлу інсталятора формат файлу інсталятора? Зверніться до
+    розробників, якщо ця проблема не зникла.
   BodyTimeoutError: Сплив час очікування HTTP Body
   ChecksumNotMatchError: Контрольна сума не збігається! Має бути {expect}. Зараз {actual}.
   ConnectTimeoutError: Вийшов час очікування на підключення до сервера.
   DNSNotFoundError: Помилка пошуку DNS
   DownloadAggregateError: Неможливо завантажити файл.
   DownloadFileSystemError: >-
-    Помилка під час доступу до шляху до файлу завантаження. 
-    Переконайтеся, що програма запуску має дозвіл на запис.
+    Помилка під час доступу до шляху до файлу завантаження.  Переконайтеся, що
+    програма запуску має дозвіл на запис.
   HeadersTimeoutError: Вийшов час очікування HTTP Header
   SocketError: Помилка сокету сервера
 exception:
@@ -417,11 +420,11 @@ instance:
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
   requireName: Ім'я обов'язкове
-  showInstance: Показати папку екземпляра
   setting:
     reset: Скидання
     save: Зберегти
     unsaved: Вашу модифікацію не збережено!
+  showInstance: Показати папку екземпляра
   versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
   vmOptionsHint: Додаткові аргументи, що передаються JVM
@@ -638,26 +641,26 @@ mod:
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
-  import: Імпорт мода
   hideIncompatible: Приховати несумісні модифікації
+  import: Імпорт мода
   incompatible: Несумістні мод.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
   name: Мод | Моди
-  openLink: Відкрити посилання на мод {url}
-  searchOnCurseforge: Исать на curseforge {name}
   noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
+  openLink: Відкрити посилання на мод {url}
   search: Пошук модифікацій
+  searchOnCurseforge: Исать на curseforge {name}
   searchOnModrinth: Пошук {name} на Modrinth
   selected: Обрані моди
-  showFile: Показувати шлях до моду {file}
   showDirectory: Показати каталог модифікацій
+  showFile: Показувати шлях до моду {file}
   showInCurseforge: Показувати мод на curseforge
   showInModrinth: Показувати {name} на Modrinth
   showIncompatible: Показувати несумістні моди
-  unselected: Необрані моди
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
+  unselected: Необрані моди
 modInstall:
   checkUpgrade: Перевірте оновлення модифікацій
   checkedUpgrade: Оновлення перевірено
@@ -752,9 +755,9 @@ modrinth:
     forge: Forge
     game-mechanics: Ігрова механіки
     gui: ГРАФІЧНИЙ ІНТЕРФЕЙС
-    items: Предмети
     high: Важкий
     iris: Iris
+    items: Предмети
     kitchen-sink: Все підряд
     library: Бібліотека
     lightweight: Полегшений
@@ -863,16 +866,18 @@ modrinth:
 modrinthCard:
   currentVersion: Поточна версія
   projectHint: >
-    Цей екземпляр створено за допомогою модпакету Modrinth з <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+    Цей екземпляр створено за допомогою модпакету Modrinth з <code
+    class="rounded p-1" style="background: rgba(123,123,123,0.2)">{title}</code>
+    (project id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
   projectLastUpdateDate: 'Проект востаннє оновлювався о:'
   projectLastUpdateVersion: Остання версія
 multiplayer:
   allowTurn: Увімкнути сервер ретрансляції
   allowTurnHint: >-
-    Дозволити ретрансляцію сервера, якщо ви не можете з'єднатися з другом. Однак, використання
-    ретрансляційного сервера може уповільнити ваше з'єднання. Використовуйте його з обережністю.
+    Дозволити ретрансляцію сервера, якщо ви не можете з'єднатися з другом.
+    Однак, використання ретрансляційного сервера може уповільнити ваше
+    з'єднання. Використовуйте його з обережністю.
   complete: Готовий
   confirm: Підтвердити
   connections: Зв'язки
@@ -1172,8 +1177,10 @@ setting:
   disableTelemetry: Вимкнути телеметрію
   disableTelemetryDescription: XMCL збиратиме події запуску гри та входу користувача у гру.
   enableDiscord: Увімкнути Discord Presence(Статус гри в Discord)
-  enableDiscordDescription: Це призведе до того, що стан вашої панелі запуску не буде оновлюватися всупереч
-  general: Загальні          
+  enableDiscordDescription: >-
+    Це призведе до того, що стан вашої панелі запуску не буде оновлюватися
+    всупереч
+  general: Загальні
   githubRelease: Github Release
   globalSetting: Глобальне налаштування екземпляра
   globalSettingHint: Примірник буде використовувати ці параметри за промовчанням.
@@ -1189,7 +1196,10 @@ setting:
   layoutTitle: Макет
   linuxTitlebar: Рідний рядок заголовка
   linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
-  location: Розташування сховища           
+  location: Розташування сховища
+  maunalUpdateHint: |-
+    Версія не може бути автоматично оновлена. 
+    Перезавантажте програму запуску з веб-сайту!
   maxSockets: На хост
   maxSocketsDescription: >-
     Обмежте максимальну кількість сокетів, дозволених за кожного хоста або для
@@ -1295,9 +1305,9 @@ universalDrop:
 upstream:
   missingModpackMetadata: >-
     Метадані старого модпакету не знайдено.
- 
-    Ви все ще можете оновити систему, але результат може бути неправильним. Будь ласка, створіть резервну копію
-    файли екземплярів.         
+
+    Ви все ще можете оновити систему, але результат може бути неправильним. Будь
+    ласка, створіть резервну копію файли екземплярів.         
 user:
   accessToken: Токен доступу
   authMode: Служба авторизації

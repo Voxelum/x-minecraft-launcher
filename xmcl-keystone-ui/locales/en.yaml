@@ -1183,6 +1183,9 @@ setting:
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
+  maunalUpdateHint: >-
+    The version cannot be auto-updated. Please redownload the launcher from the
+    website!
   maxSockets: Per Host
   maxSocketsDescription: >-
     Limit the maximum number of sockets to allow per host or for all hosts in

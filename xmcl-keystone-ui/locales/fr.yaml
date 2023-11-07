@@ -1234,6 +1234,7 @@ setting:
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin
+  maunalUpdateHint: "La version ne peut pas être mise à jour automatiquement. \nVeuillez retélécharger le lanceur depuis le site Web\_!"
   maxSockets: Par hôte
   maxSocketsDescription: >-
     Limitez le nombre maximal de sockets à autoriser par hôte ou pour tous les

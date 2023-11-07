@@ -21,6 +21,7 @@ import { DownloadAppInstallerTask } from './appinstaller'
 import { checksum } from './fs'
 import { GFW } from '@xmcl/runtime/lib/entities/gfw'
 import { ensureElevateExe } from './elevate'
+import { shell } from 'electron'
 
 /**
  * Only download asar file update.
@@ -66,6 +67,21 @@ export class DownloadAsarUpdateTask extends DownloadTask {
         },
       },
     })
+  }
+}
+
+export class HintUserDownloadTask extends BaseTask<void> {
+  protected async runTask(): Promise<void> {
+    shell.openExternal('https://xmcl.app')
+  }
+
+  protected async cancelTask(): Promise<void> {
+  }
+
+  protected async pauseTask(): Promise<void> {
+  }
+
+  protected async resumeTask(): Promise<void> {
   }
 }
 
@@ -142,7 +158,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   private async quitAndInstallAsar() {
-    const appAsarPath = dirname(__dirname)
+    const appAsarPath = join(dirname(__dirname), 'app.asar')
     const updateAsarPath = join(this.app.appDataPath, 'pending_update')
 
     this.logger.log(`Install asar on ${this.app.platform.os} ${appAsarPath}`)
@@ -271,14 +287,19 @@ export class ElectronUpdater implements LauncherAppUpdater {
 
   downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
     if (this.app.env === 'appx') {
+      this.logger.log('Download appx from selfhost')
       return new DownloadAppInstallerTask(this.app)
     }
     if (updateInfo.incremental && this.app.env === 'raw') {
+      this.logger.log('Download asar from selfhost')
       const updatePath = join(this.app.appDataPath, 'pending_update')
       return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
         .map(() => undefined)
     }
-    return new DownloadFullUpdateTask()
+    if (updateInfo.useAutoUpdater) {
+      return new DownloadFullUpdateTask()
+    }
+    return new HintUserDownloadTask()
   }
 
   async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {

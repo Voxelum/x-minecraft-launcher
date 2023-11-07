@@ -25,6 +25,13 @@
       <v-card-text class="markdown-body">
         <div v-html="body" />
       </v-card-text>
+      <v-alert
+        v-if="hintRedownload"
+        text
+        type="warning"
+      >
+        {{ t('setting.maunalUpdateHint') }}
+      </v-alert>
       <v-card-actions>
         <v-btn
           text
@@ -49,34 +56,36 @@
           {{ t('setting.githubRelease') }}
         </v-btn>
         <v-spacer />
-        <v-btn
-          v-if="updateStatus === 'pending'"
-          color="primary"
-          text
-          :loading="downloadingUpdate"
-          :disabled="downloadingUpdate"
-          @click="downloadUpdate()"
-        >
-          <v-icon
-            left
+        <template v-if="!hintRedownload">
+          <v-btn
+            v-if="updateStatus === 'pending'"
+            color="primary"
+            text
+            :loading="downloadingUpdate"
+            :disabled="downloadingUpdate"
+            @click="downloadUpdate()"
           >
-            cloud_download
-          </v-icon>
-          {{ t('launcherUpdate.updateToThisVersion') }}
-        </v-btn>
-        <v-btn
-          v-else
-          color="primary"
-          :loading="installing"
-          @click="quitAndInstall()"
-        >
-          <v-icon
-            left
+            <v-icon
+              left
+            >
+              cloud_download
+            </v-icon>
+            {{ t('launcherUpdate.updateToThisVersion') }}
+          </v-btn>
+          <v-btn
+            v-else
+            color="primary"
+            :loading="installing"
+            @click="quitAndInstall()"
           >
-            refresh
-          </v-icon>
-          {{ t('launcherUpdate.installAndQuit') }}
-        </v-btn>
+            <v-icon
+              left
+            >
+              refresh
+            </v-icon>
+            {{ t('launcherUpdate.installAndQuit') }}
+          </v-btn>
+        </template>
       </v-card-actions>
     </v-card>
     <v-card
@@ -130,6 +139,13 @@ const updateStatus = computed(() => state.value?.updateStatus)
 const body = computed(() => state.value?.updateInfo?.useAutoUpdater ? state.value?.updateInfo.body : render(state.value?.updateInfo?.body ?? ''))
 const env = useEnvironment()
 const isAppX = computed(() => env.value?.env === 'appx')
+const isAppImage = computed(() => env.value?.env === 'appimage')
+const hintRedownload = computed(() =>
+  !isAppX.value &&
+  !isAppImage.value &&
+  !updateInfo.value?.useAutoUpdater &&
+  !updateInfo.value?.incremental,
+)
 
 const openOfficialWebsite = () => {
   window.open('https://xmcl.app', 'browser')
