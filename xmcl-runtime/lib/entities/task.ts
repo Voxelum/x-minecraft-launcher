@@ -2,8 +2,18 @@ import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
 import { Logger } from '../util/log'
+import { InjectionKey } from '../util/objectRegistry'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
+
+export const kTaskExecutor: InjectionKey<TaskFn> = Symbol('kTaskExecutor')
+export const kTasks: InjectionKey<{
+  submit: TaskFn
+  emitter: TaskEventEmitter
+  getActiveTask: () => Task<any> | undefined
+}> = Symbol('kTasks')
+
+export type TaskFn = <T>(task: Task<T>) => Promise<T>
 
 export interface TaskEventEmitter extends EventEmitter {
   on(event: 'update', handler: (uuid: string, task: Task<any>, chunkSize: number) => void): this

@@ -16,6 +16,7 @@ import { BaseService } from './BaseService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -56,6 +57,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(BaseService) private baseService: BaseService,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {

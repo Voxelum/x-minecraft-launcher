@@ -180,17 +180,6 @@ export abstract class AbstractService extends EventEmitter {
   }
 
   /**
-   * Submit a task into the task manager.
-   *
-   * The lifecycle of the service call will fit with the task life-cycle automatically.
-   *
-   * @param task
-   */
-  protected submit<T>(task: Task<T>) {
-    return this.app.taskManager.submit(task)
-  }
-
-  /**
    * Return the path under the config root
    */
   protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args)

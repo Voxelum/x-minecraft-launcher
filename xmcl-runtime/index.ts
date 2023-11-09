@@ -39,4 +39,3 @@ export * from './lib/util/log'
 
 export type { default as SemaphoreManager } from './lib/managers/SemaphoreManager'
 export type { default as ServiceStateManager } from './lib/managers/ServiceStateManager'
-export type { default as TaskManager } from './lib/managers/TaskManager'

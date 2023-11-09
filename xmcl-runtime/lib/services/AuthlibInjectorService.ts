@@ -13,6 +13,7 @@ import { Inject } from '../util/objectRegistry'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { NetworkInterface, kNetworkInterface } from '../entities/networkInterface'
 import { kDownloadOptions } from '../entities/downloadOptions'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
 
@@ -24,6 +25,7 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kSettings) private settings: Settings,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(GFW) gfw: GFW,
     @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {

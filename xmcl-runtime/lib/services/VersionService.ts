@@ -1,5 +1,5 @@
 import { ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, LocalVersions, MutableState, findNeoForgedVersion, findLabyModVersion } from '@xmcl/runtime-api'
+import { VersionService as IVersionService, LocalVersionHeader, LocalVersions, MutableState, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
@@ -8,12 +8,13 @@ import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
+import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
-import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 
 /**
  * The local version service maintains the installed versions on disk
@@ -24,6 +25,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app, () => new LocalVersions(), async () => {

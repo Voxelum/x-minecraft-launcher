@@ -13,12 +13,14 @@ import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends AbstractService implements ICurseForgeService {
   readonly client: CurseforgeV1Client
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {

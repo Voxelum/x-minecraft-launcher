@@ -14,12 +14,14 @@ import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { kLogRoot } from '../entities/log'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kTaskExecutor) private submit: TaskFn,
   ) {
     super(app, async () => {
       this.checkUpdate()

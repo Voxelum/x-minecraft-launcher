@@ -15,6 +15,7 @@ import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { VersionService } from './VersionService'
+import { kTaskExecutor, TaskFn } from '../entities/task'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -23,6 +24,7 @@ import { VersionService } from './VersionService'
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(VersionService) private versionService: VersionService,
   ) {

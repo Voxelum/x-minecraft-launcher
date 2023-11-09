@@ -13,7 +13,6 @@ import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { Manager } from '../managers'
 import SemaphoreManager from '../managers/SemaphoreManager'
 import ServiceStateManager from '../managers/ServiceStateManager'
-import TaskManager from '../managers/TaskManager'
 import { plugins } from '../plugins'
 import { ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
@@ -79,7 +78,6 @@ export class LauncherApp extends EventEmitter {
   readonly temporaryPath: string
 
   readonly serviceStateManager: ServiceStateManager
-  readonly taskManager: TaskManager
   readonly semaphoreManager: SemaphoreManager
   readonly launcherAppManager: LauncherAppManager
   readonly logEmitter: LogEmitter = new EventEmitter()
@@ -89,8 +87,6 @@ export class LauncherApp extends EventEmitter {
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
   get version() { return this.host.getVersion() }
-
-  protected managers: Manager[]
 
   readonly protocol = new LauncherProtocolHandler()
 
@@ -163,7 +159,6 @@ export class LauncherApp extends EventEmitter {
     this.updater = getUpdater(this)
 
     this.serviceStateManager = new ServiceStateManager(this)
-    this.taskManager = new TaskManager(this)
     this.semaphoreManager = new SemaphoreManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
@@ -174,8 +169,6 @@ export class LauncherApp extends EventEmitter {
         this.logger.warn(`Fail to load plugin ${plugin.name}`)
       }
     }
-
-    this.managers = [this.taskManager, this.serviceStateManager, this.semaphoreManager, this.launcherAppManager]
 
     this.localhostServerPort = listen(this.server, 25555, (cur) => cur + 7).then((port) => {
       this.logger.log(`Localhost server is listening on port ${port}`)
