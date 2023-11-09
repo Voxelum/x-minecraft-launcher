@@ -13,6 +13,7 @@ import { pluginOffineUser } from './pluginOfflineUser'
 import { pluginResourcePackLink } from './pluginResourcePackLink'
 import { pluginServicesHandler } from './pluginServicesHandler'
 import { pluginSettings } from './pluginSettings'
+import { pluginTasks } from './pluginTask'
 import { pluginTelemetry } from './pluginTelemetry'
 import { pluginUndiciLogger } from './pluginUndiciLogger'
 import { pluginUserPlaytime } from './pluginUserPlaytime'
@@ -25,6 +26,7 @@ export const plugins = [
   pluginCommonProtocol,
   pluginGameDataPath,
   pluginGFW,
+  pluginTasks,
   pluginImageStorage,
   pluginLogConsumer,
   pluginNetworkInterface,

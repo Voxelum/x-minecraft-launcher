@@ -14,10 +14,12 @@ import { ZipTask } from '../util/zip'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { kDownloadOptions } from '../entities/downloadOptions'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 @ExposeServiceKey(ImportServiceKey)
 export class ImportService extends AbstractService implements IImportService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)

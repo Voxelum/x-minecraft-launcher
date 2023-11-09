@@ -2,22 +2,22 @@ import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { ensureFile } from 'fs-extra/esm'
-import { chmod, readFile, readdir } from 'fs/promises'
+import { chmod, readFile } from 'fs/promises'
 import { dirname, join } from 'path'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kDownloadOptions } from '../entities/downloadOptions'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
+import { GFW } from '../entities/gfw'
 import { JavaValidation, validateJavaPath } from '../entities/java'
+import { getApiSets, shouldOverrideApiSet } from '../entities/settings'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 import { readdirIfPresent } from '../util/fs'
-import { requireObject, requireString } from '../util/object'
+import { requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { SafeFile, createSafeFile } from '../util/persistance'
-import { BaseService } from './BaseService'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
-import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
-import { getApiSets, shouldOverrideApiSet } from '../entities/settings'
-import { GFW } from '../entities/gfw'
-import { kDownloadOptions } from '../entities/downloadOptions'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -25,6 +25,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(Settings) private settings: Settings,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(GFW) private gfw: GFW,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {

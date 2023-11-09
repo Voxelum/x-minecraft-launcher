@@ -1,6 +1,7 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon } from '@/utils/icons'
-import { app, Notification } from 'electron'
+import { kTasks } from '@xmcl/runtime/lib/entities/task'
+import { Notification } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 /**
@@ -29,8 +30,7 @@ export const taskProgressPlugin: ControllerPlugin = function (this: ElectronCont
       // this.app.broadcast('notification', n)
     }
   }
-  this.app.once('engine-ready', () => {
-    const tasks = this.app.taskManager
+  this.app.registry.get(kTasks).then((tasks) => {
     tasks.emitter.on('update', (uid, task) => {
       if (tasks.getActiveTask() === task) {
         if (this.activeWindow && !this.activeWindow.isDestroyed()) {

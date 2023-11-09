@@ -25,6 +25,7 @@ import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
 import { missing } from '../util/fs'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -42,6 +43,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(kSettings) private settings: MutableState<Settings>,
     @Inject(kNetworkInterface) networkInterface: NetworkInterface,
     @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
+    @Inject(kTaskExecutor) private submit: TaskFn,
   ) {
     super(app, async () => {
       this.getFabricVersionList()

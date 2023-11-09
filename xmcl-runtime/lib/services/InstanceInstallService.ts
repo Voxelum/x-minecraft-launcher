@@ -14,6 +14,7 @@ import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -22,6 +23,7 @@ import { AbstractService, ExposeServiceKey } from './Service'
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
     @Inject(ModrinthV2Client) private modrinthClient: ModrinthV2Client,

@@ -8,11 +8,13 @@ import { kDownloadOptions } from '../entities/downloadOptions'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { TaskFn, kTaskExecutor } from '../entities/task'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) private resourceService: ResourceService,
+  @Inject(kTaskExecutor) private submit: TaskFn,
+  @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, async () => { })
   }
