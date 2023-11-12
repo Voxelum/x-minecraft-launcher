@@ -119,6 +119,10 @@ export const router = new Router({
       path: '/version-setting',
       component: VersionLocalView,
     },
+    {
+      path: '/me-stuff',
+      component: Me,
+    },
     // {
     //   path: '/ftb',
     //   component: FeedTheBeast,

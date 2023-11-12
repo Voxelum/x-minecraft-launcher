@@ -21,6 +21,35 @@
           arrow_back
         </v-icon>
       </v-list-item>
+      <v-list-item
+        class="non-moveable"
+      >
+        <v-tooltip
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              link
+              push
+              to="/me-stuff"
+              class="non-moveable"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon> home </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title v-text="'Text'" />
+            </v-list-item>
+          </template>
+          {{ t('me.title') }}
+        </v-tooltip>
+        <!-- <v-icon class="text-[18px]">
+          home
+        </v-icon> -->
+      </v-list-item>
       <v-list-group
         v-model="expanding"
         v-shared-tooltip.right="_ => t('myStuff')"

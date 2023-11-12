@@ -631,6 +631,7 @@ logsCrashes:
   placeholder: No Files Found
   title: Logs or Crash Reports
 me:
+  title: Me Stuff
   news: News
   recentPlay: Recent Play
 minecraftVersion:
@@ -963,7 +964,7 @@ multiplayer:
   sharing: Sharing files...
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
-myStuff: My Stuff
+myCollection: My Collection
 name: Name
 natType:
   blocked: Blocked
