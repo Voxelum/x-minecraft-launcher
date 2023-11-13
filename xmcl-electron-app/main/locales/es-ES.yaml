@@ -9,6 +9,7 @@ openUrl:
   trust: Confiar en este sitio y no volver a preguntar
   'yes': Sí
 quit: Salir
+relaunch: Relanzar
 showDiagnosis: Mostrar diagnostico
 showLogsFolder: Mostrar carpeta de registros
 task:
