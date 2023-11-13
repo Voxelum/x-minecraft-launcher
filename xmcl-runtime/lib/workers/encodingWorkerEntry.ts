@@ -31,6 +31,10 @@ function toNodeEncoding(enc: string | null): string {
     return UTF8 // iconv does not distinguish UTF 8 with or without BOM, so we need to help it
   }
 
+  if (enc === 'xmaccyrillic') {
+    return 'maccyrillic'
+  }
+
   return enc
 }
 
