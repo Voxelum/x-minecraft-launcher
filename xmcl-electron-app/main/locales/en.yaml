@@ -9,6 +9,7 @@ openUrl:
   trust: Trust this site and don't show next time
   'yes': 'Yes'
 quit: Quit
+relaunch: Relaunch
 showDiagnosis: Show Diagnose
 showLauncher: Show Launcher
 showLogsFolder: Show Logs Folder

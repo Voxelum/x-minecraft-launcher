@@ -59,6 +59,13 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         role: 'toggleDevTools',
       },
       {
+        label: t('relaunch'),
+        type: 'normal',
+        click() {
+          app.relaunch()
+        },
+      },
+      {
         label: t('quit'),
         type: 'normal',
         click() {
