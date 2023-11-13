@@ -60,7 +60,7 @@ export interface SettingSchema {
   theme: 'dark' | 'light' | 'system'
   /**
    * Maximum number of sockets to allow per host. Default for Node 0.10 is 5, default for Node 0.12 is Infinity
-   * @default 128
+   * @default 64
    */
   maxSockets: number
   /**

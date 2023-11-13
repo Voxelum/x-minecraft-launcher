@@ -28,9 +28,9 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
   const dispatchInterceptors: Array<(opts: DispatchOptions) => void | Promise<void>> = []
 
-  let maxConnection = 16
+  let maxConnection = 64
   app.registry.get(kSettings).then((state) => {
-    maxConnection = state.maxSockets > 0 ? state.maxSockets : Number.POSITIVE_INFINITY
+    maxConnection = state.maxSockets > 0 ? state.maxSockets : 64
     proxy.setProxyEnabled(state.httpProxyEnabled)
     if (state.httpProxy) {
       try {
@@ -40,7 +40,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       }
     }
     state.subscribe('maxSocketsSet', (val) => {
-      maxConnection = val > 0 ? val : Number.POSITIVE_INFINITY
+      maxConnection = val > 0 ? val : 64
     })
     state.subscribe('httpProxySet', (p) => {
       try {
