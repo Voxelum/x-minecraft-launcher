@@ -22,10 +22,12 @@ async function addResource(file: string, sha1: string, fileType: string, domain:
   await context.db.transaction().execute(async (trx) => {
     await trx.insertInto('resources').values(resourceTable).execute()
     if (uris.length > 0) {
-      await trx.insertInto('uris').values(uris.map(u => ({ uri: u, sha1 }))).execute()
+      await trx.insertInto('uris').values(uris.map(u => ({ uri: u, sha1 })))
+        .onConflict((el) => el.doNothing()).execute()
     }
     if (icons.length > 0) {
-      await trx.insertInto('icons').values(icons.map(i => ({ icon: i, sha1 }))).execute()
+      await trx.insertInto('icons').values(icons.map(i => ({ icon: i, sha1 })))
+        .onConflict((el) => el.doNothing()).execute()
     }
   })
 }
