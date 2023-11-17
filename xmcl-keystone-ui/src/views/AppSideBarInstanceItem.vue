@@ -60,7 +60,7 @@
         size="28"
       >
         <img
-          :src="'image://builtin/minecraft'"
+          :src="'http://launcher/icons/minecraft'"
         >
       </v-avatar>
       {{ instance.runtime.minecraft }}
@@ -70,7 +70,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/forge'"
+            :src="'http://launcher/icons/forge'"
           >
         </v-avatar>
         {{ instance.runtime.forge }}
@@ -80,7 +80,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/labyMod'"
+            :src="'http://launcher/icons/labyMod'"
           >
         </v-avatar>
         {{ instance.runtime.labyMod }}
@@ -90,7 +90,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/neoForged'"
+            :src="'http://launcher/icons/neoForged'"
           >
         </v-avatar>
         {{ instance.runtime.neoForged }}
@@ -100,7 +100,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/fabric'"
+            :src="'http://launcher/icons/fabric'"
           >
         </v-avatar>
         {{ instance.runtime.fabricLoader }}
@@ -110,7 +110,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/quilt'"
+            :src="'http://launcher/icons/quilt'"
           >
         </v-avatar>
         {{ instance.runtime.quiltLoader }}
@@ -120,7 +120,7 @@
           size="28"
         >
           <img
-            :src="'image://builtin/optifine'"
+            :src="'http://launcher/icons/optifine'"
           >
         </v-avatar>
         {{ instance.runtime.optifine }}

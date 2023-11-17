@@ -46,7 +46,7 @@ export function getInstanceSave(path: string, instanceName: string): InstanceSav
     path,
     instanceName,
     name: basename(path),
-    icon: 'image:///' + join(path, 'icon.png'),
+    icon: 'http://launcher/media?path=' + join(path, 'icon.png'),
   }
 }
 

@@ -29,21 +29,47 @@ export function useBarBlur() {
 export const kBackground: InjectionKey<ReturnType<typeof useBackground>> = Symbol('Background')
 
 export function useBackground() {
-  const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.NONE)
+  const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.NONE, {
+    migrate: (v) => {
+      if (v.startsWith('image:')) {
+        let path = v.substring('image:'.length)
+        if (path.startsWith('/')) path = path.substring(1)
+        const url = new URL('http://launcher/media')
+        url.searchParams.append('path', path)
+        return url.toString()
+      }
+      return v
+    },
+  })
   const blur = useLocalStorageCacheInt('blur', 4)
 
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
   const backgroundImage = useLocalStorageCacheStringValue('background', '' as string)
   const backgroundImageFit = useLocalStorageCacheStringValue<'cover' | 'contain'>('imageFill', 'cover')
   const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH)
-  const backgroundVideo = useLocalStorageCacheStringValue('backgroundVideo', '' as string)
+  const backgroundVideo = useLocalStorageCacheStringValue('backgroundVideo', '' as string, {
+    migrate: (v) => {
+      if (v.startsWith('video:')) {
+        let path = v.substring('video:'.length)
+        if (path.startsWith('/')) path = path.substring(1)
+        const url = new URL('http://launcher/media')
+        url.searchParams.append('path', path)
+        return url.toString()
+      }
+      return v
+    },
+  })
   const volume = useLocalStorageCacheInt('volume', 0)
   async function setBackgroundVideo(path: string) {
-    backgroundVideo.value = path
+    const url = new URL('http://launcher/media')
+    url.searchParams.append('path', path)
+    backgroundVideo.value = url.toString()
   }
   async function setBackgroundImage(path: string) {
     const img = document.createElement('img')
-    img.src = `image://${path}`
+    const url = new URL('http://launcher/media')
+    url.searchParams.append('path', path)
+    img.src = url.toString()
     img.onload = () => {
       const canvas = document.createElement('canvas')
       canvas.height = img.naturalHeight

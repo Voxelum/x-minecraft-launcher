@@ -25,7 +25,7 @@
       >
         <v-avatar left>
           <v-img
-            src="image://builtin/minecraft"
+            src="http://launcher/icons/minecraft"
             left
           />
         </v-avatar>

@@ -3,6 +3,7 @@ import { AbstractLevel, AbstractSublevel } from 'abstract-level'
 import { ClassicLevel } from 'classic-level'
 import { remove } from 'fs-extra/esm'
 import { Logger } from '../util/log'
+import { sql } from 'kysely'
 import { ResourceContext } from './ResourceContext'
 import { ResourceSnapshotTable, ResourceTable } from './schema'
 
@@ -81,6 +82,16 @@ async function migrateDomain(snapshot: ResourceSnapshotDatabase, current: Resour
       .onConflict(oc => oc.doNothing())
       .execute()
       .catch(() => { /* ignore error */ })
+  }
+}
+
+export async function migrateImageProtocolChange({ db, logger }: ResourceContext) {
+  // Update all image://<id> to http://launcher/image/<id>
+  try {
+    await sql`update icons set icon = REPLACE(icon, 'image://', 'http://launcher/image/') where "icon" like 'image:%';`.execute(db)
+  } catch (e) {
+    logger.warn('Fail to migrate image protocol change')
+    logger.error(e as any)
   }
 }
 

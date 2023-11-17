@@ -123,7 +123,7 @@
       >
         <v-img
           width="28"
-          :src="'image://builtin/forge'"
+          :src="'http://launcher/icons/forge'"
         />
       </v-avatar>
       <v-avatar
@@ -132,7 +132,7 @@
       >
         <v-img
           width="28"
-          :src="'image://builtin/fabric'"
+          :src="'http://launcher/icons/fabric'"
         />
       </v-avatar>
       <v-avatar
@@ -141,7 +141,7 @@
       >
         <v-img
           width="28"
-          :src="'image://builtin/quilt'"
+          :src="'http://launcher/icons/quilt'"
         />
       </v-avatar>
       <v-avatar

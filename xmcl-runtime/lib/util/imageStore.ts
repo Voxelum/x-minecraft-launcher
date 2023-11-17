@@ -23,6 +23,6 @@ export class ImageStorage {
         await writeFile(imagePath, pathOrData)
       }
     }
-    return `image://${sha1}`
+    return `http://launcher/image/${sha1}`
   }
 }

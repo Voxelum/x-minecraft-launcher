@@ -109,14 +109,14 @@
         class="flex flex-grow-0 flex-row items-center justify-center gap-1"
       >
         <AvatarItem
-          :avatar="'image://builtin/minecraft'"
+          :avatar="'http://launcher/icons/minecraft'"
           title="Minecraft"
           :text="`${version.minecraft}`"
         />
         <v-divider vertical />
         <AvatarItem
           v-if="version.forge"
-          :avatar="'image://builtin/forge'"
+          :avatar="'http://launcher/icons/forge'"
           title="Forge"
           :text="`${version.forge}`"
         />
@@ -126,7 +126,7 @@
         />
         <AvatarItem
           v-if="version.fabricLoader"
-          :avatar="'image://builtin/fabric'"
+          :avatar="'http://launcher/icons/fabric'"
           title="Fabric"
           :text="`${version.fabricLoader}`"
         />
@@ -136,7 +136,7 @@
         />
         <AvatarItem
           v-if="version.quiltLoader"
-          :avatar="'image://builtin/quilt'"
+          :avatar="'http://launcher/icons/quilt'"
           title="Quilt"
           :text="`${version.quiltLoader}`"
         />
@@ -146,7 +146,7 @@
         />
         <AvatarItem
           v-if="version.optifine"
-          :avatar="'image://builtin/optifine'"
+          :avatar="'http://launcher/icons/optifine'"
           title="Optifine"
           :text="`${version.optifine}`"
         />

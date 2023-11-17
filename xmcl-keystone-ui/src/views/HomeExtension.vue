@@ -79,49 +79,49 @@ const versions = computed(() => {
   const result: Array<{icon: string; title: string; version: string}> = []
   if (ver.minecraft) {
     result.push({
-      icon: 'image://builtin/minecraft',
+      icon: 'http://launcher/icons/minecraft',
       title: 'Minecraft',
       version: ver.minecraft,
     })
   }
   if (ver.forge) {
     result.push({
-      icon: 'image://builtin/forge',
+      icon: 'http://launcher/icons/forge',
       title: 'Forge',
       version: ver.forge,
     })
   }
   if (ver.neoForged) {
     result.push({
-      icon: 'image://builtin/neoForged',
+      icon: 'http://launcher/icons/neoForged',
       title: 'NeoForged',
       version: ver.neoForged,
     })
   }
   if (ver.fabricLoader) {
     result.push({
-      icon: 'image://builtin/fabric',
+      icon: 'http://launcher/icons/fabric',
       title: 'Fabric',
       version: ver.fabricLoader,
     })
   }
   if (ver.quiltLoader) {
     result.push({
-      icon: 'image://builtin/quilt',
+      icon: 'http://launcher/icons/quilt',
       title: 'Quilt',
       version: ver.quiltLoader,
     })
   }
   if (ver.optifine) {
     result.push({
-      icon: 'image://builtin/optifine',
+      icon: 'http://launcher/icons/optifine',
       title: 'Optifine',
       version: ver.optifine,
     })
   }
   if (ver.labyMod) {
     result.push({
-      icon: 'image://builtin/labyMod',
+      icon: 'http://launcher/icons/labyMod',
       title: 'LabyMod',
       version: ver.labyMod,
     })

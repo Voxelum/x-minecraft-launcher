@@ -2,18 +2,23 @@ import { createReadStream, existsSync } from 'fs'
 import { join } from 'path'
 import { LauncherAppPlugin } from '../app/LauncherApp'
 import { ImageStorage } from '../util/imageStore'
+import { missing } from '../util/fs'
 
 export const pluginImageStorage: LauncherAppPlugin = (app) => {
   const root = join(app.appDataPath, 'resource-images')
   app.registry.register(ImageStorage, new ImageStorage(root))
-  app.protocol.registerHandler('image', ({ request, response }) => {
-    if (request.url.host.length === 40) {
-      const image = join(root, request.url.host)
-      if (existsSync(image)) {
-        response.status = 200
-        response.body = createReadStream(join(root, request.url.host))
-      } else {
-        response.status = 404
+  app.protocol.registerHandler('http', async ({ request, response }) => {
+    if (request.url.host === 'launcher' && request.url.pathname.startsWith('/image')) {
+      // Get the last part of the image
+      const sha1 = request.url.pathname.substring('/image/'.length)
+      if (sha1.length === 40) {
+        const image = join(root, sha1)
+        if (await missing(image)) {
+          response.status = 404
+        } else {
+          response.status = 200
+          response.body = createReadStream(image)
+        }
       }
     }
   })

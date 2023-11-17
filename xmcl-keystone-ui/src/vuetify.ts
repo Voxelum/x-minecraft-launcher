@@ -1,23 +1,16 @@
-import 'vuetify/dist/vuetify.min.css'
 import CurseforgeIcon from '@/components/CurseforgeIcon.vue'
-import FabricIcon from '@/components/FabricIcon.vue'
-import QuiltIcon from '@/components/QuiltIcon.vue'
-import ForgeIcon from '@/components/ForgeIcon.vue'
-import MinecraftIcon from '@/components/MinecraftIcon.vue'
 import FTBIcon from '@/components/FTBIcon.vue'
+import ImageIcon from '@/components/ImageIcon.vue'
 import JarFileIcon from '@/components/JarFileIcon.vue'
 import ModrinthIcon from '@/components/ModrinthIcon.vue'
 import PackageFileIcon from '@/components/PackageFileIcon.vue'
-import OptifineIcon from '@/components/OptifineIcon.vue'
-import IrisIcon from '@/components/IrisIcon.vue'
 import ZipFileIcon from '@/components/ZipFileIcon.vue'
-
+import Vue from 'vue'
 import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'
 import ru from 'vuetify/src/locale/ru'
 import zhHans from 'vuetify/src/locale/zh-Hans'
-import Vue from 'vue'
-import NeoForgedIcon from './components/NeoForgedIcon.vue'
 
 Vue.use(Vuetify)
 
@@ -39,7 +32,10 @@ export const vuetify = new Vuetify({
         component: CurseforgeIcon,
       },
       minecraft: {
-        component: MinecraftIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/minecraft',
+        },
       },
       zip: {
         component: ZipFileIcon,
@@ -54,22 +50,46 @@ export const vuetify = new Vuetify({
         component: ModrinthIcon,
       },
       forge: {
-        component: ForgeIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/forge',
+        },
       },
       fabric: {
-        component: FabricIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/fabric',
+        },
       },
       quilt: {
-        component: QuiltIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/quilt',
+        },
       },
       neoForged: {
-        component: NeoForgedIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/neoForged',
+        },
       },
       optifine: {
-        component: OptifineIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/optifine',
+        },
       },
       iris: {
-        component: IrisIcon,
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/iris',
+        },
+      },
+      mmc: {
+        component: ImageIcon,
+        props: {
+          src: 'http://launcher/icons/mmc',
+        },
       },
     },
   },

@@ -115,7 +115,7 @@ async function loadSkin() {
   if (!canUploadSkin.value) return
   const { filePaths } = await showOpenDialog({ title: t('userSkin.importFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
   if (filePaths && filePaths[0]) {
-    skin.value = `image://${filePaths[0]}`
+    skin.value = `http://launcher/media?path=${filePaths[0]}`
     inferModelType.value = true
   }
 }
@@ -134,7 +134,7 @@ async function dropSkin(e: DragEvent) {
   if (e.dataTransfer) {
     const length = e.dataTransfer.files.length
     if (length > 0) {
-      skin.value = `image://${e.dataTransfer!.files[0].path}`
+      skin.value = `http://launcher/media?path=${e.dataTransfer!.files[0].path}`
       inferModelType.value = true
     }
   }

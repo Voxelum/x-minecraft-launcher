@@ -20,7 +20,7 @@
       >
         <v-img
           width="28"
-          :src="'image://builtin/iris'"
+          :src="'http://launcher/icons/iris'"
         />
       </v-btn>
 
@@ -31,7 +31,7 @@
       >
         <v-img
           width="28"
-          :src="'image://builtin/optifine'"
+          :src="'http://launcher/icons/optifine'"
         />
       </v-btn>
     </v-btn-toggle>

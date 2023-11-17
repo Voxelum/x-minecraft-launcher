@@ -3,42 +3,42 @@ import { RuntimeVersions } from '@xmcl/runtime-api'
 export function getExtensionItemsFromRuntime(runtime: RuntimeVersions) {
   const items = [
     {
-      avatar: 'image://builtin/minecraft',
+      avatar: 'http://launcher/icons/minecraft',
       title: 'Minecraft',
       text: runtime.minecraft,
     },
   ]
   if (runtime.forge) {
     items.push({
-      avatar: 'image://builtin/forge',
+      avatar: 'http://launcher/icons/forge',
       title: 'Forge',
       text: runtime.forge,
     })
   }
   if (runtime.fabricLoader) {
     items.push({
-      avatar: 'image://builtin/fabric',
+      avatar: 'http://launcher/icons/fabric',
       title: 'Fabric',
       text: runtime.fabricLoader,
     })
   }
   if (runtime.quiltLoader) {
     items.push({
-      avatar: 'image://builtin/quilt',
+      avatar: 'http://launcher/icons/quilt',
       title: 'Quilt',
       text: runtime.quiltLoader,
     })
   }
   if (runtime.neoForged) {
     items.push({
-      avatar: 'image://builtin/neoforged',
+      avatar: 'http://launcher/icons/neoforged',
       title: 'NeoForged',
       text: runtime.neoForged,
     })
   }
   if (runtime.optifine) {
     items.push({
-      avatar: 'image://builtin/optifine',
+      avatar: 'http://launcher/icons/optifine',
       title: 'Optifine',
       text: runtime.optifine,
     })

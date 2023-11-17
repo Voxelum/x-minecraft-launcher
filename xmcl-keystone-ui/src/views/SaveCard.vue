@@ -29,7 +29,7 @@
         <div class="flex gap-2">
           <AvatarChip
             small
-            avatar="image://builtin/minecraft"
+            avatar="http://launcher/icons/minecraft"
             :text="`Minecraft ${source.gameVersion}`"
           />
 

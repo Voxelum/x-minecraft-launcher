@@ -507,8 +507,7 @@ function selectVideo() {
     }],
   }).then((v) => {
     if (v.filePaths[0]) {
-      const videoPath = 'video://' + v.filePaths[0]
-      setBackgroundVideo(videoPath)
+      setBackgroundVideo(v.filePaths[0])
     }
   })
 }

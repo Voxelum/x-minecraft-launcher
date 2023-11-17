@@ -23,7 +23,7 @@ import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { PromiseSignal, createPromiseSignal } from '../util/promiseSignal'
 import { AbstractService, ExposeServiceKey } from './Service'
-import { migrateLevelDBData } from '../resources/migrateLegacy'
+import { migrateImageProtocolChange, migrateLevelDBData } from '../resources/migrateLegacy'
 
 const EMPTY_RESOURCE_SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 
@@ -89,12 +89,15 @@ export class ResourceService extends AbstractService implements IResourceService
       await migrate(this.context.db).catch((e) => {
         this.error(new Error('Fail to migrate the legacy resource', { cause: e }))
       })
+
       const legacyPath = this.getAppDataPath('resources-v2')
       if (existsSync(legacyPath)) {
         await migrateLevelDBData(legacyPath, this.context, this).catch((e) => {
           this.error(new Error('Fail to migrate the legacy leveldb', { cause: e }))
         })
       }
+
+      await migrateImageProtocolChange(this.context)
 
       this.signals[ResourceDomain.Mods].accept(mount(ResourceDomain.Mods))
       this.signals[ResourceDomain.ResourcePacks].accept(mount(ResourceDomain.ResourcePacks))

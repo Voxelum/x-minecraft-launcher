@@ -11,21 +11,21 @@ export function getInstanceIcon(instance: InstanceData, status: ServerStatus | u
   }
   if (!instance.icon) {
     if (instance.runtime.forge) {
-      return 'image://builtin/forge'
+      return 'http://launcher/icons/forge'
     } else if (instance.runtime.neoForged) {
-      return 'image://builtin/neoForged'
+      return 'http://launcher/icons/neoForged'
     } else if (instance.runtime.labyMod) {
-      return 'image://builtin/labyMod'
+      return 'http://launcher/icons/labyMod'
     } else if (instance.runtime.fabricLoader) {
-      return 'image://builtin/fabric'
+      return 'http://launcher/icons/fabric'
     } else if (instance.runtime.quiltLoader) {
-      return 'image://builtin/quilt'
+      return 'http://launcher/icons/quilt'
     } else if (instance.runtime.optifine) {
-      return 'image://builtin/optifine'
+      return 'http://launcher/icons/optifine'
     } else if (instance.runtime.minecraft) {
-      return 'image://builtin/minecraft'
+      return 'http://launcher/icons/minecraft'
     } else {
-      return 'image://builtin/craftingTable'
+      return 'http://launcher/icons/craftingTable'
     }
   }
   return instance.icon

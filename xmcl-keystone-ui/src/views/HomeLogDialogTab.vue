@@ -5,16 +5,24 @@
         name="fade-transition"
         mode="out-in"
       >
-        <VirtualList
+        <v-virtual-scroll
           v-if="content === '' && files.length !== 0"
           :key="0"
           class="visible-scroll v-list h-full max-h-[70vh] overflow-auto"
-          :data-component="HomeLogDialogTabItem"
-          data-key="id"
-          :data-sources="files.map((name, index) => ({ name, id: `${name}-${index}` }))"
-          :estimate-size="60"
-          :extra-props="{ openFile, removeFile, showFile, disabled: pending }"
-        />
+          :bench="10"
+          :items="files.map((name, index) => ({ name, id: `${name}-${index}` }))"
+          :item-height="60"
+        >
+          <template #default="{ item }">
+            <HomeLogDialogTabItem
+              :source="item"
+              :open-file="openFile"
+              :remove-file="removeFile"
+              :show-file="showFile"
+              :disabled="pending"
+            />
+          </template>
+        </v-virtual-scroll>
         <div
           v-else-if="content === '' && files.length === 0"
           style="height: 420px"
@@ -71,9 +79,7 @@
 <script lang=ts setup>
 import { parseLog } from '@/util/log'
 import LogView from '@/components/LogView.vue'
-import VirtualList from 'vue-virtual-scroll-list'
 import HomeLogDialogTabItem from './HomeLogDialogTabItem.vue'
-import { useDialog } from '@/composables/dialog'
 
 const props = defineProps<{
   files: string[]
