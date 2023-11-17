@@ -7,8 +7,8 @@ import { kUserContext } from './user'
 import { kSettingsState } from './setting'
 
 export function useAccountSystemHistory() {
-  const authority = useLocalStorageCacheStringValue('loginLastAuthAuthority', AUTHORITY_MICROSOFT as string, 'last-auth-service')
-  const history = computed(() => useLocalStorageCache<string[]>(`loginAuthorityHistory:${authority.value}`, () => [], JSON.stringify, JSON.parse).value)
+  const authority = useLocalStorageCacheStringValue('loginLastAuthAuthority', AUTHORITY_MICROSOFT as string, { legacyKey: 'last-auth-service' })
+  const history = computed(() => useLocalStorageCache<string[]>(computed(() => `loginAuthorityHistory:${authority.value}`), () => [], JSON.stringify, JSON.parse).value)
 
   return {
     authority,
