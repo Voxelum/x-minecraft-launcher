@@ -135,13 +135,6 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         if (!target) {
           logger.log(`Not found texture: ${target}`)
           response.status = 400
-        } else if (target.startsWith('http')) {
-          logger.log(`Request http texture: ${target}`)
-          // redirect http
-          const resp = await uRequest(target)
-          response.status = resp.statusCode
-          response.headers = resp.headers
-          response.body = resp.body
         } else {
           logger.log(`Delegate texture request: ${target}`)
           // delegate to other handler

@@ -1,4 +1,5 @@
 import { pluginClientToken } from './pluginClientToken'
+import { pluginMediaProtocol } from './pluginMediaProtocol'
 import { pluginCurseforgeClient } from './pluginCurseforgeClient'
 import { pluginCurseforgeModpackHandler } from './pluginCurseforgeModpackHandler'
 import { pluginGFW } from './pluginGFW'
@@ -24,6 +25,7 @@ import { pluginFlights } from './pluginFlights'
 export const plugins = [
   pluginClientToken,
   pluginFlights,
+  pluginMediaProtocol,
   pluginGameDataPath,
   pluginGFW,
   pluginTasks,

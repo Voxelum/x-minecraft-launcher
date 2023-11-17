@@ -26,7 +26,7 @@ export function useInstanceShaderPacks(instance: Ref<Instance>, mods: Ref<ModFil
         id: 'optifine',
         name: 'Optifine',
         version: instance.value.runtime.optifine,
-        icon: 'image://builtin/optifine',
+        icon: 'http://launcher/icons/optifine',
       }
     }
     const shader = mods.value.find(m => {

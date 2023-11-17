@@ -13,6 +13,8 @@ import { isDirectory } from './utils/fs'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
+import { pluginCommonProtocol } from './pluginCommonProtocol'
+import { pluginIconProtocol } from './pluginIconProtocol'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -101,7 +103,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       defaultApp,
       getEnv(),
       definedServices,
-      [pluginAutoUpdate, pluginPowerMonitor],
+      [pluginAutoUpdate, pluginPowerMonitor, pluginCommonProtocol, pluginIconProtocol],
     )
   }
 

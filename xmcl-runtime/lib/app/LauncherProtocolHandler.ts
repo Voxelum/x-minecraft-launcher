@@ -42,6 +42,8 @@ export type ResolvedResponse = Response & {
  * 2. URL drop to launcher UI
  * 3. open-url event or launcher process startup argument
  * 4. HTTP request from the browser process
+ *
+ * The drop in request or localhost request will be transformed into xmcl:// protocol
  */
 export class LauncherProtocolHandler {
   private handlers: [string, Handler][] = []

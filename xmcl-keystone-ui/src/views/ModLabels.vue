@@ -99,9 +99,9 @@ const { getTooltip } = useModCompatibleTooltip()
 
 const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon
-  if (name === 'forge') return 'image://builtin/forge'
-  if (name === 'minecraft') return 'image://builtin/minecraft'
-  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'image://builtin/fabric'
+  if (name === 'forge') return 'http://launcher/icons/forge'
+  if (name === 'minecraft') return 'http://launcher/icons/minecraft'
+  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'http://launcher/icons/fabric'
   return ''
 }
 const { darkTheme } = useTheme()

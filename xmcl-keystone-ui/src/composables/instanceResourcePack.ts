@@ -106,7 +106,7 @@ function getResourcePackItemFromGameSettingName(resourcePackName: string): Insta
     pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
     pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
   } else {
-    pack.icon = 'image://builtin/minecraft'
+    pack.icon = 'http://launcher/icons/minecraft'
     pack.description = 'The minecraft default look and feel'
   }
   return pack

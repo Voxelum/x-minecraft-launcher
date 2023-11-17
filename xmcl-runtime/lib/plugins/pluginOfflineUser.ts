@@ -48,11 +48,6 @@ export const pluginOffineUser: LauncherAppPlugin = (app) => {
           if (skin) {
             let url = skin.url
             if (!url.startsWith('http')) {
-              // let u = url
-              // if (u.startsWith('image://')) {
-              //   u = url.substring('image://'.length)
-              // }
-              // url = `data:image/png;base64,${await readFile(u, 'base64')}`
               url = await imageStore.addImage(url)
             }
             gameProfile.textures.SKIN.url = url
@@ -66,11 +61,6 @@ export const pluginOffineUser: LauncherAppPlugin = (app) => {
           if (cape) {
             let url = cape
             if (!url.startsWith('http')) {
-              // let u = url
-              // if (u.startsWith('image://')) {
-              //   u = url.substring('image://'.length)
-              // }
-              // url = `data:image/png;base64,${await readFile(u, 'base64')}`
               url = await imageStore.addImage(url)
             }
             gameProfile.textures.CAPE = { url }

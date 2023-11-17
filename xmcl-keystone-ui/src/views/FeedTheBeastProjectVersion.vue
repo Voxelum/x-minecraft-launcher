@@ -22,7 +22,7 @@
       >
         <template #prepend-inner>
           <img
-            :src="'image://builtin/minecraft'"
+            :src="'http://launcher/icons/minecraft'"
             width="32"
           >
         </template>
@@ -39,7 +39,7 @@
       >
         <template #prepend-inner>
           <img
-            :src="'image://builtin/forge'"
+            :src="'http://launcher/icons/forge'"
             width="32"
           >
         </template>
@@ -56,7 +56,7 @@
       >
         <template #prepend-inner>
           <img
-            :src="'image://builtin/fabric'"
+            :src="'http://launcher/icons/fabric'"
             width="32"
           >
         </template>

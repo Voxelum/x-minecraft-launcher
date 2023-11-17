@@ -1,4 +1,4 @@
-import { AccentState, HAS_DEV_SERVER, IS_DEV, WindowsBuild } from '@/constant'
+import { AccentState, HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
@@ -10,11 +10,11 @@ import { Client } from '@xmcl/runtime/lib/engineBridge'
 import { kSettings } from '@xmcl/runtime/lib/entities/settings'
 import { kUserAgent } from '@xmcl/runtime/lib/entities/userAgent'
 import { Logger } from '@xmcl/runtime/lib/util/log'
-import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, ProtocolRequest, ProtocolResponse, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
+import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
 import { createReadStream } from 'fs'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { request } from 'undici'
+import { Readable } from 'stream'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
 import en from './locales/en.yaml'
@@ -251,90 +251,52 @@ export class ElectronController implements LauncherAppController {
       }
     })
 
-    const wellKnown = ['data', 'http', 'https']
-    const handler: (request: ProtocolRequest, callback: (response: ProtocolResponse) => void) => void = (request, callback) => {
-      let url: URL
-      try {
-        url = new URL(request.url)
-      } catch (e) {
-        if (request.url.startsWith('image://') && !request.url.startsWith('image:///')) {
-          url = new URL(request.url.replace('image://', 'image:///'))
-        } else if (request.url.startsWith('video://') && !request.url.startsWith('video:///')) {
-          url = new URL(request.url.replace('video://', 'video:///'))
-        } else throw new Error()
+    const handler = async (request: Request): Promise<Response> => {
+      const url = new URL(request.url)
+      if (url.host === HOST && !HAS_DEV_SERVER) {
+        const realPath = join(__dirname, 'renderer', url.pathname)
+        const mimeType =
+          url.pathname.endsWith('.js')
+            ? 'text/javascript'
+            : url.pathname.endsWith('.css')
+              ? 'text/css'
+              : url.pathname.endsWith('.html')
+                ? 'text/html'
+                : url.pathname.endsWith('.json')
+                  ? 'application/json'
+                  : url.pathname.endsWith('.png')
+                    ? 'image/png'
+                    : url.pathname.endsWith('.svg')
+                      ? 'image/svg+xml'
+                      : url.pathname.endsWith('.ico')
+                        ? 'image/x-icon'
+                        : url.pathname.endsWith('.woff')
+                          ? 'font/woff'
+                          : url.pathname.endsWith('.woff2')
+                            ? 'font/woff2'
+                            : url.pathname.endsWith('.ttf')
+                              ? 'font/ttf'
+                              // webp
+                              : url.pathname.endsWith('.webp') ? 'image/webp' : ''
+        return new Response(Readable.toWeb(createReadStream(realPath)) as any, {
+          headers: {
+            'Content-Type': mimeType,
+          },
+        })
       }
-
-      const responseUrl = new URL(url.toString())
-      responseUrl.protocol = 'http:'
-
-      this.app.protocol.handle({
-        url,
-        headers: request.headers,
+      const response = await this.app.protocol.handle({
+        url: new URL(url),
         method: request.method,
-      }).then((resp) => {
-        callback({ statusCode: resp.status, data: resp.body, headers: resp.headers })
-      }, (err) => {
-        callback({ statusCode: 500, error: err })
+        headers: request.headers,
+        body: request.body ? Readable.fromWeb(request.body as any) : request.body as any,
+      })
+      return new Response(response.body instanceof Readable ? Readable.toWeb(response.body) as any : response.body, {
+        status: response.status,
+        headers: response.headers,
       })
     }
 
-    if (!HAS_DEV_SERVER) {
-      restoredSession.protocol.interceptStreamProtocol('http', (req, callback) => {
-        if (req.url.startsWith('http://app')) {
-          const parsed = new URL(req.url)
-          const realPath = join(__dirname, 'renderer', parsed.pathname)
-          this.logger.log(`Intercept http request ${req.url} -> ${realPath}`)
-          const mimeType =
-            parsed.pathname.endsWith('.js')
-              ? 'text/javascript'
-              : parsed.pathname.endsWith('.css')
-                ? 'text/css'
-                : parsed.pathname.endsWith('.html')
-                  ? 'text/html'
-                  : parsed.pathname.endsWith('.json')
-                    ? 'application/json'
-                    : parsed.pathname.endsWith('.png')
-                      ? 'image/png'
-                      : parsed.pathname.endsWith('.svg')
-                        ? 'image/svg+xml'
-                        : parsed.pathname.endsWith('.ico')
-                          ? 'image/x-icon'
-                          : parsed.pathname.endsWith('.woff')
-                            ? 'font/woff'
-                            : parsed.pathname.endsWith('.woff2')
-                              ? 'font/woff2'
-                              : parsed.pathname.endsWith('.ttf')
-                                ? 'font/ttf'
-                                // webp
-                                : parsed.pathname.endsWith('.webp') ? 'image/webp' : ''
-          callback({ statusCode: 200, mimeType, data: createReadStream(realPath) })
-        } else {
-          request(req.url, {
-            headers: req.headers,
-            method: req.method as any,
-          }).then((resp) => {
-            callback({ statusCode: resp.statusCode, headers: resp.headers as any, data: resp.body })
-          }, (err) => {
-            callback({ statusCode: 500, error: err })
-          })
-        }
-      })
-    }
-
-    this.app.protocol.onRegistered = (protocol) => {
-      if (!wellKnown.includes(protocol)) {
-        this.logger.log(`Register custom protocol ${protocol} to electron`)
-        restoredSession.protocol.registerStreamProtocol(protocol, handler)
-      }
-    }
-
-    for (const protocol of this.app.protocol.getProtocols()) {
-      if (!wellKnown.includes(protocol)) {
-        this.logger.log(`Register custom protocol ${protocol} to electron`)
-        restoredSession.protocol.registerStreamProtocol(protocol, handler)
-      }
-    }
-
+    restoredSession.protocol.handle('http', handler)
     this.sharedSession = restoredSession
 
     return restoredSession
