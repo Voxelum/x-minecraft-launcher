@@ -13,12 +13,12 @@
         xs4
       >
         <v-list style="height: 100%">
-          <virtual-list
+          <!-- <virtual-list
             style="height: 100%; overflow-y: auto;"
             :data-key="'name'"
             :data-sources="items"
             :data-component="PreviewItem"
-          />
+          /> -->
         </v-list>
       </v-flex>
       <v-flex xs8>
