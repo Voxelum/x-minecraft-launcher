@@ -1,9 +1,8 @@
 import { useService } from '@/composables'
 import { generateDistinctName } from '@/util/instanceName'
-import { Instance, InstanceData, InstanceServiceKey, LocalVersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
+import { Instance, InstanceData, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
-import { useMinecraftVersions } from './version'
 
 export const kInstanceCreation: InjectionKey<InstanceData> = Symbol('CreateOption')
 
@@ -12,10 +11,13 @@ export const kInstanceCreation: InjectionKey<InstanceData> = Symbol('CreateOptio
  */
 export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref<LocalVersionHeader[]>, instances: Ref<Instance[]>, path: Ref<string>) {
   const { createInstance: create } = useService(InstanceServiceKey)
-  const { release } = useMinecraftVersions(versions)
+  const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+  const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
+  let latest = ''
+  getLatestMinecraftRelease().then(v => { latest = v })
   const data = reactive<InstanceData>({
     name: '',
-    runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '', labyMod: '' } as RuntimeVersions,
+    runtime: { forge: '', minecraft: latest || '', liteloader: '', fabricLoader: '', yarn: '', labyMod: '' } as RuntimeVersions,
     version: '',
     java: '',
     showLog: false,
@@ -46,6 +48,10 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
         data.name = generateDistinctName(instances.value.map(i => i.name), data.runtime)
       }
       const newPath = await create(data)
+      await installInstanceFiles({
+        path: newPath,
+        files: await template.loadFiles(),
+      })
       path.value = newPath
       return newPath
     },
@@ -55,7 +61,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
     reset() {
       data.name = ''
       data.runtime = {
-        minecraft: release.value?.id || '',
+        minecraft: latest || '',
         forge: '',
         liteloader: '',
         fabricLoader: '',

@@ -36,6 +36,7 @@ export * from './lib/services/UserService'
 export * from './lib/services/VersionService'
 export * from './lib/services/YggdrasilService'
 export * from './lib/services/PeerService'
+export * from './lib/services/VersionMetadataService'
 export * from './lib/util/log'
 
 export type { default as SemaphoreManager } from './lib/managers/SemaphoreManager'

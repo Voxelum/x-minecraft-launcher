@@ -49,14 +49,21 @@
         </v-list-item-avatar>
         {{ disableText }}
       </v-list-item>
-      <virtual-list
+      <v-virtual-scroll
         class="h-full overflow-y-auto"
-        :data-sources="versions"
-        :data-key="'name'"
-        :data-component="VersionListTile"
-        :keep="16"
-        :extra-props="{ select: onSelect, install, show: onShow }"
-      />
+        :items="versions"
+        :item-height="48"
+        :bench="16"
+      >
+        <template #default="{ item }">
+          <VersionListTile
+            :source="item"
+            :select="onSelect"
+            :install="onInstall"
+            :show="onShow"
+          />
+        </template>
+      </v-virtual-scroll>
     </v-list>
     <Hint
       v-else

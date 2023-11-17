@@ -1,4 +1,4 @@
-import { EditInstanceOptions, Instance, RuntimeVersions } from '@xmcl/runtime-api'
+import { EditInstanceOptions, Instance, InstanceData, LocalVersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
 import { useGlobalSettings } from './setting'
 
@@ -304,5 +304,110 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     data,
     save,
     load,
+  }
+}
+
+export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 'version'>, versions: Ref<LocalVersionHeader[]>) {
+  function onSelectMinecraft(version: string) {
+    if (data?.runtime) {
+      const runtime = data.runtime
+      data.version = ''
+      runtime.minecraft = version
+      runtime.forge = ''
+      runtime.neoForged = ''
+      runtime.fabricLoader = ''
+      runtime.optifine = ''
+    }
+  }
+  function onSelectForge(version: string) {
+    if (data?.runtime) {
+      const runtime = data?.runtime
+      runtime.forge = version
+      if (version) {
+        data.version = ''
+        runtime.neoForged = ''
+        runtime.fabricLoader = ''
+        runtime.quiltLoader = ''
+      }
+    }
+  }
+  function onSelectNeoForged(version: string) {
+    if (data?.runtime) {
+      const runtime = data?.runtime
+      runtime.neoForged = version
+      if (version) {
+        data.version = ''
+        runtime.forge = ''
+        runtime.fabricLoader = ''
+        runtime.quiltLoader = ''
+      }
+    }
+  }
+  function onSelectFabric(version: string) {
+    if (data?.runtime) {
+      const runtime = data?.runtime
+      if (version) {
+        data.version = ''
+        runtime.forge = ''
+        runtime.neoForged = ''
+        runtime.quiltLoader = ''
+        runtime.optifine = ''
+      }
+      runtime.fabricLoader = version
+    }
+  }
+  function onSelectQuilt(version: string) {
+    if (data?.runtime) {
+      const runtime = data?.runtime
+      runtime.quiltLoader = version
+      if (version) {
+        data.version = ''
+        runtime.neoForged = ''
+        runtime.forge = runtime.fabricLoader = ''
+        runtime.optifine = ''
+      }
+    }
+  }
+  function onSelectOptifine(version: string) {
+    if (data.runtime) {
+      const runtime = data.runtime
+      runtime.optifine = version
+      if (version) {
+        data.version = ''
+        runtime.quiltLoader = runtime.fabricLoader = ''
+      }
+    }
+  }
+  function onSelectLabyMod(version: string) {
+    if (data.runtime) {
+      const runtime = data.runtime
+      runtime.labyMod = version
+      if (version) {
+        data.version = ''
+      }
+    }
+  }
+  function onSelectLocalVersion(version: string) {
+    data.version = version
+    const v = versions.value.find(ver => ver.id === version)!
+    data.runtime.minecraft = v.minecraft
+    data.runtime.forge = v.forge
+    data.runtime.liteloader = v.liteloader
+    data.runtime.fabricLoader = v.fabric
+    data.runtime.neoForged = v.neoForged
+    data.runtime.optifine = v.optifine
+    data.runtime.quiltLoader = v.quilt
+    data.runtime.labyMod = v.labyMod
+  }
+
+  return {
+    onSelectMinecraft,
+    onSelectForge,
+    onSelectNeoForged,
+    onSelectFabric,
+    onSelectQuilt,
+    onSelectOptifine,
+    onSelectLabyMod,
+    onSelectLocalVersion,
   }
 }

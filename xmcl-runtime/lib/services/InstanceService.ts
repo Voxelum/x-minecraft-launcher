@@ -15,8 +15,8 @@ import { ImageStorage } from '../util/imageStore'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
-import { InstallService } from './InstallService'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { VersionMetadataService } from './VersionMetadataService'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -29,7 +29,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstallService) private installService: InstallService,
+    @Inject(VersionMetadataService) private versionMetadataService: VersionMetadataService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ImageStorage) private imageStore: ImageStorage,
@@ -187,7 +187,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
+    instance.runtime.minecraft = instance.runtime.minecraft || this.versionMetadataService.getLatestRelease()
     instance.upstream = option.upstream
     instance.playtime = option.playtime
     instance.lastPlayedDate = option.lastPlayedDate
@@ -235,7 +235,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       instance.path = this.getCandidatePath(payload.name)
     }
 
-    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
+    instance.runtime.minecraft = instance.runtime.minecraft || this.versionMetadataService.getLatestRelease()
     instance.creationDate = Date.now()
     instance.lastAccessDate = Date.now()
 
@@ -572,7 +572,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
         } else {
           options.runtime = {
-            minecraft: this.installService.getLatestRelease(),
+            minecraft: this.versionMetadataService.getLatestRelease(),
           }
         }
       } else {
@@ -586,7 +586,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
         } else {
           options.runtime = {
-            minecraft: this.installService.getLatestRelease(),
+            minecraft: this.versionMetadataService.getLatestRelease(),
           }
         }
       }
