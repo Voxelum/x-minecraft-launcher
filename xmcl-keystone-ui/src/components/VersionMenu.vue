@@ -43,10 +43,11 @@
     <v-skeleton-loader
       v-if="refreshing"
       type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+      class="w-100"
     />
     <v-list
       v-else
-      class="flex h-full flex-col overflow-auto p-0"
+      class="w-100 flex h-full flex-col overflow-auto p-0"
     >
       <v-list-item
         v-if="isClearable"
@@ -59,14 +60,30 @@
         {{ clearText }}
         <div class="flex-grow" />
       </v-list-item>
-      <virtual-list
-        class="h-full max-h-[300px] overflow-y-auto"
-        :data-sources="filteredItems"
-        :data-key="'name'"
-        :data-component="VersionMenuListTile"
-        :keep="16"
-        :extra-props="{ select: onSelect }"
-      />
+      <v-virtual-scroll
+        class="box-content h-full max-h-[300px] w-full overflow-y-auto"
+        :items="filteredItems"
+        :item-height="48"
+        :bench="10"
+      >
+        <template #default="{ item }">
+          <v-list-item
+            :key="item.name"
+            ripple
+            @click="onSelect(item.name)"
+          >
+            {{ item.name }}
+            <div class="flex-grow" />
+            <v-chip
+              v-if="item.tag"
+              label
+              :color="item.tagColor"
+            >
+              {{ item.tag }}
+            </v-chip>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
       <v-list-item v-if="filteredItems.length === 0">
         {{ emptyText }}
       </v-list-item>
@@ -76,7 +93,6 @@
 
 <script lang=ts setup>
 import { VersionMenuItem } from '../composables/versionList'
-import VersionMenuListTile from './VersionMenuListTile.vue'
 
 const props = defineProps<{
   items: VersionMenuItem[]

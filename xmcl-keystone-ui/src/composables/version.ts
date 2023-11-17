@@ -1,13 +1,13 @@
 import { useService, useServiceBusy } from '@/composables'
 import { MinecraftVersion } from '@xmcl/installer'
-import { InstallServiceKey, LocalVersionHeader } from '@xmcl/runtime-api'
+import { VersionMetadataServiceKey, LocalVersionHeader } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref, computed, reactive, toRefs } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 
 export function useMinecraftVersions(local: Ref<LocalVersionHeader[]>) {
-  const { getMinecraftVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getMinecraftVersionList')
+  const { getMinecraftVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getMinecraftVersionList')
 
   const { data, isValidating, mutate, error } = useSWRV('/minecraft-versions',
     () => getMinecraftVersionList(),
@@ -36,6 +36,7 @@ export function useMinecraftVersions(local: Ref<LocalVersionHeader[]>) {
     refreshing,
     release,
     snapshot,
+    mutate,
   }
 }
 
@@ -58,8 +59,8 @@ export function useMinecraftVersionFilter(filterText: Ref<string>) {
 }
 
 export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { getFabricVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getFabricVersionList')
+  const { getFabricVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getFabricVersionList')
 
   const { data: allVersions, isValidating, mutate, error } = useSWRV('/fabric-versions',
     () => getFabricVersionList(),
@@ -94,18 +95,18 @@ export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<Loca
 }
 
 export function useLabyModManifest() {
-  const { getLabyModManifest } = useService(InstallServiceKey)
+  const { getLabyModManifest } = useService(VersionMetadataServiceKey)
   return useSWRV('/labymod',
     () => getLabyModManifest(),
     inject(kSWRVConfig))
 }
 
 export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { getQuiltVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
+  const { getQuiltVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getQuiltVersionList')
 
   const { data: versions, isValidating, mutate, error } = useSWRV(`/quilt-versions/${minecraftVersion.value}`,
-    () => minecraftVersion.value ? getQuiltVersionList({ minecraftVersion: minecraftVersion.value }).then(v => v.map(markRaw)) : [],
+    () => minecraftVersion.value ? getQuiltVersionList(minecraftVersion.value).then(v => v.map(markRaw)) : [],
     inject(kSWRVConfig))
 
   const refreshing = computed(() => isValidating.value || _refreshing.value)
@@ -128,8 +129,8 @@ export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<Local
 }
 
 export function useNeoForgedVersions(local: Ref<LocalVersionHeader[]>) {
-  const { getNeoForgedVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getNeoForgedVersionList')
+  const { getNeoForgedVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getNeoForgedVersionList')
 
   const { data, isValidating, mutate, error } = useSWRV('/neoforged-versions',
     async () => {
@@ -176,13 +177,13 @@ export function useNeoForgedVersions(local: Ref<LocalVersionHeader[]>) {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { getForgeVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')
+  const { getForgeVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getForgeVersionList')
 
-  const { data: versions, isValidating, mutate, error } = useSWRV(`/forge-versions/${minecraftVersion.value}`,
+  const { data: versions, isValidating, mutate, error } = useSWRV(computed(() => minecraftVersion.value && `/forge-versions/${minecraftVersion.value}`),
     async () => {
       const version = minecraftVersion.value
-      const result = await version ? getForgeVersionList({ minecraftVersion: version }).then(v => v.map(markRaw)) : []
+      const result = version ? await getForgeVersionList(version).then(v => v.map(markRaw)) : []
       if (version !== minecraftVersion.value) {
         return []
       }
@@ -235,10 +236,10 @@ export function useForgeVersions(minecraftVersion: Ref<string>, local: Ref<Local
 }
 
 // export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-//   const { getLiteloaderVersionList } = useService(InstallServiceKey)
+//   const { getLiteloaderVersionList } = useService(VersionMetadataServiceKey)
 
 //   const versions = ref([] as LiteloaderVersions)
-//   const refreshing = useServiceBusy(InstallServiceKey, 'getLiteloaderVersionList')
+//   const refreshing = useServiceBusy(VersionMetadataServiceKey, 'getLiteloaderVersionList')
 //   onMounted(() => {
 //     watch(minecraftVersion, () => {
 //       if (!versions.value) {
@@ -259,8 +260,8 @@ export function useForgeVersions(minecraftVersion: Ref<string>, local: Ref<Local
 // }
 
 export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { getOptifineVersionList } = useService(InstallServiceKey)
-  const _refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
+  const { getOptifineVersionList } = useService(VersionMetadataServiceKey)
+  const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getOptifineVersionList')
 
   const { data: allVersions, isValidating, mutate, error } = useSWRV('/optifine-versions',
     () => getOptifineVersionList().then(v => v.map(markRaw)),

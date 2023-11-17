@@ -23,7 +23,7 @@ export interface VersionMenuItem {
 }
 
 export function useMinecraftVersionList(version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { versions: vers, installed, refreshing, release } = useMinecraftVersions(local)
+  const { versions: vers, installed, refreshing, release, mutate } = useMinecraftVersions(local)
   const { t } = useI18n()
   const showAlpha = ref(false)
   const { semaphores } = injection(kSemaphores)
@@ -51,6 +51,7 @@ export function useMinecraftVersionList(version: Ref<string>, local: Ref<LocalVe
     release,
     showAlpha,
     items,
+    mutate,
     refreshing,
   }
 }

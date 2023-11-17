@@ -99,40 +99,6 @@ export interface InstallLabyModOptions {
  */
 export interface InstallService {
   /**
-   * The minecraft version list
-   * Request minecraft version list and cache in to store and disk.
-   */
-  getMinecraftVersionList(force?: boolean): Promise<MinecraftVersions>
-  /**
-   * Refresh forge remote versions cache from forge websites or BMCL API
-   */
-  getForgeVersionList(options: { force?: boolean; minecraftVersion: string }): Promise<ForgeVersion[]>
-  /**
-   * Get the neo forge version list
-   */
-  getNeoForgedVersionList(): Promise<NeoForgedVersions>
-  /**
-   * Get liteloader version list in the store.
-   */
-  getLiteloaderVersionList(): Promise<LiteloaderVersions>
-  /**
-   * Refresh fabric version list in the store.
-   * @param force should the version be refresh regardless if we have already refreshed fabric version.
-   */
-  getFabricVersionList(force?: boolean): Promise<FabricVersions>
-  /**
-   * Refresh optifine version list from BMCL API
-   */
-  getOptifineVersionList(force?: boolean): Promise<OptifineVersion[]>
-  /**
-   * Get the quilt version list
-   */
-  getQuiltVersionList(options?: GetQuiltVersionListOptions): Promise<QuiltArtifactVersion[]>
-  /**
-   * Get the labymod manifest
-   */
-  getLabyModManifest(): Promise<LabyModManifest>
-  /**
    * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
    */

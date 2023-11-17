@@ -1,6 +1,8 @@
-import { AuthlibInjectorService, BaseService, CurseForgeService, YggdrasilService, ImportService, InstallService, InstanceIOService, InstanceInstallService, InstanceLogService, InstanceManifestService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceScreenshotService, InstanceService, InstanceShaderPacksService, InstanceUpdateService, InstanceVersionService, JavaService, LaunchService, LittleSkinUserService, ModpackService, ModrinthService, NatService, OfficialUserService, PeerService, PresenceService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionService } from '@xmcl/runtime'
+import { AuthlibInjectorService, BaseService, CurseForgeService, ImportService, InstallService, InstanceIOService, InstanceInstallService, InstanceLogService, InstanceManifestService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceScreenshotService, InstanceService, InstanceShaderPacksService, InstanceUpdateService, InstanceVersionService, JavaService, LaunchService, LittleSkinUserService, ModpackService, ModrinthService, MultiMCService, NatService, OfficialUserService, PeerService, PresenceService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionMetadataService, VersionService, YggdrasilService } from '@xmcl/runtime'
 
 export const definedServices = [
+  MultiMCService,
+  VersionMetadataService,
   LittleSkinUserService,
   BaseService,
   CurseForgeService,

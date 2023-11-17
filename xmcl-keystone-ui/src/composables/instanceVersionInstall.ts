@@ -1,5 +1,5 @@
 import { injection } from '@/util/inject'
-import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionServiceKey } from '@xmcl/runtime-api'
+import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { Ref } from 'vue'
@@ -7,10 +7,6 @@ import { Ref } from 'vue'
 export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
   const { cache } = injection(kSWRVConfig)
   const {
-    getMinecraftVersionList,
-    getForgeVersionList,
-    getNeoForgedVersionList,
-    getLabyModManifest,
     installForge,
     installNeoForged,
     installMinecraft,
@@ -19,6 +15,13 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     installQuilt,
     installLabyModVersion,
   } = useService(InstallServiceKey)
+
+  const {
+    getMinecraftVersionList,
+    getForgeVersionList,
+    getNeoForgedVersionList,
+    getLabyModManifest,
+  } = useService(VersionMetadataServiceKey)
 
   const getCacheOrFetch = async <T>(key: string, fetcher: () => Promise<T>) => {
     const cached = cache.get(key)
@@ -42,7 +45,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (forge) {
       const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
       if (!localForge) {
-        const forgeVersions = await getCacheOrFetch(`/forge-versions/${minecraft}`, () => getForgeVersionList({ minecraftVersion: minecraft }))
+        const forgeVersions = await getCacheOrFetch(`/forge-versions/${minecraft}`, () => getForgeVersionList(minecraft))
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
         forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
