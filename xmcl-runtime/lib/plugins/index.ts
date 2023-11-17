@@ -1,5 +1,4 @@
 import { pluginClientToken } from './pluginClientToken'
-import { pluginCommonProtocol } from './pluginCommonProtocol'
 import { pluginCurseforgeClient } from './pluginCurseforgeClient'
 import { pluginCurseforgeModpackHandler } from './pluginCurseforgeModpackHandler'
 import { pluginGFW } from './pluginGFW'
@@ -13,17 +12,18 @@ import { pluginOffineUser } from './pluginOfflineUser'
 import { pluginResourcePackLink } from './pluginResourcePackLink'
 import { pluginServicesHandler } from './pluginServicesHandler'
 import { pluginSettings } from './pluginSettings'
-import { pluginTasks } from './pluginTask'
+import { pluginTasks } from './pluginTasks'
 import { pluginTelemetry } from './pluginTelemetry'
 import { pluginUndiciLogger } from './pluginUndiciLogger'
 import { pluginUserPlaytime } from './pluginUserPlaytime'
 import { pluginUserTokenStorage } from './pluginUserTokenStorage'
 import { pluginWorker } from './pluginWorker'
 import { pluginYggdrasilHandler } from './pluginYggdrasilHandler'
+import { pluginFlights } from './pluginFlights'
 
 export const plugins = [
   pluginClientToken,
-  pluginCommonProtocol,
+  pluginFlights,
   pluginGameDataPath,
   pluginGFW,
   pluginTasks,

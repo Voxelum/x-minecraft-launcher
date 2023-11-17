@@ -17,6 +17,7 @@ import { UserService } from '../services/UserService'
 
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = '{}'
+  const logger = app.getLogger('Telemtry')
   const appInsight = await import('applicationinsights')
   const contract = new appInsight.Contracts.ContextTagKeys()
 
@@ -68,6 +69,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     return true
   })
 
+  logger.log('Telemetry client started')
   client.trackEvent({
     name: 'app-start',
     properties: { },
@@ -82,7 +84,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     app.registry.getOrCreate(NatService).then(async (service) => {
       const state = await service.getNatState()
       if (state.natDevice) {
-        appInsight.defaultClient.trackEvent({
+        client.trackEvent({
           name: 'nat-device',
           properties: {
             natDeviceSupported: !!state.natDevice,

@@ -12,6 +12,7 @@ import Vue, { defineComponent, getCurrentInstance, h, provide } from 'vue'
 import App from './App.vue'
 import Context from './Context'
 import { router } from './router'
+import { kFlights } from '@/composables/flights'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -37,6 +38,8 @@ const app = new Vue(defineComponent({
         },
       }),
     })
+
+    provide(kFlights, (window as any).flights || {})
 
     provide(kVuetify, vuetify.framework)
     provide(kTaskManager, useTaskManager())
