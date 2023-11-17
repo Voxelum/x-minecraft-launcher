@@ -88,6 +88,9 @@ export class LauncherApp extends EventEmitter {
 
   get version() { return this.host.getVersion() }
 
+  /**
+   * The launcher server protocol handler
+   */
   readonly protocol = new LauncherProtocolHandler()
 
   readonly server: Server = createServer((req, res) => {
@@ -165,8 +168,9 @@ export class LauncherApp extends EventEmitter {
     for (const plugin of plugins.concat(_plugins)) {
       try {
         plugin(this, builtinAppManifest, services)
-      } catch {
+      } catch (e) {
         this.logger.warn(`Fail to load plugin ${plugin.name}`)
+        this.logger.error(e as any)
       }
     }
 
