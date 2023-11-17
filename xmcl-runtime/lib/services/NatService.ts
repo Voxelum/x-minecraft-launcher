@@ -12,7 +12,9 @@ export class NatService extends StatefulService<NatState> implements INatService
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, () => new NatState(), async () => {
-      this.refreshNatType()
+      this.refreshNatType().catch((e) => {
+        this.warn('Failed to get nat type: %o', e)
+      })
 
       try {
         const ssdp = await createSsdp()
