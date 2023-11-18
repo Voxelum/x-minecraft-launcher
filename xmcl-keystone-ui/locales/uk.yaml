@@ -420,10 +420,6 @@ instance:
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
   requireName: Ім'я обов'язкове
-  setting:
-    reset: Скидання
-    save: Зберегти
-    unsaved: Вашу модифікацію не збережено!
   showInstance: Показати папку екземпляра
   versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
@@ -1013,6 +1009,10 @@ quiltVersion:
 refresh: Оновити
 refreshResource: Оновити ресурси
 remove: Видалити
+modified:
+  reset: Скидання
+  save: Зберегти
+  unsaved: Вашу модифікацію не збережено!
 resourcepack:
   available: Доступно
   compatible: Формат {format} сумісний з {version}

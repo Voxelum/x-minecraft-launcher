@@ -373,10 +373,6 @@ instance:
   openLogFolder: Abrir Carpeta de Registro
   playtime: Tiempo de Juego
   requireName: El nombre es obligatorio
-  setting:
-    reset: Restablecer
-    save: Guardar
-    unsaved: ¡Tus modificaciones no se han guardado!
   showInstance: Mostrar carpeta de la instancia
   versionHint: La versión de Minecraft de este juego
   vmOptions: Opciones de JVM
@@ -730,6 +726,10 @@ quiltVersion:
 refresh: Actualizar
 refreshResource: Actualizar Recursos
 remove: Eliminar
+modified:
+  reset: Restablecer
+  unsaved: ¡Tus modificaciones no se han guardado!
+  save: Guardar
 resourcepack:
   available: Disponible
   compatible: Formato compatible {format} con {version}

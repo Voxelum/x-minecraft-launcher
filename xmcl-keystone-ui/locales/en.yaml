@@ -412,10 +412,6 @@ instance:
   openLogFolder: Open Log Folder
   playtime: Playtime
   requireName: The name is required
-  setting:
-    reset: Reset
-    save: Save
-    unsaved: Your modification is unsaved!
   showInstance: Show instance folder
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
@@ -1000,6 +996,10 @@ quiltVersion:
 refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
+modified:
+  reset: Reset
+  unsaved: Your modification is unsaved!
+  save: Save
 resourcepack:
   available: Available
   compatible: Compatible format {format} with {version}

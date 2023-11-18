@@ -14,7 +14,7 @@
       :value="edit.isModified"
     >
       <div class="text-button mr-4">
-        {{ t('instance.setting.unsaved') }}
+        {{ t('modified.unsaved') }}
       </div>
 
       <template #action="{ attrs }">
@@ -26,14 +26,13 @@
             text
             @click="onReset"
           >
-            {{ t('instance.setting.reset') }}
+            {{ t('modified.reset') }}
           </v-btn>
-
           <v-btn
             color="primary"
             @click="edit.save"
           >
-            {{ t('instance.setting.save') }}
+            {{ t('modified.save') }}
           </v-btn>
         </div>
       </template>
