@@ -457,10 +457,6 @@ instance:
   openLogFolder: Ouvrir le dossier de logs
   playtime: Temps de jeu
   requireName: Le nom est requis
-  setting:
-    reset: Réinitialiser
-    save: Sauvegarder
-    unsaved: Votre modification n'est pas enregistrée !
   showInstance: Afficher le dossier d'instances
   versionHint: La version Minecraft de ce jeu
   vmOptions: Options JVM
@@ -1040,6 +1036,10 @@ quiltVersion:
 refresh: Rafraîchir
 refreshResource: Actualiser les ressources
 remove: Enlever
+modified:
+  reset: Réinitialiser
+  save: Sauvegarder
+  unsaved: Votre modification n'est pas enregistrée !
 resourcepack:
   available: Disponible
   compatible: Format compatible {format} avec {version}

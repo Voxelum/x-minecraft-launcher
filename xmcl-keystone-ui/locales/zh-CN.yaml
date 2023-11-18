@@ -426,10 +426,6 @@ instance:
   openLogFolder: 打开日志文件夹
   playtime: 游玩时间
   requireName: 必须填写名称
-  setting:
-    reset: 重置
-    save: 保存
-    unsaved: 注意！你尚未保存更改！
   showInstance: 显示文件夹
   versionHint: 这个游戏使用的Minecraft版本
   vmOptions: JVM 启动选项
@@ -992,6 +988,10 @@ quiltVersion:
 refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
+modified:
+  reset: 重置
+  unsaved: 注意！你尚未保存更改！
+  save: 保存
 resourcepack:
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}

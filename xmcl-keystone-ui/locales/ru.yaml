@@ -404,10 +404,6 @@ instance:
   openLogFolder: Открыть папку логов
   playtime: Время игры
   requireName: Имя обязательно
-  setting:
-    reset: Сбросить
-    save: Сохранить
-    unsaved: Изменения не сохранены!
   showInstance: Показать папку экземпляра
   versionHint: Версия игры для этой Minecraft
   vmOptions: Параметры JVM
@@ -967,6 +963,10 @@ quiltVersion:
 refresh: Обновить
 refreshResource: Обновить ресурсы
 remove: Удалить
+modified:
+  reset: Сбросить
+  unsaved: Изменения не сохранены!
+  save: Сохранить
 resourcepack:
   available: Доступно
   compatible: Формат {format} совместим с {version}
