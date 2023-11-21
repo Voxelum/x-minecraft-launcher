@@ -10,10 +10,13 @@
     ],
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
       "@/*": [
         "./main/*"
+      ],
+      "~/*": [
+        "../xmcl-runtime/*"
       ]
     },
     "esModuleInterop": true,
