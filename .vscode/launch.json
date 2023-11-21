@@ -27,9 +27,8 @@
             "skipFiles": [
                 "<node_internals>/**",
                 "${workspaceFolder}/node_modules/**/*.js",
-                "${workspaceFolder}/xmcl-runtime/lib/managers/index.ts",
-                "${workspaceFolder}/xmcl-runtime/lib/app/DummyLogger.ts",
-                "${workspaceFolder}/xmcl-runtime/lib/plugins/pluginLogConsumer.ts"
+                "${workspaceFolder}/xmcl-runtime/app/DummyLogger.ts",
+                "${workspaceFolder}/xmcl-runtime/logger/pluginLogConsumer.ts"
             ],
             "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
             "env": {

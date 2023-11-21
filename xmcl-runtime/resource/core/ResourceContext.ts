@@ -1,8 +1,8 @@
 import { Kysely } from 'kysely'
 import { EventEmitter } from 'stream'
 import { ParseResourceArgs, ParseResourceResult } from '../parsers'
-import { ImageStorage } from '~/lib/util/imageStore'
-import { Logger } from '~/lib/util/log'
+import { ImageStorage } from '~/imageStore'
+import { Logger } from '~/logger'
 import { Database } from './schema'
 
 export interface ResourceContext {

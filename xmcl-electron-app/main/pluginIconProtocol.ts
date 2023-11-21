@@ -1,5 +1,5 @@
 import { createReadStream } from 'fs'
-import { LauncherAppPlugin } from '@xmcl/runtime'
+import { LauncherAppPlugin } from '@xmcl/runtime/app'
 import craftingTable from './assets/craftingtable.png'
 import fabric from './assets/fabric.png'
 import forge from './assets/forge.png'

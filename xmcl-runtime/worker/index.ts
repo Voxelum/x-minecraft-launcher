@@ -1,6 +1,6 @@
-import { Logger } from '../lib/util/log'
-import { HAS_DEV_SERVER } from '../lib/constant'
-import { checksum } from '../lib/util/fs'
+import { Logger } from '~/logger'
+import { HAS_DEV_SERVER } from '~/constant'
+import { checksum } from '~/util/fs'
 import { readFile, writeFile } from 'fs/promises'
 import { Worker } from 'worker_threads'
 

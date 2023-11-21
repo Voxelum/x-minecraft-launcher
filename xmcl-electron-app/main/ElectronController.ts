@@ -4,12 +4,12 @@ import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
-import { LauncherAppController, UserService } from '@xmcl/runtime'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
-import { Client } from '@xmcl/runtime/lib/engineBridge'
-import { kSettings } from '@xmcl/runtime/lib/entities/settings'
-import { kUserAgent } from '@xmcl/runtime/lib/entities/userAgent'
-import { Logger } from '@xmcl/runtime/lib/util/log'
+import { Client, LauncherAppController } from '@xmcl/runtime/app'
+import { Logger } from '@xmcl/runtime/logger'
+import { kUserAgent } from '@xmcl/runtime/network'
+import { kSettings } from '@xmcl/runtime/settings'
+import { UserService } from '@xmcl/runtime/user'
 import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
 import { createReadStream } from 'fs'
 import { readFile } from 'fs/promises'
@@ -17,10 +17,7 @@ import { join } from 'path'
 import { Readable } from 'stream'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
-import en from './locales/en.yaml'
-import es from './locales/es-ES.yaml'
-import ru from './locales/ru.yaml'
-import zh from './locales/zh-CN.yaml'
+import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
@@ -34,7 +31,7 @@ export class ElectronController implements LauncherAppController {
 
   protected browserRef: BrowserWindow | undefined = undefined
 
-  protected i18n = createI18n({ en, 'zh-CN': zh, ru, 'es-ES': es }, 'en')
+  protected i18n = createI18n(definedLocales, 'en')
 
   private logger: Logger
 
@@ -96,7 +93,7 @@ export class ElectronController implements LauncherAppController {
   }
 
   private onWebContentWillNavigate = (event: Event, url: string) => {
-    if (!url.startsWith(IS_DEV ? 'http://localhost' : 'http://app')) {
+    if (!url.startsWith(HAS_DEV_SERVER ? 'http://localhost' : ('http://' + HOST))) {
       event.preventDefault()
       shell.openExternal(url)
     }

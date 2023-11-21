@@ -13,14 +13,11 @@ import {
   UserState,
 } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
-import { LauncherApp } from '../lib/app/LauncherApp'
-import { LauncherAppKey } from '../lib/app/utils'
-import { PathResolver, kGameDataPath } from '../lib/entities/gameDataPath'
-import { ExposeServiceKey, Lock, Singleton, StatefulService } from '../lib/services/Service'
-import { requireObject, requireString } from '../lib/util/object'
-import { Inject } from '../lib/util/objectRegistry'
-import { SafeFile, createSafeFile } from '../lib/util/persistance'
+import { LauncherApp, LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
 import { kDownloadOptions } from '~/network'
+import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { requireObject, requireString } from '~/util/object'
+import { SafeFile, createSafeFile } from '~/util/persistance'
 import { YggdrasilService } from './YggdrasilService'
 import { UserAccountSystem } from './accountSystems/AccountSystem'
 import { ensureLauncherProfile, preprocessUserData } from './userData'
@@ -43,10 +40,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private mojangSelectedUserId = ''
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(YggdrasilService) private yggdrasilAccountSystem: YggdrasilService) {
-    super(app, () => new UserState(), async () => {
+    super(app, () => store.registerStatic(new UserState()), async () => {
       const data = await this.userFile.read()
       const userData = {
         users: {},

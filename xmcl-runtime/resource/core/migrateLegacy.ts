@@ -2,7 +2,7 @@ import { ResourceDomain, ResourceMetadata, ResourceType } from '@xmcl/runtime-ap
 import { AbstractLevel, AbstractSublevel } from 'abstract-level'
 import { ClassicLevel } from 'classic-level'
 import { remove } from 'fs-extra/esm'
-import { Logger } from '~/lib/util/log'
+import { Logger } from '~/logger'
 import { sql } from 'kysely'
 import { ResourceContext } from './ResourceContext'
 import { ResourceSnapshotTable, ResourceTable } from './schema'

@@ -3,8 +3,8 @@ import EventEmitter from 'events'
 import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, SqliteDialect, UnknownRow, ValueNode } from 'kysely'
 import { ResourceContext } from './ResourceContext'
 import { Database } from './schema'
-import { ImageStorage } from '~/lib/util/imageStore'
-import { Logger } from '~/lib/util/log'
+import { ImageStorage } from '~/imageStore'
+import { Logger } from '~/logger'
 
 class JSONPlugin implements KyselyPlugin {
   #tranformer = new JSONTransformer()

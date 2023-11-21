@@ -1,5 +1,5 @@
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG } from '@xmcl/runtime-api'
-import { LauncherAppPlugin } from '~/lib/app/LauncherApp'
+import { LauncherAppPlugin } from '~/app'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 
 export const pluginUserTokenStorage: LauncherAppPlugin = (app) => {

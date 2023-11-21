@@ -26,8 +26,8 @@
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "types": [
-      "@xmcl/runtime/lib/global",
-      "@xmcl/runtime/lib/global.module",
+      "@xmcl/runtime/global",
+      "@xmcl/runtime/global.module",
       "esbuild-plugin-yaml/dist/yaml"
     ]
   },

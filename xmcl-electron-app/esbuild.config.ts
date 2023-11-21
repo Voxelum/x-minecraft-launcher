@@ -1,4 +1,4 @@
-import path from 'path'
+import path, { join } from 'path'
 import pluginPreload from './plugins/esbuild.preload.plugin'
 import pluginRenderer from './plugins/esbuild.renderer.plugin'
 import pluginWorker from './plugins/esbuild.worker.plugin'
@@ -18,6 +18,7 @@ const config = {
   entryNames: '[dir]/[name]',
   format: 'cjs',
   sourcemap: 'inline',
+  // tsconfig: join(__dirname, '..', 'xmcl-runtime', 'tsconfig.json'),
   minifyWhitespace: process.env.NODE_ENV === 'production',
   minifySyntax: process.env.NODE_ENV === 'production',
   treeShaking: true,

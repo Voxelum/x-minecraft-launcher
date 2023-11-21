@@ -3,7 +3,7 @@ import { writeFile, readFile } from 'atomically'
 import { ensureFile } from 'fs-extra/esm'
 import { copyFile } from 'fs/promises'
 import { missing } from './fs'
-import { Logger } from './log'
+import { Logger } from '~/logger'
 import { SafeJsonSerializer } from './serialize'
 
 export interface SafeFile<T> {

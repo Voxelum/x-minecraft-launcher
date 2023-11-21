@@ -1,9 +1,9 @@
 import { offline } from '@xmcl/user'
-import { LauncherAppPlugin } from '~/lib/app/LauncherApp'
+import { LauncherAppPlugin } from '~/app'
 import { UserService } from './UserService'
 import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
 import { kUserTokenStorage } from './userTokenStore'
-import { ImageStorage } from '~/lib/util/imageStore'
+import { ImageStorage } from '~/imageStore'
 
 export const pluginOffineUser: LauncherAppPlugin = (app) => {
   const OFFLINE_USER_ID = 'OFFLINE'

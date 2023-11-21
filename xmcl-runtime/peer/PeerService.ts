@@ -12,19 +12,16 @@ import { pipeline } from 'stream/promises'
 import { request } from 'undici'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
-import { LauncherApp } from '../lib/app/LauncherApp'
-import { LauncherAppKey } from '../lib/app/utils'
-import { IS_DEV } from '../lib/constant'
-import { kGameDataPath, PathResolver } from '../lib/entities/gameDataPath'
-import { kSettings } from '../lib/entities/settings'
-import { NatService } from '../lib/services/NatService'
-import { ExposeServiceKey, Lock, Singleton, StatefulService } from '../lib/services/Service'
-import { UserService } from '../user'
-import { ImageStorage } from '../lib/util/imageStore'
-import { mapLocalPort, parseCandidate } from '../lib/util/mapAndGetPortCanidate'
-import { Inject } from '../lib/util/objectRegistry'
+import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from '~/app'
+import { IS_DEV } from '~/constant'
+import { ImageStorage } from '~/imageStore'
+import { NatService } from '~/nat'
+import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { kSettings } from '~/settings'
 import { kResourceWorker, ResourceWorker } from '../resource'
+import { UserService } from '../user'
 import { PeerSession } from './connection'
+import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
 import { PeerGroup, TransferDescription } from './peer'
@@ -53,13 +50,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) private imageStorage: ImageStorage,
+    @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kSettings) private settings: Settings,
     @Inject(NatService) private natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app, () => new PeerState(), async () => {
+    super(app, () => store.registerStatic(new PeerState()), async () => {
       const initCredential = async () => {
         await this.fetchCredential()
         const state = await userService.getUserState()

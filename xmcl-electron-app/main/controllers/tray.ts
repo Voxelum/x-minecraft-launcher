@@ -1,9 +1,9 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
-import { BaseService } from '@xmcl/runtime'
+import { BaseService } from '@xmcl/runtime/base'
 import { app, Menu, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
 import { ControllerPlugin } from './plugin'
-import { kSettings } from '@xmcl/runtime/lib/entities/settings'
+import { kSettings } from '@xmcl/runtime/settings'
 
 export const trayPlugin: ControllerPlugin = function (this: ElectronController) {
   const { t } = this.i18n

@@ -1,5 +1,5 @@
 import { getPlatform } from '@xmcl/core'
-import { AppManifest, InstalledAppManifest, Platform } from '@xmcl/runtime-api'
+import { InstalledAppManifest, Platform } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { ensureDir } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
@@ -9,29 +9,24 @@ import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
 import { URL } from 'url'
+import { Logger } from '~/logger'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
-import SemaphoreManager from './SemaphoreManager'
-import ServiceStateManager from './ServiceStateManager'
-import { plugins } from '../plugins'
-import { ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
-import { Logger } from '../util/log'
-import { ObjectFactory } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { listen } from '../util/server'
+import { createDummyLogger } from './DummyLogger'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
+import { LauncherAppPlugin } from './LauncherAppPlugin'
 import { LauncherAppUpdater } from './LauncherAppUpdater'
 import { LauncherProtocolHandler } from './LauncherProtocolHandler'
 import { SecretStorage } from './SecretStorage'
+import SemaphoreManager from './SemaphoreManager'
 import { Shell } from './Shell'
-import { LauncherAppKey } from './utils'
-import { createDummyLogger } from './DummyLogger'
+import { InjectionKey, ObjectFactory } from './objectRegistry'
 
-export interface LauncherAppPlugin {
-  (app: LauncherApp, manifest: AppManifest, services: ServiceConstructor[]): void
-}
+export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKeyunchAppKey')
 
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
@@ -76,7 +71,6 @@ export class LauncherApp extends EventEmitter {
    */
   readonly temporaryPath: string
 
-  readonly serviceStateManager: ServiceStateManager
   readonly semaphoreManager: SemaphoreManager
   readonly launcherAppManager: LauncherAppManager
   readonly logEmitter: LogEmitter = new EventEmitter()
@@ -124,7 +118,6 @@ export class LauncherApp extends EventEmitter {
   readonly updater: LauncherAppUpdater
 
   readonly registry: ObjectFactory = new ObjectFactory()
-  private initialInstance = ''
   private preferredLocale = ''
   private gamePathSignal = createPromiseSignal<string>()
   private gamePathMissingSignal = createPromiseSignal<boolean>()
@@ -140,8 +133,7 @@ export class LauncherApp extends EventEmitter {
     getUpdater: (app: LauncherApp) => LauncherAppUpdater,
     readonly builtinAppManifest: InstalledAppManifest,
     readonly env: string,
-    services: ServiceConstructor[],
-    _plugins: LauncherAppPlugin[],
+    plugins: LauncherAppPlugin[],
   ) {
     super()
     this.temporaryPath = ''
@@ -160,13 +152,12 @@ export class LauncherApp extends EventEmitter {
     this.controller = getController(this)
     this.updater = getUpdater(this)
 
-    this.serviceStateManager = new ServiceStateManager(this)
     this.semaphoreManager = new SemaphoreManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
-    for (const plugin of plugins.concat(_plugins)) {
+    for (const plugin of plugins) {
       try {
-        plugin(this, builtinAppManifest, services)
+        plugin(this, builtinAppManifest)
       } catch (e) {
         this.logger.warn(`Fail to load plugin ${plugin.name}`)
         this.logger.error(e as any)
@@ -181,10 +172,6 @@ export class LauncherApp extends EventEmitter {
 
   getAppInstallerStartUpUrl(): string {
     return ''
-  }
-
-  getInitialInstance() {
-    return this.initialInstance
   }
 
   getPreferredLocale() {
@@ -285,7 +272,6 @@ export class LauncherApp extends EventEmitter {
         // first launch
         this.gamePathMissingSignal.resolve(true)
         const { path, instancePath, locale } = await this.controller.processFirstLaunch()
-        this.initialInstance = instancePath
         this.preferredLocale = locale
         gameDataPath = (path)
         await writeFile(join(this.appDataPath, 'root'), path)

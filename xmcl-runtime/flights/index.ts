@@ -1,10 +1,9 @@
-import { request } from 'undici'
-import { LauncherAppPlugin } from '../lib/app/LauncherApp'
-import { kClientToken } from '../lib/entities/clientToken'
-import { join } from 'path'
 import { readFile, writeFile } from 'fs/promises'
+import { join } from 'path'
 import { setTimeout } from 'timers/promises'
-import { InjectionKey } from '../lib/util/objectRegistry'
+import { request } from 'undici'
+import { LauncherAppPlugin, InjectionKey } from '~/app'
+import { kClientToken } from '~/clientToken'
 
 export const kFlights: InjectionKey<Record<string, string>> = Symbol('Flights')
 

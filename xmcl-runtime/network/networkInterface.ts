@@ -1,5 +1,5 @@
 import { Agent, Dispatcher } from 'undici'
-import { InjectionKey } from '../lib/util/objectRegistry'
+import { InjectionKey } from '~/app'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 
 export const kNetworkInterface: InjectionKey<NetworkInterface> = Symbol('NetworkInterface')

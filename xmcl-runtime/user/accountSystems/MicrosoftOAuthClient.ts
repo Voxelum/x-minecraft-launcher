@@ -2,8 +2,8 @@ import { Constants, DeviceCodeResponse } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { Dispatcher, request } from 'undici'
 import { createPlugin } from '../credentialPlugin'
-import { Logger } from '../../lib/util/log'
-import { SecretStorage } from '../../lib/app/SecretStorage'
+import { Logger } from '~/logger'
+import { SecretStorage } from '~/app/SecretStorage'
 
 export class MicrosoftOAuthClient {
   constructor(

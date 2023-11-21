@@ -1,11 +1,10 @@
-import { BaseService, LauncherAppPlugin } from '@xmcl/runtime'
+import { LauncherAppPlugin } from '@xmcl/runtime/app'
 import { autoUpdater } from 'electron-updater'
+import { kSettings } from '~/settings'
 
 export const pluginAutoUpdate: LauncherAppPlugin = (app) => {
   app.once('engine-ready', async () => {
-    const baseService = await app.registry.get(BaseService)
-    const state = await baseService.getSettings()
-
+    const state = await app.registry.get(kSettings)
     state.subscribe('autoInstallOnAppQuitSet', (value) => {
       autoUpdater.autoInstallOnAppQuit = value
     }).subscribe('allowPrereleaseSet', (value) => {

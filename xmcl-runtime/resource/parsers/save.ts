@@ -1,6 +1,6 @@
 import { ResourceDomain, ResourceSaveMetadata, ResourceType } from '@xmcl/runtime-api'
 import type { IResourceParser } from './index'
-import { findLevelRootDirectory, readResourceSaveMetadata } from '../../lib/entities/save'
+import { findLevelRootDirectory, readResourceSaveMetadata } from '~/save'
 
 export const saveParser: IResourceParser<ResourceSaveMetadata> = ({
   type: ResourceType.Save,

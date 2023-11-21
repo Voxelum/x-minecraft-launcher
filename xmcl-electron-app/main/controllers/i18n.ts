@@ -1,5 +1,5 @@
 import { ElectronController } from '@/ElectronController'
-import { kSettings } from '@xmcl/runtime/lib/entities/settings'
+import { kSettings } from '@xmcl/runtime/settings'
 import localeMappings from '../../../assets/locales.json'
 import { ControllerPlugin } from './plugin'
 

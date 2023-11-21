@@ -4,7 +4,7 @@ import EventEmitter from 'events'
 import { DescriptionType } from 'node-datachannel'
 import { setTimeout } from 'timers/promises'
 import { WebSocket } from 'ws'
-import { createPromiseSignal, PromiseSignal } from '~/lib/util/promiseSignal'
+import { createPromiseSignal, PromiseSignal } from '~/util/promiseSignal'
 
 export interface TransferDescription {
   session: string

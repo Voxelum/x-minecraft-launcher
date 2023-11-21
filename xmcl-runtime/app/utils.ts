@@ -2,7 +2,7 @@ import { createWriteStream } from 'fs'
 import { extname } from 'path'
 import { Writable } from 'stream'
 import { stream } from 'undici'
-import { InjectionKey } from '../util/objectRegistry'
+import { InjectionKey } from '~/app'
 import { LauncherApp } from './LauncherApp'
 
 export interface ResolvedIcon {
@@ -30,8 +30,6 @@ function resolveType(url: string, type?: string) {
   }
   return ''
 }
-
-export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LaLauncherAppKeyunchAppKey')
 
 function resolvePurpose(purpose?: string) {
   return !purpose ? 'any' : purpose

@@ -1,6 +1,6 @@
 import { Schema } from '@xmcl/runtime-api'
 import Ajv from 'ajv'
-import { Logger } from './log'
+import { Logger } from '~/logger'
 
 export interface Serializer<D, T> {
   serialize(value: T): D | Promise<D>

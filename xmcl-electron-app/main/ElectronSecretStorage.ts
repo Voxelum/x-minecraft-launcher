@@ -1,4 +1,4 @@
-import { SecretStorage } from '@xmcl/runtime'
+import { SecretStorage } from '@xmcl/runtime/app'
 import { safeStorage } from 'electron'
 import { ensureDir } from 'fs-extra'
 import { readFile, unlink, writeFile } from 'fs/promises'
