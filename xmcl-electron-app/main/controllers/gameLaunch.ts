@@ -1,5 +1,5 @@
 import { ElectronController } from '@/ElectronController'
-import { LaunchService } from '@xmcl/runtime'
+import { LaunchService } from '@xmcl/runtime/launch'
 import { ControllerPlugin } from './plugin'
 
 /**

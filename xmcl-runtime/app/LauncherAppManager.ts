@@ -7,10 +7,10 @@ import { join } from 'path'
 import { request } from 'undici'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
-import { Manager } from '../managers'
 import { isSystemError } from '../util/error'
 import { ENOENT_ERROR } from '../util/fs'
 import { createLinkWin32, installWin32, removeShortcut } from './win32'
+import { Logger } from '~/logger'
 
 export interface InstallAppOptions {
   createDesktopShortcut?: boolean
@@ -18,12 +18,11 @@ export interface InstallAppOptions {
   createStartMenuShortcut?: boolean
 }
 
-export class LauncherAppManager extends Manager implements AppsHost {
-  private logger = this.app.getLogger('LauncherAppManager')
+export class LauncherAppManager implements AppsHost {
+  private logger: Logger
 
-  constructor(app: LauncherApp) {
-    super(app)
-
+  constructor(private app: LauncherApp) {
+    this.logger = this.app.getLogger('LauncherAppManager')
     this.app.controller.handle('get-installed-apps', () => this.getInstalledApps())
     this.app.controller.handle('install-app', (_, url) => this.installApp(url))
     this.app.controller.handle('uninstall-app', (_, url) => this.uninstallApp(url))

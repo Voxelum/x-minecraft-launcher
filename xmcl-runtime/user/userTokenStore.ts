@@ -1,5 +1,5 @@
 import { UserProfile } from '@xmcl/runtime-api'
-import { InjectionKey } from '../lib/util/objectRegistry'
+import { InjectionKey } from '~/app'
 
 export const kUserTokenStorage: InjectionKey<UserTokenStorage> = Symbol('UserTokenStorage')
 

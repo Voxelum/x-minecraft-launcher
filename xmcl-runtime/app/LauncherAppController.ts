@@ -1,5 +1,5 @@
 import { InstalledAppManifest } from '@xmcl/runtime-api'
-import { Client } from '../engineBridge'
+import { Client } from './Client'
 
 /**
  * The controller is response to keep the communication between main process and renderer process

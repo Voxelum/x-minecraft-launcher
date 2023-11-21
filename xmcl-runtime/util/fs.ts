@@ -9,13 +9,12 @@ import { platform } from 'os'
 import { extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
-import { Logger } from './log'
+import { Logger } from '~/logger'
 import { AnyError } from './error'
 
 const pip = promisify(pipeline)
 
-export { pip as pipeline }
-export { checksum }
+export { checksum, pip as pipeline }
 
 export function isPathDiskRootPath(path: string): boolean {
   if (platform() === 'win32') {

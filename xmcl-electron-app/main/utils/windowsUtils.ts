@@ -1,5 +1,5 @@
 import ElectronLauncherApp from '@/ElectronLauncherApp'
-import { Logger } from '@xmcl/runtime'
+import { Logger } from '@xmcl/runtime/logger'
 
 export function getWindowsUtils(app: ElectronLauncherApp, logger: Logger) {
   try {

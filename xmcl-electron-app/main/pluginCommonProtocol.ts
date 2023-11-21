@@ -1,5 +1,4 @@
-import { LauncherAppPlugin } from '@xmcl/runtime'
-import { Handler } from '@xmcl/runtime/lib/app/LauncherProtocolHandler'
+import { Handler, LauncherAppPlugin } from '@xmcl/runtime/app'
 import { net } from 'electron'
 import { Readable } from 'stream'
 

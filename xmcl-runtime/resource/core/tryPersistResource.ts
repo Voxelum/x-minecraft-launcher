@@ -3,10 +3,10 @@ import { randomBytes } from 'crypto'
 import filenamify from 'filenamify'
 import { rename, stat, unlink } from 'fs/promises'
 import { dirname, extname, join } from 'path'
-import { linkOrCopy } from '../../lib/util/fs'
+import { linkOrCopy } from '~/util/fs'
 import { getResourceEntry } from './getResourceEntry'
 import { ResourceContext } from './ResourceContext'
-import { isSystemError } from '../../lib/util/error'
+import { isSystemError } from '~/util/error'
 
 export async function tryPersistResource(resource: { fileName: string; domain: ResourceDomain; hash: string; path: string }, root: string, context: ResourceContext) {
   const backup = [

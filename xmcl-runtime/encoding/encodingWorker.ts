@@ -1,4 +1,4 @@
-import { InjectionKey } from '../lib/util/objectRegistry'
+import { InjectionKey } from '~/app'
 
 export const kEncodingWorker: InjectionKey<EncodingWorker> = Symbol('EncodingWorker')
 

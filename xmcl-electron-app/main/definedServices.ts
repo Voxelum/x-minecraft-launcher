@@ -1,9 +1,30 @@
-import { AuthlibInjectorService, BaseService, CurseForgeService, ImportService, InstallService, InstanceIOService, InstanceInstallService, InstanceLogService, InstanceManifestService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceScreenshotService, InstanceService, InstanceShaderPacksService, InstanceUpdateService, InstanceVersionService, JavaService, LaunchService, LittleSkinUserService, ModpackService, ModrinthService, MultiMCService, NatService, OfficialUserService, PeerService, PresenceService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionMetadataService, VersionService, YggdrasilService } from '@xmcl/runtime'
+import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
+import { BaseService } from '@xmcl/runtime/base'
+import { CurseForgeService } from '@xmcl/runtime/curseforge'
+import { ImportService } from '@xmcl/runtime/import'
+import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
+import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, InstanceService } from '@xmcl/runtime/instance'
+import { InstanceIOService, InstanceInstallService, InstanceManifestService, InstanceUpdateService } from '@xmcl/runtime/instanceIO'
+import { JavaService } from '@xmcl/runtime/java'
+import { LaunchService } from '@xmcl/runtime/launch'
+import { MultiMCService } from '@xmcl/runtime/mmc'
+import { InstanceModsService } from '@xmcl/runtime/mod'
+import { ModpackService } from '@xmcl/runtime/modpack'
+import { ModrinthService } from '@xmcl/runtime/modrinth'
+import { NatService } from '@xmcl/runtime/nat'
+import { PeerService } from '@xmcl/runtime/peer'
+import { PresenceService } from '@xmcl/runtime/presence'
+import { ResourceService } from '@xmcl/runtime/resource'
+import { InstanceResourcePackService, ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
+import { InstanceSavesService } from '@xmcl/runtime/save'
+import { ServerStatusService } from '@xmcl/runtime/serverStatus'
+import { InstanceShaderPacksService } from '@xmcl/runtime/shaderPack'
+import { OfficialUserService, UserService, YggdrasilService } from '@xmcl/runtime/user'
+import { VersionService } from '@xmcl/runtime/version'
 
 export const definedServices = [
   MultiMCService,
   VersionMetadataService,
-  LittleSkinUserService,
   BaseService,
   CurseForgeService,
   AuthlibInjectorService,
@@ -21,7 +42,7 @@ export const definedServices = [
   InstanceShaderPacksService,
   InstanceUpdateService,
   PresenceService,
-  InstanceVersionService,
+  DiagnoseService,
   JavaService,
   LaunchService,
   ModpackService,

@@ -1,4 +1,6 @@
-import { LaunchService, LauncherApp, LauncherAppPlugin } from '@xmcl/runtime'
+import { LauncherApp, LauncherAppPlugin } from '@xmcl/runtime/app'
+import { LaunchService } from '@xmcl/runtime/launch'
+
 import { exec } from 'child_process'
 import { powerMonitor, app as elec } from 'electron'
 import { ensureElevateExe } from './utils/elevate'

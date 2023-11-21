@@ -1,20 +1,15 @@
-import { LauncherApp } from '@xmcl/runtime'
-import { Shell } from '@xmcl/runtime/lib/app/Shell'
-import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
+import { LauncherApp, Shell } from '@xmcl/runtime/app'
+import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { Menu, app, shell } from 'electron'
 import { join } from 'path'
 import { URL } from 'url'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import defaultApp from './defaultApp'
-import { definedServices } from './definedServices'
-import { pluginAutoUpdate } from './pluginAutoUpdate'
+import { definedPlugins } from './definedPlugins'
 import { isDirectory } from './utils/fs'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
-import { pluginPowerMonitor } from './pluginPowerMonitor'
-import { pluginCommonProtocol } from './pluginCommonProtocol'
-import { pluginIconProtocol } from './pluginIconProtocol'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -102,8 +97,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,
       getEnv(),
-      definedServices,
-      [pluginAutoUpdate, pluginPowerMonitor, pluginCommonProtocol, pluginIconProtocol],
+      definedPlugins,
     )
   }
 

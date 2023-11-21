@@ -4,7 +4,7 @@ import { existsSync } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
 import { rename, stat } from 'fs/promises'
 import { basename, dirname, extname, join } from 'path'
-import { linkOrCopy } from '../lib/util/fs'
+import { linkOrCopy } from '~/util/fs'
 
 // resource functions
 

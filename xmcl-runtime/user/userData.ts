@@ -3,7 +3,7 @@ import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile, User
 import { existsSync } from 'fs'
 import { readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
-import { LauncherProfile } from '../lib/entities/launchProfile'
+import { LauncherProfile } from '~/launchProfile'
 import { UserTokenStorage } from './userTokenStore'
 
 /**

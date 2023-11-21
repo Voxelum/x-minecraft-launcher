@@ -1,6 +1,6 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon } from '@/utils/icons'
-import { kTasks } from '@xmcl/runtime/lib/entities/task'
+import { kTasks } from '@xmcl/runtime/task'
 import { Notification } from 'electron'
 import { ControllerPlugin } from './plugin'
 

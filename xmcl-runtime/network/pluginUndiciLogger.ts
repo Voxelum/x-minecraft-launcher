@@ -1,6 +1,6 @@
 import { channel } from 'diagnostics_channel'
 import { DiagnosticsChannel, Dispatcher } from 'undici'
-import { LauncherAppPlugin } from '../lib/app/LauncherApp'
+import { LauncherAppPlugin } from '~/app'
 
 export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
   const undici = app.getLogger('undici', 'undici')

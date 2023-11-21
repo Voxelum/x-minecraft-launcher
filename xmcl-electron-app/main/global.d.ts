@@ -67,6 +67,13 @@ declare module '*.ico' {
   const path: string
   export default path
 }
+declare module '*.webp' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
 
 declare module '@renderer/*' {
   /**

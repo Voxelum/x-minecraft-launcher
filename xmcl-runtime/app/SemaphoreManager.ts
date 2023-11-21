@@ -1,7 +1,7 @@
 import { nextTick } from 'process'
 import { LauncherApp } from '../app/LauncherApp'
 import { ReadWriteLock } from '../util/mutex'
-import { Logger } from '../util/log'
+import { Logger } from '~/logger'
 
 export default class SemaphoreManager {
   private locks: Record<string, ReadWriteLock> = {}
