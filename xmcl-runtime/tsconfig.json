@@ -10,11 +10,9 @@
     ],
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": ".",
+    "baseUrl": "./",
     "paths": {
-      "/@main/*": [
-        "lib/*"
-      ]
+      "~/*": ["./*"]
     },
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -23,8 +21,7 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "index.ts",
-    "lib"
+    "./**/*.ts"
   ],
   "exclude": [
     "node_modules"
