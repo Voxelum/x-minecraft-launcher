@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- bottom layer img -->
-    <div class="bottom-layer mt-4">
+    <div class="bottom-layer mt-4 fixed">
       <h2>
         {{ t('me.news') }}
       </h2>
@@ -11,7 +11,7 @@
         <div
           v-for="n of news"
           :key="n.id"
-          class="flex flex-col gap-2 cover"
+          class="cover flex flex-col gap-2"
         >
           <div class="v-subtitle text-sm">
             {{ n.date }}
@@ -34,24 +34,20 @@
     </div>
     <!-- second layer content -->
     <div
-      class="second-layer footer me flex h-full max-h-full w-full flex-col overflow-auto p-4 pl-6"
+      class="second-layer footer me flex two-times-hight  w-full flex-col overflow-auto p-4 pl-6"
       @dragover.prevent
     >
-      <section >
-        <div
-          v-for="n of news"
-          :key="n.id"
-          class="flex flex-col gap-2"
-        >
-          <div class="v-subtitle text-sm">
-            {{ n.date }}
-          </div>
-          <div>
-            {{ n.title }}
-          </div>
+      <!-- background description -->
+      <section class=" mt-5 block-left message-box ">
+        <div class="">
+          lol
+        </div>
+        <div>
+          lol
         </div>
       </section>
-      <section class="mt-4">
+      <!-- extra news -->
+      <section class="mt-4 news-box">
         <h2>
           {{ t('me.news') }}
         </h2>
@@ -84,9 +80,9 @@
           </div>
         </div>
       </section>
-
-      <section class="mt-4">
-        <h2>
+      <!-- my instance -->
+      <section class="mt-4 instance-box">
+        <h2 class="block-left">
           {{ t('me.recentPlay') }}
         </h2>
         <div class="row-span-4 flex w-full gap-4 overflow-x-auto overflow-y-hidden">
@@ -184,6 +180,7 @@ const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
 } */
 .cover {
     position: relative;
+    opacity: 1.0;
 }
 .cover:after {
     position: absolute;
@@ -194,6 +191,28 @@ const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
     left: 0;
     box-shadow:0 0 60px 60px #000000 inset;
 }
+.top-layer-news-title{
+  font-size: 700px;
+}
+.block-left {
+  margin-right: auto;
+}
+.two-times-hight{
+  height: 180%;
+}
+.message-box {
+
+  height:50%;   /* 视口的高度 */
+}
+.news-box {
+
+height:25%;   /* 视口的高度 */
+}
+.instance-box {
+
+height:25%;   /* 视口的高度 */
+}
+
 </style>
 <style scoped>
 h2 {
