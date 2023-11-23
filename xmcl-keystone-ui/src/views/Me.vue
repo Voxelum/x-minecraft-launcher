@@ -1,26 +1,24 @@
 <template>
   <div>
     <!-- bottom layer img -->
-    <div class="bottom-layer mt-4 fixed">
-      <h2>
-        {{ t('me.news') }}
-      </h2>
+    <div class="bottom-layer fixed mt-4">
+      <h2></h2>
       <div
         class="row-span-4 flex w-full gap-4 overflow-x-auto overflow-y-hidden"
       >
         <div
           v-for="n of news"
           :key="n.id"
-          class="cover flex flex-col gap-2"
+          class="flex flex-col gap-2"
         >
-          <div class="v-subtitle text-sm">
+          <!-- <div class="v-subtitle text-sm">
             {{ n.date }}
           </div>
           <div>
             {{ n.title }}
-          </div>
+          </div> -->
           <v-img
-            class="rounded-lg "
+            class="cover background-opacity rounded-lg "
             :src="n.newsPageImage.url"
             :width="n.newsPageImage.dimensions.width *2"
             :height="n.newsPageImage.dimensions.height *2"
@@ -34,11 +32,11 @@
     </div>
     <!-- second layer content -->
     <div
-      class="second-layer footer me flex two-times-hight  w-full flex-col overflow-auto p-4 pl-6"
+      class="second-layer two-times-hight footer me flex   w-full flex-col overflow-auto p-4 pl-6"
       @dragover.prevent
     >
       <!-- background description -->
-      <section class=" mt-5 block-left message-box ">
+      <section class="message-box text-align-left mt-5 ">
         <div class="">
           lol
         </div>
@@ -47,8 +45,8 @@
         </div>
       </section>
       <!-- extra news -->
-      <section class="mt-4 news-box">
-        <h2>
+      <section class="news-box mt-4 ">
+        <h2 class="text-align-left">
           {{ t('me.news') }}
         </h2>
         <div
@@ -81,8 +79,8 @@
         </div>
       </section>
       <!-- my instance -->
-      <section class="mt-4 instance-box">
-        <h2 class="block-left">
+      <section class="instance-box mt-4 ">
+        <h2 class="text-align-left">
           {{ t('me.recentPlay') }}
         </h2>
         <div class="row-span-4 flex w-full gap-4 overflow-x-auto overflow-y-hidden">
@@ -178,9 +176,11 @@ const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
     height: 180px;
     position: relative;
 } */
+.background-opacity{
+  opacity: 0.7;
+}
 .cover {
     position: relative;
-    opacity: 1.0;
 }
 .cover:after {
     position: absolute;
@@ -194,8 +194,8 @@ const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
 .top-layer-news-title{
   font-size: 700px;
 }
-.block-left {
-  margin-right: auto;
+.text-align-left {
+  text-align: left;
 }
 .two-times-hight{
   height: 180%;
