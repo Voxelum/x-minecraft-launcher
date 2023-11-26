@@ -3,15 +3,14 @@
     v-if="!data.fetching"
     class="setup flex flex-col overflow-auto"
   >
-    <v-card-title
+    <!-- <v-card-title
       class="elevation-3 text-lg font-bold"
     >
       <h2>{{ t('setup.title') }}{{ currentTitle }}</h2>
-    </v-card-title>
-    <v-divider />
+    </v-card-title> -->
     <v-stepper
       v-model="data.step"
-      class="non-moveable flex h-full flex-col overflow-auto"
+      class="non-moveable visible-scroll flex h-full flex-col overflow-auto bg-transparent"
     >
       <v-stepper-header>
         <v-stepper-step
@@ -29,68 +28,84 @@
           :editable="data.step > 2"
           step="2"
         >
+          {{ t('setup.appearance.name') }}
+        </v-stepper-step>
+
+        <v-divider />
+
+        <v-stepper-step
+          :complete="data.step > 3"
+          :editable="data.step > 3"
+          step="3"
+        >
           {{ t('setup.dataRoot.name') }}
         </v-stepper-step>
 
         <v-divider />
 
-        <v-stepper-step step="3">
+        <v-stepper-step step="4">
           {{ t('setup.game.name') }}
         </v-stepper-step>
       </v-stepper-header>
 
-      <v-stepper-items class="h-full overflow-auto">
+      <v-stepper-items class="h-full overflow-auto overflow-x-hidden">
         <v-stepper-content
-          class="h-full overflow-auto"
+          class="h-full overflow-auto overflow-x-hidden pt-2"
           step="1"
         >
           <SetLocale
             v-model="locale"
           />
           <div class="flex-grow" />
-          <div class="mt-5 flex flex-1 flex-grow-0">
-            <div class="flex-grow" />
-            <v-btn
-              color="primary"
-              :disabled="data.loading"
-              @click="data.step = 2"
-            >
-              {{ t('next') }}
-            </v-btn>
-          </div>
+          <SetupFooter
+            next
+            :loading="data.loading"
+            @next="next"
+          />
         </v-stepper-content>
         <v-stepper-content
-          class="h-full overflow-auto"
+          class="h-full overflow-auto overflow-x-hidden pt-2"
           step="2"
         >
-          <SetDataRoot
+          <SetupAppearance
             v-model="data.path"
-            class="h-full overflow-auto"
+            class="h-full overflow-y-auto px-4"
             :default-path="data.defaultPath"
             :drives="data.drives"
           />
 
-          <div class="mt-5 flex">
-            <v-btn
-              text
-              :disabled="data.loading"
-              @click="data.step -= 1"
-            >
-              {{ t('previous') }}
-            </v-btn>
-            <div class="flex-grow" />
-            <v-btn
-              color="primary"
-              :disabled="data.loading"
-              @click="data.step = 3"
-            >
-              {{ t('next') }}
-            </v-btn>
-          </div>
+          <SetupFooter
+            prev
+            next
+            :loading="data.loading"
+            @prev="prev"
+            @next="next"
+          />
         </v-stepper-content>
         <v-stepper-content
-          class="h-full overflow-auto"
+          class="h-full overflow-auto overflow-x-hidden pt-2"
           step="3"
+        >
+          <SetDataRoot
+            v-model="data.path"
+            class="h-full overflow-auto"
+            :error="data.pathError"
+            :default-path="data.defaultPath"
+            :drives="data.drives"
+          />
+
+          <SetupFooter
+            prev
+            next
+            :disabled="hasError"
+            :loading="data.loading"
+            @prev="prev"
+            @next="next"
+          />
+        </v-stepper-content>
+        <v-stepper-content
+          class="h-full overflow-auto overflow-x-hidden pt-2"
+          step="4"
         >
           <SelectGame
             v-model="data.instancePath"
@@ -98,61 +113,50 @@
           />
 
           <div class="flex-grow" />
-          <div class="mt-5 flex flex-grow-0 ">
-            <v-btn
-              text
-              :disabled="data.loading"
-              @click="data.step -= 1"
-            >
-              {{ t('previous') }}
-            </v-btn>
-            <div class="flex-grow" />
-            <v-btn
-              color="primary"
-              :loading="data.loading"
-              @click="setup"
-            >
-              {{ t('confirm') }}
-            </v-btn>
-          </div>
+          <SetupFooter
+            prev
+            next
+            :loading="data.loading"
+            finish
+            @prev="prev"
+            @next="setup"
+          />
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
   </v-card>
   <v-card
     v-else
-    class="h-full w-full"
+    class="flex h-full w-full items-center justify-center"
   >
-    <v-container fill-height>
-      <v-layout
-        align-center
-        justify-center
-        row
-        fill-height
-      >
-        <v-flex
-          shrink
-          style="text-align:center; user-select: none;"
-        >
-          <v-progress-circular
-            :size="100"
-            color="white"
-            indeterminate
-          />
-        </v-flex>
-      </v-layout>
-    </v-container>
+    <v-img
+      class="max-w-50"
+      src="http://launcher/icons/logoDark"
+    />
   </v-card>
 </template>
 
 <script lang=ts setup>
-import SetDataRoot from './SetupDataRoot.vue'
-import { Drive } from '@xmcl/runtime-api'
-import SetLocale from './SetupLocale.vue'
-import SelectGame from './SetupInstance.vue'
+import { usePreferDark, useService } from '@/composables'
 import { useBootstrap } from '@/composables/bootstrap'
+import { kVuetify } from '@/composables/vuetify'
+import { injection } from '@/util/inject'
+import { BaseServiceKey, Drive } from '@xmcl/runtime-api'
+import SetupAppearance from './SetupAppearance.vue'
+import SetDataRoot from './SetupDataRoot.vue'
+import SetupFooter from './SetupFooter.vue'
+import SelectGame from './SetupInstance.vue'
+import SetLocale from './SetupLocale.vue'
 
 const emit = defineEmits(['ready'])
+const { validateDataDictionary } = useService(BaseServiceKey)
+
+const next = () => {
+  data.step = Number(data.step) + 1
+}
+const prev = () => {
+  data.step = Number(data.step) - 1
+}
 
 const { locale, t } = useI18n()
 const bootstrap = useBootstrap()
@@ -167,10 +171,13 @@ const data = reactive({
   minecraftPath: '',
   instancePath: '',
   path: '',
+  pathError: '' as '' | 'noperm' | 'bad' | 'nondictionary' | 'exists',
   defaultPath: '',
   loading: false,
   drives: [] as Drive[],
+  theme: 'system',
 })
+provide('setup', data)
 bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
   data.fetching = false
   locale.value = locale_
@@ -180,9 +187,43 @@ bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }
   data.defaultPath = defaultPath
   data.drives = drives
 })
+
+const hasError = computed(() => !!data.pathError && data.pathError !== 'exists')
+watch(() => data.path, (newPath) => {
+  data.loading = true
+  data.pathError = ''
+  validateDataDictionary(newPath).then((reason) => {
+    data.loading = false
+    if (!reason) {
+      data.path = newPath
+    } else {
+      data.pathError = reason
+    }
+  })
+})
+
+const vuetify = injection(kVuetify)
+const preferDark = usePreferDark()
+
+const updateTheme = (theme: 'dark' | 'system' | 'light') => {
+  if (theme === 'system') {
+    vuetify.theme.dark = preferDark.value
+  } else if (theme === 'dark') {
+    vuetify.theme.dark = true
+  } else if (theme === 'light') {
+    vuetify.theme.dark = false
+  }
+}
+
+updateTheme(data.theme as any)
+
+watch(() => data.theme, () => {
+  updateTheme(data.theme as any)
+})
+
 async function setup() {
   await bootstrap.bootstrap(data.path, data.instancePath, locale.value)
-  emit('ready')
+  emit('ready', data)
   data.loading = true
 }
 </script>
@@ -199,4 +240,5 @@ async function setup() {
 .setup .v-stepper__wrapper {
   @apply h-full flex flex-col overflow-auto;
 }
+
 </style>

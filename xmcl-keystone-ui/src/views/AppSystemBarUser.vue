@@ -8,6 +8,7 @@
   >
     <template #activator="{ on, attrs }">
       <div
+        id="user-avatar"
         v-bind="attrs"
         class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 transition-all hover:bg-[rgba(255,255,255,0.2)]"
         v-on="on"

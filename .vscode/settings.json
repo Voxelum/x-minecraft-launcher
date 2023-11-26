@@ -50,5 +50,6 @@
         "xmcl-keystone-ui/locales",
     ],
     "npm.packageManager": "pnpm",
-    "discord.enabled": true
+    "discord.enabled": true,
+    "search.followSymlinks": false
 }

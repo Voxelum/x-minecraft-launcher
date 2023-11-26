@@ -18,6 +18,7 @@
     >
       <template #activator="{ attrs }">
         <v-btn
+          id="launch-button"
           :color="color"
           :x-large="!compact"
           :large="compact"

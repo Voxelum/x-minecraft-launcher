@@ -256,7 +256,7 @@ a {
 }
 
 .v-text-field input {
-    @apply z-10;
+    @apply z-7;
 }
 
 .theme--dark.v-card .v-card__subtitle,

@@ -49,6 +49,7 @@
 
     <span class="flex h-full shrink grow-0 p-0">
       <v-icon
+        id="feedback-button"
         v-ripple
         tabindex="-1"
         class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"

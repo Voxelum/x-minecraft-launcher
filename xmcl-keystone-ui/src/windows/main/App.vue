@@ -1,6 +1,6 @@
 <template>
   <v-app
-    v-if="!shouldSetup"
+    v-if="!showSetup"
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
@@ -51,7 +51,7 @@
     <div
       class="relative flex h-full overflow-auto"
     >
-      <Setup @ready="shouldSetup = false" />
+      <Setup @ready="onReady" />
     </div>
     <AppFeedbackDialog />
   </v-app>
@@ -85,8 +85,31 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
+import { useTutorial } from '@/composables/tutorial'
+import { kSettingsState } from '@/composables/setting'
 
-const shouldSetup = ref(location.search.indexOf('setup') !== -1)
+const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
+const showSetup = ref(isFirstLaunch.value)
+const { state } = injection(kSettingsState)
+const tutor = useTutorial()
+
+// Set theme and start tutorial
+const onReady = async (data: any) => {
+  await nextTick()
+  showSetup.value = false
+  await nextTick()
+  if (state.value) {
+    state.value.themeSet(data.theme)
+  } else {
+    const unwatch = watch(state, (state) => {
+      if (state) {
+        state.themeSet(data.theme)
+      }
+      unwatch()
+    })
+  }
+  tutor.start()
+}
 
 const { cssVars, ...colorTheme } = injection(kColorTheme)
 
