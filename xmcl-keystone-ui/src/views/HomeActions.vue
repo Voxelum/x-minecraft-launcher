@@ -47,7 +47,7 @@
       to="/base-setting"
     >
       <v-icon>
-        settings
+        tune
       </v-icon>
     </v-btn>
   </div>

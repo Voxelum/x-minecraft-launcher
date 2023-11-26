@@ -10,6 +10,8 @@ import mmc from './assets/mmc.png'
 import neoForged from './assets/neoforged.png'
 import optifine from './assets/optifine.webp'
 import quilt from './assets/quilt.svg'
+import logoDark from '../icons/dark@256x256.png'
+import logoLight from '../icons/light@256x256.png'
 
 const builtin: Record<string, string> = {
   craftingTable,
@@ -22,6 +24,8 @@ const builtin: Record<string, string> = {
   labyMod,
   neoForged,
   iris,
+  logoLight,
+  logoDark,
 }
 
 /**

@@ -1,5 +1,5 @@
 import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, Settings } from '@xmcl/runtime-api'
-import { readdir, rename, rm, stat } from 'fs/promises'
+import { mkdir, readdir, rename, rm, stat, unlink, writeFile } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
@@ -13,12 +13,12 @@ import { ZipTask } from '../util/zip'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kLogRoot } from '~/logger'
 import { TaskFn, kTaskExecutor } from '~/task'
+import { randomBytes } from 'crypto'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kTaskExecutor) private submit: TaskFn,
   ) {
     super(app, async () => {
@@ -150,7 +150,8 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async migrate(options: MigrateOptions) {
-    const source = this.getPath()
+    const getPath = await this.app.registry.get(kGameDataPath)
+    const source = getPath()
     const destination = options.destination
     const destStat = await stat(destination).catch(() => undefined)
     if (destStat && destStat.isFile()) {
@@ -197,6 +198,53 @@ export class BaseService extends AbstractService implements IBaseService {
 
     this.app.relaunch()
     this.app.quit()
+  }
+
+  async validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'> {
+    // Check if the path is the root of the drive
+    if ((this.app.platform.os === 'osx' || this.app.platform.os === 'linux') && path === '/') {
+      return 'bad'
+    }
+    if (this.app.platform.os === 'windows' && /^[a-zA-Z]:\\$/.test(path)) {
+      return 'bad'
+    }
+
+    const fStat = await stat(path).catch(() => undefined)
+    if (fStat) {
+      if (!fStat.isDirectory()) {
+        return 'nondictionary'
+      }
+      // Check if we can write under the directory
+      try {
+        const tempFileName = '.' + randomBytes(16).toString('hex')
+        await writeFile(join(path, tempFileName), '.')
+        await unlink(join(path, tempFileName))
+      } catch (e) {
+        if (isSystemError(e)) {
+          if (e.code === 'EACCES') {
+            return 'noperm'
+          }
+        }
+        return 'bad'
+      }
+      // Check if the directory is empty
+      const files = await readdir(path)
+      return files.length > 0 ? 'exists' : undefined
+    } else {
+      // Check if we have permission to create the directory
+      try {
+        await mkdir(path, { recursive: true })
+        await unlink(path)
+      } catch (e) {
+        if (isSystemError(e)) {
+          if (e.code === 'EACCES') {
+            return 'noperm'
+          }
+        }
+        return 'bad'
+      }
+    }
+    return undefined
   }
 
   getMemoryStatus(): Promise<{ total: number; free: number }> {

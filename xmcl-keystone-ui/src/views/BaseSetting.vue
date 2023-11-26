@@ -1,11 +1,15 @@
 <template>
   <div class="mx-6">
     <BaseSettingGeneral />
+    <v-divider />
     <BaseSettingSync />
+    <v-divider />
+    <BaseSettingJava />
+    <v-divider />
+    <BaseSettingLaunch />
+    <v-divider />
     <BaseSettingModpack v-if="!isServer" />
     <BaseSettingServer v-else />
-    <BaseSettingJava />
-    <BaseSettingLaunch />
 
     <v-snackbar
       :color="snackbarColor"

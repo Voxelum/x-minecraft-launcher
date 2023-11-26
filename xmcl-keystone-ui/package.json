@@ -34,6 +34,7 @@
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/text-component": "workspace:*",
         "@xmcl/user": "workspace:*",
+        "driver.js": "^1.3.1",
         "fuzzy": "^0.1.3",
         "lodash.debounce": "^4.0.8",
         "markdown-it": "^13.0.1",

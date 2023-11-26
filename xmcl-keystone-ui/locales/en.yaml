@@ -1222,13 +1222,32 @@ settingLabel:
   local: Local
   localHint: This setting is modified by current instance
 setup:
+  appearance:
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       The data root is not a common .minecraft directory. Since XMCL data
       directory structure is different from vanilla, we do not recommend to use
       the common .minecraft directory as a data root.
-    name: Set Data Root
+    drives: Recommend Locations
+    name: Set Data Directory
+  defaultLayoutDescription: >-
+    The default layout is trying to enhance the game "instance" concept. It
+    looks like apps like Discord. It's also inspired by other game launcher app
+    like Steam, etc.
   defaultPath: Default Path
+  error:
+    badDataRoot: Invalid directory for launcher data! Please try other directory!
+    exists: >-
+      Selected directory is not empty. It's okay but please make sure you backup
+      your data.
+    noPermission: >-
+      Launcher does not have permission to access selected directory! Please try
+      another one.
+    nonDictionary: Selected path is a file! Please select a directory!
+  focusLayoutDescription: >-
+    The focus layout is the legacy layout of Minecraft Launcher. It is designed
+    to be used with a single instance or few instances.
   game:
     description: >-
       Choose existing game directory (.minecraft) to import existing resources.
@@ -1282,6 +1301,13 @@ transportType:
   prflx: Peer Reflexive Candidate
   relay: Relay Candidate
   srflx: Server Reflexive Candidate
+tutorial:
+  feedbackDescription: If you encounter any problem, please click this button to send feedback!
+  instanceAddDescription: >-
+    Click this button to import existed Minecraft or create a new one from
+    scratch or modpack.
+  launchDescription: Click this button to install or launch the game.
+  userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
   start: Import Started

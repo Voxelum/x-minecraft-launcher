@@ -938,7 +938,7 @@ neoForgedVersion:
 news:
   name: 新闻
   readMore: 阅读更多
-next: 下一项
+next: 下一步
 'no': 否
 ok: 好的
 optifineVersion:
@@ -1193,10 +1193,29 @@ settingLabel:
   local: 实例配置
   localHint: 这个配置已被当前实例修改
 setup:
+  appearance:
+    name: '@:setting.appearance'
   dataRoot:
     description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
+    drives: 推荐路径
     name: 设置数据存储目录
+  defaultLayoutDescription: |-
+    默认布局试图强化游戏“实例”的概念。
+    布局上有点像 Discord 之类的应用程序。
+    它还受到其他游戏启动器应用程序（如 Steam 等）的启发。
   defaultPath: 默认位置
+  error:
+    badDataRoot: 启动器无法使用当前文件目录作为数据文件夹！请尝试其他的文件夹！
+    exists: |-
+      所选目录里面已经有文件了。
+      你仍然可以选择他作为数据目录，但请确保备份数据。
+    noPermission: |-
+      启动器没有访问所选目录的权限！
+      请尝试选择其他的文件夹。
+    nonDictionary: 已选择的文件路径是一个文件！请选择一个文件夹！
+  focusLayoutDescription: |-
+    焦点布局是 Minecraft Launcher 最大众的布局。
+    它设计用于单个实例或几个实例的情况。
   game:
     description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的启动目标。同时让启动器能复用已有的版本文件，库，模组，资源包等。
     name: 导入已有的游戏
@@ -1242,6 +1261,11 @@ transportType:
   prflx: 同伴反射地址
   relay: 转发地址
   srflx: 服务端反射地址
+tutorial:
+  feedbackDescription: 如果你遇到了问题，请点击这个按钮来联系开发团队。
+  instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从 modpack 创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
+  launchDescription: 点击此按钮安装或启动游戏。
+  userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
 universalDrop:
   enableModsAfterImport: Mod 导入后自动启用
   start: 开始导入

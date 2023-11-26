@@ -35,6 +35,7 @@
     </v-subheader>
     <v-list-group
       no-action
+      :value="true"
     >
       <template #activator>
         <v-list-item>

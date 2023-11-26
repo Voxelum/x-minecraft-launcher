@@ -1276,14 +1276,36 @@ settingLabel:
   local: Local
   localHint: Ce réglage n'affectera que l'instance actuelle
 setup:
+  appearance:
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       La racine des données n'est pas un répertoire .minecraft commun. Étant
       donné que la structure du répertoire de données XMCL est différente de
       celle vanilla, nous ne recommandons pas d'utiliser le répertoire commun
       .minecraft comme racine de données.
+    drives: Recommander des emplacements
     name: définir la racine des données
+  defaultLayoutDescription: >-
+    La disposition par défaut tente d'améliorer le concept "d'instance" du jeu. 
+
+    Cela ressemble à des applications comme Discord. 
+
+    Il est également inspiré d'autres applications de lancement de jeux comme
+    Steam, etc.
   defaultPath: Chemin par défaut
+  error:
+    badDataRoot: "Répertoire invalide pour les données du lanceur\_! \nVeuillez essayer un autre répertoire\_!"
+    exists: |-
+      Le répertoire sélectionné n'est pas vide. 
+      Ce n'est pas grave, mais assurez-vous de sauvegarder vos données.
+    noPermission: "Le lanceur n'est pas autorisé à accéder au répertoire sélectionné\_! \nVeuillez en essayer un autre."
+    nonDictionary: "Le chemin sélectionné est un fichier\_! \nVeuillez sélectionner un répertoire\_!"
+  focusLayoutDescription: >-
+    La mise en page ciblée est la mise en page héritée de Minecraft Launcher. 
+
+    Il est conçu pour être utilisé avec une seule instance ou quelques
+    instances.
   game:
     description: >-
       Choisissez le répertoire de jeu existant (.minecraft) pour importer les
@@ -1343,6 +1365,13 @@ transportType:
   prflx: Candidat Peer Reflexive
   relay: Candidat Relay
   srflx: Candidat Server Reflexive
+tutorial:
+  feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires\_!"
+  instanceAddDescription: >-
+    Cliquez sur ce bouton pour importer Minecraft existant ou en créer un
+    nouveau à partir de zéro ou un modpack.
+  launchDescription: Cliquez sur ce bouton pour installer ou lancer le jeu.
+  userAccountDescription: Cliquez sur cette icône pour ajouter ou gérer votre compte Minecraft.
 universalDrop:
   enableModsAfterImport: Activer les mods après l'importation
   start: Importation commencée
