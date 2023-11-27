@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import MarketProjectDetail, { CategoryItem, ExternalResource, Info, ModGallery, ProjectDependency, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { useCurseforgeProject, useCurseforgeProjectDescription, useCurseforgeProjectFiles } from '@/composables/curseforge'
+import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectModel, useCurseforgeProjectFiles } from '@/composables/curseforge'
 import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
-import { useCurseforgeDependencies, useCurseforgeTask } from '@/composables/curseforgeDependencies'
-import { useCurseforgeInstallModFile } from '@/composables/curseforgeInstall'
+import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
+import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
-import { kImageDialog } from '@/composables/imageDialog'
-import { kInstance } from '@/composables/instance'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
+import { useSWRVModel } from '@/composables/swrv'
 import { getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
-import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
-import { isNoModLoader } from '@/util/isNoModloader'
+import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
-import { FileRelationType, Mod } from '@xmcl/curseforge'
+import { Mod } from '@xmcl/curseforge'
 import { Resource, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
@@ -41,12 +39,12 @@ const { getDateString } = useDateString()
 
 const cursforgeModId = computed(() => props.curseforgeId)
 
-const { project: curseforgeProject, error: projectError, refreshing } = useCurseforgeProject(cursforgeModId)
+const { data: curseforgeProject } = useSWRVModel(getCurseforgeProjectModel(cursforgeModId))
 const curseforgeMod = computed(() => {
   if (props.curseforge) return props.curseforge
   if (curseforgeProject.value) return curseforgeProject.value
 })
-const { description, refreshing: loadings } = useCurseforgeProjectDescription(reactive({ project: cursforgeModId }))
+const { data: description, isValidating: loadings } = useSWRVModel(getCurseforgeProjectDescriptionModel(cursforgeModId))
 const model = computed(() => {
   const externals: ExternalResource[] = []
   const mod = curseforgeMod.value
@@ -158,6 +156,7 @@ const { changelog, isValidating } = useCurseforgeChangelog(modId, fileId)
 
 const modVersions = computed(() => {
   const versions: ProjectVersion[] = []
+  const installed = [...props.installed]
   for (const file of files.value) {
     if (props.loaders.length > 0) {
       const loaders = getCursforgeFileModLoaders(file)
@@ -165,6 +164,9 @@ const modVersions = computed(() => {
         continue
       }
     }
+    const installedFileIndex = installed.findIndex(f => f.curseforge?.fileId === file.id)
+    installed.splice(installedFileIndex, 1)
+
     versions.push(reactive({
       id: file.id.toString(),
       name: file.displayName,
@@ -173,14 +175,32 @@ const modVersions = computed(() => {
       changelog: computed(() => file.id === fileId.value ? changelog.value : undefined),
       changelogLoading: isValidating,
       type: releaseTypes[file.releaseType],
-      installed: computed(() => props.installed.some(f => f.curseforge?.fileId === file.id)),
+      installed: !!installed[installedFileIndex],
       downloadCount: file.downloadCount,
       loaders: getCursforgeFileModLoaders(file),
       minecraftVersion: file.gameVersions.filter(v => Number.isInteger(Number(v[0]))).join(', '),
       createdDate: file.fileDate,
-      progress: undefined,
     }))
   }
+
+  for (const i of installed) {
+    const mcDep = (i as ModFile).dependencies.find(d => d.modId === 'minecraft')
+    versions.push({
+      id: i.curseforge?.fileId.toString() ?? '',
+      name: i.resource.name ?? '',
+      version: i.version,
+      disabled: false,
+      changelog: undefined,
+      changelogLoading: false,
+      type: 'release',
+      installed: true,
+      downloadCount: 0,
+      loaders: (i as ModFile).modLoaders,
+      minecraftVersion: (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange ?? '',
+      createdDate: '',
+    })
+  }
+
   return versions
 })
 
@@ -188,8 +208,6 @@ const loadChangelog = (version: ProjectVersion) => {
   modId.value = props.curseforgeId
   fileId.value = Number(version.id)
 }
-
-const imageDialog = injection(kImageDialog)
 
 const onLoadMore = () => {
   index.value += pageSize.value
@@ -203,6 +221,9 @@ const innerUpdating = useModDetailUpdate()
 watch(() => props.curseforge, () => {
   innerUpdating.value = false
 })
+watch(() => props.installed, () => {
+  innerUpdating.value = false
+}, { deep: true })
 
 const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
   selectedVersion,
@@ -212,10 +233,12 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
   (f) => emit('disable', f),
 )
 
-const { data: deps, error, isValidating: loadingDependencies } = useCurseforgeDependencies(
-  computed(() => files.value.find(f => f.modId === props.curseforgeId)),
-  computed(() => props.runtime.minecraft),
-  computed(() => getCurseforgeModLoaderTypeFromRuntime(props.runtime)),
+const { data: deps, error, isValidating: loadingDependencies } = useSWRVModel(
+  getCurseforgeDependenciesModel(
+    computed(() => files.value.find(f => f.modId === props.curseforgeId)),
+    computed(() => props.runtime.minecraft),
+    computed(() => getCurseforgeModLoaderTypeFromRuntime(props.runtime)),
+  ),
 )
 
 const dependencies = computed(() => deps.value?.map((resolvedDep) => {
@@ -248,32 +271,17 @@ const dependencies = computed(() => deps.value?.map((resolvedDep) => {
   return dep
 }) ?? [])
 
-const { path } = injection(kInstance)
-const installCurseforgeFile = useCurseforgeInstallModFile(path, (r) => {
-  emit('install', r)
-})
 const installing = ref(false)
-const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
 
-const install = async (mod: ProjectVersion) => {
+const { install, installWithDependencies } = injection(kCurseforgeInstaller)
+
+const onInstall = async (mod: ProjectVersion) => {
   const file = files.value.find(v => v.id.toString() === mod.id)
   if (!file) return
   try {
     installing.value = true
-    if (isNoModLoader(props.runtime)) {
-      // forge, fabric, quilt or neoforge
-      const loaders = getCursforgeFileModLoaders(file)
-      await installDefaultModLoader(loaders)
-    }
-
-    const uninstall = hasInstalledVersion.value ? [...props.installed] : []
-    await Promise.all(deps.value
-      ?.filter((v) => v.type === FileRelationType.RequiredDependency)
-      .filter(v => props.allFiles.every(m => m.curseforge?.fileId !== v.project.id))
-      .map((v) => installCurseforgeFile(v.file, v.project.logo?.url)) ?? [])
-    await installCurseforgeFile(file, model.value.icon)
-    if (uninstall.length > 0) {
-      emit('uninstall', uninstall)
+    if (curseforgeProject.value) {
+      await installWithDependencies(curseforgeProject.value, file, props.installed, deps.value ?? [])
     }
   } finally {
     installing.value = false
@@ -293,7 +301,7 @@ const installDependency = async (dep: ProjectDependency) => {
         }
       }
     }
-    await installCurseforgeFile(ver, dep.icon)
+    await install(ver, dep.icon)
     if (resources.length > 0) {
       emit('uninstall', resources)
     }
@@ -330,11 +338,10 @@ const onOpenDependency = (dep: ProjectDependency) => {
     :loading-dependencies="loadingDependencies"
     @load-changelog="loadChangelog"
     @delete="onDelete"
-    @show-image="imageDialog.show"
     @enable="enabled = $event"
     @load-more="onLoadMore"
     @open-dependency="onOpenDependency"
-    @install="install"
+    @install="onInstall"
     @install-dependency="installDependency"
     @select:category="emit('category', Number($event))"
   />

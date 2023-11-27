@@ -7,6 +7,7 @@
     :checked="checked"
     :height="80"
     :get-context-menu-items="getContextMenuItems"
+    :install="install"
     @click="emit('click', $event)"
     @checked="emit('check', $event)"
   />
@@ -25,11 +26,13 @@ const props = defineProps<{
   checked: boolean
   selected: boolean
   hasUpdate?: boolean
+  install: (p: ShaderPackProject) => Promise<void>
 }>()
 
 const emit = defineEmits<{
   (event: 'click', pack: ShaderPackProject): void
   (event: 'check', pack: ShaderPackProject): void
+  (event: 'install', pack: ShaderPackProject): void
 }>()
 
 const { goModrinthProject } = useMarketRoute()

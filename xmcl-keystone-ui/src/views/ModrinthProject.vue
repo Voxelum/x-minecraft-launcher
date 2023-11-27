@@ -137,8 +137,8 @@
 </template>
 <script lang="ts"  setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { useService } from '@/composables'
 import { kImageDialog } from '@/composables/imageDialog'
+import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kModrinthInstall, useModrinthInstall } from '@/composables/modrinthInstall'
 import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
@@ -147,7 +147,6 @@ import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrintTasks, useM
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
 import ModrinthProjectBasicInfo from './ModrinthProjectBasicInfo.vue'
 import ModrinthProjectDescription from './ModrinthProjectDescription.vue'
 import ModrinthProjectExternal from './ModrinthProjectExternal.vue'
@@ -158,7 +157,6 @@ import ModrinthProjectMembers from './ModrinthProjectMembers.vue'
 import ModrinthProjectTags from './ModrinthProjectTags.vue'
 import ModrinthProjectUpstream from './ModrinthProjectUpstream.vue'
 import ModrinthProjectVersions from './ModrinthProjectVersions.vue'
-import { kInstance } from '@/composables/instance'
 
 const props = defineProps<{ id: string }>()
 

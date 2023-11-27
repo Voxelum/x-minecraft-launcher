@@ -14,6 +14,8 @@
     }"
     :input-value="selected"
     link
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
     @dragenter="onDragEnter"
     @dragover="onDragOver"
     @dragleave="onDragLeave"
@@ -25,8 +27,24 @@
     <v-list-item-avatar v-if="!selectionMode">
       <img
         ref="iconImage"
+        :class="{ 'opacity-20': item.installed.length === 0 && hover }"
         :src="icon || item.icon || unknownServer"
       >
+      <v-btn
+        v-if="item.installed.length === 0"
+        class="absolute"
+        large
+        icon
+        :loading="installing"
+        @click.stop="onInstall()"
+      >
+        <v-icon
+          class="material-icons-outlined"
+          :class="{ 'opacity-0': !hover }"
+        >
+          file_download
+        </v-icon>
+      </v-btn>
     </v-list-item-avatar>
     <v-list-item-action v-else>
       <v-checkbox
@@ -113,60 +131,21 @@
         </template>
       </v-list-item-subtitle>
     </v-list-item-content>
-    <v-list-item-action
-      v-if="!item.installed"
-      class="flex flex-grow-0 flex-row self-center"
-    >
-      <v-avatar
-        v-if="item.forge"
-        size="30px"
-      >
-        <v-img
-          width="28"
-          :src="'http://launcher/icons/forge'"
-        />
-      </v-avatar>
-      <v-avatar
-        v-if="item.fabric"
-        size="30px"
-      >
-        <v-img
-          width="28"
-          :src="'http://launcher/icons/fabric'"
-        />
-      </v-avatar>
-      <v-avatar
-        v-if="item.quilt"
-        size="30px"
-      >
-        <v-img
-          width="28"
-          :src="'http://launcher/icons/quilt'"
-        />
-      </v-avatar>
-      <v-avatar
-        size="30px"
-      >
-        <v-icon class="pt-2">
-          {{ item.modrinth ? '$vuetify.icons.modrinth' : item.curseforge ? '$vuetify.icons.curseforge' : 'inventory_2' }}
-        </v-icon>
-      </v-avatar>
-    </v-list-item-action>
   </v-list-item>
 </template>
 
 <script lang="ts" setup>
 import unknownServer from '@/assets/unknown_server.png'
 import { ContextMenuItem, useContextMenu } from '@/composables/contextMenu'
+import { getCurseforgeProjectModel } from '@/composables/curseforge'
+import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { vContextMenu } from '@/directives/contextMenu'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { getModrinthProjectKey } from '@/util/modrinth'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
-import { swrvGet } from '@/util/swrvGet'
+import { getSWRV } from '@/util/swrvGet'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
 
@@ -178,10 +157,13 @@ const props = defineProps<{
   hasUpdate?: boolean
   height?: number
   draggable?: boolean
+  install: (p: ProjectEntry) => Promise<void>
   getContextMenuItems?: () => ContextMenuItem[]
 }>()
 const slots = useSlots()
-const emit = defineEmits(['click', 'checked', 'drop'])
+const emit = defineEmits(['click', 'checked', 'drop', 'install'])
+
+const hover = ref(false)
 
 const isChecked = computed({
   get() {
@@ -241,27 +223,25 @@ watch(() => props.item, (newMod) => {
     if (!newMod.curseforge && !newMod.modrinth) {
       const { curseforgeProjectId, modrinthProjectId } = newMod
       if (modrinthProjectId) {
-        swrvGet(getModrinthProjectKey(modrinthProjectId), () => clientModrinthV2.getProject(modrinthProjectId),
-          config.cache,
-          config.dedupingInterval, { ttl: config.ttl })
-          .then((project) => {
+        getSWRV(getModrinthProjectModel(ref(modrinthProjectId)), config).then((project) => {
+          if (project) {
             icon.value = project.icon_url
             title.value = project.title
             description.value = project.description
             downloadCount.value = project.downloads
             followerCount.value = project.followers
-          })
+          }
+        })
       } else if (curseforgeProjectId) {
-        swrvGet(`/curseforge/${curseforgeProjectId}`, () => clientCurseforgeV1.getMod(curseforgeProjectId),
-          config.cache,
-          config.dedupingInterval, { ttl: config.ttl })
-          .then((project) => {
+        getSWRV(getCurseforgeProjectModel(ref(curseforgeProjectId)), config).then((project) => {
+          if (project) {
             icon.value = project.logo?.url
             title.value = project.name
             description.value = project.summary
             downloadCount.value = project.downloadCount
             followerCount.value = project.thumbsUpCount
-          })
+          }
+        })
       }
     }
   }
@@ -320,6 +300,20 @@ const tags = computed(() => {
 
   return tags
 })
+
+const installing = ref(false)
+const onInstall = async () => {
+  try {
+    installing.value = true
+    await props.install(props.item)
+  } finally {
+    // Delay for the local file to be updated
+    setTimeout(() => {
+      installing.value = false
+    }, 1000)
+  }
+}
+
 </script>
 
 <style scoped>

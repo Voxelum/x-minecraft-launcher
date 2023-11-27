@@ -24,10 +24,11 @@
 
 <script lang=ts setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { useCurseforgeProjectDescription } from '../composables/curseforge'
+import { useSWRVModel } from '@/composables/swrv'
+import { getCurseforgeProjectDescriptionModel } from '../composables/curseforge'
 
 const props = defineProps<{ project: number }>()
-const { refreshing, description, error, refresh } = useCurseforgeProjectDescription(props)
+const { isValidating: refreshing, data: description, error, mutate: refresh } = useSWRVModel(getCurseforgeProjectDescriptionModel(computed(() => props.project)))
 
 </script>
 

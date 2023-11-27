@@ -345,7 +345,7 @@
               v-for="g of detail.galleries"
               :key="g.url + g.title"
               hover
-              @click="emit('show-image', g)"
+              @click="onShowImage(g)"
             >
               <v-img
                 :src="g.url"
@@ -543,6 +543,7 @@ import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import { useMarketRoute } from '@/composables/useMarketRoute'
+import { kImageDialog } from '@/composables/imageDialog'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -563,7 +564,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'load-changelog', version: ProjectVersion): void
-  (event: 'show-image', img: ModGallery): void
   (event: 'load-more'): void
   (event: 'install', version: ProjectVersion): void
   (event: 'install-dependency', dep: ProjectDependency): void
@@ -707,6 +707,12 @@ const onScroll = (e: Event) => {
   if (t.scrollTop + t.clientHeight >= t.scrollHeight && tab.value === 3) {
     emit('load-more')
   }
+}
+
+// Image
+const imageDialog = injection(kImageDialog)
+const onShowImage = (img: ModGallery) => {
+  imageDialog.show(img.url, { description: img.description, date: img.date })
 }
 </script>
 

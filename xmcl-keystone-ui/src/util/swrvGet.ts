@@ -1,11 +1,16 @@
 import { SWRVCache, mutate } from 'swrv'
+import { Ref } from 'vue'
 
-export function swrvGetCache<T>(key: string, cache: SWRVCache<any>): T | undefined {
-  const cacheItem = cache?.get(key)
-  const newData = cacheItem?.data
-  if (newData && !newData.error) {
-    if (newData.data) return newData.data
+export interface SWRVModel<T> {
+  key: Ref<string | undefined>
+  fetcher: () => Promise<T>
+}
+
+export function getSWRV<T>(model: SWRVModel<T>, config: any) {
+  if (model.key.value) {
+    return swrvGet(model.key.value, model.fetcher, config.cache!, config.dedupingInterval!)
   }
+  return Promise.resolve(undefined)
 }
 
 export async function swrvGet<T>(key: string, fetcher: (abortSignal?: AbortSignal) => Promise<T>,

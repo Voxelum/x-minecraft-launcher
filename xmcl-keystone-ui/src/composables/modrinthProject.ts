@@ -69,3 +69,10 @@ export function useModrinthProject(id: Ref<string>) {
     refresh: mutate,
   }
 }
+
+export function getModrinthProjectModel(id: Ref<string>) {
+  return {
+    key: computed(() => getModrinthProjectKey(id.value)),
+    fetcher: async () => clientModrinthV2.getProject(id.value),
+  }
+}

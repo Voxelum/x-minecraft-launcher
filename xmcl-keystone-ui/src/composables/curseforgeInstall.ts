@@ -1,15 +1,15 @@
 import { clientCurseforgeV1 } from '@/util/clients'
 import { File, FileIndex } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, InstanceModsServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useCurseforgeProject } from './curseforge'
+import { getCurseforgeProjectModel } from './curseforge'
 import { useDialog } from './dialog'
-import { kInstallList } from './installList'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
+import { useSWRVModel } from './swrv'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
@@ -40,7 +40,7 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
   const isDownloaded = (file: Pick<File, 'modId' | 'id'>) => {
     return !!resources.value[getCurseforgeFileUri(file)]
   }
-  const { project } = useCurseforgeProject(modId)
+  const { data: project } = useSWRVModel(getCurseforgeProjectModel(modId))
   async function install(input: File | FileIndex) {
     const file = 'modId' in input ? input : await clientCurseforgeV1.getModFile(modId.value, input.fileId)
     const resource = resources.value[getCurseforgeFileUri(file)]
