@@ -16,6 +16,7 @@
         :selected="selected"
         :has-update="hasUpdate"
         :checked="checked"
+        :install="onInstallProject"
         @click="on.click"
       />
     </template>
@@ -57,33 +58,34 @@
         class="h-full"
       />
     </template>
-  </MarketBase>
-  <!--
-      <DeleteDialog
-        :title="t('shaderPack.deletion') "
-        :width="400"
-        persistent
-        @confirm="onConfirmDeleted"
-        @cancel="onCancelDelete"
+    <!-- <DeleteDialog
+      :title="t('shaderPack.deletion') "
+      :width="400"
+      persistent
+      @confirm="onConfirmDeleted"
+      @cancel="onCancelDelete"
+    >
+      <div
+        style="overflow: hidden; word-break: break-all;"
       >
-        <div
-          style="overflow: hidden; word-break: break-all;"
-        >
-          {{ t('shaderPack.deletionHint', { path: deletingPack ? deletingPack.path : '' }) }}
-        </div>
-      </DeleteDialog>
-    </div>
-  </div> -->
+        {{ t('shaderPack.deletionHint', { path: deletingPack ? deletingPack.path : '' }) }}
+      </div>
+    </DeleteDialog> -->
+  </MarketBase>
 </template>
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
+import { useProjectInstall } from '@/composables/projectInstall'
+import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
@@ -103,7 +105,7 @@ const {
   shaderLoaderFilters,
   modrinthCategories,
 } = injection(kShaderPackSearch)
-const { runtime } = injection(kInstance)
+const { runtime, path } = injection(kInstance)
 
 const toggleCategory = useToggleCategories(modrinthCategories)
 
@@ -143,4 +145,38 @@ const { dragover } = useDrop(() => {}, async (t) => {
   const resources = await importResources(paths.map(p => ({ path: p, domain: ResourceDomain.ShaderPacks })))
   shaderPack.value = resources[0].fileName
 }, () => {})
+
+// Page compact
+const compact = injection(kCompact)
+onMounted(() => {
+  compact.value = true
+})
+
+// modrinth installer
+const modrinthInstaller = useModrinthInstaller(
+  path,
+  runtime,
+  shaderProjectFiles,
+  onInstall,
+  onUninstall,
+)
+provide(kModrinthInstaller, modrinthInstaller)
+
+// curseforge installer
+const curseforgeInstaller = useCurseforgeInstaller(
+  path,
+  runtime,
+  shaderProjectFiles,
+  onInstall,
+  onUninstall,
+)
+provide(kCurseforgeInstaller, curseforgeInstaller)
+
+const onInstallProject = useProjectInstall(
+  runtime,
+  shaderLoaderFilters,
+  curseforgeInstaller,
+  modrinthInstaller,
+)
+
 </script>

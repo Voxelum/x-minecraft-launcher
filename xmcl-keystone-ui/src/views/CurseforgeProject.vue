@@ -112,10 +112,11 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { usePresence } from '@/composables/presence'
+import { useSWRVModel } from '@/composables/swrv'
 import { injection } from '@/util/inject'
 import { File } from '@xmcl/curseforge'
 import { ProjectType } from '@xmcl/runtime-api'
-import { kCurseforgeFiles, useCurseforgeProject } from '../composables/curseforge'
+import { getCurseforgeProjectModel, kCurseforgeFiles } from '../composables/curseforge'
 import { kCurseforgeInstall, useCurseforgeInstall } from '../composables/curseforgeInstall'
 import CurseforgeProjectDescription from './CurseforgeProjectDescription.vue'
 import CurseforgeProjectFiles from './CurseforgeProjectFiles.vue'
@@ -138,7 +139,7 @@ const upstream = inject(kUpstream, undefined)
 
 // Curseforge Project
 const modId = computed(() => Number.parseInt(props.id, 10))
-const { project, refreshing, error, refresh } = useCurseforgeProject(modId)
+const { data: project, isValidating: refreshing, error, mutate: refresh } = useSWRVModel(getCurseforgeProjectModel(modId))
 
 // Curseforge files
 const files = ref([] as File[])

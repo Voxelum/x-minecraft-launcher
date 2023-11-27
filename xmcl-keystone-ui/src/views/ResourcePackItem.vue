@@ -8,6 +8,7 @@
     :draggable="draggable"
     :height="76"
     :get-context-menu-items="isBuiltIn ? undefined : getContextMenuItems"
+    :install="install"
     @drop="emit('drop', $event)"
     @click="emit('click', $event)"
     @checked="emit('check', $event)"
@@ -53,6 +54,7 @@ import { ResourcePackProject } from '@/composables/resourcePackSearch'
 import { useMarketRoute } from '@/composables/useMarketRoute'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { ProjectEntry } from '@/util/search'
 import { ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
 
 const props = defineProps<{
@@ -62,12 +64,14 @@ const props = defineProps<{
   draggable?: boolean
   selected: boolean
   hasUpdate?: boolean
+  install: (p: ProjectEntry) => Promise<void>
 }>()
 
 const emit = defineEmits<{
   (event: 'click', pack: ResourcePackProject): void
   (event: 'check', pack: ResourcePackProject): void
   (event: 'drop', id: string): void
+  (event: 'install'): void
 }>()
 
 const { runtime } = injection(kInstance)

@@ -281,6 +281,7 @@ export class ResourceService extends AbstractService implements IResourceService
     // We need to resolve the domain of the resource
     const resolved = await this.resolveResources(options)
     const result = await Promise.all(resolved.map(async (resolved, index) => {
+      if (resolved.size === 0 && resolved.fileType !== 'directory') return
       try {
         if (resolved.fileType === 'directory') {
           // Will not persist the dictionary as it cannot calculate hash

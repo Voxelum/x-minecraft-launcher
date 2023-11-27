@@ -107,7 +107,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       if (res.domain !== ResourceDomain.Mods) {
         this.warn(`Install non mod resource ${res.name} as it's not a mod`)
       }
-      const src = join(res.path)
+      const src = res.storedPath || res.path
       const dest = join(path, ResourceDomain.Mods, res.fileName)
       const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 

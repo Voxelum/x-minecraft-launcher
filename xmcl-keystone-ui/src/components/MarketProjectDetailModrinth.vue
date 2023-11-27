@@ -1,20 +1,18 @@
 <script setup lang="ts">
 import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { useService } from '@/composables'
-import { kImageDialog } from '@/composables/imageDialog'
-import { kInstance } from '@/composables/instance'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
-import { useModrinthDependencies } from '@/composables/modrinthDependencies'
+import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
+import { kModrinthInstaller } from '@/composables/modrinthInstaller'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
-import { useModrinthTask, useModrinthVersions, useModrinthVersionsResources } from '@/composables/modrinthVersions'
+import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
+import { useSWRVModel } from '@/composables/swrv'
+import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
-import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
-import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
-import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
+import { SearchResultHit } from '@xmcl/modrinth'
+import { Resource, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -28,9 +26,6 @@ const props = defineProps<{
   curseforge?: number
 }>()
 
-const projectId = computed(() => props.projectId)
-const { project, refreshing: loading } = useModrinthProject(projectId)
-
 const emit = defineEmits<{
   (event: 'category', cat: string): void
   (event: 'install', file: Resource[]): void
@@ -39,20 +34,22 @@ const emit = defineEmits<{
   (event: 'disable', file: ProjectFile): void
 }>()
 
-const { versions, refreshing: loadingVersions } = useModrinthVersions(projectId,
-  undefined,
-  computed(() => props.loaders),
-  computed(() => [props.runtime.minecraft]))
-
+// Project
+const projectId = computed(() => props.projectId)
+const { project, refreshing: loading } = useModrinthProject(projectId)
 const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth))
-const modVersions = useModrinthProjectDetailVersions(versions, computed(() => props.installed))
 
-const imageDialog = injection(kImageDialog)
+// Versions
+const { data: versions, isValidating: loadingVersions } = useSWRVModel(
+  getModrinthVersionModel(projectId, undefined, computed(() => props.loaders), computed(() => [props.runtime.minecraft])),
+  inject(kSWRVConfig))
+const modVersions = useModrinthProjectDetailVersions(versions, computed(() => props.installed))
 
 const selectedVersion = ref(modVersions.value[0] as ProjectDetailVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
-const { data: deps, isValidating, error } = useModrinthDependencies(computed(() => versions.value.find(v => v.id === selectedVersion.value?.id)))
+// Dependencies
+const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))))
 const dependencies = computed(() => {
   if (!deps.value) return []
 
@@ -88,50 +85,30 @@ const dependencies = computed(() => {
   }) ?? []
 })
 
-const { path } = injection(kInstance)
-const { installVersion } = useService(ModrinthServiceKey)
-const { getResource } = useModrinthVersionsResources(versions)
-const installModrinthVersion = async (v: ProjectVersion) => {
-  const resource = getResource(v)
-  if (resource) {
-    emit('install', [resource])
-  } else {
-    const { resources } = await installVersion({ version: v, icon: project.value?.icon_url })
-    emit('install', resources)
-  }
-}
-
 const innerUpdating = useModDetailUpdate()
 watch(() => props.modrinth, () => {
   innerUpdating.value = false
 })
+watch(() => props.installed, () => {
+  innerUpdating.value = false
+}, { deep: true })
 
-const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
-
+// Install
 const installing = ref(false)
-const install = async (version: ProjectDetailVersion) => {
-  const v = versions.value.find(v => v.id === version.id)
-  if (!v) return
+const { installWithDependencies, install } = injection(kModrinthInstaller)
+const onInstall = async (v: ProjectDetailVersion) => {
+  const version = versions.value?.find(ver => ver.id === v.id)
+  if (!version) return
   try {
     installing.value = true
-    if (isNoModLoader(props.runtime)) {
-      // forge, fabric, quilt or neoforge
-      await installDefaultModLoader(v.loaders)
-    }
-    const resources = [...props.installed]
-    await Promise.all(deps.value
-      ?.filter((v) => v.type === 'required')
-      .filter(v => props.allFiles.every(m => m.modrinth?.projectId !== v.project.id))
-      .map((v) => installModrinthVersion(v.recommendedVersion)) ?? [])
-    await installModrinthVersion(v)
-    if (hasInstalledVersion.value) {
-      emit('uninstall', resources)
+    if (project.value) {
+      await installWithDependencies(project.value, version, props.installed, deps.value ?? [])
     }
   } finally {
     installing.value = false
   }
 }
-const installDependency = async (dep: ProjectDependency) => {
+const onInstallDependency = async (dep: ProjectDependency) => {
   const resolvedDep = deps.value?.find(d => d.project.id === dep.id)
   if (!resolvedDep) return
   const version = resolvedDep.recommendedVersion
@@ -145,7 +122,7 @@ const installDependency = async (dep: ProjectDependency) => {
         }
       }
     }
-    await installModrinthVersion(version)
+    await install(resolvedDep.project, version)
     if (files.length > 0) {
       emit('uninstall', files)
     }
@@ -171,7 +148,6 @@ const { push, currentRoute } = useRouter()
 const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
-
 </script>
 
 <template>
@@ -190,11 +166,10 @@ const onOpenDependency = (dep: ProjectDependency) => {
     :modrinth="projectId"
     :curseforge="curseforge"
     @open-dependency="onOpenDependency"
-    @show-image="imageDialog.show($event.url, { description: $event.description, date: $event.date })"
-    @install="install"
+    @install="onInstall"
     @enable="enabled = $event"
     @delete="onDelete"
-    @install-dependency="installDependency"
+    @install-dependency="onInstallDependency"
     @select:category="emit('category', $event)"
   />
 </template>

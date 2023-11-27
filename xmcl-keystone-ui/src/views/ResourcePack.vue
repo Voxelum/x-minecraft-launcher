@@ -24,6 +24,7 @@
         :selected="selected"
         :has-update="hasUpdate"
         :checked="checked"
+        :install="onInstallProject"
         @drop="onDrop(item, $event)"
         @click="on.click"
       />
@@ -89,21 +90,23 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'
+import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
+import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vDragover } from '@/directives/dragover'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 
-const { runtime } = injection(kInstance)
+const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
 const {
   items,
@@ -122,9 +125,15 @@ const allMode = computed(() => !keyword.value && modrinthCategories.value.length
 
 const displayItems = computed(() => {
   if (allMode.value) {
+    if (enabled.value.length > 0) {
+      return [
+        'enabled' as string,
+        ...enabled.value,
+        'disabled' as string,
+        ...disabled.value,
+      ] as (string | ResourcePackProject)[]
+    }
     return [
-      'enabled' as string,
-      ...enabled.value,
       'disabled' as string,
       ...disabled.value,
     ] as (string | ResourcePackProject)[]
@@ -203,6 +212,33 @@ const { dragover } = useDrop(() => {}, async (t) => {
   const resources = await importResources(paths.map(p => ({ path: p, domain: ResourceDomain.ResourcePacks })))
   enable(resources.map(r => `file/${r.fileName}`))
 }, () => {})
+
+// modrinth installer
+const modrinthInstaller = useModrinthInstaller(
+  path,
+  runtime,
+  files,
+  onInstall,
+  onUninstall,
+)
+provide(kModrinthInstaller, modrinthInstaller)
+
+// curseforge installer
+const curseforgeInstaller = useCurseforgeInstaller(
+  path,
+  runtime,
+  files,
+  onInstall,
+  onUninstall,
+)
+provide(kCurseforgeInstaller, curseforgeInstaller)
+
+const onInstallProject = useProjectInstall(
+  runtime,
+  modrinthLoaders,
+  curseforgeInstaller,
+  modrinthInstaller,
+)
 
 </script>
 

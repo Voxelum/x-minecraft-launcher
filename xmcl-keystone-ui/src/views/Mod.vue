@@ -64,6 +64,7 @@
         :checked="checked"
         :selection-mode="selectionMode"
         :selected="selected"
+        :install="onInstallProject"
         @click="on.click"
       />
     </template>
@@ -138,12 +139,15 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'
+import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
+import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
+import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { vDragover } from '@/directives/dragover'
@@ -266,6 +270,33 @@ const { dragover } = useDrop(() => {}, async (t) => {
   const resources = await resolveResources(paths.map(p => ({ path: p, domain: ResourceDomain.Mods })))
   await install({ path: path.value, mods: resources })
 }, () => {})
+
+// modrinth installer
+const modrinthInstaller = useModrinthInstaller(
+  path,
+  runtime,
+  mods,
+  onInstall,
+  onUninstall,
+)
+provide(kModrinthInstaller, modrinthInstaller)
+
+// curseforge installer
+const curseforgeInstaller = useCurseforgeInstaller(
+  path,
+  runtime,
+  mods,
+  onInstall,
+  onUninstall,
+)
+provide(kCurseforgeInstaller, curseforgeInstaller)
+
+const onInstallProject = useProjectInstall(
+  runtime,
+  modLoaderFilters,
+  curseforgeInstaller,
+  modrinthInstaller,
+)
 
 </script>
 

@@ -92,6 +92,8 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
         icons,
       }])
 
+      imported.path = imported.storedPath || imported.path
+
       resource = imported
       this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
       await unlink(destination).catch(() => undefined)

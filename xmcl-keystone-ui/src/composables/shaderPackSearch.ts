@@ -107,6 +107,7 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
     shaderProjectFiles,
     cached: result,
     loadingCached,
+    shaderFiles,
   }
 }
 

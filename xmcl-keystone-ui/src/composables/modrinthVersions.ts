@@ -1,14 +1,14 @@
 import { TaskItem } from '@/entities/task'
+import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
+import { getModrinthVersionKey } from '@/util/modrinth'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { Resource, TaskState } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
+import { TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useResourceUriStartsWithDiscovery, useResourceUrisDiscovery } from './resources'
-import { kTaskManager } from './taskManager'
-import { clientModrinthV2 } from '@/util/clients'
+import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
-import { getModrinthVersionKey } from '@/util/modrinth'
+import { kTaskManager } from './taskManager'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
@@ -16,25 +16,37 @@ export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVer
 export function useModrinthVersions(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
   const holder = inject(kModrinthVersionsHolder, undefined)
 
-  const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() => getModrinthVersionKey(project.value, featured, loaders?.value, gameVersions?.value)), async () => {
-    const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
-    return result
-  }, inject(kSWRVConfig))
+  const { mutate, error, isValidating: refreshing, data } = useSWRVModel(
+    getModrinthVersionModel(project, featured, loaders, gameVersions),
+    inject(kSWRVConfig))
 
-  watch(data, (result) => {
-    if (holder && result) {
-      const newHolder = { ...holder.value }
-      for (const v of result) {
-        newHolder[v.id] = v
+  if (holder) {
+    watch(data, (result) => {
+      if (holder && result) {
+        const newHolder = { ...holder.value }
+        for (const v of result) {
+          newHolder[v.id] = v
+        }
+        holder.value = newHolder
       }
-      holder.value = newHolder
-    }
-  }, { immediate: true })
+    }, { immediate: true })
+  }
+
   return {
     refreshing,
     refresh: () => mutate(),
     error,
     versions: computed(() => data.value || []),
+  }
+}
+
+export function getModrinthVersionModel(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
+  return {
+    key: computed(() => getModrinthVersionKey(project.value, featured, loaders?.value, gameVersions?.value)),
+    fetcher: async () => {
+      const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
+      return result
+    },
   }
 }
 

@@ -168,13 +168,24 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
     error,
   }
 }
-
 export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFiles')
 
-export function useCurseforgeProjectDescription(props: { project: number }) {
-  const { mutate: refresh, isValidating: refreshing, error, data: description } = useSWRV(
-    computed(() => `/curseforge/${props.project}/description`), async () => {
-      const text = await clientCurseforgeV1.getModDescription(props.project)
+export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
+  return {
+    key: computed(() => `/curseforge/${projectId.value}/files?gameVersion=${gameVersion.value}&modLoaderType=${modLoaderType.value}`),
+    fetcher: () => clientCurseforgeV1.getModFiles({
+      modId: projectId.value,
+      gameVersion: gameVersion.value,
+      modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
+    }),
+  }
+}
+
+export function getCurseforgeProjectDescriptionModel(projectId: Ref<number>) {
+  return {
+    key: computed(() => `/curseforge/${projectId.value}/description`),
+    fetcher: async () => {
+      const text = await clientCurseforgeV1.getModDescription(projectId.value)
       const root = document.createElement('div')
       root.innerHTML = text
       const allLinks = root.getElementsByTagName('a')
@@ -188,23 +199,14 @@ export function useCurseforgeProjectDescription(props: { project: number }) {
         }
       }
       return root.innerHTML
-    }, inject(kSWRVConfig))
-
-  return { description, refreshing, refresh, error }
+    },
+  }
 }
-/**
- * Hook to view the front page of the curseforge project.
- * @param projectId The project id
- */
-export function useCurseforgeProject(projectId: Ref<number>) {
-  const { data: project, isValidating, mutate, error } = useSWRV(computed(() => `/curseforge/${projectId.value}`), async function () {
-    return markRaw(await clientCurseforgeV1.getMod(projectId.value))
-  }, inject(kSWRVConfig))
+
+export function getCurseforgeProjectModel(projectId: Ref<number>) {
   return {
-    refreshing: isValidating,
-    refresh: mutate,
-    project,
-    error,
+    key: computed(() => `/curseforge/${projectId.value}`),
+    fetcher: () => clientCurseforgeV1.getMod(projectId.value),
   }
 }
 

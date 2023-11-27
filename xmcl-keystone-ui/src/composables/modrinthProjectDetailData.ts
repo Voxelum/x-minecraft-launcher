@@ -5,6 +5,7 @@ import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrin
 import { Ref } from 'vue'
 import type { ExternalResource, Info, ProjectDetail, ModGallery } from '@/components/MarketProjectDetail.vue'
 import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
+import { ProjectFile } from '@/util/search'
 
 export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>) {
   const { render } = useMarkdown()
@@ -110,12 +111,18 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
   return data
 }
 
-export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[]>, installed: Ref<Pick<ModFile, 'modrinth'>[]>) {
+export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] | undefined>, installed: Ref<ProjectFile[]>) {
   const { render } = useMarkdown()
   const modVersions = computed(() => {
     const all: ModVersion[] = []
+
+    const files = [...installed.value]
+
     for (const v of (versions.value || [])) {
-      all.push(reactive({
+      const installedFileIndex = files.findIndex(f => f.modrinth?.versionId === v.id)
+      files.splice(installedFileIndex, 1)
+
+      all.push({
         id: v.id,
         name: v.name,
         version: v.version_number,
@@ -123,12 +130,34 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[]>
         type: v.version_type as any,
         downloadCount: v.downloads,
         loaders: v.loaders,
-        installed: computed(() => installed.value.some(f => f.modrinth?.versionId === v.id)),
+        installed: !!files[installedFileIndex],
         minecraftVersion: v.game_versions.join(', '),
         createdDate: v.date_published,
         changelog: v.changelog ? render(v.changelog) : undefined,
-      }))
+      })
     }
+
+    const isModFile = (f: ProjectFile | ModFile): f is ModFile => (f as ModFile).dependencies !== undefined
+
+    for (const i of files) {
+      const mcDep = isModFile(i) ? (i as ModFile).dependencies.find(d => d.modId === 'minecraft') : undefined
+      const minecraftVersion = (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange ?? ''
+      all.push({
+        id: i.modrinth?.versionId.toString() ?? '',
+        name: i.resource.name ?? '',
+        version: i.version,
+        disabled: false,
+        changelog: undefined,
+        changelogLoading: false,
+        type: 'release',
+        installed: true,
+        downloadCount: 0,
+        loaders: (i as ModFile).modLoaders,
+        minecraftVersion,
+        createdDate: '',
+      })
+    }
+
     return all
   })
 
