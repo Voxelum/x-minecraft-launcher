@@ -1,6 +1,6 @@
 import { AssetIndexIssue, AssetIssue, diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmcl/installer'
-import { InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey } from '@xmcl/runtime-api'
+import { DiagnoseService as IDiagnoseService, DiagnoseServiceKey } from '@xmcl/runtime-api'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
@@ -9,8 +9,8 @@ import { kResourceWorker, ResourceWorker } from '~/resource'
 import { exists } from '../util/fs'
 import { AbstractService, ExposeServiceKey } from '~/service'
 
-@ExposeServiceKey(InstanceVersionServiceKey)
-export class DiagnoseService extends AbstractService implements IInstanceVersionService {
+@ExposeServiceKey(DiagnoseServiceKey)
+export class DiagnoseService extends AbstractService implements IDiagnoseService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
   @Inject(kGameDataPath) private getPath: PathResolver,
   @Inject(kResourceWorker) private worker: ResourceWorker,

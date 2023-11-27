@@ -5,11 +5,11 @@ import { useCurseforgeProject, useCurseforgeProjectDescription, useCurseforgePro
 import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { useCurseforgeDependencies, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { useCurseforgeInstallModFile } from '@/composables/curseforgeInstall'
+import { useDateString } from '@/composables/date'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
-import { TimeUnit, getAgoOrDate } from '@/util/date'
 import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
@@ -37,24 +37,7 @@ const emit = defineEmits<{
   (event: 'disable', file: ProjectFile): void
 }>()
 
-const getDateString = (date: string) => {
-  const result = getAgoOrDate(new Date(date).getTime())
-  if (typeof result === 'string') {
-    return result
-  }
-  const [ago, unit] = result
-  switch (unit) {
-    case TimeUnit.Hour:
-      return t('ago.hour', { duration: ago }, { plural: ago })
-    case TimeUnit.Minute:
-      return t('ago.minute', { duration: ago }, { plural: ago })
-    case TimeUnit.Second:
-      return t('ago.second', { duration: ago }, { plural: ago })
-    case TimeUnit.Day:
-      return t('ago.day', { duration: ago }, { plural: ago })
-  }
-  return date
-}
+const { getDateString } = useDateString()
 
 const cursforgeModId = computed(() => props.curseforgeId)
 

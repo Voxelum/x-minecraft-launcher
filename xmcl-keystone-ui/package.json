@@ -21,6 +21,7 @@
         "lint:fix": "eslint --ext .ts,.vue --fix src"
     },
     "dependencies": {
+        "@vueuse/core": "^10.5.0",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/game-data": "workspace:*",
@@ -49,7 +50,6 @@
         "vue-i18n": "^8.28.2",
         "vue-i18n-bridge": "9.2.2",
         "vue-router": "^3.6.5",
-        "vue-virtual-scroll-list": "^2.3.4",
         "vuetify": "^2.6.13",
         "vuex": "^3.6.2"
     },
