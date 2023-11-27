@@ -1,4 +1,4 @@
-import { InstallServiceKey, InstanceVersionServiceKey, LocalVersionHeader, RuntimeVersions, getExpectVersion } from '@xmcl/runtime-api'
+import { InstallServiceKey, DiagnoseServiceKey, LocalVersionHeader, RuntimeVersions, getExpectVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useInstanceVersionInstall } from './instanceVersionInstall'
@@ -8,7 +8,7 @@ import { useService } from './service'
 export const kInstanceVersionDiagnose: InjectionKey<ReturnType<typeof useInstanceVersionDiagnose>> = Symbol('InstanceVersionDiagnose')
 
 export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, versions: Ref<LocalVersionHeader[]>) {
-  const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(InstanceVersionServiceKey)
+  const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
   const issueItems = ref([] as LaunchMenuItem[])
   let operation = undefined as undefined | (() => Promise<void>)
   const { t } = useI18n()

@@ -98,6 +98,8 @@ export function useInstancesServerStatus() {
   }
 }
 
+export const kServerStatus: InjectionKey<ReturnType<typeof useServerStatus>> = Symbol('ServerStatus')
+
 export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
   const pingServer = usePingServer()
   const unknownStatus = useUnknown()

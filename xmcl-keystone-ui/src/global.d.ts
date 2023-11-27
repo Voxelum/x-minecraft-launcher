@@ -2,11 +2,6 @@ declare module '*.webp' {
   const value: string
   export default value
 }
-declare module 'vue-virtual-scroll-list' {
-
-  const component: import('vue').Component<any, any, any, { size: number; remain: number }>
-  export = component
-}
 
 declare module 'vue-grid-layout' {
   export const GridLayout: import('vue').Component<any, any, any, { size: number; remain: number }>
