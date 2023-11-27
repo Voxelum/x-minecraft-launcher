@@ -19,7 +19,9 @@ import ModActions from '@/views/ModActions.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
 import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
+import Store from '@/views/Store.vue'
 import ModExtension from '@/views/ModExtension.vue'
+import StoreProject from '@/components/StoreProject.vue'
 import Vue from 'vue'
 
 Vue.use(Router)
@@ -77,6 +79,15 @@ export const router = new Router({
           },
         },
       ],
+    },
+    {
+      path: '/store',
+      component: Store,
+    },
+    {
+      path: '/store/:id',
+      component: StoreProject,
+      props: (route) => ({ id: route.path.split('/')[2] }),
     },
     {
       path: '/setting',
