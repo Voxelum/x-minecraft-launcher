@@ -1,5 +1,6 @@
 AppAddInstanceDialog:
   downloadedNotification: El modpack {name} se ha descargado. ¿Quieres crear una instancia para ello?
+  serverTitle: Ingrese la dirección de su servidor
 AppShareInstanceDialog:
   baseInfo: Configuración Básica
   cancelShare: Cancelar Compartir
@@ -348,7 +349,7 @@ instance:
   addMod: Agregar Mod a la instancia
   addServer: Agregar Servidor
   current: Instancia Actual
-  delete: Borrar Perfil
+  delete: Eliminar juego
   deleteHint: >-
     Los datos de la instancia se eliminarán permanentemente del disco. ¿Estás
     seguro de hacer esto?
@@ -373,7 +374,7 @@ instance:
   openLogFolder: Abrir Carpeta de Registro
   playtime: Tiempo de Juego
   requireName: El nombre es obligatorio
-  showInstance: Mostrar carpeta de la instancia
+  showInstance: Mostrar carpeta del juego
   versionHint: La versión de Minecraft de este juego
   vmOptions: Opciones de JVM
   vmOptionsHint: Argumentos adicionales para pasar a la JVM
@@ -413,7 +414,10 @@ instanceUpdate:
   title: Actualizar Instancia
   update: Iniciar Actualización
 instances:
-  add: Agregar Juego Local
+  add: Crear juego
+  addServer: Crear desde el servidor
+  addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
+  addTemplate: Crear desde plantilla
   choose: Seleccionar Instancia
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
@@ -493,6 +497,10 @@ modInstall:
 modSearchType:
   all: Todos
   local: Caché en Disco
+modified:
+  reset: Restablecer
+  save: Guardar
+  unsaved: ¡Tus modificaciones no se han guardado!
 modpack:
   author: Nombre del Autor
   authorHint: Esto podría usarse para firmar en la exportación de modpack (Curseforge)
@@ -726,10 +734,6 @@ quiltVersion:
 refresh: Actualizar
 refreshResource: Actualizar Recursos
 remove: Eliminar
-modified:
-  reset: Restablecer
-  unsaved: ¡Tus modificaciones no se han guardado!
-  save: Guardar
 resourcepack:
   available: Disponible
   compatible: Formato compatible {format} con {version}
@@ -797,7 +801,6 @@ screenshots:
   name: Capturas de Pantalla
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
-  add: Agregar Servidor
   create: Crear un Nuevo Servidor
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor
   delete:

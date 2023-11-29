@@ -157,6 +157,9 @@ export interface InstanceData {
 
   useLatest?: false | 'release' | 'alpha'
 
+  playTime?: number
+  lastPlayedDate?: number
+
   upstream?: {
     type: 'curseforge-modpack'
     modId: number

@@ -38,6 +38,6 @@ defineProps<{
   next?: boolean
 }>()
 
-const emit = defineEmits(['quit', 'next', 'create'])
+const emit = defineEmits(['quit', 'next', 'create', 'back'])
 const { t } = useI18n()
 </script>

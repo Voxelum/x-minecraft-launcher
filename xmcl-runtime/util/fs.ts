@@ -189,6 +189,16 @@ export function linkWithTimeout(from: string, to: string, timeout = 1500) {
   })
 }
 
+export function isInSameDisk(from: string, to: string, os: 'osx' | 'linux' | 'windows' | 'unknown') {
+  if (os === 'linux') {
+    return from.startsWith(to) || to.startsWith(from)
+  } else if (os === 'windows') {
+    return from[0] === to[0]
+  } else {
+    return from.startsWith(to) || to.startsWith(from)
+  }
+}
+
 export async function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
   try {
     await linkWithTimeout(from, to, timeout)

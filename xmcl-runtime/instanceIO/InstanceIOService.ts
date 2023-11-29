@@ -1,19 +1,22 @@
-import { CreateInstanceOption, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, LockKey } from '@xmcl/runtime-api'
-import { readFile } from 'fs/promises'
+import { CreateInstanceManifest, CreateInstanceOption, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LockKey } from '@xmcl/runtime-api'
+import { readFile, readdir } from 'fs/promises'
 import { basename, join, resolve } from 'path'
+import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { VersionMetadataService } from '~/install'
+import { InstanceService } from '~/instance'
+import { kResourceWorker } from '~/resource'
+import { AbstractService, ExposeServiceKey } from '~/service'
+import { TaskFn, kTaskExecutor } from '~/task'
+import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, kGameDataPath, PathResolver, Inject } from '~/app'
-import { kTaskExecutor, TaskFn } from '~/task'
 import { copyPassively, exists } from '../util/fs'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { InstanceService } from '~/instance'
-import { AbstractService, ExposeServiceKey } from '~/service'
-import { VersionService } from '~/version'
+import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
+import { parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
+import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
+import { AnyError, isSystemError } from '~/util/error'
 
-/**
- * Provide the abilities to import/export instance from/to modpack
- */
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
@@ -25,6 +28,66 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     super(app)
   }
 
+  async getGameDefaultPath(type?: 'modrinth-root' | 'modrinth-instances' | 'vanilla') {
+    if (type === 'modrinth-root' || type === 'modrinth-instances') {
+      const dir = join(this.app.host.getPath('appData'), 'com.modrinth.theseus')
+      if (type === 'modrinth-instances') {
+        return join(dir, 'profiles')
+      }
+      return dir
+    }
+    return join(this.app.host.getPath('appData'), '.minecraft')
+  }
+
+  async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
+    if (type === 'mmc') {
+      return await parseMultiMcInstanceFiles(path, this.logger)
+    }
+    if (type === 'modrinth') {
+      const worker = await this.app.registry.get(kResourceWorker)
+      return await parseModrinthInstanceFiles(path, worker, this.logger)
+    }
+    return await parseVanillaInstanceFiles(path, this.logger)
+  }
+
+  async parseInstances(path: string, type?: InstanceType): Promise<CreateInstanceManifest[]> {
+    try {
+      if (type === 'mmc') {
+        const options = await parseMultiMCInstance(path)
+        return [{
+          options,
+          path: join(path, '.minecraft'),
+          isIsolated: true,
+        }]
+      }
+
+      if (type === 'modrinth') {
+        // const instancesPath = join(path, 'profiles')
+        // const instances = await readdir(instancesPath)
+        // const manifests = await Promise.all(instances.map(async (instance) => {
+        // const instancePath = join(instancesPath, instance)
+        const options = await parseModrinthInstance(path)
+        return [{
+          options,
+          path,
+          isIsolated: true,
+        }]
+      }
+
+      const versionMetadataService = await this.app.registry.get(VersionMetadataService)
+      const vanillaInstances = await parseVanillaInstance(path, versionMetadataService)
+
+      return vanillaInstances
+    } catch (e) {
+      if (isSystemError(e)) {
+        if (e.code === 'ENOENT') {
+          throw new AnyError('BadInstance', undefined, { cause: e }, { path })
+        }
+      }
+      throw e
+    }
+  }
+
   /**
    * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
    * @param options The export instance options
@@ -33,11 +96,6 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     requireObject(options)
 
     const { src, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
-
-    // if (!this.instanceService.state.all[src]) {
-    //   this.warn(`Cannot export unmanaged instance ${src}`)
-    //   return
-    // }
 
     const version = await this.versionService.resolveLocalVersion(options.version)
 
@@ -126,39 +184,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     }
 
     return instancePath
-    // const isDir = await isDirectory(location)
-
-    // let srcDirectory = location
-    // if (!isDir) {
-    //   srcDirectory = await mkdtemp(join(tmpdir(), 'launcher'))
-    //   const zipFile = await open(location)
-    //   const entries = await readAllEntries(zipFile)
-    //   const unzipTask = new UnzipTask(zipFile, entries, srcDirectory)
-    //   await unzipTask.startAndWait()
-    // }
-
-    // // check if this game contains the instance.json from us
-    // let instanceTemplate: InstanceSchema
-
-    // const instanceConfigPath = resolve(srcDirectory, 'instance.json')
-    // const isExportFromUs = await isFile(instanceConfigPath)
-    // // if (isExportFromUs) {
-    // //   instanceTemplate = await this.getPersistence({ path: instanceConfigPath, schema: InstanceSchema })
-    // // } else {
-    // // eslint-disable-next-line prefer-const
-    // instanceTemplate = createTemplate()
-    // instanceTemplate.creationDate = Date.now()
-
-    // const dir = new MinecraftFolder(srcDirectory)
-    // const versions = await readdir(dir.versions)
-    // const localVersion: RuntimeVersions = {} as any
-    // for (const ver of versions) {
-    //   Object.assign(localVersion, await this.versionService.resolveLocalVersion(ver, dir.root))
-    // }
-    // delete localVersion.id
-    // delete localVersion.folder
-    // instanceTemplate.runtime = localVersion
-    // instanceTemplate.name = basename(location)
-    // }
   }
 }

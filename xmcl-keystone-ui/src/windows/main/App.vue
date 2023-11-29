@@ -29,7 +29,6 @@
     <AppFeedbackDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
-    <AppAddServerDialog />
     <AppExportDialog />
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
@@ -70,7 +69,6 @@ import { kVuetify } from '@/composables/vuetify'
 import { useVuetifyColorTheme } from '@/composables/vuetifyColorTheme'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
-import AppAddServerDialog from '@/views/AppAddServerDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppDropDialog from '@/views/AppDropDialog.vue'

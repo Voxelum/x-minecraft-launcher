@@ -230,17 +230,17 @@ export class ResourceService extends AbstractService implements IResourceService
             .set(params).execute()
         }
         // Upsert each tag
-        if (resource.tags) {
+        if (resource.tags && resource.tags.length > 0) {
           // await trx.deleteFrom('tags').where('sha1', '=', resource.hash).execute()
           await trx.insertInto('tags').values(resource.tags.map(t => ({ tag: t, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }
         // Upsert each uri
-        if (resource.uris) {
+        if (resource.uris && resource.uris.length > 0) {
           // await trx.deleteFrom('uris').where('sha1', '=', resource.hash).execute()
           await trx.insertInto('uris').values(resource.uris.map(u => ({ uri: u, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }
         // Upsert each icon
-        if (resource.icons) {
+        if (resource.icons && resource.icons.length > 0) {
           // await trx.deleteFrom('icons').where('sha1', '=', resource.hash).execute()
           await trx.insertInto('icons').values(resource.icons.map(i => ({ icon: i, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }

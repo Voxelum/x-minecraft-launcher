@@ -1,5 +1,10 @@
 AppAddInstanceDialog:
+  choiceTitle: |-
+    Обнаружено несколько профилей запуска. 
+    Пожалуйста, выберите один для импорта.
+  configTitle: Конфигурация
   downloadedNotification: Модпак {name} скачан. Создать для него экземпляр?
+  serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
   baseInfo: Базовая настройка
   cancelShare: Не делиться
@@ -382,7 +387,7 @@ instance:
   addMod: Добавить мод
   addServer: Добавить сервер
   current: Текущий экземпляр
-  delete: Удалить профиль
+  delete: Удалить игру
   deleteHint: Данные экземпляра будут перемещены с диска навсегда. Точно сделать это?
   duplicatedName: Повторяющееся имя
   fileApi: URL-адрес API синхронизации файлового сервера
@@ -404,7 +409,7 @@ instance:
   openLogFolder: Открыть папку логов
   playtime: Время игры
   requireName: Имя обязательно
-  showInstance: Показать папку экземпляра
+  showInstance: Показать папку с игрой
   versionHint: Версия игры для этой Minecraft
   vmOptions: Параметры JVM
   vmOptionsHint: Дополнительные аргументы, передаваемые в JVM
@@ -442,7 +447,23 @@ instanceUpdate:
   title: Обновление экземпляра
   update: Начать обновление
 instances:
-  add: Добавить локальную игру
+  add: Создать игру
+  addDescription: Создать новый экземпляр с нуля
+  addMMCDescription: |-
+    Импортируйте существующий экземпляр MultiMC. 
+    Вам нужно выбрать папку экземпляра из MultiMC.
+  addManually: Создать вручную
+  addModrinthDescription: |-
+    Импортировать существующий экземпляр Modrinth. 
+    Вам нужно выбрать папку экземпляра Modrinth.
+  addServer: Создать с сервера
+  addServerDescription: Это создаст игру, запускаемую напрямую на сервер.
+  addTemplate: Создать из шаблона
+  addTemplateDescription: Импортировать из скачанного модпака
+  addVanilla: Создайте из ванильного Minecraft
+  addVanillaDescription: |-
+    Импортируйте из общей папки .minecraft. 
+    Это приведет к дублированию исходного игрового профиля в XMCL.
   choose: Выберать экземпляр
   importFolder: Импорт из папки
   importFolderDescription: Импорт Minecraft в лаунчер
@@ -641,6 +662,10 @@ modInstall:
 modSearchType:
   all: Все
   local: Дисковый кэш
+modified:
+  reset: Сбросить
+  save: Сохранить
+  unsaved: Изменения не сохранены!
 modpack:
   author: Имя автора
   authorHint: >-
@@ -963,10 +988,6 @@ quiltVersion:
 refresh: Обновить
 refreshResource: Обновить ресурсы
 remove: Удалить
-modified:
-  reset: Сбросить
-  unsaved: Изменения не сохранены!
-  save: Сохранить
 resourcepack:
   available: Доступно
   compatible: Формат {format} совместим с {version}
@@ -1033,7 +1054,6 @@ screenshots:
   name: Скриншоты
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
-  add: Добавить сервер
   create: Создать новый сервер
   creationHint: Укажите адрес сервера и пинг сервера
   delete:

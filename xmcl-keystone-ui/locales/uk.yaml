@@ -1,5 +1,9 @@
 AppAddInstanceDialog:
+  choiceTitle: |-
+    Виявлено кілька профілів запуску. 
+    Виберіть один для імпорту.
   downloadedNotification: Модпак {name} встановлен. Зробити для нього екземпляр?
+  serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
   baseInfo: Базове налаштування
   cancelShare: Не розповсюджувати
@@ -398,7 +402,7 @@ instance:
   addMod: Додати модифікацію до екземпляра
   addServer: Добавить сервер
   current: Поточний екземпляр
-  delete: Видалити екземпляр
+  delete: Видалити гру
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
   duplicate: Дублювати екземпляр
   duplicatedName: Ім'я, що повторюється
@@ -420,7 +424,7 @@ instance:
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
   requireName: Ім'я обов'язкове
-  showInstance: Показати папку екземпляра
+  showInstance: Показати папку гри
   versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
   vmOptionsHint: Додаткові аргументи, що передаються JVM
@@ -458,7 +462,23 @@ instanceUpdate:
   title: Оновити екземпляр
   update: Почати оновлення
 instances:
-  add: Додати локальну гру
+  add: Створити гру
+  addDescription: Створіть новий екземпляр з нуля
+  addMMCDescription: |-
+    Імпорт існуючого екземпляра MultiMC. 
+    Вам потрібно вибрати папку екземпляра з MultiMC.
+  addManually: Створити вручну
+  addModrinthDescription: |-
+    Імпорт існуючого екземпляра Modrinth. 
+    Вам потрібно вибрати папку екземпляра Modrinth.
+  addServer: Створити з сервера
+  addServerDescription: Це призведе до запуску гри безпосередньо на сервері.
+  addTemplate: Створити з шаблону
+  addTemplateDescription: Імпорт із завантаженого Modpack
+  addVanilla: Створюйте з ванільного Minecraft
+  addVanillaDescription: |-
+    Імпорт із загальної папки .minecraft. 
+    Це призведе до копіювання оригінального профілю гри в XMCL.
   choose: Вибирати екземпляр
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера
@@ -676,6 +696,10 @@ modInstall:
 modSearchType:
   all: Всі
   local: Кеш на диску
+modified:
+  reset: Скидання
+  save: Зберегти
+  unsaved: Вашу модифікацію не збережено!
 modpack:
   author: Ім'я автора
   authorHint: Це може бути використане для підпису експортованого модпаку. (Curseforge)
@@ -1009,10 +1033,6 @@ quiltVersion:
 refresh: Оновити
 refreshResource: Оновити ресурси
 remove: Видалити
-modified:
-  reset: Скидання
-  save: Зберегти
-  unsaved: Вашу модифікацію не збережено!
 resourcepack:
   available: Доступно
   compatible: Формат {format} сумісний з {version}
@@ -1081,7 +1101,6 @@ screenshots:
   name: Скріншоти
 server:
   acceptingMinecraftVersion: Ухвалення версії Minecraft
-  add: Додати сервер
   create: Створити новий сервер
   creationHint: Вкажіть адресу сервера та пінг сервера
   delete:

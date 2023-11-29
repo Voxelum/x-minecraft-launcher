@@ -45,7 +45,7 @@
 </template>
 <script lang="ts" setup>
 import { Ref } from 'vue'
-import { InstanceInstallServiceKey, InstanceIOServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { kColorTheme } from '../composables/colorTheme'
 import Hint from '@/components/Hint.vue'

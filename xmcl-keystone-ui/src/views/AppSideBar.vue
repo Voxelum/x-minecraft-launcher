@@ -42,6 +42,23 @@
           </v-tooltip>
         </template>
 
+        <v-list-item
+          v-shared-tooltip="'store'"
+          link
+          push
+          to="/store"
+          class="non-moveable"
+        >
+          <v-list-item-icon>
+            <v-icon
+              :size="28"
+            >
+              store
+            </v-icon>
+          </v-list-item-icon>
+          <v-list-item-title v-text="'Text'" />
+        </v-list-item>
+
         <v-tooltip
           color="black"
           transition="scroll-x-transition"
@@ -259,6 +276,7 @@ import { kColorTheme } from '../composables/colorTheme'
 import { kUILayout } from '../composables/uiLayout'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { blurSidebar } = useBarBlur()
 const layout = injection(kUILayout)
@@ -268,7 +286,6 @@ const { state } = injection(kSettingsState)
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
 const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
-
 const { t } = useI18n()
 const { sideBarColor } = injection(kColorTheme)
 const { push, back, currentRoute } = useRouter()

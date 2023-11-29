@@ -1,5 +1,9 @@
 AppAddInstanceDialog:
+  choiceTitle: Multiple launch profiles detected. Please select one to import.
+  configTitle: Configuration
+  createTitle: Create Game
   downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
+  serverTitle: Input your server address
 AppShareInstanceDialog:
   baseInfo: Basic Setting
   cancelShare: Cancel Share
@@ -257,6 +261,7 @@ errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persisted.
+  BadInstanceType: 'Not a valid instance: {type}'
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
@@ -391,7 +396,7 @@ instance:
   addMod: Add Mod to instance
   addServer: Add Server
   current: Current Instance
-  delete: Delete Profile
+  delete: Delete Game
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
@@ -412,7 +417,7 @@ instance:
   openLogFolder: Open Log Folder
   playtime: Playtime
   requireName: The name is required
-  showInstance: Show instance folder
+  showInstance: Show game folder
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments passing to JVM
@@ -450,9 +455,25 @@ instanceUpdate:
   title: Update Instance
   update: Start Update
 instances:
-  add: Add Local Game
+  add: Create Game
+  addDescription: Create a new instance from scratch
+  addMMCDescription: >-
+    Import existed MultiMC instance. You need to select the instance folder from
+    MultiMC.
+  addManually: Manually Create
+  addModrinthDescription: >-
+    Import existed Modrinth instance. You need to select the Modrinth instance
+    folder.
+  addServer: Create from server
+  addServerDescription: This will create a game directly launch to the server.
+  addTemplate: Create from template
+  addTemplateDescription: Import from downloaded Modpack
+  addVanilla: Create from vanilla-like Minecraft
+  addVanillaDescription: >-
+    Import from common .minecraft folder. This will duplciate the original game
+    profile to XMCL.
   choose: Select Instance
-  importFolder: Import from Folder
+  importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
   refreshServers: Refresh Servers
 issue:
@@ -666,6 +687,10 @@ modInstall:
 modSearchType:
   all: All
   local: Disk Cache
+modified:
+  reset: Reset
+  save: Save
+  unsaved: Your modification is unsaved!
 modpack:
   author: Author Name
   authorHint: This might be used to sign on exported modpack (Curseforge)
@@ -996,10 +1021,6 @@ quiltVersion:
 refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
-modified:
-  reset: Reset
-  unsaved: Your modification is unsaved!
-  save: Save
 resourcepack:
   available: Available
   compatible: Compatible format {format} with {version}
@@ -1069,7 +1090,6 @@ screenshots:
   name: Screenshots
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
-  add: Add Server
   create: Create A New Server
   creationHint: Please Fill the server address and ping the server
   delete:

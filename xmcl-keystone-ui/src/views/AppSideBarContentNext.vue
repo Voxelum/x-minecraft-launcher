@@ -41,102 +41,6 @@
 
         <v-list-item-title>Instance</v-list-item-title>
       </v-list-item>
-
-      <v-list-item
-        push
-        class="non-moveable"
-        @click="showAddServerDialog()"
-      >
-        <v-tooltip
-          :close-delay="0"
-          color="black"
-          transition="scroll-x-transition"
-          right
-        >
-          <template #activator="{ on: tooltip }">
-            <v-list-item-avatar
-              size="48"
-              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
-              large
-              v-on="tooltip"
-            >
-              <v-badge
-                right
-                color="transparent"
-                bottom
-                overlap
-                offset-x="13"
-                offset-y="17"
-                :value="true"
-              >
-                <template #badge>
-                  <v-icon>
-                    public
-                  </v-icon>
-                </template>
-                <v-icon
-                  class="text-2xl"
-                  v-on="tooltip"
-                >
-                  add
-                </v-icon>
-              </v-badge>
-            </v-list-item-avatar>
-          </template>
-          {{ t('server.add') }}
-        </v-tooltip>
-
-        <v-list-item-title>Instance</v-list-item-title>
-      </v-list-item>
-
-      <v-list-item
-        push
-        class="non-moveable"
-        @click="onImport('folder')"
-      >
-        <v-tooltip
-          color="black"
-          transition="scroll-x-transition"
-          :close-delay="0"
-          right
-        >
-          <template #activator="{ on: tooltip }">
-            <v-list-item-avatar
-              size="48"
-              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
-              large
-              v-on="tooltip"
-            >
-              <v-badge
-                right
-                color="transparent"
-                bottom
-                overlap
-                offset-x="13"
-                offset-y="17"
-                :value="true"
-              >
-                <template #badge>
-                  <v-icon>
-                    folder
-                  </v-icon>
-                </template>
-                <v-icon
-                  class="text-2xl"
-                  v-on="tooltip"
-                >
-                  add
-                </v-icon>
-              </v-badge>
-            </v-list-item-avatar>
-          </template>
-          {{ t('instances.importFolder') }}
-        </v-tooltip>
-
-        <v-list-item-title>
-          {{ t('instances.importFolder') }}
-        </v-list-item-title>
-      </v-list-item>
       <v-spacer />
     </v-list>
   </div>
@@ -181,7 +85,6 @@ async function onImport(type: 'zip' | 'folder') {
 }
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
-const { show: showAddServerDialog } = useDialog('add-server-dialog')
 
 const items = computed(() => {
   const result: ContextMenuItem[] = [

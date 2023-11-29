@@ -16,6 +16,6 @@
 <script lang="ts" setup>
 import { useSharedTooltipData } from '@/composables/sharedTooltip'
 
-const { currentTooltip, x, y, isShown, color, left, stack } = useSharedTooltipData()
+const { currentTooltip, x, y, isShown, color, left } = useSharedTooltipData()
 
 </script>
