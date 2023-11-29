@@ -1,5 +1,6 @@
-import { ResolvedVersion } from '@xmcl/core'
+import { InstanceFile } from '../entities/instanceManifest.schema'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
+import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 
 export interface ExportInstanceOptions {
@@ -38,6 +39,14 @@ export interface ExportInstanceOptions {
   files?: string[]
 }
 
+export interface CreateInstanceManifest {
+  options: CreateInstanceOption
+  isIsolated: boolean
+  path: string
+}
+
+export type InstanceType = 'mmc' | 'vanilla' | 'modrinth'
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -47,12 +56,10 @@ export interface InstanceIOService {
    * @param options The export instance options
    */
   exportInstance(options: ExportInstanceOptions): Promise<void>
-  /**
-   * Import an instance from a game zip file or a game directory. The location root must be the game directory.
-   * @param location The zip or directory path
-   * @returns The newly created instance path
-   */
-  importInstance(location: string): Promise<string>
+
+  getGameDefaultPath(type?: 'modrinth-root' | 'modrinth-instances' | 'vanilla'): Promise<string>
+  parseInstances(path: string, type?: InstanceType): Promise<CreateInstanceManifest[]>
+  parseInstanceFiles(instancePath: string, type?: InstanceType): Promise<InstanceFile[]>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

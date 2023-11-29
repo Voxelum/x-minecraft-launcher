@@ -53,27 +53,9 @@ export interface ModrinthProfile {
     metadata: {
       type: string
       project: Project
-      version: ProjectVersion
-      update_version: object
+      version: ProjectVersion | string | null
+      update_version: ProjectVersion | null
       incompatible: boolean
     }
   }>
-}
-
-export interface ModrinthSettings {
-  java_globals: Record<string, {
-    path: string
-    version: string
-    architecture: string
-  }>
-}
-
-export interface ModrinthUsers {
-  [id: string]: {
-    id: string
-    username: string
-    access_token: string
-    refresh_token: string
-    expires: string
-  }
 }

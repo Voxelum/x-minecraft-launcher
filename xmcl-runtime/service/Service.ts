@@ -4,6 +4,7 @@ import { EventEmitter } from 'stream'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
+import { Logger } from '~/logger'
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T
@@ -160,13 +161,14 @@ export function getServiceKey<T extends Function>(target: T): ServiceKey<T> & st
  */
 export abstract class AbstractService extends EventEmitter {
   private initializeSignal: PromiseSignal<void> | undefined
+  protected logger: Logger
 
   constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
     super()
-    const loggers = app.getLogger(Object.getPrototypeOf(this).constructor.name)
-    this.log = loggers.log
-    this.warn = loggers.warn
-    this.error = loggers.error
+    this.logger = app.getLogger(Object.getPrototypeOf(this).constructor.name)
+    this.log = this.logger.log
+    this.warn = this.logger.warn
+    this.error = this.logger.error
   }
 
   get semaphoreManager() { return this.app.semaphoreManager }

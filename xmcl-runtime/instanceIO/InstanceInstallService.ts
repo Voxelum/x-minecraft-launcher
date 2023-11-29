@@ -10,8 +10,9 @@ import { ResourceService, ResourceWorker, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { AnyError } from '../util/error'
-import { isNonnull } from '../util/object'
-import { FileDownloadHandler, ResolveInstanceFileTask, postprocess, removeInstallProfile, writeInstallProfile } from './instanceInstall'
+import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
+import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
+import { removeInstallProfile, writeInstallProfile } from './instanceInstall'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -40,9 +41,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const modrinthClient = this.modrinthClient
     const resourceService = this.resourceService
 
-    const handler = new FileDownloadHandler(
+    const handler = new InstanceFileOperationHandler(
       this.app,
-      this.resourceService,
+      resourceService,
       this.worker,
       this,
       instancePath,
@@ -58,11 +59,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
         } catch {
           // Ignore
         }
-        const tasks = await Promise.all(files.map(f => handler.getTask(f))).then(v => v.filter(isNonnull))
-        await handler.process()
-        const results = await this.all(tasks, { throwErrorImmediately: false })
-        await postprocess(modrinthClient, resourceService, results)
-        handler.dispose()
+        const tasks = await handler.process(files)
+        await this.all(tasks, { throwErrorImmediately: false })
+        await handler.postprocess(modrinthClient)
       })
     }, { instance: instancePath })
 

@@ -203,7 +203,9 @@ instanceTemplate:
   server: 這是一個已有的服務器啓動配置
   title: 模板設置
 instances:
-  add: 新建本地遊戲
+  add: 創建遊戲
+  addManually: 手動建立
+  addServer: 從伺服器創建
   importFolder: 從文件夾導入
   importFolderDescription: 導入 Minecraft 到啓動器
   refreshServers: 刷新服務器
@@ -463,7 +465,6 @@ save:
   name: 地圖存檔 | 地圖存檔
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
-  add: 添加服務器
   create: 創建一個新的服務器
   creationHint: 請填寫服務器地址並嘗試 Ping 服務器
   delete:

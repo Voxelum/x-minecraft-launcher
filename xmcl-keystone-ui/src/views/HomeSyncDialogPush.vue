@@ -43,7 +43,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { InstanceIOException, InstanceIOServiceKey, InstanceManifest, isException, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOException, InstanceManifest, isException, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useService, useServiceBusy } from '@/composables'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'

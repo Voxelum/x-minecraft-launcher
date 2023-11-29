@@ -15,7 +15,10 @@ import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 
 @ExposeServiceKey(VersionMetadataServiceKey)
 export class VersionMetadataService extends AbstractService implements IVersionMetadataService {
-  private latestRelease = '1.20.2'
+  private latest = {
+    release: '1.20.2',
+    snapshot: '21w37a',
+  }
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(GFW) private gfw: GFW,
@@ -56,11 +59,15 @@ export class VersionMetadataService extends AbstractService implements IVersionM
   }
 
   getLatestRelease() {
-    return this.latestRelease
+    return this.latest.release
+  }
+
+  getLatestSnapshot() {
+    return this.latest.snapshot
   }
 
   async getLatestMinecraftRelease() {
-    return this.latestRelease
+    return this.latest.release
   }
 
   @Singleton()
@@ -83,7 +90,9 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       metadata = JSON.parse(e[kCacheKey].getBody().toString())
     }
 
-    this.latestRelease = metadata.latest.release
+    this.latest.release = metadata.latest.release
+    this.latest.snapshot = metadata.latest.snapshot
+
     return metadata
   }
 

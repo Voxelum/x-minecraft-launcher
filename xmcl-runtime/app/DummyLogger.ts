@@ -9,7 +9,7 @@ export function createDummyLogger(tag: string, destination: string, logEmitter: 
       logEmitter.emit('warn', destination, tag, message, ...options)
     },
     error: (e: Error, scope?: string) => {
-      logEmitter.emit('failure', destination, tag, e)
+      logEmitter.emit('failure', destination, scope ?? tag, e)
     },
   }
 }

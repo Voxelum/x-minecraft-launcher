@@ -1,7 +1,12 @@
 AppAddInstanceDialog:
+  choiceTitle: |-
+    Plusieurs profils de lancement détectés. 
+    Veuillez en sélectionner un à importer.
+  configTitle: Configuration
   downloadedNotification: |-
     Le modpack {name} a été téléchargé. 
     Voulez-vous créer une instance pour cela ?
+  serverTitle: Saisissez l'adresse de votre serveur
 AppShareInstanceDialog:
   baseInfo: Réglage de base
   cancelShare: Annuler le Partage
@@ -431,7 +436,7 @@ instance:
   addMod: Ajouter un Mod à l'instance
   addServer: Ajouter un Serveur
   current: Instance actuelle
-  delete: Supprimer le Profil
+  delete: Supprimer le jeu
   deleteHint: |-
     Les données d'instance seront définitivement déplacées du disque. 
     Tu es sûr de faire ça ?
@@ -457,7 +462,7 @@ instance:
   openLogFolder: Ouvrir le dossier de logs
   playtime: Temps de jeu
   requireName: Le nom est requis
-  showInstance: Afficher le dossier d'instances
+  showInstance: Afficher le dossier du jeu
   versionHint: La version Minecraft de ce jeu
   vmOptions: Options JVM
   vmOptionsHint: Arguments supplémentaires transmis à JVM
@@ -497,7 +502,23 @@ instanceUpdate:
   title: Mettre à jour l'Instance
   update: Démarrer la Mise à Jour
 instances:
-  add: Ajouter un jeu local
+  add: Créer un jeu
+  addDescription: Créer une nouvelle instance à partir de zéro
+  addMMCDescription: |-
+    Importer une instance MultiMC existante. 
+    Vous devez sélectionner le dossier d'instance dans MultiMC.
+  addManually: Créer manuellement
+  addModrinthDescription: |-
+    L'importation existait par l'instance de Modrinth. 
+    Vous devez sélectionner le dossier de l'instance Modrinth.
+  addServer: Créer à partir du serveur
+  addServerDescription: Cela créera un jeu directement lancé sur le serveur.
+  addTemplate: Créer à partir d'un modèle
+  addTemplateDescription: Importer à partir du Modpack téléchargé
+  addVanilla: Créez à partir de Minecraft de type vanille
+  addVanillaDescription: |-
+    Importer à partir du dossier commun .minecraft. 
+    Cela dupliquera le profil de jeu original vers XMLL.
   choose: Sélectionner une Instance
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
@@ -717,6 +738,10 @@ modInstall:
 modSearchType:
   all: Tous
   local: Cache disque
+modified:
+  reset: Réinitialiser
+  save: Sauvegarder
+  unsaved: Votre modification n'est pas enregistrée !
 modpack:
   author: Nom de l'auteur
   authorHint: Cela peut être utilisé pour signer le modpack exporté (Curseforge)
@@ -1036,10 +1061,6 @@ quiltVersion:
 refresh: Rafraîchir
 refreshResource: Actualiser les ressources
 remove: Enlever
-modified:
-  reset: Réinitialiser
-  save: Sauvegarder
-  unsaved: Votre modification n'est pas enregistrée !
 resourcepack:
   available: Disponible
   compatible: Format compatible {format} avec {version}
@@ -1111,7 +1132,6 @@ screenshots:
   name: Captures d'écran
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
-  add: Ajouter un serveur
   create: Créer un nouveau serveur
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur
   delete:

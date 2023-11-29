@@ -7,7 +7,6 @@ import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { ResourceService } from '../resource'
-import { ModrinthProfile } from './entities'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
@@ -16,41 +15,6 @@ export class ModrinthService extends AbstractService implements IModrinthService
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, async () => { })
-  }
-
-  getModrinthRootDirectory() {
-    return join(this.app.host.getPath('appData'), 'com.modrinth.theseus')
-  }
-
-  async parseModrinthInstance(instancePath: string): Promise<CreateInstanceOption & { importPath: string }> {
-    const data = await readFile(join(instancePath, 'profile.json'), 'utf-8')
-    const modrinth = JSON.parse(data) as ModrinthProfile
-
-    const options: CreateInstanceOption = {
-      name: modrinth.metadata.name,
-      icon: modrinth.metadata.icon,
-      runtime: {
-        minecraft: modrinth.metadata.game_version,
-        forge: modrinth.metadata.loader === 'forge' ? modrinth.metadata.loader_version.id : undefined,
-        fabricLoader: modrinth.metadata.loader === 'fabric' ? modrinth.metadata.loader_version.id : undefined,
-        quiltLoader: modrinth.metadata.loader === 'quilt' ? modrinth.metadata.loader_version.id : undefined,
-      },
-      upstream: {
-        type: 'modrinth-modpack',
-        projectId: modrinth.metadata.linked_data.project_id,
-        versionId: modrinth.metadata.linked_data.version_id,
-      },
-    }
-
-    return {
-      ...options,
-      importPath: join(instancePath, modrinth.path),
-    }
-  }
-
-  async importModrinth(path: string) {
-    const data = await readFile(path, 'utf-8')
-    const modrinth = JSON.parse(data) as ModrinthProfile
   }
 
   @Singleton((o) => `${o.version.id}`)

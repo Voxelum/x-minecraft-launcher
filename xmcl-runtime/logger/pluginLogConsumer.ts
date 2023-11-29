@@ -63,12 +63,18 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
   app.logEmitter.on('info', (destination, tag, message, ...args) => {
     if (!sinks[destination]) {
       sinks[destination] = new LogSink(destination)
+      if (initialized) {
+        sinks[destination].init(logRoot)
+      }
     }
     sinks[destination].entries.log.write(`[${tag}] ${formatMsg(message, args)}`)
   })
   app.logEmitter.on('warn', (destination, tag, message, ...args) => {
     if (!sinks[destination]) {
       sinks[destination] = new LogSink(destination)
+      if (initialized) {
+        sinks[destination].init(logRoot)
+      }
     }
     sinks[destination].entries.warn.write(`[${tag}] ${formatMsg(message, args)}`)
   })
@@ -76,6 +82,9 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
     hasError = true
     if (!sinks[destination]) {
       sinks[destination] = new LogSink(destination)
+      if (initialized) {
+        sinks[destination].init(logRoot)
+      }
     }
     sinks[destination].entries.error.write(`[${tag}] ${getMessageFromError(e)}`)
   })
@@ -133,6 +142,7 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
     }
   }, 60 * 1000)
 
+  let initialized = false
   const init = async () => {
     await ensureDir(logRoot)
     for (const destination of Object.values(sinks)) {
@@ -140,6 +150,7 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
     }
     logger.log(`Set log root to ${logRoot}`)
     app.registry.register(kLogRoot, logRoot)
+    initialized = true
   }
 
   init()

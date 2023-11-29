@@ -1,5 +1,11 @@
 AppAddInstanceDialog:
+  choiceTitle: |-
+    检测到多个启动配置文件。
+    请选择一项进行导入。
+  configTitle: 实例配置
+  createTitle: 创建游戏
   downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
+  serverTitle: 输入您的服务器地址
 AppShareInstanceDialog:
   baseInfo: 分享的基本配置
   cancelShare: 取消分享
@@ -282,6 +288,7 @@ edit: 编辑
 enable: 启用
 errors:
   BadForgeInstallerJarError: 无法解析 Forge 安装包 jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到这个问题，请联系开发团队。
+  BadInstanceType: '不是一个合法的实例: {type}'
   BodyTimeoutError: 等待 HTTP 数据超时
   ChecksumNotMatchError: 文件校验失败！期望哈希值是 {expect}，实际获取到的是 {actual}。
   ConnectTimeoutError: 与服务器建立连接超时
@@ -464,7 +471,21 @@ instanceUpdate:
   title: 更新实例
   update: 开始更新实例
 instances:
-  add: 新建本地游戏
+  add: 创建游戏
+  addDescription: 从头开始创建一个新实例
+  addMMCDescription: 导入已有的 MultiMC 实例，你需要选择 MultiMC 实例的文件夹
+  addManually: 手动创建
+  addModrinthDescription: |-
+    导入现有的 Modrinth 实例。
+    您需要选择 Modrinth 实例文件夹。
+  addServer: 从服务器创建
+  addServerDescription: 这将创建一个直接启动到服务器的游戏。
+  addTemplate: 从模板创建
+  addTemplateDescription: 从下载的 Modpack 导入
+  addVanilla: 从原版 Minecraft 创建
+  addVanillaDescription: |-
+    从通用 .minecraft 文件夹导入。
+    这会将原始游戏配置文件复制到 XMCL。
   choose: 选择实例
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
@@ -675,6 +696,10 @@ modInstall:
 modSearchType:
   all: 所有
   local: 磁盘缓存
+modified:
+  reset: 重置
+  save: 保存
+  unsaved: 注意！你尚未保存更改！
 modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人
@@ -988,10 +1013,6 @@ quiltVersion:
 refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
-modified:
-  reset: 重置
-  unsaved: 注意！你尚未保存更改！
-  save: 保存
 resourcepack:
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
@@ -1051,7 +1072,6 @@ screenshots:
   name: 截图
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
-  add: 添加服务器
   create: 创建一个新的服务器
   creationHint: 请填写服务器地址并尝试 Ping 服务器
   delete:

@@ -1,10 +1,16 @@
 import { useService } from '@/composables'
 import { generateDistinctName } from '@/util/instanceName'
-import { Instance, InstanceData, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
 
-export const kInstanceCreation: InjectionKey<InstanceData> = Symbol('CreateOption')
+export const kInstanceCreation: InjectionKey<{
+  data: InstanceData
+  files: Ref<InstanceFile[]>
+  loading: Ref<boolean>
+  error: Ref<any>
+  loadFiles?: () => Promise<InstanceFile[]>
+}> = Symbol('CreateOption')
 
 /**
  * Hook to create a general instance
@@ -38,8 +44,10 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
     assignMemory: false,
     fastLaunch: false,
   })
+  const files: Ref<InstanceFile[]> = ref([])
   return {
     data,
+    files,
     /**
      * Commit this creation. It will create and select the instance.
      */
@@ -48,10 +56,12 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
         data.name = generateDistinctName(instances.value.map(i => i.name), data.runtime)
       }
       const newPath = await create(data)
-      await installInstanceFiles({
-        path: newPath,
-        files: await template.loadFiles(),
-      })
+      if (files.value.length > 0) {
+        await installInstanceFiles({
+          path: newPath,
+          files: files.value,
+        })
+      }
       path.value = newPath
       return newPath
     },

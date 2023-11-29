@@ -242,6 +242,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.description = payload.description ?? instance.description
     instance.showLog = payload.showLog ?? instance.showLog
     instance.upstream = payload.upstream
+    instance.icon = payload.icon ?? ''
 
     if (!isPathDiskRootPath(instance.path)) {
       await ensureDir(instance.path)

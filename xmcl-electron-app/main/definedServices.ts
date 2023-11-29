@@ -7,7 +7,6 @@ import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, 
 import { InstanceIOService, InstanceInstallService, InstanceManifestService, InstanceUpdateService } from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
-import { MultiMCService } from '@xmcl/runtime/mmc'
 import { InstanceModsService } from '@xmcl/runtime/mod'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { ModrinthService } from '@xmcl/runtime/modrinth'
@@ -23,7 +22,6 @@ import { OfficialUserService, UserService, YggdrasilService } from '@xmcl/runtim
 import { VersionService } from '@xmcl/runtime/version'
 
 export const definedServices = [
-  MultiMCService,
   VersionMetadataService,
   BaseService,
   CurseForgeService,
