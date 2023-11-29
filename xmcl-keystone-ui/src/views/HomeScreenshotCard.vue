@@ -6,7 +6,7 @@
     <v-carousel
       hide-delimiters
       :height="height"
-      show-arrows-on-hover="urls.length > 0"
+      show-arrows-on-hover
       :show-arrows="urls.length > 0"
       cycle
       interval="5000"

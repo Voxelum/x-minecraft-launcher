@@ -17,12 +17,17 @@ export function useProjectsFilterSearch<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
   networkOnly: Ref<boolean>,
+  isCurseforgeActive: Ref<boolean>,
+  isModrinthActive: Ref<boolean>,
 ) {
   const filterSorted = computed(() => {
-    const filtered =
-      !networkOnly.value
-        ? items.value
-        : items.value.filter(p => p.modrinth || p.curseforge)
+    const filtered = networkOnly.value
+      ? items.value.filter(p => {
+        if (!isCurseforgeActive.value && p.curseforge) return false
+        if (!isModrinthActive.value && p.modrinth) return false
+        return p.curseforge || p.modrinth
+      })
+      : items.value
 
     if (!keyword.value) return filtered
 

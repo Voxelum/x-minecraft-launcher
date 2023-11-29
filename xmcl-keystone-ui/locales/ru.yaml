@@ -1258,8 +1258,10 @@ setup:
 shaderPack:
   deletion: Удалить шейдер
   deletionHint: Это удалит файл шейдера {path} и будет невозможно восстановить его.
+  disabled: Отключенный пакет шейдеров
   empty: Шейдер не выделен
   enable: Использование шейдера {name}
+  enabled: Включенный пакет шейдеров
   filter: Фильтр шейдеров
   internal: Внутренний шейдер
   internalDescription: >-

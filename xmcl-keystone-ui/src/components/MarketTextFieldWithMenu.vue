@@ -18,11 +18,42 @@
     </template>
     <v-card
       color="secondary"
-      class="max-w-100 max-h-100 overflow-auto px-2"
+      class="max-w-100 max-h-120 overflow-auto px-2"
       @mousedown.prevent
     >
-      <v-subheader>
+      <v-subheader class="flex">
+        {{ t('modrinth.sort.title') }}
+      </v-subheader>
+      <v-btn-toggle
+        :value="sort"
+        class="bg-transparent px-1"
+        @change="emit('update:sort', $event)"
+      >
+        <v-btn
+          v-for="tag in sortByItems"
+          :key="tag.value"
+          v-shared-tooltip="tag.text"
+          small
+          outlined
+        >
+          <v-icon
+            class="material-icons-outlined"
+            small
+          >
+            {{ tag.icon }}
+          </v-icon>
+        </v-btn>
+      </v-btn-toggle>
+
+      <v-subheader class="flex">
         Modrinth
+        <div class="flex-grow" />
+        <v-switch
+          dense
+          flat
+          :input-value="enableModrinth"
+          @change="emit('update:enableModrinth', $event)"
+        />
       </v-subheader>
       <v-chip-group
         v-model="modrinthSelectModel"
@@ -33,6 +64,7 @@
           v-for="tag in _modrinthCategories"
           :key="tag.name"
           filter
+          :disabled="!enableModrinth"
           outlined
           label
         >
@@ -45,17 +77,27 @@
         </v-chip>
       </v-chip-group>
       <template v-if="curseforgeCategoryFilter">
-        <v-subheader>
+        <v-subheader class="flex">
           Curseforge
+
+          <div class="flex-grow" />
+          <v-switch
+            dense
+            flat
+            :input-value="enableCurseforge"
+            @change="emit('update:enableCurseforge', $event)"
+          />
         </v-subheader>
         <v-chip-group
           v-model="curseforgeSelectModel"
           column
+          :disabled="!enableCurseforge"
         >
           <v-chip
             v-for="c of curseforgeCategories"
             :key="c.id"
             filter
+            :disabled="!enableCurseforge"
             outlined
             label
           >
@@ -78,21 +120,31 @@
 import MarketTextField from '@/components/MarketTextField.vue'
 import { useCurseforgeCategories } from '@/composables/curseforge'
 import { useModrinthTags } from '@/composables/modrinth'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { ModsSearchSortField } from '@xmcl/curseforge'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
   modrinthCategories: string[]
   curseforgeCategoryFilter?: string
   modrinthCategoryFilter: string
+  enableCurseforge?: boolean
+  enableModrinth?: boolean
   keyword: string
   placeholder?: string
+  sort?: number
+  modrinthSort?: 'relevance'| 'downloads' |'follows' |'newest' |'updated'
+  curseforgeSort?: ModsSearchSortField
 }>()
 
 const emit = defineEmits<{
   (event: 'input', value: boolean): void
   (event: 'update:curseforgeCategory', value: number | undefined): void
   (event: 'update:modrinthCategories', value: string[]): void
+  (event: 'update:enableCurseforge', value: boolean): void
+  (event: 'update:enableModrinth', value: boolean): void
   (event: 'update:keyword', value: string | undefined): void
+  (event: 'update:sort', value: number): void
 }>()
 
 const focused = ref(false)
@@ -146,4 +198,29 @@ const onClear = () => {
   emit('update:curseforgeCategory', undefined)
   emit('update:modrinthCategories', [])
 }
+
+const sortByItems = computed(() => {
+  return [{
+    text: t('modrinth.sort.relevance'),
+    icon: 'sort_by_alpha',
+    value: 'relevance',
+  }, {
+    text: t('modrinth.sort.downloads'),
+    icon: 'file_download',
+    value: 'downloads',
+  }, {
+    text: t('modrinth.sort.follows'),
+    icon: 'star',
+    value: 'popularity',
+  }, {
+    text: t('modrinth.sort.updated'),
+    icon: 'update',
+    value: 'updated',
+  }, {
+    text: t('modrinth.sort.newest'),
+    icon: 'celebration',
+    value: 'created',
+  }]
+})
+
 </script>

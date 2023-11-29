@@ -1,55 +1,62 @@
 <template>
   <div
-    class="mt-4 flex flex-1 flex-grow-0 flex-row items-center justify-center gap-2 pl-4 pr-6"
-    :class="{
-      'mb-4': !compact,
-      'mb-2': compact,
-    }"
+    class="mb-0 flex flex-col pl-4 pr-6"
   >
-    <AvatarItemList :items="extensionItems" />
-    <div class="flex-grow" />
-    <v-btn-toggle
-      v-model="shaderLoaderFilters"
-      multiple
-      dense
+    <div
+      class="flex flex-1 flex-grow-0 flex-row items-center justify-center gap-2"
     >
-      <v-btn
-        icon
-        text
-        value="iris"
+      <AvatarItemList :items="extensionItems" />
+      <div class="flex-grow" />
+      <v-btn-toggle
+        v-model="shaderLoaderFilters"
+        multiple
+        dense
       >
-        <v-img
-          width="28"
-          :src="'http://launcher/icons/iris'"
-        />
-      </v-btn>
+        <v-btn
+          icon
+          text
+          value="iris"
+        >
+          <v-img
+            width="28"
+            :src="'http://launcher/icons/iris'"
+          />
+        </v-btn>
 
-      <v-btn
-        icon
-        text
-        value="optifine"
-      >
-        <v-img
-          width="28"
-          :src="'http://launcher/icons/optifine'"
-        />
-      </v-btn>
-    </v-btn-toggle>
-    <MarketTextFieldWithMenu
-      :keyword.sync="keyword"
-      :placeholder="t('shaderPack.searchHint')"
-      :modrinth-categories.sync="modrinthCategories"
-      modrinth-category-filter="shader"
+        <v-btn
+          icon
+          text
+          value="optifine"
+        >
+          <v-img
+            width="28"
+            :src="'http://launcher/icons/optifine'"
+          />
+        </v-btn>
+      </v-btn-toggle>
+      <MarketTextFieldWithMenu
+        :keyword.sync="keyword"
+        :placeholder="t('shaderPack.searchHint')"
+        :modrinth-categories.sync="modrinthCategories"
+        modrinth-category-filter="shader"
+        :enable-modrinth.sync="isModrinthActive"
+        :sort.sync="sort"
+      />
+    </div>
+    <MarketExtensions
+      :modrinth="0"
+      :curseforge="0"
+      :local="0"
     />
   </div>
 </template>
 
 <script lang=ts setup>
 import AvatarItemList from '@/components/AvatarItemList.vue'
+import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
-import { kCompact } from '@/composables/scrollTop'
 import { kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
@@ -69,15 +76,10 @@ const extensionItems = computed(() => {
       text: shaderMod.value.version,
     })
   }
-  return [{
-    icon: 'gradient',
-    title: t('shaderPack.name', 2),
-    text: shaderPack.value,
-  }, ...items]
+  return items
 })
 
-const { keyword, shaderLoaderFilters, modrinthCategories } = injection(kShaderPackSearch)
+const { keyword, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
 const { shaderMod, shaderPack } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
-const compact = injection(kCompact)
 </script>

@@ -16,10 +16,12 @@
         modrinth-category-filter="resourcepack"
         :curseforge-category.sync="curseforgeCategory"
         curseforge-category-filter="texture-packs"
+        :enable-curseforge.sync="isCurseforgeActive"
+        :enable-modrinth.sync="isModrinthActive"
+        :sort.sync="sort"
       />
     </div>
     <MarketExtensions
-      :tab.sync="tab"
       :modrinth="modrinth.length"
       :curseforge="curseforge.length"
       :local="local.length"
@@ -45,7 +47,11 @@ const extensionItems = computed(() => {
   }, ...getExtensionItemsFromRuntime(runtime.value)]
 })
 
-const { keyword, modrinthCategories, tab, curseforgeCategory, modrinth, curseforge, enabled, items, local } = injection(kResourcePackSearch)
+const {
+  keyword, modrinthCategories, curseforgeCategory,
+  modrinth, curseforge, enabled, items, sort, local,
+  isCurseforgeActive, isModrinthActive,
+} = injection(kResourcePackSearch)
 
 const { t } = useI18n()
 </script>

@@ -1,6 +1,6 @@
 <template>
   <MarketBase
-    :items="items"
+    :items="all"
     :item-height="80"
     :plans="{}"
     :error="modrinthError"
@@ -10,7 +10,14 @@
     :loading="loading"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+      <v-subheader
+        v-if="typeof item === 'string'"
+        class="h-[76px]"
+      >
+        {{ item === 'enabled' ? t("shaderPack.enabled") : t("shaderPack.disabled") }}
+      </v-subheader>
       <ShaderPackItem
+        v-else
         :pack="item"
         :selection-mode="selectionMode"
         :selected="selected"
@@ -89,7 +96,6 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vDragover } from '@/directives/dragover'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
@@ -99,6 +105,7 @@ import ShaderPackItem from './ShaderPackItem.vue'
 const {
   modrinthError,
   loading,
+  networkOnly,
   items,
   keyword,
   shaderProjectFiles,
@@ -106,6 +113,31 @@ const {
   modrinthCategories,
 } = injection(kShaderPackSearch)
 const { runtime, path } = injection(kInstance)
+
+const all = computed(() => {
+  if (networkOnly.value) return items.value
+  const rest = [] as ProjectEntry<ProjectFile>[]
+  const enabled = [] as ProjectEntry<ProjectFile>[]
+  for (const i of items.value) {
+    if (!i.disabled) {
+      enabled.push(i)
+    } else {
+      rest.push(i)
+    }
+  }
+  if (enabled.length > 0) {
+    return [
+      'enabled' as string,
+      ...enabled,
+      'disabled' as string,
+      ...rest,
+    ] as (string | ProjectEntry<ProjectFile>)[]
+  }
+  return [
+    'disabled' as string,
+    ...rest,
+  ]
+})
 
 const toggleCategory = useToggleCategories(modrinthCategories)
 

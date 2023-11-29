@@ -1,11 +1,12 @@
 import { clientModrinthV2 } from '@/util/clients'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceData, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceData, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { useMarketSort } from './marketSort'
+import { useModrinthSearch } from './modrinthSearch'
 import { useDomainResources } from './resources'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
-import { useModrinthSearch } from './modrinthSearch'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -115,8 +116,11 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const shaderLoaderFilters = ref(['iris', 'optifine'] as ShaderLoaderFilter[])
   const keyword: Ref<string> = ref('')
   const modrinthCategories = ref([] as string[])
+  const isCurseforgeActive = ref(true)
+  const isModrinthActive = ref(true)
+  const { sort, modrinthSort } = useMarketSort()
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, runtime)
+  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, runtime)
   const { cached, loadingCached, shaderProjectFiles } = useLocalSearch(shaderPack)
   const loading = computed(() => loadingModrinth.value || loadingCached.value)
 
@@ -127,19 +131,26 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     cached,
   )
 
+  const networkOnly = computed(() => keyword.value.length > 0 || modrinthCategories.value.length > 0)
+
   const items = useProjectsFilterSearch(
     keyword,
     all,
-    computed(() => !keyword.value && modrinthCategories.value.length > 0),
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
   )
 
   return {
+    networkOnly,
     shaderProjectFiles,
     modrinthCategories,
     shaderLoaderFilters,
     items,
     loadMoreModrinth,
     canModrinthLoadMore,
+    sort,
+    isModrinthActive,
     modrinthError,
     loadingModrinth,
     cached,

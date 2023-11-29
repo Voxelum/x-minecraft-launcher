@@ -19,9 +19,9 @@ export function getCursforgeFileModLoaders(file: File): string[] {
 
 export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[]) {
   const mapping = {
-    [ModLoaderFilter.fabric]: 'Fabric',
-    [ModLoaderFilter.forge]: 'Forge',
-    [ModLoaderFilter.quilt]: 'Quilt',
+    [ModLoaderFilter.fabric]: 'Fabric' as const,
+    [ModLoaderFilter.forge]: 'Forge' as const,
+    [ModLoaderFilter.quilt]: 'Quilt' as const,
   }
   return loaderTypes.map(loaderType => mapping[loaderType])
 }

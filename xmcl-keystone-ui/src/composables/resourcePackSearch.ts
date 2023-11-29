@@ -4,9 +4,9 @@ import { InstanceData, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceResourcePack } from './instanceResourcePack'
+import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { useService } from './service'
-import { useTabMarketFilter } from './tab'
 import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
@@ -111,30 +111,38 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   const keyword: Ref<string> = ref('')
   const modrinthCategories = ref([] as string[])
   const curseforgeCategory = ref(undefined as number | undefined)
-  const { tab, disableCurseforge, disableLocal, disableModrinth } = useTabMarketFilter()
+  const isCurseforgeActive = ref(true)
+  const isModrinthActive = ref(true)
+  const { sort, modrinthSort, curseforgeSort } = useMarketSort()
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories, runtime)
-  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory, runtime)
+  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
+    modrinthSort, runtime)
+  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory,
+    curseforgeSort, runtime)
   const { enabled, disabled, all: filtered, loadingCached } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
   const all = useAggregateProjects(
-    computed(() => disableModrinth.value ? [] : modrinth.value),
-    computed(() => disableCurseforge.value ? [] : curseforge.value),
-    computed(() => disableLocal.value ? [] : filtered.value),
+    modrinth,
+    curseforge,
+    filtered,
     computed(() => enabled.value.filter(v => v.title.toLowerCase().includes(keyword.value.toLowerCase()))),
   )
 
-  const networkFirst = computed(() => !keyword.value && (modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined))
+  const networkOnly = computed(() => keyword.value.length > 0 || modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
+
   const items = useProjectsFilterSearch(
     keyword,
     all,
-    networkFirst,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
   )
 
   return {
     items,
-    tab,
+    networkOnly,
+    sort,
 
     modrinthCategories,
 
@@ -157,5 +165,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     loadingCached,
     keyword,
     loading,
+    isCurseforgeActive,
+    isModrinthActive,
   }
 }

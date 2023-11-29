@@ -89,7 +89,7 @@
         <template v-if="description">
           {{ description }}
         </template>
-        <template v-else-if="item.description.includes('§')">
+        <template v-else-if="typeof item.description === 'string' && item.description?.includes('§')">
           <TextComponent :source="item.description" />
         </template>
         <template v-else>
