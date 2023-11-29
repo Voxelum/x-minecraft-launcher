@@ -129,6 +129,7 @@ const updateData = async (man: CreateInstanceManifest) => {
   creationData.lastPlayedDate = options.lastPlayedDate ?? 0
   creationData.resolution = options.resolution ?? null
   creationData.icon = options.icon ?? ''
+  creationData.upstream = options.upstream
 
   if (man.isIsolated) {
     try {

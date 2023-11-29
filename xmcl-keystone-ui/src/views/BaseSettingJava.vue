@@ -38,7 +38,9 @@
       :value="true"
     >
       <template #activator>
-        <v-list-item>
+        <v-list-item
+          id="java-list"
+        >
           <v-list-item-content>
             <v-list-item-title>
               <span class="h-full self-center object-center text-center">

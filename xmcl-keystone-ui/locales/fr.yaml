@@ -1350,8 +1350,10 @@ shaderPack:
   deletionHint: >-
     Cela supprimera le fichier du shaderpack {path} et ne pourra pas être
     annulé.
+  disabled: Pack de shaders désactivé
   empty: Vous avez 0 shaderpack
   enable: Utilisation du shaderpack {name}
+  enabled: Pack de shaders activé
   filter: Filtrer les Shaderpacks
   internal: Shader Interne
   internalDescription: >-

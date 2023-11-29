@@ -150,7 +150,6 @@ import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinth
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
-import { vDragover } from '@/directives/dragover'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -171,13 +170,11 @@ const {
   curseforgeCategory,
   modLoaderFilters,
   keyword,
-  tab,
   items,
 } = injection(kModsSearch)
 
 const error = computed(() => {
-  if (tab.value === 2) return curseforgeError.value
-  if (tab.value === 3) return modrinthError.value
+  return curseforgeError.value || modrinthError.value
 })
 
 const isModProject = (v: ProjectEntry<ProjectFile> | undefined): v is (ProjectEntry<ModFile> & { files: ModFile[] }) =>
@@ -221,11 +218,8 @@ watch(computed(() => route.fullPath), () => {
 }, { immediate: true })
 
 const onLoad = () => {
-  if (tab.value === 2) {
-    loadMoreCurseforge()
-  } else if (tab.value === 3) {
-    loadMoreModrinth()
-  }
+  loadMoreCurseforge()
+  loadMoreModrinth()
 }
 
 // install / uninstall / enable / disable

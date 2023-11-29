@@ -5,24 +5,30 @@ import { InstanceData } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { Ref } from 'vue'
 
-export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: string, keyword: Ref<string>, passiveCategories: Ref<string[]>, activeCategories: Ref<string[]>, runtime: Ref<InstanceData['runtime']>) {
+export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: string,
+  keyword: Ref<string>,
+  passiveCategories: Ref<string[]>,
+  activeCategories: Ref<string[]>,
+  sort: Ref<'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | undefined>,
+  runtime: Ref<InstanceData['runtime']>,
+) {
   const modrinth = ref(undefined as SearchResult | undefined)
   const modrinthError = ref(undefined as any)
   const loadingModrinth = ref(false)
   const modrinthPage = ref(0)
 
-  const doSearch = async (offset: number, append: boolean) => {
-    try {
-      modrinthError.value = undefined
-      const facets = [`["versions:${runtime.value.minecraft}"]`, `["project_type:${projectType}"]`]
-      if (passiveCategories.value.length > 0) {
-        facets.push('[' + passiveCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
-      }
-      if (activeCategories.value.length > 0) {
-        facets.push('[' + activeCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
-      }
-      if (keyword.value || activeCategories.value.length > 0) {
-        const index = keyword.value ? 'relevance' : 'downloads'
+  const doSearch = debounce(async (offset: number, append: boolean) => {
+    if (keyword.value || activeCategories.value.length > 0) {
+      try {
+        modrinthError.value = undefined
+        const facets = [`["versions:${runtime.value.minecraft}"]`, `["project_type:${projectType}"]`]
+        if (passiveCategories.value.length > 0) {
+          facets.push('[' + passiveCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
+        }
+        if (activeCategories.value.length > 0) {
+          facets.push('[' + activeCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
+        }
+        const index = sort.value
         const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
         const result = await clientModrinthV2.searchProjects({
           query: keyword.value,
@@ -38,27 +44,31 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
           modrinth.value.limit += result.limit
           modrinth.value.offset = result.offset
         }
-      } else {
-        modrinth.value = undefined
+      } catch (e) {
+        modrinthError.value = e
+      } finally {
+        loadingModrinth.value = false
       }
-    } catch (e) {
-      modrinthError.value = e
-    } finally {
+    } else {
+      modrinthError.value = undefined
+      modrinth.value = undefined
       loadingModrinth.value = false
     }
-  }
+  }, 1000)
+
   const canModrinthLoadMore = computed(() => {
     return modrinth.value && modrinth.value.total_hits > (modrinth.value.offset + modrinth.value.limit)
   })
-  const loadMoreModrinth = debounce(async () => {
+  const loadMoreModrinth = async () => {
     if (canModrinthLoadMore.value) {
       modrinthPage.value += 1
       loadingModrinth.value = true
       await doSearch(modrinthPage.value * 20, true)
     }
-  }, 1000)
+  }
 
   const onSearch = async () => {
+    // if (!isActive.value) return
     loadingModrinth.value = true
     modrinthPage.value = 0
     doSearch(modrinthPage.value * 20, false)
@@ -66,7 +76,12 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
 
   watch(keyword, onSearch)
   watch(activeCategories, onSearch, { deep: true })
-  watch(passiveCategories, onSearch, { deep: true })
+  watch(sort, onSearch)
+  // watch(isActive, (v) => {
+  //   if (v) {
+  //     onSearch()
+  //   }
+  // })
 
   const result = computed(() => {
     const modr = modrinth.value

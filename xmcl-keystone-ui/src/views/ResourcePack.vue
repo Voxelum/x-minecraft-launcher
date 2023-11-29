@@ -19,7 +19,7 @@
       <ResourcePackItem
         v-else-if="(typeof item === 'object')"
         :pack="item"
-        :draggable="allMode && !item.disabled"
+        :draggable="!networkOnly && !item.disabled"
         :selection-mode="selectionMode"
         :selected="selected"
         :has-update="hasUpdate"
@@ -117,14 +117,13 @@ const {
   enabled,
   disabled,
   keyword,
+  networkOnly,
 } = injection(kResourcePackSearch)
 
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
 
-const allMode = computed(() => !keyword.value && modrinthCategories.value.length === 0 && !curseforgeCategory.value)
-
 const displayItems = computed(() => {
-  if (allMode.value) {
+  if (!networkOnly.value) {
     if (enabled.value.length > 0) {
       return [
         'enabled' as string,

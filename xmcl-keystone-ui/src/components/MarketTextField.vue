@@ -50,11 +50,11 @@ const emit = defineEmits<{
   (event: 'clear'): void
 }>()
 
-const search = debounce((v: string | undefined) => {
+const search = (v: string | undefined) => {
   if (v !== props.value) {
     emit('input', v)
   }
-}, 800)
+}
 
 const clear = () => {
   _keyword.value = ''

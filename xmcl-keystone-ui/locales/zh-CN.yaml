@@ -695,6 +695,8 @@ modInstall:
   upgrade: 更新 Mods
 modSearchType:
   all: 所有
+  explore: 浏览市场
+  installed: 本地
   local: 磁盘缓存
 modified:
   reset: 重置
@@ -1248,9 +1250,11 @@ setup:
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
+  disabled: 未启用的光影
   dropHint: 导入光影包
   empty: 没有启用光影包
   enable: 使用了 {name} 作为光影包
+  enabled: 已启用的光影
   filter: 筛选光影包
   internal: 内置
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项

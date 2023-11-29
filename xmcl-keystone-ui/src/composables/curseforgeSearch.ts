@@ -1,6 +1,6 @@
 import { clientCurseforgeV1 } from '@/util/clients'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
-import { Mod as CFMod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
+import { Mod as CFMod, ModsSearchSortField, Pagination, FileModLoaderType } from '@xmcl/curseforge'
 import { InstanceData } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { Ref } from 'vue'
@@ -14,21 +14,34 @@ export enum CurseforgeBuiltinClassId {
   world = 17,
 }
 
-export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number, keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, curseforgeCategory: Ref<number | undefined>, runtime: Ref<InstanceData['runtime']>) {
+export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number,
+  keyword: Ref<string>,
+  modLoaderFilters: Ref<ModLoaderFilter[]>,
+  curseforgeCategory: Ref<number | undefined>,
+  sort: Ref<ModsSearchSortField | undefined>,
+  runtime: Ref<InstanceData['runtime']>) {
   const curseforge = ref(undefined as {
     data: CFMod[]
     pagination: Pagination
   } | undefined)
 
-  const processCurseforge = async (offset: number, append: boolean) => {
+  const processCurseforge = debounce(async (offset: number, append: boolean) => {
     if (keyword.value || curseforgeCategory.value) {
       try {
         curseforgeError.value = undefined
         const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
+        const modLoaderTypes = getCursforgeModLoadersFromString(modLoaderFilters.value)
+        let modLoaderType = undefined as FileModLoaderType | undefined
+        if (modLoaderTypes.length === 1) {
+          if (modLoaderTypes[0] === 'Forge') modLoaderType = FileModLoaderType.Forge
+          if (modLoaderTypes[0] === 'Fabric') modLoaderType = FileModLoaderType.Fabric
+          if (modLoaderTypes[0] === 'Quilt') modLoaderType = FileModLoaderType.Quilt
+        }
         const result = await clientCurseforgeV1.searchMods({
           classId,
-          sortField: keyword.value ? ModsSearchSortField.Name : ModsSearchSortField.Popularity,
-          modLoaderTypes: getCursforgeModLoadersFromString(modLoaderFilters.value),
+          sortField: sort.value,
+          modLoaderTypes: modLoaderTypes.length > 1 ? modLoaderTypes : undefined,
+          modLoaderType,
           gameVersion: runtime.value.minecraft,
           searchFilter: keyword.value,
           categoryId: curseforgeCategory.value,
@@ -52,7 +65,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
       loadingCurseforge.value = false
       curseforge.value = undefined
     }
-  }
+  }, 1000)
 
   const curseforgeError = ref(undefined as any)
   const loadingCurseforge = ref(false)
@@ -61,23 +74,30 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
     return curseforge.value && curseforge.value.pagination.totalCount > (curseforge.value.pagination.index + curseforge.value.pagination.resultCount)
   })
 
-  const loadMoreCurseforge = debounce(async () => {
-    if (canCurseforgeLoadMore.value) {
+  const loadMoreCurseforge = async () => {
+    if (/* isActive.value &&  */canCurseforgeLoadMore.value) {
       curseforgePage.value += 1
       loadingCurseforge.value = true
       await processCurseforge(curseforgePage.value * 20, true)
     }
-  }, 1000)
+  }
 
   const onSearch = async () => {
+    // if (!isActive.value) return
     loadingCurseforge.value = true
     curseforgePage.value = 0
     processCurseforge(curseforgePage.value * 20, false)
   }
 
   watch(keyword, onSearch)
-  watch(modLoaderFilters, onSearch)
-  watch(curseforgeCategory, onSearch)
+  watch(modLoaderFilters, onSearch, { deep: true })
+  watch(curseforgeCategory, onSearch, { deep: true })
+  watch(sort, onSearch)
+  // watch(isActive, (v) => {
+  //   if (v) {
+  //     onSearch()
+  //   }
+  // })
 
   const mods = computed(() => {
     const cf = curseforge.value
@@ -86,7 +106,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
       id: i.id.toString(),
       icon: i.logo?.url ?? '',
       title: i.name,
-      author: i.authors[0].name,
+      author: i.authors[0]?.name,
       description: i.summary,
       downloadCount: i.downloadCount,
       followerCount: i.thumbsUpCount,
