@@ -52,7 +52,7 @@
             </v-icon>
           </v-btn>
         </span>
-        <div class="flex flex-grow-0 items-center gap-2">
+        <div class="ml-1 flex flex-grow-0 items-center gap-2 pt-1">
           <template v-if="loading">
             <v-skeleton-loader
               width="100"
@@ -102,7 +102,7 @@
             </div>
           </template>
         </div>
-        <div class="my-1">
+        <div class="my-1 ml-1">
           <v-skeleton-loader
             v-if="loading"
             type="text, text"
@@ -601,27 +601,7 @@
                   >
                     {{ item.value }}
                   </a>
-                  <v-chip
-                    v-else
-                    v-shared-tooltip="item.value"
-                    v-ripple
-                    color="grey darken-4"
-                    class="cursor-pointer"
-                    small
-                    @click="onInfoClicked(item.value)"
-                  >
-                    <span
-                      class=" select-text overflow-hidden overflow-ellipsis"
-                    >
-                      {{ item.value }}
-                    </span>
-                    <v-icon
-                      x-small
-                      right
-                    >
-                      content_copy
-                    </v-icon>
-                  </v-chip>
+                  <AppCopyChip :value="item.value" />
                 </div>
               </div>
             </template>
@@ -629,18 +609,31 @@
         </div>
       </aside>
     </div>
+
+    <v-btn
+      class="absolute bottom-4 right-4"
+      fab
+      large
+      :loading="loading"
+      color="primary"
+      @click="emit('refresh')"
+    >
+      <v-icon>
+        refresh
+      </v-icon>
+    </v-btn>
   </div>
 </template>
 <script setup lang="ts">
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
 import { kVuetify } from '@/composables/vuetify'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import { useMarketRoute } from '@/composables/useMarketRoute'
+import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 
 const props = defineProps<{
@@ -669,6 +662,7 @@ const emit = defineEmits<{
   (event: 'enable', value: boolean): void
   (event: 'open-dependency', dep: ProjectDependency): void
   (event: 'select:category', category: string): void
+  (event: 'refresh'): void
 }>()
 
 export interface ProjectDependency {
@@ -794,10 +788,6 @@ const onInstall = () => {
   if (selectedVersion.value) {
     emit('install', selectedVersion.value)
   }
-}
-
-const onInfoClicked = (value: string) => {
-  navigator.clipboard.writeText(value)
 }
 
 const onScroll = (e: Event) => {

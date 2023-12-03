@@ -39,7 +39,7 @@ const { getDateString } = useDateString()
 
 const cursforgeModId = computed(() => props.curseforgeId)
 
-const { data: curseforgeProject } = useSWRVModel(getCurseforgeProjectModel(cursforgeModId))
+const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectModel(cursforgeModId))
 const curseforgeMod = computed(() => {
   if (props.curseforge) return props.curseforge
   if (curseforgeProject.value) return curseforgeProject.value
@@ -175,7 +175,7 @@ const modVersions = computed(() => {
       changelog: computed(() => file.id === fileId.value ? changelog.value : undefined),
       changelogLoading: isValidating,
       type: releaseTypes[file.releaseType],
-      installed: !!installed[installedFileIndex],
+      installed: !!props.installed[installedFileIndex],
       downloadCount: file.downloadCount,
       loaders: getCursforgeFileModLoaders(file),
       minecraftVersion: file.gameVersions.filter(v => Number.isInteger(Number(v[0]))).join(', '),
@@ -320,6 +320,9 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `curseforge:${dep.id}` } })
 }
 
+const onRefresh = () => {
+  mutate()
+}
 </script>
 <template>
   <MarketProjectDetail
@@ -344,5 +347,6 @@ const onOpenDependency = (dep: ProjectDependency) => {
     @install="onInstall"
     @install-dependency="installDependency"
     @select:category="emit('category', Number($event))"
+    @refresh="onRefresh"
   />
 </template>
