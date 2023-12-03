@@ -36,7 +36,7 @@ const emit = defineEmits<{
 
 // Project
 const projectId = computed(() => props.projectId)
-const { project, refreshing: loading } = useModrinthProject(projectId)
+const { project, refreshing: loading, refresh } = useModrinthProject(projectId)
 const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth))
 
 // Versions
@@ -171,5 +171,6 @@ const onOpenDependency = (dep: ProjectDependency) => {
     @delete="onDelete"
     @install-dependency="onInstallDependency"
     @select:category="emit('category', $event)"
+    @refresh="refresh()"
   />
 </template>

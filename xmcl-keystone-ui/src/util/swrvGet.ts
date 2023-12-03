@@ -3,7 +3,7 @@ import { Ref } from 'vue'
 
 export interface SWRVModel<T> {
   key: Ref<string | undefined>
-  fetcher: () => Promise<T>
+  fetcher: (...args: any[]) => Promise<T>
 }
 
 export function getSWRV<T>(model: SWRVModel<T>, config: any) {

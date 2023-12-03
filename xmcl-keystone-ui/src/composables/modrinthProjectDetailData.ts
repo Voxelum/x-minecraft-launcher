@@ -130,7 +130,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
         type: v.version_type as any,
         downloadCount: v.downloads,
         loaders: v.loaders,
-        installed: !!files[installedFileIndex],
+        installed: !!installed.value[installedFileIndex],
         minecraftVersion: v.game_versions.join(', '),
         createdDate: v.date_published,
         changelog: v.changelog ? render(v.changelog) : undefined,

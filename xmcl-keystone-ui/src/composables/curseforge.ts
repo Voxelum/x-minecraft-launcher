@@ -206,7 +206,7 @@ export function getCurseforgeProjectDescriptionModel(projectId: Ref<number>) {
 export function getCurseforgeProjectModel(projectId: Ref<number>) {
   return {
     key: computed(() => `/curseforge/${projectId.value}`),
-    fetcher: () => clientCurseforgeV1.getMod(projectId.value),
+    fetcher: (v: any) => clientCurseforgeV1.getMod(projectId.value),
   }
 }
 

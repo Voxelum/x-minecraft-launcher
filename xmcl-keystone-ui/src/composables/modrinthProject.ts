@@ -14,10 +14,26 @@ export function useModrinthProject(id: Ref<string>) {
     error,
     mutate,
   } = useSWRV(computed(() => getModrinthProjectKey(id.value)),
-    async () => clientModrinthV2.getProject(id.value), inject(kSWRVConfig))
+    async (key) => {
+      const cacheKey = getModrinthProjectKey(id.value)
+      if (cacheKey === key) {
+        return clientModrinthV2.getProject(id.value)
+      } else {
+        const realId = key.split('/')[2]
+        return clientModrinthV2.getProject(realId)
+      }
+    }, inject(kSWRVConfig))
 
   const flights = inject(kFlights, {})
 
+  watch(data, () => {
+    const _id = id.value
+    const key = getModrinthProjectKey(_id)
+    const item = config?.cache.get(key)
+    if (item?.data.data.id !== _id) {
+      config?.cache.delete(key)
+    }
+  })
   if (flights.i18nSearch) {
     const { locale } = useI18n()
 
