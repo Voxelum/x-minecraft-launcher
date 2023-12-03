@@ -23,6 +23,7 @@
       <v-tooltip left>
         <template #activator="{ on }">
           <v-btn
+            id="java-import"
             icon
             @click="browseFile"
             v-on="on"
@@ -34,6 +35,7 @@
       </v-tooltip>
     </v-subheader>
     <v-list-group
+      id="java-list"
       no-action
       :value="true"
     >

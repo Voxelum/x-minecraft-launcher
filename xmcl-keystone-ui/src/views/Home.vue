@@ -22,7 +22,8 @@
     <transition
       name="fade-transition"
       mode="out-in"
-      @after-leave="onAfterTransition"
+      @after-enter="end"
+      @leave="start"
     >
       <router-view />
     </transition>
@@ -49,8 +50,7 @@ import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
-import { useSharedTooltip, useSharedTooltipData } from '@/composables/sharedTooltip'
-
+import { useSharedTooltipData, useBlockSharedTooltip } from '@/composables/sharedTooltip'
 const router = useRouter()
 
 router.afterEach((r) => {
@@ -83,13 +83,7 @@ const compact = ref(false)
 provide(kCompact, compact)
 const onScroll = useCompactScroll(compact)
 
-const { isShown, stack } = useSharedTooltipData()
-const onAfterTransition = () => {
-  isShown.value = false
-  while (stack.length) {
-    stack.pop()
-  }
-}
+const { start, end } = useBlockSharedTooltip()
 
 </script>
 

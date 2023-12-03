@@ -129,6 +129,8 @@ import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import ModrinthProject from './ModrinthProject.vue'
+import { useTutorial } from '@/composables/tutorial'
+import { DriveStep } from 'driver.js'
 
 const { instance, isServer } = injection(kInstance)
 
@@ -279,6 +281,17 @@ onMounted(async () => {
   }
   newsLayout.value = layout
 })
+
+const { t } = useI18n()
+useTutorial(computed(() => {
+  const steps: DriveStep[] = [
+    { element: '#user-avatar', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
+    { element: '#create-instance-button', popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') } },
+    { element: '#launch-button', popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') } },
+    { element: '#feedback-button', popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') } },
+  ]
+  return steps
+}))
 
 </script>
 

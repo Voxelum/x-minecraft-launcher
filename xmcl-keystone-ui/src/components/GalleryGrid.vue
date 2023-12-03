@@ -28,11 +28,11 @@
           class="flex h-40 max-h-40 max-w-full overflow-auto"
           @click="$emit('enter', g)"
         >
-          <img
+          <v-img
             v-if="g.logo"
             :src="g.logo"
-            class="white--text w-30 h-30"
-          >
+            class="white--text w-30"
+          />
           <div class="flex max-w-full flex-col overflow-auto">
             <v-card-title class="ml-1 max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap pt-3">
               {{ g.title }}

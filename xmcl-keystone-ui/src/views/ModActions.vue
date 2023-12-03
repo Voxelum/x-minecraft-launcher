@@ -18,6 +18,7 @@
     >
       <template #activator="{ on }">
         <v-btn
+          id="default-source-button"
           text
           v-on="on"
         >

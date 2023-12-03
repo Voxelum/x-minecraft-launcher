@@ -17,6 +17,7 @@
         >
           <template #activator="{ on, attrs }">
             <v-avatar
+              id="instance-icon"
               v-ripple
               size="40"
               v-bind="attrs"

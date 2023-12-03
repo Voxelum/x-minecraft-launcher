@@ -1327,10 +1327,47 @@ transportType:
   srflx: Server Reflexive Candidate
 tutorial:
   feedbackDescription: If you encounter any problem, please click this button to send feedback!
+  instance:
+    iconDescription: Click to change icon.`
+    iconTitle: Instance icon
+    javaDescription: Choose or switch a java version.
+    javaImportDescription: Import java from local storage.
+    javaImportTitle: Import java
+    javaTitle: Java list
   instanceAddDescription: >-
     Click this button to import existed Minecraft or create a new one from
     scratch or modpack.
   launchDescription: Click this button to install or launch the game.
+  mod:
+    defaultSourceDescription: >-
+      You can choose the source of mods detail here. There are the mods
+      published to both Modrinth and Curseforge. If you want to switch between
+      these two content provider. You can change the value here.
+    defaultSourceTitle: Select Mod Content Source
+    detailDescription: >-
+      When you select an item on the left. You will see the detail of the mod.
+      The content can come from Modrinth, Curseforge or parsed mod's content.
+    detailTitle: Mod Detail
+    listDescription: >-
+      We will display installed mods when you don't have any input. You will see
+      the searched mods once you input have keyword or category selected.
+    listTitle: Installed or Searched Mod
+    searchDescription: >-
+      You could search mods from Modrinth, Curseforge or your local cache by
+      this search box.
+    searchTitle: Search Mods
+  multiplayer:
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: >-
+      You can create or join a group with other players. The launcher will try
+      to create P2P connections between you and your friends according to the
+      group. You can input the group name given by your friends. Or you can
+      create an unique name from your own.
+    groupTitle: Join a group
+    joinDescription: >-
+      Once you input a group name. You can click this button to join or create
+      the group. If the group name is empty, the launcher will generate a name
+      for you.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
   enableModsAfterImport: Enable Mods After Import

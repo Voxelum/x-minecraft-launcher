@@ -1287,8 +1287,45 @@ transportType:
   srflx: 服务端反射地址
 tutorial:
   feedbackDescription: 如果你遇到了问题，请点击这个按钮来联系开发团队。
+  instance:
+    iconDescription: 点击更改图标。
+    iconTitle: 游戏图标
+    javaDescription: 选择或切换java版本。
+    javaImportDescription: 从本地导入java。
+    javaImportTitle: 导入java
+    javaTitle: 已有java列表
   instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从 modpack 创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
   launchDescription: 点击此按钮安装或启动游戏。
+  mod:
+    defaultSourceDescription: |-
+      您可以在此处选择模组详细信息的来源。 
+      Modrinth 和 Curseforge 均发布了 Mod。
+      如果你想在这两个内容提供商之间切换。
+      您可以在此处更改该值。
+    defaultSourceTitle: 选择 Mod 详情来源
+    detailDescription: |-
+      当您选择左侧的项目时。
+      您将看到该模组的详细信息。
+      内容可以来自 Modrinth、Curseforge 或解析的 mod 内容。
+    detailTitle: Mod 详情
+    listDescription: |-
+      这里会显示已安装的模组。
+      如果你输入了关键字或选了个类别后，这里会显示搜索到的模组。
+    listTitle: 安装/搜索的模组
+    searchDescription: 您可以通过此搜索框从 Modrinth、Curseforge 或本地缓存中搜索模组。
+    searchTitle: 搜索、发现模组
+  multiplayer:
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: |-
+      您可以与其他玩家创建或加入群组。
+      启动器会尝试根据群组在您和您的朋友之间创建 P2P 连接。
+      您可以输入好友提供的群组名称。
+      或者您可以自己创建一个独特的名称。
+    groupTitle: 和其他玩家组队
+    joinDescription: |-
+      输入组名称后。
+      您可以单击此按钮加入或创建群组。
+      如果组名称为空，启动器将为您生成一个名称。
   userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
 universalDrop:
   enableModsAfterImport: Mod 导入后自动启用

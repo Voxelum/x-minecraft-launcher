@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    id="search-text-field"
     ref="searchTextField"
     v-model="_keyword"
     class="max-w-80 min-w-70"

@@ -58,6 +58,7 @@ import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
+import { useTutorial } from '@/composables/tutorial'
 
 const { isServer, name, instance } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)
@@ -90,6 +91,17 @@ useBeforeLeave(() => {
 })
 
 usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
+
+useTutorial(computed(() => [{
+  element: '#instance-icon',
+  popover: { title: t('tutorial.instance.iconTitle'), description: t('tutorial.instance.iconDescription') },
+}, {
+  element: '#java-list',
+  popover: { title: t('tutorial.instance.javaTitle'), description: t('tutorial.instance.javaDescription') },
+}, {
+  element: '#java-import',
+  popover: { title: t('tutorial.instance.javaImportTitle'), description: t('tutorial.instance.javaImportDescription') },
+}]))
 
 </script>
 
