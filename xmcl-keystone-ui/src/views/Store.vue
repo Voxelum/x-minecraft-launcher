@@ -24,7 +24,7 @@
         />
       </v-carousel-item>
     </v-carousel>
-    <div class="w-full">
+    <div class="w-full select-none">
       <v-subheader>
         Recent Updated
       </v-subheader>
@@ -35,10 +35,18 @@
       @enter="enter($event.type, $event.id)"
     />
 
+    <div class="w-full select-none">
+      <v-subheader>
+        Recent Created
+      </v-subheader>
+    </div>
+
     <GalleryList
       :items="recentVersionItems"
       @enter="enter($event.type, $event.id)"
     />
+
+    <Modrinth />
   </div>
 </template>
 <script setup lang="ts">
@@ -51,6 +59,7 @@ import { Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import useSWRV from 'swrv'
 import StoreGallery, { GameGallery } from './StoreGallery.vue'
+import Modrinth from './Modrinth.vue'
 
 defineProps<{}>()
 

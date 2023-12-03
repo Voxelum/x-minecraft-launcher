@@ -31,6 +31,7 @@ import { kInstanceSave, useInstanceSaves } from '@/composables/save'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
+import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 import { kUserContext, useUserContext } from '@/composables/user'
@@ -129,6 +130,7 @@ export default defineComponent({
     provide(kMarketRoute, useMarketRoute())
     provide(kFilterCombobox, useFilterComboboxData())
     provide(kYggdrasilServices, useYggdrasilServices())
+    provide(kTutorial, useTutorialModel())
 
     return () => ctx.slots.default?.()
   },

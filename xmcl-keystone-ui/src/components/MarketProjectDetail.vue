@@ -609,19 +609,6 @@
         </div>
       </aside>
     </div>
-
-    <v-btn
-      class="absolute bottom-4 right-4"
-      fab
-      large
-      :loading="loading"
-      color="primary"
-      @click="emit('refresh')"
-    >
-      <v-icon>
-        refresh
-      </v-icon>
-    </v-btn>
   </div>
 </template>
 <script setup lang="ts">

@@ -23,6 +23,7 @@
           />
           {{ tGroupState[groupState] }}
           <v-text-field
+            id="group-input"
             v-model="groupId"
             class="max-w-40"
             hide-details
@@ -64,6 +65,7 @@
 
           <div class="flex-grow" />
           <v-btn
+            id="join-group-button"
             text
             :loading="joiningGroup"
             @click="onJoin()"
@@ -115,6 +117,7 @@
               >
                 <template #activator="{ on: onTooltip }">
                   <v-btn
+                    id="manual-connect-button"
                     text
                     icon
                     v-on="{ ...on, ...onTooltip }"
@@ -296,14 +299,14 @@
         <Hint
           v-if="connections.length === 0"
           icon="sports_kabaddi"
-          class="h-full"
+          class="multiplayer-content h-full"
           :size="120"
           :text="t('multiplayer.placeholder')"
         />
         <v-list-item
           v-for="c of connections"
           :key="c.id"
-          class="flex-1 flex-grow-0"
+          class="multiplayer-content flex-1 flex-grow-0"
         >
           <v-progress-linear
             v-if="c.sharing"
@@ -470,6 +473,7 @@ import { kUserContext } from '@/composables/user'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { useNatState } from '@/composables/nat'
 import { kSettingsState } from '@/composables/setting'
+import { useTutorial } from '@/composables/tutorial'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -620,4 +624,10 @@ const onJoin = () => {
   }
 }
 
+useTutorial(computed(() => [
+  { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
+  { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
+  { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
+  { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
+]))
 </script>

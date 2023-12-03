@@ -68,14 +68,11 @@
         @click="on.click"
       />
     </template>
-    <template
-      #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }"
-    >
+    <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
       <Hint
         v-if="dragover"
         icon="save_alt"
-        :text="
-          t('mod.dropHint')"
+        :text="t('mod.dropHint')"
         class="h-full"
       />
       <MarketProjectDetailModrinth
@@ -157,6 +154,7 @@ import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey } 
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
+import { useTutorial } from '@/composables/tutorial'
 
 const { runtime, path } = injection(kInstance)
 
@@ -256,14 +254,14 @@ onUnmounted(() => {
 
 // Drop
 const { resolveResources } = useService(ResourceServiceKey)
-const { dragover } = useDrop(() => {}, async (t) => {
+const { dragover } = useDrop(() => { }, async (t) => {
   const paths = [] as string[]
   for (const f of t.files) {
     paths.push(f.path)
   }
   const resources = await resolveResources(paths.map(p => ({ path: p, domain: ResourceDomain.Mods })))
   await install({ path: path.value, mods: resources })
-}, () => {})
+}, () => { })
 
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
@@ -292,6 +290,31 @@ const onInstallProject = useProjectInstall(
   modrinthInstaller,
 )
 
+useTutorial(computed(() => [{
+  element: '#search-text-field',
+  popover: {
+    title: t('tutorial.mod.searchTitle'),
+    description: t('tutorial.mod.searchDescription'),
+  },
+}, {
+  element: '#left-pane',
+  popover: {
+    title: t('tutorial.mod.listTitle'),
+    description: t('tutorial.mod.listDescription'),
+  },
+}, {
+  element: '#right-pane',
+  popover: {
+    title: t('tutorial.mod.detailTitle'),
+    description: t('tutorial.mod.detailDescription'),
+  },
+}, {
+  element: '#default-source-button',
+  popover: {
+    title: t('tutorial.mod.defaultSourceTitle'),
+    description: t('tutorial.mod.defaultSourceDescription'),
+  },
+}]))
 </script>
 
 <style scoped>

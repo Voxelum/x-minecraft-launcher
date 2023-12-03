@@ -28,37 +28,29 @@
 
     <div class="grow " />
     <TaskSpeedMonitor v-if="!noTask" />
-    <div
+    <AppSystemBarBadge
       v-if="!noTask"
-      class="non-moveable flex flex-grow-0 cursor-pointer rounded px-2 py-1 transition-all hover:bg-[rgba(255,255,255,0.2)]"
+      icon="assignment"
+      :text="count === 0 ? t('task.empty') : t('task.nTaskRunning', { count })"
       @click="showTaskDialog()"
-    >
-      <v-icon>
-        assignment
-      </v-icon>
-      <span v-if="count === 0">
-        {{ t('task.empty') }}
-      </span>
-      <span v-else>
-        {{ t('task.nTaskRunning', { count } ) }}
-      </span>
-    </div>
+    />
     <AppSystemBarAvatar
       v-if="!noUser"
     />
+    <AppSystemBarBadge
+      id="tutor-button"
+      icon="quiz"
+      :text="t('help')"
+      @click="start()"
+    />
+    <AppSystemBarBadge
+      id="feedback-button"
+      icon="bug_report"
+      :text="t('feedback.name')"
+      @click="showFeedbackDialog"
+    />
 
     <span class="flex h-full shrink grow-0 p-0">
-      <v-icon
-        id="feedback-button"
-        v-ripple
-        tabindex="-1"
-        class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
-
-        small
-        @click="showFeedbackDialog"
-      >
-        help_outline
-      </v-icon>
       <v-icon
         v-if="!hideWindowControl"
         v-ripple
@@ -96,6 +88,8 @@ import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
 import AppSystemBarAvatar from './AppSystemBarUser.vue'
+import { kTutorial } from '@/composables/tutorial'
+import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 
 defineProps<{
   noUser?: boolean
@@ -111,6 +105,7 @@ const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
+const { start, steps } = injection(kTutorial)
 
 const { back: onBack } = useRouter()
 

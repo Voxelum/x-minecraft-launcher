@@ -47,6 +47,8 @@
         <transition
           name="fade-transition"
           mode="out-in"
+          @after-enter="end"
+          @leave="start"
         >
           <router-view class="z-2" />
         </transition>
@@ -68,6 +70,7 @@ import { useBackground } from '@/composables/background'
 import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
+import { useBlockSharedTooltip } from '@/composables/sharedTooltip'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
@@ -84,6 +87,8 @@ useDefaultErrorHandler(notify)
 
 const router = useRouter()
 useExternalRoute(router)
+
+const { start, end } = useBlockSharedTooltip()
 
 </script>
 

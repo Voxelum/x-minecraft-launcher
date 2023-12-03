@@ -1393,6 +1393,47 @@ tutorial:
     Cliquez sur ce bouton pour importer Minecraft existant ou en créer un
     nouveau à partir de zéro ou un modpack.
   launchDescription: Cliquez sur ce bouton pour installer ou lancer le jeu.
+  mod:
+    defaultSourceDescription: |-
+      Vous pouvez choisir la source des détails des mods ici. 
+      Il existe des mods publiés sur Modrinth et Curseforge. 
+      Si vous souhaitez basculer entre ces deux fournisseurs de contenu. 
+      Vous pouvez modifier la valeur ici.
+    defaultSourceTitle: Sélectionnez la source de contenu du module
+    detailDescription: >-
+      Lorsque vous sélectionnez un élément sur la gauche. 
+
+      Vous verrez le détail du mod. 
+
+      Le contenu peut provenir de Modrinth, Curseforge ou du contenu analysé du
+      mod.
+    detailTitle: Détails du module
+    listDescription: >-
+      Nous afficherons les mods installés lorsque vous n’avez aucune entrée. 
+
+      Vous verrez les mods recherchés une fois que vous aurez saisi le mot-clé
+      ou la catégorie sélectionné.
+    listTitle: Mod installé ou recherché
+    searchDescription: >-
+      Vous pouvez rechercher des mods depuis Modrinth, Curseforge ou votre cache
+      local grâce à ce champ de recherche.
+    searchTitle: Rechercher des modules
+  multiplayer:
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: >-
+      Vous pouvez créer ou rejoindre un groupe avec d'autres joueurs. 
+
+      Le lanceur tentera de créer des connexions P2P entre vous et vos amis en
+      fonction du groupe. 
+
+      Vous pouvez saisir le nom du groupe donné par vos amis. 
+
+      Ou vous pouvez créer un nom unique à partir du vôtre.
+    groupTitle: Rejoindre un groupe
+    joinDescription: |-
+      Une fois que vous avez saisi un nom de groupe. 
+      Vous pouvez cliquer sur ce bouton pour rejoindre ou créer le groupe. 
+      Si le nom du groupe est vide, le lanceur générera un nom pour vous.
   userAccountDescription: Cliquez sur cette icône pour ajouter ou gérer votre compte Minecraft.
 universalDrop:
   enableModsAfterImport: Activer les mods après l'importation

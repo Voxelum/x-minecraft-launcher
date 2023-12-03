@@ -83,13 +83,11 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
-import { useTutorial } from '@/composables/tutorial'
 import { kSettingsState } from '@/composables/setting'
 
 const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
 const showSetup = ref(isFirstLaunch.value)
 const { state } = injection(kSettingsState)
-const tutor = useTutorial()
 
 // Set theme and start tutorial
 const onReady = async (data: any) => {

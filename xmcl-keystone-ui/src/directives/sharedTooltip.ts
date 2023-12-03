@@ -1,58 +1,77 @@
-import { useSharedTooltipData } from '@/composables/sharedTooltip'
+import { SharedTooltipData, useSharedTooltipData } from '@/composables/sharedTooltip'
 import { FunctionDirective } from 'vue'
 
 export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, string]> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
-  const { currentTooltip, x, y, color, left, stack, isShown } = useSharedTooltipData()
+  const { blocked, data, isShown, stack, shouldPushStack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
+    if (blocked.value) return
     const target = e.target as HTMLElement
     const rect = target.getBoundingClientRect()
-    if (isShown.value) {
-      stack.push([x.value, y.value, currentTooltip.value, color.value, left.value])
+    if (shouldPushStack() && data.value) {
+      stack.push(data.value)
     }
 
+    const newData: SharedTooltipData = {
+      text: '',
+      direction: 'top',
+      x: 0,
+      y: 0,
+      color: 'black',
+    }
     if (bindings.modifiers.left) {
-      left.value = true
+      newData.direction = 'left'
+    } else if (bindings.modifiers.right) {
+      newData.direction = 'right'
+    } else if (bindings.modifiers.bottom) {
+      newData.direction = 'bottom'
     } else {
-      left.value = false
+      newData.direction = 'top'
     }
-    if (!left.value) {
-      x.value = rect.x + rect.width / 2
-      y.value = rect.y - 0
+
+    if (newData.direction === 'top') {
+      newData.x = rect.x + rect.width / 2
+      newData.y = rect.y - 0
+    } else if (newData.direction === 'bottom') {
+      newData.x = rect.x + rect.width / 2
+      newData.y = rect.y + rect.height + 0
+    } else if (newData.direction === 'right') {
+      newData.x = rect.x + rect.width + 0
+      newData.y = rect.y + rect.height / 2
     } else {
-      x.value = rect.x
-      y.value = rect.y + rect.width / 2
+      newData.x = rect.x
+      newData.y = rect.y + rect.width / 2
     }
+
     const val = bindings.value
-    color.value = 'black'
     if (typeof val === 'string') {
-      currentTooltip.value = val
+      newData.text = val
     } else if (val instanceof Array) {
-      currentTooltip.value = val[0]
-      color.value = val[1]
+      newData.text = val[0]
+      newData.color = val[1]
     }
-    isShown.value = true
+
+    data.value = newData
+    isShown.value = false
+    setValue(true)
   })
   el.addEventListener('click', (e) => {
+    if (blocked.value) return
     stack.pop()
-    isShown.value = false
+    setValue(false)
   })
   el.addEventListener('mouseleave', (e) => {
+    if (blocked.value) return
     const last = stack.pop()
     if (last) {
-      x.value = last[0]
-      y.value = last[1]
-      currentTooltip.value = last[2]
-      color.value = last[3]
-      left.value = last[4]
-      isShown.value = true
+      data.value = last
+      setValue(true)
     } else {
-      isShown.value = false
+      setValue(false)
     }
   })
   el.addEventListener('DOMNodeRemoved', (e) => {
     stack.pop()
-    left.value = false
-    isShown.value = false
+    setValue(false)
   })
 }
