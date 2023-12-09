@@ -118,10 +118,6 @@ import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
 
-const props = defineProps<{
-  loading: boolean
-}>()
-
 const emit = defineEmits(['select'])
 
 // Templates

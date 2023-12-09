@@ -65,6 +65,8 @@ import { kBackground } from '@/composables/background'
 import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
+import { kSettingsState } from '@/composables/setting'
+import { kTutorial } from '@/composables/tutorial'
 import { kVuetify } from '@/composables/vuetify'
 import { useVuetifyColorTheme } from '@/composables/vuetifyColorTheme'
 import { injection } from '@/util/inject'
@@ -83,12 +85,12 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
-import { kSettingsState } from '@/composables/setting'
 
 const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
 const showSetup = ref(isFirstLaunch.value)
 const { state } = injection(kSettingsState)
 
+const tutor = injection(kTutorial)
 // Set theme and start tutorial
 const onReady = async (data: any) => {
   await nextTick()

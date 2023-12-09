@@ -64,7 +64,6 @@
           />
           <StepTemplate
             v-if="tStep === 'template'"
-            :loading="false"
             @select="next()"
           />
           <StepConfig
