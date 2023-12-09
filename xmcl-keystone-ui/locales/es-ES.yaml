@@ -418,7 +418,7 @@ instances:
   addServer: Crear desde el servidor
   addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
   addTemplate: Crear desde plantilla
-  choose: Seleccionar Instancia
+  choose: Selecciona un juego
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   refreshServers: Actualizar Servidores

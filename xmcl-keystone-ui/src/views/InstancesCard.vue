@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-draggable-card
-    v-context-menu="contextMenuItems"
+    v-context-menu.force="contextMenuItems"
     :ripple="!isBusy"
     class="draggable-card flex w-full flex-col"
     :color="isSelected ? 'primary' : ''"
@@ -26,49 +26,41 @@
       />
     </div>
     <v-img
-      class="white--text favicon grey en-2 max-h-50"
+      class="white--text favicon grey en-2 flex max-h-40 items-center"
       :src="image"
     >
-      <v-layout
-        fill-height
-        class="relative flex-col justify-center"
+      <div
+        class="flex items-center justify-center"
       >
-        <v-flex
-          flexbox
-          class="items-center justify-center"
+        <span class="headline">{{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}</span>
+      </div>
+      <div
+        v-if="instance.server"
+        class="absolute bottom-0 w-full justify-center"
+      >
+        <v-chip
+          color="green"
+          label
+          small
+          style
         >
-          <!-- <v-icon left>
-            {{ instance.server ? 'storage' : 'layers' }}
-          </v-icon> -->
-          <span class="headline">{{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}</span>
-        </v-flex>
-        <v-flex
-          v-if="instance.server"
-          class="absolute bottom-0 w-full justify-center"
-        >
-          <v-chip
-            color="green"
-            label
-            small
-            style
-          >
-            {{ instance.server.host }}:{{ instance.server.port }}
-          </v-chip>
-        </v-flex>
-      </v-layout>
+          {{ instance.server.host }}:{{ instance.server.port }}
+        </v-chip>
+      </div>
     </v-img>
 
     <v-card-text
       v-if="description"
       class="font-weight-bold"
     >
-      <text-component
+      <TextComponent
         :source="typeof description === 'object' ? description : { text: description }"
       />
     </v-card-text>
 
-    <v-card-actions>
-      <div class="flex flex-row flex-wrap justify-center gap-2">
+    <v-card-actions class="flex flex-col">
+      <div class="flex-grow" />
+      <div class="flex flex-grow-0 flex-row flex-wrap justify-center gap-2">
         <v-chip
           v-if="instance.server"
           small
@@ -77,7 +69,7 @@
           :input-value="false"
           @click.stop
         >
-          <text-component :source="status.version.name" />
+          <TextComponent :source="status.version.name" />
         </v-chip>
         <v-chip
           v-if="instance.server"
@@ -189,6 +181,7 @@
 </template>
 <script lang=ts setup>
 import unknownServer from '@/assets/unknown_server.png'
+import TextComponent from '@/components/TextComponent'
 import { useBusy } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'

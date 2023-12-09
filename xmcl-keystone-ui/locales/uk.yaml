@@ -479,7 +479,7 @@ instances:
   addVanillaDescription: |-
     Імпорт із загальної папки .minecraft. 
     Це призведе до копіювання оригінального профілю гри в XMCL.
-  choose: Вибирати екземпляр
+  choose: Виберіть Гра
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера
   refreshServers: Оновити сервери
@@ -1351,6 +1351,9 @@ tutorial:
   instanceAddDescription: >-
     Натисніть цю кнопку, щоб імпортувати існуючий Minecraft або створити новий з
     нуля або модпак.
+  instanceSelectDescription: >-
+    Натиснувши цю кнопку, ви перейдете на сторінку вибору та створення нової
+    гри.
   launchDescription: Натисніть цю кнопку, щоб встановити або запустити гру.
   mod:
     defaultSourceDescription: |-

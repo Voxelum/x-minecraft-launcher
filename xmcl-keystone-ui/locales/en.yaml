@@ -472,7 +472,7 @@ instances:
   addVanillaDescription: >-
     Import from common .minecraft folder. This will duplciate the original game
     profile to XMCL.
-  choose: Select Instance
+  choose: Select Game
   importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
   refreshServers: Refresh Servers
@@ -1337,6 +1337,9 @@ tutorial:
   instanceAddDescription: >-
     Click this button to import existed Minecraft or create a new one from
     scratch or modpack.
+  instanceSelectDescription: >-
+    Clicking this button will navigate to the page to select and create new
+    game.
   launchDescription: Click this button to install or launch the game.
   mod:
     defaultSourceDescription: >-

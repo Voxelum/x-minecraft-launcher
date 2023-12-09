@@ -1,104 +1,13 @@
 <template>
-  <div
-    ref="containerRef"
-    class="home-page visible-scroll relative flex max-h-full flex-1 flex-col overflow-x-hidden"
-    :style="{ overflow: 'overlay' }"
-    @wheel="onScroll"
-  >
-    <transition
-      name="fade-transition"
-      mode="out-in"
-    >
-      <HomeHeader class="sticky top-0 z-20" />
-    </transition>
-
-    <!-- <template
-      v-if="!isFocusMode"
-    > -->
-    <!-- This is to fix strange hover color issue... -->
-    <v-divider
-      class="border-transparent"
-    />
-    <transition
-      name="fade-transition"
-      mode="out-in"
-      @after-enter="end"
-      @leave="start"
-    >
-      <router-view />
-    </transition>
-
-    <!-- </template> -->
-
-    <HomeLogDialog />
-    <HomeLaunchMultiInstanceDialog />
-    <HomeLaunchStatusDialog />
-    <HomeJavaIssueDialog />
-    <HomeInstanceUpdateDialog />
-  </div>
+  <HomeDefault
+    v-if="!isFocus"
+  />
+  <HomeFocus v-else />
 </template>
+<script lang="ts" setup>
+import { useInFocusMode } from '@/composables/uiLayout'
+import HomeDefault from './HomeDefault.vue'
+import HomeFocus from './HomeFocus.vue'
 
-<script lang=ts setup>
-import { kInstance } from '@/composables/instance'
-import { usePresence } from '@/composables/presence'
-import { kCompact, useCompactScroll } from '@/composables/scrollTop'
-import { injection } from '@/util/inject'
-import { useInstanceServerStatus } from '../composables/serverStatus'
-import HomeHeader from './HomeHeader.vue'
-import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'
-import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
-import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
-import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
-import HomeLogDialog from './HomeLogDialog.vue'
-import { useSharedTooltipData, useBlockSharedTooltip } from '@/composables/sharedTooltip'
-const router = useRouter()
-
-router.afterEach((r) => {
-  document.title = `XMCL KeyStone - ${r.fullPath}`
-  if (containerRef.value) {
-    containerRef.value.scrollTop = 0
-  }
-})
-
-const { isServer, instance } = injection(kInstance)
-
-const { refresh } = useInstanceServerStatus(instance)
-const containerRef = ref(null as null | HTMLDivElement)
-
-onMounted(() => {
-  if (isServer.value) {
-    refresh()
-  }
-})
-
-const { t } = useI18n()
-usePresence(computed(() => t('presence.instance', {
-  instance: instance.value.name,
-  minecraft: instance.value.runtime.minecraft || '',
-  forge: instance.value.runtime.forge || '',
-  fabric: instance.value.runtime.fabricLoader || '',
-})))
-
-const compact = ref(false)
-provide(kCompact, compact)
-const onScroll = useCompactScroll(compact)
-
-const { start, end } = useBlockSharedTooltip()
-
+const isFocus = useInFocusMode()
 </script>
-
-<style>
-.v-dialog__content--active {
-  -webkit-app-region: no-drag;
-  user-select: auto;
-}
-.v-dialog {
-  -webkit-app-region: no-drag;
-  user-select: auto;
-}
-
-.pointer * {
-  cursor: pointer !important;
-}
-
-</style>

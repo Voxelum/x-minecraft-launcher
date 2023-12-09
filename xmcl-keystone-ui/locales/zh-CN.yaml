@@ -486,7 +486,7 @@ instances:
   addVanillaDescription: |-
     从通用 .minecraft 文件夹导入。
     这会将原始游戏配置文件复制到 XMCL。
-  choose: 选择实例
+  choose: 选择游戏
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
   refreshServers: 刷新服务器
@@ -1295,6 +1295,7 @@ tutorial:
     javaImportTitle: 导入java
     javaTitle: 已有java列表
   instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从 modpack 创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
+  instanceSelectDescription: 单击此按钮将导航到选择并创建新游戏的页面。
   launchDescription: 点击此按钮安装或启动游戏。
   mod:
     defaultSourceDescription: |-
