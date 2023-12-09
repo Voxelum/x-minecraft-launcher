@@ -7,7 +7,7 @@ import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '../constant'
-import { kClientToken } from '~/clientToken'
+import { kClientToken, kIsNewClient } from '~/clientToken'
 import { kSettings } from '~/settings'
 import { APP_INSIGHT_KEY, parseStack } from './telemetry'
 import { InstanceService } from '~/instance'
@@ -25,6 +25,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const sessionId = randomUUID()
 
   const clientSession = await app.registry.get(kClientToken)
+  const isNewClient = await app.registry.get(kIsNewClient)
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
 
@@ -74,7 +75,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   logger.log('Telemetry client started')
   client.trackEvent({
     name: 'app-start',
-    properties: { },
+    properties: {
+      isNewClient,
+    },
   })
 
   app.registryDisposer(async () => {
