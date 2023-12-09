@@ -21,9 +21,18 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
   const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
   let latest = ''
   getLatestMinecraftRelease().then(v => { latest = v })
+  const getNewRuntime = () => ({
+    minecraft: latest || '',
+    forge: '',
+    liteloader: '',
+    fabricLoader: '',
+    yarn: '',
+    quiltLoader: '',
+    neoForged: '',
+  })
   const data = reactive<InstanceData>({
     name: '',
-    runtime: { forge: '', minecraft: latest || '', liteloader: '', fabricLoader: '', yarn: '', labyMod: '' } as RuntimeVersions,
+    runtime: getNewRuntime(),
     version: '',
     java: '',
     showLog: false,
@@ -70,13 +79,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
      */
     reset() {
       data.name = ''
-      data.runtime = {
-        minecraft: latest || '',
-        forge: '',
-        liteloader: '',
-        fabricLoader: '',
-        yarn: '',
-      }
+      data.runtime = getNewRuntime()
       data.java = ''
       data.showLog = false
       data.hideLauncher = true

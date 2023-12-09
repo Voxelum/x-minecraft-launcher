@@ -305,13 +305,13 @@ export class InstallService extends AbstractService implements IInstallService {
     let version: string | undefined
     for (const java of validJavaPaths) {
       try {
-        this.log(`Start to install forge ${options.version} on ${options.minecraft} by ${java.path}`)
-        version = await this.submit(installNeoForgedTask(options.version, this.getPath(), {
+        this.log(`Start to install neoforge ${options.version} on ${options.minecraft} by ${java.path}`)
+        version = await this.submit(installNeoForgedTask(options.version.startsWith(options.minecraft) ? 'forge' : 'neoforge', options.version, this.getPath(), {
           ...installOptions,
           java: java.path,
           inheritsFrom: options.minecraft,
         }).setName('installForge', { id: options.version }))
-        this.log(`Success to install forge ${options.version} on ${options.minecraft}`)
+        this.log(`Success to install neoforge ${options.version} on ${options.minecraft}`)
         break
       } catch (err) {
         if (err instanceof Error) {

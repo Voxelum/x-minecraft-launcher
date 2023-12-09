@@ -240,8 +240,16 @@ export function findNeoForgedVersion(minecraft: string, resolvedVersion: Resolve
   const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
   if (!hasNeoForged) return ''
   const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
-  const version = resolvedVersion.arguments.game[forgeIndex + 1]
-  return `${minecraft}-${version}` as string
+  const neoForgeIndex = resolvedVersion.arguments.game.indexOf('--fml.neoForgeVersion')
+  if (forgeIndex !== -1) {
+    const version = resolvedVersion.arguments.game[forgeIndex + 1]
+    return `${minecraft}-${version}` as string
+  }
+  if (neoForgeIndex !== -1) {
+    const version = resolvedVersion.arguments.game[neoForgeIndex + 1]
+    return version as string
+  }
+  return ''
 }
 
 export function findLabyModVersion(resolvedVersion: ResolvedVersion) {
@@ -373,6 +381,7 @@ function isVersionMatched(version: LocalVersionHeader,
   }
 
   if (neoForged) {
+    console.log(version.neoForged)
     // require neoForged
     if (!version.neoForged || version.neoForged !== neoForged) {
       // require neoForged but not neoForged

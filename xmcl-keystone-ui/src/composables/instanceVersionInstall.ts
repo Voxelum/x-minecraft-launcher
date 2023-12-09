@@ -57,7 +57,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (neoForged) {
       const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft)
       if (!localNeoForge) {
-        const neoForgedVersion = await getCacheOrFetch('/neoforged-versions', () => getNeoForgedVersionList())
+        const neoForgedVersion = await getCacheOrFetch(`/neoforged-versions/${minecraft}`, () => getNeoForgedVersionList(minecraft))
         const found = neoForgedVersion.versions.find(v => v === neoForged)
         const id = found ?? neoForged
         forgeVersion = await installNeoForged({ version: id, minecraft })
