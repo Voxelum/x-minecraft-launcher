@@ -110,6 +110,7 @@ import { kInstanceCreation, useInstanceCreation } from '../composables/instanceC
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { useNotifier } from '../composables/notifier'
 import StepChoice from '@/components/StepChoice.vue'
+import { kPeerState } from '@/composables/peers'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
@@ -202,6 +203,8 @@ const steps = computed(() => {
 })
 
 // Dialog model
+const selectedTemplatePath = ref('')
+provide('template', selectedTemplatePath)
 const { isShown, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey, (param) => {
   if (creating.value) {
     return
@@ -212,6 +215,14 @@ const { isShown, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey,
   valid.value = true
 
   windowController.focus()
+
+  if (param && typeof param === 'string') {
+    selectedTemplatePath.value = param
+    type.value = 'template'
+    nextTick(() => {
+      step.value = 2
+    })
+  }
 }, () => {
   if (creating.value) {
     return
@@ -223,6 +234,11 @@ const { isShown, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey,
     error.value = undefined
     reset()
   }, 500)
+})
+watch(isShown, (v) => {
+  if (v) {
+    windowController.focus()
+  }
 })
 function quit() {
   if (creating.value) return
@@ -285,23 +301,24 @@ useResourceAdd(({ path, name }) => {
 }, ResourceDomain.Modpacks)
 
 const { on: onPeerService } = useService(PeerServiceKey)
+const { connections } = injection(kPeerState)
 onPeerService('share', (event) => {
-  // if (!event.manifest) {
-  //   return
-  // }
-  // const conn = connections.value.find(c => c.id === event.id)
-  // if (conn) {
-  //   notify({
-  //     level: 'info',
-  //     title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
-  //     full: true,
-  //     more() {
-  //       if (!isShown.value) {
-  //         showAddInstance(event.id)
-  //       }
-  //     },
-  //   })
-  // }
+  if (!event.manifest) {
+    return
+  }
+  const conn = connections.value.find(c => c.id === event.id)
+  if (conn) {
+    notify({
+      level: 'info',
+      title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
+      full: true,
+      more() {
+        if (!isShown.value) {
+          showAddInstance(event.id)
+        }
+      },
+    })
+  }
 })
 
 window.addEventListener('keydown', (e) => {
