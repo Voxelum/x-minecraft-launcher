@@ -128,13 +128,13 @@ export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<Local
   }
 }
 
-export function useNeoForgedVersions(local: Ref<LocalVersionHeader[]>) {
+export function useNeoForgedVersions(minecraft: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { getNeoForgedVersionList } = useService(VersionMetadataServiceKey)
   const _refreshing = useServiceBusy(VersionMetadataServiceKey, 'getNeoForgedVersionList')
 
-  const { data, isValidating, mutate, error } = useSWRV('/neoforged-versions',
+  const { data, isValidating, mutate, error } = useSWRV(computed(() => `/neoforged-versions/${minecraft.value}`),
     async () => {
-      const result = await getNeoForgedVersionList().then(markRaw)
+      const result = await getNeoForgedVersionList(minecraft.value).then(markRaw)
       return result
     },
     inject(kSWRVConfig))

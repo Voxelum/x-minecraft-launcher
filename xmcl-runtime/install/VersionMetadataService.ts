@@ -97,8 +97,13 @@ export class VersionMetadataService extends AbstractService implements IVersionM
   }
 
   @Singleton()
-  async getNeoForgedVersionList() {
-    const response = await request('https://maven.neoforged.net/releases/net/neoforged/forge/maven-metadata.xml')
+  async getNeoForgedVersionList(version: string) {
+    const allowed = ['1.20.1', '1.20.2'/* 20.2.x */, '1.20.3'/* 20.3.x */, '1.20.4'/* 20.4.x */]
+    if (!allowed.includes(version)) { return { latest: '', release: '', versions: [] } }
+    const url = version === '1.20.1'
+      ? 'https://maven.neoforged.net/releases/net/neoforged/forge/maven-metadata.xml'
+      : 'https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml'
+    const response = await request(url)
     const body = await response.body.text()
     const parser = new XMLParser()
     const forgeMetadata = parser.parse(body)
@@ -107,6 +112,13 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       latest: forgeMetadata.metadata.versioning.latest,
       release: forgeMetadata.metadata.versioning.release,
       versions: versions.version,
+    }
+    if (version === '1.20.2') {
+      result.versions = result.versions.filter(v => v.startsWith('20.2'))
+    } else if (version === '1.20.3') {
+      result.versions = result.versions.filter(v => v.startsWith('20.3'))
+    } else if (version === '1.20.4') {
+      result.versions = result.versions.filter(v => v.startsWith('20.4'))
     }
     return result
   }

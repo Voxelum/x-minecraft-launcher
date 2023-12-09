@@ -16,7 +16,7 @@ export interface VersionMetadataService {
   /**
    * Get the neo forge version list
    */
-  getNeoForgedVersionList(): Promise<NeoForgedVersions>
+  getNeoForgedVersionList(minecraftVersion: string): Promise<NeoForgedVersions>
   /**
    * Get liteloader version list in the store.
    */

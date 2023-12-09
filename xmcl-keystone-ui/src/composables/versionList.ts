@@ -57,14 +57,13 @@ export function useMinecraftVersionList(version: Ref<string>, local: Ref<LocalVe
 }
 
 export function useNeoForgedVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
-  const { versions, installed, latest, recommended, refresh, refreshing, error } = useNeoForgedVersions(local)
+  const { versions, installed, latest, recommended, refresh, refreshing, error } = useNeoForgedVersions(minecraft, local)
   const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
 
   const items = computed(() => {
     const vers = versions.value
     const result: VersionItem[] = vers
-      .filter(v => v.startsWith(minecraft.value))
       .map(v => {
         const key = LockKey.version(`neoforge-${v}`)
         return reactive({

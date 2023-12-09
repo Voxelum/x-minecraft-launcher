@@ -52,7 +52,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
           return true
         }
       } else if (loader === 'neoforge') {
-        const versions = await swrvGet('/neoforged-versions', () => getNeoForgedVersionList(), cache, dedupingInterval)
+        const versions = await swrvGet(`/neoforged-versions/${runtime.value.minecraft}`, () => getNeoForgedVersionList(runtime.value.minecraft), cache, dedupingInterval)
         const version = versions.release
         if (version) {
           await editInstance({
