@@ -78,6 +78,12 @@ export function useInstances() {
       path.value = firstInstancePath
     }
   })
+  watch(path, (newPath) => {
+    editInstance({
+      instancePath: newPath,
+      lastAccessDate: Date.now(),
+    })
+  })
   return {
     selectedInstance: path,
     instances,
