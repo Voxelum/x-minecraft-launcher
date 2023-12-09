@@ -89,6 +89,11 @@ import { useDialog } from '../composables/dialog'
 
 const { hide, isShown } = useDialog('feedback')
 const { t } = useI18n()
+watch(isShown, (v) => {
+  if (v) {
+    windowController.focus()
+  }
+})
 
 </script>
 

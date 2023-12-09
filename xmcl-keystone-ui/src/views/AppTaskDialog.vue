@@ -16,7 +16,11 @@ import TaskView from './AppTaskDialogTaskView.vue'
 
 const { hide, isShown } = useDialog('task')
 const router = useRouter()
-
+watch(isShown, (v) => {
+  if (v) {
+    windowController.focus()
+  }
+})
 router.afterEach((g) => {
   if (isShown.value) {
     hide()
