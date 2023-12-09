@@ -130,14 +130,17 @@ const { resources } = injection(kModpacks)
 const { connections } = injection(kPeerState)
 const { cache: cachedList } = useFeedTheBeastVersionsCache()
 const { templates } = useInstanceTemplates(all, resources, connections, cachedList)
-const selectedTemplatePath = ref('')
+const selectedTemplatePath = inject('template', ref(''))
 const selectedTemplate = computed(() => templates.value.find(f => f.filePath === selectedTemplatePath.value))
 function onSelect(template: Template) {
+  if (selectedTemplate.value === template) {
+    emit('select')
+    return
+  }
   selectedTemplatePath.value = template.filePath
-  emit('select', template)
 }
-const { data: creationData } = injection(kInstanceCreation)
-watch(selectedTemplate, (t) => {
+const { data: creationData, files, loading, error } = injection(kInstanceCreation)
+watch(selectedTemplate, async (t) => {
   if (!t) return
   const instData = t.instance
   creationData.name = instData.name
@@ -156,7 +159,19 @@ watch(selectedTemplate, (t) => {
   creationData.modpackVersion = instData.modpackVersion || ''
   creationData.server = instData.server ? { ...instData.server } : null
   creationData.upstream = instData.upstream
-})
+
+  files.value = t.files
+  try {
+    loading.value = true
+    files.value = await t.loadFiles()
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
+  }
+
+  emit('select')
+}, { immediate: true })
 
 const filterText = ref('')
 const versionFilterOptions = computed(() => templates.value.map(v => v.instance.runtime.minecraft).filter((v): v is string => !!v))
