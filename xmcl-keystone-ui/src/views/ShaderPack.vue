@@ -146,12 +146,14 @@ const { t } = useI18n()
 const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
 const { shaderPack } = injection(kInstanceShaderPacks)
+const { removeResources } = useService(ResourceServiceKey)
 
 const onInstall = (r: Resource[]) => {
   shaderPack.value = r[0].fileName
 }
-const onUninstall = () => {
+const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
+  removeResources(files.map(f => f.resource.hash))
 }
 const onEnable = (f: ProjectFile) => {
   shaderPack.value = f.resource.fileName
