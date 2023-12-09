@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="!isFocus"
     class="relative mx-3 select-none"
   >
     <GridLayout
@@ -107,20 +106,16 @@
       </GridItem>
     </GridLayout>
   </div>
-  <HomeFocus v-else />
 </template>
 <script lang="ts" setup>
-
 import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
-import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
 import CurseforgeProject from './CurseforgeProject.vue'
-import HomeFocus from './HomeFocus.vue'
 import HomeModCard from './HomeModCard.vue'
 import HomeNewsCard from './HomeNewsCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
@@ -133,8 +128,6 @@ import { useTutorial } from '@/composables/tutorial'
 import { DriveStep } from 'driver.js'
 
 const { instance, isServer } = injection(kInstance)
-
-const isFocus = useInFocusMode()
 
 enum CardType {
   Mod,

@@ -519,7 +519,7 @@ instances:
   addVanillaDescription: |-
     Importer à partir du dossier commun .minecraft. 
     Cela dupliquera le profil de jeu original vers XMLL.
-  choose: Sélectionner une Instance
+  choose: Sélectionnez un jeu
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
   refreshServers: Actualiser les Serveurs
@@ -1392,6 +1392,9 @@ tutorial:
   instanceAddDescription: >-
     Cliquez sur ce bouton pour importer Minecraft existant ou en créer un
     nouveau à partir de zéro ou un modpack.
+  instanceSelectDescription: >-
+    En cliquant sur ce bouton, vous accéderez à la page pour sélectionner et
+    créer un nouveau jeu.
   launchDescription: Cliquez sur ce bouton pour installer ou lancer le jeu.
   mod:
     defaultSourceDescription: |-

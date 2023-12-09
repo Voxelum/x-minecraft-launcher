@@ -38,10 +38,11 @@
       v-if="!noUser"
     />
     <AppSystemBarBadge
+      v-if="tutor"
       id="tutor-button"
       icon="quiz"
       :text="t('help')"
-      @click="start()"
+      @click="tutor.start()"
     />
     <AppSystemBarBadge
       id="feedback-button"
@@ -105,7 +106,7 @@ const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
-const { start, steps } = injection(kTutorial)
+const tutor = inject(kTutorial)
 
 const { back: onBack } = useRouter()
 

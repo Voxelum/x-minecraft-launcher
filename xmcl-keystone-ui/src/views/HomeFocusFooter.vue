@@ -1,65 +1,48 @@
 <template>
   <div class="flex w-full items-end">
-    <div>
-      <HomeSettingsSpeedDial :refreshing="false" />
-    </div>
-    <v-tooltip
-      top
-      transition="scroll-y-reverse-transition"
+    <v-btn
+      v-shared-tooltip="_ => t('baseSetting.title')"
+      text
+      icon
+      to="/base-setting"
+      :loading="refreshing"
     >
-      <template #activator="{ on }">
-        <v-btn
-          text
-          icon
-          v-on="on"
-          @click="showInstanceFolder"
-        >
-          <v-icon>
-            folder
-          </v-icon>
-        </v-btn>
-      </template>
-      {{ t("instance.showInstance") }}
-    </v-tooltip>
+      <v-icon>
+        tune
+      </v-icon>
+    </v-btn>
+    <v-btn
+      v-shared-tooltip="_ => t('instance.showInstance')"
+      text
+      icon
+      @click="showInstanceFolder"
+    >
+      <v-icon>
+        folder
+      </v-icon>
+    </v-btn>
 
-    <v-tooltip
-      top
-      transition="scroll-y-reverse-transition"
+    <v-btn
+      v-shared-tooltip="_ => t('logsCrashes.title')"
+      text
+      icon
+      @click="showLogDialog"
     >
-      <template #activator="{ on }">
-        <v-btn
-          text
-          icon
-          v-on="on"
-          @click="showLogDialog"
-        >
-          <v-icon>
-            subtitles
-          </v-icon>
-        </v-btn>
-      </template>
-      {{ t("logsCrashes.title") }}
-    </v-tooltip>
-    <v-tooltip
-      :close-delay="0"
-      top
-      transition="scroll-y-reverse-transition"
+      <v-icon>
+        subtitles
+      </v-icon>
+    </v-btn>
+    <v-btn
+      v-shared-tooltip="_ => t('modpack.export')"
+      text
+      icon
+      :loading="refreshing"
+      @click="showExport"
     >
-      <template #activator="{ on }">
-        <v-btn
-          text
-          icon
-          :loading="refreshing"
-          v-on="on"
-          @click="showExport"
-        >
-          <v-icon>
-            share
-          </v-icon>
-        </v-btn>
-      </template>
-      {{ t('modpack.export') }}
-    </v-tooltip>
+      <v-icon>
+        share
+      </v-icon>
+    </v-btn>
 
     <v-spacer />
     <HomeLaunchButton
@@ -79,7 +62,7 @@ import { kLaunchTask } from '@/composables/launchTask'
 import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import HomeLaunchButton from './HomeLaunchButton.vue'
-import HomeSettingsSpeedDial from './HomeSettingsSpeedDial.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { path, refreshing } = injection(kInstance)
 const { status, pause, resume } = injection(kLaunchTask)

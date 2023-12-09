@@ -11,9 +11,6 @@
       <v-flex class="flex-grow-0">
         <CreateButton />
       </v-flex>
-      <v-flex class="flex-grow-0">
-        <ImportButton />
-      </v-flex>
     </v-card>
 
     <v-container

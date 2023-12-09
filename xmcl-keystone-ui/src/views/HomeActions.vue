@@ -4,7 +4,7 @@
     class=""
   >
     <v-btn
-      v-shared-tooltip="t('modpack.export')"
+      v-shared-tooltip="_ => t('modpack.export')"
       text
       icon
       :loading="refreshing"
@@ -16,7 +16,7 @@
     </v-btn>
 
     <v-btn
-      v-shared-tooltip="t('logsCrashes.title')"
+      v-shared-tooltip="_ => t('logsCrashes.title')"
       class="ml-1.5"
       text
       icon
@@ -28,7 +28,7 @@
     </v-btn>
 
     <v-btn
-      v-shared-tooltip="t('instance.showInstance')"
+      v-shared-tooltip="_ => t('instance.showInstance')"
       class="ml-1.5"
       text
       icon
@@ -40,7 +40,7 @@
     </v-btn>
 
     <v-btn
-      v-shared-tooltip="t('baseSetting.title', 2)"
+      v-shared-tooltip="_ => t('baseSetting.title', 2)"
       class="ml-1.5"
       text
       icon
