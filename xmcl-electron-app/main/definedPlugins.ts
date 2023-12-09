@@ -15,6 +15,7 @@ import { pluginImageStorage } from '@xmcl/runtime/imageStore/pluginImageStore'
 import { pluginLogConsumer } from '@xmcl/runtime/logger/pluginLogConsumer'
 import { pluginCurseforgeModpackHandler } from '@xmcl/runtime/modpack/pluginCurseforgeModpackHandler'
 import { pluginModrinthModpackHandler } from '@xmcl/runtime/modpack/pluginModrinthModpackHandler'
+import { pluginMcbbsModpackHandler } from '@xmcl/runtime/modpack/pluginMcbbsModpackHandler'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
 import { pluginUndiciLogger } from '@xmcl/runtime/network/pluginUndiciLogger'
 import { pluginUserPlaytime } from '@xmcl/runtime/playTime/pluginUserPlaytime'
@@ -44,6 +45,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginUserPlaytime,
   pluginYggdrasilHandler,
   pluginCurseforgeModpackHandler,
+  pluginMcbbsModpackHandler,
   pluginModrinthModpackHandler,
   pluginClientToken,
   pluginCurseforgeClient,

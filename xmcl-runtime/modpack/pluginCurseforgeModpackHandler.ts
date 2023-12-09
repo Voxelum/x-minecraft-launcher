@@ -10,7 +10,6 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
-  const curseforgeService = await app.registry.get(CurseForgeService)
   modpackService.registerHandler<CurseforgeModpackManifest>('curseforge', {
     resolveUnpackPath: function (manifest: CurseforgeModpackManifest, e: Entry) {
       let overridePrefix = manifest.overrides ?? 'overrides/'
@@ -29,6 +28,7 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
     resolveInstanceOptions: getInstanceConfigFromCurseforgeModpack,
     resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
       // curseforge or mcbbs
+      const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
       const curseforgeFiles = manifest.files
       const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
       const infos: InstanceFile[] = []
