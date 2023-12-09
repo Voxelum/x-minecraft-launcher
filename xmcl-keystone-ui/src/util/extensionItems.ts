@@ -31,7 +31,7 @@ export function getExtensionItemsFromRuntime(runtime: RuntimeVersions) {
   }
   if (runtime.neoForged) {
     items.push({
-      avatar: 'http://launcher/icons/neoforged',
+      avatar: 'http://launcher/icons/neoForged',
       title: 'NeoForged',
       text: runtime.neoForged,
     })
