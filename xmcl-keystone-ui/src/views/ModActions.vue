@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
-      v-shared-tooltip="t('mod.showDirectory')"
+      v-shared-tooltip="_ => t('mod.showDirectory')"
       icon
       large
       @click="showDirectory(path)"

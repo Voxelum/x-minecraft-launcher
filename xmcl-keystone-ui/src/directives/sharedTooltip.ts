@@ -1,7 +1,7 @@
 import { SharedTooltipData, useSharedTooltipData } from '@/composables/sharedTooltip'
 import { FunctionDirective } from 'vue'
 
-export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, string]> = (el, bindings, node, prevNode) => {
+export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string) | string | [string, string]> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
   const { blocked, data, isShown, stack, shouldPushStack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
@@ -49,6 +49,8 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, st
     } else if (val instanceof Array) {
       newData.text = val[0]
       newData.color = val[1]
+    } else if (typeof val === 'function') {
+      newData.text = val()
     }
 
     data.value = newData

@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-draggable-card
-    v-context-menu="contextMenuItems"
+    v-context-menu.force="contextMenuItems"
     outlined
     draggable
     hover
