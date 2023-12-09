@@ -1,7 +1,9 @@
+import StoreProjectModrinth from '@/components/StoreProjectModrinth.vue'
+import StoreProjectCurseforge from '@/components/StoreProjectCurseforge.vue'
 import BaseSetting from '@/views/BaseSetting.vue'
-import Home from '@/views/Home.vue'
+import HomeLayout from '@/views/HomeLayout.vue'
 import HomeActions from '@/views/HomeActions.vue'
-import HomeCardHost from '@/views/HomeCardHost.vue'
+import Home from '@/views/Home.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
 import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
@@ -19,7 +21,6 @@ import ShaderPack from '@/views/ShaderPack.vue'
 import ShaderPackActions from '@/views/ShaderPackActions.vue'
 import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
 import Store from '@/views/Store.vue'
-import StoreProject from '@/components/StoreProject.vue'
 import VersionLocalView from '@/views/VersionLocalView.vue'
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -29,12 +30,12 @@ export const router = new Router({
   routes: [
     {
       path: '/',
-      component: Home,
+      component: HomeLayout,
       children: [
         {
           path: '/',
           components: {
-            default: HomeCardHost,
+            default: Home,
             extensions: HomeExtension,
             actions: HomeActions,
           },
@@ -85,9 +86,14 @@ export const router = new Router({
       component: Store,
     },
     {
-      path: '/store/:id',
-      component: StoreProject,
-      props: (route) => ({ id: route.path.split('/')[2] }),
+      path: '/store/modrinth/:id',
+      component: StoreProjectModrinth,
+      props: (route) => ({ id: route.path.split('/')[3] }),
+    },
+    {
+      path: '/store/curseforge/:id',
+      component: StoreProjectCurseforge,
+      props: (route) => ({ id: Number(route.path.split('/')[3]) }),
     },
     {
       path: '/setting',
