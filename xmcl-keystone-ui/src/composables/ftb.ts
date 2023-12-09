@@ -69,7 +69,9 @@ export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref
 }
 
 export function useFeedTheBeastVersionsCache() {
-  const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorageCache('cachedFTB', () => [], JSON.stringify, JSON.parse, true)
+  const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorageCache('cachedFTB', () => [], JSON.stringify, JSON.parse, {
+    deep: true,
+  })
 
   function dispose() {
     ftb.value = []

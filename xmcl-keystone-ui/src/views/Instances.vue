@@ -62,7 +62,6 @@ import { vContextMenu } from '../directives/contextMenu'
 import InstancesView from './InstancesCards.vue'
 import CreateButton from './InstancesCreateButton.vue'
 import InstancesFabButton from './InstancesFabButton.vue'
-import ImportButton from './InstancesImportButton.vue'
 import { injection } from '@/util/inject'
 import { kInstances } from '@/composables/instances'
 
