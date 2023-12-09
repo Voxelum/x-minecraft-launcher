@@ -36,7 +36,10 @@ export function useDialogModel(): DialogModel {
     model.value = e.data
   })
   watch(model, (value) => {
-    channel.postMessage(value)
+    channel.postMessage({
+      dialog: value.dialog,
+      parameter: value.parameter ? JSON.parse(JSON.stringify(value.parameter)) : value.parameter,
+    })
   })
   return model
 }
