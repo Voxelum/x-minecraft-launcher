@@ -10,7 +10,7 @@
         <v-btn
           v-if="value"
           v-model="fab"
-          v-shared-tooltip.left="t('userSkin.importFile')"
+          v-shared-tooltip.left="() => t('userSkin.importFile')"
           :disabled="disabled || !hasSkin"
           fab
           color="primary"
@@ -21,7 +21,7 @@
       </v-fab-transition>
     </template>
     <v-btn
-      v-shared-tooltip.left="t('userSkin.importLink')"
+      v-shared-tooltip.left="() => t('userSkin.importLink')"
       :disabled="disabled || !hasSkin"
       fab
       light
@@ -32,7 +32,7 @@
       <v-icon>link</v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip.left="t('userSkin.saveTitle')"
+      v-shared-tooltip.left="() => t('userSkin.saveTitle')"
       :disabled="disabled"
       fab
       small

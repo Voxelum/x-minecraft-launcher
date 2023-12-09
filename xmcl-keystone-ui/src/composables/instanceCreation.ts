@@ -1,5 +1,5 @@
 import { useService } from '@/composables'
-import { generateDistinctName } from '@/util/instanceName'
+import { generateBaseName, generateDistinctName } from '@/util/instanceName'
 import { Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
@@ -53,7 +53,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
      */
     async create() {
       if (!data.name) {
-        data.name = generateDistinctName(instances.value.map(i => i.name), data.runtime)
+        data.name = generateDistinctName(generateBaseName(data.runtime), instances.value.map(i => i.name))
       }
       const newPath = await create(data)
       if (files.value.length > 0) {

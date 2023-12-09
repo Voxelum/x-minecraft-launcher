@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
-      v-shared-tooltip="t('resourcepack.name', 2)"
+      v-shared-tooltip="_ => t('resourcepack.name', 2)"
       icon
       large
       @click="showDirectory(path)"
