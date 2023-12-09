@@ -120,7 +120,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
 
     for (const v of (versions.value || [])) {
       const installedFileIndex = files.findIndex(f => f.modrinth?.versionId === v.id)
-      files.splice(installedFileIndex, 1)
+      const file = installedFileIndex !== -1 ? files.splice(installedFileIndex, 1)[0] : undefined
 
       all.push({
         id: v.id,
@@ -130,7 +130,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
         type: v.version_type as any,
         downloadCount: v.downloads,
         loaders: v.loaders,
-        installed: !!installed.value[installedFileIndex],
+        installed: !!file,
         minecraftVersion: v.game_versions.join(', '),
         createdDate: v.date_published,
         changelog: v.changelog ? render(v.changelog) : undefined,

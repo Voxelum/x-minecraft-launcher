@@ -101,7 +101,7 @@ const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon
   if (name === 'forge') return 'http://launcher/icons/forge'
   if (name === 'minecraft') return 'http://launcher/icons/minecraft'
-  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'http://launcher/icons/fabric'
+  if (name === 'fabricloader' || name.startsWith('fabric-') || name === 'fabric') return 'http://launcher/icons/fabric'
   return ''
 }
 const { darkTheme } = useTheme()

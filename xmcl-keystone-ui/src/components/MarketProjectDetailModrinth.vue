@@ -45,7 +45,7 @@ const { data: versions, isValidating: loadingVersions } = useSWRVModel(
   inject(kSWRVConfig))
 const modVersions = useModrinthProjectDetailVersions(versions, computed(() => props.installed))
 
-const selectedVersion = ref(modVersions.value[0] as ProjectDetailVersion | undefined)
+const selectedVersion = ref(modVersions.value.find(v => v.installed) ?? modVersions.value[0] as ProjectDetailVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
 // Dependencies
