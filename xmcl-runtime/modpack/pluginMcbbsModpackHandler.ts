@@ -10,7 +10,6 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 
 export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
-  const curseforgeService = await app.registry.get(CurseForgeService)
   modpackService.registerHandler<McbbsModpackManifest>('mcbbs', {
     readMetadata: async (zip, entries) => {
       const mcbbsManifest = entries.find(e => e.fileName === 'mcbbs.packmeta')
@@ -20,6 +19,7 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
     },
     resolveInstanceOptions: getInstanceConfigFromMcbbsModpack,
     resolveInstanceFiles: async (manifest) => {
+      const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
       const infos: InstanceFile[] = []
       if (manifest.files) {
         // curseforge or mcbbs
