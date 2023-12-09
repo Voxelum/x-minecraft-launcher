@@ -165,7 +165,7 @@ const modVersions = computed(() => {
       }
     }
     const installedFileIndex = installed.findIndex(f => f.curseforge?.fileId === file.id)
-    installed.splice(installedFileIndex, 1)
+    const f = installed.splice(installedFileIndex, 1)
 
     versions.push(reactive({
       id: file.id.toString(),
@@ -175,7 +175,7 @@ const modVersions = computed(() => {
       changelog: computed(() => file.id === fileId.value ? changelog.value : undefined),
       changelogLoading: isValidating,
       type: releaseTypes[file.releaseType],
-      installed: !!props.installed[installedFileIndex],
+      installed: !!f,
       downloadCount: file.downloadCount,
       loaders: getCursforgeFileModLoaders(file),
       minecraftVersion: file.gameVersions.filter(v => Number.isInteger(Number(v[0]))).join(', '),
@@ -213,7 +213,7 @@ const onLoadMore = () => {
   index.value += pageSize.value
 }
 
-const selectedVersion = ref(modVersions.value[0] as ProjectVersion | undefined)
+const selectedVersion = ref(modVersions.value.find(v => v.installed) ?? modVersions.value[0] as ProjectVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
 const innerUpdating = useModDetailUpdate()

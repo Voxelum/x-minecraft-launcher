@@ -11,7 +11,10 @@
     @load="onLoad"
   >
     <template #actions>
-      <v-subheader class="responsive-header py-2 pl-0">
+      <v-subheader
+        v-if="isLocalView"
+        class="responsive-header py-2 pl-0"
+      >
         <v-btn
           text
           small
@@ -175,6 +178,10 @@ const error = computed(() => {
   return curseforgeError.value || modrinthError.value
 })
 
+const isLocalView = computed(() => {
+  return !keyword.value && modrinthCategories.value.length === 0 && curseforgeCategory.value === undefined
+})
+
 const isModProject = (v: ProjectEntry<ProjectFile> | undefined): v is (ProjectEntry<ModFile> & { files: ModFile[] }) =>
   !!v?.files
 const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is ProjectEntry<ModFile> =>
@@ -293,7 +300,7 @@ const onInstallProject = useProjectInstall(
 useTutorial(computed(() => [{
   element: '#search-text-field',
   popover: {
-    title: t('tutorial.mod.searchTitle'),
+    title: t('tutorial.mod.searchTitle') + ' (ctrl + f)',
     description: t('tutorial.mod.searchDescription'),
   },
 }, {
