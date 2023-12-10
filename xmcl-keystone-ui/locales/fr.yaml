@@ -711,6 +711,7 @@ mod:
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
   enabled: '{count} mods activés'
   filter: Mods de filtrage
+  groupInstalled: Groupe de modules installés
   hideIncompatible: Masquer les mods incompatibles
   import: Importer un Mod
   incompatible: Mod incompatible.

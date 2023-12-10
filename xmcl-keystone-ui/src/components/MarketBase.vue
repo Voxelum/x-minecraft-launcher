@@ -19,9 +19,13 @@
         <div
           class="flex flex-grow-0 items-center px-4"
         >
-          <slot name="actions" />
+          <slot
+            v-if="items.length > 0"
+            name="actions"
+          />
         </div>
         <v-virtual-scroll
+          v-if="items.length > 0"
           id="left-pane"
           :bench="2"
           class="visible-scroll h-full max-h-full w-full overflow-auto"
@@ -44,6 +48,10 @@
         <ErrorView
           v-if="error"
           :error="error"
+        />
+        <slot
+          v-else-if="items.length === 0"
+          name="placeholder"
         />
       </template>
       <template #right>

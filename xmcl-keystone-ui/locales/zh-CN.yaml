@@ -375,8 +375,10 @@ installForge:
   postProcessing: 处理 Minecraft Jar 文件
 installInstance:
   file: 更新/安装实例文件 {file}
+  link: 复制或链接 {count} 个文件
   name: 更新/安装实例
   resolve: 解析实例安装信息
+  unzip: 解压缩 {count} 个文件
 installJre:
   decompress: 解压缩JRE文件到本地
   download: 下载压缩的JRE文件
@@ -656,6 +658,7 @@ mod:
   dropHint: 将Mod的jar文件拖入此处来导入
   enabled: 一共启用了 {count} 个 Mods
   filter: 筛选 Mods
+  groupInstalled: 分开显示已安装 Mod
   hideIncompatible: 隐藏不兼容 Mods
   import: 导入 Mod
   incompatible: 可能不兼容当前版本。

@@ -635,6 +635,7 @@ mod:
   dropHint: Перетащите мод .jar/.litemod сюда для импорта.
   enabled: 'Модов включено: {count}'
   filter: Фильтр модов
+  groupInstalled: Групповые установленные моды
   hideIncompatible: Скрыть несовместимые моды
   import: Импорт мода
   incompatible: Несовместимый мод.

@@ -359,6 +359,8 @@ installForge:
 installInstance:
   file: Update Instance File {file}
   name: Update Instance
+  unzip: Unzip {count} Files
+  link: Copy or Link {count} Files
   resolve: Resolve Instance Config
 installJre:
   decompress: Decompress JRE files to folder
@@ -646,6 +648,7 @@ mod:
   deletionRestHint: And {rest} more Mods...
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
+  groupInstalled: 'Group Installed Mods'
   filter: Filter Mods
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods

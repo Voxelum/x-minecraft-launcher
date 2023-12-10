@@ -1,7 +1,7 @@
 <template>
   <MarketBase
     :plans="plans"
-    :items="items"
+    :items="groupedItems"
     :item-height="91"
     :loading="loading"
     :error="error"
@@ -59,9 +59,20 @@
           </span>
         </v-btn>
       </v-subheader>
+      <v-subheader
+        v-else
+        class="responsive-header px-0 py-2"
+      >
+        <div class="flex-grow" />
+        <v-checkbox
+          v-model="groupInstalled"
+          :label="t('mod.groupInstalled')"
+        />
+      </v-subheader>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
+        v-if="(typeof item === 'object')"
         :item="item"
         :has-update="hasUpdate"
         :checked="checked"
@@ -69,6 +80,20 @@
         :selected="selected"
         :install="onInstallProject"
         @click="on.click"
+      />
+      <v-subheader
+        v-if="typeof item === 'string'"
+        class="h-[91px]"
+      >
+        <v-divider class="mr-4" />
+        {{ t("modInstall.search") }}
+        <v-divider class="ml-4" />
+      </v-subheader>
+    </template>
+    <template #placeholder>
+      <Hint
+        :text="t('modInstall.searchHint')"
+        icon="playlist_add"
       />
     </template>
     <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
@@ -139,6 +164,7 @@ import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import { useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
@@ -150,6 +176,7 @@ import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinth
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -157,7 +184,6 @@ import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey } 
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
-import { useTutorial } from '@/composables/tutorial'
 
 const { runtime, path } = injection(kInstance)
 
@@ -176,6 +202,27 @@ const {
 
 const error = computed(() => {
   return curseforgeError.value || modrinthError.value
+})
+
+const groupInstalled = useLocalStorageCacheBool('mod-group-installed', true)
+
+const groupedItems = computed(() => {
+  const result = items.value
+
+  if (isLocalView.value) return result
+
+  if (!groupInstalled.value) return result
+
+  const installed = result.filter((i) => i.installed.length > 0)
+
+  if (installed.length === 0) return result
+
+  const notInstalled = result.filter((i) => i.installed.length === 0)
+  return [
+    ...installed,
+    'search' as string,
+    ...notInstalled,
+  ]
 })
 
 const isLocalView = computed(() => {
