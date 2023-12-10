@@ -90,7 +90,7 @@ export class InstanceFileOperationHandler {
     for (const f of file) {
       await this.#handleFile(f)
     }
-    if (this.#copyOrLinkQueue.length > 0) {
+    if (this.#copyOrLinkQueue.length > 0 || this.#resourceLinkQueue.length > 0) {
       this.#tasks.push(await this.#getCopyOrLinkTask())
     }
     if (this.#unzipQueue.length > 0) {

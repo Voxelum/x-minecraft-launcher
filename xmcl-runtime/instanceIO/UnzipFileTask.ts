@@ -13,6 +13,8 @@ export class UnzipFileTask extends AbortableTask<void> {
 
   constructor(private queue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }>) {
     super()
+    this.name = 'unzip'
+    this.param = { count: queue.length }
   }
 
   async #processEntry(zip: ZipFile, entry: Entry, destination: string) {

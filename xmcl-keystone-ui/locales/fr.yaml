@@ -402,8 +402,10 @@ installForge:
   postProcessing: Post-traitement
 installInstance:
   file: Mettre à jour le fichier d'instance {file}
+  link: "Copier ou lier {count}\_fichiers"
   name: Mettre à jour l'instance
   resolve: Résoudre la configuration de l'instance
+  unzip: "Décompressez {count}\_fichiers"
 installJre:
   decompress: Décompresser les fichiers JRE dans le dossier
   download: Télécharger le fichier JRE compressé

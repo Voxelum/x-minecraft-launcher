@@ -16,6 +16,7 @@ export class LinkFilesTask extends AbortableTask<void> {
     super()
     this._total = copyOrLinkQueue.length + resourceLinkQueue.length
     this.name = 'link'
+    this.param = { count: this._total }
   }
 
   tryLink = async (filePath: string, destination: string, size: number, fstat?: Stats) => {

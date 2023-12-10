@@ -364,8 +364,10 @@ installForge:
   postProcessing: Постобробка
 installInstance:
   file: Оновити файл екземпляра {file}
+  link: Скопіюйте або зв’яжіть {count} файлів
   name: Оновити екземпляр
   resolve: Визначити конфігурацію екземпляра
+  unzip: Розархівуйте {count} файлів
 installJre:
   decompress: Розпакувати файли JRE у папку
   download: Завантажити стислий файл JRE

@@ -26,6 +26,8 @@ t('installOptifine.download')
 t('installInstance.name')
 t('installInstance.file')
 t('installInstance.resolve')
+t('installInstance.unzip')
+t('installInstance.link')
 
 // Install Libraries
 t('installLibraries.library')

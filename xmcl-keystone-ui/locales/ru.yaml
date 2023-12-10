@@ -353,8 +353,10 @@ installForge:
   postProcessing: Постобработка
 installInstance:
   file: Обновить файл экземпляра {file}
+  link: Скопируйте или свяжите {count} файлов
   name: Обновить экземпляр
   resolve: Определить конфигурацию экземпляра
+  unzip: Разархивируйте {count} файлов
 installJre:
   decompress: Распаковать файлы JRE в папку
   download: Скачать сжатый файл JRE
