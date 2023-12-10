@@ -95,6 +95,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
       data.server = null
       data.modpackVersion = ''
       data.description = ''
+      files.value = []
     },
   }
 }
