@@ -50,7 +50,15 @@ export async function mapLocalPort(natService: NatService, ip: string, priv: num
       const candidates = getUnmapCandidates(currentMappings, mappings)
       console.log(candidates)
       for (const c of candidates) {
-        await natService.unmap(c)
+        await natService.unmap(c).catch(() => {})
+      }
+      await Promise.all(mappings.map(n => natService.map(n)))
+    } else if (err.detail.UPnPError && err.detail.UPnPError.errorCode === 718) {
+      // Conflict
+      const candidates = getUnmapCandidates(currentMappings, mappings)
+      console.log(candidates)
+      for (const c of candidates) {
+        await natService.unmap(c).catch(() => {})
       }
       await Promise.all(mappings.map(n => natService.map(n)))
     } else {
