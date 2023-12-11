@@ -2,7 +2,7 @@
     "name": "@xmcl/keystone-ui",
     "private": true,
     "productName": "xmcl",
-    "version": "0.36.8",
+    "version": "0.37.0",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
