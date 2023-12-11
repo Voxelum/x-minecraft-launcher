@@ -757,11 +757,17 @@ watch(() => props.detail, (d, o) => {
     tab.value = 0
   }
 })
+
+let dirty = false
+watch([() => props.detail, () => props.loading], () => {
+  dirty = true
+}, { immediate: true })
 watch(() => props.versions, (vers) => {
-  if (!selectedVersion.value) {
+  if (dirty || !selectedVersion.value) {
+    dirty = false
     selectedVersion.value = props.versions.find(v => v.installed) || vers[0]
   }
-})
+}, { immediate: true })
 
 const showDependencies = ref(false)
 
