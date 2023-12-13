@@ -66,7 +66,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       state.mods = await scan(basePath)
 
       const watcher = watch(basePath, async (event, filePath) => {
-        if (shouldIgnoreFile(filePath)) return
+        if (shouldIgnoreFile(filePath) && filePath !== basePath) return
         if (event === 'update') {
           const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (isModResource(resource)) {
