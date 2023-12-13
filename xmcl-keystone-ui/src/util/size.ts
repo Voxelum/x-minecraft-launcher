@@ -9,5 +9,5 @@ export const getExpectedSize = (size: number, unitText = 'B', fix = 2) => {
     size /= 1024
     unit = 'G' + unitText
   }
-  return `${size.toFixed(fix)}${unit}`
+  return `${Math.abs(size).toFixed(fix)}${unit}`
 }
