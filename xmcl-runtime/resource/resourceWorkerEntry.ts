@@ -3,10 +3,10 @@ import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
 import 'source-map-support/register'
 import { copyPassively } from '~/util/fs'
-import { hashAndFiletypeResource, hashResource } from '../resource/core/hashResource'
-import { ResourceParser } from '../resource/parsers'
+import { hashAndFiletypeResource, hashResource } from './core/hashResource'
+import { ResourceParser } from './parsers'
 import { setHandler } from '../worker/helper'
-import { ResourceWorker } from './worker'
+import type { ResourceWorker } from './worker'
 
 gracefulify(fs)
 

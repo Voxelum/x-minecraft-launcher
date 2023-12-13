@@ -1,6 +1,6 @@
 import { LauncherAppPlugin } from '~/app'
 import { checkUpdate, createLazyWorker } from '../worker'
-import createResourceWorker, { path as resourceWorkerPath } from './worker.entry?worker'
+import createResourceWorker, { path as resourceWorkerPath } from './resourceWorkerEntry?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
