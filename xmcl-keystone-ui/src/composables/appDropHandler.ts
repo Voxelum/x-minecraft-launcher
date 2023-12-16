@@ -111,10 +111,11 @@ export function useAppDropHandler() {
 
   function getType(resource: Resource | undefined) {
     const types = [] as string[]
-    if (!resource) {
+    if (!resource || !resource.metadata) {
       return t('universalDrop.unknownResource')
     }
-    for (const key of Object.keys(resource.metadata)) {
+    for (const [key, value] of Object.entries(resource.metadata)) {
+      if (!value || Object.entries(value).length === 0) continue
       switch (key) {
         case 'forge':
           types.push('Forge Mod')
@@ -123,17 +124,17 @@ export function useAppDropHandler() {
           types.push('Fabric Mod')
           break
         case 'resourcepack':
-          types.push(t('resourcepack.name', 0))
+          types.push(t('resourcepack.name', 1))
           break
         case 'mcbbs-modpack':
         case 'modpack':
-          types.push(t('modpack.name', 0))
+          types.push(t('modpack.name', 1))
           break
         case 'save':
-          types.push(t('save.name', 0))
+          types.push(t('save.name', 1))
           break
         case 'curseforge-modpack':
-          types.push(t('modpack.name', 0))
+          types.push(t('modpack.name', 1))
           break
         case 'modrinth-modpack':
           types.push(t('modrinth.projectType.modpack'))
