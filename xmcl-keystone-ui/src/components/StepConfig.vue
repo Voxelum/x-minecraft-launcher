@@ -66,7 +66,9 @@
     />
     <ErrorView
       v-else-if="error"
+      class="px-7"
       :error="error"
+      no-refresh
     />
     <InstanceManifestFileTree
       v-else

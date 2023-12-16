@@ -41,18 +41,9 @@
         <v-stepper-content
           v-for="(tStep, i) in steps"
           :key="tStep"
-          class="max-h-[70vh] overflow-y-auto"
+          class="max-h-[70vh] overflow-y-hidden"
           :step="i + 1"
         >
-          <v-alert
-            v-if="error"
-            type="error"
-          >
-            {{ errorText ?? error }}
-            <div>
-              {{ error?.path }}
-            </div>
-          </v-alert>
           <StepSelect
             v-if="tStep === 'create'"
             @select="onSelectType"
@@ -85,7 +76,23 @@
         @create="onCreate"
         @next="next"
         @quit="quit"
-      />
+      >
+        <div
+          v-if="error"
+          class="pointer-events-none absolute left-0 flex w-full justify-center"
+        >
+          <v-alert
+            dense
+            class="w-[50%]"
+            type="error"
+          >
+            {{ errorText ?? error }}
+            <div>
+              {{ error?.path }}
+            </div>
+          </v-alert>
+        </div>
+      </StepperFooter>
     </v-stepper>
   </v-dialog>
 </template>
