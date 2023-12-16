@@ -34,6 +34,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       mods.value = []
       return
     }
+    console.log('update instance mods by state')
     updateItems(state.value?.mods, instanceRuntime.value)
   })
   watch(instanceRuntime, () => {
@@ -41,6 +42,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       mods.value = []
       return
     }
+    console.log('update instance mods by runtime')
     updateItems(state.value?.mods, instanceRuntime.value)
   }, { deep: true })
 

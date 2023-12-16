@@ -1,4 +1,4 @@
-import { GameOptionsState, Instance, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
+import { GameOptionsState, Instance, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
@@ -8,24 +8,25 @@ import useSWRV from 'swrv'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
 
-export function useInstanceShaderPacks(instance: Ref<Instance>, mods: Ref<ModFile[]>, gameOptions: Ref<GameOptionsState | undefined>) {
+export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<RuntimeVersions>, mods: Ref<ModFile[]>, gameOptions: Ref<GameOptionsState | undefined>) {
   const { link, scan } = useService(InstanceShaderPacksServiceKey)
   const { getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
   const linked = ref(false)
   const { refresh, refreshing } = useRefreshable(async () => {
-    linked.value = await link(instance.value.path)
+    linked.value = await link(instancePath.value)
 
     if (!linked.value) {
-      await scan(instance.value.path)
+      await scan(instancePath.value)
     }
   })
   const shaderMod = computed(() => {
-    if (instance.value.runtime.optifine) {
+    console.log('get shader mod')
+    if (runtime.value.optifine) {
       return {
         id: 'optifine',
         name: 'Optifine',
-        version: instance.value.runtime.optifine,
+        version: runtime.value.optifine,
         icon: 'http://launcher/icons/optifine',
       }
     }
@@ -72,6 +73,10 @@ export function useInstanceShaderPacks(instance: Ref<Instance>, mods: Ref<ModFil
       }
       : shader?.resource.metadata.fabric ? normalzieFabricResource(shader.resource.metadata.fabric, shader.icon) : undefined
   })
+  const shaderPackPath = computed(() => {
+    console.log('get shader pack path')
+    return gameOptions.value?.shaderPack
+  })
 
   const { data: shaderPackStatus, mutate } = useSWRV('/shader', async () => {
     console.log('update shader pack status')
@@ -80,12 +85,12 @@ export function useInstanceShaderPacks(instance: Ref<Instance>, mods: Ref<ModFil
       return ['optifine', gameOptions.value?.shaderPack] as const
     }
     if (mod?.id === 'iris') {
-      const options = await getIrisShaderOptions(instance.value.path)
+      const options = await getIrisShaderOptions(instancePath.value)
       return ['iris', options.shaderPack] as const
     }
-  })
+  }, { revalidateOnFocus: false })
 
-  watch([shaderMod, computed(() => gameOptions.value?.shaderPack)], () => {
+  watch([shaderMod, shaderPackPath], () => {
     mutate()
   })
 
@@ -97,19 +102,19 @@ export function useInstanceShaderPacks(instance: Ref<Instance>, mods: Ref<ModFil
     set(v: string | undefined) {
       if (shaderPackStatus.value?.[0] === 'optifine') {
         editShaderOptions({
-          instancePath: instance.value.path,
+          instancePath: instancePath.value,
           shaderPack: v ?? '',
         })
       } else if (shaderPackStatus.value?.[0] === 'iris') {
         editIrisShaderOptions({
-          instancePath: instance.value.path,
+          instancePath: instancePath.value,
           shaderPack: v ?? '',
         }).then(() => mutate())
       }
     },
   })
 
-  watch(instance, refresh, { immediate: true })
+  watch(instancePath, refresh, { immediate: true })
 
   return {
     linked,

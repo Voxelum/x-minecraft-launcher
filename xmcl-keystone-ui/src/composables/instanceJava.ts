@@ -31,7 +31,7 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
 
   const { data, mutate, isValidating, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/java-version?version=${version.value && 'id' in version.value ? version.value.id : undefined}`, async () => {
     return await computeJava(all.value, resolveJava, instance.value, version.value)
-  })
+  }, { revalidateOnFocus: false })
 
   const java = computed(() => data.value?.java)
   const recommendation = computed(() => data.value?.recomendation)
