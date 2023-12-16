@@ -16,6 +16,7 @@ export class ServiceStateContainer {
     readonly state: any,
     readonly emitter: EventEmitter,
     readonly dispose: () => void,
+    readonly revalidator?: () => Promise<void>,
   ) {
   }
 
