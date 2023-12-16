@@ -136,6 +136,7 @@ curseforge:
     files: 文件
     images: 图片
   recentFiles: 近期文件
+  releasedDate: 创建日期
   search: 搜索
   texture-packs:
     description: 从 Curseforge 上安装资源包

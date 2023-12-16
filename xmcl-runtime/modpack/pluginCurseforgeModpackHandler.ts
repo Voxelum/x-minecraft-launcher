@@ -30,43 +30,46 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
       // curseforge or mcbbs
       const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
       const curseforgeFiles = manifest.files
-      const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
-      const infos: InstanceFile[] = []
+      if (curseforgeFiles.length > 0) {
+        const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
+        const infos: InstanceFile[] = []
 
-      const dict: Record<string, File> = {}
-      for (const file of files) {
-        if (dict[file.id]) {
-          modpackService.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
+        const dict: Record<string, File> = {}
+        for (const file of files) {
+          if (dict[file.id]) {
+            modpackService.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
+          }
+          dict[file.id] = file
         }
-        dict[file.id] = file
+
+        for (let i = 0; i < manifest.files.length; i++) {
+          const manifestFile = manifest.files[i]
+          const file = dict[manifestFile.fileID]
+          if (!file) {
+            modpackService.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
+            continue
+          }
+          const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
+          infos.push({
+            downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+            path: join(domain, file.fileName),
+            hashes: sha1
+              ? {
+                sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
+              } as Record<string, string>
+              : {},
+            curseforge: {
+              fileId: file.id,
+              projectId: file.modId,
+            },
+            size: file.fileLength,
+          })
+        }
+        return infos
       }
 
-      for (let i = 0; i < manifest.files.length; i++) {
-        const manifestFile = manifest.files[i]
-        const file = dict[manifestFile.fileID]
-        if (!file) {
-          modpackService.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
-          continue
-        }
-        const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
-        const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
-        infos.push({
-          downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
-          path: join(domain, file.fileName),
-          hashes: sha1
-            ? {
-              sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
-            } as Record<string, string>
-            : {},
-          curseforge: {
-            fileId: file.id,
-            projectId: file.modId,
-          },
-          size: file.fileLength,
-        })
-      }
-
-      return infos
+      return []
     },
   })
 }

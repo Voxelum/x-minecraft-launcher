@@ -16,6 +16,22 @@ import { LaunchService } from '~/launch'
 import { NatService } from '~/nat'
 import { ServiceStateManager } from '~/service'
 
+const getSdkVersion = () => {
+  let sdkVersion = ''
+
+  if (process.versions.electron) {
+    sdkVersion += 'electron:' + process.versions.electron + ';'
+  }
+  if (process.versions.node) {
+    sdkVersion += 'node:' + process.versions.node + ';'
+  }
+  if (process.versions.napi) {
+    sdkVersion += 'napi:' + process.versions.napi + ';'
+  }
+
+  return sdkVersion
+}
+
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = '{}'
   const logger = app.getLogger('Telemtry')
@@ -43,6 +59,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   tags[contract.userId] = clientSession
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
+  tags[contract.cloudRole] = app.env
+  tags[contract.internalSdkVersion] = getSdkVersion()
 
   const createExceptionDetails = (msg?: string, name?: string, stack?: string) => {
     const d = new appInsight.Contracts.ExceptionDetails()

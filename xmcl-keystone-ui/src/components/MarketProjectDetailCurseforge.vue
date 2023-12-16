@@ -50,29 +50,29 @@ const model = computed(() => {
   const mod = curseforgeMod.value
   if (mod?.links.issuesUrl) {
     externals.push({
-      icon: 'mdi-bug',
-      name: 'Issue',
+      icon: 'pest_control',
+      name: t('modrinth.issueUrl'),
       url: mod.links.issuesUrl,
     })
   }
   if (mod?.links.websiteUrl) {
     externals.push({
-      icon: 'mdi-web',
+      icon: 'web',
       name: 'Website',
       url: mod.links.websiteUrl,
     })
   }
   if (mod?.links.sourceUrl) {
     externals.push({
-      icon: 'mdi-source-repository',
-      name: 'Source',
+      icon: 'code',
+      name: t('modrinth.sourceUrl'),
       url: mod.links.sourceUrl,
     })
   }
   if (mod?.links.wikiUrl) {
     externals.push({
-      icon: 'mdi-wikipedia',
-      name: 'Wiki',
+      icon: 'public',
+      name: t('modrinth.wikiUrl'),
       url: mod.links.wikiUrl,
     })
   }
@@ -165,7 +165,7 @@ const modVersions = computed(() => {
       }
     }
     const installedFileIndex = installed.findIndex(f => f.curseforge?.fileId === file.id)
-    const f = installed.splice(installedFileIndex, 1)
+    const f = installedFileIndex === -1 ? undefined : installed.splice(installedFileIndex, 1)
 
     versions.push(reactive({
       id: file.id.toString(),

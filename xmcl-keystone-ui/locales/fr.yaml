@@ -171,6 +171,7 @@ curseforge:
     files: Fichiers
     images: Images
   recentFiles: Fichiers récents
+  releasedDate: Date de parution
   search: Rechercher
   texture-packs:
     description: Afficher et télécharger les packs de ressources de Curseforge

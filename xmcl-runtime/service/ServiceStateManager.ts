@@ -99,13 +99,14 @@ export class ServiceStateManager {
    * @param state The state object
    * @param dispose The dispose function to release the state resource
    */
-  register<T extends State<T>>(id: string, state: T, dispose: () => void): MutableState<T> {
+  register<T extends State<T>>(id: string, state: T, dispose: () => void, revalidator?: () => Promise<void>): MutableState<T> {
     const emitter = new EventEmitter()
     const container = new ServiceStateContainer(
       id,
       state,
       emitter,
       dispose,
+      revalidator,
     )
 
     for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(state)))) {
@@ -136,15 +137,17 @@ export class ServiceStateManager {
     return this.containers[id]?.state
   }
 
-  async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void]>): Promise<MutableState<T>> {
+  async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>): Promise<MutableState<T>> {
     if (this.containers[id]) {
       const container = this.containers[id]
+      await container.revalidator?.()
       return container.state
     }
     const onDestroy = () => {
       while (this.containers[id] && !this.containers[id].deref()) { /* empty */ }
       delete this.containers[id]
     }
-    return this.register(id, ...await supplier(onDestroy))
+    const result = await supplier(onDestroy)
+    return this.register(id, result[0], result[1], result[2])
   }
 }

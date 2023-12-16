@@ -72,7 +72,7 @@ export default defineComponent({
     const saves = useInstanceSaves(instance.instance)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
-    const shaderPacks = useInstanceShaderPacks(instance.instance, instanceMods.mods, options.gameOptions)
+    const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
     const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.resolvedVersion, instanceJava.java, user.userProfile, settings)

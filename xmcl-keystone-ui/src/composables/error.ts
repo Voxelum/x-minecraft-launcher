@@ -14,7 +14,8 @@ export function useLocaleError() {
     if (e.code === 'UND_ERR_RESPONSE_STATUS_CODE') {
       return [(e.code || ''), e.statusCode, JSON.stringify(e.body)].join(' ')
     }
-    const str = JSON.stringify(e)
+    if (e.message) return e.message
+    const str = JSON.stringify(e, undefined, 4)
     return str.trim() === '{}' ? e : str
   }
   return tError

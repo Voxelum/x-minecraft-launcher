@@ -1,6 +1,6 @@
 import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey, PartialResourceHash, InstanceModUpdatePayload, InstanceModUpdatePayloadAction } from '@xmcl/runtime-api'
 import { ensureDir } from 'fs-extra/esm'
-import { rename, stat, unlink } from 'fs/promises'
+import { rename, stat, unlink, readdir } from 'fs/promises'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
@@ -66,7 +66,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       state.mods = await scan(basePath)
 
       const watcher = watch(basePath, async (event, filePath) => {
-        if (shouldIgnoreFile(filePath)) return
+        if (shouldIgnoreFile(filePath) && filePath !== basePath) return
         if (event === 'update') {
           const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (isModResource(resource)) {
@@ -96,6 +96,15 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         watcher.close()
         listener.removeListener('resourceAdd', onResourceUpdate)
           .removeListener('resourceUpdate', onResourceUpdate)
+      }, async () => {
+        // relvaidate
+        const files = await readdirIfPresent(basePath)
+        const expectFiles = files.filter((file) => !shouldIgnoreFile(file))
+        const current = state.mods.length
+        if (current !== expectFiles.length) {
+          this.log(`Instance mods count mismatch: ${current} vs ${expectFiles.length}`)
+          state.mods = await scan(basePath)
+        }
       }]
     })
   }

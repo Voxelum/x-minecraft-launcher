@@ -54,6 +54,7 @@ export function useDropHandler() {
   document.addEventListener('drop', (e) => {
     onDrop(e)
     dragover.value = false
+    e.preventDefault()
   })
   document.addEventListener('dragover', (e) => {
     if ((e as any).fromElement === null) {

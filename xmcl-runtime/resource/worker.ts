@@ -1,5 +1,5 @@
-import { InjectionKey } from '~/app'
-import { ResourceContext } from '../resource/core/ResourceContext'
+import type { InjectionKey } from '~/app'
+import type { ResourceContext } from '../resource/core/ResourceContext'
 
 export const kResourceWorker: InjectionKey<ResourceWorker> = Symbol('ResourceWorker')
 /**
