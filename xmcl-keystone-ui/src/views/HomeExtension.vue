@@ -58,15 +58,16 @@
 
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
-import { kCompact } from '@/composables/scrollTop'
-import { useInFocusMode } from '@/composables/uiLayout'
-import { getAgoOrDate, getHumanizeDuration, TimeUnit } from '@/util/date'
-import { injection } from '@/util/inject'
-import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
-import HomeLaunchButton from './HomeLaunchButton.vue'
-import useSWRV from 'swrv'
+import { useDateString } from '@/composables/date'
 import { kInstance } from '@/composables/instance'
 import { kLaunchTask } from '@/composables/launchTask'
+import { kCompact } from '@/composables/scrollTop'
+import { useInFocusMode } from '@/composables/uiLayout'
+import { getHumanizeDuration, TimeUnit } from '@/util/date'
+import { injection } from '@/util/inject'
+import useSWRV from 'swrv'
+import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
+import HomeLaunchButton from './HomeLaunchButton.vue'
 
 const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
@@ -128,27 +129,15 @@ const versions = computed(() => {
   }
   return result
 })
+const { getDateString } = useDateString()
 const { data: lastPlayedText } = useSWRV(computed(() => `${instance.value.path}/lastPlay`), () => {
   const i = instance.value
   const date = i.lastPlayedDate
   if (!date) {
     return t('instance.neverPlayed')
   }
-  const result = getAgoOrDate(date)
-  if (typeof result === 'string') {
-    return result
-  }
-  const [ago, unit] = result
-  switch (unit) {
-    case TimeUnit.Hour:
-      return t('ago.hour', { duration: ago }, { plural: ago })
-    case TimeUnit.Minute:
-      return t('ago.minute', { duration: ago }, { plural: ago })
-    case TimeUnit.Second:
-      return t('ago.second', { duration: ago }, { plural: ago })
-    case TimeUnit.Day:
-      return t('ago.day', { duration: ago }, { plural: ago })
-  }
+  const result = getDateString(date)
+  return result
 }, { revalidateOnFocus: true })
 
 const playTimeText = computed(() => {

@@ -38,7 +38,7 @@
 </template>
 <script lang="ts" setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { useCurseforgeCategories } from '@/composables/curseforge'
+import { useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 
 const props = defineProps<{
   type: string
@@ -56,7 +56,7 @@ const categories = computed(() => {
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
 
-const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
+const tCategory = useCurseforgeCategoryI18n()
 
 </script>
 

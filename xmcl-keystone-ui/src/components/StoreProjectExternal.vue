@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="project.links.length > 0">
     <v-subheader>
       {{ t('modrinth.externalResources') }}
     </v-subheader>
@@ -24,9 +24,3 @@ defineProps<{
 const { t } = useI18n()
 
 </script>
-<style scoped>
-/* a:not(:first-child):before {
-    content: "•";
-    margin: 0 0.25rem;
-} */
-</style>

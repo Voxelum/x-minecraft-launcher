@@ -46,6 +46,8 @@ import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
+import { useScroll } from '@vueuse/core'
+
 const router = useRouter()
 
 router.afterEach((r) => {
@@ -79,6 +81,9 @@ provide(kCompact, compact)
 const onScroll = useCompactScroll(compact)
 
 const { start, end } = useBlockSharedTooltip()
+
+const { arrivedState } = useScroll(containerRef)
+provide('scroll', arrivedState)
 
 </script>
 

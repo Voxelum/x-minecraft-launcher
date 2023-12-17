@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!isFocus"
-    class=""
+    class="grid grid-cols-4 gap-1"
   >
     <v-btn
       v-shared-tooltip="_ => t('modpack.export')"
@@ -17,7 +17,6 @@
 
     <v-btn
       v-shared-tooltip="_ => t('logsCrashes.title')"
-      class="ml-1.5"
       text
       icon
       @click="showLogDialog()"
@@ -29,7 +28,6 @@
 
     <v-btn
       v-shared-tooltip="_ => t('instance.showInstance')"
-      class="ml-1.5"
       text
       icon
       @click="showInstanceFolder"
@@ -41,7 +39,6 @@
 
     <v-btn
       v-shared-tooltip="_ => t('baseSetting.title', 2)"
-      class="ml-1.5"
       text
       icon
       to="/base-setting"

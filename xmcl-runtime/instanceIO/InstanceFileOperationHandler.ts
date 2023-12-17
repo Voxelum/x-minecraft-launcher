@@ -74,6 +74,7 @@ export class InstanceFileOperationHandler {
 
     const task = await this.#getFileTask(file, destination, metadata, pending, sha1)
     if (task) {
+      task.setName('file', { file: file.path })
       this.#tasks.push(task)
     }
 

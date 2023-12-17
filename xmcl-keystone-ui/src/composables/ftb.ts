@@ -68,6 +68,22 @@ export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref
   }
 }
 
+export function useGetFeedTheBeastVersionsCache() {
+  function getFTBModpackVersionManifests() {
+    const item = localStorage.getItem('cachedFTB')
+    if (item) {
+      try {
+        return JSON.parse(item) as CachedFTBModpackVersionManifest[]
+      } catch { }
+    }
+    return []
+  }
+
+  return {
+    getFeaturedModpacks: getFTBModpackVersionManifests,
+  }
+}
+
 export function useFeedTheBeastVersionsCache() {
   const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorageCache('cachedFTB', () => [], JSON.stringify, JSON.parse, {
     deep: true,

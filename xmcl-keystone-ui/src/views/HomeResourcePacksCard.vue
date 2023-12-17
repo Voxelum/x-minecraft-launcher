@@ -1,5 +1,5 @@
 <template>
-  <HomeCardBase
+  <HomeCard
     icon="palette"
     :title="t('resourcepack.name', 2)"
     :text="t('resourcepack.enable', { count: resourcePackCount })"
@@ -11,7 +11,7 @@
 </template>
 <script lang="ts" setup>
 import { injection } from '@/util/inject'
-import HomeCardBase from './HomeCardBase.vue'
+import HomeCard from '@/components/HomeCard.vue'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 
 const props = defineProps<{ row: number; rowCount: number }>()

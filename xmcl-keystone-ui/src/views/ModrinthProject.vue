@@ -26,12 +26,6 @@
       :indeterminate="true"
     />
     <div class="flex flex-shrink flex-grow-0 flex-col gap-4 lg:max-w-[40%]">
-      <v-icon
-        v-if="_upstream"
-        class="z-19 lg:scale-400 scale-200 absolute rotate-45 transform"
-      >
-        attach_file
-      </v-icon>
       <v-card
         outlined
         class="p-4"
@@ -78,11 +72,6 @@
     <div
       class="relative flex flex-grow flex-col gap-4 overflow-auto"
     >
-      <ModrinthProjectUpstream
-        v-if="_upstream && _upstream.upstream && (_upstream.upstream.type === 'modrinth-modpack')"
-        :upstream="_upstream.upstream"
-        :project="project.id"
-      />
       <v-card
         outlined
       >
@@ -141,7 +130,6 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kModrinthInstall, useModrinthInstall } from '@/composables/modrinthInstall'
-import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrintTasks, useModrinthVersionsResources } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
@@ -155,7 +143,6 @@ import ModrinthProjectGallery from './ModrinthProjectGallery.vue'
 import ModrinthProjectHeader from './ModrinthProjectHeader.vue'
 import ModrinthProjectMembers from './ModrinthProjectMembers.vue'
 import ModrinthProjectTags from './ModrinthProjectTags.vue'
-import ModrinthProjectUpstream from './ModrinthProjectUpstream.vue'
 import ModrinthProjectVersions from './ModrinthProjectVersions.vue'
 
 const props = defineProps<{ id: string }>()
@@ -182,18 +169,7 @@ const status = useModrinthVersionsResources(versions)
 const tasks = useModrintTasks(projectId)
 provide(kModrinthVersionsStatus, { ...status, tasks })
 
-const _upstream = inject(kUpstream)
+provide(kModrinthInstall, useModrinthInstall(project, tasks, installTo, status.getResource, computed(() => undefined)))
 
-if (_upstream && _upstream.value.upstream?.type === 'modrinth-modpack') {
-  // In home page
-  // Current instance resource
-  const { resource: currentVersionResource } = useModrinthInstanceResource(projectId, computed(() => (_upstream.value.upstream?.type === 'modrinth-modpack' ? _upstream.value.upstream.sha1 : undefined) || ''))
-  provide(kModrinthInstall, useModrinthInstall(project, tasks, installTo, status.getResource, currentVersionResource))
-} else {
-  provide(kModrinthInstall, useModrinthInstall(project, tasks, installTo, status.getResource, computed(() => undefined)))
-}
-
-if (!_upstream) {
-  usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.title || '' })))
-}
+usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.title || '' })))
 </script>

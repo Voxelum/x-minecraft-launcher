@@ -1,9 +1,9 @@
-import { TimeUnit, getAgoOrDate } from '@/util/date'
+import { TimeFormatOptions, TimeUnit, getAgoOrDate } from '@/util/date'
 
 export function useDateString() {
   const { t } = useI18n()
-  const getDateString = (date: string) => {
-    const result = getAgoOrDate(new Date(date).getTime())
+  const getDateString = (date: string | number, format?: TimeFormatOptions | undefined) => {
+    const result = getAgoOrDate(date, format)
     if (typeof result === 'string') {
       return result
     }
@@ -18,7 +18,7 @@ export function useDateString() {
       case TimeUnit.Day:
         return t('ago.day', { duration: ago }, { plural: ago })
     }
-    return date
+    return date.toString()
   }
   return {
     getDateString,

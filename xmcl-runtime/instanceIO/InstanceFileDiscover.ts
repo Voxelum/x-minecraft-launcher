@@ -77,7 +77,9 @@ const resolveHashes = async (file: string, worker: ResourceWorker, hashes?: stri
   return result as any
 }
 
-export const isSpecialFile = (relativePath: string) => relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')
+export const isSpecialFile = (relativePath: string) =>
+  (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) &&
+  !relativePath.endsWith('.txt')
 
 export async function decoareteInstanceFileFromResourceCache(
   localFile: InstanceFile,

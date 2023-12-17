@@ -9,6 +9,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { isNonnull } from '../util/object'
 import { decoareteInstanceFileFromResourceCache, discover } from './InstanceFileDiscover'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
+import { AnyError } from '~/util/error'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -47,7 +48,10 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       const _files = await discover(instancePath, logger)
 
       await Promise.all(
-        _files.map(async ([file, status]) => decoareteInstanceFileFromResourceCache(file, status, instancePath, worker, resourceService, undecorated, undecoratedResources, options?.hashes)),
+        _files.map(([file, status]) => decoareteInstanceFileFromResourceCache(file, status, instancePath, worker, resourceService, undecorated, undecoratedResources, options?.hashes)
+          .catch((e) => {
+            logger.error(new AnyError('InstanceManifestResolveResourceError', 'Fail to get manifest data for instance file', { cause: e }, file))
+          })),
       )
 
       files = _files.map(([file]) => file)

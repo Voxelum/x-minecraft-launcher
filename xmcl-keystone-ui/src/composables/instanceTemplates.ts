@@ -17,13 +17,13 @@ export interface Template {
   loadFiles: () => Promise<InstanceFile[]>
 }
 
-export function useInstanceTemplates(javas: Ref<JavaRecord[]>, modpackResources: Ref<Resource[]>, peers: Ref<PeerConnection[]>, ftb: Ref<CachedFTBModpackVersionManifest[]>) {
+export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
   const { t } = useI18n()
   const { getModpackInstallFiles } = useService(ModpackServiceKey)
 
-  const templates = computed(() => {
+  const getTemplates = (modpackResources: Resource[], peers: PeerConnection[], ftb: CachedFTBModpackVersionManifest[]) => {
     const all = [] as Array<Template>
-    for (const resource of modpackResources.value) {
+    for (const resource of modpackResources) {
       const config = resolveModpackInstanceConfig(resource)
       const type = resource.metadata['modrinth-modpack']
         ? 'modrinth'
@@ -50,18 +50,18 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>, modpackResources:
       }
     }
 
-    for (const c of peers.value) {
+    for (const c of peers) {
       if (c.sharing) {
         all.push(getPeerTemplate(c.id, c.userInfo.name, c.sharing))
       }
     }
 
-    for (const f of ftb.value) {
+    for (const f of ftb) {
       all.push(getFtbTemplate(f))
     }
 
     return all
-  })
+  }
 
   const getActionText = (type: string) => {
     if (type === 'mcbbs') return t('instanceTemplate.mcbbs')
@@ -116,6 +116,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>, modpackResources:
   }
 
   return {
-    templates,
+    getTemplates,
   }
 }

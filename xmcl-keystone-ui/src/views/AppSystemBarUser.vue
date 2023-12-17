@@ -2,6 +2,7 @@
   <v-menu
     v-model="isShown"
     :close-on-content-click="false"
+    transition="slide-y-transition"
     :nudge-width="280"
     offset-y
     class="z-20"

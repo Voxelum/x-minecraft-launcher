@@ -1,5 +1,16 @@
-export function getLocalDateString(s: string | number) {
-  return new Date(s).toLocaleDateString()
+export type TimeStyle = 'full' | 'long' | 'medium' | 'short' | undefined
+export interface TimeFormatOptions {
+  dateStyle?: TimeStyle
+  timeStyle?: TimeStyle
+}
+export function getLocalDateString(s: string | number, options?: TimeFormatOptions) {
+  const format = Intl.DateTimeFormat(navigator.language, { dateStyle: options?.dateStyle, timeStyle: options?.timeStyle })
+  const d = new Date(s)
+  try {
+    return format.format(d)
+  } catch (e) {
+    return d.toLocaleString()
+  }
 }
 export function getLocalTimeString(s: string | number) {
   return new Date(s).toLocaleString()
@@ -29,12 +40,13 @@ export function getHumanizeDuration(millisecond: number): [string, number, TimeU
   return [day.toFixed(2), day, TimeUnit.Day]
 }
 
-export function getAgoOrDate(date: number) {
+export function getAgoOrDate(d: number | string, format?: TimeFormatOptions) {
+  const date = new Date(d).getTime()
   const now = Date.now()
   if (now - date < (TimeUnit.Day * 7)) {
     const [, duration, unit] = getHumanizeDuration(now - date)
     return [Math.floor(duration), unit]
   } else {
-    return getLocalDateString(date)
+    return getLocalDateString(date, format)
   }
 }

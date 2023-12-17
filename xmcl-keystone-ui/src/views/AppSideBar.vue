@@ -112,8 +112,8 @@
         </v-list-item>
       </v-list-group>
       <v-list-item
-        v-if="false"
-        v-shared-tooltip.right="t('marketplace.name', 2)"
+        v-if="true"
+        v-shared-tooltip.right="_ => t('store.name', 2)"
         link
         push
         to="/store"

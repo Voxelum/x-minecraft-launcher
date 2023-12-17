@@ -79,24 +79,6 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         }))
     }
 
-    const assetIndexIssue = await diagnoseAssetIndex(version)
-    if (abortSignal.aborted) { return }
-
-    if (assetIndexIssue) {
-      ops.push(async () => {
-        await installAssetsForVersion(version.id)
-      })
-      items.push(assetIndexIssue.type === 'corrupted'
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version })),
-          description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version })),
-          description: computed(() => t('diagnosis.missingAssetsIndex.message')),
-        }))
-    }
-
     const librariesIssue = await diagnoseLibraries(version)
     if (abortSignal.aborted) { return }
 
@@ -113,6 +95,24 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         : reactive({
           title: computed(() => t('diagnosis.missingLibraries.name', 2, options)),
           description: computed(() => t('diagnosis.missingLibraries.message')),
+        }))
+    }
+
+    const assetIndexIssue = await diagnoseAssetIndex(version)
+    if (abortSignal.aborted) { return }
+
+    if (assetIndexIssue) {
+      ops.push(async () => {
+        await installAssetsForVersion(version.id)
+      })
+      items.push(assetIndexIssue.type === 'corrupted'
+        ? reactive({
+          title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version })),
+          description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
+        })
+        : reactive({
+          title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version })),
+          description: computed(() => t('diagnosis.missingAssetsIndex.message')),
         }))
     }
 

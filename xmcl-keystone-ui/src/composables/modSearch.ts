@@ -181,7 +181,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   const keyword: Ref<string> = ref('')
   const isModrinthActive = ref(true)
   const isCurseforgeActive = ref(true)
-  const { sort, modrinthSort, curseforgeSort } = useMarketSort()
+  const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
 
   watch(runtime, (version) => {
     const items = [] as ModLoaderFilter[]
