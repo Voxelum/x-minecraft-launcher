@@ -6,12 +6,6 @@
       <div
         class="lg:(w-80 max-w-80) flex flex-shrink gap-2 lg:flex lg:flex-col lg:gap-5"
       >
-        <v-icon
-          v-if="upstream"
-          class="z-9 lg:scale-400 scale-200 absolute rotate-45 transform"
-        >
-          attach_file
-        </v-icon>
         <ErrorView
           :error="error"
           @refresh="refresh"
@@ -27,18 +21,10 @@
           v-if="project"
           :project="project"
           :from="destination"
-          :upstream="upstream && upstream.upstream && upstream.upstream.type === 'curseforge-modpack' ? upstream.upstream : undefined"
         />
       </div>
 
       <div class="flex h-full flex-grow flex-col gap-2 overflow-auto lg:gap-5">
-        <CurseforgeUpstreamCard
-          v-if="project && upstream && upstream.upstream && upstream.upstream.type === 'curseforge-modpack'"
-          :mod-id="modId"
-          :upstream="upstream.upstream"
-          :game-version="upstream.minecraft"
-          :files="project.latestFilesIndexes"
-        />
         <v-card
           outlined
           class="relative flex flex-grow flex-col overflow-auto"
@@ -84,7 +70,6 @@
                 :from="destination"
                 :game-versions="gameVersions"
                 :mod-loaders="modLoaders"
-                :upstream="upstream && upstream.upstream && upstream.upstream.type === 'curseforge-modpack' ? upstream.upstream : undefined"
               />
             </v-tab-item>
             <v-tab-item
@@ -107,10 +92,8 @@
 
 <script lang=ts setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { kLatestCurseforgeResource, useLatestCurseforgeResource } from '@/composables/curseforgeResource'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
-import { kUpstream } from '@/composables/instanceUpdate'
 import { usePresence } from '@/composables/presence'
 import { useSWRVModel } from '@/composables/swrv'
 import { injection } from '@/util/inject'
@@ -123,7 +106,6 @@ import CurseforgeProjectFiles from './CurseforgeProjectFiles.vue'
 import CurseforgeProjectHeader from './CurseforgeProjectHeader.vue'
 import CurseforgeProjectImages from './CurseforgeProjectImages.vue'
 import CurseforgeProjectRecentFiles from './CurseforgeProjectRecentFiles.vue'
-import CurseforgeUpstreamCard from './CurseforgeUpstreamCard.vue'
 
 const props = withDefaults(defineProps<{
   type: ProjectType
@@ -134,8 +116,6 @@ const props = withDefaults(defineProps<{
   id: '',
   from: '',
 })
-
-const upstream = inject(kUpstream, undefined)
 
 // Curseforge Project
 const modId = computed(() => Number.parseInt(props.id, 10))
@@ -159,16 +139,8 @@ const destination = ref(props.from || path.value)
 // I18n
 const { t } = useI18n()
 
-if (upstream) {
-  // Provide install function with upstream (home page)
-  const latestFileIndex = computed(() => project.value?.latestFilesIndexes.find(f => f.gameVersion === upstream.value.minecraft))
-  const current = useLatestCurseforgeResource(modId, latestFileIndex)
-  provide(kLatestCurseforgeResource, current)
-  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, path, computed(() => props.type), current.resource))
-} else {
-  // Common Curseforge install function
-  provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, path, computed(() => props.type), computed(() => undefined)))
-}
+// Common Curseforge install function
+provide(kCurseforgeInstall, useCurseforgeInstall(modId, allFiles, path, computed(() => props.type), computed(() => undefined)))
 
 const gameVersions = computed(() => {
   const index = project.value?.latestFilesIndexes
@@ -196,9 +168,7 @@ const imageDialog = injection(kImageDialog)
 // Tab
 const tab = ref(0)
 
-if (!upstream) {
-  usePresence(computed(() => t('presence.curseforgeProject', { name: project.value?.name || props.id })))
-}
+usePresence(computed(() => t('presence.curseforgeProject', { name: project.value?.name || props.id })))
 </script>
 
 <style>

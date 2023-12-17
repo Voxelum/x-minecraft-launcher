@@ -2,9 +2,10 @@
   <v-chip
     v-shared-tooltip="value"
     v-ripple
-    color="grey darken-4"
+    color="dark:(grey darken-4)"
     class="cursor-pointer"
     :small="!large"
+    :outlined="outlined"
     @click="onInfoClicked(value)"
   >
     <span
@@ -26,6 +27,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 defineProps<{
   value: string
   large?: boolean
+  outlined?: boolean
 }>()
 
 const onInfoClicked = (value: string) => {

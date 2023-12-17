@@ -32,6 +32,8 @@
 </template>
 
 <script lang=ts setup>
+import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
+import { useEventListener } from '@vueuse/core'
 import debounce from 'lodash.debounce'
 
 const props = defineProps<{
@@ -64,37 +66,12 @@ const clear = () => {
 
 const searchTextField = ref(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))
-const onKeyPress = (e: KeyboardEvent) => {
-  // ctrl+f
-  if (e.ctrlKey && e.key === 'f') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.focus()
-  }
-  // ctrl+a
-  if (searchTextFieldFocused.value && e.ctrlKey && e.key === 'a') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.$el.querySelector('input')?.select()
-  }
-  // esc
-  if (searchTextFieldFocused.value && e.key === 'Escape') {
-    e.preventDefault()
-    e.stopPropagation()
-    searchTextField.value?.blur()
-  }
-}
+useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
 defineExpose({
   focus() {
     if (!searchTextFieldFocused.value) {
       searchTextField.value?.focus()
     }
   },
-})
-onMounted(() => {
-  document.addEventListener('keydown', onKeyPress, { capture: true })
-})
-onUnmounted(() => {
-  document.removeEventListener('keydown', onKeyPress)
 })
 </script>

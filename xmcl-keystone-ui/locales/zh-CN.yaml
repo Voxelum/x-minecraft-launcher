@@ -136,7 +136,7 @@ curseforge:
     files: 文件
     images: 图片
   recentFiles: 近期文件
-  releasedDate: 创建日期
+  releasedDate: 发布日期
   search: 搜索
   texture-packs:
     description: 从 Curseforge 上安装资源包
@@ -1273,6 +1273,12 @@ shaderPack:
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此 shader pack
+store:
+  explore: 探索
+  latestMinecraft: 使用近期 Minecraft 版本
+  name: 整合包市场
+  popular: 热门整合包
+  recentUpdated: 最近更新
 summery: 简介
 tag:
   create: 创建标签
@@ -1341,8 +1347,11 @@ universalDrop:
   title: 将文件拖到这并导入为
   unknownResource: 无法解析
 upstream:
+  downgrade: 降级
   missingModpackMetadata: >-
     无法找到当前实例使用的整合包元数据。虽然你不会因此没法更新到最新的整合包版本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份你的文件。
+  onlyShowCurrentVersion: 只显示适合当前 Minecraft 的版本
+  update: 更新
 user:
   accessToken: 访问令牌
   authMode: 验证服务

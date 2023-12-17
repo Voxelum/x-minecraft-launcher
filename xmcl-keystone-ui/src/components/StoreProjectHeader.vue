@@ -20,33 +20,16 @@
 
             <span>{{ project.description }}</span>
           </div>
-          <span class="flex select-none gap-2 xl:justify-center">
-            <v-chip
+          <span class="flex select-none flex-wrap gap-3 xl:justify-center">
+            <CategoryChip
               v-for="item of project.categories"
-              :key="item.name"
-              label
-              outlined
-              class="ml-2"
-            >
-              <v-avatar
-                v-if="item.icon?.startsWith('http')"
-                left
-              >
-                <v-img
-                  :src="item.icon"
-                />
-              </v-avatar>
-              <v-avatar
-                v-else-if="item.icon"
-                left
-                v-html="item.icon"
-              />
-              {{ item.name }}
-            </v-chip>
+              :key="item.text"
+              :item="item"
+            />
           </span>
         </div>
 
-        <div class="flex flex-col items-center justify-center gap-2 xl:flex-row">
+        <div class="flex flex-grow-0 flex-col items-center justify-center gap-2 xl:flex-row">
           <v-btn
             v-if="!installed"
             color="primary"
@@ -85,25 +68,10 @@
       <template
         v-for="(x, i) of items"
       >
-        <span
+        <InfoHighlight
           :key="x.name"
-        >
-          <div class="text-center text-2xl font-bold text-gray-600 dark:text-gray-300">
-            {{ x.value }}
-          </div>
-          <div
-            class="flex w-full items-center justify-center"
-          >
-            <v-icon
-              class="material-icons-outlined"
-              left
-              small
-            >
-              {{ x.icon }}
-            </v-icon>
-            <span class="whitespace-nowrap">{{ x.name }}</span>
-          </div>
-        </span>
+          :value="x"
+        />
         <v-divider
           v-if="i !== items.length - 1"
           :key="x.name + 'divider'"
@@ -116,7 +84,9 @@
 <script lang="ts" setup>
 import { getExpectedSize } from '@/util/size'
 import { StoreProject } from './StoreProject.vue'
-import { getLocalDateString } from '@/util/date'
+import CategoryChip from './CategoryChip.vue'
+import InfoHighlight from './InfoHighlight.vue'
+import { useDateString } from '@/composables/date'
 
 const props = defineProps<{
   project: StoreProject
@@ -127,6 +97,7 @@ const props = defineProps<{
 const emit = defineEmits(['install', 'open'])
 const { t } = useI18n()
 
+const { getDateString } = useDateString()
 const items = computed(() => {
   return [{
     icon: 'file_download',
@@ -139,11 +110,11 @@ const items = computed(() => {
   }, {
     icon: 'event',
     name: t('modrinth.createAt'),
-    value: getLocalDateString(props.project.createDate),
+    value: getDateString(props.project.createDate),
   }, {
     icon: 'update',
     name: t('modrinth.updateAt'),
-    value: getLocalDateString(props.project.updateDate),
+    value: getDateString(props.project.updateDate),
   }]
 })
 </script>

@@ -118,6 +118,11 @@ export class ResourceService extends AbstractService implements IResourceService
     })
   }
 
+  async getResourceMetadataByUri(uri: string): Promise<ResourceMetadata[]> {
+    const result = await getResourceAndMetadata(this.context, { uris: [uri] })
+    return result
+  }
+
   async getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined> {
     const metadata = await this.context.db.selectFrom('resources')
       .selectAll()

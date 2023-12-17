@@ -17,6 +17,10 @@ export function getCursforgeFileModLoaders(file: File): string[] {
   return file.gameVersions.filter(v => !Number.isInteger(Number(v[0])))
 }
 
+export function getCurseforgeFileGameVersions(file: File): string[] {
+  return file.gameVersions.filter(v => Number.isInteger(Number(v[0])))
+}
+
 export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[]) {
   const mapping = {
     [ModLoaderFilter.fabric]: 'Fabric' as const,

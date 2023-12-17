@@ -4,7 +4,7 @@ import useSWRV from 'swrv'
 import { InjectionKey, Ref, computed, reactive, ref, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 
-interface CurseforgeProps {
+export interface CurseforgeProps {
   type: string
   page: number
   keyword: string
@@ -20,15 +20,8 @@ interface CurseforgeProps {
  * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
  */
 export function useCurseforge(props: CurseforgeProps) {
-  const router = useRouter()
   const pageSize = 10
 
-  const currentType = computed({
-    get() { return props.type },
-    set(v: string) {
-      router.push(`/curseforge/${v}`)
-    },
-  })
   const currentSectionId = computed(() => {
     switch (props.type) {
       case 'modpacks':
@@ -44,43 +37,13 @@ export function useCurseforge(props: CurseforgeProps) {
         return 6
     }
   })
-  const currentPage = computed({
-    get() { return props.page },
-    set(v: number) {
-      router.replace({ query: { ...router.currentRoute.query, page: v.toString() } })
-    },
-  })
-  const currentCategory = computed({
-    get() { return props.category },
-    set(v: string) {
-      router.replace({ query: { ...router.currentRoute.query, category: v, page: '1' } })
-    },
-  })
-  const currentSort = computed({
-    get() { return props.sortField },
-    set(v: ModsSearchSortField) {
-      router.replace({ query: { ...router.currentRoute.query, sortField: v.toString() } })
-    },
-  })
-  const currentKeyword = computed({
-    get() { return props.keyword },
-    set(v: string) {
-      router.replace({ query: { ...router.currentRoute.query, keyword: v } })
-    },
-  })
-  const currentVersion = computed({
-    get() { return props.gameVersion },
-    set(v: string) {
-      router.replace({ query: { ...router.currentRoute.query, gameVersion: v } })
-    },
-  })
   const categoryId = computed({
-    get() { return currentCategory.value ? Number.parseInt(currentCategory.value, 10) : undefined },
+    get() { return props.category ? Number.parseInt(props.category, 10) : undefined },
     set(v: number | undefined) {
       if (v) {
-        currentCategory.value = v.toString()
+        props.category = v.toString()
       } else {
-        currentCategory.value = ''
+        props.category = ''
       }
     },
   })
@@ -90,18 +53,19 @@ export function useCurseforge(props: CurseforgeProps) {
     totalCount: 0,
     projects: [] as Mod[],
   })
-  const index = computed(() => (currentPage.value - 1) * pageSize)
+  const index = computed(() => (props.page - 1) * pageSize)
   const { mutate, isValidating, error, data: _data } = useSWRV(
-    computed(() => `/curseforge/search?index=${index.value}&classId=${currentSectionId.value}&sortField=${currentSort.value}&gameVersion=${currentVersion.value}&categoryId=${categoryId.value}&searchFilter=${currentKeyword.value}`),
+    computed(() => `/curseforge/search?index=${index.value}&classId=${currentSectionId.value}&sortField=${props.sortField}&gameVersion=${props.gameVersion}&categoryId=${categoryId.value}&searchFilter=${props.keyword}`),
     async () => {
       const result = await clientCurseforgeV1.searchMods({
         pageSize,
         index: index.value,
         classId: currentSectionId.value,
-        sortField: currentSort.value,
-        gameVersion: currentVersion.value,
+        sortField: props.sortField,
+        modLoaderType: props.modLoaderType === 0 ? undefined : props.modLoaderType,
+        gameVersion: props.gameVersion,
         categoryId: categoryId.value,
-        searchFilter: currentKeyword.value,
+        searchFilter: props.keyword,
       })
       return markRaw(result)
     }, useOverrideSWRVConfig({
@@ -115,18 +79,12 @@ export function useCurseforge(props: CurseforgeProps) {
       data.totalCount = v.pagination.totalCount
       data.pages = Math.ceil(v.pagination.totalCount / pageSize)
     }
-  })
+  }, { immediate: true })
   return {
     ...toRefs(data),
     refreshing: isValidating,
     error,
     categoryId,
-    currentSort,
-    currentVersion,
-    currentKeyword,
-    currentPage,
-    currentCategory,
-    currentType,
     refresh: mutate,
   }
 }
@@ -179,6 +137,12 @@ export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersi
       modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
     }),
   }
+}
+
+export function useCurseforgeCategoryI18n() {
+  const { te, t } = useI18n()
+  const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
+  return tCategory
 }
 
 export function getCurseforgeProjectDescriptionModel(projectId: Ref<number>) {

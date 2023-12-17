@@ -1,5 +1,5 @@
 <template>
-  <HomeCardBase
+  <HomeCard
     icon="map"
     :title="t('save.name', 2)"
     :text="t('save.createdWorlds', { count: savesLength })"
@@ -10,7 +10,7 @@
   />
 </template>
 <script lang="ts" setup>
-import HomeCardBase from './HomeCardBase.vue'
+import HomeCard from '@/components/HomeCard.vue'
 import { injection } from '@/util/inject'
 import { kInstanceSave } from '@/composables/save'
 

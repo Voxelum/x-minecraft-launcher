@@ -409,7 +409,7 @@
               <v-card-subtitle>
                 {{ g.description }}
                 <div v-if="g.date">
-                  {{ getLocalDateString(g.date) }}
+                  {{ getDateString(g.date) }}
                 </div>
               </v-card-subtitle>
             </v-card>
@@ -615,13 +615,13 @@
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
 import { kVuetify } from '@/composables/vuetify'
-import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import { useMarketRoute } from '@/composables/useMarketRoute'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
+import { useDateString } from '@/composables/date'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -733,6 +733,7 @@ const _enabled = computed({
   },
 })
 
+const { getDateString } = useDateString()
 const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
 
 const { goCurseforgeProject, goModrinthProject } = useMarketRoute()

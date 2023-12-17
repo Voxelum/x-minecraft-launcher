@@ -118,7 +118,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const modrinthCategories = ref([] as string[])
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
-  const { sort, modrinthSort } = useMarketSort()
+  const { sort, modrinthSort } = useMarketSort(0)
 
   const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, runtime)
   const { cached, loadingCached, shaderProjectFiles } = useLocalSearch(shaderPack)

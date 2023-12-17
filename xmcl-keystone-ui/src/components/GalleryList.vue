@@ -1,22 +1,32 @@
 <template>
-  <div class="relative flex select-none gap-4">
+  <div class="relative flex w-full select-none gap-4">
     <div
       class="absolute left-0 flex h-full items-center lg:static"
-      @click="prev"
     >
-      <v-btn icon>
+      <v-btn
+        icon
+        @click="prev"
+      >
         <v-icon>
           chevron_left
         </v-icon>
       </v-btn>
     </div>
+    <!-- <v-window
+      v-model="index"
+      class="elevation-1 w-full"
+    >
+      <v-window-item
+        v-for="(currentGroup, i) of grouped"
+        :key="i"
+      > -->
     <Transition
       mode="out-in"
       transition="fade-transition"
     >
       <div
         :key="index"
-        class="grid gap-4 overflow-auto"
+        class="grid w-full gap-4 overflow-auto"
         :style="{
           gridTemplateColumns: `repeat(${size}, minmax(0, 1fr))`,
         }"
@@ -25,6 +35,7 @@
           v-for="g of currentGroup"
           :key="g.id"
           class="flex flex-col overflow-auto"
+          outlined
           @click="$emit('enter', g)"
         >
           <v-img
@@ -33,7 +44,7 @@
             height="200px"
             class="flex-shrink flex-grow-0"
           />
-          <v-card-subtitle class="whitespace-nowrap">
+          <v-card-subtitle class="h-[98px] flex-grow">
             <v-icon
               class="mr-1"
               size="16"
@@ -71,11 +82,15 @@
         </v-card>
       </div>
     </Transition>
+    <!-- </v-window-item>
+    </v-window> -->
     <div
       class="absolute right-0 flex h-full items-center lg:static"
-      @click="next"
     >
-      <v-btn icon>
+      <v-btn
+        icon
+        @click="next"
+      >
         <v-icon>
           chevron_right
         </v-icon>
@@ -128,8 +143,6 @@ const grouped = computed(() => {
 
 const index = ref(0)
 const currentGroup = computed(() => grouped.value[index.value])
-
-const { getDateString } = useDateString()
 
 const next = () => {
   index.value = (index.value + 1) % grouped.value.length

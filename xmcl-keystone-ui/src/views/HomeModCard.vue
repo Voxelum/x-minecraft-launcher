@@ -1,5 +1,5 @@
 <template>
-  <HomeCardBase
+  <HomeCard
     title="Mod"
     icon="extension"
     :text="t('mod.enabled', { count: enabledModCounts })"
@@ -13,7 +13,7 @@
 <script lang="ts" setup>
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { injection } from '@/util/inject'
-import HomeCardBase from './HomeCardBase.vue'
+import HomeCard from '@/components/HomeCard.vue'
 
 const props = defineProps<{ row: number; rowCount: number }>()
 

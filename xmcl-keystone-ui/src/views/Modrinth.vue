@@ -9,7 +9,7 @@
     <div class="relative flex flex-col gap-2 overflow-auto md:col-span-12 lg:col-span-9">
       <div class="hover:(scale-100 opacity-100) absolute bottom-3 z-10 w-full scale-90 transform opacity-60 transition">
         <v-pagination
-          v-model="_page"
+          v-model="page"
           :length="pageCount"
           color="success"
           :disabled="refreshing"
@@ -17,12 +17,12 @@
         />
       </div>
       <v-card
-        class="flex flex-shrink flex-grow-0 py-1"
+        class="hide-underline flex flex-shrink flex-grow-0 py-1"
         outlined
       >
         <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
-            v-model="_projectType"
+            v-model="projectType"
             flat
             solo
             :items="projectTypes"
@@ -37,10 +37,10 @@
           flat
           hide-details
           :placeholder="t('modrinth.searchText')"
-          @keypress.enter="_query = keyword"
+          @keypress.enter="query = keyword"
         />
         <v-select
-          v-model="_sortBy"
+          v-model="sortBy"
           :item-value="
             // @ts-expect-error
             v => v.name"
@@ -104,11 +104,11 @@
         :license="license"
         :category="category"
         :error="tagError"
-        @select:modLoader="_modLoader = _modLoader === $event ? '' : $event"
-        @select:gameVersion="_gameVersion = _gameVersion === $event ? '' : $event"
-        @select:license="_license = _license === $event ? '' : $event"
+        @select:modLoader="modLoader = modLoader === $event ? '' : $event"
+        @select:gameVersion="gameVersion = gameVersion === $event ? '' : $event"
+        @select:license="license = license === $event ? '' : $event"
         @select:category="selectCategory"
-        @select:environment="_environment = _environment === $event ? '' : $event"
+        @select:environment="environment = environment === $event ? '' : $event"
       />
     </div>
   </div>
@@ -121,6 +121,8 @@ import ModrinthModCard from './ModrinthModCard.vue'
 import ErrorView from '@/components/ErrorView.vue'
 import { usePresence } from '@/composables/presence'
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
+
+import { useVModels } from '@vueuse/core'
 
 const props = withDefaults(defineProps<{
   query: string
@@ -146,12 +148,44 @@ const props = withDefaults(defineProps<{
   from: () => '',
 })
 
+const { replace, currentRoute } = useRouter()
+const { query, gameVersion, modLoader, category, environment, license } = useVModels(props, (name, val) => {
+  switch (name) {
+    case 'update:query':
+      replace({ query: { ...currentRoute.query, query: val, page: '1' } })
+      break
+    case 'update:gameVersion':
+      replace({ query: { ...currentRoute.query, gameVersion: val, page: '1' } })
+      break
+    case 'update:license':
+      replace({ query: { ...currentRoute.query, license: val, page: '1' } })
+      break
+    case 'update:category':
+      replace({ query: { ...currentRoute.query, category: val, page: '1' } })
+      break
+    case 'update:modLoader':
+      replace({ query: { ...currentRoute.query, modLoader: val, page: '1' } })
+      break
+    case 'update:environment':
+      replace({ query: { ...currentRoute.query, environment: val, page: '1' } })
+      break
+    case 'update:projectType':
+      replace({ query: { ...currentRoute.query, projectType: val, page: '1' } })
+      break
+    case 'update:sortBy':
+      replace({ query: { ...currentRoute.query, sortBy: val, page: '1' } })
+      break
+    case 'update:page':
+      replace({ query: { ...currentRoute.query, page: val.toString() } })
+      break
+  }
+})
 const { t } = useI18n()
 const { refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses, error: tagError } = useModrinthTags()
 const {
   error: searchError,
-  refresh, query: _query, category: _category, gameVersion: _gameVersion, license: _license, modLoader: _modLoader, environment: _environment, projectType: _projectType,
-  sortBy: _sortBy, page: _page, projectTypes,
+  refresh,
+  projectTypes,
   refreshing, sortOptions, projects, pageSize, pageCount, pageSizeOptions,
 } = useModrinth(props)
 const { push } = useRouter()
@@ -164,14 +198,14 @@ const onFiltered = (tag: string) => {
   if (categories.value.find(c => c.name === tag)) {
     selectCategory(tag)
   } else if (modLoaders.value.find(l => l.name === tag)) {
-    _modLoader.value = tag
+    modLoader.value = tag
   }
 }
 const selectCategory = (cat: string) => {
-  if (_category.value.indexOf(cat) === -1) {
-    _category.value = [..._category.value, cat]
+  if (category.value.indexOf(cat) === -1) {
+    category.value = [...category.value, cat]
   } else {
-    _category.value = _category.value.filter(v => v !== cat)
+    category.value = category.value.filter(v => v !== cat)
   }
 }
 onMounted(() => {
@@ -180,14 +214,3 @@ onMounted(() => {
 
 usePresence(computed(() => t('presence.modrinth')))
 </script>
-
-<style>
-.modrinth .theme--.v-text-field>.v-input__control>.v-input__slot:before {
-  border: none;
-}
-
-.modrinth .v-text-field>.v-input__control>.v-input__slot:before {
-  border: none;
-  border-width: 0px;
-}
-</style>

@@ -11,12 +11,6 @@ export function useTaskCount() {
   return { count }
 }
 
-export function useTasks() {
-  const proxy = injection(kTaskManager)
-  const { pause, resume, cancel, tasks, throughput } = proxy
-  return { tasks, pause, resume, cancel, throughput }
-}
-
 export function useTaskName() {
   const { t, tm, te } = useI18n()
   const tTask = (id: string, param: Record<string, any>) => {
@@ -27,6 +21,11 @@ export function useTaskName() {
     return te(id + '.name', 'en') ? t(id + '.name', param) : id
   }
   return tTask
+}
+
+export function useTasks(filter: (t: TaskItem) => boolean) {
+  const { tasks } = injection(kTaskManager)
+  return computed(() => tasks.value.filter(filter))
 }
 
 export function useTask(finder: (i: TaskItem) => boolean) {

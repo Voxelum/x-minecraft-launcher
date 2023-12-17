@@ -3,7 +3,7 @@
     v-model="isShown"
     :width="380"
   >
-    <v-card color="secondary">
+    <v-card>
       <v-card-title v-if="exiting">
         {{ t('launchStatus.exit') }}
       </v-card-title>

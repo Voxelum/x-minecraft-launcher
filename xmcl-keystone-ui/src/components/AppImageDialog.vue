@@ -14,7 +14,7 @@
       <div class="absolute bottom-10 flex w-full flex-col items-center justify-center gap-2">
         {{ description }}
         <div v-if="date">
-          {{ getLocalDateString(date) }}
+          {{ getDateString(date) }}
         </div>
         <v-card class="hover:(scale-100 opacity-100) flex flex-grow-0 gap-2 rounded-xl px-2 py-1 opacity-60 transition">
           <v-btn
@@ -38,11 +38,12 @@
 </template>
 
 <script lang="ts" setup>
+import { useDateString } from '@/composables/date'
 import { kImageDialog } from '@/composables/imageDialog'
-import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
 
 const { isShown, image, description, date } = injection(kImageDialog)
+const { getDateString } = useDateString()
 const onOpen = () => {
   window.open(image.value, 'browser')
 }

@@ -61,7 +61,7 @@
               {{ i.name }}
             </div>
             <v-subheader>
-              {{ getAgoOrDate(i.lastAccessDate) }}
+              {{ getDateString(i.lastAccessDate) }}
             </v-subheader>
           </v-card>
           <v-btn class="primary">
@@ -76,15 +76,16 @@
 </template>
 
 <script lang=ts setup>
+import { useDateString } from '@/composables/date'
 import { kInstances } from '@/composables/instances'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useScrollRight } from '@/composables/scroll'
-import { getAgoOrDate } from '@/util/date'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
 const { refresh, news } = useMojangNews()
+const { getDateString } = useDateString()
 onMounted(refresh)
 
 const { instances } = injection(kInstances)

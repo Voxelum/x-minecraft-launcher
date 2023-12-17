@@ -1,6 +1,6 @@
 <template>
   <div
-    class="template-content w-full"
+    class="template-content flex h-full flex-col overflow-auto"
     style="overflow: auto; padding: 24px 24px 16px"
   >
     <v-skeleton-loader
@@ -9,7 +9,7 @@
     />
     <v-list
       v-else
-      class="min-h-[50vh] bg-transparent p-0"
+      class="flex flex-col overflow-auto bg-transparent p-0"
       two-line
     >
       <v-list-item class="mb-2">
@@ -34,85 +34,93 @@
         </div>
       </v-list-item>
       <v-divider />
-      <v-list-item
-        v-for="p in items"
-        :key="p.filePath"
-        ripple
-        @click="onSelect(p)"
+      <v-virtual-scroll
+        :bench="2"
+        class="visible-scroll ml-2 h-full max-h-full overflow-auto"
+        :items="items"
+        :item-height="72"
       >
-        <v-list-item-avatar>
-          <v-img
-            :src="p.instance.icon ? p.instance.icon : ''"
-          />
-        </v-list-item-avatar>
+        <template #default="{ item: p }">
+          <v-list-item
+            :key="p.filePath"
+            ripple
+            @click="onSelect(p)"
+          >
+            <v-list-item-avatar>
+              <v-img
+                :src="p.instance.icon ? p.instance.icon : ''"
+              />
+            </v-list-item-avatar>
 
-        <v-list-item-content>
-          <v-list-item-title>{{ p.name }}</v-list-item-title>
-          <v-list-item-subtitle class="flex gap-1">
-            <v-chip
-              v-if="p.instance.runtime.minecraft"
-              outlined
-              small
-              label
-            >
-              <v-avatar left>
-                <img
-                  :src="'http://launcher/icons/minecraft'"
-                  alt="minecraft"
+            <v-list-item-content>
+              <v-list-item-title>{{ p.name }}</v-list-item-title>
+              <v-list-item-subtitle class="flex gap-1">
+                <v-chip
+                  v-if="p.instance.runtime.minecraft"
+                  outlined
+                  small
+                  label
                 >
-              </v-avatar>
-              {{ p.instance.runtime.minecraft }}
-            </v-chip>
-            <v-chip
-              v-if="p.instance.runtime.forge"
-              outlined
-              small
-              label
-            >
-              <v-avatar left>
-                <img
-                  :src="'http://launcher/icons/forge'"
-                  alt="forge"
+                  <v-avatar left>
+                    <img
+                      :src="'http://launcher/icons/minecraft'"
+                      alt="minecraft"
+                    >
+                  </v-avatar>
+                  {{ p.instance.runtime.minecraft }}
+                </v-chip>
+                <v-chip
+                  v-if="p.instance.runtime.forge"
+                  outlined
+                  small
+                  label
                 >
-              </v-avatar>
-              {{ p.instance.runtime.forge }}
-            </v-chip>
-            <v-chip
-              v-if="p.instance.runtime.fabricLoader"
-              outlined
-              small
-              label
-            >
-              <v-avatar left>
-                <img
-                  :src="'http://launcher/icons/fabric'"
-                  alt="fabric"
+                  <v-avatar left>
+                    <img
+                      :src="'http://launcher/icons/forge'"
+                      alt="forge"
+                    >
+                  </v-avatar>
+                  {{ p.instance.runtime.forge }}
+                </v-chip>
+                <v-chip
+                  v-if="p.instance.runtime.fabricLoader"
+                  outlined
+                  small
+                  label
                 >
-              </v-avatar>
-              {{ p.instance.runtime.fabricLoader }}
-            </v-chip>
-          </v-list-item-subtitle>
-        </v-list-item-content>
+                  <v-avatar left>
+                    <img
+                      :src="'http://launcher/icons/fabric'"
+                      alt="fabric"
+                    >
+                  </v-avatar>
+                  {{ p.instance.runtime.fabricLoader }}
+                </v-chip>
+              </v-list-item-subtitle>
+            </v-list-item-content>
 
-        <v-list-item-action>
-          <v-list-item-action-text>{{ p.description }}</v-list-item-action-text>
-        </v-list-item-action>
-        <v-list-item-action>
-          <v-checkbox
-            :value="selectedTemplate === p"
-            readonly
-          />
-        </v-list-item-action>
-      </v-list-item>
+            <v-list-item-action>
+              <v-list-item-action-text>{{ p.description }}</v-list-item-action-text>
+            </v-list-item-action>
+            <v-list-item-action>
+              <v-checkbox
+                :value="selectedTemplate === p"
+                readonly
+              />
+            </v-list-item-action>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
     </v-list>
   </div>
 </template>
 
 <script lang=ts setup>
-import { useFeedTheBeastVersionsCache } from '@/composables/ftb'
+import { useGetFeedTheBeastVersionsCache } from '@/composables/ftb'
 import { kInstanceCreation } from '@/composables/instanceCreation'
 import { kJavaContext } from '@/composables/java'
-import { kModpacks } from '@/composables/modpack'
+import { useModpacks } from '@/composables/modpack'
 import { kPeerState } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
@@ -122,10 +130,15 @@ const emit = defineEmits(['select'])
 
 // Templates
 const { all } = injection(kJavaContext)
-const { resources } = injection(kModpacks)
 const { connections } = injection(kPeerState)
-const { cache: cachedList } = useFeedTheBeastVersionsCache()
-const { templates } = useInstanceTemplates(all, resources, connections, cachedList)
+const { getFeaturedModpacks } = useGetFeedTheBeastVersionsCache()
+const { getTemplates } = useInstanceTemplates(all)
+const { resources } = useModpacks()
+const templates = computed(() => {
+  const ftb = getFeaturedModpacks()
+  return getTemplates(resources.value, connections.value, ftb)
+})
+
 const selectedTemplatePath = inject('template', ref(''))
 const selectedTemplate = computed(() => templates.value.find(f => f.filePath === selectedTemplatePath.value))
 function onSelect(template: Template) {

@@ -1,10 +1,8 @@
-import StoreProjectModrinth from '@/components/StoreProjectModrinth.vue'
-import StoreProjectCurseforge from '@/components/StoreProjectCurseforge.vue'
 import BaseSetting from '@/views/BaseSetting.vue'
-import HomeLayout from '@/views/HomeLayout.vue'
-import HomeActions from '@/views/HomeActions.vue'
 import Home from '@/views/Home.vue'
+import HomeActions from '@/views/HomeActions.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
+import HomeLayout from '@/views/HomeLayout.vue'
 import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
@@ -21,6 +19,9 @@ import ShaderPack from '@/views/ShaderPack.vue'
 import ShaderPackActions from '@/views/ShaderPackActions.vue'
 import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
 import Store from '@/views/Store.vue'
+import StoreEntry from '@/views/StoreEntry.vue'
+import StoreProjectCurseforge from '@/views/StoreProjectCurseforge.vue'
+import StoreProjectModrinth from '@/views/StoreProjectModrinth.vue'
 import VersionLocalView from '@/views/VersionLocalView.vue'
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -84,16 +85,22 @@ export const router = new Router({
     {
       path: '/store',
       component: Store,
-    },
-    {
-      path: '/store/modrinth/:id',
-      component: StoreProjectModrinth,
-      props: (route) => ({ id: route.path.split('/')[3] }),
-    },
-    {
-      path: '/store/curseforge/:id',
-      component: StoreProjectCurseforge,
-      props: (route) => ({ id: Number(route.path.split('/')[3]) }),
+      children: [
+        {
+          path: '/',
+          component: StoreEntry,
+        },
+        {
+          path: '/store/modrinth/:id',
+          component: StoreProjectModrinth,
+          props: (route) => ({ id: route.path.split('/')[3] }),
+        },
+        {
+          path: '/store/curseforge/:id',
+          component: StoreProjectCurseforge,
+          props: (route) => ({ id: Number(route.path.split('/')[3]) }),
+        },
+      ],
     },
     {
       path: '/setting',
