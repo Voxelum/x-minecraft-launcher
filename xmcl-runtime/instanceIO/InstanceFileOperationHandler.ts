@@ -125,7 +125,11 @@ export class InstanceFileOperationHandler {
         }
       }
 
-      await this.resourceService.updateResources(options.filter(o => !!o.hash))
+      try {
+        await this.resourceService.updateResources(options.filter(o => !!o.hash))
+      } catch (e) {
+        this.logger.error(e as any)
+      }
     }
   }
 
@@ -193,11 +197,15 @@ export class InstanceFileOperationHandler {
   async #handleLinkResource(file: InstanceFile, destination: string, metadata: ResourceMetadata, sha1: string) {
     if (!sha1) return
 
-    const urls = file.downloads || []
+    const urls = file.downloads?.filter(u => u.startsWith('http')) || []
     const resource = await this.resourceService.getResourceByHash(sha1)
 
     if (resource) {
-      if ((metadata.modrinth && !resource.metadata.modrinth) || (metadata.curseforge && resource.metadata.curseforge) || (urls.length > 0 && urls.some(u => resource.uris.indexOf(u) === -1))) {
+      if (
+        (metadata.modrinth && !resource.metadata.modrinth) ||
+        (metadata.curseforge && resource.metadata.curseforge) ||
+        (urls.length > 0 && urls.some(u => resource.uris.indexOf(u) === -1))
+      ) {
         if (!resource.hash) {
           this.logger.error(new TypeError('Invalid resource ' + JSON.stringify(resource)))
         } else {
