@@ -17,8 +17,7 @@ const config = {
   assetNames: '[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: 'inline',
-  // tsconfig: join(__dirname, '..', 'xmcl-runtime', 'tsconfig.json'),
+  sourcemap: process.env.SOURCEMAP === 'production' ? 'external' : 'linked',
   minifyWhitespace: process.env.NODE_ENV === 'production',
   minifySyntax: process.env.NODE_ENV === 'production',
   treeShaking: true,
@@ -28,7 +27,6 @@ const config = {
     'process.env.BUILD_NUMBER': JSON.stringify(process.env.BUILD_NUMBER) ?? '0',
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
     'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY),
-    'process.env.RUNTIME': JSON.stringify(process.env.RUNTIME || 'raw'),
   } as Record<string, string>,
   platform: 'node',
   loader: {
