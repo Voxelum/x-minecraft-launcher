@@ -1,15 +1,16 @@
-import path, { join } from 'path'
+import 'dotenv/config'
+import { BuildOptions } from 'esbuild'
+import { yamlPlugin } from 'esbuild-plugin-yaml'
+import path from 'path'
+import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
+import pluginJsdetect from './plugins/esbuild.jschardet.plugin'
+import plugin7Zip from './plugins/esbuild.native.plugin'
+import pluginNode from './plugins/esbuild.node.plugin'
 import pluginPreload from './plugins/esbuild.preload.plugin'
 import pluginRenderer from './plugins/esbuild.renderer.plugin'
-import pluginWorker from './plugins/esbuild.worker.plugin'
-import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
-import pluginNode from './plugins/esbuild.node.plugin'
-import plugin7Zip from './plugins/esbuild.native.plugin'
+import createSourcemapPlugin from './plugins/esbuild.sourcemap.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
-import pluginJsdetect from './plugins/esbuild.jschardet.plugin'
-import { yamlPlugin } from 'esbuild-plugin-yaml'
-import { BuildOptions } from 'esbuild'
-import 'dotenv/config'
+import pluginWorker from './plugins/esbuild.worker.plugin'
 
 const config = {
   bundle: true,
@@ -44,6 +45,7 @@ const config = {
   plugins: [
     pluginRenderer(),
     pluginStatic(),
+    createSourcemapPlugin(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),
