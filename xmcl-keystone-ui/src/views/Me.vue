@@ -18,10 +18,11 @@
             {{ n.title }}
           </div> -->
           <v-img
-            class="cover background-opacity rounded-lg "
+            class=" background-opacity rounded-lg "
             :src="n.newsPageImage.url"
             :width="n.newsPageImage.dimensions.width *2"
             :height="n.newsPageImage.dimensions.height *2"
+            :style="{ opacity: dynamicOpacity }"
           >
             <div class="flex h-full w-full cursor-pointer items-center justify-center bg-[rgba(123,123,123,0.5)] opacity-0 transition-all duration-300 hover:opacity-100">
               {{ n.text }}
@@ -63,7 +64,7 @@
               {{ n.date }}
             </div>
             <v-img
-              class="rounded-lg"
+              class="rounded-lg "
               :src="n.newsPageImage.url"
               :width="n.newsPageImage.dimensions.width / 2"
               :height="n.newsPageImage.dimensions.height / 2"
@@ -126,6 +127,8 @@ import { getAgoOrDate } from '@/util/date'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+
 const { t } = useI18n()
 const { refresh, news } = useMojangNews()
 onMounted(refresh)
@@ -138,6 +141,27 @@ const sorted = computed(() => [...instances.value].sort((a, b) => a.lastAccessDa
 
 const containerSecondLayer = ref(null as null | HTMLElement)
 const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
+// 透明度代码
+const dynamicOpacity = ref(1) // 初始透明度设为1
+
+// 更新透明度的函数
+function updateOpacity() {
+  const scrollY = window.scrollY || window.pageYOffset
+  const height = document.documentElement.scrollHeight - window.innerHeight
+  const scrolled = scrollY / height
+  dynamicOpacity.value = 1 - Math.min(scrolled, 1) // 确保透明度在0到1之间
+}
+
+// 在组件挂载时添加事件监听器
+onMounted(() => {
+  window.addEventListener('scroll', updateOpacity)
+})
+
+// 在组件销毁前移除事件监听器
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', updateOpacity)
+})
+
 </script>
 
 <style>
@@ -176,8 +200,9 @@ const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
     height: 180px;
     position: relative;
 } */
-.background-opacity{
-  opacity: 0.7;
+.dynamicOpacity{
+  transition: opacity 0.3s;
+  opacity: dynamicOpacity;
 }
 .cover {
     position: relative;
