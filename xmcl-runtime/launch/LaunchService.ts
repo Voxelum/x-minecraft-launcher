@@ -223,6 +223,16 @@ export class LaunchService extends AbstractService implements ILaunchService {
       this.log('Launching with these option...')
       this.log(JSON.stringify(launchOptions, (k, v) => (k === 'accessToken' ? '***' : v), 2))
 
+      const commonLibs = version.libraries.filter(lib => !lib.isNative)
+      for (const lib of commonLibs) {
+        if (!lib.download.path) {
+          (lib.download as any).path = lib.path
+          if (!lib.download.path) {
+            throw new LaunchException({ type: 'launchBadVersion', version: version.id }, JSON.stringify(lib))
+          }
+        }
+      }
+
       // Launch
       const process = await launch(launchOptions)
       const processData = {
