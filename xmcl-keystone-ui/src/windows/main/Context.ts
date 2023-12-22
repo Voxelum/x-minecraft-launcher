@@ -60,7 +60,7 @@ export default defineComponent({
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
-    const peerState = usePeerState()
+    const peerState = usePeerState(user.gameProfile)
     provide(kPeerState, peerState)
     const instance = useInstance(instances.selectedInstance, instances.instances)
 

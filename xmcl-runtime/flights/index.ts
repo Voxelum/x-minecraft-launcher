@@ -17,7 +17,7 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
       if (resp.statusCode !== 200) {
         throw new Error(`Failed to fetch flights: ${resp.statusCode}`)
       }
-      const result = await resp.body.json()
+      const result = await resp.body.json() as any
       for (const [k, v] of Object.entries(result)) {
         if (typeof v === 'string') {
           output[k] = v
@@ -26,7 +26,12 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
       // Write to cache
       await writeFile(cachedPath, JSON.stringify(output))
     } catch (e) {
-      logger.error(e as Error)
+      const err = e as any
+      if (err.code === 'ENOTFOUND' && err.syscall === 'getaddrinfo') {
+        logger.warn('Failed to fetch flights: Network error. Please check your network connection.')
+      } else {
+        logger.error(e as Error)
+      }
     }
   }
   const readCachedFlights = async (output: Record<string, string>, cachedPath: string) => {

@@ -132,7 +132,7 @@ export class CacheHandler extends DispatchHandler {
   onTimeout() {
     if (this.headers && this.body) {
       cacheTimeoutChannel.publish({ options: this.options, recovered: true })
-      this.handler.onHeaders?.(200, this.headers, () => { })
+      this.handler.onHeaders?.(200, this.headers, () => { }, '')
       this.handler.onData?.(this.body)
       this.handler.onComplete?.(this.trailers || [])
     } else {
@@ -358,7 +358,7 @@ export class CacheDispatcher extends Dispatcher {
 
       if (!cachedRequest.isExpired(opts)) {
         // Not expired, use cache directly
-        handler.onHeaders?.(cachedRequest.getStatusCode(), cachedRequest.getHeaders(), () => { })
+        handler.onHeaders?.(cachedRequest.getStatusCode(), cachedRequest.getHeaders(), () => { }, '')
         handler.onData?.(cachedRequest.getBody())
         handler.onComplete?.(cachedRequest.getTrailers())
         // console.log(`[CACHE] ${opts.method} ${opts.origin}${opts.path} -> not expired! use cache without request!`)

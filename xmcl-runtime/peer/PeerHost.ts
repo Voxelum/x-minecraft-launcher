@@ -9,9 +9,9 @@ export interface PeerHost {
   getSharedLibrariesPath(): string
   getSharedAssetsPath(): string
 
-  onIdentity(id: string, info: ConnectionUserInfo): void
-  onInstanceShared(id: string, manifest: InstanceManifest): void
-  onDescriptorUpdate(id: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>): void
-  onHeartbeat(id: string, ping: number): void
-  onLanMessage(id: string, inf: LanServerInfo): void
+  onIdentity(session: string, info: ConnectionUserInfo): void
+  onInstanceShared(session: string, manifest: InstanceManifest): void
+  onDescriptorUpdate(session: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>): void
+  onHeartbeat(session: string, ping: number): void
+  onLanMessage(session: string, inf: LanServerInfo): void
 }

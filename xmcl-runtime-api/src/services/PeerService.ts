@@ -32,6 +32,7 @@ export interface ConnectionUserInfo extends GameProfileAndTexture {
 }
 export interface PeerConnection {
   id: string
+  remoteId: string
   userInfo: ConnectionUserInfo
   initiator: boolean
   selectedCandidate?: {
@@ -51,17 +52,7 @@ export interface PeerConnection {
 }
 
 export class PeerState {
-  group = ''
-  groupState = 'closed' as 'connecting' | 'closing' | 'closed' | 'connected'
   connections = [] as PeerConnection[]
-
-  connectionGroup(group: string) {
-    this.group = group
-  }
-
-  connectionGroupState(state: 'connecting' | 'closing' | 'closed' | 'connected') {
-    this.groupState = state
-  }
 
   connectionUserInfo({ id, info }: { id: string; info: ConnectionUserInfo }) {
     const conn = this.connections.find(c => c.id === id)
@@ -70,10 +61,17 @@ export class PeerState {
     }
   }
 
-  connectionShareManifest({ id, manifest } : { id: string; manifest?: InstanceManifest }) {
+  connectionShareManifest({ id, manifest }: { id: string; manifest?: InstanceManifest }) {
     const conn = this.connections.find(c => c.id === id)
     if (conn) {
       conn.sharing = manifest
+    }
+  }
+
+  connectionRemoteSet({ id, remoteId }: { id: string; remoteId: string }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      conn.remoteId = remoteId
     }
   }
 
@@ -145,18 +143,43 @@ export interface ShareInstanceOptions {
 
 interface PeerServiceEvents {
   share: { id: string; manifest?: InstanceManifest }
+  'connection-local-description': { description: TransferDescription; type: 'offer' | 'answer' }
+}
+
+export interface TransferDescription {
+  /**
+   * The peer id
+   */
+  id: string
+  session: string
+  sdp: string
+  candidates: Array<{ candidate: string; mid: string }>
+}
+
+export interface SetRemoteDescriptionOptions {
+  type: 'offer' | 'answer'
+  /**
+   * The remote description
+   */
+  description: string | TransferDescription
+  gameProfile?: GameProfileAndTexture
+}
+
+export interface InitiateOptions {
+  /**
+   * Peer id
+   */
+  remoteId?: string
+  /**
+   * Peer connection id
+   */
+  session?: string
+  initiate?: boolean
+  gameProfile?: GameProfileAndTexture
 }
 
 export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
   getPeerState(): Promise<MutableState<PeerState>>
-  /**
-   * Join a group. Then the group will automatically handle your connection between peers
-   */
-  joinGroup(id: string, user?: GameProfileAndTexture): Promise<void>
-  /**
-   * Leave the current group
-   */
-  leaveGroup(): Promise<void>
   /**
     * Share the instance to other peers
     */
@@ -165,19 +188,11 @@ export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
    * Initiate a peer connection, and return the session description payload.
    * You need to manually send this offer payload to other user
    */
-  initiate(options?: { gameProfile?: GameProfileAndTexture }): Promise<string>
+  initiate(options: InitiateOptions): Promise<string>
   /**
-   * Receive the offer from other user, and create peer corresponding to it.
-   *
-   * @param offer The compressed `offer` sdp string from other user
+   * Receive the offer/answer from other user.
    */
-  offer(offer: string, gameProfile?: GameProfileAndTexture): Promise<string>
-  /**
-   * Receive the answer from other user. This will finally create the connection between you and other
-   *
-   * @param answer The compressed `answer` sdp string from other user
-   */
-  answer(answer: string): Promise<void>
+  setRemoteDescription(options: SetRemoteDescriptionOptions): Promise<string>
   /**
    * Low level api to create peer
    *

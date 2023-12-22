@@ -138,7 +138,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
       },
       throwOnError: true,
     }).catch(() => request('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
-    const result = await response.body.json()
+    const result = await response.body.json() as any
     const updateInfo: ReleaseInfo = {
       name: result.tag_name,
       body: result.body,

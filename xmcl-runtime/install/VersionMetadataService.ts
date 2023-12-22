@@ -84,7 +84,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
         this.log('Found new minecraft version metadata. Update it.')
       }
 
-      metadata = await response.body.json()
+      metadata = await response.body.json() as any
     } catch (e) {
       assertErrorWithCache(e)
       metadata = JSON.parse(e[kCacheKey].getBody().toString())
@@ -178,7 +178,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
     let yarns: FabricArtifactVersion[]
     try {
       const response = await request('https://meta.fabricmc.net/v2/versions/yarn')
-      yarns = await response.body.json()
+      yarns = await response.body.json() as any
       if (response.statusCode === 304) {
         this.log('Not found new fabric yarn metadata. Use cache')
       } else {
@@ -192,7 +192,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
     let loaders: FabricArtifactVersion[]
     try {
       const response = await request('https://meta.fabricmc.net/v2/versions/loader')
-      loaders = await response.body.json()
+      loaders = await response.body.json() as any
       if (response.statusCode === 304) {
         this.log('Not found new fabric loader metadata. Use cache')
       } else {
@@ -221,7 +221,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       } else {
         this.log('Found new optifine version metadata. Update it.')
       }
-      versions = await response.body.json()
+      versions = await response.body.json() as any
     } catch (e) {
       assertErrorWithCache(e)
       versions = e[kCacheKey].getBodyJson() || []
@@ -237,9 +237,9 @@ export class VersionMetadataService extends AbstractService implements IVersionM
         const url = `https://meta.fabricmc.net/v2/versions/intermediary/${minecraftVersion}`
         const response = await request(url)
         if (response.statusCode === 200) {
-          return (await response.body.json()).length > 0
+          return (await response.body.json() as any).length > 0
         } else if (response.statusCode === 304) {
-          return (await response.body.json()).length > 0
+          return (await response.body.json() as any).length > 0
         }
         return false
       }
@@ -252,7 +252,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       if (statusCode >= 400) {
         throw new AnyError('QuiltVersionListError')
       }
-      versions = await body.json()
+      versions = await body.json() as any
       if (statusCode === 200) {
         this.log('Found new quilt metadata')
       } else if (statusCode === 304) {

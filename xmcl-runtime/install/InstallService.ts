@@ -402,7 +402,7 @@ export class InstallService extends AbstractService implements IInstallService {
             this._from = api
             this.update(0)
             const resp = await request(api, { throwOnError: true, signal: this.controller.signal, skipOverride: true })
-            const artifact = await resp.body.json()
+            const artifact = await resp.body.json() as any
             const result = await installFabric(artifact, this.dest, { side: 'client' })
             return result
           } catch (e) {
