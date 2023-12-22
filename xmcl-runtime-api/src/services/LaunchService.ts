@@ -166,6 +166,9 @@ export type LaunchExceptions = {
    */
   type: 'launchUserStatusRefreshFailed'
   userException: UserExceptions
+} | {
+  type: 'launchBadVersion'
+  version: string
 }
 
 export class LaunchException extends Exception<LaunchExceptions> { }
