@@ -91,7 +91,7 @@ async function start() {
         buildPath: context.appDir,
         electronVersion: context.electronVersion,
         arch: context.arch,
-        types: ['dev'],
+        types: [process.env.NODE_ENV === 'development' ? 'dev' : 'prod'],
       })
       rebuildProcess.lifecycle.on('module-found', (path: string) => {
         console.log(`  ${chalk.blue('•')} rebuild module ${chalk.blue('path')}=${path}`)
