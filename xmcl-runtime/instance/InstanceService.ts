@@ -15,6 +15,7 @@ import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { VersionMetadataService } from '~/install'
+import { AnyError } from '~/util/error'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -329,6 +330,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * @param path The instance path
    */
   async deleteInstance(path: string) {
+    await this.initialize()
     requireString(path)
 
     this.state.instanceRemove(path)
@@ -344,10 +346,29 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * Otherwise, it will edit the instance on the provided path
    */
   async editInstance(options: EditInstanceOptions & { instancePath: string }) {
+    await this.initialize()
+
     requireObject(options)
 
     const instancePath = options.instancePath
-    const state = this.state.all[instancePath]
+    let state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
+
+    if (!state) {
+      // Try to force load the instance
+      await this.loadInstance(instancePath).catch(() => false)
+      state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
+
+      if (!state) {
+        const error = new InstanceException({
+          type: 'instanceNotFound',
+          path: instancePath,
+        })
+        this.error(new AnyError('InstanceNotFoundError',
+          `Fail to find ${instancePath}. Existed: ${Object.keys(this.state.all).join(', ')}.`,
+        ))
+        throw error
+      }
+    }
 
     const ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true }
     const result: Record<string, any> = {}
