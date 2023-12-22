@@ -213,7 +213,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
         }
       } catch (e) {
-        throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Cannot launch without a valid java')
+        throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Cannot launch without a valid java', { cause: e })
       }
 
       if (launchOptions.server) {
