@@ -31,6 +31,7 @@ import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggd
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
+import { pluginSetupWorker } from './pluginSetupWorker'
 
 export const definedPlugins: LauncherAppPlugin[] = [
   pluginAutoUpdate,
@@ -39,6 +40,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginIconProtocol,
   pluginResourceWorker,
   pluginEncodingWorker,
+  pluginSetupWorker,
 
   pluginMediaProtocol,
   pluginResourcePackLink,
