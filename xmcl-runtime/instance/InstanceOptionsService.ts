@@ -5,7 +5,7 @@ import watch from 'node-watch'
 import { basename, join, relative } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
-import { isSystemError } from '../util/error'
+import { AnyError, isSystemError } from '../util/error'
 import { missing } from '../util/fs'
 import { requireString } from '../util/object'
 import { ResourceService } from '~/resource'
@@ -96,7 +96,16 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     const result = await readFile(optionsPath, 'utf-8').then(parse, () => ({} as Frame))
 
     if (typeof result.resourcePacks === 'string') {
-      result.resourcePacks = JSON.parse(result.resourcePacks)
+      try {
+        result.resourcePacks = JSON.parse(result.resourcePacks)
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.error(new AnyError('InvalidOptionsResourcePacks', result.resourcePacks as any))
+        } else {
+          this.error(e as any)
+        }
+        result.resourcePacks = []
+      }
     }
 
     return result
