@@ -1,19 +1,19 @@
 import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, Settings } from '@xmcl/runtime-api'
-import { mkdir, readdir, rename, rm, stat, unlink, writeFile } from 'fs/promises'
+import { readdir, rename, rm, stat } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
-import { HAS_DEV_SERVER } from '../constant'
+import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import { kClientToken } from '~/clientToken'
+import { kLogRoot } from '~/logger'
+import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
+import { TaskFn, kTaskExecutor } from '~/task'
+import { validateDirectory } from '~/util/validate'
+import { LauncherApp } from '../app/LauncherApp'
+import { HAS_DEV_SERVER } from '../constant'
 import { isSystemError } from '../util/error'
 import { copyPassively } from '../util/fs'
 import { ZipTask } from '../util/zip'
-import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
-import { kLogRoot } from '~/logger'
-import { TaskFn, kTaskExecutor } from '~/task'
-import { randomBytes } from 'crypto'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -201,50 +201,7 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'> {
-    // Check if the path is the root of the drive
-    if ((this.app.platform.os === 'osx' || this.app.platform.os === 'linux') && path === '/') {
-      return 'bad'
-    }
-    if (this.app.platform.os === 'windows' && /^[a-zA-Z]:\\$/.test(path)) {
-      return 'bad'
-    }
-
-    const fStat = await stat(path).catch(() => undefined)
-    if (fStat) {
-      if (!fStat.isDirectory()) {
-        return 'nondictionary'
-      }
-      // Check if we can write under the directory
-      try {
-        const tempFileName = '.' + randomBytes(16).toString('hex')
-        await writeFile(join(path, tempFileName), '.')
-        await unlink(join(path, tempFileName))
-      } catch (e) {
-        if (isSystemError(e)) {
-          if (e.code === 'EACCES') {
-            return 'noperm'
-          }
-        }
-        return 'bad'
-      }
-      // Check if the directory is empty
-      const files = await readdir(path)
-      return files.length > 0 ? 'exists' : undefined
-    } else {
-      // Check if we have permission to create the directory
-      try {
-        await mkdir(path, { recursive: true })
-        await unlink(path)
-      } catch (e) {
-        if (isSystemError(e)) {
-          if (e.code === 'EACCES') {
-            return 'noperm'
-          }
-        }
-        return 'bad'
-      }
-    }
-    return undefined
+    return await validateDirectory(this.app.platform, path)
   }
 
   getMemoryStatus(): Promise<{ total: number; free: number }> {

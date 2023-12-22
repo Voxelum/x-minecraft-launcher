@@ -201,6 +201,10 @@ export type InstanceExceptions = {
 } | {
   type: 'instanceNotFound'
   path: string
+} | {
+  type: 'instancePathInvalid'
+  path: string
+  reason: string
 }
 
 export class InstanceException extends Exception<InstanceExceptions> {
