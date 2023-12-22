@@ -67,48 +67,48 @@ jobs:
     #     key: ${{ runner.os }}-electron
     - name: Upload Source Maps
       if: ${{ runner.os == 'Windows' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: sourcemap
         path: |
           xmcl-electron-app/dist/*.js.map
     - name: Upload Build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
-        name: build
+        name: build-${{ runner.os }}
         path: |
           xmcl-electron-app/build/output/
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: win-b${{ github.run_number }}
         path: |
           xmcl-electron-app/build/output/win-unpacked/
     - name: Upload Linux x64 Zip Build
       if: ${{ runner.os == 'Linux' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/linux-unpacked/
     - name: Upload Linux arm64 Zip Build
       if: ${{ runner.os == 'Linux' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/linux-arm64-unpacked/
     - name: Upload Mac x64 Zip Build
       if: ${{ runner.os == 'macOS' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/mac/
     - name: Upload Mac arm64 Zip Build
       if: ${{ runner.os == 'macOS' }} 
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-arm64
         path: |
@@ -174,7 +174,7 @@ jobs:
       - build
     steps:
     - name: Download Source Map
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: sourcemap
         path: sourcemap/${{github.run_number}}
@@ -209,9 +209,10 @@ jobs:
       run: |
         pnpm install --filter ./.github/actions
     - name: Download Build
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
-        name: build
+        pattern: build-*
+        merge-multiple: true
         path: build
     - name: Prepare Release
       id: prepare_release
