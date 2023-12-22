@@ -1,6 +1,6 @@
 import { Plugin } from 'esbuild'
 import { existsSync } from 'fs'
-import { readdir, readFile, link, unlink } from 'fs/promises'
+import { readdir, readFile, link, unlink, stat } from 'fs/promises'
 import { arch, platform } from 'os'
 import { dirname, join, relative } from 'path'
 
@@ -205,9 +205,15 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           const targetPath = join(prebuilds, winner.file)
           const linkedPath = join(dir, 'classic-level.node')
           if (existsSync(linkedPath)) {
-            await unlink(linkedPath)
+            const s = await stat(linkedPath)
+            const d = await stat(targetPath)
+            if (s.ino !== d.ino) {
+              await unlink(linkedPath)
+              await link(targetPath, linkedPath)
+            }
+          } else {
+            await link(targetPath, linkedPath)
           }
-          await link(targetPath, linkedPath)
           const relativePath = './' + relative(dir, linkedPath).replace(/\\/g, '/')
           return {
             contents: `module.exports = require(${JSON.stringify(relativePath)})`,
