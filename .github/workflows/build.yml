@@ -184,7 +184,7 @@ jobs:
       with:
         account: xmcl
         container: sourcemap
-        directory: ./sourcemap/${{github.run_number}}
+        directory: ./sourcemap
 
   release:
     if: startsWith(github.event.head_commit.message, 'chore(release)')
