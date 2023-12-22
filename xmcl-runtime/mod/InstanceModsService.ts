@@ -10,6 +10,7 @@ import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
+import { AnyError } from '~/util/error'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -34,6 +35,8 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
   }
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
+    // TODO: make this excpetion as this is a bad request
+    if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
     const stateManager = await this.app.registry.get(ServiceStateManager)
     return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async (onDestroy) => {
       const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,

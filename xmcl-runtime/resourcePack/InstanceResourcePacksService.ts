@@ -48,6 +48,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
   @Lock(p => LockKey.resourcepacks(p))
   async link(instancePath: string): Promise<boolean> {
+    if (!instancePath) return false
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
     const destPath = join(instancePath, 'resourcepacks')
     const srcPath = this.getPath('resourcepacks')

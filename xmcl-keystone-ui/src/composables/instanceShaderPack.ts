@@ -14,6 +14,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
 
   const linked = ref(false)
   const { refresh, refreshing } = useRefreshable(async () => {
+    if (!instancePath.value) return
     linked.value = await link(instancePath.value)
 
     if (!linked.value) {
