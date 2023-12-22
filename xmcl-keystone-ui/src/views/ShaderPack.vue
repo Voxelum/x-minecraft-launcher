@@ -48,7 +48,7 @@
         @install="onInstall"
         @uninstall="onUninstall"
         @enable="onEnable"
-        @disable="onUninstall"
+        @disable="onUninstall([$event])"
         @category="toggleCategory"
       />
       <ShaderPackDetailResource
