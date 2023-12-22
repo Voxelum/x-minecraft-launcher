@@ -32,7 +32,7 @@ export class JavaState {
   }
 
   javaRemove(java: JavaRecord) {
-    this.all = this.all.filter(j => j.path !== java.path && j.version !== java.version)
+    this.all = this.all.filter(j => j.path !== java.path)
   }
 }
 
@@ -50,6 +50,8 @@ export interface JavaService {
    * scan local java locations and cache
    */
   refreshLocalJava(force?: boolean): Promise<void>
+
+  removeJava(javaPath: string): Promise<void>
 }
 
 export const JavaServiceKey: ServiceKey<JavaService> = 'JavaService'
