@@ -27,7 +27,7 @@ export class DispatchHandler implements Dispatcher.DispatchHandlers {
 
   /** Invoked when statusCode and headers have been received. May be invoked multiple times due to 1xx informational headers. */
   onHeaders(statusCode: number, headers: string[] | null, resume: () => void, statusMessage?: any): boolean {
-    return this.handler.onHeaders?.(statusCode, headers, resume) ?? false
+    return this.handler.onHeaders?.(statusCode, headers, resume, statusMessage) ?? false
   }
 
   /** Invoked when response payload data is received. */

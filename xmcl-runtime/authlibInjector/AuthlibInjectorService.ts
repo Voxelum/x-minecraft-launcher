@@ -76,7 +76,7 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
 
     try {
       const response = await request('https://authlib-injector.yushi.moe/artifact/latest.json', { throwOnError: true })
-      const body = await response.body.json()
+      const body = await response.body.json() as any
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
     } catch (e) {

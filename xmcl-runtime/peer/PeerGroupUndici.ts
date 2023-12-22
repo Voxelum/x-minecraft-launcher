@@ -2,16 +2,8 @@
 // import EventSource from 'eventsource'
 import EventEmitter from 'events'
 import { DescriptionType } from 'node-datachannel'
-import { setTimeout } from 'timers/promises'
-import { WebSocket } from 'ws'
 import { createPromiseSignal, PromiseSignal } from '~/util/promiseSignal'
-
-export interface TransferDescription {
-  session: string
-  id: string
-  sdp: string
-  candidates: Array<{ candidate: string; mid: string }>
-}
+import { WebSocket } from 'undici'
 
 type RelayPeerMessage = {
   type: 'DESCRIPTOR-ECHO'
@@ -45,6 +37,17 @@ export interface PeerGroup {
   once(eventName: 'descriptor', handler: (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>) => void): this
 }
 
+function timeout(n: number) {
+  return new Promise<void>((resolve, reject) => {
+    setTimeout(() => resolve(), n)
+  })
+}
+
+function convertUUIDToUint8Array(id: string) {
+  const ints = id.replace(/-/g, '').match(/.{2}/g)!.map((v) => parseInt(v, 16))
+  return new Uint8Array(ints)
+}
+
 export class PeerGroup extends EventEmitter {
   private messageId = 0
   private socket: WebSocket
@@ -54,23 +57,18 @@ export class PeerGroup extends EventEmitter {
   readonly signals: Record<number, PromiseSignal<void>> = {}
 
   private messageQueue: RelayPeerMessage[] = []
-  private idBinary: Buffer
+  private idBinary: Uint8Array
 
   #heartbeat = setInterval(() => {
     if (this.socket.readyState === this.socket.OPEN) {
-      this.socket.send(this.idBinary, { binary: true })
+      this.socket.send(this.idBinary)
     }
   }, 4_000)
 
-  constructor(readonly groupId: string, readonly id: string, headers?: Record<string, string>) {
+  constructor(readonly groupId: string, readonly id: string) {
     super()
-    this.idBinary = Buffer.from(id.replace(/-/g, '').match(/.{2}/g)!.map((v) => parseInt(v, 16)))
-    this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`, {
-      headers: {
-        ...(headers || {}),
-        id,
-      },
-    })
+    this.idBinary = convertUUIDToUint8Array(id)
+    this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
     this.state = 'connecting'
     this.#initiate()
   }
@@ -78,31 +76,17 @@ export class PeerGroup extends EventEmitter {
   #initiate() {
     const { id, groupId, socket } = this
 
-    let controller = new AbortController()
-
-    function heartbeat() {
-      controller.abort()
-      controller = new AbortController()
-      // Use `WebSocket#terminate()`, which immediately destroys the connection,
-      // instead of `WebSocket#close()`, which waits for the close timer.
-      // Delay should be equal to the interval at which your server
-      // sends out pings plus a conservative assumption of the latency.
-      setTimeout(30000 + 1000, { signal: controller.signal }).then(() => {
-        socket.terminate()
-      })
-    }
-
-    socket.on('open', () => {
-      heartbeat()
+    socket.onopen = () => {
       this.state = 'connected'
       this.emit('state', this.state)
       for (let i = this.messageQueue.shift(); i; i = this.messageQueue.shift()) {
         this.send(i)
       }
-    })
-    socket.on('ping', heartbeat)
-    socket.on('message', (data, isBinary) => {
-      if (isBinary && data instanceof Buffer) {
+    }
+    // socket.on('ping', heartbeat)
+    socket.onmessage = (event) => {
+      const { data } = event
+      if (data instanceof Uint8Array) {
         const id = [...data]
           .map((b) => ('00' + b.toString(16)).slice(-2))
           .join('')
@@ -112,38 +96,40 @@ export class PeerGroup extends EventEmitter {
         }
         return
       }
-      try {
-        const payload = JSON.parse(data.toString()) as RelayPeerMessage
-        if (payload.receiver !== id) {
-          return
-        }
-        if (payload.type === 'DESCRIPTOR') {
-          this.send({
-            type: 'DESCRIPTOR-ECHO',
-            receiver: payload.sender,
-            sender: id,
-            id: payload.id,
-          })
-          this.emit('descriptor', payload.sender, payload.sdp, payload.sdpType, payload.candidates)
-        } else if (payload.type === 'DESCRIPTOR-ECHO') {
-          const signal = this.signals[payload.id]
-          if (signal) {
-            signal.resolve()
-            delete this.signals[payload.id]
+      if (typeof data === 'string') {
+        try {
+          const payload = JSON.parse(data.toString()) as RelayPeerMessage
+          if (payload.receiver !== id) {
+            return
           }
+          if (payload.type === 'DESCRIPTOR') {
+            this.send({
+              type: 'DESCRIPTOR-ECHO',
+              receiver: payload.sender,
+              sender: id,
+              id: payload.id,
+            })
+            this.emit('descriptor', payload.sender, payload.sdp, payload.sdpType, payload.candidates)
+          } else if (payload.type === 'DESCRIPTOR-ECHO') {
+            const signal = this.signals[payload.id]
+            if (signal) {
+              signal.resolve()
+              delete this.signals[payload.id]
+            }
+          }
+        } catch (e) {
+          this.emit('error', e)
         }
-      } catch (e) {
-        this.emit('error', e)
       }
-    })
-    socket.on('error', (e) => {
+    }
+    socket.onerror = (e) => {
       this.emit('error', e)
-    })
-    socket.on('close', () => {
-      controller.abort()
+    }
+    socket.onclose = (e) => {
+      const { wasClean, reason, code } = e
       if (!this.closed) {
         // Try to reconnect as this is closed unexpected
-        this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`, {})
+        this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
         this.state = 'connecting'
         this.#initiate()
         this.emit('state', this.state)
@@ -151,7 +137,7 @@ export class PeerGroup extends EventEmitter {
         this.state = 'closed'
         this.emit('state', this.state)
       }
-    })
+    }
   }
 
   wait(messageId: number): Promise<void> {
@@ -163,7 +149,7 @@ export class PeerGroup extends EventEmitter {
     const messageId = this.messageId++
     while (true) {
       try {
-        await this.send({
+        this.send({
           type: 'DESCRIPTOR',
           receiver: id,
           sdp,
@@ -174,7 +160,7 @@ export class PeerGroup extends EventEmitter {
         })
         const responsed = await Promise.race([
           this.wait(messageId).then(() => true, () => false),
-          setTimeout(4_000).then(() => false), // wait 4 seconds for response
+          timeout(4_000).then(() => false), // wait 4 seconds for response
         ])
         if (responsed) {
           return
@@ -186,16 +172,11 @@ export class PeerGroup extends EventEmitter {
   }
 
   send(message: RelayPeerMessage) {
-    return new Promise<void>((resolve, reject) => {
-      if (this.socket.readyState === this.socket.OPEN) {
-        this.socket.send(JSON.stringify(message), (err) => {
-          if (err) reject(err)
-          else resolve()
-        })
-      } else {
-        this.messageQueue.push(message)
-      }
-    })
+    if (this.socket.readyState === this.socket.OPEN) {
+      this.socket.send(JSON.stringify(message))
+    } else {
+      this.messageQueue.push(message)
+    }
   }
 
   quit() {

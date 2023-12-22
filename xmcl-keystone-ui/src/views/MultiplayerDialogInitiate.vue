@@ -154,7 +154,7 @@ import { kUserContext } from '../composables/user'
 import { kPeerState } from '@/composables/peers'
 
 const { gameProfile } = injection(kUserContext)
-const { connections } = injection(kPeerState)
+const { connections, setRemoteDescription, initiate: _initiate } = injection(kPeerState)
 const { isShown, dialog } = useDialog('peer-initiate')
 
 const service = useService(PeerServiceKey)
@@ -195,7 +195,7 @@ function copyLocalDescription() {
   copied.value = true
 }
 
-const connecting = useServiceBusy(PeerServiceKey, 'answer', id)
+const connecting = useServiceBusy(PeerServiceKey, 'setRemoteDescription', id)
 const initiating = useServiceBusy(PeerServiceKey, 'initiate', id)
 
 const { refresh: connect } = useRefreshable(async () => {
@@ -204,7 +204,7 @@ const { refresh: connect } = useRefreshable(async () => {
       errorText.value = t('multiplayer.illegalTokenDescription')
       return
     }
-    await service.answer(remoteDescription.value)
+    await setRemoteDescription('answer', remoteDescription.value)
     id.value = ''
     done.value = true
     isShown.value = false
@@ -219,7 +219,7 @@ const { refresh: connect } = useRefreshable(async () => {
 
 const { refresh: initiate } = useRefreshable(async () => {
   step.value += 1
-  id.value = await service.initiate({ gameProfile: gameProfile.value })
+  id.value = await _initiate()
   setTimeout(() => { freeze.value = false }, 4000)
   freeze.value = true
 })
