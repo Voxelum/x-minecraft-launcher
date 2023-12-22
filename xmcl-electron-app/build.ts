@@ -5,7 +5,7 @@ import { Configuration, build as electronBuilder } from 'electron-builder'
 import { BuildOptions, build as esbuild } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, ensureFile } from 'fs-extra'
-import { copyFile, readdir, rm, stat } from 'fs/promises'
+import { copyFile, readdir, rm, stat, writeFile } from 'fs/promises'
 import path, { join, resolve } from 'path'
 import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { pipeline } from 'stream'
@@ -31,11 +31,15 @@ async function buildMain(options: BuildOptions, slient = false) {
   if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
   if (!slient) options.plugins?.push(createPrintPlugin())
-  await esbuild({
+  const out = await esbuild({
     ...options,
     outdir: resolve(__dirname, './dist'),
     entryPoints: [path.join(__dirname, './main/index.ts')],
   })
+
+  if (options.metafile) {
+    await writeFile('./meta.json', JSON.stringify(out.metafile, null, 2))
+  }
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
   if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
@@ -98,7 +102,7 @@ async function start() {
       })
       await rebuildProcess
       console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
-      const time = await buildMain(esbuildConfig, true)
+      const time = await buildMain({ ...esbuildConfig, metafile: true }, true)
       console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
     },
     async afterPack(context) {
