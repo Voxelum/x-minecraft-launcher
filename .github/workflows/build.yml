@@ -66,6 +66,7 @@ jobs:
     #       ~/.cache/electron-builder
     #     key: ${{ runner.os }}-electron
     - name: Upload Source Maps
+      if: ${{ runner.os == 'Windows' }} 
       uses: actions/upload-artifact@v3
       with:
         name: sourcemap
