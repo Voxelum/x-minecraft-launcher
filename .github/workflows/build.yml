@@ -168,7 +168,6 @@ jobs:
         branch: prepare-release
 
   upload-sourcemap:
-    if: startsWith(github.event.head_commit.message, 'chore(release)')
     runs-on: ubuntu-latest
     needs:
       - build
