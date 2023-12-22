@@ -1,7 +1,7 @@
 import { DownloadTask } from '@xmcl/installer'
 import { ImportService as IImportService, ImportFileOptions, ImportServiceKey, ImportUrlOptions, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { unlink } from 'fs/promises'
 import { basename } from 'path'
 import { request } from 'undici'

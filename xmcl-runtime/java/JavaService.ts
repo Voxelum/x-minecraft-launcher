@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { chmod, readFile } from 'fs/promises'
 import { dirname, join } from 'path'
 import { URL } from 'url'

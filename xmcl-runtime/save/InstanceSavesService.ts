@@ -12,7 +12,7 @@ isSaveResource,
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir, ensureFile } from 'fs-extra/esm'
+import { ensureDir, ensureFile } from 'fs-extra'
 import { readdir, rm } from 'fs/promises'
 import throttle from 'lodash.throttle'
 import watch from 'node-watch'

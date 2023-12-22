@@ -4,7 +4,7 @@ import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, InstallFo
 import { Asset, InstallService as IInstallService, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LockKey, MutableState, Resource, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
 import { existsSync } from 'fs'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { readFile, unlink, writeFile } from 'fs/promises'
 import { errors, request } from 'undici'
 import { URL } from 'url'

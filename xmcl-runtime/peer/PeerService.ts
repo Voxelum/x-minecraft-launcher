@@ -4,7 +4,7 @@ import { AUTHORITY_MICROSOFT, InitiateOptions, InstanceManifest, PeerService as 
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { IceServer, initLogger } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'

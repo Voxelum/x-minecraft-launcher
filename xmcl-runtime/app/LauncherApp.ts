@@ -1,7 +1,7 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, Platform } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
-import { ensureDir } from 'fs-extra/esm'
+import { ensureDir } from 'fs-extra'
 import { readFile, writeFile } from 'fs/promises'
 import { Server, createServer } from 'http'
 import { join } from 'path'
