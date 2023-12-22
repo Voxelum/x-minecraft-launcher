@@ -1,7 +1,7 @@
 import { AppManifest, AppsHost, InstalledAppManifest } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
-import { ensureDir } from 'fs-extra/esm'
+import { ensureDir } from 'fs-extra'
 import { readdir, readFile, rm, stat, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { request } from 'undici'

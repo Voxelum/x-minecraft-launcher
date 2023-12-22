@@ -1,5 +1,5 @@
 import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey, PartialResourceHash, InstanceModUpdatePayload, InstanceModUpdatePayloadAction } from '@xmcl/runtime-api'
-import { ensureDir } from 'fs-extra/esm'
+import { ensureDir } from 'fs-extra'
 import { rename, stat, unlink, readdir } from 'fs/promises'
 import watch from 'node-watch'
 import { dirname, join } from 'path'

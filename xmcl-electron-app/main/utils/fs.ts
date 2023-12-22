@@ -1,7 +1,7 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
-import { copy, ensureDir } from 'fs-extra/esm'
+import { copy, ensureDir } from 'fs-extra'
 import { access, copyFile, link, readdir, stat, unlink } from 'fs/promises'
 import { constants } from 'fs'
 import { extname, join, resolve } from 'path'

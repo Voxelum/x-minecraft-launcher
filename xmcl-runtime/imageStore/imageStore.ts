@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { join } from 'path'
 import { checksum, linkOrCopy } from '~/util/fs'
 import { existsSync } from 'fs'
