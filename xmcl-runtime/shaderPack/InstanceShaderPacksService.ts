@@ -2,10 +2,11 @@ import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShade
 import { existsSync } from 'fs'
 import { readdir } from 'fs/promises'
 import { basename, join } from 'path'
-import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
+import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Lock } from '~/service'
+import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { linkWithTimeoutOrCopy } from '../util/fs'
 import { tryLink } from '../util/linkResourceFolder'
@@ -54,7 +55,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
       const isLinked = await tryLink(srcPath, destPath, this, (path) => this.instanceService.isUnderManaged(path))
       return isLinked
     } catch (e) {
-      this.error(e as Error)
+      this.error(new AnyError('LinkShaderPacksError', `Fail to link shaderpacks folder under: "${instancePath}"`, { cause: e }))
       return false
     }
   }
