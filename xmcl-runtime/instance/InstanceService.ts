@@ -352,6 +352,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireObject(options)
 
     const instancePath = options.instancePath
+
+    if (!instancePath) {
+      return
+    }
     let state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
 
     if (!state) {

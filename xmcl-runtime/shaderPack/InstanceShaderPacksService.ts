@@ -47,6 +47,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
 
   @Lock(p => LockKey.shaderpacks(p))
   async link(instancePath: string) {
+    if (!instancePath) return false
     const destPath = join(instancePath, 'shaderpacks')
     const srcPath = this.getPath('shaderpacks')
     await this.resourceService.whenReady(ResourceDomain.ShaderPacks)
