@@ -65,15 +65,16 @@ export function useInstances() {
       }
     }
   }
-  watch(state, async (newState) => {
+  watch(state, async () => {
     let firstInstancePath = instances.value[0]?.path ?? ''
     if (!firstInstancePath) {
       firstInstancePath = await createInstance({
         name: 'Minecraft',
       })
-      path.value = ''
+      path.value = firstInstancePath
     }
-    if (!path.value) {
+    const existed = instances.value.find(i => i.path === path.value)
+    if (!path.value || !existed) {
       // Select the first instance
       path.value = firstInstancePath
     }
