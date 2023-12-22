@@ -38,7 +38,7 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
 
   watch([all, version, computed(() => instance.value.java)], () => {
     mutate()
-  })
+  }, { deep: true })
 
   return {
     java,
