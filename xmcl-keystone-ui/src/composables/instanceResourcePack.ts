@@ -118,6 +118,7 @@ function getResourcePackItemFromGameSettingName(resourcePackName: string): Insta
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
   const { link, scan } = useService(InstanceResourcePacksServiceKey)
   async function mount(path: string) {
+    if (!path) return
     const linked = await link(path)
     if (!linked) {
       await scan(path)

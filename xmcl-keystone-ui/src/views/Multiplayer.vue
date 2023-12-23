@@ -462,6 +462,11 @@
 import Hint from '@/components/Hint.vue'
 import { useBusy, useService, useServiceBusy } from '@/composables'
 import { kColorTheme } from '@/composables/colorTheme'
+import { useNatState } from '@/composables/nat'
+import { kPeerState } from '@/composables/peers'
+import { kSettingsState } from '@/composables/setting'
+import { useTutorial } from '@/composables/tutorial'
+import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
@@ -469,18 +474,13 @@ import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { kUserContext } from '@/composables/user'
-import { kPeerState, usePeerState } from '@/composables/peers'
-import { useNatState } from '@/composables/nat'
-import { kSettingsState } from '@/composables/setting'
-import { useTutorial } from '@/composables/tutorial'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showDelete } = useDialog('deletion')
-const { joinGroup, leaveGroup, drop } = useService(PeerServiceKey)
-const { connections, group, groupState } = injection(kPeerState)
+const { drop } = useService(PeerServiceKey)
+const { connections, group, groupState, joinGroup, leaveGroup } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
@@ -553,7 +553,7 @@ const deleting = ref('')
 const deletingName = computed(() => connections.value.find(c => c.id === deleting.value)?.userInfo.name)
 const copied = ref(false)
 
-const joiningGroup = useBusy('joinGroup')
+const joiningGroup = computed(() => groupState.value === 'connecting')
 
 watch(group, (newVal) => {
   groupId.value = newVal
@@ -613,12 +613,9 @@ const onCopy = (val: string) => {
   }
 }
 
-const { gameProfile } = injection(kUserContext)
 const onJoin = () => {
   if (!group.value) {
-    const buf = new Uint16Array(1)
-    window.crypto.getRandomValues(buf)
-    joinGroup(groupId.value || (gameProfile.value.name + '@' + buf[0]), gameProfile.value)
+    joinGroup(groupId.value)
   } else {
     leaveGroup()
   }
@@ -630,4 +627,20 @@ useTutorial(computed(() => [
   { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
   { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
 ]))
+
+// const sock = new WebSocket('wss://api.xmcl.app/group/abc')
+// sock.onmessage = (ev) => {
+//   console.log(ev.data)
+// }
+// sock.onopen = (ev) => {
+//   console.log(ev)
+//   debugger
+// }
+// sock.onerror = (ev) => {
+//   console.error(ev)
+//   debugger
+// }
+// sock.onclose = (e) => {
+//   console.log(e.code, e.reason, e.wasClean, e)
+// }
 </script>

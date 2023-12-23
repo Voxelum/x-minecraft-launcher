@@ -1,7 +1,7 @@
-import { JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
-import { JavaCompatibleState, JavaRecommendation } from './instanceJava'
+import { JavaRecommendation } from './instanceJava'
 import { JavaIssueDialogKey } from './java'
 import { LaunchMenuItem } from './launchButton'
 import { LocalNotification, useNotifier } from './notifier'
@@ -9,10 +9,11 @@ import { useService } from './service'
 
 export const kInstanceJavaDiagnose: InjectionKey<ReturnType<typeof useInstanceJavaDiagnose>> = Symbol('InstanceJavaDiagnose')
 
-export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRecord | undefined>, javaRecommendation: Ref<JavaRecommendation | undefined>, queue: Ref<LocalNotification[]>) {
+export function useInstanceJavaDiagnose(path: Ref<string>, all: Ref<JavaRecord[]>, java: Ref<JavaRecord | undefined>, javaRecommendation: Ref<JavaRecommendation | undefined>, queue: Ref<LocalNotification[]>) {
   const { t } = useI18n()
   const { subscribeTask } = useNotifier(queue)
   const { installDefaultJava } = useService(JavaServiceKey)
+  const { editInstance } = useService(InstanceServiceKey)
   const issue: Ref<LaunchMenuItem | undefined> = computed(() => {
     console.log('update java diagnose')
     if (all.value.length === 0) {
@@ -52,7 +53,10 @@ export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRe
       if (javaRecommendation.value && javaRecommendation.value.recommendedLevel && javaRecommendation.value.recommendedLevel >= 1 &&
         javaRecommendation.value.recommendedDownload) {
         const promise = installDefaultJava(javaRecommendation.value.recommendedDownload)
-        subscribeTask(promise, t('java.modifyInstance'))
+        subscribeTask(promise.then((java) => editInstance({
+          instancePath: path.value,
+          java: java?.path,
+        })), t('java.modifyInstance'))
         return promise
       } else {
         showJavaDialog()

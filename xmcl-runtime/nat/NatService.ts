@@ -30,6 +30,9 @@ export class NatService extends StatefulService<NatState> implements INatService
         this.client.reject(e)
       }
     })
+    this.client.promise.catch((e) => {
+      this.warn(e)
+    })
   }
 
   async getNatState(): Promise<MutableState<NatState>> {

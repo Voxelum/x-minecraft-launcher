@@ -46,7 +46,7 @@ export class MicrosoftOAuthClient {
               dispatcher,
             })
 
-            const body = await response.body.json()
+            const body = await response.body.json() as any
 
             if ((response.statusCode < 200 || response.statusCode > 299) && // do not destroy the request for the device code flow
               body.error !== Constants.AUTHORIZATION_PENDING) {
@@ -68,7 +68,7 @@ export class MicrosoftOAuthClient {
               signal,
             })
 
-            const body = await response.body.json()
+            const body = await response.body.json() as any
 
             if ((response.statusCode < 200 || response.statusCode > 299) && // do not destroy the request for the device code flow
               body.error !== Constants.AUTHORIZATION_PENDING) {

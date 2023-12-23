@@ -1,5 +1,5 @@
 import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey, PartialResourceHash, InstanceModUpdatePayload, InstanceModUpdatePayloadAction } from '@xmcl/runtime-api'
-import { ensureDir } from 'fs-extra/esm'
+import { ensureDir } from 'fs-extra'
 import { rename, stat, unlink, readdir } from 'fs/promises'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
@@ -10,6 +10,7 @@ import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
+import { AnyError } from '~/util/error'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -34,6 +35,8 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
   }
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
+    // TODO: make this excpetion as this is a bad request
+    if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
     const stateManager = await this.app.registry.get(ServiceStateManager)
     return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async (onDestroy) => {
       const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,

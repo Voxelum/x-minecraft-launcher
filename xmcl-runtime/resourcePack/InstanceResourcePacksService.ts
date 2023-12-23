@@ -6,6 +6,7 @@ import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Lock } from '~/service'
+import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { linkWithTimeoutOrCopy } from '../util/fs'
 import { tryLink } from '../util/linkResourceFolder'
@@ -47,6 +48,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
   @Lock(p => LockKey.resourcepacks(p))
   async link(instancePath: string): Promise<boolean> {
+    if (!instancePath) return false
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
     const destPath = join(instancePath, 'resourcepacks')
     const srcPath = this.getPath('resourcepacks')
@@ -54,7 +56,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
       const isLinked = await tryLink(srcPath, destPath, this, (path) => this.instanceService.isUnderManaged(path))
       return isLinked
     } catch (e) {
-      this.error(e as Error)
+      this.error(new AnyError('LinkResourcePacksError', `Fail to link resourcepacks folder under: "${instancePath}"`, { cause: e }))
       return false
     }
   }

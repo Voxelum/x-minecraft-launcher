@@ -2,19 +2,21 @@ import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, Instance, InstanceException, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, MutableState, RuntimeVersions, createTemplate, filterForgeVersion, filterOptifineVersion, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { copy, ensureDir } from 'fs-extra/esm'
+import { copy, ensureDir } from 'fs-extra'
 import { copyFile, readdir, rename, rm, stat } from 'fs/promises'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
-import { ResourceWorker, kResourceWorker } from '~/resource'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
-import { readLaunchProfile } from '~/launchProfile'
-import { exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
+import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
+import { VersionMetadataService } from '~/install'
+import { readLaunchProfile } from '~/launchProfile'
+import { ResourceWorker, kResourceWorker } from '~/resource'
+import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { AnyError } from '~/util/error'
+import { validateDirectory } from '~/util/validate'
+import { LauncherApp } from '../app/LauncherApp'
+import { exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
-import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { VersionMetadataService } from '~/install'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -329,6 +331,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * @param path The instance path
    */
   async deleteInstance(path: string) {
+    await this.initialize()
     requireString(path)
 
     this.state.instanceRemove(path)
@@ -344,10 +347,33 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * Otherwise, it will edit the instance on the provided path
    */
   async editInstance(options: EditInstanceOptions & { instancePath: string }) {
+    await this.initialize()
+
     requireObject(options)
 
     const instancePath = options.instancePath
-    const state = this.state.all[instancePath]
+
+    if (!instancePath) {
+      return
+    }
+    let state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
+
+    if (!state) {
+      // Try to force load the instance
+      await this.loadInstance(instancePath).catch(() => false)
+      state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
+
+      if (!state) {
+        const error = new InstanceException({
+          type: 'instanceNotFound',
+          path: instancePath,
+        })
+        this.error(new AnyError('InstanceNotFoundError',
+          `Fail to find ${instancePath}. Existed: ${Object.keys(this.state.all).join(', ')}.`,
+        ))
+        throw error
+      }
+    }
 
     const ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true }
     const result: Record<string, any> = {}
@@ -477,6 +503,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   @Singleton()
   async addExternalInstance(path: string): Promise<boolean> {
+    const err = await validateDirectory(this.app.platform, path)
+    if (err && err !== 'exists') {
+      throw new InstanceException({
+        type: 'instancePathInvalid',
+        path,
+        reason: err,
+      })
+    }
+
     if (this.state.all[path]) {
       this.log(`Skip to link already managed instance ${path}`)
       return false

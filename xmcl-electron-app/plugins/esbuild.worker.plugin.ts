@@ -27,6 +27,7 @@ export default function createWorkerPlugin(): Plugin {
           assetNames: '[name]',
           entryPoints: [absoltePath],
           treeShaking: true,
+          define: build.initialOptions.define,
           write: true,
           outdir: outDir,
           sourcemap: build.initialOptions.sourcemap,

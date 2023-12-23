@@ -1,10 +1,10 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, GameProfileAndTexture, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, Settings, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, InitiateOptions, InstanceManifest, PeerService as IPeerService, MutableState, SetRemoteDescriptionOptions, PeerServiceKey, PeerState, Settings, ShareInstanceOptions, TransferDescription } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { IceServer, initLogger } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
@@ -16,7 +16,7 @@ import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from
 import { IS_DEV } from '~/constant'
 import { ImageStorage } from '~/imageStore'
 import { NatService } from '~/nat'
-import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { kSettings } from '~/settings'
 import { kResourceWorker, ResourceWorker } from '../resource'
 import { UserService } from '../user'
@@ -24,7 +24,6 @@ import { PeerSession } from './connection'
 import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
-import { PeerGroup, TransferDescription } from './peer'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -35,16 +34,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   readonly discover = new MinecraftLanDiscover()
   readonly discoverV6 = new MinecraftLanDiscover('udp6')
-  /**
-   * The unique id of this host. Should start with local ip
-   */
-  private id = randomUUID()
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
   private iceServers: IceServer[] = []
-
-  private group: PeerGroup | undefined
 
   private portCandidate = 35565
 
@@ -134,7 +127,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           this.warn(`Ignore illegal peer join for group=${group}`)
           response.status = 400
         } else {
-          this.joinGroup(group)
           response.status = 200
         }
       }
@@ -201,15 +193,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return this.state
   }
 
-  async leaveGroup(): Promise<void> {
-    this.group?.quit()
-    this.group = undefined
-    this.state.connectionGroup('')
-    this.state.connectionGroupState('closed')
-    this.emit('connection-group', '')
-    this.emit('connection-group-state', 'closed')
-  }
-
   @Singleton()
   async fetchCredential() {
     this.log('Try to fetch rtc credential')
@@ -227,7 +210,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           password: string
           username: string
           uris: string[]
-        } = await response.body.json()
+        } = await response.body.json() as any
         this.iceServers.splice(0, this.iceServers.length)
         this.iceServers.push(...credential.uris
           .filter(u => u.startsWith('turn:'))
@@ -251,70 +234,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     }
   }
 
-  @Lock('joinGroup')
-  async joinGroup(id: string, gameProfile?: GameProfileAndTexture): Promise<void> {
-    if (this.group?.groupId && this.group.groupId === id) {
-      return
-    }
-
-    if (this.group) {
-      this.group.quit()
-    }
-
-    const group = new PeerGroup(id, this.id)
-
-    group.on('heartbeat', (sender) => {
-      const peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
-      // Ask sender to connect to me :)
-      if (!peer) {
-        if (this.id.localeCompare(sender) > 0) {
-          this.log(`Not found the ${sender}. Initiate new connection`)
-          // Only if my id is greater than other's id, we try to initiate the connection.
-          // This will have a total order in the UUID random space
-
-          // Try to connect to the sender
-          this.initiate({ id: sender, initiate: true, gameProfile })
-        }
-      }
-    })
-    group.on('descriptor', async (sender, sdp, type, candidates) => {
-      let peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
-      this.log(`Descriptor from ${sender}`)
-      const newPeer = !peer
-      if (!peer) {
-        this.log(`Not found the ${sender}. Initiate new connection`)
-        // Try to connect to the sender
-        await this.initiate({ id: sender, initiate: false, gameProfile })
-        peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)!
-      }
-      this.log(`Set remote ${type} description: ${sdp}`)
-      this.log(candidates)
-      const state = peer.connection.signalingState()
-      if (state !== 'stable' || newPeer) {
-        peer.connection.setRemoteDescription(sdp, type)
-        for (const { candidate, mid } of candidates) {
-          this.log(`Add remote candidate: ${candidate} ${mid}`)
-          peer.connection.addRemoteCandidate(candidate, mid)
-        }
-      } else {
-        this.log('Skip to set remote description as signal state is stable')
-      }
-    })
-    group.on('state', (state) => {
-      this.state.connectionGroupState(state)
-      this.emit('connection-group-state', state)
-    })
-    group.on('error', (err) => {
-      if (err instanceof Error) this.error(err)
-    })
-
-    this.group = group
-    this.state.connectionGroup(group.groupId)
-    this.state.connectionGroupState(group.state)
-    this.emit('connection-group', group.groupId)
-    this.emit('connection-group-state', group.state)
-  }
-
   protected async decode(description: string): Promise<TransferDescription> {
     return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
   }
@@ -333,31 +252,25 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   @Singleton(ops => JSON.stringify(ops))
-  async initiate(options?: {
-    id?: string
-    session?: string
-    initiate?: boolean
-    gameProfile?: GameProfileAndTexture
-  }): Promise<string> {
-    const initiator = !options?.id || options?.initiate || false
-    const remoteId = options?.id
-    const gameProfile = options?.gameProfile
-    const sessionId = options?.session || randomUUID() // `${await this.getLocalIp(true)}-${randomUUID()}`
+  async initiate(options: InitiateOptions): Promise<string> {
+    const initiator = !options.remoteId || options.initiate || false
+    const remoteId = options.remoteId
+    const gameProfile = options.gameProfile
+    const sessionId = options.session || randomUUID() // `${await this.getLocalIp(true)}-${randomUUID()}`
 
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
     const natService = this.natService
     const privatePort = this.portCandidate
 
     const conn = new PeerSession(sessionId, this.settings.allowTurn ? this.iceServers : [], {
-      onHeartbeat: (id, ping) => {
-        this.state.connectionPing({ id, ping })
-        this.emit('connection-ping', { id, ping })
+      onHeartbeat: (session, ping) => {
+        this.state.connectionPing({ id: session, ping })
       },
-      onInstanceShared: (id, manifest) => {
-        this.state.connectionShareManifest({ id, manifest })
-        this.emit('share', { id, manifest })
+      onInstanceShared: (session, manifest) => {
+        this.state.connectionShareManifest({ id: session, manifest })
+        this.emit('share', { id: session, manifest })
       },
-      onDescriptorUpdate: async (id, sdp, type, candidates) => {
+      onDescriptorUpdate: async (session, sdp, type, candidates) => {
         this.log(`Send local description ${remoteId}: ${sdp} ${type}`)
         this.log(candidates)
 
@@ -371,18 +284,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
             })
           }
         }
-        if (remoteId) {
-          this.group?.sendLocalDescription(remoteId, sdp, type, candidates)
-        }
-        const payload = { sdp, id: this.id, session: id, candidates }
+        const payload = { sdp, id: remoteId, session, candidates }
+        this.emit('connection-local-description', { type, description: payload })
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
           this.state.connectionLocalDescription({ id: payload.session, description: compressed })
-          this.emit('connection-local-description', { id: payload.session, description: compressed })
         })
       },
-      onIdentity: (id, info) => {
-        this.state.connectionUserInfo({ id, info })
-        this.emit('connection-user-info', { id, info })
+      onIdentity: (session, info) => {
+        this.state.connectionUserInfo({ id: session, info })
       },
       onLanMessage: (_, msg) => {
         if (!this.discover.isReady) {
@@ -416,6 +325,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     }, this, privatePort)
 
     if (remoteId) {
+      this.state.connectionRemoteSet({ id: conn.id, remoteId })
       conn.setRemoteId(remoteId)
     }
 
@@ -428,11 +338,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           remote: pair.remote as any,
           local: pair.local as any,
         })
-        this.emit('connection-selected-candidate', {
-          id: conn.id,
-          remote: pair.remote,
-          local: pair.local,
-        })
       }
       this.state.connectionStateChange({ id: conn.id, connectionState: state as any })
       if (state === 'closed') {
@@ -440,30 +345,22 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           // Close by user manually
           delete this.peers[conn.id]
           this.state.connectionDrop(conn.id)
-          this.emit('connection-drop', conn.id)
         } else {
           this.error(new Error(`Connection is closed unexpected! ${conn.id}`))
-          if (this.group) {
-            // Only delete if the group exist. Then it can re-connect automatically.
-            delete this.peers[conn.id]
-            this.state.connectionDrop(conn.id)
-            this.emit('connection-drop', conn.id)
-          }
         }
       }
     })
     conn.connection.onSignalingStateChange((state) => {
       this.state.signalingStateChange({ id: conn.id, signalingState: state as any })
-      this.emit('signaling-state-change', { id: conn.id, signalingState: state })
     })
     conn.connection.onGatheringStateChange((state) => {
       this.state.iceGatheringStateChange({ id: conn.id, iceGatheringState: state as any })
-      this.emit('ice-gathering-state-change', { id: conn.id, iceGatheringState: state })
     })
 
     this.state.connectionAdd({
       id: conn.id,
       initiator,
+      remoteId: remoteId ?? '',
       userInfo: {
         name: '',
         id: '',
@@ -490,36 +387,37 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return conn.id
   }
 
-  async offer(offer: string, gameProfile?: GameProfileAndTexture): Promise<string> {
-    const o = await this.decode(offer) as TransferDescription
-    const sess = await this.initiate({
-      id: o.id,
-      session: o.session,
-      initiate: false,
-      gameProfile,
-    })
-    const peer = this.peers[sess]
-    peer.connection.setRemoteDescription(o.sdp, 'offer' as any)
-    for (const c of o.candidates) {
-      peer.connection.addRemoteCandidate(c.candidate, c.mid)
+  async setRemoteDescription({ description, gameProfile, type }: SetRemoteDescriptionOptions) {
+    const desc = typeof description === 'string' ? await this.decode(description) : description
+    const { sdp, candidates, id: sender, session } = desc
+    let sess = this.peers[session] ?? Object.values(this.peers).find(p => p.getRemoteId() === sender)
+    const newPeer = !sess
+    if (!sess) {
+      this.log(`Not found the ${sender}. Initiate new connection`)
+      // Try to connect to the sender
+      await this.initiate({ remoteId: sender, session, initiate: false, gameProfile })
+      sess = this.peers[session] ?? Object.values(this.peers).find(p => p.getRemoteId() === sender)!
     }
-    return sess
-  }
-
-  async answer(answer: string): Promise<void> {
-    const o = await this.decode(answer) as TransferDescription
-    const peer = this.peers[o.session]
-    peer.setRemoteId(o.id)
-    peer.connection.setRemoteDescription(o.sdp, 'answer' as any)
-    for (const c of o.candidates) {
-      peer.connection.addRemoteCandidate(c.candidate, c.mid)
+    this.log(`Set remote ${type} description: ${sdp}`)
+    this.log(candidates)
+    const state = sess.connection.signalingState()
+    if (state !== 'stable' || newPeer) {
+      sess.connection.setRemoteDescription(sdp, type as any)
+      for (const { candidate, mid } of candidates) {
+        this.log(`Add remote candidate: ${candidate} ${mid}`)
+        sess.connection.addRemoteCandidate(candidate, mid)
+      }
+    } else {
+      this.log('Skip to set remote description as signal state is stable')
     }
+    return sess.id
   }
 
   async drop(id: string): Promise<void> {
     const existed = this.peers[id]
     if (existed) {
       existed.close()
+      this.state.connectionDrop(id)
     }
   }
 

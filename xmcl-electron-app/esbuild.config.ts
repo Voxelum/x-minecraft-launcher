@@ -1,15 +1,16 @@
-import path, { join } from 'path'
+import 'dotenv/config'
+import { BuildOptions } from 'esbuild'
+import { yamlPlugin } from 'esbuild-plugin-yaml'
+import path from 'path'
+import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
+import pluginJsdetect from './plugins/esbuild.jschardet.plugin'
+import plugin7Zip from './plugins/esbuild.native.plugin'
+import pluginNode from './plugins/esbuild.node.plugin'
 import pluginPreload from './plugins/esbuild.preload.plugin'
 import pluginRenderer from './plugins/esbuild.renderer.plugin'
-import pluginWorker from './plugins/esbuild.worker.plugin'
-import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
-import pluginNode from './plugins/esbuild.node.plugin'
-import plugin7Zip from './plugins/esbuild.native.plugin'
+import createSourcemapPlugin from './plugins/esbuild.sourcemap.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
-import pluginJsdetect from './plugins/esbuild.jschardet.plugin'
-import { yamlPlugin } from 'esbuild-plugin-yaml'
-import { BuildOptions } from 'esbuild'
-import 'dotenv/config'
+import pluginWorker from './plugins/esbuild.worker.plugin'
 
 const config = {
   bundle: true,
@@ -17,8 +18,7 @@ const config = {
   assetNames: '[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: 'inline',
-  // tsconfig: join(__dirname, '..', 'xmcl-runtime', 'tsconfig.json'),
+  sourcemap: process.env.SOURCEMAP === 'production' ? 'external' : 'linked',
   minifyWhitespace: process.env.NODE_ENV === 'production',
   minifySyntax: process.env.NODE_ENV === 'production',
   treeShaking: true,
@@ -28,7 +28,6 @@ const config = {
     'process.env.BUILD_NUMBER': JSON.stringify(process.env.BUILD_NUMBER) ?? '0',
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
     'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY),
-    'process.env.RUNTIME': JSON.stringify(process.env.RUNTIME || 'raw'),
   } as Record<string, string>,
   platform: 'node',
   loader: {
@@ -46,6 +45,7 @@ const config = {
   plugins: [
     pluginRenderer(),
     pluginStatic(),
+    createSourcemapPlugin(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),

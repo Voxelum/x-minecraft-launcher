@@ -9,6 +9,7 @@
 import { app } from 'electron'
 import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import { autoUpdater } from 'electron-updater'
+import 'source-map-support/register'
 import './index'
 
 console.log(`Process id=${process.pid}`)

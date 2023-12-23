@@ -121,9 +121,8 @@ import { kPeerState } from '@/composables/peers'
 
 const { isShown, dialog } = useDialog('peer-receive')
 const { gameProfile } = injection(kUserContext)
-const { connections } = injection(kPeerState)
+const { connections, setRemoteDescription } = injection(kPeerState)
 
-const service = useService(PeerServiceKey)
 const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value?.localDescriptionSDP ? (connection.value?.localDescriptionSDP) : '')
 const localSdpUrl = computed(() => createAnswerAppUrl(localDescription.value, gameProfile.value.name))
@@ -155,7 +154,7 @@ function copyLocalDescription() {
   copied.value = true
 }
 
-const answering = useServiceBusy(PeerServiceKey, 'offer', id)
+const answering = useServiceBusy(PeerServiceKey, 'setRemoteDescription')
 
 const { refresh: answer } = useRefreshable(async () => {
   errorText.value = ''
@@ -166,7 +165,7 @@ const { refresh: answer } = useRefreshable(async () => {
     if (remoteDescription.value === localDescription.value) {
       throw new Error('Cannot enter token from yourself!')
     }
-    id.value = await service.offer(remoteDescription.value, gameProfile.value)
+    id.value = await setRemoteDescription('answer', remoteDescription.value)
     done.value = true
     step.value++
   } catch (e) {

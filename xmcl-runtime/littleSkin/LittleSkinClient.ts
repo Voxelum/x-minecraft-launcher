@@ -19,7 +19,7 @@ export class LittleSkinClient {
       },
       dispatcher: this.dispatcher,
     })
-    const result: LittleSkinCharacter[] = await response.body.json()
+    const result: LittleSkinCharacter[] = await response.body.json() as any
     return result
   }
 
@@ -35,7 +35,7 @@ export class LittleSkinClient {
       dispatcher: this.dispatcher,
     })
 
-    await response.body.json()
+    await response.body.json() as any
   }
 
   async setCharacterTexture(options: SetCharacterTextureOptions, token: string): Promise<void> {
@@ -105,7 +105,7 @@ export class LittleSkinClient {
       },
       dispatcher: this.dispatcher,
     })
-    const body: ClosetResponse = await response.body.json()
+    const body: ClosetResponse = await response.body.json() as any
     return body
   }
 

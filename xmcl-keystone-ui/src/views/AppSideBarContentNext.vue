@@ -5,6 +5,14 @@
       dense
       class="ml-1 flex-grow-0 justify-start overflow-auto px-2"
     >
+      <template v-if="isValidating">
+        <v-skeleton-loader
+          v-for="i in 5"
+          :key="i"
+          class="non-moveable my-2 ml-[6px]"
+          type="avatar"
+        />
+      </template>
       <AppSideBarInstanceItem
         v-for="(i, index) of instances"
         :key="i.path + ' ' + index"
@@ -61,7 +69,7 @@ const { t } = useI18n()
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
 const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
-const { instances, setToPrevious } = injection(kInstances)
+const { instances, setToPrevious, isValidating } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
 

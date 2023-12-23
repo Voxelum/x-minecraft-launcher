@@ -526,6 +526,9 @@ launch:
   launch: 启动
 launchBlocked:
   ignore: 强行启动
+  launchBadVersion:
+    description: 版本 {version} 的 JSON 内有无法解析的库，也许你需要重装这个版本？
+    title: 版本 JSON 可能损坏
   launchGeneralException:
     description: 一些未知错误导致启动失败。
     title: 无法启动

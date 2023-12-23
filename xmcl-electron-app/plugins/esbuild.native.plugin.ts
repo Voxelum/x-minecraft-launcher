@@ -1,6 +1,6 @@
 import { Plugin } from 'esbuild'
 import { existsSync } from 'fs'
-import { readdir, readFile } from 'fs/promises'
+import { readdir, readFile, link, unlink, stat } from 'fs/promises'
 import { arch, platform } from 'os'
 import { dirname, join, relative } from 'path'
 
@@ -13,17 +13,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
     setup(build) {
       const isDev = build.initialOptions.plugins!.find(v => v.name === 'dev')
       if (isDev) {
-        build.onLoad(
-          { filter: /^.+[\\/]node_modules[\\/].+[\\/]7zip-bin[\\/]index\.js$/g },
-          async ({ path }) => {
-            const content = await readFile(path, 'utf-8')
-            return {
-              contents: content.replace(/__dirname/g, JSON.stringify(join(nodeModules, '7zip-bin'))),
-              loader: 'js',
-            }
-          },
-        )
-
         build.onLoad(
           { filter: /^.+[\\/]node_modules[\\/].+[\\/]default-gateway[\\/]index\.js$/g },
           async ({ path }) => {
@@ -78,18 +67,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
-      build.onResolve(
-        { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
-        async ({ path, resolveDir }) => {
-          return {
-            path,
-            pluginData: {
-              resolveDir,
-            },
-          }
-        },
-      )
-
       // Intercept node_modules\better-sqlite3\lib\database.js
       build.onLoad(
         { filter: /^.+better-sqlite3[\\/]lib[\\/]database\.js$/g },
@@ -116,6 +93,17 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      build.onResolve(
+        { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
+        async ({ path, resolveDir }) => {
+          return {
+            path,
+            pluginData: {
+              resolveDir,
+            },
+          }
+        },
+      )
       build.onLoad(
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
         async ({ path }) => {
@@ -215,7 +203,18 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           const winner = candidates.sort(compareTags(runtime))[0]
           if (!winner) throw new Error()
           const targetPath = join(prebuilds, winner.file)
-          const relativePath = './' + relative(dir, targetPath).replace(/\\/g, '/')
+          const linkedPath = join(dir, 'classic-level.node')
+          if (existsSync(linkedPath)) {
+            const s = await stat(linkedPath)
+            const d = await stat(targetPath)
+            if (s.ino !== d.ino) {
+              await unlink(linkedPath)
+              await link(targetPath, linkedPath)
+            }
+          } else {
+            await link(targetPath, linkedPath)
+          }
+          const relativePath = './' + relative(dir, linkedPath).replace(/\\/g, '/')
           return {
             contents: `module.exports = require(${JSON.stringify(relativePath)})`,
             resolveDir: dir,

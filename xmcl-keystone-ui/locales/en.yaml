@@ -358,10 +358,10 @@ installForge:
   postProcessing: Post Processing
 installInstance:
   file: Update Instance File {file}
-  name: Update Instance
-  unzip: Unzip {count} Files
   link: Copy or Link {count} Files
+  name: Update Instance
   resolve: Resolve Instance Config
+  unzip: Unzip {count} Files
 installJre:
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
@@ -512,6 +512,9 @@ launch:
   launch: Launch
 launchBlocked:
   ignore: Force Launch
+  launchBadVersion:
+    description: The version {version} json is breaking. Maybe re-install this version?
+    title: Bad Version JSON
   launchGeneralException:
     description: Some errors cause the launch failed.
     title: Launch Failed
@@ -648,8 +651,8 @@ mod:
   deletionRestHint: And {rest} more Mods...
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
-  groupInstalled: 'Group Installed Mods'
   filter: Filter Mods
+  groupInstalled: Group Installed Mods
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   import: Import Mod

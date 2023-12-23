@@ -1,6 +1,6 @@
 import { Schema } from '@xmcl/runtime-api'
 import { writeFile, readFile } from 'atomically'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { copyFile } from 'fs/promises'
 import { missing } from './fs'
 import { Logger } from '~/logger'

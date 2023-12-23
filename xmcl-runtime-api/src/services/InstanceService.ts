@@ -198,6 +198,13 @@ export type InstanceExceptions = {
   name: string
 } | {
   type: 'instanceNameRequired'
+} | {
+  type: 'instanceNotFound'
+  path: string
+} | {
+  type: 'instancePathInvalid'
+  path: string
+  reason: string
 }
 
 export class InstanceException extends Exception<InstanceExceptions> {

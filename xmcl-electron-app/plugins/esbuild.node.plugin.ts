@@ -1,4 +1,5 @@
 import { Plugin } from 'esbuild'
+import { readFile } from 'fs/promises'
 /**
  * Resolve native .node module
  */
@@ -13,27 +14,14 @@ export default function createNodePlugin(): Plugin {
       build.onResolve(
         { filter: /\.node$/, namespace: 'file' },
         (args) => ({
-          path: require.resolve(args.path, {
-            paths: [args.resolveDir],
-          }),
+          path: args.path,
           namespace: 'node-file',
-          pluginData: args.pluginData,
-          external: !!isDev,
+          pluginData: {
+            ...(args.pluginData || {}),
+            resolveDir: args.resolveDir,
+          },
         }),
       )
-
-      // build.onLoad({ filter: /\.node$/, namespace: 'file' }, async (args) => {
-      //   if (args.pluginData && 'skip' in args.pluginData) {
-      //     return undefined
-      //   }
-      //   console.log('special load ', build.initialOptions.absWorkingDir, args)
-      //   const path = args.path.substring(0, args.path.length - 'node'.length) + 'post-node'
-      //   return ({
-      //     contents: `export * from ${JSON.stringify(path)};`,
-      //     loader: 'js',
-      //     pluginData: { skip: true },
-      //   })
-      // })
 
       // build.onResolve(
       //   { filter: /^.+\.post-node$$/ },
@@ -54,12 +42,15 @@ export default function createNodePlugin(): Plugin {
       // Files in the "node-file" virtual namespace call "require()" on the
       // path from esbuild of the ".node" file in the output directory.
       build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => {
+        const resolved = require.resolve(args.path, {
+          paths: [args.pluginData.resolveDir],
+        })
         return ({
           contents: `
-try { const path = require(${JSON.stringify(args.path)}); module.exports = typeof path === 'string' ? require(path) : path }
+try { const path = require(${JSON.stringify(resolved)}); module.exports = typeof path === 'string' ? require(path) : path }
 catch (e) { debugger; console.error('Fail to require native node module ' + ${JSON.stringify(args.path)}); console.error(e); }
         `,
-          pluginData: { skip: true },
+          loader: 'js',
         })
       })
 

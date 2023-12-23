@@ -11,7 +11,7 @@ import { InstanceModsService } from '@xmcl/runtime/mod'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { ModrinthService } from '@xmcl/runtime/modrinth'
 import { NatService } from '@xmcl/runtime/nat'
-import { PeerService } from '@xmcl/runtime/peer'
+import { PeerGroupService, PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourceService } from '@xmcl/runtime/resource'
 import { InstanceResourcePackService, ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
@@ -55,4 +55,5 @@ export const definedServices = [
   YggdrasilService,
   InstanceInstallService,
   PeerService,
+  PeerGroupService,
 ]

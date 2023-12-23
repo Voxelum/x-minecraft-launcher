@@ -1,19 +1,19 @@
 import { ElectronController } from '@/ElectronController'
-import { ControllerPlugin } from './plugin'
-import { getDiskInfo } from 'node-disk-info'
+import { kSetupWorker } from '@/setupWorker'
 import { ipcMain } from 'electron'
 import { join, parse } from 'path'
-import type Drive from 'node-disk-info/dist/classes/drive'
+import { setTimeout } from 'timers/promises'
+import { ControllerPlugin } from './plugin'
 
 /**
  * Handle setup window preset request
  */
 export const setupWindow: ControllerPlugin = function (this: ElectronController) {
   ipcMain.handle('preset', async () => {
-    const drives = await new Promise<Drive[]>((resolve) => {
-      getDiskInfo().then(resolve, () => resolve([]))
-      setTimeout(() => { resolve([]) }, 4000)
-    })
+    const drives = await Promise.race([
+      this.app.registry.get(kSetupWorker).then(w => w.getDiskInfo()),
+      setTimeout(4000).then(() => []),
+    ])
     const defaultPath = join(this.app.host.getPath('home'), '.xmcl')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)

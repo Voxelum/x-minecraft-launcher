@@ -19,7 +19,7 @@ export async function getForgeListFromBMCL(minecraft: string) {
     method: 'GET',
     maxRedirections: 2,
   })
-  const forges: BMCLForge[] = await response.body.json()
+  const forges: BMCLForge[] = await response.body.json() as any
 
   return forges.map(v => ({
     mcversion: v.mcversion,

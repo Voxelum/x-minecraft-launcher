@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
-import { ensureFile } from 'fs-extra/esm'
+import { ensureFile } from 'fs-extra'
 import { chmod, readFile } from 'fs/promises'
 import { dirname, join } from 'path'
 import { URL } from 'url'
@@ -43,7 +43,13 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
   }
 
+  removeJava(javaPath: string): Promise<void> {
+    this.state.javaRemove({ path: javaPath, majorVersion: 0, version: '', valid: false })
+    return Promise.resolve()
+  }
+
   async getJavaState(): Promise<MutableState<JavaState>> {
+    await this.initialize()
     return this.state
   }
 

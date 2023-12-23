@@ -39,10 +39,10 @@ export function useLaunchOption(instance: Ref<Instance>, resolvedVersion: Ref<Re
     let yggdrasilAgent: LaunchOptions['yggdrasilAgent']
 
     const authority = tryParseUrl(userProfile.value.authority)
-    if (authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || authority.toString() === AUTHORITY_DEV)) {
+    if (authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
       yggdrasilAgent = {
         jar: await getOrInstallAuthlibInjector(),
-        server: authority.toString(),
+        server: userProfile.value.authority,
       }
     }
 

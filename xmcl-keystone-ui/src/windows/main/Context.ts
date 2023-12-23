@@ -60,7 +60,7 @@ export default defineComponent({
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
-    const peerState = usePeerState()
+    const peerState = usePeerState(user.gameProfile)
     provide(kPeerState, peerState)
     const instance = useInstance(instances.selectedInstance, instances.instances)
 
@@ -84,7 +84,7 @@ export default defineComponent({
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
-    const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation, queue)
+    const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)
 

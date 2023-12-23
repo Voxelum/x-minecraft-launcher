@@ -1,7 +1,6 @@
 import { checksum } from '@xmcl/core'
 import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
-import 'source-map-support/register'
 import { copyPassively } from '~/util/fs'
 import { hashAndFiletypeResource, hashResource } from './core/hashResource'
 import { ResourceParser } from './parsers'
