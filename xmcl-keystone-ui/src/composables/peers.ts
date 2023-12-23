@@ -15,7 +15,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const groupState = ref<'connecting' | 'connected' | 'closing' | 'closed'>('closed')
   const error = ref<Error | undefined>(undefined)
   let _group: PeerGroup | undefined
-  const _id = crypto.randomUUID()
+  let _id = ''
 
   on('connection-local-description', ({ description, type }) => {
     _group?.sendLocalDescription(description.id, description.sdp, type, description.candidates)
@@ -26,6 +26,16 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
       const buf = new Uint16Array(1)
       window.crypto.getRandomValues(buf)
       groupId = gameProfile.value.name + '@' + buf[0]
+    }
+    if (!_id) {
+      try {
+        _id = window.crypto.randomUUID()
+      } catch {
+        const buf = new Uint16Array(16)
+        window.crypto.getRandomValues(buf)
+        const str = [...buf].map(v => v.toString(16)).join('')
+        _id = str
+      }
     }
     _group = new PeerGroup(groupId, _id)
 
@@ -87,7 +97,6 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   }
 
   return {
-    id: _id,
     joinGroup,
     leaveGroup,
     setRemoteDescription: _setRemoteDescription,
