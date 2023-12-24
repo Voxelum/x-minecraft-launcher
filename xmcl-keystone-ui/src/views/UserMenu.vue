@@ -160,6 +160,7 @@ const usersToSwitch = computed(() => users.value.filter(v => selected.value ? (v
 </script>
 <style scoped>
 .user-menu {
-  @apply h-[700px] max-h-[700px] w-[600px] max-w-[600px] overflow-y-auto;
+  @apply w-[600px] max-w-[600px] overflow-y-auto;
+  max-height: min(700px, 90vh);
 }
 </style>

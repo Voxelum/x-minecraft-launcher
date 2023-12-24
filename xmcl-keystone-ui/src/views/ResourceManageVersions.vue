@@ -1,9 +1,8 @@
 <template>
-  <div class="visible-scroll h-full">
+  <v-tab-item class="local-version-list h-full flex-col gap-4 overflow-auto overflow-x-hidden py-0">
     <v-list
       v-if="versions.length !== 0"
-      class="local-version-list flex h-full flex-col overflow-auto"
-      style="background: transparent"
+      class=" flex h-full flex-col overflow-auto bg-transparent pt-0"
     >
       <v-list-item class="flex justify-end">
         <v-select
@@ -16,66 +15,23 @@
           clearable
         />
       </v-list-item>
-      <v-divider />
-      <div
-        class="flex h-full flex-shrink flex-grow-0 flex-col overflow-auto"
+      <v-virtual-scroll
+        id="left-pane"
+        :bench="2"
+        class="visible-scroll ml-2 h-full max-h-full overflow-auto"
+        :items="versions"
+        :item-height="50"
       >
-        <template v-for="(item) in versions">
-          <v-list-item
+        <template #default="{ item }">
+          <LocalVersionItem
             :key="item.id"
-            class="flex-1 flex-grow-0"
-            :class="{
-              selected: isSelected(item),
-              'en-1': isSelected(item),
-              'elevation-2': isSelected(item),
-            }"
-            style="margin: 0px 0;"
-          >
-            <v-list-item-avatar>
-              <v-btn
-                icon
-                style="cursor: pointer"
-                @click.stop="openVersionDir(item)"
-              >
-                <v-icon>folder</v-icon>
-              </v-btn>
-            </v-list-item-avatar>
-            <v-list-item-title
-              style="flex: 1 1 50%"
-              class="!flex-grow-0"
-            >
-              {{ item.id }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="flex !flex-grow">
-              {{ item.minecraft }}
-            </v-list-item-subtitle>
-            <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
-              <v-btn
-                style="cursor: pointer"
-                icon
-                text
-                @mousedown.stop
-                @click.stop="startReinstall(item)"
-              >
-                <v-icon>build</v-icon>
-              </v-btn>
-            </v-list-item-action>
-            <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
-              <v-btn
-                style="cursor: pointer"
-                icon
-                color="error"
-                text
-                @mousedown.stop
-                @click.stop="startDelete(item)"
-              >
-                <v-icon>delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
+            :item="item"
+            :open-version-dir="openVersionDir"
+            :start-reinstall="startReinstall"
+            :start-delete="startDelete"
+          />
         </template>
-      </div>
-
+      </v-virtual-scroll>
       <v-dialog
         v-model="data.deletingVersion"
         max-width="290"
@@ -173,23 +129,16 @@
         </v-flex>
       </v-layout>
     </v-container>
-  </div>
+  </v-tab-item>
 </template>
 
 <script lang=ts setup>
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '@/composables'
+import { useFilterCombobox, useRefreshable, useService } from '@/composables'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { kLocalVersions } from '@/composables/versionLocal'
-
-const props = withDefaults(defineProps<{
-  value?: LocalVersionHeader
-}>(), {
-  value: undefined,
-})
-
-const filterText = ref('')
+import LocalVersionItem from '@/components/LocalVersionItem.vue'
 
 const data = reactive({
   deletingVersion: false,
@@ -203,14 +152,17 @@ const data = reactive({
 const { reinstall } = useService(InstallServiceKey)
 const { versions: localVersions } = injection(kLocalVersions)
 const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
-const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(filterText.value) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
 const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
 const { t } = useI18n()
-
-function isSelected(v: LocalVersionHeader) {
-  if (!props.value) return false
-  return v.id === props.value.id
+function getFilterOptions(item: LocalVersionHeader) {
+  return [
+    { label: '$vuetify.icons.minecraft', value: item.minecraft, color: 'lime' },
+  ]
 }
+const filterOptions = computed(() => localVersions.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
+const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.id}`)
+const versions = computed(() => filter(localVersions.value))
+
 function browseVersionsFolder() {
   showVersionsDirectory()
 }
