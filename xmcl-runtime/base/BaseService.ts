@@ -26,6 +26,10 @@ export class BaseService extends AbstractService implements IBaseService {
     })
   }
 
+  getSessionId() {
+    return this.app.registry.get(kClientToken)
+  }
+
   getGameDataDirectory(): Promise<string> {
     return this.app.getGameDataPath()
   }

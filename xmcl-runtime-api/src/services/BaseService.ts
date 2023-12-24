@@ -35,6 +35,8 @@ export interface Environment extends Platform {
 export interface BaseService {
   validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'>
 
+  getSessionId(): Promise<string>
+
   getSettings(): Promise<MutableState<Settings>>
   /**
    * Get the environment of the launcher
