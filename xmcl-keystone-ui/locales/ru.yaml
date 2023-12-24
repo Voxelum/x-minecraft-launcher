@@ -1356,6 +1356,7 @@ universalDrop:
   title: Перетащите файл(ы) сюда, чтобы импортировать как
   unknownResource: Неизвестно
 upstream:
+  downgrade: Понизить версию
   missingModpackMetadata: >-
     Не найдена metadata старого модпака
 

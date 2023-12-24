@@ -1,24 +1,37 @@
-import { Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
-import { useRefreshable } from './refreshable'
+import { ModrinthUpstream, Resource, ResourceServiceKey, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { useService } from './service'
+import { ProjectVersion } from '@xmcl/modrinth'
 
-export const kModrinthInstanceResource: InjectionKey<ReturnType<typeof useModrinthInstanceResource>> = Symbol('ModrinthInstanceResource')
-
-export function useModrinthInstanceResource(projectId: Ref<string>, sha1: Ref<string>) {
-  const { getResourceByHash } = useService(ResourceServiceKey)
-  const resource: Ref<Resource | undefined> = ref()
-  const { refresh, refreshing } = useRefreshable(async () => {
-    if (sha1.value) {
-      const res = await getResourceByHash(sha1.value)
-      resource.value = res
+export function useModrinthInstanceResource() {
+  const { getResourceByHash, getResourcesByUris } = useService(ResourceServiceKey)
+  async function getResourceByUpstream(upstream: ModrinthUpstream) {
+    let resource: Resource | undefined
+    if (upstream.sha1) {
+      resource = await getResourceByHash(upstream.sha1)
     }
-  })
-  onMounted(refresh)
-  watch([projectId, sha1], refresh)
+    if (!resource) {
+      const arr = await getResourcesByUris([getModrinthVersionUri({
+        project_id: upstream.projectId,
+        id: upstream.versionId,
+      })])
+      resource = arr[0]
+    }
+    return resource
+  }
+  async function getResourceByVersion(version: ProjectVersion) {
+    let resource: Resource | undefined
+    const file = version.files.find(f => f.primary) || version.files[0]
+    if (file && file.hashes.sha1) {
+      resource = await getResourceByHash(file.hashes.sha1)
+    }
+    if (!resource) {
+      const arr = await getResourcesByUris([getModrinthVersionUri(version)])
+      resource = arr[0]
+    }
+    return resource
+  }
   return {
-    refresh,
-    refreshing,
-    resource,
+    getResourceByUpstream,
+    getResourceByVersion,
   }
 }

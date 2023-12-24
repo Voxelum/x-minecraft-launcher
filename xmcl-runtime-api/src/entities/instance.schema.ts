@@ -56,6 +56,20 @@ export interface RuntimeVersions {
   [id: string]: undefined | string
 }
 
+export interface ModrinthUpstream {
+  type: 'modrinth-modpack'
+  projectId: string
+  versionId: string
+  sha1?: string
+}
+
+export interface CurseforgeUpstream {
+  type: 'curseforge-modpack'
+  modId: number
+  fileId: number
+  sha1?: string
+}
+
 export interface InstanceData {
   /**
    * The display name of the profile. It will also be the modpack display name
@@ -160,17 +174,7 @@ export interface InstanceData {
   playTime?: number
   lastPlayedDate?: number
 
-  upstream?: {
-    type: 'curseforge-modpack'
-    modId: number
-    fileId: number
-    sha1?: string
-  } | {
-    type: 'modrinth-modpack'
-    projectId: string
-    versionId: string
-    sha1?: string
-  } | {
+  upstream?: CurseforgeUpstream | ModrinthUpstream | {
     type: 'ftb-modpack'
     id: number
   }

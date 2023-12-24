@@ -1448,6 +1448,7 @@ universalDrop:
   title: Déposez le ou les fichiers ici pour les importer en tant que
   unknownResource: Inconnu
 upstream:
+  downgrade: Rétrograder
   missingModpackMetadata: >-
     Les anciennes métadonnées du modpack sont introuvables.
                 

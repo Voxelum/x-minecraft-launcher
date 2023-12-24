@@ -9,7 +9,7 @@
     >
       error
     </v-icon>
-    <div class="max-w-full select-text break-words text-center text-3xl font-bold">
+    <div class="max-w-full select-text overflow-auto break-words text-center text-3xl font-bold">
       {{ tError(error) }}
     </div>
     <div

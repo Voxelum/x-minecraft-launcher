@@ -1,4 +1,4 @@
-import { GameProfileAndTexture, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
+import { BaseServiceKey, GameProfileAndTexture, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { PeerGroup } from './peerGroup'
 import { useService } from './service'
@@ -9,6 +9,7 @@ export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol(
 export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const { getPeerState, initiate, on, setRemoteDescription } = useService(PeerServiceKey)
   const { state } = useState(getPeerState, PeerState)
+  const { getSessionId } = useService(BaseServiceKey)
   const connections = computed(() => state.value?.connections || [])
 
   const group = ref('')
@@ -17,24 +18,25 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   let _group: PeerGroup | undefined
   let _id = ''
 
+  getSessionId().then((s) => {
+    _id = s
+  })
+
   on('connection-local-description', ({ description, type }) => {
     _group?.sendLocalDescription(description.id, description.sdp, type, description.candidates)
   })
 
-  function joinGroup(groupId?: string) {
+  async function joinGroup(groupId?: string) {
     if (!groupId) {
       const buf = new Uint16Array(1)
       window.crypto.getRandomValues(buf)
       groupId = gameProfile.value.name + '@' + buf[0]
     }
     if (!_id) {
-      try {
+      if (typeof window.crypto.randomUUID === 'function') {
         _id = window.crypto.randomUUID()
-      } catch {
-        const buf = new Uint16Array(16)
-        window.crypto.getRandomValues(buf)
-        const str = [...buf].map(v => v.toString(16)).join('')
-        _id = str
+      } else {
+        _id = await getSessionId()
       }
     }
     _group = new PeerGroup(groupId, _id)

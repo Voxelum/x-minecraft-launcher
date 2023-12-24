@@ -53,6 +53,6 @@ export function useLocalStorageCacheStringValue<T extends string = string>(key: 
   return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T, options)
 }
 
-export function useLocalStorageCacheBool(key: string, defaultValue: boolean): Ref<boolean> {
+export function useLocalStorageCacheBool(key: Ref<string> | string, defaultValue: boolean): Ref<boolean> {
   return useLocalStorageCache(key, () => defaultValue, (b) => b.toString(), (s) => s === 'true')
 }

@@ -41,7 +41,7 @@
         <v-stepper-content
           v-for="(tStep, i) in steps"
           :key="tStep"
-          class="max-h-[70vh] overflow-y-hidden"
+          class="max-h-[70vh]"
           :step="i + 1"
         >
           <StepSelect
@@ -55,6 +55,7 @@
           />
           <StepTemplate
             v-if="tStep === 'template'"
+            :is-shown="isShown"
             @select="next()"
           />
           <StepConfig
@@ -339,6 +340,13 @@ window.addEventListener('keydown', (e) => {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.v-stepper__wrapper {
+  display: flex;
+  flex-direction: column;
 }
 
 .v-stepper__step span {

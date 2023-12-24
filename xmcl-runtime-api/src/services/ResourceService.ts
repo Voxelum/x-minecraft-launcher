@@ -50,6 +50,8 @@ export interface Pagination {
  */
 export interface ResourceService extends GenericEventEmitter<ResourceServiceEventMap> {
   getResources(domain: ResourceDomain, pagination?: Pagination): Promise<Array<Resource>>
+  getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined>
+  getResourceMetadataByUri(uri: string): Promise<ResourceMetadata[] | undefined>
   getReosurceByIno(ino: number): Promise<Resource | undefined>
   getResourceByHash(sha1: string): Promise<Resource | undefined>
   getResourcesByHashes(sha1: string[]): Promise<Array<Resource | undefined>>

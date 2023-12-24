@@ -113,7 +113,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   const curseforgeCategory = ref(undefined as number | undefined)
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
-  const { sort, modrinthSort, curseforgeSort } = useMarketSort()
+  const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
 
   const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
     modrinthSort, runtime)

@@ -1311,6 +1311,12 @@ shaderPack:
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
+store:
+  explore: Explore
+  latestMinecraft: Latest Minecraft Version
+  name: Modpack Market
+  popular: Popular Modpacks
+  recentUpdated: Recent Updated
 summery: Summery
 tag:
   create: Create Tag
@@ -1384,11 +1390,14 @@ universalDrop:
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
 upstream:
+  downgrade: Downgrade
   missingModpackMetadata: >-
     The old modpack metadata not found.
 
     You can still upgrade, but the result might be wrong. Please backup your
     instance files.
+  onlyShowCurrentVersion: Only Show Current Minecraft Version
+  update: Update
 user:
   accessToken: Access Token
   authMode: Auth Service

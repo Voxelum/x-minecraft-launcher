@@ -12,10 +12,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useTasks } from '../composables/task'
+import { kTaskManager } from '@/composables/taskManager'
+import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 
-const { throughput } = useTasks()
+const { throughput } = injection(kTaskManager)
 const speed = ref(0)
 const speedText = computed(() => getExpectedSize(speed.value) + '/s')
 setInterval(() => {

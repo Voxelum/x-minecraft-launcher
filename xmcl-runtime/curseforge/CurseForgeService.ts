@@ -1,10 +1,11 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import { existsSync } from 'fs'
 import { unlink } from 'fs/promises'
 import { join } from 'path'
 import { Client } from 'undici'
-import { LauncherAppKey, Inject } from '~/app'
+import { Inject, LauncherAppKey } from '~/app'
 import { NetworkInterface, kDownloadOptions, kNetworkInterface } from '~/network'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
@@ -68,14 +69,14 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
     // Try to find the resource in cache
     let resource = (await this.resourceService.getResourcesByUris(uris))[0]
-    if (resource) {
+    if (resource && resource.storedPath && existsSync(resource.storedPath)) {
       this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
     } else {
       const task = new DownloadTask({
         ...downloadOptions,
         url: downloadUrls,
         destination,
-      }).setName('installCurseforgeFile', { fileId: file.id })
+      }).setName('installCurseforgeFile', { modId: file.modId, fileId: file.id })
       await this.submit(task)
 
       const icons = icon ? [icon] : []

@@ -120,8 +120,6 @@ export function getModrinthSearchUrl(
 
 export function useModrinth(props: ModrinthOptions) {
   const { t } = useI18n()
-  const { replace } = useRouter()
-  const router = useRouter()
   const projectTypes = computed(() => [{
     value: 'mod',
     text: t('modrinth.projectType.mod'),
@@ -153,118 +151,50 @@ export function useModrinth(props: ModrinthOptions) {
   }])
 
   const data = reactive({
-    projects: [] as SearchResultHit[],
     pageSize: 10,
     pageCount: 0,
     pageSizeOptions: [5, 10, 15, 20],
   })
 
-  const query = computed({
-    get() { return props.query },
-    set(query: string) {
-      if (query !== props.query) {
-        replace({ query: { ...router.currentRoute.query, query, page: '1' } })
-      }
-    },
-  })
-
-  const projectType = computed({
-    get() { return props.projectType },
-    set(projectType: string) {
-      replace({ query: { ...router.currentRoute.query, projectType, page: '1' } })
-    },
-  })
-  const gameVersion = computed({
-    get() { return props.gameVersion },
-    set(gameVersion: string) {
-      replace({ query: { ...router.currentRoute.query, gameVersion, page: '1' } })
-    },
-  })
-  const license = computed({
-    get() { return props.license },
-    set(license: string) {
-      replace({ query: { ...router.currentRoute.query, license, page: '1' } })
-    },
-  })
-  const environment = computed({
-    get() { return props.environment },
-    set(environment: string) {
-      replace({ query: { ...router.currentRoute.query, environment, page: '1' } })
-    },
-  })
-  const category = computed({
-    get() { return props.category },
-    set(category: string[]) {
-      replace({ query: { ...router.currentRoute.query, category, page: '1' } })
-    },
-  })
-  const modLoader = computed({
-    get() { return props.modLoader },
-    set(modLoader: string) {
-      replace({ query: { ...router.currentRoute.query, modLoader, page: '1' } })
-    },
-  })
-  const page = computed({
-    get() { return props.page },
-    set(page: number) {
-      replace({ query: { ...router.currentRoute.query, page: page.toString() } })
-    },
-  })
-  const sortBy = computed({
-    get() { return props.sortBy },
-    set(sortBy: string) {
-      replace({ query: { ...router.currentRoute.query, sortBy, page: '1' } })
-    },
-  })
-
-  const refs = toRefs(data)
-
-  const facetsText = computed(() => getFacatsText(gameVersion.value, license.value, category.value, modLoader.value, projectType.value, environment.value))
+  const facetsText = computed(() => getFacatsText(props.gameVersion, props.license, props.category, props.modLoader, props.projectType, props.environment))
   const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV(
-    computed(() => getModrinthSearchUrl(query.value, data.pageSize, (props.page - 1) * data.pageSize, sortBy.value, facetsText.value)),
+    computed(() => getModrinthSearchUrl(props.query, data.pageSize, (props.page - 1) * data.pageSize, props.sortBy, facetsText.value)),
     () => clientModrinthV2.searchProjects({
       query: props.query,
       limit: data.pageSize,
       offset: (props.page - 1) * data.pageSize,
-      index: sortBy.value,
+      index: props.sortBy,
       facets: facetsText.value,
     }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
 
   watch(searchData, (result) => {
     if (result) {
       data.pageCount = Math.floor(result.total_hits / data.pageSize) + 1
-      data.projects = result.hits
     }
-  })
+  }, { immediate: true })
+
+  const projects = computed(() => searchData.value?.hits || [])
   const debouncedRefresh = debounce(() => mutate(), 1000)
   const wrappedRefresh = () => {
     refreshing.value = true
     return debouncedRefresh()
   }
 
-  watch(projectType, () => {
-    category.value = []
+  watch(() => props.projectType, () => {
+    props.category = []
   })
 
-  watch([query, gameVersion, license, category, environment, modLoader, refs.pageSize, page, sortBy, projectType], () => {
+  watch(props, () => {
     wrappedRefresh()
-  })
+  }, { deep: true })
 
   return {
-    ...refs,
+    ...toRefs(data),
+    projects,
     projectTypes,
-    query,
     refresh: wrappedRefresh,
     refreshing,
     sortOptions,
-    projectType,
-    gameVersion,
-    license,
-    environment,
-    category,
-    modLoader,
-    page,
-    sortBy,
     error,
   }
 }

@@ -516,3 +516,13 @@ a {
 .dragover {
     @apply border-4 border-dashed border-yellow-400;
 }
+
+
+.hide-underline .theme--.v-text-field>.v-input__control>.v-input__slot:before {
+    border: none;
+}
+
+.hide-underline .v-text-field>.v-input__control>.v-input__slot:before {
+    border: none;
+    border-width: 0px;
+}

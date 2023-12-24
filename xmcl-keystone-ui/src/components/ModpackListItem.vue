@@ -1,81 +1,86 @@
 <template>
-  <v-card
-    v-draggable-card
+  <v-list-item
     v-context-menu.force="contextMenuItems"
-    outlined
-    draggable
-    hover
     width="250"
-    class="draggable-card cursor-pointer rounded-lg transition-all duration-200"
+    class="select-text rounded-lg transition-all duration-200"
     style="transition: all; transition-duration: 200ms;"
-    @dragstart="emit('dragstart')"
-    @dragend="emit('dragend')"
+    @click="item.resource ? showItemInDirectory(item.resource.path) : undefined"
   >
-    <v-img
-      v-if="item.icon"
-      :src="item.icon"
-    >
-      <template #placeholder>
-        <v-skeleton-loader type="image" />
-      </template>
-    </v-img>
-    <v-card-title>
-      {{ item.name }}
-    </v-card-title>
-    <v-card-subtitle class="flex flex-col">
-      <span
-        v-if="item.author"
+    <v-list-item-avatar>
+      <v-img
+        v-if="item.icon"
+        :src="item.icon"
       >
-        <v-icon small>
-          person
-        </v-icon>
-        {{ item.author }}
-      </span>
-      <div class="">
-        <v-icon small>
-          history
-        </v-icon>
-        {{ item.version }}
-      </div>
-      <div>
-        <v-icon small>
-          sd_card
-        </v-icon>
-        {{ (item.size / 1024 / 1024).toFixed(2) }} MB
-      </div>
-      <div>
-        <v-icon small>
-          event
-        </v-icon>
-        {{ time }}
-      </div>
-    </v-card-subtitle>
-    <v-divider class="mx-4" />
-    <div
-      v-if="item.tags.length > 0"
-      class="flex flex-wrap gap-2 p-2"
-    >
-      <v-chip
-        v-for="(tag, index) in item.tags"
-        :key="tag"
-        label
-        outlined
-        close
-        @click:close="onDeleteTag(tag)"
-      >
-        <div
-          contenteditable
-          class="max-w-50 overflow-auto"
-          @input.stop="onEditTag($event, index)"
-          @blur="emit('tags', [...item.tags])"
+        <template #placeholder>
+          <v-skeleton-loader type="image" />
+        </template>
+      </v-img>
+    </v-list-item-avatar>
+
+    <v-list-item-content>
+      <v-list-item-title>{{ item.name }}</v-list-item-title>
+      <v-list-item-subtitle class="flex items-center gap-2">
+        <span
+          v-if="item.author"
         >
-          {{ tag }}
+          <v-icon small>
+            person
+          </v-icon>
+          {{ item.author }}
+        </span>
+        <div class="">
+          <v-icon small>
+            history
+          </v-icon>
+          {{ item.version }}
         </div>
-      </v-chip>
-    </div>
-    <v-card-actions>
+        <div>
+          <v-icon small>
+            sd_card
+          </v-icon>
+          {{ (item.size / 1024 / 1024).toFixed(2) }} MB
+        </div>
+        <div>
+          <v-icon small>
+            event
+          </v-icon>
+          {{ time }}
+        </div>
+        <v-chip
+          v-for="(tag, index) in item.tags"
+          :key="tag"
+          small
+          label
+          outlined
+          close
+          @click:close="onDeleteTag(tag)"
+        >
+          <div
+            contenteditable
+            class="max-w-50 overflow-auto"
+            @input.stop="onEditTag($event, index)"
+            @blur="emit('tags', [...item.tags])"
+          >
+            {{ tag }}
+          </div>
+        </v-chip>
+      </v-list-item-subtitle>
+    </v-list-item-content>
+    <v-list-item-action>
       <v-btn
-        block
+        icon
+        color="red"
+        text
+        @click.stop="emit('delete')"
+      >
+        <v-icon>
+          delete
+        </v-icon>
+      </v-btn>
+    </v-list-item-action>
+    <v-list-item-action>
+      <v-btn
+        icon
         text
         @click="emit('create')"
       >
@@ -83,8 +88,8 @@
           add
         </v-icon>
       </v-btn>
-    </v-card-actions>
-  </v-card>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 <script lang="ts" setup>
 import { useService, useTags } from '@/composables'
@@ -96,7 +101,6 @@ import { ContextMenuItem } from '../composables/contextMenu'
 import { ModpackItem } from '../composables/modpack'
 import { kMarketRoute } from '../composables/useMarketRoute'
 import { vContextMenu } from '../directives/contextMenu'
-import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ item: ModpackItem }>()
 const emit = defineEmits(['tags', 'delete', 'dragstart', 'dragend', 'create'])

@@ -1,22 +1,23 @@
 <script lang="ts"  setup>
+import StoreProjectBase, { StoreProject } from '@/components/StoreProject.vue'
+import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
+import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { useService } from '@/composables'
+import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
 import { useModrinthTags } from '@/composables/modrinth'
 import { useModrinthProject } from '@/composables/modrinthProject'
-import { useModrintTasks, useModrinthVersions } from '@/composables/modrinthVersions'
+import { useModrinthVersions } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
 import { kSWRVConfig } from '@/composables/swrvConfig'
+import { useTasks } from '@/composables/task'
 import { clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
+import { generateDistinctName } from '@/util/instanceName'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, ModrinthServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, ModrinthServiceKey, TaskState } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import StoreProjectBase, { StoreProject } from './StoreProject.vue'
-import { TeamMember } from './StoreProjectMembers.vue'
-import { generateDistinctName } from '@/util/instanceName'
-import { injection } from '@/util/inject'
-import { kInstances } from '@/composables/instances'
-import { StoreProjectVersion } from './StoreProjectInstallFeaturedVersionDialog.vue'
 
 const props = defineProps<{ id: string }>()
 
@@ -39,19 +40,19 @@ const project = computed(() => {
   if (p.issues_url) {
     links.push({
       url: p.issues_url,
-      name: 'Issue',
+      name: t('modrinth.issueUrl'),
     })
   }
   if (p.source_url) {
     links.push({
       url: p.source_url,
-      name: 'Source',
+      name: t('modrinth.sourceUrl'),
     })
   }
   if (p.wiki_url) {
     links.push({
       url: p.wiki_url,
-      name: 'Wiki',
+      name: t('modrinth.wikiUrl'),
     })
   }
   const info = [] as StoreProject['info']
@@ -77,7 +78,7 @@ const project = computed(() => {
     const cat = modrinthCategories.value.find(cat => cat.name === c)
     if (cat) {
       categories.push({
-        name: t(`modrinth.categories.${cat.name}`),
+        text: t(`modrinth.categories.${cat.name}`),
         icon: cat.icon,
       })
     }
@@ -103,13 +104,19 @@ const project = computed(() => {
   }
   return result
 })
-const { versions, error } = useModrinthVersions(computed(() => props.id), true)
+const { versions, error } = useModrinthVersions(computed(() => props.id))
 
+const _installing = ref(false)
 const onInstall = (v: StoreProjectVersion) => {
   const ver = v as ProjectVersion
-  installModpack(ver)
+  _installing.value = true
+  installModpack(ver).finally(() => {
+    _installing.value = false
+  })
 }
 
+const { instances, selectedInstance } = injection(kInstances)
+const existed = computed(() => instances.value.find(i => i.upstream?.type === 'modrinth-modpack' && i.upstream?.projectId === props.id))
 const { push } = useRouter()
 const onOpen = () => {
   const i = existed.value
@@ -119,12 +126,17 @@ const onOpen = () => {
   }
 }
 
-const tasks = useModrintTasks(computed(() => props.id))
-const isDownloading = computed(() => Object.keys(tasks.value).length > 0)
+const tasks = useTasks((t) => {
+  if (t.state !== TaskState.Running) return false
+  if (t.path === 'installModrinthFile' && t.param.projectId === project.value) return true
+  if (t.path === 'installInstanceFiles' && t.param.instance === existed.value?.path) return true
+  return false
+})
+const isDownloading = computed(() => tasks.value.length > 0)
 const { getModpackInstallFiles } = useService(ModpackServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { instances, selectedInstance } = injection(kInstances)
-const existed = computed(() => instances.value.find(i => i.upstream?.type === 'modrinth-modpack' && i.upstream?.projectId === props.id))
+const { createInstance } = useService(InstanceServiceKey)
+const { installVersion } = useService(ModrinthServiceKey)
 const installModpack = async (v: ProjectVersion) => {
   const result = await installVersion({ version: v, icon: project.value?.iconUrl })
   const resource = result.resources[0]
@@ -142,9 +154,6 @@ const installModpack = async (v: ProjectVersion) => {
     files,
   })
 }
-
-const { createInstance } = useService(InstanceServiceKey)
-const { installVersion } = useService(ModrinthServiceKey)
 
 const { isValidating: loadingMembers, error: teamError, data } = useSWRV(computed(() => `/modrinth/team/${props.id}`),
   () => clientModrinthV2.getProjectTeamMembers(props.id),
@@ -164,28 +173,17 @@ const members = computed(() => {
   return result
 })
 
-// // modrinth project
-// const { path } = inject(kInstance, ({ path: '' }) as any)
-
-// // modrinth version status
-// const holder = ref({} as Record<string, ProjectVersion>)
-// provide(kModrinthVersionsHolder, holder)
-// const versions = computed(() => Object.values(holder.value))
-// const status = useModrinthVersionsResources(versions)
-// const tasks = useModrintTasks(projectId)
-// provide(kModrinthVersionsStatus, { ...status, tasks })
-
 usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.title || '' })))
 </script>
 <template>
   <StoreProjectBase
     :project="project"
-    :featured-versions="versions"
+    :versions="versions"
     :error="error"
     :refreshing="refreshing"
     :tasks="tasks"
     :members="members"
-    :installing="isDownloading"
+    :installing="isDownloading || _installing"
     :installed="!!existed"
     :loading-members="loadingMembers"
     :team-error="teamError"

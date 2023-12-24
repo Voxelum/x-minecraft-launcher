@@ -1,16 +1,12 @@
 import { TaskItem } from '@/entities/task'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey, RuntimeVersions, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey, getModrinthVersionFileUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useNotifier } from './notifier'
 import { useService } from './service'
-import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
-import { isNoModLoader } from '@/util/isNoModloader'
-import { ProjectFile } from '@/util/search'
-import { ProjectDependency } from '@/components/MarketProjectDetail.vue'
 
 export const kModrinthInstall: InjectionKey<ReturnType<typeof useModrinthInstall>> = Symbol('ModrinthInstall')
 

@@ -2,14 +2,24 @@
   <div class="relative flex gap-4">
     <div
       class="absolute left-0 flex h-full items-center lg:static"
-      @click="prev"
     >
-      <v-btn icon>
+      <v-btn
+        icon
+        @click="prev"
+      >
         <v-icon>
           chevron_left
         </v-icon>
       </v-btn>
     </div>
+    <!-- <v-window
+      v-model="index"
+      class="elevation-1"
+    >
+      <v-window-item
+        v-for="(currentGroup, i) of grouped"
+        :key="i"
+      > -->
     <Transition
       mode="out-in"
       transition="fade-transition"
@@ -25,13 +35,12 @@
         <v-card
           v-for="g of currentGroup"
           :key="g.id"
-          class="flex h-40 max-h-40 max-w-full overflow-auto"
+          class="flex h-40 max-h-40 max-w-full overflow-auto overflow-x-hidden"
           @click="$emit('enter', g)"
         >
           <v-img
-            v-if="g.logo"
             :src="g.logo"
-            class="white--text w-30"
+            class="white--text max-w-36 min-w-36"
           />
           <div class="flex max-w-full flex-col overflow-auto">
             <v-card-title class="ml-1 max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap pt-3">
@@ -67,6 +76,7 @@
               <v-chip
                 v-for="c of g.categories.slice(0, 2)"
                 :key="c"
+                class="hidden lg:block"
                 :ripple="false"
                 small
               >
@@ -77,11 +87,15 @@
         </v-card>
       </div>
     </Transition>
+    <!-- </v-window-item>
+    </v-window> -->
     <div
       class="absolute right-0 flex h-full items-center lg:static"
-      @click="next"
     >
-      <v-btn icon>
+      <v-btn
+        icon
+        @click="next"
+      >
         <v-icon>
           chevron_right
         </v-icon>

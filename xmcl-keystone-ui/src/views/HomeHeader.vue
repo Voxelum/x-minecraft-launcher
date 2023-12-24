@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header sticky mb-0 flex max-w-full flex-1 flex-grow-0 flex-col transition-all"
+    class="header sticky mb-0 flex max-w-full flex-1 flex-grow-0 select-none flex-col transition-all"
     :class="{
       'backdrop-filter': !isInFocusMode,
       'backdrop-blur-sm': !isInFocusMode,

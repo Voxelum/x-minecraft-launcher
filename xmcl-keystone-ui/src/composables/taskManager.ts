@@ -2,6 +2,7 @@ import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } fr
 import { TaskItem } from '@/entities/task'
 
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
+import { injection } from '@/util/inject'
 
 export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 

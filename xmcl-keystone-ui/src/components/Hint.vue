@@ -13,7 +13,7 @@
       <div
         v-if="!button"
         class="headline text-button select-none text-center"
-        :style="{ 'color': color }"
+        :style="{ 'color': color, }"
       >
         <v-icon
           :style="{ 'font-size' : `${size}px`, 'color': color }"

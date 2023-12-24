@@ -16,7 +16,7 @@
   </div>
   <div
     v-else
-    class="visible-scroll flex flex-col gap-4 overflow-auto p-4"
+    class="flex flex-col gap-4 p-4"
   >
     <v-progress-linear
       class="absolute left-0 top-0 z-10 m-0 p-0"
@@ -32,7 +32,7 @@
       <StoreProjectHeader
         class="flex-shrink flex-grow-0"
         :project="project"
-        :installing="isTryingToShowDialog || installing || false"
+        :installing="installing || !!installDialog"
         :installed="installed"
         @open="onOpen"
         @install="onInstall"
@@ -58,10 +58,11 @@
         />
       </div>
     </div>
-    <StoreProjectInstallFeaturedVersionDialog
+    <StoreProjectInstallVersionDialog
       :value="installDialog"
-      :versions="featuredVersions || []"
-      @input="isTryingToShowDialog = false"
+      :versions="versions || []"
+      @load="emit('load')"
+      @input="installDialog = false"
       @install="onInstallVersion"
     />
   </div>
@@ -71,9 +72,10 @@ import ErrorView from '@/components/ErrorView.vue'
 import StoreProjectExternal from './StoreProjectExternal.vue'
 import StoreProjectGallery from './StoreProjectGallery.vue'
 import StoreProjectHeader from './StoreProjectHeader.vue'
-import StoreProjectInstallFeaturedVersionDialog, { StoreProjectVersion } from './StoreProjectInstallFeaturedVersionDialog.vue'
+import StoreProjectInstallVersionDialog, { StoreProjectVersion } from './StoreProjectInstallVersionDialog.vue'
 import StoreProjectMembers, { TeamMember } from './StoreProjectMembers.vue'
 import StoreProjectTags from './StoreProjectTags.vue'
+import { CategoryChipProps } from './CategoryChip.vue'
 
 export interface StoreProject {
   id: string
@@ -81,7 +83,7 @@ export interface StoreProject {
   iconUrl: string | undefined
   url: string
   description: string
-  categories: Array<{ icon?: string; name: string }>
+  categories: Array<CategoryChipProps>
   downloads: number
   follows: number
   createDate: string
@@ -104,7 +106,7 @@ const props = defineProps<{
   loadingMembers: boolean
   teamError: any
 
-  featuredVersions: StoreProjectVersion[]
+  versions: StoreProjectVersion[]
 
   installed?: boolean
   installing?: boolean
@@ -113,24 +115,18 @@ const props = defineProps<{
 const emit = defineEmits<{
   (event: 'install', version: StoreProjectVersion): void
   (event: 'open'): void
+  (event: 'load'): void
 }>()
 
-const isTryingToShowDialog = ref(false)
-const installDialog = computed(() => isTryingToShowDialog.value && props.featuredVersions && props.featuredVersions.length > 0)
+const installDialog = ref(false)
 const onInstall = () => {
-  if (props.featuredVersions && props.featuredVersions.length === 1) {
-    // Directly install the version
-    emit('install', props.featuredVersions[0])
-  } else {
-    // Show the dialog
-    isTryingToShowDialog.value = true
-  }
+  installDialog.value = true
 }
 const onOpen = () => {
   emit('open')
 }
 const onInstallVersion = (v: StoreProjectVersion) => {
-  isTryingToShowDialog.value = false
+  installDialog.value = false
   emit('install', v)
 }
 </script>

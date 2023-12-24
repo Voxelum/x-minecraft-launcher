@@ -1,21 +1,17 @@
-<template>
-  <StoreProject
-    :project="project"
-    :featured-versions="versions"
-    :error="error"
-    :refreshing="isValidating"
-    :members="members"
-    :loading-members="false"
-    :team-error="undefined"
-  />
-</template>
 <script lang="ts"  setup>
-import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectModel } from '@/composables/curseforge'
+import StoreProject, { StoreProject as IStoreProject } from '@/components/StoreProject.vue'
+import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
+import { TeamMember } from '@/components/StoreProjectMembers.vue'
+import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectFilesModel, getCurseforgeProjectModel, useCurseforgeCategoryI18n } from '@/composables/curseforge'
+import { useCurseforgeInstallModpack } from '@/composables/curseforgeInstall'
 import { useDateString } from '@/composables/date'
+import { kInstances } from '@/composables/instances'
 import { useSWRVModel } from '@/composables/swrv'
-import StoreProject, { StoreProject as IStoreProject } from './StoreProject.vue'
-import { StoreProjectVersion } from './StoreProjectInstallFeaturedVersionDialog.vue'
-import { TeamMember } from './StoreProjectMembers.vue'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { useTasks } from '@/composables/task'
+import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
+import { injection } from '@/util/inject'
+import { TaskState } from '@xmcl/runtime-api'
 
 const props = defineProps<{ id: number }>()
 
@@ -24,7 +20,7 @@ const projectId = computed(() => props.id)
 
 const { data: proj, isValidating, mutate, error } = useSWRVModel(getCurseforgeProjectModel(projectId))
 const { getDateString } = useDateString()
-const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
+const tCategory = useCurseforgeCategoryI18n()
 const description = useSWRVModel(getCurseforgeProjectDescriptionModel(projectId))
 const project = computed(() => {
   const p = proj.value
@@ -33,19 +29,19 @@ const project = computed(() => {
   if (p.links.issuesUrl) {
     links.push({
       url: p.links.issuesUrl,
-      name: 'Issue',
+      name: t('modrinth.issueUrl'),
     })
   }
   if (p.links.sourceUrl) {
     links.push({
       url: p.links.sourceUrl,
-      name: 'Source',
+      name: t('modrinth.sourceUrl'),
     })
   }
   if (p.links.wikiUrl) {
     links.push({
       url: p.links.wikiUrl,
-      name: 'Wiki',
+      name: t('modrinth.wikiUrl'),
     })
   }
   const info = [] as IStoreProject['info']
@@ -79,7 +75,7 @@ const project = computed(() => {
   }
   const categories: IStoreProject['categories'] = p?.categories.map(c => reactive({
     id: c.id.toString(),
-    name: computed(() => tCategory(c.name)),
+    text: computed(() => tCategory(c.name)),
     icon: c.iconUrl,
   })) || []
 
@@ -105,16 +101,17 @@ const project = computed(() => {
   return result
 })
 
+const allVersions = useSWRVModel(getCurseforgeProjectFilesModel(projectId, ref(undefined), ref(undefined)), inject(kSWRVConfig))
 const versions = computed(() => {
   if (!proj.value) return []
   const result: StoreProjectVersion[] = []
-  for (const v of proj.value.latestFiles) {
+  for (const v of (allVersions.data.value?.data || proj.value.latestFiles)) {
     const x: StoreProjectVersion = {
       id: v.id.toString(),
       name: v.displayName,
       version_type: v.releaseType === 1 ? 'release' : v.releaseType === 2 ? 'beta' : 'alpha',
-      game_versions: v.gameVersions,
-      loaders: v.gameVersions,
+      game_versions: getCursforgeFileModLoaders(v),
+      loaders: getCurseforgeFileGameVersions(v),
     }
     result.push(x)
   }
@@ -135,4 +132,51 @@ const members = computed(() => {
   return result
 })
 
+const _installing = ref(false)
+const onInstall = (v: StoreProjectVersion) => {
+  if (!proj.value) return
+  const files = proj.value.latestFiles
+  const file = files.find(f => f.id.toString() === v.id)
+  if (!file) return
+  _installing.value = true
+  installModpack(file).finally(() => {
+    _installing.value = false
+  })
+}
+
+const { instances, selectedInstance } = injection(kInstances)
+const existed = computed(() => instances.value.find(i => i.upstream?.type === 'curseforge-modpack' && i.upstream?.modId === props.id))
+const { push } = useRouter()
+const onOpen = () => {
+  const i = existed.value
+  if (i) {
+    selectedInstance.value = i.path
+    push('/')
+  }
+}
+
+const tasks = useTasks((t) => {
+  if (t.state !== TaskState.Running) return false
+  if (t.path === 'installCurseforgeFile' && t.param.modId === props.id) return true
+  if (t.path === 'installInstanceFiles' && t.param.instance === existed.value?.path) return true
+  return false
+})
+const isDownloading = computed(() => tasks.value.length > 0)
+const installModpack = useCurseforgeInstallModpack(computed(() => project.value?.iconUrl))
+
 </script>
+<template>
+  <StoreProject
+    :project="project"
+    :versions="versions"
+    :error="error"
+    :refreshing="isValidating"
+    :members="members"
+    :installing="isDownloading || _installing"
+    :installed="!!existed"
+    :loading-members="false"
+    :team-error="undefined"
+    @install="onInstall"
+    @open="onOpen"
+  />
+</template>

@@ -2,11 +2,12 @@ import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 import { clientCurseforgeV1 } from '@/util/clients'
+import { useSWRVModel } from './swrv'
 
-export function useCurseforgeChangelog(modId: Ref<number>, fileId: Ref<number | undefined>) {
-  const { data: changelog, ...rest } = useSWRV(
-    computed(() => fileId.value ? `/cureforge/${modId.value}/${fileId.value}/changelog` : undefined),
-    async () => {
+export function getCurseforgeChangelogModel(modId: Ref<number>, fileId: Ref<number | undefined>) {
+  return {
+    key: computed(() => fileId.value ? `/cureforge/${modId.value}/${fileId.value}/changelog` : undefined),
+    fetcher: async () => {
       const changelog = await clientCurseforgeV1.getModFileChangelog(modId.value, fileId.value!)
       const root = document.createElement('div')
       root.innerHTML = changelog
@@ -22,7 +23,14 @@ export function useCurseforgeChangelog(modId: Ref<number>, fileId: Ref<number | 
       }
       return root.innerHTML
     },
-    { ...inject(kSWRVConfig), dedupingInterval: Infinity })
+  }
+}
+
+export function useCurseforgeChangelog(modId: Ref<number>, fileId: Ref<number | undefined>) {
+  const { data: changelog, ...rest } = useSWRVModel(
+    getCurseforgeChangelogModel(modId, fileId),
+    { ...inject(kSWRVConfig), dedupingInterval: Infinity },
+  )
   return {
     changelog,
     ...rest,

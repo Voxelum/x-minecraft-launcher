@@ -34,6 +34,10 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
           }
           return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
         }
+        const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`modrinth:${upstream.projectId}:${upstream.versionId}`))[0]
+        if (resMetadata?.instance) {
+          return resMetadata.instance
+        }
       }
       return undefined
     })
@@ -46,6 +50,10 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
             return res.metadata.instance
           }
           return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
+        }
+        const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`curseforge:${upstream.modId}:${upstream.fileId}`))[0]
+        if (resMetadata?.instance) {
+          return resMetadata.instance
         }
       }
       return undefined

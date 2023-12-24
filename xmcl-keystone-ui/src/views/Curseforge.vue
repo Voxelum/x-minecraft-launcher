@@ -9,7 +9,7 @@
     <div class="relative flex flex-col gap-3 overflow-auto">
       <div class="hover:(scale-100 opacity-100) absolute bottom-1 z-10 w-full scale-90 transform opacity-60 transition">
         <v-pagination
-          v-model="currentPage"
+          v-model="page"
           color="success"
           :disabled="loading"
           :length="pages"
@@ -22,7 +22,7 @@
       >
         <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
-            v-model="currentType"
+            v-model="type"
             flat
             solo
             :items="allTypes"
@@ -31,7 +31,7 @@
         </span>
         <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
-            v-model="currentVersion"
+            v-model="gameVersion"
             flat
             solo
             clearable
@@ -50,7 +50,7 @@
           flat
           hide-details
           :placeholder="t('curseforge.search')"
-          @keypress.enter="currentKeyword = keywordBuffer"
+          @keypress.enter="keyword = keywordBuffer"
         />
       </v-card>
       <div
@@ -61,11 +61,11 @@
           v-for="proj in projects"
           :key="proj.id"
           :proj="proj"
-          :current-type="currentType"
+          :current-type="type"
           :from="from"
           :disabled="false"
           @category="categoryId = categoryId === $event ? undefined : $event"
-          @search="currentKeyword = $event"
+          @search="keyword = $event"
         />
         <div class="min-h-14 w-full p-1" />
       </div>
@@ -82,8 +82,8 @@
     </div>
     <div class="flex min-w-[20%] max-w-[20%] select-none flex-col overflow-auto md:hidden lg:flex">
       <Categories
-        :type="currentType"
-        :selected="currentCategory"
+        :type="type"
+        :selected="category"
         @select="categoryId = categoryId === $event ? undefined : $event"
       />
     </div>
@@ -102,6 +102,7 @@ import CurseforgeCard from './CurseforgeCard.vue'
 import { usePresence } from '@/composables/presence'
 import { kLocalVersions } from '@/composables/versionLocal'
 import { injection } from '@/util/inject'
+import { useVModels } from '@vueuse/core'
 
 interface CurseforgeProps {
   type: string
@@ -129,6 +130,36 @@ const props = withDefaults(
   },
 )
 
+const { replace, push, currentRoute } = useRouter()
+const { page, type, category, keyword, gameVersion } = useVModels(props, (name, val) => {
+  switch (name) {
+    case 'update:type':
+      push(`/curseforge/${val}`)
+      break
+    case 'update:page':
+      replace({ query: { ...currentRoute.query, page: val.toString() } })
+      break
+    case 'update:keyword':
+      replace({ query: { ...currentRoute.query, keyword: val, page: '1' } })
+      break
+    case 'update:category':
+      replace({ query: { ...currentRoute.query, category: val, page: '1' } })
+      break
+    case 'update:sortField':
+      replace({ query: { ...currentRoute.query, sortField: val, page: '1' } })
+      break
+    case 'update:modLoaderType':
+      replace({ query: { ...currentRoute.query, modLoaderType: val, page: '1' } })
+      break
+    case 'update:sortOrder':
+      replace({ query: { ...currentRoute.query, sortOrder: val, page: '1' } })
+      break
+    case 'update:gameVersion':
+      replace({ query: { ...currentRoute.query, gameVersion: val, page: '1' } })
+      break
+  }
+})
+
 const { t } = useI18n()
 const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
   text: t(`curseforge.${v}.name`),
@@ -143,11 +174,6 @@ const { versions, refreshing } = useMinecraftVersions(local)
 const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
 
 const {
-  currentCategory,
-  currentKeyword,
-  currentPage,
-  currentType,
-  currentVersion,
   categoryId,
   refreshing: loading,
   error,

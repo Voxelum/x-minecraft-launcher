@@ -18,6 +18,7 @@
         v-if="refreshing"
         type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
       />
+      <ErrorView :error="error" />
       <div
         v-if="upgrade && !refreshing"
         class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
@@ -105,7 +106,7 @@
         <v-btn
           text
           large
-          :disabled="installing || refreshing"
+          :disabled="refreshing"
           @click="cancel"
         >
           {{ t('cancel') }}
@@ -115,7 +116,7 @@
           text
           color="primary"
           large
-          :loading="installing || refreshing"
+          :loading="refreshing"
           @click="confirm"
         >
           {{ t('instanceUpdate.update') }}
@@ -138,6 +139,7 @@ import { getUpstreamFromResource } from '@/util/upstream'
 import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstance } from '@/composables/instance'
+import ErrorView from '@/components/ErrorView.vue'
 
 const selected = ref([] as string[])
 
@@ -217,7 +219,7 @@ const { leaves } = provideFileNodes(result)
 
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
-const { refresh, refreshing } = useRefreshable(async () => {
+const { refresh, refreshing, error } = useRefreshable(async () => {
   const path = newResource.value?.path
   if (path) {
     upgrade.value = await getInstanceUpdateProfile({
@@ -232,6 +234,7 @@ const confirm = async () => {
   if (upgrade.value) {
     const { instance, files } = upgrade.value
     const upstream = newResource.value
+    isShown.value = false
     await installInstanceFiles({
       path: instancePath.value,
       files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
@@ -248,14 +251,10 @@ const confirm = async () => {
       modpackVersion: instance.modpackVersion,
       upstream: getUpstreamFromResource(upstream!),
     })
-    isShown.value = false
   }
 }
 
 const cancel = () => {
   isShown.value = false
 }
-
-const installing = useServiceBusy(InstanceInstallServiceKey, 'installInstanceFiles', instancePath)
-
 </script>

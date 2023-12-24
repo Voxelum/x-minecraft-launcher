@@ -72,12 +72,14 @@
 </template>
 
 <script lang=ts setup>
-import { useTasks, useTaskName } from '../composables/task'
+import { useTaskName } from '../composables/task'
 import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
 import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
 
-import { TaskItem } from '@/entities/task'
 import { useDialog } from '@/composables/dialog'
+import { kTaskManager } from '@/composables/taskManager'
+import { TaskItem } from '@/entities/task'
+import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
@@ -86,7 +88,7 @@ interface TaskItemOrGroup extends TaskItem {
   groupedCount: number
 }
 
-const { tasks: all, pause, resume, cancel } = useTasks()
+const { tasks: all, pause, resume, cancel } = injection(kTaskManager)
 const { t } = useI18n()
 const tTask = useTaskName()
 

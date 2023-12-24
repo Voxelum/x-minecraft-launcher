@@ -23,7 +23,6 @@ import { kLaunchStatus, useLaunchStatus } from '@/composables/launch'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
-import { kModpacks, useModpacks } from '@/composables/modpack'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
@@ -117,7 +116,6 @@ export default defineComponent({
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
     provide(kModUpgrade, modUpgrade)
-    provide(kModpacks, useModpacks())
 
     useI18nSync(vuetify.framework, settings.state)
     useThemeSync(vuetify.framework, settings.state)

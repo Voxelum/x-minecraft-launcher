@@ -19,7 +19,6 @@
     >
       <v-chip
         v-shared-tooltip="tooltip"
-        text-color="white"
         label
         outlined
         small

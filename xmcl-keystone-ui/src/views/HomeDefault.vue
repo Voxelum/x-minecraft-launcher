@@ -31,11 +31,6 @@
         @container-resized="onResized"
         @resized="onResized"
       >
-        <!-- <span class="absolute left-0 top-0 z-10">
-          {{ item.x }} {{ item.y }}
-          {{ item.w }} {{ item.h }}
-          {{ 410 / item.h }}
-        </span> -->
         <HomeModCard
           v-if="isType(item.i, CardType.Mod)"
           :row-count="modRowCount"
@@ -63,20 +58,18 @@
       </GridItem>
     </GridLayout>
 
-    <v-divider
+    <div
       v-if="instance.upstream || isServer || !hideNews"
-      class="my-4"
+      class="my-2"
     />
     <HomeServerStatusBar v-if="isServer" />
-    <CurseforgeProject
+    <HomeUpstreamCurseforge
       v-else-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
-      :id="instance.upstream.modId.toString()"
-      :type="'modpacks'"
-      :from="instance.path"
+      :id="instance.upstream.modId"
     />
-    <ModrinthProject
+    <HomeUpstreamModrinth
       v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-      :id="instance.upstream.projectId.toString()"
+      :id="instance.upstream.projectId"
     />
     <GridLayout
       v-else-if="!hideNews"
@@ -126,6 +119,8 @@ import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import ModrinthProject from './ModrinthProject.vue'
 import { useTutorial } from '@/composables/tutorial'
 import { DriveStep } from 'driver.js'
+import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
+import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 
 const { instance, isServer } = injection(kInstance)
 

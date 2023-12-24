@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import MarketProjectDetail, { CategoryItem, ExternalResource, Info, ModGallery, ProjectDependency, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectModel, useCurseforgeProjectFiles } from '@/composables/curseforge'
+import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectModel, useCurseforgeCategoryI18n, useCurseforgeProjectFiles } from '@/composables/curseforge'
 import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { useSWRVModel } from '@/composables/swrv'
-import { getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
+import { getCurseforgeFileGameVersions, getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
@@ -138,8 +138,8 @@ const model = computed(() => {
   return detail
 })
 
-const { te, t } = useI18n()
-const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
+const { t } = useI18n()
+const tCategory = useCurseforgeCategoryI18n()
 const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
   1: 'release',
   2: 'beta',
@@ -178,7 +178,7 @@ const modVersions = computed(() => {
       installed: !!f,
       downloadCount: file.downloadCount,
       loaders: getCursforgeFileModLoaders(file),
-      minecraftVersion: file.gameVersions.filter(v => Number.isInteger(Number(v[0]))).join(', '),
+      minecraftVersion: getCurseforgeFileGameVersions(file).join(', '),
       createdDate: file.fileDate,
     }))
   }

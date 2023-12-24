@@ -118,8 +118,9 @@
 </template>
 <script setup lang="ts">
 import MarketTextField from '@/components/MarketTextField.vue'
-import { useCurseforgeCategories } from '@/composables/curseforge'
+import { useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 import { useModrinthTags } from '@/composables/modrinth'
+import { useSortByItems } from '@/composables/sortBy'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { ModsSearchSortField } from '@xmcl/curseforge'
 
@@ -192,35 +193,13 @@ const curseforgeSelectModel = computed({
     emit('update:curseforgeCategory', !v ? v : curseforgeCategories.value[v].id)
   },
 })
-const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
+const tCategory = useCurseforgeCategoryI18n()
 
 const onClear = () => {
   emit('update:curseforgeCategory', undefined)
   emit('update:modrinthCategories', [])
 }
 
-const sortByItems = computed(() => {
-  return [{
-    text: t('modrinth.sort.relevance'),
-    icon: 'sort_by_alpha',
-    value: 'relevance',
-  }, {
-    text: t('modrinth.sort.downloads'),
-    icon: 'file_download',
-    value: 'downloads',
-  }, {
-    text: t('modrinth.sort.follows'),
-    icon: 'star',
-    value: 'popularity',
-  }, {
-    text: t('modrinth.sort.updated'),
-    icon: 'update',
-    value: 'updated',
-  }, {
-    text: t('modrinth.sort.newest'),
-    icon: 'celebration',
-    value: 'created',
-  }]
-})
+const sortByItems = useSortByItems()
 
 </script>
