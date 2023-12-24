@@ -34,27 +34,10 @@
         </template>
 
         <v-list-item
-          v-shared-tooltip.right="_ => t('localVersion.title')"
+          v-shared-tooltip.right="_ => t('modpack.name', 2) + ' & ' + t('localVersion.title')"
           link
           push
-          to="/version-setting"
-          class="non-moveable"
-        >
-          <v-list-item-icon>
-            <v-icon
-              :size="28"
-            >
-              power
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title v-text="'Text'" />
-        </v-list-item>
-
-        <v-list-item
-          v-shared-tooltip.right="_ => t('modpack.name', 2)"
-          link
-          push
-          to="/modpack-setting"
+          to="/local-resources"
           class="non-moveable"
         >
           <v-list-item-icon>
