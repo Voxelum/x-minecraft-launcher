@@ -193,7 +193,6 @@ diagnosis:
   corruptedAssets:
     message: Der Launcher installiert Assets für Sie
     name: >-
-
       Пошкоджено asset: {name} | Asset {name} ist beschädigt | Assets sind beschädigt:
       {count}
   corruptedAssetsIndex:
@@ -525,7 +524,7 @@ launchBlocked:
   launchInvalidJavaPath:
     description: >-
       Das ausgewählte Java fehlt oder ist falsch ausgewählt. Wählen Sie ein neues aus. <span
-     class="highlight"> {javaPath} </span>
+      class="highlight"> {javaPath} </span>
     title: Falscher Pfad zu Java
   launchJavaNoPermission:
     description: >-
@@ -737,7 +736,7 @@ modpack:
   showInModrinth: anzeigen {name} in Modrinth
   url: Link
   urlHint: Link zur Homepage deines Modpacks
-  modrinth:
+modrinth:
   browseUrl: Im Browser öffnen {url}
   categories:
     128x: 128x
@@ -834,7 +833,6 @@ modpack:
   clientSide: Kunden-Seite
   copyTitle: Text kopieren {title} in die Zwischenablage
   createAt: Erstellt von
-  description: Beschreibung.
   downloads: Herunterladen
   environments:
     client: Kunde.
@@ -924,7 +922,7 @@ multiplayer:
   enterRemoteToken: Eingabe des entfernten Tokens
   enterRemoteTokenHint: |-
     Sobald Ihr Freund Ihren Token eingegeben hat, müssen Sie seinen Token in das Textfeld
-  Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die Verbindung herzustellen.
+    Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die Verbindung herzustellen.
   gatheringIce: >
     "Warten Sie, bis der ICE-Server genügend Informationen über Sie gesammelt hat
       Netzwerk Wenn Sie ungeduldig sind und über genügend Informationen verfügen, können Sie vorankommen
@@ -1345,7 +1343,7 @@ task:
 title: X Minecraft Launcher
 transportType:
   host: Gastgeber-Kandidat
-  prflx  Gastgeber-Peer Reflexive
+  prflx:  Gastgeber-Peer Reflexive
   relay: Gastgeber-Relay
   srflx: Gastgeber-Server Reflexive
 tutorial:
@@ -1410,8 +1408,8 @@ upstream:
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.
 
-  Sie können das System trotzdem aktualisieren, aber das Ergebnis ist möglicherweise nicht korrekt. Bitte
-  erstellen Sie bitte eine Sicherungskopie der Instanzdatei.         
+    Sie können das System trotzdem aktualisieren, aber das Ergebnis ist möglicherweise nicht korrekt. Bitte
+    erstellen Sie bitte eine Sicherungskopie der Instanzdatei.         
 user:
   accessToken: Zugangstoken
   authMode: Autorisierungsdienst
