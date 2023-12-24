@@ -1,0 +1,22 @@
+browseApps: Überblick über die angepasste Launcher-Oberfläche
+checkUpdate: Nach Aktualisierungen suchen
+openUrl:
+  cancel: Stornierung
+  message: >-
+    Launcher möchte {url} in Ihrem Standardbrowser öffnen. Soll ich diesen
+    Vorgang erlauben?
+  title: In einem Browser öffnen
+  trust: Vertrauen Sie dieser Website und zeigen Sie sie beim nächsten Mal nicht mehr
+  'yes': Ja
+quit: Ausgabe
+relaunch: Neustart
+showDiagnosis: Diagnose anzeigen
+showLauncher: Launcher anzeigen
+showLogsFolder: Öffnen Sie den Ordner logs
+task:
+  continue: Blick in den Launcher
+  fail: Eine Aufgabe nicht erledigt
+  success: Eine Aufgabe erfüllt
+title: X Minecraft Launcher
+urlFailed: Unbekannter Link {url}. Überprüfen Sie Ihren Link oder kontaktieren Sie den Entwickler
+urlSuccess: Erfolgreich! Jetzt können Sie dieses Fenster schließen und zum Launcher zurückkehren!
