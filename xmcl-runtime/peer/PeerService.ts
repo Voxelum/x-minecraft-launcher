@@ -280,6 +280,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           if (ip && port) {
             const state = await natService.getNatState()
             await mapLocalPort(natService, state.localIp, privatePort, Number(port), this).catch((e) => {
+              if (e.name === 'Error') { e.name = 'MapNatError' }
               this.error(e)
             })
           }
