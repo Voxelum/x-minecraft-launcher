@@ -17,34 +17,16 @@ curseforge:
   createdDate: 創建日期
   file:
     gameVersion: 遊戲版本
-    releaseType: 類型
-    sortByDate: 日期
-    sortByName: 文件名
-  fileReleaseType:
-    release: 穩定版
   installTo: 安裝到 {path}
   installToStorage: 安裝到庫
   lastUpdate: 上次更新日期
-  mc-mods:
-    description: 從 Curseforge 上安裝 Mods
-    name: Mods
-  modpacks:
-    description: 從 Curseforge 上安裝整合包
-    name: 整合包
-  name: 瀏覽 Curseforge
   project:
     description: 簡介
     files: 文件
     images: 圖片
   recentFiles: 近期文件
   search: 搜索
-  texture-packs:
-    description: 從 Curseforge 上安裝資源包
-    name: 資源包
   totalDownloads: 總下載量
-  worlds:
-    description: 從 Curseforge 上安裝世界存檔
-    name: 世界存檔
 dataMigration:
   apply: 開始遷移
   setRootCause: 請確保啓動器在此過程中不被中斷，不然您的數據可能丟失
@@ -88,9 +70,7 @@ diagnosis:
   missingAssetsIndex:
     message: 啓動器將自動下載並安裝遊戲資源目錄
     name: '%{version}缺少遊戲資源目錄'
-  missingAuthlibInjector:
-    message: 必須安裝 authlib-injector, 第三方驗證服務配置才能生效！
-    name: 需要安裝 authlib-injector
+  missingAuthlibInjector: {}
   missingJava:
     message: Click to resolve this problem
     name: 沒有分配Java
@@ -100,7 +80,6 @@ diagnosis:
   missingVersionJar:
     message: 啓動器將自動下載JAR文件
     name: '%{version}版本JAR文件缺失'
-  problem: 1個問題待修復 | %{count}個問題待修復
 disk:
   available: 可用
   used: 已用
@@ -110,7 +89,6 @@ fabricVersion:
   disable: 不啓用 Fabric
   empty: 在 Minecraft {version} 下未找到任何 Fabric 版本
   showSnapshot: 顯示快照版
-  showStableOnly: 只顯示穩定版
   stable: 穩定版
   unstable: 預覽版
 filter: 檢索
@@ -127,8 +105,7 @@ forgeVersion:
   showBuggy: 顯示Buggy版
   showRecommendedAndLatestOnly: 只顯示最新版和穩定版
   version: Forge
-gameSetting:
-  title: 遊戲設置
+gameSetting: {}
 help: 幫助
 home: 主頁
 importModpack:
@@ -199,8 +176,6 @@ instanceAge:
 instanceTemplate:
   importing: 模板導入
   preview: 預覽
-  profile: 這是一個已有的啓動配置
-  server: 這是一個已有的服務器啓動配置
   title: 模板設置
 instances:
   add: 創建遊戲
@@ -209,8 +184,6 @@ instances:
   importFolder: 從文件夾導入
   importFolderDescription: 導入 Minecraft 到啓動器
   refreshServers: 刷新服務器
-issue:
-  name: 已知問題
 java:
   allocatedLong: 啓動器自動選擇 Java
   allocatedShort: 自動分配
@@ -220,13 +193,10 @@ java:
   location: Java 路徑
   maxMemory: 最大內存
   memory: Java 內存
-  memoryHint: 這將影響您的遊戲運行性能
   minMemory: 最小內存
   modifyInstance: 更改 Java 路徑
   noMemory: 不設置內存限制
   refresh: 刷新本地 Java
-  refreshAfter: 請在安裝後刷新。
-  switchVersion: 已切換 Java 版本
 launch: 啓動
 launchBlocked:
   ignore: 強行啓動
@@ -236,7 +206,6 @@ launchFailed:
   latestLog: 最新日誌文件
   title: 遊戲未正常退出
 launchStatus:
-  checkingProblems: 檢測問題中
   launching: 啓動中...
   launchingSlow: 還在啓動…Minecraft圖形界面啓動的會比較慢呢~
 launcherUpdate:
@@ -257,7 +226,6 @@ logLevel:
   info: 信息
   success: 成功
   warning: 警告
-logMonitor: 游戏日志检测
 login:
   dropHint: 將驗證鏈接拖入此處手工驗證
   forgetPassword: 忘記密碼?
@@ -292,7 +260,6 @@ mod:
   dropHint: 將Mod的jar文件拖入此處來導入
   filter: 過濾 Mods
   hideIncompatible: 隱藏不兼容 Mods
-  import: 導入 Mod
   incompatible: 可能不兼容當前版本。
   maybeCompatible: 也許兼容於當前版本。
   name: Mod | Mods
@@ -300,16 +267,12 @@ mod:
   searchOnCurseforge: 在 Curseforge 上搜索 {name}
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜素 {name}
-  selected: 已選 Mods
   showFile: 打開 Mod 所在位置 {file}
   showInCurseforge: 在 Curseforge 上顯示該 Mod
   showInModrinth: 在 Modrinth 中顯示 {name}
-  showIncompatible: 顯示不兼容 Mods
-  unselected: 未選 Mods
 modpack:
   author: 署名
   authorHint: 在導出成各種整合包時使用
-  create: 創建新Mod包
   delete:
     hint: 這將刪除整合包 {name} 和他的基本資料。你確定麼？
     title: 刪除整合包
@@ -319,7 +282,6 @@ modpack:
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
   export: 導出整合包
-  filter: 過濾整合包
   general: 基本信息
   includeAssets: 是否包含遊戲資源 (assets) 文件
   includeLibraries: 是否包含庫文件
@@ -357,7 +319,6 @@ modrinth:
     server: 服務端
   gameVersions:
     name: 遊戲版本
-  installFrom: 從 Modrinth 安裝
   license: 協議
   licenses:
     name: 協議
@@ -427,14 +388,10 @@ resourcepack:
   available: 可用的資源包
   compatible: 當前格式({format})可用於當前版本 {version}
   defaultDescription: Minecraft 的默認材質
-  defaultName: 默認
   delete:
     content: 將從磁盤中刪除資源包，該操作不可逆，確定繼續執行嗎
     title: 刪除資源包
-  deletion: 移除 {pack}
-  deletionHint: 你將永遠失去該資源包的數據以及相關信息，你進行此操作嗎？
   dropHint: 將資源包zip或文件夾拖入此處導入
-  filter: 過濾材質包
   import: 導入資源包
   incompatible: 不兼容的資源包格式({format})。適用範圍 {accept}。當前版本 {actual}。
   name: 資源包 | 資源包
@@ -465,14 +422,7 @@ save:
   name: 地圖存檔 | 地圖存檔
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
-  create: 創建一個新的服務器
   creationHint: 請填寫服務器地址並嘗試 Ping 服務器
-  delete:
-    description: 此操作將刪除所有本地關於此服務器的信息。你確定繼續嗎？
-    name: 刪除服務器
-  edit: 編輯
-  error:
-    wrongVersion: 當前版本與服務器協議不匹配，可能導致連接錯誤
   expectedVersions: 已支持的版本
   filterVersion: 過濾服務器相應的 Minecraft 版本
   host: 服務器地址
@@ -496,7 +446,6 @@ serverStatus:
 setting:
   allowPrerelease: 是否下載搶先版
   allowPrereleaseDescription: 搶先版可能不是那麼穩定
-  alreadyLatest: 已經是最新
   appearance: 外觀
   autoDownload: 自動下載
   autoDownloadDescription: 自動下載最新的版本
@@ -556,8 +505,6 @@ setting:
     remove: 移除
     repulse: 擊退
   particleModeDescription: 選擇當你點擊粒子時的特效
-  showParticle: 顯示粒子
-  showParticleDescription: 是否在背景顯示粒子效果 (這會影響性能，覺得卡可以關了)
   showRoot: 瀏覽
   theme:
     dark: 暗色主題
@@ -571,12 +518,7 @@ setting:
 shaderPack:
   deletion: 刪除光影包
   deletionHint: 這將把光影包文件 {path} 永久刪除。
-  filter: 過濾光影包
-  internal: 內置
-  internalDescription: 使用內置 shader，在此模式下你可以編輯 shader 管線選項
   name: 光影包
-  'off': 無
-  offDescription: 關閉 shader 引擎
   showFile: 在文件夾中顯示此 shader pack
 summery: 簡介
 tag:
@@ -588,7 +530,6 @@ task:
   failed: 失敗
   manager: 任務管理器
   name: 任務 | 任務
-  running: 活躍任務
 universalDrop:
   enableModsAfterImport: Mod 導入後自動啓用
   start: 開始導入
@@ -607,7 +548,6 @@ user:
   insecureClient: Minecraft 服務器無法驗證您的身份，請回答密保問題!
   name: 用户名
   profile: 個人信息
-  profileMode: 皮膚服務
   refreshAccount: 刷新賬號
   refreshSkin: 刷新皮膚
   submitChallenges: 提交答案
@@ -615,32 +555,11 @@ userAccount:
   add: 添加賬號
   removeDescription: 這將抹去所有關於此賬號的信息，您是否確定？
   removeTitle: 移除賬號
-  switch: 切換賬號
 userService:
   add: 添加更多驗證或玩家信息服務器
   authLibInjector: 按照 authlib-injector 推薦流程創建
-  authServiceDetail: 配置驗證服務器
-  authenticateHint: 用來相應玩家登錄請求
-  baseUrl: 基礎 URL
   baseUrlHint: 第三方服務器的根 URL
-  duplicatedName: 此名字與已有的服務重名
-  hostName: 驗證服務器 URL
-  hostNameHint: 第三方驗證服務器的根 URL 地址
-  invalidUrl: 請輸入有效的 URL
-  invalidateHint: 登出時作廢玩家憑證
-  name: 服務器名稱
-  normal: 按照正常流程創建
-  profile: 玩家信息 API
-  profileByName: 查詢玩家信息 API
-  profileByNameHint: 通過玩家名字來獲取玩家信息
-  profileHint: 通過用户 UUID 來獲得玩家信息
-  profileServiceDetail: 配置玩家信息服務器
-  refreshHint: 用來刷新玩家登錄憑證
-  requireName: 服務器名不能為空
-  texture: 皮膚上傳 API
-  textureHint: 通過玩家 ID 和憑證來上傳皮膚
   title: 第三方玩家信息服務
-  typeOfService: 選擇配置類型
   validateHint: 用來檢驗玩家憑證有效性
 userServices:
   microsoft:

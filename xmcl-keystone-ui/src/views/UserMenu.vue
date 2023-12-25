@@ -15,7 +15,7 @@
               :user="selected"
               controls
               :refreshing="refreshing"
-              @remove="onRemoveUser()"
+              @remove="onShowDeleteDialog()"
               @abort-refresh="abortRefresh()"
               @refresh="onRefresh()"
             />
@@ -92,6 +92,13 @@
         </div>
       </template>
     </transition>
+    <DeleteDialog
+      dialog="user-delete"
+      :title="t('userAccount.removeTitle')"
+      @confirm="onRemoveUser"
+    >
+      {{ t('userAccount.removeDescription') }}
+    </DeleteDialog>
   </v-card>
 </template>
 <script lang="ts" setup>
@@ -104,11 +111,14 @@ import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
 import UserMenuMojang from './UserMenuMojang.vue'
 import UserMenuUserItem from './UserMenuUserItem.vue'
 import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
+import DeleteDialog from '@/components/DeleteDialog.vue'
+import { useDialog } from '@/composables/dialog'
 
 const { t } = useI18n()
 const { users, select, userProfile: selected } = injection(kUserContext)
 const { abortRefresh, refreshUser, removeUser } = useService(UserServiceKey)
 const expired = useUserExpired(computed(() => selected.value))
+const { show: onShowDeleteDialog } = useDialog('user-delete')
 
 const props = defineProps<{ show: boolean }>()
 

@@ -19,8 +19,7 @@ AppShareInstanceDialog:
   share: Compartir
   shareNotifyTitle: Compartir Instancia
   shareTitle: Comparte archivos de juego con otro jugador
-BaseSetting:
-  title: Ajustes
+BaseSetting: {}
 BaseSettingGeneral:
   title: General
 FeedTheBeast:
@@ -42,9 +41,7 @@ HomeJavaIssueDialog:
   optionAutoDownload:
     message: Launcher descargará e instalará Java desde la fuente de Mojang's para ti.
     name: Descargar Automáticamente
-  optionManualDownload:
-    message: Launcher lo redirigirá a la página de descarga de Orecale JRE.
-    name: Descargar Manualmente
+  optionManualDownload: {}
   optionSelectJava:
     message: >-
       Tal vez el launcher no encuentro Java en tu computadora. Puedes decirle al
@@ -66,12 +63,10 @@ HomeLaunchMultiInstanceDialog:
   confirm: Sí, Lanzar
   description: Estás lanzando varias instancias de Minecraft. ¿Está seguro?
   title: Múltiples instancias
-HomeSyncButton:
-  update: Sincronizar Instancia
+HomeSyncButton: {}
 HomeSyncDialog:
   pull: Empujar
   push: Empujar
-  title: Sincronización de Instancias
 HomeSyncDialogPull:
   failText: Error al obtener la actualización. {url}
   refresh: Actualizar
@@ -105,41 +100,19 @@ create: Crear
 curseforge:
   createdDate: Fecha de creación
   downloadOnly: Descargar
-  downloaded: Descargado
   file:
     gameVersion: Versión del Juego
-    releaseType: Tipo de Lanzamiento
-    sortByDate: Fecha
-    sortByName: Nombre del Archivo
-  fileReleaseType:
-    alpha: Alfa
-    beta: Beta
-    release: Liberar
   install: Instalar
   installTo: Instalar en {path}
   installToStorage: Instalar en Almacenamiento
-  installed: Instalado
   lastUpdate: Última Fecha de Actualización
-  mc-mods:
-    description: Ver y descargar paquetes de mods de Curseforge
-    name: Mods
-  modpacks:
-    description: Ver y descargar modpacks de Curseforge
-    name: Modpacks
-  name: Explorar Curseforge
   project:
     description: Descripción
     files: Archivos
     images: Imágenes
   recentFiles: Archivos Recientes
   search: Buscar
-  texture-packs:
-    description: Ver y descargar paquetes de recursos de Curseforge
-    name: Paquetes de recursos
   totalDownloads: Descargas Totales
-  worlds:
-    description: Ver y descargar mundos de Curseforge
-    name: Mundos
 curseforgeCategory:
   API and Library: API y Bibliotecas
   Addons: Addons
@@ -250,7 +223,6 @@ fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}
   showSnapshot: Mostrar versión Snapshot
-  showStableOnly: Mostrar solo versiones estables
   stable: Estable
   unstable: Inestable
 feedback:
@@ -282,8 +254,7 @@ forgeVersion:
   showBuggy: Mostrar versiones con errores
   showRecommendedAndLatestOnly: Solo Recomendadas y Últimas
   version: Versión de Forge
-gameSetting:
-  title: Ajustes
+gameSetting: {}
 gameType:
   adventure: Modo Aventura
   creative: Modo Creativo
@@ -346,7 +317,6 @@ installVersion:
   json: Instalar Versión Json
   name: Instalar Cliente de Minecraft {version}
 instance:
-  addMod: Agregar Mod a la instancia
   addServer: Agregar Servidor
   current: Instancia Actual
   delete: Eliminar juego
@@ -405,8 +375,6 @@ instanceTemplate:
   modpack: Este es un modpack sin procesar
   modrinth: Este es un modpack de Modrinth
   preview: Vista Previa del Modpack
-  profile: Esta es una configuración de perfil existente
-  server: Esta es una configuración de servidor existente
   title: Configuración de Plantilla
 instanceUpdate:
   basic: Actualización de Ajustes
@@ -422,8 +390,6 @@ instances:
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   refreshServers: Actualizar Servidores
-issue:
-  name: Problemas
 items:
   count: '{count} ítems'
   total: '{total} total'
@@ -459,7 +425,6 @@ mod:
   filter: Filtrar Mods
   hasUpdate: ¡El Mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
-  import: Importar Mod
   incompatible: Mod Incompatible.
   manage: Administrar Mods
   maybeCompatible: Posiblemente Compatible.
@@ -469,15 +434,12 @@ mod:
   search: Buscar Mods
   searchOnCurseforge: Buscar {name} en Curseforge
   searchOnModrinth: Buscar {name} en Modrinth
-  selected: Mods Seleccionados
   showDirectory: Mostrar directorio de mods
   showFile: Mostrar la ruta del mod {file}
   showInCurseforge: Mostrar el mod en Curseforge
   showInModrinth: Mostrar {name} en Modrinth
-  showIncompatible: Mostrar Mods Incompatibles
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
-  unselected: Mods No Seleccionados
 modInstall:
   checkUpgrade: Verificar Actualizaciones de Mods
   checkedUpgrade: Actualizaciones verificadas
@@ -487,10 +449,7 @@ modInstall:
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: El Mod no es compatible con la versión actual de Minecraft
-  pending: Pendiente de instalación
-  search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto
-  selectProjectHint: Selecciona el proyecto e instala el archivo
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
@@ -504,7 +463,6 @@ modified:
 modpack:
   author: Nombre del Autor
   authorHint: Esto podría usarse para firmar en la exportación de modpack (Curseforge)
-  create: Crear un Nuevo Modpack
   delete:
     hint: Esto eliminará el modpack {name} y sus metadatos. ¿Estás seguro?
     title: Eliminar el Modpack
@@ -521,13 +479,10 @@ modpack:
     Solo se permiten las URL de los 4 dominios listados en el documento de
     Modrinth
   export: Exportar como Modpack
-  filter: Filtrar Modpacks
   general: Información General
   includeAssets: Incluir Recursos
   includeLibraries: Incluir Bibliotecas
   includes: Archivos para Incluir
-  installFromCurseforge: Instalar desde Curseforge
-  installFromModrinth: Instalar desde Modrinth
   modpackVersion: Versión del Modpack
   name: Modpack | Modpacks
   overrides: Anulaciones
@@ -654,8 +609,6 @@ modrinth:
     status: Estadísticas
     support: Soporta
     version: Versión
-  install: Instalar
-  installFrom: Instalar desde Modrinth
   issueUrl: Problema
   license: Licencia
   licenses:
@@ -738,19 +691,13 @@ resourcepack:
   available: Disponible
   compatible: Formato compatible {format} con {version}
   defaultDescription: El aspecto y la sensación predeterminados de Minecraft
-  defaultName: Predeterminado
   delete:
     content: >-
       Esto eliminará el archivo de paquete de recursos del disco, y no podremos
       deshacerlo. ¿Estás seguro de hacerlo?
     title: Eliminar el paquete de recursos
-  deletion: Eliminando {pack}
-  deletionHint: >-
-    Perderás los datos y metadatos de este paquete de recursos. ¿Estás seguro de
-    hacerlo?
   dropHint: Arrastra la carpeta/zip del paquete de recursos aquí para importar.
   enable: '{count} Paquete de Recursos está habilitado'
-  filter: Filtrar Paquetes de Recursos
   import: Importar Paquete de Recursos
   incompatible: >-
     Formato de Paquete de Recursos incompatible ({format}). Se ajusta a
@@ -801,19 +748,9 @@ screenshots:
   name: Capturas de Pantalla
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
-  create: Crear un Nuevo Servidor
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor
-  delete:
-    description: >-
-      Esto eliminará todos los datos locales sobre este servidor. ¿Estás seguro
-      de hacerlo?
-    name: Eliminar el Servidor
-  edit: Editar Información del Servidor
-  error:
-    wrongVersion: >-
-      ¡La versión seleccionada actualmente no coincide realmente con el
-      protocolo del servidor! Esto podría causar errores de conexión en el
-      juego.
+  delete: {}
+  error: {}
   expectedVersions: Versiones Soportadas
   filterVersion: Filtrar versión de Minecraft del servidor respondido
   host: Anfitrión
@@ -935,8 +872,6 @@ setting:
     repulse: Repulsar
   particleModeDescription: Selecciona el comportamiento al hacer clic en las partículas
   resetToDefault: Restablecer a los Valores Predeterminados
-  showParticle: Mostrar Partículas
-  showParticleDescription: Mostrar partículas en el fondo (puede afectar el rendimiento)
   showRoot: Mostrar
   theme:
     dark: Tema Oscuro
@@ -949,7 +884,6 @@ setting:
     continental. (Esto no afectará si no estás en la China continental)
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
-  viewUpdate: Ver Detalles de la Actualización
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global
@@ -984,15 +918,8 @@ shaderPack:
   deletionHint: Esto eliminará el archivo del pack de shaders {path} y no se podrá deshacer.
   empty: No se ha asignado ningún pack de shaders
   enable: Usando el pack de shaders {name}
-  filter: Filtrar Packs de Shaders
-  internal: Pack de Shaders Interno
-  internalDescription: >-
-    Habilitar el canal de procesamiento de shaders interno por defecto (puedes
-    configurar las opciones de shader en este caso)
   manage: Gestionar Packs de Shaders
   name: Pack de Shaders
-  'off': Apagar
-  offDescription: Apagar el shader
   showDirectory: Mostrar directorio de packs de shaders
   showFile: Mostrar este pack de shaders en la carpeta
 summery: Resumen
@@ -1008,7 +935,6 @@ task:
   nTaskRunning: '{count} tareas en ejecución'
   name: Tarea | Tareas
   pause: Pausar
-  running: Tareas en Ejecución
 title: X Minecraft Launcher
 transportType:
   host: Candidato de Anfitrión
@@ -1042,7 +968,6 @@ user:
   name: Nombre de Usuario
   nameHint: El nombre que se mostrará en el juego
   profile: Perfil
-  profileMode: Servicio de Perfil
   refreshAccount: Actualizar Cuenta
   refreshSkin: Actualizar Piel
   submitChallenges: Enviar Respuestas

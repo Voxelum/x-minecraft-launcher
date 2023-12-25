@@ -28,6 +28,12 @@ export function useInstanceJavaDiagnose(path: Ref<string>, all: Ref<JavaRecord[]
         description: t('diagnosis.missingJava.message'),
       }
     }
+    if (!java.value.valid) {
+      return {
+        title: t('diagnosis.invalidJava.name'),
+        description: t('diagnosis.invalidJava.message'),
+      }
+    }
     if (javaRecommendation.value) {
       if (javaRecommendation.value.recommendedLevel && javaRecommendation.value.recommendedLevel >= 1 &&
         javaRecommendation.value.recommendedDownload) {

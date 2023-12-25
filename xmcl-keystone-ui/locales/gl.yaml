@@ -21,8 +21,7 @@ AppShareInstanceDialog:
   share: Compartir
   shareNotifyTitle: Compartir Instancia
   shareTitle: Comparte arquivos do xogo con outro xogador
-BaseSetting:
-  title: Axustes
+BaseSetting: {}
 BaseSettingGeneral:
   title: Xeral
 FeedTheBeast:
@@ -44,9 +43,7 @@ HomeJavaIssueDialog:
   optionAutoDownload:
     message: O lanzador descargará e instalará Java dende a fonte de Mojang para ti.
     name: Descargar Automáticamente
-  optionManualDownload:
-    message: O lanzador o redirixirá a páxina de descarga de Oracle JRE.
-    name: Descargar Manualmente
+  optionManualDownload: {}
   optionSelectJava:
     message: >-
       Tal vez o lanzador non encuentra Java na súa computadora. Podes decirlle ó
@@ -68,12 +65,10 @@ HomeLaunchMultiInstanceDialog:
   confirm: Sí, Lanzar
   description: Estás lanzando varias instancias de Minecraft. ¿Está seguro?
   title: Múltiples instancias
-HomeSyncButton:
-  update: Sincronizar Instancia
+HomeSyncButton: {}
 HomeSyncDialog:
   pull: Empuxar
   push: Empuxar
-  title: Sincronización de Instancias
 HomeSyncDialogPull:
   failText: Erro ó obter a actualización. {url}
   refresh: Actualizar
@@ -107,41 +102,19 @@ create: Crear
 curseforge:
   createdDate: Data de creación
   downloadOnly: Descargar
-  downloaded: Descargado
   file:
     gameVersion: Versión do Xogo
-    releaseType: Tipo de Lanzamento
-    sortByDate: Data
-    sortByName: Nome do Arquivo
-  fileReleaseType:
-    alpha: Alfa
-    beta: Beta
-    release: Liberar
   install: Instalar
   installTo: Instalar en {path}
   installToStorage: Instalar en Almacenamento
-  installed: Instalado
   lastUpdate: Última Data de Actualización
-  mc-mods:
-    description: Ver e descargar paquetes de mods de Curseforge
-    name: Mods
-  modpacks:
-    description: Ver e descargar modpacks de Curseforge
-    name: Modpacks
-  name: Explorar Curseforge
   project:
     description: Descripción
     files: Arquivos
     images: Imáxes
   recentFiles: Arquivos Recentes
   search: Procurar
-  texture-packs:
-    description: Ver e descargar paquetes de recursos de Curseforge
-    name: Paquetes de recursos
   totalDownloads: Descargas Totales
-  worlds:
-    description: Ver e descargar mundos de Curseforge
-    name: Mundos
 curseforgeCategory:
   API and Library: API e Bibliotecas
   Addons: Addons

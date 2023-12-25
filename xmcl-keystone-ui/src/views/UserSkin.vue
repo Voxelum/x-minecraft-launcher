@@ -34,6 +34,7 @@
       <v-fab-transition>
         <v-btn
           v-show="!inspect && modified"
+          v-shared-tooltip="_ => t('userSkin.reset')"
           color="secondary"
           fab
           small
@@ -77,12 +78,13 @@
 </template>
 
 <script lang=ts setup>
+import SkinView from '@/components/SkinView.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
-import { PlayerNameModel, usePlayerName, UserSkinModel, UserSkinRenderPaused, useUserSkin } from '../composables/userSkin'
+import { PlayerNameModel, UserSkinModel, UserSkinRenderPaused, usePlayerName, useUserSkin } from '../composables/userSkin'
 import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
-import SkinView from '@/components/SkinView.vue'
 
 const props = withDefaults(defineProps<{
   user: UserProfile

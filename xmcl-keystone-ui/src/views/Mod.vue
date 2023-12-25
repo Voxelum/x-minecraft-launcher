@@ -173,6 +173,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
+import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
@@ -369,6 +370,9 @@ useTutorial(computed(() => [{
     description: t('tutorial.mod.defaultSourceDescription'),
   },
 }]))
+// Presense
+usePresence(computed(() => t('presence.mod')))
+
 </script>
 
 <style scoped>
