@@ -1,5 +1,5 @@
 import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { MicrosoftAuthenticator, MojangClient } from '@xmcl/user'
+import { MicrosoftAuthenticator, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError } from '@xmcl/user'
 import { Logger } from '~/logger'
 import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
@@ -149,7 +149,25 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       const ownGame = ownershipResponse.items.length > 0
       this.logger.log(`Successfully check ownership: ${ownGame}`)
 
-      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
+      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal).catch((e) => {
+        this.logger.warn(e)
+        if (e instanceof MojangError) {
+          throw new UserException({
+            type: 'fetchMinecraftProfileFailed',
+            errorType: e.name,
+            error: (e as any).error,
+            errorMessage: e.errorMessage,
+            developerMessage: e.developerMessage,
+           }, 'Failed to get Microsoft account game profile', { cause: e })
+        }
+        throw new UserException({
+          type: 'fetchMinecraftProfileFailed',
+          errorType: 'Unknown',
+          error: 'Unknown',
+          errorMessage: '',
+          developerMessage: '',
+         }, 'Failed to get Microsoft account game profile', { cause: e })
+      })
       this.logger.log('Successfully get game profile')
       const skin: Skin | undefined = gameProfileResponse.skins?.[0]
       const gameProfiles: GameProfileAndTexture[] = [{
