@@ -29,7 +29,7 @@
   </a>
 </p>
 
-![home](assets/home.png)
+![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/src/assets/home.png)
 
 Visit the [official site](https://xmcl.app) to download the app!
 
@@ -58,7 +58,7 @@ winget install CI010.XMinecraftLauncher
 
 For general developer, see [Contributing](./CONTRIBUTING.md)
 
-For i18n localization developer, please follow [Getting Started with Localization](./CONTRIBUTING.i18n.md)
+For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
 
 ## LICENSE
 

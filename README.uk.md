@@ -29,7 +29,7 @@
   </a>
 </p>
 
-![home](assets/home.png)
+![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/src/assets/home.png)
 
 Відвідайте [оффіційну сторінку](https://xmcl.app) щоб завантажити програму!
 
@@ -58,7 +58,7 @@ winget install CI010.XMinecraftLauncher
 
 Для загального розробника, дивіться [Внесок](./CONTRIBUTING.md)
 
-Для розробника локалізації i18n, будь ласка, перейдіть за посиланням [Початок роботи з локалізацією](./CONTRIBUTING.i18n.md)
+Для розробника локалізації i18n, будь ласка, перейдіть за посиланням [Початок роботи з локалізацією](https://docs.xmcl.app/en/guide/i18n)
 
 ## ЛІЦЕНЗІЯ
 
