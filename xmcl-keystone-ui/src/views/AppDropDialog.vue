@@ -15,12 +15,7 @@
           :elevation="14"
         >
           <div
-            v-if="loading"
-          >
-            <RefreshingTile />
-          </div>
-          <div
-            v-else-if="dragover"
+            v-if="dragover"
             class="select-none text-center"
           >
             <v-icon

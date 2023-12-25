@@ -37,20 +37,6 @@ export interface ImportFileOptions {
    * Override the setting for importing save
    */
   savePolicy?: ImportSavePolicy
-  /**
-   * Should install this mod/resource pack to an instance?
-   *
-   * - If string, which should be a instance path, it will apply to the instance setting.
-   */
-  installToInstance?: string
-  /**
-   * Is import file task in background?
-   */
-  background?: boolean
-  /**
-    * If optional, the resource won't be import if we cannot parse it.
-    */
-  optional?: boolean
 }
 
 export interface ImportOptionsBase {

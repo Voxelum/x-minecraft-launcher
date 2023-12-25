@@ -51,7 +51,7 @@ export class ResourceParser {
     saveParser,
     mcbbsModpackParser,
     curseforgeModpackParser,
-  ]) {}
+  ]) { }
 
   async parse(args: ParseResourceArgs): Promise<ParseResourceResult> {
     const inspectExt = args.fileType === 'zip' ? '.zip' : undefined
@@ -82,6 +82,18 @@ export class ResourceParser {
     const uris = [] as string[]
     let name: string | undefined
 
+    if (args.domain === ResourceDomain.Unclassified) {
+      const files = await fs.listFiles('')
+      const isModpack = files.some(f => f.toLowerCase() === 'manifest.json' || f === 'mcbbs.packmeta' || f === 'modrinth.index.json')
+      if (isModpack) {
+        parsers = [
+          modrinthModpackParser,
+          mcbbsModpackParser,
+          curseforgeModpackParser,
+        ]
+      }
+    }
+
     for (const parser of parsers) {
       if (args.domain !== ResourceDomain.Unclassified) {
         if (parser.domain !== args.domain) {
@@ -100,7 +112,7 @@ export class ResourceParser {
           icons.push(icon)
         }
       } catch (e) {
-      // skip
+        // skip
       }
     }
     fs.close()

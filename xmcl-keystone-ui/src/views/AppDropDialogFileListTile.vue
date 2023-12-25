@@ -19,20 +19,14 @@
         {{ value.description }}
       </v-list-item-subtitle>
     </v-list-item-content>
-    <v-list-item-action class="flex flex-row items-center justify-end gap-4">
+    <v-list-item-action class="flex flex-row items-center justify-end gap-2">
       <v-chip
-        v-if="'date' in value"
+        v-for="tt of value.type"
+        :key="tt"
         label
+        small
       >
-        {{ t('existed') }} {{ value.type }}
-      </v-chip>
-      <v-chip
-        v-else-if="value.type"
-        label
-        outlined
-        color="white"
-      >
-        {{ value.type }}
+        {{ tt }}
       </v-chip>
       <v-checkbox
         v-model="enabled"
@@ -79,9 +73,9 @@
 </template>
 
 <script lang=ts setup>
-import { PreviewItem } from '@/composables/appDropHandler'
+import { DropItem } from '@/composables/appDropHandler'
 
-const props = defineProps<{ value: PreviewItem }>()
+const props = defineProps<{ value: DropItem }>()
 const emit = defineEmits(['enable', 'remove'])
 
 const { t } = useI18n()

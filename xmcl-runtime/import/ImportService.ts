@@ -42,7 +42,6 @@ export class ImportService extends AbstractService implements IImportService {
       }
       return {
         shouldImport: true,
-        installToInstance: options.installToInstance,
       }
     }
     const { shouldImport, installToInstance } = resolveOptions()
@@ -68,21 +67,6 @@ export class ImportService extends AbstractService implements IImportService {
       // the import object is a file
       if (shouldImport) {
         await this.resourceService.importResources([{ path: parsed.path, domain: parsed.domain }])
-      }
-    }
-
-    if (installToInstance) {
-      if (parsed.domain === ResourceDomain.Unclassified) {
-        if (parsed.path.endsWith('.jar')) {
-          parsed.domain = ResourceDomain.Mods
-        } else if (parsed.path.endsWith('.zip')) {
-          parsed.domain = ResourceDomain.ResourcePacks
-        }
-      }
-      try {
-        await this.resourceService.install({ resource: parsed, instancePath: installToInstance })
-      } catch {
-        this.error(Object.assign(new Error('Fail to install resource to instance'), { resource: parsed }))
       }
     }
   }

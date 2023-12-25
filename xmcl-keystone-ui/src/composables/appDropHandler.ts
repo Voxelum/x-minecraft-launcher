@@ -4,8 +4,11 @@ import { getExpectedSize } from '@/util/size'
 import { ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, UserServiceKey, YggdrasilServiceKey } from '@xmcl/runtime-api'
 import { kDropHandler } from './dropHandler'
 import { useService } from './service'
+import { kInstance } from './instance'
+import { useDialog } from './dialog'
+import { AddInstanceDialogKey } from './instanceTemplates'
 
-export interface PreviewItem {
+export interface DropItem {
   id: string
   enabled: boolean
 
@@ -14,7 +17,7 @@ export interface PreviewItem {
   icon: string
   title: string
   description: string
-  type: string
+  type: string[]
 
   // Used for import
   uris: string[]
@@ -27,66 +30,51 @@ export interface PreviewItem {
 export function useAppDropHandler() {
   const loading = ref(false)
   const active = ref(false)
-  const previews = ref([] as PreviewItem[])
+  const items = ref([] as DropItem[])
   const { t } = useI18n()
 
   const { registerHandler, dragover } = injection(kDropHandler)
+  const { path } = injection(kInstance)
+  const { show } = useDialog(AddInstanceDialogKey)
 
   registerHandler(() => {
     active.value = true
   }, async (dataTransfer) => {
+    const promises = [] as Promise<any>[]
     if (dataTransfer.items.length > 0) {
       for (let i = 0; i < dataTransfer.items.length; ++i) {
         const item = dataTransfer.items[i]
         if (item.kind === 'string') {
           const content = await new Promise<string>((resolve) => item.getAsString(resolve))
           if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-            previewAuthService(content)
+            promises.push(onAuthServiceDropped(content))
           } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
-            previewGitUrl(content)
+            promises.push(onGitURLDropped(content))
           }
         }
       }
     }
 
-    const files = [] as Array<File>
     if (dataTransfer.files.length > 0) {
       for (let i = 0; i < dataTransfer.files.length; i++) {
         const file = dataTransfer.files.item(i)!
-        if (previews.value.every(p => p.id !== file.path)) {
-          files.push(file)
+        if (items.value.every(p => p.id !== file.path)) {
+          promises.push(onFileDropped(file))
         }
       }
     }
-    loading.value = true
-    const result = await resolveResources(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
-    for (let i = 0; i < result.length; i++) {
-      const r = result[i]
-      const f = files[i]
-      previews.value.push({
-        enabled: isPersistedResource(r),
-        id: f.path,
-
-        title: f.name,
-        description: getDescription(r, f.path),
-        icon: getIcon(r),
-        type: getType(r),
-        status: isPersistedResource(r) && r.domain !== ResourceDomain.Unclassified ? 'saved' : 'idle',
-
-        uris: [],
-        resource: r,
-      })
-    }
     dragover.value = false
-    if (previews.value.length === 0) {
+
+    await Promise.all(promises).catch(() => {})
+    if (items.value.length === 0) {
       cancel()
     }
   }, () => {
-    if (previews.value.length === 0) cancel()
+    if (items.value.length === 0) cancel()
   })
-  const { resolveResources } = useService(ResourceServiceKey)
+  const { resolveResources, importResources, install } = useService(ResourceServiceKey)
   const { addYggdrasilService } = useService(YggdrasilServiceKey)
-  const { previewUrl, importFile } = useService(ImportServiceKey)
+  const { previewUrl } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {
     forge: '$vuetify.icons.package',
@@ -101,18 +89,18 @@ export function useAppDropHandler() {
     'modrinth-modpack': '$vuetify.icons.modrinth',
   }
 
-  function getDescription(r: Resource | undefined, url: string) {
-    if (!r) {
+  function getDescription(rsize: number | undefined, url: string) {
+    if (!rsize) {
       return url
     }
-    const size = getExpectedSize(r.size, 'B')
+    const size = getExpectedSize(rsize, 'B')
     return `${size} ${url}`
   }
 
-  function getType(resource: Resource | undefined) {
+  function getTypes(resource: Resource | undefined) {
     const types = [] as string[]
     if (!resource || !resource.metadata) {
-      return t('universalDrop.unknownResource')
+      return [t('universalDrop.unknownResource')]
     }
     for (const [key, value] of Object.entries(resource.metadata)) {
       if (!value || Object.entries(value).length === 0) continue
@@ -127,6 +115,8 @@ export function useAppDropHandler() {
           types.push(t('resourcepack.name', 1))
           break
         case 'mcbbs-modpack':
+          types.push(t('modpack.name', 1) + ' (MCBBS)')
+          break
         case 'modpack':
           types.push(t('modpack.name', 1))
           break
@@ -134,68 +124,106 @@ export function useAppDropHandler() {
           types.push(t('save.name', 1))
           break
         case 'curseforge-modpack':
-          types.push(t('modpack.name', 1))
+          types.push(t('modpack.name', 1) + ' (Curseforge)')
           break
         case 'modrinth-modpack':
-          types.push(t('modrinth.projectType.modpack'))
+          types.push(t('modrinth.projectType.modpack') + ' (Modrinth)')
           break
         case 'shaderpack':
           types.push(t('shaderPack.name'))
           break
       }
     }
-    return types.join(' | ')
+    return types
   }
 
   function getIcon(resource: Resource | undefined) {
     return resource ? iconMap[resource.domain] ?? 'question_mark' : 'question_mark'
   }
 
-  async function onImport(previews: PreviewItem[]) {
-    const promises = [] as Promise<any>[]
-    for (const preview of previews) {
-      preview.status = 'loading'
-      if (preview.resource) {
-        const res = preview.resource
-        const promise = importFile({
-          resource: {
-            name: preview.title,
-            path: res.path,
-            uris: preview.uris,
-          },
-          modpackPolicy: {
-            import: true,
-          },
-        }).then(() => {
-          preview.type = getType(res)
-          preview.icon = getIcon(res)
-          preview.status = 'saved'
-        }, (e) => {
-          console.log(`Failed to import resource ${res.path}`)
+  async function handleImport(item: DropItem, shouldHandleModpack: boolean) {
+    item.status = 'loading'
+    if (item.resource) {
+      let resource = item.resource
+      if (!isPersistedResource(item.resource)) {
+        try {
+          [resource] = await importResources([{
+            path: resource.path,
+            uris: item.uris,
+          }])
+          item.type = getTypes(resource)
+          item.icon = getIcon(resource)
+          item.resource = resource
+          item.status = 'saved'
+        } catch (e) {
+          console.log(`Failed to import resource ${resource.path}`)
           console.log(e)
-          preview.status = 'failed'
-        })
-        promises.push(promise)
-      } else if (preview.type === 'Yggdrasil') {
-        addYggdrasilService(preview.id).then(() => {
-          preview.status = 'saved'
-        }, (e) => {
-          console.log(e)
-          preview.status = 'failed'
+          item.status = 'failed'
+        }
+      }
+      const isModpack = !!resource.metadata['modrinth-modpack'] || !!resource.metadata['curseforge-modpack'] || !!resource.metadata['mcbbs-modpack']
+
+      if (isModpack) {
+        if (shouldHandleModpack) {
+          show(item.resource.path)
+        }
+      } else {
+        // Install the resources
+        install({
+          instancePath: path.value,
+          resource,
         })
       }
+    } else if (item.type[0] === 'Yggdrasil') {
+      try {
+        await addYggdrasilService(item.id)
+        item.status = 'saved'
+      } catch (e) {
+        console.log(e)
+        item.status = 'failed'
+      }
     }
-    Promise.all(promises).then(() => cancel())
   }
 
-  async function previewAuthService(url: string) {
-    const existed = previews.value.find(v => v.id === url)
+  async function onImport(items: DropItem[]) {
+    await Promise.all(items.map((item) => handleImport(item, items.length === 1)))
+    cancel()
+  }
+
+  async function onFileDropped(file: File) {
+    const object: DropItem = reactive({
+      enabled: true,
+      id: file.path,
+
+      title: file.name,
+      description: getDescription(file.size, file.path),
+      icon: 'question_mark',
+      type: [],
+      status: 'loading',
+      uris: [],
+      resource: undefined,
+    })
+    items.value.push(object)
+    try {
+      const result = await resolveResources([{ path: file.path }]).finally(() => { loading.value = false })
+      object.resource = result[0]
+      object.type = getTypes(result[0])
+      object.icon = getIcon(result[0])
+      object.status = isPersistedResource(result[0]) && result[0].domain !== ResourceDomain.Unclassified ? 'saved' : 'idle'
+    } catch (e) {
+      console.log(e)
+      object.status = 'failed'
+    }
+  }
+
+  async function onAuthServiceDropped(url: string) {
+    const existed = items.value.find(v => v.id === url)
     if (!existed) {
-      const object: PreviewItem = reactive({
+      const object: DropItem = reactive({
         enabled: true,
         id: url,
 
-        type: 'Yggdrasil',
+        type: ['Yggdrasil'],
         icon: 'link',
         title: computed(() => t('userService.add')),
         description: url,
@@ -204,17 +232,17 @@ export function useAppDropHandler() {
         uris: [url],
         resource: undefined,
       })
-      previews.value.push(object)
+      items.value.push(object)
     }
   }
 
-  async function previewGitUrl(url: string) {
-    const existed = previews.value.find(v => v.id === url)
-    const object: PreviewItem = existed ?? reactive({
+  async function onGitURLDropped(url: string) {
+    const existed = items.value.find(v => v.id === url)
+    const object: DropItem = existed ?? reactive({
       enabled: false,
       id: url,
 
-      type: getType(undefined),
+      type: getTypes(undefined),
       icon: getIcon(undefined),
       title: basename(new URL(url).pathname),
       description: getDescription(undefined, url),
@@ -230,7 +258,7 @@ export function useAppDropHandler() {
         object.resource = result
         if (result) {
           object.title = result.name
-          object.type = getType(result)
+          object.type = getTypes(result)
           object.icon = getIcon(result)
 
           object.status = 'idle'
@@ -244,13 +272,13 @@ export function useAppDropHandler() {
     }
 
     if (!existed) {
-      previews.value.push(object)
+      items.value.push(object)
     }
   }
 
-  function remove(file: PreviewItem) {
-    previews.value = previews.value.filter((p) => p.id !== file.id)
-    if (previews.value.length === 0) {
+  function remove(file: DropItem) {
+    items.value = items.value.filter((p) => p.id !== file.id)
+    if (items.value.length === 0) {
       cancel()
     }
   }
@@ -258,15 +286,15 @@ export function useAppDropHandler() {
   function cancel() {
     dragover.value = false
     active.value = false
-    previews.value = []
+    items.value = []
   }
 
   return {
     active,
-    previews,
+    previews: items,
     onImport,
-    previewAuthService,
-    previewGitUrl,
+    previewAuthService: onAuthServiceDropped,
+    previewGitUrl: onGitURLDropped,
     remove,
     dragover,
     loading,

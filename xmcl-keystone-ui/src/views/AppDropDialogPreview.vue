@@ -28,12 +28,6 @@
         {{ t('cancel') }}
       </v-btn>
       <v-spacer />
-      <v-checkbox
-        v-model="enableMods"
-        style="flex-grow: 0; margin-top: 0; padding-top: 0;"
-        :label="t('universalDrop.enableModsAfterImport')"
-        hide-details
-      />
       <v-btn
         large
         text
@@ -50,15 +44,14 @@
 </template>
 
 <script lang=ts setup>
-import { PreviewItem } from '@/composables/appDropHandler'
+import { DropItem } from '@/composables/appDropHandler'
 import FileListTile from './AppDropDialogFileListTile.vue'
 
-const props = defineProps<{ previews: PreviewItem[] }>()
+const props = defineProps<{ previews: DropItem[] }>()
 const emit = defineEmits(['cancel', 'remove', 'import'])
 
-const enableMods = ref(true)
 const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
-const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') && v.enabled))
+const pendings = computed(() => props.previews.filter((v) => v.enabled))
 const disabled = computed(() => pendings.value.length === 0)
 const { t } = useI18n()
 
@@ -68,7 +61,7 @@ function cancel() {
 function start() {
   emit('import', pendings.value)
 }
-function setEnable(file: PreviewItem, enabled?: boolean) {
+function setEnable(file: DropItem, enabled?: boolean) {
   file.enabled = enabled ?? true
 }
 </script>
