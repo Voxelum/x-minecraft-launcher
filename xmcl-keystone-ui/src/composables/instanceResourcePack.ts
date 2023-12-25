@@ -84,33 +84,6 @@ const EMPTY_RESOURCE: Resource = ({
   name: '',
   uris: [],
 })
-function getResourcePackItemFromGameSettingName(resourcePackName: string): InstanceResourcePack {
-  const pack: InstanceResourcePack = {
-    path: '',
-    acceptingRange: '[*]',
-    icon: '',
-    name: 'Minecraft',
-    version: '',
-    enabled: true,
-    description: '',
-    pack_format: 0,
-    id: 'vanilla',
-    url: [],
-    tags: [],
-    resource: markRaw({ ...EMPTY_RESOURCE, name: 'Vanilla', path: 'vanilla' }),
-  }
-  if (resourcePackName !== 'vanilla') {
-    pack.path = ''
-    pack.name = resourcePackName
-    pack.acceptingRange = 'unknown'
-    pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
-    pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
-  } else {
-    pack.icon = 'http://launcher/icons/minecraft'
-    pack.description = 'The minecraft default look and feel'
-  }
-  return pack
-}
 
 /**
  * The hook return a reactive resource pack array.
@@ -127,6 +100,35 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   watch(path, mount, { immediate: true })
 
   const { resources, refresh, refreshing } = useDomainResources(ResourceDomain.ResourcePacks)
+  const { t } = useI18n()
+
+  function getResourcePackItemFromGameSettingName(resourcePackName: string): InstanceResourcePack {
+    const pack: InstanceResourcePack = {
+      path: '',
+      acceptingRange: '[*]',
+      icon: '',
+      name: 'Minecraft',
+      version: '',
+      enabled: true,
+      description: '',
+      pack_format: 0,
+      id: 'vanilla',
+      url: [],
+      tags: [],
+      resource: markRaw({ ...EMPTY_RESOURCE, name: 'Vanilla', path: 'vanilla' }),
+    }
+    if (resourcePackName !== 'vanilla') {
+      pack.path = ''
+      pack.name = resourcePackName
+      pack.acceptingRange = 'unknown'
+      pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
+      pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
+    } else {
+      pack.icon = 'http://launcher/icons/minecraft'
+      pack.description = t('resourcepack.defaultDescription')
+    }
+    return pack
+  }
 
   const result = computed(() => {
     const enabledArray = [...gameOptions.value?.resourcePacks ?? []].reverse()

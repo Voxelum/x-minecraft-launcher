@@ -70,6 +70,7 @@
         </div>
       </template>
     </SplitPane>
+    <slot />
   </div>
 </template>
 

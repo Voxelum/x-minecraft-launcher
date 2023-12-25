@@ -22,8 +22,7 @@ AppShareInstanceDialog:
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
-BaseSetting:
-  title: Settings
+BaseSetting: {}
 BaseSettingGeneral:
   title: General
 FeedTheBeast:
@@ -46,9 +45,7 @@ HomeJavaIssueDialog:
   optionAutoDownload:
     message: Launcher will download and install Java from Mojang's source for you.
     name: Automatically Download
-  optionManualDownload:
-    message: Launcher will redirect you to the Orecale JRE download page.
-    name: Manually Download
+  optionManualDownload: {}
   optionSelectJava:
     message: >-
       Maybe the launcher doesn't found your Java. You can tell the launcher
@@ -67,12 +64,10 @@ HomeLaunchMultiInstanceDialog:
   confirm: Yes, Launch
   description: You are launching multiple instances of Minecraft. Are you sure?
   title: Multiple Instances
-HomeSyncButton:
-  update: Sync Instance
+HomeSyncButton: {}
 HomeSyncDialog:
   pull: Pull
   push: Push
-  title: Instance Sync
 HomeSyncDialogPull:
   failText: Fail to fetch update. {url}
   refresh: Refresh
@@ -106,10 +101,6 @@ browseApp:
 cancel: Cancel
 checkUpdate:
   name: Check Update
-compatibleDetail:
-  current: Current
-  id: Id
-  requirements: Requirements
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
@@ -119,28 +110,13 @@ curseforge:
   category: Category
   createdDate: Created Date
   downloadOnly: Download
-  downloaded: Downloaded
   file:
     gameVersion: Game Version
     modLoader: Mod Loader
-    releaseType: Release Type
-    sortByDate: Date
-    sortByName: File Name
-  fileReleaseType:
-    alpha: Alpha
-    beta: Beta
-    release: Release
   install: Install
   installTo: Install to {path}
   installToStorage: Install to Storage
-  installed: Installed
   lastUpdate: Last Update Date
-  mc-mods:
-    description: View and download mods packs from Curseforge
-    name: Mods
-  modpacks:
-    description: View and download modpacks from Curseforge
-    name: Modpacks
   project:
     description: Description
     files: Files
@@ -148,17 +124,8 @@ curseforge:
   recentFiles: Recent Files
   releasedDate: Released Date
   search: Search
-  texture-packs:
-    description: View and download resource packs from Curseforge
-    name: Resource Packs
   totalDownloads: Total Downloads
-  worlds:
-    description: View and download worlds from Curseforge
-    name: Worlds
-curseforgeCard:
-  currentFile: Current Modpack File
-  projectHint: This instance is created by curseforge project {mod} with file id = {file}
-  projectLastFile: Latest Modpack File
+curseforgeCard: {}
 dataMigration:
   apply: Apply Setting
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
@@ -224,9 +191,7 @@ diagnosis:
   missingAssetsIndex:
     message: Launcher will download assets index for you
     name: Missing assets index file of {version}.
-  missingAuthlibInjector:
-    message: The authlib-injector is required to use third party auth server!
-    name: Missing authlib-injector
+  missingAuthlibInjector: {}
   missingJava:
     message: Click to resolve this problem
     name: Cannot find Java to launch Minecraft!
@@ -241,7 +206,6 @@ diagnosis:
   missingVersionJar:
     message: Click to install this version
     name: Missing version jar for Minecraft %{version}
-  problem: 1 Problem | %{count} Problems
 disable: Disable
 disk:
   available: Available
@@ -290,7 +254,6 @@ fabricVersion:
   disable: Disable Fabric
   empty: No Fabric Version for Minecraft {version}
   showSnapshot: Show Snapshot
-  showStableOnly: Show Stable Only
   stable: Stable
   unstable: Unstable
 feedback:
@@ -329,8 +292,7 @@ forgeVersion:
   showBuggy: Show Buggy
   showRecommendedAndLatestOnly: Recommended and Latest Only
   version: Forge Version
-gameSetting:
-  title: Settings
+gameSetting: {}
 gameType:
   adventure: Adventure Mode
   creative: Creative Mode
@@ -395,7 +357,6 @@ installVersion:
   json: Install Version Json
   name: Install Minecraft Client {version}
 instance:
-  addMod: Add Mod to instance
   addServer: Add Server
   current: Current Instance
   delete: Delete Game
@@ -448,8 +409,6 @@ instanceTemplate:
   modpack: This is a raw modpack
   modrinth: This is a Modrinth modpack
   preview: Modpack Preview
-  profile: This is a existed profile configuration
-  server: This is a existed server configuration
   title: Template Setting
 instanceUpdate:
   basic: Setting Update
@@ -478,8 +437,6 @@ instances:
   importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
   refreshServers: Refresh Servers
-issue:
-  name: Issues
 items:
   count: '{count} items'
   total: '{total} total'
@@ -493,15 +450,12 @@ java:
   maxMemory: Max Memory
   memory: Java Memory
   memoryAuto: Auto
-  memoryHint: This might hit your game performance
   memoryManual: Manual
   memoryUnassigned: Unassign
   minMemory: Min Memory
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  refreshAfter: Please Refresh After you install the java.
-  switchVersion: Java Version Changed
   systemMemory: Current System Memory
 labyMod:
   disable: Disable LabyMod
@@ -560,7 +514,6 @@ launchFailed:
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
 launchStatus:
-  checkingProblems: Checking Problems
   exit: Exit Game?
   injectingAuthLib: Seting-up Thirdparty AuthLib
   launching: Launching...
@@ -592,11 +545,9 @@ logLevel:
   info: Info
   success: Success
   warning: Warning
-logMonitor: Log Monitor
 login:
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
-  hint: Please click Add Account to login
   login: Login
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
@@ -655,7 +606,6 @@ mod:
   groupInstalled: Group Installed Mods
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
-  import: Import Mod
   incompatible: Incompatible Mod.
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
@@ -665,28 +615,23 @@ mod:
   search: Search Mods
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: Search {name} in Modrinth
-  selected: Selected Mods
   showDirectory: Show mods directory
   showFile: Show the mod path {file}
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
-  showIncompatible: Show Incompatible Mods
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} to update'
-  unselected: Unselected Mods
 modInstall:
   checkUpgrade: Check Mods Update
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   install: Install
+  search: Search Result
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   noVersionSupported: Mod does not support current Minecraft version
-  pending: Pending to install
-  search: Search Result
   searchHint: Search and select project
-  selectProjectHint: Select project and install file
   source: Mod Source
   switch: Swtich Version
   upgrade: Upgrade Mods
@@ -702,7 +647,6 @@ modified:
 modpack:
   author: Author Name
   authorHint: This might be used to sign on exported modpack (Curseforge)
-  create: Create a New Modpack
   delete:
     hint: This will delete the modpack {name} with its metadata. Are you sure?
     title: Delete the Modpack
@@ -717,13 +661,10 @@ modpack:
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
   export: Export as Modpack
-  filter: Filter Modpacks
   general: General Information
   includeAssets: Include Assets
   includeLibraries: Include Libraries
   includes: Files to includes
-  installFromCurseforge: Install from Curseforge
-  installFromModrinth: Install from Modrinth
   modpackVersion: Modpack Version
   name: Modpack | Modpacks
   overrides: Overrides
@@ -740,6 +681,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x+
     64x: 64x
     8x-: 8x-
@@ -850,8 +792,6 @@ modrinth:
     status: Stats
     support: Supports
     version: Version
-  install: Install
-  installFrom: Install from Modrinth
   issueUrl: Issue
   license: License
   licenses:
@@ -888,8 +828,6 @@ modrinthCard:
     This instance is created by Modrinth modpack from <code class="rounded p-1"
     style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
-  projectLastUpdateDate: 'Project Last Updated At:'
-  projectLastUpdateVersion: Latest Version
 multiplayer:
   allowTurn: Enable relay server
   allowTurnHint: >-
@@ -909,7 +847,6 @@ multiplayer:
     style="font-style: italic;">If you need to connect multiple peers, you need
     to create <span style="font-weight: bold; color: rgba(245, 158,
     11)">multiple</span> connections.</span>"
-  createGroup: ''
   createLocalToken: Create Local Token
   currentIpTitle: Detectd Public IP
   currentNatTitle: 'Current network (NAT):'
@@ -946,7 +883,6 @@ multiplayer:
   leaveGroup: Leave group
   localToken: Local Token
   manualConnect: Manually Connect
-  mappings: Upnp Mappings
   name: Multiplayer on LAN
   networkInfo: Network Info
   next: Next
@@ -1033,19 +969,13 @@ resourcepack:
   available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
-  defaultName: Default
   delete:
     content: >-
       This will remove the resource pack file from disk, and we cannot redo it.
       Are you sure to do this?
     title: Delete the resource pack
-  deletion: Deleting {pack}
-  deletionHint: >-
-    You will lose the data and metadata of this resource pack. You are sure to
-    do this?
   dropHint: Drop Resource Pack's folder/zip here to import.
   enable: '{count} Resource Pack is enabled'
-  filter: Filter Resource Packs
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
@@ -1098,18 +1028,9 @@ screenshots:
   name: Screenshots
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
-  create: Create A New Server
   creationHint: Please Fill the server address and ping the server
-  delete:
-    description: >-
-      This will delete all the local data about this server. Are you sure to do
-      this?
-    name: Delete the server
-  edit: Edit Server Info
-  error:
-    wrongVersion: >-
-      The current selected version doesn't really match the server protocol!
-      This might cause game connection errors.
+  delete: {}
+  error: {}
   expectedVersions: Supported Versions
   filterVersion: Filter server responded Minecraft version
   host: Host
@@ -1229,8 +1150,6 @@ setting:
     repulse: Repulse
   particleModeDescription: Select the particle click behavior
   resetToDefault: Reset to Default
-  showParticle: Show Particles
-  showParticleDescription: Show particles in background (May impact performance)
   showRoot: Show
   theme:
     dark: Dark Theme
@@ -1243,7 +1162,6 @@ setting:
     won't affect if you're not in China mainland)
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
-  viewUpdate: View Update Detail
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
@@ -1297,16 +1215,8 @@ shaderPack:
   dropHint: Import Shader Pack
   empty: No shader pack allocated
   enable: Using {name} shader pack
-  enabled: Enabled Shader Pack
-  filter: Filter Shader Packs
-  internal: Internal Shader
-  internalDescription: >-
-    Enable internal default shader pipeline (You can config shader options in
-    this case)
   manage: Manage Shader Packs
   name: Shader Pack
-  'off': 'Off'
-  offDescription: Turn off the shader
   searchHint: Search Shader Pack
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
@@ -1330,7 +1240,6 @@ task:
   nTaskRunning: '{count} tasks is running'
   name: Task | Tasks
   pause: Pause
-  running: Running Tasks
 title: X Minecraft Launcher
 transportType:
   host: Host Candidate
@@ -1372,6 +1281,7 @@ tutorial:
       this search box.
     searchTitle: Search Mods
   multiplayer:
+    contentDescription: Connections between you and your peers will be listed here.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
       You can create or join a group with other players. The launcher will try
@@ -1383,6 +1293,10 @@ tutorial:
       Once you input a group name. You can click this button to join or create
       the group. If the group name is empty, the launcher will generate a name
       for you.
+    manualDescription: >-
+      If you or your friend cannot connect to group. You can try to manually
+      exchange the token by clicking manually connect. If that also failed, it
+      might be the internet issue.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
@@ -1412,7 +1326,6 @@ user:
   name: Username
   nameHint: The name display in game
   profile: Profile
-  profileMode: Profile Service
   refreshAccount: Refresh Account
   refreshSkin: Refresh Skin
   submitChallenges: Submit Answers
@@ -1422,7 +1335,6 @@ userAccount:
   add: Add Account
   removeDescription: This will wipe out all the info of this account. Are you sure?
   removeTitle: Remove Account
-  switch: Switch Account
 userCape:
   changeTitle: Change your cape
   description: >-
@@ -1433,28 +1345,8 @@ userCape:
 userService:
   add: Add More Service
   authLibInjector: Follow the auth-lib injector suggestion
-  authServiceDetail: Configure Auth Service
-  authenticateHint: Response for normal login request
-  baseUrl: The Base URL
   baseUrlHint: The base URL of your custom service
-  duplicatedName: There is an existed service named this
-  hostName: Root of Auth Server URL
-  hostNameHint: The base URL of your auth server
-  invalidUrl: Invalid URL
-  invalidateHint: Make current token invalid when user logout
-  name: The identifier of this service
-  normal: Follow the normal step
-  profile: Fetch Profile API
-  profileByName: Query Profile API
-  profileByNameHint: Fetch Profile by User Name
-  profileHint: Fetch Profile by User UUID
-  profileServiceDetail: Configure Profile Service
-  refreshHint: Used to refresh your token
-  requireName: The name cannot be empty
-  texture: Upload Texture API
-  textureHint: Upload Texture by User ID and Access Token
   title: Third-party User Services
-  typeOfService: Choose the Service Type
   validateHint: Used to check if user's token still valid
 userServices:
   microsoft:
@@ -1475,20 +1367,15 @@ userServices:
     password: No Password
     uuid: User UUID (Optional)
 userSkin:
-  change: Change Skin
-  export: Export Skin
   import: Import Skin
   importFile: Open from File
   importLink: Open from Link
-  importLocal: Import Local Skin
-  loadURL: Load URL Skin
   placeUrlHere: Place Skin URL here to import
   reset: Reset
   save: Save
   saveTitle: Save Skin To Disk
   skinType: Skin Type
   upload: Upload Skin
-  urlHint: Place your skin url here
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model

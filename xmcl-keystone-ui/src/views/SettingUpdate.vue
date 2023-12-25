@@ -11,6 +11,7 @@
     <v-list-item v-if="!disableUpdate">
       <v-list-item-action class="self-center">
         <v-btn
+          v-shared-tooltip="_ => t('setting.checkUpdate')"
           icon
           :loading="checkingUpdate"
           @click="checkUpdate"
@@ -86,6 +87,7 @@ import { useServiceBusy } from '@/composables'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useUpdateSettings } from '../composables/setting'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'

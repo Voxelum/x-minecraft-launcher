@@ -46,10 +46,16 @@
         "https://json.schemastore.org/github-workflow.json": "file:///.github/workflows/deploy.yml"
     },
     "i18n-ally.localesPaths": [
-        "xmcl-electron-app/main/locales",
         "xmcl-keystone-ui/locales",
     ],
     "npm.packageManager": "pnpm",
     "discord.enabled": true,
-    "search.followSymlinks": false
+    "search.followSymlinks": false,
+    "i18n-ally.keysInUse": [
+        "curseforgeCategory.Armor, Tools, and Weapons",
+        "curseforgeCategory.Utility & QoL",
+        "curseforgeCategory.Vanilla+",
+        "installForge.downloadInstaller",
+        "dependencies.embedded"
+    ]
 }

@@ -8,11 +8,11 @@ AppShareInstanceDialog:
   baseInfo: Grundlegende Einrichtung
   cancelShare: Verteilen Sie nicht
   description: >-
-    Nachdem Sie Ihr Profil freigegeben haben, können andere Benutzer die
-    diese Dateien über Ihren PC installieren.
+    Nachdem Sie Ihr Profil freigegeben haben, können andere Benutzer die diese
+    Dateien über Ihren PC installieren.
   downloadDescription: >-
-    Überprüfen Sie die Dateien, die Ihr Freund freigegeben hat. Wählen Sie die Dateien aus, die Sie
-    installieren möchten.
+    Überprüfen Sie die Dateien, die Ihr Freund freigegeben hat. Wählen Sie die
+    Dateien aus, die Sie installieren möchten.
   downloadNotifyTitle: Installieren Sie eine Instanz von {user}
   downloadTitle: Dateien von anderen Peers installieren
   downloadToLocal: Installation in der Streaming-Instanz
@@ -22,8 +22,6 @@ AppShareInstanceDialog:
   share: Teilen Sie
   shareNotifyTitle: Eine Kopie freigeben
   shareTitle: Teilen von Spieldateien mit anderen Spielern
-BaseSetting:
-  title: Einstellungen.
 BaseSettingGeneral:
   title: Allgemein
 FeedTheBeast:
@@ -37,49 +35,53 @@ FeedTheBeastProject:
   versions: Versionen
 HomeJavaIssueDialog:
   incompatibleJava: Inkompatibles Java
-  incompatibleJavaHint: Ihr aktuelles Java ist möglicherweise nicht mit dem von Ihnen gewählten Minecraft kompatibel!
+  incompatibleJavaHint: >-
+    Ihr aktuelles Java ist möglicherweise nicht mit dem von Ihnen gewählten
+    Minecraft kompatibel!
   missingJava: Java fehlt
   missingJavaHint: 'Der Launcher kann Java auf Ihrem Computer nicht finden. Das können Sie:'
   needDownloadHint: >-
-    Die aktuelle Version von Java konnte auf Ihrem Computer nicht gefunden werden. Wir empfehlen, dass Sie
-    eine neue Version zu installieren.
+    Die aktuelle Version von Java konnte auf Ihrem Computer nicht gefunden
+    werden. Wir empfehlen, dass Sie eine neue Version zu installieren.
   optionAutoDownload:
-    message: Der Launcher wird Java aus dem Mojang-Quellcode herunterladen und installieren.
+    message: >-
+      Der Launcher wird Java aus dem Mojang-Quellcode herunterladen und
+      installieren.
     name: Automatisch herunterladen
-  optionManualDownload:
-    message: Der Launcher führt Sie zur Oracle JRE Download-Seite.
-    name: Manuelles Herunterladen
+  optionManualDownload: {}
   optionSelectJava:
-    message: Der Launcher hat Java nicht in Ihrem System gefunden. Sagen Sie dem Startprogramm, wo es sich befindet.
+    message: >-
+      Der Launcher hat Java nicht in Ihrem System gefunden. Sagen Sie dem
+      Startprogramm, wo es sich befindet.
     name: Wählen Sie Java auf Ihrem Computer
   optionSwitch:
     disabled: Kein Java in der Datenbank gefunden {version}!
     message: Verwenden Sie die vorhandene Java {version} auf Ihrem Computer
     name: Wechseln zu {version}
   recommendedVersionHint: '{version} empfiehlt die Verwendung von Java im Bereich von {range}.'
-  selectMatchedHint: Es wurden übereinstimmende lokale Java-Versionen gefunden. Sie können diese lokalen Java-Versionen auswählen.
+  selectMatchedHint: >-
+    Es wurden übereinstimmende lokale Java-Versionen gefunden. Sie können diese
+    lokalen Java-Versionen auswählen.
   selectSecondaryHint: >-
-    Es wurden mehrere lokale Java-Versionen gefunden, die aber möglicherweise nicht die
-    die Kriterien. Sie können sie verwenden, aber es kann zu
-    Probleme geben.
+    Es wurden mehrere lokale Java-Versionen gefunden, die aber möglicherweise
+    nicht die die Kriterien. Sie können sie verwenden, aber es kann zu Probleme
+    geben.
 HomeLaunchMultiInstanceDialog:
   confirm: Laufen lassen
   description: Sie haben mehrere Instanzen von Minecraft laufen. Sind Sie sicher?
   title: Mehrere Kopien
-HomeSyncButton:
-  update: Eine Instanz synchronisieren
+HomeSyncButton: {}
 HomeSyncDialog:
   pull: Siehe
   push: Senden Sie
-  title: Synchronisierung einer Instanz
 HomeSyncDialogPull:
   failText: Es kann kein Update empfangen werden. {url}
   refresh: Neustart
   update: Update
 HomeSyncDialogPush:
   authError: >-
-    Falsche Benutzerberechtigung. Vergewissern Sie sich, dass Sie die Rechte haben, um
-    Dateien vom Server herunterzuladen!
+    Falsche Benutzerberechtigung. Vergewissern Sie sich, dass Sie die Rechte
+    haben, um Dateien vom Server herunterzuladen!
   refresh: Neustart
   unknownError: Unbekannter Serverfehler. Bitte versuchen Sie es erneut.
   upload: Download einer Kopie
@@ -105,10 +107,7 @@ browseApp:
 cancel: Stornierung.
 checkUpdate:
   name: Nach Aktualisierungen suchen
-compatibleDetail:
-  current: Aktuell
-  id: Id
-  requirements: Anforderungen.
+compatibleDetail: {}
 confirm: Start
 copyClipboard:
   success: In die Zwischenablage kopieren
@@ -118,27 +117,15 @@ curseforge:
   category: Kategorie.
   createdDate: Datum der Erstellung
   downloadOnly: Herunterladen
-  downloaded: Heruntergeladen
   file:
     gameVersion: Version des Spiels
-    releaseType: Art der Ausgabe
-    sortByDate: Datum.
-    sortByName: Name der Datei
-  fileReleaseType:
-    alpha: Alpha
-    beta: Beta
-    release: Freigabe
+  fileReleaseType: {}
   install: Installieren Sie
   installTo: Eingestellt in {path}
   installToStorage: Einbau in den Speicher
-  installed: Installiert
   lastUpdate: Datum der letzten Aktualisierung
-  mc-mods:
-    description: Mods von Curseforge durchsuchen und herunterladen
-    name: Mods
-  modpacks:
-    description: Durchsuchen und Herunterladen von Mod Packs von Curseforge
-    name: Modpacks
+  mc-mods: {}
+  modpacks: {}
   project:
     description: Beschreibung.
     files: Dateien.
@@ -146,34 +133,33 @@ curseforge:
   recentFiles: Neueste Dateien
   releasedDate: Datum der Veröffentlichung
   search: Suche.
-  texture-packs:
-    description: Texturpakete von Curseforge durchsuchen und herunterladen
-    name: Texturepaks
+  texture-packs: {}
   totalDownloads: Downloads insgesamt
-  worlds:
-    description: Welten mit Curseforge durchsuchen und herunterladen
-    name: Welten
-curseforgeCard:
-  currentFile: Aktuelle Modpack-Datei
-  projectHint: >-
-    Diese Instanz wurde durch das curseforge {mod} Projekt mit der Datei-ID =
-    {file}.
-  projectLastFile: Die neueste Modpack-Datei
+  worlds: {}
+curseforgeCard: {}
 dataMigration:
   apply: Einstellungen anwenden
   directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
-  migrationDestinationIsFile: Der Speicherort der Übertragung ist eine Datei! Wählen Sie ein leeres Verzeichnis!
+  migrationDestinationIsFile: >-
+    Der Speicherort der Übertragung ist eine Datei! Wählen Sie ein leeres
+    Verzeichnis!
   migrationDestinationIsNotEmptyDirectory: >-
-    Das Übertragungsziel ist kein leeres Verzeichnis! Stellen Sie sicher, dass ein leeres
-    Verzeichnis ausgewählt ist!
+    Das Übertragungsziel ist kein leeres Verzeichnis! Stellen Sie sicher, dass
+    ein leeres Verzeichnis ausgewählt ist!
   placeholder: Klicken Sie hier, um einen Katalog auszuwählen
   setRootCause: |-
     Sie verlieren Daten (Maps, Texture Packs, Mods), wenn Sie den
      den Launcher während dieses Vorgangs schließen!
-  setRootDescription: Dadurch wird der Stammdatenordner dieses Launchers und von minecraft geändert.
+  setRootDescription: >-
+    Dadurch wird der Stammdatenordner dieses Launchers und von minecraft
+    geändert.
   setRootTitle: Einen neuen Speicherort festlegen
-  unknownError: Unbekannter Fehler! Bitte versuchen Sie es erneut oder kontaktieren Sie den Entwickler!
-  waitReload: Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten verlieren.
+  unknownError: >-
+    Unbekannter Fehler! Bitte versuchen Sie es erneut oder kontaktieren Sie den
+    Entwickler!
+  waitReload: >-
+    Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten
+    verlieren.
 delete:
   name: Löschen {name}
   'no': Nein.
@@ -193,16 +179,16 @@ diagnosis:
   corruptedAssets:
     message: Der Launcher installiert Assets für Sie
     name: >-
-      Пошкоджено asset: {name} | Asset {name} ist beschädigt | Assets sind beschädigt:
-      {count}
+      Пошкоджено asset: {name} | Asset {name} ist beschädigt | Assets sind
+      beschädigt: {count}
   corruptedAssetsIndex:
     message: Der Launcher wird Index-Assets für Sie herunterladen
     name: Die Asset-Indexdatei ist beschädigt {version}.
   corruptedLibraries:
     message: Der Launcher wird Bibliotheken für Sie installieren
     name: >-
-      Пошкоджено бібліотеку: {name} | Bibliothek ist beschädigt: {name} | Beschädigt
-      бібліотек: {count}
+      Пошкоджено бібліотеку: {name} | Bibliothek ist beschädigt: {name} |
+      Beschädigt бібліотек: {count}
   corruptedVersionJar:
     message: Klicken Sie, um diese Version zu installieren
     name: Die jar-Version für Minecraft %{version} ist poshkodzhen.
@@ -220,23 +206,21 @@ diagnosis:
     name: Der Java-Standort ist falsch.
   missingAssets:
     message: Der Launcher installiert Assets für Sie
-    name: 'Kein Vermögenswert: {name} | Kein Vermögenswert: {name} | Keine Vermögenswerte: %{count}'
+    name: >-
+      Kein Vermögenswert: {name} | Kein Vermögenswert: {name} | Keine
+      Vermögenswerte: %{count}
   missingAssetsIndex:
     message: Der Launcher lädt Index-Assets für Sie
     name: Die Asset-Indexdatei fehlt {version}.
-  missingAuthlibInjector:
-    message: >-
-      Um einen Authentifizierungsserver eines Drittanbieters zu verwenden, benötigen Sie
-      authlib-Injektor!
-    name: Authlib-Injektor fehlt
+  missingAuthlibInjector: {}
   missingJava:
     message: Klicken Sie, um dieses Problem zu lösen
     name: Ich konnte kein Java finden, um Minecraft auszuführen!
   missingLibraries:
     message: Ich konnte kein Java finden, um Minecraft auszuführen!
     name: >-
-      Bibliothek {name} fehlt | Bibliothek {name} fehlt | Bibliothek {name} fehlt
-      бібліотека: {count}
+      Bibliothek {name} fehlt | Bibliothek {name} fehlt | Bibliothek {name}
+      fehlt бібліотека: {count}
        | Відсутня бібліотека {count}
   missingVersion:
     message: Klicken Sie, um diese Version zu installieren
@@ -244,7 +228,6 @@ diagnosis:
   missingVersionJar:
     message: Klicken Sie, um diese Version zu installieren
     name: Die Version {version} ist nicht installiert!
-  problem: 1 Problem | %{count} Probleme
 disable: Ausschalten
 disk:
   available: Verfügbar
@@ -262,24 +245,27 @@ error:
   name: Fehler | Fehler
 errors:
   BadForgeInstallerJarError: >-
-    Die jar-Datei des Forge-Installationsprogramms kann nicht analysiert werden. Vielleicht hat Forge ein neues
-    Installer-Dateiformat Installer-Dateiformat? Bitte kontaktieren Sie die
-    Entwickler, wenn das Problem weiterhin besteht.
+    Die jar-Datei des Forge-Installationsprogramms kann nicht analysiert werden.
+    Vielleicht hat Forge ein neues Installer-Dateiformat Installer-Dateiformat?
+    Bitte kontaktieren Sie die Entwickler, wenn das Problem weiterhin besteht.
   BodyTimeoutError: HTTP Body Zeitüberschreitung ist abgelaufen
-  ChecksumNotMatchError: Die Prüfsumme stimmt nicht überein! Sie sollte {expect} sein. Sie ist jetzt {actual}.
+  ChecksumNotMatchError: >-
+    Die Prüfsumme stimmt nicht überein! Sie sollte {expect} sein. Sie ist jetzt
+    {actual}.
   ConnectTimeoutError: Die Verbindungszeit zum Server ist abgelaufen.
   DNSNotFoundError: Fehler beim DNS-Lookup
   DownloadAggregateError: Datei kann nicht hochgeladen werden.
   DownloadFileSystemError: >-
-    Fehler beim Zugriff auf den Pfad zur Download-Datei.  Stellen Sie sicher, dass
-    der Launcher Schreibrechte hat.
+    Fehler beim Zugriff auf den Pfad zur Download-Datei.  Stellen Sie sicher,
+    dass der Launcher Schreibrechte hat.
   HeadersTimeoutError: HTTP-Header-Zeitüberschreitung ist aufgetreten
   SocketError: Server-Socket-Fehler
 exception:
   http: >-
-    HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}. Bitte versuchen Sie es erneut
-    oder überprüfen Sie Ihre Internetverbindung. Wenn dieser Fehler weiterhin besteht, senden Sie bitte einen
-    einen Bericht an das Entwicklungsteam.
+    HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}.
+    Bitte versuchen Sie es erneut oder überprüfen Sie Ihre Internetverbindung.
+    Wenn dieser Fehler weiterhin besteht, senden Sie bitte einen einen Bericht
+    an das Entwicklungsteam.
 existed: Es gibt
 exportModpackTarget:
   curseforge: Curseforge file
@@ -293,7 +279,6 @@ fabricVersion:
   disable: Ausschalten  Fabric
   empty: Keine Version verfügbar Fabric für Minecraft {version}
   showSnapshot: anzeigen Snapshot
-  showStableOnly: anzeigen nur stabile
   stable: Stabil
   unstable: Instabil
 feedback:
@@ -307,13 +292,13 @@ feedback:
   githubOpenIssue: Github
   kook: Kook
   kookDescription: >-
-    Kook ist eine alternative Anwendung für Discord-Nutzer auf dem chinesischen Festland.
-    Festland China
+    Kook ist eine alternative Anwendung für Discord-Nutzer auf dem chinesischen
+    Festland. Festland China
   name: Rückmeldung
   qq: QQ-Gruppe
   qqDescription: >-
-    Treten Sie der QQ-Feedback-Gruppe bei und sprechen Sie direkt mit
-    авторами. Номер групи: {number}
+    Treten Sie der QQ-Feedback-Gruppe bei und sprechen Sie direkt mit авторами.
+    Номер групи: {number}
   qqEnterGroup: Beitreten
 fileDetail:
   fileSize: Größe der Datei
@@ -322,8 +307,8 @@ filter: Filter.
 finish: Oberfläche
 forgeConfig:
   hint: >-
-    Lassen Sie das Spiel mindestens einmal mit dieser Mod laufen, damit wir sie erkennen können
-    Konfigurationsdatei erkennen können!
+    Lassen Sie das Spiel mindestens einmal mit dieser Mod laufen, damit wir sie
+    erkennen können Konfigurationsdatei erkennen können!
 forgeVersion:
   common: Allgemein
   disable: Vimknuty-Schmiede
@@ -334,8 +319,7 @@ forgeVersion:
   showBuggy: Show mit Problemen
   showRecommendedAndLatestOnly: Nur empfohlene und neueste Versionen
   version: Version Forge
-gameSetting:
-  title: Einstellungen.
+gameSetting: {}
 gameType:
   adventure: Priddy-Modus
   creative: Kreativ-Modus
@@ -400,11 +384,12 @@ installVersion:
   json: Einstellen der Json-Version
   name: Installieren Sie den Minecraft-Client {version}
 instance:
-  addMod: Hinzufügen einer Änderung zu einer Instanz
   addServer: Server hinzufügen
   current: Aktuelle Instanz
   delete: Deinstallieren Sie das Spiel
-  deleteHint: Die Instanzdaten werden dauerhaft von der Festplatte entfernt. Wie ist dies zu tun?
+  deleteHint: >-
+    Die Instanzdaten werden dauerhaft von der Festplatte entfernt. Wie ist dies
+    zu tun?
   duplicate: Duplizieren einer Instanz
   duplicatedName: Wiederholter Name
   fileApi: Dateiserver-Synchronisierungs-API-URL
@@ -445,7 +430,9 @@ instanceSetting:
   hideLauncher: Den Launcher nach dem Start ausblenden
   icon: Wählen Sie ein Bild aus
   showLog: Minecraft-Protokolle anzeigen
-  showLogHint: Hier wird ein Fenster angezeigt, in dem die Minecraft-Logs nach dem Start des Spiels angezeigt werden
+  showLogHint: >-
+    Hier wird ein Fenster angezeigt, in dem die Minecraft-Logs nach dem Start
+    des Spiels angezeigt werden
 instanceTemplate:
   curseforge: Dieses Curseforge Mod Pack
   ftb: Dieses FTB-Modpack
@@ -454,8 +441,6 @@ instanceTemplate:
   modpack: Dieses rohe Modpack
   modrinth: Dieses Modrinth Modpack
   preview: Modpack-Vorschau
-  profile: Dies ist die bestehende Profilkonfiguration
-  server: Dies ist die bestehende Serverkonfiguration
   title: Vorlage einrichten
 instanceUpdate:
   basic: Aktualisieren Sie Ihre Einstellungen
@@ -484,8 +469,7 @@ instances:
   importFolder: Importieren aus einem Ordner
   importFolderDescription: Minecraft in den Launcher importieren
   refreshServers: Server aktualisieren
-issue:
-  name: Probleme.
+issue: {}
 items:
   count: '{count} Artikel'
   total: '{total} insgesamt'
@@ -499,15 +483,12 @@ java:
   maxMemory: Max. Speicherkapazität
   memory: Java-Speicher
   memoryAuto: Auto
-  memoryHint: Dies kann die Spielleistung beeinträchtigen
   memoryManual: Manuell
   memoryUnassigned: Den Termin absagen
   minMemory: Min. Speicherkapazität
   modifyInstance: Ändern Sie den Pfad zu Java
   noMemory: Speichernutzung nicht einschränken
   refresh: Lokales Java aktualisieren
-  refreshAfter: Update nach der Installation von Java.
-  switchVersion: Java-Version geändert
   systemMemory: Aktueller Systemspeicher
 labyMod:
   disable: LabyMod ausschalten
@@ -523,24 +504,24 @@ launchBlocked:
     title: Der Start ist fehlgeschlagen
   launchInvalidJavaPath:
     description: >-
-      Das ausgewählte Java fehlt oder ist falsch ausgewählt. Wählen Sie ein neues aus. <span
-      class="highlight"> {javaPath} </span>
+      Das ausgewählte Java fehlt oder ist falsch ausgewählt. Wählen Sie ein
+      neues aus. <span class="highlight"> {javaPath} </span>
     title: Falscher Pfad zu Java
   launchJavaNoPermission:
     description: >-
-       Der Launcher hat keine Berechtigung zum Ausführen von Java <span class="highlight">
-       {javaPath} </span>. Ändern Sie entweder die Auflösung der Java-Datei oder
-       Erteilen Sie dem Launcher die Erlaubnis.
+      Der Launcher hat keine Berechtigung zum Ausführen von Java <span
+      class="highlight"> {javaPath} </span>. Ändern Sie entweder die Auflösung
+      der Java-Datei oder Erteilen Sie dem Launcher die Erlaubnis.
     title: Keine Erlaubnis zur Ausführung
   launchNoProperJava:
     description: >-
-      Es kann nicht das richtige Java zum Ausführen des Spiels ausgewählt werden ({javaPath} ist
-      ist ungültig?)
+      Es kann nicht das richtige Java zum Ausführen des Spiels ausgewählt werden
+      ({javaPath} ist ist ungültig?)
     title: Kein passendes Java gefunden
   launchNoVersionInstalled:
     description: >-
-      Kann die Version von <span class="highlight">{version}</span> nicht ermitteln, um
-      ausführen.
+      Kann die Version von <span class="highlight">{version}</span> nicht
+      ermitteln, um ausführen.
     title: Version nicht ausgewählt
   launchUserStatusRefreshFailed:
     description: Der aktuelle Benutzerstatus kann nicht aktualisiert werden.
@@ -549,24 +530,25 @@ launchBlocked:
     Unerwartet. Sie können den Launcher neu starten, um das Problem zu beheben.
     Kontaktieren Sie den Autor, wenn das Problem weiterhin besteht.
   userAcquireMicrosoftTokenFailed: >-
-    Der Microsoft-Token konnte nicht eingelöst werden. Bitte versuchen Sie es erneut oder überprüfen Sie Ihr
-    Microsoft-Konto.
+    Der Microsoft-Token konnte nicht eingelöst werden. Bitte versuchen Sie es
+    erneut oder überprüfen Sie Ihr Microsoft-Konto.
   userCheckGameOwnershipFailed: >-
-    Der Besitz von Minecraft konnte nicht überprüft werden. Bitte versuche es erneut oder
-    überprüfe deine Internetverbindung.
+    Der Besitz von Minecraft konnte nicht überprüft werden. Bitte versuche es
+    erneut oder überprüfe deine Internetverbindung.
   userExchangeXboxTokenFailed: >-
-    Der Austausch eines Xbox-Tokens gegen ein Microsoft-Token ist nicht möglich. Bitte versuchen Sie es erneut oder
-    überprüfen Sie Ihre Internetverbindung.
+    Der Austausch eines Xbox-Tokens gegen ein Microsoft-Token ist nicht möglich.
+    Bitte versuchen Sie es erneut oder überprüfen Sie Ihre Internetverbindung.
   userLoginMinecraftByXboxFailed: >-
-    Ich konnte mich nicht mit meinem Xbox-Token bei Minecraft anmelden. Bitte versuche es erneut
-    oder überprüfe deine Internetverbindung.
+    Ich konnte mich nicht mit meinem Xbox-Token bei Minecraft anmelden. Bitte
+    versuche es erneut oder überprüfe deine Internetverbindung.
 launchFailed:
   crash: Das Spiel ist raus!
-  description: Es gibt keinen Absturzbericht. Dies sind Fehlerprotokolle und das letzte Protokoll.
+  description: >-
+    Es gibt keinen Absturzbericht. Dies sind Fehlerprotokolle und das letzte
+    Protokoll.
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
 launchStatus:
-  checkingProblems: Prüfung auf Probleme
   exit: Das Spiel aufgeben?
   injectingAuthLib: Einrichten einer AuthLib eines Drittanbieters
   launching: Starten...
@@ -583,14 +565,15 @@ localVersion:
   auto: Automatische Berechnung
   delete: Deinstallation der lokalen Version
   deleteDescription: >-
-    Bei diesem Vorgang wird die lokale Version von json und jar entfernt. Sie müssen sie erneut herunterladen
-    erneut herunterladen, wenn Sie sie verwenden möchten.
+    Bei diesem Vorgang wird die lokale Version von json und jar entfernt. Sie
+    müssen sie erneut herunterladen erneut herunterladen, wenn Sie sie verwenden
+    möchten.
   empty: Version nicht installiert
   hint: Eine bestimmte lokale Version direkt ausführen
   refresh: Aktualisierte Versionen
   reinstallDescription: >-
-    Wenn Sie feststellen, dass bei der Installation dieser Version Probleme auftreten, können Sie
-    versuchen, sie neu zu installieren.
+    Wenn Sie feststellen, dass bei der Installation dieser Version Probleme
+    auftreten, können Sie versuchen, sie neu zu installieren.
   reinstallTitle: Neu installieren {version}
   title: Lokale Version | Lokale Versionen
 logLevel:
@@ -598,39 +581,53 @@ logLevel:
   info: Informationen.
   success: Erfolgreich
   warning: Warnungen
-logMonitor: Log-Monitor
 login:
-  dropHint: Senden Sie hier den Link mit dem Autorisierungscode, um sich manuell anzumelden
+  dropHint: >-
+    Senden Sie hier den Link mit dem Autorisierungscode, um sich manuell
+    anzumelden
   forgetPassword: Haben Sie Ihr Passwort vergessen?
-  hint: Klicken Sie auf Konto hinzufügen, um sich beim System anzumelden.
   login: Anmeldung
-  manualLoginUrl: Sollte sich Ihr Browser nicht öffnen, folgen Sie bitte diesem Link, um sich einzuloggen!
+  manualLoginUrl: >-
+    Sollte sich Ihr Browser nicht öffnen, folgen Sie bitte diesem Link, um sich
+    einzuloggen!
   signup: Register
   signupDescription: Sind Sie neu bei uns?
-  userRelogin: Das Zugriffstoken des Benutzers ist abgelaufen. Bitte melden Sie sich erneut an!
+  userRelogin: >-
+    Das Zugriffstoken des Benutzers ist abgelaufen. Bitte melden Sie sich erneut
+    an!
 loginError:
   acquireMicrosoftTokenFailed: >-
-    Ein Microsoft-Token kann nicht abgerufen werden. Dies könnte ein Internetproblem sein.
-    Bitte versuchen Sie es erneut.
+    Ein Microsoft-Token kann nicht abgerufen werden. Dies könnte ein
+    Internetproblem sein. Bitte versuchen Sie es erneut.
   badNetworkOrServer: >-
-    Перевірте: Internetverbindung! Oder vielleicht funktioniert der Autorisierungsserver nicht
-    funktioniert!
-  checkOwnershipFailed: Der Besitz des Spiels konnte nicht überprüft werden. Bitte versuchen Sie es erneut.
-  connectionReset: Konnte sich nicht anmelden, weil die Verbindung vom Server zurückgesetzt wurde
+    Перевірте: Internetverbindung! Oder vielleicht funktioniert der
+    Autorisierungsserver nicht funktioniert!
+  checkOwnershipFailed: >-
+    Der Besitz des Spiels konnte nicht überprüft werden. Bitte versuchen Sie es
+    erneut.
+  connectionReset: >-
+    Konnte sich nicht anmelden, weil die Verbindung vom Server zurückgesetzt
+    wurde
   fetchMinecraftProfileFailed: 'Es ist unmöglich, ein Minecraft-Profil zu bekommen: {reason}'
   illegalEmail: Die E-Mail Adresse muss gültig sein
   invalidCredentials: Falsche Anmeldedaten. Falscher Benutzername oder falsches Passwort.
   loginMinecraftByXboxFailed: >-
-    Ich konnte einen Minecraft-Token nicht gegen einen XBox-Token eintauschen. Bitte,
-    vergewissern Sie sich, dass Sie Minecraft auf Ihrer Xbox haben, oder versuchen Sie es erneut.
+    Ich konnte einen Minecraft-Token nicht gegen einen XBox-Token eintauschen.
+    Bitte, vergewissern Sie sich, dass Sie Minecraft auf Ihrer Xbox haben, oder
+    versuchen Sie es erneut.
   loginXboxFailed: >-
-    Ich konnte mich nicht mit meinem Microsoft-Token bei der Xbox anmelden. Stellen Sie sicher, dass Ihr
-    Sie ein Xbox-Konto haben, das mit Ihrem Microsoft-Konto verknüpft ist. Versuchen Sie es erneut.
-  requestFailed: Sie konnten sich nicht anmelden, wir sind nicht sicher warum. Versuchen Sie es erneut.
+    Ich konnte mich nicht mit meinem Microsoft-Token bei der Xbox anmelden.
+    Stellen Sie sicher, dass Ihr Sie ein Xbox-Konto haben, das mit Ihrem
+    Microsoft-Konto verknüpft ist. Versuchen Sie es erneut.
+  requestFailed: >-
+    Sie konnten sich nicht anmelden, wir sind nicht sicher warum. Versuchen Sie
+    es erneut.
   requireEmail: Eine E-Mail Adresse ist erforderlich
   requirePassword: Passwort erforderlich
   requireUsername: Benutzername erforderlich
-  timeout: Das Zeitlimit für die Anmeldung ist abgelaufen. Bitte versuchen Sie es erneut oder überprüfen Sie Ihre Internetverbindung.
+  timeout: >-
+    Das Zeitlimit für die Anmeldung ist abgelaufen. Bitte versuchen Sie es
+    erneut oder überprüfen Sie Ihre Internetverbindung.
 logsCrashes:
   crashes: Berichte über Misserfolge
   logs: Логи
@@ -651,16 +648,15 @@ mod:
   currentVersion: Aktuell {current}
   deletion: Entfernen eines Mods
   deletionHint: >-
-    Sie werden diesen Mod und seine Methoden dauerhaft löschen. Sind Sie sicher, dass Sie sie löschen wollen? | Du wirst
-    diese Mod und ihre Metadaten für immer verschwinden lassen. Sind Sie sicher, dass Sie
-    dies tun wollen?
+    Sie werden diesen Mod und seine Methoden dauerhaft löschen. Sind Sie sicher,
+    dass Sie sie löschen wollen? | Du wirst diese Mod und ihre Metadaten für
+    immer verschwinden lassen. Sind Sie sicher, dass Sie dies tun wollen?
   deletionRestHint: Und der {rest} der Mods...
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
   enabled: 'Inklusive Mods: {count}'
   filter: Mod-Filter
   groupInstalled: Gruppensatz Mods
   hideIncompatible: Inkompatible Änderungen ausblenden
-  import: Mods importieren
   incompatible: Inkompatible Mods.
   manage: Mods verwalten
   maybeCompatible: Möglicherweise kompatibel.
@@ -670,15 +666,12 @@ mod:
   search: Suche nach Änderungen
   searchOnCurseforge: Fluchschmiede besuchen {name}
   searchOnModrinth: Suche. {name} auf Modrinth
-  selected: Ausgewählte Modetrends
   showDirectory: Änderungskatalog anzeigen
   showFile: Den Weg zur Mode weisen {file}
   showInCurseforge: Mods auf Curseforge anzeigen
   showInModrinth: anzeigen {name} auf Modrinth
-  showIncompatible: Unvereinbare Moden zeigen
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
-  unselected: Unerwählte Moden
 modInstall:
   checkUpgrade: Prüfen Sie auf Aktualisierungen von Änderungen
   checkedUpgrade: Aktualisierung geprüft
@@ -688,10 +681,8 @@ modInstall:
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Die Mod unterstützt nicht die aktuelle Version von Minecraft
-  pending: Warten auf die Installation
   search: Suchergebnis
   searchHint: Projektsuche und -auswahl
-  selectProjectHint: Wählen Sie das Projekt und die Installationsdatei
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
@@ -704,10 +695,13 @@ modified:
   unsaved: Ihre Änderung wurde nicht gespeichert!
 modpack:
   author: Name des Autors
-  authorHint: Dies kann verwendet werden, um das exportierte Modpack zu signieren. (Curseforge)
-  create: Ein neues Mod Pack erstellen
+  authorHint: >-
+    Dies kann verwendet werden, um das exportierte Modpack zu signieren.
+    (Curseforge)
   delete:
-    hint: Dadurch wird das Modpack entfernt {name} mit seinen Metadaten. Sind Sie sicher?
+    hint: >-
+      Dadurch wird das Modpack entfernt {name} mit seinen Metadaten. Sind Sie
+      sicher?
     title: Modpack entfernen
   description: Beschreibung.
   descriptionHint: >-
@@ -720,13 +714,10 @@ modpack:
   emitModrinthStrict: Strenges Modrinth-Format
   emitModrinthStrictDescription: Nur Links von den 4 im modrinth-Dokument aufgeführten Domains sind erlaubt
   export: Als Modpack exportieren
-  filter: Modpack-Filter
   general: Allgemeine Informationen
   includeAssets: Aktiva einbeziehen
   includeLibraries: Bibliotheken einbeziehen
   includes: Einzuschließende Dateien
-  installFromCurseforge: Installieren mit Curseforge
-  installFromModrinth: Installieren mit Modrinth
   modpackVersion: Modpack-Version
   name: Modpack | Modpacks
   overrides: Überschreibt
@@ -852,8 +843,6 @@ modrinth:
     status: Werden Sie
     support: Unterstützt
     version: Version.
-  install: Installieren Sie
-  installFrom: Installieren mit Modrinth
   issueUrl: Problem.
   license: Lizenz
   licenses:
@@ -877,7 +866,6 @@ modrinth:
     follows: Abonnenten
     newest: Die neu geschaffene
     relevance: Relevanz
-    titel: Sortieren nach.
     updated: Kürzlich aktualisiert
   sourceUrl: Quelle.
   technicalInformation: Technische Informationen
@@ -887,18 +875,16 @@ modrinth:
 modrinthCard:
   currentVersion: Aktuelle Version
   projectHint: >
-    Diese Instanz wurde mit dem Modrinth Modpack mit <code>
-    class="rounded p-1" style="background: rgba(123,123,123,0.2)">{title}</code>
-    (project id:
+    Diese Instanz wurde mit dem Modrinth Modpack mit <code> class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
-  projectLastUpdateDate: 'Das Projekt wurde zuletzt aktualisiert am:'
-  projectLastUpdateVersion: Die neueste Version
 multiplayer:
   allowTurn: Schalten Sie den Relay-Server ein
   allowTurnHint: >-
-    Lassen Sie einen Relay-Server zu, wenn Sie keine Verbindung zu Ihrem Freund herstellen können.
-    Die Verwendung eines Relay-Servers kann Ihre Verbindung jedoch verlangsamen.
-    Verbindung verlangsamen. Verwenden Sie ihn mit Vorsicht.
+    Lassen Sie einen Relay-Server zu, wenn Sie keine Verbindung zu Ihrem Freund
+    herstellen können. Die Verwendung eines Relay-Servers kann Ihre Verbindung
+    jedoch verlangsamen. Verbindung verlangsamen. Verwenden Sie ihn mit
+    Vorsicht.
   complete: Bereit
   confirm: Bestätigen Sie
   connections: Verbindungen
@@ -911,7 +897,6 @@ multiplayer:
      тільки для <span style="color: red; font-weight: bold;">віндого</span>! Не можна
      відправляти той самий токен кільком вузлам!</span> <br> <span class="hint-text" style="font-style: italic;">Якщо вам потрібно підключити декілька
      товаришів, вам потрібно створити<span style="font-weight: bold; color: rgba(245, 158, 11)">кілька</span> з'єднань.</span>"
-  createGroup: ''
   createLocalToken: Ein lokales Token erstellen
   currentIpTitle: Öffentliche IP-Adresse erkannt
   currentNatTitle: 'Aktuelles Netzwerk (NAT):'
@@ -920,11 +905,15 @@ multiplayer:
   disconnectDescription: Präzise Trennung vom Benutzer {user}({id})?
   disconnected: Aus
   enterRemoteToken: Eingabe des entfernten Tokens
-  enterRemoteTokenHint: |-
-    Sobald Ihr Freund Ihren Token eingegeben hat, müssen Sie seinen Token in das Textfeld
-    Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die Verbindung herzustellen.
+  enterRemoteTokenHint: >-
+    Sobald Ihr Freund Ihren Token eingegeben hat, müssen Sie seinen Token in das
+    Textfeld
+
+    Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die
+    Verbindung herzustellen.
   gatheringIce: >
-    "Warten Sie, bis der ICE-Server genügend Informationen über Sie gesammelt hat
+    "Warten Sie, bis der ICE-Server genügend Informationen über Sie gesammelt
+    hat
       Netzwerk Wenn Sie ungeduldig sind und über genügend Informationen verfügen, können Sie vorankommen
       Stellen Sie der anderen Partei das aktuelle SDP zur Verfügung und klicken Sie auf Weiter, senden Sie <span
      class="v-chip v-chip--label v-size--small" style="text-font:bold">
@@ -936,7 +925,9 @@ multiplayer:
       Sie müssen nicht warten, bis der ICE-Status abgeschlossen ist. Wenn das Token unten
       bleibt unverändert, Sie können es kopieren und an Ihren Freund senden.
   groupId: Kennung der Gruppe
-  illegalTokenDescription: Unzulässiger Token, vergewissern Sie sich, dass der Token von Ihrem Partner korrekt ist
+  illegalTokenDescription: >-
+    Unzulässiger Token, vergewissern Sie sich, dass der Token von Ihrem Partner
+    korrekt ist
   initiateConnection: Start der Verbindung
   inviteLink: Link zur Einladung
   joinConnection: |-
@@ -944,17 +935,18 @@ multiplayer:
       um ihn zu verbinden.
   joinManual: Beitreten
   joinOrCreateGroup: Gruppe beitreten/erstellen
-  joinOrCreateGroupHint: Erhalten Sie eine Gruppen-ID von Ihren Freunden oder erstellen Sie eine Gruppe
+  joinOrCreateGroupHint: >-
+    Erhalten Sie eine Gruppen-ID von Ihren Freunden oder erstellen Sie eine
+    Gruppe
   leaveGroup: Verlassen Sie die Gruppe
   localToken: Lokaler Token
   manualConnect: Manuelle Verbindung
-  mappings: UPNP-Zuordnung
   name: Multiplayer über ein lokales Netzwerk
   networkInfo: Informationen über das Netzwerk
   next: Nächste.
   placeholder: >-
-    Schließe dich anderen Leuten an, um Minecraft in deinem lokalen Netzwerk zu spielen
-    Netzwerk!
+    Schließe dich anderen Leuten an, um Minecraft in deinem lokalen Netzwerk zu
+    spielen Netzwerk!
   previous: назад
   receiveHint: |-
     Nachdem die andere Partei Ihr Token eingegeben hat, wird Ihre Verbindung
@@ -1037,20 +1029,16 @@ resourcepack:
   available: Verfügbar
   compatible: Format. {format} kompatibel mit {version}
   defaultDescription: kompatibel mit dem Standardbild von Minecraft
-  defaultName: Standardmäßig
   delete:
     content: >-
-      Dadurch wird die Texturpaketdatei von der Diskette gelöscht, und wir können sie nicht mehr
-      wiederherstellen.
+      Dadurch wird die Texturpaketdatei von der Diskette gelöscht, und wir
+      können sie nicht mehr wiederherstellen.
        Sind Sie sicher, dass Sie sie wiederherstellen können?
     title: Видалити текстурпак
-  deletion: Вилучення {pack}
-  deletionHint: |-
-    Sie verlieren die Daten und Metadaten dieses Texturpakets. Sind Sie sicher, dass Sie
-     dies tun wollen?
-  dropHint: Ziehen Sie den Textur-Ordner/die Zip-Datei zum Importieren hierher und legen Sie sie ab..
+  dropHint: >-
+    Ziehen Sie den Textur-Ordner/die Zip-Datei zum Importieren hierher und legen
+    Sie sie ab..
   enable: 'Texturpakete sind enthalten: {count}'
-  filter: Texturpakets-Filter
   import: Texturpakete importieren
   incompatible: >-
     Inkompatibles Textformat ({format}). Einschlägige {accept}. Aktuell
@@ -1081,8 +1069,9 @@ save:
     fromResource: Aus verwalteten Ressourcen
     title: Importieren einer Sicherung aus einer verwalteten Quelle
   createdWorlds: 'Ihre Welten: {count}'
-  deleteHint: |-
-    Dieser Vorgang kann nicht abgebrochen werden. Die gespeicherten Daten gehen dauerhaft verloren.
+  deleteHint: >-
+    Dieser Vorgang kann nicht abgebrochen werden. Die gespeicherten Daten gehen
+    dauerhaft verloren.
      Sind Sie sicher, dass Sie diese Speicherung löschen möchten?
   deleteTitle: Löschen
   detail: Weitere Informationen
@@ -1101,18 +1090,9 @@ screenshots:
   name: Screenshots
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
-  create: Einen neuen Server erstellen
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
-  delete:
-    description: |-
-      Dadurch werden alle lokalen Daten über diesen Server gelöscht.
-       Wie kann ich das tun?
-    name: Löschen
-  edit: Serverinformationen ändernа
-  error:
-    wrongVersion: |-
-      Die aktuell ausgewählte Version stimmt nicht mit dem Serverprotokoll überein!
-       Dies kann zu Fehlern bei der Verbindung mit dem Spiel führen.
+  delete: {}
+  error: {}
   expectedVersions: Unterstützte Versionen
   filterVersion: Filter-Server reagiert auf Minecraft-Version
   host: Gastgeber
@@ -1142,8 +1122,9 @@ setting:
     auto: Automatisch (wird vom Netz bestimmt)
     official: Offiziell (Mojang)
   appearance: Erscheinungsbild
-  appxUpdateHint: |-
-    Der Launcher wird es herunterladen und installieren. Wenn das Installations-Pop-up-Fenster nicht erscheint
+  appxUpdateHint: >-
+    Der Launcher wird es herunterladen und installieren. Wenn das
+    Installations-Pop-up-Fenster nicht erscheint
      Pop-up-Fenster nicht erscheint, führen Sie es manuell aus.
   autoDownload: Automatisches Herunterladen
   autoDownloadDescription: Updates automatisch herunterladen, falls verfügbar
@@ -1160,7 +1141,9 @@ setting:
     name: Fit
   backgroundImageSelect: Wählen Sie
   backgroundType: Hintergrund Typ
-  backgroundTypeDescription: Einen speziellen Effekt auf dem Hintergrund anzeigen (kann die Leistung beeinträchtigen)
+  backgroundTypeDescription: >-
+    Einen speziellen Effekt auf dem Hintergrund anzeigen (kann die Leistung
+    beeinträchtigen)
   backgroundTypes:
     halo: Halo
     image: Bild.
@@ -1192,7 +1175,9 @@ setting:
   darkTheme: Thema.
   darkThemeDescription: Wählen Sie ein dunkles oder helles Thema
   developerMode: Entwickler-Modus
-  developerModeDescription: Der Entwicklermodus ist dazu gedacht, die von Ihnen geschriebene Mod zu testen.
+  developerModeDescription: >-
+    Der Entwicklermodus ist dazu gedacht, die von Ihnen geschriebene Mod zu
+    testen.
   disableTelemetry: Telemetrie ausschalten
   disableTelemetryDescription: XMCL sammelt die Ereignisse des Spielstarts und der Benutzeranmeldung.
   enableDiscord: Discord-Präsenz einschalten (Discord-Spielstatus)
@@ -1224,7 +1209,7 @@ setting:
     Begrenzen Sie die maximal zulässige Anzahl von Sockets pro Host oder für
     alle Rechner
      insgesamt. 0 bedeutet keine Einschränkungen.
-  maxSocketsTitle:  Maximale Anzahl von HTTP-Sockets
+  maxSocketsTitle: Maximale Anzahl von HTTP-Sockets
   name: Globale Einstellungen | Globale Einstellungen
   officialWebsite: Офіційний сайт
   particleMode:
@@ -1235,8 +1220,6 @@ setting:
     repulse: Abwehren
   particleModeDescription: Wählen Sie das Verhalten des Partikels beim Anklicken
   resetToDefault: Zurücksetzen auf den Standardwert
-  showParticle: Partikel anzeigen
-  showParticleDescription: Partikeldarstellung im Hintergrund (kann die Leistung beeinträchtigen)
   showRoot: ВідображатиAnzeige
   theme:
     dark: Dunkles Thema
@@ -1245,12 +1228,11 @@ setting:
   update: Update
   useBmclAPI: Verwenden Sie die BMCL-API
   useBmclAPIDescription: >-
-    Verwenden Sie BMCLAPI, um Minecraft herunterzuladen, wenn Sie sich auf dem chinesischen Festland befinden.
-    Festland China.
+    Verwenden Sie BMCLAPI, um Minecraft herunterzuladen, wenn Sie sich auf dem
+    chinesischen Festland befinden. Festland China.
      (Funktioniert nicht, wenn Sie sich nicht auf dem chinesischen Festland befinden)
   useProxy: HTTP-Proxy
   useProxyDescription: Proxy-Server-Adresse für http-Anfrage
-  viewUpdate: Informationen über Updates anzeigen
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung
@@ -1267,12 +1249,12 @@ setup:
     drives: Empfohlene Orte
     name: Die Wurzel der Daten festlegen
   defaultLayoutDescription: >-
-    Das Standardlayout versucht, das Konzept einer "Instanz" des Spiels zu verbessern. 
+    Das Standardlayout versucht, das Konzept einer "Instanz" des Spiels zu
+    verbessern. 
 
     Es sieht so aus, als wären die Apps ähnlich wie Discord. 
 
-    Es ist auch inspiriert von anderen Spiel-Startprogrammen wie Steam
-    usw.
+    Es ist auch inspiriert von anderen Spiel-Startprogrammen wie Steam usw.
   defaultPath: Standard-Pfad
   error:
     badDataRoot: |-
@@ -1281,10 +1263,12 @@ setup:
     exists: >-
       Das ausgewählte Verzeichnis ist nicht leer. 
 
-      Das ist normal, aber stellen Sie sicher, dass Sie eine Sicherungskopie Ihrer
-      Daten.
-    noPermission: |-
-      Der Starter hat keine Berechtigung, auf das ausgewählte Verzeichnis zuzugreifen! 
+      Das ist normal, aber stellen Sie sicher, dass Sie eine Sicherungskopie
+      Ihrer Daten.
+    noPermission: >-
+      Der Starter hat keine Berechtigung, auf das ausgewählte Verzeichnis
+      zuzugreifen! 
+
       Bitte versuchen Sie ein anderes.
     nonDictionary: |-
       Der ausgewählte Pfad ist eine Datei! 
@@ -1293,38 +1277,32 @@ setup:
     Das Fokus-Layout ist ein veraltetes Layout des Minecraft Launcher. 
     Es ist für die Verwendung mit einer oder mehreren Instanzen gedacht.
   game:
-    description: |-
-      Wählen Sie ein bestehendes Spielverzeichnis (.minecraft) aus, um Ihre vorhandenen Assets zu importieren.
+    description: >-
+      Wählen Sie ein bestehendes Spielverzeichnis (.minecraft) aus, um Ihre
+      vorhandenen Assets zu importieren.
        Auf diese Weise können Sie schnell Mods, Texturpakete usw. definieren.
     name: Імпортувати існуючу гру
   locale:
-    description: |-
-      Wählen Sie Ihre bevorzugte Sprache, falls verfügbar! Wenn Sie Ihre Muttersprache nicht sehen
+    description: >-
+      Wählen Sie Ihre bevorzugte Sprache, falls verfügbar! Wenn Sie Ihre
+      Muttersprache nicht sehen
        Sprache sehen und helfen wollen, können Sie auf Github einen Pull
        Übersetzungsanfrage einreichen!
     language: Sprache.
     name: Sprache einstellen
   path: Aktueller Pfad
-  title: >-
-    Willkommen beim X Minecraft Launcher. Bevor wir beginnen, brauchen wir
-    Sie
+  title: Willkommen beim X Minecraft Launcher. Bevor wir beginnen, brauchen wir Sie
 shaderPack:
   deletion: Shader löschen
-  deletionHint: Damit wird die Shader-Datei gelöscht {path} und es wird unmöglich sein, sie wiederherzustellen.
+  deletionHint: >-
+    Damit wird die Shader-Datei gelöscht {path} und es wird unmöglich sein, sie
+    wiederherzustellen.
   disabled: Shader Pack ist deaktiviert
   empty: Shader nicht hervorgehoben
   enable: Verwendung eines Shaders {name}
   enabled: Shader-Pack aktiviert
-  filter: Shader-Filter
-  internal: Interner Shader
-  internalDescription: >-
-    Aktivieren Sie die interne Shader-Pipeline standardmäßig (Shader-Optionen
-    können konfiguriert werden
-     in diesem Abschnitt)
   manage: Shader verwalten
   name: Shader
-  'off': Вимк
-  offDescription: Den Shader ausschalten
   showFile: Відкрити цей шейдер у папці
 summery: Sommer
 tag:
@@ -1339,22 +1317,26 @@ task:
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
-  running: Starten von Aufgaben
 title: X Minecraft Launcher
 transportType:
   host: Gastgeber-Kandidat
-  prflx:  Gastgeber-Peer Reflexive
+  prflx: Gastgeber-Peer Reflexive
   relay: Gastgeber-Relay
   srflx: Gastgeber-Server Reflexive
 tutorial:
-  feedbackDescription: Wenn Sie Probleme haben, klicken Sie auf diese Schaltfläche, um eine Bewertung abzugeben!
+  feedbackDescription: >-
+    Wenn Sie Probleme haben, klicken Sie auf diese Schaltfläche, um eine
+    Bewertung abzugeben!
   instanceAddDescription: >-
-    Klicken Sie auf diese Schaltfläche, um ein bestehendes Minecraft zu importieren oder ein neues Minecraft von Grund auf zu erstellen oder ein
-    von Grund auf oder ein Mod-Pack.
+    Klicken Sie auf diese Schaltfläche, um ein bestehendes Minecraft zu
+    importieren oder ein neues Minecraft von Grund auf zu erstellen oder ein von
+    Grund auf oder ein Mod-Pack.
   instanceSelectDescription: >-
-    Wenn Sie auf diese Schaltfläche klicken, gelangen Sie auf die Seite zum Auswählen und Erstellen einer neuen
-    Spiel.
-  launchDescription: Klicken Sie auf diese Schaltfläche, um das Spiel zu installieren oder zu starten.
+    Wenn Sie auf diese Schaltfläche klicken, gelangen Sie auf die Seite zum
+    Auswählen und Erstellen einer neuen Spiel.
+  launchDescription: >-
+    Klicken Sie auf diese Schaltfläche, um das Spiel zu installieren oder zu
+    starten.
   mod:
     defaultSourceDescription: |-
       Sie können die Quelle der Mod-Teile hier auswählen. 
@@ -1371,45 +1353,62 @@ tutorial:
       Mods.
     detailTitle: Details zur Mode
     listDescription: >-
-      Wenn Sie keine Daten eingeben, werden die von Ihnen installierten Mods angezeigt. 
+      Wenn Sie keine Daten eingeben, werden die von Ihnen installierten Mods
+      angezeigt. 
 
-      Sie sehen die Mods, nach denen Sie suchen, wenn Sie ein Stichwort eingeben oder eine
-      eine Kategorie auswählst.
+      Sie sehen die Mods, nach denen Sie suchen, wenn Sie ein Stichwort eingeben
+      oder eine eine Kategorie auswählst.
     listTitle: Встановлений або шуканий мод
     searchDescription: >-
       Ви можете шукати моди з Modrinth, Curseforge або локального кешу за
       допомогою цього поля пошуку.
     searchTitle: Suchmodi
   multiplayer:
+    contentDescription: >-
+      Hier werden die Verbindungen zwischen Ihnen und Ihren Kollegen
+      aufgelistet.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
       Sie können eine Gruppe mit anderen Spielern erstellen oder ihr beitreten. 
 
-      Der Launcher wird versuchen, eine P2P-Verbindung zwischen Ihnen und Ihren Freunden herzustellen.
-      Freunden entsprechend der Gruppe herzustellen. 
+      Der Launcher wird versuchen, eine P2P-Verbindung zwischen Ihnen und Ihren
+      Freunden herzustellen. Freunden entsprechend der Gruppe herzustellen. 
 
       Sie können einen von Ihren Freunden vergebenen Gruppennamen eingeben. 
 
       Oder Sie können einen eigenen Namen erstellen.
     groupTitle: Der Gruppe beitreten
-    joinDescription: |-
+    joinDescription: >-
       Nachdem Sie den Gruppennamen eingegeben haben. 
-      Sie können auf diese Schaltfläche klicken, um einer Gruppe beizutreten oder eine Gruppe zu erstellen. 
+
+      Sie können auf diese Schaltfläche klicken, um einer Gruppe beizutreten
+      oder eine Gruppe zu erstellen. 
+
       Wenn der Gruppenname leer ist, generiert der Launcher einen Namen für Sie.
+    manualDescription: >-
+      Wenn Sie oder Ihr Freund keine Verbindung zur Gruppe herstellen können. 
+
+      Sie können versuchen, den Token manuell auszutauschen, indem Sie auf
+      „Manuell verbinden“ klicken. 
+
+      Wenn auch das fehlschlägt, liegt möglicherweise ein Internetproblem vor.
   userAccountDescription: >-
-    Klicken Sie auf dieses Symbol, um ein Minecraft-Konto hinzuzufügen oder zu verwalten.
-    ein Konto.
+    Klicken Sie auf dieses Symbol, um ein Minecraft-Konto hinzuzufügen oder zu
+    verwalten. ein Konto.
 universalDrop:
   enableModsAfterImport: Aktivieren von Mods nach dem Importieren
   start: Einheiten nach dem Import
-  title: Ziehen Sie Ihre Datei(en) per Drag & Drop hierher und importieren Sie sie als
+  title: >-
+    Ziehen Sie Ihre Datei(en) per Drag & Drop hierher und importieren Sie sie
+    als
   unknownResource: Unbekannt
 upstream:
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.
 
-    Sie können das System trotzdem aktualisieren, aber das Ergebnis ist möglicherweise nicht korrekt. Bitte
-    erstellen Sie bitte eine Sicherungskopie der Instanzdatei.         
+    Sie können das System trotzdem aktualisieren, aber das Ergebnis ist
+    möglicherweise nicht korrekt. Bitte erstellen Sie bitte eine Sicherungskopie
+    der Instanzdatei.         
 user:
   accessToken: Zugangstoken
   authMode: Autorisierungsdienst
@@ -1420,11 +1419,12 @@ user:
   forgetChallenges: Ich habe diese Fragen vergessen und möchte sie ändern
   id: Benutzer-ID
   info: Informationen über den Benutzer
-  insecureClient: Der Client ist gefährlich! Überprüfen Sie Ihre Identität, um den Skin herunterzuladen!
+  insecureClient: >-
+    Der Client ist gefährlich! Überprüfen Sie Ihre Identität, um den Skin
+    herunterzuladen!
   name: Benutzername
   nameHint: Im Spiel angezeigter Name
   profile: Profil
-  profileMode: Profil-Dienst
   refreshAccount: Aktualisieren Sie Ihr Konto
   refreshSkin: Haut aktualisieren
   submitChallenges: Antworten senden
@@ -1432,41 +1432,23 @@ user:
   tokenValidUntil: Der Token ist gültig bis
 userAccount:
   add: Ein Konto hinzufügen
-  removeDescription: Dadurch werden alle Informationen über dieses Konto gelöscht. Sind Sie sicher?
+  removeDescription: >-
+    Dadurch werden alle Informationen über dieses Konto gelöscht. Sind Sie
+    sicher?
   removeTitle: Konto löschen
-  switch: Ihr Konto ändern
 userCape:
   changeTitle: Den Mantel wechseln
-  description: |-
-    Umhänge sind besondere Belohnungen, die Spieler bei verschiedenen Ereignissen, Kampagnen und anderen Aktivitäten erhalten können,
+  description: >-
+    Umhänge sind besondere Belohnungen, die Spieler bei verschiedenen
+    Ereignissen, Kampagnen und anderen Aktivitäten erhalten können,
       Kampagnen und anderen Aktivitäten erhalten können. Hier können Sie zwischen den Umhängen wählen, von denen Sie
       володієте в даний час:
   noCape: Keine Regenmäntel
 userService:
   add: Weitere Dienste hinzufügen
   authLibInjector: Befolgen Sie die Empfehlungen für den auth-lib-Injektor
-  authServiceDetail: Einrichtung eines Genehmigungsdienstes
-  authenticateHint: Antwort auf eine normale Anmeldeanfrage
-  baseUrl: Basis-URL
   baseUrlHint: Der Basislink Ihres Benutzerdienstes
-  duplicatedName: Ein Dienst mit diesem Namen existiert bereits
-  hostName: URL des Root-Authentifizierungsservers
-  hostNameHint: Basislink Ihres Authentifizierungsservers
-  invalidUrl: Ungültige URL
-  invalidateHint: Das aktuelle Token ungültig machen, wenn sich der Benutzer abmeldet
-  name: Kennung dieses Dienstes
-  normal: Befolgen Sie die üblichen Schritte
-  profile: Profil über API entfernen
-  profileByName: Ein API-Profil abrufen
-  profileByNameHint: Ein Profil im Namen eines Benutzers abrufen
-  profileHint: Ein Profil nach Benutzer-UUID abrufen
-  profileServiceDetail: Einrichten des Profildienstes
-  refreshHint: Dient zur Aktualisierung des Tokens
-  requireName: Der Name darf nicht leer sein
-  texture: API für das Herunterladen von Texturen
-  textureHint: Herunterladen von Texturen nach Benutzer-ID und Zugriffstoken
   title: Benutzerdienste
-  typeOfService: Wählen Sie die Art der Dienstleistung
   validateHint: Wird verwendet, um zu überprüfen, ob das Token des Benutzers noch gültig ist
 userServices:
   microsoft:
@@ -1487,20 +1469,15 @@ userServices:
     password: Kein Passwort erforderlich
     uuid: Benutzer UUID (Optional)
 userSkin:
-  change: Haut ändern
-  export: Skin exportieren
   import: Importieren eines Skins
   importFile: Aus Datei öffnenу
   importLink: Öffnen Sie unter dem Link
-  importLocal: Importieren eines lokalen Skins
-  loadURL: Laden Sie den Skin von der folgenden URL herunter
   placeUrlHere: Geben Sie hier die URL des zu importierenden Skins ein
   reset: Zurücksetzen
   save: Speichern Sie
   saveTitle: Speichern Sie den Skin auf der Festplatte
   skinType: Hauttyp
   upload: Download des Skins
-  urlHint: Posten Sie die URL Ihres Skins hier
   urlNotEmpty: Die URL des Skins darf nicht leer sein
   urlNotValid: Ungültige URL auf dem Skin
   useSlim: Verwenden Sie ein dünnes Modell

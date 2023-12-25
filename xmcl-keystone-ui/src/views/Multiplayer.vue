@@ -627,20 +627,4 @@ useTutorial(computed(() => [
   { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
   { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
 ]))
-
-// const sock = new WebSocket('wss://api.xmcl.app/group/abc')
-// sock.onmessage = (ev) => {
-//   console.log(ev.data)
-// }
-// sock.onopen = (ev) => {
-//   console.log(ev)
-//   debugger
-// }
-// sock.onerror = (ev) => {
-//   console.error(ev)
-//   debugger
-// }
-// sock.onclose = (e) => {
-//   console.log(e.code, e.reason, e.wasClean, e)
-// }
 </script>
