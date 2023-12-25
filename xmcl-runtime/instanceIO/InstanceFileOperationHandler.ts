@@ -101,36 +101,36 @@ export class InstanceFileOperationHandler {
   }
 
   async postprocess(client: ModrinthV2Client) {
-    if (this.#resourceToUpdate.length > 0) {
-      const options = await Promise.all(this.#resourceToUpdate.map(async ({ hash, metadata, uris, destination }) => {
-        const actualSha1 = hash ?? await this.worker.checksum(destination, 'sha1').catch(() => undefined)
-        return {
-          hash: actualSha1,
-          metadata,
-          uris,
-        }
-      }))
+    try {
+      if (this.#resourceToUpdate.length > 0) {
+        const options = await Promise.all(this.#resourceToUpdate.map(async ({ hash, metadata, uris, destination }) => {
+          const actualSha1 = hash ?? await this.worker.checksum(destination, 'sha1').catch(() => undefined)
+          return {
+            hash: actualSha1,
+            metadata,
+            uris,
+          }
+        }))
 
-      const toQuery = options.filter(r => Object.keys(r.metadata).length === 0).map(r => r.hash)
-      if (toQuery.length > 0) {
-        const modrinthMetadata = await client.getProjectVersionsByHash(toQuery, 'sha1')
+        const toQuery = options.filter(r => Object.keys(r.metadata).length === 0).map(r => r.hash)
+        if (toQuery.length > 0) {
+          const modrinthMetadata = await client.getProjectVersionsByHash(toQuery, 'sha1')
 
-        for (const o of options) {
-          const modrinth = modrinthMetadata[o.hash]
-          if (modrinth) {
-            o.metadata.modrinth = {
-              projectId: modrinth.project_id,
-              versionId: modrinth.id,
+          for (const o of options) {
+            const modrinth = modrinthMetadata[o.hash]
+            if (modrinth) {
+              o.metadata.modrinth = {
+                projectId: modrinth.project_id,
+                versionId: modrinth.id,
+              }
             }
           }
         }
-      }
 
-      try {
         await this.resourceService.updateResources(options.filter(o => !!o.hash))
-      } catch (e) {
-        this.logger.error(e as any)
       }
+    } catch (e) {
+      this.logger.error(e as any)
     }
   }
 
