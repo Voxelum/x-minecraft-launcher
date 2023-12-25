@@ -80,6 +80,6 @@ const extensionItems = computed(() => {
 })
 
 const { keyword, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
-const { shaderMod, shaderPack } = injection(kInstanceShaderPacks)
+const { shaderMod } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 </script>

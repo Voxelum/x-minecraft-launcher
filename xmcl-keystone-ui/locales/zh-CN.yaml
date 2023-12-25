@@ -1154,6 +1154,7 @@ setup:
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
+  enabled: 已启用的光影
   disabled: 未启用的光影
   dropHint: 导入光影包
   empty: 没有启用光影包

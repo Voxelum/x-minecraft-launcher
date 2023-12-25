@@ -1212,6 +1212,7 @@ shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
   disabled: Disabled Shader Pack
+  enabled: Enabled Shader Pack
   dropHint: Import Shader Pack
   empty: No shader pack allocated
   enable: Using {name} shader pack

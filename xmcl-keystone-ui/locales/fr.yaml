@@ -1267,6 +1267,7 @@ shaderPack:
     Cela supprimera le fichier du shaderpack {path} et ne pourra pas être
     annulé.
   disabled: Pack de shaders désactivé
+  enabled: Pack de shaders activé
   empty: Vous avez 0 shaderpack
   enable: Utilisation du shaderpack {name}
   manage: Gérer les Shaderpacks

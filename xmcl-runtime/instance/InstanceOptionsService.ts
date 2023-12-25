@@ -114,14 +114,32 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   async editIrisShaderOptions(options: EditShaderOptions): Promise<void> {
     const instancePath = options.instancePath
     const pack = options.shaderPack
-    const current = await this.getIrisShaderOptions(instancePath)
-    current.shaderPack = pack
-    const configFile = join(instancePath, 'config', 'iris.properties')
-    await writeFile(configFile, Object.entries(current).map(([k, v]) => `${k}=${v}`).join('\n') + '\n')
+    await this.#editShaderOptions(pack, instancePath, 'iris.properties')
   }
 
   async getIrisShaderOptions(instancePath: string): Promise<Record<string, string>> {
-    const filePath = join(instancePath, 'config', 'iris.properties')
+    return this.#getProperties(instancePath, 'iris.properties')
+  }
+
+  async editOculusShaderOptions(options: EditShaderOptions): Promise<void> {
+    const instancePath = options.instancePath
+    const pack = options.shaderPack
+    await this.#editShaderOptions(pack, instancePath, 'oculus.properties')
+  }
+
+  async getOculusShaderOptions(instancePath: string): Promise<Record<string, string>> {
+    return this.#getProperties(instancePath, 'oculus.properties')
+  }
+
+  async #editShaderOptions(pack: string, instancePath: string, name: string) {
+    const current = await this.getOculusShaderOptions(instancePath)
+    current.shaderPack = pack
+    const configFile = join(instancePath, 'config', name)
+    await writeFile(configFile, Object.entries(current).filter(([k, v]) => !!k && !!v).map(([k, v]) => `${k}=${v}`).join('\n') + '\n')
+  }
+
+  async #getProperties(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'config', name)
     if (await missing(filePath)) return {}
 
     const content = await readFile(filePath, 'utf-8')

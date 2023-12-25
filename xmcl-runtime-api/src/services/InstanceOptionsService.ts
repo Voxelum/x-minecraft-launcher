@@ -105,7 +105,11 @@ export interface InstanceOptionsService {
 
   editIrisShaderOptions(options: EditShaderOptions): Promise<void>
 
+  editOculusShaderOptions(options: EditShaderOptions): Promise<void>
+
   getIrisShaderOptions(instancePath: string): Promise<Record<string, string>>
+
+  getOculusShaderOptions(instancePath: string): Promise<Record<string, string>>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

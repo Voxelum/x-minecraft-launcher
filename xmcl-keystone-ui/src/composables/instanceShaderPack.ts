@@ -10,7 +10,7 @@ export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceSha
 
 export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<RuntimeVersions>, mods: Ref<ModFile[]>, gameOptions: Ref<GameOptionsState | undefined>) {
   const { link, scan } = useService(InstanceShaderPacksServiceKey)
-  const { getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
+  const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
   const linked = ref(false)
   const { refresh, refreshing } = useRefreshable(async () => {
@@ -36,7 +36,10 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
       const fabric = m.resource.metadata.fabric
       if (forge) {
         // optifine in forge
-        return forge.modid === 'optifine'
+        if (forge.modid === 'optifine') {
+          return true
+        }
+        return forge.modid === 'oculus'
       } else if (fabric) {
         if (fabric instanceof Array) {
           // optifine fabric or iris
@@ -89,6 +92,10 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
       const options = await getIrisShaderOptions(instancePath.value)
       return ['iris', options.shaderPack] as const
     }
+    if (mod?.id === 'oculus') {
+      const options = await getOculusShaderOptions(instancePath.value)
+      return ['oculus', options.shaderPack] as const
+    }
   }, { revalidateOnFocus: false })
 
   watch([shaderMod, shaderPackPath], () => {
@@ -108,6 +115,11 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
         })
       } else if (shaderPackStatus.value?.[0] === 'iris') {
         editIrisShaderOptions({
+          instancePath: instancePath.value,
+          shaderPack: v ?? '',
+        }).then(() => mutate())
+      } else if (shaderPackStatus.value?.[0] === 'oculus') {
+        editOculusShaderOptions({
           instancePath: instancePath.value,
           shaderPack: v ?? '',
         }).then(() => mutate())
