@@ -10,7 +10,8 @@ import { GFW } from '~/gfw'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { validateSha256 } from '../util/fs'
-import { AbstractService, ExposeServiceKey } from '~/service'
+import { AbstractService, ExposeServiceKey, Lock } from '~/service'
+import { AnyError } from '~/util/error'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
 
@@ -19,6 +20,8 @@ const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
  */
 @ExposeServiceKey(AuthlibInjectorServiceKey)
 export class AuthlibInjectorService extends AbstractService implements IAuthlibInjectorService {
+  #abortController = new AbortController()
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kSettings) private settings: Settings,
     @Inject(kGameDataPath) private getPath: PathResolver,
@@ -40,10 +43,16 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     })
   }
 
+  async abortAuthlibInjectorInstall(): Promise<void> {
+    this.#abortController.abort()
+  }
+
+  @Lock('authlib-injector')
   async getOrInstallAuthlibInjector(): Promise<string> {
     const jsonPath = this.getPath('authlib-injection.json')
     const root = this.getPath()
     const mc = new MinecraftFolder(root)
+    this.#abortController = new AbortController()
 
     const download = async (content: any) => {
       const name = `${AUTHLIB_ORG_NAME}:${content.version}`
@@ -59,7 +68,10 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
       }
 
       const downloadOptions = await this.app.registry.get(kDownloadOptions)
-      await this.submit(new DownloadTask({
+      if (this.#abortController.signal.aborted) {
+        throw new AnyError('AbortError', 'The authlib injector installation is aborted by user.')
+      }
+      const task = new DownloadTask({
         url: urls,
         validator: {
           algorithm: 'sha256',
@@ -67,7 +79,9 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
         },
         destination: path,
         ...downloadOptions,
-      }).setName('installAuthlibInjector'))
+      }).setName('installAuthlibInjector')
+      this.#abortController.signal.addEventListener('abort', () => task.cancel(3000))
+      await this.submit(task)
 
       return path
     }
@@ -75,7 +89,10 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     let path: string
 
     try {
-      const response = await request('https://authlib-injector.yushi.moe/artifact/latest.json', { throwOnError: true })
+      const response = await request('https://authlib-injector.yushi.moe/artifact/latest.json', {
+        throwOnError: true,
+        signal: this.#abortController.signal,
+      })
       const body = await response.body.json() as any
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)

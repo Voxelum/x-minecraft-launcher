@@ -2,6 +2,7 @@ import { ServiceKey } from './Service'
 
 export interface AuthlibInjectorService {
   isAuthlibInjectorReady(): Promise<boolean>
+  abortAuthlibInjectorInstall(): Promise<void>
   getOrInstallAuthlibInjector(): Promise<string>
 }
 

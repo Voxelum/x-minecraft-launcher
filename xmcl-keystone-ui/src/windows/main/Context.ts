@@ -19,7 +19,6 @@ import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVers
 import { kInstanceVersionDiagnose, useInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
-import { kLaunchStatus, useLaunchStatus } from '@/composables/launch'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
@@ -93,7 +92,6 @@ export default defineComponent({
     provide(kInstances, instances)
     provide(kInstance, instance)
     provide(kLocalVersions, localVersions)
-    provide(kLaunchStatus, useLaunchStatus())
     provide(kInstanceLaunch, instanceLaunch)
 
     provide(kInstanceVersion, instanceVersion)
