@@ -184,7 +184,7 @@ const modVersions = computed(() => {
   }
 
   for (const i of installed) {
-    const mcDep = (i as ModFile).dependencies.find(d => d.modId === 'minecraft')
+    const mcDep = 'dependencies' in i ? (i as ModFile).dependencies.find(d => d.modId === 'minecraft') : undefined
     versions.push({
       id: i.curseforge?.fileId.toString() ?? '',
       name: i.resource.name ?? '',
