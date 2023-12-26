@@ -43,6 +43,9 @@ function CallSiteToString(this: any) {
       }
     }
   }
+  if (fileLocation.startsWith('node:internal')) {
+    fileLocation = fileLocation.replace('node:internal', 'internal')
+  }
 
   let line = ''
   const functionName = this.getFunctionName()
@@ -82,7 +85,7 @@ function CallSiteToString(this: any) {
 }
 
 const buildNumber = process.env.BUILD_NUMBER
-const url = `https://client.xmcl.app/${buildNumber}`
+const url = `/${buildNumber}`
 
 const wrapCallSite = (frame: any) => {
   if (frame.isNative()) return frame
