@@ -1,26 +1,5 @@
-import { Logger } from '~/logger'
-import { HAS_DEV_SERVER } from '~/constant'
-import { checksum } from '~/util/fs'
-import { readFile, writeFile } from 'fs/promises'
 import { Worker } from 'worker_threads'
-
-export const checkUpdate = async (path: string, logger: Logger) => {
-  if (!HAS_DEV_SERVER) {
-    logger.log('Try to update worker js as this is PROD')
-    const workerJsPath = path.replace('.unpacked', '')
-    const asarWorkerJsPath = path
-    const realSha = await checksum(workerJsPath, 'sha1').catch(e => undefined)
-    const expectSha = await checksum(asarWorkerJsPath, 'sha1').catch(e => undefined)
-    if (realSha !== expectSha) {
-      logger.log('The worker js checksum not matched. Replace with the asar worker js.')
-      await writeFile(workerJsPath, await readFile(asarWorkerJsPath))
-    } else {
-      logger.log('The worker js checksum matched. Skip to replace asar worker js.')
-    }
-  } else {
-    logger.log('Skip to update worker js as this is DEV')
-  }
-}
+import { Logger } from '~/logger'
 
 export const createLazyWorker = <T>(factory: () => Worker, methods: Array<keyof T>, logger: Logger): T => {
   let threadWorker: Worker | undefined

@@ -49,7 +49,7 @@ export default function createWorkerPlugin(): Plugin {
             : `
           import { join, dirname } from 'path';
           import { Worker } from 'worker_threads';
-          export const path = join(__dirname.replace("app.asar", "app.asar.unpacked"), ${JSON.stringify(fileName)});
+          export const path = join(__dirname.replace("app.asar", "app.asar"), ${JSON.stringify(fileName)});
           export default function (options) { return new Worker(path, options); }`,
           resolveDir: outDir,
         }

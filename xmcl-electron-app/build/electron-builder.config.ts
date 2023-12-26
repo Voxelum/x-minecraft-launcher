@@ -32,9 +32,6 @@ export const config = {
     to: '.',
     filter: 'package.json',
   }],
-  asarUnpack: [
-    '**/*.worker.js',
-  ],
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
     artifactName: 'xmcl-${version}.${ext}',
