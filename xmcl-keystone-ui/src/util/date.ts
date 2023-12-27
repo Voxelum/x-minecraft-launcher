@@ -12,9 +12,6 @@ export function getLocalDateString(s: string | number, options?: TimeFormatOptio
     return d.toLocaleString()
   }
 }
-export function getLocalTimeString(s: string | number) {
-  return new Date(s).toLocaleString()
-}
 
 export enum TimeUnit {
   Second = 1000,

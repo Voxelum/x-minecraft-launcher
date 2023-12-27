@@ -17,7 +17,7 @@
             {{ news.title }}
           </v-card-title>
           <v-card-subtitle>
-            {{ new Date(news.date).toLocaleDateString() }}
+            {{ getDateString(news.date, { dateStyle: 'long' }) }}
           </v-card-subtitle>
           <v-card-text
             class="flex-grow"
@@ -40,6 +40,7 @@
   </v-hover>
 </template>
 <script lang="ts" setup>
+import { useDateString } from '@/composables/date'
 import { NewsItem } from '@/composables/mojangNews'
 
 const props = defineProps<{
@@ -47,7 +48,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-
+const { getDateString } = useDateString()
 const nav = () => {
   window.location.href = props.news.readMoreLink
 }
