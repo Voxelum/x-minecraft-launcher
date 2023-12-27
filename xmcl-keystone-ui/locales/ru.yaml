@@ -499,9 +499,12 @@ launchFailed:
   latestLog: Последние логи
   title: Игра завершилась с аномальным кодом
 launchStatus:
+  assigningMemory: Назначение памяти
   injectingAuthLib: Настройка стороннего AuthLib
   launching: Запуск...
   launchingSlow: Все еще запускается... Запуск графического движка может быть медленным...
+  refreshingUser: Обновление токена пользователя
+  spawningProcess: ''
 launcherUpdate:
   alreadyLatest: Последняя версия
   installAndQuit: Перезапустите, чтобы установить
@@ -602,8 +605,8 @@ mod:
   showInModrinth: Показать {name} на Modrinth
 modInstall:
   install: Скачать
-  search: Результаты поиска
   installed: Скачан
+  search: Результаты поиска
   searchHint: Найдите и выберите проект
 modSearchType:
   all: Все
@@ -1174,10 +1177,10 @@ setup:
 shaderPack:
   deletion: Удалить шейдер
   deletionHint: Это удалит файл шейдера {path} и будет невозможно восстановить его.
-  enabled: Включенный пакет шейдеров
   disabled: Отключенный пакет шейдеров
   empty: Шейдер не выделен
   enable: Использование шейдера {name}
+  enabled: Включенный пакет шейдеров
   manage: Управление шейдерами
   name: Шейдер
   showDirectory: Открыть расположение шейдеров

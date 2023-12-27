@@ -17,6 +17,7 @@ interface LaunchServiceEventMap {
   'minecraft-exit': LaunchOptions & { pid: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string }
   'minecraft-stdout': { pid: number; stdout: string }
   'minecraft-stderr': { pid: number; stdout: string }
+  'minecraft-launch-status-pre': { record: Record<string, number>; alreadyTimeout?: string }
   'error': LaunchException
 }
 
@@ -131,6 +132,8 @@ export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap
    * Get all game processes
    */
   getGameProcesses(): Promise<GameProcess[]>
+
+  reportLaunchStatus(record: Record<string, number>, alreadyTimeout?: number): Promise<void>
 }
 
 export type LaunchExceptions = {

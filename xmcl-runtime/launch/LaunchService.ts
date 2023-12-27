@@ -347,4 +347,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
       options: v.options,
     }))
   }
+
+  async reportLaunchStatus(record: Record<string, number>, alreadyTimeout?: number | undefined): Promise<void> {
+    this.emit('minecraft-launch-status-pre', { record, alreadyTimeout })
+  }
 }

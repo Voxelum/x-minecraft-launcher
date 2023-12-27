@@ -514,10 +514,13 @@ launchFailed:
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
 launchStatus:
+  assigningMemory: Assigning memory
   exit: Exit Game?
   injectingAuthLib: Seting-up Thirdparty AuthLib
   launching: Launching...
   launchingSlow: Still launching... Starting graphic engine can be slow...
+  refreshingUser: Refreshing User Token
+  spawningProcess: Spawning Process
 launcherUpdate:
   alreadyLatest: Up To Date
   installAndQuit: Restart to Install
@@ -627,10 +630,10 @@ modInstall:
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   install: Install
-  search: Search Result
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   noVersionSupported: Mod does not support current Minecraft version
+  search: Search Result
   searchHint: Search and select project
   source: Mod Source
   switch: Swtich Version
@@ -1212,10 +1215,10 @@ shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
   disabled: Disabled Shader Pack
-  enabled: Enabled Shader Pack
   dropHint: Import Shader Pack
   empty: No shader pack allocated
   enable: Using {name} shader pack
+  enabled: Enabled Shader Pack
   manage: Manage Shader Packs
   name: Shader Pack
   searchHint: Search Shader Pack

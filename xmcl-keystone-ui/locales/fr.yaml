@@ -559,11 +559,14 @@ launchFailed:
   latestLog: Dernier log
   title: Jeu terminé avec un code anormal
 launchStatus:
+  assigningMemory: Attribution de mémoire
   injectingAuthLib: Configuration d'AuthLib tiers
   launching: Lancement...
   launchingSlow: >-
     Toujours en cours de lancement... Le démarrage du moteur graphique peut être
     lent...
+  refreshingUser: Actualisation du jeton utilisateur
+  spawningProcess: ''
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer
@@ -1267,9 +1270,9 @@ shaderPack:
     Cela supprimera le fichier du shaderpack {path} et ne pourra pas être
     annulé.
   disabled: Pack de shaders désactivé
-  enabled: Pack de shaders activé
   empty: Vous avez 0 shaderpack
   enable: Utilisation du shaderpack {name}
+  enabled: Pack de shaders activé
   manage: Gérer les Shaderpacks
   name: Shaderpack
   showDirectory: Afficher le répertoire du shaderpack

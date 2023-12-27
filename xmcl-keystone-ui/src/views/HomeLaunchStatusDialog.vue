@@ -42,12 +42,12 @@
               class="blink"
               :steps="launchingSteps"
             />
-            <!-- <div
-              class="transition-all text-transparent"
-              :class="{ 'text-gray-500': status === 'injectingAuthLib' }"
+            <div
+              class="text-transparent transition-all"
+              :class="{ 'text-gray-500': launchingStatus !== '' }"
             >
-              {{ t('launchStatus.injectingAuthLib') + ` (${userProfile.authService})` + '...' }}
-            </div> -->
+              {{ hint + '...' }}
+            </div>
           </v-flex>
         </v-layout>
       </v-container>
@@ -86,11 +86,21 @@ import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
 
 const { t } = useI18n()
-const { launching, windowReady, kill } = injection(kInstanceLaunch)
+const { launching, windowReady, kill, launchingStatus } = injection(kInstanceLaunch)
 const exiting = ref(false)
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (isKilling) => {
   exiting.value = !!isKilling
 })
+
+const hint = computed(() => launchingStatus.value === 'preparing-authlib'
+  ? t('launchStatus.injectingAuthLib')
+  : launchingStatus.value === 'assigning-memory'
+    ? t('launchStatus.assigningMemory')
+    : launchingStatus.value === 'refreshing-user'
+      ? t('launchStatus.refreshingUser')
+      : launchingStatus.value === 'spawning-process'
+        ? t('launchStatus.spawningProcess')
+        : '')
 
 const launchingSteps = computed(() => [
   t('launchStatus.launching'),

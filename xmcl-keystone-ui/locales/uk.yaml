@@ -517,10 +517,13 @@ launchFailed:
   latestLog: Останні логі
   title: Гра завершилася з аномальним кодом
 launchStatus:
+  assigningMemory: Призначення пам'яті
   exit: Вийти З ГРИ?
   injectingAuthLib: Налаштування стороннього AuthLib
   launching: Запуск...
   launchingSlow: Все ще запускається... Запуск графічного двигуна може бути повільним.
+  refreshingUser: Оновлення маркера користувача
+  spawningProcess: ''
 launcherUpdate:
   alreadyLatest: Остання версія
   installAndQuit: Перезапустіть, щоб встановити
@@ -632,8 +635,8 @@ modInstall:
   installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
   installed: Встановлено
   noVersionSupported: Мод не підтримує поточну версію Minecraft
-  searchHint: Пошук та вибір проекту
   search: Результат пошуку
+  searchHint: Пошук та вибір проекту
   source: Джерело мода
   switch: Змінити версію
   upgrade: Оновлення модифікацій
@@ -1225,10 +1228,10 @@ setup:
 shaderPack:
   deletion: Видалити шейдер
   deletionHint: Це видалити файл шейдера {path} і неможливо буде відновити його.
-  enabled: Увімкнений пакет шейдерів
   disabled: Вимкнений пакет шейдерів
   empty: Шейдер не виділено
   enable: Використання шейдера {name}
+  enabled: Увімкнений пакет шейдерів
   manage: Управління шейдерами
   name: Шейдер
   showFile: Відкрити цей шейдер у папці

@@ -396,6 +396,9 @@ items:
 java:
   allocatedLong: Usar Java predeterminada del sistema
   allocatedShort: Asignación Automática
+launchStatus:
+  refreshingUser: Actualizar token de usuario
+  spawningProcess: ''
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros
@@ -445,11 +448,11 @@ modInstall:
   checkedUpgrade: Actualizaciones verificadas
   currentVersion: Versión Seleccionada
   dependencyHint: 'Otra versión instalada: {version}'
-  search: Resultado de la Búsqueda
   install: Instalar
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: El Mod no es compatible con la versión actual de Minecraft
+  search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto
   source: Fuente de Mods
   switch: Cambiar Versión

@@ -9,7 +9,7 @@ export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>>
 
 export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
   const { refreshUser } = useService(UserServiceKey)
-  const { launch, kill, on, getGameProcesses } = useService(LaunchServiceKey)
+  const { launch, kill, on, getGameProcesses, reportLaunchStatus } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { abortRefresh } = useService(UserServiceKey)
@@ -20,7 +20,8 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
 
   const error = ref<any | undefined>(undefined)
 
-  const { data, mutate } = useSWRV(`/${instance.value.path}/games`, async () => {
+  const { data, mutate } = useSWRV(computed(() => `/${instance.value.path}/games`), async () => {
+    console.log('revalidate game processes')
     const processes = await getGameProcesses()
     const filtered = processes.filter(p => p.options.gameDirectory === instance.value.path)
     return filtered
@@ -158,7 +159,25 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  watch(launchingStatus, (v) => console.log(v))
+  let last = 0
+  const record = {} as Record<string, number>
+  let timeout: any
+  watch(launchingStatus, (newVal, oldVal) => {
+    if (oldVal !== '') {
+      const duration = performance.now() - last
+      record[oldVal] = duration
+      if (!newVal) {
+        reportLaunchStatus(record)
+        clearTimeout(timeout)
+      }
+    } else {
+      // start timming
+      last = performance.now()
+      timeout = setTimeout(() => {
+        reportLaunchStatus(record, 30_000)
+      }, 30_000)
+    }
+  })
 
   return {
     launch: launchGame,
@@ -167,6 +186,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     error,
     count,
     launching,
+    launchingStatus,
     generateLaunchOptions,
   }
 }

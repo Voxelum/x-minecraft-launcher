@@ -102,6 +102,18 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     client.flush()
   })
 
+  app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
+    if (serviceName === 'LaunchService' && serviceMethod === 'launch') {
+      client.trackRequest({
+        name: `${serviceName}.${serviceMethod}`,
+        url: `/${serviceName}/${serviceMethod}`,
+        resultCode: success ? 200 : 500,
+        duration,
+        success,
+      })
+    }
+  })
+
   app.on('engine-ready', async () => {
     const settings = await app.registry.get(kSettings)
     app.registry.getOrCreate(NatService).then(async (service) => {
@@ -136,25 +148,33 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           properties: options,
         })
       })
-      .on('minecraft-exit', ({ code, signal, crashReport }) => {
-        if (settings.disableTelemetry) return
-        const normalExit = code === 0
-        const crashed = crashReport && crashReport.length > 0
-        if (normalExit) {
+        .on('minecraft-exit', ({ code, signal, crashReport }) => {
+          if (settings.disableTelemetry) return
+          const normalExit = code === 0
+          const crashed = crashReport && crashReport.length > 0
+          if (normalExit) {
+            client.trackEvent({
+              name: 'minecraft-exit',
+            })
+          } else {
+            client.trackEvent({
+              name: 'minecraft-exit',
+              properties: {
+                code,
+                signal,
+                crashed,
+              },
+            })
+          }
+        }).on('minecraft-launch-status-pre', ({ alreadyTimeout, record }) => {
           client.trackEvent({
-            name: 'minecraft-exit',
-          })
-        } else {
-          client.trackEvent({
-            name: 'minecraft-exit',
+            name: 'minecraft-launch-status-pre',
             properties: {
-              code,
-              signal,
-              crashed,
+              alreadyTimeout,
+              record,
             },
           })
-        }
-      })
+        })
 
       if (!flights.disableMinecraftRunLog) {
         service.registerMiddleware({

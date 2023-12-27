@@ -56,13 +56,16 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
       return { error }
     }
 
+    const start = Date.now()
     try {
       const r = await (serv as any)[serviceMethod](...payload)
+      app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, true)
       if (isStateObject(r)) {
         return { result: serviceStateManager.serializeAndTrack(client, r) }
       }
       return { result: r }
     } catch (e) {
+      app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, false)
       logger.warn(`Error during service call ${serviceName}.${serviceMethod}:`)
       if (e instanceof Error) {
         logger.error(e, serviceName)

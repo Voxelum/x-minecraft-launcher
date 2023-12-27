@@ -549,10 +549,13 @@ launchFailed:
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
 launchStatus:
+  assigningMemory: Speicher zuweisen
   exit: Das Spiel aufgeben?
   injectingAuthLib: Einrichten einer AuthLib eines Drittanbieters
   launching: Starten...
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
+  refreshingUser: Aktualisierung des Benutzertokens
+  spawningProcess: ''
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
