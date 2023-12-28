@@ -84,7 +84,7 @@ export const isSpecialFile = (relativePath: string) =>
 export async function decoareteInstanceFileFromResourceCache(
   localFile: InstanceFile,
   stat: Stats,
-  filePath: string,
+  instancePath: string,
   worker: ResourceWorker,
   resourceService: ResourceService,
   undecorated: Array<InstanceFile>,
@@ -92,6 +92,7 @@ export async function decoareteInstanceFileFromResourceCache(
   hashes?: string[],
 ) {
   const relativePath = localFile.path
+  const filePath = join(instancePath, relativePath)
   const ino = stat.ino
   if (isSpecialFile(relativePath)) {
     let resource = await resourceService.getReosurceByIno(ino)
