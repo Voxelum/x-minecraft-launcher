@@ -456,6 +456,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
+    if (result.runtime && state.version && typeof result.version === 'undefined') {
+      // Reset the version if the runtime is changed
+      result.version = ''
+    }
+
     if ('server' in options) {
       if (options.server) {
         if (options.server.host !== state.server?.host || options.server.port !== state.server.port) {

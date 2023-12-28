@@ -21,6 +21,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
               ...runtime.value,
               fabricLoader: version.version,
             },
+            version: '',
           })
           return true
         }
@@ -35,6 +36,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
               ...runtime.value,
               quiltLoader: version.version,
             },
+            version: '',
           })
           return true
         }
@@ -48,6 +50,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
               ...runtime.value,
               forge: version.version,
             },
+            version: '',
           })
           return true
         }
@@ -61,6 +64,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
               ...runtime.value,
               neoForged: version,
             },
+            version: '',
           })
           return true
         }
