@@ -103,7 +103,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
-    if (serviceName === 'LaunchService' && serviceMethod === 'launch') {
+    const shouldTrack = () => {
+      if (serviceName === 'LaunchService' && serviceMethod === 'launch') return true
+      if (serviceName === 'UserSerivce' && serviceMethod === 'refreshUser') return true
+      return false
+    }
+    if (shouldTrack()) {
       client.trackRequest({
         name: `${serviceName}.${serviceMethod}`,
         url: `/${serviceName}/${serviceMethod}`,

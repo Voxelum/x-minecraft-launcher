@@ -123,7 +123,10 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       if (!options.skipAssetsCheck) {
         launchingStatus.value = 'refreshing-user'
         try {
-          await refreshUser(userProfile.value.id)
+          await Promise.race([
+            new Promise((resolve) => { setTimeout(resolve, 5_000) }),
+            refreshUser(userProfile.value.id),
+          ])
         } catch (e) {
         }
       }
@@ -166,6 +169,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     if (oldVal !== '') {
       const duration = performance.now() - last
       record[oldVal] = duration
+      record[newVal] = -1
       if (!newVal) {
         reportLaunchStatus(record)
         clearTimeout(timeout)
@@ -173,6 +177,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     } else {
       // start timming
       last = performance.now()
+      record[newVal] = -1
       timeout = setTimeout(() => {
         reportLaunchStatus(record, 30_000)
       }, 30_000)
