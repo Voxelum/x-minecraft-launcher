@@ -20,7 +20,7 @@ async function main() {
         const today = new Date()
         content = `---\nversion: ${version}\ndate: ${today.getUTCFullYear()}-${(today.getUTCMonth() + 1).toString().padStart(2, '0')}-${today.getUTCDate().toString().padStart(2, '0')}\nlayout: changelog\n---\n${content}`
         try {
-            writeFileSync(`xmcl-page/src/pages/${l}/changelogs/${version}.md`, content)
+            writeFileSync(`xmcl-page/docs/${l}/changelogs/${version}.md`, content)
         } catch (e) {
             console.error(`Fail to update ${l} release note:`)
             console.error(e)
