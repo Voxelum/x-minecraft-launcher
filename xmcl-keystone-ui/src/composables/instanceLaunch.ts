@@ -126,7 +126,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
 
     const options: LaunchOptions = {
       operationId: id,
-      version: instance.value.version || ver.id,
+      version: ver.id,
       gameDirectory: instance.value.path,
       user: userProfile.value,
       java: javaRec.path,

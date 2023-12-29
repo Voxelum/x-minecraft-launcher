@@ -5,9 +5,9 @@ import { useState } from './syncableState'
 
 export const kInstanceSave: InjectionKey<ReturnType<typeof useInstanceSaves>> = Symbol('InstanceSave')
 
-export function useInstanceSaves(instance: Ref<Instance>) {
+export function useInstanceSaves(instancePath: Ref<string>) {
   const { watch } = useService(InstanceSavesServiceKey)
-  const { state, isValidating, error } = useState(() => instance.value.path ? watch(instance.value.path) : undefined, Saves)
+  const { state, isValidating, error } = useState(() => instancePath.value ? watch(instancePath.value) : undefined, Saves)
 
   const saves = computed(() => state.value?.saves || [])
 

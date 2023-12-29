@@ -188,6 +188,8 @@ export interface InstanceService {
    * @returns The instance path
    */
   acquireInstanceById(id: string): Promise<string>
+
+  validateInstancePath(path: string): Promise<'bad' | 'nondictionary' | 'noperm' | 'exists' | undefined>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'

@@ -6,6 +6,7 @@ export const kLaunchTask: InjectionKey<ReturnType<typeof useLaunchTask>> = Symbo
 
 export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<LocalVersionHeader>) {
   return useTask((i) => {
+    if (!path.value) return false
     const p = i.param as any
     if (i.state === TaskState.Cancelled || i.state === TaskState.Succeed || i.state === TaskState.Failed) {
       return false

@@ -1,8 +1,8 @@
+import { Platform } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
-import { mkdir, readdir, stat, unlink, writeFile } from 'fs/promises'
+import { mkdir, readdir, rmdir, stat, unlink, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { isSystemError } from '../util/error'
-import { Platform } from '@xmcl/runtime-api'
 
 export async function validateDirectory(platform: Platform, path: string) {
   // Check if the path is the root of the drive
@@ -38,7 +38,7 @@ export async function validateDirectory(platform: Platform, path: string) {
     // Check if we have permission to create the directory
     try {
       await mkdir(path, { recursive: true })
-      await unlink(path)
+      await rmdir(path)
     } catch (e) {
       if (isSystemError(e)) {
         if (e.code === 'EACCES') {

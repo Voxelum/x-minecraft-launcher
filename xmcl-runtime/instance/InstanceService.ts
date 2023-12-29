@@ -661,4 +661,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.log(`Create new instance ${id} -> ${instancePath}`)
     return path
   }
+
+  async validateInstancePath(path: string) {
+    const err = await validateDirectory(this.app.platform, path)
+    if (err && err !== 'exists') {
+      return err
+    }
+    if (this.state.all[path]) {
+      return undefined
+    }
+    return await this.loadInstance(path).catch(() => 'bad') ? undefined : 'bad'
+  }
 }

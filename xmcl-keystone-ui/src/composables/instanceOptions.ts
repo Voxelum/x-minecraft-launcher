@@ -5,16 +5,16 @@ import { useState } from './syncableState'
 
 export const kInstanceOptions: InjectionKey<ReturnType<typeof useInstanceOptions>> = Symbol('InstanceOptions')
 
-export function useInstanceOptions(instance: Ref<Instance>) {
+export function useInstanceOptions(instancePath: Ref<string>) {
   const { editGameSetting, watch: watchOptions } = useService(InstanceOptionsServiceKey)
-  const { state, isValidating, error } = useState(() => instance.value.path ? watchOptions(instance.value.path) : undefined, GameOptionsState)
+  const { state, isValidating, error } = useState(() => instancePath.value ? watchOptions(instancePath.value) : undefined, GameOptionsState)
   const { locale } = useI18n()
 
   watch(state, (newOps) => {
     if (newOps) {
       if (newOps.lang === '') {
         editGameSetting({
-          instancePath: instance.value.path,
+          instancePath: instancePath.value,
           lang: locale.value.toLowerCase().replace('-', '_'),
           resourcePacks: newOps.resourcePacks,
         })

@@ -12,8 +12,7 @@ export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol(
  * Hook of a view of all instances & some deletion/selection functions
  */
 export function useInstances() {
-  const path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
-  const { createInstance, getSharedInstancesState, editInstance, deleteInstance } = useService(InstanceServiceKey)
+  const { createInstance, getSharedInstancesState, editInstance, deleteInstance, validateInstancePath } = useService(InstanceServiceKey)
   const { state, isValidating, error } = useState(getSharedInstancesState, class extends InstanceState {
     override instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
       const inst = this.instances.find(i => i.path === (settings.path))!
@@ -46,6 +45,8 @@ export function useInstances() {
   })
   const _instances = computed(() => state.value?.instances ?? [])
   const { instances, setToPrevious } = useSortedInstance(_instances)
+  const _path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
+  const path = ref('')
 
   async function edit(options: EditInstanceOptions & { instancePath: string }) {
     await editInstance(options)
@@ -65,21 +66,47 @@ export function useInstances() {
       }
     }
   }
-  watch(state, async () => {
-    let firstInstancePath = instances.value[0]?.path ?? ''
-    if (!firstInstancePath) {
-      firstInstancePath = await createInstance({
-        name: 'Minecraft',
-      })
-      path.value = firstInstancePath
-    }
-    const existed = instances.value.find(i => i.path === path.value)
-    if (!path.value || !existed) {
-      // Select the first instance
-      path.value = firstInstancePath
+  watch(state, async (newVal, oldVal) => {
+    if (!newVal) return
+    debugger
+    if (!oldVal) {
+      // initialize
+      const instances = [...newVal.instances]
+      const lastSelectedPath = _path.value
+
+      const selectDefault = async () => {
+        // Select the first instance
+        let defaultPath = instances[0]?.path as string | undefined
+        if (!defaultPath) {
+          // Create a default instance
+          defaultPath = await createInstance({
+            name: 'Minecraft',
+          })
+        }
+        _path.value = defaultPath
+      }
+
+      if (lastSelectedPath) {
+        // Validate the last selected path
+        if (!instances.some(i => i.path === lastSelectedPath)) {
+          const badInstance = await validateInstancePath(lastSelectedPath)
+          if (badInstance) {
+            await selectDefault()
+          }
+        }
+      } else {
+        // No selected, try to select the first instance
+        await selectDefault()
+      }
+
+      path.value = _path.value
     }
   })
   watch(path, (newPath) => {
+    if (newPath !== _path.value) {
+      // save to local storage
+      _path.value = newPath
+    }
     editInstance({
       instancePath: newPath,
       lastAccessDate: Date.now(),
