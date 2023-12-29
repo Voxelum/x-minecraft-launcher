@@ -20,7 +20,11 @@ export class ModrinthService extends AbstractService implements IModrinthService
   @Singleton((o) => `${o.version.id}`)
   async installVersion({ version, icon, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const primaryFiles = version.files.filter(f => f.primary)
-    const files = primaryFiles.length === 0 ? version.files : primaryFiles
+    let files = primaryFiles.length === 0 ? version.files : primaryFiles
+    if (files.some(f => f.filename.endsWith('.zip')) &&
+      files.some(f => f.filename.endsWith('.mrpack') || f.filename.endsWith('.jar'))) {
+      files = files.filter(f => f.filename.endsWith('.mrpack') || f.filename.endsWith('.jar'))
+    }
     const isSingleFile = files.length === 1
     const resources = await Promise.all(files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
