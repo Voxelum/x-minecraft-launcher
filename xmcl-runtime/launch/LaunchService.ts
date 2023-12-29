@@ -1,11 +1,10 @@
-import { LaunchPrecheck, MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, Version, createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, generateArguments, launch } from '@xmcl/core'
-import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
+import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, Version, createMinecraftProcessWatcher, generateArguments, launch } from '@xmcl/core'
+import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
+import { randomUUID } from 'crypto'
 import { EOL } from 'os'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { EncodingWorker, kEncodingWorker } from '~/encoding'
-import { InstallService } from '~/install'
-import { JavaService, JavaValidation } from '~/java'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { UserTokenStorage, kUserTokenStorage } from '~/user'
 import { LauncherApp } from '../app/LauncherApp'
@@ -16,11 +15,9 @@ import { LaunchMiddleware } from './LaunchMiddleware'
 export class LaunchService extends AbstractService implements ILaunchService {
   private processes: Record<number, GameProcess & { process: ChildProcess }> = {}
 
-  private plugins: LaunchMiddleware[] = []
+  private middlewares: LaunchMiddleware[] = []
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstallService) private installService: InstallService,
-    @Inject(JavaService) private javaService: JavaService,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
@@ -29,7 +26,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
   }
 
   registerMiddleware(plugin: LaunchMiddleware) {
-    this.plugins.push(plugin)
+    this.middlewares.push(plugin)
   }
 
   getProcesses(): number[] {
@@ -46,12 +43,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
     const minMemory: number | undefined = options.maxMemory
     const maxMemory: number | undefined = options.minMemory
-    const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
 
     /**
      * Build launch condition
      */
-    const launchOptions: ResolvedLaunchOptions = {
+    const launchOptions: ResolvedLaunchOptions & { version: ResolvedVersion } = {
       gameProfile,
       accessToken,
       properties: {},
@@ -70,7 +66,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       launcherBrand: options?.launcherBrand ?? '',
       launcherName: options?.launcherName ?? 'XMCL',
       yggdrasilAgent,
-      prechecks,
+      prechecks: [],
     }
 
     const getAddress = () => {
@@ -141,6 +137,19 @@ export class LaunchService extends AbstractService implements ILaunchService {
     }
   }
 
+  async #track<T>(promise: Promise<T>, name: string, id: string): Promise<T> {
+    const start = performance.now()
+    this.emit('launch-performance-pre', { id, name })
+    try {
+      const result = await promise
+      this.emit('launch-performance', { id, name, duration: performance.now() - start, success: true })
+      return result
+    } catch (e) {
+      this.emit('launch-performance', { id, name, duration: performance.now() - start, success: false })
+      throw e
+    }
+  }
+
   /**
    * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
    * @returns Does this launch request success?
@@ -151,11 +160,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const javaPath = options.java
 
       let version: ResolvedVersion | undefined
+      const operationId = options.operationId || randomUUID()
 
       if (options.version) {
         this.log(`Override the version: ${options.version}`)
         try {
-          version = await Version.parse(this.getPath(), options.version)
+          version = await this.#track(Version.parse(this.getPath(), options.version), 'parse-version', operationId)
         } catch (e) {
           this.warn(`Cannot use override version: ${options.version}`)
           this.warn(e)
@@ -169,51 +179,22 @@ export class LaunchService extends AbstractService implements ILaunchService {
         })
       }
 
-      if (!options?.skipAssetsCheck) {
-        const resolvedVersion = version
-        const resourceFolder = new MinecraftFolder(this.getPath())
-        await Promise.all([
-          diagnoseJar(resolvedVersion, resourceFolder).then((issue) => {
-            if (issue) {
-              return this.installService.installMinecraftJar(resolvedVersion)
-            }
-          }),
-          diagnoseLibraries(version, resourceFolder).then(async (libs) => {
-            if (libs.length > 0) {
-              await this.installService.installLibraries(libs.map(l => l.library))
-            }
-          }),
-        ])
-      }
-
       this.log(`Will launch with ${version.id} version.`)
 
       if (!javaPath) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
 
-      const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
+      const accessToken = user ? await this.#track(this.userTokenStorage.get(user).catch(() => undefined), 'get-user-token', operationId) : undefined
       const launchOptions = this.#generateOptions(options, version, accessToken)
       const context = {}
-      for (const plugin of this.plugins) {
+      for (const plugin of this.middlewares) {
         try {
-          await plugin.onBeforeLaunch(options, launchOptions, context)
+          await this.#track(plugin.onBeforeLaunch(options, launchOptions, context), plugin.name, operationId)
         } catch (e) {
           this.warn('Fail to run plugin')
           this.error(e as any)
         }
-      }
-
-      try {
-        const result = await this.javaService.validateJavaPath(javaPath)
-        if (result === JavaValidation.NotExisted) {
-          throw new LaunchException({ type: 'launchInvalidJavaPath', javaPath })
-        }
-        if (result === JavaValidation.NoPermission) {
-          throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
-        }
-      } catch (e) {
-        throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Cannot launch without a valid java', { cause: e })
       }
 
       if (launchOptions.server) {
@@ -234,7 +215,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       }
 
       // Launch
-      const process = await launch(launchOptions)
+      const process = await this.#track(launch(launchOptions), 'launch', operationId)
       const processData = {
         pid: process.pid!,
         options,
@@ -286,7 +267,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
         Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
-          for (const plugin of this.plugins) {
+          for (const plugin of this.middlewares) {
             try {
               plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation }, launchOptions, context)
             } catch (e) {
@@ -348,7 +329,19 @@ export class LaunchService extends AbstractService implements ILaunchService {
     }))
   }
 
-  async reportLaunchStatus(record: Record<string, number>, alreadyTimeout?: number | undefined): Promise<void> {
-    this.emit('minecraft-launch-status-pre', { record, alreadyTimeout })
+  async reportOperation(payload: ReportOperationPayload): Promise<void> {
+    if ('duration' in payload) {
+      this.emit('launch-performance', {
+        id: payload.operationId,
+        name: payload.name,
+        duration: payload.duration,
+        success: payload.success,
+      })
+    } else {
+      this.emit('launch-performance-pre', {
+        id: payload.operationId,
+        name: payload.name,
+      })
+    }
   }
 }

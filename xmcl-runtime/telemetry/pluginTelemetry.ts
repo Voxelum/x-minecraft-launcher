@@ -171,18 +171,32 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
               },
             })
           }
-        }).on('minecraft-launch-status-pre', ({ alreadyTimeout, record }) => {
+        }).on('launch-performance', ({ name, id, duration }) => {
+          if (settings.disableTelemetry) return
           client.trackEvent({
-            name: 'minecraft-launch-status-pre',
-            properties: {
-              alreadyTimeout,
-              record,
+            name,
+            measurements: {
+              duration,
+            },
+            tagOverrides: {
+              [contract.operationId]: id,
+              [contract.operationName]: name,
+            },
+          })
+        }).on('launch-performance-pre', ({ name, id }) => {
+          if (settings.disableTelemetry) return
+          client.trackEvent({
+            name: name + '-pre',
+            tagOverrides: {
+              [contract.operationId]: id,
+              [contract.operationName]: name,
             },
           })
         })
 
       if (!flights.disableMinecraftRunLog) {
         service.registerMiddleware({
+          name: 'minecraft-run-record',
           async onBeforeLaunch(_, { gamePath }, ctx) {
             const state = stateManager.get<InstanceModsState>(getInstanceModStateKey(gamePath))
             const mods = state?.mods.map(m => {

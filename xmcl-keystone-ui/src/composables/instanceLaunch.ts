@@ -9,7 +9,7 @@ export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>>
 
 export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
   const { refreshUser } = useService(UserServiceKey)
-  const { launch, kill, on, getGameProcesses, reportLaunchStatus } = useService(LaunchServiceKey)
+  const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { abortRefresh } = useService(UserServiceKey)
@@ -55,7 +55,33 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     data.value = data.value?.filter(p => p.pid !== pid)
   })
 
-  async function generateLaunchOptions() {
+  async function track<T>(p: Promise<T>, name: string, id: string) {
+    const start = performance.now()
+    reportOperation({
+      name,
+      operationId: id,
+    })
+    try {
+      const v = await p
+      reportOperation({
+        duration: performance.now() - start,
+        name,
+        operationId: id,
+        success: true,
+      })
+      return v
+    } catch (e) {
+      reportOperation({
+        duration: performance.now() - start,
+        name,
+        operationId: id,
+        success: false,
+      })
+      throw e
+    }
+  }
+
+  async function generateLaunchOptions(id: string) {
     const ver = resolvedVersion.value
     if (!ver || 'requirements' in ver) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
@@ -71,7 +97,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     if (authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
       launchingStatus.value = 'preparing-authlib'
       yggdrasilAgent = {
-        jar: await getOrInstallAuthlibInjector(),
+        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
         server: userProfile.value.authority,
       }
     }
@@ -88,7 +114,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       // noop
     } else if (assignMemory === 'auto') {
       launchingStatus.value = 'assigning-memory'
-      const mem = await getMemoryStatus()
+      const mem = await track(getMemoryStatus(), 'get-memory-status', id)
       minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
     } else {
       minMemory = undefined
@@ -99,6 +125,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     const mcOptions = inst.mcOptions ?? globalMcOptions.value.filter(v => !!v)
 
     const options: LaunchOptions = {
+      operationId: id,
       version: instance.value.version || ver.id,
       gameDirectory: instance.value.path,
       user: userProfile.value,
@@ -118,15 +145,16 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   async function launchGame() {
     try {
       error.value = undefined
-      const options = await generateLaunchOptions()
+      const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+      const options = await generateLaunchOptions(operationId)
 
       if (!options.skipAssetsCheck) {
         launchingStatus.value = 'refreshing-user'
         try {
-          await Promise.race([
-            new Promise((resolve) => { setTimeout(resolve, 5_000) }),
+          await track(Promise.race([
+            new Promise((resolve, reject) => { setTimeout(() => reject(new Error('Timeout')), 5_000) }),
             refreshUser(userProfile.value.id),
-          ])
+          ]), 'refresh-user', operationId)
         } catch (e) {
         }
       }
@@ -161,28 +189,6 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       }
     }
   }
-
-  let last = 0
-  const record = {} as Record<string, number>
-  let timeout: any
-  watch(launchingStatus, (newVal, oldVal) => {
-    if (oldVal !== '') {
-      const duration = performance.now() - last
-      record[oldVal] = duration
-      record[newVal] = -1
-      if (!newVal) {
-        reportLaunchStatus(record)
-        clearTimeout(timeout)
-      }
-    } else {
-      // start timming
-      last = performance.now()
-      record[newVal] = -1
-      timeout = setTimeout(() => {
-        reportLaunchStatus(record, 30_000)
-      }, 30_000)
-    }
-  })
 
   return {
     launch: launchGame,

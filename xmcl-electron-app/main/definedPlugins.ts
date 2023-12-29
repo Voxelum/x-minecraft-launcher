@@ -28,6 +28,7 @@ import { pluginOfficialUserApi } from '@xmcl/runtime/user/pluginOfficialUserApi'
 import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
+import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
@@ -41,6 +42,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginResourceWorker,
   pluginEncodingWorker,
   pluginSetupWorker,
+  pluginLaunchPrecheck,
 
   pluginMediaProtocol,
   pluginResourcePackLink,
