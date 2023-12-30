@@ -16,8 +16,8 @@ function baseTransform(tag: string) { return new Transform({ transform(c, e, cb)
 
 function getMessageFromError(e: Error): string {
   let message = e.stack ?? e.message
-  if (e instanceof AggregateError) {
-    message = e.errors.map(getMessageFromError).join('\n')
+  if (e instanceof AggregateError || ('errors' in e && Array.isArray(e.errors))) {
+    message = (e as any).errors.map(getMessageFromError).join('\n')
   }
   if (e.cause && e.cause instanceof Error) {
     return `${message}\nCaused by: ${getMessageFromError(e.cause)}`

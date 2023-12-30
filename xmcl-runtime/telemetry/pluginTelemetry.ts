@@ -71,6 +71,16 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     return d
   }
 
+  const handleException = (exception: Contracts.ExceptionData, e: Error) => {
+    if (e.cause instanceof Error) {
+      exception.exceptions.push(createExceptionDetails(e.cause.message, e.cause.name, e.cause.stack))
+    } else if (e instanceof AggregateError || (Array.isArray((e as any).errors))) {
+      for (const cause of (e as any).errors) {
+        handleException(exception, cause)
+      }
+    }
+  }
+
   const client = appInsight.defaultClient
 
   client.addTelemetryProcessor((envelope, contextObjects) => {
@@ -78,13 +88,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       const exception = envelope.data.baseData as Contracts.ExceptionData
       const e = contextObjects?.error
       if (e instanceof Error) {
-        if (e.cause instanceof Error) {
-          exception.exceptions.push(createExceptionDetails(e.cause.message, e.cause.name, e.cause.stack))
-        } else if (e instanceof AggregateError) {
-          for (const cause of e.errors) {
-            exception.exceptions.push(createExceptionDetails(cause.message, cause.name, cause.stack))
-          }
-        }
+        handleException(exception, e)
       }
     }
     return true
