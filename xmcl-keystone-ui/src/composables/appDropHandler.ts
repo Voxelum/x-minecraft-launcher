@@ -77,16 +77,12 @@ export function useAppDropHandler() {
   const { previewUrl } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {
-    forge: '$vuetify.icons.package',
-    fabric: '$vuetify.icons.fabric',
+    mods: '$vuetify.icons.package',
     unclassified: 'question_mark',
-    resourcepack: '$vuetify.icons.zip',
-    shaderpack: '$vuetify.icons.zip',
-    'curseforge-modpack': '$vuetify.icons.curseforge',
-    modpack: '$vuetify.icons.package',
-    'mcbbs-modpack': '$vuetify.icons.package',
-    save: '$vuetify.icons.zip',
-    'modrinth-modpack': '$vuetify.icons.modrinth',
+    resourcepacks: '$vuetify.icons.zip',
+    shaderpacks: '$vuetify.icons.zip',
+    modpacks: '$vuetify.icons.package',
+    saves: '$vuetify.icons.zip',
   }
 
   function getDescription(rsize: number | undefined, url: string) {
@@ -138,6 +134,21 @@ export function useAppDropHandler() {
   }
 
   function getIcon(resource: Resource | undefined) {
+    if (resource?.metadata['curseforge-modpack']) {
+      return '$vuetify.icons.curseforge'
+    }
+    if (resource?.metadata['modrinth-modpack']) {
+      return '$vuetify.icons.modrinth'
+    }
+    if (resource?.metadata['mcbbs-modpack']) {
+      return '$vuetify.icons.package'
+    }
+    if (resource?.metadata.forge) {
+      return '$vuetify.icons.forge'
+    }
+    if (resource?.metadata.fabric) {
+      return '$vuetify.icons.fabric'
+    }
     return resource ? iconMap[resource.domain] ?? 'question_mark' : 'question_mark'
   }
 

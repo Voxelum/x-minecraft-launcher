@@ -7,9 +7,9 @@
     scrollable
     width="800"
   >
-    <v-card>
+    <v-card class="rounded-none">
       <v-toolbar
-        class="moveable flex-1 flex-grow-0"
+        class="moveable flex-1 flex-grow-0 rounded-none"
         tabs
         color="green en"
       >
@@ -268,6 +268,7 @@
           </InstanceManifestFileTree>
         </v-layout>
       </div>
+      <div class="flex-grow" />
       <v-card-actions class="items-baseline gap-5">
         <v-btn
           text

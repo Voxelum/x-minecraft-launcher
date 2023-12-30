@@ -68,7 +68,6 @@ export function useInstances() {
   }
   watch(state, async (newVal, oldVal) => {
     if (!newVal) return
-    debugger
     if (!oldVal) {
       // initialize
       const instances = [...newVal.instances]
