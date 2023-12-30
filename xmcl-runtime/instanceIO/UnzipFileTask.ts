@@ -3,6 +3,7 @@ import { AbortableTask } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
 import { ensureDir } from 'fs-extra'
+import { stat } from 'fs/promises'
 import { dirname } from 'path'
 import { pipeline } from 'stream/promises'
 import { errors } from 'undici'
@@ -19,6 +20,10 @@ export class UnzipFileTask extends AbortableTask<void> {
 
   async #processEntry(zip: ZipFile, entry: Entry, destination: string) {
     await ensureDir(dirname(destination))
+    const fstat = await stat(destination).catch(() => undefined)
+    if (fstat && entry.uncompressedSize === fstat.size) {
+      return
+    }
     const stream = await openEntryReadStream(zip, entry)
     this._total += entry.uncompressedSize
     this.update(0)
@@ -42,13 +47,15 @@ export class UnzipFileTask extends AbortableTask<void> {
       this.#zipInstances[zip] = [zipInstance, reocrd]
     }
 
+    const promises = [] as Promise<void>[]
     for (const { zipPath, entryName, destination } of queue) {
       const [zip, entries] = this.#zipInstances[zipPath]
       const entry = entries[entryName]
       if (entry) {
-        await this.#processEntry(zip, entry, destination)
+        promises.push(this.#processEntry(zip, entry, destination))
       }
     }
+    await Promise.all(promises)
 
     for (const [zipPath, [zip]] of Object.entries(this.#zipInstances)) {
       zip.close()

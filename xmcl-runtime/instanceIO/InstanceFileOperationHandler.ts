@@ -92,10 +92,10 @@ export class InstanceFileOperationHandler {
       await this.#handleFile(f)
     }
     if (this.#copyOrLinkQueue.length > 0 || this.#resourceLinkQueue.length > 0) {
-      this.#tasks.push(await this.#getCopyOrLinkTask())
+      this.#tasks.unshift(await this.#getCopyOrLinkTask())
     }
     if (this.#unzipQueue.length > 0) {
-      this.#tasks.push(await this.#getUnzipTask())
+      this.#tasks.unshift(await this.#getUnzipTask())
     }
     return this.#tasks
   }

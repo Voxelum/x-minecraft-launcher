@@ -217,18 +217,15 @@ export class ModpackService extends AbstractService implements IModpackService {
     const files = (await Promise.all(entries
       .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
       .map(async (e) => {
-        const sha1 = await checksumFromStream(await openEntryReadStream(zip, e), 'sha1')
         const relativePath = handler.resolveUnpackPath(manifest, e)!
         const file: InstanceFile = {
           path: relativePath,
           size: e.uncompressedSize,
           hashes: {
-            sha1,
             crc32: e.crc32.toString(),
           },
           downloads: [
             `zip:///${modpackFile}?entry=${encodeURIComponent(e.fileName)}`,
-            `zip://${sha1}/${e.fileName}`,
           ],
         }
         return file

@@ -7,6 +7,7 @@ import { LauncherAppPlugin } from '~/app'
 import { CurseForgeService } from '~/curseforge'
 import { ModpackService } from './ModpackService'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
+import { getCurseforgeFiles } from './getCurseforgeFiles'
 
 export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
@@ -19,12 +20,13 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
     },
     resolveInstanceOptions: getInstanceConfigFromMcbbsModpack,
     resolveInstanceFiles: async (manifest) => {
-      const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
       const infos: InstanceFile[] = []
       if (manifest.files) {
         // curseforge or mcbbs
         const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
-        const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
+        const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')
+        const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
+        const files = await getCurseforgeFiles(curseforgeService.client, ids)
 
         const dict: Record<string, File> = {}
         for (const file of files) {
