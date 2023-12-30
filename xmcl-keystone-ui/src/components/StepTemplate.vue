@@ -35,7 +35,7 @@
       </v-list-item>
       <v-divider />
       <v-virtual-scroll
-        :bench="2"
+        :bench="8"
         class="visible-scroll ml-2 h-full max-h-full overflow-auto"
         :items="items"
         :item-height="72"
