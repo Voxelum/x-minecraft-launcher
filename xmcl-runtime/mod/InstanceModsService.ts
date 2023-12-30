@@ -66,26 +66,35 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const basePath = join(instancePath, 'mods')
       await ensureDir(basePath)
       await this.resourceService.whenReady(ResourceDomain.Mods)
-      state.mods = await scan(basePath)
+      const initializing = scan(basePath)
+      state.mods = await initializing
+
+      const processUpdate = async (filePath: string) => {
+        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
+        if (isModResource(resource)) {
+          this.log(`Instance mod add ${filePath}`)
+        } else {
+          this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+        }
+        updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+      }
+
+      const processRemove = async (filePath: string) => {
+        const target = state.mods.find(r => r.path === filePath)
+        if (target) {
+          this.log(`Instance mod remove ${filePath}`)
+          updateMod.push([target, InstanceModUpdatePayloadAction.Remove])
+        } else {
+          this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
+        }
+      }
 
       const watcher = watch(basePath, async (event, filePath) => {
         if (shouldIgnoreFile(filePath) || filePath === basePath) return
         if (event === 'update') {
-          const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
-          if (isModResource(resource)) {
-            this.log(`Instance mod add ${filePath}`)
-          } else {
-            this.warn(`Non mod resource added in /mods directory! ${filePath}`)
-          }
-          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+          processUpdate(filePath)
         } else {
-          const target = state.mods.find(r => r.path === filePath)
-          if (target) {
-            this.log(`Instance mod remove ${filePath}`)
-            updateMod.push([target, InstanceModUpdatePayloadAction.Remove])
-          } else {
-            this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
-          }
+          processRemove(filePath)
         }
       })
 
@@ -101,12 +110,24 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           .removeListener('resourceUpdate', onResourceUpdate)
       }, async () => {
         // relvaidate
+        await initializing.catch(() => undefined)
         const files = await readdirIfPresent(basePath)
-        const expectFiles = files.filter((file) => !shouldIgnoreFile(file))
+        const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
         const current = state.mods.length
         if (current !== expectFiles.length) {
           this.log(`Instance mods count mismatch: ${current} vs ${expectFiles.length}`)
-          state.mods = await scan(basePath)
+          // Find differences
+          const currentFiles = state.mods.map(r => r.path)
+          const added = expectFiles.filter(f => !currentFiles.includes(f))
+          const removed = currentFiles.filter(f => !expectFiles.includes(f))
+          if (added.length > 0) {
+            this.log(`Instance mods added: ${added.length}`)
+            added.map(f => join(basePath, f)).forEach(processUpdate)
+          }
+          if (removed.length > 0) {
+            this.log(`Instance mods removed: ${removed.length}`)
+            removed.map(f => join(basePath, f)).forEach(processRemove)
+          }
         }
       }]
     })
