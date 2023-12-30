@@ -75,6 +75,7 @@ const showMenu = ref(false)
 
 function onMouseEnter() {
   if (handle) clearTimeout(handle)
+  if (loading.value) return
   showMenu.value = true
 }
 

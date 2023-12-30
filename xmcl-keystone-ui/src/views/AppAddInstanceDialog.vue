@@ -256,10 +256,9 @@ const { t } = useI18n()
 
 // Instance create data
 const { gameProfile } = injection(kUserContext)
-const { versions } = injection(kLocalVersions)
 const { instances } = injection(kInstances)
 const { path } = injection(kInstance)
-const { create, reset, data: creationData, files } = useInstanceCreation(gameProfile, versions, instances, path)
+const { create, reset, data: creationData, files } = useInstanceCreation(gameProfile, instances, path)
 const isInvalid = computed(() => {
   return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
 })

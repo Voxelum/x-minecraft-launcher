@@ -1,8 +1,10 @@
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
 import { generateBaseName, generateDistinctName } from '@/util/instanceName'
-import { Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, LocalVersionHeader, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
+import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
 
 export const kInstanceCreation: InjectionKey<{
   data: InstanceData
@@ -15,12 +17,13 @@ export const kInstanceCreation: InjectionKey<{
 /**
  * Hook to create a general instance
  */
-export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref<LocalVersionHeader[]>, instances: Ref<Instance[]>, path: Ref<string>) {
+export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Ref<Instance[]>, path: Ref<string>) {
   const { createInstance: create } = useService(InstanceServiceKey)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
   const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
   let latest = ''
   getLatestMinecraftRelease().then(v => { latest = v })
+  const { fix } = injection(kInstanceVersionDiagnose)
   const getNewRuntime = () => ({
     minecraft: latest || '',
     forge: '',
@@ -61,17 +64,21 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
      * Commit this creation. It will create and select the instance.
      */
     async create() {
+      const runtime = { ...data.runtime }
       if (!data.name) {
-        data.name = generateDistinctName(generateBaseName(data.runtime), instances.value.map(i => i.name))
+        data.name = generateDistinctName(generateBaseName(runtime), instances.value.map(i => i.name))
       }
       const newPath = await create(data)
       if (files.value.length > 0) {
         await installInstanceFiles({
           path: newPath,
           files: files.value,
+        }).catch((e) => {
+          console.error(e)
         })
       }
       path.value = newPath
+      await fix()
       return newPath
     },
     /**

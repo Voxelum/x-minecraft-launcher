@@ -201,7 +201,7 @@ export class InstanceFileOperationHandler {
     const urls = file.downloads?.filter(u => u.startsWith('http')) || []
     const resource = await this.resourceService.getResourceByHash(sha1)
 
-    if (resource) {
+    if (resource && await this.resourceService.touchResource(resource)) {
       if (
         (metadata.modrinth && !resource.metadata.modrinth) ||
         (metadata.curseforge && resource.metadata.curseforge) ||

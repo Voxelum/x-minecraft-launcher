@@ -82,7 +82,7 @@
       <v-btn
         icon
         text
-        @click="emit('create')"
+        @click.stop="emit('create')"
       >
         <v-icon>
           add

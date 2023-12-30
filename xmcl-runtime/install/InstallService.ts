@@ -579,6 +579,11 @@ export class InstallService extends AbstractService implements IInstallService {
         ...this.getForgeInstallOptions(),
       }).setName('installForge', { id: version ?? profile.version }))
     } catch (err) {
+      const forgeVersion = profile.version.indexOf('-forge') !== -1 ? profile.version.replace(/-forge/, '') : profile.version
+      await this.installForge({
+        version: forgeVersion,
+        mcversion: profile.minecraft,
+      })
       this.warn(err)
     }
   }

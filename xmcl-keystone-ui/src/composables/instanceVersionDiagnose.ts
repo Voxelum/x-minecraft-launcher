@@ -13,9 +13,10 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
   let operation = undefined as undefined | (() => Promise<void>)
   const { t } = useI18n()
   const { install } = useInstanceVersionInstall(versions)
-  const { installAssetsForVersion, installAssets, installLibraries, installDependencies, installByProfile } = useService(InstallServiceKey)
+  const { installAssetsForVersion, installForge, installAssets, installLibraries, installDependencies, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
   let abortController = new AbortController()
+  let pendingFix = false
 
   const loading = ref(false)
 
@@ -34,6 +35,8 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     console.log('update version diagnose')
 
     const abortSignal = abortController.signal
+    // invalidate operation
+    operation = () => Promise.resolve()
 
     if ('requirements' in version) {
       const runtime = version.requirements
@@ -152,15 +155,20 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     issueItems.value = items
     if (ops.length > 0) {
       operation = async () => {
+        pendingFix = false
         for (const op of ops) {
           await op()
         }
         await _update(resolvedVersion.value)
       }
+      if (pendingFix) {
+        operation()
+      }
     }
   }
 
-  function fix() {
+  async function fix() {
+    pendingFix = true
     if (operation) {
       operation()
     }

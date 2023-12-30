@@ -7,7 +7,7 @@ import { basename, join } from 'path'
 import { LauncherApp, LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { copyPassively, readdirEnsured } from '~/util/fs'
+import { copyPassively, missing, readdirEnsured } from '~/util/fs'
 import { PromiseSignal, createPromiseSignal } from '~/util/promiseSignal'
 import { ResourceContext } from './core/ResourceContext'
 import { createResourceContext } from './core/createResourceContext'
@@ -195,13 +195,23 @@ export class ResourceService extends AbstractService implements IResourceService
     return generateResource(this.getPath(), result[0], result[0])
   }
 
+  async touchResource(resource: Resource) {
+    const missed = await missing(resource.storedPath || resource.path)
+    if (missed) {
+      // Remove from database
+      await this.removeResources([resource.hash])
+      return false
+    }
+    return true
+  }
+
   async removeResources(hashes: Array<string>) {
     const existed = await this.context.db.selectFrom('snapshots')
       .where('sha1', 'in', hashes)
       .select('domainedPath')
       .execute()
     const resourcePaths = existed.map(r => this.getPath(r.domainedPath))
-    await Promise.all(resourcePaths.map(p => unlink(p)))
+    await Promise.all(resourcePaths.map(p => unlink(p).catch(() => {})))
   }
 
   async getResourcesByKeyword(keyword: string, domain: ResourceDomain, pagination?: Pagination): Promise<Array<Resource>> {

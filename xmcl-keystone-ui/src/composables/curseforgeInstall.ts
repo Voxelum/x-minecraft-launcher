@@ -9,6 +9,7 @@ import { getCurseforgeProjectModel } from './curseforge'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { InstanceInstallDialog } from './instanceUpdate'
+import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
 import { kInstances } from './instances'
 import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
@@ -120,6 +121,7 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
   const { createInstance } = useService(InstanceServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
+  const { fix } = injection(kInstanceVersionDiagnose)
   const installModpack = async (f: File) => {
     const result = await installFile({ file: f, type: 'modpacks', icon: icon.value })
     const resource = result.resource
@@ -135,7 +137,8 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
     await installInstanceFiles({
       path,
       files,
-    })
+    }).catch(() => { })
+    await fix()
   }
   return installModpack
 }
