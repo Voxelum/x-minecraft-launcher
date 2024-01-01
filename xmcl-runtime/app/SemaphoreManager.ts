@@ -1,6 +1,6 @@
 import { nextTick } from 'process'
 import { LauncherApp } from '../app/LauncherApp'
-import { ReadWriteLock } from '../util/mutex'
+import { ReadWriteLock } from '@xmcl/runtime-api'
 import { Logger } from '~/logger'
 
 export default class SemaphoreManager {

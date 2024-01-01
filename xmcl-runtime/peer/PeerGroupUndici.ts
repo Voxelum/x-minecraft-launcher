@@ -2,7 +2,7 @@
 // import EventSource from 'eventsource'
 import EventEmitter from 'events'
 import { DescriptionType } from 'node-datachannel'
-import { createPromiseSignal, PromiseSignal } from '~/util/promiseSignal'
+import { createPromiseSignal, PromiseSignal } from '@xmcl/runtime-api'
 import { WebSocket } from 'undici'
 
 type RelayPeerMessage = {

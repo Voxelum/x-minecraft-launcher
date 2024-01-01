@@ -1,4 +1,4 @@
-import { PromiseSignal, createPromiseSignal } from '~/util/promiseSignal'
+import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
 
 /**
  * The helper class to hold type to object map

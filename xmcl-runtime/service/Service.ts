@@ -1,10 +1,9 @@
-import { getServiceSemaphoreKey, MutableState, ServiceKey, State } from '@xmcl/runtime-api'
+import { createPromiseSignal, getServiceSemaphoreKey, MutableState, PromiseSignal, ServiceKey, State } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
+import { Logger } from '~/logger'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
-import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
-import { Logger } from '~/logger'
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T

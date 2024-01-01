@@ -3,7 +3,7 @@ import { NatService as INatService, MutableState, NatServiceKey, NatState } from
 import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
-import { createPromiseSignal } from '../util/promiseSignal'
+import { createPromiseSignal } from '@xmcl/runtime-api'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 @ExposeServiceKey(NatServiceKey)
 export class NatService extends StatefulService<NatState> implements INatService {

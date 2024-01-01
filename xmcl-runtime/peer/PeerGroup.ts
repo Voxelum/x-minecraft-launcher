@@ -1,10 +1,10 @@
 /* eslint-disable no-dupe-class-members */
 // import EventSource from 'eventsource'
+import { createPromiseSignal, PromiseSignal } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { DescriptionType } from 'node-datachannel'
 import { setTimeout } from 'timers/promises'
 import { WebSocket } from 'ws'
-import { createPromiseSignal, PromiseSignal } from '~/util/promiseSignal'
 
 type RelayPeerMessage = {
   type: 'DESCRIPTOR-ECHO'
