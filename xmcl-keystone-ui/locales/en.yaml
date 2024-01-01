@@ -1240,6 +1240,7 @@ tag:
   newTag: New Tag
 task:
   cancelled: Cancelled
+  clear: Clear Finished Tasks
   empty: No Running Tasks
   failed: Failed
   manager: Task Manager

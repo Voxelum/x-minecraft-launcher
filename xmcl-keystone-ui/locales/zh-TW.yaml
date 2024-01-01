@@ -526,6 +526,7 @@ tag:
   newTag: 新標籤
 task:
   cancelled: 已取消
+  clear: 清除已完成的任務
   empty: 目前沒有運行中的任務
   failed: 失敗
   manager: 任務管理器

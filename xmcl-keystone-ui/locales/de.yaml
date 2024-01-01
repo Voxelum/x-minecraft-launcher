@@ -1316,6 +1316,7 @@ tag:
   newTag: Neuer Tag
 task:
   cancelled: Abgesagt
+  clear: Erledigte Aufgaben löschen
   empty: Keine Aufgaben laufen
   failed: Gescheitert
   manager: Aufgaben-Manager

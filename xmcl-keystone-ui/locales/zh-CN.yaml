@@ -1185,6 +1185,7 @@ task:
   cancelled: 已取消
   empty: 目前没有运行中的任务
   failed: 失败
+  clear: 清除已完成的任务
   manager: 任务管理器
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务

@@ -1286,6 +1286,7 @@ tag:
   newTag: Nouveau tag
 task:
   cancelled: Annulé
+  clear: Effacer les tâches terminées
   empty: Aucune tâche en cours d'exécution
   failed: Échec
   manager: Gestionnaire des tâches

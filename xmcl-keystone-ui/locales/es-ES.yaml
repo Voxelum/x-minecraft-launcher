@@ -935,6 +935,7 @@ tag:
   newTag: Nueva Etiqueta
 task:
   cancelled: Cancelada
+  clear: Borrar tareas terminadas
   empty: No hay Tareas en Ejecución
   failed: Fallida
   manager: Gestor de Tareas

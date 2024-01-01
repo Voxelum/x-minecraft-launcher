@@ -1,96 +1,18 @@
-import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from 'vue'
 import { TaskItem } from '@/entities/task'
+import { InjectionKey, onMounted, onUnmounted, Ref, ref } from 'vue'
 
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
-import { injection } from '@/util/inject'
+import { task } from '../../../xmcl/packages/task'
 
 export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
-
-class ChildrenWatcher {
-  readonly oldChildren: Array<TaskItem> = []
-
-  readonly newChildren: Array<TaskItem> = []
-
-  readonly updateChildren: Array<TaskItem> = []
-
-  readonly visited: Set<TaskItem> = new Set()
-
-  public dirty = false
-
-  constructor(private target: TaskItem, init?: TaskItem[]) {
-    if (init) {
-      this.newChildren = init
-      this.dirty = true
-      this.update()
-    }
-  }
-
-  addChild(item: TaskItem) {
-    this.newChildren.unshift(item)
-    this.dirty = true
-  }
-
-  updateChild(item: TaskItem) {
-    this.updateChildren.push(item)
-    this.dirty = true
-  }
-
-  update() {
-    if (!this.dirty) {
-      return
-    }
-    const inactive = []
-    const active = []
-    const newChildren = this.newChildren
-    const updatedChildren = this.updateChildren
-    const oldChildren = this.oldChildren
-    const visited = this.visited
-
-    for (const item of newChildren) {
-      if (item.state === TaskState.Succeed) {
-        inactive.push(item)
-      } else {
-        active.push(item)
-      }
-      visited.add(item)
-    }
-    for (const item of updatedChildren) {
-      if (item.state === TaskState.Succeed) {
-        inactive.push(item)
-      } else {
-        active.push(item)
-      }
-      visited.add(item)
-    }
-    for (const item of oldChildren) {
-      if (visited.has(item)) continue
-      if (item.state === TaskState.Succeed) {
-        inactive.push(item)
-      } else {
-        active.push(item)
-      }
-      visited.add(item)
-    }
-    const sorted = active.concat(inactive)
-
-    // only show 10
-    const result = sorted.slice(0, 10)
-    this.target.children = result
-
-    updatedChildren.splice(0)
-    newChildren.splice(0)
-    oldChildren.splice(0)
-    oldChildren.push(...sorted)
-    visited.clear()
-  }
-}
 
 /**
  * Create a task manager based on vue reactivity
  * @returns
  */
 export function useTaskManager() {
-  const cache: Record<string, TaskItem> = {}
+  const cache: Record<string, WeakRef<TaskItem> | undefined> = {}
+
   const throughput = ref(0)
   /**
    * All tasks
@@ -142,29 +64,31 @@ export function useTaskManager() {
     for (const add of adds) {
       const { uuid, parentId, path, id: _id } = add
       const id = `${uuid}@${_id}`
-      if (cache[id]) {
+      if (cache[id]?.deref()) {
         console.warn(`Skip for duplicated task ${id} ${path}`)
         continue
       }
       const item = getTaskItem(add)
       if (typeof parentId === 'number') {
         // this is child task
-        const parent = cache[`${uuid}@${parentId}`]
+        const parent = cache[`${uuid}@${parentId}`]?.deref()
         // Push to the static children and mark dirty
         // We don't update the reactive children
         // Until the consumer (task-viewer) need to render the children
-        parent.rawChildren?.push(item)
-        parent.childrenDirty = true
+        parent?.rawChildren?.push(item)
+        if (parent) {
+          parent.childrenDirty = true
+        }
       } else {
         tasks.value.unshift(item)
       }
-      cache[id] = item
+      cache[id] = new WeakRef(item)
       // console.log(`Add task ${add.path}(${id})`)
     }
     for (const update of updates) {
       const { uuid, id, time, to, from, progress, total, chunkSize, state, error } = update
       const localId = `${uuid}@${id}`
-      const item = cache[localId]
+      const item = cache[localId]?.deref()
       if (item) {
         if (state !== undefined) {
           item.state = state
@@ -181,9 +105,6 @@ export function useTaskManager() {
           item.throughput += chunkSize
           throughput.value += chunkSize
         }
-      } else {
-        console.log(`Cannot apply update for task ${localId} as task not found.`)
-        console.log(cache)
       }
     }
   }
@@ -196,7 +117,7 @@ export function useTaskManager() {
       const result = payload.map(getTaskItem)
       tasks.value = result
       for (const r of result) {
-        cache[r.id] = r
+        cache[r.id] = new WeakRef(r)
       }
       _resolve()
     })
@@ -206,9 +127,14 @@ export function useTaskManager() {
     taskMonitor.removeListener('task-update', onTaskUpdate)
   })
 
+  function clear() {
+    tasks.value = tasks.value.filter(t => t.state !== TaskState.Cancelled && t.state !== TaskState.Succeed)
+  }
+
   return {
     dictionary: cache,
     throughput,
+    clear,
     tasks,
     pause,
     resume,

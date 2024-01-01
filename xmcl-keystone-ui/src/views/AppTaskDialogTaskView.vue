@@ -2,8 +2,12 @@
   <v-card
     flat
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
+    class="flex flex-col"
   >
-    <v-toolbar tabs>
+    <v-toolbar
+      tabs
+      class="flex-grow-0"
+    >
       <v-toolbar-title>{{ t('task.manager') }}</v-toolbar-title>
       <v-spacer />
       <v-btn
@@ -68,6 +72,20 @@
         </template>
       </v-treeview>
     </v-card-text>
+    <div class="flex-grow" />
+    <v-card-actions class="flex flex-grow-0">
+      <div class="flex-grow" />
+      <v-btn
+        text
+        small
+        @click="clear"
+      >
+        <v-icon left>
+          delete_forever
+        </v-icon>
+        {{ t('task.clear') }}
+      </v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 
@@ -88,7 +106,7 @@ interface TaskItemOrGroup extends TaskItem {
   groupedCount: number
 }
 
-const { tasks: all, pause, resume, cancel } = injection(kTaskManager)
+const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager)
 const { t } = useI18n()
 const tTask = useTaskName()
 
