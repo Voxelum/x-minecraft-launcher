@@ -750,6 +750,8 @@ screenshots:
   empty: No tienes capturas de pantalla
   goto: Abrir Carpeta
   name: Capturas de Pantalla
+  playRandom: Juega aleatoriamente
+  playSequence: Jugar en orden
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor

@@ -1065,6 +1065,8 @@ screenshots:
   empty: Vous n'avez pas de capture d'écran
   goto: Ouvrir Dossier
   name: Captures d'écran
+  playRandom: Jouez au hasard
+  playSequence: Jouer dans l'ordre
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur

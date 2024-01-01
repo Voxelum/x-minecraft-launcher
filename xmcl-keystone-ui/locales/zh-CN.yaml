@@ -986,6 +986,8 @@ screenshots:
   empty: 你还没有截图
   goto: 显示文件夹
   name: 截图
+  playRandom: 随机播放
+  playSequence: 顺序播放
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   creationHint: 请填写服务器地址并尝试 Ping 服务器

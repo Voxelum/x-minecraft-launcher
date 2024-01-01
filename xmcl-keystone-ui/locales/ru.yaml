@@ -985,6 +985,8 @@ screenshots:
   empty: У вас нет скриншотов
   goto: Открыть папку
   name: Скриншоты
+  playRandom: Играть случайным образом
+  playSequence: Играйте по порядку
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Укажите адрес сервера и пинг сервера

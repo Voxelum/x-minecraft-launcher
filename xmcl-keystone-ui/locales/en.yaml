@@ -1029,6 +1029,8 @@ screenshots:
   empty: You don't have screenshots
   goto: Open Folder
   name: Screenshots
+  playRandom: Play randomly
+  playSequence: Play in order
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   creationHint: Please Fill the server address and ping the server

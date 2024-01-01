@@ -3,6 +3,17 @@
     class="w-full"
     :color="cardColor"
   >
+    <v-btn
+      v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
+      text
+      icon
+      class="z-6 absolute bottom-2 right-2"
+      @click="randomPlayScreenshot = !randomPlayScreenshot"
+    >
+      <v-icon>
+        {{ randomPlayScreenshot ? 'shuffle' : 'repeat' }}
+      </v-icon>
+    </v-btn>
     <v-carousel
       hide-delimiters
       :height="height"
@@ -14,7 +25,7 @@
     >
       <template v-if="urls.length > 0">
         <v-carousel-item
-          v-for="i of urls"
+          v-for="i of display"
           :key="i"
           :src="i"
           class="cursor-pointer"
@@ -57,8 +68,10 @@
 </template>
 <script lang="ts" setup>
 import { useRefreshable, useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kColorTheme } from '@/composables/colorTheme'
 import { kImageDialog } from '@/composables/imageDialog'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
@@ -68,8 +81,11 @@ const { cardColor } = injection(kColorTheme)
 
 const { getScreenshots, showScreenshot } = useService(InstanceScreenshotServiceKey)
 const { on } = useService(LaunchServiceKey)
+const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
 
 const urls = ref([] as string[])
+const shuffled = computed(() => urls.value.sort(() => Math.random() - 0.5))
+const display = computed(() => (randomPlayScreenshot.value ? shuffled.value : urls.value))
 const { refresh, refreshing } = useRefreshable(async () => {
   const result = await getScreenshots(props.instance.path)
   if (result.length === 0) {

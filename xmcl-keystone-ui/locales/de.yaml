@@ -1091,6 +1091,8 @@ screenshots:
   empty: Sie haben keine Bildschirmfotos
   goto: Öffnen Sie den Ordner
   name: Screenshots
+  playRandom: Spielen Sie zufällig
+  playSequence: Spielen Sie der Reihe nach
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
