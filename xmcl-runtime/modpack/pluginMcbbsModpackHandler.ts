@@ -1,4 +1,4 @@
-import { File, HashAlgo } from '@xmcl/curseforge'
+import { File, HashAlgo, Mod } from '@xmcl/curseforge'
 import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, ResourceDomain, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
@@ -7,7 +7,7 @@ import { LauncherAppPlugin } from '~/app'
 import { CurseForgeService } from '~/curseforge'
 import { ModpackService } from './ModpackService'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { getCurseforgeFiles } from './getCurseforgeFiles'
+import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
 
 export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
@@ -27,6 +27,7 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
         const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')
         const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
         const files = await getCurseforgeFiles(curseforgeService.client, ids)
+        const mods = await getCurseforgeProjects(curseforgeService.client, files.map(f => f.modId))
 
         const dict: Record<string, File> = {}
         for (const file of files) {
@@ -34,6 +35,13 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
             modpackService.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
           }
           dict[file.id] = file
+        }
+        const modDict: Record<string, Mod> = {}
+        for (const mod of mods) {
+          if (modDict[mod.id]) {
+            modpackService.warn(`Duplicated curseforge mod return from curseforge API: ${mod.id}`)
+          }
+          modDict[mod.id] = mod
         }
 
         for (let i = 0; i < files.length; i++) {
@@ -46,7 +54,18 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
             modpackService.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
             continue
           }
-          const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          let domain: ResourceDomain | undefined
+          const mod = modDict[file.modId]
+          if (mod) {
+            domain = mod.primaryCategoryId === 12
+              ? ResourceDomain.ResourcePacks
+              : mod.primaryCategoryId === 6
+                ? ResourceDomain.Mods
+                : undefined
+          }
+          if (!domain) {
+            domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          }
           const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
           infos.push({
             downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
