@@ -71,7 +71,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
       const processUpdate = async (filePath: string) => {
         const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
-        if (isModResource(resource)) {
+        if (resource && isModResource(resource)) {
           this.log(`Instance mod add ${filePath}`)
         } else {
           this.warn(`Non mod resource added in /mods directory! ${filePath}`)
