@@ -91,10 +91,22 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
 
   process.on('uncaughtException', (err) => {
     logger.warn('Uncaught Exception')
+    if (!err.name || err.name === 'Error') {
+      Object.assign(err, {
+        name: 'UncaughtException',
+        uncaught: true,
+      })
+    }
     logger.error(err)
   })
   process.on('unhandledRejection', (reason) => {
     logger.warn('Uncaught Rejection')
+    if (reason instanceof Error && (!reason.name || reason.name === 'Error')) {
+      Object.assign(reason, {
+        name: 'UncaughtRxception',
+        uncaught: true,
+      })
+    }
     logger.warn(reason)
   })
 
