@@ -1,11 +1,7 @@
 name: Deploy UI
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'xmcl-keystone-ui/**'
+  workflow_dispatch:
 
 jobs:
   build-web:
