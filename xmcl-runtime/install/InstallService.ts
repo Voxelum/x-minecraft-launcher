@@ -2,7 +2,7 @@ import { MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmc
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, InstallForgeOptions, InstallJarTask, InstallProfile, LiteloaderVersion, MinecraftVersion, Options, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
 import { Asset, InstallService as IInstallService, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LockKey, MutableState, Resource, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
-import { AbortableTask, task } from '@xmcl/task'
+import { AbortableTask, CancelledError, task } from '@xmcl/task'
 import { existsSync } from 'fs'
 import { ensureFile } from 'fs-extra'
 import { readFile, unlink, writeFile } from 'fs/promises'
@@ -579,7 +579,14 @@ export class InstallService extends AbstractService implements IInstallService {
         ...this.getForgeInstallOptions(),
       }).setName('installForge', { id: version ?? profile.version }))
     } catch (err) {
-      const forgeVersion = profile.version.indexOf('-forge') !== -1 ? profile.version.replace(/-forge/, '') : profile.version
+      if (err instanceof CancelledError) {
+        return
+      }
+      const forgeVersion = profile.version.indexOf('-forge-') !== -1
+        ? profile.version.replace(/-forge-/, '-')
+        : profile.version.indexOf('-forge') !== -1
+          ? profile.version.replace(/-forge/, '-')
+          : profile.version
       await this.installForge({
         version: forgeVersion,
         mcversion: profile.minecraft,

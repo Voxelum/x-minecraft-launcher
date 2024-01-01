@@ -1,6 +1,6 @@
 import { useService, useServiceBusy } from '@/composables'
 import { MinecraftVersion } from '@xmcl/installer'
-import { VersionMetadataServiceKey, LocalVersionHeader } from '@xmcl/runtime-api'
+import { VersionMetadataServiceKey, LocalVersionHeader, VersionMetadataService } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref, computed, reactive, toRefs } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
@@ -173,6 +173,13 @@ export function useNeoForgedVersions(minecraft: Ref<string>, local: Ref<LocalVer
     refreshing,
     recommended,
     latest,
+  }
+}
+
+export function getForgeVersionsModel(minecraftVersion: Ref<string>, serv: VersionMetadataService) {
+  return {
+    key: computed(() => minecraftVersion.value && `/forge-versions/${minecraftVersion.value}`),
+    fetcher: async () => serv.getForgeVersionList(minecraftVersion.value).then(v => v.map(markRaw)),
   }
 }
 
