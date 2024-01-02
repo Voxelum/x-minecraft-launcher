@@ -7,7 +7,7 @@ import { Inject, LauncherAppKey } from '~/app'
 import { ResourceService } from '~/resource'
 import { shouldIgnoreFile } from '~/resource/core/pathUtils'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { AnyError } from '~/util/error'
+import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
@@ -57,7 +57,11 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const state = new InstanceModsState()
       const listener = this.resourceService as IResourceService
       const onResourceUpdate = async (res: PartialResourceHash[]) => {
-        updateMod.push([res, InstanceModUpdatePayloadAction.Update])
+        if (res) {
+          updateMod.push([res, InstanceModUpdatePayloadAction.Update])
+        } else {
+          this.error(new AnyError('InstanceModUpdateError', 'Cannot update instance mods as the resource is empty'))
+        }
       }
 
       listener
@@ -69,17 +73,22 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const initializing = scan(basePath)
       state.mods = await initializing
 
-      const processUpdate = async (filePath: string) => {
+      const processUpdate = async (filePath: string, retryLimit = 3) => {
         try {
           const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (resource && isModResource(resource)) {
             this.log(`Instance mod add ${filePath}`)
+            updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
-          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
         } catch (e) {
-          this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
+          if (isSystemError(e) && e.code === 'EMFILE' && retryLimit > 0) {
+            // Retry
+            setTimeout(() => processUpdate(filePath, retryLimit - 1), Math.random() * 2000)
+          } else {
+            this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
+          }
         }
       }
 
