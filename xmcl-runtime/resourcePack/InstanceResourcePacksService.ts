@@ -1,6 +1,6 @@
 import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir } from 'fs/promises'
+import { readdir, stat } from 'fs/promises'
 import { basename, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
@@ -31,6 +31,8 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     if (!existsSync(dest)) {
       throw Object.assign(new Error(), { name: 'FileNotFound' })
     }
+    const fstat = await stat(src)
+    if (fstat.isDirectory()) return
     await linkWithTimeoutOrCopy(src, dest)
   }
 
