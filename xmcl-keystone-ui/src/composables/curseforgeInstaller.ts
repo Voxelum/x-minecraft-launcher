@@ -15,6 +15,7 @@ export function useCurseforgeInstaller(
   allFiles: Ref<ProjectFile[]>,
   installResource: (resource: Resource[]) => void,
   uninstallResource: (files: ProjectFile[]) => void,
+  type: 'mc-mods' | 'texture-packs' | 'worlds' | 'modpacks',
 ) {
   const { getResourcesByUris } = useService(ResourceServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
@@ -24,7 +25,7 @@ export function useCurseforgeInstaller(
     if (resources.length > 0) {
       installResource(resources)
     } else {
-      const { resource } = await installFile({ file: v, icon, type: 'mc-mods' })
+      const { resource } = await installFile({ file: v, icon, type })
       installResource([resource])
     }
   }

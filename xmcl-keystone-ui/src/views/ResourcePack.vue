@@ -235,6 +235,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   files,
   onInstall,
   onUninstall,
+  'texture-packs',
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

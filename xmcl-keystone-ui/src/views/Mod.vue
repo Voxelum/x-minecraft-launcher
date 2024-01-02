@@ -335,6 +335,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   mods,
   onInstall,
   onUninstall,
+  'mc-mods',
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

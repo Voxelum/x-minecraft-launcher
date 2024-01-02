@@ -203,6 +203,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   shaderProjectFiles,
   onInstall,
   onUninstall,
+  'mc-mods',
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
