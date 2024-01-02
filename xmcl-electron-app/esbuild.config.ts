@@ -11,6 +11,7 @@ import pluginRenderer from './plugins/esbuild.renderer.plugin'
 import createSourcemapPlugin from './plugins/esbuild.sourcemap.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
 import pluginWorker from './plugins/esbuild.worker.plugin'
+import createFSPlugin from 'plugins/esbuild.fs.plugin'
 
 const config = {
   bundle: true,
@@ -45,6 +46,7 @@ const config = {
   plugins: [
     pluginRenderer(),
     pluginStatic(),
+    createFSPlugin(),
     createSourcemapPlugin(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
