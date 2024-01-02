@@ -2,9 +2,10 @@ import { MutableState, State } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Client, LauncherApp } from '~/app'
 import { Logger } from '~/logger'
+import { AnyError } from '~/util/error'
+import { getServiceKey } from './Service'
 import { ServiceStateContainer } from './ServiceStateContainer'
 import { MutableStateImpl, kStateKey } from './stateUtils'
-import { getServiceKey } from './Service'
 
 const kStateContainer = Symbol('StateContainer')
 
@@ -140,7 +141,9 @@ export class ServiceStateManager {
   async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>): Promise<MutableState<T>> {
     if (this.containers[id]) {
       const container = this.containers[id]
-      await container.revalidator?.()
+      await container.revalidator?.().catch((e) => {
+        this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${id}`, { cause: e }, { id }))
+      })
       return container.state
     }
     const onDestroy = () => {

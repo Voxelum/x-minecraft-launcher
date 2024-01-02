@@ -1,16 +1,16 @@
-import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey, PartialResourceHash, InstanceModUpdatePayload, InstanceModUpdatePayloadAction } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, MutableState, PartialResourceHash, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
 import { ensureDir } from 'fs-extra'
-import { rename, stat, unlink, readdir } from 'fs/promises'
+import { rename, stat, unlink } from 'fs/promises'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
-import { shouldIgnoreFile } from '~/resource/core/pathUtils'
-import { AggregateExecutor } from '../util/aggregator'
-import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { Inject, LauncherAppKey } from '~/app'
 import { ResourceService } from '~/resource'
+import { shouldIgnoreFile } from '~/resource/core/pathUtils'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { AnyError } from '~/util/error'
+import { LauncherApp } from '../app/LauncherApp'
+import { AggregateExecutor } from '../util/aggregator'
+import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -70,13 +70,17 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       state.mods = await initializing
 
       const processUpdate = async (filePath: string) => {
-        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
-        if (resource && isModResource(resource)) {
-          this.log(`Instance mod add ${filePath}`)
-        } else {
-          this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+        try {
+          const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
+          if (resource && isModResource(resource)) {
+            this.log(`Instance mod add ${filePath}`)
+          } else {
+            this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+          }
+          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+        } catch (e) {
+          this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
         }
-        updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
       }
 
       const processRemove = async (filePath: string) => {
@@ -122,11 +126,11 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           const removed = currentFiles.filter(f => !expectFiles.includes(f))
           if (added.length > 0) {
             this.log(`Instance mods added: ${added.length}`)
-            added.map(f => join(basePath, f)).forEach(processUpdate)
+            for (const f of added) { processUpdate(f) }
           }
           if (removed.length > 0) {
             this.log(`Instance mods removed: ${removed.length}`)
-            removed.map(f => join(basePath, f)).forEach(processRemove)
+            for (const f of removed) { processRemove(f) }
           }
         }
       }]
