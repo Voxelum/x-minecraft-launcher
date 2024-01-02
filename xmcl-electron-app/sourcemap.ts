@@ -43,9 +43,6 @@ function CallSiteToString(this: any) {
       }
     }
   }
-  if (fileLocation.startsWith('node:internal')) {
-    fileLocation = fileLocation.replace('node:internal', 'internal')
-  }
 
   let line = ''
   const functionName = this.getFunctionName()
