@@ -84,7 +84,11 @@ export function useAggregateProjects<T extends ProjectEntry>(
 
     for (const mod of modrinth.value) visit(mod)
     for (const mod of curseforge.value) visit(mod)
-    for (const mod of cached.value) visit(mod)
+    for (const mod of cached.value) {
+      mod.curseforge = undefined
+      mod.modrinth = undefined
+      visit(mod)
+    }
 
     return all
   })
