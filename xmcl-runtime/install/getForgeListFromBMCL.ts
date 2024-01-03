@@ -1,5 +1,4 @@
 import { ForgeVersion } from '@xmcl/runtime-api'
-import { request } from 'undici'
 
 export interface BMCLForge {
   'branch': string // '1.9';
@@ -14,13 +13,7 @@ export interface BMCLForge {
   }[]
 }
 
-export async function getForgeListFromBMCL(minecraft: string) {
-  const response = await request(`https://bmclapi2.bangbang93.com/forge/minecraft/${minecraft}`, {
-    method: 'GET',
-    maxRedirections: 2,
-  })
-  const forges: BMCLForge[] = await response.body.json() as any
-
+export function getForgeListFromBMCLList(forges: BMCLForge[]) {
   return forges.map(v => ({
     mcversion: v.mcversion,
     version: v.version,
