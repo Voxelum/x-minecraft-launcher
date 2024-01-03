@@ -122,6 +122,9 @@ function onException(e: LaunchExceptions) {
     } else if (e.userException.type === 'userLoginMinecraftByXboxFailed') {
       description.value += t('launchBlocked.userLoginMinecraftByXboxFailed')
     }
+  } else if (e.type === 'launchSpawnProcessFailed') {
+    title.value = t('launchBlocked.launchSpawnProcessFailed.title')
+    description.value = t('launchBlocked.launchSpawnProcessFailed.description')
   }
   isShown.value = true
 }

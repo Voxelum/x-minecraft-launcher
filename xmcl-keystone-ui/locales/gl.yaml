@@ -225,6 +225,12 @@ diagnosis:
     name: Falta o arquivo de índice de activos de {version}.
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
+launchBlocked:
+  launchSpawnProcessFailed:
+    description: |-
+      Comproba o teu java ou dálle máis permisos ao iniciador e téntao de novo. 
+      Se isto aínda non funciona, póñase en contacto cos desenvolvedores.
+    title: Non se puido iniciar o proceso de xogo
 mod:
   searchOnCurseforge: Busca {name} en curseforge
 setting:

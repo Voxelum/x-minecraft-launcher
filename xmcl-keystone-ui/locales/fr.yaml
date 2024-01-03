@@ -532,6 +532,13 @@ launchBlocked:
       Impossible de résoudre la version <span class="highlight">{version}</span>
       à lancer.
     title: Aucune version sélectionnée
+  launchSpawnProcessFailed:
+    description: >-
+      Veuillez vérifier votre Java ou accorder plus d'autorisations au lanceur
+      et réessayer. 
+
+      Si cela ne fonctionne toujours pas, veuillez contacter les développeurs.
+    title: Impossible de démarrer le processus de jeu
   launchUserStatusRefreshFailed:
     description: Impossible d'actualiser l'état actuel de l'utilisateur sélectionné.
     title: Échec de la validation du statut de l'utilisateur

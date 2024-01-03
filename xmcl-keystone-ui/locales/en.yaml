@@ -491,6 +491,11 @@ launchBlocked:
   launchNoVersionInstalled:
     description: Cannot resolve version <span class="highlight">{version}</span> to launch.
     title: No version selected
+  launchSpawnProcessFailed:
+    description: >-
+      Please check your java, or give more permissions tothe launcher and retry.
+      If this still doesn't work, please contact the developers.
+    title: Fail to start game process
   launchUserStatusRefreshFailed:
     description: Cannot refresh current selected user status.
     title: Fail to validate user status

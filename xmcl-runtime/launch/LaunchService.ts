@@ -10,6 +10,7 @@ import { UserTokenStorage, kUserTokenStorage } from '~/user'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
+import { offline } from '@xmcl/user'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -35,7 +36,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
   #generateOptions(options: LaunchOptions, version: ResolvedVersion, accessToken?: string) {
     const user = options.user
-    const gameProfile = user.profiles[user.selectedProfile]
+    const gameProfile = user.profiles[user.selectedProfile] ?? offline('Steve').selectedProfile
     const javaPath = options.java
     const yggdrasilAgent = options.yggdrasilAgent
 
@@ -44,6 +45,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const minMemory: number | undefined = options.maxMemory
     const maxMemory: number | undefined = options.minMemory
 
+    const launcherName = `X Minecraft Launcher (${this.app.version})`
     /**
      * Build launch condition
      */
@@ -63,8 +65,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
       },
       extraJVMArgs: options.vmOptions?.filter(v => !!v),
       extraMCArgs: options.mcOptions?.filter(v => !!v),
-      launcherBrand: options?.launcherBrand ?? '',
-      launcherName: options?.launcherName ?? 'XMCL',
+      launcherBrand: options?.launcherBrand ?? launcherName,
+      launcherName: options?.launcherName ?? launcherName,
       yggdrasilAgent,
       prechecks: [],
     }
@@ -216,13 +218,24 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       // Launch
       const process = await this.#track(launch(launchOptions), 'spawn-minecraft-process', operationId)
+      if (typeof process.pid !== 'number') {
+        process.once('error', (e) => {
+          if (e.name === 'Error') {
+            Object.assign(e, {
+              name: 'LaunchSpawnProcessError',
+            })
+          }
+          this.error(e)
+        })
+        throw new LaunchException({ type: 'launchSpawnProcessFailed' })
+      }
       const processData = {
-        pid: process.pid!,
+        pid: process.pid,
         options,
         process,
         ready: false,
       }
-      this.processes[process.pid!] = processData
+      this.processes[process.pid] = processData
 
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
@@ -288,10 +301,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
             errorLog: errorLogs.join('\n'),
           })
         })
-        delete this.processes[process.pid!]
+        delete this.processes[processData.pid]
       }).on('minecraft-window-ready', () => {
         processData.ready = true
-        this.emit('minecraft-window-ready', { pid: process.pid, ...options })
+        this.emit('minecraft-window-ready', { pid: processData.pid, ...options })
       })
       process.unref()
 

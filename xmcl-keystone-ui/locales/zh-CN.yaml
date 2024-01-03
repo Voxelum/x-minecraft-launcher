@@ -504,6 +504,11 @@ launchBlocked:
   launchNoVersionInstalled:
     description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
     title: 无法找到安装的 Minecraft
+  launchSpawnProcessFailed:
+    description: |-
+      请检查您的 java，或向启动器授予更多权限，然后重试。
+      如果仍然无法解决问题，请联系开发人员。
+    title: 无法启动游戏进程
   launchUserStatusRefreshFailed:
     description: 无法验证当前账户信息
     title: 验证账户失败
@@ -1183,9 +1188,9 @@ tag:
   newTag: 新标签
 task:
   cancelled: 已取消
+  clear: 清除已完成的任务
   empty: 目前没有运行中的任务
   failed: 失败
-  clear: 清除已完成的任务
   manager: 任务管理器
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
