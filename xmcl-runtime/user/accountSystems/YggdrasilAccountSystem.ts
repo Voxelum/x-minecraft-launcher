@@ -1,5 +1,5 @@
 import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
+import { YggdrasilError, YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
 import { Dispatcher } from 'undici'
 import { isSystemError } from '~/util/error'
 import { Logger } from '~/logger'
@@ -79,6 +79,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         } else if (e.code === 'ECONNRESET') {
           throw new UserException({ type: 'loginReset' }, e.message, { cause: e })
         }
+      } else if (e instanceof YggdrasilError) {
+        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       }
       throw new UserException({ type: 'loginGeneral' }, e.message || e.errorMessage, { cause: e })
     }
