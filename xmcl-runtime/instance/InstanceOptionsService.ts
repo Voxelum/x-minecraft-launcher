@@ -132,7 +132,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   }
 
   async #editShaderOptions(pack: string, instancePath: string, name: string) {
-    const current = await this.getOculusShaderOptions(instancePath)
+    const current = await this.#getProperties(instancePath, name)
     current.shaderPack = pack
     const configFile = join(instancePath, 'config', name)
     await writeFile(configFile, Object.entries(current).filter(([k, v]) => !!k && !!v).map(([k, v]) => `${k}=${v}`).join('\n') + '\n')
