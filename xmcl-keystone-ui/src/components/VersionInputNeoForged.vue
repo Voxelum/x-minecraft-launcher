@@ -1,66 +1,48 @@
-<template>
-  <v-list-item>
-    <v-list-item-action class="self-center">
-      <img
-        :src="'http://launcher/icons/neoForged'"
-        width="40"
-      >
-    </v-list-item-action>
-    <v-list-item-content>
-      <v-list-item-title>
-        {{
-          t('neoForgedVersion.name')
-        }}
-      </v-list-item-title>
-      <v-list-item-subtitle>
-        <a
-          target="browser"
-          href="https://github.com/neoforged/NeoForge"
-        >https://github.com/neoforged/NeoForge</a>
-      </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action>
-      <VersionMenu
-        :is-clearable="true"
-        :items="neoForgedItems"
-        :clear-text="t('neoForgedVersion.disable')"
-        :refreshing="refreshingNeoForged"
-        @select="emit('input', $event)"
-      >
-        <template #default="{ on }">
-          <v-text-field
-            :value="value"
-            outlined
-            filled
-            dense
-            append-icon="arrow_drop_down"
-            :placeholder="t('neoForgedVersion.disable')"
-            :empty-text="t('neoForgedVersion.empty', { version: minecraft })"
-            hide-details
-            persistent-hint
-            :readonly="true"
-            @click:append="on.click($event);"
-            v-on="on"
-          />
-        </template>
-      </VersionMenu>
-    </v-list-item-action>
-  </v-list-item>
-</template>
 <script lang="ts" setup>
-import { useNeoForgedVersionList } from '@/composables/versionList'
-import { LocalVersionHeader } from '@xmcl/runtime-api'
-import VersionMenu from './VersionMenu.vue'
+import { useNeoForgedVersions } from '@/composables/version'
+import VersionInput, { VersionItem } from './VersionInput.vue'
 
 const props = defineProps<{
   minecraft: string
-  versions: LocalVersionHeader[]
   value?: string
 }>()
-const { items: neoForgedItems, refresh: refreshNeoForged, refreshing: refreshingNeoForged } = useNeoForgedVersionList(computed(() => props.minecraft), computed(() => props.value ?? ''), computed(() => props.versions))
+const { versions, latest, recommended, isValidating, mutate, error } = useNeoForgedVersions(computed(() => props.minecraft))
 const { t } = useI18n()
+
+const items = computed(() => {
+  const vers = versions.value
+  const result: VersionItem[] = vers
+    .map(v => {
+      return markRaw({
+        name: v,
+        description: '',
+        tag: recommended.value === v
+          ? t('forgeVersion.recommended')
+          : latest.value === v ? t('forgeVersion.latest') : '',
+        tagColor: recommended.value === v ? 'primary' : '',
+      })
+    })
+  return result
+})
 
 const emit = defineEmits<{
   (event: 'input', value: string): void
 }>()
 </script>
+<template>
+  <VersionInput
+    icon="http://launcher/icons/neoForged"
+    title="NeoForge"
+    url="https://github.com/neoforged/NeoForge"
+    :is-clearable="true"
+    :items="items"
+    :error="error"
+    :clear-text="t('neoForgedVersion.disable')"
+    :empty-text="t('neoForgedVersion.empty', { version: minecraft })"
+    :refreshing="isValidating"
+    :placeholder="t('neoForgedVersion.disable')"
+    :value="value"
+    @refresh="mutate()"
+    @input="emit('input', $event)"
+  />
+</template>

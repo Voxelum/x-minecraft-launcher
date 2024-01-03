@@ -1,68 +1,40 @@
-<template>
-  <v-list-item>
-    <v-list-item-action class="self-center">
-      <img
-        :src="'http://launcher/icons/minecraft'"
-        width="40"
-      >
-    </v-list-item-action>
-    <v-list-item-content>
-      <v-list-item-title>
-        {{
-          t('minecraftVersion.name')
-        }}
-      </v-list-item-title>
-      <v-list-item-subtitle>
-        {{
-          t('instance.versionHint')
-        }}
-      </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action>
-      <VersionMenu
-        :is-clearable="false"
-        :items="minecraftItems"
-        :has-snapshot="true"
-        :snapshot.sync="showAlpha"
-        :snapshot-tooltip="t('fabricVersion.showSnapshot')"
-        :refreshing="refreshingMinecraft"
-        @select="emit('input', $event)"
-      >
-        <template #default="{ on }">
-          <v-text-field
-            :value="value"
-            outlined
-            filled
-            dense
-            append-icon="arrow_drop_down"
-            persistent-hint
-            hide-details
-            :readonly="true"
-            @input="emit('input', $event)"
-            @click:append="on.click($event);onClick();"
-            v-on="on"
-          />
-        </template>
-      </VersionMenu>
-    </v-list-item-action>
-  </v-list-item>
-</template>
 <script lang="ts" setup>
-import { useMinecraftVersionList } from '@/composables/versionList'
-import { LocalVersionHeader } from '@xmcl/runtime-api'
-import VersionMenu from './VersionMenu.vue'
+import VersionInput, { VersionItem } from './VersionInput.vue'
+import { useMinecraftVersions } from '@/composables/version'
 
 const props = defineProps<{
-  versions: LocalVersionHeader[]
   value: string
 }>()
-const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release, mutate } = useMinecraftVersionList(computed(() => props.value), computed(() => props.versions))
+const { versions: vers, isValidating, release, mutate, error } = useMinecraftVersions()
 const { t } = useI18n()
-const onClick = () => {
-  mutate()
-  console.log('mutate')
-}
+const showAlpha = ref(false)
+const items = computed(() => {
+  const result = vers.value
+    .filter(v => showAlpha.value || v.type === 'release')
+    .map(v => markRaw({
+      tag: v.type === 'snapshot' ? t('minecraftVersion.snapshot') : v.type === 'release' ? t('minecraftVersion.release') : '',
+      tagColor: v.type === 'release' ? 'primary' : '',
+      name: v.id,
+    } as VersionItem))
+  return result
+})
+
 const emit = defineEmits<{
   (event: 'input', value: string): void
 }>()
 </script>
+<template>
+  <VersionInput
+    icon="http://launcher/icons/minecraft"
+    title="Minecraft"
+    url="https://minecraft.net"
+    :is-clearable="false"
+    :items="items"
+    :error="error"
+    :refreshing="isValidating"
+    :placeholder="t('minecraftVersion.disable')"
+    :value="value"
+    @refresh="mutate()"
+    @input="emit('input', $event)"
+  />
+</template>

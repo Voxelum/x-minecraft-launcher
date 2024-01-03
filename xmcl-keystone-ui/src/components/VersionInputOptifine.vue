@@ -1,69 +1,56 @@
-<template>
-  <v-list-item>
-    <v-list-item-action class="self-center">
-      <img
-        :src="'http://launcher/icons/optifine'"
-        width="40px"
-      >
-    </v-list-item-action>
-    <v-list-item-content>
-      <v-list-item-title>Optifine</v-list-item-title>
-      <v-list-item-subtitle>
-        <a
-          target="browser"
-          href="https://www.optifine.net/home"
-        >https://www.optifine.net/home</a>
-      </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action>
-      <VersionMenu
-        :is-clearable="true"
-        :items="optifineItems"
-        :clear-text="t('optifineVersion.disable')"
-        :empty-text="t('optifineVersion.empty', { version: minecraft })"
-        :refreshing="refreshingOptifine"
-        @select="emit('input', $event)"
-      >
-        <template #default="{ on }">
-          <v-text-field
-            :value="value"
-            outlined
-            filled
-            dense
-            hide-details
-            :placeholder="t('optifineVersion.disable')"
-            append-icon="arrow_drop_down"
-            persistent-hint
-            :readonly="true"
-            @click:append="on.click($event);"
-            v-on="on"
-          />
-        </template>
-      </VersionMenu>
-    </v-list-item-action>
-  </v-list-item>
-</template>
 <script lang="ts" setup>
-import { useOptifineVersionList } from '@/composables/versionList'
-import { LocalVersionHeader } from '@xmcl/runtime-api'
-import VersionMenu from './VersionMenu.vue'
+import VersionInput, { VersionItem } from './VersionInput.vue'
+import { useOptifineVersions } from '@/composables/version'
 
 const props = defineProps<{
   minecraft: string
   forge: string
-  versions: LocalVersionHeader[]
   value?: string
 }>()
 
-const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(
-  computed(() => props.minecraft),
-  computed(() => props.forge),
-  computed(() => props.value ?? ''),
-  computed(() => props.versions),
-)
+const { versions, error, isValidating, mutate } = useOptifineVersions()
+
+const items = computed(() => {
+  const filtered = versions.value.filter(v => v.mcversion === props.minecraft) ?? []
+  return filtered.sort((a, b) => {
+    const { patch, type } = a
+    // compare type first and then the patch
+    const result = type.localeCompare(b.type)
+    if (result === 0) {
+      return -patch.localeCompare(b.patch)
+    }
+    return -result
+  }).map((v) => {
+    const name = v.type + '_' + v.patch
+    const result: VersionItem = markRaw({
+      name,
+      description: v.patch,
+    })
+    return result
+  })
+})
+
 const { t } = useI18n()
 
 const emit = defineEmits<{
   (event: 'input', value: string): void
 }>()
 </script>
+
+<template>
+  <VersionInput
+    icon="http://launcher/icons/optifine"
+    title="Optifine"
+    url="https://www.optifine.net/home"
+    :is-clearable="true"
+    :items="items"
+    :error="error"
+    :clear-text="t('optifineVersion.disable')"
+    :empty-text="t('optifineVersion.empty', { version: minecraft })"
+    :refreshing="isValidating"
+    :placeholder="t('optifineVersion.disable')"
+    :value="value"
+    @refresh="mutate()"
+    @input="emit('input', $event)"
+  />
+</template>
