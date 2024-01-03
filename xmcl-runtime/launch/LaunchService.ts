@@ -215,7 +215,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       }
 
       // Launch
-      const process = await this.#track(launch(launchOptions), 'launch', operationId)
+      const process = await this.#track(launch(launchOptions), 'spawn-minecraft-process', operationId)
       const processData = {
         pid: process.pid!,
         options,
@@ -229,6 +229,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const startTime = Date.now()
       this.emit('minecraft-start', {
         pid: process.pid,
+        operationId,
         minecraft: version.minecraftVersion,
         ...options,
         startTime,
@@ -279,6 +280,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
             pid: process.pid,
             ...options,
             code,
+            operationId,
             signal,
             crashReport,
             duration: playTime,

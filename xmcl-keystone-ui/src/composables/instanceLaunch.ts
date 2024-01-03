@@ -142,10 +142,9 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     return options
   }
 
-  async function launchGame() {
+  async function _launch(operationId: string) {
     try {
       error.value = undefined
-      const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
       const options = await generateLaunchOptions(operationId)
 
       if (!options.skipAssetsCheck) {
@@ -176,6 +175,11 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
+  async function launchWithTracking() {
+    const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
+    await track(_launch(operationId), 'launch', operationId)
+  }
+
   async function killGame() {
     if (launchingStatus.value === 'refreshing-user') {
       abortRefresh()
@@ -191,7 +195,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   }
 
   return {
-    launch: launchGame,
+    launch: launchWithTracking,
     kill: killGame,
     windowReady,
     error,
