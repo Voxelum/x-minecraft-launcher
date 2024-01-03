@@ -1,4 +1,4 @@
-import { DefaultRangePolicy, resolveAgent } from '@xmcl/file-transfer'
+import { DefaultRangePolicy, createDefaultRetryHandler, resolveAgent } from '@xmcl/file-transfer'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
 import { Agent, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
@@ -129,6 +129,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       ],
       proxy,
     ),
+    retryHandler: createDefaultRetryHandler(7),
     checkpointHandler: {
       lookup: async (url) => { return undefined },
       put: async (url, checkpoint) => { },
