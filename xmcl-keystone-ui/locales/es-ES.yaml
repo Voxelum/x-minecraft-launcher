@@ -396,6 +396,14 @@ items:
 java:
   allocatedLong: Usar Java predeterminada del sistema
   allocatedShort: Asignación Automática
+launchBlocked:
+  launchSpawnProcessFailed:
+    description: >-
+      Verifique su Java o otorgue más permisos al iniciador y vuelva a
+      intentarlo. 
+
+      Si esto aún no funciona, comuníquese con los desarrolladores.
+    title: No se puede iniciar el proceso del juego
 launchStatus:
   refreshingUser: Actualizar token de usuario
   spawningProcess: ''

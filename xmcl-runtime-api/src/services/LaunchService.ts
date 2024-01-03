@@ -168,6 +168,11 @@ export type LaunchExceptions = {
   error: unknown
 } | {
   /**
+   * Spawn process failed
+   */
+  type: 'launchSpawnProcessFailed'
+} | {
+  /**
    * Unknown java error. Might be empty java path
    */
   type: 'launchNoProperJava'

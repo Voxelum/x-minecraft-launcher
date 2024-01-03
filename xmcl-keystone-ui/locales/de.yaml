@@ -523,6 +523,14 @@ launchBlocked:
       Kann die Version von <span class="highlight">{version}</span> nicht
       ermitteln, um ausführen.
     title: Version nicht ausgewählt
+  launchSpawnProcessFailed:
+    description: >-
+      Bitte überprüfen Sie Ihr Java oder erteilen Sie dem Launcher weitere
+      Berechtigungen und versuchen Sie es erneut. 
+
+      Sollte dies immer noch nicht funktionieren, wenden Sie sich bitte an die
+      Entwickler.
+    title: Spielvorgang konnte nicht gestartet werden
   launchUserStatusRefreshFailed:
     description: Der aktuelle Benutzerstatus kann nicht aktualisiert werden.
     title: Benutzerstatus kann nicht überprüft werden
