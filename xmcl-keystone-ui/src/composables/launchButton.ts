@@ -23,7 +23,6 @@ export interface LaunchMenuItem {
 
 export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
-  const { show: showMultiInstanceDialog } = useDialog('multi-instance-launch')
 
   const { path } = injection(kInstance)
   const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionDiagnose)
@@ -31,7 +30,7 @@ export function useLaunchButton() {
   const { issue: filesIssue, fix: fixInstanceFileIssue } = injection(kInstanceFilesDiagnose)
   const { issue: userIssue, fix: fixUserIssue } = injection(kUserDiagnose)
   const { status, pause, resume } = injection(kLaunchTask)
-  const { refreshing: refreshingFiles } = injection(kInstanceFiles)
+  const { isValidating: refreshingFiles, mutate } = injection(kInstanceFiles)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
   const { launch, launching, count, kill } = injection(kInstanceLaunch)
 
@@ -125,7 +124,9 @@ export function useLaunchButton() {
         color: !javaIssue.value ? 'primary' : 'primary darken-1',
         leftIcon: 'play_arrow',
         menu: javaIssue.value ? [javaIssue.value] : [],
-        onClick: () => {
+        onClick: async () => {
+          await mutate().catch(() => {})
+          await fixInstanceFileIssue()
           launch()
           showLaunchStatusDialog(false)
         },

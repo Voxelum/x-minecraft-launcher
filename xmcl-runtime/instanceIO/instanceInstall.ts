@@ -1,9 +1,7 @@
-import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/runtime-api'
 import { writeFile } from 'atomically'
 import { unlink } from 'fs/promises'
 import { join } from 'path'
-import { ResourceService } from '~/resource'
 
 export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 

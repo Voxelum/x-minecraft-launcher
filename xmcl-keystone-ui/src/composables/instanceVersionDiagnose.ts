@@ -1,10 +1,9 @@
-import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, VersionMetadataServiceKey, getExpectVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, getExpectVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useInstanceVersionInstall } from './instanceVersionInstall'
 import { LaunchMenuItem } from './launchButton'
 import { useService } from './service'
-import { kSWRVConfig } from './swrvConfig'
 
 export const kInstanceVersionDiagnose: InjectionKey<ReturnType<typeof useInstanceVersionDiagnose>> = Symbol('InstanceVersionDiagnose')
 
@@ -21,8 +20,6 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
   let pendingFix = false
 
   const lock = new ReadWriteLock()
-  const serv = useService(VersionMetadataServiceKey)
-  const config = inject(kSWRVConfig)
 
   const loading = ref(false)
 

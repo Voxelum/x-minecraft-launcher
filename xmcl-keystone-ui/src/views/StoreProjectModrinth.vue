@@ -3,8 +3,8 @@ import StoreProjectBase, { StoreProject } from '@/components/StoreProject.vue'
 import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { useService } from '@/composables'
+import { kInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
-import { useInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
 import { useModrinthTags } from '@/composables/modrinth'
@@ -13,7 +13,6 @@ import { useModrinthVersions } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
-import { kLocalVersions } from '@/composables/versionLocal'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
@@ -140,7 +139,9 @@ const { getModpackInstallFiles } = useService(ModpackServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { createInstance } = useService(InstanceServiceKey)
 const { installVersion } = useService(ModrinthServiceKey)
+const { install, mutate } = injection(kInstanceFiles)
 const { fix } = injection(kInstanceVersionDiagnose)
+const { currentRoute } = useRouter()
 const installModpack = async (v: ProjectVersion) => {
   const result = await installVersion({ version: v, icon: project.value?.iconUrl })
   const resource = result.resources[0]
@@ -152,11 +153,21 @@ const installModpack = async (v: ProjectVersion) => {
     ...config,
     name,
   })
+  selectedInstance.value = path
+  if (currentRoute.path !== '/') {
+    push('/')
+  }
   const files = await getModpackInstallFiles(resource.path)
   await installInstanceFiles({
     path,
     files,
-  }).catch(console.error)
+  }).catch(() => {
+    if (selectedInstance.value === path) {
+      return install()
+    }
+  }).finally(() => {
+    mutate()
+  })
   fix()
 }
 

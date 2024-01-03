@@ -15,6 +15,7 @@ import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
 import { useSWRVModel } from './swrv'
+import { kInstanceFiles } from './instanceFiles'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
@@ -116,12 +117,14 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
 }
 
 export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
-  const { instances } = injection(kInstances)
+  const { instances, selectedInstance } = injection(kInstances)
   const { getModpackInstallFiles } = useService(ModpackServiceKey)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
   const { createInstance } = useService(InstanceServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
+  const { install, mutate } = injection(kInstanceFiles)
   const { fix } = injection(kInstanceVersionDiagnose)
+  const { currentRoute, push } = useRouter()
   const installModpack = async (f: File) => {
     const result = await installFile({ file: f, type: 'modpacks', icon: icon.value })
     const resource = result.resource
@@ -133,11 +136,21 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
       ...config,
       name,
     })
+    selectedInstance.value = path
+    if (currentRoute.path !== '/') {
+      push('/')
+    }
     const files = await getModpackInstallFiles(resource.path)
     await installInstanceFiles({
       path,
       files,
-    }).catch(() => { })
+    }).catch(() => {
+      if (selectedInstance.value === path) {
+        return install()
+      }
+    }).finall(() => {
+      mutate()
+    })
     await fix()
   }
   return installModpack
