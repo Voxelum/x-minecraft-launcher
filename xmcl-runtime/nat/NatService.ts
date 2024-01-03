@@ -1,9 +1,8 @@
 import { createSsdp, UpnpClient, UpnpMapOptions, UpnpUnmapOptions } from '@xmcl/nat-api'
-import { NatService as INatService, MutableState, NatServiceKey, NatState } from '@xmcl/runtime-api'
+import { NatService as INatService, MutableState, NatServiceKey, NatState, createPromiseSignal } from '@xmcl/runtime-api'
 import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
-import { createPromiseSignal } from '@xmcl/runtime-api'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 @ExposeServiceKey(NatServiceKey)
 export class NatService extends StatefulService<NatState> implements INatService {
