@@ -59,6 +59,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   tags[contract.userId] = clientSession
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
+  tags[contract.deviceModel] = app.platform.arch
   tags[contract.cloudRole] = app.env
   tags[contract.internalSdkVersion] = getSdkVersion()
 
