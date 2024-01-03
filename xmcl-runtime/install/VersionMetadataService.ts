@@ -1,22 +1,22 @@
 import { parse as parseForge } from '@xmcl/forge-site-parser'
-import { DEFAULT_VERSION_MANIFEST_URL, FabricArtifactVersion, LabyModManifest, MinecraftVersionList, QuiltArtifactVersion, getLabyModManifest } from '@xmcl/installer'
+import { DEFAULT_VERSION_MANIFEST_URL, FabricArtifactVersion, LabyModManifest, MinecraftVersionList, QuiltArtifactVersion } from '@xmcl/installer'
 import { FabricVersions, ForgeVersion, VersionMetadataService as IVersionMetadataService, LiteloaderVersions, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, Settings, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import { request } from 'undici'
-import { NetworkInterface, kNetworkInterface } from '~/network'
-import { assertErrorWithCache, kCacheKey } from '~/network/dispatchers/cacheDispatcher'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
+import { Inject, LauncherAppKey } from '~/app'
 import { GFW } from '~/gfw'
-import { kSettings, shouldOverrideApiSet } from '~/settings'
-import { AnyError } from '../util/error'
-import { getForgeListFromBMCL } from './getForgeListFromBMCL'
+import { NetworkInterface, kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
+import { kSettings, shouldOverrideApiSet } from '~/settings'
+import { LauncherApp } from '../app/LauncherApp'
+import { AnyError } from '../util/error'
+import { BMCLForge, getForgeListFromBMCLList } from './getForgeListFromBMCL'
+import { getJson } from './getJsonWithCache'
 
 @ExposeServiceKey(VersionMetadataServiceKey)
 export class VersionMetadataService extends AbstractService implements IVersionMetadataService {
   private latest = {
-    release: '1.20.2',
+    release: '1.20.4',
     snapshot: '21w37a',
   }
 
@@ -72,27 +72,9 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton()
   async getMinecraftVersionList(): Promise<MinecraftVersions> {
-    this.log('Start to refresh minecraft version metadata.')
-    let metadata: MinecraftVersionList
-
-    try {
-      const response = await request(DEFAULT_VERSION_MANIFEST_URL)
-
-      if (response.statusCode === 304) {
-        this.log('Not found new Minecraft version metadata. Use cache.')
-      } else {
-        this.log('Found new minecraft version metadata. Update it.')
-      }
-
-      metadata = await response.body.json() as any
-    } catch (e) {
-      assertErrorWithCache(e)
-      metadata = JSON.parse(e[kCacheKey].getBody().toString())
-    }
-
+    const metadata = await getJson<MinecraftVersionList>(DEFAULT_VERSION_MANIFEST_URL, 'MinecraftVersionListError')
     this.latest.release = metadata.latest.release
     this.latest.snapshot = metadata.latest.snapshot
-
     return metadata
   }
 
@@ -125,7 +107,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton()
   async getLabyModManifest(): Promise<LabyModManifest> {
-    const manifest = await getLabyModManifest()
+    const manifest = await getJson<LabyModManifest>('https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/manifest/production/latest.json', 'LabyModManifestError')
     return manifest
   }
 
@@ -137,7 +119,8 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
     try {
       if (shouldOverrideApiSet(this.settings, this.gfw.inside)) {
-        return await getForgeListFromBMCL(minecraftVersion)
+        const forges = await getJson<BMCLForge[]>(`https://bmclapi2.bangbang93.com/forge/minecraft/${minecraftVersion}`, 'ForgeVersionListError')
+        return getForgeListFromBMCLList(forges)
       }
       try {
         const response = await request(`http://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
@@ -159,9 +142,13 @@ export class VersionMetadataService extends AbstractService implements IVersionM
           } as ForgeVersion
         })
       } catch {
-        return await getForgeListFromBMCL(minecraftVersion)
+        const forges = await getJson<BMCLForge[]>(`https://bmclapi2.bangbang93.com/forge/minecraft/${minecraftVersion}`, 'ForgeVersionListError')
+        return getForgeListFromBMCLList(forges)
       }
     } catch (e) {
+      if (e instanceof AnyError) {
+        throw e
+      }
       throw new AnyError('ForgeVersionListError', `Fail to fetch forge info of ${minecraftVersion}`, { cause: e })
     }
   }
@@ -173,36 +160,8 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton()
   async getFabricVersionList(): Promise<FabricVersions> {
-    this.log('Start to refresh fabric metadata')
-
-    let yarns: FabricArtifactVersion[]
-    try {
-      const response = await request('https://meta.fabricmc.net/v2/versions/yarn')
-      yarns = await response.body.json() as any
-      if (response.statusCode === 304) {
-        this.log('Not found new fabric yarn metadata. Use cache')
-      } else {
-        this.log(`Found new fabric yarn metadata: ${response.headers['last-modified']}.`)
-      }
-    } catch (e) {
-      assertErrorWithCache(e)
-      yarns = e[kCacheKey].getBodyJson() || []
-    }
-
-    let loaders: FabricArtifactVersion[]
-    try {
-      const response = await request('https://meta.fabricmc.net/v2/versions/loader')
-      loaders = await response.body.json() as any
-      if (response.statusCode === 304) {
-        this.log('Not found new fabric loader metadata. Use cache')
-      } else {
-        this.log(`Found new fabric loader metadata: ${response.headers['last-modified']}.`)
-      }
-    } catch (e) {
-      assertErrorWithCache(e)
-      loaders = e[kCacheKey].getBodyJson() || []
-    }
-
+    const yarns = await getJson<FabricArtifactVersion[]>('https://meta.fabricmc.net/v2/versions/yarn', 'FabricYarnListError')
+    const loaders = await getJson<FabricArtifactVersion[]>('https://meta.fabricmc.net/v2/versions/loader', 'FabricLoaderListError')
     return {
       loaders,
       yarns,
@@ -211,62 +170,19 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   @Singleton()
   async getOptifineVersionList(): Promise<OptifineVersion[]> {
-    this.log('Start to refresh optifine metadata')
-
-    let versions: OptifineVersion[]
-    try {
-      const response = await request('https://bmclapi2.bangbang93.com/optifine/versionList')
-      if (response.statusCode === 304) {
-        this.log('Not found new optifine version metadata. Use cache.')
-      } else {
-        this.log('Found new optifine version metadata. Update it.')
-      }
-      versions = await response.body.json() as any
-    } catch (e) {
-      assertErrorWithCache(e)
-      versions = e[kCacheKey].getBodyJson() || []
-    }
-
+    const versions = await getJson<OptifineVersion[]>('https://bmclapi2.bangbang93.com/optifine/versionList', 'OptifineVersionListError')
     return versions
   }
 
   @Singleton()
   async getQuiltVersionList(minecraftVersion?: string): Promise<QuiltArtifactVersion[]> {
-    const hasMinecraft = async () => {
-      if (minecraftVersion) {
-        const url = `https://meta.fabricmc.net/v2/versions/intermediary/${minecraftVersion}`
-        const response = await request(url)
-        if (response.statusCode === 200) {
-          return (await response.body.json() as any).length > 0
-        } else if (response.statusCode === 304) {
-          return (await response.body.json() as any).length > 0
-        }
-        return false
-      }
-      return true
-    }
-    this.log('Start to get quilt metadata')
-    let versions: QuiltArtifactVersion[]
-    try {
-      const { body, statusCode } = await request('https://meta.quiltmc.org/v3/versions/loader')
-      if (statusCode >= 400) {
-        throw new AnyError('QuiltVersionListError')
-      }
-      versions = await body.json() as any
-      if (statusCode === 200) {
-        this.log('Found new quilt metadata')
-      } else if (statusCode === 304) {
-        this.log('Use existed quilt metadata')
-      }
-    } catch (e) {
-      assertErrorWithCache(e)
-      versions = e[kCacheKey].getBodyJson() || []
+    const versions = await getJson<QuiltArtifactVersion[]>('https://meta.quiltmc.org/v3/versions/loader', 'QuiltVersionListError')
+
+    if (minecraftVersion) {
+      const lists = await getJson<unknown[]>(`https://meta.fabricmc.net/v2/versions/intermediary/${minecraftVersion}`, 'FabricIntermediaryListError').catch(() => [])
+      return lists.length > 0 ? versions : []
     }
 
-    if (await hasMinecraft()) {
-      return versions
-    }
-
-    return []
+    return versions
   }
 }

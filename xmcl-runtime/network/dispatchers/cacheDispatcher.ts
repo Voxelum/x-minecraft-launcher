@@ -22,8 +22,12 @@ export const kCacheKey = Symbol('cache')
 
 export type WithCache<T> = T & { [kCacheKey]: CachedRequest }
 
+export function isWithCache<T = unknown>(e: T): e is WithCache<T> {
+  return typeof e === 'object' && !!e && kCacheKey in e && (e as any)[kCacheKey] instanceof CachedRequest
+}
+
 export function assertErrorWithCache<T = unknown>(e: T): asserts e is WithCache<T> {
-  if (typeof e === 'object' && !!e && kCacheKey in e && (e as any)[kCacheKey] instanceof CachedRequest) {
+  if (isWithCache(e)) {
     return
   }
   throw e
