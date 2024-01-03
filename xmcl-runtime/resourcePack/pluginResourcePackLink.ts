@@ -1,12 +1,12 @@
 import { ResourceDomain } from '@xmcl/runtime-api'
-import { existsSync } from 'fs'
+import { ensureDir } from 'fs-extra'
 import { readdir } from 'fs/promises'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
-import { LaunchService } from '~/launch'
 import { InstanceOptionsService } from '~/instance'
+import { LaunchService } from '~/launch'
+import { linkWithTimeoutOrCopy, missing } from '../util/fs'
 import { InstanceResourcePackService } from './InstanceResourcePacksService'
-import { linkWithTimeoutOrCopy } from '../util/fs'
 
 export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -21,7 +21,9 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
       const linked = await resourcePackService.link(path)
       if (linked) return
 
-      const files = await readdir(join(path, ResourceDomain.ResourcePacks))
+      const folder = join(path, ResourceDomain.ResourcePacks)
+      await ensureDir(folder)
+      const files = await readdir(folder).catch(() => [] as string[])
 
       // if not linked, we need to link the resource pack to the instance
       const promises: Promise<any>[] = []
@@ -31,15 +33,31 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
         if (fileName === 'vanilla') {
           continue
         }
-        fileName = fileName.startsWith('file/') ? fileName.slice(5) : fileName
+        if (fileName.indexOf('/') !== -1) {
+          if (fileName.startsWith('file/')) {
+            fileName = fileName.slice(5)
+          } else {
+            // Skip for external resource pack. This might be a mod
+            continue
+          }
+        }
+        if (fileName.indexOf(':') !== -1) {
+          // Skip for external resource pack. This might be a mod
+          continue
+        }
         if (files.includes(fileName)) {
           // Skip for existed file
           continue
         }
         const src = getPath(ResourceDomain.ResourcePacks, fileName)
         const dest = join(path, ResourceDomain.ResourcePacks, fileName)
-        if (!existsSync(dest)) {
-          promises.push(linkWithTimeoutOrCopy(src, dest).catch((e) => resourcePackService.error(e)))
+        if (await missing(dest) && !(await missing(src))) {
+          promises.push(linkWithTimeoutOrCopy(src, dest).catch((e) => {
+            if (e.name === 'Error') {
+              Object.assign(e, { name: 'LinkResourcePackError' })
+            }
+            resourcePackService.error(e)
+          }))
         }
       }
       await Promise.all(promises)
