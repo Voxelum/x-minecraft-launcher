@@ -155,9 +155,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         client.trackEvent({
           name: 'minecraft-start',
           properties: options,
+          tagOverrides: {
+            [contract.operationId]: options.operationId ?? '',
+          },
         })
       })
-        .on('minecraft-exit', ({ code, signal, crashReport }) => {
+        .on('minecraft-exit', ({ code, signal, crashReport, operationId }) => {
           if (settings.disableTelemetry) return
           const normalExit = code === 0
           const crashed = crashReport && crashReport.length > 0
@@ -172,6 +175,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
                 code,
                 signal,
                 crashed,
+              },
+              tagOverrides: {
+                [contract.operationId]: operationId ?? '',
               },
             })
           }
