@@ -1,69 +1,64 @@
-<template>
-  <v-list-item>
-    <v-list-item-action class="self-center">
-      <img
-        :src="'http://launcher/icons/forge'"
-        width="40"
-      >
-    </v-list-item-action>
-    <v-list-item-content>
-      <v-list-item-title>
-        {{
-          t('forgeVersion.name')
-        }}
-      </v-list-item-title>
-      <v-list-item-subtitle>
-        <a
-          target="browser"
-          href="https://github.com/MinecraftForge/MinecraftForge"
-        >https://github.com/MinecraftForge/MinecraftForge</a>
-      </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action>
-      <VersionMenu
-        :is-clearable="true"
-        :items="forgeItems"
-        :clear-text="t('forgeVersion.disable')"
-        :has-snapshot="true"
-        :snapshot.sync="canShowBuggy"
-        :snapshot-tooltip="t('fabricVersion.showSnapshot')"
-        :refreshing="refreshingForge"
-        @select="emit('input', $event)"
-      >
-        <template #default="{ on }">
-          <v-text-field
-            :value="value"
-            outlined
-            filled
-            dense
-            append-icon="arrow_drop_down"
-            :placeholder="t('forgeVersion.disable')"
-            :empty-text="t('forgeVersion.empty', { version: minecraft })"
-            hide-details
-            persistent-hint
-            :readonly="true"
-            @click:append="on.click($event);"
-            v-on="on"
-          />
-        </template>
-      </VersionMenu>
-    </v-list-item-action>
-  </v-list-item>
-</template>
 <script lang="ts" setup>
-import { useForgeVersionList } from '@/composables/versionList'
-import { LocalVersionHeader } from '@xmcl/runtime-api'
-import VersionMenu from './VersionMenu.vue'
+import { useForgeVersions } from '@/composables/version'
+import { ForgeVersion } from '@xmcl/runtime-api'
+import VersionInput, { VersionItem } from './VersionInput.vue'
 
 const props = defineProps<{
   minecraft: string
-  versions: LocalVersionHeader[]
   value?: string
 }>()
-const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(computed(() => props.minecraft), computed(() => props.value ?? ''), computed(() => props.versions))
+
+const { versions, isValidating, mutate, error } = useForgeVersions(computed(() => props.minecraft))
 const { t } = useI18n()
+
+const recommendedOnly = ref(false)
+const canShowBuggy = ref(false)
+
+function filterForge(version: ForgeVersion) {
+  if (recommendedOnly.value && version.type !== 'recommended' && version.type !== 'latest') { return false }
+  if (canShowBuggy.value && version.type !== 'buggy') { return true }
+  return true
+}
+const items = computed(() => {
+  const result: VersionItem[] = (versions.value ?? [])
+    .filter(filterForge).sort((a, b) => {
+      if (a.date && b.date) {
+        // @ts-ignore
+        return new Date(b.date) - (new Date(a.date))
+      }
+      return b.version.localeCompare(a.version)
+    })
+    .map(v => {
+      return markRaw({
+        name: v.version,
+        tag: v.type === 'recommended' ? t('forgeVersion.recommended') : v.type === 'latest' ? t('forgeVersion.latest') : '',
+        tagColor: v.type === 'recommended' ? 'primary' : '',
+      })
+    })
+  return result
+})
 
 const emit = defineEmits<{
   (event: 'input', value: string): void
 }>()
 </script>
+<template>
+  <VersionInput
+    icon="http://launcher/icons/forge"
+    title="Forge"
+    url="https://github.com/MinecraftForge/MinecraftForge"
+    :is-clearable="true"
+    :items="items"
+    :has-snapshot="true"
+    :error="error"
+    :clear-text="t('forgeVersion.disable')"
+    :empty-text="t('forgeVersion.empty', { version: minecraft })"
+    :snapshot.sync="canShowBuggy"
+    :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+    :refreshing="isValidating"
+    :placeholder="t('forgeVersion.disable')"
+    :value="value"
+    @input="emit('input', $event)"
+    @refresh="mutate()"
+  />
+</template>

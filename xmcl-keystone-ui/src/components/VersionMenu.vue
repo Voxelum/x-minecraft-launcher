@@ -4,7 +4,6 @@
     bottom
     :close-on-content-click="false"
     :disabled="disabled"
-    style="background-color: #303030; overflow-y: hidden;"
   >
     <template #activator="{ on }">
       <slot :on="on" />
@@ -44,6 +43,13 @@
       v-if="refreshing"
       type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
       class="w-100"
+    />
+    <ErrorView
+      v-else-if="error"
+      type="error"
+      :error="error"
+      class="w-100 dark:bg-dark-300 bg-light-500"
+      @refresh="emit('refresh')"
     />
     <v-list
       v-else
@@ -92,10 +98,17 @@
 </template>
 
 <script lang=ts setup>
-import { VersionMenuItem } from '../composables/versionList'
+import ErrorView from './ErrorView.vue'
+
+export interface VersionItem {
+  tag?: string
+  tagColor?: string
+  name: string
+  description?: string
+}
 
 const props = defineProps<{
-  items: VersionMenuItem[]
+  items: VersionItem[]
   refreshing?: boolean
   disabled?: boolean
   isClearable?: boolean
@@ -104,9 +117,10 @@ const props = defineProps<{
   hasSnapshot?: boolean
   snapshot?: boolean
   snapshotTooltip?: string
+  error?: any
 }>()
 
-const emit = defineEmits(['update:snapshot', 'select'])
+const emit = defineEmits(['update:snapshot', 'select', 'refresh'])
 const { t } = useI18n()
 
 const data = reactive({

@@ -94,35 +94,30 @@
 
     <VersionInputMinecraft
       :value="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectMinecraft"
     />
     <VersionInputNeoForged
       v-if="!data.runtime.labyMod"
       :value="data.runtime.neoForged"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectNeoForged"
     />
     <VersionInputForge
       v-if="!data.runtime.labyMod"
       :value="data.runtime.forge"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectForge"
     />
     <VersionInputFabric
       v-if="!data.runtime.labyMod"
       :value="data.runtime.fabricLoader"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectFabric"
     />
     <VersionInputQuilt
       v-if="!data.runtime.labyMod"
       :value="data.runtime.quiltLoader"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectQuilt"
     />
     <VersionInputOptifine
@@ -130,14 +125,12 @@
       :value="data.runtime.optifine"
       :forge="data.runtime.forge || ''"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectOptifine"
     />
     <VersionInputLabymod
       v-if="data.runtime.labyMod"
       :value="data.runtime.labyMod"
       :minecraft="data.runtime.minecraft"
-      :versions="versions"
       @input="onSelectLabyMod"
     />
     <VersionInputLocal
