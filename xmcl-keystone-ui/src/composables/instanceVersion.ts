@@ -2,7 +2,7 @@ import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, VersionSe
 import useSWRV from 'swrv'
 import { Ref, InjectionKey } from 'vue'
 import { useService } from './service'
-import type { ResolvedVersion } from '@xmcl/core'
+import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
 
 function useInstanceVersionBase(instance: Ref<Instance>) {
   const minecraft = computed(() => instance.value.runtime.minecraft)
@@ -58,8 +58,16 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     if (!versionHeader.value.path) {
       return { requirements: { ...instance.value.runtime } }
     }
-    const resolvedVersion = await resolveLocalVersion(versionHeader.value.id)
-    return resolvedVersion
+    try {
+      const resolvedVersion = await resolveLocalVersion(versionHeader.value.id)
+      return resolvedVersion
+    } catch (e) {
+      const err = e as VersionParseError
+      if (err.name === 'MissingVersionJson') {
+        return { requirements: { ...instance.value.runtime } }
+      }
+      throw e
+    }
   }, { revalidateOnFocus: false, errorRetryCount: 0, shouldRetryOnError: false })
 
   watch([versionHeader, local], () => {

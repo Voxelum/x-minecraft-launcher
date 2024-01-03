@@ -2,7 +2,7 @@ import { ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
 import { VersionService as IVersionService, LocalVersionHeader, LocalVersions, MutableState, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
-import { ensureDir } from 'fs-extra'
+import { ensureDir, readdir } from 'fs-extra'
 import { rm } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
@@ -108,8 +108,17 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   }
 
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
-    const resolved = await Version.parse(root, versionFolder)
-    return Object.freeze(resolved)
+    try {
+      const resolved = await Version.parse(root, versionFolder)
+      return Object.freeze(resolved)
+    } catch (e) {
+      if (e instanceof Error && e.name === 'MissingVersionJson') {
+        Object.assign(e, {
+          files: await readdir(join(root, 'versions', versionFolder)).catch(() => []),
+        })
+      }
+      throw e
+    }
   }
 
   public getLocalVersion(versionId: string) {
