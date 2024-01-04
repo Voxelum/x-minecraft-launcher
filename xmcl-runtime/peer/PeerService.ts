@@ -403,10 +403,17 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.log(candidates)
     const state = sess.connection.signalingState()
     if (state !== 'stable' || newPeer) {
-      sess.connection.setRemoteDescription(sdp, type as any)
-      for (const { candidate, mid } of candidates) {
-        this.log(`Add remote candidate: ${candidate} ${mid}`)
-        sess.connection.addRemoteCandidate(candidate, mid)
+      try {
+        sess.connection.setRemoteDescription(sdp, type as any)
+        for (const { candidate, mid } of candidates) {
+          this.log(`Add remote candidate: ${candidate} ${mid}`)
+          sess.connection.addRemoteCandidate(candidate, mid)
+        }
+      } catch (e) {
+        if (e instanceof Error && e.name === 'Error') {
+          e.name = 'SetRemoteDescriptionError'
+        }
+        throw e
       }
     } else {
       this.log('Skip to set remote description as signal state is stable')
