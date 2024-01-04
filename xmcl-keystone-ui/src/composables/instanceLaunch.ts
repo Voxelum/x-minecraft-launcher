@@ -57,26 +57,32 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
 
   async function track<T>(p: Promise<T>, name: string, id: string) {
     const start = performance.now()
-    reportOperation({
-      name,
-      operationId: id,
-    })
+    if (id) {
+      reportOperation({
+        name,
+        operationId: id,
+      })
+    }
     try {
       const v = await p
-      reportOperation({
-        duration: performance.now() - start,
-        name,
-        operationId: id,
-        success: true,
-      })
+      if (id) {
+        reportOperation({
+          duration: performance.now() - start,
+          name,
+          operationId: id,
+          success: true,
+        })
+      }
       return v
     } catch (e) {
-      reportOperation({
-        duration: performance.now() - start,
-        name,
-        operationId: id,
-        success: false,
-      })
+      if (id) {
+        reportOperation({
+          duration: performance.now() - start,
+          name,
+          operationId: id,
+          success: false,
+        })
+      }
       throw e
     }
   }

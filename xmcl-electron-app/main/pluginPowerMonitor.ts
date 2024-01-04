@@ -27,6 +27,7 @@ export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
 
   app.registry.get(LaunchService).then((servi) => {
     servi.registerMiddleware({
+      name: 'gpu-optimization',
       async onBeforeLaunch(input, output) {
         const javaPath = output.javaPath
         try {
