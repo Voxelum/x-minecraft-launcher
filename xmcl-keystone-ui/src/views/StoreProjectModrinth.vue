@@ -2,12 +2,10 @@
 import StoreProjectBase, { StoreProject } from '@/components/StoreProject.vue'
 import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
-import { useService } from '@/composables'
-import { kInstanceFiles } from '@/composables/instanceFiles'
-import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
 import { useModrinthTags } from '@/composables/modrinth'
+import { useModrinthInstallModpack } from '@/composables/modrinthInstall'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthVersions } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
@@ -15,10 +13,8 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { generateDistinctName } from '@/util/instanceName'
-import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, ModrinthServiceKey, TaskState } from '@xmcl/runtime-api'
+import { TaskState } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
 const props = defineProps<{ id: string }>()
@@ -135,41 +131,7 @@ const tasks = useTasks((t) => {
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)
-const { getModpackInstallFiles } = useService(ModpackServiceKey)
-const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { createInstance } = useService(InstanceServiceKey)
-const { installVersion } = useService(ModrinthServiceKey)
-const { install, mutate } = injection(kInstanceFiles)
-const { fix } = injection(kInstanceVersionDiagnose)
-const { currentRoute } = useRouter()
-const installModpack = async (v: ProjectVersion) => {
-  const result = await installVersion({ version: v, icon: project.value?.iconUrl })
-  const resource = result.resources[0]
-  const config = resolveModpackInstanceConfig(resource)
-
-  if (!config) return
-  const name = generateDistinctName(config.name, instances.value.map(i => i.name))
-  const path = await createInstance({
-    ...config,
-    name,
-  })
-  selectedInstance.value = path
-  if (currentRoute.path !== '/') {
-    push('/')
-  }
-  const files = await getModpackInstallFiles(resource.path)
-  await installInstanceFiles({
-    path,
-    files,
-  }).catch(() => {
-    if (selectedInstance.value === path) {
-      return install()
-    }
-  }).finally(() => {
-    mutate()
-  })
-  fix()
-}
+const { installModpack } = useModrinthInstallModpack(computed(() => project.value?.iconUrl))
 
 const { isValidating: loadingMembers, error: teamError, data } = useSWRV(computed(() => `/modrinth/team/${props.id}`),
   () => clientModrinthV2.getProjectTeamMembers(props.id),
