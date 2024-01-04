@@ -25,8 +25,9 @@
         :clear-text="clearText"
         :empty-text="emptyText"
         :has-snapshot="hasSnapshot"
-        :snapshot.sync="snapshot"
+        :snapshot="snapshot"
         :snapshot-tooltip="snapshotTooltip"
+        @update:snapshot="emit('update:snapshot', $event)"
         @select="emit('input', $event)"
         @refresh="emit('refresh')"
       >
@@ -82,5 +83,6 @@ defineProps<{
 const emit = defineEmits<{
   (event: 'input', value: string): void
   (event: 'refresh'): void
+  (event: 'update:snapshot', value: boolean): void
 }>()
 </script>
