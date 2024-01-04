@@ -6,16 +6,26 @@ export async function getJson<T>(url: string, error: string) {
   try {
     const response = await request(url)
 
-    const contentType = response.headers['content-type']
-    if (typeof contentType !== 'string' || !contentType.startsWith('application/json')) {
-      throw new AnyError(error, await response.body.text())
-    }
+    const body = await response.body.text()
 
     if (response.statusCode >= 400) {
-      throw new AnyError(error, `Response with ${response.statusCode}`, undefined, await response.body.json())
+      throw new AnyError(error, `Response with ${response.statusCode}`, undefined, {
+        headers: response.headers,
+        statusCode: response.statusCode,
+        body,
+      })
     }
 
-    return await response.body.json() as T
+    try {
+      const parsed = JSON.parse(body) as T
+      return parsed
+    } catch {
+      throw new AnyError(error, `Invalid JSON body: ${response.headers['content-type']}`, {}, {
+        headers: response.headers,
+        statusCode: response.statusCode,
+        body,
+      })
+    }
   } catch (e) {
     if (isWithCache(e)) {
       return e[kCacheKey].getBodyJson() as T
@@ -24,6 +34,6 @@ export async function getJson<T>(url: string, error: string) {
     if (e instanceof AnyError) {
       throw e
     }
-    throw new AnyError(error, 'Fail to fetch ' + url, { cause: e })
+    throw new AnyError(error, 'Fail to fetch ' + url + ' ' + (e as any).code, { cause: e })
   }
 }
