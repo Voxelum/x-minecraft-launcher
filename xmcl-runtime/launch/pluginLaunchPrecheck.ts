@@ -7,13 +7,12 @@ import { LaunchService } from '~/launch'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
-  const installService = await app.registry.get(InstallService)
   const getPath = await app.registry.get(kGameDataPath)
-  const javaService = await app.registry.get(JavaService)
 
   launchService.registerMiddleware({
     name: 'java-validation',
     async onBeforeLaunch(input, output) {
+      const javaService = await app.registry.getOrCreate(JavaService)
       const javaPath = input.java
       try {
         const result = await javaService.validateJavaPath(javaPath)
@@ -35,14 +34,16 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       if (!input?.skipAssetsCheck) {
         const resourceFolder = new MinecraftFolder(getPath())
         await Promise.all([
-          diagnoseJar(resolvedVersion, resourceFolder).then((issue) => {
+          diagnoseJar(resolvedVersion, resourceFolder).then(async (issue) => {
             if (issue?.type === 'missing') {
+              const installService = await app.registry.getOrCreate(InstallService)
               return installService.installMinecraftJar(resolvedVersion)
             }
           }),
           diagnoseLibraries(resolvedVersion, resourceFolder).then(async (libs) => {
             const missing = libs.filter((l) => l.type === 'missing')
             if (missing.length > 0) {
+              const installService = await app.registry.getOrCreate(InstallService)
               await installService.installLibraries(libs.map(l => l.library))
             }
           }),
