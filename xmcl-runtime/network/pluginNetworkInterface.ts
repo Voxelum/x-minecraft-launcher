@@ -4,12 +4,15 @@ import { join } from 'path'
 import { Agent, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
+import { GFW } from '~/gfw'
 import { kSettings } from '~/settings'
+import { isSystemError } from '~/util/error'
 import { BiDispatcher, kUseDownload } from './dispatchers/biDispatcher'
 import { CacheDispatcher, JsonCacheStorage } from './dispatchers/cacheDispatcher'
 import { InteroperableDispatcher } from './dispatchers/dispatcher'
 import { ProxyDispatcher } from './dispatchers/proxyDispatcher'
 import { buildHeaders } from './dispatchers/utils'
+import { overrideDns } from './dnsServers'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kUserAgent } from './userAgent'
 
@@ -53,6 +56,22 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       proxy.setProxyEnabled(e)
     })
   })
+
+  // Error sampling
+  let hasDnsIssue = false
+  const onError = (err: Error) => {
+    if (isSystemError(err) && err.syscall === 'getaddrinfo') {
+      // DNS lookup issue
+      err.name = 'DNSLookupError'
+      if (!hasDnsIssue) {
+        hasDnsIssue = true
+        app.registry.get(GFW).then(g => {
+          overrideDns(g.env)
+        })
+      }
+    }
+  }
+
   const proxy = new ProxyDispatcher({
     factory(connect) {
       const downloadAgent = new Agent({
@@ -92,7 +111,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
           return dispatcher
         },
       })
-      return new BiDispatcher(downloadAgent, apiAgent)
+      return new BiDispatcher(downloadAgent, apiAgent, onError)
     },
   })
 

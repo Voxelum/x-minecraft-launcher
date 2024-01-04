@@ -7,24 +7,31 @@ export const pluginGFW: LauncherAppPlugin = (app) => {
   async function updateGFW() {
     const taobao = new Client('https://npm.taobao.org')
     const google = new Client('https://www.google.com')
-    const inGFW = await Promise.race([
+    const yandex = new Client('https://www.yandex.com')
+    const networkEnv = await Promise.race([
       taobao.request({
         method: 'HEAD',
         path: '/',
         connectTimeout: 5000,
         headersTimeout: 5000,
-      }).then(() => true, () => false),
+      }).then(() => 'cn' as const, () => 'global' as const),
       google.request({
         method: 'HEAD',
         path: '/',
         connectTimeout: 5000,
         headersTimeout: 5000,
-      }).then(() => false, () => true),
+      }).then(() => 'global' as const, () => 'global' as const),
+      yandex.request({
+        method: 'HEAD',
+        path: '/',
+        connectTimeout: 5000,
+        headersTimeout: 5000,
+      }).then(() => 'yandex' as const, () => 'global' as const),
     ])
-    logger.log(inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
+    logger.log(networkEnv ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
     taobao.close()
     google.close()
-    return inGFW
+    return networkEnv
   }
   app.registry.register(GFW, new GFW(updateGFW()))
 }
