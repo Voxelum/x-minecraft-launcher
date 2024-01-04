@@ -148,7 +148,7 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
       if (selectedInstance.value === path) {
         return install()
       }
-    }).finall(() => {
+    }).finally(() => {
       mutate()
     })
     await fix()

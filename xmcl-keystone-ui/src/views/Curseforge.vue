@@ -36,7 +36,7 @@
             solo
             clearable
             :items="mcVersions"
-            :loading="refreshing"
+            :loading="isValidating"
             :label="t('minecraftVersion.name')"
             hide-details
           />
@@ -98,11 +98,9 @@ import { vFocusOnSearch } from '../directives/focusOnSearch'
 import Categories from './CurseforgeCategories.vue'
 
 import ErrorView from '@/components/ErrorView.vue'
-import CurseforgeCard from './CurseforgeCard.vue'
 import { usePresence } from '@/composables/presence'
-import { kLocalVersions } from '@/composables/versionLocal'
-import { injection } from '@/util/inject'
 import { useVModels } from '@vueuse/core'
+import CurseforgeCard from './CurseforgeCard.vue'
 
 interface CurseforgeProps {
   type: string
@@ -118,16 +116,16 @@ interface CurseforgeProps {
 
 const props = withDefaults(
   defineProps<CurseforgeProps>(), {
-    type: 'mc-mods',
-    page: 1,
-    keyword: '',
-    category: '',
-    sortField: 2,
-    modLoaderType: 0,
-    sortOrder: 'desc',
-    gameVersion: '',
-    from: '',
-  },
+  type: 'mc-mods',
+  page: 1,
+  keyword: '',
+  category: '',
+  sortField: 2,
+  modLoaderType: 0,
+  sortOrder: 'desc',
+  gameVersion: '',
+  from: '',
+},
 )
 
 const { replace, push, currentRoute } = useRouter()
@@ -161,16 +159,24 @@ const { page, type, category, keyword, gameVersion } = useVModels(props, (name, 
 })
 
 const { t } = useI18n()
-const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
-  text: t(`curseforge.${v}.name`),
-  value: v,
-})))
+const allTypes = computed(() => [{
+  text: t('modpack.name', 2),
+  value: 'modpacks',
+}, {
+  text: t('mod.name', 2),
+  value: 'mc-mods',
+}, {
+  text: t('resourcepack.name', 2),
+  value: 'texture-packs',
+}, {
+  text: t('save.name', 2),
+  value: 'worlds',
+}])
 const keywordBuffer = ref(props.keyword)
 watch(() => props.keyword, (newKeyword) => {
   keywordBuffer.value = newKeyword
 })
-const { versions: local } = injection(kLocalVersions)
-const { versions, refreshing } = useMinecraftVersions(local)
+const { versions, isValidating } = useMinecraftVersions()
 const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
 
 const {

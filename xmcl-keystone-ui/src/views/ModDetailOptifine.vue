@@ -18,7 +18,7 @@ const props = defineProps<{
   runtime: RuntimeVersions
 }>()
 
-const { versions: optVersions, refreshing } = useOptifineVersions(computed(() => props.runtime.minecraft), computed(() => props.runtime.forge || ''), computed(() => []))
+const { versions: optVersions, isValidating } = useOptifineVersions()
 
 const selectedVersion = ref(undefined as ProjectVersion | undefined)
 provide('selectedVersion', selectedVersion)
@@ -158,7 +158,7 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
     :updating="updating"
     no-enabled
     :has-more="false"
-    :loading-versions="refreshing"
+    :loading-versions="isValidating"
     :loading-dependencies="false"
     @install="onInstall"
     @delete="onDelete"

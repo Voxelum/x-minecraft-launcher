@@ -11,7 +11,7 @@ export function useLaunchPreview() {
   })
   const wrapIfSpace = (s: string) => (s.indexOf(' ') !== -1 ? `"${s}"` : s)
   const { refresh, refreshing, error } = useRefreshable(async () => {
-    const options = await generateLaunchOptions()
+    const options = await generateLaunchOptions('')
     const args = await generateArguments(options)
     data.preview = args
   })
