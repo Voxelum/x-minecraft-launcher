@@ -11,6 +11,8 @@ import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
 import { offline } from '@xmcl/user'
+import { isSystemError } from '~/util/error'
+import { setTimeout } from 'timers/promises'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -219,14 +221,27 @@ export class LaunchService extends AbstractService implements ILaunchService {
       // Launch
       const process = await this.#track(launch(launchOptions), 'spawn-minecraft-process', operationId)
       if (typeof process.pid !== 'number') {
-        process.once('error', (e) => {
-          if (e.name === 'Error') {
-            Object.assign(e, {
-              name: 'LaunchSpawnProcessError',
+        const err = await Promise.race([
+          setTimeout(1000),
+          new Promise<Error>((resolve) => {
+            process.once('error', (e) => {
+              if (isSystemError(e) && e.code === 'ENOENT' && e.syscall?.startsWith('spawn')) {
+                resolve(new LaunchException({ type: 'launchInvalidJavaPath', javaPath }, javaPath + '; ' + e.path))
+              } else {
+                if (e.name === 'Error') {
+                  Object.assign(e, {
+                    name: 'LaunchSpawnProcessError',
+                  })
+                }
+                resolve(e)
+              }
             })
-          }
-          this.error(e)
-        })
+          }),
+        ])
+        if (err) {
+          this.error(err)
+          throw err
+        }
         throw new LaunchException({ type: 'launchSpawnProcessFailed' })
       }
       const processData = {
