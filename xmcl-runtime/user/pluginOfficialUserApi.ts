@@ -5,7 +5,7 @@ import { LauncherAppPlugin } from '~/app'
 import { kClientToken } from '~/clientToken'
 import { kNetworkInterface } from '~/network'
 import { IS_DEV } from '../constant'
-import { isSystemError } from '../util/error'
+import { AnyError, isSystemError } from '../util/error'
 import { toRecord } from '../util/object'
 import { UserService } from './UserService'
 import { MicrosoftAccountSystem } from './accountSystems/MicrosoftAccountSystem'
@@ -49,7 +49,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = (app) => {
           userService.emit('microsoft-authorize-url', url)
           return await new Promise<string>((resolve, reject) => {
             const abort = () => {
-              reject(new Error('Timeout to wait the auth code! Please try again later!'))
+              reject(new AnyError('AuthCodeTimeoutError', 'Timeout to wait the auth code! Please try again later!'))
             }
             (signal as any)?.addEventListener('abort', abort)
             userService.once('microsoft-authorize-code', (err, code) => {
