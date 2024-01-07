@@ -60,14 +60,20 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   // Error sampling
   let hasDnsIssue = false
   const onError = (err: Error) => {
-    if (isSystemError(err) && err.syscall === 'getaddrinfo') {
-      // DNS lookup issue
-      err.name = 'DNSLookupError'
-      if (!hasDnsIssue) {
-        hasDnsIssue = true
-        app.registry.get(GFW).then(g => {
-          overrideDns(g.env)
-        })
+    if (isSystemError(err)) {
+      if (err.syscall === 'getaddrinfo') {
+        // DNS lookup issue
+        err.name = 'DNSLookupError'
+        if (!hasDnsIssue) {
+          hasDnsIssue = true
+          app.registry.get(GFW).then(g => {
+            overrideDns(g.env)
+          })
+        }
+      } else if (err.syscall === 'read') {
+        if (err.code === 'ECONNRESET') {
+          err.name = 'ConnectionResetError'
+        }
       }
     }
   }

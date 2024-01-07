@@ -89,27 +89,6 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
     sinks[destination].entries.error.write(`[${tag}] ${getMessageFromError(e)}`)
   })
 
-  process.on('uncaughtException', (err) => {
-    logger.warn('Uncaught Exception')
-    if (!err.name || err.name === 'Error') {
-      Object.assign(err, {
-        name: 'UncaughtException',
-        uncaught: true,
-      })
-    }
-    logger.error(err)
-  })
-  process.on('unhandledRejection', (reason) => {
-    logger.warn('Uncaught Rejection')
-    if (reason instanceof Error && (!reason.name || reason.name === 'Error')) {
-      Object.assign(reason, {
-        name: 'UncaughtRejection',
-        uncaught: true,
-      })
-    }
-    logger.warn(reason)
-  })
-
   if (IS_DEV) {
     let pipeIsBroken = false
     const capturePipeError = (f: (...args: any[]) => void) => (...args: any[]) => {
