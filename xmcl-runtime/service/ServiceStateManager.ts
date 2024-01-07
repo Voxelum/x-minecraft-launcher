@@ -32,6 +32,11 @@ export class ServiceStateManager {
         delete this.containers[id]
       }
     })
+    app.registryDisposer(async () => {
+      for (const container of Object.values(this.containers)) {
+        container.dispose()
+      }
+    })
   }
 
   registerStatic<T>(v: T): MutableState<T> {
