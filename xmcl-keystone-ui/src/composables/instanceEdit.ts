@@ -34,14 +34,14 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     minMemory: instance.value?.minMemory,
 
     runtime: {
-      minecraft: instance.value?.runtime.minecraft,
-      forge: instance.value?.runtime.forge,
-      fabricLoader: instance.value?.runtime.fabricLoader,
-      quiltLoader: instance.value?.runtime.quiltLoader,
-      optifine: instance.value?.runtime.optifine,
-      liteloader: instance.value?.runtime.liteloader,
-      neoForged: instance.value?.runtime.neoForged,
-      labyMod: instance.value?.runtime.labyMod,
+      minecraft: instance.value?.runtime.minecraft ?? '',
+      forge: instance.value?.runtime.forge ?? '',
+      fabricLoader: instance.value?.runtime.fabricLoader ?? '',
+      quiltLoader: instance.value?.runtime.quiltLoader ?? '',
+      optifine: instance.value?.runtime.optifine ?? '',
+      liteloader: instance.value?.runtime.liteloader ?? '',
+      neoForged: instance.value?.runtime.neoForged ?? '',
+      labyMod: instance.value?.runtime.labyMod ?? '',
     } as RuntimeVersions,
     version: '',
 
@@ -252,13 +252,13 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.author = current.author
       data.fileServerApi = current.fileApi
       data.description = current.description || ''
-      data.runtime.fabricLoader = current.runtime.fabricLoader
-      data.runtime.forge = current.runtime.forge
-      data.runtime.minecraft = current.runtime.minecraft
-      data.runtime.optifine = current.runtime.optifine
-      data.runtime.quiltLoader = current.runtime.quiltLoader
-      data.runtime.neoForged = current.runtime.neoForged
-      data.runtime.labyMod = current.runtime.labyMod
+      data.runtime.fabricLoader = current.runtime.fabricLoader ?? ''
+      data.runtime.forge = current.runtime.forge ?? ''
+      data.runtime.minecraft = current.runtime.minecraft ?? ''
+      data.runtime.optifine = current.runtime.optifine ?? ''
+      data.runtime.quiltLoader = current.runtime.quiltLoader ?? ''
+      data.runtime.neoForged = current.runtime.neoForged ?? ''
+      data.runtime.labyMod = current.runtime.labyMod ?? ''
       data.version = current.version
       data.icon = current.icon
 
