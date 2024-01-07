@@ -197,6 +197,10 @@ export class LauncherApp extends EventEmitter {
     this.disposers.push(disposer)
   }
 
+  async dispose() {
+    await Promise.all(this.disposers.map(m => m().catch(() => {})))
+  }
+
   /**
    * Quit the app gently.
    */

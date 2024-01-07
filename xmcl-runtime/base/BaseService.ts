@@ -1,5 +1,5 @@
 import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, Settings } from '@xmcl/runtime-api'
-import { readdir, rename, rm, stat } from 'fs/promises'
+import { readdir, rename, stat } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -11,7 +11,7 @@ import { TaskFn, kTaskExecutor } from '~/task'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
-import { isSystemError } from '../util/error'
+import { AnyError, isSystemError } from '../util/error'
 import { copyPassively } from '../util/fs'
 import { ZipTask } from '../util/zip'
 
@@ -172,30 +172,32 @@ export class BaseService extends AbstractService implements IBaseService {
           destination,
         })
       }
-      await rm(destination, { recursive: true, force: true })
     }
 
-    const renameOrCopy = async () => {
-      try {
-        this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
-        await rename(source, destination)
-      } catch (e) {
-        if (isSystemError(e)) {
-          if (e.code === 'EXDEV') {
-            // cannot move file across disk
-            this.warn(`Cannot move file across disk ${source} -> ${destination}. Use copy instead.`)
-            await copyPassively(source, destination)
-            return
-          }
-        }
-        throw e
-      }
-    }
     try {
-      await renameOrCopy()
+      await this.app.dispose()
+      this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
+      const files = await readdir(source)
+      for (const file of files) {
+        const from = join(source, file)
+        const to = join(destination, file)
+        try {
+          await rename(from, to)
+        } catch (e) {
+          if (isSystemError(e)) {
+            if (e.code === 'EXDEV') {
+              // cannot move file across disk
+              this.warn(`Cannot move file across disk ${from} -> ${to}. Use copy instead.`)
+              await copyPassively(from, to)
+              return
+            }
+          }
+          throw e
+        }
+      }
       await this.app.migrateRoot(destination)
     } catch (e) {
-      this.error(new Error(`Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
+      this.error(new AnyError('MigrateRootError', `Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
       await this.app.migrateRoot(source).catch(() => { })
       throw e
     }
