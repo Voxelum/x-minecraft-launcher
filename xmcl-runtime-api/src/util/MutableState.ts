@@ -19,4 +19,6 @@ export type MutableState<T> = T & {
   subscribeAll<K extends keyof Mutations<T>>(listener: (mutation: K, payload: Mutations<T>[keyof Mutations<T>]) => void): MutableState<T>
 
   unsubscribeAll<K extends keyof Mutations<T>>(listener: (mutation: K, payload: Mutations<T>[keyof Mutations<T>]) => void): MutableState<T>
+
+  revalidate(): void
 }

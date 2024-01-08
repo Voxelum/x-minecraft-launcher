@@ -23,7 +23,7 @@ const typeToStatePrototype: Record<string, StateMetadata> = AllStates.reduce((ob
 
 const kEmitter = Symbol('Emitter')
 
-function createMutableState<T extends object>(val: T): MutableState<T> {
+function createMutableState<T extends object>(val: T, id: string): MutableState<T> {
   const emitter = new EventEmitter()
   Object.defineProperty(val, kEmitter, { value: emitter })
   return Object.assign(val, {
@@ -42,6 +42,9 @@ function createMutableState<T extends object>(val: T): MutableState<T> {
     unsubscribeAll(listener: (payload: any) => void) {
       emitter.removeListener('*', listener)
       return this
+    },
+    revalidate() {
+      ipcRenderer.invoke('revalidate', id)
     },
   }) as any
 }
@@ -81,7 +84,7 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     }
 
     delete result.__state__
-    const state = createMutableState(result)
+    const state = createMutableState(result, id)
 
     for (const [method, handler] of prototype.methods) {
       // explictly bind to the state object under electron context isolation

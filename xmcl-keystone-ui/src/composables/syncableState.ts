@@ -1,4 +1,5 @@
 import { MutableState } from '@xmcl/runtime-api'
+import { useEventListener } from '@vueuse/core'
 
 export type Handler<T> = { [k in keyof T]?: T[k] /* extends (...args: infer A) => infer R ? (state: T, ...args: A) => R : never */ }
 
@@ -6,7 +7,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
   Type: { prototype: Handler<T>; new(): T }) {
   const isValidating = ref(false)
 
-  const state = ref<T | undefined>()
+  const state = ref<MutableState<T> | undefined>()
   const error = ref(undefined as any)
   const mutate = async (onCleanup?: (abort: () => void) => void) => {
     const abortController = new AbortController()
@@ -36,6 +37,12 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     }
   }
   watchEffect(mutate)
+  const revalidateCall = () => {
+    if (isValidating.value) return
+    state.value?.revalidate()
+  }
+  useEventListener(document, 'visibilitychange', revalidateCall, false)
+  useEventListener(window, 'focus', revalidateCall, false)
   return {
     isValidating,
     state,

@@ -1,4 +1,4 @@
-import { MutableState, State } from '@xmcl/runtime-api'
+import { MutableState, ServiceKey, State } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Client, LauncherApp } from '~/app'
 import { Logger } from '~/logger'
@@ -32,6 +32,9 @@ export class ServiceStateManager {
         delete this.containers[id]
       }
     })
+    app.controller.handle('revalidate', (_, id) => {
+      this.revalidate(id)
+    })
     app.registryDisposer(async () => {
       for (const container of Object.values(this.containers)) {
         container.dispose()
@@ -39,8 +42,8 @@ export class ServiceStateManager {
     })
   }
 
-  registerStatic<T>(v: T): MutableState<T> {
-    const _state = this.register(getServiceKey(Object.getPrototypeOf(this).constructor), (v as any), () => { })
+  registerStatic<T>(v: T, key: string | ServiceKey<T>): MutableState<T> {
+    const _state = this.register(key.toString(), (v as any), () => { })
     this.ref(_state)
     this.app.registryDisposer(async () => {
       this.deref(_state)
@@ -136,11 +139,20 @@ export class ServiceStateManager {
     Object.setPrototypeOf(Object.getPrototypeOf(state), parent)
     return Object.assign(state, {
       id,
+      revalidate: () => revalidator?.(),
     }) as MutableState<T>
   }
 
   get<T extends State<T>>(id: string): T | undefined {
     return this.containers[id]?.state
+  }
+
+  async revalidate(id: string) {
+    const container = this.containers[id]
+    if (!container) return
+    await container.revalidator?.().catch((e) => {
+      this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${id}`, { cause: e }, { id }))
+    })
   }
 
   async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>): Promise<MutableState<T>> {

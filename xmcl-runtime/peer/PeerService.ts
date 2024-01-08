@@ -50,7 +50,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(NatService) private natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app, () => store.registerStatic(new PeerState()), async () => {
+    super(app, () => store.registerStatic(new PeerState(), PeerServiceKey), async () => {
       const initCredential = async () => {
         await this.fetchCredential()
         const state = await userService.getUserState()

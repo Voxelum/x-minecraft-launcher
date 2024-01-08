@@ -12,7 +12,7 @@ export class NatService extends StatefulService<NatState> implements INatService
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
   ) {
-    super(app, () => store.registerStatic(new NatState()), async () => {
+    super(app, () => store.registerStatic(new NatState(), NatServiceKey), async () => {
       this.refreshNatType().catch((e) => {
         this.warn('Failed to get nat type: %o', e)
       })
