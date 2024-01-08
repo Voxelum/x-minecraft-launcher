@@ -35,7 +35,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ImageStorage) private imageStore: ImageStorage,
   ) {
-    super(app, () => store.registerStatic(new InstanceState()), async () => {
+    super(app, () => store.registerStatic(new InstanceState(), InstanceServiceKey), async () => {
       const instanceConfig = await this.instancesFile.read()
       const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p))
 

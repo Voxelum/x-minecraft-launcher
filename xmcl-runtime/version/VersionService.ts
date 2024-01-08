@@ -27,7 +27,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
-    super(app, () => store.registerStatic(new LocalVersions()), async () => {
+    super(app, () => store.registerStatic(new LocalVersions(), VersionServiceKey), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)

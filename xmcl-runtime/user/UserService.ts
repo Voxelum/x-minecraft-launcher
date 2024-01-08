@@ -44,7 +44,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(YggdrasilService) private yggdrasilAccountSystem: YggdrasilService) {
-    super(app, () => store.registerStatic(new UserState()), async () => {
+    super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
       const data = await this.userFile.read()
       const userData = {
         users: {},

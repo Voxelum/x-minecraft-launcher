@@ -28,7 +28,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     @Inject(GFW) private gfw: GFW,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
-    super(app, () => store.registerStatic(new JavaState()), async () => {
+    super(app, () => store.registerStatic(new JavaState(), JavaServiceKey), async () => {
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
       this.log(`Loaded ${valid.length} java from cache.`)

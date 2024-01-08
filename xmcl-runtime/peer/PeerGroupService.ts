@@ -19,7 +19,7 @@ export class PeerGroupService extends StatefulService<PeerGroupState> implements
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(PeerService) private peerService: PeerService,
   ) {
-    super(app, () => store.registerStatic(new PeerGroupState()))
+    super(app, () => store.registerStatic(new PeerGroupState(), PeerGroupServiceKey))
 
     app.protocol.registerHandler('xmcl', ({ request, response }) => {
       const parsed = request.url
