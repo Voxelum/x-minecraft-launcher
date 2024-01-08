@@ -99,25 +99,25 @@
 </template>
 
 <script lang=ts setup>
+import StepChoice from '@/components/StepChoice.vue'
 import StepConfig from '@/components/StepConfig.vue'
 import StepSelect from '@/components/StepSelect.vue'
 import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances } from '@/composables/instances'
+import { kPeerState } from '@/composables/peers'
 import { useResourceAdd } from '@/composables/resources'
 import { kUserContext } from '@/composables/user'
-import { kLocalVersions } from '@/composables/versionLocal'
 import { injection } from '@/util/inject'
-import { CreateInstanceManifest, InstanceIOServiceKey, PeerServiceKey, ResourceDomain } from '@xmcl/runtime-api'
+import { CreateInstanceManifest, InstanceIOServiceKey, InstanceInstallServiceKey, PeerServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { useNotifier } from '../composables/notifier'
-import StepChoice from '@/components/StepChoice.vue'
-import { kPeerState } from '@/composables/peers'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
@@ -258,7 +258,7 @@ const { t } = useI18n()
 const { gameProfile } = injection(kUserContext)
 const { instances } = injection(kInstances)
 const { path } = injection(kInstance)
-const { create, reset, data: creationData, files } = useInstanceCreation(gameProfile, instances, path)
+const { create, reset, data: creationData, files } = useInstanceCreation(gameProfile, instances)
 const isInvalid = computed(() => {
   return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
 })
@@ -274,12 +274,24 @@ const step = ref(1)
 // Install
 const { notify } = useNotifier()
 const router = useRouter()
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const { fix } = injection(kInstanceVersionDiagnose)
 const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   try {
-    await create()
+    const newPath = await create()
+    path.value = newPath
     if (router.currentRoute.path !== '/') router.push('/')
     reset()
     hide()
+    if (files.value.length > 0) {
+      await installInstanceFiles({
+        path: newPath,
+        files: files.value,
+      }).catch((e) => {
+        console.error(e)
+      })
+    }
+    await fix().catch(() => {})
   } catch (e) {
     error.value = e
   }
