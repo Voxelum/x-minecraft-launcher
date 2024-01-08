@@ -1,8 +1,7 @@
-import { ensureDir } from 'fs-extra'
-import { lstat, readlink, rename, unlink } from 'fs/promises'
+import { ensureDir, lstat, readlink, rename, unlink } from 'fs-extra'
+import { Logger } from '~/logger'
 import { isSystemError } from './error'
 import { ENOENT_ERROR, createSymbolicLink } from './fs'
-import { Logger } from '~/logger'
 
 /**
  * Try to link folder as symbolic link to the resource folder.

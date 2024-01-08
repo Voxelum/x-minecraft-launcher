@@ -1,6 +1,5 @@
 import filenamify from 'filenamify'
-import { WriteStream, createWriteStream, ensureDir } from 'fs-extra'
-import { readFile, readdir, stat, unlink } from 'fs/promises'
+import { WriteStream, createWriteStream, ensureDir, readFile, readdir, stat, unlink } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { PassThrough, Transform } from 'stream'
 import { format } from 'util'

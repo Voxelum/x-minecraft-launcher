@@ -1,5 +1,5 @@
 import { ResourceDomain } from '@xmcl/runtime-api'
-import { stat, unlink } from 'fs/promises'
+import { stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { ResourceContext } from './ResourceContext'
 import { parseMetadata } from './parseMetadata'

@@ -1,7 +1,6 @@
 import { SecretStorage } from '@xmcl/runtime/app'
 import { safeStorage } from 'electron'
-import { ensureDir } from 'fs-extra'
-import { readFile, unlink, writeFile } from 'fs/promises'
+import { ensureDir, readFile, unlink, writeFile } from 'fs-extra'
 import { deletePassword, getPassword, setPassword } from 'keytar'
 
 function encrypt(s: string) {

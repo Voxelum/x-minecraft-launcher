@@ -1,5 +1,5 @@
 import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
-import { readFile, unlink } from 'fs/promises'
+import { readFile, unlink } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'

@@ -1,6 +1,6 @@
 import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey, LockKey, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir } from 'fs/promises'
+import { readdir } from 'fs-extra'
 import { basename, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'

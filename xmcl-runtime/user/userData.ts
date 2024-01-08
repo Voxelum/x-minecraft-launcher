@@ -1,7 +1,7 @@
 import { isNotNull } from '@xmcl/core/utils'
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile, UserProfileCompatible, UserSchema, normalizeUserId } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { LauncherProfile } from '~/launchProfile'
 import { UserTokenStorage } from './userTokenStore'

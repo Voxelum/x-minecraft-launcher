@@ -1,6 +1,6 @@
 import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir, stat } from 'fs/promises'
+import { readdir, stat } from 'fs-extra'
 import { basename, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'

@@ -1,6 +1,6 @@
 import { InstanceScreenshotService as IInstanceScreenshotService, InstanceScreenshotServiceKey } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir } from 'fs/promises'
+import { readdir } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'

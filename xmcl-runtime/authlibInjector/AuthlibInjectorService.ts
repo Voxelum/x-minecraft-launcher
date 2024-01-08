@@ -1,7 +1,7 @@
 import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { AuthlibInjectorServiceKey, AuthlibInjectorService as IAuthlibInjectorService, Settings } from '@xmcl/runtime-api'
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs-extra'
 import { request } from 'undici'
 import { NetworkInterface, kDownloadOptions, kNetworkInterface } from '~/network'
 import { LauncherApp } from '../app/LauncherApp'

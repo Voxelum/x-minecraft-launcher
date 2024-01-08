@@ -1,4 +1,4 @@
-import { readFile } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import { join } from 'path'
 
 export interface LauncherProfile {

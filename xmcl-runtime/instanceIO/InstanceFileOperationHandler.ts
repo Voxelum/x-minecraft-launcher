@@ -1,7 +1,8 @@
 import { DownloadTask } from '@xmcl/installer'
+import { ModrinthV2Client } from '@xmcl/modrinth'
 import { InstanceFile, InstanceFileWithOperation, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { rename, unlink } from 'fs/promises'
+import { rename, unlink } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
@@ -11,7 +12,6 @@ import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
 import { LinkFilesTask } from './LinkFilesTask'
 import { UnzipFileTask } from './UnzipFileTask'
-import { ModrinthV2Client } from '@xmcl/modrinth'
 
 export class InstanceFileOperationHandler {
   #tasks: Array<Task<any>> = []

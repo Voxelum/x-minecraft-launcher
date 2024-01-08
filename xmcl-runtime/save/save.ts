@@ -1,9 +1,8 @@
+import { WorldReader } from '@xmcl/game-data'
 import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
-import { WorldReader } from '@xmcl/game-data'
-import { readdir } from 'fs/promises'
+import { readdir } from 'fs-extra'
 import { basename, join } from 'path'
-import { pathToFileURL } from 'url'
 import { exists, isDirectory } from '../util/fs'
 
 /**

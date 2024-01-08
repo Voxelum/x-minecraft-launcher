@@ -1,12 +1,11 @@
 import { CreateInstanceOption } from '@xmcl/runtime-api'
-import { readFile } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import { join, sep } from 'path'
 import { pathToFileURL } from 'url'
 import { Logger } from '~/logger'
 import { ResourceWorker } from '~/resource'
 import { discover } from './InstanceFileDiscover'
 import { ModrinthProfile } from './entities/ModrinthProfile'
-import { AnyError, isSystemError } from '~/util/error'
 
 export async function parseModrinthInstance(instancePath: string) {
   const data = await readFile(join(instancePath, 'profile.json'), 'utf-8')

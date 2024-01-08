@@ -1,11 +1,11 @@
-import { readFile } from 'fs/promises'
-import { join } from 'path'
 import { CreateInstanceOption } from '@xmcl/runtime-api'
+import { readFile } from 'fs-extra'
+import { join } from 'path'
+import { pathToFileURL } from 'url'
+import { Logger } from '~/logger'
+import { discover } from './InstanceFileDiscover'
 import { MultiMCConfig } from './entities/MultiMCConfig'
 import { MultiMCManifest } from './entities/MultiMCManifest'
-import { pathToFileURL } from 'url'
-import { discover } from './InstanceFileDiscover'
-import { Logger } from '~/logger'
 
 export async function parseMultiMCInstance(path: string): Promise<CreateInstanceOption> {
   const instanceCFGText = await readFile(join(path, 'instance.cfg'), 'utf-8')

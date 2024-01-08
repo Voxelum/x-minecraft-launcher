@@ -1,7 +1,6 @@
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createWriteStream, promises } from 'fs'
-import { ensureFile } from 'fs-extra'
-import { stat } from 'node:fs/promises'
+import { ensureFile, stat } from 'fs-extra'
 import { join } from 'path'
 import { Readable, Writable } from 'stream'
 import { promisify } from 'util'

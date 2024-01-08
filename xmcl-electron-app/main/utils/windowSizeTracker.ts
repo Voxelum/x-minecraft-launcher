@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron'
-import { writeFile } from 'fs/promises'
+import { writeFile } from 'fs-extra'
 import debounce from 'lodash.debounce'
 
 export interface WindowsTransform {

@@ -1,10 +1,10 @@
-import { InstanceFile, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { InstanceFile, Resource } from '@xmcl/runtime-api'
 import { Stats } from 'fs'
-import { stat } from 'fs/promises'
+import { stat } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
-import { readdirIfPresent } from '../util/fs'
 import { ResourceService, ResourceWorker } from '~/resource'
+import { readdirIfPresent } from '../util/fs'
 
 /**
  * @returns The instance file with file stats array. The InstanceFile does not have hashes and downloads.

@@ -1,9 +1,8 @@
 import { Schema } from '@xmcl/runtime-api'
-import { writeFile, readFile } from 'atomically'
-import { ensureFile } from 'fs-extra'
-import { copyFile } from 'fs/promises'
-import { missing } from './fs'
+import { readFile, writeFile } from 'atomically'
+import { copyFile, ensureFile } from 'fs-extra'
 import { Logger } from '~/logger'
+import { missing } from './fs'
 import { SafeJsonSerializer } from './serialize'
 
 export interface SafeFile<T> {

@@ -2,7 +2,7 @@
 
 import { AuthlibInjectorApiProfile, GameProfileAndTexture, YggdrasilApi } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
-import { readFile } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import { request } from 'undici'
 import { URL } from 'url'
 

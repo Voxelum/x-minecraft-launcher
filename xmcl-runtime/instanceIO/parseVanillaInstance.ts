@@ -1,13 +1,13 @@
 import { Version } from '@xmcl/core'
-import { CreateInstanceOption, filterForgeVersion, filterOptifineVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, findLabyModVersion } from '@xmcl/runtime-api'
-import { readFile, readdir } from 'fs/promises'
+import { isNotNull } from '@xmcl/core/utils'
+import { CreateInstanceOption, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
+import { readFile, readdir } from 'fs-extra'
 import { join, resolve } from 'path'
 import { pathToFileURL } from 'url'
 import { VersionMetadataService } from '~/install'
 import { LauncherProfile } from '~/launchProfile'
 import { Logger } from '~/logger'
 import { discover } from './InstanceFileDiscover'
-import { isNotNull } from '@xmcl/core/utils'
 
 export async function parseVanillaInstance(path: string, versionMetadataService: VersionMetadataService) {
   const launcherProfilePath = join(path, 'launcher_profiles.json')

@@ -1,4 +1,4 @@
-import { stat } from 'fs/promises'
+import { stat } from 'fs-extra'
 import { ResourceContext } from './ResourceContext'
 import { ResourceEntryPath, ResourceSnapshotTable } from './schema'
 

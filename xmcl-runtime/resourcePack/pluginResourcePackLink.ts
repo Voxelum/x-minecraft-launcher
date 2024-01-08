@@ -1,6 +1,5 @@
 import { ResourceDomain } from '@xmcl/runtime-api'
-import { ensureDir } from 'fs-extra'
-import { readdir } from 'fs/promises'
+import { ensureDir, readdir } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceOptionsService } from '~/instance'

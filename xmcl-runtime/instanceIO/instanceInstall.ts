@@ -1,6 +1,6 @@
 import { InstanceFile } from '@xmcl/runtime-api'
 import { writeFile } from 'atomically'
-import { unlink } from 'fs/promises'
+import { unlink } from 'fs-extra'
 import { join } from 'path'
 
 export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>

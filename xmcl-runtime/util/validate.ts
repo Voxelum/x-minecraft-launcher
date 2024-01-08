@@ -1,6 +1,6 @@
 import { Platform } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
-import { mkdir, readdir, rmdir, stat, unlink, writeFile } from 'fs/promises'
+import { mkdir, readdir, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { isSystemError } from '../util/error'
 

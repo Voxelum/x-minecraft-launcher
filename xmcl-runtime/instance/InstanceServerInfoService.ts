@@ -1,5 +1,5 @@
 import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState, getServerInfoKey } from '@xmcl/runtime-api'
-import { readFile } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'

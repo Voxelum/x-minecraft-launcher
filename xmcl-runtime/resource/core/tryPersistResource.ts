@@ -1,7 +1,7 @@
 import { ResourceDomain } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
 import filenamify from 'filenamify'
-import { rename, stat, unlink } from 'fs/promises'
+import { rename, stat, unlink } from 'fs-extra'
 import { dirname, extname, join } from 'path'
 import { linkOrCopy } from '~/util/fs'
 import { getResourceEntry } from './getResourceEntry'

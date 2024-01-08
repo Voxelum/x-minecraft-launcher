@@ -1,16 +1,10 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
-import { copy, ensureDir } from 'fs-extra'
-import { access, copyFile, link, readdir, stat, unlink } from 'fs/promises'
 import { constants } from 'fs'
+import { access, copy, copyFile, ensureDir, link, readdir, stat, unlink } from 'fs-extra'
 import { extname, join, resolve } from 'path'
-import { pipeline } from 'stream'
-import { promisify } from 'util'
 
-const pip = promisify(pipeline)
-
-export { pip as pipeline }
 export { checksum }
 
 export function missing(file: string) {

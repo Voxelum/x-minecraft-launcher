@@ -2,7 +2,7 @@
 
 import { createHash } from 'crypto'
 import { createReadStream } from 'fs'
-import { readFile } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import { pipeline } from 'stream/promises'
 
 const THREASHOLD = 65536 * 20 // 20 chunk ~ 1.310 MB

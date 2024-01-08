@@ -1,9 +1,8 @@
 import { createHash } from 'crypto'
-import { ensureFile } from 'fs-extra'
+import { existsSync } from 'fs'
+import { ensureFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { checksum, linkOrCopy } from '~/util/fs'
-import { existsSync } from 'fs'
-import { writeFile } from 'fs/promises'
 
 export class ImageStorage {
   constructor(readonly root: string) {

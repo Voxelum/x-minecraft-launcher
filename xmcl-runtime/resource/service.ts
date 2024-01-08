@@ -1,8 +1,7 @@
 /* eslint-disable no-dupe-class-members */
 import { ExportResourceOptions, ResourceService as IResourceService, ImportResourceOptions, Pagination, PartialResourceHash, PromiseSignal, ResolveResourceOptions, Resource, ResourceDomain, ResourceMetadata, ResourceServiceKey, createPromiseSignal } from '@xmcl/runtime-api'
 import { FSWatcher, existsSync } from 'fs'
-import { ensureDir } from 'fs-extra'
-import { unlink } from 'fs/promises'
+import { ensureDir, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'

@@ -1,13 +1,13 @@
-import SQLite from 'better-sqlite3'
-import { Kysely, SqliteDialect } from 'kysely'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
-import { AbstractService, ExposeServiceKey } from '~/service'
-import { missing } from '../util/fs'
 import { download } from '@xmcl/file-transfer'
+import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import SQLite from 'better-sqlite3'
+import { readFile, writeFile } from 'fs-extra'
+import { Kysely, SqliteDialect } from 'kysely'
 import { request } from 'undici'
-import { readFile, writeFile } from 'fs/promises'
-import { ProjectMappingServiceKey, ProjectMappingService as IProjectMappingService } from '@xmcl/runtime-api'
+import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { AbstractService, ExposeServiceKey } from '~/service'
+import { LauncherApp } from '../app/LauncherApp'
+import { missing } from '../util/fs'
 
 interface Database {
   project: {

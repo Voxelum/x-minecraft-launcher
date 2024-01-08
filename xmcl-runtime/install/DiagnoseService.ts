@@ -1,13 +1,13 @@
 import { AssetIndexIssue, AssetIssue, diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseService as IDiagnoseService, DiagnoseServiceKey } from '@xmcl/runtime-api'
-import { readFile } from 'fs/promises'
+import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '@xmcl/runtime-api'
+import { readFile } from 'fs-extra'
 import { join } from 'path'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, kGameDataPath, PathResolver, Inject } from '~/app'
+import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { kResourceWorker, ResourceWorker } from '~/resource'
-import { exists } from '../util/fs'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { LauncherApp } from '../app/LauncherApp'
+import { exists } from '../util/fs'
 
 @ExposeServiceKey(DiagnoseServiceKey)
 export class DiagnoseService extends AbstractService implements IDiagnoseService {

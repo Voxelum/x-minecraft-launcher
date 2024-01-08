@@ -1,5 +1,5 @@
 import { CreateInstanceManifest, CreateInstanceOption, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LockKey } from '@xmcl/runtime-api'
-import { readFile, readdir } from 'fs/promises'
+import { readFile } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { VersionMetadataService } from '~/install'
@@ -7,6 +7,7 @@ import { InstanceService } from '~/instance'
 import { kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
+import { AnyError, isSystemError } from '~/util/error'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, exists } from '../util/fs'
@@ -15,7 +16,6 @@ import { ZipTask } from '../util/zip'
 import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
 import { parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
 import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
-import { AnyError, isSystemError } from '~/util/error'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {

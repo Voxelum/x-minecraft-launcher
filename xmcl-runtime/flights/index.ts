@@ -1,8 +1,8 @@
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
 import { request } from 'undici'
-import { LauncherAppPlugin, InjectionKey } from '~/app'
+import { InjectionKey, LauncherAppPlugin } from '~/app'
 import { kClientToken } from '~/clientToken'
 
 export const kFlights: InjectionKey<Record<string, string>> = Symbol('Flights')

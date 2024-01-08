@@ -1,16 +1,15 @@
 import { AppManifest, AppsHost, InstalledAppManifest } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
-import { ensureDir } from 'fs-extra'
-import { readdir, readFile, rm, stat, writeFile } from 'fs/promises'
+import { ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { request } from 'undici'
 import { URL } from 'url'
+import { Logger } from '~/logger'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
 import { ENOENT_ERROR } from '../util/fs'
 import { createLinkWin32, installWin32, removeShortcut } from './win32'
-import { Logger } from '~/logger'
 
 export interface InstallAppOptions {
   createDesktopShortcut?: boolean

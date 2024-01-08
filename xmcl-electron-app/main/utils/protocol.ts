@@ -1,6 +1,6 @@
 import { execSync } from 'child_process'
 import { existsSync } from 'fs'
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 
 async function writeMimeList(mimesAppsList: string) {
