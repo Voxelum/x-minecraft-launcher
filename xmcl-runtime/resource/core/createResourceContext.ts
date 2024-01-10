@@ -40,9 +40,10 @@ class JSONTransformer extends OperationNodeTransformer {
 }
 
 export function createResourceContext(root: string, imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>) {
+  const sqlite = new SQLite(root, {
+  })
   const dialect = new SqliteDialect({
-    database: new SQLite(root, {
-    }),
+    database: sqlite,
   })
 
   // Database interface is passed to Kysely's constructor, and from now on, Kysely
@@ -61,6 +62,7 @@ export function createResourceContext(root: string, imageStore: ImageStorage, ev
 
   const context: ResourceContext = {
     db,
+    sqlite,
     image: imageStore,
     hash: delegates.hash,
     hashAndFileType: delegates.hashAndFileType,

@@ -9,7 +9,9 @@
         v-if="!inView"
         key="empty"
         class="h-full"
-      />
+      >
+        <HomeDatabaseError />
+      </div>
       <HomeUpstreamCurseforge
         v-else-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
         :id="instance.upstream.modId"
@@ -38,6 +40,8 @@ import debounce from 'lodash.debounce'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
+import { kDatabaseStatus } from '@/composables/databaseStatus'
+import HomeDatabaseError from './HomeDatabaseError.vue'
 
 const { instance } = injection(kInstance)
 const { t } = useI18n()
@@ -55,14 +59,14 @@ const content = ref<HTMLElement | null>(null)
 let counter = 0
 const inView = ref(false)
 const scrollIn = debounce(() => {
-  if (counter > 3) {
+  if (counter > 3 && instance.value.upstream) {
     inView.value = true
   }
   counter = 0
 }, 300)
 
 const scrollOut = debounce(() => {
-  if (counter > 3) {
+  if (counter > 3 && instance.value.upstream) {
     inView.value = false
   }
   counter = 0

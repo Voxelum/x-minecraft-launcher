@@ -4,9 +4,11 @@ import { ParseResourceArgs, ParseResourceResult } from '../parsers'
 import { ImageStorage } from '~/imageStore'
 import { Logger } from '~/logger'
 import { Database } from './schema'
+import type { Database as SQLite } from 'better-sqlite3'
 
 export interface ResourceContext {
   readonly db: Kysely<Database>
+  readonly sqlite: SQLite
 
   readonly image: ImageStorage
 

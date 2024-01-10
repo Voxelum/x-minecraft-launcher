@@ -1,6 +1,7 @@
 import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores, useThemeSync } from '@/composables'
 import { kBackground, useBackground } from '@/composables/background'
 import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
+import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
@@ -85,6 +86,8 @@ export default defineComponent({
     const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)
+
+    provide(kDatabaseStatus, useDatabaseStatus())
 
     provide(kUserContext, user)
     provide(kJavaContext, java)

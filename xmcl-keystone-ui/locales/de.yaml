@@ -254,6 +254,16 @@ errors:
     {actual}.
   ConnectTimeoutError: Die Verbindungszeit zum Server ist abgelaufen.
   DNSNotFoundError: Fehler beim DNS-Lookup
+  DatabaseNotOpened: >-
+    Datenbank ist nicht geöffnet! 
+
+    Der Launcher funktioniert nicht richtig! 
+
+    Bitte wählen Sie ein Datenverzeichnis aus, auf das der Launcher zugreifen
+    kann. 
+
+    Sie können versuchen, den Datenstamm auf der Einstellungsseite
+    zurückzusetzen.
   DownloadAggregateError: Datei kann nicht hochgeladen werden.
   DownloadFileSystemError: >-
     Fehler beim Zugriff auf den Pfad zur Download-Datei.  Stellen Sie sicher,

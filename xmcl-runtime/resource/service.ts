@@ -116,6 +116,10 @@ export class ResourceService extends AbstractService implements IResourceService
     })
   }
 
+  async isResourceDatabaseOpened() {
+    return this.context.sqlite.open
+  }
+
   async getResourceMetadataByUri(uri: string): Promise<ResourceMetadata[]> {
     const result = await getResourceAndMetadata(this.context, { uris: [uri] })
     return result

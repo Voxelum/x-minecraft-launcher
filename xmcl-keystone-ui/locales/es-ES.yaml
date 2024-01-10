@@ -219,6 +219,12 @@ diagnosis:
   missingAssetsIndex:
     message: Launcher descargará el índice de assets por ti
     name: Falta el archivo de índice de activos de {version}.
+errors:
+  DatabaseNotOpened: |-
+    ¡La base de datos no está abierta! 
+    ¡El lanzador no funcionará correctamente! 
+    Seleccione un directorio de datos al que pueda acceder el iniciador. 
+    Puede intentar restablecer la raíz de datos en la página de configuración.
 fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}

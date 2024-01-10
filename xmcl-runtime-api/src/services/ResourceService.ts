@@ -62,6 +62,7 @@ export interface ResourceService extends GenericEventEmitter<ResourceServiceEven
   getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined>
   getResourcesMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>>
 
+  isResourceDatabaseOpened(): Promise<boolean>
   getResourcesUnder(options: { fileNames: string[]; domain: ResourceDomain }): Promise<Array<Resource | undefined>>
   /**
    * Remove resources from the disk

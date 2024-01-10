@@ -258,6 +258,10 @@ errors:
   BodyTimeoutError: 等待 HTTP 数据超时
   ChecksumNotMatchError: 文件校验失败！期望哈希值是 {expect}，实际获取到的是 {actual}。
   ConnectTimeoutError: 与服务器建立连接超时
+  DatabaseNotOpened: |-
+    数据库无法打开！
+    启动器将无法正常工作！
+    请选择启动器可以访问的数据目录。你可以在设置页面重选数据目录。
   DownloadAggregateError: 下载文件失败。
   DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时

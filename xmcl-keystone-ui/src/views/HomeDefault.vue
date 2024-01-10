@@ -2,6 +2,7 @@
   <div
     class="relative mx-3 select-none"
   >
+    <HomeDatabaseError />
     <GridLayout
       :layout.sync="layout"
       :responsive-layouts="layouts"
@@ -105,10 +106,12 @@ import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/ca
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
+import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
+import { DriveStep } from 'driver.js'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
-import CurseforgeProject from './CurseforgeProject.vue'
+import HomeDatabaseError from './HomeDatabaseError.vue'
 import HomeModCard from './HomeModCard.vue'
 import HomeNewsCard from './HomeNewsCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
@@ -116,11 +119,8 @@ import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import ModrinthProject from './ModrinthProject.vue'
-import { useTutorial } from '@/composables/tutorial'
-import { DriveStep } from 'driver.js'
-import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
+import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
 
 const { instance, isServer } = injection(kInstance)
 

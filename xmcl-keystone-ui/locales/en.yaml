@@ -230,6 +230,10 @@ errors:
   ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
   DNSNotFoundError: DNS lookup error
+  DatabaseNotOpened: >-
+    Database is not opened! The launcher won't work properly! Please select a
+    data directory the launcher can access. You can try to reset the data root
+    in setting page.
   DownloadAggregateError: Fail to download file.
   DownloadFileSystemError: >-
     Error during accessing the download file path. Please ensure the launcher
