@@ -94,13 +94,18 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
     } else {
       filePath = join(instancePath, 'crash-reports', name)
     }
-    let buf = await readFile(filePath.trim())
-    if (name.endsWith('.gz')) {
-      buf = await gunzip(buf)
+    try {
+      let buf = await readFile(filePath.trim())
+      if (name.endsWith('.gz')) {
+        buf = await gunzip(buf)
+      }
+      const encoding = await this.encoder.guessEncodingByBuffer(buf.subarray(0, 512 * 128)).catch(() => undefined)
+      const result = await this.encoder.decode(buf, encoding || UTF8)
+      return result
+    } catch (e) {
+      this.error(new AnyError('GetCrashContentError', `Fail to get log content "${name}"`, { cause: e }))
+      return ''
     }
-    const encoding = await this.encoder.guessEncodingByBuffer(buf.subarray(0, 512 * 128)).catch(() => undefined)
-    const result = await this.encoder.decode(buf, encoding || UTF8)
-    return result
   }
 
   /**
