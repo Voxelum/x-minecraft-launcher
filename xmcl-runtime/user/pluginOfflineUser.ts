@@ -4,16 +4,47 @@ import { UserService } from './UserService'
 import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
 import { kUserTokenStorage } from './userTokenStore'
 import { ImageStorage } from '~/imageStore'
+import { createHash } from 'crypto'
 
 export const pluginOffineUser: LauncherAppPlugin = (app) => {
   const OFFLINE_USER_ID = 'OFFLINE'
+
+  const getUUID = (input: string) => {
+    input = `OfflinePlayer:${input}`
+    const md5Bytes = createHash('md5').update(input).digest()
+    md5Bytes[6] &= 0x0f /* clear version        */
+    md5Bytes[6] |= 0x30 /* set to version 3     */
+    md5Bytes[8] &= 0x3f /* clear variant        */
+    md5Bytes[8] |= 0x80 /* set to IETF variant  */
+    return md5Bytes.toString('hex').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5')
+  }
   app.on('engine-ready', async () => {
     const userService = await app.registry.get(UserService)
     const userTokenStorage = await app.registry.get(kUserTokenStorage)
     const imageStore = await app.registry.get(ImageStorage)
+    userService.getUserState().then((state) => {
+      const offlineUsers = state.users[OFFLINE_USER_ID]
+      if (offlineUsers) {
+        let modified = false
+        for (const [k, v] of Object.entries(offlineUsers.profiles)) {
+          const expectedUUID = getUUID(v.name)
+          if (k !== expectedUUID) {
+            modified = true
+            v.id = expectedUUID
+            delete offlineUsers.profiles[k]
+            offlineUsers.profiles[expectedUUID] = v
+          }
+        }
+        if (modified) {
+          state.userProfile(offlineUsers)
+        }
+      }
+    })
     userService.registerAccountSystem(AUTHORITY_DEV, {
       async login({ username, properties }) {
         const auth = offline(username, properties?.uuid)
+        auth.selectedProfile.id = getUUID(username)
+
         const existed = userService.state.users[OFFLINE_USER_ID]
         const profiles = existed ? { ...existed.profiles } : {}
         for (const p of auth.availableProfiles) {
