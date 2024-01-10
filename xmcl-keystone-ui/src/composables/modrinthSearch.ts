@@ -29,13 +29,12 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
           facets.push('[' + activeCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
         }
         const index = sort.value
-        const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
         const result = await clientModrinthV2.searchProjects({
           query: keyword.value,
           facets: '[' + facets.join(',') + ']',
           index,
           offset,
-          limit: append ? Math.min(remain, 20) : 20,
+          limit: 20,
         })
         if (!append || !modrinth.value) {
           modrinth.value = result
@@ -56,15 +55,13 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
     }
   }, 1000)
 
-  const canModrinthLoadMore = computed(() => {
-    return modrinth.value && modrinth.value.total_hits > (modrinth.value.offset + modrinth.value.limit)
-  })
   const loadMoreModrinth = async () => {
-    if (canModrinthLoadMore.value) {
-      modrinthPage.value += 1
-      loadingModrinth.value = true
-      await doSearch(modrinthPage.value * 20, true)
-    }
+    if (!modrinth.value) return
+    const hasMore = modrinth.value.total_hits >= (modrinth.value.offset + modrinth.value.limit)
+    if (!hasMore) return
+    modrinthPage.value += 1
+    loadingModrinth.value = true
+    await doSearch(modrinthPage.value * 20, true)
   }
 
   const onSearch = async () => {
@@ -77,11 +74,6 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
   watch(keyword, onSearch)
   watch(activeCategories, onSearch, { deep: true })
   watch(sort, onSearch)
-  // watch(isActive, (v) => {
-  //   if (v) {
-  //     onSearch()
-  //   }
-  // })
 
   const result = computed(() => {
     const modr = modrinth.value
@@ -105,6 +97,5 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
     modrinthError,
     loadMoreModrinth,
     loadingModrinth,
-    canModrinthLoadMore,
   }
 }

@@ -202,8 +202,8 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     modLoaderFilters.value = items
   }, { immediate: true, deep: true })
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, runtime)
-  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, runtime)
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, runtime)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, runtime)
   const { cached: cachedMods, instances, loadingCached } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value)
 
@@ -228,8 +228,6 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     modrinthCategories,
     loadMoreCurseforge,
     loadMoreModrinth,
-    canCurseforgeLoadMore,
-    canModrinthLoadMore,
     modrinthError,
     loadingModrinth,
     curseforgeError,

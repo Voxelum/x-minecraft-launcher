@@ -120,7 +120,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const isModrinthActive = ref(true)
   const { sort, modrinthSort } = useMarketSort(0)
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, runtime)
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, runtime)
   const { cached, loadingCached, shaderProjectFiles } = useLocalSearch(shaderPack)
   const loading = computed(() => loadingModrinth.value || loadingCached.value)
 
@@ -148,7 +148,6 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     shaderLoaderFilters,
     items,
     loadMoreModrinth,
-    canModrinthLoadMore,
     sort,
     isModrinthActive,
     modrinthError,

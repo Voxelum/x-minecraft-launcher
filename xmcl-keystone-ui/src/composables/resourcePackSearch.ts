@@ -115,9 +115,9 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   const isModrinthActive = ref(true)
   const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
     modrinthSort, runtime)
-  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory,
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory,
     curseforgeSort, runtime)
   const { enabled, disabled, all: filtered, loadingCached } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
@@ -147,7 +147,6 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     modrinthCategories,
 
     loadMoreModrinth,
-    canModrinthLoadMore,
     modrinthError,
     modrinth,
     loadingModrinth,
@@ -155,7 +154,6 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     curseforgeCategory,
     loadMoreCurseforge,
     loadingCurseforge,
-    canCurseforgeLoadMore,
     curseforge,
     curseforgeError,
 

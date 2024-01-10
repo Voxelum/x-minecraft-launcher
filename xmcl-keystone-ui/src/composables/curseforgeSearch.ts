@@ -29,7 +29,6 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
     if (keyword.value || curseforgeCategory.value) {
       try {
         curseforgeError.value = undefined
-        const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
         const modLoaderTypes = getCursforgeModLoadersFromString(modLoaderFilters.value)
         let modLoaderType = undefined as FileModLoaderType | undefined
         if (modLoaderTypes.length === 1) {
@@ -45,7 +44,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
           gameVersion: runtime.value.minecraft,
           searchFilter: keyword.value,
           categoryId: curseforgeCategory.value,
-          pageSize: append ? Math.min(20, remain) : 20,
+          pageSize: 20,
           index: offset,
         })
 
@@ -75,15 +74,15 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
   })
 
   const loadMoreCurseforge = async () => {
-    if (/* isActive.value &&  */canCurseforgeLoadMore.value) {
-      curseforgePage.value += 1
-      loadingCurseforge.value = true
-      await processCurseforge(curseforgePage.value * 20, true)
-    }
+    if (!curseforge.value) return
+    const hasMore = curseforge.value.pagination.totalCount > (curseforge.value.pagination.index + curseforge.value.pagination.resultCount)
+    if (!hasMore) return
+    curseforgePage.value += 1
+    loadingCurseforge.value = true
+    await processCurseforge(curseforgePage.value * 20, true)
   }
 
   const onSearch = async () => {
-    // if (!isActive.value) return
     loadingCurseforge.value = true
     curseforgePage.value = 0
     processCurseforge(curseforgePage.value * 20, false)
@@ -93,11 +92,6 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
   watch(modLoaderFilters, onSearch, { deep: true })
   watch(curseforgeCategory, onSearch, { deep: true })
   watch(sort, onSearch)
-  // watch(isActive, (v) => {
-  //   if (v) {
-  //     onSearch()
-  //   }
-  // })
 
   const mods = computed(() => {
     const cf = curseforge.value
