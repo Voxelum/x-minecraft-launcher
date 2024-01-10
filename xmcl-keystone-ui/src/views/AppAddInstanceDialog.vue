@@ -109,10 +109,9 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances } from '@/composables/instances'
 import { kPeerState } from '@/composables/peers'
-import { useResourceAdd } from '@/composables/resources'
 import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
-import { CreateInstanceManifest, InstanceIOServiceKey, InstanceInstallServiceKey, PeerServiceKey, ResourceDomain } from '@xmcl/runtime-api'
+import { CreateInstanceManifest, InstanceIOServiceKey, InstanceInstallServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
@@ -302,21 +301,6 @@ function next() {
     step.value += 1
   }
 }
-
-useResourceAdd(({ path, name }) => {
-  setTimeout(() => {
-    if (!isShown.value) {
-      notify({
-        level: 'success',
-        title: t('AppAddInstanceDialog.downloadedNotification', { name }),
-        full: true,
-        more: () => {
-          showAddInstance(path)
-        },
-      })
-    }
-  }, 100)
-}, ResourceDomain.Modpacks)
 
 const { on: onPeerService } = useService(PeerServiceKey)
 const { connections } = injection(kPeerState)

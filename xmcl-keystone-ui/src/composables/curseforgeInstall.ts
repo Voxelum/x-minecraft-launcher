@@ -16,6 +16,7 @@ import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
 import { useSWRVModel } from './swrv'
 import { kInstanceFiles } from './instanceFiles'
+import { kModpackNotification } from './modpackNotification'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
@@ -124,10 +125,12 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
   const { installFile } = useService(CurseForgeServiceKey)
   const { install, mutate } = injection(kInstanceFiles)
   const { fix } = injection(kInstanceVersionDiagnose)
+  const { ignore } = injection(kModpackNotification)
   const { currentRoute, push } = useRouter()
   const installModpack = async (f: File) => {
     const result = await installFile({ file: f, type: 'modpacks', icon: icon.value })
     const resource = result.resource
+    ignore(resource.path)
     const config = resolveModpackInstanceConfig(resource)
 
     if (!config) return
