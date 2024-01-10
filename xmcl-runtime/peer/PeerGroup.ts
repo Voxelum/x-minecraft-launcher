@@ -2,7 +2,7 @@
 // import EventSource from 'eventsource'
 import { createPromiseSignal, PromiseSignal } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
-import { DescriptionType } from 'node-datachannel'
+import type { DescriptionType } from 'node-datachannel'
 import { setTimeout } from 'timers/promises'
 import { WebSocket } from 'ws'
 

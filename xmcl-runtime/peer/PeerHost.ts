@@ -1,6 +1,6 @@
 import { LanServerInfo } from '@xmcl/client'
 import { ConnectionUserInfo, InstanceManifest } from '@xmcl/runtime-api'
-import { DescriptionType } from 'node-datachannel'
+import type { DescriptionType } from 'node-datachannel'
 export interface PeerHost {
   getUserInfo(): ConnectionUserInfo
   getSharedInstance(): InstanceManifest | undefined
