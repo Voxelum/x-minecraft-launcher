@@ -72,7 +72,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const initializing = scan(basePath)
       state.mods = await initializing
 
-      const processUpdate = async (filePath: string, retryLimit = 3) => {
+      const processUpdate = async (filePath: string, retryLimit = 7) => {
         try {
           const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (resource && isModResource(resource)) {
@@ -82,9 +82,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
         } catch (e) {
-          if (isSystemError(e) && e.code === 'EMFILE' && retryLimit > 0) {
+          if (isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY') && retryLimit > 0) {
             // Retry
-            setTimeout(() => processUpdate(filePath, retryLimit - 1), Math.random() * 2000)
+            setTimeout(() => processUpdate(filePath, retryLimit - 1), Math.random() * 2000 + 1000)
           } else {
             this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
           }
