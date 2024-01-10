@@ -25,7 +25,7 @@ export function useProjectsFilterSearch<T extends ProjectEntry>(
       ? items.value.filter(p => {
         if (!isCurseforgeActive.value && p.curseforge) return false
         if (!isModrinthActive.value && p.modrinth) return false
-        return p.curseforge || p.modrinth
+        return p.curseforge || p.modrinth || p.id === 'OptiFine'
       })
       : items.value
 
