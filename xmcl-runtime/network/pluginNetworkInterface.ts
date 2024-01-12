@@ -66,9 +66,9 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         err.name = 'DNSLookupError'
         if (!hasDnsIssue) {
           hasDnsIssue = true
-          app.registry.get(GFW).then(g => {
-            overrideDns(g.env)
-          })
+          // app.registry.get(GFW).then(g => {
+          //   overrideDns(g.env)
+          // })
         }
       } else if (err.syscall === 'read') {
         if (err.code === 'ECONNRESET') {
