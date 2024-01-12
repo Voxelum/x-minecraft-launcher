@@ -135,7 +135,7 @@ const members = computed(() => {
 const _installing = ref(false)
 const onInstall = (v: StoreProjectVersion) => {
   if (!proj.value) return
-  const files = proj.value.latestFiles
+  const files = (allVersions.data.value?.data || proj.value.latestFiles)
   const file = files.find(f => f.id.toString() === v.id)
   if (!file) return
   _installing.value = true
