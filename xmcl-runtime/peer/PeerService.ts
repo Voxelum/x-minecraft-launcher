@@ -1,6 +1,6 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, InitiateOptions, InstanceManifest, PeerService as IPeerService, MutableState, SetRemoteDescriptionOptions, PeerServiceKey, PeerState, Settings, ShareInstanceOptions, TransferDescription } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, PeerService as IPeerService, InitiateOptions, InstanceManifest, MutableState, PeerServiceKey, PeerState, SetRemoteDescriptionOptions, Settings, ShareInstanceOptions, TransferDescription } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
@@ -12,14 +12,15 @@ import { pipeline } from 'stream/promises'
 import { request } from 'undici'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
-import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { IS_DEV } from '~/constant'
 import { ImageStorage } from '~/imageStore'
 import { NatService } from '~/nat'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { kSettings } from '~/settings'
-import { kResourceWorker, ResourceWorker } from '../resource'
+import { ResourceWorker, kResourceWorker } from '../resource'
 import { UserService } from '../user'
+import { ExposeServerHandler } from './ExposeServerHandler'
 import { PeerSession } from './connection'
 import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
@@ -38,6 +39,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
   private iceServers: IceServer[] = []
+  private exposePortHandler: ExposeServerHandler
 
   private portCandidate = 35565
 
@@ -70,6 +72,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       //   this.warn('Fail to init nat', e)
       // })
     })
+
+    this.exposePortHandler = new ExposeServerHandler()
 
     app.registryDisposer(async () => {
       for (const peer of Object.values(this.peers)) {
@@ -498,5 +502,17 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     for (const sess of Object.values(this.peers)) {
       sess.send(MessageShareManifest, { manifest: options.manifest })
     }
+  }
+
+  async exposePort(port: number): Promise<void> {
+    this.exposePortHandler.expose(port)
+  }
+
+  async unexposePort(port: number): Promise<void> {
+    return this.exposePortHandler.unexpose(port)
+  }
+
+  async getExposedPorts(): Promise<number[]> {
+    return this.exposePortHandler.ports
   }
 }
