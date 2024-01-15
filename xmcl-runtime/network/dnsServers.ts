@@ -22,7 +22,8 @@ export function overrideDns(networkEnv: 'yandex' | 'global' | 'cn') {
       '2400:3200::1', // ali
       '2400:3200:baba::1', // ali
       '119.29.29.29', // tencent
-      '180.76.76.76', // baidu
+      '180.76.76.76', // baidu,
+      ...currentDNS,
     ])
   } else if (networkEnv === 'yandex') {
     setServers([
@@ -30,12 +31,14 @@ export function overrideDns(networkEnv: 'yandex' | 'global' | 'cn') {
       '2a02:6b8::feed:0ff',
       '77.88.8.1',
       '2a02:6b8:0:1::feed:0ff',
+      ...currentDNS,
     ])
   } else {
     setServers([
       '8.8.8.8',
       '8.8.8.4',
       '1.1.1.1',
+      ...currentDNS,
     ])
   }
 }
