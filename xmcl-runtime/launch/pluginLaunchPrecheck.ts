@@ -1,5 +1,7 @@
 import { LaunchPrecheck, MinecraftFolder, diagnoseJar, diagnoseLibraries } from '@xmcl/core'
-import { LaunchException } from '@xmcl/runtime-api'
+import { LaunchException, resolveForgeVersion } from '@xmcl/runtime-api'
+import { move, readlink, stat, symlink, unlink } from 'fs-extra'
+import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstallService } from '~/install'
 import { JavaService, JavaValidation } from '~/java'
@@ -8,6 +10,35 @@ import { LaunchService } from '~/launch'
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
   const getPath = await app.registry.get(kGameDataPath)
+
+  launchService.registerMiddleware({
+    name: 'legacy-forge-lib',
+    async onBeforeLaunch(input, output) {
+      const version = output.version as any
+      if (!output.version.inheritances[output.version.inheritances.length - 1].startsWith('1.4.')) {
+        return
+      }
+      const forgeVersion = resolveForgeVersion(version)
+      if (!forgeVersion) {
+        return
+      }
+      const libPath = getPath('libraries')
+      const destPath = join(input.gameDirectory, 'lib')
+      const fstat = await stat(destPath).catch(() => undefined)
+      if (!fstat) {
+        await symlink(libPath, destPath)
+        return
+      }
+      if (fstat.isSymbolicLink() && (await readlink(destPath) !== libPath)) {
+        // relink
+        await unlink(destPath)
+        await symlink(libPath, destPath)
+        return
+      }
+      await move(destPath, join(input.gameDirectory, 'lib.bk'))
+      await symlink(libPath, destPath)
+    },
+  })
 
   launchService.registerMiddleware({
     name: 'java-validation',
