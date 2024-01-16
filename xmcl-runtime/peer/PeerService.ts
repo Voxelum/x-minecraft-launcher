@@ -73,7 +73,19 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       // })
     })
 
-    this.exposePortHandler = new ExposeServerHandler()
+    this.exposePortHandler = new ExposeServerHandler((infos) => {
+      const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
+      for (const conn of peers) {
+        if (conn.isOnSameLan()) {
+          return
+        }
+      }
+      for (const conn of peers) {
+        for (const info of infos) {
+          conn.send(MessageLan, info)
+        }
+      }
+    })
 
     app.registryDisposer(async () => {
       for (const peer of Object.values(this.peers)) {

@@ -5,26 +5,25 @@
     style="background: transparent; width: 100%"
   >
     <v-list-item>
-      <v-layout
-        row
-        class="max-w-full gap-4"
+      <div
+        class="grid max-w-full grid-cols-12 gap-4"
       >
-        <v-flex d-flex>
+        <div
+          class="col-span-4"
+        >
           <v-select
             v-model="data.java"
             outlined
             class="java-select"
-            :label="t('java.location')"
             :placeholder="t('java.allocatedLong')"
             :items="javaItems"
             :menu-props="{ auto: true, overflowY: true }"
             hide-details
             required
           />
-        </v-flex>
-        <v-flex
-          d-flex
-          xs2
+        </div>
+        <div
+          class="col-span-2"
         >
           <v-text-field
             v-model="data.minMemory"
@@ -35,22 +34,36 @@
             :placeholder="t('java.allocatedShort')"
             required
           />
-        </v-flex>
-        <v-flex
-          d-flex
-          xs2
+        </div>
+        <div
+          class="col-span-2"
         >
           <v-text-field
             v-model="data.maxMemory"
             outlined
+            persistent-hint
             hide-details
             type="number"
             :label="t('java.maxMemory')"
             :placeholder="t('java.allocatedShort')"
             required
           />
-        </v-flex>
-      </v-layout>
+        </div>
+        <div
+          class="col-span-4 flex items-center justify-end"
+        >
+          <v-select
+            v-model="data.side"
+            outlined
+            class="java-select"
+            :label="t('modrinth.clientSide') + '/' + t('modrinth.serverSide')"
+            :items="sideItems"
+            :menu-props="{ auto: true, overflowY: true }"
+            hide-details
+            required
+          />
+        </div>
+      </div>
     </v-list-item>
 
     <VersionInputMinecraft
@@ -157,6 +170,7 @@ const javaItems = computed(() => javas.value.map(java => ({
   text: `Java ${java.majorVersion} (${java.version})`,
   value: java.path,
 })))
+const sideItems = computed(() => [{ text: t('modrinth.clientSide'), value: 'client' }, { text: t('modrinth.serverSide'), value: 'server' }])
 
 const isNotSelectingLabyMod = computed(() => {
   return !data.runtime.labyMod

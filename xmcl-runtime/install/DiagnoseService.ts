@@ -43,10 +43,10 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
     return assetsIssues
   }
 
-  async diagnoseJar(currentVersion: ResolvedVersion): Promise<MinecraftJarIssue | undefined> {
+  async diagnoseJar(currentVersion: ResolvedVersion, side: 'client' | 'server' = 'client'): Promise<MinecraftJarIssue | undefined> {
     this.log(`Diagnose for version ${currentVersion.id} jar`)
     const minecraft = new MinecraftFolder(this.getPath())
-    const jarIssue = await diagnoseJar(currentVersion, minecraft)
+    const jarIssue = await diagnoseJar(currentVersion, minecraft, { side })
 
     return jarIssue
   }

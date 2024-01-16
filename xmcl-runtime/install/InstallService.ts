@@ -238,11 +238,11 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v: MinecraftVersion) => LockKey.version(v.id))
-  async installMinecraft(meta: MinecraftVersion) {
+  async installMinecraft(meta: MinecraftVersion, side: 'client' | 'server' = 'client') {
     const id = meta.id
 
     const option = this.getInstallOptions()
-    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion', { id: meta.id })
+    const task = installVersionTask(meta, this.getPath(), { ...option, side }).setName('installVersion', { id: meta.id })
     try {
       await this.submit(task)
     } catch (e) {
@@ -252,10 +252,10 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v: MinecraftVersion) => LockKey.version(v.id))
-  async installMinecraftJar(version: ResolvedVersion) {
+  async installMinecraftJar(version: ResolvedVersion, side: 'client' | 'server' = 'client') {
     const option = this.getInstallOptions()
 
-    const task = new InstallJarTask(version, this.getPath(), option).setName('installVersion.jar', { id: version.id })
+    const task = new InstallJarTask(version, this.getPath(), { ...option, side }).setName('installVersion.jar', { id: version.id })
     try {
       await this.submit(task)
     } catch (e) {

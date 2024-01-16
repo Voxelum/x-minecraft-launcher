@@ -51,6 +51,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     tags: [],
     assignMemory: false,
     fastLaunch: false,
+    side: 'client',
   })
   const files: Ref<InstanceFile[]> = ref([])
   return {
@@ -87,6 +88,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
       data.icon = ''
       data.server = null
       data.modpackVersion = ''
+      data.side = 'client'
       data.description = ''
       files.value = []
     },

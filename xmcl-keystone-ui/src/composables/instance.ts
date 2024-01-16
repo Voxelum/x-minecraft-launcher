@@ -32,12 +32,14 @@ export function useInstance(path: Ref<string>, instances: Ref<Instance[]>) {
   const runtime = computed(() => instance.value.runtime)
   const name = computed(() => instance.value.name)
   const isServer = computed(() => instance.value.server !== null)
+  const side = computed(() => instance.value.side || 'client')
   const select = (p: string) => {
     path.value = p
   }
 
   return {
     instances,
+    side,
     path,
     runtime,
     name,

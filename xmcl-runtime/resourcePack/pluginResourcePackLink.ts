@@ -15,7 +15,8 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
 
   launchService.registerMiddleware({
     name: 'resources-link',
-    async onBeforeLaunch(input, output) {
+    async onBeforeLaunch(input, version, output) {
+      if ('path' in output) return
       const path = output.gamePath
       const linked = await resourcePackService.link(path)
       if (linked) return

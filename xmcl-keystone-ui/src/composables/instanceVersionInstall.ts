@@ -32,13 +32,16 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     cache.set(key, data, 1000 * 60 * 60 * 24)
     return data
   }
-  async function install(runtime: RuntimeVersions) {
+  async function install(runtime: RuntimeVersions, side: 'client' | 'server') {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
     const local = versions.value
-    if (!local.find(v => v.id === minecraft)) {
+    if (side === 'client' && !local.find(v => v.id === minecraft)) {
       const metadata = mcVersions.versions.find(v => v.id === minecraft)!
-      await installMinecraft(metadata)
+      await installMinecraft(metadata, side)
+    } else if (side === 'server') {
+      const metadata = mcVersions.versions.find(v => v.id === minecraft)!
+      await installMinecraft(metadata, side)
     }
 
     let forgeVersion = undefined as undefined | string
@@ -48,7 +51,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         const forgeVersions = await getCacheOrFetch(`/forge-versions/${minecraft}`, () => getForgeVersionList(minecraft))
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
-        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
+        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side })
       } else {
         forgeVersion = localForge.id
       }
