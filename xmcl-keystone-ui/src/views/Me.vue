@@ -1,59 +1,48 @@
 <template>
-  <div>
-    <!-- bottom layer img -->
-    <div class="bottom-layer fixed mt-4">
-      <h2></h2>
-      <div
-        class="row-span-4 flex w-full gap-4 overflow-x-auto overflow-y-hidden"
-      >
-        <div
-          v-for="n of news"
-          :key="n.id"
-          class="flex flex-col gap-2"
-        >
-          <!-- <div class="v-subtitle text-sm">
-            {{ n.date }}
-          </div>
-          <div>
-            {{ n.title }}
-          </div> -->
-          <v-img
-            class=" background-opacity rounded-lg "
-            :src="n.newsPageImage.url"
-            :width="n.newsPageImage.dimensions.width *2"
-            :height="n.newsPageImage.dimensions.height *2"
-            :style="{ opacity: dynamicOpacity }"
-          >
-            <div class="flex h-full w-full cursor-pointer items-center justify-center bg-[rgba(123,123,123,0.5)] opacity-0 transition-all duration-300 hover:opacity-100">
-              {{ n.text }}
-            </div>
-          </v-img>
-        </div>
-      </div>
-    </div>
-    <!-- second layer content -->
+  <div
+    ref="container"
+    class="visible-scroll h-full overflow-auto"
+    @wheel="onWheel"
+  >
+    <ImageGradient
+      v-if="news[0]"
+      class="fixed transition-opacity duration-500"
+      :opacity="opacity"
+      :news="news[0]"
+    />
     <div
-      class="second-layer two-times-hight footer me flex   w-full flex-col overflow-auto p-4 pl-6"
+      class="footer me z-2 relative flex w-full flex-col py-4"
       @dragover.prevent
     >
       <!-- background description -->
-      <section class="message-box text-align-left mt-5 ">
-        <div class="">
-          lol
+      <section class="message-box text-align-left py-25 mt-5 px-10">
+        <div class="mt-10 text-5xl font-bold">
+          {{ news[0]?.title }}
         </div>
-        <div>
-          lol
+        <div class="mt-4 text-lg">
+          {{ getDateString(news[0]?.date) }}
+          {{ news[0]?.category }}
+        </div>
+        <div class="mt-2 text-xl">
+          {{ news[0]?.text }}
+        </div>
+        <div class="mt-4">
+          <v-btn
+            color="primary"
+            large
+          >
+            {{ t('news.readMore') }}
+          </v-btn>
         </div>
       </section>
       <!-- extra news -->
-      <section class="news-box mt-4 ">
+      <section class="news-box mt-4 px-2">
         <h2 class="text-align-left">
           {{ t('me.news') }}
         </h2>
         <div
           ref="containerSecondLayer"
           class="row-span-4 flex w-full gap-4 overflow-x-auto overflow-y-hidden "
-          @wheel="onWheelSecond"
         >
           <div
             v-for="n of news"
@@ -80,7 +69,7 @@
         </div>
       </section>
       <!-- my instance -->
-      <section class="instance-box mt-4 ">
+      <section class="instance-box mt-4 px-2">
         <h2 class="text-align-left">
           {{ t('me.recentPlay') }}
         </h2>
@@ -122,45 +111,34 @@
 <script lang=ts setup>
 import { kInstances } from '@/composables/instances'
 import { useMojangNews } from '@/composables/mojangNews'
-import { useScrollRight } from '@/composables/scroll'
 import { getAgoOrDate } from '@/util/date'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useDateString } from '@/composables/date'
+import { onMounted, ref } from 'vue'
+import ImageGradient from './ImageGradient.vue'
 
 const { t } = useI18n()
 const { refresh, news } = useMojangNews()
 onMounted(refresh)
 
+const { getDateString } = useDateString()
+
 const { instances } = injection(kInstances)
 const sorted = computed(() => [...instances.value].sort((a, b) => a.lastAccessDate - b.lastAccessDate).slice(0, 5))
 
-// const containerBottomLayer = ref(null as null | HTMLElement)
-// const { onWheel: onWheelBottom } = useScrollRight(containerBottomLayer)
-
-const containerSecondLayer = ref(null as null | HTMLElement)
-const { onWheel: onWheelSecond } = useScrollRight(containerSecondLayer)
 // 透明度代码
-const dynamicOpacity = ref(1) // 初始透明度设为1
+const opacity = ref(1) // 初始透明度设为1
 
-// 更新透明度的函数
-function updateOpacity() {
-  const scrollY = window.scrollY || window.pageYOffset
-  const height = document.documentElement.scrollHeight - window.innerHeight
-  const scrolled = scrollY / height
-  dynamicOpacity.value = 1 - Math.min(scrolled, 1) // 确保透明度在0到1之间
+const container = ref(undefined as undefined | HTMLDivElement)
+const onWheel = (e: WheelEvent) => {
+  const element = container.value
+  if (!element) return
+  const maxVal = element.scrollHeight - element.clientHeight
+  const currentVal = element.scrollTop
+  opacity.value = 1 - currentVal / maxVal
 }
-
-// 在组件挂载时添加事件监听器
-onMounted(() => {
-  window.addEventListener('scroll', updateOpacity)
-})
-
-// 在组件销毁前移除事件监听器
-onBeforeUnmount(() => {
-  window.removeEventListener('scroll', updateOpacity)
-})
 
 </script>
 
@@ -221,9 +199,6 @@ onBeforeUnmount(() => {
 }
 .text-align-left {
   text-align: left;
-}
-.two-times-hight{
-  height: 180%;
 }
 .message-box {
 
