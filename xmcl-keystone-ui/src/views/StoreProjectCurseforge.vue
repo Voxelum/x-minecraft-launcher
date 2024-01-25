@@ -110,8 +110,8 @@ const versions = computed(() => {
       id: v.id.toString(),
       name: v.displayName,
       version_type: v.releaseType === 1 ? 'release' : v.releaseType === 2 ? 'beta' : 'alpha',
-      game_versions: getCursforgeFileModLoaders(v),
-      loaders: getCurseforgeFileGameVersions(v),
+      game_versions: getCurseforgeFileGameVersions(v),
+      loaders: getCursforgeFileModLoaders(v),
     }
     result.push(x)
   }

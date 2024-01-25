@@ -4,6 +4,7 @@ import { ResourceDomain } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { InjectionKey, Ref } from 'vue'
+import debounce from 'lodash.debounce'
 
 export const kModpackNotification: InjectionKey<ReturnType<typeof useModpackNotification>> = Symbol('ModpackNotification')
 
@@ -12,7 +13,24 @@ export function useModpackNotification(queue: Ref<LocalNotification[]>) {
   const { notify } = useNotifier(queue)
   const { t } = useI18n()
   const ignored = [] as string[]
+  const onRemove = debounce((path: string) => {
+    ignored.splice(ignored.indexOf(path), 1)
+  }, 60_000)
   useResourceAdd(({ path, name }) => {
+    if (ignored.some(p => p === path)) {
+      onRemove(path)
+      return
+    }
+    if (!isShown.value) {
+      notify({
+        level: 'success',
+        title: t('AppAddInstanceDialog.downloadedNotification', { name }),
+        full: true,
+        more: () => {
+          showAddInstance(path)
+        },
+      })
+    }
     setTimeout(() => {
       if (ignored.some(p => p === path)) {
         ignored.splice(ignored.indexOf(path), 1)

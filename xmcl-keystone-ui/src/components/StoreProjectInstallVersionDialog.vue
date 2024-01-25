@@ -74,7 +74,9 @@
               <v-list-item-subtitle>
                 <div>
                   {{ version.loaders.join(' ') }}
-                  {{ version.game_versions.length === 1 ? version.game_versions[0] : version.game_versions[0] + '-' + version.game_versions[version.game_versions.length - 1] }}
+                  <template v-if="version.game_versions.length > 0">
+                    {{ version.game_versions.length === 1 ? version.game_versions[0] : version.game_versions[0] + '-' + version.game_versions[version.game_versions.length - 1] }}
+                  </template>
                 </div>
                 <span
                   :style="{ color: getColorCode(getColorForReleaseType(version.version_type)) }"
