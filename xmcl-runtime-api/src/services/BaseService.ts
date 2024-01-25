@@ -106,6 +106,13 @@ export type BaseServiceExceptions = {
    */
   type: 'migrationDestinationIsNotEmptyDirectory'
   destination: string
+} | {
+  /**
+   * Throw rename has no permission.
+   */
+  type: 'migrationNoPermission'
+  source: string
+  destination: string
 }
 
 export class BaseServiceException extends Exception<BaseServiceExceptions> { }

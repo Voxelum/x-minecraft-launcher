@@ -115,6 +115,8 @@ const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
         errorText.value = t('dataMigration.migrationDestinationIsFile')
       } else if (e.exception.type === 'migrationDestinationIsNotEmptyDirectory') {
         errorText.value = t('dataMigration.migrationDestinationIsNotEmptyDirectory')
+      } else if (e.exception.type === 'migrationNoPermission') {
+        errorText.value = t('dataMigration.migrationNoPermission')
       } else {
         errorText.value = t('dataMigration.unknownError')
       }

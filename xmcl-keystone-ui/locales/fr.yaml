@@ -165,6 +165,7 @@ dataMigration:
   migrationDestinationIsNotEmptyDirectory: |-
     La destination de la migration n'est pas un répertoire vide ! 
     Assurez-vous de sélectionner un répertoire vide !
+  migrationNoPermission: "Aucune autorisation pour renommer l'ancien répertoire en nouveau répertoire\_! \nVeuillez vous assurer que le lanceur a accès aux deux endroits\_!"
   placeholder: Veuillez cliquer ici pour sélectionner le répertoire
   setRootCause: >-
     Vous perdrez vos données (cartes, packs de ressources, mods) si vous fermez

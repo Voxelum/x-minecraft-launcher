@@ -172,6 +172,9 @@ dataMigration:
   migrationDestinationIsNotEmptyDirectory: >-
     ¡El destino de migración no es un directorio vacío! ¡Asegúrese de
     seleccionar un directorio vacío!
+  migrationNoPermission: |-
+    ¡No hay permiso para cambiar el nombre del directorio antiguo al nuevo! 
+    ¡Asegúrese de que el lanzador tenga acceso a ambos lugares!
   placeholder: Haga clic aquí para seleccionar el directorio
   setRootCause: >-
     ¡Perderá sus datos (Mapas, Paquetes de Recursos, Mods) si cierra el Launcher

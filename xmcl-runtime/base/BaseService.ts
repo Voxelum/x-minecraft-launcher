@@ -191,16 +191,22 @@ export class BaseService extends AbstractService implements IBaseService {
               await copyPassively(from, to)
               return
             }
+            if (e.code === 'EPERM') {
+              throw new BaseServiceException({
+                type: 'migrationNoPermission',
+                source,
+                destination,
+              })
+            }
           }
           throw e
         }
       }
-      await this.app.migrateRoot(destination)
     } catch (e) {
       this.error(new AnyError('MigrateRootError', `Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
-      await this.app.migrateRoot(source).catch(() => { })
       throw e
     }
+    await this.app.migrateRoot(destination)
 
     this.app.relaunch()
     this.app.quit()

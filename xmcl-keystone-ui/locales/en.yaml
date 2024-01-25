@@ -133,6 +133,9 @@ dataMigration:
   migrationDestinationIsNotEmptyDirectory: >-
     Migration destination is not an empty directory! Please make sure you select
     an empty directory!
+  migrationNoPermission: >-
+    No permission to rename the old directory to new directory! Please make sure
+    the launcher has access to both places!
   placeholder: Please click here to select directory
   setRootCause: >-
     You will loose your data (Maps, Resource Packs, Mods) if you close the

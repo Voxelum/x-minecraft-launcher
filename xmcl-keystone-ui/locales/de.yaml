@@ -146,6 +146,11 @@ dataMigration:
   migrationDestinationIsNotEmptyDirectory: >-
     Das Übertragungsziel ist kein leeres Verzeichnis! Stellen Sie sicher, dass
     ein leeres Verzeichnis ausgewählt ist!
+  migrationNoPermission: >-
+    Keine Berechtigung zum Umbenennen des alten Verzeichnisses in ein neues
+    Verzeichnis! 
+
+    Bitte stellen Sie sicher, dass der Launcher Zugriff auf beide Orte hat!
   placeholder: Klicken Sie hier, um einen Katalog auszuwählen
   setRootCause: |-
     Sie verlieren Daten (Maps, Texture Packs, Mods), wenn Sie den
