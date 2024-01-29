@@ -120,7 +120,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
         const a = toAdd[f.path]
         if (a.hashes.sha1 !== f.hashes.sha1) {
           // backup this file
-          result.push({ currentFile: f, file: f, operation: 'backup-add' })
+          result.push({ currentFile: f, file: a, operation: 'backup-add' })
         } else {
           result.push({ file: f, operation: 'keep' })
         }
