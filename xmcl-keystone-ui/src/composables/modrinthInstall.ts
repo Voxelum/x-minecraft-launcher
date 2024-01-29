@@ -54,7 +54,7 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
           resource,
         })
       } else if (resource.domain === ResourceDomain.Modpacks) {
-        show(resource.path)
+        show({ type: 'resource', resource })
       } else if (installTo.value) {
         install({ resource, instancePath: installTo.value }).then(() => {
           notify({ title: t('installResource.success', { file: resource.fileName }), level: 'success', full: true })

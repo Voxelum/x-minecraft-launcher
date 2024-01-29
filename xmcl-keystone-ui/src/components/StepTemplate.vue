@@ -148,37 +148,11 @@ function onSelect(template: Template) {
   }
   selectedTemplatePath.value = template.filePath
 }
-const { data: creationData, files, loading, error } = injection(kInstanceCreation)
+const creationData = injection(kInstanceCreation)
+const loading = creationData.loading
 watch(selectedTemplate, async (t) => {
   if (!t) return
-  const instData = t.instance
-  creationData.name = instData.name
-  creationData.runtime = { ...instData.runtime }
-  creationData.java = instData.java ?? ''
-  creationData.showLog = instData.showLog ?? false
-  creationData.hideLauncher = instData.hideLauncher ?? true
-  creationData.vmOptions = [...instData.vmOptions ?? []]
-  creationData.mcOptions = [...instData.mcOptions ?? []]
-  creationData.maxMemory = instData.maxMemory ?? 0
-  creationData.minMemory = instData.minMemory ?? 0
-  creationData.author = instData.author ?? ''
-  creationData.description = instData.description ?? ''
-  creationData.url = instData.url ?? ''
-  creationData.icon = instData.icon ?? ''
-  creationData.modpackVersion = instData.modpackVersion || ''
-  creationData.server = instData.server ? { ...instData.server } : null
-  creationData.upstream = instData.upstream
-
-  files.value = t.files
-  try {
-    loading.value = true
-    files.value = await t.loadFiles()
-  } catch (e) {
-    error.value = e
-  } finally {
-    loading.value = false
-  }
-
+  await creationData.update(t.instance, t.loadFiles())
   emit('select')
 }, { immediate: true })
 
@@ -214,23 +188,6 @@ const items = computed(() => templates.value.filter((template) => {
 onUnmounted(() => {
   filterText.value = ''
 })
-
- // notify({
-      //   title: t('importModpack.success', { modpack: template?.name }),
-      //   level: 'success',
-      //   full: true,
-      //   more() {
-      //     router.push('/')
-      //   },
-      // })
-      // notify({
-      //   title: t('importModpack.failed', { modpack: template?.name }),
-      //   level: 'error',
-      //   full: true,
-      //   more() {
-      //     showTaskDialog()
-      //   },
-      // })
 </script>
 
 <style>

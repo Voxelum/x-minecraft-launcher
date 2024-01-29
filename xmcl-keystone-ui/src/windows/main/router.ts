@@ -21,6 +21,7 @@ import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
 import Store from '@/views/Store.vue'
 import StoreEntry from '@/views/StoreEntry.vue'
 import StoreProjectCurseforge from '@/views/StoreProjectCurseforge.vue'
+import StoreProjectFeedTheBeast from '@/views/StoreProjectFeedTheBeast.vue'
 import StoreProjectModrinth from '@/views/StoreProjectModrinth.vue'
 import Vue from 'vue'
 import Router from 'vue-router'
@@ -97,6 +98,11 @@ export const router = new Router({
         {
           path: '/store/curseforge/:id',
           component: StoreProjectCurseforge,
+          props: (route) => ({ id: Number(route.path.split('/')[3]) }),
+        },
+        {
+          path: '/store/ftb/:id',
+          component: StoreProjectFeedTheBeast,
           props: (route) => ({ id: Number(route.path.split('/')[3]) }),
         },
       ],

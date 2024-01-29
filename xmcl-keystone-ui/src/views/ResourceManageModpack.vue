@@ -16,7 +16,7 @@
           :key="item.id"
           :item="item"
           @tags="item.tags = $event"
-          @create="show(item.id)"
+          @create="onCreate(item)"
           @delete="startDelete(item)"
         />
       </template>
@@ -121,4 +121,12 @@ onUnmounted(() => {
 watch(resources, (v) => {
   items.value = [...v.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
 })
+
+const onCreate = (item: ModpackItem) => {
+  if (item.resource) {
+    show({ type: 'resource', resource: item.resource })
+  } else if (item.ftb) {
+    show({ type: 'ftb', manifest: item.ftb })
+  }
+}
 </script>

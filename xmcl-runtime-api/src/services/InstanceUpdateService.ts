@@ -15,6 +15,11 @@ export type UpgradeModpackOptions = {
   newModpack: string
 }
 
+export type UpgradeModpackRawOptions = {
+  instancePath: string
+  oldVersionFiles: InstanceFile[]
+  newVersionFiles: InstanceFile[]
+}
 export interface InstanceUpdateProfile {
   instance: EditInstanceOptions
   files: InstanceFileUpdate[]
@@ -31,8 +36,7 @@ export type InstanceFileUpdate = {
 
 export interface InstanceUpdateService {
   getInstanceUpdateProfile(options: UpgradeModpackOptions): Promise<InstanceUpdateProfile>
-
-  // updateInstance(options: UpdateInstanceOptions): Promise<void>
+  getInstanceUpdateProfileRaw(options: UpgradeModpackRawOptions): Promise<InstanceFileUpdate[]>
 }
 
 export const InstanceUpdateServiceKey: ServiceKey<InstanceUpdateService> = 'InstanceUpdateService'

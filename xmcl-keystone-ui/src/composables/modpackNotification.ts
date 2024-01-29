@@ -16,7 +16,8 @@ export function useModpackNotification(queue: Ref<LocalNotification[]>) {
   const onRemove = debounce((path: string) => {
     ignored.splice(ignored.indexOf(path), 1)
   }, 60_000)
-  useResourceAdd(({ path, name }) => {
+  useResourceAdd((resource) => {
+    const { path, name } = resource
     if (ignored.some(p => p === path)) {
       onRemove(path)
       return
@@ -27,7 +28,7 @@ export function useModpackNotification(queue: Ref<LocalNotification[]>) {
         title: t('AppAddInstanceDialog.downloadedNotification', { name }),
         full: true,
         more: () => {
-          showAddInstance(path)
+          showAddInstance({ type: 'resource', resource })
         },
       })
     }
@@ -42,7 +43,7 @@ export function useModpackNotification(queue: Ref<LocalNotification[]>) {
           title: t('AppAddInstanceDialog.downloadedNotification', { name }),
           full: true,
           more: () => {
-            showAddInstance(path)
+            showAddInstance({ type: 'resource', resource })
           },
         })
       }

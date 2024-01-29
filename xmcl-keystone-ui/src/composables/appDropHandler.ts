@@ -176,7 +176,7 @@ export function useAppDropHandler() {
 
       if (isModpack) {
         if (shouldHandleModpack) {
-          show(item.resource.path)
+          show({ type: 'resource', resource: item.resource })
         }
       } else {
         // Install the resources

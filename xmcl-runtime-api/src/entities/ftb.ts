@@ -11,6 +11,7 @@ export interface FTBModpackManifest {
   plays: number
   featured: boolean
   refreshed: number
+  released: number
   status: string
   id: number
   name: string
@@ -88,7 +89,7 @@ export interface FTBFile {
   serveronly: boolean
   optional: boolean
   id: number
-  curseforge?: {project: number; file: number}
+  curseforge?: { project: number; file: number }
   /**
    * The file name
    */

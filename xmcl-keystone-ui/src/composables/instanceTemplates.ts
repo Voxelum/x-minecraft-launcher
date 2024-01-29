@@ -5,7 +5,18 @@ import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { useService } from './service'
 
-export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
+export type AddInstanceDialogParameter = {
+  type: 'resource'
+  resource: Resource
+} | {
+  type: 'ftb'
+  manifest: CachedFTBModpackVersionManifest
+} | {
+  type: 'manifest'
+  manifest: InstanceManifest
+}
+
+export const AddInstanceDialogKey: DialogKey<AddInstanceDialogParameter> = 'add-instance-dialog'
 
 export interface Template {
   filePath: string
@@ -13,7 +24,6 @@ export interface Template {
   instance: ModpackInstallProfile['instance']
   type: 'curseforge' | 'mcbbs' | 'modpack' | 'modrinth' | 'instance' | 'ftb' | 'peer'
   description: string
-  files: InstanceFile[]
   loadFiles: () => Promise<InstanceFile[]>
 }
 
@@ -38,7 +48,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
           instance: markRaw(config),
           description: computed(() => getActionText(type)),
           type,
-          files: [],
           loadFiles: () => {
             if (!promise) {
               promise = getModpackInstallFiles(resource.path)
@@ -93,7 +102,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
         minMemory: man.minMemory,
         maxMemory: man.maxMemory,
       },
-      files: man.files,
       loadFiles: () => Promise.resolve(man.files),
       type: 'peer',
     }
@@ -110,7 +118,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
       instance: markRaw(instanceConfig),
       loadingFiles: false,
       loadFiles: () => Promise.resolve(files),
-      files,
       type: 'ftb',
     })
   }

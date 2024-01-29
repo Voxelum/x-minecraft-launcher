@@ -78,21 +78,6 @@
           </v-list-item-icon>
           <v-list-item-title>Modrinth</v-list-item-title>
         </v-list-item>
-
-        <v-list-item
-          v-if="sideBarShowFtb"
-          v-shared-tooltip.right="'FTB'"
-          link
-          class="non-moveable"
-          @click="goToFtb()"
-        >
-          <v-list-item-icon>
-            <v-icon>
-              $vuetify.icons.ftb
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>FTB</v-list-item-title>
-        </v-list-item>
       </v-list-group>
       <v-list-item
         v-if="true"
@@ -190,7 +175,6 @@ const { state } = injection(kSettingsState)
 
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
-const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kColorTheme)

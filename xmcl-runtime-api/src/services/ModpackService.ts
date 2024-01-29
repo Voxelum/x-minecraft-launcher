@@ -2,7 +2,7 @@ import { RuntimeVersions } from '../entities/instance.schema'
 import { Exception } from '../entities/exception'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ResourceMetadata } from '../entities/resource'
-import { EditInstanceOptions } from './InstanceService'
+import { CreateInstanceOption, EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
 export interface ExportFileDirective {
@@ -97,7 +97,7 @@ export interface ImportModpackCreateInstanceOptions {
    */
   path: string
 
-  instanceConfig: Omit<EditInstanceOptions, 'instancePath'>
+  instanceConfig: Omit<CreateInstanceOption, 'path'>
   /**
    * Mount the instance after the modpack is imported
    */
@@ -105,8 +105,7 @@ export interface ImportModpackCreateInstanceOptions {
 }
 
 export interface ModpackInstallProfile {
-  instance: EditInstanceOptions & {
-    name: string
+  instance: CreateInstanceOption & {
     runtime: RuntimeVersions
   }
   files: InstanceFile[]
