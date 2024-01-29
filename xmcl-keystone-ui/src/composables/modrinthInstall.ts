@@ -11,7 +11,6 @@ import { AddInstanceDialogKey } from './instanceTemplates'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
 import { kInstances } from './instances'
-import { kModpackNotification } from './modpackNotification'
 import { useNotifier } from './notifier'
 import { useService } from './service'
 
@@ -94,12 +93,10 @@ export function useModrinthInstallModpack(icon: Ref<string | undefined>) {
   const { installVersion } = useService(ModrinthServiceKey)
   const { install, mutate } = injection(kInstanceFiles)
   const { fix } = injection(kInstanceVersionDiagnose)
-  const { ignore } = injection(kModpackNotification)
   const { currentRoute, push } = useRouter()
   const installModpack = async (v: ProjectVersion) => {
     const result = await installVersion({ version: v, icon: icon.value })
     const resource = result.resources[0]
-    ignore(resource.path)
     const config = resolveModpackInstanceConfig(resource)
 
     if (!config) return

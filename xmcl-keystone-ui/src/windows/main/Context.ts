@@ -23,7 +23,6 @@ import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
-import { kModpackNotification, useModpackNotification } from '@/composables/modpackNotification'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
@@ -89,7 +88,6 @@ export default defineComponent({
     const userDiagnose = useUserDiagnose(user.userProfile)
 
     provide(kDatabaseStatus, useDatabaseStatus())
-    provide(kModpackNotification, useModpackNotification(queue))
 
     provide(kUserContext, user)
     provide(kJavaContext, java)
