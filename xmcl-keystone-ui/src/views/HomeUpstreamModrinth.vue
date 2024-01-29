@@ -6,6 +6,7 @@ import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
+import { useMarkdown } from '@/composables/markdown'
 import { useModrinthTags } from '@/composables/modrinth'
 import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
@@ -67,6 +68,7 @@ const headerData = computed(() => {
   return result
 })
 const { data } = useSWRVModel(getModrinthVersionModel(computed(() => props.id), undefined, ref(undefined), ref(undefined)))
+const { render } = useMarkdown()
 const currentVersion = computed(() => {
   const val = upstream.value
   if (!val || val.type !== 'modrinth-modpack') return undefined
@@ -81,7 +83,7 @@ const currentVersion = computed(() => {
     gameVersions: ver.game_versions,
     datePublished: (ver.date_published),
     downloads: ver.downloads,
-    changelog: ver.changelog || '',
+    changelog: ver.changelog ? render(ver.changelog) : '',
   }
   return result
 })
@@ -109,7 +111,7 @@ const items = computed(() => {
       gameVersions: d.game_versions,
       datePublished: (d.date_published),
       downloads: d.downloads,
-      changelog: d.changelog || '',
+      changelog: d.changelog ? render(d.changelog) : '',
     })
   }
 
@@ -173,7 +175,7 @@ async function onDuplicate(v: ProjectVersionProps) {
       })
       newResource = result.resources[0]
     }
-    showAddInstanceDialog(newResource.path)
+    showAddInstanceDialog({ type: 'resource', resource: newResource })
   } finally {
     duplicating.value = false
   }

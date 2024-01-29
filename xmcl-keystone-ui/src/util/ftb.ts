@@ -81,7 +81,8 @@ export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, java
     runtime,
     upstream: {
       type: 'ftb-modpack',
-      id: man.id,
+      id: man.parent,
+      versionId: man.id,
     },
     icon: man.iconUrl,
   } as ModpackInstallProfile['instance'], files] as const

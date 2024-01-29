@@ -93,7 +93,7 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
           resource,
         })
       } else if (type.value === 'modpacks') {
-        showAddInstanceDialog(resource.path)
+        showAddInstanceDialog({ type: 'resource', resource })
       } else if (from.value) {
         installResource({ instancePath: from.value, resource }).then(() => {
           notify({ title: t('installResource.success', { file: resource.fileName }), level: 'success', full: true })

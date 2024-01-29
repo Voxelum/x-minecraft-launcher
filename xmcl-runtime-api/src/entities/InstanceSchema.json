@@ -172,75 +172,19 @@
                 "release"
             ]
         },
+        "playTime": {
+            "type": "number"
+        },
         "upstream": {
             "anyOf": [
                 {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [
-                                "curseforge-modpack"
-                            ]
-                        },
-                        "modId": {
-                            "type": "number"
-                        },
-                        "fileId": {
-                            "type": "number"
-                        },
-                        "sha1": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "fileId",
-                        "modId",
-                        "type"
-                    ]
+                    "$ref": "#/definitions/ModrinthUpstream"
                 },
                 {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [
-                                "modrinth-modpack"
-                            ]
-                        },
-                        "projectId": {
-                            "type": "string"
-                        },
-                        "versionId": {
-                            "type": "string"
-                        },
-                        "sha1": {
-                            "type": "string"
-                        }
-                    },
-                    "required": [
-                        "projectId",
-                        "type",
-                        "versionId"
-                    ]
+                    "$ref": "#/definitions/CurseforgeUpstream"
                 },
                 {
-                    "type": "object",
-                    "properties": {
-                        "type": {
-                            "type": "string",
-                            "enum": [
-                                "ftb-modpack"
-                            ]
-                        },
-                        "id": {
-                            "type": "number"
-                        }
-                    },
-                    "required": [
-                        "id",
-                        "type"
-                    ]
+                    "$ref": "#/definitions/FTBUpstream"
                 }
             ]
         }
@@ -315,6 +259,78 @@
             },
             "required": [
                 "minecraft"
+            ]
+        },
+        "ModrinthUpstream": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "modrinth-modpack"
+                    ]
+                },
+                "projectId": {
+                    "type": "string"
+                },
+                "versionId": {
+                    "type": "string"
+                },
+                "sha1": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "projectId",
+                "type",
+                "versionId"
+            ]
+        },
+        "CurseforgeUpstream": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "curseforge-modpack"
+                    ]
+                },
+                "modId": {
+                    "type": "number"
+                },
+                "fileId": {
+                    "type": "number"
+                },
+                "sha1": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "fileId",
+                "modId",
+                "type"
+            ]
+        },
+        "FTBUpstream": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "ftb-modpack"
+                    ]
+                },
+                "id": {
+                    "type": "number"
+                },
+                "versionId": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "id",
+                "type",
+                "versionId"
             ]
         }
     },

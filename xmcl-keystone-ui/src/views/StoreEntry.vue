@@ -75,9 +75,10 @@
           @enter="enter($event.type, $event.id)"
         />
       </div>
+
       <v-subheader ref="exploreHeader">
         <v-icon left>
-          $vuetify.icons.minecraft
+          explore
         </v-icon>
         {{ t('store.explore') }}
       </v-subheader>
@@ -142,6 +143,7 @@ import StoreExploreCategories, { Category, ExploreCategoryGroup } from '@/compon
 import StoreGallery, { GameGallery } from '@/components/StoreGallery.vue'
 import { CurseforgeProps, useCurseforge, useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 import { useDateString } from '@/composables/date'
+import { getFeedTheBeastProjectModel, useFeedTheBeast } from '@/composables/ftb'
 import { useMarketSort } from '@/composables/marketSort'
 import { ModrinthOptions, getFacatsText, useModrinth, useModrinthTags } from '@/composables/modrinth'
 import { useSortByItems } from '@/composables/sortBy'
@@ -149,6 +151,7 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getExpectedSize } from '@/util/size'
+import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
 import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
@@ -159,11 +162,11 @@ const { t } = useI18n()
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
 
-function merge<T>(modrinths: T[], curseforges: T[]) {
+function merge<T>(first: T[], second: T[]) {
   const result: T[] = []
-  for (let i = 0; i < Math.max(modrinths.length, curseforges.length); i++) {
-    const m = modrinths[i]
-    const c = curseforges[i]
+  for (let i = 0; i < Math.max(first.length, second.length); i++) {
+    const m = first[i]
+    const c = second[i]
     if (m) result.push(m)
     if (c) result.push(c)
   }
@@ -312,6 +315,38 @@ const recentMinecraftItems = computed(() => {
   )
 })
 
+// FTB
+const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword }))
+const ftbItems = ref([] as ExploreProject[])
+const config = inject(kSWRVConfig)
+watch(ftbData, async (packs) => {
+  if (!packs) {
+    ftbItems.value = []
+    return
+  }
+  ftbItems.value = await Promise.all(packs.packs.map(async (p) => {
+    const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
+    const result: ExploreProject = {
+      id: p.toString(),
+      type: 'ftb',
+      title: data?.name ?? '',
+      icon_url: data?.art.find(v => v.type === 'square')?.url ?? '',
+      description: data?.synopsis || '',
+      author: data?.authors[0].name ?? '',
+      labels: [
+        { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, '') },
+        { icon: 'event', text: getDateString((data?.released ?? 0) * 1000) },
+        { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000) },
+        { icon: 'local_offer', text: data?.plays.toString() ?? '0' },
+      ],
+      tags: data?.tags.map(t => ({ text: t.name })) ?? [],
+      gallery: data?.art.map(a => a.url) ?? [],
+    }
+    return result
+  }))
+}, { immediate: true })
+watch(ftbItems, console.log, { immediate: true })
+
 // Routing
 const { push } = useRouter()
 const enter = (type: string, id: string) => {
@@ -369,7 +404,6 @@ const groups = computed(() => {
       }
     }
   }
-  console.log(cfCats?.map(c => ({ id: c.id, name: c.name })).filter(c => c.name in binMap))
   for (const c of (cfCats || [])) {
     const key = binMap[c.name]
     if (!(key in bin) || !key) {
@@ -515,10 +549,10 @@ const items = computed(() => {
   const curseforges = curseforgeProjects.value.map((p) => {
     const existed = new Set<number>()
     const tags = p.categories.map(c => {
-        if (existed.has(c.id)) return undefined
-        existed.add(c.id)
-        return { icon: c.iconUrl, text: tCategory(c.name) } as CategoryChipProps
-      }).filter((v): v is CategoryChipProps => v !== undefined)
+      if (existed.has(c.id)) return undefined
+      existed.add(c.id)
+      return { icon: c.iconUrl, text: tCategory(c.name) } as CategoryChipProps
+    }).filter((v): v is CategoryChipProps => v !== undefined)
     const mapped: ExploreProject = {
       id: p.id.toString(),
       type: 'curseforge',
@@ -538,7 +572,14 @@ const items = computed(() => {
     return mapped
   })
 
-  return merge(modrinths, curseforges)
+  if (curseforgeData.category && data.category.length === 0) {
+    return curseforges
+  }
+  if (data.category.length > 0 && curseforgeData.category === '') {
+    return modrinths
+  }
+
+  return merge(merge(modrinths, ftbItems.value), curseforges)
 })
 
 // Scroll to the search result
@@ -666,6 +707,7 @@ useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, focu
   .content {
     grid-column: 1 / 3;
   }
+
   .category {
     grid-column: 3 / 5;
   }

@@ -136,10 +136,12 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getUpstreamFromResource } from '@/util/upstream'
-import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
+import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceServiceKey, InstanceUpdateServiceKey, Resource } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kInstance } from '@/composables/instance'
 import ErrorView from '@/components/ErrorView.vue'
+import { getFTBTemplateAndFile } from '@/util/ftb'
+import { kJavaContext } from '@/composables/java'
 
 const selected = ref([] as string[])
 
@@ -148,9 +150,11 @@ const { isShown, dialog } = useDialog(InstanceInstallDialog, () => {
 }, () => {
   upgrade.value = undefined
 })
-const oldResource = computed(() => dialog.value.parameter?.currentResource)
-const newResource = computed(() => dialog.value.parameter?.resource)
-const { getInstanceUpdateProfile } = useService(InstanceUpdateServiceKey)
+const oldResource = computed(() => dialog.value.parameter.type !== 'ftb' ? dialog.value.parameter?.currentResource as Resource : undefined)
+const newResource = computed(() => dialog.value.parameter.type !== 'ftb' ? dialog.value.parameter?.resource : undefined)
+const oldManifest = computed(() => dialog.value.parameter.type === 'ftb' ? dialog.value.parameter?.oldManifest : undefined)
+const newManifest = computed(() => dialog.value.parameter.type === 'ftb' ? dialog.value.parameter?.newManifest : undefined)
+const { getInstanceUpdateProfile, getInstanceUpdateProfileRaw } = useService(InstanceUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 
 const { edit } = injection(kInstances)
@@ -219,7 +223,21 @@ const { leaves } = provideFileNodes(result)
 
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
+const { all: javas } = injection(kJavaContext)
 const { refresh, refreshing, error } = useRefreshable(async () => {
+  if (newManifest.value && oldManifest.value) {
+    const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest.value, javas.value)
+    const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest.value, javas.value)
+    upgrade.value = {
+      instance: config,
+      files: markRaw(await getInstanceUpdateProfileRaw({
+        instancePath: instancePath.value,
+        oldVersionFiles,
+        newVersionFiles,
+      })),
+    }
+    return
+  }
   const path = newResource.value?.path
   if (path) {
     upgrade.value = await getInstanceUpdateProfile({

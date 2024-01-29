@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     width="900"
-    :persistent="!creating"
+    :persistent="!loading"
   >
     <v-toolbar
       elevation="4"
@@ -16,9 +16,7 @@
         <v-icon>arrow_back</v-icon>
       </v-btn>
       <v-toolbar-title>
-        <div
-          v-if="steps[step - 1] === 'template'"
-        >
+        <div v-if="steps[step - 1] === 'template'">
           {{ t('instanceTemplate.title') }}
         </div>
         <template v-if="steps[step - 1] === 'config'">
@@ -70,8 +68,8 @@
       </v-stepper-items>
       <StepperFooter
         class="px-6 pb-6 pt-4"
-        :disabled="!valid || creating"
-        :creating="creating"
+        :disabled="!valid || loading"
+        :creating="loading"
         :next="step !== steps.length"
         :create="step === steps.length"
         @create="onCreate"
@@ -104,50 +102,31 @@ import StepConfig from '@/components/StepConfig.vue'
 import StepSelect from '@/components/StepSelect.vue'
 import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
-import { useRefreshable, useService } from '@/composables'
+import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances } from '@/composables/instances'
 import { kPeerState } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
-import { CreateInstanceManifest, InstanceIOServiceKey, InstanceInstallServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { useNotifier } from '../composables/notifier'
+import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
+import { getFTBTemplateAndFile } from '@/util/ftb'
+import { kJavaContext } from '@/composables/java'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
 const { getGameDefaultPath, parseInstanceFiles, parseInstances } = useService(InstanceIOServiceKey)
 const updateData = async (man: CreateInstanceManifest) => {
-  const options = man.options
-  creationData.name = options.name
-  creationData.description = options.description || ''
-  creationData.java = options.java || ''
-  creationData.runtime = { ...options.runtime } as any
-  creationData.server = options.server ?? null
-  creationData.maxMemory = options.maxMemory ?? 0
-  creationData.minMemory = options.minMemory ?? 0
-  creationData.showLog = options.showLog ?? false
-  creationData.vmOptions = [...options.vmOptions ?? []]
-  creationData.playTime = options.playTime ?? 0
-  creationData.lastPlayedDate = options.lastPlayedDate ?? 0
-  creationData.resolution = options.resolution ?? null
-  creationData.icon = options.icon ?? ''
-  creationData.upstream = options.upstream
-
-  if (man.isIsolated) {
-    try {
-      loading.value = true
-      files.value = await parseInstanceFiles(man.path, type.value as any)
-    } catch (e) {
-      error.value = e
-    } finally {
-      loading.value = false
-    }
-  }
+  await update(
+    man.options,
+    man.isIsolated ? parseInstanceFiles(man.path, type.value as any) : Promise.resolve([]),
+  )
 }
 const onManifestSelect = async (man: CreateInstanceManifest) => {
   updateData(man)
@@ -188,8 +167,132 @@ const onSelectType = async (t: string) => {
   }
 }
 
-const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : 'Minecraft' }))
+// Dialog model
+const { getModpackInstallFiles } = useService(ModpackServiceKey)
+const { all: javas } = injection(kJavaContext)
+const onSelectResource = async (res: Resource) => {
+  try {
+    loading.value = true
+    const config = resolveModpackInstanceConfig(res)
+    if (!config) return
+    await update(config, getModpackInstallFiles(res.path))
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
+  }
+}
+const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
+  try {
+    loading.value = true
+    const [config, files] = getFTBTemplateAndFile(ftb, javas.value)
+    if (!config) return
+    await update(config, Promise.resolve(files))
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
+  }
+}
+const onSelectManifest = async (man: InstanceManifest) => {
+  try {
+    loading.value = true
+    await update({
+      name: man.name ?? '',
+      description: man.description,
+      minMemory: man.minMemory,
+      maxMemory: man.maxMemory,
+      vmOptions: man.vmOptions,
+      mcOptions: man.mcOptions,
+      runtime: man.runtime,
+    }, Promise.resolve(man.files))
+  } catch (e) {
+    error.value = e
+  } finally {
+    loading.value = false
+  }
+}
 
+const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
+  if (loading.value) {
+    return
+  }
+
+  step.value = 1
+  type.value = undefined
+  valid.value = true
+
+  windowController.focus()
+
+  if (!param) return
+
+  if (typeof param === 'object') {
+    const after = () => {
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 3
+      })
+    }
+    if (param.type === 'resource') {
+      onSelectResource(param.resource).then(after)
+    } else if (param.type === 'ftb') {
+      onSelectFTB(param.manifest).then(after)
+    } else if (param.type === 'manifest') {
+      onSelectManifest(param.manifest).then(after)
+    }
+  }
+}, () => {
+  if (loading.value) {
+    return
+  }
+  setTimeout(() => {
+    step.value = 1
+    valid.value = true
+    type.value = undefined
+    reset()
+  }, 500)
+})
+watch(isShown, (v) => {
+  if (v) {
+    windowController.focus()
+  }
+})
+function quit() {
+  if (loading.value) return
+  hide()
+}
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    hide()
+  }
+})
+
+const { t } = useI18n()
+
+// Instance create data
+const { gameProfile } = injection(kUserContext)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const creation = useInstanceCreation(gameProfile, instances)
+const { create, reset, error, update, loading } = creation
+provide(kInstanceCreation, creation)
+
+// Install
+const router = useRouter()
+const { fix } = injection(kInstanceVersionDiagnose)
+const onCreate = async () => {
+  await create((newPath) => {
+    path.value = newPath
+    if (router.currentRoute.path !== '/') router.push('/')
+    hide()
+  })
+  await fix().catch(() => { })
+}
+
+// Stepper model
+const valid = ref(false)
+const step = ref(1)
+const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : 'Minecraft' }))
 const steps = computed(() => {
   if (type.value === 'template') {
     return ['create', 'template', 'config']
@@ -207,102 +310,15 @@ const steps = computed(() => {
 
   return ['create', 'config']
 })
-
-// Dialog model
-const selectedTemplatePath = ref('')
-provide('template', selectedTemplatePath)
-const { isShown, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey, (param) => {
-  if (creating.value) {
-    return
-  }
-
-  step.value = 1
-  type.value = undefined
-  valid.value = true
-
-  windowController.focus()
-
-  if (param && typeof param === 'string') {
-    selectedTemplatePath.value = param
-    type.value = 'template'
-    nextTick(() => {
-      step.value = 2
-    })
-  }
-}, () => {
-  if (creating.value) {
-    return
-  }
-  setTimeout(() => {
-    step.value = 1
-    valid.value = true
-    type.value = undefined
-    error.value = undefined
-    reset()
-  }, 500)
-})
-watch(isShown, (v) => {
-  if (v) {
-    windowController.focus()
-  }
-})
-function quit() {
-  if (creating.value) return
-  hide()
-}
-
-const { t } = useI18n()
-
-// Instance create data
-const { gameProfile } = injection(kUserContext)
-const { instances } = injection(kInstances)
-const { path } = injection(kInstance)
-const { create, reset, data: creationData, files } = useInstanceCreation(gameProfile, instances)
-const isInvalid = computed(() => {
-  return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
-})
-
-const error = ref(undefined as any)
-const loading = ref(false)
-provide(kInstanceCreation, { data: creationData, files, error, loading })
-
-// Stepper model
-const valid = ref(false)
-const step = ref(1)
-
-// Install
-const { notify } = useNotifier()
-const router = useRouter()
-const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { fix } = injection(kInstanceVersionDiagnose)
-const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
-  try {
-    const newPath = await create()
-    path.value = newPath
-    if (router.currentRoute.path !== '/') router.push('/')
-    reset()
-    hide()
-    if (files.value.length > 0) {
-      await installInstanceFiles({
-        path: newPath,
-        files: files.value,
-      }).catch((e) => {
-        console.error(e)
-      })
-    }
-    await fix().catch(() => {})
-  } catch (e) {
-    error.value = e
-  }
-})
-
 function next() {
   if (step.value < steps.value.length) {
     step.value += 1
   }
 }
 
+// Peer
 const { on: onPeerService } = useService(PeerServiceKey)
+const { notify } = useNotifier()
 const { connections } = injection(kPeerState)
 onPeerService('share', (event) => {
   if (!event.manifest) {
@@ -315,19 +331,14 @@ onPeerService('share', (event) => {
       title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
       full: true,
       more() {
-        if (!isShown.value) {
-          showAddInstance(event.id)
+        if (!isShown.value && event.manifest) {
+          show({ type: 'manifest', manifest: event.manifest })
         }
       },
     })
   }
 })
 
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    hide()
-  }
-})
 </script>
 
 <style>

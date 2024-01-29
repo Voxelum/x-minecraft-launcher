@@ -1,4 +1,4 @@
-import { Instance, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpdateService as IInstanceUpdateService, InstanceUpdateServiceKey, UpdateInstanceOptions, UpgradeModpackOptions } from '@xmcl/runtime-api'
+import { Instance, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpdateService as IInstanceUpdateService, InstanceUpdateServiceKey, UpdateInstanceOptions, UpgradeModpackOptions, UpgradeModpackRawOptions } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
 import { InstanceManifestService } from './InstanceManifestService'
@@ -90,19 +90,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
     return files
   }
 
-  async getInstanceUpdateProfile(options: UpgradeModpackOptions) {
-    const instancePath = options.instancePath
-    const instance = this.instanceService.state.all[instancePath]
-    if (!instance) {
-      throw new Error()
-    }
-
-    const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
-
-    const { files: newFiles, instance: instanceOptions } = await this.modpackService.getModpackInstallProfile(options.newModpack)
-
-    const manifest = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
-
+  #getInstanceFilesUpdate(oldFiles: InstanceFile[], currentFiles: InstanceFile[], newFiles: InstanceFile[]) {
     const toRemove = [] as InstanceFile[]
     const toAdd: Record<string, InstanceFile> = {}
 
@@ -118,7 +106,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
     toRemove.push(...Object.values(oldMapping))
 
     const result: InstanceFileUpdate[] = []
-    for (const f of manifest.files) {
+    for (const f of currentFiles) {
       let index = -1
       if ((index = toRemove.findIndex(r => r.path === f.path)) !== -1) {
         const r = toRemove[index]
@@ -149,6 +137,34 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
         operation: 'add',
       })
     }
+
+    return result
+  }
+
+  async getInstanceUpdateProfileRaw(options: UpgradeModpackRawOptions): Promise<InstanceFileUpdate[]> {
+    const oldFiles = options.oldVersionFiles
+    const newFiles = options.newVersionFiles
+
+    const manifest = await this.instanceManifestService.getInstanceManifest({ path: options.instancePath, hashes: ['sha1'] })
+    const result = this.#getInstanceFilesUpdate(oldFiles, manifest.files, newFiles)
+
+    return result
+  }
+
+  async getInstanceUpdateProfile(options: UpgradeModpackOptions) {
+    const instancePath = options.instancePath
+    const instance = this.instanceService.state.all[instancePath]
+    if (!instance) {
+      throw new Error()
+    }
+
+    const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
+
+    const { files: newFiles, instance: instanceOptions } = await this.modpackService.getModpackInstallProfile(options.newModpack)
+
+    const manifest = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
+
+    const result = this.#getInstanceFilesUpdate(oldFiles, manifest.files, newFiles)
 
     return {
       instance: instanceOptions,

@@ -48,7 +48,7 @@
       class="lg:(col-span-3 row-start-auto) col-span-9 row-start-1"
     >
       <v-subheader class="px-1">
-        {{ header?.type === 'modrinth' ? 'Modrinth' : 'Curseforge' }}
+        {{ header?.type === 'modrinth' ? 'Modrinth' : header?.type === 'curseforge' ? 'Curseforge' : 'FTB' }}
       </v-subheader>
       <HomeUpstreamHeader
         :value="header"

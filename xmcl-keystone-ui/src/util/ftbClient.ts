@@ -10,7 +10,7 @@ export interface FTBModpacksResult {
 
 export interface GetFTBModpackVersionOptions {
   modpack: number | FTBModpackManifest
-  version: FTBVersion
+  version: Pick<FTBVersion, 'id'>
 }
 
 export interface SearchFTBModpackOptions {

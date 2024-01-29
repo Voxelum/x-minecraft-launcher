@@ -70,7 +70,7 @@ export interface UpstreamHeaderProps {
   description: string
   infos: Highlight[]
   categories: CategoryChipProps[]
-  type: 'curseforge' | 'modrinth'
+  type: 'curseforge' | 'modrinth' | 'ftb'
   store: string
 }
 

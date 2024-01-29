@@ -24,7 +24,10 @@
           </h2>
           <span class="secondary-text"> by {{ value.author }}</span>
           <div class="flex-grow" />
-          <v-icon> {{ value.type === 'curseforge' ? '$vuetify.icons.curseforge' : '$vuetify.icons.modrinth' }} </v-icon>
+          <v-icon>
+            {{ value.type === 'curseforge' ? '$vuetify.icons.curseforge' :
+              value.type === 'ftb' ? '$vuetify.icons.ftb' : '$vuetify.icons.modrinth' }}
+          </v-icon>
         </div>
         {{ value.description }}
         <div class="secondary-text mt-1 flex gap-3 align-baseline">
@@ -89,7 +92,7 @@ defineProps<{
 
 export interface ExploreProject {
   id: string
-  type: 'modrinth' | 'curseforge'
+  type: 'modrinth' | 'curseforge' | 'ftb'
   title: string
   icon_url: string
   description: string

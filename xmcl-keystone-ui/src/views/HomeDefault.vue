@@ -72,6 +72,10 @@
       v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
       :id="instance.upstream.projectId"
     />
+    <HomeUpstreamFeedTheBeast
+      v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
+      :id="instance.upstream.id"
+    />
     <GridLayout
       v-else-if="!hideNews"
       :layout.sync="newsLayout"
@@ -121,6 +125,7 @@ import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
+import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
 
 const { instance, isServer } = injection(kInstance)
 

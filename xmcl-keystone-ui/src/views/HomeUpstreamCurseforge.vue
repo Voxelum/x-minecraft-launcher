@@ -174,7 +174,7 @@ const onDuplicate = async (v: ProjectVersionProps) => {
       })
       newResource = result.resource
     }
-    showAddInstanceDialog(newResource.path)
+    showAddInstanceDialog({ type: 'resource', resource: newResource })
   } finally {
     duplicating.value = false
   }

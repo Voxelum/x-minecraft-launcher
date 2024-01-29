@@ -1,9 +1,17 @@
 import { clientFTB } from '@/util/clients'
-import { CachedFTBModpackVersionManifest, FTBVersion } from '@xmcl/runtime-api'
+import { getFTBTemplateAndFile } from '@/util/ftb'
+import { injection } from '@/util/inject'
+import { generateDistinctName } from '@/util/instanceName'
+import { CachedFTBModpackVersionManifest, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
-import { kSWRVConfig } from './swrvConfig'
 import { useLocalStorageCache } from './cache'
+import { kInstanceFiles } from './instanceFiles'
+import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
+import { kInstances } from './instances'
+import { kJavaContext } from './java'
+import { useService } from './service'
+import { kSWRVConfig } from './swrvConfig'
 
 interface FeedTheBeastProps {
   keyword?: string
@@ -30,41 +38,30 @@ export function useFeedTheBeast(props: FeedTheBeastProps) {
   }
 }
 
-export function useFeedTheBeastProject(id: Ref<number>) {
-  const { data: manifest, error, isValidating: refreshing, mutate } = useSWRV(computed(() => `/ftb/${id.value}`),
-    () => clientFTB.getModpackManifest(id.value), inject(kSWRVConfig))
-
+export function getFeedTheBeastProjectModel(id: Ref<number>) {
   return {
-    manifest,
-    refreshing,
-    error,
+    key: computed(() => `/ftb/${id.value}`),
+    fetcher: () => clientFTB.getModpackManifest(id.value),
   }
 }
 
-export function useFeedTheBeastChangelog(version: Ref<{ id: number; version: FTBVersion }>) {
-  const { data, error, isValidating } = useSWRV(computed(() => `/ftb/${version.value.id}/${version.value.version.id}/changelog`), () => clientFTB.getModpackVersionChangelog({
-    modpack: version.value.id,
-    version: version.value.version,
-  }), inject(kSWRVConfig))
+export function getFeedTheBeastVersionModel(id: Ref<number>, version: Ref<FTBVersion>) {
   return {
-    refreshing: isValidating,
-    changelog: data,
-    error,
-  }
-}
-
-export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref<FTBVersion>) {
-  const { isValidating: refreshing, data: versionManifest, error } = useSWRV(computed(() => `/ftb/${version.value.id}/${version.value.id}`), async () => {
-    return clientFTB.getModpackVersionManifest({
-      modpack: project.value,
+    key: computed(() => `/ftb/${id.value}/${version.value.id}`),
+    fetcher: () => clientFTB.getModpackVersionManifest({
+      modpack: id.value,
       version: version.value,
-    })
-  }, inject(kSWRVConfig))
+    }),
+  }
+}
 
+export function getFeedTheBeastVersionChangelogModel(id: Ref<number>, version: Ref<number>) {
   return {
-    refreshing,
-    error,
-    versionManifest,
+    key: computed(() => `/ftb/${id.value}/${version.value}/changelog`),
+    fetcher: () => clientFTB.getModpackVersionChangelog({
+      modpack: id.value,
+      version: { id: version.value },
+    }),
   }
 }
 
@@ -96,5 +93,52 @@ export function useFeedTheBeastVersionsCache() {
   return {
     cache: ftb,
     dispose,
+  }
+}
+
+export function useFeedTheBeastModpackInstall() {
+  const { cache } = useFeedTheBeastVersionsCache()
+  const { createInstance } = useService(InstanceServiceKey)
+  const { all } = injection(kJavaContext)
+  const { instances, selectedInstance } = injection(kInstances)
+  const { fix } = injection(kInstanceVersionDiagnose)
+  const { currentRoute, push } = useRouter()
+  const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+  const { install, mutate } = injection(kInstanceFiles)
+
+  async function installModpack(versionManifest: FTBModpackVersionManifest, man: FTBModpackManifest) {
+    const cached = {
+      ...versionManifest,
+      iconUrl: man.art.find(a => a.type === 'square')?.url ?? '',
+      projectName: man.name,
+      authors: man.authors,
+    }
+    cache.value.push(cached)
+
+    const [config, files] = getFTBTemplateAndFile(cached, all.value)
+
+    const name = generateDistinctName(config.name, instances.value.map(i => i.name))
+    const path = await createInstance({
+      ...config,
+      name,
+    })
+    selectedInstance.value = path
+    if (currentRoute.path !== '/') {
+      push('/')
+    }
+    await installInstanceFiles({
+      path,
+      files,
+    }).catch(() => {
+      if (selectedInstance.value === path) {
+        return install()
+      }
+    }).finally(() => {
+      mutate()
+    })
+    await fix()
+  }
+  return {
+    installModpack,
   }
 }

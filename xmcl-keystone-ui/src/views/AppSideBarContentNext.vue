@@ -68,7 +68,6 @@ const { t } = useI18n()
 
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
-const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
 const { instances, setToPrevious, isValidating } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
@@ -108,13 +107,6 @@ const items = computed(() => {
       icon: sideBarShowModrinth.value ? 'check' : '',
       onClick() {
         sideBarShowModrinth.value = !sideBarShowModrinth.value
-      },
-    },
-    {
-      text: 'Feed The Beast',
-      icon: sideBarShowFtb.value ? 'check' : '',
-      onClick() {
-        sideBarShowFtb.value = !sideBarShowFtb.value
       },
     },
   ]

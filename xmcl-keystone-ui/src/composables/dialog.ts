@@ -28,7 +28,7 @@ export type DialogModel<T = any> = Ref<{
 }>
 
 export function useDialogModel(): DialogModel {
-  const model = ref({ dialog: '', parameter: undefined })
+  const model = shallowRef({ dialog: '', parameter: undefined })
   const channel = new BroadcastChannel('dialog')
   channel.addEventListener('message', (e) => {
     console.log(e)

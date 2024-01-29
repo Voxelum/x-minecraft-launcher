@@ -70,6 +70,12 @@ export interface CurseforgeUpstream {
   sha1?: string
 }
 
+export interface FTBUpstream {
+  type: 'ftb-modpack'
+  id: number
+  versionId: number
+}
+
 export interface InstanceData {
   /**
    * The display name of the profile. It will also be the modpack display name
@@ -174,10 +180,7 @@ export interface InstanceData {
   playTime?: number
   lastPlayedDate?: number
 
-  upstream?: CurseforgeUpstream | ModrinthUpstream | {
-    type: 'ftb-modpack'
-    id: number
-  }
+  upstream?: CurseforgeUpstream | ModrinthUpstream | FTBUpstream
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
