@@ -46,7 +46,7 @@ export class InstanceFileOperationHandler {
     }
 
     if (file.operation === 'backup-remove') {
-      await rename(destination, destination + '.backup')
+      await rename(destination, destination + '.backup').catch(() => {})
       return
     }
 

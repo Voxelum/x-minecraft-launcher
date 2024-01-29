@@ -10,6 +10,7 @@ import { isNonnull } from '../util/object'
 import { decoareteInstanceFileFromResourceCache, discover } from './InstanceFileDiscover'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { AnyError } from '~/util/error'
+import { join } from 'path'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -53,6 +54,22 @@ export class InstanceManifestService extends AbstractService implements IInstanc
             logger.error(new AnyError('InstanceManifestResolveResourceError', 'Fail to get manifest data for instance file', { cause: e }, file))
           })),
       )
+
+      if (options.hashes) {
+        const hashes = options.hashes
+        await Promise.all(_files.filter(([f]) => {
+          for (const h of hashes) {
+            if (!f.hashes[h]) {
+              return true
+            }
+          }
+          return false
+        }).map(([f]) => Promise.all(hashes.map(async (a) => {
+          if (!f.hashes[a]) {
+            f.hashes[a] = await worker.checksum(join(instancePath, f.path), a)
+          }
+        }))))
+      }
 
       files = _files.map(([file]) => file)
 
