@@ -184,6 +184,10 @@ export interface InstanceData {
   disableAuthlibInjector?: boolean
 
   useLatest?: false | 'release' | 'alpha'
+  /**
+   * By default it's client
+   */
+  side?: 'client' | 'server'
 
   playTime?: number
   lastPlayedDate?: number

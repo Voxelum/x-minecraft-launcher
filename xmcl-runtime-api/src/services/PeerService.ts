@@ -200,6 +200,10 @@ export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
    * @param id The session to drop
    */
   drop(id: string): Promise<void>
+
+  exposePort(port: number, protocol: number): Promise<void>
+  unexposePort(port: number): Promise<void>
+  getExposedPorts(): Promise<number[]>
 }
 
 export const PeerServiceKey: ServiceKey<PeerService> = 'PeerServiceKey'

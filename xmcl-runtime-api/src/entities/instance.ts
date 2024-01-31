@@ -43,6 +43,7 @@ export function createTemplate(): Instance {
     modpackVersion: '',
     fileApi: '',
     tags: [],
+    side: 'client',
 
     assignMemory: false,
     showLog: undefined,

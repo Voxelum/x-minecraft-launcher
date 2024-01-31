@@ -7,12 +7,12 @@ import { useService } from './service'
 
 export const kInstanceVersionDiagnose: InjectionKey<ReturnType<typeof useInstanceVersionDiagnose>> = Symbol('InstanceVersionDiagnose')
 
-export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<RuntimeVersions>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, versions: Ref<LocalVersionHeader[]>) {
+export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<RuntimeVersions>, side: Ref<'client' | 'server'>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, versions: Ref<LocalVersionHeader[]>) {
   const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
   const issueItems = ref([] as LaunchMenuItem[])
   const { t } = useI18n()
   const { install } = useInstanceVersionInstall(versions)
-  const { installAssetsForVersion, installForge, installAssets, installLibraries, installDependencies, installByProfile } = useService(InstallServiceKey)
+  const { installAssetsForVersion, installForge, installAssets, installMinecraft, installLibraries, installDependencies, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
 
   let operation = undefined as undefined | (() => Promise<void>)
@@ -44,9 +44,9 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if ('requirements' in version) {
       const runtime = version.requirements
       operation = async () => {
-        const version = await install(runtime)
+        const version = await install(runtime, side.value)
         if (version) {
-          await installDependencies(version)
+          await installDependencies(version, side.value === 'server')
         }
         await editInstance({
           instancePath: path.value,
@@ -62,15 +62,15 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
 
     const items: LaunchMenuItem[] = []
     const operations: Array<() => Promise<void>> = []
-    const jarIssue = await diagnoseJar(version)
+    const jarIssue = await diagnoseJar(version, side.value)
     if (abortSignal.aborted) { return }
 
     if (jarIssue) {
       const options = { version: jarIssue.version }
       operations.push(async () => {
-        const version = await install(runtime.value)
+        const version = await install(runtime.value, side.value)
         if (version) {
-          await installDependencies(version)
+          await installDependencies(version, side.value === 'server')
         }
       })
       items.push(jarIssue.type === 'corrupted'
@@ -91,6 +91,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         await installForge({
           mcversion: version.minecraftVersion,
           version: runtime.value.forge!,
+          side: side.value,
         })
       })
       items.push(reactive({
@@ -121,42 +122,44 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       }
     }
 
-    const assetIndexIssue = await diagnoseAssetIndex(version)
-    if (abortSignal.aborted) { return }
-
-    if (assetIndexIssue) {
-      operations.push(async () => {
-        await installAssetsForVersion(version.id)
-      })
-      items.push(assetIndexIssue.type === 'corrupted'
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version })),
-          description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version })),
-          description: computed(() => t('diagnosis.missingAssetsIndex.message')),
-        }))
-    }
-
-    if (!assetIndexIssue) {
-      const assetsIssue = await diagnoseAssets(version)
+    if (side.value === 'client') {
+      const assetIndexIssue = await diagnoseAssetIndex(version)
       if (abortSignal.aborted) { return }
-      if (assetsIssue.length > 0) {
-        const options = { named: { count: assetsIssue.length } }
+
+      if (assetIndexIssue) {
         operations.push(async () => {
-          await installAssets(assetsIssue.map(v => v.asset), version.id, assetsIssue.length < 15)
+          await installAssetsForVersion(version.id)
         })
-        items.push(assetsIssue.some(v => v.type === 'corrupted')
+        items.push(assetIndexIssue.type === 'corrupted'
           ? reactive({
-            title: computed(() => t('diagnosis.corruptedAssets.name', 2, options)),
-            description: computed(() => t('diagnosis.corruptedAssets.message')),
+            title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version })),
+            description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
           })
           : reactive({
-            title: computed(() => t('diagnosis.missingAssets.name', 2, options)),
-            description: computed(() => t('diagnosis.missingAssets.message')),
-          }),
-        )
+            title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version })),
+            description: computed(() => t('diagnosis.missingAssetsIndex.message')),
+          }))
+      }
+
+      if (!assetIndexIssue) {
+        const assetsIssue = await diagnoseAssets(version)
+        if (abortSignal.aborted) { return }
+        if (assetsIssue.length > 0) {
+          const options = { named: { count: assetsIssue.length } }
+          operations.push(async () => {
+            await installAssets(assetsIssue.map(v => v.asset), version.id, assetsIssue.length < 15)
+          })
+          items.push(assetsIssue.some(v => v.type === 'corrupted')
+            ? reactive({
+              title: computed(() => t('diagnosis.corruptedAssets.name', 2, options)),
+              description: computed(() => t('diagnosis.corruptedAssets.message')),
+            })
+            : reactive({
+              title: computed(() => t('diagnosis.missingAssets.name', 2, options)),
+              description: computed(() => t('diagnosis.missingAssets.message')),
+            }),
+          )
+        }
       }
     }
 

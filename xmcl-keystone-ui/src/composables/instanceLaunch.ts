@@ -145,6 +145,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       mcOptions,
       yggdrasilAgent,
       server: inst.server ?? undefined,
+      side: inst.side,
     }
     return options
   }

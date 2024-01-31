@@ -24,6 +24,7 @@ import { PeerSession } from './connection'
 import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
+import { ExposeServerHandler } from './ExposeServerHandler'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -40,6 +41,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private iceServers: IceServer[] = []
 
   private portCandidate = 35565
+  private exposePortHandler: ExposeServerHandler
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) private imageStorage: ImageStorage,
@@ -69,6 +71,20 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       // }, (e) => {
       //   this.warn('Fail to init nat', e)
       // })
+    })
+
+    this.exposePortHandler = new ExposeServerHandler((infos) => {
+      const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
+      for (const conn of peers) {
+        if (conn.isOnSameLan()) {
+          return
+        }
+      }
+      for (const conn of peers) {
+        for (const info of infos) {
+          conn.send(MessageLan, info)
+        }
+      }
     })
 
     app.registryDisposer(async () => {
@@ -498,5 +514,17 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     for (const sess of Object.values(this.peers)) {
       sess.send(MessageShareManifest, { manifest: options.manifest })
     }
+  }
+
+  async exposePort(port: number, protocol: number): Promise<void> {
+    this.exposePortHandler.expose(port, protocol)
+  }
+
+  async unexposePort(port: number): Promise<void> {
+    this.exposePortHandler.unexpose(port)
+  }
+
+  async getExposedPorts(): Promise<number[]> {
+    return this.exposePortHandler.ports
   }
 }

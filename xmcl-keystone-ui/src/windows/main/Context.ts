@@ -82,7 +82,7 @@ export default defineComponent({
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
-    const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
+    const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instance.side, instanceVersion.resolvedVersion, localVersions.versions)
     const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)

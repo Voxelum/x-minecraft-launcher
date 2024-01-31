@@ -208,21 +208,22 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       if (!flights.disableMinecraftRunLog) {
         service.registerMiddleware({
           name: 'minecraft-run-telemetry',
-          async onBeforeLaunch(_, { gamePath }, ctx) {
-            const state = stateManager.get<InstanceModsState>(getInstanceModStateKey(gamePath))
+          async onBeforeLaunch(_, version, options, ctx) {
+            const path = 'path' in options ? options.path : options.gamePath
+            const state = stateManager.get<InstanceModsState>(getInstanceModStateKey(path))
             const mods = state?.mods.map(m => {
               const payload = getPayload(m.hash, m.metadata, m.name, m.domain)
               delete payload.name
               delete payload.domain
               return payload
             })
-            const runtime = instanceService?.state.all[gamePath]?.runtime
+            const runtime = instanceService?.state.all[path]?.runtime
             if (mods) {
               ctx.mods = mods
               ctx.runtime = runtime
             }
           },
-          async onAfterLaunch(result, opts, ctx) {
+          async onAfterLaunch(result, version, opts, ctx) {
             if (result.code !== 0) {
               return
             }

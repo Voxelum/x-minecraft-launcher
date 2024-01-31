@@ -180,6 +180,14 @@
                 "release"
             ]
         },
+        "side": {
+            "description": "By default it's client",
+            "enum": [
+                "client",
+                "server"
+            ],
+            "type": "string"
+        },
         "playTime": {
             "type": "number"
         },

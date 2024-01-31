@@ -48,6 +48,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     tags: [],
     assignMemory: false,
     fastLaunch: false,
+    side: 'client',
   })
   const files: Ref<InstanceFile[]> = ref([])
   const loading = ref(false)
@@ -99,6 +100,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.url = ''
     data.icon = ''
     data.server = null
+    data.side = 'client'
     data.modpackVersion = ''
     data.description = ''
     error.value = null

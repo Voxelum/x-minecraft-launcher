@@ -22,6 +22,13 @@ export class ObjectFactory {
     return this.signals.has(Type)
   }
 
+  getIfPresent<T>(Type: Constructor<T> | InjectionKey<T>): Promise<T | undefined> {
+    if (this.signals.has(Type)) {
+      return this.signals.get(Type)!.promise
+    }
+    return Promise.resolve(undefined)
+  }
+
   /**
    * Get the type or key registered object. This won't trigger the creation of the object.
    */

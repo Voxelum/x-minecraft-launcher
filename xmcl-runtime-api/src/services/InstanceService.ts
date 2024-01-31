@@ -135,6 +135,7 @@ export class InstanceState {
     inst.lastPlayedDate = settings.lastPlayedDate ?? inst.lastPlayedDate
     inst.lastAccessDate = settings.lastAccessDate ?? inst.lastAccessDate
     inst.icon = settings.icon ?? inst.icon
+    inst.side = settings.side ?? inst.side
 
     if ('showLog' in settings) {
       inst.showLog = settings.showLog
