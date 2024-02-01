@@ -177,6 +177,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     } catch (e) {
       console.error(e)
       error.value = e as any
+      throw e
     } finally {
       launchingStatus.value = ''
     }
