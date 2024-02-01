@@ -1,4 +1,5 @@
 import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
+import { AnyError } from '~/util/error'
 
 /**
  * The helper class to hold type to object map
@@ -61,7 +62,7 @@ export class ObjectFactory {
           if (type) {
             params[i] = await this.getOrCreate(type)
           } else {
-            throw new Error(`Cannot create ${type.name} because ${type.name} is not registered`)
+            throw new AnyError('ObjectRegistryError', `Fail to get [${i}] param type for ${typeof Type === 'symbol' ? Type.toString() : (Type as Function).name} since it's not registered`)
           }
         }
       }
