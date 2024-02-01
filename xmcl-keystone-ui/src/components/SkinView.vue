@@ -8,7 +8,6 @@
 
 <script lang=ts setup>
 import { IdleAnimation, SkinViewer, WalkingAnimation, RunningAnimation } from 'skinview3d'
-import steveSkin from '@/assets/steve_skin.png'
 
 const props = withDefaults(defineProps<{
   width?: number
@@ -25,7 +24,7 @@ const props = withDefaults(defineProps<{
   slim: undefined,
   cape: undefined,
   name: 'Steve',
-  skin: steveSkin,
+  skin: '',
   animation: 'idle',
 })
 
@@ -51,10 +50,24 @@ onUnmounted(() => {
 
 const emit = defineEmits(['model', 'dragover', 'drop'])
 
-let lastLoad = Promise.resolve()
 let lastCapeLoad = Promise.resolve()
 
 let viewer: SkinViewer
+
+let lastLoad = Promise.resolve()
+async function loadSkin() {
+  const url = props.skin
+  if (url) {
+    console.log('loadSkin', url, props.skin)
+    try {
+      await lastLoad
+    } finally {
+      lastLoad = viewer.loadSkin(url, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
+        emit('model', viewer.playerObject.skin.modelType)
+      })
+    }
+  }
+}
 
 onMounted(() => {
   viewer = new SkinViewer({
@@ -68,9 +81,7 @@ onMounted(() => {
 
   viewer.animation = animationObject.value
 
-  lastLoad = viewer.loadSkin(props.skin || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
-    emit('model', viewer.playerObject.skin.modelType)
-  })
+  loadSkin()
   if (props.cape) {
     lastCapeLoad = viewer.loadCape(props.cape)
   }
@@ -80,13 +91,8 @@ watch(animationObject, (v) => {
   viewer.animation = v
 })
 
-watch(() => props.skin, (v) => {
-  lastLoad = lastLoad.finally(() => {
-    return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
-      emit('model', viewer.playerObject.skin.modelType)
-    })
-  })
-})
+watch(() => props.skin, loadSkin)
+watch(() => props.slim, loadSkin)
 
 watch(() => props.cape, (v) => {
   if (v) {
@@ -94,12 +100,6 @@ watch(() => props.cape, (v) => {
   } else {
     viewer.resetCape()
   }
-})
-
-watch(() => props.slim, (v) => {
-  viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).finally(() => {
-    emit('model', viewer.playerObject.skin.modelType)
-  })
 })
 
 watch(() => props.name, (v) => {

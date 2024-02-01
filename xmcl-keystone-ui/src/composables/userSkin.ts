@@ -1,6 +1,7 @@
 import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 'vue'
 import { GameProfileAndTexture, UserServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import steveSkin from '@/assets/steve_skin.png'
 
 export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   const name = ref(gameProfile.value.name)
@@ -35,10 +36,10 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
     const prof = gameProfile.value
     if (!prof) return
     data.cape = currentCape.value
-    data.skin = prof.textures.SKIN.url
+    data.skin = prof.textures.SKIN.url || steveSkin
     data.slim = prof.textures.SKIN.metadata ? prof.textures.SKIN.metadata.model === 'slim' : false
   }
-  const skinModified = computed(() => data.skin !== currentSkin.value || data.slim !== currentSlim.value)
+  const skinModified = computed(() => (data.skin !== currentSkin.value && currentSkin.value && data.skin !== steveSkin) || data.slim !== currentSlim.value)
   const capeModified = computed(() => data.cape !== currentCape.value)
   const modified = computed(() => skinModified.value || capeModified.value)
 
