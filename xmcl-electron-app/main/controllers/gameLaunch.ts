@@ -17,7 +17,7 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
           }
         }
       }).on('minecraft-start', ({ showLog }) => {
-        if (this.loggerWin === undefined && showLog) {
+        if (!this.getLoggerWindow() && showLog) {
           this.createMonitorWindow()
         }
       }).on('minecraft-exit', (status) => {
@@ -27,9 +27,10 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
           }
         }
         this.app.controller.broadcast('minecraft-exit', status)
-        if (this.loggerWin) {
+        const loggerWin = this.getLoggerWindow()
+        if (loggerWin) {
           if (service.getProcesses().length === 0) {
-            this.loggerWin.close()
+            loggerWin.close()
             this.loggerWin = undefined
           }
         }

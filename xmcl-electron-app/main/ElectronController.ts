@@ -427,6 +427,13 @@ export class ElectronController implements LauncherAppController {
     this.app.emit('app-booted', man)
   }
 
+  getLoggerWindow() {
+    if (this.loggerWin?.isDestroyed()) {
+      this.loggerWin = undefined
+    }
+    return this.loggerWin
+  }
+
   createMonitorWindow() {
     const browser = new BrowserWindow({
       title: 'KeyStone Monitor',
