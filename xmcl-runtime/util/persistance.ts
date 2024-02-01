@@ -1,6 +1,6 @@
 import { Schema } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'atomically'
-import { copyFile, ensureFile } from 'fs-extra'
+import { copyFile, ensureFile, writeFile as writeFileOriginal } from 'fs-extra'
 import { Logger } from '~/logger'
 import { missing } from './fs'
 import { SafeJsonSerializer } from './serialize'
@@ -22,7 +22,12 @@ export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logge
   return {
     async write(data: T) {
       await ensureFile(path)
-      await writeFile(path, await serializer.serialize(data))
+      const b = await serializer.serialize(data)
+      try {
+        await writeFile(path, b)
+      } catch (e) {
+        await writeFileOriginal(path, b)
+      }
     },
     async read(): Promise<T> {
       let isMissing = await missing(path)
