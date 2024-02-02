@@ -1154,6 +1154,8 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
   layoutTitle: Макет
+  linuxEnableDedicatedGPUOptimization: Призначити виділений графічний процесор
+  linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
   linuxTitlebar: Рідний рядок заголовка
   linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
   location: Розташування сховища
@@ -1167,6 +1169,7 @@ setting:
      загалом. 0 означає відсутність обмежень.
   maxSocketsTitle: Максимальна кількість HTTP-сокетів
   name: Глобальне налаштування | Глобальні налаштування
+  network: Мережеві налаштування
   officialWebsite: Офіційний сайт
   particleMode:
     bubble: Бульбашки

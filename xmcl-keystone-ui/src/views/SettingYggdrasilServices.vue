@@ -1,22 +1,19 @@
 <template>
   <div>
-    <v-subheader>
-      {{ t('userService.title') }}
+    <SettingHeader>
+      <div class="flex">
+        🔑 {{ t('userService.title') }}
 
-      <v-spacer />
-      <v-tooltip left>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            @click="addNew"
-            v-on="on"
-          >
-            <v-icon>add</v-icon>
-          </v-btn>
-        </template>
-        {{ t("userService.add") }}
-      </v-tooltip>
-    </v-subheader>
+        <v-spacer />
+        <v-btn
+          v-shared-tooltip.left="_ => t('userService.add')"
+          icon
+          @click="addNew"
+        >
+          <v-icon>add</v-icon>
+        </v-btn>
+      </div>
+    </SettingHeader>
     <v-list
       color="transparent"
       hover
@@ -60,8 +57,10 @@
   </div>
 </template>
 <script setup lang="ts">
+import SettingHeader from '@/components/SettingHeader.vue'
 import { useService } from '@/composables'
 import { kYggdrasilServices } from '@/composables/yggrasil'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { YggdrasilApi, YggdrasilServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'

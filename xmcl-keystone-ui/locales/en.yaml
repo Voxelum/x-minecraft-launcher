@@ -1146,6 +1146,8 @@ setting:
     focus: Focus Layout
   layoutDescription: The launcher layout reprensenting different UI logic
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Assign Dedicated GPU
+  linuxEnableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
@@ -1158,6 +1160,7 @@ setting:
     total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
   name: Global Setting | Global Settings
+  network: Network Settings
   officialWebsite: Official Website
   particleMode:
     bubble: Bubble

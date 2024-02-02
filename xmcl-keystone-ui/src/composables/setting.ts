@@ -5,7 +5,6 @@ import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCacheBool } from './cache'
 import { useState } from './syncableState'
 import { useEnvironment } from './environment'
-import useSWRV from 'swrv'
 
 export function useUpdateSettings() {
   const { checkUpdate } = useService(BaseServiceKey)
@@ -117,18 +116,10 @@ export function useSettings() {
     get: () => locales.value.find(l => l.locale === state.value?.locale)?.locale || 'en',
     set: v => state.value?.localeSet(v),
   })
-  // const allowPrerelease = computed({
-  //   get: () => state.allowPrerelease,
-  //   set: v => state.allowPrereleaseSet(v),
-  // })
-  // const autoInstallOnAppQuit = computed({
-  //   get: () => state.autoInstallOnAppQuit,
-  //   set: v => state.autoInstallOnAppQuitSet(v),
-  // })
-  // const autoDownload = computed({
-  //   get: () => state.autoDownload,
-  //   set: v => state.autoDownloadSet(v),
-  // })
+  const linuxEnableDedicatedGPUOptimization = computed({
+    get: () => state.value?.linuxEnableDedicatedGPUOptimization ?? false,
+    set: v => state.value?.linuxEnableDedicatedGPUOptimizationSet(v),
+  })
   const apiSetsPreference = computed({
     get: () => state.value?.apiSetsPreference ?? '',
     set: v => state.value?.apiSetsPreferenceSet(v),
@@ -184,6 +175,7 @@ export function useSettings() {
   })
 
   return {
+    linuxEnableDedicatedGPUOptimization,
     developerMode,
     httpProxyEnabled,
     enableDiscord,

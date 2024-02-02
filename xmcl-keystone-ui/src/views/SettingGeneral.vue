@@ -1,35 +1,14 @@
 <template>
-  <v-list
-    three-line
-    subheader
-    style="background: transparent; width: 100%"
-  >
-    <v-subheader class>
-      {{ t("setting.general") }}
-    </v-subheader>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.language")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.languageDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="selectedLocale"
-          filled
-          style="max-width: 185px"
-          hide-details
-          :items="locales"
-        />
-      </v-list-item-action>
-    </v-list-item>
+  <div>
+    <SettingHeader>
+      ⚙️ {{ t("setting.general") }}
+    </SettingHeader>
+    <SettingItemSelect
+      :select.sync="selectedLocale"
+      :title="t('setting.language')"
+      :description="t('setting.languageDescription')"
+      :items="locales"
+    />
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -59,86 +38,55 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item @click="disableTelemetry = !disableTelemetry">
-      <v-list-item-action class="self-center">
-        <v-checkbox
-          v-model="disableTelemetry"
-          @click.stop
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t('setting.disableTelemetry') }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t('setting.disableTelemetryDescription') }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item @click="hideNews = !hideNews">
-      <v-list-item-action class="self-center">
-        <v-checkbox
-          v-model="hideNews"
-          @click.stop
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t('setting.hideNews') }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t('setting.hideNewsDescription') }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item @click="enableDiscord = !enableDiscord">
-      <v-list-item-action class="self-center">
-        <v-checkbox
-          v-model="enableDiscord"
-          @click.stop
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t('setting.enableDiscord') }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t('setting.enableDiscordDescription') }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.useBmclAPI")
-          }}
-          <a
-            class="primary ml-1 underline"
-            target="browser"
-            href="https://bmclapidoc.bangbang93.com/"
-          >
-            <v-icon small>
-              question_mark
-            </v-icon>
-          </a>
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.useBmclAPIDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="apiSetsPreference"
-          filled
-          style="max-width: 185px"
-          hide-details
-          :items="apiSetItems"
-        />
-      </v-list-item-action>
-    </v-list-item>
+    <SettingItemCheckbox
+      v-model="disableTelemetry"
+      :title="t('setting.disableTelemetry')"
+      :description="t('setting.disableTelemetryDescription')"
+    />
+    <SettingItemCheckbox
+      v-model="hideNews"
+      :title="t('setting.hideNews')"
+      :description="t('setting.hideNewsDescription')"
+    />
+    <SettingItemCheckbox
+      v-if="env?.os === 'linux'"
+      v-model="linuxEnableDedicatedGPUOptimization"
+      :title="t('setting.linuxEnableDedicatedGPUOptimization')"
+      :description="t('setting.linuxEnableDedicatedGPUOptimizationDescription')"
+    />
+    <SettingItemCheckbox
+      v-model="enableDiscord"
+      :title="t('setting.enableDiscord')"
+      :description="t('setting.enableDiscordDescription')"
+    />
+    <SettingItemCheckbox
+      v-model="developerMode"
+      :title="t('setting.developerMode')"
+      :description="t('setting.developerModeDescription')"
+    />
+
+    <SettingHeader>
+      🌐 {{ t('setting.network') }}
+    </SettingHeader>
+    <SettingItemSelect
+      :select.sync="apiSetsPreference"
+      :title="''"
+      :description="t('setting.useBmclAPIDescription')"
+      :items="apiSetItems"
+    >
+      <template #title>
+        {{ t('setting.useBmclAPI') }}
+        <a
+          class="primary ml-1 underline"
+          target="browser"
+          href="https://bmclapidoc.bangbang93.com/"
+        >
+          <v-icon small>
+            question_mark
+          </v-icon>
+        </a>
+      </template>
+    </SettingItemSelect>
     <v-list-item>
       <v-list-item-action class="self-center">
         <v-checkbox v-model="httpProxyEnabled" />
@@ -201,34 +149,17 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item @click="developerMode = !developerMode">
-      <v-list-item-action class="self-center">
-        <v-checkbox
-          v-model="developerMode"
-          @click.stop
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.developerMode")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.developerModeDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-  </v-list>
+  </div>
 </template>
 <script lang="ts" setup>
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
-import { useService } from '@/composables'
+import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import SettingHeader from '@/components/SettingHeader.vue'
+import { useEnvironment } from '@/composables/environment'
 
+const env = useEnvironment()
 const {
   proxy, httpProxyEnabled, apiSets,
   developerMode,
@@ -239,6 +170,7 @@ const {
   hideNews,
   enableDiscord,
   locales: rawLocales,
+  linuxEnableDedicatedGPUOptimization,
 } = useSettings()
 const { t } = useI18n()
 const apiSetItems = computed(() =>

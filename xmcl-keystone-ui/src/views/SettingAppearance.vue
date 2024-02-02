@@ -1,77 +1,24 @@
 <template>
-  <v-list
-    three-line
-    subheader
-    style="background: transparent"
-    class="flex-grow"
-  >
-    <v-subheader>{{ t("setting.appearance") }}</v-subheader>
-    <v-list-item class="items-center justify-center">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.layoutTitle")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.layoutDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="layout"
-          filled
-          style="max-width: 185px"
-          hide-details
-          :items="layouts"
-        />
-      </v-list-item-action>
-    </v-list-item>
-    <v-list-item @click="linuxTitlebar = !linuxTitlebar">
-      <v-list-item-action
-        class="self-center"
-      >
-        <v-checkbox v-model="linuxTitlebar" />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.linuxTitlebar")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.linuxTitlebarDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-
-    <v-list-item class="items-center justify-center">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.darkTheme")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.darkThemeDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="theme"
-          filled
-          style="max-width: 185px"
-          hide-details
-          :items="themes"
-        />
-      </v-list-item-action>
-    </v-list-item>
+  <div>
+    <SettingHeader>🎨 {{ t("setting.appearance") }}</SettingHeader>
+    <SettingItemSelect
+      :select.sync="layout"
+      :title="t('setting.layoutTitle')"
+      :description="t('setting.layoutDescription')"
+      :items="layouts"
+    />
+    <SettingItemCheckbox
+      v-if="env?.os === 'linux'"
+      v-model="linuxTitlebar"
+      :title="t('setting.linuxTitlebar')"
+      :description="t('setting.linuxTitlebarDescription')"
+    />
+    <SettingItemSelect
+      :select.sync="theme"
+      :title="t('setting.darkTheme')"
+      :description="t('setting.darkThemeDescription')"
+      :items="themes"
+    />
     <v-list-item class="items-center justify-center">
       <v-list-item-action class="self-center">
         <v-tooltip
@@ -172,82 +119,19 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <!-- <v-list-item>
-      <v-list-item-action class="self-center">
-        <v-checkbox v-model="blurMainBody" />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.blurMainBody")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.blurMainBodyDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item> -->
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.backgroundType")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.backgroundTypeDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="backgroundType"
-          filled
-          :items="backgroundTypes"
-        />
-      </v-list-item-action>
-    </v-list-item>
-    <!-- <v-list-item v-if="backgroundType === 'halo'">
-          <v-list-item-content>
-            <v-list-item-title>
-              {{
-                t("setting.particleMode")
-              }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              {{
-                t("setting.particleModeDescription")
-              }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-select v-model="particleMode" :items="particleModes" />
-          </v-list-item-action>
-        </v-list-item>-->
-    <v-list-item v-if="backgroundType === 'particle'">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.particleMode.name")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.particleModeDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-select
-          v-model="particleMode"
-          filled
-          :items="particleModes"
-        />
-      </v-list-item-action>
-    </v-list-item>
+    <SettingItemSelect
+      :select.sync="backgroundType"
+      :title="t('setting.backgroundType')"
+      :description="t('setting.backgroundTypeDescription')"
+      :items="backgroundTypes"
+    />
+    <SettingItemSelect
+      v-if="backgroundType === 'particle'"
+      :select.sync="particleMode"
+      :title="t('setting.particleMode.name')"
+      :description="t('setting.particleModeDescription')"
+      :items="particleModes"
+    />
     <v-list-item v-if="backgroundType === 'image'">
       <v-list-item-content>
         <v-list-item-title>
@@ -381,11 +265,6 @@
             t("setting.blurSidebar")
           }}
         </v-list-item-title>
-        <!-- <v-list-item-subtitle>
-          {{
-            t("setting.blurSidebarDescription")
-          }}
-        </v-list-item-subtitle> -->
       </v-list-item-content>
       <v-slider
         v-model="blurSidebar"
@@ -403,11 +282,6 @@
             t("setting.blurAppBar")
           }}
         </v-list-item-title>
-        <!-- <v-list-item-subtitle>
-          {{
-            t("setting.blurAppBarDescription")
-          }}
-        </v-list-item-subtitle> -->
       </v-list-item-content>
       <v-slider
         v-model="blurAppBar"
@@ -418,7 +292,7 @@
         :always-dirty="true"
       />
     </v-list-item>
-  </v-list>
+  </div>
 </template>
 <script lang="ts" setup>
 import { kSettingsState } from '@/composables/setting'
@@ -427,6 +301,10 @@ import { injection } from '@/util/inject'
 import { BackgroundType, kBackground, useBackground, useBarBlur } from '../composables/background'
 import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
+import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import SettingHeader from '@/components/SettingHeader.vue'
+import { useEnvironment } from '@/composables/environment'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
@@ -434,6 +312,7 @@ const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType,
 const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
 const { state } = injection(kSettingsState)
+const env = useEnvironment()
 
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,

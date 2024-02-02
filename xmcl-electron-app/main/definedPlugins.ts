@@ -34,6 +34,7 @@ import { pluginUncaughtError } from '@xmcl/runtime/uncaughtError/pluginUncaughtE
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 import { pluginSetupWorker } from './pluginSetupWorker'
+import { pluginNvdiaGPULinux } from './pluginNvdiaGPULinux'
 
 export const definedPlugins: LauncherAppPlugin[] = [
   pluginAutoUpdate,
@@ -44,6 +45,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginEncodingWorker,
   pluginSetupWorker,
   pluginLaunchPrecheck,
+  pluginNvdiaGPULinux,
   pluginUncaughtError,
 
   pluginMediaProtocol,

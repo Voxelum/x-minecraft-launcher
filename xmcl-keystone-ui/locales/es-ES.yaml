@@ -875,6 +875,8 @@ setting:
     El diseño del lanzador representa una lógica de interfaz de usuario
     diferente
   layoutTitle: Diseño
+  linuxEnableDedicatedGPUOptimization: Asignar GPU dedicada
+  linuxEnableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento
@@ -887,6 +889,7 @@ setting:
     los anfitriones. 0 significa sin límite.
   maxSocketsTitle: Máximo de Conexiones HTTP
   name: Configuración Global | Configuraciones Globales
+  network: Configuración de la red
   officialWebsite: Sitio Web Oficial
   particleMode:
     bubble: Burbuja

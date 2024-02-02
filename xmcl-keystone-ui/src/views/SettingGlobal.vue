@@ -1,75 +1,28 @@
 <template>
-  <v-list
-    two-line
-    subheader
-    style="background: transparent; width: 100%"
-  >
-    <v-subheader style="padding-right: 2px">
+  <div>
+    <SettingHeader>
       <div class="flex flex-col">
-        {{ t('setting.globalSetting') }}
+        🌍 {{ t('setting.globalSetting') }}
 
-        <span class="text-xs italic">
+        <v-subheader class="my-0 h-[unset] px-0">
           {{ t('setting.globalSettingHint') }}
-        </span>
+        </v-subheader>
       </div>
-    </v-subheader>
-    <v-list-item
-      @click="fastLaunch = !fastLaunch"
-    >
-      <v-list-item-action>
-        <v-checkbox
-          v-model="fastLaunch"
-          hide-details
-          @click="fastLaunch = !fastLaunch"
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instanceSetting.fastLaunch") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("instanceSetting.fastLaunchHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-
-    <v-list-item
-      @click="hideLauncher = !hideLauncher"
-    >
-      <v-list-item-action>
-        <v-checkbox
-          v-model="hideLauncher"
-          hide-details
-          @click="hideLauncher = !hideLauncher"
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("instanceSetting.hideLauncher")
-          }}
-        </v-list-item-title>
-      </v-list-item-content>
-    </v-list-item>
-    <v-list-item
-      @click="showLog = !showLog"
-    >
-      <v-list-item-action>
-        <v-checkbox
-          v-model="showLog"
-          hide-details
-          @click="showLog = !showLog"
-        />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instanceSetting.showLog") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("instanceSetting.showLogHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
+    </SettingHeader>
+    <SettingItemCheckbox
+      v-model="fastLaunch"
+      :title="t('instanceSetting.fastLaunch')"
+      :description="t('instanceSetting.fastLaunchHint')"
+    />
+    <SettingItemCheckbox
+      v-model="hideLauncher"
+      :title="t('instanceSetting.hideLauncher')"
+    />
+    <SettingItemCheckbox
+      v-model="showLog"
+      :title="t('instanceSetting.showLog')"
+      :description="t('instanceSetting.showLogHint')"
+    />
 
     <v-list-item>
       <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
@@ -121,13 +74,15 @@
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
-  </v-list>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useGlobalSettings } from '@/composables/setting'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import SettingHeader from '@/components/SettingHeader.vue'
 
 const { t } = useI18n()
 const {

@@ -1,6 +1,8 @@
 <template>
-  <div
-    class="visible-scroll h-full overflow-auto p-4 xl:px-20 2xl:px-40"
+  <v-list
+    two-line
+    subheader
+    class="visible-scroll h-full w-full overflow-auto bg-transparent p-4 xl:px-20 2xl:px-40"
   >
     <SettingGeneral />
     <SettingYggdrasilServices />
@@ -9,7 +11,7 @@
     <SettingAppearance />
     <SettingUpdateInfoDialog />
     <SettingMigrationDialog />
-  </div>
+  </v-list>
 </template>
 
 <script lang=ts setup>

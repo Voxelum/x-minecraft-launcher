@@ -1226,6 +1226,8 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
+  linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess eine dedizierte GPU zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort
@@ -1239,6 +1241,7 @@ setting:
      insgesamt. 0 bedeutet keine Einschränkungen.
   maxSocketsTitle: Maximale Anzahl von HTTP-Sockets
   name: Globale Einstellungen | Globale Einstellungen
+  network: Netzwerkeinstellungen
   officialWebsite: Офіційний сайт
   particleMode:
     bubble: Blasen

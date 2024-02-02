@@ -4,21 +4,14 @@
     top
   >
     <template #activator="{ on, attrs }">
-      <v-tooltip
-        top
+      <div
+        v-shared-tooltip="_ => text"
+        class="color-button min-w-5 max-w-5 dark:border-light-50 rounded-full border-2 p-5 transition-all"
+        v-bind="attrs"
+        :style="shadowColor"
+        @click="on.click($event)"
         v-on="on"
-      >
-        <template #activator="{ on: onTooltip }">
-          <div
-            class="color-button min-w-5 max-w-5 dark:border-light-50 rounded-full border-2 p-5 transition-all"
-            v-bind="attrs"
-            :style="shadowColor"
-            @click="on.click($event)"
-            v-on="onTooltip"
-          />
-        </template>
-        {{ text }}
-      </v-tooltip>
+      />
     </template>
     <v-color-picker
       :value="value"
@@ -31,6 +24,7 @@
 </template>
 <script lang="ts" setup>
 import { useTheme } from '@/composables'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   value: string

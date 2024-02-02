@@ -144,6 +144,10 @@
         "linuxTitlebar": {
             "default": false,
             "type": "boolean"
+        },
+        "linuxEnableDedicatedGPUOptimization": {
+            "default": true,
+            "type": "boolean"
         }
     },
     "required": [
@@ -166,6 +170,7 @@
         "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
+        "linuxEnableDedicatedGPUOptimization",
         "linuxTitlebar",
         "locale",
         "maxSockets",

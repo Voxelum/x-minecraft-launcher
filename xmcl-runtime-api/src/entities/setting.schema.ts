@@ -117,4 +117,8 @@ export interface SettingSchema {
    * @default false
    */
   linuxTitlebar: boolean
+  /**
+   * @default true
+   */
+  linuxEnableDedicatedGPUOptimization: boolean
 }

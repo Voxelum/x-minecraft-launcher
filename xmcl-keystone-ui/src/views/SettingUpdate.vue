@@ -1,13 +1,8 @@
 <template>
-  <v-list
-    three-line
-    subheader
-    style="background: transparent"
-    class="flex-grow"
-  >
-    <v-subheader v-if="!disableUpdate">
-      {{ t("setting.update") }}
-    </v-subheader>
+  <div>
+    <SettingHeader v-if="!disableUpdate">
+      🚀 {{ t("setting.update") }}
+    </SettingHeader>
     <v-list-item v-if="!disableUpdate">
       <v-list-item-action class="self-center">
         <v-btn
@@ -80,7 +75,7 @@
               <v-list-item-subtitle>{{ t('setting.allowPrereleaseDescription') }}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>-->
-  </v-list>
+  </div>
 </template>
 <script lang="ts" setup>
 import { useServiceBusy } from '@/composables'
@@ -88,6 +83,7 @@ import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useUpdateSettings } from '../composables/setting'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import SettingHeader from '@/components/SettingHeader.vue'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'

@@ -1186,6 +1186,8 @@ setting:
     La disposition du launcher représentant différentes logiques d'interface
     utilisateur
   layoutTitle: Mise en page
+  linuxEnableDedicatedGPUOptimization: Attribuer un GPU dédié
+  linuxEnableDedicatedGPUOptimizationDescription: Cette option attribuera un GPU dédié au processus Minecraft.
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin
@@ -1198,6 +1200,7 @@ setting:
   name: |-
     Paramètre global | 
     Paramètres globaux
+  network: Paramètres réseau
   officialWebsite: Site officiel
   particleMode:
     bubble: Bulles

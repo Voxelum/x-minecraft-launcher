@@ -234,6 +234,8 @@ launchBlocked:
 mod:
   searchOnCurseforge: Busca {name} en curseforge
 setting:
+  linuxEnableDedicatedGPUOptimization: Asignar GPU dedicada
+  linuxEnableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
     Volve descargar o iniciador do sitio web!
