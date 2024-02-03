@@ -1,5 +1,5 @@
 import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { MicrosoftAuthenticator, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError } from '@xmcl/user'
+import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError } from '@xmcl/user'
 import { Logger } from '~/logger'
 import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
@@ -66,13 +66,15 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       userProfile.invalidated = true
       return userProfile
     }
+
+    let newProfile: MicrosoftMinecraftProfile | undefined
     if (typeof options.cape !== 'undefined') {
       if (options.cape === '') {
         await this.mojangClient.hideCape(token, signal)
       } else {
         const target = gameProfile.capes?.find(c => c.url === options.cape)
         if (target) {
-          await this.mojangClient.showCape(target.id, token, signal)
+          newProfile = await this.mojangClient.showCape(target.id, token, signal)
         } else {
           throw new Error(`Cannot upload new cape for Microsoft account: ${gameProfile.name}(${userProfile.username})`)
         }
@@ -82,32 +84,36 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       if (options.skin === null) {
         await this.mojangClient.resetSkin(token, signal)
       } else {
-        const profile = await this.mojangClient.setSkin(
+        newProfile = await this.mojangClient.setSkin(
           `${gameProfile.name}.png`,
           await normalizeSkinData(options.skin?.url),
           options.skin?.slim ? 'slim' : 'classic',
           token,
           signal,
-        )
-        // @ts-ignore
-        userProfile.profiles[gameProfile.id] = {
-          ...gameProfile,
-          ...profile,
-          uploadable: ['skin', 'cape'],
-          textures: {
-            SKIN: {
-              url: profile.skins[0].url,
-              metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
-            },
-            CAPE: profile.capes.length > 0
-              ? {
-                url: profile.capes[0].url,
-              }
-              : undefined,
-          },
-        }
+        ) as any
       }
     }
+
+    if (newProfile) {
+      // @ts-ignore
+      userProfile.profiles[gameProfile.id] = {
+        ...gameProfile,
+        ...newProfile,
+        uploadable: ['skin', 'cape'],
+        textures: {
+          SKIN: {
+            url: newProfile.skins[0].url,
+            metadata: { model: newProfile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+          },
+          CAPE: newProfile.capes.length > 0
+            ? {
+              url: newProfile.capes[0].url,
+            }
+            : undefined,
+        },
+      }
+    }
+
     return userProfile
   }
 
@@ -158,7 +164,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             error: (e as any).error,
             errorMessage: e.errorMessage,
             developerMessage: e.developerMessage,
-           }, 'Failed to get Microsoft account game profile', { cause: e })
+          }, 'Failed to get Microsoft account game profile', { cause: e })
         }
         throw new UserException({
           type: 'fetchMinecraftProfileFailed',
@@ -166,7 +172,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
           error: 'Unknown',
           errorMessage: '',
           developerMessage: '',
-         }, 'Failed to get Microsoft account game profile', { cause: e })
+        }, 'Failed to get Microsoft account game profile', { cause: e })
       })
       this.logger.log('Successfully get game profile')
       const skin: Skin | undefined = gameProfileResponse.skins?.[0]

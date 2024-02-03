@@ -115,10 +115,14 @@ export function normalizeGameProfile(profile: GameProfile): GameProfileAndTextur
 
 export async function normalizeSkinData(url: string) {
   url = url.replace('image:', 'file:')
-  const { protocol } = new URL(url)
-  if (protocol === 'file:' || protocol === 'image:') {
+  const resolved = new URL(url)
+  if (resolved.protocol === 'file:' || resolved.protocol === 'image:') {
     return await readFile(url.replace('file://', '').replace('image://', ''))
-  } else if (protocol === 'https:' || protocol === 'http:') {
+  } else if (resolved.protocol === 'https:' || resolved.protocol === 'http:') {
+    if (resolved.host === 'launcher' && resolved.pathname === '/media') {
+      const path = resolved.searchParams.get('path')
+      if (path) return await readFile(path)
+    }
     return url
   } else {
     throw new Error('Unknown url protocol! Require a file or http/https protocol!')
