@@ -25,14 +25,14 @@
       @click="emit('input', item)"
     >
       <v-list-item-avatar>
-        <v-chip
-          label
-          small
-          :color="item.path === value.path && item.valid ? 'white' : item.valid ? 'orange' : 'grey'"
-          outlined
+        <span
+          class="font-extrabold"
+          :style="{
+            color: item.path === value.path && item.valid ? 'white' : item.valid ? 'orange' : 'grey'
+          }"
         >
           {{ item.majorVersion }}
-        </v-chip>
+        </span>
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title v-if="item.valid">
@@ -55,6 +55,7 @@
       <v-list-item-action>
         <v-btn
           icon
+          color="red"
           @click.stop="remove(item)"
         >
           <v-icon>delete</v-icon>

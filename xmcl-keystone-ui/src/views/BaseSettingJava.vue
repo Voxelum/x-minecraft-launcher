@@ -7,32 +7,22 @@
     <v-subheader style="padding-right: 2px">
       Java
       <v-spacer />
-      <v-tooltip left>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            :loading="refreshingLocalJava"
-            v-on="on"
-            @click="refreshLocalJava"
-          >
-            <v-icon>refresh</v-icon>
-          </v-btn>
-        </template>
-        {{ t("java.refresh") }}
-      </v-tooltip>
-      <v-tooltip left>
-        <template #activator="{ on }">
-          <v-btn
-            id="java-import"
-            icon
-            @click="browseFile"
-            v-on="on"
-          >
-            <v-icon>add</v-icon>
-          </v-btn>
-        </template>
-        {{ t("java.importFromFile") }}
-      </v-tooltip>
+      <v-btn
+        v-shared-tooltip.left="_ => t('java.refresh')"
+        icon
+        :loading="refreshingLocalJava"
+        @click="refreshLocalJava"
+      >
+        <v-icon>refresh</v-icon>
+      </v-btn>
+      <v-btn
+        id="java-import"
+        v-shared-tooltip.left="_ => t('java.importFromFile')"
+        icon
+        @click="browseFile"
+      >
+        <v-icon>add</v-icon>
+      </v-btn>
     </v-subheader>
     <v-list-group
       id="java-list"
@@ -123,6 +113,7 @@ import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 import JavaList from './BaseSettingJavaList.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { t } = useI18n()
 const { showOpenDialog } = windowController
