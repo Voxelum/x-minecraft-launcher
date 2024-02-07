@@ -78,6 +78,15 @@ interface UserServiceEventMap {
   'user-login': string
   'error': UserException
   'auth-profile-added': string
+  'microsoft-authorize-url': string
+  'device-code': {
+    userCode: string
+    deviceCode: string
+    verificationUri: string
+    expiresIn: number
+    interval: number
+    message: string
+  }
 }
 
 export class UserState {

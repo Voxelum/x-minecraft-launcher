@@ -62,7 +62,6 @@ export const pluginOfficialUserApi: LauncherAppPlugin = (app) => {
           })
         },
         async (directRedirectToLauncher) => {
-          if (IS_DEV) directRedirectToLauncher = true
           const port = await app.localhostServerPort ?? 25555
           return (directRedirectToLauncher ? `http://localhost:${port}/auth` : `https://xmcl.app/auth?port=${port}`)
         },

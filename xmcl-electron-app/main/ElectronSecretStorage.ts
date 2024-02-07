@@ -1,7 +1,8 @@
 import { SecretStorage } from '@xmcl/runtime/app'
 import { safeStorage } from 'electron'
+import filenamify from 'filenamify'
 import { ensureDir, readFile, unlink, writeFile } from 'fs-extra'
-import { deletePassword, getPassword, setPassword } from 'keytar'
+import { join } from 'path'
 
 function encrypt(s: string) {
   try {
@@ -20,30 +21,20 @@ function decrypt(s: Buffer) {
 }
 
 export class ElectronSecretStorage implements SecretStorage {
-  constructor(private fallbackDir: string) {}
+  constructor(private dir: string) {}
 
   async get(service: string, account: string): Promise<string | undefined> {
-    try {
-      return (await getPassword(service, account) || undefined)
-    } catch (e) {
-      return await readFile(this.fallbackDir).then(decrypt, () => undefined)
-    }
+    const key = filenamify(service + '@' + account)
+    return await readFile(join(this.dir, key)).then(decrypt, () => undefined)
   }
 
   async put(service: string, account: string, value: string): Promise<void> {
+    const key = filenamify(service + '@' + account)
     if (value) {
-      try {
-        await setPassword(service, account, value)
-      } catch {
-        await ensureDir(this.fallbackDir)
-        await writeFile(this.fallbackDir, encrypt(value)).catch(() => undefined)
-      }
+      await ensureDir(this.dir)
+      await writeFile(join(this.dir, key), encrypt(value)).catch(() => undefined)
     } else {
-      try {
-        await deletePassword(service, account)
-      } catch {
-        await unlink(this.fallbackDir).catch(() => undefined)
-      }
+      await unlink(join(this.dir, key)).catch(() => undefined)
     }
   }
 }

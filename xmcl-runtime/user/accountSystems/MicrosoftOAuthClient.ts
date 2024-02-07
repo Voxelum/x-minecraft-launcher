@@ -25,7 +25,7 @@ export class MicrosoftOAuthClient {
         clientId: this.clientId,
       },
       cache: {
-        cachePlugin: createPlugin('xmcl', account, this.logger, this.storage),
+        cachePlugin: createPlugin('xmcl-oauth', account, this.logger, this.storage),
       },
       system: {
         loggerOptions: {
