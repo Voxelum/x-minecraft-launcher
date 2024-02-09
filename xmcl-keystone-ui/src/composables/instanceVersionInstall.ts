@@ -16,6 +16,8 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     installLabyModVersion,
   } = useService(InstallServiceKey)
 
+  const { refreshVersion } = useService(VersionServiceKey)
+
   const {
     getMinecraftVersionList,
     getForgeVersionList,
@@ -36,9 +38,12 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
     const local = versions.value
-    if (!local.find(v => v.id === minecraft)) {
+    const localMinecraft = local.find(v => v.id === minecraft)
+    if (!localMinecraft) {
       const metadata = mcVersions.versions.find(v => v.id === minecraft)!
       await installMinecraft(metadata)
+    } else {
+      await refreshVersion(localMinecraft.id)
     }
 
     let forgeVersion = undefined as undefined | string
@@ -51,6 +56,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
       } else {
         forgeVersion = localForge.id
+        await refreshVersion(localForge.id)
       }
     }
 
@@ -63,6 +69,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         forgeVersion = await installNeoForged({ version: id, minecraft })
       } else {
         forgeVersion = localNeoForge.id
+        await refreshVersion(localNeoForge.id)
       }
     }
 
@@ -73,6 +80,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
       }
       const localOptifine = local.find(v => v.optifine === optifineVersion && v.forge === (forgeVersion || ''))
       if (localOptifine) {
+        await refreshVersion(localOptifine.id)
         return localOptifine.id
       }
       const index = optifineVersion.lastIndexOf('_')
@@ -87,6 +95,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (fabricLoader) {
       const localFabric = local.find(v => v.fabric === fabricLoader && v.minecraft === runtime.minecraft)
       if (localFabric) {
+        await refreshVersion(localFabric.id)
         return localFabric.id
       }
       return await installFabric({ loader: fabricLoader, minecraft })
@@ -95,6 +104,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (quiltLoader) {
       const localQuilt = local.find(v => v.quilt === quiltLoader)
       if (localQuilt) {
+        await refreshVersion(localQuilt.id)
         return localQuilt.id
       }
       return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft })
@@ -103,6 +113,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (labyMod) {
       const localLabyMod = local.find(v => v.labyMod === labyMod)
       if (localLabyMod) {
+        await refreshVersion(localLabyMod.id)
         return localLabyMod.id
       }
 
