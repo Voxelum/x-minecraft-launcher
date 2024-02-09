@@ -34,15 +34,13 @@ export const config = {
   }],
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
-    artifactName: 'xmcl-${version}.${ext}',
     displayName: 'X Minecraft Launcher',
     applicationId: 'CI010.XMCL',
-    identityName: 'XMCL',
+    identityName: '22961CI010.XMCL',
     backgroundColor: 'transparent',
-    publisher: process.env.APPX_PUBLISHER ? Buffer.from(process.env.APPX_PUBLISHER!, 'base64').toString('utf8') : undefined,
+    publisher: 'CN=DAFB9390-F5BD-4F94-828C-242F8DAA6FDE',
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
-    languages: ['en-US', 'zh-CN', 'ru'],
   },
   dmg: {
     artifactName: 'xmcl-${version}.${ext}',
