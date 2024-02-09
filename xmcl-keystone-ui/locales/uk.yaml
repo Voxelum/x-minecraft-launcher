@@ -451,6 +451,7 @@ instances:
   choose: Виберіть Гра
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера
+  loadingFiles: Завантаження файлів Modpack
   refreshServers: Оновити сервери
 items:
   count: '{count} предмети'

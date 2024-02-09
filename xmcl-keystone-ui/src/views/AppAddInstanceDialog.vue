@@ -43,8 +43,12 @@
           :step="i + 1"
         >
           <StepSelect
-            v-if="tStep === 'create'"
+            v-if="tStep === 'create' && !loading"
             @select="onSelectType"
+          />
+          <AppLoadingCircular
+            v-if="tStep === 'create' &&loading"
+            :texts="[t('instances.loadingFiles') + '...']"
           />
           <StepChoice
             v-if="tStep === 'choice'"
@@ -118,6 +122,7 @@ import { useNotifier } from '../composables/notifier'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { kJavaContext } from '@/composables/java'
+import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])

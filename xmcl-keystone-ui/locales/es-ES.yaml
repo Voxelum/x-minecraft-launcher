@@ -398,6 +398,7 @@ instances:
   choose: Selecciona un juego
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
+  loadingFiles: Cargando archivos Modpack
   refreshServers: Actualizar Servidores
 items:
   count: '{count} ítems'

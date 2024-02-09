@@ -7,50 +7,12 @@
       <v-card-title v-if="exiting">
         {{ t('launchStatus.exit') }}
       </v-card-title>
-      <v-container v-if="launching || !windowReady">
-        <v-layout
-          align-center
-          justify-center
-          column
-        >
-          <div class="relative mt-8">
-            <v-progress-circular
-              color="primary"
-              :size="70"
-              :width="4"
-              indeterminate
-            />
-
-            <v-progress-circular
-              class="absolute left-[10px] top-[11px]"
-              color="error"
-              :size="50"
-              :width="4"
-              indeterminate
-            />
-
-            <v-progress-circular
-              class="absolute left-[20px] top-[21px]"
-              color="warning"
-              :size="30"
-              :width="4"
-              indeterminate
-            />
-          </div>
-          <v-flex class="mx-10 my-3 flex flex-col items-center justify-center gap-1">
-            <VTypical
-              class="blink"
-              :steps="launchingSteps"
-            />
-            <div
-              class="text-transparent transition-all"
-              :class="{ 'text-gray-500': launchingStatus !== '' }"
-            >
-              {{ hint + '...' }}
-            </div>
-          </v-flex>
-        </v-layout>
-      </v-container>
+      <AppLoadingCircular
+        v-if="launching || !windowReady"
+        :texts="launchingSteps"
+        :secondary-hint="launchingStatus !== ''"
+        :hint="hint"
+      />
 
       <div
         v-if="exiting"
@@ -79,11 +41,11 @@
 </template>
 
 <script lang=ts setup>
-import VTypical from '@/components/VTyping.vue'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
+import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
 
 const { t } = useI18n()
 const { launching, windowReady, kill, launchingStatus } = injection(kInstanceLaunch)

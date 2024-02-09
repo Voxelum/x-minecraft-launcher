@@ -484,6 +484,7 @@ instances:
   choose: Sélectionnez un jeu
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
+  loadingFiles: Chargement des fichiers Modpack
   refreshServers: Actualiser les Serveurs
 items:
   count: '{count} éléments'

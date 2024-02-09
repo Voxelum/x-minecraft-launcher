@@ -483,6 +483,7 @@ instances:
   choose: Spiel auswählen
   importFolder: Importieren aus einem Ordner
   importFolderDescription: Minecraft in den Launcher importieren
+  loadingFiles: Laden von Modpack-Dateien
   refreshServers: Server aktualisieren
 issue: {}
 items:

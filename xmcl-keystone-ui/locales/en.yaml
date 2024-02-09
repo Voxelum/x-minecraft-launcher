@@ -443,6 +443,7 @@ instances:
   choose: Select Game
   importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
+  loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
 items:
   count: '{count} items'

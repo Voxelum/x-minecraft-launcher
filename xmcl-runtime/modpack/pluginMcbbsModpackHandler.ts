@@ -21,7 +21,7 @@ export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
     resolveInstanceOptions: getInstanceConfigFromMcbbsModpack,
     resolveInstanceFiles: async (manifest) => {
       const infos: InstanceFile[] = []
-      if (manifest.files) {
+      if (manifest.files && manifest.files.length > 0) {
         // curseforge or mcbbs
         const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
         const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')

@@ -459,6 +459,7 @@ instances:
   choose: 选择游戏
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
+  loadingFiles: 加载整合包文件
   refreshServers: 刷新服务器
 items:
   count: '{count} 个'
