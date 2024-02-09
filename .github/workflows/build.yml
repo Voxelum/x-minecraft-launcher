@@ -55,9 +55,6 @@ jobs:
         BUILD_NUMBER: ${{ github.run_number }}
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
-        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
-        WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
     # - name: Save cached Electron
     #   uses: actions/cache/save@v3
     #   with:
