@@ -14,6 +14,9 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     filenamify(`${resource.fileName}.${resource.hash}${extname(resource.fileName)}`, { replacement: '-' }),
   ]
   let fileName = filenamify(resource.fileName, { replacement: '-' })
+  if (fileName.endsWith('.disabled')) {
+    fileName = fileName.slice(0, -9)
+  }
   let filePath = join(root, resource.domain, fileName)
 
   const entryName = `${resource.domain}/${fileName}`
