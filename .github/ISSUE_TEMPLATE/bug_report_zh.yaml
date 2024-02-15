@@ -1,0 +1,77 @@
+name: 🐞 Bug (中文)
+description: 我找到了一个 Bug
+title: "<title>"
+labels: ["bug", "needs triage"]
+body:
+- type: markdown
+  attributes:
+    value: |
+      你知道吗？XMCL 也有 [Discord 频道](https://discord.com/channels/405213567118213121/1073220911106371626)来讨论 Bug 和问题！
+- type: checkboxes
+  attributes:
+    label: 是否已经有人报告过这个问题？
+    description: 请搜索以查看是否已经有人报告了你遇到的问题。
+    options:
+    - label: 我已经搜索过现有的问题
+      required: true
+- type: input
+  id: version
+  attributes:
+    label: 启动器版本
+    description: 请填写你正在使用的启动器版本。
+  validations:
+    required: true
+- type: dropdown
+  id: os
+  attributes:
+    label: 操作系统
+    description: 请选择你正在使用的操作系统。
+    options:
+      - Windows
+      - Mac
+      - Linux
+  validations:
+    required: true
+- type: dropdown
+  id: arch
+  attributes:
+    label: 架构
+    description: 请选择你正在使用的架构。
+    options:
+      - x64
+      - ARM
+      - 其他 (请在描述中指定)
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: 当前行为
+    description: 一个简洁的描述你正在遇到的问题。
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: 期望行为
+    description: 一个简洁的描述你期望发生的事情。
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: 复现步骤
+    description: 复现问题的步骤。
+    placeholder: |
+      1. 在这个环境中...
+      1. 使用这个配置...
+      1. 运行 '...'
+      1. 然后会发生...
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: 其他信息？
+    description: |
+      链接？参考？任何能给我们更多关于你遇到的问题的上下文的东西！
+
+      提示：你可以通过点击这个区域来高亮它，然后拖拽文件来附加图片或日志文件。
+  validations:
+    required: false
