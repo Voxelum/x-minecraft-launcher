@@ -10,6 +10,7 @@
     <v-list-item-content>
       <v-list-item-title>
         {{ title }}
+        <slot />
       </v-list-item-title>
       <v-list-item-subtitle v-if="description">
         {{ description }}

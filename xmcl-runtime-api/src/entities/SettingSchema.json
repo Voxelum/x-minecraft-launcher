@@ -129,6 +129,14 @@
             "default": false,
             "type": "boolean"
         },
+        "globalDisableAuthlibInjector": {
+            "default": false,
+            "type": "boolean"
+        },
+        "globalDisableElyByAuthlib": {
+            "default": false,
+            "type": "boolean"
+        },
         "discordPresence": {
             "default": true,
             "type": "boolean"
@@ -161,6 +169,8 @@
         "disableTelemetry",
         "discordPresence",
         "globalAssignMemory",
+        "globalDisableAuthlibInjector",
+        "globalDisableElyByAuthlib",
         "globalFastLaunch",
         "globalHideLauncher",
         "globalMaxMemory",

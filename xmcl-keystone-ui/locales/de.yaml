@@ -440,6 +440,14 @@ instanceFileOperation:
   keep: Hier ist es
   remove: Löschen
 instanceSetting:
+  disableAuthlibInjector: Deaktivieren Sie den Authlib-Injektor
+  disableAuthlibInjectorDescription: |-
+    Wenn Sie ein Skin-System eines Drittanbieters verwenden. 
+    Der Authlib-Injektor kann Ihnen dabei helfen, Skins im Spiel anzuzeigen.
+  disableElyByAuthlib: Deaktivieren Sie den Authlib-Ersatz von ely.by
+  disableElyByAuthlibDescription: >-
+    Ely.by verfügt über einen einzigartigen Authlib-Ersatz, um Skins universell
+    auf jedem Server anzuzeigen.
   fastLaunch: Schnelle Inbetriebnahme
   fastLaunchHint: Benutzerstatus und bestehende ungelöste Probleme ignorieren
   hideLauncher: Den Launcher nach dem Start ausblenden

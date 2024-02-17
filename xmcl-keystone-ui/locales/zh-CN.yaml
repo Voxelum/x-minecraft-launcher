@@ -420,6 +420,12 @@ instanceFileOperation:
   keep: 保留
   remove: 移除
 instanceSetting:
+  disableAuthlibInjector: 禁用 authlib 注入器
+  disableAuthlibInjectorDescription: |-
+    如果您使用的是第三方皮肤系统。 
+    authlib 注入器可以帮助您在游戏中显示皮肤。
+  disableElyByAuthlib: 禁用 ely.by 的 authlib 替换
+  disableElyByAuthlibDescription: Ely.by 有一个独特的 authlib 替代品，可以在任何服务器中普遍显示皮肤。
   fastLaunch: 快速启动
   fastLaunchHint: 启动时跳过刷新用户和没有修复的问题
   hideLauncher: Minecraft 启动后隐藏启动器

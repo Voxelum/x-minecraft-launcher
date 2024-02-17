@@ -8,6 +8,7 @@ import { InstanceIOService, InstanceInstallService, InstanceManifestService, Ins
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
 import { InstanceModsService } from '@xmcl/runtime/mod'
+import { ElyByService } from '@xmcl/runtime/elyby'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { ModrinthService } from '@xmcl/runtime/modrinth'
 import { NatService } from '@xmcl/runtime/nat'
@@ -31,6 +32,7 @@ export const definedServices = [
   InstallService,
   InstanceIOService,
   InstanceLogService,
+  ElyByService,
   InstanceModsService,
   InstanceOptionsService,
   InstanceResourcePackService,

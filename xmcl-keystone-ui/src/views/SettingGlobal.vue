@@ -23,6 +23,16 @@
       :title="t('instanceSetting.showLog')"
       :description="t('instanceSetting.showLogHint')"
     />
+    <SettingItemCheckbox
+      v-model="disableAuthlibInjector"
+      :title="t('instanceSetting.disableAuthlibInjector')"
+      :description="t('instanceSetting.disableAuthlibInjectorDescription')"
+    />
+    <SettingItemCheckbox
+      v-model="disableElyByAuthlib"
+      :title="t('instanceSetting.disableElyByAuthlib')"
+      :description="t('instanceSetting.disableElyByAuthlibDescription')"
+    />
 
     <v-list-item>
       <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
@@ -94,6 +104,8 @@ const {
   globalFastLaunch,
   globalHideLauncher,
   globalShowLog,
+  globalDisableAuthlibInjector,
+  globalDisableElyByAuthlib,
   setGlobalSettings,
 } = useGlobalSettings()
 
@@ -105,6 +117,8 @@ const mcOptions = ref(globalMcOptions.value.join(' '))
 const fastLaunch = ref(globalFastLaunch.value)
 const hideLauncher = ref(globalHideLauncher.value)
 const showLog = ref(globalShowLog.value)
+const disableAuthlibInjector = ref(globalDisableAuthlibInjector.value)
+const disableElyByAuthlib = ref(globalDisableElyByAuthlib.value)
 
 onMounted(() => {
   assignMemory.value = globalAssignMemory.value
@@ -115,6 +129,8 @@ onMounted(() => {
   fastLaunch.value = globalFastLaunch.value
   hideLauncher.value = globalHideLauncher.value
   showLog.value = globalShowLog.value
+  disableAuthlibInjector.value = globalDisableAuthlibInjector.value
+  disableElyByAuthlib.value = globalDisableElyByAuthlib.value
 })
 
 onUnmounted(() => {
@@ -127,6 +143,8 @@ onUnmounted(() => {
     globalFastLaunch: fastLaunch.value,
     globalHideLauncher: hideLauncher.value,
     globalShowLog: showLog.value,
+    globalDisableAuthlibInjector: disableAuthlibInjector.value,
+    globalDisableElyByAuthlib: disableElyByAuthlib.value,
   })
 })
 

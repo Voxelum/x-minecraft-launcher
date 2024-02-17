@@ -10,12 +10,11 @@
     <v-divider />
     <BaseSettingModpack v-if="!isServer" />
     <BaseSettingServer v-else />
-
     <v-snackbar
       :color="snackbarColor"
       :class="{ 'shake-animation': hasAnimation }"
       :timeout="-1"
-      :value="edit.isModified"
+      :value="isModified"
     >
       <div class="text-button mr-4">
         {{ t('modified.unsaved') }}
@@ -66,6 +65,7 @@ const edit = useInstanceEdit(instance, _edit)
 const { t } = useI18n()
 provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(() => {}, edit.load)
+const { isModified } = edit
 
 function onReset() {
   edit.load()
@@ -74,7 +74,7 @@ function onReset() {
 const snackbarColor = ref('black')
 const hasAnimation = ref(false)
 useBeforeLeave(() => {
-  if (edit.isModified.value) {
+  if (isModified.value) {
     if (edit.data.path !== instance.value.path) {
       edit.load()
       return true

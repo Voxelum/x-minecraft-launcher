@@ -410,6 +410,14 @@ instanceFileOperation:
   keep: Тримай
   remove: Видалити
 instanceSetting:
+  disableAuthlibInjector: Вимкнути інжектор authlib
+  disableAuthlibInjectorDescription: |-
+    Якщо ви використовуєте сторонню систему скінів. 
+    Інжектор authlib може допомогти вам відобразити скін у грі.
+  disableElyByAuthlib: Вимкнути заміну authlib ely.by
+  disableElyByAuthlibDescription: >-
+    Ely.by має унікальну заміну authlib для універсального відображення скіна на
+    будь-якому сервері.
   fastLaunch: Швидкий запуск
   fastLaunchHint: Ігнорувати статус користувача та існуючі невирішені проблеми
   hideLauncher: Сховати лаунчер після запуску

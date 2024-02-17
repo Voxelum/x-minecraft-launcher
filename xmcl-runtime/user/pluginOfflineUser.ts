@@ -1,23 +1,14 @@
+import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
-import { UserService } from './UserService'
-import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
-import { kUserTokenStorage } from './userTokenStore'
 import { ImageStorage } from '~/imageStore'
-import { createHash } from 'crypto'
+import { getUUID } from '~/util/offlineUser'
+import { UserService } from './UserService'
+import { kUserTokenStorage } from './userTokenStore'
 
 export const pluginOffineUser: LauncherAppPlugin = (app) => {
   const OFFLINE_USER_ID = 'OFFLINE'
 
-  const getUUID = (input: string) => {
-    input = `OfflinePlayer:${input}`
-    const md5Bytes = createHash('md5').update(input).digest()
-    md5Bytes[6] &= 0x0f /* clear version        */
-    md5Bytes[6] |= 0x30 /* set to version 3     */
-    md5Bytes[8] &= 0x3f /* clear variant        */
-    md5Bytes[8] |= 0x80 /* set to IETF variant  */
-    return md5Bytes.toString('hex').replace(/(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/, '$1-$2-$3-$4-$5')
-  }
   app.on('engine-ready', async () => {
     const userService = await app.registry.get(UserService)
     const userTokenStorage = await app.registry.get(kUserTokenStorage)

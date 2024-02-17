@@ -105,6 +105,8 @@ export interface LaunchOptions {
    * The extra arguments for minecraft
    */
   mcOptions?: string[]
+
+  disableElyByAuthlib?: boolean
 }
 
 export interface GameProcess {
