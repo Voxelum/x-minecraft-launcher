@@ -44,7 +44,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if ('requirements' in version) {
       const runtime = version.requirements
       operation = async () => {
-        const version = await install(runtime, side.value)
+        const version = await install(runtime, side.value, path.value)
         if (version) {
           await installDependencies(version, side.value === 'server')
         }
@@ -68,7 +68,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if (jarIssue) {
       const options = { version: jarIssue.version }
       operations.push(async () => {
-        const version = await install(runtime.value, side.value)
+        const version = await install(runtime.value, side.value, path.value)
         if (version) {
           await installDependencies(version, side.value === 'server')
         }
@@ -84,7 +84,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         }))
     }
 
-    const profileIssue = await diagnoseProfile(version.id)
+    const profileIssue = await diagnoseProfile(version.id, side.value, path.value)
     if (abortSignal.aborted) { return }
     if (profileIssue) {
       operations.push(async () => {
@@ -92,6 +92,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
           mcversion: version.minecraftVersion,
           version: runtime.value.forge!,
           side: side.value,
+          root: path.value,
         })
       })
       items.push(reactive({
@@ -100,7 +101,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       }))
     }
 
-    if (!profileIssue) {
+    if (!profileIssue && side.value === 'client') {
       const librariesIssue = await diagnoseLibraries(version)
       if (abortSignal.aborted) { return }
 
@@ -112,11 +113,11 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         })
         items.push(librariesIssue.some(v => v.type === 'corrupted')
           ? reactive({
-            title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: 3 })),
+            title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: librariesIssue.length })),
             description: computed(() => t('diagnosis.corruptedLibraries.message')),
           })
           : reactive({
-            title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: 3 })),
+            title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: librariesIssue.length })),
             description: computed(() => t('diagnosis.missingLibraries.message')),
           }))
       }

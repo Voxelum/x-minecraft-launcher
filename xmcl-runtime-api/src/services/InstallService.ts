@@ -55,6 +55,8 @@ export interface InstallForgeOptions {
   version: string
 
   side?: 'client' | 'server'
+
+  root?: string
 }
 
 export interface InstallNeoForgedOptions {

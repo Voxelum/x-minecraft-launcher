@@ -4,6 +4,7 @@ import { move, readlink, stat, symlink, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstallService } from '~/install'
+import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
@@ -112,6 +113,13 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
       }
     },
+  })
+
+  app.registry.get(InstanceService).then((serv) => {
+    serv.state.subscribe('instanceAdd', ({ path }) => {
+      linkFolder(path, 'libraries')
+      linkFolder(path, 'versions')
+    })
   })
   launchService.registerMiddleware({
     name: 'link-assets',

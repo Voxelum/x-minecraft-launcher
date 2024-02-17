@@ -51,13 +51,13 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
     return jarIssue
   }
 
-  async diagnoseProfile(version: string): Promise<InstallProfileIssueReport | undefined> {
-    const minecraft = new MinecraftFolder(this.getPath())
+  async diagnoseProfile(version: string, side: 'client' | 'server' = 'client', path?: string): Promise<InstallProfileIssueReport | undefined> {
+    const minecraft = new MinecraftFolder(path ?? this.getPath())
     const root = minecraft.getVersionRoot(version)
     const installProfilePath = join(root, 'install_profile.json')
     if (await exists(installProfilePath)) {
       const installProfile: InstallProfile = JSON.parse(await readFile(installProfilePath, 'utf8'))
-      const report = await diagnoseInstall(installProfile, minecraft.root)
+      const report = await diagnoseInstall(installProfile, minecraft.root, side)
       let badInstall = false
       const librariesIssues: LibraryIssue[] = []
       for (const issue of report.issues) {

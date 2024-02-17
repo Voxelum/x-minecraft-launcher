@@ -330,6 +330,7 @@ export class InstallService extends AbstractService implements IInstallService {
   async installForge(options: _InstallForgeOptions) {
     const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
+    const side = options.side ?? 'client'
 
     validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
 
@@ -337,9 +338,10 @@ export class InstallService extends AbstractService implements IInstallService {
     for (const java of validJavaPaths) {
       try {
         this.log(`Start to install forge ${options.version} on ${options.mcversion} by ${java.path}`)
-        version = await this.submit(installForgeTask(options, this.getPath(), {
+        version = await this.submit(installForgeTask(options, options.root || this.getPath(), {
           ...installOptions,
           java: java.path,
+          side,
           inheritsFrom: options.mcversion,
         }).setName('installForge', { id: options.version }))
         this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
