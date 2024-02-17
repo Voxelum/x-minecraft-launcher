@@ -14,6 +14,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const {
     globalAssignMemory, globalFastLaunch, globalHideLauncher, globalMaxMemory,
     globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
+    globalDisableAuthlibInjector, globalDisableElyByAuthlib,
   } = useGlobalSettings()
 
   const data = reactive({
@@ -48,6 +49,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     fastLaunch: instance.value?.fastLaunch,
     hideLauncher: instance.value?.hideLauncher,
     showLog: instance.value?.showLog,
+    disableElyByAuthlib: instance.value?.disableElybyAuthlib,
+    disableAuthlibInjector: instance.value?.disableAuthlibInjector,
 
     assignMemory: instance.value?.assignMemory,
 
@@ -66,6 +69,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const isGlobalFastLaunch = computed(() => data.fastLaunch === undefined)
   const isGlobalHideLauncher = computed(() => data.hideLauncher === undefined)
   const isGlobalShowLog = computed(() => data.showLog === undefined)
+  const isGlobalDisableElyByAuthlib = computed(() => data.disableElyByAuthlib === undefined)
+  const isGlobalDisableAuthlibInjector = computed(() => data.disableAuthlibInjector === undefined)
   const resetAssignMemory = () => {
     set(data, 'assignMemory', undefined)
     set(data, 'minMemory', undefined)
@@ -85,6 +90,12 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
   const resetShowLog = () => {
     data.showLog = undefined
+  }
+  const resetDisableAuthlibInjector = () => {
+    data.disableAuthlibInjector = undefined
+  }
+  const resetDisableElyByAuthlib = () => {
+    data.disableElyByAuthlib = undefined
   }
 
   const assignMemory = computed({
@@ -119,6 +130,14 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     get: () => data.showLog ?? globalShowLog.value,
     set: (v) => { data.showLog = v },
   })
+  const disableAuthlibInjector = computed({
+    get: () => data.disableAuthlibInjector ?? globalDisableAuthlibInjector.value,
+    set: (v) => { data.disableAuthlibInjector = v },
+  })
+  const disableElyByAuthlib = computed({
+    get: () => data.disableElyByAuthlib ?? globalDisableElyByAuthlib.value,
+    set: (v) => { data.disableElyByAuthlib = v },
+  })
 
   const isModified = computed(() => {
     const current = instance.value
@@ -142,6 +161,12 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     }
     if (current.maxMemory !== data.maxMemory) {
       return data.assignMemory === true
+    }
+    if (current.disableAuthlibInjector !== data.disableAuthlibInjector) {
+      return true
+    }
+    if (current.disableElybyAuthlib !== data.disableElyByAuthlib) {
+      return true
     }
     if (current.vmOptions?.join(' ') !== data.vmOptions) {
       return true
@@ -220,6 +245,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       hideLauncher: data.hideLauncher,
       java: data.javaPath,
       icon: data.icon,
+      disableAuthlibInjector: data.disableAuthlibInjector,
+      disableElybyAuthlib: data.disableElyByAuthlib,
     }
     if (!instance.value?.server) {
       await edit({
@@ -239,6 +266,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       })
     }
     data.icon = instance.value?.icon
+    // load()
   }
   function load() {
     data.loading = false
@@ -261,6 +289,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.runtime.labyMod = current.runtime.labyMod ?? ''
       data.version = current.version
       data.icon = current.icon
+      data.disableAuthlibInjector = current.disableAuthlibInjector
+      data.disableElyByAuthlib = current.disableElybyAuthlib
 
       if (current.server) {
         data.host = current.server.host
@@ -287,16 +317,22 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     isGlobalFastLaunch,
     isGlobalHideLauncher,
     isGlobalShowLog,
+    isGlobalDisableElyByAuthlib,
+    isGlobalDisableAuthlibInjector,
     assignMemory,
     fastLaunch,
     hideLauncher,
     showLog,
+    disableAuthlibInjector,
+    disableElyByAuthlib,
     resetAssignMemory,
     resetVmOptions,
     resetMcOptions,
     resetFastLaunch,
     resetHideLauncher,
     resetShowLog,
+    resetDisableAuthlibInjector,
+    resetDisableElyByAuthlib,
     minMemory,
     maxMemory,
     mcOptions,

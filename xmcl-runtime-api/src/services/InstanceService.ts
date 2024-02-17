@@ -148,6 +148,12 @@ export class InstanceState {
     if ('assignMemory' in settings && settings.assignMemory !== inst.assignMemory) {
       inst.assignMemory = settings.assignMemory
     }
+    if ('disableAuthlibInjector' in settings) {
+      inst.disableAuthlibInjector = settings.disableAuthlibInjector
+    }
+    if ('disableElybyAuthlib' in settings) {
+      inst.disableElybyAuthlib = settings.disableElybyAuthlib
+    }
   }
 }
 

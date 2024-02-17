@@ -2,6 +2,8 @@ import { SettingSchema } from './setting.schema'
 import { ReleaseInfo } from './update'
 
 export class Settings implements SettingSchema {
+  globalDisableAuthlibInjector = false
+  globalDisableElyByAuthlib = false
   globalMinMemory = 0
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
@@ -74,6 +76,8 @@ export class Settings implements SettingSchema {
     this.globalFastLaunch = config.globalFastLaunch
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
+    this.globalDisableElyByAuthlib = config.globalDisableElyByAuthlib
+    this.globalDisableAuthlibInjector = config.globalDisableAuthlibInjector
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
@@ -183,6 +187,8 @@ export class Settings implements SettingSchema {
     globalFastLaunch: boolean
     globalHideLauncher: boolean
     globalShowLog: boolean
+    globalDisableAuthlibInjector: boolean
+    globalDisableElyByAuthlib: boolean
   }) {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
@@ -192,5 +198,7 @@ export class Settings implements SettingSchema {
     this.globalFastLaunch = settings.globalFastLaunch
     this.globalHideLauncher = settings.globalHideLauncher
     this.globalShowLog = settings.globalShowLog
+    this.globalDisableAuthlibInjector = settings.globalDisableAuthlibInjector
+    this.globalDisableElyByAuthlib = settings.globalDisableElyByAuthlib
   }
 }

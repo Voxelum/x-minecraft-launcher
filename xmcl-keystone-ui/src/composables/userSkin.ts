@@ -39,7 +39,7 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
     data.skin = prof.textures.SKIN.url || steveSkin
     data.slim = prof.textures.SKIN.metadata ? prof.textures.SKIN.metadata.model === 'slim' : false
   }
-  const skinModified = computed(() => (data.skin !== currentSkin.value && currentSkin.value && data.skin !== steveSkin) || data.slim !== currentSlim.value)
+  const skinModified = computed(() => (data.skin !== currentSkin.value && data.skin !== steveSkin) || data.slim !== currentSlim.value)
   const capeModified = computed(() => data.cape !== currentCape.value)
   const modified = computed(() => skinModified.value || capeModified.value)
 

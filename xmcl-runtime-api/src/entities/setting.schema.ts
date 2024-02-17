@@ -102,6 +102,14 @@ export interface SettingSchema {
    */
   globalShowLog: boolean
   /**
+   * @default false
+   */
+  globalDisableAuthlibInjector: boolean
+  /**
+   * @default false
+   */
+  globalDisableElyByAuthlib: boolean
+  /**
    * @default true
    */
   discordPresence: boolean

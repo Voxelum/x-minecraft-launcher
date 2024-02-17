@@ -47,6 +47,8 @@ export function createTemplate(): Instance {
     assignMemory: false,
     showLog: undefined,
     hideLauncher: undefined,
+    disableAuthlibInjector: undefined,
+    disableElybyAuthlib: undefined,
     fastLaunch: undefined,
     upstream: undefined,
     lastPlayedDate: 0,

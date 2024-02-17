@@ -41,6 +41,8 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalFastLaunch = computed(() => state.value?.globalFastLaunch ?? false)
   const globalHideLauncher = computed(() => state.value?.globalHideLauncher ?? false)
   const globalShowLog = computed(() => state.value?.globalShowLog ?? false)
+  const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? true)
+  const globalDisableElyByAuthlib = computed(() => state.value?.globalDisableElyByAuthlib ?? false)
   const setGlobalSettings = (setting: {
     globalMinMemory: number
     globalMaxMemory: number
@@ -50,6 +52,8 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalFastLaunch: boolean
     globalHideLauncher: boolean
     globalShowLog: boolean
+    globalDisableAuthlibInjector: boolean
+    globalDisableElyByAuthlib: boolean
   }) => {
     state.value?.globalInstanceSetting(setting)
   }
@@ -63,6 +67,8 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalFastLaunch,
     globalHideLauncher,
     globalShowLog,
+    globalDisableAuthlibInjector,
+    globalDisableElyByAuthlib,
     setGlobalSettings,
   }
 }

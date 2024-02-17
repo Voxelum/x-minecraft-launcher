@@ -6,6 +6,7 @@ import { finished } from 'stream/promises'
 import { PeerService } from '~/peer'
 import { UserService } from '~/user'
 import { LauncherAppPlugin } from '~/app'
+import { getUUID } from '~/util/offlineUser'
 
 export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('YggdrasilServer')
@@ -71,6 +72,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         ],
       }
       logger.log(`Encode profile for ${id}: %o`, transformed)
+      transformed.id = id
       return JSON.stringify(transformed)
     }
     return undefined

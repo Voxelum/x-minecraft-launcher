@@ -60,6 +60,11 @@
       :description="t('setting.enableDiscordDescription')"
     />
     <SettingItemCheckbox
+      v-model="enableDiscord"
+      :title="t('setting.enableDiscord')"
+      :description="t('setting.enableDiscordDescription')"
+    />
+    <SettingItemCheckbox
       v-model="developerMode"
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"

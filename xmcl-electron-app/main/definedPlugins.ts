@@ -30,6 +30,7 @@ import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorag
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 import { pluginUncaughtError } from '@xmcl/runtime/uncaughtError/pluginUncaughtError'
+import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
@@ -47,6 +48,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginLaunchPrecheck,
   pluginNvdiaGPULinux,
   pluginUncaughtError,
+  elyByPlugin,
 
   pluginMediaProtocol,
   pluginResourcePackLink,

@@ -402,6 +402,14 @@ instanceFileOperation:
   keep: Keep
   remove: Remove
 instanceSetting:
+  disableAuthlibInjector: Disable authlib injector
+  disableAuthlibInjectorDescription: >-
+    If you are using third-party skin system. The authlib injector can help you
+    to display skin in game.
+  disableElyByAuthlib: Disable ely.by's authlib replacement
+  disableElyByAuthlibDescription: >-
+    Ely.by has a unique authlib replacement to display skin universally in any
+    server.
   fastLaunch: Turbo Launch
   fastLaunchHint: Ignore the user status and existed unfixed problems
   hideLauncher: Hide the launcher after launch

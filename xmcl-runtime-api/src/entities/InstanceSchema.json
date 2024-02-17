@@ -165,6 +165,14 @@
                 "type": "string"
             }
         },
+        "disableElybyAuthlib": {
+            "default": false,
+            "type": "boolean"
+        },
+        "disableAuthlibInjector": {
+            "default": false,
+            "type": "boolean"
+        },
         "useLatest": {
             "enum": [
                 "alpha",

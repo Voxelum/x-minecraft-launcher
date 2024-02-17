@@ -177,6 +177,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.mcOptions = option.mcOptions
     instance.creationDate = option.creationDate
     instance.lastAccessDate = option.lastAccessDate
+    instance.disableAuthlibInjector = option.disableAuthlibInjector
+    instance.disableElybyAuthlib = option.disableElybyAuthlib
     if (option.resolution) {
       if (instance.resolution) {
         instance.resolution.width = option.resolution.width
@@ -435,6 +437,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
     if ('fastLaunch' in options && options.fastLaunch !== state.fastLaunch) {
       result.fastLaunch = options.fastLaunch
+    }
+    if ('disableAuthlibInjector' in options && options.disableAuthlibInjector !== state.disableAuthlibInjector) {
+      result.disableAuthlibInjector = options.disableAuthlibInjector
+    }
+    if ('disableElybyAuthlib' in options && options.disableElybyAuthlib !== state.disableElybyAuthlib) {
+      result.disableElybyAuthlib = options.disableElybyAuthlib
     }
 
     if ('runtime' in options && options.runtime) {
