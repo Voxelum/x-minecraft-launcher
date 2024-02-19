@@ -1,4 +1,4 @@
-const { writeFileSync } = require('fs');
+const { writeFileSync, existsSync } = require('fs');
 
 const getInput = (name) => {
     const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
