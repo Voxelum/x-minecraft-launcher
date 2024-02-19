@@ -34,7 +34,7 @@ export const config = {
   }],
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
-    displayName: 'X Minecraft Launcher',
+    displayName: 'X Minecraft Launcher (Beta)',
     applicationId: 'CI010.XMCL',
     identityName: '22961CI010.XMCL',
     backgroundColor: 'transparent',
