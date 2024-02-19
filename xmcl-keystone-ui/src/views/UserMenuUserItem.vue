@@ -88,7 +88,6 @@
       <v-btn
         text
         color="red"
-        :disabled="refreshing"
         @click="emit('remove')"
       >
         <v-icon

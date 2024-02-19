@@ -170,10 +170,13 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.refreshController = undefined
     })
 
-    this.state.userProfile(newUser)
+    // Only update the user if the user is still in the state
+    if (this.state.users[userId]) {
+      this.state.userProfile(newUser)
 
-    if (newUser.invalidated) {
-      throw new UserException({ type: 'userAccessTokenExpired' })
+      if (newUser.invalidated) {
+        throw new UserException({ type: 'userAccessTokenExpired' })
+      }
     }
   }
 
