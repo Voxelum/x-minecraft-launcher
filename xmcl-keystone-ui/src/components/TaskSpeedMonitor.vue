@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-grow-0 items-center text-gray-400"
+    class="flex flex-1 flex-grow-0 items-center"
     :class="{ 'text-gray-400': speed !== 0, 'text-transparent': speed === 0 }"
   >
     <v-icon
