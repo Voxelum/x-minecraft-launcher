@@ -1,8 +1,9 @@
 import { Client, SetActivity } from '@xmcl/discord-rpc'
 import { PresenceService as IPresenceService, MutableState, PresenceServiceKey, Settings } from '@xmcl/runtime-api'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
+import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { kSettings } from '~/settings'
+import { LauncherApp } from '../app/LauncherApp'
 
 @ExposeServiceKey(PresenceServiceKey)
 export class PresenceService extends AbstractService implements IPresenceService {
@@ -11,7 +12,7 @@ export class PresenceService extends AbstractService implements IPresenceService
   }
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(Settings) private settings: MutableState<Settings>,
+    @Inject(kSettings) private settings: MutableState<Settings>,
   ) {
     super(app, async () => {
       if (settings.discordPresence) {
