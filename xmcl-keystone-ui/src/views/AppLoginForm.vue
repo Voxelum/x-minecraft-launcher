@@ -25,6 +25,7 @@
       :error-messages="errorMessage"
       @input="error = undefined"
       @keypress="error = undefined"
+      @keypress.enter="onLogin"
     />
     <v-text-field
       v-if="!isOffline"
@@ -79,6 +80,7 @@
       <v-btn
         block
         :loading="isLogining && (!hovered)"
+        :disabled="!data.username"
         color="primary"
         rounded
         large

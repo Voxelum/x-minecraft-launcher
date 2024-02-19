@@ -66,6 +66,16 @@ export function useUserContext() {
     selectedUserId.value = id
   }
 
+  watch(userProfile, (profile) => {
+    if (profile === NO_USER_PROFILE) {
+      // Select the first user
+      const first = users.value[0]
+      if (first) {
+        select(first.id)
+      }
+    }
+  })
+
   return {
     users,
     isValidating,
