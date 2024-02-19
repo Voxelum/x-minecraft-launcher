@@ -21,7 +21,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const useDeviceCode = properties.mode === 'device'
     const directToLauncher = properties.mode === 'fast'
     const code = properties.code || ''
-    const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher, signal)
+    const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher, signal, false)
 
     const profile: UserProfile = {
       id: normalizeUserId(authentication.userId, options.authority),
@@ -37,13 +37,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return profile
   }
 
-  async refresh(user: UserProfile, signal: AbortSignal): Promise<UserProfile> {
+  async refresh(user: UserProfile, signal: AbortSignal, slientOnly = false): Promise<UserProfile> {
     const diff = Date.now() - user.expiredAt
     if (!user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated) {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
       try {
-        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal)
+        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal, slientOnly)
 
         user.expiredAt = expiredAt
         user.selectedProfile = selectedProfile?.id ?? ''
@@ -117,12 +117,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return userProfile
   }
 
-  protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal) {
+  protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal, slientOnly = false) {
     const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access'], {
       code: oauthCode,
       useDeviceCode,
       directRedirectToLauncher,
       signal,
+      slientOnly,
     }).catch((e) => {
       this.logger.error(e)
       throw new UserException({ type: 'userAcquireMicrosoftTokenFailed' }, 'Failed to acquire Microsoft access token', { cause: e })
@@ -131,7 +132,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const isBadXstsResponse = (xstsResponse: XBoxResponse) => !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui
 
     this.logger.log('Successfully get Microsoft access token')
-    const oauthAccessToken = result!.accessToken
+    const oauthAccessToken = result.accessToken
     const { liveXstsResponse, minecraftXstsResponse } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
       throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Failed to exchange Xbox token', { cause: e })
     })

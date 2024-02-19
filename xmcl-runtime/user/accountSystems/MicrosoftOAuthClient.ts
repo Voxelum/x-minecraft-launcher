@@ -4,6 +4,7 @@ import { Dispatcher, request } from 'undici'
 import { createPlugin } from '../credentialPlugin'
 import { Logger } from '~/logger'
 import { SecretStorage } from '~/app/SecretStorage'
+import { AnyError } from '~/util/error'
 
 export class MicrosoftOAuthClient {
   constructor(
@@ -90,6 +91,7 @@ export class MicrosoftOAuthClient {
     signal?: AbortSignal
     useDeviceCode?: boolean
     code?: string
+    slientOnly?: boolean
     extraScopes?: string[]
     directRedirectToLauncher?: boolean
   } = {}) {
@@ -124,6 +126,11 @@ export class MicrosoftOAuthClient {
         }
       }
     }
+
+    if (options.slientOnly) {
+      throw new AnyError('MicrosoftOAuthSlientFailed', 'Fail to acquire Microsoft token silently.')
+    }
+
     let result: AuthenticationResult | null = null
     if (!options.useDeviceCode) {
       const redirectUri = await this.getRedirectUrl(options?.directRedirectToLauncher ?? false)
