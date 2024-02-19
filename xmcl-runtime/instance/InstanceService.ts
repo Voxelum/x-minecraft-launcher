@@ -495,8 +495,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if ('icon' in result && result.icon) {
       try {
         const iconURL = new URL(result.icon)
-        if (iconURL.protocol === 'image:' && iconURL.host === '') {
-          result.icon = await this.imageStore.addImage(iconURL.pathname.substring(1))
+        const path = iconURL.searchParams.get('path')
+        if (iconURL.host === 'launcher' && iconURL.pathname === '/media' && path) {
+          result.icon = await this.imageStore.addImage(path)
         }
       } catch (e) {
         if (e instanceof Error) this.error(e)
