@@ -78,7 +78,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
       if (optifineVersion.startsWith(minecraft)) {
         optifineVersion = optifineVersion.substring(minecraft.length)
       }
-      const localOptifine = local.find(v => v.optifine === optifineVersion && v.forge === (forgeVersion || ''))
+      const localOptifine = local.find(v => v.minecraft === minecraft && v.optifine === optifineVersion && v.forge === (forgeVersion || ''))
       if (localOptifine) {
         await refreshVersion(localOptifine.id)
         return localOptifine.id
