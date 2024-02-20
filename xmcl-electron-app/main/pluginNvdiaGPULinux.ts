@@ -13,11 +13,14 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
         if (settings.linuxEnableDedicatedGPUOptimization) {
           const env = output.extraExecOption?.env || {}
           const info = (await elec.getGPUInfo('basic')) as any
-          const gpus =
+          interface GpuDevice {
+            vendorId: number
+            deviceId: number
+          }
+          const gpus: GpuDevice[] =
             info?.gpuDevice
-              ?.filter((v: any) => v?.vendorId !== 5140)
-              .map((v: any) => v.vendorId) || []
-          if (gpus.some((g: string) => g?.toLowerCase().includes('nvidia'))) {
+              ?.filter((v: GpuDevice) => v?.vendorId !== 5140) || []
+          if (gpus.some((g) => g.vendorId === 4318)) {
             env.__NV_PRIME_RENDER_OFFLOAD = '1'
             env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
             output.extraExecOption = { ...output.extraExecOption, env }
