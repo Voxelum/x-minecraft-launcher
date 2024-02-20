@@ -10,7 +10,7 @@ export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>>
 export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog } = useGlobalSettings(globalState)
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { abortRefresh } = useService(UserServiceKey)
   const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
@@ -100,7 +100,11 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     let yggdrasilAgent: LaunchOptions['yggdrasilAgent']
 
     const authority = tryParseUrl(userProfile.value.authority)
-    if (authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
+
+    const inst = instance.value
+
+    const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
+    if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
       launchingStatus.value = 'preparing-authlib'
       yggdrasilAgent = {
         jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
@@ -108,7 +112,6 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       }
     }
 
-    const inst = instance.value
     const assignMemory = inst.assignMemory ?? globalAssignMemory.value
     const hideLauncher = inst.hideLauncher ?? globalHideLauncher.value
     const showLog = inst.showLog ?? globalShowLog.value
