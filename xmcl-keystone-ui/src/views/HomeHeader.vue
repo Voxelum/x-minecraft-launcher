@@ -21,13 +21,22 @@
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
       <router-view name="route" />
       <AvatarItem
+        v-if="isResolvedVersion(resolvedVersion)"
         v-ripple
-        :color="!isResolvedVersion(resolvedVersion) ? 'warning' : 'primary'"
+        color="primary"
         icon="fact_check"
         class="ml-2 cursor-pointer"
         :title="t('version.name', 2)"
         :text="currentVersion"
         @click="onShowLocalVersion"
+      />
+      <AvatarItem
+        v-else
+        color="warning"
+        icon="fact_check"
+        class="ml-2"
+        :title="t('version.name', 2)"
+        :text="currentVersion"
       />
       <div class="flex-grow" />
       <router-view name="actions" />
