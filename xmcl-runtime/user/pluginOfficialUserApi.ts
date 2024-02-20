@@ -53,6 +53,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = (app) => {
             }
             (signal as any)?.addEventListener('abort', abort)
             userService.once('microsoft-authorize-code', (err, code) => {
+              app.controller.requireFocus()
               if (err) {
                 reject(err)
               } else {
