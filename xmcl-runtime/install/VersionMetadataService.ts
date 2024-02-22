@@ -1,6 +1,6 @@
 import { parse as parseForge } from '@xmcl/forge-site-parser'
 import { DEFAULT_VERSION_MANIFEST_URL, FabricArtifactVersion, LabyModManifest, MinecraftVersionList, QuiltArtifactVersion } from '@xmcl/installer'
-import { FabricVersions, ForgeVersion, VersionMetadataService as IVersionMetadataService, LiteloaderVersions, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, Settings, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { FabricVersions, ForgeVersion, HTTPException, VersionMetadataService as IVersionMetadataService, LiteloaderVersions, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, Settings, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import { request } from 'undici'
 import { Inject, LauncherAppKey } from '~/app'
@@ -86,6 +86,18 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       ? 'https://maven.neoforged.net/releases/net/neoforged/forge/maven-metadata.xml'
       : 'https://maven.neoforged.net/releases/net/neoforged/neoforge/maven-metadata.xml'
     const response = await request(url)
+
+    if (response.statusCode !== 200) {
+      throw new HTTPException({
+        type: 'httpException',
+        code: '',
+        method: 'GET',
+        url,
+        statusCode: response.statusCode,
+        body: await response.body.text().catch(() => ''),
+      })
+    }
+
     const body = await response.body.text()
     const parser = new XMLParser()
     const forgeMetadata = parser.parse(body)

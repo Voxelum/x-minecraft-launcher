@@ -68,9 +68,10 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
       app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, false)
       logger.warn(`Error during service call ${serviceName}.${serviceMethod}:`)
       if (e instanceof Error) {
+        Object.assign(e, { payload })
         logger.error(e, serviceName)
       } else {
-        logger.error(new Error(JSON.stringify(e)), serviceName)
+        logger.error(new AnyError('UnknownServiceError', JSON.stringify(e), undefined, { payload }), serviceName)
       }
       const error = await serializeError(e)
       error.serviceName = serviceName
