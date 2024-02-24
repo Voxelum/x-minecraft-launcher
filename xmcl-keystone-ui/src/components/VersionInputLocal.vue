@@ -29,6 +29,7 @@ const emit = defineEmits<{
     :url="t('localVersion.hint')"
     :is-clearable="true"
     :items="localItems"
+    :clear-text="t('localVersion.auto')"
     :empty-text="t('localVersion.empty')"
     :placeholder="t('localVersion.auto')"
     :value="value"

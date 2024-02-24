@@ -10,9 +10,13 @@
       <v-list-item-title>{{ title }}</v-list-item-title>
       <v-list-item-subtitle>
         <a
+          v-if="url.startsWith('http')"
           target="browser"
           :href="url"
         >{{ url }}</a>
+        <template v-else>
+          {{ url }}
+        </template>
       </v-list-item-subtitle>
     </v-list-item-content>
     <v-list-item-action>
