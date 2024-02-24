@@ -99,6 +99,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       getEnv(),
       definedPlugins,
     )
+    app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
   }
 
   windowsUtils = getWindowsUtils(this, this.logger)
