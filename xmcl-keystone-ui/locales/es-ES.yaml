@@ -906,6 +906,10 @@ setting:
     legacy: Solo versión heredada
   resetToDefault: Restablecer a los Valores Predeterminados
   showRoot: Mostrar
+  streamerMode: Modo de transmisión
+  streamerModeDescription: >-
+    Esto ocultará su información privada, como el correo electrónico, en el
+    iniciador.
   theme:
     dark: Tema Oscuro
     light: Tema Claro

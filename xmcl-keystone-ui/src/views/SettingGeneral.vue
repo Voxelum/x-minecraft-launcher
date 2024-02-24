@@ -64,6 +64,11 @@
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
     />
+    <SettingItemCheckbox
+      v-model="streamerMode"
+      :title="t('setting.streamerMode')"
+      :description="t('setting.streamerModeDescription')"
+    />
     <SettingItemSelect
       :select="replaceNative === false ? '' : replaceNative"
       :title="t('setting.replaceNative')"
@@ -169,6 +174,7 @@ import { useEnvironment } from '@/composables/environment'
 const env = useEnvironment()
 const {
   proxy, httpProxyEnabled, apiSets,
+  streamerMode,
   developerMode,
   apiSetsPreference,
   selectedLocale,

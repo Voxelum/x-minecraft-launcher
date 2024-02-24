@@ -1268,6 +1268,10 @@ setting:
     legacy: Nur Legacy-Version
   resetToDefault: Zurücksetzen auf den Standardwert
   showRoot: ВідображатиAnzeige
+  streamerMode: Streaming-Modus
+  streamerModeDescription: >-
+    Dadurch werden Ihre privaten Informationen wie E-Mails im Launcher
+    ausgeblendet.
   theme:
     dark: Dunkles Thema
     light: Thema Licht

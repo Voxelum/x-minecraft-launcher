@@ -16,7 +16,7 @@
     </v-list-item-avatar>
     <v-list-item-content>
       <v-list-item-title>
-        {{ user.username }}
+        {{ userNameText }}
       </v-list-item-title>
       <v-list-item-subtitle>
         <v-icon
@@ -110,11 +110,22 @@ const props = defineProps<{
   user: UserProfile
   link?: boolean
   controls?: boolean
+  hideUserName?: boolean
   refreshing?: boolean
 }>()
 
 const hoverRefresh = ref(false)
 const emit = defineEmits(['remove', 'refresh', 'abort-refresh'])
+
+const maskTheEmail = (email: string) => {
+  const atIndex = email.indexOf('@')
+  if (atIndex === -1) return email
+  const prefix = email.slice(0, atIndex)
+  const suffix = email.slice(atIndex)
+  return prefix.slice(0, 2) + '***' + suffix
+}
+
+const userNameText = computed(() => props.hideUserName ? maskTheEmail(props.user.username) : props.user.username)
 const { t } = useI18n()
 const { getColorCode } = useVuetifyColor()
 const expired = useUserExpired(computed(() => props.user))

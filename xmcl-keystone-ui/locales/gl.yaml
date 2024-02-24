@@ -245,3 +245,7 @@ setting:
   replaceNatives:
     all: Todos
     legacy: Só a versión legada
+  streamerMode: Modo de transmisión
+  streamerModeDescription: >-
+    Isto ocultará a túa información privada como o correo electrónico no
+    launcher.

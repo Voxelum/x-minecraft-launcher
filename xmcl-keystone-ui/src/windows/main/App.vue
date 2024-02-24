@@ -62,6 +62,7 @@ import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { kBackground } from '@/composables/background'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
@@ -89,6 +90,8 @@ import Setup from '@/views/Setup.vue'
 const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
 const showSetup = ref(isFirstLaunch.value)
 const { state } = injection(kSettingsState)
+
+provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial

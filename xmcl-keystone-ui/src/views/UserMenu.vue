@@ -14,6 +14,7 @@
               v-if="selected"
               :user="selected"
               controls
+              :hide-user-name="streamerMode"
               :refreshing="refreshing"
               @remove="onShowDeleteDialog()"
               @abort-refresh="abortRefresh()"
@@ -39,6 +40,7 @@
             <UserMenuUserItem
               v-for="(item) of usersToSwitch"
               :key="item.id"
+              :hide-user-name="streamerMode"
               link
               :user="item"
               @click.native="onSelectUser(item.id)"
@@ -102,7 +104,10 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import DeleteDialog from '@/components/DeleteDialog.vue'
 import { useRefreshable, useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useDialog } from '@/composables/dialog'
 import { kUserContext, useUserExpired } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserServiceKey } from '@xmcl/runtime-api'
@@ -111,14 +116,13 @@ import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
 import UserMenuMojang from './UserMenuMojang.vue'
 import UserMenuUserItem from './UserMenuUserItem.vue'
 import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
-import DeleteDialog from '@/components/DeleteDialog.vue'
-import { useDialog } from '@/composables/dialog'
 
 const { t } = useI18n()
 const { users, select, userProfile: selected } = injection(kUserContext)
 const { abortRefresh, refreshUser, removeUser } = useService(UserServiceKey)
 const expired = useUserExpired(computed(() => selected.value))
 const { show: onShowDeleteDialog } = useDialog('user-delete')
+const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 
 const props = defineProps<{ show: boolean }>()
 

@@ -13,12 +13,29 @@
       :items="items"
     />
     <v-combobox
+      v-if="!streamerMode"
       ref="accountInput"
       v-model="data.username"
       :items="history"
       prepend-inner-icon="person"
       outlined
       required
+      :label="getUserServiceAccount(authority)"
+      :rules="usernameRules"
+      :error="!!errorMessage"
+      :error-messages="errorMessage"
+      @input="error = undefined"
+      @keypress="error = undefined"
+      @keypress.enter="onLogin"
+    />
+    <v-text-field
+      v-else
+      ref="accountInput"
+      v-model="data.username"
+      prepend-inner-icon="person"
+      outlined
+      required
+      type="password"
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
       :error="!!errorMessage"
@@ -132,13 +149,14 @@
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
 import { useBusy, useRefreshable, useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
+import { kYggdrasilServices } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, OfficialUserServiceKey, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useAccountSystemHistory, useAllowThirdparty, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
 import AppLoginAuthoritySelect from './AppLoginAuthoritySelect.vue'
-import { kYggdrasilServices } from '@/composables/yggrasil'
 
 const props = defineProps<{
   inside: boolean
@@ -146,6 +164,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['seed', 'login'])
+const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 
 const { t } = useI18n()
 const { select } = injection(kUserContext)

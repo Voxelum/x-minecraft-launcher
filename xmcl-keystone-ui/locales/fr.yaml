@@ -1228,6 +1228,8 @@ setting:
     legacy: Version héritée uniquement
   resetToDefault: Réinitialiser
   showRoot: Afficher
+  streamerMode: Mode diffusion
+  streamerModeDescription: Cela masquera vos informations privées comme les e-mails dans le lanceur.
   theme:
     dark: Thème sombre
     light: Thème clair

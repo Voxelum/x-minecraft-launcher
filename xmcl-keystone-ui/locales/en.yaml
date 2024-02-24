@@ -1185,6 +1185,8 @@ setting:
     legacy: Legacy Version Only
   resetToDefault: Reset to Default
   showRoot: Show
+  streamerMode: Streaming Mode
+  streamerModeDescription: This will hide your private information like email in launcher.
   theme:
     dark: Dark Theme
     light: Light Theme
