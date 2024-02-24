@@ -222,6 +222,7 @@ diagnosis:
   missingAssetsIndex:
     message: Launcher descargará el índice de assets por ti
     name: Falta el archivo de índice de activos de {version}.
+disable: Desactivar
 errors:
   DatabaseNotOpened: |-
     ¡La base de datos no está abierta! 
@@ -898,6 +899,11 @@ setting:
     remove: Eliminar
     repulse: Repulsar
   particleModeDescription: Selecciona el comportamiento al hacer clic en las partículas
+  replaceNative: Reemplazar bibliotecas nativas
+  replaceNativeDescription: Reemplace las bibliotecas nativas según el arco de su computadora.
+  replaceNatives:
+    all: Todo
+    legacy: Solo versión heredada
   resetToDefault: Restablecer a los Valores Predeterminados
   showRoot: Mostrar
   theme:

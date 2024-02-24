@@ -9,6 +9,7 @@ import { pluginClientToken } from '@xmcl/runtime/clientToken/pluginClientToken'
 import { pluginCurseforgeClient } from '@xmcl/runtime/curseforge/pluginCurseforgeClient'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
 import { pluginResourceWorker } from '@xmcl/runtime/resource/pluginResourceWorker'
+import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginFlights } from '@xmcl/runtime/flights'
 import { pluginGFW } from '@xmcl/runtime/gfw/pluginGFW'
 import { pluginImageStorage } from '@xmcl/runtime/imageStore/pluginImageStore'
@@ -48,6 +49,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginLaunchPrecheck,
   pluginNvdiaGPULinux,
   pluginUncaughtError,
+  pluginNativeReplacer,
   elyByPlugin,
 
   pluginMediaProtocol,

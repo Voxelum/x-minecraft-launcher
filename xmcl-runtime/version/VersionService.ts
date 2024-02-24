@@ -13,12 +13,17 @@ import { LauncherApp } from '../app/LauncherApp'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 
+export interface VersionResolver {
+  (version: ResolvedVersion): Promise<void> | void
+}
+
 /**
  * The local version service maintains the installed versions on disk
  */
 @ExposeServiceKey(VersionServiceKey)
 export class VersionService extends StatefulService<LocalVersions> implements IVersionService {
   private watcher: FSWatcher | undefined
+  private resolvers: VersionResolver[] = []
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kGameDataPath) private getPath: PathResolver,
@@ -65,6 +70,10 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     })
   }
 
+  registerResolver(resolver: VersionResolver) {
+    this.resolvers.push(resolver)
+  }
+
   async getLocalVersions(): Promise<MutableState<LocalVersions>> {
     return this.state
   }
@@ -109,6 +118,16 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
     try {
       const resolved = await Version.parse(root, versionFolder)
+      for (const resolver of this.resolvers) {
+        try {
+          await resolver(resolved)
+        } catch (e) {
+          this.warn(`An error occurred during post resolve version ${versionFolder}`)
+          if (e instanceof Error) {
+            this.error(e)
+          }
+        }
+      }
       return Object.freeze(resolved)
     } catch (e) {
       if (e instanceof Error && e.name === 'MissingVersionJson') {

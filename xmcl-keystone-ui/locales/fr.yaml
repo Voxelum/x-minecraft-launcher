@@ -246,6 +246,7 @@ diagnosis:
   missingVersionJar:
     message: Cliquez pour installer cette version
     name: Jar de version manquant pour Minecraft %{version}
+disable: Désactiver
 disk:
   available: Disponible
   used: Utilisé
@@ -1218,6 +1219,13 @@ setting:
     remove: Éliminer
     repulse: Repousser
   particleModeDescription: Sélectionnez le comportement de clic des particules
+  replaceNative: Remplacer les bibliothèques natives
+  replaceNativeDescription: >-
+    Remplacez les bibliothèques natives en fonction de l'architecture de votre
+    ordinateur.
+  replaceNatives:
+    all: Tous
+    legacy: Version héritée uniquement
   resetToDefault: Réinitialiser
   showRoot: Afficher
   theme:

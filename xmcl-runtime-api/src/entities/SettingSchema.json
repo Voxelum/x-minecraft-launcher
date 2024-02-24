@@ -87,6 +87,14 @@
             "default": 16,
             "type": "number"
         },
+        "replaceNatives": {
+            "default": "legacy-only",
+            "enum": [
+                "all",
+                false,
+                "legacy-only"
+            ]
+        },
         "globalMinMemory": {
             "default": 0,
             "type": "number"
@@ -184,6 +192,7 @@
         "linuxTitlebar",
         "locale",
         "maxSockets",
+        "replaceNatives",
         "theme"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",

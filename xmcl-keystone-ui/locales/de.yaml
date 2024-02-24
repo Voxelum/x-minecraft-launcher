@@ -1259,6 +1259,13 @@ setting:
     remove: entfernen
     repulse: Abwehren
   particleModeDescription: Wählen Sie das Verhalten des Partikels beim Anklicken
+  replaceNative: Ersetzen Sie native Bibliotheken
+  replaceNativeDescription: >-
+    Ersetzen Sie native Bibliotheken entsprechend der Architektur Ihres
+    Computers.
+  replaceNatives:
+    all: Alle
+    legacy: Nur Legacy-Version
   resetToDefault: Zurücksetzen auf den Standardwert
   showRoot: ВідображатиAnzeige
   theme:

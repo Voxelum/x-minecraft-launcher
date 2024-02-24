@@ -64,6 +64,13 @@
       :title="t('setting.developerMode')"
       :description="t('setting.developerModeDescription')"
     />
+    <SettingItemSelect
+      :select="replaceNative === false ? '' : replaceNative"
+      :title="t('setting.replaceNative')"
+      :description="t('setting.replaceNativeDescription')"
+      :items="replaceNativeItems"
+      @update:select="replaceNative = !$event ? false : $event"
+    />
 
     <SettingHeader>
       🌐 {{ t('setting.network') }}
@@ -166,6 +173,7 @@ const {
   apiSetsPreference,
   selectedLocale,
   maxSockets,
+  replaceNative,
   disableTelemetry,
   hideNews,
   enableDiscord,
@@ -191,6 +199,20 @@ const apiSetItems = computed(() =>
       }
     })))
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
+const replaceNativeItems = computed(() => [
+  {
+    text: t('disable'),
+    value: '',
+  },
+  {
+    text: t('setting.replaceNatives.legacy'),
+    value: 'legacy-only',
+  },
+  {
+    text: t('setting.replaceNatives.all'),
+    value: 'all',
+  },
+])
 
 const { show } = useDialog('migration')
 const { root, showGameDirectory } = useGameDirectory()

@@ -1129,6 +1129,11 @@ setting:
     remove: 移除
     repulse: 击退
   particleModeDescription: 选择当你点击粒子时的特效
+  replaceNative: 替换库为 Native (原生)
+  replaceNativeDescription: 根据您的计算机架构替换本机库。
+  replaceNatives:
+    all: 全部
+    legacy: 仅旧版本
   resetToDefault: 重置到默认配色
   showRoot: 浏览
   theme:

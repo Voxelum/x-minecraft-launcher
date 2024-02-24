@@ -10,5 +10,5 @@ export interface Platform {
   /**
    * The direct output of `os.arch()`. Should look like x86 or x64.
    */
-  arch: 'x86' | 'x64' | string
+  arch: 'x64' | 'arm' | 'arm64' | 'ia32' | 'loong64' | 'mips' | 'mipsel' | 'ppc' | 'ppc64' | 'riscv64' | 's390' | 's390x'
 }

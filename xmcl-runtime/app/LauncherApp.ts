@@ -144,7 +144,7 @@ export class LauncherApp extends EventEmitter {
     this.platform = {
       os: plat.name,
       osRelease: plat.version,
-      arch: plat.arch,
+      arch: plat.arch as any,
     }
     this.appDataPath = join(appData, LAUNCHER_NAME)
     this.minecraftDataPath = join(appData, this.platform.os === 'osx' ? 'minecraft' : '.minecraft')

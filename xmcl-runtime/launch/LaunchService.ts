@@ -1,18 +1,19 @@
-import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, Version, createMinecraftProcessWatcher, generateArguments, launch } from '@xmcl/core'
+import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, createMinecraftProcessWatcher, generateArguments, launch } from '@xmcl/core'
 import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload } from '@xmcl/runtime-api'
+import { offline } from '@xmcl/user'
 import { ChildProcess } from 'child_process'
 import { randomUUID } from 'crypto'
 import { EOL } from 'os'
+import { setTimeout } from 'timers/promises'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { EncodingWorker, kEncodingWorker } from '~/encoding'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { UserTokenStorage, kUserTokenStorage } from '~/user'
+import { isSystemError } from '~/util/error'
+import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
-import { offline } from '@xmcl/user'
-import { isSystemError } from '~/util/error'
-import { setTimeout } from 'timers/promises'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -24,6 +25,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
+    @Inject(VersionService) private versionService: VersionService,
   ) {
     super(app)
   }
@@ -110,7 +112,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (options.version) {
         this.log(`Override the version: ${options.version}`)
         try {
-          version = await Version.parse(this.getPath(), options.version)
+          version = await this.versionService.resolveLocalVersion(options.version)
         } catch (e) {
           this.warn(`Cannot use override version: ${options.version}`)
           this.warn(e)
@@ -169,7 +171,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (options.version) {
         this.log(`Override the version: ${options.version}`)
         try {
-          version = await this.#track(Version.parse(this.getPath(), options.version), 'parse-version', operationId)
+          version = await this.#track(this.versionService.resolveLocalVersion(options.version), 'parse-version', operationId)
         } catch (e) {
           this.warn(`Cannot use override version: ${options.version}`)
           this.warn(e)

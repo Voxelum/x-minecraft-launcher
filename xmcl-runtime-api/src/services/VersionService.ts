@@ -14,7 +14,12 @@ export interface VersionService {
    * This will not replace the existed files
    */
   migrateMinecraftFile(): Promise<void>
-  resolveLocalVersion(versionFolder: string, root?: string): Promise<ResolvedVersion>
+  /**
+   * Resolve the local version from the version folder.
+   *
+   * @param versionFolder The version id
+   */
+  resolveLocalVersion(versionFolder: string): Promise<ResolvedVersion>
   /**
    * Refresh a version in the version folder.
    * @param versionFolder The version folder name. It must existed under the `versions` folder.

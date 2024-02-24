@@ -223,6 +223,7 @@ diagnosis:
   missingAssetsIndex:
     message: O Lanzador descargará o índice de assets por ti
     name: Falta o arquivo de índice de activos de {version}.
+disable: Desactivar
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
 launchBlocked:
@@ -239,3 +240,8 @@ setting:
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
     Volve descargar o iniciador do sitio web!
+  replaceNative: Substituír as bibliotecas nativas
+  replaceNativeDescription: Substitúe as bibliotecas nativas segundo o arco do teu ordenador.
+  replaceNatives:
+    all: Todos
+    legacy: Só a versión legada

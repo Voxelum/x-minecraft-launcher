@@ -130,6 +130,10 @@ export function useSettings() {
     get: () => state.value?.apiSetsPreference ?? '',
     set: v => state.value?.apiSetsPreferenceSet(v),
   })
+  const replaceNative = computed({
+    get: () => state.value?.replaceNatives ?? 'legacy-only' as string | false,
+    set: v => state.value?.replaceNativesSet(v as any),
+  })
   const maxSockets = ref(state.value?.maxSockets)
   const maxAPISockets = ref(state.value?.maxAPISockets)
   const proxy = ref(getProxy())
@@ -189,6 +193,7 @@ export function useSettings() {
     maxAPISockets,
     locales,
     proxy,
+    replaceNative,
     selectedLocale,
     apiSetsPreference,
     apiSets,

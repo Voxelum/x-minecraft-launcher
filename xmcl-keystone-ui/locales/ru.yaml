@@ -205,6 +205,7 @@ diagnosis:
   missingVersionJar:
     message: Нажмите, чтобы установить эту версию
     name: Версия jar для Minecraft %{version} отсутсвует
+disable: Запрещать
 disk:
   available: Доступно
   used: Использовано
@@ -1139,6 +1140,11 @@ setting:
     remove: Убрать
     repulse: Репульс
   particleModeDescription: Выберите поведение частицы при нажатии
+  replaceNative: Замените собственные библиотеки
+  replaceNativeDescription: Замените родные библиотеки в соответствии с аркой вашего компьютера.
+  replaceNatives:
+    all: Все
+    legacy: Только устаревшая версия
   resetToDefault: Сброс к значению по умолчанию
   showRoot: Отображать
   theme:

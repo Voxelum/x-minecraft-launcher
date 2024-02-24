@@ -1187,6 +1187,11 @@ setting:
     remove: Прибрати
     repulse: Репульс
   particleModeDescription: Виберіть поведінку частки при натисканні
+  replaceNative: Замінити рідні бібліотеки
+  replaceNativeDescription: Замініть рідні бібліотеки відповідно до арки вашого комп’ютера.
+  replaceNatives:
+    all: все
+    legacy: Лише застаріла версія
   resetToDefault: Скидання до значення за промовчанням
   showRoot: Відображати
   theme:

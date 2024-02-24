@@ -1178,6 +1178,11 @@ setting:
     remove: Remove
     repulse: Repulse
   particleModeDescription: Select the particle click behavior
+  replaceNative: Replace Native Libraries
+  replaceNativeDescription: Replace native libraries according to your computer's arch.
+  replaceNatives:
+    all: All
+    legacy: Legacy Version Only
   resetToDefault: Reset to Default
   showRoot: Show
   theme:

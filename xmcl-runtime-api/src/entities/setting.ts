@@ -47,6 +47,7 @@ export class Settings implements SettingSchema {
    */
   online = false
   allowTurn = false
+  replaceNatives: 'all' | 'legacy-only' | false = 'legacy-only'
 
   httpProxy = ''
 
@@ -83,6 +84,7 @@ export class Settings implements SettingSchema {
     this.disableTelemetry = config.disableTelemetry
     this.linuxTitlebar = config.linuxTitlebar
     this.linuxEnableDedicatedGPUOptimization = config.linuxEnableDedicatedGPUOptimization
+    this.replaceNatives = config.replaceNatives
   }
 
   developerModeSet(developerMode: boolean) {
@@ -176,6 +178,10 @@ export class Settings implements SettingSchema {
 
   linuxTitlebarSet(enabled: boolean) {
     this.linuxTitlebar = enabled
+  }
+
+  replaceNativesSet(replace: 'all' | 'legacy-only' | false) {
+    this.replaceNatives = replace
   }
 
   globalInstanceSetting(settings: {

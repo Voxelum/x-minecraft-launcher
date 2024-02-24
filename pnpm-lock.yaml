@@ -447,7 +447,7 @@ importers:
         version: 0.6.3
       jschardet:
         specifier: github:aadsm/jschardet
-        version: github.com/aadsm/jschardet/a1c060718ae8f273861fc223514004283893ca06
+        version: github.com/aadsm/jschardet/701053142f1b468ff7c6a72806b1ef4db1f276bd
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
@@ -1163,6 +1163,18 @@ importers:
       undici-shim:
         specifier: workspace:^*
         version: link:../undici-shim
+      user-offline-uuid:
+        specifier: workspace:^*
+        version: link:../user-offline-uuid
+
+  xmcl/packages/user-offline-uuid:
+    dependencies:
+      '@types/node':
+        specifier: ~18.15.11
+        version: 18.15.13
+      undici:
+        specifier: ^4.0.1
+        version: 4.1.0
 
 packages:
 
@@ -3959,7 +3971,6 @@ packages:
 
   /@types/node@18.15.13:
     resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
-    dev: true
 
   /@types/node@18.16.5:
     resolution: {integrity: sha512-seOA34WMo9KB+UA78qaJoCO20RJzZGVXQ5Sh6FWu0g/hfT44nKXnej3/tCQl7FL97idFpBhisLYCTB50S0EirA==}
@@ -4422,7 +4433,7 @@ packages:
       '@volar/source-map': 1.10.1
       '@vue/compiler-dom': 3.3.4
       '@vue/reactivity': 3.4.18
-      '@vue/shared': 3.4.18
+      '@vue/shared': 3.4.19
       minimatch: 9.0.3
       muggle-string: 0.3.1
       typescript: 5.2.2
@@ -10042,6 +10053,11 @@ packages:
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
 
+  /undici@4.1.0:
+    resolution: {integrity: sha512-Y1e/pSDLtNT4nXSQc4C7eiqoiV7pq8QmsvD7/6cbUuUER0MewR3xwBswYiHYWqVI4FcUptjHixrdqW4xrmo4uA==}
+    engines: {node: '>=12.18'}
+    dev: false
+
   /undici@6.0.1:
     resolution: {integrity: sha512-eZFYQLeS9BiXpsU0cuFhCwfeda2MnC48EVmmOz/eCjsTgmyTdaHdVsPSC/kwC2GtW2e0uH0HIPbadf3/bRWSxw==}
     engines: {node: '>=18.0'}
@@ -10959,8 +10975,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  github.com/aadsm/jschardet/a1c060718ae8f273861fc223514004283893ca06:
-    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/a1c060718ae8f273861fc223514004283893ca06}
+  github.com/aadsm/jschardet/701053142f1b468ff7c6a72806b1ef4db1f276bd:
+    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/701053142f1b468ff7c6a72806b1ef4db1f276bd}
     name: jschardet
     version: 3.0.0
     engines: {node: '>=0.1.90'}
