@@ -5,9 +5,11 @@ import { VersionService } from '~/version'
 
 export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
   const settings = await app.registry.get(kSettings)
+  const logger = app.getLogger('nativeReplacer')
   app.registry.get(VersionService).then(serv => {
     serv.registerResolver(async (version) => {
       if (!settings.replaceNatives) {
+        logger.log('Skip native replacement because it is disabled.')
         return
       }
       const mcVersion = version.minecraftVersion.split('.')
@@ -16,6 +18,7 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
       let libraries = version.libraries
       if (minor >= 19) {
         if (settings.replaceNatives === 'legacy-only') {
+          logger.log('Skip native replacement because it is disabled for modern version.')
           return
         }
         libraries = libraries.filter((lib) =>
@@ -24,6 +27,8 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
             (lib.artifactId === 'lwjgl-glfw' || lib.artifactId === 'lwjgl-openal')
           ))
       }
+
+      logger.log('Replace natives for version', version.id)
 
       const natives: Record<string, Record<string, Version.Library | null>> = (await import('./natives.json')).default
       const archMapping: Record<string, 'loongarch64' | 'arm32' | 'x86_64' | undefined> = {
@@ -38,11 +43,12 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
       const platformArch = `${app.platform.os}-${arch}`
       const replacement = natives[platformArch]
       if (!replacement) {
+        logger.log('Skip native replacement because no replacement for', platformArch)
         return
       }
       const replaced: ResolvedLibrary[] = []
       for (const original of libraries) {
-        const candidate = replacement[original.isNative ? original.name + ':natives' : original.name]
+        const candidate = replacement[original.isNative ? `${original.groupId}:${original.artifactId}:${original.version}:natives` : original.name]
         const resolved = candidate ? Version.resolveLibrary(candidate, app.platform as any) : undefined
         replaced.push(resolved || original)
       }
