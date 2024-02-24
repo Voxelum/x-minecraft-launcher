@@ -38,6 +38,30 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     return client
   }
 
+  async #updateSkins(client: YggdrasilThirdPartyClient, userProfile: UserProfile, signal?: AbortSignal) {
+    for (const p of Object.values(userProfile.profiles)) {
+      const profile = await client.lookup(p.id, true, signal)
+      const texturesBase64 = profile.properties.textures
+      const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
+      const skin = textures?.textures.SKIN
+      const uploadable = profile.properties.uploadableTextures
+
+      // mark skin already refreshed
+      if (skin) {
+        this.logger.log(`Update the skin for profile ${p.name}`)
+
+        userProfile.profiles[p.id] = {
+          ...profile,
+          textures: {
+            ...textures.textures,
+            SKIN: skin,
+          },
+          uploadable: uploadable ? uploadable.split(',') as any : undefined,
+        }
+      }
+    }
+  }
+
   async login({ username, password, authority }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
     const client = this.getClient(authority)
     if (!client) throw new UserException({ type: 'loginServiceNotSupported', authority }, `Service ${authority} is not supported`)
@@ -60,6 +84,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         authority,
       }
       await this.storage.put(userProfile, auth.accessToken)
+
+      await this.#updateSkins(client, userProfile, signal)
 
       return userProfile
     } catch (e: any) {
@@ -123,27 +149,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       userProfile.invalidated = false
     }
 
-    for (const p of Object.values(userProfile.profiles)) {
-      const profile = await client.lookup(p.id, true, signal)
-      const texturesBase64 = profile.properties.textures
-      const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
-      const skin = textures?.textures.SKIN
-      const uploadable = profile.properties.uploadableTextures
-
-      // mark skin already refreshed
-      if (skin) {
-        this.logger.log(`Update the skin for profile ${p.name}`)
-
-        userProfile.profiles[p.id] = {
-          ...profile,
-          textures: {
-            ...textures.textures,
-            SKIN: skin,
-          },
-          uploadable: uploadable ? uploadable.split(',') as any : undefined,
-        }
-      }
-    }
+    await this.#updateSkins(client, userProfile, signal)
 
     return userProfile
   }
