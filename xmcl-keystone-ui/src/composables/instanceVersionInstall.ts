@@ -102,7 +102,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     }
 
     if (quiltLoader) {
-      const localQuilt = local.find(v => v.quilt === quiltLoader)
+      const localQuilt = local.find(v => v.quilt === quiltLoader && v.minecraft === runtime.minecraft)
       if (localQuilt) {
         await refreshVersion(localQuilt.id)
         return localQuilt.id
@@ -111,7 +111,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     }
 
     if (labyMod) {
-      const localLabyMod = local.find(v => v.labyMod === labyMod)
+      const localLabyMod = local.find(v => v.labyMod === labyMod && v.minecraft === runtime.minecraft)
       if (localLabyMod) {
         await refreshVersion(localLabyMod.id)
         return localLabyMod.id

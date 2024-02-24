@@ -352,6 +352,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
       runtime.forge = ''
       runtime.neoForged = ''
       runtime.fabricLoader = ''
+      runtime.quiltLoader = ''
       runtime.optifine = ''
     }
   }
@@ -364,6 +365,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
         runtime.neoForged = ''
         runtime.fabricLoader = ''
         runtime.quiltLoader = ''
+        runtime.optifine = ''
       }
     }
   }
@@ -376,6 +378,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
         runtime.forge = ''
         runtime.fabricLoader = ''
         runtime.quiltLoader = ''
+        runtime.optifine = ''
       }
     }
   }
@@ -411,6 +414,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
       if (version) {
         data.version = ''
         runtime.quiltLoader = runtime.fabricLoader = ''
+        runtime.neoForged = ''
       }
     }
   }
