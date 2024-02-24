@@ -149,7 +149,7 @@ const { status } = useInstanceServerStatus(computed(() => props.instance))
 const dragging = ref(false)
 const dragover = ref(0)
 
-const favicon = computed(() => getInstanceIcon(props.instance, status.value))
+const favicon = computed(() => getInstanceIcon(props.instance, props.instance.server ? status.value : undefined))
 
 const items = useInstanceContextMenuItems(computed(() => props.instance))
 

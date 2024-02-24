@@ -1,7 +1,7 @@
-import { Instance, PingServerOptions, ServerStatus, ServerStatusServiceKey, UNKNOWN_STATUS } from '@xmcl/runtime-api'
+import { Instance, PingServerOptions, ServerStatus, ServerStatusServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, computed, ref, set, watch } from 'vue'
 
-import { useService, useSeverStatusAcceptVersion } from '@/composables'
+import { useService } from '@/composables'
 import { useLocalStorageCache } from '@/composables/cache'
 import { injection } from '@/util/inject'
 import { kInstances } from './instances'
@@ -9,8 +9,7 @@ import { kInstances } from './instances'
 export const kServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
 
 export function useInstanceServerStatus(instance: Ref<Instance>) {
-  const serverRef = computed(() => instance.value?.server ?? { host: '' })
-  return useServerStatus(serverRef, ref(25565))
+  return useServerStatus(computed(() => instance.value?.server ?? { host: '' }), ref(25565))
 }
 
 export function useServerStatusCache() {
@@ -105,16 +104,13 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
   const unknownStatus = useUnknown()
   const cache = injection(kServerStatusCache)
   const serverId = computed(() => `${serverRef.value.host}:${serverRef.value.port ?? 25565}`)
-  if (!cache.value[serverId.value]) {
-    set(cache.value, serverId.value, unknownStatus.value)
-  }
   watch(serverId, () => {
     if (!cache.value[serverId.value]) {
       set(cache.value, serverId.value, unknownStatus.value)
     }
-  })
+  }, { immediate: true })
   const status = computed<ServerStatus>({
-    get() { return cache.value[serverId.value] },
+    get() { return cache.value[serverId.value] ?? unknownStatus.value },
     set(v) {
       set(cache.value, serverId.value, v)
       localStorage.setItem('serverStatusCache', JSON.stringify(cache.value))
@@ -144,12 +140,10 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
   })
 
   function reset() {
-    status.value = UNKNOWN_STATUS
+    status.value = unknownStatus.value
   }
 
-  const acceptingVersion = useSeverStatusAcceptVersion(status)
   return {
-    acceptingVersion,
     status,
     pinging,
     refresh,
