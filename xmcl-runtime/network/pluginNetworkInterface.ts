@@ -1,18 +1,16 @@
-import { DefaultRangePolicy, createDefaultRetryHandler, resolveAgent } from '@xmcl/file-transfer'
+import { DefaultRangePolicy, getDefaultAgentOptions } from '@xmcl/file-transfer'
+import { PoolStats } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
 import { Agent, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
+import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
-import { GFW } from '~/gfw'
 import { kSettings } from '~/settings'
-import { isSystemError } from '~/util/error'
-import { BiDispatcher, kUseDownload } from './dispatchers/biDispatcher'
 import { CacheDispatcher, JsonCacheStorage } from './dispatchers/cacheDispatcher'
-import { InteroperableDispatcher } from './dispatchers/dispatcher'
-import { ProxyDispatcher } from './dispatchers/proxyDispatcher'
+import { DispatchInterceptor, createInterceptOptionsInterceptor } from './dispatchers/dispatcher'
+import { ProxyAgent, ProxySettingController } from './dispatchers/proxyDispatcher'
 import { buildHeaders } from './dispatchers/utils'
-import { overrideDns } from './dnsServers'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kUserAgent } from './userAgent'
 
@@ -32,6 +30,8 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const dispatchInterceptors: Array<(opts: DispatchOptions) => void | Promise<void>> = []
 
   let maxConnection = 64
+
+  const proxy = new ProxySettingController()
   app.registry.get(kSettings).then((state) => {
     maxConnection = state.maxSockets > 0 ? state.maxSockets : 64
     proxy.setProxyEnabled(state.httpProxyEnabled)
@@ -57,124 +57,113 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     })
   })
 
-  // Error sampling
-  let hasDnsIssue = false
-  const onError = (err: Error) => {
-    if (isSystemError(err)) {
-      if (err.syscall === 'getaddrinfo') {
-        // DNS lookup issue
-        err.name = 'DNSLookupError'
-        if (!hasDnsIssue) {
-          hasDnsIssue = true
-          // app.registry.get(GFW).then(g => {
-          //   overrideDns(g.env)
-          // })
-        }
-      } else if (err.syscall === 'read') {
-        if (err.code === 'ECONNRESET') {
-          err.name = 'ConnectionResetError'
-        }
-      }
+  const patchIfPool = (dispatcher: Dispatcher) => {
+    if (dispatcher instanceof Pool) {
+      const keys = Reflect.ownKeys(dispatcher)
+      const kConnections = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
+      if (kConnections) { Object.defineProperty(dispatcher, kConnections, { get: () => maxConnection }) }
     }
+    return dispatcher
   }
-
-  const proxy = new ProxyDispatcher({
-    factory(connect) {
-      const downloadAgent = new Agent({
-        bodyTimeout: 15_000,
-        headersTimeout: 10_000,
-        connectTimeout: 10_000,
-        connect,
-        factory(origin, opts: Agent.Options) {
-          const dispatcher = new Pool(origin, opts)
-          const keys = Reflect.ownKeys(dispatcher)
-          const sym = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
-          if (sym) {
-            Object.defineProperty(dispatcher, sym, {
-              get: () => {
-                return maxConnection
-              },
-            })
-          }
-          return dispatcher
-        },
-      })
-      const apiAgent = new Agent({
-        pipelining: 1,
-        bodyTimeout: 20_000,
-        headersTimeout: 10_000,
-        connectTimeout: 10_000,
-        connect,
-        factory(origin, opts: Agent.Options) {
-          let dispatcher: Dispatcher | undefined
-          for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin, opts) }
-          if (!dispatcher) { dispatcher = new Pool(origin, opts) }
-          if (dispatcher instanceof Pool) {
-            const keys = Reflect.ownKeys(dispatcher)
-            const kConnections = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
-            if (kConnections) { Object.defineProperty(dispatcher, kConnections, { get: () => maxConnection }) }
-          }
-          return dispatcher
-        },
-      })
-      return new BiDispatcher(downloadAgent, apiAgent, onError)
-    },
-  })
-
-  const apiDispatcher = new InteroperableDispatcher(
-    [
-      async (options) => {
-        for (const interceptor of dispatchInterceptors) {
-          await interceptor(options)
-        }
-        (options as any)[kUseDownload] = false
-        const headers = buildHeaders(options.headers || {})
-        if (!headers['user-agent']) {
-          headers['user-agent'] = userAgent
-        }
-        options.headers = headers
+  const appendUserAgent: DispatchInterceptor = (options) => {
+    const headers = buildHeaders(options.headers || {})
+    if (!headers['user-agent']) {
+      headers['user-agent'] = userAgent
+    }
+    options.headers = headers
+  }
+  const agentOptions = getDefaultAgentOptions()
+  const apiDispatcher = new CacheDispatcher(new ProxyAgent({
+    controller: proxy,
+    factory: (connect) => new Agent({
+      interceptors: {
+        Agent: [...agentOptions.interceptors.Agent],
+        Client: [...agentOptions.interceptors.Client, createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors])],
       },
-    ],
-    new CacheDispatcher(proxy, new JsonCacheStorage(cache)),
-  )
+      pipelining: 1,
+      bodyTimeout: 20_000,
+      headersTimeout: 10_000,
+      connectTimeout: 10_000,
+      connect,
+      factory(origin, opts: Agent.Options) {
+        let dispatcher: Dispatcher | undefined
+        for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin, opts) }
+        if (!dispatcher) { dispatcher = new Pool(origin, opts) }
+        return patchIfPool(dispatcher)
+      },
+    }),
+  }), new JsonCacheStorage(cache))
   setGlobalDispatcher(apiDispatcher)
 
-  const downloadAgent = resolveAgent({
+  const downloadProxy = new ProxyAgent({
+    controller: proxy,
+    factory: (connect) => new Agent({
+      connections: agentOptions.connections,
+      interceptors: {
+        Agent: [...agentOptions.interceptors.Agent],
+        Client: [...agentOptions.interceptors.Client],
+      },
+      headersTimeout: 15_000,
+      connectTimeout: 35_000,
+      connect,
+      factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),
+    }),
+  })
+  app.registry.register(kDownloadOptions, {
     rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
-    dispatcher: new InteroperableDispatcher(
-      [
-        (options) => {
-          (options as any)[kUseDownload] = true
-          const headers = buildHeaders(options.headers || {})
-          if (!headers['user-agent']) {
-            headers['user-agent'] = userAgent
-          }
-          options.headers = headers
-        },
-      ],
-      proxy,
-    ),
-    retryHandler: createDefaultRetryHandler(7),
+    dispatcher: downloadProxy,
     checkpointHandler: {
       lookup: async (url) => { return undefined },
       put: async (url, checkpoint) => { },
       delete: async (url) => { },
     },
+    headers: {
+      'user-agent': userAgent,
+    },
+  })
+
+  const getAgentStatus = () => {
+    // @ts-ignore
+    const clients = downloadProxy.agent[kClients] as Map<string, Dispatcher>
+    const result = {} as Record<string, PoolStats>
+    for (const [k, v] of clients.entries()) {
+      if (v instanceof Pool) {
+        const connected = v.stats.connected
+        const free = v.stats.free
+        const pending = v.stats.pending
+        const queued = v.stats.queued
+        const running = v.stats.running
+        const size = v.stats.size
+        const status = { connected, free, pending, queued, running, size }
+        result[k] = status
+      }
+    }
+    return result
+  }
+
+  downloadProxy.agent.on('drain', (url) => {
+    setTimeout(() => {
+      // @ts-ignore
+      const clients = downloadProxy.agent[kClients] as Map<string, Dispatcher>
+      const pool = clients.get(url.origin)
+      // @ts-ignore
+      const running = pool?.[kRunning]
+      if (running && running === 0) {
+        pool?.close()
+        clients.delete(url.origin)
+      }
+    }, 60_000)
   })
 
   app.registry.register(kNetworkInterface, {
-    registerAPIFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
+    registerClientFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
       apiClientFactories.unshift(interceptor)
       return apiDispatcher
     },
-    registerDispatchInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>): void {
+    registerOptionsInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>): void {
       dispatchInterceptors.unshift(interceptor)
     },
-  })
-
-  app.registry.register(kDownloadOptions, {
-    agent: downloadAgent,
-    headers: {},
+    getDownloadAgentStatus: getAgentStatus,
   })
 
   app.registryDisposer(async () => {

@@ -1,10 +1,11 @@
-import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, Settings } from '@xmcl/runtime-api'
+import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, PoolStats, Settings } from '@xmcl/runtime-api'
 import { readdir, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
 import { kClientToken } from '~/clientToken'
 import { kLogRoot } from '~/logger'
+import { kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
@@ -24,6 +25,10 @@ export class BaseService extends AbstractService implements IBaseService {
     super(app, async () => {
       this.checkUpdate()
     })
+  }
+
+  getNetworkStatus(): Promise<Record<string, PoolStats>> {
+    return this.app.registry.get(kNetworkInterface).then(s => s.getDownloadAgentStatus())
   }
 
   getSessionId() {

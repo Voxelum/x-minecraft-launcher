@@ -230,6 +230,7 @@ errors:
     ¡El lanzador no funcionará correctamente! 
     Seleccione un directorio de datos al que pueda acceder el iniciador. 
     Puede intentar restablecer la raíz de datos en la página de configuración.
+  NotFoundError: 404 No encontrado
 fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}
@@ -860,6 +861,8 @@ setting:
   disableTelemetryDescription: >-
     XMCL recopilará eventos de inicio del juego y de inicio de sesión del
     usuario.
+  enableDedicatedGPUOptimization: Asignar GPU dedicada
+  enableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   enableDiscord: Habilitar Presencia en Discord
   enableDiscordDescription: Esto mantendrá actualizado tu estado de lanzador en Discord
   general: General
@@ -878,8 +881,6 @@ setting:
     El diseño del lanzador representa una lógica de interfaz de usuario
     diferente
   layoutTitle: Diseño
-  enableDedicatedGPUOptimization: Asignar GPU dedicada
-  enableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento

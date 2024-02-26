@@ -5,7 +5,7 @@ import { kNetworkInterface } from '~/network'
 
 export const pluginCurseforgeClient: LauncherAppPlugin = async (app) => {
   const networkInterface = await app.registry.get(kNetworkInterface)
-  const dispatcher = networkInterface.registerAPIFactoryInterceptor((origin, options) => {
+  const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, options) => {
     if (origin.host === 'api.curseforge.com') {
       return new Client(origin, {
         ...options,

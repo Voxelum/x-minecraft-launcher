@@ -32,7 +32,18 @@ export interface Environment extends Platform {
   build: number
 }
 
+export interface PoolStats {
+  connected: number
+  free: number
+  pending: number
+  queued: number
+  running: number
+  size: number
+}
+
 export interface BaseService {
+  getNetworkStatus(): Promise<Record<string, PoolStats>>
+
   validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'>
 
   getSessionId(): Promise<string>

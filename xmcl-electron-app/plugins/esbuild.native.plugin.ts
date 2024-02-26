@@ -67,6 +67,21 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      // node_modules\.pnpm\undici@6.6.2\node_modules\undici\lib\handler\RetryHandler.js
+      build.onLoad(
+        { filter: /^.+undici[\\/]lib[\\/]handler[\\/]RetryHandler\.js$/g },
+        async ({ path }) => {
+          const content = await readFile(path, 'utf-8')
+          return {
+            contents: content.replace(
+              /start != null && Number\.isFinite\(start\) && this\.start !== start/g,
+              'start !== null && Number.isFinite(start)',
+            ),
+            loader: 'js',
+          }
+        },
+      )
+
       // Intercept node_modules\better-sqlite3\lib\database.js
       build.onLoad(
         { filter: /^.+better-sqlite3[\\/]lib[\\/]database\.js$/g },

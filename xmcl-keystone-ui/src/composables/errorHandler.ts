@@ -2,13 +2,16 @@ import { HTTPException } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { Notify } from './notifier'
 import { useExceptionHandler } from '@/composables/exception'
+import { useLocaleError } from './error'
 
 export function useDefaultErrorHandler(notify: Notify) {
   const { t } = useI18n()
   const { show } = useDialog('feedback')
+  const tError = useLocaleError()
   useExceptionHandler(HTTPException, (e) => {
+    const message: string = tError(e)
     notify({
-      title: t('exception.http', { statusCode: e.statusCode, url: e.url, code: e.code }),
+      title: message,
       level: 'error',
       more() {
         show()

@@ -1,8 +1,8 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { InstallProfile, LiteloaderVersion, MinecraftVersion, QuiltArtifactVersion, InstallLabyModOptions as IInstallLabyModOptions, LabyModManifest } from '@xmcl/installer'
-import { ForgeVersion, OptifineVersion, FabricVersions, LiteloaderVersions, MinecraftVersions, NeoForgedVersions } from '../entities/version'
-import { ServiceKey } from './Service'
+import type { InstallProfile, LabyModManifest, LiteloaderVersion, MinecraftVersion } from '@xmcl/installer'
 import { Resource } from '../entities/resource'
+import { OptifineVersion } from '../entities/version'
+import { ServiceKey } from './Service'
 
 export interface InstallOptifineOptions extends OptifineVersion {
   /**

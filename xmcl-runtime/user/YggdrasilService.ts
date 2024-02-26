@@ -34,7 +34,7 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
       this.yggdrasilServices.push(...apis.yggdrasilServices)
     })
 
-    const dispatcher = networkInterface.registerAPIFactoryInterceptor((origin, options) => {
+    const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, options) => {
       const hosts = this.yggdrasilServices.map(v => new URL(v.url).hostname)
       if (hosts.indexOf(origin.hostname) !== -1) {
         return new Pool(origin, {

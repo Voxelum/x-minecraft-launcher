@@ -1,8 +1,8 @@
 <template>
   <v-card
     flat
-    style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
-    class="flex flex-col"
+    style="min-height: 300px; max-width: 100%;"
+    class="flex flex-col overflow-auto"
   >
     <v-toolbar
       tabs
@@ -18,7 +18,7 @@
       </v-btn>
     </v-toolbar>
 
-    <v-card-text>
+    <v-card-text class="max-h-[400px] overflow-auto">
       <div
         v-if="visible.length === 0"
         class="mt-4"
@@ -90,6 +90,7 @@
 </template>
 
 <script lang=ts setup>
+import { useService } from '@/composables'
 import { useTaskName } from '../composables/task'
 import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
 import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
@@ -98,7 +99,7 @@ import { useDialog } from '@/composables/dialog'
 import { kTaskManager } from '@/composables/taskManager'
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
-import { TaskState } from '@xmcl/runtime-api'
+import { BaseServiceKey, PoolStats, TaskState } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
 interface TaskItemOrGroup extends TaskItem {
@@ -109,6 +110,14 @@ interface TaskItemOrGroup extends TaskItem {
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager)
 const { t } = useI18n()
 const tTask = useTaskName()
+const { getNetworkStatus } = useService(BaseServiceKey)
+
+const stat: Ref<Record<string, PoolStats>> = ref({})
+setInterval(() => {
+  getNetworkStatus().then((s) => {
+    stat.value = s
+  })
+}, 1000)
 
 const visible: Ref<TaskItem[]> = ref([])
 

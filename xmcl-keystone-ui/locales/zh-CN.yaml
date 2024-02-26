@@ -269,6 +269,7 @@ errors:
   DownloadAggregateError: 下载文件失败。
   DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时
+  NotFoundError: 404 未找到资源
   SocketError: 与服务器连接被断开
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查你的网络。如果这个问题持续出现，请联系开发团队。'
@@ -1093,6 +1094,8 @@ setting:
   developerModeDescription: 开发者模式意在于帮助你测试你自己写的 Mod
   disableTelemetry: 关闭遥测
   disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
+  enableDedicatedGPUOptimization: 分配专用 GPU
+  enableDedicatedGPUOptimizationDescription: 此选项将为 Minecraft 进程分配专用 GPU。
   enableDiscord: 启用 Discord Presence
   enableDiscordDescription: 根据 XMCL 实时更新 Discord 的状态
   general: 基本设置
@@ -1109,8 +1112,6 @@ setting:
     focus: 聚焦布局
   layoutDescription: 不同的布局有不同的UI交互逻辑
   layoutTitle: 布局
-  enableDedicatedGPUOptimization: 分配专用 GPU
-  enableDedicatedGPUOptimizationDescription: 此选项将为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   location: 数据存储位置
