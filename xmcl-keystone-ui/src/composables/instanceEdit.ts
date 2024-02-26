@@ -228,6 +228,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     return false
   })
 
+  watch(computed(() => instance.value.version), () => load())
+
   async function save() {
     const payload = {
       name: data.name,
