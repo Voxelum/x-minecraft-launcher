@@ -248,6 +248,7 @@ disk:
   used: 已用
 download: 下载
 downloadCount: '{count} 次下载'
+downloadUpdate: 下载更新
 duration:
   day: '{duration} 天'
   hour: '{duration} 小时'

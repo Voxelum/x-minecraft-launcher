@@ -223,6 +223,7 @@ diagnosis:
     message: Launcher descargará el índice de assets por ti
     name: Falta el archivo de índice de activos de {version}.
 disable: Desactivar
+downloadUpdate: Descarga de la actualización
 errors:
   DatabaseNotOpened: |-
     ¡La base de datos no está abierta! 

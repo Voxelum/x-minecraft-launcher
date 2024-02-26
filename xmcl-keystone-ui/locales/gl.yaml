@@ -224,6 +224,7 @@ diagnosis:
     message: O Lanzador descargará o índice de assets por ti
     name: Falta o arquivo de índice de activos de {version}.
 disable: Desactivar
+downloadUpdate: Descargar actualización
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
 launchBlocked:

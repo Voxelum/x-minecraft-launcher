@@ -215,6 +215,7 @@ disk:
   used: Викоростовано
 download: Завантажити
 downloadCount: 'Завантажень: {count}'
+downloadUpdate: Завантажити оновлення
 duration:
   day: '{duration} день | {duration} дні'
   hour: '{duration} година | {duration} години'

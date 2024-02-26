@@ -239,6 +239,7 @@ disk:
   used: Gepflegt
 download: Herunterladen
 downloadCount: 'Downloads: {count}'
+downloadUpdate: Aktualisierung herunterladen
 duration:
   day: '{duration} Tag | {duration} Tage'
   hour: '{duration} Stunde  | {duration} Stunden'

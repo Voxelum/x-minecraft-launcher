@@ -252,6 +252,7 @@ disk:
   used: Utilisé
 download: Télécharger
 downloadCount: '{count} téléchargements'
+downloadUpdate: Télécharger la mise à jour
 duration:
   day: '{duration} jour | {duration} jours'
   hour: |-

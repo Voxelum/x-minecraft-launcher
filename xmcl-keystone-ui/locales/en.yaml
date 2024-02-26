@@ -214,6 +214,7 @@ disk:
   available: Available
   used: Used
 download: Download
+downloadUpdate: Download Update
 downloadCount: '{count} downloads'
 duration:
   day: '{duration} day | {duration} days'

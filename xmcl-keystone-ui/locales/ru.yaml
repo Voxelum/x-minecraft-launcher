@@ -211,6 +211,7 @@ disk:
   used: Использовано
 download: Скачать
 downloadCount: 'Скачиваний: {count}'
+downloadUpdate: Скачать обновление
 duration:
   day: '{duration} день | {duration} дней'
   hour: '{duration} час | {duration} часов'
