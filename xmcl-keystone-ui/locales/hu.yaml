@@ -625,86 +625,85 @@ mod:
   currentVersion: Jelenlegi {current}
   deletion: Mod törlése
   deletionHint: >-
-    You will lose this mod & its metadata forever. Are you sure you want to
-    delete it? | You will lose these mod & these metadata forever. Are you sure
-    you want to do that?
-  deletionRestHint: And {rest} more Mods...
-  dropHint: Drop mod's .jar/.litemod here to import.
-  enabled: '{count} Mods enabled'
-  filter: Filter Mods
-  groupInstalled: Group Installed Mods
-  hasUpdate: Mod has a new version!
-  hideIncompatible: Hide Incompatible Mods
-  incompatible: Incompatible Mod.
-  manage: Manage Mods
-  maybeCompatible: Maybe Compatible.
-  name: Mod | Mods
-  noModLoaderHint: Don't forget to enable a modloader to use mods!
-  openLink: Open the mod url {url}
-  search: Search Mods
-  searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: Search {name} in Modrinth
-  showDirectory: Show mods directory
-  showFile: Show the mod path {file}
-  showInCurseforge: Show the mod in curseforge
-  showInModrinth: Show {name} in Modrinth
-  switchDefaultSource: Default Mod Source
-  toUpdate: '{count} to update'
+    Ez a mod és metaadatai örökre elvesznek. Biztos vagy benne, hogy törlöd? | Ezt
+    a modot és metaadatait örökre elveszíted. Biztos vagy benne, hogy hogy ezt akarod?
+  deletionRestHint: És további {rest} mod...
+  dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
+  enabled: '{count} Modok engedélyezve'
+  filter: Modok szűrése
+  groupInstalled: Csoportosan telepített modok
+  hasUpdate: A modnak új verziója van!
+  hideIncompatible: Inkompatibilis modok elrejtése
+  incompatible: Inkompatibilis mod.
+  manage: Modok kezelése
+  maybeCompatible: Talán kompatibilis.
+  name: Mod | Modok
+  noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
+  openLink: A mod url {url} megnyitása
+  search: Modok keresése
+  searchOnCurseforge: Keresés {name} a curseforge-on
+  searchOnModrinth: Keresés {név} a Modrinth-on
+  showDirectory: Modok mappájának megjelenítése
+  showFile: A mod elérési útvonalának megjelenítése {file}
+  showInCurseforge: A mod megjelenítése a curseforge-ban
+  showInModrinth: {name} megjelenítése Modrinth-en
+  switchDefaultSource: Alapértelmezett mod forrás
+  toUpdate: '{count} frissítendő'
 modInstall:
-  checkUpgrade: Check Mods Update
-  checkedUpgrade: Upgrade checked
-  currentVersion: Selected Version
-  dependencyHint: Installed another version {version}
-  install: Install
-  installHint: Will install {file} file with {dependencies} dependencies
-  installed: Installed
-  noVersionSupported: Mod does not support current Minecraft version
-  search: Search Result
-  searchHint: Search and select project
-  source: Mod Source
-  switch: Swtich Version
-  upgrade: Upgrade Mods
+  checkUpgrade: Modok frissítésének ellenőrzése
+  checkedUpgrade: Frissítés ellenőrizve
+  currentVersion: Kiválasztott verzió
+  dependencyHint: Egy másik verzió {version} telepítése
+  install: Telepítés
+  installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
+  installed: Telepítve
+  noVersionSupported: A mod nem támogatja az aktuális Minecraft verziót
+  search: Keresési találat
+  searchHint: Keresés és projekt kiválasztása
+  source: Mod forrása
+  switch: Verzió váltás
+  upgrade: Modok frissítése
 modSearchType:
-  all: All
-  explore: Explore Market
-  installed: Installed
-  local: Disk Cache
+  all: Összes
+  explore: Piac felfedezése
+  installed: Telepítve
+  local: Lemez gyorsítótár
 modified:
-  reset: Reset
-  save: Save
-  unsaved: Your modification is unsaved!
+  reset: Visszaállítás
+  save: Mentés
+  unsaved: A módosításod még nincs mentve!
 modpack:
-  author: Author Name
-  authorHint: This might be used to sign on exported modpack (Curseforge)
+  author: Készítő neve
+  authorHint: Ezt lehet használni, hogy aláírd az exportált modcsomagot (Curseforge)
   delete:
-    hint: This will delete the modpack {name} with its metadata. Are you sure?
-    title: Delete the Modpack
-  description: Description
+    hint: Törlöd a {name} modcsomagot a metadataival együtt. Biztos vagy benne?
+    title: Modcsomag törlése
+  description: Leírás
   descriptionHint: >-
-    General description for you modpack. Might be used for exporting as
-    curseforge modpack.
-  dropHint: Drop modpack zip to here to import
-  emitCurseforge: Emit Curseforge Modpack
-  emitMcbbs: Emit MCBBS Modpack
-  emitModrinth: Emit Modrinth Modpack
-  emitModrinthStrict: Strict Modrinth Format
-  emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
-  export: Export as Modpack
-  general: General Information
-  includeAssets: Include Assets
-  includeLibraries: Include Libraries
-  includes: Files to includes
-  modpackVersion: Modpack Version
-  name: Modpack | Modpacks
-  overrides: Overrides
-  showFile: Show File {file}
-  showInCurseforge: Show {name} in Curseforge
-  showInFtb: Show {name} in FTB
-  showInModrinth: Show {name} in Modrinth
+    A modcsomag általános leírása. Használható a curseforge modcsomag
+    exportálásához.
+  dropHint: Húzd ide a modcsomag zip fájlát az importáláshoz
+  emitCurseforge: Emit Curseforge modcsomag
+  emitMcbbs: Emit MCBBS modcsomag
+  emitModrinth: Emit Modrinth modcsomag
+  emitModrinthStrict: Szigorú Modrinth formátum
+  emitModrinthStrictDescription: Csak a modrinth dokumentumban felsorolt 4 domain URL-je engedélyezett.
+  export: Exportálás modcsomagként
+  general: Általános információk
+  includeAssets: Tartalmazott elemek
+  includeLibraries: Tartalmazott könyvtárak
+  includes: Fájlok, amelyek tartalmazzák
+  modpackVersion: Modpcsomag verzió
+  name: Modcsomag | Modcsomagok
+  overrides: Felülírás
+  showFile: Fájl megjelenítése {file}
+  showInCurseforge: {name} megnyitása Curseforge-on
+  showInFtb: {name} megnyitása FTB-ben
+  showInModrinth: {name} megnyitása Modrinth-en
   url: URL
-  urlHint: The home page url of your modpack
+  urlHint: A modcsomag kezdőlapjának url-je
 modrinth:
-  browseUrl: Open In Browser {url}
+  browseUrl: Megnyitás böngészőben {url}
   categories:
     128x: 128x
     16x: 16x
@@ -714,290 +713,291 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    adventure: Adventure
-    atmosphere: Atmosphere
-    audio: Audio
-    blocks: Blocks
+    adventure: Kaland
+    atmosphere: Hangulat
+    audio: Hang
+    blocks: Blokkok
     bloom: Bloom
     bukkit: Bukkit
     bungeecord: Bungeecord
-    canvas: Canvas
-    cartoon: Cartoon
-    categories: Categories
-    challenging: Challenging
-    colored-lighting: Colored Lighting
-    combat: Combat
-    core-shaders: Core-shaders
-    cursed: Cursed
-    datapack: Data Pack
-    decoration: Decoration
-    economy: Economy
-    entities: Entities
-    environment: Environment
-    equipment: Equipment
+    canvas: Vászon
+    cartoon: Rajzfilm
+    categories: Kategóriák
+    challenging: Kihívás
+    colored-lighting: Színes világítás
+    combat: Harc
+    core-shaders: Core-shaderek
+    cursed: Elátkozott
+    datapack: Adatcsomag
+    decoration: Dekoráció
+    economy: Gazdaság
+    entities: Entitások
+    environment: Környezet
+    equipment: Felszerelés
     fabric: Fabric
-    fantasy: Fantasy
-    features: Features
+    fantasy: Fantázia
+    features: Funkciók
     folia: Folia
     foliage: Foliage
-    fonts: Fonts
-    food: Food
+    fonts: Betűtípusok
+    food: Étel
     forge: Forge
-    game-mechanics: Game Mechanics
+    game-mechanics: Játékmechanikák
     gui: Gui
-    high: High
+    high: Magas
     iris: Iris
-    items: Items
-    kitchen-sink: Kitchen Sink
-    library: Library
-    lightweight: Lightweight
+    items: Tárgyak
+    kitchen-sink: Mosogató
+    library: Könyvtár
+    lightweight: Pehelysúlyú
     liteloader: Liteloader
-    locale: Locale
-    low: Low
-    magic: Magic
-    management: Management
-    medium: Medium
+    locale: Nyelv
+    low: Alacsony
+    magic: Varázslatos
+    management: Kezelés
+    medium: Közepes
     minecraft: Minecraft
-    minigame: Mini Games
-    misc: Misc
-    mobs: Mobs
-    modded: Modded
-    models: Models
-    modloader: Mod Loader
-    multiplayer: Multiplayer
+    minigame: Mini játékok
+    misc: Különféle
+    mobs: Ellenségek
+    modded: Modolt
+    models: Modellek
+    modloader: Mod betöltő
+    multiplayer: Többjátékos
     neoforge: NeoForge
     optifine: Optifine
-    optimization: Optimizations
+    optimization: Optimalizálás
     paper: Paper
-    path-tracing: Path Tracing
+    path-tracing: Útvonal követés
     pbr: PBR
-    performance impact: Performance Impact
-    potato: Potato
+    performance impact: Teljesítmény hatás
+    potato: Krumpli
     purpur: Purpur
-    quests: Quests
+    quests: Küldetések
     quilt: Quilt
-    realistic: Realistic
-    reflections: Reflections
-    resolutions: Resolutions
+    realistic: Valósághű
+    reflections: Visszatükröződések
+    resolutions: Felbontások
     rift: Rift
-    screenshot: Screenshot
-    semi-realistic: Semi Realistic
-    shadows: Shadows
-    simplistic: Simplistic
-    social: Social
+    screenshot: Képernyőkép
+    semi-realistic: Félig valósághű
+    shadows: Árnyékok
+    simplistic: Egyszerű
+    social: Közösségi
     spigot: Spigot
     sponge: Sponge
-    storage: Storage
-    technology: Technology
-    themed: Themed
-    transportation: Transportation
-    tweaks: Tweaks
-    utility: Utility
+    storage: Tárolás
+    technology: Technológia
+    themed: Tematikus
+    transportation: Közlekedés
+    tweaks: Módosítások
+    utility: Segédprogram
     vanilla: Vanilla
     vanilla-like: Vanilla-like
     velocity: Velocity
     waterfall: Waterfall
-    worldgen: World Gen
-  clientSide: Client Side
-  copyTitle: Copy Text {title} to clipboard
-  createAt: Created
-  description: Description
-  downloads: Downloads
+    worldgen: Világ generálás
+  clientSide: Kliens oldali
+  copyTitle: {title} címe másolása vágólapra
+  createAt: Létrehozva
+  description: Leírás
+  downloads: Letöltések
   environments:
-    client: Client
-    default: Default
-    name: Environment
-    optional: Optional
-    required: Required
-    server: Server
-    unsupported: Unsupported
-  externalResources: External Resources
-  featuredVersions: Featured Versions
-  followers: Followers
-  gallery: Gallery
+    client: Kliens
+    default: Alapértelmezett
+    name: Környezet
+    optional: Opcionális
+    required: Szükséges
+    server: Szerver
+    unsupported: Nem támogatott
+  externalResources: Külső források
+  featuredVersions: Kiemelt verziók
+  followers: Követők
+  gallery: Galéria
   gameVersions:
-    name: Game Versions
+    name: Játék verziók
   headers:
-    status: Stats
-    support: Supports
-    version: Version
-  issueUrl: Issue
-  license: License
+    status: Statisztika
+    support: Támogatás
+    version: Verziók
+  issueUrl: Problémák
+  license: Licenc
   licenses:
-    name: Licenses
+    name: Licencek
   modLoaders:
-    name: Mod Loaders
-  perPage: Per Page
-  projectId: Project Id
-  projectMembers: Project Members
+    name: Mod betöltők
+  perPage: Oldalanként
+  projectId: Projekt Id
+  projectMembers: Projekt tagok
   projectType:
     mod: Mod
-    modpack: Modpack
-    name: Project Type
-    resourcePack: Resource Pack
+    modpack: Modcsomag
+    name: Projekt típusa
+    resourcePack: Forráscsomag
     shader: Shader
-  quickSearch: Search {title}
-  searchText: Search
-  serverSide: Server Side
+  quickSearch: Keresés {title}
+  searchText: Keresés
+  serverSide: Szerver oldali
   sort:
-    downloads: Download counts
-    follows: Follow count
-    newest: Recently created
-    relevance: Relevance
-    title: Sort By
-    updated: Recently updated
-  sourceUrl: Source
-  technicalInformation: Technical Information
-  updateAt: Updated
-  versions: Versions
+    downloads: Letöltések
+    follows: Követések
+    newest: Nemrégiben létrehozva
+    relevance: Releváns
+    title: Rendezés
+    updated: Nemrég frissítve
+  sourceUrl: Forrás
+  technicalInformation: Technikai információk
+  updateAt: Frissítve
+  versions: Verziók
   wikiUrl: Wiki
 modrinthCard:
-  currentVersion: Current Version
+  currentVersion: Jelenlegi verzió
   projectHint: >
-    This instance is created by Modrinth modpack from <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+    Ezt a példányt a Modrinth modpack hozta létre a következőből <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (projekt id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
-  allowTurn: Enable relay server
+  allowTurn: Relay szerver engedélyezése
   allowTurnHint: >-
-    Allow relay server if you cannot connect with your friend. However, using
-    relay server may slow down your connection. Use it with caution.
-  complete: Complete
-  confirm: Confirm
-  connections: Connections
-  copied: Copied!
-  copy: Copy
-  copyGroupToFriendHint: Let your friends join group by this id
+    Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz.
+    A relés szerver használata azonban lelassíthatja a kapcsolatot. Használd 
+    óvatosan.
+  complete: Kész
+  confirm: Megerősítés
+  connections: Kapcsolatok
+  copied: Másolva!
+  copy: Másolás
+  copyGroupToFriendHint: Engedd meg barátaidnak, hogy csatlakozzanak a csoporthoz ezzel az azonosítóval
   copyLocalHint: >
-    "Please copy the local SDP text and send it to your object to have your
-    object enter this text in the join connection <span>A token can be only used
-    for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
-    send the same token to multiple peer!</span> <br> <span class="hint-text"
-    style="font-style: italic;">If you need to connect multiple peers, you need
-    to create <span style="font-weight: bold; color: rgba(245, 158,
-    11)">multiple</span> connections.</span>"
-  createLocalToken: Create Local Token
-  currentIpTitle: Detectd Public IP
-  currentNatTitle: 'Current network (NAT):'
-  difficultyLevelHint: The level of difficulty to create a peer connection with other
-  disconnect: Disconnect
-  disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
-  disconnected: disconnected
-  enterRemoteToken: Enter Remote Token
+    "Kérjük, másolja a helyi SDP szövegét, és küldje el az objektumának, hogy az
+    objektum ezt a szöveget adja meg a csatlakozási kapcsolatba <span>Egy token
+    csak <span style="color: red; font-weight: bold;">egy partner</span> számára
+    használható!   Ugyanazt a tokent nem küldheti el több peer-nek!</span> <br>
+    <span class="hint-text" style="font-style: italic;">Ha több peerhez kell
+    csatlakoznia, akkor a létrehozni <span style="font-weight: bold; color: rgba(245, 158, 11)">
+    több</span> kapcsolatot.</span>"
+  createLocalToken: Helyi token létrehozása
+  currentIpTitle: Nyilvános IP érzékelése
+  currentNatTitle: 'Jelenlegi hálózat (NAT):'
+  difficultyLevelHint: A nehézségi szint, hogy létrehozzanak egy peer kapcsolatot más
+  disconnect: Lecsatlakozás
+  disconnectDescription: Biztos, hogy a {user}({id}) felhasználóval akarod megszakítani a kapcsolatot?
+  disconnected: lecsatlakozva
+  enterRemoteToken: Távoli token megadása
   enterRemoteTokenHint: >-
-    Once your peer enter your token, you need to enter his token to the text
-    area below. Click confirm to connect.
+    Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát
+    az alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
   gatheringIce: >
-    "Please wait for the ICE server to collect enough information about your
-    network. If you are impatient and there are enough information, you can give
-    the current SDP to the other party in advance and click Next Please send the
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
-    >Local Token</span> to your peer, you peer enter your token in <span
+    "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön
+    a hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az
+    aktuális SDP-t a másik félnek előre, és kattintson a Next Please send the
+    <span class="v-chip v-chip--label v-size--small" style="text-font: bold">
+    Local Token</span> a partnerének, a partner megadja a tokenjét a <span
     class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
-    Connection </span> section. <br> The ICE server might need some time to
-    collect your info to create <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">Local token</span>.<br> You do not need to wait
-    until the ICE status complete. If the token below remain unchanged, you can
-    copy it and send to you peer."
-  groupId: Group Id
-  illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
-  initiateConnection: Initiate Connection
-  inviteLink: Invite Link
+    Kapcsolat </span> szakaszban. <br> Az ICE-kiszolgálónak időre lehet szüksége
+    ahhoz, hogy összegyűjti az adatait, hogy létrehozza a <span class="v-chip
+    v-chip--label v-size--small" style="text-font: bold">Lokális token</span>.
+    <br> Nem kell várnia. amíg az ICE státusz befejeződik. Ha az alábbi token
+    változatlanul marad, akkor a másolja le és küldje el a partnerének."
+  groupId: Csoport Id
+  illegalTokenDescription: Hibás token, kérlek győződj meg róla, hogy a partneredtől kapott token helyes-e
+  initiateConnection: Kapcsolat kezdeményezése
+  inviteLink: Meghívó link
   joinConnection: >-
-    If your peer has already initiated a connection, you need to Join
-    Connection.
-  joinManual: Join
-  joinOrCreateGroup: Join/Create Group
-  joinOrCreateGroupHint: Get group id from your friends or create a group
-  leaveGroup: Leave group
-  localToken: Local Token
-  manualConnect: Manually Connect
-  name: Multiplayer on LAN
-  networkInfo: Network Info
-  next: Next
-  placeholder: Connect with other user to play Minecraft on LAN!
-  previous: Previous
+    Ha a társad már kezdeményezett kapcsolatot, akkor a Csatlakozáshoz
+    csatlakozni kell.
+  joinManual: Csatlakozás
+  joinOrCreateGroup: Csatlakozás/Csoport létrehozása
+  joinOrCreateGroupHint: Csoport azonosító kérése barátaidtól vagy csoport létrehozása
+  leaveGroup: Csoport elhagyása
+  localToken: Helyi token
+  manualConnect: Manuális csatlakozás
+  name: Többjátékos LAN-on
+  networkInfo: Hálózati információk
+  next: Következő
+  placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
+  previous: Előző
   receiveHint: >-
-    After the other party enters your token, your connection will create
-    automatically. Now you can close the dialog.
-  receiveRemoteTokenHint: Please enter the token from your peer here.
-  remoteToken: Remote Token
-  routerInfo: Router Info
-  sendTokenToRemote: Send Token to Remote
-  share: Share Instance Config
-  sharing: Sharing files...
-  start: Start
-  startNewP2PConnection: Click the Start button to create a new peer connection
-myStuff: My Stuff
-name: Name
+    Miután a másik fél megadja a jelszavát, a kapcsolat automatikusan
+    létrejön. Most már bezárhatod a párbeszédpanelt.
+  receiveRemoteTokenHint: Kérlek, add meg itt a partneredtől kapott tokent.
+  remoteToken: Távoli token
+  routerInfo: Router információ
+  sendTokenToRemote: Token küldése a távolra
+  share: Példány konfigurációjánask megosztása
+  sharing: Fájlok megosztása...
+  start: Indítás
+  startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
+myStuff: Dolgaid
+name: Név
 natType:
-  blocked: Blocked
-  fullCone: Full Cone
-  openInternet: Open Internet
-  restrictNat: Restrict NAT
-  restrictPortNat: Restrict Port NAT
-  symmetricNat: Symmetric NAT
-  symmetricUDPFirewall: Symmetric UDP Firewall
-  unknown: Unknown
+  blocked: Blokkolva
+  fullCone: Teljes cone
+  openInternet: Nyílt internet
+  restrictNat: NAT korlátozása
+  restrictPortNat: NAT-port korlátozása
+  symmetricNat: Szimmetrikus NAT
+  symmetricUDPFirewall: Szimmetrikus UDP tűzfal
+  unknown: Ismeretlen
 neoForgedVersion:
-  disable: Disable NeoForged
-  empty: NeoForged does not support {version}
+  disable: NeoForged letiltása
+  empty: NeoForged nem támogatja a {version} verziót
   name: NeoForged
 news:
-  name: News
-  readMore: Read More
-next: Next
-'no': 'No'
-ok: OK
+  name: Hírek
+  readMore: Bővebben
+next: Következő
+'no': 'Nem'
+ok: Oké
 optifineVersion:
-  disable: Disable Optifine
-  empty: Optifine not support Minecraft {version}
-optional: Optional
+  disable: Optifine letiltása
+  empty: Optifine nem támogatja a {version} verziót
+optional: Opcionális
 peerConnectionState:
-  closed: Closed
-  connected: Connected
-  connecting: Connecting
-  disconnected: Disconnected
-  failed: Failed
-  name: Connection State
-  new: New
+  closed: Zárt
+  connected: Csatlakozva
+  connecting: Csatlakozás
+  disconnected: Lecsatlakozva
+  failed: Sikertelen
+  name: Csatlakozás állapota
+  new: Új
 peerGroupState:
-  closed: Not in Group
-  closing: Closed
-  connected: Group Joined
-  connecting: Connecting
+  closed: Nem a csoportban
+  closing: Zárt
+  connected: Csoport csatlakozott
+  connecting: Csatlakozás
 peerIceGatheringState:
-  gathering: Gathering Ice Server
+  gathering: Ice Szerver gyűjtése
 peerSignalingState:
-  have-local-offer: Waiting peer description
-popular: Popularity
+  have-local-offer: Várakozó peer leírása
+popular: Népszerűség
 presence:
-  curseforge: Viewing CurseForge
-  curseforgeProject: Viewing {name} in Curseforge
-  instance: Idle in Instance {instance}
-  instanceSetting: 'Edit Instance Setting: {instance}'
-  mod: Viewing Mods in {instance}
-  modrinth: Viewing Modrinth
-  modrinthProject: Viewing {name} in Modrinth
-  resourcePack: Viewing Resource Packs in {instance}
-  save: Viewing Saves in {instance}
-  setting: Viewing Setting Page
-  shaderPack: Viewing Shader Packs in {instance}
-  version: Viewing Versions Page
-previous: Previous
+  curseforge: CurseForge megtekintése
+  curseforgeProject: {name} megtekintése a Curseforge-ban
+  instance: Tétlen a példányban {instance}
+  instanceSetting: 'Példa beállításainak szerkesztése: {instance}'
+  mod: Modok megtekintése a {instance}-ban
+  modrinth: Modrinth megtekintése
+  modrinthProject: {name} megtekintése Modrinth-ban
+  resourcePack: Forráscsomagok megtekintése a {instance}-ben
+  save: Mentés megtekintése a {instance}-ben
+  setting: Beállítások megtekintése
+  shaderPack: Shader csomagok megtekintése {instance}-ben
+  version: Verziók megtekintése
+previous: Előző
 proxy:
-  host: Host
+  host: Hoszt
   port: Port
 quiltVersion:
-  disable: Disable Quilt
-  empty: Quilt does not support Minecraft {version}
-refresh: Refresh
-refreshResource: Refresh Resources
-remove: Remove
+  disable: Quilt letiltása
+  empty: Quilt nem támogatja a {version} verziót
+refresh: Frissítés
+refreshResource: Erőforrások frissítése
+remove: Eltávolítás
 resourcepack:
-  available: Available
-  compatible: Compatible format {format} with {version}
-  defaultDescription: The default look and feel of Minecraft
+  available: Elérhető
+  compatible: Kompatibilis formátum {format} a {version}-vel
+  defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
     content: >-
       This will remove the resource pack file from disk, and we cannot redo it.
