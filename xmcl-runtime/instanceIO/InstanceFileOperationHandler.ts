@@ -145,7 +145,7 @@ export class InstanceFileOperationHandler {
       const zipPath = decodeURI(url.pathname).substring(1)
       const entry = url.searchParams.get('entry')
       if (entry) {
-        const entryName = decodeURIComponent(entry)
+        const entryName = entry
         this.#unzipQueue.push({ file, zipPath, entryName, destination })
         return true
       }
