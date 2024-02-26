@@ -38,7 +38,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       linuxTitlebar: state.linuxTitlebar,
       globalDisableAuthlibInjector: state.globalDisableAuthlibInjector,
       globalDisableElyByAuthlib: state.globalDisableElyByAuthlib,
-      linuxEnableDedicatedGPUOptimization: state.linuxEnableDedicatedGPUOptimization,
+      enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
       replaceNatives: state.replaceNatives,
     }), 1000)
 

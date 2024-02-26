@@ -123,9 +123,9 @@ export function useSettings() {
     get: () => locales.value.find(l => l.locale === state.value?.locale)?.locale || 'en',
     set: v => state.value?.localeSet(v),
   })
-  const linuxEnableDedicatedGPUOptimization = computed({
-    get: () => state.value?.linuxEnableDedicatedGPUOptimization ?? false,
-    set: v => state.value?.linuxEnableDedicatedGPUOptimizationSet(v),
+  const enableDedicatedGPUOptimization = computed({
+    get: () => state.value?.enableDedicatedGPUOptimization ?? false,
+    set: v => state.value?.enableDedicatedGPUOptimizationSet(v),
   })
   const apiSetsPreference = computed({
     get: () => state.value?.apiSetsPreference ?? '',
@@ -186,7 +186,7 @@ export function useSettings() {
   })
 
   return {
-    linuxEnableDedicatedGPUOptimization,
+    enableDedicatedGPUOptimization,
     streamerMode,
     developerMode,
     httpProxyEnabled,

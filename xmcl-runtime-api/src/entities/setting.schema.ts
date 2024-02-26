@@ -131,5 +131,5 @@ export interface SettingSchema {
   /**
    * @default true
    */
-  linuxEnableDedicatedGPUOptimization: boolean
+  enableDedicatedGPUOptimization: boolean
 }

@@ -1164,8 +1164,8 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
   layoutTitle: Макет
-  linuxEnableDedicatedGPUOptimization: Призначити виділений графічний процесор
-  linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
+  enableDedicatedGPUOptimization: Призначити виділений графічний процесор
+  enableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
   linuxTitlebar: Рідний рядок заголовка
   linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
   location: Розташування сховища

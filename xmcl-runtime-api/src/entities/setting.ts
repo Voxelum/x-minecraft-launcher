@@ -39,7 +39,7 @@ export class Settings implements SettingSchema {
   allowPrerelease = false
   autoInstallOnAppQuit = false
   autoDownload = false
-  linuxEnableDedicatedGPUOptimization = true
+  enableDedicatedGPUOptimization = true
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | '' = ''
   apiSets = [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
   /**
@@ -83,7 +83,7 @@ export class Settings implements SettingSchema {
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
     this.linuxTitlebar = config.linuxTitlebar
-    this.linuxEnableDedicatedGPUOptimization = config.linuxEnableDedicatedGPUOptimization
+    this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
   }
 
@@ -103,8 +103,8 @@ export class Settings implements SettingSchema {
     this.locale = language
   }
 
-  linuxEnableDedicatedGPUOptimizationSet(enabled: boolean) {
-    this.linuxEnableDedicatedGPUOptimization = enabled
+  enableDedicatedGPUOptimizationSet(enabled: boolean) {
+    this.enableDedicatedGPUOptimization = enabled
   }
 
   localesSet(languages: {

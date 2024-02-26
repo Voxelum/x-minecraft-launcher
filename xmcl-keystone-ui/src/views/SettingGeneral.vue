@@ -49,10 +49,10 @@
       :description="t('setting.hideNewsDescription')"
     />
     <SettingItemCheckbox
-      v-if="env?.os === 'linux'"
-      v-model="linuxEnableDedicatedGPUOptimization"
-      :title="t('setting.linuxEnableDedicatedGPUOptimization')"
-      :description="t('setting.linuxEnableDedicatedGPUOptimizationDescription')"
+      v-if="env?.os === 'linux' || env?.os === 'windows'"
+      v-model="enableDedicatedGPUOptimization"
+      :title="t('setting.enableDedicatedGPUOptimization')"
+      :description="t('setting.enableDedicatedGPUOptimizationDescription')"
     />
     <SettingItemCheckbox
       v-model="enableDiscord"
@@ -184,7 +184,7 @@ const {
   hideNews,
   enableDiscord,
   locales: rawLocales,
-  linuxEnableDedicatedGPUOptimization,
+  enableDedicatedGPUOptimization,
 } = useSettings()
 const { t } = useI18n()
 const apiSetItems = computed(() =>

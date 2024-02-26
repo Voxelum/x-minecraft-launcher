@@ -161,7 +161,7 @@
             "default": false,
             "type": "boolean"
         },
-        "linuxEnableDedicatedGPUOptimization": {
+        "enableDedicatedGPUOptimization": {
             "default": true,
             "type": "boolean"
         }
@@ -188,7 +188,7 @@
         "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
-        "linuxEnableDedicatedGPUOptimization",
+        "enableDedicatedGPUOptimization",
         "linuxTitlebar",
         "locale",
         "maxSockets",

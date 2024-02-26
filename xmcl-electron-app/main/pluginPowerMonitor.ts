@@ -5,6 +5,7 @@ import { exec } from 'child_process'
 import { powerMonitor, app as elec } from 'electron'
 import { ensureElevateExe } from './utils/elevate'
 import { AnyError } from '~/util/error'
+import { kSettings } from '~/settings'
 
 const enum PerformanceType {
   AUTO = 0,
@@ -31,20 +32,23 @@ export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
       name: 'power-plan-monitor',
       async onBeforeLaunch(input, output) {
         const javaPath = output.javaPath
-        try {
-          const result = await queryGPUStatus(javaPath)
-          log(`JVM GPU setting: ${result}`)
-        } catch (e) {
-          // No GPU status
-          warn(`No GPU assignment: ${(e as any).message}`)
+        const settings = await app.registry.get(kSettings)
+        if (settings.enableDedicatedGPUOptimization) {
           try {
-            await addRegistryKey(app, javaPath, powerMonitor.onBatteryPower ? PerformanceType.POWER_SAVING : PerformanceType.HIGH_PERFORMANCE)
-            log('Assigned Minecraft JVM to high performance GPU')
+            const result = await queryGPUStatus(javaPath)
+            log(`JVM GPU setting: ${result}`)
           } catch (e) {
-            if (e instanceof Error) {
-              e.name = 'GPUOptimizationError'
-            } else {
-              error(new AnyError('GPUOptimizationError', 'Failed to assign Minecraft JVM to high performance GPU', { cause: e }))
+            // No GPU status
+            warn(`No GPU assignment: ${(e as any).message}`)
+            try {
+              await addRegistryKey(app, javaPath, powerMonitor.onBatteryPower ? PerformanceType.POWER_SAVING : PerformanceType.HIGH_PERFORMANCE)
+              log('Assigned Minecraft JVM to high performance GPU')
+            } catch (e) {
+              if (e instanceof Error) {
+                e.name = 'GPUOptimizationError'
+              } else {
+                error(new AnyError('GPUOptimizationError', 'Failed to assign Minecraft JVM to high performance GPU', { cause: e }))
+              }
             }
           }
         }

@@ -878,8 +878,8 @@ setting:
     El diseño del lanzador representa una lógica de interfaz de usuario
     diferente
   layoutTitle: Diseño
-  linuxEnableDedicatedGPUOptimization: Asignar GPU dedicada
-  linuxEnableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
+  enableDedicatedGPUOptimization: Asignar GPU dedicada
+  enableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento

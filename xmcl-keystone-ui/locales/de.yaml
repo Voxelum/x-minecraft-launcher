@@ -1236,8 +1236,8 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
-  linuxEnableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
-  linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess eine dedizierte GPU zu.
+  enableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
+  enableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess eine dedizierte GPU zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort
