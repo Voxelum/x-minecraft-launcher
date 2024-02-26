@@ -5,6 +5,7 @@ import { Java } from './java.schema'
  */
 export interface JavaRecord extends Java {
   valid: boolean
+  arch?: string
 }
 
 /**

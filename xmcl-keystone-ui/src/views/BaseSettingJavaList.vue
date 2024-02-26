@@ -35,8 +35,21 @@
         </span>
       </v-list-item-avatar>
       <v-list-item-content>
-        <v-list-item-title v-if="item.valid">
+        <v-list-item-title
+          v-if="item.valid"
+          class="flex items-center gap-2"
+        >
           Java {{ item.version }}
+          <v-chip
+            v-if="item.arch"
+            class="h-[20px]"
+            color="orange"
+            small
+            label
+            outlined
+          >
+            {{ item.arch }}
+          </v-chip>
         </v-list-item-title>
         <v-list-item-title v-else>
           {{ t('java.invalid') }}

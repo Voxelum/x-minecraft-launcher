@@ -15,6 +15,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
+import { ensureClass, getJavaArch } from './detectJVMArch'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -37,6 +38,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       this.state.subscribeAll(() => {
         this.config.write(this.state)
+      })
+
+      ensureClass(this.app).catch((e) => {
+        this.error(e)
       })
     })
     this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
@@ -168,7 +173,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     if (java && validation === JavaValidation.Okay) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
 
-      this.state.javaUpdate({ ...java, valid: true })
+      this.state.javaUpdate({ ...java, valid: true, arch: await getJavaArch(this.app, java.path) })
     } else {
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')
@@ -204,7 +209,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         commonLocations.push(...files)
       }
       const javas = await scanLocalJava(commonLocations)
-      const infos = javas.map(j => ({ ...j, valid: true }))
+      const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this.app, j.path) })))
 
       this.log(`Found ${infos.length} java.`)
       this.state.javaUpdate(infos)
@@ -214,7 +219,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       for (let i = 0; i < this.state.all.length; ++i) {
         const result = await resolveJava(this.state.all[i].path)
         if (result) {
-          javas.push({ ...result, valid: true })
+          javas.push({ ...result, valid: true, arch: this.state.all[i].arch ?? await getJavaArch(this.app, result.path) })
         } else {
           javas.push({ ...this.state.all[i], valid: false })
         }

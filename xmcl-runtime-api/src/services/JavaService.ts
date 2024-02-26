@@ -15,6 +15,7 @@ export class JavaState {
           existed.majorVersion = j.majorVersion
           existed.version = j.version
           existed.valid = j.valid
+          existed.arch = j.arch || existed.arch
         } else {
           this.all.push(j)
         }
@@ -25,6 +26,7 @@ export class JavaState {
         existed.majorVersion = java.majorVersion
         existed.version = java.version
         existed.valid = java.valid
+        existed.arch = java.arch || existed.arch
       } else {
         this.all.push(java)
       }

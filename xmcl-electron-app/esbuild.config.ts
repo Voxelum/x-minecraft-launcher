@@ -40,6 +40,7 @@ const config = {
     '.cs': 'file',
     '.vbs': 'file',
     '.ico': 'file',
+    '.class': 'binary',
     '.html': 'file',
   },
   plugins: [
