@@ -285,6 +285,7 @@ errors:
     Erreur lors de l'accès au chemin du fichier de téléchargement. 
     Veuillez vous assurer que le launcher a la permission d'écrire dessus.
   HeadersTimeoutError: Délai d'expiration du Header HTTP
+  NotFoundError: 404 introuvable
   SocketError: Erreur de socket du serveur
 exception:
   http: >-
@@ -1179,6 +1180,8 @@ setting:
   disableTelemetryDescription: >-
     XMCL collectera les événements de lancement du jeu et de connexion de
     l'utilisateur.
+  enableDedicatedGPUOptimization: Attribuer un GPU dédié
+  enableDedicatedGPUOptimizationDescription: Cette option attribuera un GPU dédié au processus Minecraft.
   enableDiscord: Activer la présence riche Discord
   enableDiscordDescription: Cela affichera votre activité sur le launcher sur votre statut discord
   general: Général
@@ -1197,8 +1200,6 @@ setting:
     La disposition du launcher représentant différentes logiques d'interface
     utilisateur
   layoutTitle: Mise en page
-  enableDedicatedGPUOptimization: Attribuer un GPU dédié
-  enableDedicatedGPUOptimizationDescription: Cette option attribuera un GPU dédié au processus Minecraft.
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin

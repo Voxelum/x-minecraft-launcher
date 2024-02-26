@@ -18,7 +18,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
     ) {
     super(app)
 
-    const dispatcher = networkInterface.registerAPIFactoryInterceptor((origin, options) => {
+    const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, options) => {
       if (origin.hostname === LITTLE_SKIN_HOST) {
         return new Pool(origin, {
           ...options,

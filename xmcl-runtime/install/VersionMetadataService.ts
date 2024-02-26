@@ -31,7 +31,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
       this.getOptifineVersionList()
     })
 
-    networkInterface.registerDispatchInterceptor((options) => {
+    networkInterface.registerOptionsInterceptor((options) => {
       if (options.skipOverride) {
         return
       }
@@ -135,7 +135,7 @@ export class VersionMetadataService extends AbstractService implements IVersionM
         return getForgeListFromBMCLList(forges)
       }
       try {
-        const response = await request(`http://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
+        const response = await request(`https://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
           maxRedirections: 2,
         })
         return parseForge(await response.body.text()).versions.map(v => {

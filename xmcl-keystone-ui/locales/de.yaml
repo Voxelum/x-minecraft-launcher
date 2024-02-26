@@ -275,6 +275,7 @@ errors:
     Fehler beim Zugriff auf den Pfad zur Download-Datei.  Stellen Sie sicher,
     dass der Launcher Schreibrechte hat.
   HeadersTimeoutError: HTTP-Header-Zeitüberschreitung ist aufgetreten
+  NotFoundError: 404 Nicht gefunden
   SocketError: Server-Socket-Fehler
 exception:
   http: >-
@@ -1218,6 +1219,8 @@ setting:
     testen.
   disableTelemetry: Telemetrie ausschalten
   disableTelemetryDescription: XMCL sammelt die Ereignisse des Spielstarts und der Benutzeranmeldung.
+  enableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
+  enableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess eine dedizierte GPU zu.
   enableDiscord: Discord-Präsenz einschalten (Discord-Spielstatus)
   enableDiscordDescription: >-
     Dies führt dazu, dass der Status Ihres Launcher nicht aktualisiert wird
@@ -1236,8 +1239,6 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
-  enableDedicatedGPUOptimization: Weisen Sie eine dedizierte GPU zu
-  enableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess eine dedizierte GPU zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort

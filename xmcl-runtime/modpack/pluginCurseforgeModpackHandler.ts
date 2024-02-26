@@ -1,12 +1,11 @@
-import { File, HashAlgo, Mod } from '@xmcl/curseforge'
+import { CurseforgeV1Client, File, HashAlgo, Mod } from '@xmcl/curseforge'
 import { CurseforgeModpackManifest, InstanceFile, ResourceDomain, getInstanceConfigFromCurseforgeModpack } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { LauncherAppPlugin } from '~/app'
-import { CurseForgeService } from '~/curseforge'
-import { ModpackService } from './ModpackService'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
+import { ModpackService } from './ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
@@ -34,9 +33,9 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
         const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')
         if (ids.length === 0) return []
 
-        const curseforgeService = await app.registry.getOrCreate(CurseForgeService)
-        const files = await getCurseforgeFiles(curseforgeService.client, ids)
-        const mods = await getCurseforgeProjects(curseforgeService.client, files.map(f => f.modId))
+        const client = await app.registry.getOrCreate(CurseforgeV1Client)
+        const files = await getCurseforgeFiles(client, ids)
+        const mods = await getCurseforgeProjects(client, files.map(f => f.modId))
         const infos: InstanceFile[] = []
 
         const dict: Record<string, File> = {}

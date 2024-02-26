@@ -6,7 +6,7 @@ import { useLocaleError } from '@/composables/error'
 
 export default defineComponent({
   props: {
-    value: required<string | object>([String, Object]),
+    value: required<string | object>([String, Object, Array]),
   },
   setup(props, context) {
     const { t } = useI18n()
@@ -16,15 +16,19 @@ export default defineComponent({
       const resolve = (m: any) => {
         if (!m) return h('div')
         markRaw(m)
-        if (m.name === 'DownloadAggregateError') {
+        if (m.name === 'AggregateError') {
           return h('div', [
             h('div', [
               h('span', { staticClass: 'font-bold' }, [
                 '🚷 ',
                 t('errors.DownloadAggregateError'),
               ]),
-              '📁 ',
-              h('a', { attrs: { }, on: { click() { showItemInDirectory(m.description) } } }, m.destination),
+              ...(m.destination
+                ? [
+                  '📁 ',
+                  h('a', { attrs: {}, on: { click() { showItemInDirectory(m.destination) } } }, m.destination),
+                ]
+                : []),
             ]),
             ...m.errors.map(resolve),
           ])
@@ -37,46 +41,51 @@ export default defineComponent({
           ])
         }
         if (m.name === 'HeadersTimeoutError') {
-          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.HeadersTimeoutError'),
           ])
         }
         if (m.name === 'ConnectTimeoutError') {
-          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.ConnectTimeoutError'),
           ])
         }
         if (m.name === 'BodyTimeoutError') {
-          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.BodyTimeoutError'),
           ])
         }
         if (m.name === 'SocketError' || m.code === 'ECONNRESET') {
-          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.SocketError'),
           ])
         }
         if (m.name === 'HTTPException') {
+          const url = m.exception?.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? '')
           return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             tError(m),
           ])
         }
         if (m.name === 'ResponseStatusCodeError') {
-          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? ''
+          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             `HTTP ${m.status}`,
           ])
         }
         if (m.name === 'DownloadAbortError') {
+          return h('div')
+        }
+        if (m.name === 'RequestAbortedError') {
           return h('div')
         }
         if (m.name === 'AggregateError') {

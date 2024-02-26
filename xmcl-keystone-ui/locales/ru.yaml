@@ -243,6 +243,7 @@ errors:
     Возникла ошибка доступа к расположению файла загрузки. Пожалуйста, убедитесь
     что лаунчер имеет разрешение на запись.
   HeadersTimeoutError: Вышло время ожидания HTTP заголовка
+  NotFoundError: 404 Не Найдено
   SocketError: Ошибка сокета сервера
 exception:
   http: >-
@@ -1102,6 +1103,8 @@ setting:
   developerModeDescription: Режим разработчика нацелен на тестирование ваших модов
   disableTelemetry: Отключить сбор данных
   disableTelemetryDescription: XMCL будет собирать информацию о запусках игр и входы в аккаунт.
+  enableDedicatedGPUOptimization: Назначить выделенный графический процессор
+  enableDedicatedGPUOptimizationDescription: Эта опция назначит выделенный графический процессор процессу Minecraft.
   enableDiscord: Включить активность Discord
   enableDiscordDescription: Ваш статус лаунчера будет отображаться в discord
   general: Общие
@@ -1118,8 +1121,6 @@ setting:
     focus: Макет фокусировки
   layoutDescription: Макет лаунчера, отражающий различную логику пользовательского интерфейса
   layoutTitle: Макет
-  enableDedicatedGPUOptimization: Назначить выделенный графический процессор
-  enableDedicatedGPUOptimizationDescription: Эта опция назначит выделенный графический процессор процессу Minecraft.
   linuxTitlebar: Нативный заголовок окна
   linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера
   location: Расположение хранилища

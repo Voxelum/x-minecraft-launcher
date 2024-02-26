@@ -1,12 +1,10 @@
-import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain, getCurseforgeFileUri } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
-import { Client } from 'undici'
 import { Inject, LauncherAppKey } from '~/app'
-import { NetworkInterface, kDownloadOptions, kNetworkInterface } from '~/network'
+import { kDownloadOptions } from '~/network'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
@@ -16,26 +14,11 @@ import { requireObject, requireString } from '../util/object'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends AbstractService implements ICurseForgeService {
-  readonly client: CurseforgeV1Client
-
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {
     super(app)
-
-    const dispatcher = networkInterface.registerAPIFactoryInterceptor((origin, options) => {
-      if (origin.host === 'api.curseforge.com') {
-        return new Client(origin, {
-          ...options,
-          pipelining: 6,
-          bodyTimeout: 7000,
-          headersTimeout: 7000,
-        })
-      }
-    })
-    this.client = new CurseforgeV1Client(process.env.CURSEFORGE_API_KEY || '', { dispatcher })
   }
 
   @Singleton((o) => o.file.id)

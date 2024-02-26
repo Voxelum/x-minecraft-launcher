@@ -467,18 +467,12 @@ export class InstallService extends AbstractService implements IInstallService {
     const resourceService = this.resourceService
     if (await missing(path)) {
       const urls = [] as string[]
-      if (getApiSets(this.settings)[0].name === 'mcbbs') {
-        urls.push(
-          `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-          `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-        )
-      } else {
+      if (getApiSets(this.settings)[0].name === 'bmcl') {
         urls.push(
           `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-          `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
         )
       }
-      const downloadOptions = await this.app.registry.get(kDownloadOptions)
+      const downloadOptions = this.downloadOptions
       await this.submit(task('installOptifine', async function () {
         await this.yield(new DownloadTask({
           ...downloadOptions,
@@ -523,13 +517,11 @@ export class InstallService extends AbstractService implements IInstallService {
     const urls = [] as string[]
     if (getApiSets(this.settings)[0].name === 'mcbbs') {
       urls.push(
-        `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
         `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
       )
     } else {
       urls.push(
         `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-        `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
       )
     }
     const result = await this.submit(task('installOptifine', async function () {

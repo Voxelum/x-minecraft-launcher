@@ -18,7 +18,7 @@ const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 export const pluginOfficialUserApi: LauncherAppPlugin = (app) => {
   app.once('engine-ready', async () => {
     const networkInterface = await app.registry.get(kNetworkInterface)
-    const dispatcher = networkInterface.registerAPIFactoryInterceptor((origin, opts) => {
+    const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, opts) => {
       if (origin.hostname === 'api.minecraftservices.com' || origin.hostname === 'api.mojang.com') {
         // keep alive for a long time
         return new Client(origin, { ...opts, pipelining: 6 })

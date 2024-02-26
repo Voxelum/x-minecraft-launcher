@@ -12,6 +12,7 @@ export function useLocaleError() {
     if (e.errno === 'ENOTFOUND' && e.syscall === 'getaddrinfo') return t('errors.DNSNotFoundError')
     if (e.errno === 'ECONNRESET') return t('errors.SocketError')
     if (e.code === 'UND_ERR_RESPONSE_STATUS_CODE') {
+      if (e.statusCode === 404) return t('errors.NotFoundError')
       return [(e.code || ''), e.statusCode, JSON.stringify(e.body)].join(' ')
     }
     if (e.message) return e.message

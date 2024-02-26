@@ -14,11 +14,36 @@ function defaultProtocolPort(protocol: string) {
   return protocol === 'https:' ? 443 : 80
 }
 
+interface Proxy {
+  setProxyEnabled(e: boolean): void
+  setProxy(uri: URL, auth?: string): Promise<void>
+}
+
+export class ProxySettingController {
+  #settings: Proxy[] = []
+
+  add(p: Proxy) {
+    this.#settings.push(p)
+  }
+
+  setProxyEnabled(e: boolean) {
+    for (const p of this.#settings) {
+      p.setProxyEnabled(e)
+    }
+  }
+
+  async setProxy(uri: URL, auth?: string): Promise<void> {
+    for (const p of this.#settings) {
+      await p.setProxy(uri, auth)
+    }
+  }
+}
+
 /**
- * Implement proxy and cache
+ * Implement mutable proxy
  */
-export class ProxyDispatcher extends DispatcherBase {
-  private dispatcher: Dispatcher
+export class ProxyAgent extends DispatcherBase {
+  readonly agent: Agent
 
   private isProxyEnabled = false
   private proxyClient?: Client
@@ -44,11 +69,14 @@ export class ProxyDispatcher extends DispatcherBase {
   }
 
   constructor(opts: {
-    factory: (connect: buildConnector.connector) => Dispatcher
+    controller: ProxySettingController
+    factory: (connect: buildConnector.connector) => Agent
     requestTls?: TlsOptions & { servername?: string }
     proxyTls?: TlsOptions & { servername?: string }
   }) {
     super()
+
+    opts.controller.add(this)
 
     this.pConnect = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
     const connector = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
@@ -90,7 +118,7 @@ export class ProxyDispatcher extends DispatcherBase {
       }
     }
 
-    this.dispatcher = opts.factory(connect as any)
+    this.agent = opts.factory(connect as any)
   }
 
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
@@ -98,7 +126,7 @@ export class ProxyDispatcher extends DispatcherBase {
     const headers = buildHeaders(opts.headers || {})
     throwIfProxyAuthIsSent(headers)
 
-    return this.dispatcher.dispatch(
+    return this.agent.dispatch(
       {
         ...opts,
         method: opts.method,
@@ -112,12 +140,12 @@ export class ProxyDispatcher extends DispatcherBase {
   }
 
   async [kClose]() {
-    await this.dispatcher.close()
+    await this.agent.close()
     await this.proxyClient?.close()
   }
 
   async [kDestroy]() {
-    await this.dispatcher.destroy()
+    await this.agent.destroy()
     await this.proxyClient?.destroy()
   }
 }

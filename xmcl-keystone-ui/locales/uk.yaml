@@ -248,6 +248,7 @@ errors:
     Помилка під час доступу до шляху до файлу завантаження.  Переконайтеся, що
     програма запуску має дозвіл на запис.
   HeadersTimeoutError: Вийшов час очікування HTTP Header
+  NotFoundError: 404 Не знайдено
   SocketError: Помилка сокету сервера
 exception:
   http: >-
@@ -1146,6 +1147,8 @@ setting:
   developerModeDescription: Режим розробника призначений для тестування написаного вами мода
   disableTelemetry: Вимкнути телеметрію
   disableTelemetryDescription: XMCL збиратиме події запуску гри та входу користувача у гру.
+  enableDedicatedGPUOptimization: Призначити виділений графічний процесор
+  enableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
   enableDiscord: Увімкнути Discord Presence(Статус гри в Discord)
   enableDiscordDescription: >-
     Це призведе до того, що стан вашої панелі запуску не буде оновлюватися
@@ -1164,8 +1167,6 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
   layoutTitle: Макет
-  enableDedicatedGPUOptimization: Призначити виділений графічний процесор
-  enableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
   linuxTitlebar: Рідний рядок заголовка
   linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
   location: Розташування сховища

@@ -1,9 +1,9 @@
 /* eslint-disable no-dupe-class-members */
 import { Duplex } from 'stream'
-import { Dispatcher, errors, getGlobalDispatcher } from 'undici'
+import { Dispatcher, getGlobalDispatcher } from 'undici'
 
 export interface DispatchInterceptor {
-  (options: Dispatcher.DispatchOptions): void | Promise<void>
+  (options: Dispatcher.DispatchOptions): void
 }
 
 export class DispatchHandler implements Dispatcher.DispatchHandlers {
@@ -42,6 +42,17 @@ export class DispatchHandler implements Dispatcher.DispatchHandlers {
 
   onBodySent(chunkSize: number, totalBytesSent: number) {
     this.handler.onBodySent?.(chunkSize, totalBytesSent)
+  }
+}
+
+export function createInterceptOptionsInterceptor(interceptors: DispatchInterceptor[]): Dispatcher.DispatchInterceptor {
+  return (dispatch) => {
+    return function Intercept(options, handler) {
+      for (const interceptor of interceptors) {
+        interceptor(options)
+      }
+      return dispatch(options, handler)
+    }
   }
 }
 

@@ -225,6 +225,8 @@ diagnosis:
     name: Falta o arquivo de índice de activos de {version}.
 disable: Desactivar
 downloadUpdate: Descargar actualización
+errors:
+  NotFoundError: 404 non atopado
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
 launchBlocked:

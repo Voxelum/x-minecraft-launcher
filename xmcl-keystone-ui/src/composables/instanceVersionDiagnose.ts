@@ -12,7 +12,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
   const issueItems = ref([] as LaunchMenuItem[])
   const { t } = useI18n()
   const { install } = useInstanceVersionInstall(versions)
-  const { installAssetsForVersion, installForge, installAssets, installLibraries, installDependencies, installByProfile } = useService(InstallServiceKey)
+  const { installAssetsForVersion, installForge, installAssets, installLibraries, installNeoForged, installDependencies, installOptifine, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
 
   let operation = undefined as undefined | (() => Promise<void>)
@@ -87,12 +87,27 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     const profileIssue = await diagnoseProfile(version.id)
     if (abortSignal.aborted) { return }
     if (profileIssue) {
-      operations.push(async () => {
-        await installForge({
-          mcversion: version.minecraftVersion,
-          version: runtime.value.forge!,
+      console.log(profileIssue)
+      if (runtime.value.forge) {
+        operations.push(async () => {
+          await installForge({
+            mcversion: version.minecraftVersion,
+            version: runtime.value.forge!,
+          })
         })
-      })
+      } else if (runtime.value.neoForged) {
+        operations.push(async () => {
+          await installNeoForged({
+            minecraft: version.minecraftVersion,
+            version: runtime.value.neoForged!,
+          })
+        })
+      } else {
+        operations.push(async () => {
+          await installByProfile(profileIssue.installProfile)
+        })
+      }
+
       items.push(reactive({
         title: computed(() => t('diagnosis.badInstall.name', { version: version.id })),
         description: computed(() => t('diagnosis.badInstall.message')),

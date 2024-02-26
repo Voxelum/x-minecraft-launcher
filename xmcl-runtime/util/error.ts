@@ -41,6 +41,11 @@ export function isSystemError(e: any): e is SystemError {
 }
 
 export async function serializeError(e: unknown): Promise<any> {
+  if ((e instanceof AggregateError) ||
+    // @ts-ignore
+    (e.name === 'AggregateError' && e.errors instanceof Array)) {
+    e = (e as any).errors
+  }
   if (e instanceof Array) {
     if (e.length !== 1) {
       return Promise.all(e.map(serializeError))
@@ -59,9 +64,9 @@ export async function serializeError(e: unknown): Promise<any> {
     }
     return new HTTPException({
       type: 'httpException',
-      code: (e as any).code,
+      code: e.code,
       method: options?.method || '',
-      url: options ? new URL(options?.path, options.origin).toString() : '',
+      url: (e as any).url ?? (options ? new URL(options?.path, options.origin).toString() : ''),
       statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
       body,
     })

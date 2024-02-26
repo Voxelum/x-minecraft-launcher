@@ -41,7 +41,7 @@ export class Settings implements SettingSchema {
   autoDownload = false
   enableDedicatedGPUOptimization = true
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | '' = ''
-  apiSets = [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
+  apiSets = [{ name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
   /**
    * Is current environment connecting to internet?
    */

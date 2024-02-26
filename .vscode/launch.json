@@ -26,7 +26,6 @@
             "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/node_modules/.bin/electron",
             "skipFiles": [
                 "<node_internals>/**",
-                "${workspaceFolder}/node_modules/**/*.js",
                 "${workspaceFolder}/xmcl-runtime/app/DummyLogger.ts",
                 "${workspaceFolder}/xmcl-runtime/logger/pluginLogConsumer.ts"
             ],

@@ -31,7 +31,7 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
   ) {
     super(app)
 
-    networkInterface.registerDispatchInterceptor((options) => {
+    networkInterface.registerOptionsInterceptor((options) => {
       const origin = options.origin instanceof URL ? options.origin : new URL(options.origin!)
       if (origin.hostname === 'authlib-injector.yushi.moe') {
         if (shouldOverrideApiSet(settings, gfw.inside)) {

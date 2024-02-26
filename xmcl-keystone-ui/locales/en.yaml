@@ -214,8 +214,8 @@ disk:
   available: Available
   used: Used
 download: Download
-downloadUpdate: Download Update
 downloadCount: '{count} downloads'
+downloadUpdate: Download Update
 duration:
   day: '{duration} day | {duration} days'
   hour: '{duration} hour | {duration} hours'
@@ -243,6 +243,7 @@ errors:
     Error during accessing the download file path. Please ensure the launcher
     has permission to write on it.
   HeadersTimeoutError: HTTP Header timeout
+  NotFoundError: 404 Not Found
   SocketError: Server socket error
 exception:
   http: >-
@@ -1140,6 +1141,8 @@ setting:
   developerModeDescription: Developer Mode is targeting to test your own written mod
   disableTelemetry: Disable Telemetry
   disableTelemetryDescription: XMCL will collect the game launch and user login events.
+  enableDedicatedGPUOptimization: Assign Dedicated GPU
+  enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   enableDiscord: Enable Discord Presence
   enableDiscordDescription: This will keep update your launcher status to discord
   general: General
@@ -1156,8 +1159,6 @@ setting:
     focus: Focus Layout
   layoutDescription: The launcher layout reprensenting different UI logic
   layoutTitle: Layout
-  enableDedicatedGPUOptimization: Assign Dedicated GPU
-  enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location

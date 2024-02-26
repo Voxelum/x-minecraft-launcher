@@ -2,7 +2,6 @@ import { TaskItem } from '@/entities/task'
 import { InjectionKey, onMounted, onUnmounted, Ref, ref } from 'vue'
 
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
-import { task } from '../../../xmcl/packages/task'
 
 export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
