@@ -33,7 +33,7 @@ const { data: changelog, isValidating: loadingChangelog } = useSWRV(computed(() 
 
 const versions = computed(() => {
   const files = optVersions.value
-  const all: ProjectVersion[] = files.map((f) => {
+  const all: ProjectVersion[] = files.filter(f => f.mcversion === props.runtime.minecraft).map((f) => {
     const version = `${f.type}_${f.patch}`
     const id = `${f.mcversion}_${version}`
     const modVersion: ProjectVersion = reactive({
@@ -41,7 +41,11 @@ const versions = computed(() => {
       name: version,
       version,
       downloadCount: 0,
-      installed: computed(() => props.runtime.optifine === version || props.mod.installed[0]?.version === version),
+      installed: computed(() => {
+        if (props.runtime.optifine === version) return true
+        if (props.mod.installed.length > 0 && props.mod.installed[0].version === version) return true
+        return false
+      }),
       loaders: ['vanilla', 'forge'],
       minecraftVersion: f.mcversion,
       type: 'release',
@@ -80,7 +84,7 @@ const model = computed(() => {
     follows: 0,
     url: 'https://www.optifine.net/home',
     htmlContent: _optifineHome,
-    installed: !!props.mod.installed,
+    installed: computed(() => props.mod.installed.length > 0),
     enabled: false,
   })
   return result
@@ -151,7 +155,6 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
     :detail="model"
     :dependencies="[]"
     :enabled="enabled"
-    :has-installed-version="!!runtime.optifine || hasInstalledVersion"
     :selected-installed="runtime.optifine === selectedVersion?.version || installed"
     :loading="loadingDescription"
     :versions="versions"

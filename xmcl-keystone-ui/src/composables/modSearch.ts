@@ -57,7 +57,11 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
           }
           return
         } else {
-          const mod = getOptifineAsMod(m)
+          const mod = getOptifineAsMod()
+          if (instanceFile) {
+            mod.installed?.push(m)
+          }
+          mod.files?.push(m)
           indices.OptiFine = mod
           return mod
         }
@@ -160,14 +164,15 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   }
 }
 
-const getOptifineAsMod = (f?: ModFile) => {
+const getOptifineAsMod = () => {
   const result: ProjectEntry<ModFile> = {
     id: 'OptiFine',
     icon: 'http://launcher/icons/optifine',
     title: 'Optifine',
     author: 'sp614x',
     description: 'Optifine is a Minecraft optimization mod. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
-    installed: f ? [f] : [],
+    installed: [],
+    files: [],
     downloadCount: 0,
     followerCount: 0,
   }

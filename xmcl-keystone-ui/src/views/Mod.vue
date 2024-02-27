@@ -137,17 +137,17 @@
         @disable="onDisable"
         @category="curseforgeCategory = $event"
       />
+      <ModDetailOptifine
+        v-else-if="isOptifineProject(selectedItem)"
+        :mod="selectedItem"
+        :runtime="runtime"
+      />
       <ModDetailResource
         v-else-if="isModProject(selectedItem)"
         :mod="selectedItem"
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
-      />
-      <ModDetailOptifine
-        v-else-if="isOptifineProject(selectedItem)"
-        :mod="selectedItem"
-        :runtime="runtime"
       />
       <Hint
         v-else
