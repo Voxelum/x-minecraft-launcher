@@ -1,6 +1,7 @@
 <template>
   <div
     v-show="items.length > 0"
+    class="select-none"
     @mouseenter="$emit('mouseenter', $event)"
     @mouseleave="$emit('mouseleave', $event)"
   >
@@ -10,7 +11,7 @@
       <template v-for="(item, index) in items">
         <v-list-item
           :key="index"
-          @click="item.onClick?.()"
+          v-on="item.onClick ? { click: item.onClick } : {}"
         >
           <v-list-item-avatar class="flex-grow-0">
             <v-icon :color="item.color ?? 'warning darken-1'">

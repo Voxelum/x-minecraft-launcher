@@ -111,11 +111,11 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         })
         items.push(librariesIssue.some(v => v.type === 'corrupted')
           ? reactive({
-            title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: 3 })),
+            title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: librariesIssue.length })),
             description: computed(() => t('diagnosis.corruptedLibraries.message')),
           })
           : reactive({
-            title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: 3 })),
+            title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: librariesIssue.length })),
             description: computed(() => t('diagnosis.missingLibraries.message')),
           }))
       }
