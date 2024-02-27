@@ -30,7 +30,7 @@
 </p>
 
 
-![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/src/assets/home.png)
+![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
 请去 [官网](https://xmcl.app) 下载启动器！
 

@@ -29,7 +29,7 @@
   </a>
 </p>
 
-![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/src/assets/home.png)
+![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
 Відвідайте [оффіційну сторінку](https://xmcl.app) щоб завантажити програму!
 
