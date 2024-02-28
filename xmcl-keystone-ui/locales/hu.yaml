@@ -312,8 +312,8 @@ gameType:
 help: Súgó
 home: Kezdőlap
 importModpack:
-  failed: {modpack} importálása sikertelen
-  success: {modpack} importálása sikeres
+  failed: '{modpack} importálása sikertelen'
+  success: '{modpack} importálása sikeres'
 importResource: Forrás importálása
 install: Telepítés
 installAssets:
@@ -334,7 +334,7 @@ installInstance:
   link: Fájlok másolása vagy összekapcsolása {szám}
   name: Példány frissítése
   resolve: Példány konfiguráció feloldása
-  unzip: {count} fájlok kicsomagolása
+  unzip: '{count} fájlok kicsomagolása'
 installJre:
   decompress: JRE fájlok dekompresszálása mappába
   download: Tömörített JRE fájl letöltése
@@ -646,7 +646,7 @@ mod:
   showDirectory: Modok mappájának megjelenítése
   showFile: A mod elérési útvonalának megjelenítése {file}
   showInCurseforge: A mod megjelenítése a curseforge-ban
-  showInModrinth: {name} megjelenítése Modrinth-en
+  showInModrinth: '{name} megjelenítése Modrinth-en'
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
 modInstall:
@@ -697,9 +697,9 @@ modpack:
   name: Modcsomag | Modcsomagok
   overrides: Felülírás
   showFile: Fájl megjelenítése {file}
-  showInCurseforge: {name} megnyitása Curseforge-on
-  showInFtb: {name} megnyitása FTB-ben
-  showInModrinth: {name} megnyitása Modrinth-en
+  showInCurseforge: '{name} megnyitása Curseforge-on'
+  showInFtb: '{name} megnyitása FTB-ben'
+  showInModrinth: '{name} megnyitása Modrinth-en'
   url: URL
   urlHint: A modcsomag kezdőlapjának url-je
 modrinth:
@@ -798,7 +798,7 @@ modrinth:
     waterfall: Waterfall
     worldgen: Világ generálás
   clientSide: Kliens oldali
-  copyTitle: {title} címe másolása vágólapra
+  copyTitle: '{title} címe másolása vágólapra'
   createAt: Létrehozva
   description: Leírás
   downloads: Letöltések
@@ -973,12 +973,12 @@ peerSignalingState:
 popular: Népszerűség
 presence:
   curseforge: CurseForge megtekintése
-  curseforgeProject: {name} megtekintése a Curseforge-ban
+  curseforgeProject: '{name} megtekintése a Curseforge-ban'
   instance: Tétlen a példányban {instance}
   instanceSetting: 'Példa beállításainak szerkesztése: {instance}'
   mod: Modok megtekintése a {instance}-ban
   modrinth: Modrinth megtekintése
-  modrinthProject: {name} megtekintése Modrinth-ban
+  modrinthProject: '{name} megtekintése Modrinth-ban'
   resourcePack: Forráscsomagok megtekintése a {instance}-ben
   save: Mentés megtekintése a {instance}-ben
   setting: Beállítások megtekintése
@@ -1000,351 +1000,351 @@ resourcepack:
   defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
     content: >-
-      This will remove the resource pack file from disk, and we cannot redo it.
-      Are you sure to do this?
-    title: Delete the resource pack
-  dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: '{count} Resource Pack is enabled'
-  import: Import Resource Pack
+      Ez eltávolítja az forráscsomag-fájlt a meghajtóról, és nem tudod visszacsinálni.
+      Biztos vagy benne, hogy ezt akarod csinálni?
+    title: Forráscsomag törlése
+  dropHint: Húzd ide a forráscsomag zip-jét/mappá-ját az importáláshoz
+  enable: '{count} forráscsomag engedélyezve'
+  import: Forráscsomag importálása
   incompatible: >-
-    Incompatible Resource Pack format({format}). Fitin {accept}. Current
+    Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi
     {actual}.
-  manage: Manage Resource Packs
-  name: Resource Pack | Resource Packs
-  searchHint: Search reosurce pack
-  searchOnCurseforge: Search {name} in curseforge
+  manage: Forráscsomagok kezelése
+  name: Forráscsomag | Forráscsomagok
+  searchHint: Forráscsomag keresése
+  searchOnCurseforge: '{name} keresése curseforge-on'
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selectSearchHint: Search and select resource pack
-  selected: Selected Resource Packs
-  showFile: Show resource pack in folder {file}
-  showInCurseforge: Show {name} in curseforge
-  unselected: Unselected Resource Packs
+  selectSearchHint: Keress és válassz forráscsomagot
+  selected: Kiválasztott forráscsomagok
+  showFile: '{file} megjelenítése fájlkezelőben'
+  showInCurseforge: '{name} megjelenítése curseforge-on'
+  unselected: Nem kiválasztott forráscsomagok
 save:
   copy:
-    cancel: Cancel Copy
-    confirm: Start Copy
-    description: Please select destination profile(s) you want the save to go.
-    name: Copy Save
-    title: Copy Save to Other Profile
+    cancel: Másolás törlése
+    confirm: Másolás indítása
+    description: Kérlek, válaszd ki a célprofil(ok)at, ahová a mentést szeretnéd eljuttatni.
+    name: Mentés másolása
+    title: Mentés másolása másik profilra
   copyFrom:
-    cancel: Cancel
-    confirm: Start Copy
+    cancel: Mégsem
+    confirm: Másolás indítása
     description: >-
-      You can deploy save to this instance from other instances, or from managed
-      resources (curseforge)
-    from: From {src}
-    fromProfile: From Other Instances
-    fromResource: From Managed Resources
-    title: Import Save from Managed Source
-  createdWorlds: You have {count} worlds
+      Erre a példányra más példányokból vagy kezelt erőforrásokból (curseforge)
+      telepíthet mentést.
+    from: Innen {src}
+    fromProfile: Más példányokból
+    fromResource: Kezelt forrásokból
+    title: Mentés importálása kezelt forrásból
+  createdWorlds: '{count} db világod van'
   deleteHint: >-
-    This operation cannot be revert. You will lose this save data forever. Are
-    you sure to delete this save?
-  deleteTitle: Delete the Save
-  detail: More Info
-  dropHint: Drag save zip here to Import
-  export: Export Save
-  exportMessage: Export the Save as zip
-  exportTitle: Export the Save
-  import: Import Save
-  importMessage: Import a Save from zip
-  importTitle: Import a Save
-  manage: Manage Saves
-  name: Save | Saves
+    Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre elveszted.
+    Biztos, hogy törölni szeretnéd ezt a mentést?
+  deleteTitle: Mentés törlése
+  detail: További infók
+  dropHint: Húzz ide egy zipet az importáláshoz
+  export: Mentés exportálása
+  exportMessage: Mentés exportálása zip-ként
+  exportTitle: Mentés exportálása
+  import: Mentés importálása
+  importMessage: Mentés importálása zip-ből
+  importTitle: Mentés importálása
+  manage: Mentések kezelése
+  name: Mentés | Mentések
 screenshots:
-  empty: You don't have screenshots
-  goto: Open Folder
-  name: Screenshots
-  playRandom: Play randomly
-  playSequence: Play in order
+  empty: Nincsenek képernyőképeid
+  goto: Mappa megnyitása
+  name: Képernyőképek
+  playRandom: Játék véletlenszerűen
+  playSequence: Játék sorrendben
 server:
-  acceptingMinecraftVersion: Accepting Minecraft Version
-  creationHint: Please Fill the server address and ping the server
+  acceptingMinecraftVersion: Minecraft verzió elfogadása
+  creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
   delete: {}
   error: {}
-  expectedVersions: Supported Versions
-  filterVersion: Filter server responded Minecraft version
-  host: Host
-  hostHint: The host (with port) of the server
-  ipAddress: IP Address
-  motd: Server MOTD
-  name: Server | Servers
+  expectedVersions: Támogatott verziók
+  filterVersion: Szűrő szerver válaszolt Minecraft verzió
+  host: Kiszolgáló
+  hostHint: A kiszolgáló állomáshelye (porttal együtt)
+  ipAddress: IP cím
+  motd: Szerver MOTD
+  name: Szerver | Szerverek
   ping: Ping
-  pings: Pings
-  players: Players
+  pings: Pingek
+  players: Játékosok
   port: Port
-  recommendedMinecraftVersion: Minecraft Version
-  status: Server Status
-  unknown: Unknown Server
-  unknownDescription: Unknown Server. Please Refresh
-  version: Server Requires Version
-  versionHint: The Minecraft Version To Ping
+  recommendedMinecraftVersion: Minecraft Verzió
+  status: Szerver Státusz
+  unknown: Ismeretlen szerver
+  unknownDescription: Ismeretlen szerver. Frissítsd újra
+  version: A szerver verzióigénye
+  versionHint: A Minecraft verzió a Pinghez
 serverStatus:
-  nohost: §4Cannot find host!
-  ping: Ping...
-  refuse: §4Server refused!
-  timeout: §4Connect server timeout!
+  nohost: §4Nem található a kiszolgáló!
+  ping: Pingelés...
+  refuse: §4A szerver elutasítot!
+  timeout: §4Szerver csatlakozási időtúllépés!
 setting:
-  allowPrerelease: Download Prerelease
-  allowPrereleaseDescription: Prerelease might be instable
+  allowPrerelease: Előzetes kiadás letöltése
+  allowPrereleaseDescription: Az előzetes kiadás instabil lehet
   apiSets:
-    auto: Auto (Determine by network)
-    official: Official (Mojang)
-  appearance: Appearance
+    auto: Automatikus (hálózat által meghatározott)
+    official: Eredeti (Mojang)
+  appearance: Megjelenés
   appxUpdateHint: >-
-    The launcher will download and execute installer. If popup installer failed,
-    please run it manually.
-  autoDownload: Auto Download
-  autoDownloadDescription: Auto Download Update if it's Avaiable
-  autoInstallOnAppQuit: Autoinstall
-  autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
-  backgroundImage: Background image
-  backgroundImageBlur: Image blur
-  backgroundImageBlurDescription: Drag to blur, easy
-  backgroundImageClear: clear
-  backgroundImageDescription: Select an image as background or clear
+    A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem sikerült,
+    kérlek futtasd manuálisan.
+  autoDownload: Automatikus letöltés
+  autoDownloadDescription: Automatikus letöltés, ha van elérhető frissítés
+  autoInstallOnAppQuit: Automatikus telepítés
+  autoInstallOnAppQuitDescription: A frissítés automatikus telepítése az alkalmazás bezárásakor
+  backgroundImage: Háttérkép
+  backgroundImageBlur: Kép elmosódása
+  backgroundImageBlurDescription: Húzd az elmosódáshoz, egyszerű
+  backgroundImageClear: törlés
+  backgroundImageDescription: Válassz ki egy képet háttérként vagy töröld
   backgroundImageFit:
-    contain: Contain
-    cover: Cover
-    name: Image Fit
-  backgroundImageSelect: select
-  backgroundType: Background Type
-  backgroundTypeDescription: Show special effect on background (This may impact performance)
+    contain: Tartalmazza
+    cover: Elfedje
+    name: Illeszkedjen
+  backgroundImageSelect: kiválasztás
+  backgroundType: Háttérkép típusa
+  backgroundTypeDescription: Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a teljesítményt)
   backgroundTypes:
     halo: Halo
-    image: Image
-    none: None
-    particle: Particle
-    video: video
-  backgroundVideo: Background Video
-  backgroundVideoDescription: select or clear video
-  backgroundVideoSelect: select
-  backgroundVideoVolume: volume
-  backgroundVideoVolumeDescription: drag to adjust volume
-  blurAppBar: Blur app bar
-  blurMainBody: Blur Main Body
-  blurMainBodyDescription: Should the launcher right pane be blurred
-  blurSidebar: Blur sidebar
-  browseRoot: Browse
-  checkUpdate: Check Update
+    image: Kép
+    none: Nincs
+    particle: Részecskék
+    video: Videó
+  backgroundVideo: Háttér videó
+  backgroundVideoDescription: válassz vagy törölj videót
+  backgroundVideoSelect: kiválasztás
+  backgroundVideoVolume: hangerő
+  backgroundVideoVolumeDescription: húzd a hangerő beállításához
+  blurAppBar: Alkalmazás sáv elmosása
+  blurMainBody: Alkalmazás testének elmosása
+  blurMainBodyDescription: A Launcher jobb panelje elmosódott legyen
+  blurSidebar: Oldalsáv elmosása
+  browseRoot: Böngészés
+  checkUpdate: Frissítés keresése
   colorTheme:
-    appBarColor: App Bar
-    backgroundColor: Background Color
-    cardColor: Card Color
-    description: Change the colors in the theme
-    errorColor: Error Color
-    name: Theme Color
-    primaryColor: Primary Color
-    secondaryColor: Secondary Color
-    sideBarColor: Side Bar
-    warningColor: Warning Color
-  darkTheme: Theme
-  darkThemeDescription: Choose the dark or light theme
-  developerMode: Developer Mode
-  developerModeDescription: Developer Mode is targeting to test your own written mod
-  disableTelemetry: Disable Telemetry
-  disableTelemetryDescription: XMCL will collect the game launch and user login events.
-  enableDiscord: Enable Discord Presence
-  enableDiscordDescription: This will keep update your launcher status to discord
-  general: General
-  githubRelease: Github Release
-  globalSetting: Global Instance Setting
-  globalSettingHint: Instance will use these settings by default.
-  hideNews: Hide News
-  hideNewsDescription: This will hide the news under the instance page
-  language: Language
-  languageDescription: The display language
-  latestVersion: Latest Version
+    appBarColor: Alkalmazás sáv
+    backgroundColor: Háttér színe
+    cardColor: Lap színe
+    description: A téma színeinek módosítása
+    errorColor: Hiba színe
+    name: Téma szíbe
+    primaryColor: Elsődleges szín
+    secondaryColor: Másodlagos szín
+    sideBarColor: Oldalsáv
+    warningColor: Figyelmeztetés színe
+  darkTheme: Téma
+  darkThemeDescription: Válaszd a sötét vagy világos témát
+  developerMode: Fejlesztői mód
+  developerModeDescription: Fejlesztői mód a saját írt mod tesztelésére irányul
+  disableTelemetry: Telemetria kikapcsolása
+  disableTelemetryDescription: Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési eseményeket.
+  enableDiscord: Discord státusz engedélyezése
+  enableDiscordDescription: Ez folyamatosan frissíti az launcher állapotát a discordra.
+  general: Általános
+  githubRelease: Github kiadás
+  globalSetting: Globális példány beállítás
+  globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
+  hideNews: Hírek elrejtése
+  hideNewsDescription: Ez elrejti a híreket a példány oldal alatt
+  language: Nyelv
+  languageDescription: A megjelenített nyelv
+  latestVersion: Legújabb verzió
   layout:
-    default: Default Layout
-    focus: Focus Layout
-  layoutDescription: The launcher layout reprensenting different UI logic
-  layoutTitle: Layout
-  linuxEnableDedicatedGPUOptimization: Assign Dedicated GPU
-  linuxEnableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
-  linuxTitlebar: Native title bar
-  linuxTitlebarDescription: Use native linux title bar for launcher
-  location: Store Location
+    default: Alap elrendezés
+    focus: Fókusz elrendezés
+  layoutDescription: A különböző UI logikát reprezentáló launcher elrendezés
+  layoutTitle: Elrendezés
+  linuxEnableDedicatedGPUOptimization: Dedikált GPU kijelölése
+  linuxEnableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft folyamathoz.
+  linuxTitlebar: Saját címsáv
+  linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
+  location: Áruház helye
   maunalUpdateHint: >-
-    The version cannot be auto-updated. Please redownload the launcher from the
-    website!
-  maxSockets: Per Host
+    A verzió nem frissíthető automatikusan. Kérlek, töltsd le újra az launchert
+    a weboldalról!
+  maxSockets: Kiszolgálónként
   maxSocketsDescription: >-
-    Limit the maximum number of sockets to allow per host or for all hosts in
-    total. 0 means no limit.
-  maxSocketsTitle: Max HTTP sockets
-  name: Global Setting | Global Settings
-  network: Network Settings
-  officialWebsite: Official Website
+    Korlátozza a maximálisan engedélyezhető foglalatok számát állomásonként vagy
+    az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
+  maxSocketsTitle: Max HTTP foglalatok
+  name: Globális beállítás | Globális beállítások
+  network: Hálózati beállítások
+  officialWebsite: Hivatalos weboldal
   particleMode:
-    bubble: Bubble
-    name: Particle Mode
-    push: Push
-    remove: Remove
-    repulse: Repulse
-  particleModeDescription: Select the particle click behavior
-  replaceNative: Replace Native Libraries
-  replaceNativeDescription: Replace native libraries according to your computer's arch.
+    bubble: Buborék
+    name: Részecske mód
+    push: Tolás
+    remove: Eltávolítás
+    repulse: Visszaverődés
+  particleModeDescription: Jelöld ki a részecske kattintási viselkedését
+  replaceNative: Natív könyvtárak helyettesítése
+  replaceNativeDescription: Cserélje ki a natív könyvtárakat a számítógép archívumának megfelelően.
   replaceNatives:
-    all: All
-    legacy: Legacy Version Only
-  resetToDefault: Reset to Default
-  showRoot: Show
-  streamerMode: Streaming Mode
-  streamerModeDescription: This will hide your private information like email in launcher.
+    all: Összes
+    legacy: Csak a Legacy verzió
+  resetToDefault: Visszaállítás alapértelmezettre
+  showRoot: Megjelenítés
+  streamerMode: Közvetítés mód
+  streamerModeDescription: Ez elrejti a személyes adatait, például az e-mail címét az launcherben.
   theme:
-    dark: Dark Theme
-    light: Light Theme
-    system: Use System Theme
-  update: Update
-  useBmclAPI: Use BMCL API
+    dark: Sötét téma
+    light: Világos téma
+    system: Rendszer téma használata
+  update: Frissítés
+  useBmclAPI: BMCL API használata
   useBmclAPIDescription: >-
-    Use BMCLAPI to download Minecraft when you are in China Mainland. (This
-    won't affect if you're not in China mainland)
+    Használd a BMCLAPI-t a Minecraft letöltéséhez, ha a kínai kontinensen tartózkodsz.
+    (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
   useProxy: HTTP Proxy
-  useProxyDescription: The proxy server address for the http request
+  useProxyDescription: A http-kérés proxy-kiszolgálójának címe
 settingLabel:
-  global: Global
-  globalHint: This setting will follow the global setting
-  local: Local
-  localHint: This setting is modified by current instance
+  global: Globális
+  globalHint: Ez a beállítás követi a globális beállítást
+  local: Helyi
+  localHint: Ezt a beállítást az aktuális példány módosítja
 setup:
   appearance:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      The data root is not a common .minecraft directory. Since XMCL data
-      directory structure is different from vanilla, we do not recommend to use
-      the common .minecraft directory as a data root.
-    drives: Recommend Locations
-    name: Set Data Directory
+      Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok
+      könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk,
+      hogy a a közös .minecraft könyvtárat adatgyökérként használni.
+    drives: Ajánlott helyek
+    name: Adatmappa beállítása
   defaultLayoutDescription: >-
-    The default layout is trying to enhance the game "instance" concept. It
-    looks like apps like Discord. It's also inspired by other game launcher app
-    like Steam, etc.
-  defaultPath: Default Path
+    Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja erősíteni.
+    Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más játékindító
+    alkalmazások, mint a Steam stb. is inspirálták.
+  defaultPath: Alapértelmezett útvonal
   error:
-    badDataRoot: Invalid directory for launcher data! Please try other directory!
+    badDataRoot: Érvénytelen könyvtár az indítóadatokhoz! Kérjük, próbálkozzon más könyvtárral!
     exists: >-
-      Selected directory is not empty. It's okay but please make sure you backup
-      your data.
+      A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen
+      biztonsági mentést az adatokról.
     noPermission: >-
-      Launcher does not have permission to access selected directory! Please try
-      another one.
-    nonDictionary: Selected path is a file! Please select a directory!
+      Az launchernek nincs jogosultsága a kiválasztott könyvtárhoz! Kérlek,
+      próbálj meg egy másikat.
+    nonDictionary: A kiválasztott útvonal egy fájl! Kérlek válasszon ki egy könyvtárat!
   focusLayoutDescription: >-
-    The focus layout is the legacy layout of Minecraft Launcher. It is designed
-    to be used with a single instance or few instances.
+    A fókusz elrendezés a Minecraft Launcher régi elrendezése. Ezt úgy tervezték
+    egyetlen példány vagy néhány példány használatára tervezték.
   game:
     description: >-
-      Choose existing game directory (.minecraft) to import existing resources.
-      So you can quickly identify the mods, resource packs, etc.
-    name: Import Existed Game
+      Válassza ki a meglévő játékkönyvtárat (.minecraft) a meglévő erőforrások
+      importálásához. Így gyorsan azonosíthatja a modokat, erőforrás csomagokat stb.
+    name: Létező játék beimportálása
   locale:
     description: >-
-      Select your preferred language if we have it! If you don't see your native
-      language and you want to help, you can visit our Github to submit pull
-      requests to translate!
-    language: Language
-    name: Set Language
-  path: Current Path
-  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
+      Válaszd ki a kívánt nyelvet, ha van! Ha nem látod az anyanyelvedet, és
+      segíteni szeretnél, akkor látogass el a Githubra, hogy pull requesteket
+      küldj a fordításhoz!
+    language: Nyelv
+    name: Nyelv beállítása
+  path: Jelenlegi útvonal
+  title: 'Üdvözöljük az X Minecraft Launcherben. Mielőtt elkezdenéd, szükségünk van arra, hogy '
 shaderPack:
-  deletion: Delete Shader Pack
-  deletionHint: This will delete the shader pack file {path} and cannot reverted.
-  disabled: Disabled Shader Pack
-  dropHint: Import Shader Pack
-  empty: No shader pack allocated
-  enable: Using {name} shader pack
-  enabled: Enabled Shader Pack
-  manage: Manage Shader Packs
+  deletion: Shader Pack törlése
+  deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
+  disabled: Shader pack kikapcsolása
+  dropHint: Shader pack importálása
+  empty: Nincs kijelölt shader csomag
+  enable: '{name} shader pack használata'
+  enabled: Engedélyezett Shader Pack
+  manage: Shader packek kezelése
   name: Shader Pack
-  searchHint: Search Shader Pack
-  selectSearchHint: Search and select Shader Pack
-  showDirectory: Show shader pack directory
-  showFile: Show this shader pack in folder
+  searchHint: Shader Pack keresése
+  selectSearchHint: Keresés és Shader Pack kiválasztása
+  showDirectory: Shader pack könyvtár megjelenítése
+  showFile: Shader pack megjelenítése a mappában
 store:
-  explore: Explore
-  latestMinecraft: Latest Minecraft Version
-  name: Modpack Market
-  popular: Popular Modpacks
-  recentUpdated: Recent Updated
-summery: Summery
+  explore: Felfedezés
+  latestMinecraft: Legfrissebb Minecraft verzió
+  name: Modcsomag piac
+  popular: Népszerű modcsomagok
+  recentUpdated: Legutóbb frissítve
+summery: Áttekintés
 tag:
-  create: Create Tag
-  createSelected: Create Tag for Selected
-  newTag: New Tag
+  create: Címke létrehozása
+  createSelected: Címke létrehozása a kiválasztotthoz
+  newTag: Új címke
 task:
-  cancelled: Cancelled
-  clear: Clear Finished Tasks
-  empty: No Running Tasks
-  failed: Failed
-  manager: Task Manager
-  nTaskRunning: '{count} tasks is running'
-  name: Task | Tasks
-  pause: Pause
+  cancelled: Törölt
+  clear: Befejezett folyamatok törlése
+  empty: Nincs futó folyamat
+  failed: Sikertelen
+  manager: Folyamatkezelő
+  nTaskRunning: '{count} folyamat fut'
+  name: Folyamat | Folyamatok
+  pause: Szüneteltetés
 title: X Minecraft Launcher
 transportType:
-  host: Host Candidate
-  prflx: Peer Reflexive Candidate
-  relay: Relay Candidate
-  srflx: Server Reflexive Candidate
+  host: Kiszolgáló jelölt
+  prflx: Peer Reflexív jelölt
+  relay: Relay jelölt
+  srflx: Kiszolgáló Reflexív jelölt
 tutorial:
-  feedbackDescription: If you encounter any problem, please click this button to send feedback!
+  feedbackDescription: Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy visszajelzést küldj!
   instance:
-    iconDescription: Click to change icon.`
-    iconTitle: Instance icon
-    javaDescription: Choose or switch a java version.
-    javaImportDescription: Import java from local storage.
-    javaImportTitle: Import java
-    javaTitle: Java list
+    iconDescription: Kattints az ikon megváltoztatásához.`
+    iconTitle: Példány ikonja
+    javaDescription: Válassz vagy válts java verziót.
+    javaImportDescription: Java importálása a helyi tárolóból.
+    javaImportTitle: Java importálása
+    javaTitle: Java lista
   instanceAddDescription: >-
-    Click this button to import existed Minecraft or create a new one from
-    scratch or modpack.
+    Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz
+    létre egy újat a vagy modcsomagot.
   instanceSelectDescription: >-
-    Clicking this button will navigate to the page to select and create new
-    game.
-  launchDescription: Click this button to install or launch the game.
+    Erre a gombra kattintva az új játék kiválasztására és létrehozására
+    szolgáló oldalra navigál.
+  launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
     defaultSourceDescription: >-
-      You can choose the source of mods detail here. There are the mods
-      published to both Modrinth and Curseforge. If you want to switch between
-      these two content provider. You can change the value here.
-    defaultSourceTitle: Select Mod Content Source
+      Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge
+      által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató
+      között. Itt módosíthatod az értéket.
+    defaultSourceTitle: Mod tartalom forrásának kiválasztása
     detailDescription: >-
-      When you select an item on the left. You will see the detail of the mod.
-      The content can come from Modrinth, Curseforge or parsed mod's content.
-    detailTitle: Mod Detail
+      Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit.
+      A tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
+    detailTitle: Mod részletek
     listDescription: >-
-      We will display installed mods when you don't have any input. You will see
-      the searched mods once you input have keyword or category selected.
+      Megjelenítjük a telepített modokat, ha nincs inputja. A keresett modokat
+      akkor fogja látni, ha a kulcsszó vagy a kategória kiválasztása megtörtént.
     listTitle: Installed or Searched Mod
     searchDescription: >-
-      You could search mods from Modrinth, Curseforge or your local cache by
-      this search box.
-    searchTitle: Search Mods
+      A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel
+      a keresőmezővel.
+    searchTitle: Modok keresése
   multiplayer:
-    contentDescription: Connections between you and your peers will be listed here.
+    contentDescription: Az Ön és társai közötti kapcsolatok itt lesznek felsorolva.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
-      You can create or join a group with other players. The launcher will try
-      to create P2P connections between you and your friends according to the
-      group. You can input the group name given by your friends. Or you can
-      create an unique name from your own.
-    groupTitle: Join a group
+      Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más játékosokkal.
+      A launcher megpróbál P2P-kapcsolatokat létrehozni közted és barátaid között a
+      csoportnak megfelelően. A barátaid által megadott csoportnevet megadhatod. Vagy
+      létrehozhatsz egy egyedi nevet a sajátodból.
+    groupTitle: Csatlakozás egy csoporthoz
     joinDescription: >-
-      Once you input a group name. You can click this button to join or create
-      the group. If the group name is empty, the launcher will generate a name
-      for you.
+      Miután beírt egy csoportnevet. Erre a gombra kattintva csatlakozhat a csoporthoz
+      vagy létrehozhatja azt. Ha a csoportnév üres, az indítóprogram generál egy nevet
+      az Ön számára.
     manualDescription: >-
-      If you or your friend cannot connect to group. You can try to manually
-      exchange the token by clicking manually connect. If that also failed, it
-      might be the internet issue.
-  userAccountDescription: Click this icon to add or manage your Minecraft account.
+      Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja manuálisan
+      kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha ez is sikertelen,
+      akkor az internetprobléma lehet.
+  userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
 universalDrop:
-  enableModsAfterImport: Enable Mods After Import
-  start: Import Started
-  title: Drop File(s) Here to Import as
+  enableModsAfterImport: Modok engedélyezése importálás után
+  start: Importálás megkezdődött
+  title: Húzd ide a fájl(oka)t az importáláshoz
   unknownResource: Ismeretlen
 upstream:
   downgrade: Visszaváltás
