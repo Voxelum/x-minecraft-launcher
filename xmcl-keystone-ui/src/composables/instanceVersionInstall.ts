@@ -1,5 +1,5 @@
 import { injection } from '@/util/inject'
-import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { Ref } from 'vue'
@@ -83,9 +83,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         await refreshVersion(localOptifine.id)
         return localOptifine.id
       }
-      const index = optifineVersion.lastIndexOf('_')
-      const type = optifineVersion.substring(0, index)
-      const patch = optifineVersion.substring(index + 1)
+      const { type, patch } = parseOptifineVersion(optifineVersion)
       const [ver] = await installOptifine({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion })
       return ver
     } else if (forgeVersion) {

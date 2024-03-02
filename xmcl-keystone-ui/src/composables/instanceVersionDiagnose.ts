@@ -1,4 +1,5 @@
-import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, getExpectVersion } from '@xmcl/runtime-api'
+import type { LibraryIssue } from '@xmcl/core'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, getExpectVersion, parseOptifineVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useInstanceVersionInstall } from './instanceVersionInstall'
@@ -119,20 +120,59 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       if (abortSignal.aborted) { return }
 
       if (librariesIssue.length > 0) {
-        const options = { named: { count: librariesIssue.length } }
-        console.log(librariesIssue)
-        operations.push(async () => {
-          await installLibraries(librariesIssue.map(v => v.library), version.id, librariesIssue.length < 15)
-        })
-        items.push(librariesIssue.some(v => v.type === 'corrupted')
-          ? reactive({
-            title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: librariesIssue.length })),
-            description: computed(() => t('diagnosis.corruptedLibraries.message')),
+        const optifinesIssues = [] as LibraryIssue[]
+        const forgeIssues = [] as LibraryIssue[]
+        const commonIssues = [] as LibraryIssue[]
+        for (const i of librariesIssue) {
+          if (i.library.groupId === 'optifine') {
+            optifinesIssues.push(i)
+          } else if (i.library.groupId === 'net.minecraftforge' && i.library.artifactId === 'forge' && i.library.classifier === 'client') {
+            forgeIssues.push(i)
+          } else {
+            commonIssues.push(i)
+          }
+        }
+        if (commonIssues.length > 0) {
+          const options = { named: { count: commonIssues.length } }
+          operations.push(async () => {
+            await installLibraries(commonIssues.map(v => v.library), version.id, commonIssues.length < 15)
           })
-          : reactive({
-            title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: librariesIssue.length })),
-            description: computed(() => t('diagnosis.missingLibraries.message')),
+          items.push(commonIssues.some(v => v.type === 'corrupted')
+            ? reactive({
+              title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: commonIssues.length })),
+              description: computed(() => t('diagnosis.corruptedLibraries.message')),
+            })
+            : reactive({
+              title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: commonIssues.length })),
+              description: computed(() => t('diagnosis.missingLibraries.message')),
+            }))
+        }
+        if (optifinesIssues.length > 0) {
+          items.push(reactive({
+            title: computed(() => t('diagnosis.badInstall.name')),
+            description: computed(() => t('diagnosis.badInstall.message')),
           }))
+          const { type, patch } = parseOptifineVersion(runtime.value.optifine!)
+          operations.push(async () => {
+            await installOptifine({
+              mcversion: runtime.value.minecraft,
+              type,
+              patch,
+            })
+          })
+        }
+        if (forgeIssues.length > 0) {
+          items.push(reactive({
+            title: computed(() => t('diagnosis.badInstall.name')),
+            description: computed(() => t('diagnosis.badInstall.message')),
+          }))
+          operations.push(async () => {
+            await installForge({
+              mcversion: runtime.value.minecraft,
+              version: runtime.value.forge!,
+            })
+          })
+        }
       }
     }
 
