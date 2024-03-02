@@ -94,7 +94,7 @@
             </v-btn>
           </v-btn-toggle>
         </div>
-        <v-select
+        <v-combobox
           v-else
           :key="g.text + 'select'"
           class="flex-grow-0"
@@ -108,7 +108,7 @@
             // @ts-ignore
             (v) => v.id"
           :value="g.categories.find(v => selected.includes(v.id))"
-          @input="emit('select', { category: $event, group: g.id })"
+          @input="emit('select', { category: $event?.id || '', group: g.id })"
         />
       </template>
     </div>

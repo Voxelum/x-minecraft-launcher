@@ -88,6 +88,11 @@ export const router = new Router({
       children: [
         {
           path: '/',
+          props: (route) => ({
+            query: route.query.query ?? '',
+            gameVersion: route.query.gameVersion ?? '',
+            modLoader: route.query.modLoader ?? '',
+          }),
           component: StoreEntry,
         },
         {
