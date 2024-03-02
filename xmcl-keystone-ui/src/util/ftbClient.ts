@@ -22,18 +22,27 @@ export class FTBClient {
 
   async searchModpacks(options?: SearchFTBModpackOptions): Promise<FTBModpacksResult> {
     const response = await fetch(`${this.endpoint}/public/modpack/search/8?term=${options?.keyword ?? ''}`)
+    if (!response.ok) {
+      throw new Error(`Fail to search modpacks: ${response.statusText}`)
+    }
     const result: FTBModpacksResult = await response.json()
     return result
   }
 
   async getFeaturedModpacks(): Promise<FTBModpacksResult> {
     const response = await fetch(`${this.endpoint}/public/modpack/featured/5`)
+    if (!response.ok) {
+      throw new Error(`Fail to search modpacks: ${response.statusText}`)
+    }
     const result: FTBModpacksResult = await response.json()
     return result
   }
 
   async getModpackManifest(id: number): Promise<FTBModpackManifest> {
     const response = await fetch(`${this.endpoint}/public/modpack/${id}`)
+    if (!response.ok) {
+      throw new Error(`Fail to search modpacks: ${response.statusText}`)
+    }
     const result: FTBModpackManifest = await response.json()
     return result
   }

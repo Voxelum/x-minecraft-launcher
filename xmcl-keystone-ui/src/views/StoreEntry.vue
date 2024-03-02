@@ -3,6 +3,12 @@
     ref="container"
     class="w-full overflow-auto"
   >
+    <v-progress-linear
+      class="absolute left-0 top-0 z-10 m-0 p-0"
+      :active="isModrinthSearching || ftbLoading || isCurseforgeSearching"
+      height="3"
+      :indeterminate="true"
+    />
     <div class="z-8 sticky top-1 mt-4 flex w-full px-4 lg:justify-center">
       <v-text-field
         ref="searchTextField"
@@ -14,8 +20,9 @@
         hide-details
         clearable
         :placeholder="t('modrinth.searchText')"
-        @click:clear="query = ''"
-        @keydown.enter="query = keyword"
+        @click:clear="_query = ''"
+        @keydown.enter="_query = keyword"
+        @click:append="_query = keyword"
       />
     </div>
     <div class="main px-3">
@@ -95,7 +102,7 @@
               v-model="page"
               :length="pageCount"
               color="success"
-              :disabled="refreshing"
+              :disabled="isModrinthSearching || isCurseforgeSearching"
               :total-visible="12"
             />
           </div>
@@ -157,7 +164,47 @@ import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import useSWRV from 'swrv'
 
-const keyword = ref('')
+const props = withDefaults(defineProps<{
+  query: string
+  gameVersion: string
+  modLoader: string
+}>(), { query: '', gameVersion: '', modLoader: '' })
+
+const { push, replace, currentRoute } = useRouter()
+const _query = computed({
+  get: () => props.query,
+  set: (v: string) => replace({
+    path: '/store',
+    query: {
+      // gameVersions: _gameVersion.value,
+      // modLoader: _modLoader.value,
+      ...currentRoute.query,
+      query: v,
+    },
+  }),
+})
+const _gameVersion = computed({
+  get: () => props.gameVersion,
+  set: (v: string) => replace({
+    path: '/store',
+    query: {
+      ...currentRoute.query,
+      gameVersions: v,
+    },
+  }),
+})
+const _modLoader = computed({
+  get: () => props.modLoader,
+  set: (v: string) => replace({
+    path: '/store',
+    query: {
+      ...currentRoute.query,
+      modLoader: v,
+    },
+  }),
+})
+
+const keyword = ref(props.query)
 const { t } = useI18n()
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
@@ -316,11 +363,15 @@ const recentMinecraftItems = computed(() => {
 })
 
 // FTB
-const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword }))
+const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: _query }))
 const ftbItems = ref([] as ExploreProject[])
 const config = inject(kSWRVConfig)
 watch(ftbData, async (packs) => {
   if (!packs) {
+    ftbItems.value = []
+    return
+  }
+  if (!('packs' in packs)) {
     ftbItems.value = []
     return
   }
@@ -345,12 +396,9 @@ watch(ftbData, async (packs) => {
     return result
   }))
 }, { immediate: true })
-watch(ftbItems, console.log, { immediate: true })
 
 // Routing
-const { push } = useRouter()
 const enter = (type: string, id: string) => {
-  console.log(type, id)
   push(`/store/${type}/${id}`)
 }
 
@@ -455,17 +503,15 @@ const groups = computed(() => {
 })
 
 const page = ref(1)
-const query = ref('')
-const gameVersion = ref('')
-const modLoader = ref('')
+
 const { sort, modrinthSort, curseforgeSort } = useMarketSort('' as string)
 // Modrinth
 const data: ModrinthOptions = reactive({
-  query,
-  gameVersion,
+  query: _query,
+  gameVersion: _gameVersion,
   license: '',
   category: [],
-  modLoader,
+  modLoader: _modLoader,
   environment: '',
   sortBy: modrinthSort as any,
   projectType: 'modpack',
@@ -501,30 +547,30 @@ const selected = computed(() => {
 })
 const {
   error: searchError,
-  refreshing, projects, pageCount,
+  refreshing: isModrinthSearching, projects, pageCount,
 } = useModrinth(data)
 
 // Curseforge
 const curseforgeData: CurseforgeProps = reactive({
   type: 'modpacks',
   page,
-  keyword: query,
+  keyword: _query,
   category: '',
   sortField: curseforgeSort as any,
   modLoaderType: computed(() => {
-    return modLoader.value === 'forge'
+    return _modLoader.value === 'forge'
       ? FileModLoaderType.Forge
-      : modLoader.value === 'fabric'
+      : _modLoader.value === 'fabric'
         ? FileModLoaderType.Fabric
-        : modLoader.value === 'quilt'
+        : _modLoader.value === 'quilt'
           ? FileModLoaderType.Quilt
           : FileModLoaderType.Any
   }),
   sortOrder: 'desc',
-  gameVersion,
+  gameVersion: _gameVersion,
   from: '',
 })
-const { projects: curseforgeProjects } = useCurseforge(curseforgeData)
+const { projects: curseforgeProjects, refreshing: isCurseforgeSearching } = useCurseforge(curseforgeData)
 
 const items = computed(() => {
   const modrinths = projects.value.map((p) => {
@@ -586,7 +632,7 @@ const items = computed(() => {
 const container = ref<any>(null)
 const exploreHeader = ref<any | null>(null)
 watch(items, (values) => {
-  if (query.value || gameVersion.value || modLoader.value) {
+  if (_query.value || _gameVersion.value || _modLoader.value) {
     // Scroll to the element
     const component = exploreHeader.value
     const el = component?.$el as HTMLElement | undefined
@@ -647,15 +693,15 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
       }
     }
   } else if (group === 'modloaders') {
-    data.modLoader = category
+    data.modLoader = data.modLoader === category ? '' : category
   } else if (group === 'environments') {
-    data.environment = category
+    data.environment = category === data.environment ? '' : category
   } else if (group === 'gameVersions') {
     data.gameVersion = category
   } else if (group === 'licenses') {
     data.license = category
   } else if (group === 'sortBy') {
-    sort.value = category
+    sort.value = category === sort.value ? '' : category
   }
 }
 
