@@ -71,15 +71,15 @@ export class ProxyAgent extends DispatcherBase {
   constructor(opts: {
     controller: ProxySettingController
     factory: (connect: buildConnector.connector) => Agent
-    requestTls?: TlsOptions & { servername?: string }
-    proxyTls?: TlsOptions & { servername?: string }
+    requestTls?: buildConnector.BuildOptions
+    proxyTls?: buildConnector.BuildOptions
   }) {
     super()
 
     opts.controller.add(this)
 
-    this.pConnect = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
-    const connector = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
+    this.pConnect = buildConnector(opts.requestTls)
+    const connector = buildConnector(opts.proxyTls)
 
     const connect = async (opts: any, callback: buildConnector.Callback) => {
       if (!this.isProxyEnabled || !this.proxyClient) {

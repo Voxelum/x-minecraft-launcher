@@ -2,7 +2,7 @@ import { DefaultRangePolicy, getDefaultAgentOptions } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
-import { Agent, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
+import { Agent, Dispatcher, Pool, setGlobalDispatcher, CacheStorage, buildConnector } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
@@ -30,6 +30,12 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const dispatchInterceptors: Array<(opts: DispatchOptions) => void | Promise<void>> = []
 
   let maxConnection = 64
+  const connectorOptions: buildConnector.BuildOptions = {
+    timeout: 10_000,
+    rejectUnauthorized: false,
+    autoSelectFamily: true,
+    autoSelectFamilyAttemptTimeout: 850,
+  }
 
   const proxy = new ProxySettingController()
   app.registry.get(kSettings).then((state) => {
@@ -92,6 +98,8 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         return patchIfPool(dispatcher)
       },
     }),
+    proxyTls: connectorOptions,
+    requestTls: connectorOptions,
   }), new JsonCacheStorage(cache))
   setGlobalDispatcher(apiDispatcher)
 
@@ -105,9 +113,12 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       },
       headersTimeout: 15_000,
       connectTimeout: 35_000,
+      bodyTimeout: 60_000,
       connect,
       factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),
     }),
+    proxyTls: connectorOptions,
+    requestTls: connectorOptions,
   })
   app.registry.register(kDownloadOptions, {
     rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
