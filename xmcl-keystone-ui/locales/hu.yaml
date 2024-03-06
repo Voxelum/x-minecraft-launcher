@@ -204,9 +204,7 @@ diagnosis:
     name: Nem található a Java a Minecraft indításához!
   missingLibraries:
     message: A Launcher telepíti neked a könyvtárakat
-    name: >-
-      Hiányzó {név} könyvtár | Hiányzó {név} könyvtár | Hiányzó {szám}
-      könyvtár | Hiányzó {szám} Könyvtár
+    name: 'Hiányzó {name} könyvtár | Hiányzó {name} könyvtár | Hiányzó {count} könyvtár | Hiányzó {count} Könyvtár'
   missingVersion:
     message: Kattints erre a verzióra a telepítéshez
     name: A {version} verzió nincs telepítve!
@@ -331,7 +329,7 @@ installForge:
   postProcessing: Utófeldolgozás
 installInstance:
   file: Példányfájl frissítése {file}
-  link: Fájlok másolása vagy összekapcsolása {szám}
+  link: Fájlok másolása vagy összekapcsolása {count}
   name: Példány frissítése
   resolve: Példány konfiguráció feloldása
   unzip: '{count} fájlok kicsomagolása'
@@ -642,7 +640,7 @@ mod:
   openLink: A mod url {url} megnyitása
   search: Modok keresése
   searchOnCurseforge: Keresés {name} a curseforge-on
-  searchOnModrinth: Keresés {név} a Modrinth-on
+  searchOnModrinth: Keresés {name} a Modrinth-on
   showDirectory: Modok mappájának megjelenítése
   showFile: A mod elérési útvonalának megjelenítése {file}
   showInCurseforge: A mod megjelenítése a curseforge-ban
