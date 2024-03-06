@@ -43,7 +43,6 @@ export class InstallService extends AbstractService implements IInstallService {
     const options: InstallForgeOptions = {
       ...this.downloadOptions,
       java: this.javaService.getPreferredJava()?.path,
-      skipRevalidate: true,
     }
 
     const allSets = getApiSets(this.settings)
@@ -64,7 +63,6 @@ export class InstallService extends AbstractService implements IInstallService {
       assetsDownloadConcurrency: 16,
       ...this.downloadOptions,
       side: 'client',
-      skipRevalidate: true,
     }
 
     const allSets = getApiSets(this.settings)
