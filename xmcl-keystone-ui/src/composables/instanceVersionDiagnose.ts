@@ -133,7 +133,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
           }
         }
         if (commonIssues.length > 0) {
-          const options = { named: { count: commonIssues.length } }
+          const options = { count: commonIssues.length, name: commonIssues[0].library.path }
           operations.push(async () => {
             await installLibraries(commonIssues.map(v => v.library), version.id, commonIssues.length < 15)
           })
@@ -198,17 +198,17 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       const assetsIssue = await diagnoseAssets(version)
       if (abortSignal.aborted) { return }
       if (assetsIssue.length > 0) {
-        const options = { named: { count: assetsIssue.length } }
+        const options = { count: assetsIssue.length, name: assetsIssue[0]?.asset.name }
         operations.push(async () => {
           await installAssets(assetsIssue.map(v => v.asset), version.id, assetsIssue.length < 15)
         })
         items.push(assetsIssue.some(v => v.type === 'corrupted')
           ? reactive({
-            title: computed(() => t('diagnosis.corruptedAssets.name', 2, options)),
+            title: computed(() => t('diagnosis.corruptedAssets.name', options, 2)),
             description: computed(() => t('diagnosis.corruptedAssets.message')),
           })
           : reactive({
-            title: computed(() => t('diagnosis.missingAssets.name', 2, options)),
+            title: computed(() => t('diagnosis.missingAssets.name', options, 2)),
             description: computed(() => t('diagnosis.missingAssets.message')),
           }),
         )

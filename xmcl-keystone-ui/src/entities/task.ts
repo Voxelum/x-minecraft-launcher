@@ -1,12 +1,12 @@
 import type { TaskState } from '@xmcl/runtime-api'
 
 /**
- * The task item represent a task or a sub task
+ * The task item represent a task on UI or a sub task
  */
 export interface TaskItem {
   /**
-     * The unique id of this task node
-     */
+   * The unique id of this task node
+   */
   id: string
 
   /**
@@ -31,8 +31,6 @@ export interface TaskItem {
 
   path: string
   param: Record<string, any>
-  from: string
-  to: string
   message: object | string
   total: number
   progress: number

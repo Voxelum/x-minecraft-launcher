@@ -38,10 +38,8 @@ export function useTaskManager() {
       taskId: payload.uuid,
       time: new Date(payload.time),
       message: 'error' in payload && payload.error ? markRaw(payload.error) : payload.from ?? payload.to ?? '',
-      from: payload.from ?? '',
       path: payload.path,
       param: payload.param,
-      to: payload.to ?? '',
       throughput: 0,
       rawChildren: markRaw([]),
       childrenDirty: false,
@@ -82,7 +80,6 @@ export function useTaskManager() {
         tasks.value.unshift(item)
       }
       cache[id] = new WeakRef(item)
-      // console.log(`Add task ${add.path}(${id})`)
     }
     for (const update of updates) {
       const { uuid, id, time, to, from, progress, total, chunkSize, state, error } = update
@@ -99,7 +96,7 @@ export function useTaskManager() {
           item.total = total
         }
         item.time = new Date(time)
-        item.message = Object.freeze(error) || item.message
+        item.message = Object.freeze(error) || from || to || item.message
         if (chunkSize) {
           item.throughput += chunkSize
           throughput.value += chunkSize
