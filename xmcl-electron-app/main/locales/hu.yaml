@@ -1,0 +1,22 @@
+browseApps: Testreszabott Launcher UI böngészése
+checkUpdate: Frissítés keresése
+openUrl:
+  cancel: Mégsem
+  message: >-
+    Az launcher meg akarja nyitni az {url} oldalt az alapértelmezett böngészőben. 
+    Engedélyezed ezt a műveletet?
+  title: Megnyitás böngészőben
+  trust: Bízzon ebben az oldalban, és legközelebb ne jelenjen meg
+  'yes': 'Igen'
+quit: Kilépés
+relaunch: Újraindítás
+showDiagnosis: Diagnózis megjelenítése
+showLauncher: Launcher megjelenítése
+showLogsFolder: Napló mappa megjelenítése
+task:
+  continue: Megjelenítés launcherben
+  fail: Egy feladat meghiúsult
+  success: Egy feladat sikeres
+title: X Minecraft Launcher
+urlFailed: Ismeretlen url {url}. Kérlek ellenőrizd az url-t vagy lépj kapcsolatba a fejlesztővel!
+urlSuccess: Sikerült! Most már bezárhatod ezt az ablakot, és visszatérhetsz a launcherhez!
