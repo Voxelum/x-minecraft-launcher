@@ -78,13 +78,14 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     }
     options.headers = headers
   }
-  const agentOptions = getDefaultAgentOptions()
+
+  const apiAgentOptions = getDefaultAgentOptions()
   const apiDispatcher = new CacheDispatcher(new ProxyAgent({
     controller: proxy,
     factory: (connect) => new Agent({
       interceptors: {
-        Agent: [...agentOptions.interceptors.Agent],
-        Client: [...agentOptions.interceptors.Client, createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors])],
+        Agent: [...apiAgentOptions.interceptors.Agent],
+        Client: [...apiAgentOptions.interceptors.Client, createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors])],
       },
       pipelining: 1,
       bodyTimeout: 20_000,
@@ -103,13 +104,28 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   }), new JsonCacheStorage(cache))
   setGlobalDispatcher(apiDispatcher)
 
+  const downloadAgentOptions = getDefaultAgentOptions({
+    maxTimeout: 60_000,
+    errorCodes: [
+      'ECONNRESET',
+      'ECONNREFUSED',
+      'ENOTFOUND',
+      'ENETDOWN',
+      'ENETUNREACH',
+      'EHOSTDOWN',
+      'EHOSTUNREACH',
+      'EPIPE',
+      'UND_ERR_CONNECT_TIMEOUT',
+    ],
+    maxRetries: 30,
+  })
   const downloadProxy = new ProxyAgent({
     controller: proxy,
     factory: (connect) => new Agent({
-      connections: agentOptions.connections,
+      connections: downloadAgentOptions.connections,
       interceptors: {
-        Agent: [...agentOptions.interceptors.Agent],
-        Client: [...agentOptions.interceptors.Client],
+        Agent: [...downloadAgentOptions.interceptors.Agent],
+        Client: [...downloadAgentOptions.interceptors.Client],
       },
       headersTimeout: 15_000,
       connectTimeout: 35_000,
