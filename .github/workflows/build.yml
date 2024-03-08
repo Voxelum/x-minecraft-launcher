@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - linux-test
     paths:
       - 'xmcl-runtime/**'
       - 'xmcl-runtime-api/**'
