@@ -11,7 +11,9 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
         if (app.platform.os !== 'linux') return
         const settings = await app.registry.get(kSettings)
         if (settings.enableDedicatedGPUOptimization) {
-          const env = output.extraExecOption?.env || {}
+          const env = output.extraExecOption?.env || {
+            ...process.env,
+          }
           const info = (await elec.getGPUInfo('basic')) as any
           interface GpuDevice {
             vendorId: number
