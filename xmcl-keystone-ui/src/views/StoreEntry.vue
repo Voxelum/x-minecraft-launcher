@@ -176,8 +176,6 @@ const _query = computed({
   set: (v: string) => replace({
     path: '/store',
     query: {
-      // gameVersions: _gameVersion.value,
-      // modLoader: _modLoader.value,
       ...currentRoute.query,
       query: v,
     },
@@ -189,7 +187,7 @@ const _gameVersion = computed({
     path: '/store',
     query: {
       ...currentRoute.query,
-      gameVersions: v,
+      gameVersion: v,
     },
   }),
 })
@@ -530,14 +528,14 @@ const selected = computed(() => {
   if (data.environment) {
     result.push(data.environment)
   }
-  if (data.gameVersion) {
-    result.push(data.gameVersion)
+  if (_gameVersion.value) {
+    result.push(_gameVersion.value)
   }
   if (data.license) {
     result.push(data.license)
   }
-  if (data.modLoader) {
-    result.push(data.modLoader)
+  if (_modLoader.value) {
+    result.push(_modLoader.value)
   }
   if (data.sortBy) {
     result.push(data.sortBy)
@@ -693,11 +691,11 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
       }
     }
   } else if (group === 'modloaders') {
-    data.modLoader = data.modLoader === category ? '' : category
+    _modLoader.value = data.modLoader === category ? '' : category
   } else if (group === 'environments') {
     data.environment = category === data.environment ? '' : category
   } else if (group === 'gameVersions') {
-    data.gameVersion = category
+    _gameVersion.value = category
   } else if (group === 'licenses') {
     data.license = category
   } else if (group === 'sortBy') {
