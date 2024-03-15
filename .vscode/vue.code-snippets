@@ -55,10 +55,8 @@
         "prefix": "service impl",
         "body": [
             "import { $1Service as I$1Service, $1ServiceKey } from '@xmcl/runtime-api'",
-            "import { LauncherAppKey } from '../app/utils'",
-            "import { LauncherApp } from '../app/LauncherApp'",
-            "import { Inject } from '../util/objectRegistry'",
-            "import { ExposeServiceKey, AbstractService } from './Service'",
+            "import { Inject, LauncherAppKey, LauncherApp } from '~/app'",
+            "import { ExposeServiceKey, AbstractService } from '~/service'",
             "@ExposeServiceKey($1ServiceKey)",
             "export class $1Service extends AbstractService implements I$1Service {",
             "  constructor(@Inject(LauncherAppKey) app: LauncherApp) {",
