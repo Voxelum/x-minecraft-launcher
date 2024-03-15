@@ -210,12 +210,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           name: 'minecraft-run-telemetry',
           async onBeforeLaunch(_, { gamePath }, ctx) {
             const state = stateManager.get<InstanceModsState>(getInstanceModStateKey(gamePath))
-            const mods = state?.mods.map(m => {
-              const payload = getPayload(m.hash, m.metadata, m.name, m.domain)
-              delete payload.name
-              delete payload.domain
-              return payload
-            })
+            const mods = state?.mods.map(m => m.hash)
             const runtime = instanceService?.state.all[gamePath]?.runtime
             if (mods) {
               ctx.mods = mods
@@ -228,9 +223,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
             }
             if (ctx.mods) {
               client.trackEvent({
-                name: 'minecraft-run-record',
+                name: 'minecraft-run-record-v2',
                 properties: {
-                  mods: ctx.mods,
+                  mods: ctx.mods.join(','),
                   runtime: ctx.runtime,
                   java: await javaService?.getJavaState().then((javaState) => {
                     const javaVersion = javaState.all.find(s => s.path === opts.javaPath)
