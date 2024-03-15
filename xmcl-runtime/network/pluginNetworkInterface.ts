@@ -106,17 +106,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
 
   const downloadAgentOptions = getDefaultAgentOptions({
     maxTimeout: 60_000,
-    errorCodes: [
-      'ECONNRESET',
-      'ECONNREFUSED',
-      'ENOTFOUND',
-      'ENETDOWN',
-      'ENETUNREACH',
-      'EHOSTDOWN',
-      'EHOSTUNREACH',
-      'EPIPE',
-      'UND_ERR_CONNECT_TIMEOUT',
-    ],
     maxRetries: 30,
   })
   const downloadProxy = new ProxyAgent({
