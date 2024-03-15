@@ -126,7 +126,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         for (const i of librariesIssue) {
           if (i.library.groupId === 'optifine') {
             optifinesIssues.push(i)
-          } else if (i.library.groupId === 'net.minecraftforge' && i.library.artifactId === 'forge' && i.library.classifier === 'client') {
+          } else if (i.library.groupId === 'net.minecraftforge' && i.library.artifactId === 'forge' && (i.library.classifier === 'client' || !i.library.classifier)) {
             forgeIssues.push(i)
           } else {
             commonIssues.push(i)
