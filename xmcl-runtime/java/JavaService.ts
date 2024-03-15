@@ -16,6 +16,7 @@ import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
+import { getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths } from './javaPaths'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -204,9 +205,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.log('Force update or no local cache found. Scan java through the disk.')
       const commonLocations = [] as string[]
       if (this.app.platform.os === 'windows') {
-        let files = await readdirIfPresent('C:\\Program Files\\Java')
-        files = files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'java.exe'))
-        commonLocations.push(...files)
+        commonLocations.push(
+          ...await getMojangJavaPaths(),
+          ...await getOrcaleJavaPaths(),
+          ...await getOpenJdkPaths(),
+        )
       }
       const javas = await scanLocalJava(commonLocations)
       const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this.app, j.path) })))
