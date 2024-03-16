@@ -24,7 +24,8 @@ export default defineConfig({
       input: entries,
       external: ['electron'],
     },
-    minify: 'terser',
+    minify: 'esbuild',
+    sourcemap: true,
     terserOptions: {
       keep_classnames: true,
     },
