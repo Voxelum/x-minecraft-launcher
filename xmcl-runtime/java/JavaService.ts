@@ -30,6 +30,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, () => store.registerStatic(new JavaState(), JavaServiceKey), async () => {
+      ensureClass(this.app).catch((e) => {
+        this.error(e)
+      })
+
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
       this.log(`Loaded ${valid.length} java from cache.`)
@@ -39,10 +43,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       this.state.subscribeAll(() => {
         this.config.write(this.state)
-      })
-
-      ensureClass(this.app).catch((e) => {
-        this.error(e)
       })
     })
     this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
@@ -174,7 +174,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     if (java && validation === JavaValidation.Okay) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
 
-      this.state.javaUpdate({ ...java, valid: true, arch: await getJavaArch(this.app, java.path) })
+      this.state.javaUpdate({ ...java, valid: true, arch: await getJavaArch(this, java.path) })
     } else {
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')
@@ -212,7 +212,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         )
       }
       const javas = await scanLocalJava(commonLocations)
-      const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this.app, j.path) })))
+      const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })))
 
       this.log(`Found ${infos.length} java.`)
       this.state.javaUpdate(infos)
@@ -222,7 +222,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       for (let i = 0; i < this.state.all.length; ++i) {
         const result = await resolveJava(this.state.all[i].path)
         if (result) {
-          javas.push({ ...result, valid: true, arch: this.state.all[i].arch ?? await getJavaArch(this.app, result.path) })
+          javas.push({ ...result, valid: true, arch: this.state.all[i].arch ?? await getJavaArch(this, result.path) })
         } else {
           javas.push({ ...this.state.all[i], valid: false })
         }

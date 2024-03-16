@@ -6,16 +6,16 @@ export async function getMojangJavaPaths() {
   const runtimes = await readdir(runtimeDir).catch(() => [])
   const arch = process.arch === 'ia32' ? 'x86' : 'x64'
   const platformArch = `windows-${arch}`
-  return runtimes.map((runtime) => join(runtimeDir, runtime, platformArch, runtime, 'bin', 'javaw.exe'))
+  return runtimes.map((runtime) => join(runtimeDir, runtime, platformArch, runtime, 'bin', 'java.exe'))
     .flat()
 }
 
 export async function getOrcaleJavaPaths() {
   const files = await readdir('C:\\Program Files\\Java').catch(() => [])
-  return files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'javaw.exe'))
+  return files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'java.exe'))
 }
 
 export async function getOpenJdkPaths() {
   const files = await readdir('C:\\Program Files\\AdoptOpenJDK').catch(() => [])
-  return files.map(f => join('C:\\Program Files\\AdoptOpenJDK', f, 'bin', 'javaw.exe'))
+  return files.map(f => join('C:\\Program Files\\AdoptOpenJDK', f, 'bin', 'java.exe'))
 }
