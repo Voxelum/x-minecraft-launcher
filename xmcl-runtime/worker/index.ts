@@ -11,6 +11,9 @@ export const createLazyWorker = <T>(factory: () => Worker, methods: Array<keyof 
     logger.log(`Awake the worker ${factory}`)
     worker.on('message', (message: 'idle' | WorkerResponse) => {
       if (message === 'idle') {
+        if (destroyTimer) {
+          clearTimeout(destroyTimer)
+        }
         destroyTimer = setTimeout(() => {
           if (threadWorker) {
             logger.log(`Dispose the worker ${factory}`)
@@ -45,6 +48,7 @@ export const createLazyWorker = <T>(factory: () => Worker, methods: Array<keyof 
         threadWorker = threadWorker || createWorker()
         if (destroyTimer) {
           clearTimeout(destroyTimer)
+          destroyTimer = undefined
         }
         threadWorker.postMessage({ type: method, id: _id, args })
       })
