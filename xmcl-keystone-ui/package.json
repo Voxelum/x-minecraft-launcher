@@ -21,6 +21,7 @@
         "lint:fix": "eslint --ext .ts,.vue --fix src"
     },
     "dependencies": {
+        "@microsoft/applicationinsights-web": "^3.1.1",
         "@vueuse/core": "^10.5.0",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",

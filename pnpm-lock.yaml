@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .: {}
@@ -50,7 +54,7 @@ importers:
         version: 2.4.2
       '@vue/runtime-dom':
         specifier: latest
-        version: 3.4.18
+        version: 3.4.21
       '@xmcl/client':
         specifier: workspace:*
         version: link:../xmcl/packages/client
@@ -159,6 +163,9 @@ importers:
 
   xmcl-keystone-ui:
     dependencies:
+      '@microsoft/applicationinsights-web':
+        specifier: ^3.1.1
+        version: 3.1.1(tslib@2.5.0)
       '@vueuse/core':
         specifier: ^10.5.0
         version: 10.5.0(vue@2.7.16)
@@ -447,7 +454,7 @@ importers:
         version: 0.6.3
       jschardet:
         specifier: github:aadsm/jschardet
-        version: github.com/aadsm/jschardet/7ddc187fe9b31ac738ee2e9cdfcf787516af45a2
+        version: github.com/aadsm/jschardet/17114395b95fcd39cad6d621945a0aeeea51d18d
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
@@ -3371,7 +3378,7 @@ packages:
       '@intlify/bundle-utils': 7.0.0(vue-i18n@8.28.2)
       '@intlify/core': 9.3.0-beta.27
       '@intlify/shared': 9.3.0-beta.27
-      '@vue/compiler-sfc': 3.4.19
+      '@vue/compiler-sfc': 3.4.21
       colorette: 2.0.20
       cosmiconfig: 7.1.0
       debug: 4.3.4
@@ -3615,8 +3622,141 @@ packages:
       - supports-color
     dev: true
 
+  /@microsoft/applicationinsights-analytics-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-XhEr0wWFbP1RX+TTK+aTVx35x0o6e/dupSeFTq6nnmotVw2AUVhGaLT9vbanQv1EhoK7OxTk5SMYwVmrhqUQsg==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-cfgsync-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-Tf+9kv9rWwbj8hXXPaV8AWPmQFrBUyUhR/0xgiJk4ymZNmDH1jhW2E0EVIKyXA/guAT++keIM9tnbfcxLnYTzA==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-async': 0.4.0
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-channel-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-HhEkcGAkXLoCCcNcpAomZiHYSjl6Y33l3oVqVRvwNj3E9T8e6zNFFtO3/iuqfuAOgDO3/adBFm5Tb5nIGPgu2g==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-async': 0.4.0
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-common@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-rhLP+l+y1b7K3fjIf9wUHOPjouzMdyOpFdQHntDiHewU7YMUOEzco5c5UUAnTGixOUh9cE/Xnf7F3/PWTtGyuw==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-core-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-vLuTrqUgXmmNBWqrLsbhp9rdc9WZrJ1jInswA0ozPomKt32WIPO1WJ8OrG3qY8FQ+rJDsrjTIy4naHP0qZpDEA==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-async': 0.4.0
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-dependencies-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-nVUL3AkVIq+U8b3xFl+tQpAUYW0VARoXWeMVdDt3ZQ9oNx9i6GAZYI7wauzMlCqzSwo2L+PrYV4ZXVvstuSExg==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-async': 0.4.0
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-properties-js@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-CAr/YGLEQ2kpKSvLSUXlzTtgbjIeU0CL4hDdlg9WgQrgvP2d065ljS5IFMLhs3+BKenQ1jVBqENvIPJOvvcF4Q==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/applicationinsights-shims@3.0.1:
+    resolution: {integrity: sha512-DKwboF47H1nb33rSUfjqI6ryX29v+2QWcTrRvcQDA32AZr5Ilkr7whOOSsD1aBzwqX0RJEIP1Z81jfE3NBm/Lg==}
+    dependencies:
+      '@nevware21/ts-utils': 0.10.5
+    dev: false
+
   /@microsoft/applicationinsights-web-snippet@1.0.1:
     resolution: {integrity: sha512-2IHAOaLauc8qaAitvWS+U931T+ze+7MNWrDHY47IENP5y2UA0vqJDu67kWZDdpCN1fFC77sfgfB+HV7SrKshnQ==}
+    dev: false
+
+  /@microsoft/applicationinsights-web@3.1.1(tslib@2.5.0):
+    resolution: {integrity: sha512-APRE32Va3yYu26SpqAXdi3jmmq8ZRtacl+T5i30HdqyIf9wjGOpG/9TArifdtPeCxu2Y1jhx64tLMO3DNZc6Hw==}
+    peerDependencies:
+      tslib: '*'
+    dependencies:
+      '@microsoft/applicationinsights-analytics-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-cfgsync-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-channel-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-common': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-core-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-dependencies-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-properties-js': 3.1.1(tslib@2.5.0)
+      '@microsoft/applicationinsights-shims': 3.0.1
+      '@microsoft/dynamicproto-js': 2.0.3
+      '@nevware21/ts-async': 0.4.0
+      '@nevware21/ts-utils': 0.10.5
+      tslib: 2.5.0
+    dev: false
+
+  /@microsoft/dynamicproto-js@2.0.3:
+    resolution: {integrity: sha512-JTWTU80rMy3mdxOjjpaiDQsTLZ6YSGGqsjURsY6AUQtIj0udlF/jYmhdLZu8693ZIC0T1IwYnFa0+QeiMnziBA==}
+    dependencies:
+      '@nevware21/ts-utils': 0.10.5
+    dev: false
+
+  /@nevware21/ts-async@0.4.0:
+    resolution: {integrity: sha512-dbV826TTehQIBIJjh8GDSbwn1Z6+cnkyNbRlpcpdBPH8mROD2zabIUKqWcw9WRdTjjUIm21K+OR4DXWlAyOVTQ==}
+    dependencies:
+      '@nevware21/ts-utils': 0.10.5
+    dev: false
+
+  /@nevware21/ts-utils@0.10.5:
+    resolution: {integrity: sha512-+TEvP0+l/VBR5bJZoYFV+o6aQQ1O6y80uys5AVyyCKeWvrgWu/yNydqSBQNsk4BuEfkayg7R9+HCJRRRIvptTA==}
     dev: false
 
   /@nodelib/fs.scandir@2.1.5:
@@ -4266,11 +4406,11 @@ packages:
       source-map-js: 1.0.2
     dev: true
 
-  /@vue/compiler-core@3.4.19:
-    resolution: {integrity: sha512-gj81785z0JNzRcU0Mq98E56e4ltO1yf8k5PQ+tV/7YHnbZkrM0fyFyuttnN8ngJZjbpofWE/m4qjKBiLl8Ju4w==}
+  /@vue/compiler-core@3.4.21:
+    resolution: {integrity: sha512-MjXawxZf2SbZszLPYxaFCjxfibYrzr3eYbKxwpLR9EQN+oaziSu3qKVbwBERj1IFIB8OLUewxB5m/BFzi613og==}
     dependencies:
       '@babel/parser': 7.23.9
-      '@vue/shared': 3.4.19
+      '@vue/shared': 3.4.21
       entities: 4.5.0
       estree-walker: 2.0.2
       source-map-js: 1.0.2
@@ -4290,11 +4430,11 @@ packages:
       '@vue/shared': 3.3.4
     dev: true
 
-  /@vue/compiler-dom@3.4.19:
-    resolution: {integrity: sha512-vm6+cogWrshjqEHTzIDCp72DKtea8Ry/QVpQRYoyTIg9k7QZDX6D8+HGURjtmatfgM8xgCFtJJaOlCaRYRK3QA==}
+  /@vue/compiler-dom@3.4.21:
+    resolution: {integrity: sha512-IZC6FKowtT1sl0CR5DpXSiEB5ayw75oT2bma1BEhV7RRR1+cfwLrxc2Z8Zq/RGFzJ8w5r9QtCOvTjQgdn0IKmA==}
     dependencies:
-      '@vue/compiler-core': 3.4.19
-      '@vue/shared': 3.4.19
+      '@vue/compiler-core': 3.4.21
+      '@vue/shared': 3.4.21
     dev: true
 
   /@vue/compiler-sfc@2.7.16:
@@ -4321,14 +4461,14 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /@vue/compiler-sfc@3.4.19:
-    resolution: {integrity: sha512-LQ3U4SN0DlvV0xhr1lUsgLCYlwQfUfetyPxkKYu7dkfvx7g3ojrGAkw0AERLOKYXuAGnqFsEuytkdcComei3Yg==}
+  /@vue/compiler-sfc@3.4.21:
+    resolution: {integrity: sha512-me7epoTxYlY+2CUM7hy9PCDdpMPfIwrOvAXud2Upk10g4YLv9UBW7kL798TvMeDhPthkZ0CONNrK2GoeI1ODiQ==}
     dependencies:
       '@babel/parser': 7.23.9
-      '@vue/compiler-core': 3.4.19
-      '@vue/compiler-dom': 3.4.19
-      '@vue/compiler-ssr': 3.4.19
-      '@vue/shared': 3.4.19
+      '@vue/compiler-core': 3.4.21
+      '@vue/compiler-dom': 3.4.21
+      '@vue/compiler-ssr': 3.4.21
+      '@vue/shared': 3.4.21
       estree-walker: 2.0.2
       magic-string: 0.30.7
       postcss: 8.4.35
@@ -4342,11 +4482,11 @@ packages:
       '@vue/shared': 3.2.47
     dev: true
 
-  /@vue/compiler-ssr@3.4.19:
-    resolution: {integrity: sha512-P0PLKC4+u4OMJ8sinba/5Z/iDT84uMRRlrWzadgLA69opCpI1gG4N55qDSC+dedwq2fJtzmGald05LWR5TFfLw==}
+  /@vue/compiler-ssr@3.4.21:
+    resolution: {integrity: sha512-M5+9nI2lPpAsgXOGQobnIueVqc9sisBFexh5yMIMRAPYLa7+5wEJs8iqOZc1WAa9WQbx9GR2twgznU8LTIiZ4Q==}
     dependencies:
-      '@vue/compiler-dom': 3.4.19
-      '@vue/shared': 3.4.19
+      '@vue/compiler-dom': 3.4.21
+      '@vue/shared': 3.4.21
     dev: true
 
   /@vue/component-compiler-utils@3.3.0:
@@ -4456,18 +4596,24 @@ packages:
       '@vue/shared': 3.4.18
     dev: true
 
-  /@vue/runtime-core@3.4.18:
-    resolution: {integrity: sha512-7mU9diCa+4e+8/wZ7Udw5pwTH10A11sZ1nldmHOUKJnzCwvZxfJqAtw31mIf4T5H2FsLCSBQT3xgioA9vIjyDQ==}
+  /@vue/reactivity@3.4.21:
+    resolution: {integrity: sha512-UhenImdc0L0/4ahGCyEzc/pZNwVgcglGy9HVzJ1Bq2Mm9qXOpP8RyNTjookw/gOCUlXSEtuZ2fUg5nrHcoqJcw==}
     dependencies:
-      '@vue/reactivity': 3.4.18
-      '@vue/shared': 3.4.18
+      '@vue/shared': 3.4.21
     dev: true
 
-  /@vue/runtime-dom@3.4.18:
-    resolution: {integrity: sha512-2y1Mkzcw1niSfG7z3Qx+2ir9Gb4hdTkZe5p/I8x1aTIKQE0vY0tPAEUPhZm5tx6183gG3D/KwHG728UR0sIufA==}
+  /@vue/runtime-core@3.4.21:
+    resolution: {integrity: sha512-pQthsuYzE1XcGZznTKn73G0s14eCJcjaLvp3/DKeYWoFacD9glJoqlNBxt3W2c5S40t6CCcpPf+jG01N3ULyrA==}
     dependencies:
-      '@vue/runtime-core': 3.4.18
-      '@vue/shared': 3.4.18
+      '@vue/reactivity': 3.4.21
+      '@vue/shared': 3.4.21
+    dev: true
+
+  /@vue/runtime-dom@3.4.21:
+    resolution: {integrity: sha512-gvf+C9cFpevsQxbkRBS1NpU8CqxKw0ebqMvLwcGQrNpx6gqRDodqKqA+A2VZZpQ9RpK2f9yfg8VbW/EpdFUOJw==}
+    dependencies:
+      '@vue/runtime-core': 3.4.21
+      '@vue/shared': 3.4.21
       csstype: 3.1.3
     dev: true
 
@@ -4485,6 +4631,10 @@ packages:
 
   /@vue/shared@3.4.19:
     resolution: {integrity: sha512-/KliRRHMF6LoiThEy+4c1Z4KB/gbPrGjWwJR+crg2otgrf/egKzRaCPvJ51S5oetgsgXLfc4Rm5ZgrKHZrtMSw==}
+    dev: true
+
+  /@vue/shared@3.4.21:
+    resolution: {integrity: sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==}
     dev: true
 
   /@vue/typescript@1.8.15(typescript@5.2.2):
@@ -5014,6 +5164,7 @@ packages:
 
   /boolean@3.2.0:
     resolution: {integrity: sha512-d0II/GO9uf9lfUHH2BQsjxzRJZBdsjgsBiW4BvhWk/3qoKwQFjIDVN19PfX8F2D/r9PCMTtLWjYVCFrpeYUzsw==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -5791,6 +5942,7 @@ packages:
 
   /detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -6211,6 +6363,7 @@ packages:
 
   /es6-error@4.1.1:
     resolution: {integrity: sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -7847,6 +8000,7 @@ packages:
 
   /json-stringify-safe@5.0.1:
     resolution: {integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -8158,6 +8312,7 @@ packages:
   /matcher@3.0.0:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}
     engines: {node: '>=10'}
+    requiresBuild: true
     dependencies:
       escape-string-regexp: 4.0.0
     dev: true
@@ -9170,6 +9325,7 @@ packages:
   /roarr@2.15.4:
     resolution: {integrity: sha512-CHhPh+UNHD2GTXNYhPWLnU8ONHdI+5DI+4EYIAOaiD63rHeYlZvyh8P+in5999TTSFgUYuKUAjzRI4mdh/p+2A==}
     engines: {node: '>=8.0'}
+    requiresBuild: true
     dependencies:
       boolean: 3.2.0
       detect-node: 2.1.0
@@ -9253,6 +9409,7 @@ packages:
 
   /semver-compare@1.0.0:
     resolution: {integrity: sha512-YM3/ITh2MJ5MtzaM429anh+x2jiLVjqILF4m4oyQB18W7Ggea7BfqdH/wGMK7dDiMghv/6WG7znWMwUDzJiXow==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -9274,6 +9431,7 @@ packages:
   /serialize-error@7.0.1:
     resolution: {integrity: sha512-8I8TjW5KMOKsZQTvoxjuSIa7foAwPWGOts+6o7sgjz41/qMD9VQHEDxi6PBvK2l0MXUmqZyNpUK+T2tQaaElvw==}
     engines: {node: '>=10'}
+    requiresBuild: true
     dependencies:
       type-fest: 0.13.1
     dev: true
@@ -9452,6 +9610,7 @@ packages:
 
   /sprintf-js@1.1.2:
     resolution: {integrity: sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -9956,6 +10115,7 @@ packages:
   /type-fest@0.13.1:
     resolution: {integrity: sha512-34R7HTnG0XIJcBSn5XhDd7nNFPRcXYRZrBB2O2jdKqYODldSzBAqzsWoZYYvduky73toYS/ESqxPvkDf/F0XMg==}
     engines: {node: '>=10'}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -10740,6 +10900,7 @@ packages:
 
   /workbox-google-analytics@6.6.0:
     resolution: {integrity: sha512-p4DJa6OldXWd6M9zRl0H6vB9lkrmqYFkRQ2xEiNdBFp9U0LhsGO7hsBscVEyH9H2/3eZZt8c97NB2FD9U2NJ+Q==}
+    deprecated: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
     dependencies:
       workbox-background-sync: 6.6.0
       workbox-core: 6.6.0
@@ -10976,8 +11137,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  github.com/aadsm/jschardet/7ddc187fe9b31ac738ee2e9cdfcf787516af45a2:
-    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/7ddc187fe9b31ac738ee2e9cdfcf787516af45a2}
+  github.com/aadsm/jschardet/17114395b95fcd39cad6d621945a0aeeea51d18d:
+    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/17114395b95fcd39cad6d621945a0aeeea51d18d}
     name: jschardet
     version: 3.0.0
     engines: {node: '>=0.1.90'}

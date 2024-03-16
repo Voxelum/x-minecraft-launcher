@@ -114,9 +114,7 @@ export function useLaunchButton() {
         text: t('install'),
         color: 'blue',
         menu: [javaIssue.value],
-        onClick: () => {
-          fixJavaIssue()
-        },
+        onClick: () => fixJavaIssue(),
       }
     } else {
       return {
@@ -125,9 +123,9 @@ export function useLaunchButton() {
         leftIcon: 'play_arrow',
         menu: javaIssue.value ? [javaIssue.value] : [],
         onClick: async () => {
-          await mutate().catch(() => {})
+          await mutate().catch(() => { })
           await fixInstanceFileIssue()
-          launch()
+          await launch()
           showLaunchStatusDialog(false)
         },
       }
