@@ -188,10 +188,10 @@ export class ElectronUpdater implements LauncherAppUpdater {
       if (process.argv.slice(1).length > 0) {
         startProcessCmd += ` -ArgumentList ${process.argv.slice(1).map((s) => `"${s}"`).join(', ')}`
       }
-      startProcessCmd += ` -WorkingDirectory ${process.cwd()}`
+      startProcessCmd += ` -WorkingDirectory "${process.cwd()}"`
       await writeFile(psPath, [
         'Start-Sleep -s 1',
-        `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
+        `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}" -force`,
         `Remove-Item -Path "${updateAsarPath}"`,
         startProcessCmd,
       ].join('\r\n'))
