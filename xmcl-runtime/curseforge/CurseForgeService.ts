@@ -55,9 +55,19 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     if (resource && resource.storedPath && existsSync(resource.storedPath)) {
       this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
     } else {
+      const getHash = () => {
+        const hash = (file.hashes || [])[0]
+        if (hash) {
+          const algo = hash.algo === 1 ? 'sha1' : hash.algo === 2 ? 'md5' : undefined
+          if (algo) {
+            return { algorithm: algo, hash: hash.value }
+          }
+        }
+      }
       const task = new DownloadTask({
         ...downloadOptions,
         url: downloadUrls,
+        validator: getHash(),
         destination,
       }).setName('installCurseforgeFile', { modId: file.modId, fileId: file.id })
       await this.submit(task)
