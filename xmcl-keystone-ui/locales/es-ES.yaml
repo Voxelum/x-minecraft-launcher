@@ -727,6 +727,7 @@ resourcepack:
   incompatible: >-
     Formato de Paquete de Recursos incompatible ({format}). Se ajusta a
     {accept}. Actual {actual}.
+  independent: La instancia utiliza la carpeta del paquete de recursos independiente
   manage: Gestionar Paquetes de Recursos
   name: Paquete de Recursos | Paquetes de Recursos
   searchOnCurseforge: Buscar {name} en CurseForge
@@ -734,6 +735,7 @@ resourcepack:
   selected: Paquetes de Recursos Seleccionados
   showFile: Mostrar paquete de recursos en la carpeta {file}
   showInCurseforge: Mostrar {name} en CurseForge
+  shared: La instancia utiliza la carpeta del paquete de recursos compartido
   unselected: Paquetes de Recursos No Seleccionados
 save:
   copy:

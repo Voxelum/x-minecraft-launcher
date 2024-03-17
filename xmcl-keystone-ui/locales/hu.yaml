@@ -175,8 +175,7 @@ diagnosis:
     name: A {verzsion} eszközindexű fájlja sérült.
   corruptedLibraries:
     message: A launcher telepíti a könyvtárakat
-    name: >-
-      Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár
+    name: 'Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár'
   corruptedVersionJar:
     message: Kattints erre a verzióra a telepítéshez
     name: A Minecraft %{version} sérült jar verziója.
@@ -204,7 +203,9 @@ diagnosis:
     name: Nem található a Java a Minecraft indításához!
   missingLibraries:
     message: A Launcher telepíti neked a könyvtárakat
-    name: 'Hiányzó {name} könyvtár | Hiányzó {name} könyvtár | Hiányzó {count} könyvtár | Hiányzó {count} Könyvtár'
+    name: >-
+      Hiányzó {name} könyvtár | Hiányzó {name} könyvtár | Hiányzó {count}
+      könyvtár | Hiányzó {count} Könyvtár
   missingVersion:
     message: Kattints erre a verzióra a telepítéshez
     name: A {version} verzió nincs telepítve!
@@ -228,8 +229,9 @@ error:
   name: Hiba | Hiba
 errors:
   BadForgeInstallerJarError: >-
-    Nem tudja elemezni a forge telepítő jar fájlt. Lehet, hogy a forge új kiterjesztéssel
-    rendelkezik? Lépj kapcsolatba a fejlesztőkkel, ha ez a probléma továbbra is fennáll.
+    Nem tudja elemezni a forge telepítő jar fájlt. Lehet, hogy a forge új
+    kiterjesztéssel rendelkezik? Lépj kapcsolatba a fejlesztőkkel, ha ez a
+    probléma továbbra is fennáll.
   BadInstanceType: 'Nem érvényes példány: {type}'
   BodyTimeoutError: HTTP test időtúllépés
   ChecksumNotMatchError: Az ellenőrző összeg nem egyezik! Várható {expect}. Tényleges {actual}.
@@ -237,8 +239,8 @@ errors:
   DNSNotFoundError: DNS keresési hiba
   DatabaseNotOpened: >-
     Az adatbázis nincs megnyitva! Az Launcher nem működik megfelelően! Kérlek,
-    válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet. Megpróbálhatod
-    visszaállítani az adatgyökeret a beállítások oldalon.
+    válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet.
+    Megpróbálhatod visszaállítani az adatgyökeret a beállítások oldalon.
   DownloadAggregateError: A fájl letöltése sikertelen.
   DownloadFileSystemError: >-
     Hiba a letöltési fájl elérési útvonalának megadásakor. Kérlek, győződj meg
@@ -279,8 +281,8 @@ feedback:
   name: Visszajelzés
   qq: QQ Csoport
   qqDescription: >-
-    Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel. Csoport száma:
-    {number}
+    Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel.
+    Csoport száma: {number}
   qqEnterGroup: Csatlakozás
 fileDetail:
   fileSize: Fájl méret
@@ -289,8 +291,8 @@ filter: Szűrő
 finish: Befejezés
 forgeConfig:
   hint: >-
-    Kérlek, legalább egyszer indítsd el a játékot ezzel a moddal, hogy felismerjük
-    a konfigurációs fájlját!
+    Kérlek, legalább egyszer indítsd el a játékot ezzel a moddal, hogy
+    felismerjük a konfigurációs fájlját!
 forgeVersion:
   common: Általános
   disable: Forge kikapcsolása
@@ -369,11 +371,15 @@ instance:
   addServer: Szerver hozzáadása
   current: Jelenlegi példány
   delete: Játék törlése
-  deleteHint: A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt akarod csinálni?
+  deleteHint: >-
+    A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt
+    akarod csinálni?
   duplicate: Duplikált játék
   duplicatedName: Duplikált név
   fileApi: A szinkronizáló fájlkiszolgáló API url címe
-  fileApiHint: Az url a példányfájlok szinkronizálásához egy távoli konfigurációs kiszolgálóról.
+  fileApiHint: >-
+    Az url a példányfájlok szinkronizálásához egy távoli konfigurációs
+    kiszolgálóról.
   gameVersion: Játék verzió
   icon: Profil ikon
   iconUrl: Ikon Url
@@ -413,11 +419,15 @@ instanceSetting:
     Az Ely.by rendelkezik egy egyedi authlib cserével a kinézet univerzális
     megjelenítéséhez bármilyen szerveren.
   fastLaunch: Gyors indítás
-  fastLaunchHint: Figyelmen kívül hagyja a felhasználói státuszt és a létező, nem javított problémákat
+  fastLaunchHint: >-
+    Figyelmen kívül hagyja a felhasználói státuszt és a létező, nem javított
+    problémákat
   hideLauncher: A Launcher elrejtése indítás után
   icon: Kép kiválasztása
   showLog: Minecraft napló megnézése
-  showLogHint: Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása után.
+  showLogHint: >-
+    Felugrik egy ablak a Minecraft naplójának streamelésére a játék elindulása
+    után.
 instanceTemplate:
   curseforge: Ez egy Curseforge modcsomag
   ftb: Ez egy FTB modcsomag
@@ -448,8 +458,8 @@ instances:
   addTemplateDescription: Importálás letöltött Modcsomagból
   addVanilla: Létrehozás vanilla-szerű Minecraftból
   addVanillaDescription: >-
-    Importálás a közös .minecraft mappából. Ez duplikálja az eredeti játékprofilt
-    az XMCL-be.
+    Importálás a közös .minecraft mappából. Ez duplikálja az eredeti
+    játékprofilt az XMCL-be.
   choose: Játék kiválasztása
   importFolder: Importálás mappából
   importFolderDescription: Minecraft importálása a Launcherbe
@@ -498,38 +508,44 @@ launchBlocked:
   launchJavaNoPermission:
     description: >-
       A Launchernek nincs jogosultsága a java indításához<span
-      class="highlight"> {javaPath} </span>. vagy módosítsd az engedélyt a
-      java fájl vagy növeld a Launcher engedélyeit.
+      class="highlight"> {javaPath} </span>. vagy módosítsd az engedélyt a java
+      fájl vagy növeld a Launcher engedélyeit.
     title: Nincs engedély az indításhoz
   launchNoProperJava:
     description: >-
-      A játék indításához nem lehet megfelelő java-t kiválasztani. ({javaPath} ez
-      érvénytelen?)
+      A játék indításához nem lehet megfelelő java-t kiválasztani. ({javaPath}
+      ez érvénytelen?)
     title: Nem található megfelelő java
   launchNoVersionInstalled:
-    description: Nem lehet feloldani a verziót <span class="highlight">{version}</span> az indításhoz.
+    description: >-
+      Nem lehet feloldani a verziót <span class="highlight">{version}</span> az
+      indításhoz.
     title: Nincs kiválasztott verzió
   launchSpawnProcessFailed:
     description: >-
-      Kérlek ellenőrizd a java-t, vagy adj több engedélyt az Launchernek, és próbáld újra.
-      Ha ez még mindig nem működik, kérlek, vedd fel a kapcsolatot a fejlesztőkkel.
+      Kérlek ellenőrizd a java-t, vagy adj több engedélyt az Launchernek, és
+      próbáld újra. Ha ez még mindig nem működik, kérlek, vedd fel a kapcsolatot
+      a fejlesztőkkel.
     title: A játékfolyamat nem indul el
   launchUserStatusRefreshFailed:
     description: Nem lehet frissíteni az aktuálisan kiválasztott felhasználói státuszt.
     title: A felhasználói státusz érvényesítésének elmulasztása
   unexpectedText: >-
-    Ez váratlanul ért. A probléma enyhítése érdekében újraindíthatod a Launchert.
-    Kérlek, vedd fel a kapcsolatot a készítővel, ha ez a probléma ismét előfordul.
+    Ez váratlanul ért. A probléma enyhítése érdekében újraindíthatod a
+    Launchert. Kérlek, vedd fel a kapcsolatot a készítővel, ha ez a probléma
+    ismét előfordul.
   userAcquireMicrosoftTokenFailed: >-
-    A Microsoft token megszerzése sikertelen. Kérlek, próbáld újra, vagy ellenőrizd
-    a Microsoft fiókod.
-  userCheckGameOwnershipFailed: Nem sikerült ellenőrizni a Minecraft tulajdonjogát. Kérlek, próbáld meg újra, vagy ellenőrizd a hálózatodat.
+    A Microsoft token megszerzése sikertelen. Kérlek, próbáld újra, vagy
+    ellenőrizd a Microsoft fiókod.
+  userCheckGameOwnershipFailed: >-
+    Nem sikerült ellenőrizni a Minecraft tulajdonjogát. Kérlek, próbáld meg
+    újra, vagy ellenőrizd a hálózatodat.
   userExchangeXboxTokenFailed: >-
     Nem sikerült kicserélni az xbox tokent a Microsoft tokenről. Kérlek, próbáld
     meg újra, vagy ellenőrizd a hálózatodat.
   userLoginMinecraftByXboxFailed: >-
-    Nem sikerült bejelentkezni a Minecraftba xbox tokennel. Kérlek, próbáld
-    meg újra, vagy ellenőrizd a hálózatodat.
+    Nem sikerült bejelentkezni a Minecraftba xbox tokennel. Kérlek, próbáld meg
+    újra, vagy ellenőrizd a hálózatodat.
 launchFailed:
   crash: A játék összeomlott!!
   description: Nincs jelentést az összeomlásról. Ez a hibanapló és a legutóbbi napló.
@@ -556,14 +572,14 @@ localVersion:
   auto: Automatikusan számolt
   delete: Helyi verzió törlése
   deleteDescription: >-
-    Ez a művelet törli a helyi json & jar verziót. Újra le kell töltened,
-    ha újra használni akarod.
+    Ez a művelet törli a helyi json & jar verziót. Újra le kell töltened, ha
+    újra használni akarod.
   empty: Nincs telepített verzió
   hint: Egy adott helyi verzió közvetlen indítása
   refresh: Verziók frissítése
   reinstallDescription: >-
-    Ha úgy gondolod, hogy ennek a verziónak a telepítése problémás, megpróbálhatod
-    újratelepíteni.
+    Ha úgy gondolod, hogy ennek a verziónak a telepítése problémás,
+    megpróbálhatod újratelepíteni.
   reinstallTitle: Újratelepítés {version}
   title: Helyi verzió | Helyi verziók
 logLevel:
@@ -598,11 +614,15 @@ loginError:
     Nem sikerül bejelentkezni az Xboxra Microsoft tokennel. Kérlek, győződj meg
     róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek,
     próbáld meg újra.
-  requestFailed: A bejelentkezés sikertelen volt, a pontos okot nem tudjuk. Kérlek, próbáld meg újra.
+  requestFailed: >-
+    A bejelentkezés sikertelen volt, a pontos okot nem tudjuk. Kérlek, próbáld
+    meg újra.
   requireEmail: E-mail szükséges
   requirePassword: Jelszó szükséges
   requireUsername: Felhasználónév szükséges
-  timeout: Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati kapcsolatot.
+  timeout: >-
+    Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati
+    kapcsolatot.
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók
@@ -623,8 +643,9 @@ mod:
   currentVersion: Jelenlegi {current}
   deletion: Mod törlése
   deletionHint: >-
-    Ez a mod és metaadatai örökre elvesznek. Biztos vagy benne, hogy törlöd? | Ezt
-    a modot és metaadatait örökre elveszíted. Biztos vagy benne, hogy hogy ezt akarod?
+    Ez a mod és metaadatai örökre elvesznek. Biztos vagy benne, hogy törlöd? |
+    Ezt a modot és metaadatait örökre elveszíted. Biztos vagy benne, hogy hogy
+    ezt akarod?
   deletionRestHint: És további {rest} mod...
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
   enabled: '{count} Modok engedélyezve'
@@ -851,46 +872,51 @@ modrinth:
 modrinthCard:
   currentVersion: Jelenlegi verzió
   projectHint: >
-    Ezt a példányt a Modrinth modpack hozta létre a következőből <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (projekt id:
+    Ezt a példányt a Modrinth modpack hozta létre a következőből <code
+    class="rounded p-1" style="background: rgba(123,123,123,0.2)">{title}</code>
+    (projekt id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Relay szerver engedélyezése
   allowTurnHint: >-
-    Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz.
-    A relés szerver használata azonban lelassíthatja a kapcsolatot. Használd 
+    Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz. A
+    relés szerver használata azonban lelassíthatja a kapcsolatot. Használd 
     óvatosan.
   complete: Kész
   confirm: Megerősítés
   connections: Kapcsolatok
   copied: Másolva!
   copy: Másolás
-  copyGroupToFriendHint: Engedd meg barátaidnak, hogy csatlakozzanak a csoporthoz ezzel az azonosítóval
+  copyGroupToFriendHint: >-
+    Engedd meg barátaidnak, hogy csatlakozzanak a csoporthoz ezzel az
+    azonosítóval
   copyLocalHint: >
     "Kérjük, másolja a helyi SDP szövegét, és küldje el az objektumának, hogy az
     objektum ezt a szöveget adja meg a csatlakozási kapcsolatba <span>Egy token
     csak <span style="color: red; font-weight: bold;">egy partner</span> számára
     használható!   Ugyanazt a tokent nem küldheti el több peer-nek!</span> <br>
     <span class="hint-text" style="font-style: italic;">Ha több peerhez kell
-    csatlakoznia, akkor a létrehozni <span style="font-weight: bold; color: rgba(245, 158, 11)">
-    több</span> kapcsolatot.</span>"
+    csatlakoznia, akkor a létrehozni <span style="font-weight: bold; color:
+    rgba(245, 158, 11)"> több</span> kapcsolatot.</span>"
   createLocalToken: Helyi token létrehozása
   currentIpTitle: Nyilvános IP érzékelése
   currentNatTitle: 'Jelenlegi hálózat (NAT):'
   difficultyLevelHint: A nehézségi szint, hogy létrehozzanak egy peer kapcsolatot más
   disconnect: Lecsatlakozás
-  disconnectDescription: Biztos, hogy a {user}({id}) felhasználóval akarod megszakítani a kapcsolatot?
+  disconnectDescription: >-
+    Biztos, hogy a {user}({id}) felhasználóval akarod megszakítani a
+    kapcsolatot?
   disconnected: lecsatlakozva
   enterRemoteToken: Távoli token megadása
   enterRemoteTokenHint: >-
-    Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát
-    az alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
+    Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát az
+    alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
   gatheringIce: >
-    "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön
-    a hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az
-    aktuális SDP-t a másik félnek előre, és kattintson a Next Please send the
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold">
-    Local Token</span> a partnerének, a partner megadja a tokenjét a <span
+    "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön a
+    hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az aktuális
+    SDP-t a másik félnek előre, és kattintson a Next Please send the <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Local
+    Token</span> a partnerének, a partner megadja a tokenjét a <span
     class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
     Kapcsolat </span> szakaszban. <br> Az ICE-kiszolgálónak időre lehet szüksége
     ahhoz, hogy összegyűjti az adatait, hogy létrehozza a <span class="v-chip
@@ -898,7 +924,9 @@ multiplayer:
     <br> Nem kell várnia. amíg az ICE státusz befejeződik. Ha az alábbi token
     változatlanul marad, akkor a másolja le és küldje el a partnerének."
   groupId: Csoport Id
-  illegalTokenDescription: Hibás token, kérlek győződj meg róla, hogy a partneredtől kapott token helyes-e
+  illegalTokenDescription: >-
+    Hibás token, kérlek győződj meg róla, hogy a partneredtől kapott token
+    helyes-e
   initiateConnection: Kapcsolat kezdeményezése
   inviteLink: Meghívó link
   joinConnection: >-
@@ -916,8 +944,8 @@ multiplayer:
   placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
   previous: Előző
   receiveHint: >-
-    Miután a másik fél megadja a jelszavát, a kapcsolat automatikusan
-    létrejön. Most már bezárhatod a párbeszédpanelt.
+    Miután a másik fél megadja a jelszavát, a kapcsolat automatikusan létrejön.
+    Most már bezárhatod a párbeszédpanelt.
   receiveRemoteTokenHint: Kérlek, add meg itt a partneredtől kapott tokent.
   remoteToken: Távoli token
   routerInfo: Router információ
@@ -945,7 +973,7 @@ news:
   name: Hírek
   readMore: Bővebben
 next: Következő
-'no': 'Nem'
+'no': Nem
 ok: Oké
 optifineVersion:
   disable: Optifine letiltása
@@ -998,15 +1026,16 @@ resourcepack:
   defaultDescription: A Minecraft alapértelmezett megjelenése
   delete:
     content: >-
-      Ez eltávolítja az forráscsomag-fájlt a meghajtóról, és nem tudod visszacsinálni.
-      Biztos vagy benne, hogy ezt akarod csinálni?
+      Ez eltávolítja az forráscsomag-fájlt a meghajtóról, és nem tudod
+      visszacsinálni. Biztos vagy benne, hogy ezt akarod csinálni?
     title: Forráscsomag törlése
   dropHint: Húzd ide a forráscsomag zip-jét/mappá-ját az importáláshoz
   enable: '{count} forráscsomag engedélyezve'
   import: Forráscsomag importálása
   incompatible: >-
-    Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}. Jelenlegi
-    {actual}.
+    Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}.
+    Jelenlegi {actual}.
+  independent: A példány független erőforráscsomag-mappát használ
   manage: Forráscsomagok kezelése
   name: Forráscsomag | Forráscsomagok
   searchHint: Forráscsomag keresése
@@ -1016,12 +1045,15 @@ resourcepack:
   selected: Kiválasztott forráscsomagok
   showFile: '{file} megjelenítése fájlkezelőben'
   showInCurseforge: '{name} megjelenítése curseforge-on'
+  shared: Példány használja a megosztott erőforráscsomag mappát
   unselected: Nem kiválasztott forráscsomagok
 save:
   copy:
     cancel: Másolás törlése
     confirm: Másolás indítása
-    description: Kérlek, válaszd ki a célprofil(ok)at, ahová a mentést szeretnéd eljuttatni.
+    description: >-
+      Kérlek, válaszd ki a célprofil(ok)at, ahová a mentést szeretnéd
+      eljuttatni.
     name: Mentés másolása
     title: Mentés másolása másik profilra
   copyFrom:
@@ -1036,8 +1068,8 @@ save:
     title: Mentés importálása kezelt forrásból
   createdWorlds: '{count} db világod van'
   deleteHint: >-
-    Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre elveszted.
-    Biztos, hogy törölni szeretnéd ezt a mentést?
+    Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre
+    elveszted. Biztos, hogy törölni szeretnéd ezt a mentést?
   deleteTitle: Mentés törlése
   detail: További infók
   dropHint: Húzz ide egy zipet az importáláshoz
@@ -1090,8 +1122,8 @@ setting:
     official: Eredeti (Mojang)
   appearance: Megjelenés
   appxUpdateHint: >-
-    A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem sikerült,
-    kérlek futtasd manuálisan.
+    A Launcher letölti és futtatja a telepítőt. Ha a felugró telepítő nem
+    sikerült, kérlek futtasd manuálisan.
   autoDownload: Automatikus letöltés
   autoDownloadDescription: Automatikus letöltés, ha van elérhető frissítés
   autoInstallOnAppQuit: Automatikus telepítés
@@ -1107,7 +1139,9 @@ setting:
     name: Illeszkedjen
   backgroundImageSelect: kiválasztás
   backgroundType: Háttérkép típusa
-  backgroundTypeDescription: Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a teljesítményt)
+  backgroundTypeDescription: >-
+    Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a
+    teljesítményt)
   backgroundTypes:
     halo: Halo
     image: Kép
@@ -1141,7 +1175,9 @@ setting:
   developerMode: Fejlesztői mód
   developerModeDescription: Fejlesztői mód a saját írt mod tesztelésére irányul
   disableTelemetry: Telemetria kikapcsolása
-  disableTelemetryDescription: Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési eseményeket.
+  disableTelemetryDescription: >-
+    Az XMCL összegyűjti a játékindítási és a felhasználói bejelentkezési
+    eseményeket.
   enableDiscord: Discord státusz engedélyezése
   enableDiscordDescription: Ez folyamatosan frissíti az launcher állapotát a discordra.
   general: Általános
@@ -1197,8 +1233,8 @@ setting:
   update: Frissítés
   useBmclAPI: BMCL API használata
   useBmclAPIDescription: >-
-    Használd a BMCLAPI-t a Minecraft letöltéséhez, ha a kínai kontinensen tartózkodsz.
-    (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
+    Használd a BMCLAPI-t a Minecraft letöltéséhez, ha a kínai kontinensen
+    tartózkodsz. (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
 settingLabel:
@@ -1212,17 +1248,19 @@ setup:
   dataRoot:
     description: >-
       Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok
-      könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem javasoljuk,
-      hogy a a közös .minecraft könyvtárat adatgyökérként használni.
+      könyvtárszerkezet különbözik a vanilla könyvtárszerkezettől, nem
+      javasoljuk, hogy a a közös .minecraft könyvtárat adatgyökérként használni.
     drives: Ajánlott helyek
     name: Adatmappa beállítása
   defaultLayoutDescription: >-
-    Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja erősíteni.
-    Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más játékindító
-    alkalmazások, mint a Steam stb. is inspirálták.
+    Az alapértelmezett elrendezés a játék "példány" koncepcióját próbálja
+    erősíteni. Úgy néz ki, mint az olyan alkalmazások, mint a Discord. Más
+    játékindító alkalmazások, mint a Steam stb. is inspirálták.
   defaultPath: Alapértelmezett útvonal
   error:
-    badDataRoot: Érvénytelen könyvtár az indítóadatokhoz! Kérjük, próbálkozzon más könyvtárral!
+    badDataRoot: >-
+      Érvénytelen könyvtár az indítóadatokhoz! Kérjük, próbálkozzon más
+      könyvtárral!
     exists: >-
       A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen
       biztonsági mentést az adatokról.
@@ -1236,7 +1274,8 @@ setup:
   game:
     description: >-
       Válassza ki a meglévő játékkönyvtárat (.minecraft) a meglévő erőforrások
-      importálásához. Így gyorsan azonosíthatja a modokat, erőforrás csomagokat stb.
+      importálásához. Így gyorsan azonosíthatja a modokat, erőforrás csomagokat
+      stb.
     name: Létező játék beimportálása
   locale:
     description: >-
@@ -1246,7 +1285,9 @@ setup:
     language: Nyelv
     name: Nyelv beállítása
   path: Jelenlegi útvonal
-  title: 'Üdvözöljük az X Minecraft Launcherben. Mielőtt elkezdenéd, szükségünk van arra, hogy '
+  title: >-
+    Üdvözöljük az X Minecraft Launcherben. Mielőtt elkezdenéd, szükségünk van
+    arra, hogy 
 shaderPack:
   deletion: Shader Pack törlése
   deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
@@ -1288,7 +1329,9 @@ transportType:
   relay: Relay jelölt
   srflx: Kiszolgáló Reflexív jelölt
 tutorial:
-  feedbackDescription: Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy visszajelzést küldj!
+  feedbackDescription: >-
+    Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy
+    visszajelzést küldj!
   instance:
     iconDescription: Kattints az ikon megváltoztatásához.`
     iconTitle: Példány ikonja
@@ -1297,47 +1340,47 @@ tutorial:
     javaImportTitle: Java importálása
     javaTitle: Java lista
   instanceAddDescription: >-
-    Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz
-    létre egy újat a vagy modcsomagot.
+    Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz létre
+    egy újat a vagy modcsomagot.
   instanceSelectDescription: >-
-    Erre a gombra kattintva az új játék kiválasztására és létrehozására
-    szolgáló oldalra navigál.
+    Erre a gombra kattintva az új játék kiválasztására és létrehozására szolgáló
+    oldalra navigál.
   launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
     defaultSourceDescription: >-
       Itt kiválaszthatja a modok forrását. Vannak a Modrinth és a Curseforge
-      által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató
-      között. Itt módosíthatod az értéket.
+      által közzétett modok. Ha váltani akarsz e két tartalomszolgáltató között.
+      Itt módosíthatod az értéket.
     defaultSourceTitle: Mod tartalom forrásának kiválasztása
     detailDescription: >-
-      Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit.
-      A tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
+      Amikor kiválaszt egy elemet a bal oldalon. Látni fogja a mod részleteit. A
+      tartalom származhat Modrinth, Curseforge vagy elemzett mod tartalmából.
     detailTitle: Mod részletek
     listDescription: >-
       Megjelenítjük a telepített modokat, ha nincs inputja. A keresett modokat
       akkor fogja látni, ha a kulcsszó vagy a kategória kiválasztása megtörtént.
     listTitle: Installed or Searched Mod
     searchDescription: >-
-      A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel
-      a keresőmezővel.
+      A Modrinth, Curseforge vagy a helyi gyorsítótár modjait keresheted ezzel a
+      keresőmezővel.
     searchTitle: Modok keresése
   multiplayer:
     contentDescription: Az Ön és társai közötti kapcsolatok itt lesznek felsorolva.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
-      Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más játékosokkal.
-      A launcher megpróbál P2P-kapcsolatokat létrehozni közted és barátaid között a
-      csoportnak megfelelően. A barátaid által megadott csoportnevet megadhatod. Vagy
-      létrehozhatsz egy egyedi nevet a sajátodból.
+      Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más
+      játékosokkal. A launcher megpróbál P2P-kapcsolatokat létrehozni közted és
+      barátaid között a csoportnak megfelelően. A barátaid által megadott
+      csoportnevet megadhatod. Vagy létrehozhatsz egy egyedi nevet a sajátodból.
     groupTitle: Csatlakozás egy csoporthoz
     joinDescription: >-
-      Miután beírt egy csoportnevet. Erre a gombra kattintva csatlakozhat a csoporthoz
-      vagy létrehozhatja azt. Ha a csoportnév üres, az indítóprogram generál egy nevet
-      az Ön számára.
+      Miután beírt egy csoportnevet. Erre a gombra kattintva csatlakozhat a
+      csoporthoz vagy létrehozhatja azt. Ha a csoportnév üres, az indítóprogram
+      generál egy nevet az Ön számára.
     manualDescription: >-
-      Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja manuálisan
-      kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha ez is sikertelen,
-      akkor az internetprobléma lehet.
+      Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja
+      manuálisan kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha
+      ez is sikertelen, akkor az internetprobléma lehet.
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
 universalDrop:
   enableModsAfterImport: Modok engedélyezése importálás után
@@ -1349,8 +1392,8 @@ upstream:
   missingModpackMetadata: >-
     A régi modcsomag metaadatok nem találhatók.
 
-    Ettől még frissíthet, de az eredmény rossz lehet. Kérlek, készíts
-    biztonsági mentést a példányfájlokról.
+    Ettől még frissíthet, de az eredmény rossz lehet. Kérlek, készíts biztonsági
+    mentést a példányfájlokról.
   onlyShowCurrentVersion: Csak az aktuális Minecraft verzió megjelenítése
   update: Frissítés
 user:
@@ -1363,7 +1406,9 @@ user:
   forgetChallenges: Elfelejtettem ezeket a kérdéseket, és szeretném megváltoztatni őket.
   id: Felhasználó Id
   info: Felhaszáló infók
-  insecureClient: A kliens bizonytalan! Kérlek, ellenőrizd személyazonosságodat a kinézet feltöltéséhez!
+  insecureClient: >-
+    A kliens bizonytalan! Kérlek, ellenőrizd személyazonosságodat a kinézet
+    feltöltéséhez!
   name: Felhasználónév
   nameHint: A játékban megjelenő név
   profile: Profil
@@ -1380,15 +1425,17 @@ userCape:
   changeTitle: Köpeny változtatása
   description: >-
     A köpenyek különleges jutalmak, amelyeket a játékosok különböző eseményeken
-    keresztül oldhatnak fel, kampányok és más vidám események során. Itt választhatsz
-    a köpenyek közül amelyek jelenleg a tulajdonodban vannak:
+    keresztül oldhatnak fel, kampányok és más vidám események során. Itt
+    választhatsz a köpenyek közül amelyek jelenleg a tulajdonodban vannak:
   noCape: Nincs köpeny
 userService:
   add: További szolgáltatás hozzáadása
   authLibInjector: Auth-lib injektor javaslat követése
   baseUrlHint: Az egyéni szolgáltatás alap URL címe
   title: Harmadik fél felhasználói szolgáltatásai
-  validateHint: Annak ellenőrzésére szolgál, hogy a felhasználó tokenje még mindig érvényes-e
+  validateHint: >-
+    Annak ellenőrzésére szolgál, hogy a felhasználó tokenje még mindig
+    érvényes-e
 userServices:
   microsoft:
     account: Microsoft Fiók
@@ -1428,4 +1475,4 @@ versionType:
   beta: Béta
   name: Státusz
   release: Kiadás
-'yes': 'Igen'
+'yes': Igen

@@ -1040,12 +1040,14 @@ resourcepack:
   incompatible: >-
     Format de pack de ressources incompatible ({format}). Fait pour {accept}.
     Actuel {actual}.
+  independent: L'instance utilise un dossier de pack de ressources indépendant
   manage: Gérer les packs de ressources
   name: Pack de Ressources | Packs de Ressources
   searchOnCurseforge: Rechercher {name} dans curseforge
   selected: Packs de ressources sélectionnés
   showFile: Afficher le pack de ressources dans le dossier {file}
   showInCurseforge: Afficher {name} dans curseforge
+  shared: L'instance utilise le dossier du pack de ressources partagé
   unselected: Packs de ressources désélectionnés
 save:
   copy:

@@ -1080,6 +1080,7 @@ resourcepack:
   incompatible: >-
     Inkompatibles Textformat ({format}). Einschlägige {accept}. Aktuell
     {actual}.
+  independent: Instanz verwendet einen unabhängigen Ressourcenpaketordner
   manage: Verwalten von Texturpaketen
   name: Texturpaket | Texturpakete
   searchOnCurseforge: Suche nach. {name} in curseforge
@@ -1087,6 +1088,7 @@ resourcepack:
   selected: Ausgewählte Texturpakete
   showFile: Öffnen Sie das Texturpaket {file} im Ordner
   showInCurseforge: anzeigen {name} in curseforge
+  shared: Instanz verwendet den Ordner des freigegebenen Ressourcenpakets
   unselected: Unausgewählte Texturpakete
 save:
   copy:

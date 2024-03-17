@@ -10,7 +10,17 @@ export interface InstanceResourcePacksService {
    * @param instancePath The instance path to link.
    * @returns `true` if the link is successful. `false` if the link is failed and it's directory.
    */
-  link(instancePath: string): Promise<boolean>
+  link(instancePath: string, force?: boolean): Promise<boolean>
+  /**
+   * Unlink the `resourcepacks` directory under the instance path.
+   * @param instancePath The instance path to unlink.
+   */
+  unlink(instancePath: string): Promise<void>
+  /**
+   * Check if the `resourcepacks` directory under the instance path is linked.
+   * @param instancePath The instance path
+   */
+  isLinked(instancePath: string): Promise<boolean>
   /**
    * Scan the `resourcepacks` directory under the instance path and import the resource packs.
    * @param instancePath The instance path

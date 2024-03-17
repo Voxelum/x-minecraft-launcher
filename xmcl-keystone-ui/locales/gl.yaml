@@ -237,6 +237,9 @@ launchBlocked:
     title: Non se puido iniciar o proceso de xogo
 mod:
   searchOnCurseforge: Busca {name} en curseforge
+resourcepack:
+  independent: A instancia utiliza o cartafol do paquete de recursos independente
+  shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 setting:
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.

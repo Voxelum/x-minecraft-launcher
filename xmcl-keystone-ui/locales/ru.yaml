@@ -973,12 +973,14 @@ resourcepack:
   incompatible: >-
     Несовместимый формат текстурпака ({format}). Подходящий {accept}. Текущий
     {actual}.
+  independent: Экземпляр использует независимую папку пакета ресурсов
   manage: Управление текстурпаками
   name: Текстурпак | Текстурпаки
   searchOnCurseforge: Искать {name} на curseforge
   selected: Выбранные текстурпаки
   showFile: Открыть текстурпак {file} в папке
   showInCurseforge: Показать {name} на curseforge
+  shared: Экземпляр использует общую папку пакета ресурсов
   unselected: Невыбранные текстурпаки
 save:
   copy:
