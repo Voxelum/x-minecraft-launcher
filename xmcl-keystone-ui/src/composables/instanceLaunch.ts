@@ -10,7 +10,7 @@ export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>>
 export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector } = useGlobalSettings(globalState)
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { abortRefresh } = useService(UserServiceKey)
   const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
@@ -116,6 +116,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     const hideLauncher = inst.hideLauncher ?? globalHideLauncher.value
     const showLog = inst.showLog ?? globalShowLog.value
     const fastLaunch = inst.fastLaunch ?? globalFastLaunch.value
+    const disableElyByAuthlib = inst.disableElybyAuthlib ?? globalDisableElyByAuthlib.value
 
     let minMemory: number | undefined = inst.minMemory ?? globalMinMemory.value
     let maxMemory: number | undefined = inst.maxMemory ?? globalMaxMemory.value
@@ -147,6 +148,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       vmOptions,
       mcOptions,
       yggdrasilAgent,
+      disableElyByAuthlib,
       server: inst.server ?? undefined,
     }
     return options
