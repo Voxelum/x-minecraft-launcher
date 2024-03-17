@@ -399,6 +399,7 @@ resourcepack:
   selected: 已選資源包
   showFile: 在文件夾中顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
+  shared: 實例使用共享資源包資料夾
   unselected: 未選資源包
 save:
   copyFrom:

@@ -2,7 +2,23 @@ import { ensureDir, lstat, readlink, rename, unlink } from 'fs-extra'
 import { Logger } from '~/logger'
 import { isSystemError } from './error'
 import { ENOENT_ERROR, createSymbolicLink } from './fs'
+import { sep } from 'path'
 
+export async function isLinked(srcPath: string, destPath: string) {
+  const stat = await lstat(destPath).catch((e) => {
+    if (isSystemError(e) && e.code === ENOENT_ERROR) {
+      return
+    }
+    throw e
+  })
+  if (stat) {
+    if (stat.isSymbolicLink()) {
+      const linkedPath = await readlink(destPath)
+      return linkedPath === srcPath || linkedPath === srcPath + sep
+    }
+  }
+  return undefined
+}
 /**
  * Try to link folder as symbolic link to the resource folder.
  * @return `true` if linked, `false` means dictionary
@@ -40,21 +56,3 @@ export async function tryLink(srcPath: string, destPath: string, logger: Logger,
   await createSymbolicLink(srcPath, destPath, logger)
   return true
 }
-
-//   async ensureResourcePacks() {
-//   if (!this.active) return
-//   if (this.linked) return
-//   const promises: Promise<void>[] = []
-//   for (let fileName of this.gameSettingService.state.options.resourcePacks) {
-//     if (fileName === 'vanilla') {
-//       continue
-//     }
-//     fileName = fileName.startsWith('file/') ? fileName.slice(5) : fileName
-//     const src = this.getPath(ResourceDomain.ResourcePacks, fileName)
-//     const dest = join(this.active, ResourceDomain.ResourcePacks, fileName)
-//     if (!existsSync(dest)) {
-//       promises.push(linkWithTimeoutOrCopy(src, dest).catch((e) => this.error(e)))
-//     }
-//   }
-//   await Promise.all(promises)
-// }

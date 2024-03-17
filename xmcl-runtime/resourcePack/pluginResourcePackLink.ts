@@ -17,7 +17,7 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
     name: 'resources-link',
     async onBeforeLaunch(input, output) {
       const path = output.gamePath
-      const linked = await resourcePackService.link(path)
+      const linked = await resourcePackService.isLinked(path)
       if (linked) return
 
       const folder = join(path, ResourceDomain.ResourcePacks)

@@ -1,6 +1,6 @@
 import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir, stat } from 'fs-extra'
+import { mkdir, readdir, stat, unlink, remove } from 'fs-extra'
 import { basename, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
@@ -9,7 +9,7 @@ import { AbstractService, ExposeServiceKey, Lock } from '~/service'
 import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { linkWithTimeoutOrCopy } from '../util/fs'
-import { tryLink } from '../util/linkResourceFolder'
+import { isLinked, tryLink } from '../util/linkResourceFolder'
 
 /**
  * Provide the abilities to import resource pack and resource packs files to instance
@@ -22,6 +22,24 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
+  }
+
+  async unlink(instancePath: string): Promise<void> {
+    const destPath = join(instancePath, 'resourcepacks')
+    const srcPath = this.getPath('resourcepacks')
+
+    const linkedStatus = await isLinked(srcPath, destPath)
+    if (typeof linkedStatus === 'boolean') {
+      await unlink(destPath)
+      await mkdir(destPath)
+    }
+  }
+
+  async isLinked(instancePath: string): Promise<boolean> {
+    const destPath = join(instancePath, 'resourcepacks')
+    const srcPath = this.getPath('resourcepacks')
+    const v = await isLinked(srcPath, destPath)
+    return !!v
   }
 
   async install(instancePath: string, resourcePack: string) {
@@ -49,12 +67,13 @@ export class InstanceResourcePackService extends AbstractService implements IIns
   }
 
   @Lock(p => LockKey.resourcepacks(p))
-  async link(instancePath: string): Promise<boolean> {
+  async link(instancePath: string, force = false): Promise<boolean> {
     if (!instancePath) return false
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
     const destPath = join(instancePath, 'resourcepacks')
     const srcPath = this.getPath('resourcepacks')
     try {
+      if (force) await remove(destPath)
       const isLinked = await tryLink(srcPath, destPath, this, (path) => this.instanceService.isUnderManaged(path))
       return isLinked
     } catch (e) {
