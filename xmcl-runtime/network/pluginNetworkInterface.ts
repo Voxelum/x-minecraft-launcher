@@ -1,4 +1,4 @@
-import { DefaultRangePolicy, getDefaultAgentOptions } from '@xmcl/file-transfer'
+import { DefaultRangePolicy, createRedirectInterceptor, getDefaultAgentOptions } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
@@ -79,18 +79,16 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     options.headers = headers
   }
 
-  const apiAgentOptions = getDefaultAgentOptions()
   const apiDispatcher = new CacheDispatcher(new ProxyAgent({
     controller: proxy,
     factory: (connect) => new Agent({
       interceptors: {
-        Agent: [...apiAgentOptions.interceptors.Agent],
-        Client: [...apiAgentOptions.interceptors.Client, createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors])],
+        Client: [createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors]), createRedirectInterceptor(5)],
       },
       pipelining: 1,
       bodyTimeout: 20_000,
       headersTimeout: 10_000,
-      connectTimeout: 10_000,
+      connectTimeout: 45_000,
       connect,
       factory(origin, opts: Agent.Options) {
         let dispatcher: Dispatcher | undefined
@@ -117,7 +115,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         Client: [...downloadAgentOptions.interceptors.Client],
       },
       headersTimeout: 15_000,
-      connectTimeout: 35_000,
+      connectTimeout: 45_000,
       bodyTimeout: 60_000,
       connect,
       factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),

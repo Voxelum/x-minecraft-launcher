@@ -4,7 +4,7 @@ import { AnyError } from '~/util/error'
 
 export async function getJson<T>(url: string, error: string) {
   try {
-    const response = await request(url)
+    const response = await request(url, { maxRedirections: 4 })
 
     const body = await response.body.text()
 
