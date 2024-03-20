@@ -23,6 +23,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     liteloader: '',
     fabricLoader: '',
     yarn: '',
+    optifine: '',
     quiltLoader: '',
     neoForged: '',
   })
