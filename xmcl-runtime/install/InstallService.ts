@@ -15,6 +15,7 @@ import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from '~/service'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
+import { joinUrl } from '~/util/url'
 import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
 import { missing } from '../util/fs'
@@ -74,7 +75,29 @@ export class InstallService extends AbstractService implements IInstallService {
     }
 
     option.assetsHost = allSets.map(api => api.url ? `${api.url}/assets` : DEFAULT_RESOURCE_ROOT_URL)
-    option.mavenHost = allSets.map(api => api.url ? `${api.url}/maven` : DEFAULT_FORGE_MAVEN)
+    option.libraryHost = (lib) => {
+      const urls = allSets.map(api => {
+        if (api.url) {
+          return joinUrl(`${api.url}/maven`, lib.download.path)
+        }
+        return lib.download.url
+      })
+      if (lib.name.includes('forge')) {
+        urls.push(joinUrl(DEFAULT_FORGE_MAVEN, lib.download.path))
+      }
+      const keywords = ['mojang', 'minecraft', 'forge', 'fabric', 'optifine']
+      let shouldAppendCommonMaven = true
+      for (const keyword of keywords) {
+        if (lib.name.includes(keyword)) {
+          shouldAppendCommonMaven = false
+          break
+        }
+      }
+      if (shouldAppendCommonMaven) {
+        urls.push(joinUrl(DEFAULT_FORGE_MAVEN, lib.download.path))
+      }
+      return urls.map(u => u.replace('/maven/maven', '/maven'))
+    }
     option.assetsIndexUrl = (ver) => allSets.map(api => {
       if (ver.assetIndex) {
         if (api.name === 'mojang') {
