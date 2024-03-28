@@ -141,7 +141,13 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   const instances = computed(() => result.value[1])
 
   async function processCachedMod() {
-    modFiles.value = keyword.value ? (await getResourcesByKeyword(keyword.value, ResourceDomain.Mods)).filter(isValidResource).map(r => getModFileFromResource(r, runtime.value)) : []
+    if (keyword.value) {
+      const searched = await getResourcesByKeyword(keyword.value, ResourceDomain.Mods)
+      const resources = searched.filter(isValidResource).map(r => getModFileFromResource(r, runtime.value))
+      modFiles.value = resources
+    } else {
+      modFiles.value = []
+    }
   }
 
   const loadingCached = ref(false)
@@ -179,7 +185,7 @@ const getOptifineAsMod = () => {
   return result
 }
 
-export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>) {
+export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>) {
   const modLoaderFilters = ref([] as ModLoaderFilter[])
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
@@ -210,7 +216,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, runtime)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, runtime)
   const { cached: cachedMods, instances, loadingCached } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
-  const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value)
+  const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
   const all = useAggregateProjects<ProjectEntry<ModFile>>(
     modrinth,
@@ -222,7 +228,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   const items = useProjectsFilterSearch(
     keyword,
     all,
-    computed(() => keyword.value.length > 0 || modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined),
+    computed(() => (keyword.value.length > 0 && (modrinth.value.length > 0 || curseforge.value.length > 0)) || modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined),
     isCurseforgeActive,
     isModrinthActive,
   )

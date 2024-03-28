@@ -5,6 +5,7 @@ InstanceSavesService as IInstanceSavesService,
 ImportSaveOptions,
 InstanceSaveException,
 InstanceSavesServiceKey,
+LaunchServiceKey,
 ResourceDomain, Saves,
 getInstanceSaveKey,
 isSaveResource,
@@ -25,6 +26,7 @@ import { copyPassively, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from './save'
+import { LaunchService } from '~/launch'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -65,24 +67,26 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     requireString(path)
 
     const stateManager = await this.app.registry.get(ServiceStateManager)
-    return stateManager.registerOrGet(getInstanceSaveKey(path), async () => {
+    return stateManager.registerOrGet(getInstanceSaveKey(path), async ({ defineAsyncOperation }) => {
       const pending: Set<string> = new Set()
       const baseName = basename(path)
       const savesDir = join(path, 'saves')
       let parking = false
       const state = new Saves()
+      const launchService = await this.app.registry.get(LaunchService)
 
-      const updateSave = throttle((filePath: string) => {
-        readInstanceSaveMetadata(filePath, baseName).then((save) => {
+      const updateSave = throttle(defineAsyncOperation((filePath: string) => {
+        return readInstanceSaveMetadata(filePath, baseName).then((save) => {
           state.instanceSaveUpdate(save)
         }).catch((e) => {
           this.warn(`Parse save in ${filePath} failed. Skip it.`)
           this.warn(e)
           return undefined
         })
-      }, 2000)
+      }), 2000)
 
-      const onLaunch = (count: number) => {
+      let count = 0
+      const onUpdate = () => {
         const newState = count > 0
         if (newState !== parking) {
           for (const p of pending) {
@@ -91,6 +95,14 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           pending.clear()
         }
         parking = newState
+      }
+      const onLaunch = () => {
+        count++
+        onUpdate()
+      }
+      const onExit = () => {
+        count--
+        onUpdate()
       }
 
       await ensureDir(savesDir)
@@ -114,9 +126,8 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
       await ensureDir(savesDir)
 
-      // TOOD: handle this
-      // this.launchService.on('launch', () => onLaunch)
-      // this.storeManager.subscribe('launchCount', onLaunch)
+      launchService.on('minecraft-start', onLaunch)
+      launchService.on('minecraft-exit', onExit)
       const savePaths = await readdir(savesDir)
       const saves = await Promise.all(savePaths
         .filter((d) => !d.startsWith('.'))
@@ -132,7 +143,8 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
       return [state, () => {
         watcher.close()
-        // this.storeManager.unsubscribe('launchCount', onLaunch)
+        launchService.off('minecraft-start', onLaunch)
+        launchService.off('minecraft-exit', onExit)
       }]
     })
   }

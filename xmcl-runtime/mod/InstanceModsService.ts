@@ -37,61 +37,40 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     // TODO: make this excpetion as this is a bad request
     if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
     const stateManager = await this.app.registry.get(ServiceStateManager)
-    return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async (onDestroy) => {
+    return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async ({ defineAsyncOperation }) => {
       const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,
         (all) => {
           state.instanceModUpdates(all)
         },
         500)
 
-      const scan = async (dir: string) => {
-        const files = await readdirIfPresent(dir)
-
-        const fileArgs = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(dir, file))
-
-        const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })), true)
-        return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
-      }
-
       const state = new InstanceModsState()
-      const listener = this.resourceService as IResourceService
-      const onResourceUpdate = async (res: PartialResourceHash[]) => {
-        if (res) {
-          updateMod.push([res, InstanceModUpdatePayloadAction.Update])
-        } else {
-          this.error(new AnyError('InstanceModUpdateError', 'Cannot update instance mods as the resource is empty'))
-        }
-      }
+      const pending: Set<string> = new Set()
 
-      listener
-        .on('resourceUpdate', onResourceUpdate)
-
-      const basePath = join(instancePath, 'mods')
-      await ensureDir(basePath)
-      await this.resourceService.whenReady(ResourceDomain.Mods)
-      const initializing = scan(basePath)
-      state.mods = await initializing
-
-      const processUpdate = async (filePath: string, retryLimit = 7) => {
+      const processUpdate = defineAsyncOperation(async (filePath: string, retryLimit = 7) => {
         try {
+          if (pending.has(filePath)) return
+          pending.add(filePath)
+
           const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (resource && isModResource(resource)) {
             this.log(`Instance mod add ${filePath}`)
-            updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
+          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+          pending.delete(filePath)
         } catch (e) {
           if (isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY') && retryLimit > 0) {
             // Retry
             setTimeout(() => processUpdate(filePath, retryLimit - 1), Math.random() * 2000 + 1000)
           } else {
             this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
+            pending.delete(filePath)
           }
         }
-      }
-
-      const processRemove = async (filePath: string) => {
+      })
+      const processRemove = (filePath: string) => {
         const target = state.mods.find(r => r.path === filePath)
         if (target) {
           this.log(`Instance mod remove ${filePath}`)
@@ -100,6 +79,36 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
         }
       }
+
+      const listener = this.resourceService as IResourceService
+      const onResourceUpdate = (res: PartialResourceHash[]) => {
+        if (res) {
+          updateMod.push([res, InstanceModUpdatePayloadAction.Update])
+        } else {
+          this.error(new AnyError('InstanceModUpdateError', 'Cannot update instance mods as the resource is empty'))
+        }
+      }
+      listener
+        .on('resourceUpdate', onResourceUpdate)
+
+      const basePath = join(instancePath, 'mods')
+      await ensureDir(basePath)
+      await this.resourceService.whenReady(ResourceDomain.Mods)
+      const scan = async (dir: string) => {
+        const files = (await readdirIfPresent(dir))
+          .filter((file) => !shouldIgnoreFile(file))
+          .map((file) => join(dir, file))
+
+        const peekCount = 32
+        const peekChunks = files.slice(0, peekCount)
+        for (const file of files.slice(peekCount)) {
+          processUpdate(file)
+        }
+
+        const resources = await this.resourceService.importResources(peekChunks.map(f => ({ path: f, domain: ResourceDomain.Mods })), true)
+        return resources.map((r, i) => ({ ...r, path: peekChunks[i] }))
+      }
+      state.mods = await scan(basePath)
 
       const watcher = watch(basePath, async (event, filePath) => {
         if (shouldIgnoreFile(filePath) || filePath === basePath) return
@@ -112,8 +121,8 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
       watcher.on('close', () => {
         this.log(`Unwatch on instance mods: ${basePath}`)
-        onDestroy()
       })
+
       this.log(`Mounted on instance mods: ${basePath}`)
 
       return [state, () => {
@@ -122,7 +131,6 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           .removeListener('resourceUpdate', onResourceUpdate)
       }, async () => {
         // relvaidate
-        await initializing.catch(() => undefined)
         const files = await readdirIfPresent(basePath)
         const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
         const current = state.mods.length

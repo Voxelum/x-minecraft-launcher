@@ -8,7 +8,7 @@ import { kSettings } from './settings'
 
 export const pluginSettings: LauncherAppPlugin = async (app) => {
   const stateManager = await app.registry.get(ServiceStateManager)
-  const state = stateManager.register('settings', new Settings(), () => { })
+  const state = stateManager.registerStatic(new Settings(), 'settings')
   const logger = app.getLogger('Settings')
   app.registry.get(kGameDataPath).then(getPath => {
     const settingFile = createSafeFile(join(app.appDataPath, 'setting.json'), SettingSchema, logger, [getPath('setting.json')])

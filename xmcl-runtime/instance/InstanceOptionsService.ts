@@ -34,10 +34,10 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   async watch(path: string) {
     requireString(path)
     const stateManager = await this.app.registry.get(ServiceStateManager)
-    return stateManager.registerOrGet(getInstanceGameOptionKey(path), async () => {
+    return stateManager.registerOrGet(getInstanceGameOptionKey(path), async ({ defineAsyncOperation }) => {
       const state = new GameOptionsState()
 
-      const loadShaderOptions = async (path: string) => {
+      const loadShaderOptions = defineAsyncOperation(async (path: string) => {
         try {
           const result = await this.getShaderOptions(path)
           state.shaderPackSet(result.shaderPack)
@@ -47,9 +47,9 @@ export class InstanceOptionsService extends AbstractService implements IInstance
             this.warn(e)
           }
         }
-      }
+      })
 
-      const loadOptions = async (path: string) => {
+      const loadOptions = defineAsyncOperation(async (path: string) => {
         try {
           const result = await this.getGameOptions(path)
           state.gameOptionsSet(result)
@@ -59,7 +59,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
             this.warn(e)
           }
         }
-      }
+      })
 
       this.log(`Start to watch instance options.txt in ${path}`)
 
