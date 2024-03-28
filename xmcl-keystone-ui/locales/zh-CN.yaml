@@ -973,9 +973,9 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: 查看选择的资源包
   selected: 已选资源包
+  shared: 实例使用共享资源包文件夹
   showFile: 在文件夹中显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
-  shared: 实例使用共享资源包文件夹
   unselected: 未选资源包
 save:
   copy:
@@ -1157,6 +1157,10 @@ settingLabel:
   local: 实例配置
   localHint: 这个配置已被当前实例修改
 setup:
+  account:
+    description: 添加你常用的账号。如果你还没有账号，你可先跳过这步。
+    name: 添加游戏账号
+    skip: 先不登陆了
   appearance:
     name: '@:setting.appearance'
   dataRoot:

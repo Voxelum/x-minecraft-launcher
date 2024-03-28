@@ -42,7 +42,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
-    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(YggdrasilService) private yggdrasilAccountSystem: YggdrasilService) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
       const data = await this.userFile.read()
@@ -55,7 +54,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       const { mojangSelectedUserId } = await preprocessUserData(userData, data, this.getMinecraftPath('launcher_profiles.json'), tokenStorage)
       this.mojangSelectedUserId = mojangSelectedUserId
       // Ensure the launcher profile
-      await ensureLauncherProfile(this.getPath())
+
+      app.registry.get(kGameDataPath).then((getPath) => {
+        ensureLauncherProfile(getPath())
+      })
 
       this.log(`Load ${Object.keys(userData.users).length} users`)
 
@@ -73,7 +75,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }))
     })
 
-    this.userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
+    this.userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this)
     this.state.subscribeAll(() => {
       this.saveUserFile()
     })

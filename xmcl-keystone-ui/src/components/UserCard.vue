@@ -1,7 +1,8 @@
 <template>
   <v-card
-    outlined
-    class="invisible-scroll user-menu "
+    :outlined="outlined"
+    flat
+    class="invisible-scroll user-menu"
   >
     <transition
       name="fade-transition"
@@ -10,7 +11,7 @@
       <template v-if="!login">
         <div :key="0">
           <v-list>
-            <UserMenuUserItem
+            <UserCardUserItem
               v-if="selected"
               :user="selected"
               controls
@@ -22,18 +23,18 @@
             />
           </v-list>
 
-          <UserMenuMicrosoft
+          <UserCardMicrosoft
             v-if="selected && selected.authority === AUTHORITY_MICROSOFT"
             :user="selected"
           />
-          <UserMenuYggdrasil
+          <UserCardYggdrasil
             v-else-if="!!selected"
             :user="selected"
           />
 
           <v-divider v-if="usersToSwitch.length > 0" />
           <v-list dense>
-            <UserMenuUserItem
+            <UserCardUserItem
               v-for="(item) of usersToSwitch"
               :key="item.id"
               :hide-user-name="streamerMode"
@@ -81,7 +82,7 @@
           </div>
 
           <div class="flex flex-grow items-center justify-center">
-            <AppLoginForm
+            <UserLoginForm
               :inside="false"
               :options="options"
               @login="reset()"
@@ -107,12 +108,12 @@ import { useDialog } from '@/composables/dialog'
 import { kUserContext, useUserExpired } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, UserServiceKey } from '@xmcl/runtime-api'
-import AppLoginForm from './AppLoginForm.vue'
-import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
-import UserMenuUserItem from './UserMenuUserItem.vue'
-import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
+import UserLoginForm from './UserLoginForm.vue'
+import UserCardMicrosoft from './UserCardMicrosoft.vue'
+import UserCardUserItem from './UserCardUserItem.vue'
+import UserCardYggdrasil from './UserCardYggdrasil.vue'
 
-const props = defineProps<{ show: boolean }>()
+const props = defineProps<{ show: boolean; outlined?: boolean }>()
 
 const { t } = useI18n()
 const { users, select, userProfile: selected } = injection(kUserContext)
@@ -167,9 +168,3 @@ const reset = (o?: { username?: string; password?: string; microsoftUrl?: string
 
 const usersToSwitch = computed(() => users.value.filter(v => selected.value ? (v.id !== selected.value.id) : true))
 </script>
-<style scoped>
-.user-menu {
-  @apply w-[600px] max-w-[600px] overflow-y-auto;
-  max-height: min(700px, 90vh);
-}
-</style>

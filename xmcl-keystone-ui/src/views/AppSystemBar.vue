@@ -88,7 +88,7 @@ import { useTaskCount } from '../composables/task'
 import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
-import AppSystemBarAvatar from './AppSystemBarUser.vue'
+import AppSystemBarAvatar from './AppSystemBarUserMenu.vue'
 import { kTutorial } from '@/composables/tutorial'
 import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 
