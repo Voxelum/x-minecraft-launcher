@@ -78,7 +78,7 @@ export default defineComponent({
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
     const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.resolvedVersion, instanceJava.java, user.userProfile, settings)
 
-    const modsSearch = useModsSearch(instance.runtime, instanceMods.mods)
+    const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
 
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)

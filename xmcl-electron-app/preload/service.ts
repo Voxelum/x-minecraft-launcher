@@ -117,12 +117,19 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
 function createServiceChannels(): ServiceChannels {
   const gc = new FinalizationRegistry<string>((id) => {
     delete states[id]
-    ipcRenderer.invoke('deref', id)
+    ipcRenderer.invoke('unref', id)
     console.log(`deref ${id}`)
   })
   const servicesEmitters = new Map<ServiceKey<any>, WeakRef<EventEmitter>>()
   const states: Record<string, WeakRef<MutableState<object>>> = {}
   const pendingCommits: Record<string, { type: string; payload: any }[]> = {}
+
+  ipcRenderer.on('state-validating', (_, { id, validating }) => {
+    const state = states[id]?.deref()
+    if (state) {
+      (state as any)[kEmitter].emit('state-validating', validating)
+    }
+  })
 
   ipcRenderer.on('service-event', (_, { service, event, args }) => {
     const emitter = servicesEmitters.get(service)?.deref()

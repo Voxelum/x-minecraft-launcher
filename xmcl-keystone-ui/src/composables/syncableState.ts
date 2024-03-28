@@ -26,6 +26,10 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
       data.subscribeAll((mutation, payload) => {
         ((Type.prototype as any)?.[mutation] as Function)?.call(state.value, payload)
       })
+      // @ts-ignore
+      data.subscribe('state-validating', (v) => {
+        isValidating.value = v as any
+      })
       state.value = data
     } catch (e) {
       if (signal.aborted) { return }

@@ -13,8 +13,10 @@ export type MutableState<T> = T & {
   readonly id: string
 
   subscribe<K extends keyof Mutations<T>>(key: K, listener: (payload: Mutations<T>[K]) => void): MutableState<T>
+  subscribe(key: 'state-validating', listener: (v: boolean) => void): MutableState<T>
 
   unsubscribe<K extends keyof Mutations<T>>(key: K, listener: (payload: Mutations<T>[K]) => void): MutableState<T>
+  unsubscribe(key: 'state-validating', listener: (v: boolean) => void): MutableState<T>
 
   subscribeAll<K extends keyof Mutations<T>>(listener: (mutation: K, payload: Mutations<T>[keyof Mutations<T>]) => void): MutableState<T>
 

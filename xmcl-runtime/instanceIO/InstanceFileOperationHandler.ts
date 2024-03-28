@@ -169,7 +169,6 @@ export class InstanceFileOperationHandler {
         url: urls,
         destination,
         pendingFile: pending,
-        skipRevalidate: true,
         validator: sha1
           ? {
             hash: sha1,

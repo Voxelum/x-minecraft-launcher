@@ -37,8 +37,6 @@
     </v-card-text>
     <v-card-actions>
       <v-btn
-        :disabled="refreshing"
-        :loading="refreshing"
         color="teal accent-4"
         text
         @click="emit('navigate')"

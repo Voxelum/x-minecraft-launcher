@@ -8,7 +8,7 @@ export function isStateObject(v: object): v is MutableState<any> {
 }
 
 export class MutableStateImpl {
-  constructor(private listener: EventEmitter) { }
+  constructor(private listener: EventEmitter, public revalidate: () => void) { }
 
   subscribe(key: string, listener: (payload: any) => void) {
     this.listener.addListener(key, listener)

@@ -1,13 +1,12 @@
 import { MutableState, ServiceKey, State } from '@xmcl/runtime-api'
-import { EventEmitter } from 'events'
 import { Client, LauncherApp } from '~/app'
 import { Logger } from '~/logger'
 import { AnyError } from '~/util/error'
-import { getServiceKey } from './Service'
-import { ServiceStateContainer } from './ServiceStateContainer'
-import { MutableStateImpl, kStateKey } from './stateUtils'
+import { ServiceStateContainer, ServiceStateFactory } from './ServiceStateContainer'
 
-const kStateContainer = Symbol('StateContainer')
+export interface ServiceStateContext {
+  defineAsyncOperation<T extends (...args: any[]) => Promise<any>>(action: T): T
+}
 
 export class ServiceStateManager {
   private logger: Logger
@@ -25,30 +24,37 @@ export class ServiceStateManager {
         this.logger.error(e as any)
       }
     })
-    app.controller.handle('deref', (_, id) => {
+    app.controller.handle('unref', ({ sender }, id) => {
       const stateProxy = this.containers[id]
       if (!stateProxy) return 'NOT_STATE_SERVICE'
-      if (stateProxy.deref()) {
-        delete this.containers[id]
-      }
+      stateProxy.untrack(sender)
     })
     app.controller.handle('revalidate', (_, id) => {
       this.revalidate(id)
     })
     app.registryDisposer(async () => {
       for (const container of Object.values(this.containers)) {
-        container.dispose()
+        container.destroy()
       }
     })
   }
 
-  registerStatic<T>(v: T, key: string | ServiceKey<T>): MutableState<T> {
-    const _state = this.register(key.toString(), (v as any), () => { })
-    this.ref(_state)
-    this.app.registryDisposer(async () => {
-      this.deref(_state)
-    })
-    return _state
+  /**
+   * Register a static state object to the service state manager. The state object will not be disposed until the app is disposed.
+   * @param state The state object
+   * @param key The key of the state object
+   * @returns The mutable state object
+   */
+  registerStatic<T>(state: T, key: string | ServiceKey<T>): MutableState<T> {
+    const container = new ServiceStateContainer(
+      key.toString(),
+      this.#unregister,
+      { instance: state },
+    )
+
+    this.containers[key.toString()] = container
+
+    return state as any
   }
 
   /**
@@ -60,114 +66,46 @@ export class ServiceStateManager {
    * @param state
    */
   serializeAndTrack<T>(client: Client, state: MutableState<T>) {
-    const container = (state as any)[kStateContainer] as ServiceStateContainer
+    const container = ServiceStateContainer.unwrap(state)
     if (!container) throw new TypeError('Unregistered state!')
-    container.ref()
-    const handler = (type: any, payload: any) => {
-      client.send('commit', container.id, type, payload)
-    }
-    state.subscribeAll(handler)
-    const onDestroyed = () => {
-      state.unsubscribeAll(handler)
-      if (container.deref()) {
-        delete this.containers[container.id]
-      }
-    }
-    container.addDisposeListener(() => {
-      client.removeListener('destroyed', onDestroyed)
-    })
-    client.on('destroyed', onDestroyed)
+    container.track(client)
     return JSON.parse(JSON.stringify(state))
   }
 
-  /**
-   * Statically ref the state. The state will not be disposed until the process exit.
-   * @param state The state to ref
-   */
-  ref<T>(state: MutableState<T>) {
-    const container = (state as any)[kStateContainer] as ServiceStateContainer
-    if (!container) throw new TypeError('Unregistered state!')
-    container.ref()
-  }
-
-  /**
-   * Statically deref the state. The state will be disposed if there is no reference to it.
-   * @param state The state to deref
-   */
-  deref<T>(state: MutableState<T>) {
-    const container = (state as any)[kStateContainer] as ServiceStateContainer
-    if (!container) throw new TypeError('Unregistered state!')
-    if (container.deref()) {
-      delete this.containers[container.id]
-    }
-  }
-
-  /**
-   * Register the state object to the service manager. Let other services to observe this state mutations.
-   * @param id The id of the state
-   * @param state The state object
-   * @param dispose The dispose function to release the state resource
-   */
-  register<T extends State<T>>(id: string, state: T, dispose: () => void, revalidator?: () => Promise<void>): MutableState<T> {
-    const emitter = new EventEmitter()
-    const container = new ServiceStateContainer(
-      id,
-      state,
-      emitter,
-      dispose,
-      revalidator,
-    )
-
-    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(state)))) {
-      if (key !== 'constructor' && prop.value instanceof Function) {
-        // decorate original mutation
-        const func = prop.value.bind(state)
-        Reflect.set(state, key, function (this: any, value: any) {
-          func(value)
-          emitter.emit(key, value)
-          emitter.emit('*', key, value)
-        })
-      }
-    }
-
-    this.containers[id] = container
-    Object.defineProperties(state, {
-      [kStateKey]: { value: Object.getPrototypeOf(state).constructor.name, enumerable: true, configurable: false },
-      [kStateContainer]: { value: container, enumerable: false, configurable: false },
-    })
-    const parent = new MutableStateImpl(emitter)
-    Object.setPrototypeOf(Object.getPrototypeOf(state), parent)
-    return Object.assign(state, {
-      id,
-      revalidate: () => revalidator?.(),
-    }) as MutableState<T>
-  }
-
   get<T extends State<T>>(id: string): T | undefined {
-    return this.containers[id]?.state
+    return this.containers[id]?.state as any
+  }
+
+  async #revalidate(container: ServiceStateContainer) {
+    await container.revalidate().catch((e) => {
+      this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${container.id}`, { cause: e }, { id: container.id }))
+    })
   }
 
   async revalidate(id: string) {
     const container = this.containers[id]
     if (!container) return
-    await container.revalidator?.().catch((e) => {
-      this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${id}`, { cause: e }, { id }))
-    })
+    await this.#revalidate(container)
   }
 
-  async registerOrGet<T extends State<T>>(id: string, supplier: (onDestroy: () => void) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>): Promise<MutableState<T>> {
+  async registerOrGet<T extends State<T>>(id: string, factory: ServiceStateFactory<T>): Promise<MutableState<T>> {
     if (this.containers[id]) {
       const container = this.containers[id]
-      await container.revalidator?.().catch((e) => {
-        this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${id}`, { cause: e }, { id }))
-      })
-      return container.state
+      await this.#revalidate(container)
+      return await container.promise
     }
-    const onDestroy = () => {
-      while (this.containers[id] && !this.containers[id].deref()) { /* empty */ }
-      delete this.containers[id]
-    }
-    const result = await supplier(onDestroy)
-    return this.register(id, result[0], result[1], result[2])
+
+    const container = new ServiceStateContainer<T>(
+      id,
+      this.#unregister,
+      { factory },
+    )
+
+    this.containers[id] = container
+    return await container.promise
+  }
+
+  #unregister = (id: string) => {
+    delete this.containers[id]
   }
 }

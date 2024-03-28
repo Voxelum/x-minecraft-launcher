@@ -16,6 +16,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     return mods as any
   }, class extends InstanceModsState {
     override instanceModUpdates(ops: [Resource, number][]) {
+      console.log('instanceModUpdates', ops.length)
       for (const o of ops) {
         markRaw(o[0])
       }
@@ -29,9 +30,19 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
 
   const enabledModCounts = computed(() => mods.value.filter(v => v.enabled).length)
 
+  function reset() {
+    mods.value = []
+    modsIconsMap.value = {}
+    provideRuntime.value = {}
+  }
+  watch(instancePath, (v, prev) => {
+    if (v !== prev) {
+      reset()
+    }
+  })
   watch([computed(() => state.value?.mods), java], () => {
     if (!state.value?.mods) {
-      mods.value = []
+      reset()
       return
     }
     console.log('update instance mods by state')
@@ -39,7 +50,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   })
   watch(instanceRuntime, () => {
     if (!state.value?.mods) {
-      mods.value = []
+      reset()
       return
     }
     console.log('update instance mods by runtime')
