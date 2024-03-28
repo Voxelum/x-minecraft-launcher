@@ -8,7 +8,7 @@
     v-else
     class="min-w-100  m-20 text-center"
   >
-    <AppLoginAuthoritySelect
+    <UserLoginAuthoritySelect
       v-model="authority"
       :items="items"
     />
@@ -111,6 +111,7 @@
           close
         </v-icon>
       </v-btn>
+      <slot />
     </div>
 
     <div
@@ -156,7 +157,7 @@ import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, Us
 import { Ref } from 'vue'
 import { useAccountSystemHistory, useAllowThirdparty, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
-import AppLoginAuthoritySelect from './AppLoginAuthoritySelect.vue'
+import UserLoginAuthoritySelect from './UserLoginAuthoritySelect.vue'
 
 const props = defineProps<{
   inside: boolean

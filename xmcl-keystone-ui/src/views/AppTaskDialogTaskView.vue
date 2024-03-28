@@ -20,6 +20,17 @@
 
     <v-card-text class="max-h-[400px] overflow-auto">
       <div
+        v-for="[o, s] of Object.entries(stat)"
+        :key="o"
+      >
+        <div>
+          {{ o }}
+        </div>
+        <div>
+          {{ s }}
+        </div>
+      </div>
+      <div
         v-if="visible.length === 0"
         class="mt-4"
       >

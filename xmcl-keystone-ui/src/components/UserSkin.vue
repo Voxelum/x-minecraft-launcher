@@ -83,7 +83,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
 import { PlayerNameModel, UserSkinModel, UserSkinRenderPaused, usePlayerName, useUserSkin } from '../composables/userSkin'
-import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
+import ImportSkinUrlForm from './UserSkinImportUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
 
 const props = withDefaults(defineProps<{
