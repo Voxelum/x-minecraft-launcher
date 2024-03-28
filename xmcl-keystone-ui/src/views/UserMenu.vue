@@ -26,10 +26,6 @@
             v-if="selected && selected.authority === AUTHORITY_MICROSOFT"
             :user="selected"
           />
-          <UserMenuMojang
-            v-else-if="selected && selected.authority === AUTHORITY_MOJANG"
-            :user="selected"
-          />
           <UserMenuYggdrasil
             v-else-if="!!selected"
             :user="selected"
@@ -110,12 +106,13 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDialog } from '@/composables/dialog'
 import { kUserContext, useUserExpired } from '@/composables/user'
 import { injection } from '@/util/inject'
-import { AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, UserServiceKey } from '@xmcl/runtime-api'
 import AppLoginForm from './AppLoginForm.vue'
 import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
-import UserMenuMojang from './UserMenuMojang.vue'
 import UserMenuUserItem from './UserMenuUserItem.vue'
 import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
+
+const props = defineProps<{ show: boolean }>()
 
 const { t } = useI18n()
 const { users, select, userProfile: selected } = injection(kUserContext)
@@ -123,8 +120,6 @@ const { abortRefresh, refreshUser, removeUser } = useService(UserServiceKey)
 const expired = useUserExpired(computed(() => selected.value))
 const { show: onShowDeleteDialog } = useDialog('user-delete')
 const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
-
-const props = defineProps<{ show: boolean }>()
 
 const onSelectUser = (user: string) => {
   select(user)
