@@ -43,6 +43,7 @@ const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectMod
 const curseforgeMod = computed(() => {
   if (props.curseforge) return props.curseforge
   if (curseforgeProject.value) return curseforgeProject.value
+  return undefined
 })
 const { data: description, isValidating: loadings } = useSWRVModel(getCurseforgeProjectDescriptionModel(cursforgeModId))
 const model = computed(() => {
@@ -249,6 +250,7 @@ const dependencies = computed(() => deps.value?.map((resolvedDep) => {
         return file
       }
     }
+    return undefined
   })
   const otherFile = computed(() => {
     for (const file of props.allFiles) {
@@ -256,6 +258,7 @@ const dependencies = computed(() => deps.value?.map((resolvedDep) => {
         return file
       }
     }
+    return undefined
   })
   const dep: ProjectDependency = reactive({
     id: resolvedDep.project.id.toString(),

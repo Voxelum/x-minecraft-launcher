@@ -84,7 +84,7 @@ const { on } = useService(LaunchServiceKey)
 const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
 
 const urls = shallowRef([] as string[])
-const shuffled = computed(() => urls.value.sort(() => Math.random() - 0.5))
+const shuffled = computed(() => urls.value.toSorted(() => Math.random() - 0.5))
 const display = computed(() => (randomPlayScreenshot.value ? shuffled.value : urls.value))
 const { refresh, refreshing } = useRefreshable(async () => {
   const result = await getScreenshots(props.instance.path)
