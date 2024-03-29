@@ -27,6 +27,10 @@ export class BaseService extends AbstractService implements IBaseService {
     })
   }
 
+  destroyPool(origin: string) {
+    return this.app.registry.get(kNetworkInterface).then(s => s.destroyPool(origin))
+  }
+
   getNetworkStatus(): Promise<Record<string, PoolStats>> {
     return this.app.registry.get(kNetworkInterface).then(s => s.getDownloadAgentStatus())
   }
