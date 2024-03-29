@@ -8,7 +8,7 @@
     <v-card
       rounded
       outlined
-      class="max-h-200 visible-scroll flex flex-col overflow-auto"
+      class="visible-scroll flex max-h-[90vh] flex-col overflow-auto"
     >
       <div
         class="mx-5 mt-3 grid flex-grow-0 grid-cols-3 gap-5"
