@@ -85,9 +85,10 @@ export class ElyByService extends AbstractService implements IElyByService {
         const path = this.getPath('libraries', info.path)
         await ensureDir(dirname(path))
         await writeFile(path, Buffer.concat(buffers))
+        const sha1 = hasher.digest('hex')
         content[minecraftVersion] = {
           path,
-          sha1: hasher.digest('hex'),
+          sha1,
           version: actualVersion,
         }
         await writeFile(jsonPath, JSON.stringify(content, null, 4))
@@ -99,7 +100,7 @@ export class ElyByService extends AbstractService implements IElyByService {
             artifact: {
               url: '',
               path: info.path,
-              sha1: hasher.digest('hex'),
+              sha1,
               size: e.uncompressedSize,
             },
           },
