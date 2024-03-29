@@ -34,10 +34,14 @@ export class ReadWriteLock {
   private async processIfIdle() {
     if (this.status === LockStatus.Idle) {
       while (this.queue.length > 0) {
-        const [operation, release] = this.queue.shift()!
-        this.release = release
-        this.status = release ? LockStatus.Reading : LockStatus.Writing
-        await operation()
+        try {
+          const [operation, release] = this.queue.shift()!
+          this.release = release
+          this.status = release ? LockStatus.Reading : LockStatus.Writing
+          await operation()
+        } catch {
+          // no-op
+        }
       }
       this.status = LockStatus.Idle
     }
