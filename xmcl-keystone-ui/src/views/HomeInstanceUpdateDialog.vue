@@ -29,7 +29,7 @@
 
         <div class="grid grid-cols-2 gap-4">
           <v-text-field
-            :value="`${oldRuntime.minecraft} -> ${runtime.minecraft}`"
+            :value="getVersionString(oldRuntime.minecraft, runtime.minecraft)"
             persistent-hint
             label="Minecraft"
             readonly
@@ -46,7 +46,7 @@
           </v-text-field>
           <v-text-field
             v-if="runtime.forge"
-            :value="`${oldRuntime.forge} -> ${runtime.forge}`"
+            :value="getVersionString(oldRuntime.forge, runtime.forge)"
             persistent-hint
             label="Forge"
             readonly
@@ -63,7 +63,7 @@
           </v-text-field>
           <v-text-field
             v-if="runtime.fabricLoader"
-            :value="`${oldRuntime.fabricLoader} -> ${runtime.fabricLoader}`"
+            :value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
             persistent-hint
             readonly
             label="Fabric"
@@ -176,6 +176,8 @@ const tOperations = computed(() => ({
 
 const { getColorCode } = useVuetifyColor()
 const runtime = computed(() => upgrade.value?.instance.runtime || {} as Record<string, string>)
+
+const getVersionString = (oldVersion?: string, newVersion?: string) => oldVersion !== newVersion ? `${oldVersion} -> ${newVersion}` : newVersion
 
 const cOperations = {
   add: 'green',
