@@ -16,7 +16,7 @@ import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
-import { getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths } from './javaPaths'
+import { getJavaPathsLinux, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths } from './javaPaths'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -210,6 +210,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
           ...await getOrcaleJavaPaths(),
           ...await getOpenJdkPaths(),
         )
+      } else if (this.app.platform.os === 'linux') {
+        commonLocations.push(...await getJavaPathsLinux())
+      } else if (this.app.platform.os === 'osx') {
+        commonLocations.push(...await getJavaPathsOSX())
       }
       const javas = await scanLocalJava(commonLocations)
       const infos = await Promise.all(javas.map(async (j) => ({ ...j, valid: true, arch: await getJavaArch(this, j.path) })))

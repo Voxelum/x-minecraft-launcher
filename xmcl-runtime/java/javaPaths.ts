@@ -19,3 +19,13 @@ export async function getOpenJdkPaths() {
   const files = await readdir('C:\\Program Files\\AdoptOpenJDK').catch(() => [])
   return files.map(f => join('C:\\Program Files\\AdoptOpenJDK', f, 'bin', 'java.exe'))
 }
+
+export async function getJavaPathsLinux() {
+  const files = await readdir('/usr/lib/jvm').catch(() => [])
+  return files.map(f => join('/usr/lib/jvm', f, 'bin', 'java'))
+}
+
+export async function getJavaPathsOSX() {
+  const files = await readdir('/Library/Java/JavaVirtualMachines').catch(() => [])
+  return files.map(f => join('/Library/Java/JavaVirtualMachines', f, 'Contents', 'Home', 'bin', 'java'))
+}
