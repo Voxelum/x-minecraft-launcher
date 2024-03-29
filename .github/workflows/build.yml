@@ -53,6 +53,7 @@ jobs:
         pnpm run --prefix xmcl-electron-app build:all
       env:
         BUILD_NUMBER: ${{ github.run_number }}
+        NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
     # - name: Save cached Electron
