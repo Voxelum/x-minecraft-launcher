@@ -3,7 +3,7 @@ import { Socket } from 'net'
 import { TlsOptions } from 'tls'
 import { Agent, buildConnector, Client, errors, Dispatcher } from 'undici'
 import { kClose, kDestroy } from 'undici/lib/core/symbols'
-import DispatcherBase from 'undici/lib/dispatcher-base'
+import DispatcherBase from 'undici/lib/dispatcher/dispatcher-base'
 import { URL } from 'url'
 import { buildHeaders } from './utils'
 

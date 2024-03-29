@@ -154,8 +154,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
 
   xmcl-keystone-ui:
     dependencies:
@@ -470,8 +470,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
       ws:
         specifier: 8.10.0
         version: 8.10.0
@@ -705,8 +705,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -721,8 +721,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
     devDependencies:
       '@types/node':
         specifier: ~18
@@ -779,8 +779,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
     devDependencies:
       '@types/node':
         specifier: ~18.15.11
@@ -887,8 +887,8 @@ importers:
         specifier: workspace:^*
         version: link:../unzip
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -977,8 +977,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -996,8 +996,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -1145,8 +1145,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1173,8 +1173,8 @@ importers:
         specifier: ~18.15.11
         version: 18.15.13
       undici:
-        specifier: 6.6.2
-        version: 6.6.2
+        specifier: 6.10.2
+        version: 6.10.2
 
 packages:
 
@@ -3096,10 +3096,6 @@ packages:
     resolution: {integrity: sha512-NCC3zz2+nvYd+Ckfh87rA47zfu2QsQpvc6k1yzTk+b9KzRj0wkGa8LSoGOXN6Zv4lRf/EIoZ80biDh9HOI+RNQ==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
-
-  /@fastify/busboy@2.1.0:
-    resolution: {integrity: sha512-+KpH+QxZU7O4675t3mnkQKcZZg56u+K/Ct2K+N2AZYNVK8kyeo/bI18tI8aPm3tvNNRyTWfj6s5tnGNlcbQRsA==}
-    engines: {node: '>=14'}
 
   /@fastify/deepmerge@1.3.0:
     resolution: {integrity: sha512-J8TOSBq3SoZbDhM9+R/u77hP93gz/rajSA+K2kGyijPpORPWUXHUpTaleoj+92As0S9uPRP7Oi8IqMf0u+ro6A==}
@@ -10215,11 +10211,9 @@ packages:
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
 
-  /undici@6.6.2:
-    resolution: {integrity: sha512-vSqvUE5skSxQJ5sztTZ/CdeJb1Wq0Hf44hlYMciqHghvz+K88U0l7D6u1VsndoFgskDcnU+nG3gYmMzJVzd9Qg==}
+  /undici@6.10.2:
+    resolution: {integrity: sha512-HcVuBy7ACaDejIMdwCzAvO22OsiE6ir6ziTIr9kAE0vB+PheVe29ZvRN8p7FXCO2uZHTjEoUs5bPiFpuc/hwwQ==}
     engines: {node: '>=18.0'}
-    dependencies:
-      '@fastify/busboy': 2.1.0
 
   /unicode-canonical-property-names-ecmascript@2.0.0:
     resolution: {integrity: sha512-yY5PpDlfVIU5+y/BSCxAJRBIS1Zc2dDG3Ujq+sR0U+JjUevW2JhocOF+soROYDSaAezOzOKuyyixhD6mBknSmQ==}
