@@ -50,7 +50,7 @@
       :max="sysmem.total"
       min="0"
       :step="step"
-      class="z-10 -mt-[25px]"
+      class="z-10 mt-[-25px]"
       height="25"
       track-fill-color="transparent"
       track-color="transparent"

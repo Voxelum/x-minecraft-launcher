@@ -9,7 +9,9 @@
     <div
       class="flex flex-grow-0 flex-row items-center justify-center gap-1"
     >
-      <template v-for="ver of versions">
+      <template
+        v-for="ver of versions"
+      >
         <AvatarItem
           :key="ver.title"
           :avatar="ver.icon"
@@ -154,6 +156,7 @@ const playTimeText = computed(() => {
     case TimeUnit.Second:
       return t('duration.second', { duration: text }, { plural: value })
     case TimeUnit.Day:
+    default:
       return t('duration.day', { duration: text }, { plural: value })
   }
 })
