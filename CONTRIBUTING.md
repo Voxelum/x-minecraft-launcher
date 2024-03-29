@@ -6,7 +6,7 @@ Here we have a overview of the toolchain & runtime of this project
 For the whole project, we have
 
 - [Node.js 16](https://nodejs.org/). The core libraries base environment. Some build scripts are based on Node 14.
-- [Electron 21](https://electron.atom.io). The actual runtime of the launcher.
+- [Electron 27](https://electron.atom.io). The actual runtime of the launcher.
 - [pnpm](https://pnpm.io/). Used for monorepo package management.
 - [TypeScript](https://www.typescriptlang.org/). The whole project uses as much TypeScript as possible.
 

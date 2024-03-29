@@ -6,7 +6,7 @@
 对于整个项目，我们有：
 
 - [Node.js 16](https://nodejs.org/). 核心库基础环境。一些构建用的脚本基于 Node 14。
-- [Electron 21](https://electron.atom.io). 启动器实际的运行时。
+- [Electron 27](https://electron.atom.io). 启动器实际的运行时。
 - [pnpm](https://pnpm.io/). 用于 monorepo 包管理。
 - [TypeScript](https://www.typescriptlang.org/). 整个项目将尽可能使用 TypeScript 代码。
 
