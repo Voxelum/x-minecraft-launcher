@@ -16,72 +16,109 @@
       >
         <v-icon>close</v-icon>
       </v-btn>
+      <template #extension>
+        <v-tabs
+          v-model="tab"
+          centered
+        >
+          <v-tab>{{ t('task.name', 2) }}</v-tab>
+          <v-tab>{{ t('task.connections' ) }}</v-tab>
+        </v-tabs>
+      </template>
     </v-toolbar>
 
     <v-card-text class="max-h-[400px] overflow-auto">
-      <div
-        v-for="[o, s] of Object.entries(stat)"
-        :key="o"
-      >
-        <div>
-          {{ o }}
-        </div>
-        <div>
-          {{ s }}
-        </div>
-      </div>
-      <div
-        v-if="visible.length === 0"
-        class="mt-4"
-      >
-        {{ t('task.empty') }}
-      </div>
-      <v-treeview
-        v-model="data.tree"
-        hoverable
-        transition
-        :open="data.opened"
-        :items="visible"
-        activatable
-        item-key="id"
-        item-children="children"
-      >
-        <template #append="{ item }">
-          <TaskDialogNodeStatus
-            :item="item"
-            :show-number="data.hovered[item.id]"
-            @pause="pause(item)"
-            @resume="resume(item)"
-            @cancel="cancel(item)"
-          />
-        </template>
-
-        <template #label="{ item }">
+      <v-tabs-items v-model="tab">
+        <v-tab-item
+          :key="0"
+        >
           <div
-            style="padding: 5px 0px;"
-            @click="onTaskClick($event, item)"
-            @mouseenter.prevent="data.hovered[item.id] = true"
-            @mouseleave.prevent="data.hovered[item.id] = false"
+            v-if="visible.length === 0"
+            class="mt-4"
           >
-            <span style="max-width: 100px;">
-              {{ tTask(item.path, item.param) }}
-
-              <span v-if="item.isGrouped">
-                ({{ item.groupedCount }} similar is collapsed)
-              </span>
-
-            </span>
-            <div style="color: grey; font-size: 12px; font-style: italic; max-width: 400px;">
-              {{ item.time.toLocaleString() }}
-            </div>
-            <div
-              style="color: grey; font-size: 12px; font-style: italic; max-width: 400px; word-wrap: normal; overflow-wrap: break-word; white-space: normal;"
-            >
-              <AppTaskDialogTaskViewMessage :value="item.message ? item.message : item.from || item.to || ''" />
-            </div>
+            {{ t('task.empty') }}
           </div>
-        </template>
-      </v-treeview>
+          <v-treeview
+            v-model="data.tree"
+            hoverable
+            transition
+            :open="data.opened"
+            :items="visible"
+            activatable
+            item-key="id"
+            item-children="children"
+          >
+            <template #append="{ item }">
+              <TaskDialogNodeStatus
+                :item="item"
+                :show-number="data.hovered[item.id]"
+                @pause="pause(item)"
+                @resume="resume(item)"
+                @cancel="cancel(item)"
+              />
+            </template>
+
+            <template #label="{ item }">
+              <div
+                style="padding: 5px 0px;"
+                @click="onTaskClick($event, item)"
+                @mouseenter.prevent="data.hovered[item.id] = true"
+                @mouseleave.prevent="data.hovered[item.id] = false"
+              >
+                <span style="max-width: 100px;">
+                  {{ tTask(item.path, item.param) }}
+
+                  <span v-if="item.isGrouped">
+                    ({{ item.groupedCount }} similar is collapsed)
+                  </span>
+
+                </span>
+                <div style="color: grey; font-size: 12px; font-style: italic; max-width: 400px;">
+                  {{ item.time.toLocaleString() }}
+                </div>
+                <div
+                  style="color: grey; font-size: 12px; font-style: italic; max-width: 400px; word-wrap: normal; overflow-wrap: break-word; white-space: normal;"
+                >
+                  <AppTaskDialogTaskViewMessage :value="item.message ? item.message : item.from || item.to || ''" />
+                </div>
+              </div>
+            </template>
+          </v-treeview>
+        </v-tab-item>
+        <v-tab-item
+          :key="1"
+        >
+          <v-list
+            dense
+            two-lines
+          >
+            <v-list-item
+              v-for="[o, s] of Object.entries(stat)"
+              :key="o"
+            >
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ o }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ s }}
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn
+                  icon
+                  small
+                  @click="destroyPool(o)"
+                >
+                  <v-icon>
+                    close
+                  </v-icon>
+                </v-btn>
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-tab-item>
+      </v-tabs-items>
     </v-card-text>
     <div class="flex-grow" />
     <v-card-actions class="flex flex-grow-0">
@@ -118,10 +155,12 @@ interface TaskItemOrGroup extends TaskItem {
   groupedCount: number
 }
 
+const tab = ref(0)
+
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager)
 const { t } = useI18n()
 const tTask = useTaskName()
-const { getNetworkStatus } = useService(BaseServiceKey)
+const { getNetworkStatus, destroyPool } = useService(BaseServiceKey)
 
 const stat: Ref<Record<string, PoolStats>> = ref({})
 setInterval(() => {

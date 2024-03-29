@@ -13,6 +13,7 @@ import { ProxyAgent, ProxySettingController } from './dispatchers/proxyDispatche
 import { buildHeaders } from './dispatchers/utils'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kUserAgent } from './userAgent'
+import { setTimeout as timeout } from 'timers/promises'
 
 type DispatchOptions = Dispatcher.DispatchOptions
 
@@ -205,7 +206,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         Agent: [...downloadAgentOptions.interceptors.Agent],
         Client: [...downloadAgentOptions.interceptors.Client],
       },
-      headersTimeout: 15_000,
+      headersTimeout: 45_000,
       connectTimeout: 45_000,
       bodyTimeout: 60_000,
       connect,
@@ -269,6 +270,15 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       dispatchInterceptors.unshift(interceptor)
     },
     getDownloadAgentStatus: getAgentStatus,
+    async destroyPool(origin) {
+      // @ts-ignore
+      const clients = downloadProxy.agent[kClients] as Map<string, Dispatcher>
+      const pool = clients.get(origin)
+      await Promise.race([pool?.close().then(() => true), timeout(500).then(() => false)]).then((closed) => {
+        if (!closed) return pool?.destroy()
+      })
+      clients.delete(origin)
+    },
   })
 
   app.registryDisposer(async () => {
