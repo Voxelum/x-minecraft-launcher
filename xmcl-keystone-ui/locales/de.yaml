@@ -204,8 +204,8 @@ diagnosis:
     message: Sie können den Launcher bitten, sie für Sie herunterzuladen.
     name: Die Java-Version {javaVersion} stimmt nicht mit {version} überein!
   instanceFiles:
-    description: Dies könnte eine unfertige Installation vom letzten Mal sein
-    title: Dateien auf Instanzen installieren
+    description: Die Instanzinstallation umfasst {counts} Dateien.
+    title: Unvollständige Instanzinstallation
   invalidJava:
     message: Klicken Sie auf , um ein anderes Java zur Ausführung zu verwenden.
     name: Der Java-Standort ist falsch.
@@ -1086,9 +1086,9 @@ resourcepack:
   searchOnCurseforge: Suche nach. {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Ausgewählte Texturpakete
+  shared: Instanz verwendet den Ordner des freigegebenen Ressourcenpakets
   showFile: Öffnen Sie das Texturpaket {file} im Ordner
   showInCurseforge: anzeigen {name} in curseforge
-  shared: Instanz verwendet den Ordner des freigegebenen Ressourcenpakets
   unselected: Unausgewählte Texturpakete
 save:
   copy:
@@ -1367,6 +1367,7 @@ tag:
 task:
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
+  connections: Netzwerkverbindungen
   empty: Keine Aufgaben laufen
   failed: Gescheitert
   manager: Aufgaben-Manager

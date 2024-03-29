@@ -214,6 +214,9 @@ diagnosis:
   incompatibleJava:
     message: Preguntar o Lanzador que o descargue por ti.
     name: ¡A versión de java {javaVersion} non é adecuada para {version}!
+  instanceFiles:
+    description: A instalación da instancia inclúe {counts} ficheiros.
+    title: Instalación de instancia incompleta
   invalidJava:
     message: Prema para iniciar con outra versión de java.
     name: Ubicación de Java non válida.
@@ -255,3 +258,5 @@ setting:
   streamerModeDescription: >-
     Isto ocultará a túa información privada como o correo electrónico no
     launcher.
+task:
+  connections: Conexións de rede

@@ -183,8 +183,8 @@ diagnosis:
     message: You can ask Launcher to download it for you.
     name: The java version {javaVersion} does not suitable to {version}!
   instanceFiles:
-    description: This might be incompleted installation last time
-    title: Install files to instances
+    description: The instance installation include {counts} files.
+    title: Incompleted instance installation
   invalidJava:
     message: Click to use another java to launch.
     name: Invalid java location.
@@ -1280,6 +1280,7 @@ tag:
 task:
   cancelled: Cancelled
   clear: Clear Finished Tasks
+  connections: Network Connections
   empty: No Running Tasks
   failed: Failed
   manager: Task Manager

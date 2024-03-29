@@ -218,8 +218,8 @@ diagnosis:
     message: 你可以选择自己让启动器帮你下载，或者自己下载
     name: 版本 {version} 可能不兼容 Java {javaVersion}!
   instanceFiles:
-    description: 这可能是因为之前安装实例时没安装完
-    title: 实例文件缺失
+    description: 实例安装包括 {counts} 个文件。
+    title: 实例安装未完成
   invalidJava:
     message: 请选择一个有效的 Java 路径.
     name: 当前 Java 路径已经失效
@@ -1221,6 +1221,7 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任务
+  connections: 网络连接
   empty: 目前没有运行中的任务
   failed: 失败
   manager: 任务管理器

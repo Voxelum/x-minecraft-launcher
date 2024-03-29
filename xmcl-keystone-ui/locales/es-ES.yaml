@@ -213,6 +213,9 @@ diagnosis:
   incompatibleJava:
     message: Preguntar al Launcher que lo descargue por ti.
     name: ¡La versión de java {javaVersion} no es adecuada para {version}!
+  instanceFiles:
+    description: La instalación de la instancia incluye archivos {counts}.
+    title: Instalación de instancia incompleta
   invalidJava:
     message: Clic para iniciar con otro java.
     name: Ubicación de Java no válida.
@@ -733,9 +736,9 @@ resourcepack:
   searchOnCurseforge: Buscar {name} en CurseForge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Paquetes de Recursos Seleccionados
+  shared: La instancia utiliza la carpeta del paquete de recursos compartido
   showFile: Mostrar paquete de recursos en la carpeta {file}
   showInCurseforge: Mostrar {name} en CurseForge
-  shared: La instancia utiliza la carpeta del paquete de recursos compartido
   unselected: Paquetes de Recursos No Seleccionados
 save:
   copy:
@@ -971,6 +974,7 @@ tag:
 task:
   cancelled: Cancelada
   clear: Borrar tareas terminadas
+  connections: Conexiones de red
   empty: No hay Tareas en Ejecución
   failed: Fallida
   manager: Gestor de Tareas

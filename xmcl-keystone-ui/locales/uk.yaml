@@ -1,2 +1,8 @@
+diagnosis:
+  instanceFiles:
+    description: Інсталяція примірника містить {counts} файлів.
+    title: Незавершена інсталяція екземпляра
 resourcepack:
   shared: Екземпляр використовує спільну папку пакета ресурсів
+task:
+  connections: Мережеві підключення

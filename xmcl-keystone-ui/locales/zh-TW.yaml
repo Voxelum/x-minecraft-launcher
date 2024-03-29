@@ -61,6 +61,9 @@ diagnosis:
   incompatibleJava:
     message: 你可以選擇自己讓啓動器幫你下載，或者自己下載
     name: 版本 {mcversion} 可能不兼容 Java {java}!
+  instanceFiles:
+    description: 實例安裝包括 {counts} 個檔案。
+    title: 實例安裝未完成
   invalidJava:
     message: 請選擇一個有效的 Java 路徑.
     name: 當前 Java 路徑已經失效
@@ -397,9 +400,9 @@ resourcepack:
   name: 資源包 | 資源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
   selected: 已選資源包
+  shared: 實例使用共享資源包資料夾
   showFile: 在文件夾中顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
-  shared: 實例使用共享資源包資料夾
   unselected: 未選資源包
 save:
   copyFrom:
@@ -528,6 +531,7 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任務
+  connections: 網路連線
   empty: 目前沒有運行中的任務
   failed: 失敗
   manager: 任務管理器
