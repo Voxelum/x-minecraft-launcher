@@ -92,14 +92,6 @@ export function useLaunchButton() {
         menu: [userIssue.value],
         onClick: () => fixUserIssue(),
       }
-    } else if (versionIssues.value.length > 0) {
-      return {
-        icon: 'get_app',
-        text: t('install'),
-        color: 'blue',
-        menu: versionIssues.value,
-        onClick: () => fixVersionIssues(),
-      }
     } else if (filesIssue.value) {
       return {
         icon: 'get_app',
@@ -107,6 +99,14 @@ export function useLaunchButton() {
         color: 'blue',
         menu: [filesIssue.value],
         onClick: () => fixInstanceFileIssue(),
+      }
+    } else if (versionIssues.value.length > 0) {
+      return {
+        icon: 'get_app',
+        text: t('install'),
+        color: 'blue',
+        menu: versionIssues.value,
+        onClick: () => fixVersionIssues(),
       }
     } else if (javaIssue.value && !javaIssue.value.onClick) {
       return {

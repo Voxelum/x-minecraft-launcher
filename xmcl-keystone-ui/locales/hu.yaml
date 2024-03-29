@@ -187,7 +187,7 @@ diagnosis:
     name: A java verzió {javaVersion} nem felel meg a {version}-nak!
   instanceFiles:
     description: Ez lehet, hogy befejezetlen telepítés volt a múltkor
-    title: Fájlok telepítése példányokba
+    title: Befejezetlen példány
   invalidJava:
     message: Kattints egy másik java indításához.
     name: Érvénytelen java hely.
@@ -1043,9 +1043,9 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Keress és válassz forráscsomagot
   selected: Kiválasztott forráscsomagok
+  shared: Példány használja a megosztott erőforráscsomag mappát
   showFile: '{file} megjelenítése fájlkezelőben'
   showInCurseforge: '{name} megjelenítése curseforge-on'
-  shared: Példány használja a megosztott erőforráscsomag mappát
   unselected: Nem kiválasztott forráscsomagok
 save:
   copy:
@@ -1316,6 +1316,7 @@ tag:
 task:
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
+  connections: Hálózati kapcsolatok
   empty: Nincs futó folyamat
   failed: Sikertelen
   manager: Folyamatkezelő

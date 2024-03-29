@@ -8,8 +8,8 @@ export function useInstanceFilesDiagnose(instanceFiles: Ref<InstanceFile[]>, ins
 
   const issue = computed(() => instanceFiles.value.length > 0
     ? {
-      title: t('diagnosis.instanceFiles.title', { plural: 2, named: instanceFiles.value.length }),
-      description: t('diagnosis.instanceFiles.description'),
+      title: t('diagnosis.instanceFiles.title'),
+      description: t('diagnosis.instanceFiles.description', { counts: instanceFiles.value.length }),
     }
     : undefined)
 
