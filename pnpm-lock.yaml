@@ -446,8 +446,8 @@ importers:
         specifier: ^0.6.3
         version: 0.6.3
       jschardet:
-        specifier: github:aadsm/jschardet
-        version: github.com/aadsm/jschardet/f42d2628722df06dfba02f035c7f83e075b7d860
+        specifier: 3.1.2
+        version: 3.1.2
       kysely:
         specifier: ^0.26.1
         version: 0.26.1
@@ -7935,6 +7935,11 @@ packages:
     dependencies:
       argparse: 2.0.1
 
+  /jschardet@3.1.2:
+    resolution: {integrity: sha512-mw3CBZGzW8nUBPYhFU2ztZ/kJ6NClQUQVpyzvFMfznZsoC///ZQ30J2RCUanNsr5yF22LqhgYr/lj807/ZleWA==}
+    engines: {node: '>=0.1.90'}
+    dev: false
+
   /jsesc@0.5.0:
     resolution: {integrity: sha512-uZz5UnB7u4T9LvwmFqXii7pZSouaRPorGs5who1Ip7VO0wxanFvBL7GkM6dTHlgX+jhBApRetaWpnDabOeTcnA==}
     hasBin: true
@@ -11122,13 +11127,6 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
-
-  github.com/aadsm/jschardet/f42d2628722df06dfba02f035c7f83e075b7d860:
-    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/f42d2628722df06dfba02f035c7f83e075b7d860}
-    name: jschardet
-    version: 3.1.2
-    engines: {node: '>=0.1.90'}
-    dev: false
 
 settings:
   autoInstallPeers: true

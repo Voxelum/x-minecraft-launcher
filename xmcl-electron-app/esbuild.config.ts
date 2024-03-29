@@ -50,7 +50,7 @@ const config = {
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),
-    pluginJsdetect(),
+    // pluginJsdetect(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),
     pluginNode(),
     yamlPlugin({}) as any,
