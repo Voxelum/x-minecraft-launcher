@@ -56,7 +56,7 @@ const { data: allVersions, isValidating: loadingVersions } = useSWRV(computed(()
     const ver = await getSWRV(getFeedTheBeastVersionModel(ref(p.id), ref(v)), config)
     return ver
   }))
-  return result.filter((v): v is FTBModpackVersionManifest => !!v)
+  return result.filter((v): v is FTBModpackVersionManifest => !!v).toReversed()
 })
 const versions = computed(() => {
   return allVersions.value?.map(ver => {
