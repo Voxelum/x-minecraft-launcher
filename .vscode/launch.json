@@ -26,7 +26,9 @@
             "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/node_modules/.bin/electron",
             "skipFiles": [
                 "<node_internals>/**",
+                "**/node_modules/diagnostic-channel-publishers/**",
                 "${workspaceFolder}/xmcl-runtime/app/DummyLogger.ts",
+                "${workspaceFolder}/xmcl-runtime/uncaughtError/pluginUncaughtError.ts",
                 "${workspaceFolder}/xmcl-runtime/logger/pluginLogConsumer.ts"
             ],
             "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
