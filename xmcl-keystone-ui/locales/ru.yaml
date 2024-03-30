@@ -1243,6 +1243,13 @@ tag:
 task:
   cancelled: Отменено
   clear: Очистить завершенные задачи
+  connection:
+    connected: Связанный
+    free: Бесплатно
+    pending: В ожидании
+    queued: В очереди
+    running: Текущее соединение
+    size: общее количество
   connections: Сетевые соединения
   empty: Нет запущенных задач
   failed: Не удалось

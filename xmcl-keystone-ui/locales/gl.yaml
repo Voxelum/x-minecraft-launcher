@@ -259,4 +259,11 @@ setting:
     Isto ocultará a túa información privada como o correo electrónico no
     launcher.
 task:
+  connection:
+    connected: Conectado
+    free: Libre
+    pending: Pendente
+    queued: En cola
+    running: Conexión en execución
+    size: reconto total
   connections: Conexións de rede

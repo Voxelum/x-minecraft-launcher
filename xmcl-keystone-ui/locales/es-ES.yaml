@@ -974,6 +974,13 @@ tag:
 task:
   cancelled: Cancelada
   clear: Borrar tareas terminadas
+  connection:
+    connected: Conectado
+    free: Gratis
+    pending: Pendiente
+    queued: Puesto en cola
+    running: Conexión en ejecución
+    size: cuenta total
   connections: Conexiones de red
   empty: No hay Tareas en Ejecución
   failed: Fallida

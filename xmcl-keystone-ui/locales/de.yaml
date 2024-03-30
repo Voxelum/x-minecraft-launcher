@@ -1367,6 +1367,13 @@ tag:
 task:
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
+  connection:
+    connected: In Verbindung gebracht
+    free: Frei
+    pending: Ausstehend
+    queued: In Warteschlange
+    running: Laufende Verbindung
+    size: komplette Anzahl
   connections: Netzwerkverbindungen
   empty: Keine Aufgaben laufen
   failed: Gescheitert

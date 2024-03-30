@@ -1325,6 +1325,13 @@ tag:
 task:
   cancelled: Annulé
   clear: Effacer les tâches terminées
+  connection:
+    connected: Connecté
+    free: Gratuit
+    pending: En attente
+    queued: En file d'attente
+    running: Connexion en cours
+    size: le compte total
   connections: Les connexions de réseau
   empty: Aucune tâche en cours d'exécution
   failed: Échec

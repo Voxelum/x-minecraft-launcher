@@ -1280,6 +1280,13 @@ tag:
 task:
   cancelled: Cancelled
   clear: Clear Finished Tasks
+  connection:
+    connected: Connected
+    free: Free
+    pending: Pending
+    queued: Queued
+    running: Running connection
+    size: total count
   connections: Network Connections
   empty: No Running Tasks
   failed: Failed

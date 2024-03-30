@@ -1,38 +1,30 @@
 import { DefaultRangePolicy, createRedirectInterceptor, getDefaultAgentOptions } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
-import { ClassicLevel } from 'classic-level'
-import { join } from 'path'
-import { Agent, Dispatcher, Pool, setGlobalDispatcher, CacheStorage, buildConnector } from 'undici'
+import { setTimeout as timeout } from 'timers/promises'
+import { Agent, Dispatcher, Pool, RetryAgent, buildConnector, setGlobalDispatcher } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
-import { CacheDispatcher, JsonCacheStorage } from './dispatchers/cacheDispatcher'
-import { DispatchInterceptor, createInterceptOptionsInterceptor } from './dispatchers/dispatcher'
-import { ProxyAgent, ProxySettingController } from './dispatchers/proxyDispatcher'
-import { buildHeaders } from './dispatchers/utils'
+import { NetworkAgent, ProxySettingController } from './dispatchers/NetworkAgent'
+import { createInterceptOptionsInterceptor } from './dispatchers/dispatcher'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kUserAgent } from './userAgent'
-import { setTimeout as timeout } from 'timers/promises'
 
 type DispatchOptions = Dispatcher.DispatchOptions
 
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
-  const cachePath = join(app.appDataPath, 'undici-cache')
-  const cache = new ClassicLevel(cachePath, {
-    valueEncoding: 'json',
-  })
   const logger = app.getLogger('NetworkInterface')
   const version = IS_DEV ? '0.0.0' : app.version
   const userAgent = `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
   app.registry.register(kUserAgent, userAgent)
 
   const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
-  const dispatchInterceptors: Array<(opts: DispatchOptions) => void | Promise<void>> = []
+  const dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
 
   let maxConnection = 64
   const connectorOptions: buildConnector.BuildOptions = {
-    timeout: 10_000,
+    timeout: 25_000,
     rejectUnauthorized: false,
     autoSelectFamily: true,
     autoSelectFamilyAttemptTimeout: 850,
@@ -72,24 +64,15 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     }
     return dispatcher
   }
-  const appendUserAgent: DispatchInterceptor = (options) => {
-    const headers = buildHeaders(options.headers || {})
-    if (!headers['user-agent']) {
-      headers['user-agent'] = userAgent
-    }
-    options.headers = headers
-  }
-
-  const apiDispatcher = new CacheDispatcher(new ProxyAgent({
-    controller: proxy,
+  const apiDispatcher = new NetworkAgent({
+    userAgent,
+    retryOptions: {},
+    dispatchInterceptors,
     factory: (connect) => new Agent({
-      interceptors: {
-        Client: [createInterceptOptionsInterceptor([appendUserAgent, ...dispatchInterceptors]), createRedirectInterceptor(5)],
-      },
       pipelining: 1,
       bodyTimeout: 20_000,
-      headersTimeout: 10_000,
-      connectTimeout: 45_000,
+      headersTimeout: 40_000,
+      maxRedirections: 5,
       connect,
       factory(origin, opts: Agent.Options) {
         let dispatcher: Dispatcher | undefined
@@ -100,7 +83,8 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     }),
     proxyTls: connectorOptions,
     requestTls: connectorOptions,
-  }), new JsonCacheStorage(cache))
+  })
+  proxy.add(apiDispatcher)
   setGlobalDispatcher(apiDispatcher)
 
   function calculateRetryAfterHeader(retryAfter: number) {
@@ -110,111 +94,102 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     return diff
   }
 
-  const downloadAgentOptions = getDefaultAgentOptions({
-    maxTimeout: 60_000,
-    maxRetries: 30,
-    // @ts-ignore
-    retry: (err, { state, opts }, cb) => {
-      const { statusCode, code, headers } = err as any
-      const { method, retryOptions } = opts
-      const {
-        maxRetries,
-        timeout,
-        maxTimeout,
-        timeoutFactor,
-        statusCodes,
-        errorCodes,
-        methods,
-      } = retryOptions! as any
-      let { counter, currentTimeout } = state
+  const downloadProxy = new NetworkAgent({
+    userAgent,
+    retryOptions: {
+      maxTimeout: 60_000,
+      maxRetries: 30,
+      // @ts-ignore
+      retry: (err, { state, opts }, cb) => {
+        const { statusCode, code, headers } = err as any
+        const { method, retryOptions } = opts
+        const {
+          maxRetries,
+          minTimeout,
+          maxTimeout,
+          timeoutFactor,
+          statusCodes,
+          errorCodes,
+          methods,
+        } = retryOptions! as any
+        const { counter } = state
 
-      currentTimeout =
-        currentTimeout != null && currentTimeout > 0 ? currentTimeout : timeout
+        // Any code that is not a Undici's originated and allowed to retry
+        if (
+          code &&
+          code !== 'UND_ERR_REQ_RETRY' &&
+          code !== 'UND_ERR_SOCKET' &&
+          !errorCodes!.includes(code)
+        ) {
+          if (code !== 'UND_ERR_CONNECT_TIMEOUT') {
+            cb(err)
+            return
+          }
+          // Check if there are connection with the same origin
+          // If there are, this error is usually due to high traffic, and we should retry
+          // @ts-ignore
+          const clients = downloadProxy.agent[kClients] as Map<string, Pool>
+          if (!opts.origin) {
+            cb(err)
+            return
+          }
+          const pool = clients.get(typeof opts.origin === 'string' ? opts.origin : opts.origin.origin)
+          const stats = pool?.stats
+          if (!stats?.connected && !stats?.pending && !stats?.running && !stats?.queued && !stats?.free) {
+            cb(err)
+            return
+          }
+        }
 
-      // Any code that is not a Undici's originated and allowed to retry
-      if (
-        code &&
-        code !== 'UND_ERR_REQ_RETRY' &&
-        code !== 'UND_ERR_SOCKET' &&
-        !errorCodes!.includes(code)
-      ) {
-        if (code !== 'UND_ERR_CONNECT_TIMEOUT') {
+        // If a set of method are provided and the current method is not in the list
+        if (Array.isArray(methods) && !methods.includes(method)) {
           cb(err)
           return
         }
-        // Check if there are connection with the same origin
-        // If there are, this error is usually due to high traffic, and we should retry
-        // @ts-ignore
-        const clients = downloadProxy.agent[kClients] as Map<string, Pool>
-        if (!opts.origin) {
+
+        // If a set of status code are provided and the current status code is not in the list
+        if (
+          statusCode != null &&
+          Array.isArray(statusCodes) &&
+          !statusCodes.includes(statusCode)
+        ) {
           cb(err)
           return
         }
-        const pool = clients.get(typeof opts.origin === 'string' ? opts.origin : opts.origin.origin)
-        const stats = pool?.stats
-        if (!stats?.connected && !stats?.pending && !stats?.running && !stats?.queued && !stats?.free) {
+
+        // If we reached the max number of retries
+        if (counter > maxRetries) {
           cb(err)
           return
         }
-      }
 
-      // If a set of method are provided and the current method is not in the list
-      if (Array.isArray(methods) && !methods.includes(method)) {
-        cb(err)
-        return
-      }
+        let retryAfterHeader = headers?.['retry-after']
+        if (retryAfterHeader) {
+          retryAfterHeader = Number(retryAfterHeader)
+          retryAfterHeader = Number.isNaN(retryAfterHeader)
+            ? calculateRetryAfterHeader(retryAfterHeader)
+            : retryAfterHeader * 1e3 // Retry-After is in seconds
+        }
 
-      // If a set of status code are provided and the current status code is not in the list
-      if (
-        statusCode != null &&
-        Array.isArray(statusCodes) &&
-        !statusCodes.includes(statusCode)
-      ) {
-        cb(err)
-        return
-      }
+        const retryTimeout =
+          retryAfterHeader > 0
+            ? Math.min(retryAfterHeader, maxTimeout)
+            : Math.min(minTimeout * timeoutFactor ** (counter - 1), maxTimeout)
 
-      // If we reached the max number of retries
-      if (counter > (maxRetries ?? 5)) {
-        cb(err)
-        return
-      }
-
-      let retryAfterHeader = headers?.['retry-after']
-      if (retryAfterHeader) {
-        retryAfterHeader = Number(retryAfterHeader)
-        retryAfterHeader = Number.isNaN(retryAfterHeader)
-          ? calculateRetryAfterHeader(retryAfterHeader)
-          : retryAfterHeader * 1e3 // Retry-After is in seconds
-      }
-
-      const retryTimeout =
-        retryAfterHeader > 0
-          ? Math.min(retryAfterHeader, (maxTimeout!))
-          : Math.min(currentTimeout * timeoutFactor! ** counter, maxTimeout!)
-
-      state.currentTimeout = retryTimeout
-
-      setTimeout(() => cb(null), retryTimeout)
-    },
-  })
-  const downloadProxy = new ProxyAgent({
-    controller: proxy,
-    factory: (connect) => new Agent({
-      connections: downloadAgentOptions.connections,
-      interceptors: {
-        Agent: [...downloadAgentOptions.interceptors.Agent],
-        Client: [...downloadAgentOptions.interceptors.Client],
+        setTimeout(() => cb(null), retryTimeout)
       },
+    },
+    factory: (connect) => new Agent({
       headersTimeout: 45_000,
-      connectTimeout: 45_000,
       bodyTimeout: 60_000,
+      maxRedirections: 5,
       connect,
       factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),
     }),
     proxyTls: connectorOptions,
     requestTls: connectorOptions,
   })
+  proxy.add(downloadProxy)
   app.registry.register(kDownloadOptions, {
     rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
     dispatcher: downloadProxy,
@@ -224,7 +199,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       delete: async (url) => { },
     },
     headers: {
-      'user-agent': userAgent,
     },
   })
 
@@ -252,11 +226,20 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       // @ts-ignore
       const clients = downloadProxy.agent[kClients] as Map<string, Dispatcher>
       const pool = clients.get(url.origin)
-      // @ts-ignore
-      const running = pool?.[kRunning]
-      if (running && running === 0) {
-        pool?.close()
-        clients.delete(url.origin)
+      if (pool instanceof Pool) {
+        const stats = pool?.stats
+        if (!stats?.connected && !stats?.pending && !stats?.running && !stats?.queued && !stats?.free) {
+          pool?.close()
+          clients.delete(url.origin)
+        }
+      } else {
+        // @ts-ignore
+        const running = pool?.[kRunning]
+
+        if (typeof running === 'number' && running === 0) {
+          pool?.close()
+          clients.delete(url.origin)
+        }
       }
     }, 60_000)
   })
@@ -279,9 +262,5 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       })
       clients.delete(origin)
     },
-  })
-
-  app.registryDisposer(async () => {
-    await cache.close()
   })
 }

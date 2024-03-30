@@ -26,9 +26,6 @@ export class VersionMetadataService extends AbstractService implements IVersionM
     @Inject(kSettings) private settings: MutableState<Settings>,
   ) {
     super(app, async () => {
-      this.getFabricVersionList()
-      this.getMinecraftVersionList()
-      this.getOptifineVersionList()
     })
 
     networkInterface.registerOptionsInterceptor((options) => {

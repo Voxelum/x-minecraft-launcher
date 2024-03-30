@@ -19,7 +19,6 @@ import { joinUrl } from '~/util/url'
 import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
 import { missing } from '../util/fs'
-import { VersionMetadataService } from './VersionMetadataService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -35,7 +34,6 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(kSettings) private settings: MutableState<Settings>,
     @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(VersionMetadataService) private versionMetadataService: VersionMetadataService,
   ) {
     super(app)
   }
@@ -141,18 +139,17 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v) => [LockKey.version(v), LockKey.assets])
-  async installAssetsForVersion(version: string) {
+  async installAssetsForVersion(version: string, fallbackVersionMetadata: MinecraftVersion[] = []) {
     const option = this.getInstallOptions()
     const location = MinecraftFolder.from(this.getPath())
     try {
       // This special logic is handling the asset index outdate issue.
       // The asset index is not updated when the minecraft version is updated.
       let resolvedVersion = await Version.parse(location, version)
-      const list = await this.versionMetadataService.getMinecraftVersionList()
-      let versionMeta = list.versions.find(v => v.id === resolvedVersion.minecraftVersion)
+      let versionMeta = fallbackVersionMetadata.find(v => v.id === resolvedVersion.minecraftVersion)
       let unofficial = false
       if (!versionMeta) {
-        versionMeta = list.versions.find(v => v.id === resolvedVersion.assets)
+        versionMeta = fallbackVersionMetadata.find(v => v.id === resolvedVersion.assets)
         unofficial = true
       }
       if (versionMeta) {

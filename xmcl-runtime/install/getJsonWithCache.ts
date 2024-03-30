@@ -1,5 +1,4 @@
 import { request } from 'undici'
-import { isWithCache, kCacheKey } from '~/network/dispatchers/cacheDispatcher'
 import { AnyError } from '~/util/error'
 
 export async function getJson<T>(url: string, error: string) {
@@ -27,10 +26,6 @@ export async function getJson<T>(url: string, error: string) {
       })
     }
   } catch (e) {
-    if (isWithCache(e)) {
-      return e[kCacheKey].getBodyJson() as T
-    }
-
     if (e instanceof AnyError) {
       throw e
     }

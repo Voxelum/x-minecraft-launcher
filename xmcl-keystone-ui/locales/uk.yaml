@@ -5,4 +5,11 @@ diagnosis:
 resourcepack:
   shared: Екземпляр використовує спільну папку пакета ресурсів
 task:
+  connection:
+    connected: Підключено
+    free: безкоштовно
+    pending: В очікуванні
+    queued: У черзі
+    running: Запущене підключення
+    size: загальна кількість
   connections: Мережеві підключення

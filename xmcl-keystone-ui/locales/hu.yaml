@@ -1316,6 +1316,13 @@ tag:
 task:
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
+  connection:
+    connected: csatlakoztatva
+    free: Ingyenes
+    pending: Függőben levő
+    queued: Sorban
+    running: Futó kapcsolat
+    size: teljes számlálás
   connections: Hálózati kapcsolatok
   empty: Nincs futó folyamat
   failed: Sikertelen

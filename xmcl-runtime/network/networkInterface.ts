@@ -8,7 +8,7 @@ export const kDownloadOptions : InjectionKey<DownloadBaseOptions> = Symbol('Down
 
 export interface NetworkInterface {
   registerClientFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined): Dispatcher
-  registerOptionsInterceptor(interceptor: (opts: Dispatcher.DispatchOptions) => void | Promise<void>): void
+  registerOptionsInterceptor(interceptor: (opts: Dispatcher.DispatchOptions) => void): void
   getDownloadAgentStatus(): Record<string, PoolStats>
   destroyPool(origin: string): Promise<void>
 }

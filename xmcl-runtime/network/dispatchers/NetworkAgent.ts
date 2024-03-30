@@ -1,11 +1,6 @@
-/* eslint-disable no-dupe-class-members */
 import { Socket } from 'net'
-import { TlsOptions } from 'tls'
-import { Agent, buildConnector, Client, errors, Dispatcher } from 'undici'
-import { kClose, kDestroy } from 'undici/lib/core/symbols'
-import DispatcherBase from 'undici/lib/dispatcher/dispatcher-base'
+import { Agent, Client, Dispatcher, RetryHandler, buildConnector, errors, util } from 'undici'
 import { URL } from 'url'
-import { buildHeaders } from './utils'
 
 type DispatchHandlers = Dispatcher.DispatchHandlers
 const { InvalidArgumentError, RequestAbortedError } = errors
@@ -42,20 +37,26 @@ export class ProxySettingController {
 /**
  * Implement mutable proxy
  */
-export class ProxyAgent extends DispatcherBase {
+export class NetworkAgent extends Dispatcher {
   readonly agent: Agent
 
   private isProxyEnabled = false
+  private proxyUri?: URL
   private proxyClient?: Client
   private proxyHeader?: Record<string, string>
 
   private pConnect: buildConnector.connector
-  private _connect: buildConnector.connector
+  private rConnect: buildConnector.connector
   private requestTls?: buildConnector.BuildOptions
   private proxyTls?: buildConnector.BuildOptions
 
+  #userAgent: string
+  #retryOptions: RetryHandler.RetryOptions
+  #dispatchInterceptors?: Array<(opts: Dispatcher.DispatchOptions) => void>
+
   async setProxy(uri: URL, auth?: string) {
     const oldClient = this.proxyClient
+    this.proxyUri = uri
     this.proxyClient = new Client(uri, { connect: this.pConnect })
     if (auth) {
       this.proxyHeader = {
@@ -73,27 +74,38 @@ export class ProxyAgent extends DispatcherBase {
 
   setConnectTimeout(timeout: number) {
     this.pConnect = buildConnector({ timeout, ...this.proxyTls || {} })
-    this._connect = buildConnector({ timeout, ...this.requestTls || {} })
+    this.rConnect = buildConnector({ timeout, ...this.requestTls || {} })
+    const oldClient = this.proxyClient
+    if (this.proxyUri) {
+      this.proxyClient = new Client(this.proxyUri, { connect: this.pConnect })
+    }
+    if (oldClient) {
+      oldClient.close()
+    }
   }
 
   constructor(opts: {
-    controller: ProxySettingController
+    userAgent: string
+    retryOptions: RetryHandler.RetryOptions
+    dispatchInterceptors?: Array<(opts: Dispatcher.DispatchOptions) => void>
     factory: (connect: buildConnector.connector) => Agent
     requestTls?: buildConnector.BuildOptions
     proxyTls?: buildConnector.BuildOptions
   }) {
     super()
 
-    opts.controller.add(this)
+    this.#retryOptions = opts.retryOptions
+    this.#userAgent = opts.userAgent
+    this.#dispatchInterceptors = opts.dispatchInterceptors
     this.requestTls = opts.requestTls
     this.proxyTls = opts.proxyTls
 
     this.pConnect = buildConnector(opts.proxyTls)
-    this._connect = buildConnector(opts.requestTls)
+    this.rConnect = buildConnector(opts.requestTls)
 
     const connect = async (opts: any, callback: buildConnector.Callback) => {
       if (!this.isProxyEnabled || !this.proxyClient) {
-        this._connect(opts, callback)
+        this.rConnect(opts, callback)
         return
       }
       let requestedHost = opts.host
@@ -118,7 +130,7 @@ export class ProxyAgent extends DispatcherBase {
           return
         }
         const servername = opts.servername
-        this._connect({
+        this.rConnect({
           ...opts,
           servername,
           httpSocket: socket,
@@ -133,8 +145,29 @@ export class ProxyAgent extends DispatcherBase {
 
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
     const { host } = new URL(opts.origin as string)
-    const headers = buildHeaders(opts.headers || {})
+    const headers = util.parseHeaders(opts.headers as any)
+    headers['user-agent'] = this.#userAgent
+
+    if (this.#dispatchInterceptors) {
+      for (const interceptor of this.#dispatchInterceptors) {
+        interceptor(opts)
+      }
+    }
+
     throwIfProxyAuthIsSent(headers)
+
+    const retry = new RetryHandler({
+      ...opts,
+      method: opts.method,
+      headers: {
+        ...headers,
+        host,
+      },
+      retryOptions: this.#retryOptions,
+    }, {
+      dispatch: this.agent.dispatch.bind(this.agent),
+      handler,
+    })
 
     return this.agent.dispatch(
       {
@@ -145,18 +178,8 @@ export class ProxyAgent extends DispatcherBase {
           host,
         },
       },
-      handler,
+      retry,
     )
-  }
-
-  async [kClose]() {
-    await this.agent.close()
-    await this.proxyClient?.close()
-  }
-
-  async [kDestroy]() {
-    await this.agent.destroy()
-    await this.proxyClient?.destroy()
   }
 }
 

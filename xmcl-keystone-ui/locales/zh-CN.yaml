@@ -1221,6 +1221,13 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任务
+  connection:
+    connected: 已连接
+    free: 空闲
+    pending: 等待
+    queued: 排队中
+    running: 连接中
+    size: 总数
   connections: 网络连接
   empty: 目前没有运行中的任务
   failed: 失败

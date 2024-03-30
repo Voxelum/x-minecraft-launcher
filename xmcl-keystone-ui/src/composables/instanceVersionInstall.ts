@@ -1,11 +1,10 @@
-import { injection } from '@/util/inject'
 import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
-import { useService } from './service'
-import { kSWRVConfig } from './swrvConfig'
 import { Ref } from 'vue'
+import { useCacheFetch } from './cache'
+import { useService } from './service'
 
 export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
-  const { cache } = injection(kSWRVConfig)
+  const getCacheOrFetch = useCacheFetch()
   const {
     installForge,
     installNeoForged,
@@ -25,15 +24,6 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     getLabyModManifest,
   } = useService(VersionMetadataServiceKey)
 
-  const getCacheOrFetch = async <T>(key: string, fetcher: () => Promise<T>) => {
-    const cached = cache.get(key)
-    if (cached && cached.data?.data) {
-      return cached.data.data as T
-    }
-    const data = await fetcher()
-    cache.set(key, data, 1000 * 60 * 60 * 24)
-    return data
-  }
   async function install(runtime: RuntimeVersions) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())

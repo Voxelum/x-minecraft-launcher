@@ -531,6 +531,13 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任務
+  connection:
+    connected: 連接的
+    free: 空闲
+    pending: 等待
+    queued: 排隊中
+    running: 連接中
+    size: 總數
   connections: 網路連線
   empty: 目前沒有運行中的任務
   failed: 失敗

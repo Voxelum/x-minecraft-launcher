@@ -101,8 +101,9 @@ export interface InstallService {
   /**
    * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
+   * @param fallbackVersionMetadata The fallback version metadata to fix the assets if the version is outdated
    */
-  installAssetsForVersion(version: string): Promise<void>
+  installAssetsForVersion(version: string, fallbackVersionMetadata?: MinecraftVersion[]): Promise<void>
   installDependencies(version: string): Promise<void>
   /**
    * Install labymod to a minecraft version

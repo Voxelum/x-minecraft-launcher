@@ -27,7 +27,7 @@
       </template>
     </v-toolbar>
 
-    <v-card-text class="max-h-[400px] overflow-auto">
+    <v-card-text class="visible-scroll max-h-[400px] overflow-auto">
       <v-tabs-items v-model="tab">
         <v-tab-item
           :key="0"
@@ -100,8 +100,25 @@
                 <v-list-item-title>
                   {{ o }}
                 </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ s }}
+                <v-list-item-subtitle class="flex gap-3">
+                  <span>
+                    {{ t('task.connection.connected') }}: {{ s.connected }}
+                  </span>
+                  <span>
+                    {{ t('task.connection.free') }}: {{ s.free }}
+                  </span>
+                  <span>
+                    {{ t('task.connection.pending') }}: {{ s.pending }}
+                  </span>
+                  <span>
+                    {{ t('task.connection.queued') }}: {{ s.queued }}
+                  </span>
+                  <span>
+                    {{ t('task.connection.running') }}: {{ s.running }}
+                  </span>
+                  <span>
+                    {{ t('task.connection.size') }}: {{ s.size }}
+                  </span>
                 </v-list-item-subtitle>
               </v-list-item-content>
               <v-list-item-action>
