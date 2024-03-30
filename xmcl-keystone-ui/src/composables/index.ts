@@ -1,7 +1,6 @@
 export * from './i18n'
 export * from './router'
 export * from './saveLoad'
-export * from './selectionList'
 export * from './protocol'
 export * from './service'
 export * from './operation'

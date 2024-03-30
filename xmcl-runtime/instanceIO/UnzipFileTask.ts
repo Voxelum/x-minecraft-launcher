@@ -46,18 +46,31 @@ export class UnzipFileTask extends AbortableTask<void> {
       this.#zipInstances[zip] = [zipInstance, reocrd]
     }
 
-    const promises = [] as Promise<void>[]
+    const promises = [] as Promise<unknown>[]
     for (const { zipPath, entryName, destination } of queue) {
       const [zip, entries] = this.#zipInstances[zipPath]
       const entry = entries[entryName]
       if (entry) {
-        promises.push(this.#processEntry(zip, entry, destination))
+        promises.push(this.#processEntry(zip, entry, destination).catch((e) => {
+          return Object.assign(e, {
+            zipEntry: entry,
+            zipPath,
+          })
+        }))
       }
     }
-    await Promise.all(promises)
+    const errors = (await Promise.all(promises)).filter(e => !!e)
 
     for (const [zipPath, [zip]] of Object.entries(this.#zipInstances)) {
       zip.close()
+    }
+
+    if (errors.length > 0) {
+      if (errors.length > 1) {
+        throw new AggregateError(errors)
+      }
+
+      throw errors[0]
     }
   }
 

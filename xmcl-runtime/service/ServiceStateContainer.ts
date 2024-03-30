@@ -126,11 +126,16 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   }
 
   untrack(client: Client) {
-    const [[_, handler]] = this.#clients.splice(this.#clients.findIndex(c => c[0] === client), 1)
-    this.emitter.off('*', handler as any)
-    if (this.#clients.length === 0 && !this.#static) {
-      this.destroy()
-      return true
+    const index = this.#clients.findIndex(c => c[0] === client)
+    if (index === -1) return false
+    const deleted = this.#clients.splice(index, 1)
+    if (deleted[0]) {
+      const [_, handler] = deleted[0]
+      this.emitter.off('*', handler as any)
+      if (this.#clients.length === 0 && !this.#static) {
+        this.destroy()
+        return true
+      }
     }
     return false
   }
