@@ -37,9 +37,9 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return profile
   }
 
-  async refresh(user: UserProfile, signal: AbortSignal, slientOnly = false): Promise<UserProfile> {
+  async refresh(user: UserProfile, signal: AbortSignal, slientOnly = false, force = false): Promise<UserProfile> {
     const diff = Date.now() - user.expiredAt
-    if (!user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated) {
+    if (force || !user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated) {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
       try {
@@ -51,7 +51,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         user.invalidated = false
         await this.userTokenStorage.put(user, accessToken)
       } catch (e) {
-        this.logger.error(new Error(`Fail to refresh ${user.username}`, { cause: e }))
+        this.logger.error(e as any)
         user.invalidated = true
         await this.userTokenStorage.put(user, '')
       }

@@ -112,7 +112,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
   }
 
-  async refresh(userProfile: UserProfile, signal?: AbortSignal): Promise<UserProfile> {
+  async refresh(userProfile: UserProfile, signal?: AbortSignal, _ = false, force = false): Promise<UserProfile> {
     const client = this.getClient(userProfile.authority)
 
     const token = await this.storage.get(userProfile)
@@ -126,7 +126,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     this.logger.log(`Validate ${userProfile.authority} user access token: ${valid ? 'valid' : 'invalid'}`)
 
-    if (!valid) {
+    if (!valid || force) {
       try {
         const result = await client.refresh({
           accessToken: token,

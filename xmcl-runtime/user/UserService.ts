@@ -157,7 +157,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
    * Refresh the current user login status
    */
   @Lock('refreshUser')
-  async refreshUser(userId: string, slientOnly = false) {
+  async refreshUser(userId: string, slientOnly = false, force = false) {
     const user = this.state.users[userId]
 
     if (!user) {
@@ -168,7 +168,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
     this.refreshController = new AbortController()
 
-    const newUser = await system.refresh(user, this.refreshController.signal, slientOnly).finally(() => {
+    const newUser = await system.refresh(user, this.refreshController.signal, slientOnly, force).finally(() => {
       this.refreshController = undefined
     })
 

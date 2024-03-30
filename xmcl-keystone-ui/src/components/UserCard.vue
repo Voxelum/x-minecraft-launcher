@@ -19,7 +19,7 @@
               :refreshing="refreshing"
               @remove="onShowDeleteDialog()"
               @abort-refresh="abortRefresh()"
-              @refresh="onRefresh()"
+              @refresh="onRefresh(true)"
             />
           </v-list>
 
@@ -93,6 +93,7 @@
     </transition>
     <DeleteDialog
       dialog="user-delete"
+      :width="400"
       :title="t('userAccount.removeTitle')"
       @confirm="onRemoveUser"
     >
@@ -126,24 +127,31 @@ const onSelectUser = (user: string) => {
   select(user)
 }
 const login = ref(users.value.length === 0)
-const { refresh: onRefresh, refreshing, error } = useRefreshable(async () => {
-  if (users.value.length === 0) {
-    login.value = true
-  } else {
+const refreshing = ref(false)
+
+async function onRefresh(force = false) {
+  refreshing.value = true
+  try {
+    if (users.value.length === 0) {
+      login.value = true
+      return
+    }
     if (!selected.value.id) {
       select(users.value[0].id)
     }
     if (selected.value?.id || selected.value.invalidated || expired.value) {
       // Try to refresh
       const authority = selected.value?.authority
-      await refreshUser(selected.value.id).catch((e) => {
+      await refreshUser(selected.value.id, false, true).catch((e) => {
         console.error(e)
         reset({ username: selected.value?.username, authority, error: t('login.userRelogin') })
         login.value = true
       })
     }
+  } finally {
+    refreshing.value = false
   }
-})
+}
 
 watch(() => props.show, (s) => {
   if (!s) return
