@@ -25,6 +25,7 @@ export default function createWorkerPlugin(): Plugin {
           metafile: true,
           entryNames: '[dir]/[name].worker',
           assetNames: '[name]',
+          loader: build.initialOptions.loader,
           entryPoints: [absoltePath],
           treeShaking: true,
           define: build.initialOptions.define,

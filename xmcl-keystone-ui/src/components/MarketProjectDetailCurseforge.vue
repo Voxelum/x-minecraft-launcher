@@ -334,6 +334,7 @@ const onOpenDependency = (dep: ProjectDependency) => {
 const onRefresh = () => {
   mutate()
 }
+
 </script>
 <template>
   <MarketProjectDetail
@@ -350,6 +351,7 @@ const onRefresh = () => {
     :curseforge="curseforgeId"
     :modrinth="modrinth"
     :loading-dependencies="loadingDependencies"
+    current-target="curseforge"
     @load-changelog="loadChangelog"
     @delete="onDelete"
     @enable="enabled = $event"

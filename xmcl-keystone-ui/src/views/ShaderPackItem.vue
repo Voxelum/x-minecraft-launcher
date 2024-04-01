@@ -16,7 +16,6 @@
 import { ShaderPackProject } from '@/composables/shaderPackSearch'
 import MarketItem from '@/components/MarketItem.vue'
 import { ContextMenuItem } from '@/composables/contextMenu'
-import { useMarketRoute } from '@/composables/useMarketRoute'
 import { BaseServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
@@ -35,13 +34,12 @@ const emit = defineEmits<{
   (event: 'install', pack: ShaderPackProject): void
 }>()
 
-const { goModrinthProject } = useMarketRoute()
 const { t } = useI18n()
 const { removeResources } = useService(ResourceServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
-  const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
+  // const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
   if (props.pack.installed.length > 0) {
     all.push({
       text: t('delete.name', { name: props.pack.title }),
@@ -58,15 +56,15 @@ const getContextMenuItems = () => {
       icon: 'folder',
     })
   }
-  if (id) {
-    all.push({
-      text: t('mod.showInModrinth'),
-      onClick: () => {
-        goModrinthProject(id)
-      },
-      icon: '$vuetify.icons.modrinth',
-    })
-  }
+  // if (id) {
+  //   all.push({
+  //     text: t('mod.showInModrinth'),
+  //     onClick: () => {
+  //       goModrinthProject(id)
+  //     },
+  //     icon: '$vuetify.icons.modrinth',
+  //   })
+  // }
   return all
 }
 

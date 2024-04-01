@@ -6,6 +6,7 @@ import { hashAndFiletypeResource, hashResource } from './core/hashResource'
 import { ResourceParser } from './parsers'
 import { setHandler } from '../worker/helper'
 import type { ResourceWorker } from './worker'
+import { fingerprint } from './fingerprint'
 
 gracefulify(fs)
 
@@ -13,6 +14,7 @@ const parser = new ResourceParser()
 
 const handlers: ResourceWorker = {
   checksum: (path, algorithm) => checksum(path, algorithm),
+  fingerprint,
   hash: (file, size) => hashResource(file, size),
   parse: (args) => parser.parse(args),
   async copyPassively(files): Promise<void> {

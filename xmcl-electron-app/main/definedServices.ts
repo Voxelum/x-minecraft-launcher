@@ -1,6 +1,7 @@
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { BaseService } from '@xmcl/runtime/base'
 import { CurseForgeService } from '@xmcl/runtime/curseforge'
+import { ElyByService } from '@xmcl/runtime/elyby'
 import { ImportService } from '@xmcl/runtime/import'
 import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, InstanceService } from '@xmcl/runtime/instance'
@@ -8,7 +9,7 @@ import { InstanceIOService, InstanceInstallService, InstanceManifestService, Ins
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
 import { InstanceModsService } from '@xmcl/runtime/mod'
-import { ElyByService } from '@xmcl/runtime/elyby'
+import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { ModrinthService } from '@xmcl/runtime/modrinth'
 import { NatService } from '@xmcl/runtime/nat'
@@ -19,9 +20,9 @@ import { InstanceResourcePackService, ResourcePackPreviewService } from '@xmcl/r
 import { InstanceSavesService } from '@xmcl/runtime/save'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { InstanceShaderPacksService } from '@xmcl/runtime/shaderPack'
+import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService, YggdrasilService } from '@xmcl/runtime/user'
 import { VersionService } from '@xmcl/runtime/version'
-import { ThemeService } from '@xmcl/runtime/theme'
 
 export const definedServices = [
   VersionMetadataService,
@@ -57,6 +58,7 @@ export const definedServices = [
   VersionService,
   YggdrasilService,
   InstanceInstallService,
+  ModMetadataService,
   PeerService,
   PeerGroupService,
   ThemeService,

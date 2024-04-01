@@ -50,7 +50,6 @@ import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
 import { ResourcePackProject } from '@/composables/resourcePackSearch'
-import { useMarketRoute } from '@/composables/useMarketRoute'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
@@ -92,7 +91,6 @@ const tooltip = computed(() => compatible.value
     format: props.pack.installed[0].pack_format,
   }))
 
-const { goModrinthProject, searchInCurseforge, searchInModrinth, goCurseforgeProject } = useMarketRoute()
 const { t } = useI18n()
 const { removeResources } = useService(ResourceServiceKey)
 
@@ -111,41 +109,41 @@ const getContextMenuItems = () => {
     })
   }
 
-  if (props.pack.curseforgeProjectId || props.pack.curseforge) {
-    all.push({
-      text: t('resourcepack.showInCurseforge', { name: props.pack.title }),
-      onClick: () => {
-        goCurseforgeProject(props.pack.curseforgeProjectId || props.pack.curseforge?.id || 0, 'texture-packs')
-      },
-      icon: '$vuetify.icons.curseforge',
-    })
-  } else {
-    all.push({
-      text: t('resourcepack.searchOnCurseforge', { name: props.pack.title }),
-      onClick: () => {
-        searchInCurseforge(props.pack.title, 'texture-packs')
-      },
-      icon: 'search',
-    })
-  }
+  // if (props.pack.curseforgeProjectId || props.pack.curseforge) {
+  //   all.push({
+  //     text: t('resourcepack.showInCurseforge', { name: props.pack.title }),
+  //     onClick: () => {
+  //       goCurseforgeProject(props.pack.curseforgeProjectId || props.pack.curseforge?.id || 0, 'texture-packs')
+  //     },
+  //     icon: '$vuetify.icons.curseforge',
+  //   })
+  // } else {
+  //   all.push({
+  //     text: t('resourcepack.searchOnCurseforge', { name: props.pack.title }),
+  //     onClick: () => {
+  //       searchInCurseforge(props.pack.title, 'texture-packs')
+  //     },
+  //     icon: 'search',
+  //   })
+  // }
 
-  if (props.pack.modrinthProjectId || props.pack.modrinth) {
-    all.push({
-      text: t('mod.showInModrinth', { name: props.pack.title }),
-      onClick: () => {
-        goModrinthProject(props.pack.modrinthProjectId || props.pack.modrinth?.project_id || '')
-      },
-      icon: '$vuetify.icons.modrinth',
-    })
-  } else {
-    all.push({
-      text: t('resourcepack.searchOnModrinth', { name: props.pack.title }),
-      onClick: () => {
-        searchInModrinth(props.pack.title, 'resourcepack')
-      },
-      icon: 'search',
-    })
-  }
+  // if (props.pack.modrinthProjectId || props.pack.modrinth) {
+  //   all.push({
+  //     text: t('mod.showInModrinth', { name: props.pack.title }),
+  //     onClick: () => {
+  //       goModrinthProject(props.pack.modrinthProjectId || props.pack.modrinth?.project_id || '')
+  //     },
+  //     icon: '$vuetify.icons.modrinth',
+  //   })
+  // } else {
+  //   all.push({
+  //     text: t('resourcepack.searchOnModrinth', { name: props.pack.title }),
+  //     onClick: () => {
+  //       searchInModrinth(props.pack.title, 'resourcepack')
+  //     },
+  //     icon: 'search',
+  //   })
+  // }
   return all
 }
 

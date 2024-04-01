@@ -98,7 +98,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           .filter((file) => !shouldIgnoreFile(file))
           .map((file) => join(dir, file))
 
-        const peekCount = 32
+        const peekCount = 100
         const peekChunks = files.slice(0, peekCount)
         for (const file of files.slice(peekCount)) {
           processUpdate(file)

@@ -465,8 +465,8 @@ const items = computed(() => {
 // Scroll to the search result
 const container = ref<any>(null)
 const exploreHeader = ref<any | null>(null)
-watch(items, (values) => {
-  if (query.value || gameVersion.value || modLoaders.value) {
+watch(items, () => {
+  if (query.value || gameVersion.value || modLoaders.value.length > 0 || _modrinthCategories.value.length > 0 || curseforgeCategory.value) {
     // Scroll to the element
     const component = exploreHeader.value
     const el = component?.$el as HTMLElement | undefined
@@ -540,12 +540,12 @@ const groups = computed(() => {
     })),
   }, {
     id: 'modrinthCategories',
-    text: t('modrinth.categories.categories'),
+    text: t('modrinth.categories.categories') + ' (Modrinth)',
     type: 'checkbox',
     categories: modrinthCatResult,
   }, {
     id: 'curseforgeCategories',
-    text: t('curseforge.category'),
+    text: t('curseforge.category') + ' (Curseforge)',
     type: 'checkbox',
     categories: curseforgeCatResult,
   }]
@@ -556,18 +556,14 @@ const groups = computed(() => {
 const selected = computed(() => {
   const result: string[] = []
 
-  if (_modrinthCategories.value.length > 0) {
-    result.push(..._modrinthCategories.value)
-  }
+  result.push(..._modrinthCategories.value)
   if (typeof curseforgeCategory.value === 'number') {
     result.push(curseforgeCategory.value.toString())
   }
   if (gameVersion.value) {
     result.push(gameVersion.value)
   }
-  if (modLoaders.value.length > 0) {
-    result.push(...modLoaders.value)
-  }
+  result.push(...modLoaders.value)
   if (sort.value) {
     result.push(sort.value)
   }
@@ -578,12 +574,11 @@ const selected = computed(() => {
 // Category select
 const onSelect = ({ group, category }: { group: string; category: string }) => {
   if (group === 'modrinthCategories') {
-    // const cat = modrinthCategories.value.find(c => c.name === category)
     const index = _modrinthCategories.value.indexOf(category)
     if (index === -1) {
-      _modrinthCategories.value.push(category)
+      _modrinthCategories.value = [..._modrinthCategories.value, category]
     } else {
-      _modrinthCategories.value.splice(index, 1)
+      _modrinthCategories.value = _modrinthCategories.value.filter((_, i) => i !== index)
     }
   } else if (group === 'curseforgeCategories') {
     const cat = curseforgeCategories.value?.find(c => c.id.toString() === category)
@@ -598,9 +593,9 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
     if (category) {
       const index = modLoaders.value.indexOf(category)
       if (index === -1) {
-        modLoaders.value.push(category)
+        modLoaders.value = [...modLoaders.value, category]
       } else {
-        modLoaders.value.splice(index, 1)
+        modLoaders.value = modLoaders.value.filter((_, i) => i !== index)
       }
     }
   } else if (group === 'gameVersions') {

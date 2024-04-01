@@ -102,6 +102,11 @@ export class ServiceStateManager {
     )
 
     this.containers[id] = container
+
+    container.promise.then(() => {
+      this.app.emit('service-state-init', id)
+    }, () => { })
+
     return await container.promise
   }
 

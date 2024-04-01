@@ -151,6 +151,7 @@ const { push, currentRoute } = useRouter()
 const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
+
 </script>
 
 <template>
@@ -168,6 +169,7 @@ const onOpenDependency = (dep: ProjectDependency) => {
     :loading-versions="loadingVersions"
     :modrinth="projectId"
     :curseforge="curseforge"
+    current-target="modrinth"
     @open-dependency="onOpenDependency"
     @install="onInstall"
     @enable="enabled = $event"

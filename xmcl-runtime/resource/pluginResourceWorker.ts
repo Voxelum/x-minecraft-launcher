@@ -6,6 +6,6 @@ import { ResourceWorker, kResourceWorker } from './worker'
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('ResourceWorker')
 
-  const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker, ['checksum', 'copyPassively', 'hash', 'hashAndFileType', 'parse'], logger)
+  const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker, ['checksum', 'copyPassively', 'hash', 'hashAndFileType', 'parse', 'fingerprint'], logger)
   app.registry.register(kResourceWorker, resourceWorker)
 }

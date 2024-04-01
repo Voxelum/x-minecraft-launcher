@@ -472,6 +472,7 @@
               v-if="modrinth"
               text
               icon
+              :color="currentTarget === 'modrinth' ? 'primary' : ''"
               @click="goModrinthProject(modrinth)"
             >
               <v-icon>
@@ -482,7 +483,8 @@
               v-if="curseforge"
               text
               icon
-              @click="goCurseforgeProject(curseforge, 'mc-mods')"
+              :color="currentTarget === 'curseforge' ? 'primary' : ''"
+              @click="goCurseforgeProject(curseforge)"
             >
               <v-icon
                 class="mt-0.5"
@@ -636,7 +638,6 @@ import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
-import { useMarketRoute } from '@/composables/useMarketRoute'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
@@ -656,6 +657,7 @@ const props = defineProps<{
   hasMore: boolean
   curseforge?: number
   modrinth?: string
+  currentTarget?: 'curseforge' | 'modrinth'
 }>()
 
 const emit = defineEmits<{
@@ -785,7 +787,13 @@ const detailsHeaders = computed(() => {
 const { getDateString } = useDateString()
 const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
 
-const { goCurseforgeProject, goModrinthProject } = useMarketRoute()
+const { replace, currentRoute } = useRouter()
+const goCurseforgeProject = (id: number) => {
+  replace({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
+}
+const goModrinthProject = (id: string) => {
+  replace({ query: { ...currentRoute.query, id: `modrinth:${id}` } })
+}
 const vuetify = injection(kVuetify)
 const isDark = computed(() => vuetify.theme.dark)
 

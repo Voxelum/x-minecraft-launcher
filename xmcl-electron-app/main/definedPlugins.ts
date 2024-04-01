@@ -32,6 +32,7 @@ import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggd
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 import { pluginUncaughtError } from '@xmcl/runtime/uncaughtError/pluginUncaughtError'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
+import { pluginInstanceModDiscover } from '@xmcl/runtime/mod/pluginInstanceModDiscover'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
@@ -50,6 +51,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginNvdiaGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,
+  pluginInstanceModDiscover,
   elyByPlugin,
 
   pluginMediaProtocol,
