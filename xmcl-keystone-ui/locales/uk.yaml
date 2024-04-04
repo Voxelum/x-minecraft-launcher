@@ -1,15 +1,1427 @@
+AppAddInstanceDialog:
+  choiceTitle: |-
+    Виявлено кілька профілів запуску. 
+    Виберіть один для імпорту.
+  downloadedNotification: Модпак {name} встановлен. Зробити для нього екземпляр?
+  serverTitle: Введіть адресу вашого сервера
+AppShareInstanceDialog:
+  baseInfo: Базове налаштування
+  cancelShare: Не розповсюджувати
+  description: >-
+    Після того як ви поділілись профілем, інші користувачі зможуть встановлювати
+    ці файли через ваш ПК.
+  downloadDescription: >-
+    Перевірте файли, якими поділився ващ товариш. Оберіть потрібні файли для
+    встановлювання.
+  downloadNotifyTitle: Встановити екземпляр від {user}
+  downloadTitle: Встановити файли з інших пірів
+  downloadToLocal: Встановити в поточний екземпляр
+  filesToDownload: Оберіть файли для встановлення
+  filesToShare: Оберіть файли котрими хочете поділиться
+  instanceShare: '{user} тільки що поділився з вами поточним экземпляром'
+  share: Поділитись
+  shareNotifyTitle: Поділитись экземпляром
+  shareTitle: Поділитись ігровими файлами з іншим гравцем
+BaseSetting: {}
+BaseSettingGeneral:
+  title: Загальні
+FeedTheBeast:
+  search: Пошук в FTB
+FeedTheBeastCard: {}
+FeedTheBeastProject:
+  changelog: Список змін
+  details: Деталі
+  install: Встановити {version}
+  overview: Огляд
+  versions: Версії
+HomeJavaIssueDialog:
+  incompatibleJava: Несумістна Java
+  incompatibleJavaHint: Поточна Java може бути несумістна з обраним Minecraft!
+  missingJava: Відсутня Java
+  missingJavaHint: 'Лаунчер не може знайти Java на вашому комп''ютері. Ви зможете:'
+  needDownloadHint: >-
+    Не вдалося знайти поточну версію Java на вашому комп'ютері. Рекомендуємо
+    встановити нову.
+  optionAutoDownload:
+    message: Лаунчер завантажить и встановить Java з вхідного коду Mojang.
+    name: Завантажити автоматично
+  optionManualDownload: {}
+  optionSelectJava:
+    message: Лаунчер не знайшов у вас Java. Вкажіть лаунчеру де він знаходиться.
+    name: Оберіть Java на своєму комп'ютері
+  optionSwitch:
+    disabled: У базі данних не знайдена Java {version}!
+    message: Використовуйте наявну Java {version} на вашом комп'ютері
+    name: Змінити на {version}
+  recommendedVersionHint: '{version} рекомендує використовувати Java у діапазоні{range}.'
+  selectMatchedHint: Знайдено відповідні локальні версії Java. Можна вибрати ці локальні Java.
+  selectSecondaryHint: >-
+    Знайдено кілька локальних версій Java, але вони можуть не відповідати
+    критеріям. Ви можете застосувати їх для запуску, але можливо будуть
+    проблеми.
+HomeLaunchMultiInstanceDialog:
+  confirm: Запустити
+  description: Ви запустили кілька екземплярів Minecraft. Ви впевнені?
+  title: Декілька екземплярів
+HomeSyncButton: {}
+HomeSyncDialog:
+  pull: Отримати
+  push: Відправити
+HomeSyncDialogPull:
+  failText: Не вдалося отримати оновлення. {url}
+  refresh: Перезавантажити
+  update: Оновити
+HomeSyncDialogPush:
+  authError: >-
+    Неправильна авторизація користувача. Переконайтеся, що у вас є права на
+    завантажування файлі з серверу !
+  refresh: Перезавантажити
+  unknownError: Невідома помилка сервера. Повторіть спробу.
+  upload: Завантажити екземпляр
+SettingMigrationDialog:
+  selectRootDirectory: Виберіть кореневий каталог
+add: Добавить
+ago:
+  day: '{duration} день | {duration} дні'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
+authProfileAddedNotification: Профіль аутифікації {name} доданий
+author: Автор
+back: Назад
+baseSetting:
+  title: Базові налаштування
+browse: Огляд
+browseApp:
+  createShortcut: Створити ярлик
+  default: ЗА ЗАМОВЧУВАННЯМ
+  delete: Видалити
+  launch: Запустити та встановити за замовчуванням
+cancel: Відміна
+checkUpdate:
+  name: Перевірити оновлення
+confirm: Запуск
+copyClipboard:
+  success: Копіювати в буфер обміну
+create: Створити
+curseforge:
+  authors: Автори
+  category: Категорія
+  createdDate: Дата створення
+  downloadOnly: Завантажити
+  file:
+    gameVersion: Версія гри
+  install: Встановити
+  installTo: Встановити в {path}
+  installToStorage: Встановити у сховище
+  lastUpdate: Дата останнього оновлення
+  project:
+    description: Опис
+    files: Файли
+    images: Зображення
+  recentFiles: Останні файли
+  releasedDate: Дата виходу
+  search: Пошук
+  totalDownloads: Усього скачувань
+curseforgeCard: {}
+dataMigration:
+  apply: Застосувати налаштування
+  directoryCriteriaHint: Переконайтеся, що новий каталог є ПУСТИМ каталогом!
+  migrationDestinationIsFile: Місцем перенесення є файл! Виберіть пустий каталог!
+  migrationDestinationIsNotEmptyDirectory: >-
+    Місце перенесення не є пустим каталогом! Переконайтеся, що обрано порожній
+    каталог!
+  migrationNoPermission: |-
+    Немає дозволу на перейменування старого каталогу на новий! 
+    Переконайтеся, що програма запуску має доступ до обох місць!
+  placeholder: Натисніть тут, щоб вибрати каталог
+  setRootCause: |-
+    Ви втратите дані (карти, текстурпаки, моди), якщо закриєте
+     лаунчер на цьому процесі!
+  setRootDescription: Це змінить кореневу папку даних цього лаунчера та minecraft.
+  setRootTitle: Встановити нове місце зберігання
+  unknownError: Невідома помилка! Спробуйте знову або зверніться до розробника!
+  waitReload: Перенесення даних. Не закривайте лаунчер, інакше ви втратите дані.
+delete:
+  name: Видалити {name}
+  'no': Ні
+  'yes': Так
+dependencies:
+  embedded: Вбудований
+  incompatible: Несумісні
+  name: Залежності
+  optional: Забажанням
+  required: Required
+description: Опис
+detail: Деталі
 diagnosis:
   instanceFiles:
     description: Інсталяція примірника містить {counts} файлів.
     title: Незавершена інсталяція екземпляра
+  badInstall:
+    message: Натисніть, щоб спробувати інсталювати цю версію.
+    name: Неправильне встановлення на {version}
+  corruptedAssets:
+    message: Лаунчер встановить assets замість вас
+    name: >-
+      Пошкоджено asset: {name} | Пошкоджено asset {name} | Assets пошкоджено:
+      {count}
+  corruptedAssetsIndex:
+    message: Лаунчер скачає індексний assets замість вас
+    name: Пошкоджено індексний файл assets {version}.
+  corruptedLibraries:
+    message: Лаунчер встановить бібліотеки замість вас
+    name: >-
+      Пошкоджено бібліотеку: {name} | Бібліотека пошкоджена: {name} | Пошкоджено
+      бібліотек: {count}
+  corruptedVersionJar:
+    message: Натисніть для встановлення цієї версії
+    name: Версия jar для Minecraft %{version} пошкоджена.
+  corruptedVersionJson:
+    message: Натисніть для встановлення цієї версії
+    name: Версія json %{version} пошкоджена.
+  incompatibleJava:
+    message: Можна запросити лаунчер завантажити його за вас.
+    name: Версія java {javaVersion} не підходить для {version}!
+  invalidJava:
+    message: Натисніть, щоб використовувати іншу java для запуску.
+    name: Неправильне розташування java.
+  missingAssets:
+    message: Лаунчер встановить assets замість вас
+    name: 'Немає asset: {name} | Відсутній asset: {name} | Немає assets: %{count}'
+  missingAssetsIndex:
+    message: Лаунчер завантажує індексні assets замість вас
+    name: Відсутня індексний файл assets {version}.
+  missingAuthlibInjector: {}
+  missingJava:
+    message: Натисніть, щоб вирішити цю проблему
+    name: Не вдалося знайти Java для запуску Minecraft!
+  missingLibraries:
+    message: Лаунчер встановить бібліотеки замість вас
+    name: >-
+      Бібліотека {name} відсутня | Відсутня бібліотека {name} | Відсутня
+      бібліотека: {count}
+       | Відсутня бібліотека {count}
+  missingVersion:
+    message: Натисніть для встановлення цієї версії
+    name: Версія {version} не встановлена!
+  missingVersionJar:
+    message: Натисніть для встановлення цієї версії
+    name: Версія jar для Minecraft %{version} відсутня
+disable: Вимкнути
+disk:
+  available: Доступно
+  used: Викоростовано
+download: Завантажити
+downloadCount: 'Завантажень: {count}'
+downloadUpdate: Завантажити оновлення
+duration:
+  day: '{duration} день | {duration} дні'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
+edit: Редагувати
+enable: Увімкнути
+error:
+  name: Помилка | Помилки
+errors:
+  BadForgeInstallerJarError: >-
+    Не вдається розібрати jar-файл інсталятора forge. Можливо, у forge новий
+    формат файлу інсталятора формат файлу інсталятора? Зверніться до
+    розробників, якщо ця проблема не зникла.
+  BodyTimeoutError: Сплив час очікування HTTP Body
+  ChecksumNotMatchError: Контрольна сума не збігається! Має бути {expect}. Зараз {actual}.
+  ConnectTimeoutError: Вийшов час очікування на підключення до сервера.
+  DNSNotFoundError: Помилка пошуку DNS
+  DatabaseNotOpened: >-
+    База даних не відкрита! 
+    Лаунчер не працює належним чином! 
+    Будь ласка, виберіть каталог даних, до якого програма запуску матиме
+    доступ. 
+    Ви можете спробувати скинути корінь даних на сторінці налаштувань.
+  DownloadAggregateError: Неможливо завантажити файл.
+  DownloadFileSystemError: >-
+    Помилка під час доступу до шляху до файлу завантаження.  Переконайтеся, що
+    програма запуску має дозвіл на запис.
+  HeadersTimeoutError: Вийшов час очікування HTTP Header
+  NotFoundError: 404 Не знайдено
+  SocketError: Помилка сокету сервера
+exception:
+  http: >-
+    HTTP-запит з {url} не виконано. Код стану {statusCode}. {code}. Повторіть
+    спробу чи перевірте свій інтернет. Якщо ця помилка зберігається, надішліть
+    звіт команда розробників.
+existed: Існує
+exportModpackTarget:
+  curseforge: Файл Curseforge
+  github: Файл Github
+  modrinth: Файл Modrinth
+  override: Файл перевизначення (raw)
+extensions:
+  mrpack: Модпак Modrinth
+  zip: Zip-файл
+fabricVersion:
+  disable: Вимкнути Fabric
+  empty: Нема версії Fabric для Minecraft {version}
+  showSnapshot: Показувати Snapshot
+  stable: Стабильні
+  unstable: Нестабильні
+feedback:
+  channel: Канали
+  description: Я знайшов помилку чи хочу внести пропозицію
+  discord: Discord
+  discordDescription: Приєднатися до каналу Discord
+  discordJoin: Приєднатися
+  github: Github Issue
+  githubDescription: Відкрийте GitHub Issue, щоб розповісти про свою думку
+  githubOpenIssue: Github
+  kook: Kook
+  kookDescription: >-
+    Kook - це альтернативний додаток для користувачів discord на материковій
+    частині Китаю
+  name: Зворотній зв'язок
+  qq: Група QQ
+  qqDescription: >-
+    Вступіть у групу зворотного зв'язку QQ і поговоріть безпосередньо з
+    авторами. Номер групи: {number}
+  qqEnterGroup: Приєднатися
+fileDetail:
+  fileSize: Розмір Файлу
+  hash: Хеш
+filter: Фільтр
+finish: Завершити
+forgeConfig:
+  hint: >-
+    Запустіть гру з цим модом хоча б один раз, щоб ми могли виявити його
+    конфігураційний файл!
+forgeVersion:
+  common: Загальний
+  disable: Вимкнути Forge
+  empty: Forge не має релізу для Minecraft {version}
+  latest: Останній
+  name: Forge
+  recommended: Рекомендований
+  showBuggy: Показати з проблемами
+  showRecommendedAndLatestOnly: Тільки рекомендовані та останні версії
+  version: Версія Forge
+gameSetting: {}
+gameType:
+  adventure: Режим пригоди
+  creative: Творчий режим
+  spectator: Режим спостерігача
+  survival: Режим виживання
+help: Довідка
+home: Головна
+importModpack:
+  failed: Не вдалося імпортувати {modpack}
+  success: Імпорт {modpack} успішно завершено
+importResource: Імпорт ресурсу
+install: Встановити
+installAssets:
+  asset: Встановити Asset {hash}
+  assetIndex: Перевірити індексний файл assets
+  name: Встановити файли Asset
+installAuthlibInjector: Встановити authlib-injector
+installCurseforgeFile: Встановити файл Curseforge
+installFabric:
+  name: Встановити Fabric
+installForge:
+  downloadInstaller: Завантажити інсталятор
+  library: Встановити бібліотеку {lib}
+  name: Встановити Forge
+  postProcessing: Постобробка
+installInstance:
+  file: Оновити файл екземпляра {file}
+  link: Скопіюйте або зв’яжіть {count} файлів
+  name: Оновити екземпляр
+  resolve: Визначити конфігурацію екземпляра
+  unzip: Розархівуйте {count} файлів
+installJre:
+  decompress: Розпакувати файли JRE у папку
+  download: Завантажити стислий файл JRE
+  name: Установити бібліотеку Java Runtime Library
+installLabyMod:
+  asset: Встановити ресурс {name}
+  json: Створити JSON {version}
+  name: Встановити LabyMod
+installLibraries:
+  library: Встановити бібліотеку
+  name: Встановити бібліотеку
+installModpack:
+  deploy: Розгорнути
+  download:
+    file: Завантажити файл
+    name: Завантажити файл
+  name: Встановити модпак
+  unpack: Розпакувати модпак
+installModrinthFile:
+  name: Встановити Modrinth
+installOptifine:
+  download: Завантажити Optifine Universal
+  jar: Згенерувати Jar
+  json: Згенерувати Json
+  name: Встановити Optifine
+installResource:
+  fail: Не вдалося встановити {file}
+  success: Установка ресурса {file} виконано успішно
+installVersion:
+  jar: Встановити версію Jar
+  json: Встановити версію Json
+  name: Встановити клієнт Minecraft {version}
+instance:
+  addServer: Добавить сервер
+  current: Поточний екземпляр
+  delete: Видалити гру
+  deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
+  duplicate: Дублювати екземпляр
+  duplicatedName: Ім'я, що повторюється
+  fileApi: URL-адреса API синхронізації файлового сервера
+  fileApiHint: >-
+    URL-адреса для синхронізації файлів екземплярів із віддаленого сервера
+    конфігурації.
+  gameVersion: Версія гри
+  icon: Значок профілю
+  iconUrl: Значок Url
+  includeVersion: Увімкнути версію | Вмикати версії
+  lastPlayed: Востаннє грали
+  launchArguments: Попередній перегляд аргументів запуску
+  mcOptions: Параметри Minecraft
+  mcOptionsHint: Додаткові інструкції із запуску Minecraft
+  name: Ім'я профілю
+  nameHint: Назва, яка використовується для ідентифікації гри
+  neverPlayed: Ніколи не грав
+  openCrashReportFolder: Відкрити папку звітів про збої
+  openLogFolder: Відкрити папку логів
+  requireName: Ім'я обов'язкове
+  showInstance: Показати папку гри
+  versionHint: Версія Minecraft для цієї гри
+  vmOptions: Параметри JVM
+  vmOptionsHint: Додаткові аргументи, що передаються JVM
+instanceAge:
+  older: Старі
+  threeDay: В протягом трьох днів
+  today: Сьогодні
+instanceFileOperation:
+  add: Додати
+  backup-add: Замінити (Резерв)
+  backup-remove: Видалити (Резерв)
+  keep: Тримай
+  remove: Видалити
+instanceSetting:
+  disableAuthlibInjector: Вимкнути інжектор authlib
+  disableAuthlibInjectorDescription: |-
+    Якщо ви використовуєте сторонню систему скінів. 
+    Інжектор authlib може допомогти вам відобразити скін у грі.
+  disableElyByAuthlib: Вимкнути заміну authlib ely.by
+  disableElyByAuthlibDescription: >-
+    Ely.by має унікальну заміну authlib для універсального відображення скіна на
+    будь-якому сервері.
+  fastLaunch: Швидкий запуск
+  fastLaunchHint: Ігнорувати статус користувача та існуючі невирішені проблеми
+  hideLauncher: Сховати лаунчер після запуску
+  icon: Оберіть зображення
+  showLog: Показати логі Minecraft
+  showLogHint: Цей виводить вікно для перегляду логів Minecraft після запуску гри
+instanceTemplate:
+  curseforge: Цей модпак Curseforge
+  ftb: Цей модпак FTB
+  importing: Імпорт шаблону
+  mcbbs: Цей модпак MCBBS
+  modpack: ЦЕй raw модпак
+  modrinth: Цей модпак Modrinth
+  preview: Попередній перегляд модпака
+  title: Шаблон налаштування
+instanceUpdate:
+  basic: Оновлення налаштувань
+  files: Оновлення файлів
+  title: Оновити екземпляр
+  update: Почати оновлення
+instances:
+  add: Створити гру
+  addDescription: Створіть новий екземпляр з нуля
+  addMMCDescription: |-
+    Імпорт існуючого екземпляра MultiMC. 
+    Вам потрібно вибрати папку екземпляра з MultiMC.
+  addManually: Створити вручну
+  addModrinthDescription: |-
+    Імпорт існуючого екземпляра Modrinth. 
+    Вам потрібно вибрати папку екземпляра Modrinth.
+  addServer: Створити з сервера
+  addServerDescription: Це призведе до запуску гри безпосередньо на сервері.
+  addTemplate: Створити з шаблону
+  addTemplateDescription: Імпорт із завантаженого Modpack
+  addVanilla: Створюйте з ванільного Minecraft
+  addVanillaDescription: |-
+    Імпорт із загальної папки .minecraft. 
+    Це призведе до копіювання оригінального профілю гри в XMCL.
+  choose: Виберіть Гра
+  importFolder: Імпорт із папки
+  importFolderDescription: Імпорт Minecraft до лаунчера
+  loadingFiles: Завантаження файлів Modpack
+  refreshServers: Оновити сервери
+items:
+  count: '{count} предмети'
+  total: '{total} всього'
+java:
+  allocatedLong: Використовувати Java у системі за замовчуванням
+  allocatedShort: Автовиділення
+  browse: Перегляд виконуваного файлу Java
+  importFromFile: Імпорт Java з файлу
+  invalid: Неправильне розташування Java
+  location: Розташування Java
+  maxMemory: Макс. обсяг пам'яті
+  memory: Пам'ять Java
+  memoryAuto: Авто
+  memoryManual: Вручну
+  memoryUnassigned: Скасувати призначення
+  minMemory: Мін. обсяг пам'яті
+  modifyInstance: Змінити шлях до Java
+  noMemory: Не обмежувати використання пам'яті
+  refresh: Оновити локальну Java
+  systemMemory: Поточна системна пам'ять
+labyMod:
+  disable: Вимкнути LabyMod
+  empty: LabyMod не підтримує поточний Minecraft
+launch:
+  cancel: Відхильнути
+  kill: Зупинити
+  launch: Почати
+launchBlocked:
+  ignore: Примусовий запуск
+  launchGeneralException:
+    description: Деякі помилки призводять до невдалого запуску.
+    title: Запуск не вдався
+  launchInvalidJavaPath:
+    description: >-
+      Вибраний Java відсутній або вибраний неправильно. Виберіть новий. <span
+      class="highlight"> {javaPath} </span>
+    title: Неверный путь к Java
+  launchJavaNoPermission:
+    description: >-
+      Лаунчер не має дозволу на виконання java <span class="highlight">
+      {javaPath} </span>. Або змініть роздільну здатність файлу java, або
+      надайте дозвіл лаунчеру.
+    title: Немає дозволу на запуск
+  launchNoProperJava:
+    description: >-
+      Неможливо вибрати відповідну java для запуску гри. ({javaPath} є
+      невірним?)
+    title: Відповідна java не знайдено
+  launchNoVersionInstalled:
+    description: >-
+      Неможливо визначити версію <span class="highlight">{version}</span> для
+      запуску.
+    title: Версія не обрана
+  launchSpawnProcessFailed:
+    description: >-
+      Будь ласка, перевірте свою Java або надайте додаткові дозволи програмі
+      запуску та повторіть спробу. 
+      Якщо це все одно не працює, зв’яжіться з розробниками.
+    title: Не вдається запустити процес гри
+  launchUserStatusRefreshFailed:
+    description: Неможливо оновити поточний статус користувача.
+    title: Неможливо перевірити статус користувача
+  unexpectedText: >-
+    Несподівано. Ви можете перезапустити лаунчер, щоб вирішити проблему.
+    Зверніться до автора, якщо ця проблема залишається.
+  userAcquireMicrosoftTokenFailed: >-
+    Не вдалося отримати токен Microsoft. Повторіть спробу або перевірте свій
+    Microsoft аккаунт.
+  userCheckGameOwnershipFailed: >-
+    Не вдалось перевірити право власності на Minecraft. Повторіть спробу або
+    перевірте свій Інтернет.
+  userExchangeXboxTokenFailed: >-
+    Не вдалося обміняти токен xbox на токен Microsoft. Повторіть спробу або
+    перевірте свій інтернет.
+  userLoginMinecraftByXboxFailed: >-
+    Не вдалося увійти до Minecraft за допомогою токена xbox. Повторіть спробу
+    або перевірте свій інтернет.
+launchFailed:
+  crash: Гра вилетіла!
+  description: Звіту про збій немає. Це логи помилок та останній журнал.
+  latestLog: Останні логі
+  title: Гра завершилася з аномальним кодом
+launchStatus:
+  assigningMemory: Призначення пам'яті
+  exit: Вийти З ГРИ?
+  injectingAuthLib: Налаштування стороннього AuthLib
+  launching: Запуск...
+  launchingSlow: Все ще запускається... Запуск графічного двигуна може бути повільним.
+  refreshingUser: Оновлення маркера користувача
+  spawningProcess: ''
+launcherUpdate:
+  alreadyLatest: Остання версія
+  installAndQuit: Перезапустіть, щоб встановити
+  noUpdateAvailable: Немає доступних оновлень
+  reinstall: Перевстановити
+  updateToThisVersion: Завантажити та встановити
+liteloader:
+  name: LiteLoader
+localVersion:
+  auto: Автообчислення
+  delete: Видалити локальну версію
+  deleteDescription: >-
+    Ця операція видаляє локальну версію json та jar. Вам потрібно знову
+    завантажити їх, якщо ви хочете використовувати їх.
+  empty: Версія не встановлена
+  hint: Запустити конкретну локальну версію безпосередньо
+  refresh: Оновити версії
+  reinstallDescription: >-
+    Якщо ви рахуете, що встановлення даній версії має деякі проблеми, ви можете
+    спробувати перевстановити її.
+  reinstallTitle: Перевстановити {version}
+  title: Локальна версія | Локальні версії
+logLevel:
+  error: Помилка
+  info: Інформація
+  success: Успішно
+  warning: Попереджувань
+login:
+  dropHint: Скиньте посилання з кодом авторизації тут, щоб увійти до системи вручну
+  forgetPassword: Забули пароль?
+  login: Вхід
+  manualLoginUrl: Якщо браузер не відкривається, перейдіть за цим посиланням для авторизації!
+  signup: Зареєструватись
+  signupDescription: Новачок у нас?
+  userRelogin: Термін дії токена доступу користувача минув. Повторіть вхід!
+loginError:
+  acquireMicrosoftTokenFailed: >-
+    Неможливо отримати токен Microsoft. Це може бути проблема з Інтернетом.
+    Повторіть спробу.
+  badNetworkOrServer: >-
+    Перевірте: Підключення до інтернету! Або може бути сервер авторизації не
+    працює!
+  checkOwnershipFailed: Не вдалось перевірити право власності на гру. Повторіть спробу.
+  connectionReset: Не вдалося увійти, оскільки з'єднання скинуто сервером
+  fetchMinecraftProfileFailed: 'Неможливо отримати профіль Minecraft: {reason}'
+  illegalEmail: Електронна пошта має бути чинною
+  invalidCredentials: Неправильні облікові дані. Неправильне ім'я користувача або пароль.
+  loginMinecraftByXboxFailed: >-
+    Не вдалось обміняти токен Minecraft на токен XBox. Будь-ласка,
+    переконайтесь, що у вас є Minecraft на Xbox або повторіть спробу.
+  loginXboxFailed: >-
+    Не вдалось увійти в Xbox за допомогою токену Microsoft. Переконайтеся, що у
+    вас пов'язаний аккаунт xbox з аккаунтом Microsoft. Повторіть спробу.
+  requestFailed: Не вдалось увійти, ми не знаємо точної причини. Повторіть спробу.
+  requireEmail: Потрібна електрона скринька
+  requirePassword: Потрібен пароль
+  requireUsername: Потрібно ім'я користувача
+  timeout: Вийшов час очікування на вхід. Повторіть спробу або перевірте свій Інтернет.
+logsCrashes:
+  crashes: Звіти про збої
+  logs: Логи
+  placeholder: Файли не знайдено
+  title: Логи або звіти про збої
+me:
+  news: Новини
+  recentPlay: Нещодавня гра
+minecraftVersion:
+  empty: Не вдалося завантажити версію Minecraft
+  name: Версія Minecraft
+  release: Реліз
+  showAlpha: Показувати Snapshot
+  snapshot: Snapshot
+mod:
+  acceptVersion: Прийняти {version}
+  compatible: Сумісний мод.
+  currentVersion: Поточна {current}
+  deletion: Видалення мода
+  deletionHint: >-
+    Ви назавжди втрите цей мод та його методанні. Впевнені що хочете видалити
+    його? | Ви витратите цей мод и ці метадані назавжди. Впевнені що хочете це
+    зробити?
+  deletionRestHint: И ще {rest} модів...
+  dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
+  enabled: 'Модів включенно: {count}'
+  filter: Фільтр модов
+  groupInstalled: Групові встановлені моди
+  hideIncompatible: Приховати несумісні модифікації
+  incompatible: Несумістні мод.
+  manage: Управління модами
+  maybeCompatible: Можливо сумісний.
+  name: Мод | Моди
+  noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
+  openLink: Відкрити посилання на мод {url}
+  search: Пошук модифікацій
+  searchOnCurseforge: Исать на curseforge {name}
+  searchOnModrinth: Пошук {name} на Modrinth
+  showDirectory: Показати каталог модифікацій
+  showFile: Показувати шлях до моду {file}
+  showInCurseforge: Показувати мод на curseforge
+  showInModrinth: Показувати {name} на Modrinth
+  switchDefaultSource: Джерело модифікації за замовчуванням
+  toUpdate: '{count} на оновлення'
+modInstall:
+  checkUpgrade: Перевірте оновлення модифікацій
+  checkedUpgrade: Оновлення перевірено
+  currentVersion: Обрана версія
+  dependencyHint: Встановлено іншу версію {version}
+  install: Встановити
+  installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
+  installed: Встановлено
+  noVersionSupported: Мод не підтримує поточну версію Minecraft
+  search: Результат пошуку
+  searchHint: Пошук та вибір проекту
+  source: Джерело мода
+  switch: Змінити версію
+  upgrade: Оновлення модифікацій
+modSearchType:
+  all: Всі
+  local: Кеш на диску
+modified:
+  reset: Скидання
+  save: Зберегти
+  unsaved: Вашу модифікацію не збережено!
+modpack:
+  author: Ім'я автора
+  authorHint: Це може бути використане для підпису експортованого модпаку. (Curseforge)
+  delete:
+    hint: Це призведе до видалення модпаку {name} з його метаданими. Ви впевнені?
+    title: Вдалити модпак
+  description: Опис
+  descriptionHint: >-
+    Загальний опис для вашого модпак. Може використовуватися для експорту як
+    модпака curseforge.
+  dropHint: Перетягніть zip-архів модпака сюди, щоб імпортувати
+  emitCurseforge: Випустити модпак Curseforge
+  emitMcbbs: Випустити модпак MCBBS
+  emitModrinth: Випустити модпак Modrinth
+  emitModrinthStrict: Суворий формат Modrinth
+  emitModrinthStrictDescription: Дозволено лише посилання з 4 доменів, перерахованих у документі modrinth
+  export: Експортувати як модпак
+  general: Загальна інформація
+  includeAssets: Включати Assets
+  includeLibraries: Включати бібліотеки
+  includes: Файли для включення
+  modpackVersion: Версія модпака
+  name: Модпак | Модпаки
+  overrides: Перевизначає
+  showFile: Показати файл {file}
+  showInCurseforge: Показати {name} в curseforge
+  showInFtb: Показати {name} в FTB
+  showInModrinth: Показати {name} в Modrinth
+  url: Посилання
+  urlHint: Посилання домашньої сторінки вашого модпака
+modrinth:
+  browseUrl: Відкрити В Браузері {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: Пригоди
+    atmosphere: Атмосферний
+    audio: Аудіо
+    blocks: Блоки
+    bloom: Розквітний
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: Полотно
+    cartoon: Карикатура
+    categories: Категорії
+    challenging: Випробування
+    colored-lighting: Кольорове освітлення
+    combat: Бойові
+    core-shaders: Ядро-шейдери
+    cursed: Проклятий
+    datapack: Data Pack
+    decoration: Косметика
+    economy: Економіка
+    entities: Сутності
+    environment: Навколишнє середовище
+    equipment: Спорядження
+    fabric: Fabric
+    fantasy: Фантастичні
+    features: Особливі
+    folia: Folia
+    foliage: Foliage
+    fonts: Шрифти
+    food: Їжа
+    forge: Forge
+    game-mechanics: Ігрова механіки
+    gui: ГРАФІЧНИЙ ІНТЕРФЕЙС
+    high: Важкий
+    iris: Iris
+    items: Предмети
+    kitchen-sink: Все підряд
+    library: Бібліотека
+    lightweight: Полегшений
+    liteloader: Liteloader
+    locale: Locale
+    low: Слабкий
+    magic: Магія
+    management: Управління
+    medium: Середній
+    minecraft: Minecraft
+    minigame: Міні-ігри
+    misc: Різне
+    mobs: Mobs
+    modded: Модифікований
+    models: Моделі
+    modloader: ModLoader
+    multiplayer: Мережева гра
+    name: Категорії
+    optifine: Optifine
+    optimization: Оптимізація
+    paper: Paper
+    path-tracing: Відстеження маршруту
+    pbr: PBR
+    performance impact: Вплив на продуктивність
+    potato: Potato(Картопляний ПК)
+    purpur: Purpur
+    quests: Квести
+    quilt: Quilt
+    realistic: Реалістичний
+    reflections: Рефлексіний
+    resolutions: Резолюціний
+    rift: Rift
+    screenshot: Скріншот
+    semi-realistic: Напівреалістичні
+    shadows: Тінь
+    simplistic: Спрощений
+    social: Соціальний
+    spigot: Spigot
+    sponge: Sponge
+    storage: Storage
+    technology: технології
+    themed: Themed
+    transportation: Транспорт
+    tweaks: Твіки
+    utility: Утиліта
+    vanilla: Ванільний
+    vanilla-like: Ванільний+
+    velocity: Velocity
+    waterfall: Waterfall
+    worldgen: World Gen
+  clientSide: Клієнтська сторона
+  copyTitle: Копіювати текст {title} до буферу обміну
+  createAt: Створено
+  description: Опис
+  downloads: Завантажень
+  environments:
+    client: Клієнт
+    default: За замовчуванням
+    name: Довкілля
+    optional: Не обов'язково
+    required: Потрібно
+    server: Сервер
+    unsupported: Непідтримуваний
+  externalResources: Зовнішні ресурси
+  featuredVersions: Популярні версії
+  followers: Передплатники
+  gallery: Галерея
+  gameVersions:
+    name: Версії ігор
+  headers:
+    status: Стати
+    support: Підтримує
+    version: Версія
+  issueUrl: Проблема
+  license: Ліцензія
+  licenses:
+    name: Ліцензії
+  modLoaders:
+    name: Завантажувачі модів
+  perPage: На сторінку
+  projectId: Id проекту
+  projectMembers: Учасники проекту
+  projectType:
+    mod: Мод
+    modpack: Модпак
+    name: Тип проекту
+    resourcePack: Пакет текстури
+    shader: Шейдер
+  quickSearch: Пошук {title}
+  searchText: Пошук
+  serverSide: Серверна частина
+  sort:
+    downloads: Завантажень
+    follows: Передплатників
+    newest: Нещодавно створений
+    relevance: Актуальність
+    title: Сортувати за
+    updated: Нещодавно оновлено
+  sourceUrl: Джерело
+  technicalInformation: Технічна інформація
+  updateAt: Оновлено
+  versions: Версії
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Поточна версія
+  projectHint: >
+    Цей екземпляр створено за допомогою модпакету Modrinth з <code
+    class="rounded p-1" style="background: rgba(123,123,123,0.2)">{title}</code>
+    (project id:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+multiplayer:
+  allowTurn: Увімкнути сервер ретрансляції
+  allowTurnHint: >-
+    Дозволити ретрансляцію сервера, якщо ви не можете з'єднатися з другом.
+    Однак, використання ретрансляційного сервера може уповільнити ваше
+    з'єднання. Використовуйте його з обережністю.
+  complete: Готовий
+  confirm: Підтвердити
+  connections: Зв'язки
+  copied: Скопійовано!
+  copy: Копіювати
+  copyGroupToFriendHint: Дозвольте своїм друзям приєднатися до групи з цього ідентифікатора
+  copyLocalHint: |
+    "Скопіюйте текст локального SDP та надішліть його своєму товаришу, щоб ваш
+     він ввів цей текст у з'єднанні приєднання <span>Токен може бути використаний
+     тільки для <span style="color: red; font-weight: bold;">віндого</span>! Не можна
+     відправляти той самий токен кільком вузлам!</span> <br> <span class="hint-text" style="font-style: italic;">Якщо вам потрібно підключити декілька
+     товаришів, вам потрібно створити<span style="font-weight: bold; color: rgba(245,
+    158, 11)">кілька</span> з'єднань.</span>"
+  createLocalToken: Створити локальний токен
+  currentIpTitle: Виявлено загальнодоступну IP-адресу
+  currentNatTitle: 'Поточна мережа (NAT):'
+  difficultyLevelHint: Рівень складності для встановлення зв'язку з іншими
+  disconnect: Вимкнутись
+  disconnectDescription: Точно відключитися від користувача {user}({id})?
+  disconnected: Вимкнено
+  enterRemoteToken: Введіть віддалений токен
+  enterRemoteTokenHint: |-
+    Як тільки товариш введе ваш токен, вам потрібно ввести його токен у текстове
+     поле нижче. Натисніть кнопку «Підтвердити», щоб підключитися.
+  gatheringIce: >
+    "Зачекайте, поки сервер ICE збере достатньо інформації про вашу
+     мережі. Якщо ви нетерплячі і ви маєте достатньо інформації, ви можете заздалегідь
+     надати поточний SDP іншій стороні та натиснути далі, відправте <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold">
+    локальний токен</span> своєму товаришу, ви можете ввести свій токен в
+    області <span class="v-chip v-chip--label v-size--small" style="text-font:
+    bold"> Приєднатися до підключення</span>.<br> Серверу ICE може знадобитися
+     деякий час для збору даних для створення <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold">локального токена</span>.<br> Вам
+     не потрібно чекати, доки статус ICE буде завершено. Якщо наведений нижче токен
+     залишиться незмінним, ви можете скопіювати його та відправити своєму товаришеві."
+  groupId: Ідентифікатор групи
+  illegalTokenDescription: Незаконний токен, переконайтеся, що токен від вашого товариша правильний
+  initiateConnection: Почати підключення
+  inviteLink: Посилання для запрошення
+  joinConnection: |-
+    Якщо ваш товариш вже почав висновок, вам необхідно приєднатися
+      для його підключення.
+  joinManual: Приєднатися
+  joinOrCreateGroup: Приєднатися/Створити групу
+  joinOrCreateGroupHint: Отримайте ідентифікатор групи від своїх друзів або створіть групу
+  leaveGroup: Залишити групу
+  localToken: Локальний токен
+  manualConnect: Ручне підключення
+  name: Мультиплеєр по локальній мережі
+  networkInfo: Інформація про мережу
+  next: Далі
+  placeholder: >-
+    Приєднуйтесь до інших користувачів, щоб грати в Minecraft по локальній
+    мережі!
+  previous: назад
+  receiveHint: |-
+    Після того, як інша сторона введе ваш токен, ваше підключення буде створено
+     автоматично. Тепер можна закрити діалогове вікно.
+  receiveRemoteTokenHint: Введіть токен вашого товариша.
+  remoteToken: Віддалений токен
+  routerInfo: Інформація про маршрутизатор
+  sendTokenToRemote: Надіслати токен на віддалений
+  share: Поділитись конфігурацією екземпляра
+  sharing: Обмін файлами...
+  start: Почати
+  startNewP2PConnection: Натисніть «Почати», щоб створити нове однорангове з'єднання
+myStuff: Мої матеріали
+name: Ім'я
+natType:
+  blocked: Заблоковано
+  fullCone: Повний конус
+  openInternet: Відкритий Інтернет
+  restrictNat: Обмеження NAT
+  restrictPortNat: Обмеження порту NAT
+  symmetricNat: Симетричний NAT
+  symmetricUDPFirewall: Симетричний міжмережевий екран UDP
+  unknown: Невідомо
+neoForgedVersion:
+  disable: Вімкнути NeoForged
+  empty: NeoForged не підтримує {version}
+  name: NeoForged
+news:
+  name: Новини
+  readMore: Дізнатись Більше
+next: Далі
+'no': Ні
+ok: ОК
+optifineVersion:
+  disable: Вимкнути Optifine
+  empty: Optifine не підтримує Minecraft {version}
+optional: Не обов'язково
+peerConnectionState:
+  closed: Закрито
+  connected: Підключено
+  connecting: Підключення
+  disconnected: Вимкнено
+  failed: Невдало
+  name: Стан підключення
+  new: Нове
+peerGroupState:
+  closed: Не в групі
+  closing: Закрита
+  connected: Приєднана група
+  connecting: Підключення
+peerIceGatheringState:
+  gathering: Збір крижаного сервера
+peerSignalingState:
+  have-local-offer: Опис очікуваного вузла
+popular: Популярність
+presence:
+  curseforge: Переглянути CurseForge
+  curseforgeProject: Переглянути {name} в Curseforge
+  instance: Бездіяльність в інстанції {instance}
+  instanceSetting: 'Редагування параметрів екземпляра: {instance}'
+  mod: Перегляд модифікацій у розділі {instance}
+  modrinth: Перегляд Modrinth
+  modrinthProject: Перегляд {name} в Modrinth
+  resourcePack: Перегляд пакетів ресурсів у розділі {instance}
+  save: Перегляд Зберігається в {instance}
+  setting: Перегляд сторінки налаштувань
+  shaderPack: Перегляд шейдерних пакетів у програмі {instance}
+  version: Перегляд сторінки версій
+previous: Попередня
+proxy:
+  host: Хост
+  port: Порт
+quiltVersion:
+  disable: Вимкнути Quilt
+  empty: Quilt не підтримує Minecraft {version}
+refresh: Оновити
+refreshResource: Оновити ресурси
+remove: Видалити
 resourcepack:
   shared: Екземпляр використовує спільну папку пакета ресурсів
 task:
-  connection:
-    connected: Підключено
-    free: безкоштовно
-    pending: В очікуванні
-    queued: У черзі
-    running: Запущене підключення
-    size: загальна кількість
-  connections: Мережеві підключення
+  available: Доступно
+  compatible: Формат {format} сумісний з {version}
+  defaultDescription: Зовнішній вигляд Minecraft за замовчуванням
+  delete:
+    content: >-
+      Це призведе до видалення файлу текстурпаку з диска, і ми не зможемо його
+      відновити.
+       Ви впевнені, що можете його відновити?
+    title: Видалити текстурпак
+  dropHint: Перетягніть сюди папку/zip текстури для імпорту.
+  enable: 'Включено текстурпаків: {count}'
+  import: Імпорт текстурпак
+  incompatible: >-
+    Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
+    {actual}.
+  manage: Управління текстурпаками
+  name: Текстурпак | Текстурпаки
+  searchOnCurseforge: Шукати {name} на curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Вибрані текстурпаки
+  showFile: Відкрити текстурпак {file} в папці
+  showInCurseforge: Показати {name} на curseforge
+  unselected: Невибрані текстурпаки
+save:
+  copy:
+    cancel: Скасувати копіювання
+    confirm: Почати копіювання
+    description: Виберіть профілі призначення, які потрібно зберегти.
+    name: Копіювати збереження
+    title: Копіювати збереження до іншого профілю
+  copyFrom:
+    cancel: Відміна
+    confirm: Почати копіювання
+    description: |-
+      Можна розгорнути збереження на цьому примірнику з інших або з керованих
+       ресурсів (curseforge)
+    from: З {src}
+    fromProfile: З інших екземплярів
+    fromResource: З керованих ресурсів
+    title: Імпорт збереження з керованого джерела
+  createdWorlds: 'Ваших світів: {count}'
+  deleteHint: |-
+    Ця операція не може бути скасована. Ви назавжди втратите дані збереження.
+     Ви впевнені, що хочете видалити це збереження?
+  deleteTitle: Видалити
+  detail: Більше інформації
+  dropHint: Перетягніть zip-архів сюди, щоб імпортувати
+  export: Експорт збереження
+  exportMessage: Експорт збереження у zip
+  exportTitle: Експорт збереження
+  import: Імпорт збереження
+  importMessage: Імпорт збереження з zip
+  importTitle: Імпорт збереження
+  manage: Управління збереженнями
+  name: Збереження | Збереження
+screenshots:
+  empty: У вас немає скріншотів
+  goto: Відкрити папку
+  name: Скріншоти
+  playRandom: Грайте випадковим чином
+  playSequence: Грайте по порядку
+server:
+  acceptingMinecraftVersion: Ухвалення версії Minecraft
+  creationHint: Вкажіть адресу сервера та пінг сервера
+  expectedVersions: Підтримувані версії
+  filterVersion: Фільтр-сервер відповів на версію Minecraft
+  host: Хост
+  hostHint: Хост (з портом) сервера
+  ipAddress: IP-адрес
+  motd: Опис сервера
+  name: Сервер | Сервера
+  ping: Пінг
+  pings: Пінги
+  players: Гравці
+  port: Порт
+  recommendedMinecraftVersion: Версія Minecraft
+  status: Стан сервера
+  unknown: Невідомий сервер
+  unknownDescription: Невідомий сервер. Оновіть
+  version: Серверу потрібна версія
+  versionHint: Версія Minecraft для пінгу
+serverStatus:
+  nohost: §4Неможливо знайти хост!
+  ping: Пінг...
+  refuse: §4Серверу відмовлено!
+  timeout: §4Вийшов час підключення до сервера!
+setting:
+  allowPrerelease: Завантажити попередню версію
+  allowPrereleaseDescription: Попередня версія може бути нестабільною
+  apiSets:
+    auto: Автоматично (Визначається мережею)
+    official: Офіційний (Mojang)
+  appearance: Зовнішній вигляд
+  appxUpdateHint: |-
+    Лаунчер скачає та виконає установку. Якщо спливаюче вікно з установкою
+     не з'явилося, запустіть його вручну.
+  autoDownload: Автоскачування
+  autoDownloadDescription: Завантажувати оновлення автоматично, якщо доступне
+  autoInstallOnAppQuit: Автоустановка
+  autoInstallOnAppQuitDescription: Автоматичне встановлення оновлення при виході з програми
+  backgroundImage: Фонове зображення
+  backgroundImageBlur: Розмиття зображення
+  backgroundImageBlurDescription: Перетягніть, щоб розмити, легко
+  backgroundImageClear: Очистити
+  backgroundImageDescription: Виберіть зображення як фон або очистіть його
+  backgroundImageFit:
+    contain: Вмістити
+    cover: Обрізати
+    name: Підігнати
+  backgroundImageSelect: Вибрати
+  backgroundType: Тип фону
+  backgroundTypeDescription: Відображати особливий ефект на фоні (Може вплинути на продуктивність)
+  backgroundTypes:
+    halo: Ореол
+    image: Зображення
+    none: Нічого
+    particle: Частинки
+    video: Відео
+  backgroundVideo: Фонове відео
+  backgroundVideoDescription: Вибрати або очистити відео
+  backgroundVideoSelect: Вибрати
+  backgroundVideoVolume: Гучність
+  backgroundVideoVolumeDescription: Перетягніть, щоб відрегулювати гучність
+  blurAppBar: Розмиття панелі програми
+  blurMainBody: Розмиття основного вікна
+  blurMainBodyDescription: Чи має правою стороною лаунчера бути розмитою
+  blurSidebar: Розмиття бічної панелі
+  browseRoot: Огляд
+  checkUpdate: Перевірити оновлення
+  colorTheme:
+    appBarColor: Панель програми
+    backgroundColor: Колір фону
+    cardColor: Колір картки
+    description: Змінити кольори у темі
+    errorColor: Колір помилки
+    name: Колір теми
+    primaryColor: Основний колір
+    secondaryColor: Вторинний колір
+    sideBarColor: Бічна панель
+    warningColor: Колір попередження
+  darkTheme: Тема
+  darkThemeDescription: Оберіть темну або світлу тему
+  developerMode: Режим розробника
+  developerModeDescription: Режим розробника призначений для тестування написаного вами мода
+  disableTelemetry: Вимкнути телеметрію
+  disableTelemetryDescription: XMCL збиратиме події запуску гри та входу користувача у гру.
+  enableDedicatedGPUOptimization: Призначити виділений графічний процесор
+  enableDedicatedGPUOptimizationDescription: Ця опція призначить виділений графічний процесор для процесу Minecraft.
+  enableDiscord: Увімкнути Discord Presence(Статус гри в Discord)
+  enableDiscordDescription: >-
+    Це призведе до того, що стан вашої панелі запуску не буде оновлюватися
+    всупереч
+  general: Загальні
+  githubRelease: Github Release
+  globalSetting: Глобальне налаштування екземпляра
+  globalSettingHint: Примірник буде використовувати ці параметри за промовчанням.
+  hideNews: Приховати Новини
+  hideNewsDescription: Це приховає новину під сторінкою екземпляра
+  language: Мова
+  languageDescription: Мова інтерфейсу
+  latestVersion: остання версія
+  layout:
+    default: Макет за замовчуванням
+    focus: Макет фокусування
+  layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
+  layoutTitle: Макет
+  linuxTitlebar: Рідний рядок заголовка
+  linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
+  location: Розташування сховища
+  maunalUpdateHint: |-
+    Версія не може бути автоматично оновлена. 
+    Перезавантажте програму запуску з веб-сайту!
+  maxSockets: На хост
+  maxSocketsDescription: >-
+    Обмежте максимальну кількість сокетів, дозволених за кожного хоста або для
+    всіх хостів
+     загалом. 0 означає відсутність обмежень.
+  maxSocketsTitle: Максимальна кількість HTTP-сокетів
+  name: Глобальне налаштування | Глобальні налаштування
+  network: Мережеві налаштування
+  officialWebsite: Офіційний сайт
+  particleMode:
+    bubble: Бульбашки
+    name: Режим частинок
+    push: Пуш
+    remove: Прибрати
+    repulse: Репульс
+  particleModeDescription: Виберіть поведінку частки при натисканні
+  replaceNative: Замінити рідні бібліотеки
+  replaceNativeDescription: Замініть рідні бібліотеки відповідно до арки вашого комп’ютера.
+  replaceNatives:
+    all: все
+    legacy: Лише застаріла версія
+  resetToDefault: Скидання до значення за промовчанням
+  showRoot: Відображати
+  streamerMode: Потоковий режим
+  streamerModeDescription: >-
+    Це приховає вашу особисту інформацію, як-от електронну адресу, у панелі
+    запуску.
+  theme:
+    dark: Темна тема
+    light: Світла тема
+    system: Використати тему системи
+  update: Оновити
+  useBmclAPI: Використовувати BMCL API
+  useBmclAPIDescription: >-
+    Використовуйте BMCLAPI для завантаження Minecraft, коли ви знаходитесь в
+    материковому Китаї.
+     (Не допоможе, якщо ви не знаходитесь у материковому Китаї)
+  useProxy: HTTP-прокси
+  useProxyDescription: Адреса проксі-сервера для http-запиту
+settingLabel:
+  global: Глобальні
+  globalHint: Це налаштування буде відповідати глобальному настроюванню
+  local: Локальна
+  localHint: Ця установка змінюється поточним екземпляром
+setup:
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: |-
+      Корінь даних – це не звичайний каталог .minecraft. Оскільки дані XMCL
+       структура каталогів відрізняється від ванільної, ми не рекомендуємо використовувати
+       загальний каталог .minecraft як корінь даних.
+    drives: Рекомендовані місця
+    name: Встановити корінь даних
+  defaultLayoutDescription: >-
+    Макет за замовчуванням намагається покращити концепцію «примірника» гри. 
+    Схоже, що програми схожі на Discord. 
+    Він також натхненний іншими програмами для запуску ігор, такими як Steam
+    тощо.
+  defaultPath: Шлях за замовчуванням
+  error:
+    badDataRoot: |-
+      Недійсний каталог для даних запуску! 
+      Будь ласка, спробуйте інший каталог!
+    exists: >-
+      Вибраний каталог не порожній. 
+      Це нормально, але переконайтеся, що ви створили резервну копію своїх
+      даних.
+    noPermission: |-
+      Пускач не має дозволу на доступ до вибраного каталогу! 
+      Будь ласка, спробуйте інший.
+    nonDictionary: |-
+      Вибраний шлях є файлом! 
+      Будь ласка, виберіть каталог!
+  focusLayoutDescription: |-
+    Розкладка фокусу є застарілою розкладкою Minecraft Launcher. 
+    Він призначений для використання з одним або кількома екземплярами.
+  game:
+    description: |-
+      Виберіть існуючий каталог гри (.minecraft) для імпорту наявних ресурсів.
+       Так ви зможете швидко визначити моди, текстурпаки тощо.
+    name: Імпортувати існуючу гру
+  locale:
+    description: |-
+      Виберіть бажану мову, якщо вона є! Якщо ви не бачите свого рідного
+       мову і ви хочете допомогти, ви можете відвідати наш Github для відправки pull
+       прохання про переклад!
+    language: Мова
+    name: Встановити мову
+  path: Поточний шлях
+  title: >-
+    Ласкаво просимо до X Minecraft Launcher. Перед запуском нам необхідно, щоб
+    ви
+shaderPack:
+  deletion: Видалити шейдер
+  deletionHint: Це видалити файл шейдера {path} і неможливо буде відновити його.
+  disabled: Вимкнений пакет шейдерів
+  empty: Шейдер не виділено
+  enable: Використання шейдера {name}
+  enabled: Увімкнений пакет шейдерів
+  manage: Управління шейдерами
+  name: Шейдер
+  showFile: Відкрити цей шейдер у папці
+summery: Літній
+tag:
+  create: Створити тег
+  createSelected: Створити тег для обраного
+  newTag: Новий тег
+title: X Minecraft Launcher
+transportType:
+  host: Кандидат Host
+  prflx: Кандидат Peer Reflexive
+  relay: Кандидат Relay
+  srflx: Кандидат Server Reflexive
+tutorial:
+  feedbackDescription: Якщо у вас виникли проблеми, натисніть цю кнопку, щоб надіслати відгук!
+  instanceAddDescription: >-
+    Натисніть цю кнопку, щоб імпортувати існуючий Minecraft або створити новий з
+    нуля або модпак.
+  instanceSelectDescription: >-
+    Натиснувши цю кнопку, ви перейдете на сторінку вибору та створення нової
+    гри.
+  launchDescription: Натисніть цю кнопку, щоб встановити або запустити гру.
+  mod:
+    defaultSourceDescription: |-
+      Ви можете вибрати джерело деталей модів тут. 
+      Існують моди, опубліковані як для Modrinth, так і для Curseforge. 
+      Якщо ви хочете перемикатися між цими двома постачальниками вмісту. 
+      Ви можете змінити значення тут.
+    defaultSourceTitle: Виберіть джерело модифікованого вмісту
+    detailDescription: >-
+      Коли ви вибираєте елемент зліва. 
+      Ви побачите деталі мода. 
+      Вміст може надходити з Modrinth, Curseforge або вмісту проаналізованого
+      мода.
+    detailTitle: Деталі моду
+    listDescription: >-
+      Ми відображатимемо встановлені моди, якщо ви не введете жодних даних. 
+      Ви побачите шукані моди, коли введете ключове слово або виберете
+      категорію.
+    listTitle: Встановлений або шуканий мод
+    searchDescription: >-
+      Ви можете шукати моди з Modrinth, Curseforge або локального кешу за
+      допомогою цього поля пошуку.
+    searchTitle: Моди пошуку
+  multiplayer:
+    contentDescription: Зв’язки між вами та вашими колегами будуть перераховані тут.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: >-
+      Ви можете створити або приєднатися до групи з іншими гравцями. 
+      Програма запуску намагатиметься створити P2P-з’єднання між вами та вашими
+      друзями відповідно до групи. 
+      Ви можете ввести назву групи, яку дали ваші друзі. 
+      Або ви можете створити унікальне ім’я зі свого власного.
+    groupTitle: Приєднатися до групи
+    joinDescription: |-
+      Після введення назви групи. 
+      Ви можете натиснути цю кнопку, щоб приєднатися або створити групу. 
+      Якщо назва групи порожня, програма запуску згенерує назву для вас.
+    manualDescription: >-
+      Якщо ви або ваш друг не можете підключитися до групи. 
+      Ви можете спробувати вручну обміняти токен, натиснувши підключитися
+      вручну. 
+      Якщо це також не вдалося, проблема може бути в Інтернеті.
+  userAccountDescription: >-
+    Клацніть цю піктограму, щоб додати обліковий запис Minecraft або керувати
+    ним.
+universalDrop:
+  enableModsAfterImport: Включити моди після імпорту
+  start: Імпорт запущено
+  title: Перетягніть файл(и) сюди, щоб імпортувати як
+  unknownResource: Невідомо
+upstream:
+  downgrade: Понизити
+  missingModpackMetadata: >-
+    Метадані старого модпакету не знайдено.
+    Ви все ще можете оновити систему, але результат може бути неправильним. Будь
+    ласка, створіть резервну копію файли екземплярів.         
+user:
+  accessToken: Токен доступу
+  authMode: Служба авторизації
+  authService: Авторизація служби
+  birth: Зареєстрований день народження
+  challenges: Дайте відповідь на запитання нижче, щоб підтвердити свою особистість
+  email: Адреса електронної пошти
+  forgetChallenges: Я забув ці питання і хочу їх змінити
+  id: Ідентифікатор користувача
+  info: інформація про користувача
+  insecureClient: Клієнт небезпечний! Підтвердіть свою особу, щоб завантажити скін!
+  name: Ім'я користувача
+  nameHint: Ім'я, що відображається в грі
+  profile: Профіль
+  refreshAccount: Оновити обліковий запис
+  refreshSkin: Оновити скін
+  submitChallenges: Надіслати відповіді
+  tokenExpired: Сплив
+  tokenValidUntil: Токен дійсний до
+userAccount:
+  add: Додати обліковий запис
+  removeDescription: Це зітре всю інформацію про цей обліковий запис. Ви впевнені?
+  removeTitle: Видалити акаунт
+userCape:
+  changeTitle: Змінити плащ
+  description: |-
+    Плащі - це спеціальні нагороди, які гравці можуть отримати у різних подіях,
+      кампанії та інших активностях. Тут ви можете вибрати між плащами якої ви
+      володієте в даний час:
+  noCape: Немає плащів
+userService:
+  add: Додати дод. служби
+  authLibInjector: Дотримуйтесь рекомендацій щодо інжектора auth-lib
+  baseUrlHint: Базове посилання вашої користувальницької служби
+  title: Служби користувача
+  validateHint: Використовується для перевірки того, що токен користувача все ще дійсний
+userServices:
+  microsoft:
+    account: Обліковий запис Microsoft
+    deviceCode: Код пристрою
+    deviceCodeHint: Код пристрою буде згенеровано після натискання кнопки входу в систему
+    fastLogin: Швидкий вхід
+    name: Microsoft
+    password: Введіть пароль у браузері
+    useDeviceCode: Вхід за кодом пристрою
+  mojang:
+    account: Адреса електронної пошти
+    name: Mojang
+    password: Пароль
+  offline:
+    account: Ім'я користувача
+    name: Автономний режим
+    password: Пароль не потрібний
+    uuid: UUID користувача (Необов'язково)
+userSkin:
+  import: Імпорт скіна
+  importFile: Відкрити з файлу
+  importLink: Відкрити за посиланням
+  placeUrlHere: Помістіть URL-адресу скіна тут для імпорту
+  reset: Скидання
+  save: Зберегти
+  saveTitle: Зберегти скін на диск
+  skinType: Тип скіну
+  upload: Завантажити скін
+  urlNotEmpty: URL-адреса на скіна не може бути порожньою
+  urlNotValid: Неприпустима URL-адреса на скіна
+  useSlim: Використовувати тонку модель
+version:
+  name: Версія | Версії
+  notInstalled: Версія не встановлена
+versionType:
+  alpha: Альфа
+  beta: Бета
+  name: Стан
+  release: Реліз
+'yes': Так
+shared: Екземпляр використовує спільну папку пакета ресурсів
