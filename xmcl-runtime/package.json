@@ -66,7 +66,7 @@
         "node-datachannel": "0.5.5",
         "node-watch": "^0.7.3",
         "normalize-url": "^7.2.0",
-        "undici": "6.10.2",
+        "undici": "6.11.1",
         "ws": "8.10.0",
         "yazl": "^2.5.1"
     },
