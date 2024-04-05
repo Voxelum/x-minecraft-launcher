@@ -7,6 +7,7 @@ import { LauncherAppPlugin } from '~/app'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { ModpackService } from './ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
+import { resolveHashes } from './resolveHashes'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
@@ -72,15 +73,10 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
           if (!domain) {
             domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
           }
-          const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
           infos.push({
             downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
             path: join(domain, file.fileName),
-            hashes: sha1
-              ? {
-                sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
-              } as Record<string, string>
-              : {},
+            hashes: resolveHashes(file),
             curseforge: {
               fileId: file.id,
               projectId: file.modId,
