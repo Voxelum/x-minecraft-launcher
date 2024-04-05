@@ -26,7 +26,11 @@
     </span>
     <slot />
 
+    <AppAudioPlayer
+      class="ml-22"
+    />
     <div class="grow " />
+
     <TaskSpeedMonitor v-if="!noTask" />
     <AppSystemBarBadge
       v-if="!noTask"
@@ -81,7 +85,6 @@
 </template>
 <script lang="ts" setup>
 import { useBarBlur } from '../composables/background'
-import { kColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 
@@ -91,6 +94,8 @@ import { useWindowStyle } from '@/composables/windowStyle'
 import AppSystemBarAvatar from './AppSystemBarUserMenu.vue'
 import { kTutorial } from '@/composables/tutorial'
 import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
+import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{
   noUser?: boolean
@@ -98,7 +103,7 @@ defineProps<{
   back?: boolean
 }>()
 
-const { appBarColor } = injection(kColorTheme)
+const { appBarColor } = injection(kTheme)
 const { blurAppBar } = useBarBlur()
 const { maximize, minimize, close } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()

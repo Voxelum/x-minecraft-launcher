@@ -18,12 +18,12 @@
   </div>
 </template>
 <script lang="ts" setup>
-
-import { useTheme } from '../composables'
+import { injection } from '@/util/inject'
 import { LogRecord } from '../util/log'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{ logs: LogRecord[] }>()
-const { darkTheme } = useTheme()
+const { isDark } = injection(kTheme)
 
 const { t } = useI18n()
 const levelText: Record<string, string> = reactive({
@@ -32,7 +32,7 @@ const levelText: Record<string, string> = reactive({
   warn: computed(() => t('logLevel.warning')),
 })
 const levelClasses: Record<string, string> = reactive({
-  info: computed(() => darkTheme.value ? 'text-gray-300' : 'text-black-500'),
+  info: computed(() => isDark.value ? 'text-gray-300' : 'text-black-500'),
   warn: computed(() => 'text-orange-600'),
   error: computed(() => 'text-rose-600'),
 })

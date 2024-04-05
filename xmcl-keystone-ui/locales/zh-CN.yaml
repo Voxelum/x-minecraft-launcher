@@ -1060,6 +1060,7 @@ setting:
     cover: 覆盖
     name: 放置方式
   backgroundImageSelect: 选择
+  backgroundMusic: 主题背景音乐
   backgroundType: 背景效果
   backgroundTypeDescription: 背景是否显示特效（如果觉得卡就可以关掉）
   backgroundTypes:
@@ -1151,6 +1152,7 @@ setting:
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
   useProxy: HTTP 代理设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
+  viewBackgroundMusic: 查看音乐
 settingLabel:
   global: 全局配置
   globalHint: 这个配置使用的是全局配置
@@ -1235,6 +1237,10 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+theme:
+  selectImage: 选择图像
+  selectMusic: 选择音乐
+  selectVideo: 选择视频
 transportType:
   host: 公网地址
   prflx: 同伴反射地址

@@ -1107,6 +1107,7 @@ setting:
     cover: Cover
     name: Image Fit
   backgroundImageSelect: select
+  backgroundMusic: Theme Background Music
   backgroundType: Background Type
   backgroundTypeDescription: Show special effect on background (This may impact performance)
   backgroundTypes:
@@ -1202,6 +1203,7 @@ setting:
     won't affect if you're not in China mainland)
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
+  viewBackgroundMusic: View Musics
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
@@ -1294,6 +1296,10 @@ task:
   nTaskRunning: '{count} tasks is running'
   name: Task | Tasks
   pause: Pause
+theme:
+  selectImage: Select Image
+  selectMusic: Select Music
+  selectVideo: Select Video
 title: X Minecraft Launcher
 transportType:
   host: Host Candidate

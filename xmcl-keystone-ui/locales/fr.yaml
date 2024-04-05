@@ -1145,6 +1145,7 @@ setting:
     cover: Couvrir
     name: S'ajuster
   backgroundImageSelect: sélectionner
+  backgroundMusic: Thème Musique de fond
   backgroundType: Type d'arrière-plan
   backgroundTypeDescription: >-
     Afficher un effet spécial sur l'arrière-plan (cela peut avoir un impact sur
@@ -1249,6 +1250,7 @@ setting:
     continentale)
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
+  viewBackgroundMusic: Voir les musiques
 settingLabel:
   global: Global
   globalHint: Ce réglage sera global
@@ -1341,6 +1343,10 @@ task:
     Tâche | 
     Tâches
   pause: Pause
+theme:
+  selectImage: Sélectionnez une image
+  selectMusic: Sélectionnez la musique
+  selectVideo: Sélectionnez la vidéo
 title: X Minecraft Launcher
 transportType:
   host: Candidat Hôte

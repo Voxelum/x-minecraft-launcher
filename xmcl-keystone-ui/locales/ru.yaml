@@ -1072,6 +1072,7 @@ setting:
     cover: Обрезать
     name: Подогнать
   backgroundImageSelect: Выбрать
+  backgroundMusic: Тематическая фоновая музыка
   backgroundType: Тип фона
   backgroundTypeDescription: Отображать особый эффект на фоне (Может повлиять на производительность)
   backgroundTypes:
@@ -1169,6 +1170,7 @@ setting:
     материковом Китае. (Не поможет, если вы не находитесь в материковом Китае)
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
+  viewBackgroundMusic: Просмотр музыки
 settingLabel:
   global: Глобальные
   globalHint: Эта настройка будет соответствовать глобальной настройке
@@ -1257,6 +1259,10 @@ task:
   nTaskRunning: 'Запущено задач: {count}'
   name: Задача | Задачи
   pause: Пауза
+theme:
+  selectImage: Выберите изображение
+  selectMusic: Выберите музыку
+  selectVideo: Выберите видео
 title: X Minecraft Launcher
 transportType:
   host: Кандидат Host

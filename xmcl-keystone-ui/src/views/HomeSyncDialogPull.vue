@@ -47,13 +47,13 @@
 import { Ref } from 'vue'
 import { InstanceInstallServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
-import { kColorTheme } from '../composables/colorTheme'
 import Hint from '@/components/Hint.vue'
 import { useService, useServiceBusy } from '@/composables'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
+import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{ shown: boolean }>()
 
@@ -63,7 +63,7 @@ const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')
 const applyingUpdate = useServiceBusy(InstanceInstallServiceKey, 'installInstanceFiles')
 const currentUpdate = ref(undefined as undefined | InstanceUpdate)
 const updateFiles = computed(() => currentUpdate.value ? currentUpdate.value.updates : [])
-const { errorColor } = injection(kColorTheme)
+const { errorColor } = injection(kTheme)
 const errorUrl = ref('')
 const { t } = useI18n()
 const { path } = injection(kInstance)

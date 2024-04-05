@@ -1181,6 +1181,7 @@ setting:
     cover: Trimmen
     name: Fit
   backgroundImageSelect: Wählen Sie
+  backgroundMusic: Thematische Hintergrundmusik
   backgroundType: Hintergrund Typ
   backgroundTypeDescription: >-
     Einen speziellen Effekt auf dem Hintergrund anzeigen (kann die Leistung
@@ -1288,6 +1289,7 @@ setting:
      (Funktioniert nicht, wenn Sie sich nicht auf dem chinesischen Festland befinden)
   useProxy: HTTP-Proxy
   useProxyDescription: Proxy-Server-Adresse für http-Anfrage
+  viewBackgroundMusic: Musik anzeigen
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung
@@ -1381,6 +1383,10 @@ task:
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
+theme:
+  selectImage: Bild auswählen
+  selectMusic: Wählen Sie Musik
+  selectVideo: Wählen Sie Video
 title: X Minecraft Launcher
 transportType:
   host: Gastgeber-Kandidat

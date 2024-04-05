@@ -42,7 +42,6 @@
     >
       <main
         class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
-        :class="{ solid: !blurMainBody }"
       >
         <transition
           name="fade-transition"
@@ -66,19 +65,17 @@ import '@/assets/common.css'
 import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useExternalRoute } from '@/composables'
-import { useBackground } from '@/composables/background'
-import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { useBlockSharedTooltip } from '@/composables/sharedTooltip'
+import { kTheme } from '@/composables/theme'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 
-const { cssVars } = injection(kColorTheme)
-const { blurMainBody } = useBackground()
+const { cssVars } = injection(kTheme)
 
 const vuetify = injection(kVuetify)
 

@@ -22,8 +22,9 @@
   </v-menu>
 </template>
 <script lang="ts" setup>
-import { useTheme } from '@/composables'
+import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   value: string
@@ -32,10 +33,10 @@ const props = defineProps<{
 
 const emit = defineEmits(['input'])
 
-const { darkTheme } = useTheme()
+const { isDark } = injection(kTheme)
 
 const shadowColor = computed(() => ({
-  '--shadow-color': darkTheme.value ? '255 255 255' : '0 0 0',
+  '--shadow-color': isDark.value ? '255 255 255' : '0 0 0',
   'background-color': props.value,
 }))
 

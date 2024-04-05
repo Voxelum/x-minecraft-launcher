@@ -13,7 +13,6 @@
       <AppSideBar />
       <main
         class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
-        :class="{ solid: !blurMainBody }"
       >
         <transition
           name="fade-transition"
@@ -61,15 +60,13 @@ import '@/assets/common.css'
 import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
-import { kBackground } from '@/composables/background'
 import { useLocalStorageCacheBool } from '@/composables/cache'
-import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { kSettingsState } from '@/composables/setting'
+import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
 import { kVuetify } from '@/composables/vuetify'
-import { useVuetifyColorTheme } from '@/composables/vuetifyColorTheme'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
@@ -112,14 +109,10 @@ const onReady = async (data: any) => {
   tutor.start()
 }
 
-const { cssVars, ...colorTheme } = injection(kColorTheme)
-
-// background
-const { blurMainBody } = injection(kBackground)
+const { cssVars } = injection(kTheme)
 
 // color theme sync
 const vuetify = injection(kVuetify)
-useVuetifyColorTheme(vuetify, colorTheme)
 
 // Notifier
 const { notify } = useNotifier()

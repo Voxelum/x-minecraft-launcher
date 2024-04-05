@@ -1,0 +1,113 @@
+<template>
+  <div class="non-moveable flex flex-grow-0">
+    {{ basename(currentUrl) }}
+    <v-btn
+      icon
+      x-small
+      @click="prev"
+    >
+      <v-icon class="mr-0">
+        skip_previous
+      </v-icon>
+    </v-btn>
+    <v-btn
+      icon
+      x-small
+      @click="play"
+    >
+      <v-icon class="mr-0">
+        {{ playing ? 'pause' : 'play_arrow' }}
+      </v-icon>
+    </v-btn>
+    <v-btn
+      icon
+      x-small
+      @click="next"
+    >
+      <v-icon class="mr-0">
+        skip_next
+      </v-icon>
+    </v-btn>
+    <!-- <v-slider
+      class="h-5 w-5"
+      hide-details
+      dense
+      max="100"
+      min="0"
+    /> -->
+    <v-menu
+      offset-y
+    >
+      <template #activator="{ on, attrs }">
+        <v-btn
+          icon
+          x-small
+          v-bind="attrs"
+          v-on="on"
+          @wheel="onWheel"
+        >
+          <v-icon class="mr-0">
+            volume_up
+          </v-icon>
+        </v-btn>
+      </template>
+      <v-sheet
+        class="w-5 overflow-hidden rounded"
+        @wheel="onWheel"
+      >
+        <v-slider
+          v-model="volume"
+          vertical
+          hide-details
+          :step="0.01"
+          :max="1"
+          :min="0"
+          dense
+        />
+      </v-sheet>
+    </v-menu>
+    <audio
+      ref="audio"
+      autoplay
+      :src="currentUrl"
+      :type="currentMineType"
+    />
+  </div>
+</template>
+<script lang="ts" setup>
+import { kTheme, useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { basename } from '@/util/basename'
+import { useMediaControls } from '@vueuse/core'
+
+defineProps<{ }>()
+
+const { currentTheme } = injection(kTheme)
+const index = ref(0)
+const currentBackgroundMusics = computed(() => currentTheme.value?.backgroundMusic || [])
+const currentUrl = computed(() => currentBackgroundMusics.value[index.value]?.url)
+const currentMineType = computed(() => currentBackgroundMusics.value[index.value]?.mimeType)
+
+const audio = ref<HTMLAudioElement | null>(null)
+const { playing, volume } = useMediaControls(audio)
+
+const play = () => {
+  playing.value = !playing.value
+}
+const next = () => {
+  audio.value?.pause()
+  // play next
+  index.value = (index.value + 1) % currentBackgroundMusics.value.length
+  audio.value?.play()
+}
+const prev = () => {
+  audio.value?.pause()
+  // play prev
+  index.value = (index.value - 1 + currentBackgroundMusics.value.length) % currentBackgroundMusics.value.length
+  audio.value?.play()
+}
+
+const onWheel = (e: WheelEvent) => {
+  volume.value = Math.max(0, Math.min(1, volume.value - e.deltaY / 1000))
+}
+</script>

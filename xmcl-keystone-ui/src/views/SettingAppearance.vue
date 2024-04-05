@@ -200,7 +200,7 @@
         outlined
         text
         style="margin-right: 10px"
-        :disabled="!backgroundVideo"
+        :disabled="!backgroundImage"
         @click="clearVideo"
       >
         {{ t("setting.backgroundImageClear") }}
@@ -235,6 +235,29 @@
         :hint="t('setting.backgroundVideoVolume')"
         :always-dirty="true"
       />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-title>
+        {{
+          t("setting.backgroundMusic")
+        }}
+      </v-list-item-title>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="viewMusic"
+      >
+        {{ t("setting.viewBackgroundMusic") }}
+      </v-btn>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="selectMusic"
+      >
+        {{ t("setting.backgroundVideoSelect") }}
+      </v-btn>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
@@ -298,19 +321,17 @@
 import { kSettingsState } from '@/composables/setting'
 import { kUILayout } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import { BackgroundType, kBackground, useBackground, useBarBlur } from '../composables/background'
-import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
 import { useEnvironment } from '@/composables/environment'
+import { BackgroundType, kTheme } from '@/composables/theme'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
-const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = injection(kBackground)
-const { blurSidebar, blurAppBar } = useBarBlur()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
+const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()
 
@@ -363,7 +384,7 @@ const backgroundTypes = computed(() => [
 ])
 function selectImage() {
   showOpenDialog({
-    title: '选择图片',
+    title: t('theme.selectImage'),
     properties: ['openFile'],
     filters: [{
       name: 'image',
@@ -378,23 +399,44 @@ function selectImage() {
 }
 function selectVideo() {
   showOpenDialog({
-    title: '选择视频',
+    title: t('theme.selectVideo'),
     properties: ['openFile'],
     filters: [{
       name: 'video',
-      extensions: ['mp4', 'ogg', 'webm'],
+      extensions: ['mp4', 'webm'],
     }],
   }).then((v) => {
     if (v.filePaths[0]) {
-      setBackgroundVideo(v.filePaths[0])
+      setBackgroundImage(v.filePaths[0])
     }
   })
 }
+
+const { addMusic } = injection(kTheme)
+function selectMusic() {
+  showOpenDialog({
+    title: t('theme.selectMusic'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'audio',
+      extensions: ['mp3', 'ogg', 'wav'],
+    }],
+  }).then(async (v) => {
+    if (v.filePaths[0]) {
+      await addMusic(v.filePaths[0])
+    }
+  })
+}
+
+function viewMusic() {
+
+}
+
 function clearVideo() {
-  backgroundVideo.value = ''
+  clearBackgroundImage()
 }
 function clearImage() {
-  backgroundImage.value = ''
+  clearBackgroundImage()
 }
 
 </script>

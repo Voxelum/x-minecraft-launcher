@@ -28,11 +28,11 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { kColorTheme } from '@/composables/colorTheme'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 
-const { cardColor } = injection(kColorTheme)
+const { cardColor } = injection(kTheme)
 const { shaderPack } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 const { push } = useRouter()

@@ -1138,6 +1138,7 @@ setting:
     cover: Elfedje
     name: Illeszkedjen
   backgroundImageSelect: kiválasztás
+  backgroundMusic: Téma Háttérzene
   backgroundType: Háttérkép típusa
   backgroundTypeDescription: >-
     Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a
@@ -1237,6 +1238,7 @@ setting:
     tartózkodsz. (Ez nem befolyásolja, ha nem a kínai kontinensen tartózkodik.)
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
+  viewBackgroundMusic: Zenék megtekintése
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást
@@ -1330,6 +1332,10 @@ task:
   nTaskRunning: '{count} folyamat fut'
   name: Folyamat | Folyamatok
   pause: Szüneteltetés
+theme:
+  selectImage: Válassza a Kép lehetőséget
+  selectMusic: Válassza a Zene lehetőséget
+  selectVideo: Válassza a Videó lehetőséget
 title: X Minecraft Launcher
 transportType:
   host: Kiszolgáló jelölt

@@ -461,7 +461,6 @@
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
 import { useBusy, useService, useServiceBusy } from '@/composables'
-import { kColorTheme } from '@/composables/colorTheme'
 import { useNatState } from '@/composables/nat'
 import { kPeerState } from '@/composables/peers'
 import { kSettingsState } from '@/composables/setting'
@@ -474,6 +473,7 @@ import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
+import { kTheme } from '@/composables/theme'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -499,7 +499,7 @@ const allowTurn = computed({
   },
 })
 
-const { errorColor, successColor, warningColor } = injection(kColorTheme)
+const { errorColor, successColor, warningColor } = injection(kTheme)
 
 const tGroupState = computed(() => ({
   connected: '✔️ ' + t('peerGroupState.connected'),

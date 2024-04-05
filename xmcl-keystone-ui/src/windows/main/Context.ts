@@ -1,6 +1,4 @@
-import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores, useThemeSync } from '@/composables'
-import { kBackground, useBackground } from '@/composables/background'
-import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
+import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores } from '@/composables'
 import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
@@ -31,6 +29,7 @@ import { kServerStatusCache, useServerStatusCache } from '@/composables/serverSt
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
+import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
@@ -53,8 +52,6 @@ export default defineComponent({
     const queue = useNotificationQueue()
     provide(kNotificationQueue, queue)
 
-    provide(kColorTheme, useColorTheme(computed(() => vuetify.framework.theme.dark)))
-    provide(kBackground, useBackground())
     provide(kDropHandler, useDropHandler())
 
     const user = useUserContext()
@@ -119,9 +116,9 @@ export default defineComponent({
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
     provide(kModUpgrade, modUpgrade)
+    provide(kTheme, useTheme(vuetify.framework))
 
     useI18nSync(vuetify.framework, settings.state)
-    useThemeSync(vuetify.framework, settings.state)
 
     const router = useRouter()
     useExternalRoute(router)

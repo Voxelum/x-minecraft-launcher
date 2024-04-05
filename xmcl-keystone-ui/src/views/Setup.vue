@@ -109,7 +109,7 @@
 </template>
 
 <script lang=ts setup>
-import { usePreferDark, useService } from '@/composables'
+import { useService } from '@/composables'
 import { useBootstrap } from '@/composables/bootstrap'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
@@ -119,6 +119,7 @@ import SetDataRoot from './SetupDataRoot.vue'
 import SetupFooter from './SetupFooter.vue'
 import SetupAccount from './SetupAccount.vue'
 import SetLocale from './SetupLocale.vue'
+import { usePreferredDark } from '@vueuse/core'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary } = useService(BaseServiceKey)
@@ -175,7 +176,7 @@ watch(() => data.path, (newPath) => {
 })
 
 const vuetify = injection(kVuetify)
-const preferDark = usePreferDark()
+const preferDark = usePreferredDark()
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {

@@ -1,4 +1,3 @@
-import { usePreferDark } from '@/composables'
 import { kVuetify } from '@/composables/vuetify'
 import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
@@ -6,6 +5,7 @@ import 'virtual:windi.css'
 import Vue, { h } from 'vue'
 import App from './App.vue'
 import { baseService } from './baseService'
+import { usePreferredDark } from '@vueuse/core'
 
 const search = window.location.search.slice(1)
 const pairs = search.split('&').map((pair) => pair.split('='))
@@ -29,7 +29,7 @@ const app = new Vue(defineComponent({
       })
     })
 
-    const preferDark = usePreferDark()
+    const preferDark = usePreferredDark()
     const updateTheme = (theme: string) => {
       if (theme === 'system') {
         vuetify.framework.theme.dark = preferDark.value

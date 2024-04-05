@@ -244,6 +244,7 @@ resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 setting:
+  backgroundMusic: Tema Música de fondo
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
   maunalUpdateHint: |-
@@ -267,3 +268,8 @@ task:
     running: Conexión en execución
     size: reconto total
   connections: Conexións de rede
+  viewBackgroundMusic: Ver músicas
+theme:
+  selectImage: Seleccione Imaxe
+  selectMusic: Seleccione Música
+  selectVideo: Seleccione Vídeo

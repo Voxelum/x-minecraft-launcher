@@ -21,6 +21,7 @@ import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { InstanceShaderPacksService } from '@xmcl/runtime/shaderPack'
 import { OfficialUserService, UserService, YggdrasilService } from '@xmcl/runtime/user'
 import { VersionService } from '@xmcl/runtime/version'
+import { ThemeService } from '@xmcl/runtime/theme'
 
 export const definedServices = [
   VersionMetadataService,
@@ -58,4 +59,5 @@ export const definedServices = [
   InstanceInstallService,
   PeerService,
   PeerGroupService,
+  ThemeService,
 ]
