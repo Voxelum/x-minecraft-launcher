@@ -5,7 +5,7 @@ import { createReadStream } from 'fs'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
 import { request } from 'undici'
-import { Inject, LauncherAppKey } from '~/app'
+import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { AbstractService, Singleton } from '~/service'
 import { UserService } from '~/user'
@@ -45,7 +45,8 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
       throw new InstanceIOException({ instancePath, type: 'instanceInvalidFileApi', url: instance.fileApi })
     }
 
-    const tempZipFile = join(this.app.temporaryPath, randomUUID())
+    const getTemp = await this.app.registry.get(kTempDataPath)
+    const tempZipFile = getTemp(randomUUID())
     const useJson = forceJsonFormat || manifest.files.every(f => f.modrinth || f.curseforge || (f.downloads && f.downloads.length > 0))
 
     if (!useJson) {

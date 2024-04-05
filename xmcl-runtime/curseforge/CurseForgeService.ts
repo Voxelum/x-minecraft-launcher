@@ -3,7 +3,7 @@ import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallF
 import { existsSync } from 'fs'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
-import { Inject, LauncherAppKey } from '~/app'
+import { Inject, LauncherAppKey, kGameDataPath, kTempDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
@@ -46,8 +46,8 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
 
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resourceService = this.resourceService
-    const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    const destination = join(this.app.temporaryPath, file.fileName)
+    const getTemp = await this.app.registry.get(kTempDataPath)
+    const destination = getTemp(file.fileName)
 
     const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
     // Try to find the resource in cache
@@ -64,6 +64,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
           }
         }
       }
+      const downloadOptions = await this.app.registry.get(kDownloadOptions)
       const task = new DownloadTask({
         ...downloadOptions,
         url: downloadUrls,

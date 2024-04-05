@@ -5,7 +5,7 @@ import { ensureFile, unlink } from 'fs-extra'
 import { basename } from 'path'
 import { request } from 'undici'
 import { URL } from 'url'
-import { Inject, LauncherAppKey } from '~/app'
+import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
@@ -43,10 +43,11 @@ export class ImportService extends AbstractService implements IImportService {
         shouldImport: true,
       }
     }
+    const getTemp = await this.app.registry.get(kTempDataPath)
     const { shouldImport, installToInstance } = resolveOptions()
     const packAndImport = async () => {
       // zip and import
-      const tempZipPath = `${this.getTempPath(parsed.name)}.zip`
+      const tempZipPath = `${getTemp(parsed.name)}.zip`
       const zipTask = new ZipTask(tempZipPath)
       await zipTask.includeAs(parsed.path, '')
       await zipTask.startAndWait()
@@ -108,7 +109,8 @@ export class ImportService extends AbstractService implements IImportService {
             disposition = disposition.substring(0, end).trim()
             fileName = disposition
           }
-          const destination = this.getTempPath(createHash('sha1').update(url).digest('hex'), fileName)
+          const getTemp = await this.app.registry.get(kTempDataPath)
+          const destination = getTemp(createHash('sha1').update(url).digest('hex'), fileName)
           await ensureFile(destination)
           const downloadOptions = await this.app.registry.get(kDownloadOptions)
           await this.submit(new DownloadTask({
