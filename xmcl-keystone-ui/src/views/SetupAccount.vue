@@ -43,7 +43,7 @@
           block
           rounded
           large
-          class="z-10 mt-4 text-white"
+          class="z-10 mt-4 dark:text-white"
           @click="login = false"
         >
           {{ t('setup.account.skip') }}
@@ -53,7 +53,6 @@
   </div>
 </template>
 <script lang=ts setup>
-import UserCard from '@/components/UserCard.vue'
 import UserCardUserItem from '@/components/UserCardUserItem.vue'
 import UserLoginForm from '@/components/UserLoginForm.vue'
 import { kUserContext } from '@/composables/user'
