@@ -40,7 +40,7 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   getGameDataDirectory(): Promise<string> {
-    return this.app.getGameDataPath()
+    return this.app.registry.get(kGameDataPath).then(f => f())
   }
 
   async getSettings(): Promise<MutableState<Settings>> {

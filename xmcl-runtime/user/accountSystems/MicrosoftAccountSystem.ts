@@ -12,7 +12,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     private logger: Logger,
     private authenticator: MicrosoftAuthenticator,
     private mojangClient: MojangClient,
-    private userTokenStorage: UserTokenStorage,
+    private getUserTokenStorage: () => Promise<UserTokenStorage>,
     private oauthClient: MicrosoftOAuthClient,
   ) { }
 
@@ -33,7 +33,8 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       selectedProfile: authentication.selectedProfile?.id ?? '',
       avatar: authentication.avatar,
     }
-    await this.userTokenStorage.put(profile, authentication.accessToken)
+    const userTokenStorage = await this.getUserTokenStorage()
+    await userTokenStorage.put(profile, authentication.accessToken)
     return profile
   }
 
@@ -49,11 +50,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         user.selectedProfile = selectedProfile?.id ?? ''
         user.profiles = toRecord(gameProfiles, v => v.id)
         user.invalidated = false
-        await this.userTokenStorage.put(user, accessToken)
+        const userTokenStorage = await this.getUserTokenStorage()
+        await userTokenStorage.put(user, accessToken)
       } catch (e) {
         this.logger.error(e as any)
         user.invalidated = true
-        await this.userTokenStorage.put(user, '')
+        const userTokenStorage = await this.getUserTokenStorage()
+        await userTokenStorage.put(user, '')
       }
     }
 
@@ -61,7 +64,8 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
   }
 
   async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, options: SkinPayload, signal: AbortSignal): Promise<UserProfile> {
-    const token = await this.userTokenStorage.get(userProfile)
+    const userTokenStorage = await this.getUserTokenStorage()
+    const token = await userTokenStorage.get(userProfile)
     if (!token) {
       userProfile.invalidated = true
       return userProfile

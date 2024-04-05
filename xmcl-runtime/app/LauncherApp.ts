@@ -67,11 +67,6 @@ export class LauncherApp extends EventEmitter {
    */
   readonly minecraftDataPath: string
 
-  /**
-   * Path to temporary folder
-   */
-  readonly temporaryPath: string
-
   readonly semaphoreManager: SemaphoreManager
   readonly launcherAppManager: LauncherAppManager
   readonly logEmitter: LogEmitter = new EventEmitter()
@@ -137,7 +132,6 @@ export class LauncherApp extends EventEmitter {
     plugins: LauncherAppPlugin[],
   ) {
     super()
-    this.temporaryPath = ''
     const appData = host.getPath('appData')
 
     const plat = getPlatform()
@@ -197,7 +191,7 @@ export class LauncherApp extends EventEmitter {
   }
 
   async dispose() {
-    await Promise.all(this.disposers.map(m => m().catch(() => {})))
+    await Promise.all(this.disposers.map(m => m().catch(() => { })))
   }
 
   /**
@@ -234,10 +228,11 @@ export class LauncherApp extends EventEmitter {
   async start(): Promise<void> {
     await Promise.all([
       this.setup(),
-      this.waitEngineReady().then(() => {
-        this.onEngineReady()
-      })],
-    )
+      this.host.whenReady().then(() => {
+        this.emit('engine-ready')
+        return this.onEngineReady()
+      }),
+    ])
   }
 
   /**
@@ -294,9 +289,6 @@ export class LauncherApp extends EventEmitter {
       await ensureDir(gameDataPath)
       this.gamePathSignal.resolve(gameDataPath)
     }
-
-    (this.temporaryPath as any) = join(gameDataPath, 'temp')
-    await ensureDir(this.temporaryPath)
   }
 
   async migrateRoot(newRoot: string) {
@@ -380,8 +372,5 @@ export class LauncherApp extends EventEmitter {
     await this.controller.activate(app)
     this.logger.log(`Current launcher core version is ${this.version}.`)
     this.logger.log('App booted')
-
-    await this.gamePathSignal.promise
-    this.emit('engine-ready')
   }
 }

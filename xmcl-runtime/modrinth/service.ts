@@ -2,7 +2,7 @@ import { DownloadTask } from '@xmcl/installer'
 import { ModrinthService as IModrinthService, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthServiceKey, ResourceDomain, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
-import { Inject, LauncherApp, LauncherAppKey } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, kTempDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
@@ -28,7 +28,8 @@ export class ModrinthService extends AbstractService implements IModrinthService
     const isSingleFile = files.length === 1
     const resources = await Promise.all(files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
-      const destination = join(this.app.temporaryPath, basename(file.filename))
+      const getTemp = await this.app.registry.get(kTempDataPath)
+      const destination = getTemp(basename(file.filename))
       const hashes = Object.entries(file.hashes)
       const urls = [file.url]
       if (version) {

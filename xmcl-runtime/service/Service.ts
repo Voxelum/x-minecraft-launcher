@@ -183,11 +183,6 @@ export abstract class AbstractService extends EventEmitter {
   protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args)
 
   /**
-   * Return the path under the temp root
-   */
-  protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args)
-
-  /**
    * Return the path under .minecraft folder
    */
   protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args)
