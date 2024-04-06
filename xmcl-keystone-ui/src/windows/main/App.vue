@@ -110,6 +110,7 @@ const onReady = async (data: any) => {
 }
 
 const { cssVars } = injection(kTheme)
+const fontUrl = computed(() => cssVars.value['--font-family'])
 
 // color theme sync
 const vuetify = injection(kVuetify)
@@ -118,6 +119,20 @@ const vuetify = injection(kVuetify)
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
+
+watch(fontUrl, () => {
+  const existed = document.getElementById('font-injection')
+  if (existed) {
+    existed.remove()
+  }
+  const style = document.createElement('style')
+  style.id = 'font-injection'
+  style.innerHTML = `@font-face {
+    font-family: 'custom-font';
+    src: ${fontUrl.value};
+  }`
+  document.head.appendChild(style)
+}, { immediate: true })
 
 </script>
 
@@ -134,5 +149,11 @@ img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+}
+
+</style>
+<style>
+.v-application {
+  font-family: 'custom-font', Roboto, sans-serif;
 }
 </style>

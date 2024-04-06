@@ -11,13 +11,13 @@
     :style="{ filter: `blur(${blur}px)` }"
   />
   <img
-    v-else-if="backgroundImage?.type === 'image'"
+    v-else-if="backgroundImage?.type === 'image' && backgroundType === BackgroundType.IMAGE"
     :src="backgroundImage.url"
     class="absolute z-0 h-full w-full"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
   >
   <video
-    v-else-if="backgroundImage?.type === 'video'"
+    v-else-if="backgroundImage?.type === 'video' && backgroundType === BackgroundType.VIDEO"
     ref="videoRef"
     class="absolute z-0 h-full w-full object-cover"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"

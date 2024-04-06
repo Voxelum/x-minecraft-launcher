@@ -8,7 +8,7 @@
       v-if="modid"
       small
       class="mod-tag"
-      :outlined="darkTheme"
+      :outlined="isDark"
       color="orange en-1"
       :disabled="disabled"
       label

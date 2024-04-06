@@ -1,4 +1,4 @@
-import { MediaData, ThemeServiceKey } from '@xmcl/runtime-api'
+import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, computed } from 'vue'
 import { Framework } from 'vuetify'
 import { useLocalStorageCache, useLocalStorageCacheStringValue } from './cache'
@@ -60,10 +60,10 @@ export interface UIThemeData {
 }
 
 export function useTheme(framework: Framework) {
-  const { addMedia, removeMedia } = useService(ThemeServiceKey)
+  const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
 
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default')
-  const darkTheme = useLocalStorageCache<boolean | 'system'>('darkTheme', () => 'system' as boolean | 'system', (v) => v === 'system' ? v : v ? 'true' : 'false', (v) => v === 'system' ? v : Boolean(v))
+  const darkTheme = useLocalStorageCacheStringValue<'dark' | 'light' | 'system'>('darkTheme', 'system')
   const currentTheme = ref<UIThemeData>({
     name: 'default',
     backgroundMusic: [],
@@ -98,11 +98,11 @@ export function useTheme(framework: Framework) {
     if (darkTheme.value === 'system') {
       return window.matchMedia('(prefers-color-scheme: dark)').matches
     }
-    return darkTheme.value
+    return darkTheme.value === 'dark'
   })
   watch(isDark, (dark) => {
     framework.theme.dark = dark
-  })
+  }, { immediate: true })
 
   const backgroundType = computed({
     get() { return currentTheme.value?.backgroundType ?? BackgroundType.NONE },
@@ -273,6 +273,7 @@ export function useTheme(framework: Framework) {
   const cssVars = computed(() => ({
     '--primary': primaryColor.value,
     'background-color': backgroundColor.value,
+    '--font-family': currentTheme.value.font ? `url(${currentTheme.value.font.url})` : '',
   }))
 
   function migrateLegacyTheme(ui: UIThemeData) {
@@ -358,6 +359,7 @@ export function useTheme(framework: Framework) {
     const themes = localStorage.getItem('themes')
     const parsed = themes ? JSON.parse(themes) as Record<string, UIThemeData> : {}
     parsed[name] = theme
+    console.log(theme)
     localStorage.setItem('themes', JSON.stringify(parsed))
   }
 
@@ -447,19 +449,128 @@ export function useTheme(framework: Framework) {
     }
   }
 
-  if (primaryColor.value) { framework.theme.currentTheme.primary = primaryColor.value }
-  if (accentColor.value) { framework.theme.currentTheme.accent = accentColor.value }
-  if (infoColor.value) { framework.theme.currentTheme.info = infoColor.value }
-  if (errorColor.value) { framework.theme.currentTheme.error = errorColor.value }
-  if (successColor.value) { framework.theme.currentTheme.success = successColor.value }
-  if (warningColor.value) { framework.theme.currentTheme.warning = warningColor.value }
+  const font = computed(() => currentTheme.value?.font)
 
-  watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor })
-  watch(accentColor, (newColor) => { framework.theme.currentTheme.accent = newColor })
-  watch(infoColor, (newColor) => { framework.theme.currentTheme.info = newColor })
-  watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor })
-  watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor })
-  watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor })
+  async function setFont(path: string) {
+    const media = await addMedia(path)
+    console.log(media)
+    if (media.type !== 'font') return
+    const theme = currentTheme.value
+    if (!theme) return
+    theme.font = media
+    writeTheme(theme.name, theme)
+  }
+
+  async function resetFont() {
+    const theme = currentTheme.value
+    if (!theme) return
+    if (theme.font) {
+      await removeMedia(theme.font.url)
+      theme.font = undefined
+      writeTheme(theme.name, theme)
+    }
+  }
+
+  function _exportTheme(filePath: string) {
+    const theme = currentTheme.value
+    const assets: Record<string, MediaData | MediaData[]> = {}
+    if (theme.backgroundImage) {
+      assets.backgroundImage = theme.backgroundImage
+    }
+    if (theme.backgroundMusic) {
+      assets.backgroundMusic = theme.backgroundMusic
+    }
+    if (theme.font) {
+      assets.font = theme.font
+    }
+    const settings: ThemeData['settings'] = {}
+    if (theme.backgroundType) {
+      settings.backgroundType = theme.backgroundType
+    }
+    if (theme.backgroundImageFit) {
+      settings.backgroundImageFit = theme.backgroundImageFit
+    }
+    if (theme.backgroundMusicPlayOrder) {
+      settings.backgroundMusicPlayOrder = theme.backgroundMusicPlayOrder
+    }
+    if (theme.backgroundVolume) {
+      settings.backgroundVolume = theme.backgroundVolume
+    }
+    if (theme.particleMode) {
+      settings.particleMode = theme.particleMode
+    }
+    if (theme.blur) {
+      settings.blur = theme.blur
+    }
+    if (theme.blurSidebar) {
+      settings.blurSidebar = theme.blurSidebar
+    }
+    if (theme.blurAppBar) {
+      settings.blurAppBar = theme.blurAppBar
+    }
+    const serialized: ThemeData = {
+      name: theme.name,
+      ui: 'keystone',
+      version: 0,
+      assets,
+      colors: theme.colors,
+      settings,
+    }
+    return exportTheme(serialized, filePath)
+  }
+
+  async function _importTheme(filePath: string) {
+    const data = await importTheme(filePath)
+    if (data.ui !== 'keystone') {
+      throw new Error('Invalid theme file')
+    }
+    const theme: UIThemeData = {
+      name: data.name,
+      backgroundMusic: [],
+      colors: data.colors as any,
+      backgroundImageFit: 'cover',
+      blur: 4,
+    }
+    if (data.assets.backgroundImage) {
+      theme.backgroundImage = data.assets.backgroundImage as MediaData
+    }
+    if (data.assets.backgroundMusic) {
+      theme.backgroundMusic = data.assets.backgroundMusic as MediaData[]
+    }
+    if (data.settings?.backgroundType) {
+      theme.backgroundType = data.settings.backgroundType as BackgroundType
+    }
+    if (data.settings?.backgroundImageFit) {
+      theme.backgroundImageFit = data.settings.backgroundImageFit as 'cover' | 'contain'
+    }
+    if (data.settings?.backgroundMusicPlayOrder) {
+      theme.backgroundMusicPlayOrder = data.settings.backgroundMusicPlayOrder as 'sequential' | 'shuffle'
+    }
+    if (data.settings?.backgroundVolume) {
+      theme.backgroundVolume = data.settings.backgroundVolume as number
+    }
+    if (data.settings?.particleMode) {
+      theme.particleMode = data.settings.particleMode as ParticleMode
+    }
+    if (data.settings?.blur) {
+      theme.blur = data.settings.blur as number
+    }
+    if (data.settings?.blurSidebar) {
+      theme.blurSidebar = data.settings.blurSidebar as number
+    }
+    if (data.settings?.blurAppBar) {
+      theme.blurAppBar = data.settings.blurAppBar as number
+    }
+    writeTheme(theme.name, theme)
+    currentTheme.value = theme
+  }
+
+  watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
+  watch(accentColor, (newColor) => { framework.theme.currentTheme.accent = newColor }, { immediate: true })
+  watch(infoColor, (newColor) => { framework.theme.currentTheme.info = newColor }, { immediate: true })
+  watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor }, { immediate: true })
+  watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
+  watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
 
   return {
     isDark,
@@ -472,6 +583,9 @@ export function useTheme(framework: Framework) {
     blurAppBar,
     volume,
     blur,
+    darkTheme,
+    exportTheme: _exportTheme,
+    importTheme: _importTheme,
 
     cssVars,
     appBarColor,
@@ -485,6 +599,10 @@ export function useTheme(framework: Framework) {
     accentColor,
     cardColor,
     resetToDefault,
+
+    font,
+    setFont,
+    resetFont,
 
     removeMusic,
     addMusic,

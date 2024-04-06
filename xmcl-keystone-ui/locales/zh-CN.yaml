@@ -1147,6 +1147,8 @@ setting:
     dark: 暗色主题
     light: 亮色主题
     system: 跟随系统
+  themeExport: 导出主题
+  themeImport: 导入主题
   update: 升级设置
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft

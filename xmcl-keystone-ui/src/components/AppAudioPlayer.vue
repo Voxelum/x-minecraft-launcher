@@ -75,10 +75,10 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { kTheme, useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { basename } from '@/util/basename'
 import { useMediaControls } from '@vueuse/core'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{ }>()
 

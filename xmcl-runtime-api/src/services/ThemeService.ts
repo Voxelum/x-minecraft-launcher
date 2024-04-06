@@ -2,15 +2,31 @@ import { ServiceKey } from './Service'
 
 export interface MediaData {
   url: string
-  type: 'audio' | 'video' | 'image'
+  type: 'audio' | 'video' | 'image' | 'font'
   mimeType: string
 }
 
 export interface ThemeData {
   name: string
-
+  /**
+   * What UI this theme is for. It should be the same as the UI name.
+   */
+  ui: string
+  /**
+   * The version of the theme.
+   */
+  version: number
+  /**
+   * The assets included in the theme.
+   */
   assets: Record<string, MediaData | MediaData[]>
+  /**
+   * The colors of the theme.
+   */
   colors?: Record<string, string>
+  /**
+   * The other settings of the theme.
+   */
   settings?: Record<string, string | number | boolean>
 }
 
@@ -29,9 +45,9 @@ export interface ThemeService {
   /**
    * Export a theme to a .xtheme (zip) file
    * @param data The theme data
-   * @param destinationFolder The destination folder
+   * @param destinationFile The destination file
    */
-  exportTheme(data: ThemeData, destinationFolder: string): Promise<string>
+  exportTheme(data: ThemeData, destinationFile: string): Promise<string>
   /**
    * Import the theme zip file
    * @param zipFilePath The zip file path

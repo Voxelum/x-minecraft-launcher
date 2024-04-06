@@ -84,7 +84,6 @@
   </v-system-bar>
 </template>
 <script lang="ts" setup>
-import { useBarBlur } from '../composables/background'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 
@@ -103,8 +102,7 @@ defineProps<{
   back?: boolean
 }>()
 
-const { appBarColor } = injection(kTheme)
-const { blurAppBar } = useBarBlur()
+const { appBarColor, blurAppBar } = injection(kTheme)
 const { maximize, minimize, close } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')

@@ -315,6 +315,56 @@
         :always-dirty="true"
       />
     </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('setting.themeFont')
+          }}
+        </v-list-item-title>
+      </v-list-item-content>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onSelectFont"
+      >
+        {{ t("setting.themeSelectFont") }}
+      </v-btn>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onRevertFont"
+      >
+        {{ t("setting.themeRevertFont") }}
+      </v-btn>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('setting.themeManage')
+          }}
+        </v-list-item-title>
+      </v-list-item-content>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onExportTheme"
+      >
+        {{ t("setting.themeExport") }}
+      </v-btn>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onImportTheme"
+      >
+        {{ t("setting.themeImport") }}
+      </v-btn>
+    </v-list-item>
   </div>
 </template>
 <script lang="ts" setup>
@@ -328,10 +378,10 @@ import SettingHeader from '@/components/SettingHeader.vue'
 import { useEnvironment } from '@/composables/environment'
 import { BackgroundType, kTheme } from '@/composables/theme'
 
-const { showOpenDialog } = windowController
+const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kTheme)
+const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()
 
@@ -342,10 +392,7 @@ const linuxTitlebar = computed({
 
 const layout = injection(kUILayout)
 
-const theme = computed({
-  get: () => state.value?.theme ?? 'system',
-  set: v => state.value?.themeSet(v),
-})
+const theme = darkTheme
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
   value: 'dark',
@@ -437,6 +484,55 @@ function clearVideo() {
 }
 function clearImage() {
   clearBackgroundImage()
+}
+
+function onExportTheme() {
+  showSaveDialog({
+    title: t('setting.themeExport'),
+    defaultPath: currentTheme.value.name,
+    filters: [{
+      name: 'xtheme',
+      extensions: ['xtheme'],
+    }],
+  }).then((v) => {
+    if (v.filePath) {
+      exportTheme(v.filePath)
+    }
+  })
+}
+
+function onImportTheme() {
+  showOpenDialog({
+    title: t('setting.themeImport'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'xtheme',
+      extensions: ['xtheme'],
+    }],
+  }).then((v) => {
+    if (v.filePaths[0]) {
+      importTheme(v.filePaths[0])
+    }
+  })
+}
+
+function onSelectFont() {
+  showOpenDialog({
+    title: t('setting.themeSelectFont'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'font',
+      extensions: ['ttf', 'otf', 'woff', 'woff2'],
+    }],
+  }).then((v) => {
+    if (v.filePaths[0]) {
+      setFont(v.filePaths[0])
+    }
+  })
+}
+
+function onRevertFont() {
+  resetFont()
 }
 
 </script>

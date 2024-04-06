@@ -1196,6 +1196,8 @@ setting:
     dark: Dark Theme
     light: Light Theme
     system: Use System Theme
+  themeExport: Export Theme
+  themeImport: Import Theme
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
