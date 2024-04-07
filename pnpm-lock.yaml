@@ -94,8 +94,8 @@ importers:
         specifier: 16.0.1
         version: 16.0.1
       electron:
-        specifier: ^27.0.4
-        version: 27.0.4
+        specifier: 27.3.9
+        version: 27.3.9
       electron-builder:
         specifier: ^24.9.1
         version: 24.9.1
@@ -154,8 +154,8 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
 
   xmcl-keystone-ui:
     dependencies:
@@ -470,8 +470,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
       ws:
         specifier: 8.10.0
         version: 8.10.0
@@ -705,8 +705,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -721,8 +721,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ~18
@@ -779,8 +779,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ~18.15.11
@@ -887,8 +887,8 @@ importers:
         specifier: workspace:^*
         version: link:../unzip
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -977,8 +977,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -996,8 +996,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -1145,8 +1145,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1173,8 +1173,8 @@ importers:
         specifier: ~18.15.11
         version: 18.15.13
       undici:
-        specifier: 6.10.2
-        version: 6.10.2
+        specifier: 6.11.1
+        version: 6.11.1
 
 packages:
 
@@ -5884,7 +5884,6 @@ packages:
       get-intrinsic: 1.2.1
       gopd: 1.0.1
       has-property-descriptors: 1.0.0
-    dev: true
 
   /define-properties@1.2.0:
     resolution: {integrity: sha512-xvqAVKGfT1+UAvPwKTVw/njhdQ8ZhXK4lI0bCIuCMrp2up9nPnaDftrLtmpTazqd1o+UY4zgzU+avtMbDP+ldA==}
@@ -5900,7 +5899,6 @@ packages:
       define-data-property: 1.1.0
       has-property-descriptors: 1.0.0
       object-keys: 1.1.1
-    dev: true
 
   /delayed-stream@1.0.0:
     resolution: {integrity: sha512-ZySD7Nf91aLB0RxL4KGrKHBXl7Eds1DAmEdcoVawXnLD7SDhpNgtuII2aAkg7a7QS41jxPSZ17p4VdGnMHk3MQ==}
@@ -6153,8 +6151,8 @@ packages:
       - supports-color
     dev: true
 
-  /electron@27.0.4:
-    resolution: {integrity: sha512-ob29rN1mtiyAXzF8HsHd5jh8bYKd9OQDakfdOExi0F7epU97gXPHaj6JPjbBJ/vpki5d32SyKVePW4vxeNZk1A==}
+  /electron@27.3.9:
+    resolution: {integrity: sha512-7Jr9j7tS9q5U0suTJeCCWoNaRpQs06XbrZP5x7mgFVytT284EUe2uBXzYL9sOUdnHSznn+eDbWvUV+2IF08ixA==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
@@ -7336,7 +7334,6 @@ packages:
       has: 1.0.3
       has-proto: 1.0.1
       has-symbols: 1.0.3
-    dev: true
 
   /get-own-enumerable-property-symbols@3.0.2:
     resolution: {integrity: sha512-I0UBV/XOz1XkIJHEUDMZAbzCThU/H8DxmSfmdGcKPnVhu2VfFqr34jr9777IyaTYvxjedWhqVIilEDsCdP5G6g==}
@@ -7449,7 +7446,7 @@ packages:
     resolution: {integrity: sha512-sFdI5LyBiNTHjRd7cGPWapiHWMOXKyuBNX/cWJ3NfzrZQVa8GI/8cofCl74AOVqq9W5kNmguTIzJ/1s2gyI9wA==}
     engines: {node: '>= 0.4'}
     dependencies:
-      define-properties: 1.2.0
+      define-properties: 1.2.1
 
   /globby@11.1.0:
     resolution: {integrity: sha512-jhIXaOzy1sb8IyocaruWSn1TjmnBVs8Ayhcy83rmxNJ8q2uWKCAj3CnJY+KpGSXCueAPc0i05kVvVKtP1t9S3g==}
@@ -10211,8 +10208,8 @@ packages:
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
 
-  /undici@6.10.2:
-    resolution: {integrity: sha512-HcVuBy7ACaDejIMdwCzAvO22OsiE6ir6ziTIr9kAE0vB+PheVe29ZvRN8p7FXCO2uZHTjEoUs5bPiFpuc/hwwQ==}
+  /undici@6.11.1:
+    resolution: {integrity: sha512-KyhzaLJnV1qa3BSHdj4AZ2ndqI0QWPxYzaIOio0WzcEJB9gvuysprJSLtpvc2D9mhR9jPDUk7xlJlZbH2KR5iw==}
     engines: {node: '>=18.0'}
 
   /unicode-canonical-property-names-ecmascript@2.0.0:

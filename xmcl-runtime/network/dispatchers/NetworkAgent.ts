@@ -146,7 +146,9 @@ export class NetworkAgent extends Dispatcher {
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
     const { host } = new URL(opts.origin as string)
     const headers = util.parseHeaders(opts.headers as any) || {}
-    headers['user-agent'] = this.#userAgent
+    if (!headers['user-agent']) {
+      headers['user-agent'] = this.#userAgent
+    }
 
     if (this.#dispatchInterceptors) {
       for (const interceptor of this.#dispatchInterceptors) {
@@ -173,10 +175,7 @@ export class NetworkAgent extends Dispatcher {
       {
         ...opts,
         method: opts.method,
-        headers: {
-          ...headers,
-          host,
-        },
+        headers,
       },
       retry,
     )

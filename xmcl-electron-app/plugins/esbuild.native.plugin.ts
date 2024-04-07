@@ -25,47 +25,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           },
         )
       }
-      // Remove the side effect of classic-level to avoid it's bundled in worker script
-      // build.onResolve({ filter: /classic-level/g }, async ({ path, resolveDir }) => ({
-      //   path: require.resolve(path, {
-      //     paths: [resolveDir],
-      //   }),
-      //   sideEffects: false,
-      // }))
-      // return empty js for sharp to prevent it include large binary
-      build.onLoad(
-        { filter: /^.+[\\/]node_modules[\\/].+[\\/]sharp[\\/]lib[\\/]index\.js$/g },
-        async ({ path }) => {
-          return {
-            contents: 'module.exports = {}',
-            loader: 'js',
-          }
-        },
-      )
-      // replace sharp
-      build.onLoad(
-        { filter: /^.+[\\/]node_modules[\\/].+[\\/]sharp[\\/]lib[\\/]sharp\.js$/g },
-        async ({ path }) => {
-          // sharp is only for svg
-          throw new Error('This should not be reach!')
-          // const content = await readFile(path, 'utf-8')
-          // const modulePath = join(path, '../platform.js')
-          // // eslint-disable-next-line @typescript-eslint/no-var-requires
-          // const platform = require(modulePath)()
-          // const contents = content.replace(/\$\{platformAndArch\}/g, platform)
-          // // if (!build.initialOptions.watch) {
-          // //   const allLibs = (await readdir(join(dirname(path), '../build/Release'))).filter(f => f.endsWith('.dll') || f.endsWith('.so'))
-          // //     .map((f) => `require("../build/Release/${f}")`)
-          // //   contents = `${allLibs.join('\n')}
-          // //   ${contents}`
-          // // }
-          // return {
-          //   contents: contents,
-          //   loader: 'js',
-          //   resolveDir: dirname(path),
-          // }
-        },
-      )
 
       // Intercept node_modules\better-sqlite3\lib\database.js
       build.onLoad(
@@ -88,6 +47,18 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             export {Audio,DataChannel,DescriptionType,PeerConnection,cleanup,initLogger,preload,setSctpSettings,RelayType,ReliabilityType,RtcpReceivingSession,Track,Video,Direction} from '../build/Release/node_datachannel.node';
             export { default as DataChannelStream } from './datachannel-stream.js';
             `,
+            loader: 'js',
+          }
+        },
+      )
+
+      // node_modules\.pnpm\undici@6.11.1\node_modules\undici\lib\dispatcher\client.js
+      build.onLoad(
+        { filter: /^.+[\\/]undici[\\/]lib[\\/]dispatcher[\\/]client\.js$/g },
+        async ({ path }) => {
+          const content = await readFile(path, 'utf-8')
+          return {
+            contents: content.replace('client[kHTTPContext]?.destroy(new InformationalError(\'servername changed\'))', 'client[kHTTPContext]?.destroy(new InformationalError(\'servername changed\'), () => {})'),
             loader: 'js',
           }
         },
