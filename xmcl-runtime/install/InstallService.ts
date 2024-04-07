@@ -94,7 +94,7 @@ export class InstallService extends AbstractService implements IInstallService {
       if (shouldAppendCommonMaven) {
         urls.push(joinUrl(DEFAULT_FORGE_MAVEN, lib.download.path))
       }
-      return urls.map(u => u.replace('/maven/maven', '/maven'))
+      return urls
     }
     option.assetsIndexUrl = (ver) => allSets.map(api => {
       if (ver.assetIndex) {
