@@ -259,6 +259,12 @@ setting:
   streamerModeDescription: >-
     Isto ocultará a túa información privada como o correo electrónico no
     launcher.
+  themeFont: Fonte
+  themeFontDescription: Cambia o tipo de letra do iniciador.
+  themeResetFont: Restablecer fonte
+  themeSelectFont: Seleccione Fonte
+  themeShare: Compartir tema
+  themeShareDescription: Podes compartir o tema co teu amigo.
 task:
   connection:
     connected: Conectado

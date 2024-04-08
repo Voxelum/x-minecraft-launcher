@@ -1,7 +1,8 @@
+import { useStyleTag } from '@vueuse/core'
 import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, computed } from 'vue'
 import { Framework } from 'vuetify'
-import { useLocalStorageCache, useLocalStorageCacheStringValue } from './cache'
+import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
 
 export const kTheme: InjectionKey<ReturnType<typeof useTheme>> = Symbol('theme')
@@ -62,7 +63,7 @@ export interface UIThemeData {
 export function useTheme(framework: Framework) {
   const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
 
-  const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default')
+  const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
   const darkTheme = useLocalStorageCacheStringValue<'dark' | 'light' | 'system'>('darkTheme', 'system')
   const currentTheme = ref<UIThemeData>({
     name: 'default',
@@ -270,12 +271,6 @@ export function useTheme(framework: Framework) {
     },
   })
 
-  const cssVars = computed(() => ({
-    '--primary': primaryColor.value,
-    'background-color': backgroundColor.value,
-    '--font-family': currentTheme.value.font ? `url(${currentTheme.value.font.url})` : '',
-  }))
-
   function migrateLegacyTheme(ui: UIThemeData) {
     const readNum = (key: string) => {
       const v = localStorage.getItem(key)
@@ -352,7 +347,24 @@ export function useTheme(framework: Framework) {
     const themes = localStorage.getItem('themes')
     if (!themes) return
     const parsed = JSON.parse(themes) as Record<string, UIThemeData>
-    return parsed[name]
+
+    const ensureRGBAHex = (color: string) => {
+      if (color.length === 7) {
+        return color + 'FF'
+      }
+      return color
+    }
+
+    const theme = parsed[name]
+
+    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
+    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
+    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
+    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
+    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
+    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
+
+    return theme
   }
 
   function writeTheme(name: string, theme: UIThemeData) {
@@ -508,6 +520,7 @@ export function useTheme(framework: Framework) {
     if (theme.blurAppBar) {
       settings.blurAppBar = theme.blurAppBar
     }
+    settings.dark = isDark.value
     const serialized: ThemeData = {
       name: theme.name,
       ui: 'keystone',
@@ -561,8 +574,12 @@ export function useTheme(framework: Framework) {
     if (data.settings?.blurAppBar) {
       theme.blurAppBar = data.settings.blurAppBar as number
     }
+    if (data.settings?.dark) {
+      darkTheme.value = data.settings.dark ? 'dark' : 'light'
+    }
     writeTheme(theme.name, theme)
     currentTheme.value = theme
+    selectedThemeName.value = theme.name
   }
 
   watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
@@ -571,6 +588,36 @@ export function useTheme(framework: Framework) {
   watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor }, { immediate: true })
   watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
   watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
+
+  useStyleTag(computed(() => `
+  @font-face {
+    font-family: 'custom';
+    src: url('${font.value?.url}');
+  }
+  
+  .v-application {
+    font-family: 'custom', 'Roboto', sans-serif;
+  }
+  `), {
+    immediate: true,
+    id: 'font-style',
+  })
+
+  useStyleTag(computed(() => `
+  :root {
+    --color-primary: ${primaryColor.value};
+    --color-accent: ${accentColor.value};
+    --color-info: ${infoColor.value};
+    --color-error: ${errorColor.value};
+    --color-success: ${successColor.value};
+    --color-warning: ${warningColor.value};
+    --color-border: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
+  }
+
+  .v-application {
+    background-color: ${backgroundColor.value};
+  }
+  `))
 
   return {
     isDark,
@@ -587,7 +634,6 @@ export function useTheme(framework: Framework) {
     exportTheme: _exportTheme,
     importTheme: _importTheme,
 
-    cssVars,
     appBarColor,
     sideBarColor,
     primaryColor,

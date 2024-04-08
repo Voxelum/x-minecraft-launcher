@@ -8,6 +8,7 @@
   />
   <Halo
     v-else-if="backgroundType === BackgroundType.HALO"
+    class="absolute z-0 h-full w-full"
     :style="{ filter: `blur(${blur}px)` }"
   />
   <img

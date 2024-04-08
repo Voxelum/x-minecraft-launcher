@@ -1242,6 +1242,12 @@ setting:
     dark: Thème sombre
     light: Thème clair
     system: Utiliser le thème système
+  themeFont: Police de caractère
+  themeFontDescription: Changez la police du lanceur.
+  themeResetFont: Réinitialiser la police
+  themeSelectFont: Sélectionnez la police
+  themeShare: Partager le thème
+  themeShareDescription: Vous pouvez partager le thème avec votre ami.
   update: Mettre à jour
   useBmclAPI: Utiliser l'API BMCL
   useBmclAPIDescription: >-

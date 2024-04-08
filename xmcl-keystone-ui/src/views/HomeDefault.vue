@@ -298,7 +298,7 @@ useTutorial(computed(() => {
 }
 
 .vue-grid-placeholder {
-  background: var(--primary);
+  background: var(--color-primary);
 }
 .vue-grid-item .resizing {
     opacity: 0.9;

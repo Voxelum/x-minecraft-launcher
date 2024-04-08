@@ -1163,6 +1163,12 @@ setting:
     dark: Тёмная тема
     light: Светлая тема
     system: Использовать тему системы
+  themeFont: Шрифт
+  themeFontDescription: Измените шрифт лаунчера.
+  themeResetFont: Сбросить шрифт
+  themeSelectFont: Выберите шрифт
+  themeShare: Поделиться темой
+  themeShareDescription: Вы можете поделиться темой со своим другом.
   update: Обновить
   useBmclAPI: Использовать BMCL API
   useBmclAPIDescription: >-

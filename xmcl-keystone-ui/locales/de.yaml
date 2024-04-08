@@ -1281,6 +1281,12 @@ setting:
     dark: Dunkles Thema
     light: Thema Licht
     system: Verwenden Sie das Systemthema
+  themeFont: Schriftart
+  themeFontDescription: Ändern Sie die Schriftart des Launchers.
+  themeResetFont: Schriftart zurücksetzen
+  themeSelectFont: Wählen Sie Schriftart aus
+  themeShare: Thema teilen
+  themeShareDescription: Sie können das Thema mit Ihrem Freund teilen.
   update: Update
   useBmclAPI: Verwenden Sie die BMCL-API
   useBmclAPIDescription: >-

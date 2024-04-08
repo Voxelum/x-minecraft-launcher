@@ -1148,7 +1148,13 @@ setting:
     light: 亮色主题
     system: 跟随系统
   themeExport: 导出主题
+  themeFont: 字体
+  themeFontDescription: 更改启动器的字体。
   themeImport: 导入主题
+  themeResetFont: 重置字体
+  themeSelectFont: 选择字体
+  themeShare: 分享主题
+  themeShareDescription: 您可以与您的朋友分享主题。
   update: 升级设置
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft

@@ -4,15 +4,6 @@ input::-webkit-inner-spin-button {
     margin: 0;
 }
 
-:root {
-    --primary-color: #388e3c;
-    --warning-color: #e65100;
-    --warning-color-decent: #c45920;
-    --common-color: #424242;
-    --border-dark: hsla(0, 0%, 100%, .12);
-    --border-light: hsla(0, 0%, 100%, .12);
-}
-
 p {
     margin-bottom: 0px !important;
 }

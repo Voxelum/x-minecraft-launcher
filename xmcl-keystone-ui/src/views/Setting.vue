@@ -2,7 +2,7 @@
   <v-list
     two-line
     subheader
-    class="visible-scroll h-full w-full overflow-auto bg-transparent p-4 xl:px-20 2xl:px-40"
+    class="visible-scroll h-full w-full select-none overflow-auto bg-transparent p-4 xl:px-20 2xl:px-40"
   >
     <SettingGeneral />
     <SettingYggdrasilServices />

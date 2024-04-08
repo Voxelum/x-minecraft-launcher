@@ -922,6 +922,12 @@ setting:
     dark: Tema Oscuro
     light: Tema Claro
     system: Usar Tema del Sistema
+  themeFont: Fuente
+  themeFontDescription: Cambia la fuente del lanzador.
+  themeResetFont: Restablecer fuente
+  themeSelectFont: Seleccionar fuente
+  themeShare: Compartir tema
+  themeShareDescription: Puedes compartir el tema con tu amigo.
   update: Actualizar
   useBmclAPI: Usar API de BMCL
   useBmclAPIDescription: >-

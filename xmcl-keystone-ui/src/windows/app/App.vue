@@ -2,7 +2,6 @@
   <v-app
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
-    :style="cssVars"
   >
     <AppSystemBar
       no-task
@@ -68,14 +67,11 @@ import { useExternalRoute } from '@/composables'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { useBlockSharedTooltip } from '@/composables/sharedTooltip'
-import { kTheme } from '@/composables/theme'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
-
-const { cssVars } = injection(kTheme)
 
 const vuetify = injection(kVuetify)
 
@@ -103,10 +99,4 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
-
-/* main {
-  border-left: 1px solid hsla(0,0%,100%,.12);
-  border-top: 1px solid hsla(0,0%,100%,.12);
-  border-top-left-radius: 0.5rem;
-} */
 </style>

@@ -1,7 +1,6 @@
 <template>
   <div
     ref="halo"
-    class="absolute z-0 h-full w-full bg-transparent"
     style="filter: blur(10px);"
   />
 </template>

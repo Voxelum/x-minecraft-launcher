@@ -1231,6 +1231,12 @@ setting:
     dark: Sötét téma
     light: Világos téma
     system: Rendszer téma használata
+  themeFont: Betűtípus
+  themeFontDescription: Módosítsa az indító betűtípusát.
+  themeResetFont: Betűtípus visszaállítása
+  themeSelectFont: Válassza a Betűtípus lehetőséget
+  themeShare: Téma megosztása
+  themeShareDescription: Megoszthatja a témát a barátjával.
   update: Frissítés
   useBmclAPI: BMCL API használata
   useBmclAPIDescription: >-

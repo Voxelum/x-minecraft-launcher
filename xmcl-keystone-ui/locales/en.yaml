@@ -1197,7 +1197,13 @@ setting:
     light: Light Theme
     system: Use System Theme
   themeExport: Export Theme
+  themeFont: Font
+  themeFontDescription: Change the font of the launcher.
   themeImport: Import Theme
+  themeResetFont: Reset Font
+  themeSelectFont: Select Font
+  themeShare: Share Theme
+  themeShareDescription: You can share the theme with your friend.
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-

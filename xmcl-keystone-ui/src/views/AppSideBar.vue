@@ -212,7 +212,7 @@ function goBack() {
 
 .sidebar .v-list .v-list-item--active, .v-list .v-list-item--active .v-icon {
   /* color: #4caf50 !important; */
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .sidebar .v-list-item--link:before {

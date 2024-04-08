@@ -322,6 +322,11 @@
             t('setting.themeFont')
           }}
         </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('setting.themeFontDescription')
+          }}
+        </v-list-item-subtitle>
       </v-list-item-content>
       <v-btn
         outlined
@@ -337,16 +342,21 @@
         style="margin-right: 10px"
         @click="onRevertFont"
       >
-        {{ t("setting.themeRevertFont") }}
+        {{ t("setting.themeResetFont") }}
       </v-btn>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
           {{
-            t('setting.themeManage')
+            t('setting.themeShare')
           }}
         </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('setting.themeShareDescription')
+          }}
+        </v-list-item-subtitle>
       </v-list-item-content>
       <v-btn
         outlined

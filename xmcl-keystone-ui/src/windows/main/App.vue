@@ -3,7 +3,6 @@
     v-if="!showSetup"
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
-    :style="cssVars"
   >
     <AppBackground />
     <AppSystemBar />
@@ -40,7 +39,6 @@
     v-else
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
-    :style="cssVars"
   >
     <AppSystemBar
       no-user
@@ -64,7 +62,6 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { kSettingsState } from '@/composables/setting'
-import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
@@ -109,9 +106,6 @@ const onReady = async (data: any) => {
   tutor.start()
 }
 
-const { cssVars } = injection(kTheme)
-const fontUrl = computed(() => cssVars.value['--font-family'])
-
 // color theme sync
 const vuetify = injection(kVuetify)
 
@@ -119,21 +113,6 @@ const vuetify = injection(kVuetify)
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
-
-watch(fontUrl, () => {
-  const existed = document.getElementById('font-injection')
-  if (existed) {
-    existed.remove()
-  }
-  const style = document.createElement('style')
-  style.id = 'font-injection'
-  style.innerHTML = `@font-face {
-    font-family: 'custom-font';
-    src: ${fontUrl.value};
-  }`
-  document.head.appendChild(style)
-}, { immediate: true })
-
 </script>
 
 <style scoped>
@@ -151,9 +130,4 @@ img {
   object-fit: contain;
 }
 
-</style>
-<style>
-.v-application {
-  font-family: 'custom-font', Roboto, sans-serif;
-}
 </style>
