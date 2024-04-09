@@ -21,6 +21,7 @@ export class ThemeService extends AbstractService implements IThemeService {
     const fileType = await fromFile(filePath)
     if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {
       const targetPath = this.getAppDataPath('themes', basename(filePath))
+      await ensureDir(this.getAppDataPath('themes'))
       await copyFile(filePath, targetPath)
       return {
         url: 'http://launcher/theme-media/' + basename(filePath),

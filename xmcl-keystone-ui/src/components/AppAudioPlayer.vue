@@ -1,6 +1,13 @@
 <template>
-  <div class="non-moveable flex flex-grow-0">
-    {{ basename(currentUrl) }}
+  <div
+    v-if="currentUrl"
+    class="non-moveable flex flex-grow-0"
+  >
+    <span class="max-w-40  overflow-hidden overflow-ellipsis whitespace-nowrap">
+      <span class="bar_content">
+        {{ basename(currentUrl) }}
+      </span>
+    </span>
     <v-btn
       icon
       x-small
@@ -111,3 +118,19 @@ const onWheel = (e: WheelEvent) => {
   volume.value = Math.max(0, Math.min(1, volume.value - e.deltaY / 1000))
 }
 </script>
+<style scoped>
+
+.bar_content {
+  display: block;
+  width: fit-content;
+
+  transform: translateX(160px); /* Animation start out of the screen */
+
+  /* Add the animation */
+  animation: move 20s linear infinite /* infinite make reapeat the animation indefinitely */;
+}
+/* Create the animation */
+@keyframes move {
+  to { transform: translateX(-100%); }
+}
+</style>

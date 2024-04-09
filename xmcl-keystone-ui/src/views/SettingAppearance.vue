@@ -242,14 +242,42 @@
           t("setting.backgroundMusic")
         }}
       </v-list-item-title>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="viewMusic"
+      <v-menu
+        offset-y
+        :disabled="backgroundMusic.length === 0"
       >
-        {{ t("setting.viewBackgroundMusic") }}
-      </v-btn>
+        <template #activator="{ on }">
+          <v-btn
+            outlined
+            text
+            :disabled="backgroundMusic.length === 0"
+            style="margin-right: 10px"
+            v-on="on"
+          >
+            {{ t("setting.viewBackgroundMusic") }}
+          </v-btn>
+        </template>
+        <v-list
+          dense
+        >
+          <v-list-item
+            v-for="(m, i) of backgroundMusic"
+            :key="m.url"
+          >
+            <v-list-item-content>
+              {{ basename(m.url) }}
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn
+                icon
+                @click="removeMusic(i)"
+              >
+                <v-icon>close</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-menu>
       <v-btn
         outlined
         text
@@ -387,11 +415,12 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
 import { useEnvironment } from '@/composables/environment'
 import { BackgroundType, kTheme } from '@/composables/theme'
+import { basename } from '@/util/basename'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()
 

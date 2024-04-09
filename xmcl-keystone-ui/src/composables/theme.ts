@@ -121,6 +121,7 @@ export function useTheme(framework: Framework) {
     },
   })
   const backgroundImage = computed(() => currentTheme.value?.backgroundImage)
+  const backgroundMusic = computed(() => currentTheme.value?.backgroundMusic ?? [])
   const backgroundImageFit = computed({
     get() { return currentTheme.value.backgroundImageFit },
     set(v: 'cover' | 'contain') {
@@ -576,6 +577,8 @@ export function useTheme(framework: Framework) {
     }
     if (data.settings?.dark) {
       darkTheme.value = data.settings.dark ? 'dark' : 'light'
+    } else {
+      darkTheme.value = 'light'
     }
     writeTheme(theme.name, theme)
     currentTheme.value = theme
@@ -624,6 +627,7 @@ export function useTheme(framework: Framework) {
     currentTheme,
     backgroundImage,
     backgroundImageFit,
+    backgroundMusic,
     backgroundType,
     particleMode,
     blurSidebar,
