@@ -46,12 +46,14 @@
       id="tutor-button"
       icon="quiz"
       :text="t('help')"
+      can-hide-text
       @click="tutor.start()"
     />
     <AppSystemBarBadge
       id="feedback-button"
       icon="bug_report"
       :text="t('feedback.name')"
+      can-hide-text
       @click="showFeedbackDialog"
     />
 

@@ -259,20 +259,29 @@
         </template>
         <v-list
           dense
+          two-line
         >
           <v-list-item
             v-for="(m, i) of backgroundMusic"
             :key="m.url"
+            @click="viewMusic(m.url)"
           >
             <v-list-item-content>
-              {{ basename(m.url) }}
+              <v-list-item-title>
+                {{ basename(m.url) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ m.mimeType }}
+              </v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
               <v-btn
                 icon
                 @click="removeMusic(i)"
               >
-                <v-icon>close</v-icon>
+                <v-icon color="red">
+                  delete
+                </v-icon>
               </v-btn>
             </v-list-item-action>
           </v-list-item>
@@ -416,6 +425,8 @@ import SettingHeader from '@/components/SettingHeader.vue'
 import { useEnvironment } from '@/composables/environment'
 import { BackgroundType, kTheme } from '@/composables/theme'
 import { basename } from '@/util/basename'
+import { useService } from '@/composables/service'
+import { ThemeServiceKey } from '@xmcl/runtime-api'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
@@ -514,8 +525,9 @@ function selectMusic() {
   })
 }
 
-function viewMusic() {
-
+const { showMediaItemInFolder } = useService(ThemeServiceKey)
+function viewMusic(m: string) {
+  showMediaItemInFolder(m)
 }
 
 function clearVideo() {

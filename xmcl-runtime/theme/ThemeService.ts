@@ -17,6 +17,14 @@ export class ThemeService extends AbstractService implements IThemeService {
     super(app)
   }
 
+  async showMediaItemInFolder(url: string): Promise<void> {
+    const path = this.getAppDataPath('themes', url.substring('http://launcher/theme-media/'.length))
+    if (!existsSync(path)) {
+      return
+    }
+    this.app.shell.showItemInFolder(path)
+  }
+
   async addMedia(filePath: string): Promise<MediaData> {
     const fileType = await fromFile(filePath)
     if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {

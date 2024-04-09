@@ -53,6 +53,8 @@ export interface ThemeService {
    * @param zipFilePath The zip file path
    */
   importTheme(zipFilePath: string): Promise<ThemeData>
+
+  showMediaItemInFolder(url: string): Promise<void>
 }
 
 export const ThemeServiceKey: ServiceKey<ThemeService> = 'ThemeService'

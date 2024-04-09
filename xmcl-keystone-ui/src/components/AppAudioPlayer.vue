@@ -96,7 +96,18 @@ const currentUrl = computed(() => currentBackgroundMusics.value[index.value]?.ur
 const currentMineType = computed(() => currentBackgroundMusics.value[index.value]?.mimeType)
 
 const audio = ref<HTMLAudioElement | null>(null)
-const { playing, volume } = useMediaControls(audio)
+const { playing, volume, ended } = useMediaControls(audio)
+
+onMounted(() => {
+  const v = localStorage.getItem('audioVolume')
+  if (v) {
+    volume.value = parseFloat(v)
+  }
+})
+
+watch(volume, (v) => {
+  localStorage.setItem('audioVolume', v.toString())
+})
 
 const play = () => {
   playing.value = !playing.value
@@ -113,6 +124,16 @@ const prev = () => {
   index.value = (index.value - 1 + currentBackgroundMusics.value.length) % currentBackgroundMusics.value.length
   audio.value?.play()
 }
+
+watch(ended, (isEnded) => {
+  if (isEnded) {
+    if (currentBackgroundMusics.value.length > 1) {
+      next()
+    } else {
+      audio.value?.play()
+    }
+  }
+})
 
 const onWheel = (e: WheelEvent) => {
   volume.value = Math.max(0, Math.min(1, volume.value - e.deltaY / 1000))
