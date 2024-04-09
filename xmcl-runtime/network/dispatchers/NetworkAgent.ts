@@ -145,7 +145,7 @@ export class NetworkAgent extends Dispatcher {
 
   dispatch(opts: Agent.DispatchOptions, handler: DispatchHandlers) {
     const { host } = new URL(opts.origin as string)
-    const headers = opts.headers ? util.parseHeaders(opts.headers as any) : {}
+    const headers = opts.headers ? opts.headers instanceof Array ? util.parseHeaders(opts.headers as any) : opts.headers as any : {}
     if (!headers['user-agent']) {
       headers['user-agent'] = this.#userAgent
     }
