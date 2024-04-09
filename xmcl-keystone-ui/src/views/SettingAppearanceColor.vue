@@ -10,7 +10,6 @@
         v-bind="attrs"
         :style="shadowColor"
         @click="on.click($event)"
-        v-on="on"
       />
     </template>
     <v-color-picker
