@@ -176,8 +176,9 @@ const _query = computed({
   set: (v: string) => replace({
     path: '/store',
     query: {
-      ...currentRoute.query,
       query: v,
+      gameVersion: props.gameVersion,
+      modLoader: props.modLoader,
     },
   }),
 })
@@ -186,8 +187,9 @@ const _gameVersion = computed({
   set: (v: string) => replace({
     path: '/store',
     query: {
-      ...currentRoute.query,
       gameVersion: v,
+      query: props.query,
+      modLoader: props.modLoader,
     },
   }),
 })
@@ -196,8 +198,9 @@ const _modLoader = computed({
   set: (v: string) => replace({
     path: '/store',
     query: {
-      ...currentRoute.query,
       modLoader: v,
+      query: props.query,
+      gameVersion: props.gameVersion,
     },
   }),
 })
@@ -230,7 +233,7 @@ const { data: modrinthResult, error, isValidating } = useSWRV('/modrinth/feature
 const { data: curseforgeResult, error: curseforgeError, isValidating: curseforgeValidating } = useSWRV('/curseforge/featured', async () => {
   const result = await clientCurseforgeV1.searchMods({ sortField: ModsSearchSortField.Featured, classId: 4471, pageSize: 5 })
   return result.data
-})
+}, inject(kSWRVConfig))
 const popularItems = computed(() => {
   function getGameGalleryFromModrinth(hits: SearchResultHit[]) {
     return hits.map((hit) => {
@@ -335,7 +338,7 @@ const { data: modrinthRecentMinecraft } = useSWRV('/modrinth/recent_version', as
 const { data: curseforgeRecentMinecraft } = useSWRV('/curseforge/recent_version', async () => {
   const result = await clientCurseforgeV1.searchMods({ sortField: ModsSearchSortField.GameVersion, classId: 4471, pageSize: 30 })
   return result.data
-})
+}, inject(kSWRVConfig))
 const recentMinecraftItems = computed(() => {
   const modrinths = modrinthRecentMinecraft.value || []
   const curseforges = curseforgeRecentMinecraft.value || []
