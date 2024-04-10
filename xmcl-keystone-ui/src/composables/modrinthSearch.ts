@@ -10,7 +10,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
   passiveCategories: Ref<string[]>,
   activeCategories: Ref<string[]>,
   sort: Ref<'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | undefined>,
-  runtime: Ref<InstanceData['runtime']>,
+  gameVersion: Ref<string>,
 ) {
   const modrinth = ref(undefined as SearchResult | undefined)
   const modrinthError = ref(undefined as any)
@@ -21,7 +21,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(projectType: stri
     if (keyword.value || activeCategories.value.length > 0) {
       try {
         modrinthError.value = undefined
-        const facets = [`["versions:${runtime.value.minecraft}"]`, `["project_type:${projectType}"]`]
+        const facets = [`["versions:${gameVersion.value}"]`, `["project_type:${projectType}"]`]
         if (passiveCategories.value.length > 0) {
           facets.push('[' + passiveCategories.value.map(m => `"categories:${m}"`).join(', ') + ']')
         }

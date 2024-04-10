@@ -40,9 +40,9 @@
         :modrinth="selectedItem.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem.installed"
+        :game-version="gameVersion"
         :loaders="shaderLoaderFilters"
         :categories="modrinthCategories"
-        :runtime="runtime"
         :all-files="shaderProjectFiles"
         :curseforge="selectedItem?.curseforge?.id || selectedItem.curseforgeProjectId"
         @install="onInstall"
@@ -111,6 +111,7 @@ const {
   shaderProjectFiles,
   shaderLoaderFilters,
   modrinthCategories,
+  gameVersion,
 } = injection(kShaderPackSearch)
 const { runtime, path } = injection(kInstance)
 

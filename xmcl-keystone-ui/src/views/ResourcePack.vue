@@ -42,9 +42,9 @@
         :modrinth="selectedItem.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem.installed"
+        :game-version="gameVersion"
         :loaders="modrinthLoaders"
         :categories="modrinthCategories"
-        :runtime="runtime"
         :all-files="files"
         @install="onInstall"
         @uninstall="onUninstall"
@@ -58,8 +58,8 @@
         :curseforge-id="selectedItem.curseforge?.id || selectedCurseforgeId"
         :installed="selectedItem.installed"
         :loaders="[]"
+        :game-version="gameVersion"
         :category="curseforgeCategory"
-        :runtime="runtime"
         :all-files="files"
         @install="onInstall"
         @uninstall="onUninstall"
@@ -124,6 +124,7 @@ const {
   disabled,
   keyword,
   networkOnly,
+  gameVersion,
 } = injection(kResourcePackSearch)
 
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f

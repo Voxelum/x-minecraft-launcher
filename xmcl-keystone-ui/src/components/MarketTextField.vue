@@ -16,6 +16,16 @@
     @click="emit('click', $event)"
   >
     <template #append>
+      <v-chip
+        v-if="gameVersion"
+        label
+        outlined
+        small
+        close
+        @click:close="emit('clear-version')"
+      >
+        {{ gameVersion }}
+      </v-chip>
       <v-btn
         v-if="clearable || _keyword"
         text
@@ -34,12 +44,12 @@
 <script lang=ts setup>
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useEventListener } from '@vueuse/core'
-import debounce from 'lodash.debounce'
 
 const props = defineProps<{
   value?: string
   clearable?: boolean
   placeholder?: string
+  gameVersion?: string
 }>()
 
 const _keyword = computed({
@@ -51,6 +61,7 @@ const emit = defineEmits<{
   (event: 'input', value: string | undefined): void
   (event: 'click', e: MouseEvent): void
   (event: 'clear'): void
+  (event: 'clear-version'): void
 }>()
 
 const search = (v: string | undefined) => {

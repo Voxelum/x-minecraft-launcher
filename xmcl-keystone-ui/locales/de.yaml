@@ -1123,6 +1123,7 @@ save:
   importTitle: Importieren einer Speicherung
   manage: Verwaltung der Reservate
   name: Speichern | Speichern
+  showDirectory: Speicherverzeichnis anzeigen
 screenshots:
   empty: Sie haben keine Bildschirmfotos
   goto: Öffnen Sie den Ordner

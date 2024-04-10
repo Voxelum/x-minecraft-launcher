@@ -1050,6 +1050,7 @@ save:
   importTitle: Import a Save
   manage: Manage Saves
   name: Save | Saves
+  showDirectory: Show save directory
 screenshots:
   empty: You don't have screenshots
   goto: Open Folder

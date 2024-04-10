@@ -424,6 +424,7 @@ save:
   importMessage: 將 zip 存檔導入
   importTitle: 導入存檔
   name: 地圖存檔 | 地圖存檔
+  showDirectory: 顯示保存目錄
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   creationHint: 請填寫服務器地址並嘗試 Ping 服務器

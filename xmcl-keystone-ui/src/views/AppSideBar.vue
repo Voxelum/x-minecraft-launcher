@@ -45,39 +45,6 @@
           </v-list-item-icon>
           <v-list-item-title v-text="'Text'" />
         </v-list-item>
-
-        <v-list-item
-          v-if="sideBarShowCurseforge"
-          v-shared-tooltip.right="'Curseforge'"
-          link
-          class="non-moveable"
-          @click="goToCurseforge()"
-        >
-          <v-list-item-icon>
-            <v-icon
-              :size="28"
-              class="mr-0.5"
-            >
-              $vuetify.icons.curseforge
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Curseforge</v-list-item-title>
-        </v-list-item>
-
-        <v-list-item
-          v-if="sideBarShowModrinth"
-          v-shared-tooltip.right="'Modrinth'"
-          link
-          class="non-moveable"
-          @click="goToModrinth()"
-        >
-          <v-list-item-icon>
-            <v-icon>
-              $vuetify.icons.modrinth
-            </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Modrinth</v-list-item-title>
-        </v-list-item>
       </v-list-group>
       <v-list-item
         v-if="true"
@@ -157,9 +124,7 @@
 </template>
 
 <script lang=ts setup>
-import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kSettingsState } from '@/composables/setting'
-import { kMarketRoute } from '@/composables/useMarketRoute'
 import { injection } from '@/util/inject'
 import { kUILayout } from '../composables/uiLayout'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
@@ -172,9 +137,6 @@ const layout = injection(kUILayout)
 const useFocus = computed(() => layout.value === 'focus')
 const { state } = injection(kSettingsState)
 
-const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
-const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
-
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
 const { push, back, currentRoute } = useRouter()
@@ -185,8 +147,6 @@ const navToMe = () => {
     push('/me')
   }
 }
-
-const { goToCurseforge, goToModrinth, goToFtb } = injection(kMarketRoute)
 
 function goBack() {
   back()

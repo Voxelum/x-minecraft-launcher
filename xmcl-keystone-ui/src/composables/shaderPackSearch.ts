@@ -115,12 +115,17 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
 export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shaderPack: Ref<string | undefined>) {
   const shaderLoaderFilters = ref(['iris', 'optifine'] as ShaderLoaderFilter[])
   const keyword: Ref<string> = ref('')
+  const gameVersion = ref('')
   const modrinthCategories = ref([] as string[])
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
   const { sort, modrinthSort } = useMarketSort(0)
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, runtime)
+  watch(runtime, (r) => {
+    gameVersion.value = r.minecraft
+  }, { immediate: true })
+
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
   const { cached, loadingCached, shaderProjectFiles } = useLocalSearch(shaderPack)
   const loading = computed(() => loadingModrinth.value || loadingCached.value)
 
@@ -143,6 +148,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
 
   return {
     networkOnly,
+    gameVersion,
     shaderProjectFiles,
     modrinthCategories,
     shaderLoaderFilters,

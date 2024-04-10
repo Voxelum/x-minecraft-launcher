@@ -12,7 +12,7 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
-import { Resource, RuntimeVersions } from '@xmcl/runtime-api'
+import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -20,7 +20,7 @@ const props = defineProps<{
   installed: ProjectFile[]
   loaders: string[]
   categories: string[]
-  runtime: RuntimeVersions
+  gameVersion: string
   allFiles: ProjectFile[]
   updating?: boolean
   curseforge?: number
@@ -41,7 +41,7 @@ const model = useModrinthProjectDetailData(projectId, project, computed(() => pr
 
 // Versions
 const { data: versions, isValidating: loadingVersions } = useSWRVModel(
-  getModrinthVersionModel(projectId, undefined, computed(() => props.loaders), computed(() => [props.runtime.minecraft])),
+  getModrinthVersionModel(projectId, undefined, computed(() => props.loaders), computed(() => [props.gameVersion])),
   inject(kSWRVConfig))
 const modVersions = useModrinthProjectDetailVersions(versions, computed(() => props.installed))
 

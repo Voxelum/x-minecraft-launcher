@@ -110,9 +110,9 @@
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :loaders="modLoaderFilters"
         :categories="modrinthCategories"
-        :runtime="runtime"
         :all-files="mods"
         :updating="updating"
+        :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         @install="onInstall"
         @uninstall="onUninstall"
@@ -125,8 +125,8 @@
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedCurseforgeId)"
         :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
+        :game-version="gameVersion"
         :loaders="modLoaderFilters"
-        :runtime="runtime"
         :category="curseforgeCategory"
         :all-files="mods"
         :updating="updating"
@@ -199,6 +199,7 @@ const {
   modLoaderFilters,
   keyword,
   items,
+  gameVersion,
 } = injection(kModsSearch)
 
 const error = computed(() => {

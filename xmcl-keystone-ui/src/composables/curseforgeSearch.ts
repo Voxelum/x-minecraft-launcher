@@ -19,7 +19,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
   modLoaderFilters: Ref<ModLoaderFilter[]>,
   curseforgeCategory: Ref<number | undefined>,
   sort: Ref<ModsSearchSortField | undefined>,
-  runtime: Ref<InstanceData['runtime']>) {
+  gameVersion: Ref<string>) {
   const curseforge = ref(undefined as {
     data: CFMod[]
     pagination: Pagination
@@ -41,7 +41,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(classId: number
           sortField: sort.value,
           modLoaderTypes: modLoaderTypes.length > 1 ? modLoaderTypes : undefined,
           modLoaderType,
-          gameVersion: runtime.value.minecraft,
+          gameVersion: gameVersion.value,
           searchFilter: keyword.value,
           categoryId: curseforgeCategory.value,
           pageSize: 20,

@@ -32,7 +32,6 @@ import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
-import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kUserDiagnose, useUserDiagnose } from '@/composables/userDiagnose'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
@@ -125,7 +124,6 @@ export default defineComponent({
 
     provide(kUILayout, useUILayout())
     provide(kImageDialog, useImageDialog())
-    provide(kMarketRoute, useMarketRoute())
     provide(kFilterCombobox, useFilterComboboxData())
     provide(kYggdrasilServices, useYggdrasilServices())
     provide(kTutorial, useTutorialModel())

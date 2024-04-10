@@ -243,6 +243,8 @@ mod:
 resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
+save:
+  showDirectory: Mostrar o directorio de gardar
 setting:
   backgroundMusic: Tema Música de fondo
   enableDedicatedGPUOptimization: Asignar GPU dedicada

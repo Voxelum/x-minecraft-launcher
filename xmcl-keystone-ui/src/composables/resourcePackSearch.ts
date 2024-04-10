@@ -109,16 +109,21 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
 
 export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>) {
   const keyword: Ref<string> = ref('')
+  const gameVersion: Ref<string> = ref('')
   const modrinthCategories = ref([] as string[])
   const curseforgeCategory = ref(undefined as number | undefined)
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
   const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
 
+  watch(runtime, (r) => {
+    gameVersion.value = r.minecraft
+  }, { immediate: true })
+
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
-    modrinthSort, runtime)
+    modrinthSort, gameVersion)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory,
-    curseforgeSort, runtime)
+    curseforgeSort, gameVersion)
   const { enabled, disabled, all: filtered, loadingCached } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
@@ -143,6 +148,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     items,
     networkOnly,
     sort,
+    gameVersion,
 
     modrinthCategories,
 

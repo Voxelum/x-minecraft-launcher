@@ -1081,6 +1081,7 @@ save:
   importTitle: Mentés importálása
   manage: Mentések kezelése
   name: Mentés | Mentések
+  showDirectory: Mentés könyvtár megjelenítése
 screenshots:
   empty: Nincsenek képernyőképeid
   goto: Mappa megnyitása

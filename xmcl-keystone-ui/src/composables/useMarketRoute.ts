@@ -3,6 +3,15 @@ import { InjectionKey } from 'vue'
 
 export const kMarketRoute: InjectionKey<ReturnType<typeof useMarketRoute>> = Symbol('MarketRoute')
 
+export function useSearchInMcWiki() {
+  function searchInMcWiki(name: string) {
+    window.open(`https://www.mcmod.cn/s?key=${name}`, 'browser')
+  }
+  return {
+    searchInMcWiki,
+  }
+}
+
 export function useMarketRoute() {
   let modrinthWindow: Window | null = null
   function goToModrinth(route = '/modrinth') {

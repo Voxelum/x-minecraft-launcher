@@ -20,6 +20,7 @@
           <v-btn
             icon
             text
+            class="h-10"
             value="forge"
           >
             <v-img
@@ -30,6 +31,7 @@
 
           <v-btn
             icon
+            class="h-10"
             text
             value="fabric"
           >
@@ -41,6 +43,7 @@
 
           <v-btn
             icon
+            class="h-10"
             text
             value="quilt"
           >
@@ -60,6 +63,8 @@
           :enable-curseforge.sync="isCurseforgeActive"
           :enable-modrinth.sync="isModrinthActive"
           :sort.sync="sort"
+          :game-version.sync="gameVersion"
+          :modloader.sync="modLoader"
         />
       </div>
     </div>
@@ -77,11 +82,12 @@ import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kModsSearch } from '@/composables/modSearch'
+import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, instanceMods, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
+const { modrinth, curseforge, instanceMods, gameVersion, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
@@ -97,6 +103,18 @@ const _keyword = computed({
   get: () => route.query.keyword as string ?? '',
   set: (v) => { search(v) },
 })
+const modLoader = useQuery('modLoader')
+
+watch(version, (v) => {
+  // gameVersion.value = v.minecraft
+  if (v.forge) {
+    modLoader.value = 'forge'
+  } else if (v.fabric) {
+    modLoader.value = 'fabric'
+  } else if (v.quilt) {
+    modLoader.value = 'quilt'
+  }
+}, { immediate: true })
 
 const extensionItems = computed(() => [
   {

@@ -40,6 +40,7 @@
         :modrinth-categories.sync="modrinthCategories"
         modrinth-category-filter="shader"
         :enable-modrinth.sync="isModrinthActive"
+        :game-version.sync="gameVersion"
         :sort.sync="sort"
       />
     </div>
@@ -79,7 +80,7 @@ const extensionItems = computed(() => {
   return items
 })
 
-const { keyword, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
+const { keyword, gameVersion, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
 const { shaderMod } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 </script>

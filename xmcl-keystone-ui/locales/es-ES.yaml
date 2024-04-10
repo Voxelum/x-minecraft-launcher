@@ -772,6 +772,7 @@ save:
   importTitle: Importar una Partida
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
+  showDirectory: Mostrar directorio de guardado
 screenshots:
   empty: No tienes capturas de pantalla
   goto: Abrir Carpeta

@@ -190,6 +190,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
   const keyword: Ref<string> = ref('')
+  const gameVersion = ref('')
   const isModrinthActive = ref(true)
   const isCurseforgeActive = ref(true)
   const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
@@ -211,10 +212,11 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     }
 
     modLoaderFilters.value = items
+    gameVersion.value = version.minecraft
   }, { immediate: true, deep: true })
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, runtime)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, runtime)
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
   const { cached: cachedMods, instances, loadingCached } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
@@ -234,6 +236,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   )
 
   return {
+    gameVersion,
     modLoaderFilters,
     curseforgeCategory,
     modrinthCategories,

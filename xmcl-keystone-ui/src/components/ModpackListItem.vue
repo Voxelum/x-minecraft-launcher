@@ -99,7 +99,6 @@ import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { ModpackItem } from '../composables/modpack'
-import { kMarketRoute } from '../composables/useMarketRoute'
 import { vContextMenu } from '../directives/contextMenu'
 
 const props = defineProps<{ item: ModpackItem }>()
@@ -107,7 +106,6 @@ const emit = defineEmits(['tags', 'delete', 'dragstart', 'dragend', 'create'])
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
-const { goCurseforgeProject, goModrinthProject } = injection(kMarketRoute)
 const router = useRouter()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
 const onDeleteTag = removeTag
@@ -147,26 +145,26 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     },
     icon: 'folder',
   })
-  if (props.item.resource?.metadata.curseforge) {
-    const curseforge = props.item.resource.metadata.curseforge
-    items.push({
-      text: t('modpack.showInCurseforge', { name: props.item.name }),
-      onClick: () => {
-        goCurseforgeProject(curseforge.projectId, 'modpacks')
-      },
-      icon: '$vuetify.icons.curseforge',
-    })
-  }
-  if (props.item.resource?.metadata.modrinth) {
-    const modrinth = props.item.resource.metadata.modrinth
-    items.push({
-      text: t('modpack.showInModrinth', { name: props.item.name }),
-      onClick: () => {
-        goModrinthProject(modrinth.projectId)
-      },
-      icon: '$vuetify.icons.modrinth',
-    })
-  }
+  // if (props.item.resource?.metadata.curseforge) {
+  //   const curseforge = props.item.resource.metadata.curseforge
+  //   items.push({
+  //     text: t('modpack.showInCurseforge', { name: props.item.name }),
+  //     onClick: () => {
+  //       goCurseforgeProject(curseforge.projectId, 'modpacks')
+  //     },
+  //     icon: '$vuetify.icons.curseforge',
+  //   })
+  // }
+  // if (props.item.resource?.metadata.modrinth) {
+  //   const modrinth = props.item.resource.metadata.modrinth
+  //   items.push({
+  //     text: t('modpack.showInModrinth', { name: props.item.name }),
+  //     onClick: () => {
+  //       goModrinthProject(modrinth.projectId)
+  //     },
+  //     icon: '$vuetify.icons.modrinth',
+  //   })
+  // }
   return items
 })
 function onEditTag(event: Event, index: number) {

@@ -1,7 +1,7 @@
 <template>
   <div class="rounded p-2 transition-colors duration-300 hover:bg-[rgba(0,0,0,0.15)]">
     <div
-      class="grid-cols-13 my-1 grid cursor-pointer text-gray-700 dark:text-gray-300"
+      class="grid-cols-13 my-1 grid cursor-pointer gap-x-1 text-gray-700 dark:text-gray-300"
       @click="emit('click', version)"
     >
       <div class="col-span-5">

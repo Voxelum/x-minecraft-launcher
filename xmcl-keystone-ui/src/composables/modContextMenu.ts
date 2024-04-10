@@ -1,15 +1,14 @@
-import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
 import { useService } from './service'
-import { kMarketRoute } from './useMarketRoute'
+import { useSearchInMcWiki } from './useMarketRoute'
 
 export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, onDelete: () => void, onCreateTag: (group?: boolean) => void, onDisable: () => void) {
   const { t, te } = useI18n()
   const { showItemInDirectory } = useService(BaseServiceKey)
-  const { searchInCurseforge, goModrinthProject, goCurseforgeProject, searchInModrinth, searchInMcWiki } = injection(kMarketRoute)
+  const { searchInMcWiki } = useSearchInMcWiki()
 
   return () => {
     const file = modFile.value
@@ -60,42 +59,42 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
         icon: 'link',
       })
     }
-    if (file.resource.metadata.curseforge) {
-      const curseforge = file.resource.metadata.curseforge
-      items.push({
-        text: t('mod.showInCurseforge', { name: file.name }),
-        onClick: () => {
-          goCurseforgeProject(curseforge.projectId, 'mc-mods')
-        },
-        icon: '$vuetify.icons.curseforge',
-      })
-    } else {
-      items.push({
-        text: t('mod.searchOnCurseforge', { name: file.name }),
-        onClick: () => {
-          searchInCurseforge(file.name, 'mc-mods')
-        },
-        icon: 'search',
-      })
-    }
-    if (file.resource.metadata.modrinth) {
-      const modrinth = file.resource.metadata.modrinth
-      items.push({
-        text: t('mod.showInModrinth', { name: file.name }),
-        onClick: () => {
-          goModrinthProject(modrinth.projectId)
-        },
-        icon: '$vuetify.icons.modrinth',
-      })
-    } else {
-      items.push({
-        text: t('mod.searchOnModrinth', { name: file.name }),
-        onClick: () => {
-          searchInModrinth(file.name, 'mod')
-        },
-        icon: 'search',
-      })
-    }
+    // if (file.resource.metadata.curseforge) {
+    //   const curseforge = file.resource.metadata.curseforge
+    //   items.push({
+    //     text: t('mod.showInCurseforge', { name: file.name }),
+    //     onClick: () => {
+    //       goCurseforgeProject(curseforge.projectId, 'mc-mods')
+    //     },
+    //     icon: '$vuetify.icons.curseforge',
+    //   })
+    // } else {
+    //   items.push({
+    //     text: t('mod.searchOnCurseforge', { name: file.name }),
+    //     onClick: () => {
+    //       searchInCurseforge(file.name, 'mc-mods')
+    //     },
+    //     icon: 'search',
+    //   })
+    // }
+    // if (file.resource.metadata.modrinth) {
+    //   const modrinth = file.resource.metadata.modrinth
+    //   items.push({
+    //     text: t('mod.showInModrinth', { name: file.name }),
+    //     onClick: () => {
+    //       goModrinthProject(modrinth.projectId)
+    //     },
+    //     icon: '$vuetify.icons.modrinth',
+    //   })
+    // } else {
+    //   items.push({
+    //     text: t('mod.searchOnModrinth', { name: file.name }),
+    //     onClick: () => {
+    //       searchInModrinth(file.name, 'mod')
+    //     },
+    //     icon: 'search',
+    //   })
+    // }
     if (te('mod.searchOnMcWiki')) {
       items.push({
         text: t('mod.searchOnMcWiki', { name: file.name }),

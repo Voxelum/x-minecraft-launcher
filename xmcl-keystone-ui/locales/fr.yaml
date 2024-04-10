@@ -1087,6 +1087,7 @@ save:
   importTitle: Importer une sauvegarde
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
+  showDirectory: Afficher le répertoire de sauvegarde
 screenshots:
   empty: Vous n'avez pas de capture d'écran
   goto: Ouvrir Dossier

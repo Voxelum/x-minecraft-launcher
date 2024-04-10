@@ -8,18 +8,18 @@ import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { useSWRVModel } from '@/composables/swrv'
-import { getCurseforgeFileGameVersions, getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
+import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
-import { Mod } from '@xmcl/curseforge'
-import { Resource, RuntimeVersions } from '@xmcl/runtime-api'
+import { FileModLoaderType, Mod } from '@xmcl/curseforge'
+import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   curseforge?: Mod
   curseforgeId: number
   installed: ProjectFile[]
-  runtime: RuntimeVersions
+  gameVersion: string
   loaders: string[]
   allFiles: ProjectFile[]
   category?: number
@@ -148,7 +148,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
 }
 
 const { files, refreshing: loadingVersions, index, totalCount, pageSize } = useCurseforgeProjectFiles(cursforgeModId,
-  computed(() => props.runtime.minecraft),
+  computed(() => props.gameVersion),
   computed(() => undefined))
 
 const modId = ref(0)
@@ -237,8 +237,14 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
 const { data: deps, error, isValidating: loadingDependencies } = useSWRVModel(
   getCurseforgeDependenciesModel(
     computed(() => files.value.find(f => f.modId === props.curseforgeId)),
-    computed(() => props.runtime.minecraft),
-    computed(() => getCurseforgeModLoaderTypeFromRuntime(props.runtime)),
+    computed(() => props.gameVersion),
+    computed(() => props.loaders.includes('forge')
+      ? FileModLoaderType.Forge
+      : props.loaders.includes('fabric')
+        ? FileModLoaderType.Fabric
+        : props.loaders.includes('quilt')
+        ? FileModLoaderType.Quilt
+        : FileModLoaderType.Any),
   ),
 )
 

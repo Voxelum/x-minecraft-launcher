@@ -1005,6 +1005,7 @@ save:
   importTitle: 导入存档
   manage: 管理存档
   name: 地图存档 | 地图存档
+  showDirectory: 显示保存目录
 screenshots:
   empty: 你还没有截图
   goto: 显示文件夹

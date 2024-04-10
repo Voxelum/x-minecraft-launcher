@@ -8,7 +8,6 @@ import { kServerStatusCache, useServerStatusCache } from '@/composables/serverSt
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
-import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kVuetify } from '@/composables/vuetify'
 import { vuetify } from '@/vuetify'
@@ -40,7 +39,6 @@ export default defineComponent({
 
     provide(kUILayout, useUILayout())
     provide(kImageDialog, useImageDialog())
-    provide(kMarketRoute, useMarketRoute())
 
     return () => ctx.slots.default?.()
   },

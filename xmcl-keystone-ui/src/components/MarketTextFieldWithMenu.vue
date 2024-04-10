@@ -12,7 +12,9 @@
         :clearable="!!curseforgeCategory || modrinthCategories.length > 0 || !!keyword"
         :value="keyword"
         :placeholder="placeholder"
+        :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
         @clear="onClear"
+        @clear-version="emit('update:gameVersion', runtime.minecraft)"
         @input="emit('update:keyword', $event)"
       />
     </template>
@@ -44,6 +46,24 @@
           </v-icon>
         </v-btn>
       </v-btn-toggle>
+
+      <v-subheader class="flex">
+        {{ t('minecraftVersion.name') }}
+      </v-subheader>
+      <v-chip-group
+        v-model="gameVersionModel"
+        column
+      >
+        <v-chip
+          v-for="v of versionIds"
+          :key="v"
+          filter
+          outlined
+          label
+        >
+          {{ v }}
+        </v-chip>
+      </v-chip-group>
 
       <v-subheader class="flex">
         Modrinth
@@ -119,13 +139,17 @@
 <script setup lang="ts">
 import MarketTextField from '@/components/MarketTextField.vue'
 import { useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
+import { kInstance } from '@/composables/instance'
 import { useModrinthTags } from '@/composables/modrinth'
 import { useSortByItems } from '@/composables/sortBy'
+import { useMinecraftVersions } from '@/composables/version'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 import { ModsSearchSortField } from '@xmcl/curseforge'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
+  gameVersion: string
   modrinthCategories: string[]
   curseforgeCategoryFilter?: string
   modrinthCategoryFilter: string
@@ -146,7 +170,11 @@ const emit = defineEmits<{
   (event: 'update:enableModrinth', value: boolean): void
   (event: 'update:keyword', value: string | undefined): void
   (event: 'update:sort', value: number): void
+  (event: 'update:modloader', value: string): void
+  (event: 'update:gameVersion', value: string): void
 }>()
+
+const { versions } = useMinecraftVersions()
 
 const focused = ref(false)
 provide('focused', focused)
@@ -167,6 +195,22 @@ const _modrinthCategories = computed(() => {
   return result.filter(r => r.project_type === props.modrinthCategoryFilter)
 })
 const { t, te } = useI18n()
+
+const { runtime } = injection(kInstance)
+function filterGameVersion(v: string) {
+  if (v.indexOf('-') !== -1) return false
+  if (!v.startsWith('1.')) return false
+  const current = props.gameVersion || runtime.value.minecraft
+  const minor = Number(current.split('.')[1])
+  // minor match
+  if (minor.toString() === v.split('.')[1]) return true
+
+  // minor +1 or -1
+  if (minor + 1 === Number(v.split('.')[1]) || minor - 1 === Number(v.split('.')[1])) return true
+
+  return false
+}
+const versionIds = computed(() => versions.value.map(v => v.id).filter(filterGameVersion))
 
 const field = ref(null as any)
 watch(() => props.curseforgeCategory, (v) => {
@@ -193,6 +237,15 @@ const curseforgeSelectModel = computed({
     emit('update:curseforgeCategory', !v ? v : curseforgeCategories.value[v].id)
   },
 })
+const gameVersionModel = computed({
+  get() {
+    return versionIds.value.findIndex(v => v === props.gameVersion)
+  },
+  set(v) {
+    emit('update:gameVersion', versionIds.value[v])
+  },
+})
+
 const tCategory = useCurseforgeCategoryI18n()
 
 const onClear = () => {

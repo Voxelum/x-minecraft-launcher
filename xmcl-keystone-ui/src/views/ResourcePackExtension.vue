@@ -19,6 +19,7 @@
         :enable-curseforge.sync="isCurseforgeActive"
         :enable-modrinth.sync="isModrinthActive"
         :sort.sync="sort"
+        :game-version.sync="gameVersion"
       />
     </div>
     <MarketExtensions
@@ -51,6 +52,7 @@ const {
   keyword, modrinthCategories, curseforgeCategory,
   modrinth, curseforge, enabled, items, sort, local,
   isCurseforgeActive, isModrinthActive,
+  gameVersion,
 } = injection(kResourcePackSearch)
 
 const { t } = useI18n()
