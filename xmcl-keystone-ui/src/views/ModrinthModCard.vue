@@ -80,7 +80,7 @@ import { ContextMenuItem } from '@/composables/contextMenu'
 import { vContextMenu } from '@/directives/contextMenu'
 import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
-import { kColorTheme } from '@/composables/colorTheme'
+import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   disabled: boolean
@@ -90,7 +90,7 @@ const props = defineProps<{
 const emit = defineEmits(['filter', 'click', 'search', 'browse'])
 const { t } = useI18n()
 
-const { cardColor } = injection(kColorTheme)
+const { cardColor } = injection(kTheme)
 const cates = injection(ModrinthCategoriesKey)
 const items = computed(() => {
   return props.value.categories.map(c => cates.value.find(cat => cat.name === c)).filter((c): c is Category => !!c)

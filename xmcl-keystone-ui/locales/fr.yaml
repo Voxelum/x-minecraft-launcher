@@ -1145,6 +1145,7 @@ setting:
     cover: Couvrir
     name: S'ajuster
   backgroundImageSelect: sélectionner
+  backgroundMusic: Thème Musique de fond
   backgroundType: Type d'arrière-plan
   backgroundTypeDescription: >-
     Afficher un effet spécial sur l'arrière-plan (cela peut avoir un impact sur
@@ -1241,6 +1242,12 @@ setting:
     dark: Thème sombre
     light: Thème clair
     system: Utiliser le thème système
+  themeFont: Police de caractère
+  themeFontDescription: Changez la police du lanceur.
+  themeResetFont: Réinitialiser la police
+  themeSelectFont: Sélectionnez la police
+  themeShare: Partager le thème
+  themeShareDescription: Vous pouvez partager le thème avec votre ami.
   update: Mettre à jour
   useBmclAPI: Utiliser l'API BMCL
   useBmclAPIDescription: >-
@@ -1249,6 +1256,7 @@ setting:
     continentale)
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
+  viewBackgroundMusic: Voir les musiques
 settingLabel:
   global: Global
   globalHint: Ce réglage sera global
@@ -1341,6 +1349,10 @@ task:
     Tâche | 
     Tâches
   pause: Pause
+theme:
+  selectImage: Sélectionnez une image
+  selectMusic: Sélectionnez la musique
+  selectVideo: Sélectionnez la vidéo
 title: X Minecraft Launcher
 transportType:
   host: Candidat Hôte

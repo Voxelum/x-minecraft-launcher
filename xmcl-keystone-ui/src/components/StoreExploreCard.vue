@@ -81,8 +81,8 @@
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { vContextMenu } from '@/directives/contextMenu'
 import { injection } from '@/util/inject'
-import { kColorTheme } from '@/composables/colorTheme'
 import CategoryChip, { CategoryChipProps } from './CategoryChip.vue'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{
   contextMenu?: ContextMenuItem[]
@@ -104,5 +104,5 @@ export interface ExploreProject {
 
 const emit = defineEmits(['filter', 'click', 'search', 'browse'])
 
-const { cardColor } = injection(kColorTheme)
+const { cardColor } = injection(kTheme)
 </script>

@@ -69,15 +69,15 @@
 <script lang="ts" setup>
 import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
-import { kColorTheme } from '@/composables/colorTheme'
 import { kImageDialog } from '@/composables/imageDialog'
+import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{ instance: Instance; width: number; height: number }>()
 
-const { cardColor } = injection(kColorTheme)
+const { cardColor } = injection(kTheme)
 
 const { getScreenshots, showScreenshot } = useService(InstanceScreenshotServiceKey)
 const { on } = useService(LaunchServiceKey)

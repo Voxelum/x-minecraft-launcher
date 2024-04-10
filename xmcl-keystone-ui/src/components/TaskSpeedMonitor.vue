@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="speed !== 0"
     class="flex flex-1 flex-grow-0 items-center"
     :class="{ 'text-gray-400': speed !== 0, 'text-transparent': speed === 0 }"
   >

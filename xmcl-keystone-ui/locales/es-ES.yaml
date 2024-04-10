@@ -828,6 +828,7 @@ setting:
     contain: Contener
     cover: Cubrir
   backgroundImageSelect: seleccionar
+  backgroundMusic: Música de fondo del tema
   backgroundType: Tipo de Fondo
   backgroundTypeDescription: Muestra efectos especiales en el fondo (esto puede afectar el rendimiento)
   backgroundTypes:
@@ -921,6 +922,12 @@ setting:
     dark: Tema Oscuro
     light: Tema Claro
     system: Usar Tema del Sistema
+  themeFont: Fuente
+  themeFontDescription: Cambia la fuente del lanzador.
+  themeResetFont: Restablecer fuente
+  themeSelectFont: Seleccionar fuente
+  themeShare: Compartir tema
+  themeShareDescription: Puedes compartir el tema con tu amigo.
   update: Actualizar
   useBmclAPI: Usar API de BMCL
   useBmclAPIDescription: >-
@@ -928,6 +935,7 @@ setting:
     continental. (Esto no afectará si no estás en la China continental)
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
+  viewBackgroundMusic: Ver músicas
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global
@@ -988,6 +996,10 @@ task:
   nTaskRunning: '{count} tareas en ejecución'
   name: Tarea | Tareas
   pause: Pausar
+theme:
+  selectImage: Seleccionar imagen
+  selectMusic: Seleccionar música
+  selectVideo: Seleccionar vídeo
 title: X Minecraft Launcher
 transportType:
   host: Candidato de Anfitrión

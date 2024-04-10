@@ -26,7 +26,11 @@
     </span>
     <slot />
 
+    <AppAudioPlayer
+      class="ml-22"
+    />
     <div class="grow " />
+
     <TaskSpeedMonitor v-if="!noTask" />
     <AppSystemBarBadge
       v-if="!noTask"
@@ -42,12 +46,14 @@
       id="tutor-button"
       icon="quiz"
       :text="t('help')"
+      can-hide-text
       @click="tutor.start()"
     />
     <AppSystemBarBadge
       id="feedback-button"
       icon="bug_report"
       :text="t('feedback.name')"
+      can-hide-text
       @click="showFeedbackDialog"
     />
 
@@ -80,8 +86,6 @@
   </v-system-bar>
 </template>
 <script lang="ts" setup>
-import { useBarBlur } from '../composables/background'
-import { kColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 
@@ -91,6 +95,8 @@ import { useWindowStyle } from '@/composables/windowStyle'
 import AppSystemBarAvatar from './AppSystemBarUserMenu.vue'
 import { kTutorial } from '@/composables/tutorial'
 import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
+import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{
   noUser?: boolean
@@ -98,8 +104,7 @@ defineProps<{
   back?: boolean
 }>()
 
-const { appBarColor } = injection(kColorTheme)
-const { blurAppBar } = useBarBlur()
+const { appBarColor, blurAppBar } = injection(kTheme)
 const { maximize, minimize, close } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')

@@ -1060,6 +1060,7 @@ setting:
     cover: 覆盖
     name: 放置方式
   backgroundImageSelect: 选择
+  backgroundMusic: 主题背景音乐
   backgroundType: 背景效果
   backgroundTypeDescription: 背景是否显示特效（如果觉得卡就可以关掉）
   backgroundTypes:
@@ -1146,11 +1147,20 @@ setting:
     dark: 暗色主题
     light: 亮色主题
     system: 跟随系统
+  themeExport: 导出主题
+  themeFont: 字体
+  themeFontDescription: 更改启动器的字体。
+  themeImport: 导入主题
+  themeResetFont: 重置字体
+  themeSelectFont: 选择字体
+  themeShare: 分享主题
+  themeShareDescription: 您可以与您的朋友分享主题。
   update: 升级设置
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
   useProxy: HTTP 代理设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
+  viewBackgroundMusic: 查看音乐
 settingLabel:
   global: 全局配置
   globalHint: 这个配置使用的是全局配置
@@ -1235,6 +1245,10 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+theme:
+  selectImage: 选择图像
+  selectMusic: 选择音乐
+  selectVideo: 选择视频
 transportType:
   host: 公网地址
   prflx: 同伴反射地址

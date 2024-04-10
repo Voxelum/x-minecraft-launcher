@@ -465,6 +465,7 @@ setting:
     cover: 覆蓋
     name: 放置方式
   backgroundImageSelect: 選擇
+  backgroundMusic: 主題背景音樂
   backgroundType: 背景效果
   backgroundTypeDescription: 背景是否顯示特效（如果覺得卡就可以關掉）
   backgroundTypes:
@@ -514,11 +515,18 @@ setting:
     dark: 暗色主題
     light: 亮色主題
     system: 跟隨系統
+  themeFont: 字體
+  themeFontDescription: 更改啟動器的字體。
+  themeResetFont: 重置字體
+  themeSelectFont: 選擇字體
+  themeShare: 分享主題
+  themeShareDescription: 您可以與您的朋友分享主題。
   update: 升級設置
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 當你在大陸時，優先使用 BMCLAPI 來下載 Minecraft
   useProxy: HTTP 代理設置
   useProxyDescription: 使用代理服務器可以某些服務的訪問
+  viewBackgroundMusic: 查看音樂
 shaderPack:
   deletion: 刪除光影包
   deletionHint: 這將把光影包文件 {path} 永久刪除。
@@ -543,6 +551,10 @@ task:
   failed: 失敗
   manager: 任務管理器
   name: 任務 | 任務
+theme:
+  selectImage: 選擇影像
+  selectMusic: 選擇音樂
+  selectVideo: 選擇影片
 universalDrop:
   enableModsAfterImport: Mod 導入後自動啓用
   start: 開始導入

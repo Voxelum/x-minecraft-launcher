@@ -1,4 +1,5 @@
 import { createReadStream } from 'fs'
+import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 
 /**
@@ -21,7 +22,23 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
       const pathname = normalizePath(request.url.searchParams.get('path')!)
       const { fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
-        if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/'))) {
+        if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/'))) {
+          response.status = 200
+          response.headers = { 'content-type': type.mime }
+          response.body = createReadStream(pathname)
+        } else {
+          response.status = 404
+        }
+      }).catch(() => {
+        response.status = 404
+      })
+    }
+    // http://launcher/theme-media/${assetName}
+    if (request.url.host === 'launcher' && request.url.pathname.startsWith('/theme-media')) {
+      const pathname = join(app.appDataPath, 'themes', normalizePath(request.url.pathname.substring('/theme-media'.length)))
+      const { fromFile } = await import('file-type')
+      await fromFile(pathname).then((type) => {
+        if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {
           response.status = 200
           response.headers = { 'content-type': type.mime }
           response.body = createReadStream(pathname)

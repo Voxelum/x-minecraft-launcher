@@ -200,7 +200,7 @@
         outlined
         text
         style="margin-right: 10px"
-        :disabled="!backgroundVideo"
+        :disabled="!backgroundImage"
         @click="clearVideo"
       >
         {{ t("setting.backgroundImageClear") }}
@@ -235,6 +235,66 @@
         :hint="t('setting.backgroundVideoVolume')"
         :always-dirty="true"
       />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-title>
+        {{
+          t("setting.backgroundMusic")
+        }}
+      </v-list-item-title>
+      <v-menu
+        offset-y
+        :disabled="backgroundMusic.length === 0"
+      >
+        <template #activator="{ on }">
+          <v-btn
+            outlined
+            text
+            :disabled="backgroundMusic.length === 0"
+            style="margin-right: 10px"
+            v-on="on"
+          >
+            {{ t("setting.viewBackgroundMusic") }}
+          </v-btn>
+        </template>
+        <v-list
+          dense
+          two-line
+        >
+          <v-list-item
+            v-for="(m, i) of backgroundMusic"
+            :key="m.url"
+            @click="viewMusic(m.url)"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ basename(m.url) }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ m.mimeType }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn
+                icon
+                @click="removeMusic(i)"
+              >
+                <v-icon color="red">
+                  delete
+                </v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="selectMusic"
+      >
+        {{ t("setting.backgroundVideoSelect") }}
+      </v-btn>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
@@ -292,25 +352,86 @@
         :always-dirty="true"
       />
     </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('setting.themeFont')
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('setting.themeFontDescription')
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onSelectFont"
+      >
+        {{ t("setting.themeSelectFont") }}
+      </v-btn>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onRevertFont"
+      >
+        {{ t("setting.themeResetFont") }}
+      </v-btn>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('setting.themeShare')
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('setting.themeShareDescription')
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onExportTheme"
+      >
+        {{ t("setting.themeExport") }}
+      </v-btn>
+      <v-btn
+        outlined
+        text
+        style="margin-right: 10px"
+        @click="onImportTheme"
+      >
+        {{ t("setting.themeImport") }}
+      </v-btn>
+    </v-list-item>
   </div>
 </template>
 <script lang="ts" setup>
 import { kSettingsState } from '@/composables/setting'
 import { kUILayout } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import { BackgroundType, kBackground, useBackground, useBarBlur } from '../composables/background'
-import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
 import { useEnvironment } from '@/composables/environment'
+import { BackgroundType, kTheme } from '@/composables/theme'
+import { basename } from '@/util/basename'
+import { useService } from '@/composables/service'
+import { ThemeServiceKey } from '@xmcl/runtime-api'
 
-const { showOpenDialog } = windowController
+const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = injection(kBackground)
-const { blurSidebar, blurAppBar } = useBarBlur()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
+const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()
 
@@ -321,10 +442,7 @@ const linuxTitlebar = computed({
 
 const layout = injection(kUILayout)
 
-const theme = computed({
-  get: () => state.value?.theme ?? 'system',
-  set: v => state.value?.themeSet(v),
-})
+const theme = darkTheme
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
   value: 'dark',
@@ -363,7 +481,7 @@ const backgroundTypes = computed(() => [
 ])
 function selectImage() {
   showOpenDialog({
-    title: '选择图片',
+    title: t('theme.selectImage'),
     properties: ['openFile'],
     filters: [{
       name: 'image',
@@ -378,23 +496,94 @@ function selectImage() {
 }
 function selectVideo() {
   showOpenDialog({
-    title: '选择视频',
+    title: t('theme.selectVideo'),
     properties: ['openFile'],
     filters: [{
       name: 'video',
-      extensions: ['mp4', 'ogg', 'webm'],
+      extensions: ['mp4', 'webm'],
     }],
   }).then((v) => {
     if (v.filePaths[0]) {
-      setBackgroundVideo(v.filePaths[0])
+      setBackgroundImage(v.filePaths[0])
     }
   })
 }
+
+const { addMusic } = injection(kTheme)
+function selectMusic() {
+  showOpenDialog({
+    title: t('theme.selectMusic'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'audio',
+      extensions: ['mp3', 'ogg', 'wav'],
+    }],
+  }).then(async (v) => {
+    if (v.filePaths[0]) {
+      await addMusic(v.filePaths[0])
+    }
+  })
+}
+
+const { showMediaItemInFolder } = useService(ThemeServiceKey)
+function viewMusic(m: string) {
+  showMediaItemInFolder(m)
+}
+
 function clearVideo() {
-  backgroundVideo.value = ''
+  clearBackgroundImage()
 }
 function clearImage() {
-  backgroundImage.value = ''
+  clearBackgroundImage()
+}
+
+function onExportTheme() {
+  showSaveDialog({
+    title: t('setting.themeExport'),
+    defaultPath: currentTheme.value.name,
+    filters: [{
+      name: 'xtheme',
+      extensions: ['xtheme'],
+    }],
+  }).then((v) => {
+    if (v.filePath) {
+      exportTheme(v.filePath)
+    }
+  })
+}
+
+function onImportTheme() {
+  showOpenDialog({
+    title: t('setting.themeImport'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'xtheme',
+      extensions: ['xtheme'],
+    }],
+  }).then((v) => {
+    if (v.filePaths[0]) {
+      importTheme(v.filePaths[0])
+    }
+  })
+}
+
+function onSelectFont() {
+  showOpenDialog({
+    title: t('setting.themeSelectFont'),
+    properties: ['openFile'],
+    filters: [{
+      name: 'font',
+      extensions: ['ttf', 'otf', 'woff', 'woff2'],
+    }],
+  }).then((v) => {
+    if (v.filePaths[0]) {
+      setFont(v.filePaths[0])
+    }
+  })
+}
+
+function onRevertFont() {
+  resetFont()
 }
 
 </script>

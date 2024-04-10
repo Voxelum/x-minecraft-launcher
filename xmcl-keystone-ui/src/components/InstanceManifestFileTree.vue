@@ -43,7 +43,7 @@
       <div style="padding: 5px 0px;">
         <span
           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-          :style="{ color: item.disabled ? 'grey' : darkTheme ? 'white' : 'black', ...(item.style || {}) }"
+          :style="{ color: item.disabled ? 'grey' : isDark ? 'white' : 'black', ...(item.style || {}) }"
         >{{ item.name }}</span>
         <div
           style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
@@ -62,8 +62,8 @@
 </template>
 
 <script lang=ts setup>
-import { useTheme } from '@/composables'
 import { FileNodesSymbol, InstanceFileNode } from '@/composables/instanceFileNodeData'
+import { kTheme } from '@/composables/theme'
 
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
@@ -76,7 +76,7 @@ defineProps<{
 }>()
 
 const { t } = useI18n()
-const { darkTheme } = useTheme()
+const { isDark } = injection(kTheme)
 
 const opened = ref([])
 

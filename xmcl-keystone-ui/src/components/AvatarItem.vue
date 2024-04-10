@@ -22,7 +22,7 @@
       class="text overflow-hidden overflow-ellipsis whitespace-nowrap"
     >
       <div
-        class="select-none font-semibold text-gray-300"
+        class="select-none font-semibold dark:text-gray-300"
         :style="{
           color: bgColor
         }"

@@ -32,7 +32,4 @@ C-1987.4,866.2-1988.1,867.6-1988.9,868.1z"
 #curseforge-icon .st0 {
   fill: currentColor;
 }
-.primary--text #curseforge-icon .st0 {
-  /* fill: var(--primary); */
-}
 </style>

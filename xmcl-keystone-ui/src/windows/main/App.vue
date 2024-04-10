@@ -3,7 +3,6 @@
     v-if="!showSetup"
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
-    :style="cssVars"
   >
     <AppBackground />
     <AppSystemBar />
@@ -13,7 +12,6 @@
       <AppSideBar />
       <main
         class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
-        :class="{ solid: !blurMainBody }"
       >
         <transition
           name="fade-transition"
@@ -41,7 +39,6 @@
     v-else
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
-    :style="cssVars"
   >
     <AppSystemBar
       no-user
@@ -61,15 +58,12 @@ import '@/assets/common.css'
 import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
-import { kBackground } from '@/composables/background'
 import { useLocalStorageCacheBool } from '@/composables/cache'
-import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { kSettingsState } from '@/composables/setting'
 import { kTutorial } from '@/composables/tutorial'
 import { kVuetify } from '@/composables/vuetify'
-import { useVuetifyColorTheme } from '@/composables/vuetifyColorTheme'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
@@ -112,20 +106,13 @@ const onReady = async (data: any) => {
   tutor.start()
 }
 
-const { cssVars, ...colorTheme } = injection(kColorTheme)
-
-// background
-const { blurMainBody } = injection(kBackground)
-
 // color theme sync
 const vuetify = injection(kVuetify)
-useVuetifyColorTheme(vuetify, colorTheme)
 
 // Notifier
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
-
 </script>
 
 <style scoped>
@@ -142,4 +129,5 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
+
 </style>

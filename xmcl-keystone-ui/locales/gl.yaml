@@ -244,6 +244,7 @@ resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 setting:
+  backgroundMusic: Tema Música de fondo
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
   maunalUpdateHint: |-
@@ -258,6 +259,12 @@ setting:
   streamerModeDescription: >-
     Isto ocultará a túa información privada como o correo electrónico no
     launcher.
+  themeFont: Fonte
+  themeFontDescription: Cambia o tipo de letra do iniciador.
+  themeResetFont: Restablecer fonte
+  themeSelectFont: Seleccione Fonte
+  themeShare: Compartir tema
+  themeShareDescription: Podes compartir o tema co teu amigo.
 task:
   connection:
     connected: Conectado
@@ -267,3 +274,8 @@ task:
     running: Conexión en execución
     size: reconto total
   connections: Conexións de rede
+  viewBackgroundMusic: Ver músicas
+theme:
+  selectImage: Seleccione Imaxe
+  selectMusic: Seleccione Música
+  selectVideo: Seleccione Vídeo

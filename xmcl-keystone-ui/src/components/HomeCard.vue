@@ -47,7 +47,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { kColorTheme } from '@/composables/colorTheme'
+import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
@@ -63,5 +63,5 @@ defineProps<{
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
 const emit = defineEmits(['navigate'])
-const { cardColor } = injection(kColorTheme)
+const { cardColor } = injection(kTheme)
 </script>

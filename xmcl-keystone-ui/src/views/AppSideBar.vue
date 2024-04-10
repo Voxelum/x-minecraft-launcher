@@ -161,14 +161,13 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kSettingsState } from '@/composables/setting'
 import { kMarketRoute } from '@/composables/useMarketRoute'
 import { injection } from '@/util/inject'
-import { useBarBlur } from '../composables/background'
-import { kColorTheme } from '../composables/colorTheme'
 import { kUILayout } from '../composables/uiLayout'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { kTheme } from '@/composables/theme'
 
-const { blurSidebar } = useBarBlur()
+const { blurSidebar } = injection(kTheme)
 const layout = injection(kUILayout)
 const useFocus = computed(() => layout.value === 'focus')
 const { state } = injection(kSettingsState)
@@ -177,7 +176,7 @@ const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', 
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
 
 const { t } = useI18n()
-const { sideBarColor } = injection(kColorTheme)
+const { sideBarColor } = injection(kTheme)
 const { push, back, currentRoute } = useRouter()
 const expanding = ref(false)
 
@@ -213,7 +212,7 @@ function goBack() {
 
 .sidebar .v-list .v-list-item--active, .v-list .v-list-item--active .v-icon {
   /* color: #4caf50 !important; */
-  color: var(--primary);
+  color: var(--color-primary);
 }
 
 .sidebar .v-list-item--link:before {
