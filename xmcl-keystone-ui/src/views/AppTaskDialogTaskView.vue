@@ -180,11 +180,6 @@ const tTask = useTaskName()
 const { getNetworkStatus, destroyPool } = useService(BaseServiceKey)
 
 const stat: Ref<Record<string, PoolStats>> = ref({})
-setInterval(() => {
-  getNetworkStatus().then((s) => {
-    stat.value = s
-  })
-}, 1000)
 
 const visible: Ref<TaskItem[]> = ref([])
 
@@ -296,24 +291,25 @@ const makeNonReactive = () => {
 }
 
 const { isShown, hide } = useDialog('task')
+let interval: ReturnType<typeof setInterval>
 
 watch(isShown, (value) => {
   if (value) {
     taskMonitor.on('task-update', onUpdate)
     makeReactive()
     visible.value = all.value
+    interval = setInterval(() => {
+      getNetworkStatus().then((s) => {
+        stat.value = s
+      })
+    }, 1000)
   } else {
+    clearInterval(interval)
     taskMonitor.removeListener('task-update', onUpdate)
     makeNonReactive()
     visible.value = []
   }
-})
-
-if (isShown.value) {
-  taskMonitor.on('task-update', onUpdate)
-  makeReactive()
-  visible.value = all.value
-}
+}, { immediate: true })
 
 const data = reactive({
   tree: [],
@@ -322,7 +318,8 @@ const data = reactive({
 })
 
 function onTaskClick(event: MouseEvent, item: TaskItem) {
-  // TODO: fix
-  // navigator.clipboard.writeText(item.message ?? '')
+  if (typeof item.message === 'string') {
+    navigator.clipboard.writeText(item.message ?? '')
+  }
 }
 </script>
