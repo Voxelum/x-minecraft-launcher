@@ -44,10 +44,6 @@
         {{ deleting }}
       </div>
     </DeleteDialog>
-    <SaveViewPageFloatButton
-      :visible="dragging"
-      @drop="$event.dataTransfer ? onStartDelete($event.dataTransfer.getData('id')) : ''"
-    />
   </div>
 </template>
 

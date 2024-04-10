@@ -138,7 +138,7 @@ import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
 
 const props = defineProps<{ instance: Instance }>()
-const emit = defineEmits(['drop'])
+const emit = defineEmits(['drop', 'drop-save'])
 
 const router = useRouter()
 const { t } = useI18n()
@@ -184,16 +184,26 @@ const onDragEnd = (e: DragEvent) => {
 }
 
 const onDragEnter = (e: DragEvent) => {
-  dragover.value += 1
+  if (e.dataTransfer?.items[0].type === 'instance') {
+    dragover.value += 1
+  }
 }
 
 const onDragLeave = () => {
   dragover.value += -1
+  if (dragover.value < 0) {
+    dragover.value = 0
+  }
 }
 
 const onDrop = (e: DragEvent) => {
   const targetPath = e.dataTransfer!.getData('instance')
-  emit('drop', targetPath)
+  const savePath = e.dataTransfer?.getData('save')
+  if (targetPath) {
+    emit('drop', targetPath)
+  } else if (savePath) {
+    emit('drop-save', props.instance.path, savePath)
+  }
   dragging.value = false
   dragover.value = 0
 }

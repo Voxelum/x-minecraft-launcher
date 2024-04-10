@@ -49,6 +49,10 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     })
   }
 
+  async showDirectory(instancePath: string): Promise<void> {
+    this.app.shell.openDirectory(join(instancePath, 'saves'))
+  }
+
   async getInstanceSaves(path: string) {
     const baseName = basename(path)
     const saveRoot = join(path, 'saves')
@@ -183,7 +187,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       }, `Cannot find managed instance ${notFound}`)
     }
 
-    const destSavePaths = destInstancePaths.map(d => join(d, destSaveName))
+    const destSavePaths = destInstancePaths.map(d => join(d, 'saves', destSaveName))
 
     for (const dest of destSavePaths) {
       await copyPassively(srcSavePath, dest)

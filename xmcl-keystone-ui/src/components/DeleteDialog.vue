@@ -19,7 +19,6 @@
       <v-divider />
       <v-card-actions>
         <v-btn
-          color="primary"
           text
           @click="onCancel"
         >
@@ -27,7 +26,7 @@
         </v-btn>
         <v-spacer />
         <v-btn
-          color="error"
+          :color="color ?? 'error'"
           text
           @click="onDelete"
         >
@@ -47,6 +46,7 @@ import { useDialog } from '../composables/dialog'
 const props = defineProps<{
   title: string
   width?: number
+  color?: string
   confirm?: string
   confirmIcon?: string
   persistent?: boolean

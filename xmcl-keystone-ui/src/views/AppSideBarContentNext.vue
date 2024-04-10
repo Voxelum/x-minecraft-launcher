@@ -18,6 +18,7 @@
         :key="i.path + ' ' + index"
         :instance="i"
         @drop="setToPrevious($event, i.path)"
+        @drop-save="onCopySave"
       />
 
       <v-list-item
@@ -51,24 +52,34 @@
       </v-list-item>
       <v-spacer />
     </v-list>
+    <DeleteDialog
+      :width="500"
+      color="primary"
+      dialog="saveCopyDialog"
+      :title="t('save.copy.title')"
+      :confirm="t('save.copy.confirm')"
+      @confirm="doCopy"
+    >
+      {{ copySavePayload?.destInstancePath }}
+      {{ copySavePayload?.saveName }}
+    </DeleteDialog>
   </div>
 </template>
 <script setup lang="ts">
+import DeleteDialog from '@/components/DeleteDialog.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
-import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
+import { basename, dirname } from '@/util/basename'
 import { injection } from '@/util/inject'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { InstanceSavesServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
+import { useNotifier } from '@/composables/notifier'
 
 const { t } = useI18n()
 
-const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
-const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
-const { instances, setToPrevious, isValidating } = injection(kInstances)
+const { instances, setToPrevious, isValidating, selectedInstance } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
 
@@ -93,24 +104,40 @@ async function onImport(type: 'zip' | 'folder') {
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
-const items = computed(() => {
-  const result: ContextMenuItem[] = [
-    {
-      text: 'Curseforge',
-      icon: sideBarShowCurseforge.value ? 'check' : '',
-      onClick() {
-        sideBarShowCurseforge.value = !sideBarShowCurseforge.value
-      },
-    },
-    {
-      text: 'Modrinth',
-      icon: sideBarShowModrinth.value ? 'check' : '',
-      onClick() {
-        sideBarShowModrinth.value = !sideBarShowModrinth.value
-      },
-    },
-  ]
-  return result
-})
+const { isShown } = useDialog('saveCopyDialog')
+const copySavePayload = ref(undefined as {
+  saveName: string
+  srcInstancePath: string
+  destInstancePath: string
+} | undefined)
+function onCopySave(instancePath: string, save: string) {
+  if (selectedInstance.value === instancePath) {
+    return
+  }
+  const savePath = save
+  const saveName = basename(savePath)
+  const srcInstancePath = dirname(savePath)
+  const destInstancePath = instancePath
+  copySavePayload.value = { saveName, srcInstancePath, destInstancePath }
+  isShown.value = true
+}
+const { cloneSave } = useService(InstanceSavesServiceKey)
+const { notify } = useNotifier()
+function doCopy() {
+  if (copySavePayload.value) {
+    cloneSave({ ...copySavePayload.value }).then(() => {
+      notify({
+        level: 'success',
+        title: t('save.copy.name'),
+      })
+    }, () => {
+      notify({
+        level: 'error',
+        title: t('save.copy.name'),
+      })
+    })
+  }
+  isShown.value = false
+}
 
 </script>

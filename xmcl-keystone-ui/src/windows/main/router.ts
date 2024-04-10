@@ -13,6 +13,7 @@ import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
 import Save from '@/views/Save.vue'
+import SaveActions from '@/views/SaveActions.vue'
 import SaveExtension from '@/views/SaveExtension.vue'
 import Setting from '@/views/Setting.vue'
 import ShaderPack from '@/views/ShaderPack.vue'
@@ -46,6 +47,7 @@ export const router = new Router({
           components: {
             default: Save,
             extensions: SaveExtension,
+            actions: SaveActions,
           },
         },
         {

@@ -94,6 +94,7 @@ export function getInstanceSaveKey(path: string) {
  * Provide the ability to preview saves data of an instance
  */
 export interface InstanceSavesService {
+  showDirectory(instancePath: string): Promise<void>
   /**
    * Read all saves under the instance folder
    * @param path The instance folder path
