@@ -21,31 +21,19 @@
           arrow_back
         </v-icon>
       </v-list-item>
-      <v-list-group
-        v-model="expanding"
-        v-shared-tooltip.right="_ => t('myStuff')"
-        active-class="v-list-item--link"
-        class="non-moveable avatar"
-      >
-        <template #activator>
-          <v-list-item-icon>
-            <v-icon> widgets </v-icon>
-          </v-list-item-icon>
-        </template>
 
-        <v-list-item
-          v-shared-tooltip.right="_ => t('modpack.name', 2) + ' & ' + t('localVersion.title')"
-          link
-          push
-          to="/local-resources"
-          class="non-moveable"
-        >
-          <v-list-item-icon>
-            <v-icon> inventory </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title v-text="'Text'" />
-        </v-list-item>
-      </v-list-group>
+      <v-list-item
+        v-shared-tooltip.right="_ => t('myStuff')"
+        link
+        push
+        to="/local-resources"
+        class="non-moveable"
+      >
+        <v-list-item-icon>
+          <v-icon> widgets </v-icon>
+        </v-list-item-icon>
+        <v-list-item-title v-text="'Text'" />
+      </v-list-item>
       <v-list-item
         v-if="true"
         v-shared-tooltip.right="_ => t('store.name', 2)"
