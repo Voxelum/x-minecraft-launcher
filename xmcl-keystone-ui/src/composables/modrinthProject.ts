@@ -72,16 +72,16 @@ export function useModrinthProject(id: Ref<string>) {
 
     return {
       project,
-      refreshing,
-      refreshError,
+      isValidating,
+      error,
       refresh,
     }
   }
 
   return {
     project: data,
-    refreshing: isValidating,
-    refreshError: error,
+    isValidating,
+    error,
     refresh: mutate,
   }
 }

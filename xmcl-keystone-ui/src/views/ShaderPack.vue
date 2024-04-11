@@ -112,8 +112,11 @@ const {
   shaderLoaderFilters,
   modrinthCategories,
   gameVersion,
+  effect,
 } = injection(kShaderPackSearch)
 const { runtime, path } = injection(kInstance)
+
+effect()
 
 const all = computed(() => {
   if (networkOnly.value) return items.value

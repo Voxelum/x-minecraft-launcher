@@ -1,74 +1,60 @@
 import { clientCurseforgeV1 } from '@/util/clients'
+import { MaybeRef, get } from '@vueuse/core'
 import { File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import useSWRV from 'swrv'
-import { InjectionKey, Ref, computed, reactive, ref, toRefs, watch } from 'vue'
+import { Ref, computed, reactive, ref, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
+import { formatKey } from '@/util/swrvGet'
 
 export interface CurseforgeProps {
-  type: string
+  classId: number
   page: number
   keyword: string
-  category: string
-  sortField: ModsSearchSortField
+  category: number | undefined
+  sortField: ModsSearchSortField | undefined
   modLoaderType: FileModLoaderType
-  sortOrder: 'asc' | 'desc'
   gameVersion: string
-  from: string
 }
 
-/**
- * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
- */
-export function useCurseforge(props: CurseforgeProps) {
-  const pageSize = 10
-
-  const currentSectionId = computed(() => {
-    switch (props.type) {
-      case 'modpacks':
-        return 4471
-      case 'texture-packs':
-        return 12
-      case 'worlds':
-        return 17
-      case 'customization':
-        return 4546
-      case 'mc-mods':
-      default:
-        return 6
-    }
-  })
-  const categoryId = computed({
-    get() { return props.category ? Number.parseInt(props.category, 10) : undefined },
-    set(v: number | undefined) {
-      if (v) {
-        props.category = v.toString()
-      } else {
-        props.category = ''
-      }
-    },
-  })
-
+export function useCurseforge(
+  classId: MaybeRef<number>,
+  keyword: Ref<string>,
+  page: Ref<number>,
+  modLoaders: Ref<FileModLoaderType[]>,
+  category: Ref<number | undefined>,
+  sort: Ref<ModsSearchSortField | undefined>,
+  gameVersion: Ref<string>,
+  pageSize: MaybeRef<number> = 10,
+) {
   const data = reactive({
+    page: 0,
     pages: 5,
     totalCount: 0,
     projects: [] as Mod[],
   })
-  const index = computed(() => (props.page - 1) * pageSize)
+
+  const search = useCurseforgeSearchFunc(
+    classId,
+    keyword,
+    modLoaders,
+    category,
+    sort,
+    gameVersion,
+    pageSize,
+  )
   const { mutate, isValidating, error, data: _data } = useSWRV(
-    computed(() => `/curseforge/search?index=${index.value}&classId=${currentSectionId.value}&sortField=${props.sortField}&gameVersion=${props.gameVersion}&categoryId=${categoryId.value}&searchFilter=${props.keyword}`),
-    async () => {
-      const result = await clientCurseforgeV1.searchMods({
-        pageSize,
-        index: index.value,
-        classId: currentSectionId.value,
-        sortField: props.sortField,
-        modLoaderType: props.modLoaderType === 0 ? undefined : props.modLoaderType,
-        gameVersion: props.gameVersion,
-        categoryId: categoryId.value,
-        searchFilter: props.keyword,
-      })
-      return markRaw(result)
-    }, useOverrideSWRVConfig({
+    computed(() => formatKey('/curseforge/search', {
+      classId,
+      keyword,
+      modLoaders,
+      category,
+      sort,
+      gameVersion,
+      page,
+      pageSize,
+    })),
+    async () => markRaw(search((page.value - 1) * get(pageSize))),
+    useOverrideSWRVConfig({
       ttl: 30 * 1000,
     }))
 
@@ -77,16 +63,65 @@ export function useCurseforge(props: CurseforgeProps) {
       data.projects = markRaw(v.data)
       v.pagination.totalCount = Math.min(1_0000, v.pagination.totalCount)
       data.totalCount = v.pagination.totalCount
-      data.pages = Math.ceil(v.pagination.totalCount / pageSize)
+      data.pages = Math.ceil(v.pagination.totalCount / get(pageSize))
     }
   }, { immediate: true })
   return {
     ...toRefs(data),
-    refreshing: isValidating,
+    isValidating,
     error,
-    categoryId,
-    refresh: mutate,
+    mutate,
   }
+}
+
+export enum CurseforgeBuiltinClassId {
+  mod = 6,
+  modpack = 4471,
+  resourcePack = 12,
+  world = 17,
+}
+
+export function useCurseforgeSearchFunc(
+  classId: MaybeRef<number>,
+  keyword: Ref<string>,
+  modLoaderFilters: Ref<FileModLoaderType[]>,
+  curseforgeCategory: Ref<number | undefined>,
+  sort: Ref<ModsSearchSortField | undefined>,
+  gameVersion: Ref<string>,
+  pageSize: MaybeRef<number>,
+) {
+  const mapping = [
+    'Any',
+    'Forge',
+    'Cauldron',
+    'LiteLoader',
+    'Fabric',
+    'Quilt',
+  ]
+  async function search(index: number) {
+    let modLoaderType = undefined as FileModLoaderType | undefined
+    let modLoaderTypes = undefined as string[] | undefined
+    const types = get(modLoaderFilters)
+    if (types.length === 1) {
+      modLoaderType = types[0]
+    } else {
+      modLoaderTypes = types.map(t => mapping[t])
+    }
+    const result = await clientCurseforgeV1.searchMods({
+      classId: get(classId),
+      sortField: sort.value,
+      modLoaderTypes,
+      modLoaderType,
+      gameVersion: gameVersion.value,
+      searchFilter: keyword.value,
+      categoryId: curseforgeCategory.value,
+      pageSize: get(pageSize),
+      index,
+    })
+    return result
+  }
+
+  return search
 }
 
 /**
@@ -94,14 +129,18 @@ export function useCurseforge(props: CurseforgeProps) {
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
-  const files = inject(kCurseforgeFiles, ref([]))
+  const files = ref([] as File[])
   const data = shallowReactive({
     index: 0,
     pageSize: 30,
     totalCount: 0,
   })
   const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
-    computed(() => `/curseforge/${projectId.value}/files?gameVersion=${gameVersion.value}&modLoaderType=${modLoaderType.value}&index=${data.index}`), async () => {
+    computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
+      gameVersion,
+      modLoaderType,
+      index: data.index,
+    })), async () => {
       return markRaw(await clientCurseforgeV1.getModFiles({
         modId: projectId.value,
         index: data.index,
@@ -126,11 +165,13 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
     error,
   }
 }
-export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFiles')
 
 export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
   return {
-    key: computed(() => `/curseforge/${projectId.value}/files?gameVersion=${gameVersion.value}&modLoaderType=${modLoaderType.value}`),
+    key: computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
+      gameVersion,
+      modLoaderType,
+    })),
     fetcher: () => clientCurseforgeV1.getModFiles({
       modId: projectId.value,
       gameVersion: gameVersion.value,

@@ -23,7 +23,7 @@ const { t } = useI18n()
 const projectId = computed(() => props.id)
 
 const { categories: modrinthCategories } = useModrinthTags()
-const { project: proj, refreshing, refreshError, refresh } = useModrinthProject(projectId)
+const { project: proj, isValidating: refreshing } = useModrinthProject(projectId)
 const { render } = useMarkdown()
 const project = computed(() => {
   const p = proj.value

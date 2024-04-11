@@ -27,7 +27,7 @@
         />
         <span
           v-else
-          class="inline-flex gap-2 text-2xl font-bold"
+          class="inline-flex items-center gap-2 text-2xl font-bold"
         >
           <a
             v-if="detail.url"
@@ -68,38 +68,30 @@
             />
           </template>
           <template v-else>
-            {{ detail.author }}
-            <v-divider
-              v-if="detail.author"
-              vertical
-            />
-            <div
-              v-if="detail.downloadCount"
-              class="flex flex-grow-0"
+            <template
+              v-for="(h, i) of detailsHeaders"
             >
-              <v-icon
-                class="material-icons-outlined pb-0.5"
-                :size="22"
-                left
+              <div
+                :key="h.text"
+                class="flex flex-grow-0"
               >
-                file_download
-              </v-icon>
-              {{ getExpectedSize(detail.downloadCount, '') }}
-            </div>
-            <v-divider vertical />
-            <div
-              v-if="detail.follows"
-              class="flex flex-grow-0"
-            >
-              <v-icon
-                color="orange"
-                left
-                class="material-icons-outlined text-gray-300"
-              >
-                star_rate
-              </v-icon>
-              {{ detail.follows }}
-            </div>
+                <v-icon
+                  v-if="h.icon"
+                  :color="h.color"
+                  class="material-icons-outlined pb-0.5"
+                  left
+                >
+                  {{ h.icon }}
+                </v-icon>
+                {{ h.text }}
+              </div>
+              <v-divider
+                v-if="i < detailsHeaders.length - 1"
+                :key="i"
+                class="ml-1"
+                vertical
+              />
+            </template>
           </template>
         </div>
         <div class="my-1 ml-1">
@@ -189,12 +181,13 @@
             >
               <template #activator="{ on, attrs }">
                 <div
-                  class="cursor-pointer text-gray-600 dark:text-gray-400"
+                  class="cursor-pointer items-center"
                   :class="{ flex: versions.length > 0, hidden: versions.length === 0 }"
+                  style="color: var(--color-secondary-text)"
                   v-bind="attrs"
                   v-on="on"
                 >
-                  <span class="mr-2 whitespace-nowrap">
+                  <span class="mr-2 whitespace-nowrap font-bold">
                     {{ t('modInstall.currentVersion') }}:
                   </span>
                   <v-skeleton-loader
@@ -203,18 +196,24 @@
                     type="text"
                     class="self-center"
                   />
-                  <span
+                  <v-btn
                     v-else
-                    class="max-w-40 xl:max-w-50 block overflow-hidden overflow-ellipsis whitespace-nowrap underline 2xl:max-w-full"
+                    small
+                    plain
+                    outlined
+                    hide-details
                   >
-                    {{ selectedVersion?.name }}
-                  </span>
-                  <v-icon
-                    class="material-icons-outlined"
-                    right
-                  >
-                    arrow_drop_down
-                  </v-icon>
+                    <span class="max-w-40 xl:max-w-50 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full">
+
+                      {{ selectedVersion?.name }}
+                    </span>
+                    <v-icon
+                      class="material-icons-outlined"
+                      right
+                    >
+                      arrow_drop_down
+                    </v-icon>
+                  </v-btn>
                 </div>
               </template>
               <v-list
@@ -421,8 +420,24 @@
             type="table-thead, table-tbody"
           />
           <template v-else-if="versions.length > 0">
+            <v-subheader
+              v-if="installed"
+            >
+              {{ t('modInstall.installed') }}
+            </v-subheader>
             <ModDetailVersion
-              v-for="version of versions"
+              v-if="installed"
+              :key="installed.id"
+              :version="installed"
+              :show-changelog="selectedVersion?.id === installed.id"
+              @click="onVersionClicked"
+            />
+            <v-divider
+              v-if="installed && notInstalled.length > 0"
+              class="my-2"
+            />
+            <ModDetailVersion
+              v-for="version of notInstalled"
               :key="version.id"
               :version="version"
               :show-changelog="selectedVersion?.id === version.id"
@@ -601,7 +616,10 @@
                   >
                     {{ item.value }}
                   </a>
-                  <AppCopyChip :value="item.value" />
+                  <AppCopyChip
+                    :value="item.value"
+                    outlined
+                  />
                 </div>
               </div>
             </template>
@@ -733,6 +751,37 @@ const _enabled = computed({
   },
 })
 
+const detailsHeaders = computed(() => {
+  const result: Array<{
+    icon: string
+    text: string
+    color?: string
+  }> = []
+
+  if (props.detail.author) {
+    result.push({
+      icon: 'person',
+      text: props.detail.author,
+    })
+  }
+
+  if (props.detail.downloadCount) {
+    result.push({
+      icon: 'file_download',
+      text: getExpectedSize(props.detail.downloadCount, ''),
+    })
+  }
+  if (props.detail.follows) {
+    result.push({
+      icon: 'star_rate',
+      color: 'orange',
+      text: props.detail.follows.toString(),
+    })
+  }
+
+  return result
+})
+
 const { getDateString } = useDateString()
 const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
 
@@ -775,6 +824,9 @@ const showDependencies = ref(false)
 const onSwitchVersion = () => {
 
 }
+
+const installed = computed(() => props.versions.find(v => v.installed))
+const notInstalled = computed(() => props.versions.filter(v => !v.installed))
 
 const tDepType = (ty: ProjectDependency['type']) => t(`dependencies.${ty}`)
 

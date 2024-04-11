@@ -1,11 +1,14 @@
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
-import { InstanceData, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceData, Resource, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
-import { CurseforgeBuiltinClassId, useCurseforgeSearch } from './curseforgeSearch'
+import { CurseforgeBuiltinClassId } from './curseforge'
+import { useCurseforgeSearch } from './curseforgeSearch'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
+import { searlizers, useQueryOverride } from './query'
 import { useResourceEffect } from './resources'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
@@ -16,6 +19,77 @@ export enum ModLoaderFilter {
   fabric = 'fabric',
   forge = 'forge',
   quilt = 'quilt',
+}
+
+export function useSearchPattern<T>(search: (offset: number) => Promise<{
+  data: T[]
+  total: number
+  offset: number
+  limit: number
+}>, shouldSearch: () => boolean) {
+  const result = ref(undefined as undefined | {
+    data: T[]
+    total: number
+    offset: number
+    limit: number
+  })
+  const page = ref(0)
+  const loading = ref(false)
+  const error = ref(undefined as any)
+
+  const doSearch = debounce(async (offset: number, append: boolean) => {
+    if (!shouldSearch()) {
+      error.value = undefined
+      loading.value = false
+      result.value = undefined
+      return
+    }
+    try {
+      error.value = undefined
+      const searchResult = await search(offset)
+      if (!append || !result.value) {
+        result.value = searchResult as any
+      } else {
+        result.value.data.push(...searchResult.data as any)
+        result.value.total = searchResult.total
+        result.value.offset = searchResult.offset
+        result.value.limit = searchResult.limit
+      }
+    } catch (e) {
+      error.value = e
+    } finally {
+      loading.value = false
+    }
+  }, 500)
+
+  const loadMore = async () => {
+    if (!result.value) return
+    if (!hasMore.value) return
+    page.value += 1
+    loading.value = true
+    await doSearch(page.value * 20, true)
+  }
+
+  const onSearch = async () => {
+    loading.value = true
+    page.value = 0
+    error.value = undefined
+    return doSearch(page.value * 20, false)
+  }
+
+  const hasMore = computed(() => {
+    return result.value && result.value.total > (result.value.offset + result.value.limit)
+  })
+
+  return {
+    result,
+    page,
+    loadMore,
+    loading,
+    onSearch,
+    hasMore,
+    error,
+  }
 }
 
 const kCached = Symbol('cached')
@@ -159,12 +233,15 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     })
   }
 
-  useResourceEffect(onSearch, ResourceDomain.Mods)
-  watch([keyword, instanceModFiles], onSearch)
-  watch(modLoaderFilters, onSearch, { deep: true })
+  function effect() {
+    useResourceEffect(onSearch, ResourceDomain.Mods)
+    watch([keyword, instanceModFiles], onSearch)
+    watch(modLoaderFilters, onSearch, { deep: true })
+  }
 
   return {
     cached: all,
+    effect,
     instances,
     loadingCached,
   }
@@ -186,16 +263,53 @@ const getOptifineAsMod = () => {
 }
 
 export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>) {
-  const modLoaderFilters = ref([] as ModLoaderFilter[])
+  const modLoaderFilters = ref<ModLoaderFilter[]>([])
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
-  const keyword: Ref<string> = ref('')
+  const keyword = ref('')
   const gameVersion = ref('')
   const isModrinthActive = ref(true)
   const isCurseforgeActive = ref(true)
-  const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
+  const sort = ref(0)
 
-  watch(runtime, (version) => {
+  const { modrinthSort, curseforgeSort } = useMarketSort(sort)
+
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
+  const { cached: cachedMods, instances, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
+  const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
+
+  const all = useAggregateProjects<ProjectEntry<ModFile>>(
+    modrinth,
+    curseforge,
+    cachedMods,
+    instances,
+  )
+
+  const networkOnly = computed(() => {
+    if (keyword.value.length > 0) {
+      return true
+    }
+    if ((modrinth.value.length > 0 || curseforge.value.length > 0)) {
+      return true
+    }
+    if (modrinthCategories.value.length > 0) {
+      return true
+    }
+    if (curseforgeCategory.value !== undefined) {
+      return true
+    }
+    return false
+  })
+  const items = useProjectsFilterSearch(
+    keyword,
+    all,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
+  )
+
+  const getModloaders = (version: RuntimeVersions) => {
     const items = [] as ModLoaderFilter[]
     if (isNoModLoader(version)) {
       items.push(ModLoaderFilter.fabric, ModLoaderFilter.forge, ModLoaderFilter.quilt)
@@ -210,30 +324,23 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
         items.push(ModLoaderFilter.quilt, ModLoaderFilter.fabric)
       }
     }
+    return items
+  }
 
-    modLoaderFilters.value = items
-    gameVersion.value = version.minecraft
-  }, { immediate: true, deep: true })
+  function effect() {
+    onModrinthEffect()
+    onCurseforgeEffect()
+    onLocalEffect()
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
-  const { cached: cachedMods, instances, loadingCached } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
-  const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
-
-  const all = useAggregateProjects<ProjectEntry<ModFile>>(
-    modrinth,
-    curseforge,
-    cachedMods,
-    instances,
-  )
-
-  const items = useProjectsFilterSearch(
-    keyword,
-    all,
-    computed(() => (keyword.value.length > 0 && (modrinth.value.length > 0 || curseforge.value.length > 0)) || modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined),
-    isCurseforgeActive,
-    isModrinthActive,
-  )
+    useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
+    useQueryOverride('modLoaders', modLoaderFilters, computed(() => getModloaders(runtime.value)), searlizers.stringArray)
+    useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
+    useQueryOverride('modrinthCategories', modrinthCategories, [], searlizers.stringArray)
+    useQueryOverride('keyword', keyword, '', searlizers.string)
+    useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
+    useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
+    useQueryOverride('sort', sort, 0, searlizers.number)
+  }
 
   return {
     gameVersion,
@@ -258,5 +365,6 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     isModrinthActive,
     isCurseforgeActive,
     sort,
+    effect,
   }
 }

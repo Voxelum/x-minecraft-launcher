@@ -1,3 +1,4 @@
+import { MaybeRef, get } from '@vueuse/core'
 import { SWRVCache, mutate } from 'swrv'
 import { Ref } from 'vue'
 
@@ -11,6 +12,14 @@ export function getSWRV<T>(model: SWRVModel<T>, config: any) {
     return swrvGet(model.key.value, model.fetcher, config.cache!, config.dedupingInterval!)
   }
   return Promise.resolve(undefined)
+}
+
+export function formatKey(path: string, record: Record<string, MaybeRef<string | number | undefined | string[] | number[]>>) {
+  return `${path}?${buildSearchParameters(record)}`
+}
+
+export function buildSearchParameters(record: Record<string, MaybeRef<string | number | undefined | string[] | number[]>>) {
+  return Object.entries(record).map(([k, v]) => `${k}=${get(v) || ''}`).join('&')
 }
 
 export async function swrvGet<T>(key: string, fetcher: (abortSignal?: AbortSignal) => Promise<T>,

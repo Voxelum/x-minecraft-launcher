@@ -76,11 +76,14 @@
               <v-chip
                 v-for="c of g.categories.slice(0, 2)"
                 :key="c"
+                v-shared-tooltip="c"
                 class="hidden lg:block"
                 :ripple="false"
                 small
               >
-                {{ c }}
+                <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">
+                  {{ c }}
+                </span>
               </v-chip>
             </v-card-actions>
           </div>
@@ -105,6 +108,7 @@
 </template>
 <script setup lang="ts">
 import { useDateString } from '@/composables/date'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useBreakpoints } from '@vueuse/core'
 
 const props = defineProps<{

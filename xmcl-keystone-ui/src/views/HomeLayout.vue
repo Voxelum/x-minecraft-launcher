@@ -5,12 +5,7 @@
     :style="{ overflow: 'overlay' }"
     @wheel="onScroll"
   >
-    <transition
-      name="fade-transition"
-      mode="out-in"
-    >
-      <HomeHeader class="sticky top-0 z-20" />
-    </transition>
+    <HomeHeader class="sticky top-0 z-20" />
 
     <!-- This is to fix strange hover color issue... -->
     <v-divider
@@ -39,6 +34,7 @@ import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
 import { useBlockSharedTooltip } from '@/composables/sharedTooltip'
 import { injection } from '@/util/inject'
+import { useScroll } from '@vueuse/core'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'
@@ -46,7 +42,6 @@ import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
-import { useScroll } from '@vueuse/core'
 
 const router = useRouter()
 

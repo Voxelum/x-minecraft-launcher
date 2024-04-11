@@ -125,7 +125,11 @@ const {
   keyword,
   networkOnly,
   gameVersion,
+  effect,
 } = injection(kResourcePackSearch)
+
+// Register the resource pack search effect
+effect()
 
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
 

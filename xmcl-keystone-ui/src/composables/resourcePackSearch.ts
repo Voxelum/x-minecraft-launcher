@@ -2,10 +2,12 @@ import { clientModrinthV2 } from '@/util/clients'
 import { ProjectEntry } from '@/util/search'
 import { InstanceData, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceResourcePack } from './instanceResourcePack'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
+import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
 
@@ -96,35 +98,37 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
       updateResources(options)
     }
   }
-  watch(enabled, update, { immediate: true })
-  watch(disabled, update, { immediate: true })
+
+  function effect() {
+    watch(enabled, update, { immediate: true })
+    watch(disabled, update, { immediate: true })
+  }
 
   return {
     disabled: _disabled,
     enabled: _enabled,
     all: _all,
     loadingCached,
+    effect,
   }
 }
 
 export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>) {
-  const keyword: Ref<string> = ref('')
-  const gameVersion: Ref<string> = ref('')
+  const keyword = ref('')
+  const gameVersion = ref('')
   const modrinthCategories = ref([] as string[])
   const curseforgeCategory = ref(undefined as number | undefined)
+  const sort = ref(0)
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
-  const { sort, modrinthSort, curseforgeSort } = useMarketSort(0)
 
-  watch(runtime, (r) => {
-    gameVersion.value = r.minecraft
-  }, { immediate: true })
+  const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
     modrinthSort, gameVersion)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError } = useCurseforgeSearch(12, keyword, ref([]), curseforgeCategory,
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: curseforgeEffect } = useCurseforgeSearch(CurseforgeBuiltinClassId.resourcePack, keyword, ref([]), curseforgeCategory,
     curseforgeSort, gameVersion)
-  const { enabled, disabled, all: filtered, loadingCached } = useLocalSearch(keyword, _enabled, _disabled)
+  const { enabled, disabled, all: filtered, loadingCached, effect: localEffect } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
   const all = useAggregateProjects(
@@ -143,6 +147,20 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     isCurseforgeActive,
     isModrinthActive,
   )
+
+  function effect() {
+    modrinthEffect()
+    curseforgeEffect()
+    localEffect()
+
+    useQueryOverride('keyword', keyword, '', searlizers.string)
+    useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
+    useQueryOverride('modLoaders', modrinthCategories, [], searlizers.stringArray)
+    useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
+    useQueryOverride('sort', sort, 0, searlizers.number)
+    useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
+    useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
+  }
 
   return {
     items,
@@ -171,5 +189,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     loading,
     isCurseforgeActive,
     isModrinthActive,
+
+    effect,
   }
 }

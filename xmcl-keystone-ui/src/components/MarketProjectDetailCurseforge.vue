@@ -7,7 +7,7 @@ import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
-import { useSWRVModel } from '@/composables/swrv'
+import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -37,15 +37,15 @@ const emit = defineEmits<{
 
 const { getDateString } = useDateString()
 
-const cursforgeModId = computed(() => props.curseforgeId)
+const curseforgeModId = computed(() => props.curseforgeId)
 
-const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectModel(cursforgeModId))
+const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectModel(curseforgeModId))
 const curseforgeMod = computed(() => {
   if (props.curseforge) return props.curseforge
   if (curseforgeProject.value) return curseforgeProject.value
   return undefined
 })
-const { data: description, isValidating: loadings } = useSWRVModel(getCurseforgeProjectDescriptionModel(cursforgeModId))
+const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
 const model = computed(() => {
   const externals: ExternalResource[] = []
   const mod = curseforgeMod.value
@@ -139,6 +139,8 @@ const model = computed(() => {
   return detail
 })
 
+const loading = useLoading(isValidatingDescription, description, curseforgeModId)
+
 const { t } = useI18n()
 const tCategory = useCurseforgeCategoryI18n()
 const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
@@ -147,7 +149,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
   3: 'alpha',
 }
 
-const { files, refreshing: loadingVersions, index, totalCount, pageSize } = useCurseforgeProjectFiles(cursforgeModId,
+const { files, refreshing: loadingVersions, index, totalCount, pageSize } = useCurseforgeProjectFiles(curseforgeModId,
   computed(() => props.gameVersion),
   computed(() => undefined))
 
@@ -159,8 +161,8 @@ const modVersions = computed(() => {
   const versions: ProjectVersion[] = []
   const installed = [...props.installed]
   for (const file of files.value) {
-    if (props.loaders.length > 0) {
-      const loaders = getCursforgeFileModLoaders(file)
+    const loaders = getCursforgeFileModLoaders(file)
+    if (props.loaders.length > 0 && loaders.length > 0) {
       if (!loaders.some(l => props.loaders.indexOf(l.toLowerCase() as any) !== -1)) {
         continue
       }
@@ -340,7 +342,7 @@ const onRefresh = () => {
     :selected-installed="installed"
     :dependencies="dependencies"
     :has-installed-version="hasInstalledVersion"
-    :loading="loadings"
+    :loading="loading"
     :has-more="files.length < totalCount"
     :loading-versions="loadingVersions"
     :updating="innerUpdating || updating || installing"

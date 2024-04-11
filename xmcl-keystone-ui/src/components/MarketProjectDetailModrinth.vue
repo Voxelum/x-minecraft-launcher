@@ -7,7 +7,7 @@ import { kModrinthInstaller } from '@/composables/modrinthInstaller'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
-import { useSWRVModel } from '@/composables/swrv'
+import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
@@ -36,8 +36,9 @@ const emit = defineEmits<{
 
 // Project
 const projectId = computed(() => props.projectId)
-const { project, refreshing: loading, refresh } = useModrinthProject(projectId)
+const { project, isValidating: isValidatingModrinth, refresh } = useModrinthProject(projectId)
 const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth))
+const loading = useLoading(isValidatingModrinth, project, projectId)
 
 // Versions
 const { data: versions, isValidating: loadingVersions } = useSWRVModel(

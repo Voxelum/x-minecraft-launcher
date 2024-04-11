@@ -1,10 +1,12 @@
-import { Category, SearchResultHit } from '@xmcl/modrinth'
+import { Category } from '@xmcl/modrinth'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
 import { clientModrinthV2 } from '@/util/clients'
 import debounce from 'lodash.debounce'
 import useSWRV from 'swrv'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
+import { MaybeRef, get } from '@vueuse/core'
+import { formatKey } from '@/util/swrvGet'
 
 export interface ModrinthOptions {
   query: string
@@ -13,7 +15,7 @@ export interface ModrinthOptions {
   category: string[]
   modLoader: string
   environment: string
-  sortBy: string
+  sortBy: string | undefined
   projectType: string
   page: number
 }
@@ -56,23 +58,11 @@ export function useModrinthTags() {
   }
 }
 
-// export function useModrinthSearch() {
-//   return useSWRV(
-//     computed(() => `/modrinth/search?query=${props.query}&limit=${data.pageSize}&offset=${(props.page - 1) * data.pageSize}&index=${sortBy.value}&facets=${facetsText.value}`),
-//     () => clientModrinthV2.searchProjects({
-//       query: props.query,
-//       limit: data.pageSize,
-//       offset: (props.page - 1) * data.pageSize,
-//       index: sortBy.value,
-//       facets: facetsText.value,
-//     }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
-// }
-
 export function getFacatsText(
   gameVersion: string,
   license: string,
   category: string[],
-  modLoader: string,
+  modLoaders: string[],
   projectType: string,
   environment: string,
 ) {
@@ -83,13 +73,9 @@ export function getFacatsText(
   if (license) {
     facets.push([`license:${license}`])
   }
-  if (modLoader) {
-    facets.push([`categories:${modLoader}`])
-  }
-  if (category) {
-    for (const cat of category) {
-      facets.push([`categories:${cat}`])
-    }
+  const cats = [...modLoaders, ...category].filter(v => !!v)
+  if (cats.length > 0) {
+    facets.push(cats.map(c => `categories:${c}`))
   }
   if (projectType) {
     facets.push([`project_type:${projectType}`])
@@ -112,89 +98,105 @@ export function getModrinthSearchUrl(
   query: string,
   limit: number,
   offset: number,
-  sortBy: string,
+  sortBy: string | undefined,
   facetsText: string | undefined,
 ) {
-  return `/modrinth/search?query=${query}&limit=${limit}&offset=${(offset)}&index=${sortBy}&facets=${facetsText}`
+  return `/modrinth/search?query=${query}&limit=${limit}&offset=${(offset)}&index=${sortBy || ''}&facets=${facetsText || ''}`
 }
 
-export function useModrinth(props: ModrinthOptions) {
-  const { t } = useI18n()
-  const projectTypes = computed(() => [{
-    value: 'mod',
-    text: t('modrinth.projectType.mod'),
-  }, {
-    value: 'modpack',
-    text: t('modrinth.projectType.modpack'),
-  }, {
-    value: 'resourcepack',
-    text: t('modrinth.projectType.resourcePack'),
-  }, {
-    value: 'shader',
-    text: t('modrinth.projectType.shader'),
-  }])
-  const sortOptions = computed(() => [{
-    name: '',
-    text: t('modrinth.sort.relevance'),
-  }, {
-    name: 'downloads',
-    text: t('modrinth.sort.downloads'),
-  }, {
-    name: 'follows',
-    text: t('modrinth.sort.follows'),
-  }, {
-    name: 'newest',
-    text: t('modrinth.sort.newest'),
-  }, {
-    name: 'updated',
-    text: t('modrinth.sort.updated'),
-  }])
+export function useModrinthSearchFunc(
+  query: MaybeRef<string>,
+  gameVersion: MaybeRef<string>,
+  license: MaybeRef<string>,
+  category: MaybeRef<string[]>,
+  modLoader: MaybeRef<string[]>,
+  environment: MaybeRef<string>,
+  sortBy: MaybeRef<string | undefined>,
+  projectType: MaybeRef<string>,
+  pageSize: MaybeRef<number>,
+) {
+  async function search(index: number) {
+    const facets = getFacatsText(get(gameVersion), get(license), get(category), get(modLoader), get(projectType), get(environment))
+    return clientModrinthV2.searchProjects({
+      query: get(query),
+      limit: get(pageSize),
+      offset: index,
+      index: get(sortBy),
+      facets,
+    })
+  }
 
-  const data = reactive({
-    pageSize: 10,
-    pageCount: 0,
-    pageSizeOptions: [5, 10, 15, 20],
-  })
+  return search
+}
 
-  const facetsText = computed(() => getFacatsText(props.gameVersion, props.license, props.category, props.modLoader, props.projectType, props.environment))
+export function useModrinth(
+  query: MaybeRef<string>,
+  gameVersion: MaybeRef<string>,
+  license: MaybeRef<string>,
+  category: MaybeRef<string[]>,
+  modLoader: MaybeRef<string[]>,
+  environment: MaybeRef<string>,
+  sortBy: MaybeRef<string | undefined>,
+  projectType: MaybeRef<string>,
+  page: MaybeRef<number>,
+  pageSize: MaybeRef<number>,
+) {
+  const search = useModrinthSearchFunc(
+    query,
+    gameVersion,
+    license,
+    category,
+    modLoader,
+    environment,
+    sortBy,
+    projectType,
+    pageSize,
+  )
+
   const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV(
-    computed(() => getModrinthSearchUrl(props.query, data.pageSize, (props.page - 1) * data.pageSize, props.sortBy, facetsText.value)),
-    () => clientModrinthV2.searchProjects({
-      query: props.query,
-      limit: data.pageSize,
-      offset: (props.page - 1) * data.pageSize,
-      index: props.sortBy,
-      facets: facetsText.value,
-    }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
+    computed(() => formatKey('/modrinth/search', {
+      query,
+      pageSize,
+      page,
+      sortBy,
+      gameVersion,
+      license,
+      category,
+      modLoader,
+      environment,
+      projectType,
+    })),
+    () => search((get(page) - 1) * get(pageSize)), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
 
-  watch(searchData, (result) => {
-    if (result) {
-      data.pageCount = Math.floor(result.total_hits / data.pageSize) + 1
-    }
-  }, { immediate: true })
+  const pages = computed(() => searchData.value ? Math.floor(searchData.value.total_hits / get(pageSize)) + 1 : 0)
 
   const projects = computed(() => searchData.value?.hits || [])
   const debouncedRefresh = debounce(() => mutate(), 1000)
-  const wrappedRefresh = () => {
+  const refresh = () => {
     refreshing.value = true
     return debouncedRefresh()
   }
 
-  watch(() => props.projectType, () => {
-    props.category = []
-  })
-
-  watch(props, () => {
-    wrappedRefresh()
+  watch([
+    query,
+    pageSize,
+    page,
+    sortBy,
+    gameVersion,
+    license,
+    category,
+    modLoader,
+    environment,
+    projectType,
+  ], () => {
+    refresh()
   }, { deep: true })
 
   return {
-    ...toRefs(data),
+    pageCount: pages,
     projects,
-    projectTypes,
-    refresh: wrappedRefresh,
+    refresh,
     refreshing,
-    sortOptions,
     error,
   }
 }

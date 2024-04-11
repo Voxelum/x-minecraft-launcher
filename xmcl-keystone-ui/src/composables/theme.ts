@@ -615,6 +615,8 @@ export function useTheme(framework: Framework) {
     --color-success: ${successColor.value};
     --color-warning: ${warningColor.value};
     --color-border: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
+    --color-highlight-bg: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
+    --color-secondary-text: ${isDark.value ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)'};
   }
 
   .v-application {

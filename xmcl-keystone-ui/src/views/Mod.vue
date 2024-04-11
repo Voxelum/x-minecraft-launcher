@@ -188,6 +188,7 @@ import ModItem from './ModItem.vue'
 
 const { runtime, path } = injection(kInstance)
 
+// Ensure mod search effect is applied
 const {
   modrinthError,
   curseforgeError,
@@ -200,7 +201,10 @@ const {
   keyword,
   items,
   gameVersion,
+  effect,
 } = injection(kModsSearch)
+
+effect()
 
 const error = computed(() => {
   return curseforgeError.value || modrinthError.value

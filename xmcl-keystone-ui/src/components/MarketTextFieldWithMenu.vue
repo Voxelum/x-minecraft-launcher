@@ -51,8 +51,12 @@
         {{ t('minecraftVersion.name') }}
       </v-subheader>
       <v-chip-group
+        ref="chipGroup"
         v-model="gameVersionModel"
-        column
+        center-active
+        show-arrows
+        mandatory
+        @wheel.native.stop="onWheel"
       >
         <v-chip
           v-for="v of versionIds"
@@ -200,15 +204,7 @@ const { runtime } = injection(kInstance)
 function filterGameVersion(v: string) {
   if (v.indexOf('-') !== -1) return false
   if (!v.startsWith('1.')) return false
-  const current = props.gameVersion || runtime.value.minecraft
-  const minor = Number(current.split('.')[1])
-  // minor match
-  if (minor.toString() === v.split('.')[1]) return true
-
-  // minor +1 or -1
-  if (minor + 1 === Number(v.split('.')[1]) || minor - 1 === Number(v.split('.')[1])) return true
-
-  return false
+  return true
 }
 const versionIds = computed(() => versions.value.map(v => v.id).filter(filterGameVersion))
 
@@ -239,6 +235,7 @@ const curseforgeSelectModel = computed({
 })
 const gameVersionModel = computed({
   get() {
+    console.log(props.gameVersion, versionIds.value.findIndex(v => v === props.gameVersion))
     return versionIds.value.findIndex(v => v === props.gameVersion)
   },
   set(v) {
@@ -255,4 +252,24 @@ const onClear = () => {
 
 const sortByItems = useSortByItems()
 
+const chipGroup = ref(null as any)
+const onWheel = (e: WheelEvent) => {
+  if (e.deltaY > 0) {
+    chipGroup.value?.onAffixClick('next')
+  } else {
+    chipGroup.value?.onAffixClick('prev')
+  }
+  e.preventDefault()
+  e.stopPropagation()
+}
+
 </script>
+
+<style>
+.v-slide-group__prev {
+  min-width: 28px;
+}
+.v-slide-group__next {
+  min-width: 28px;
+}
+</style>

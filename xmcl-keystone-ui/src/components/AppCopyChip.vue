@@ -14,10 +14,11 @@
       {{ value }}
     </span>
     <v-icon
-      x-small
+      small
       right
+      :color="clicked ? 'green' : ''"
     >
-      content_copy
+      {{ clicked ? 'check' : 'content_copy' }}
     </v-icon>
   </v-chip>
 </template>
@@ -30,7 +31,10 @@ defineProps<{
   outlined?: boolean
 }>()
 
+const clicked = ref(false)
+
 const onInfoClicked = (value: string) => {
   navigator.clipboard.writeText(value)
+  clicked.value = true
 }
 </script>

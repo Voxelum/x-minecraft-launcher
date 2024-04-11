@@ -23,9 +23,9 @@ export function getCurseforgeFileGameVersions(file: File): string[] {
 
 export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[]) {
   const mapping = {
-    [ModLoaderFilter.fabric]: 'Fabric' as const,
-    [ModLoaderFilter.forge]: 'Forge' as const,
-    [ModLoaderFilter.quilt]: 'Quilt' as const,
+    [ModLoaderFilter.fabric]: FileModLoaderType.Fabric,
+    [ModLoaderFilter.forge]: FileModLoaderType.Forge,
+    [ModLoaderFilter.quilt]: FileModLoaderType.Quilt,
   }
   return loaderTypes.map(loaderType => mapping[loaderType])
 }

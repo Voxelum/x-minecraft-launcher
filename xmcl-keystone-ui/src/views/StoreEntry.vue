@@ -20,9 +20,9 @@
         hide-details
         clearable
         :placeholder="t('modrinth.searchText')"
-        @click:clear="_query = ''"
-        @keydown.enter="_query = keyword"
-        @click:append="_query = keyword"
+        @click:clear="query = ''"
+        @keydown.enter="query = keyword"
+        @click:append="query = keyword"
       />
     </div>
     <div class="main px-3">
@@ -148,11 +148,12 @@ import Hint from '@/components/Hint.vue'
 import StoreExploreCard, { ExploreProject } from '@/components/StoreExploreCard.vue'
 import StoreExploreCategories, { Category, ExploreCategoryGroup } from '@/components/StoreExploreCategories.vue'
 import StoreGallery, { GameGallery } from '@/components/StoreGallery.vue'
-import { CurseforgeProps, useCurseforge, useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
+import { CurseforgeBuiltinClassId, useCurseforge, useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 import { useDateString } from '@/composables/date'
 import { getFeedTheBeastProjectModel, useFeedTheBeast } from '@/composables/ftb'
 import { useMarketSort } from '@/composables/marketSort'
-import { ModrinthOptions, getFacatsText, useModrinth, useModrinthTags } from '@/composables/modrinth'
+import { getFacatsText, useModrinth, useModrinthTags } from '@/composables/modrinth'
+import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/query'
 import { useSortByItems } from '@/composables/sortBy'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
@@ -164,48 +165,14 @@ import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import useSWRV from 'swrv'
 
-const props = withDefaults(defineProps<{
-  query: string
-  gameVersion: string
-  modLoader: string
-}>(), { query: '', gameVersion: '', modLoader: '' })
+const { push } = useRouter()
+const query = useQuery('query')
+const gameVersion = useQuery('gameVersion')
+const modLoaders = useQueryStringArray('modLoaders')
+const page = useQueryNumber('page', 1)
+const sort = useQuery('sort')
 
-const { push, replace, currentRoute } = useRouter()
-const _query = computed({
-  get: () => props.query,
-  set: (v: string) => replace({
-    path: '/store',
-    query: {
-      query: v,
-      gameVersion: props.gameVersion,
-      modLoader: props.modLoader,
-    },
-  }),
-})
-const _gameVersion = computed({
-  get: () => props.gameVersion,
-  set: (v: string) => replace({
-    path: '/store',
-    query: {
-      gameVersion: v,
-      query: props.query,
-      modLoader: props.modLoader,
-    },
-  }),
-})
-const _modLoader = computed({
-  get: () => props.modLoader,
-  set: (v: string) => replace({
-    path: '/store',
-    query: {
-      modLoader: v,
-      query: props.query,
-      gameVersion: props.gameVersion,
-    },
-  }),
-})
-
-const keyword = ref(props.query)
+const keyword = ref(query)
 const { t } = useI18n()
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
@@ -226,7 +193,7 @@ const { data: modrinthResult, error, isValidating } = useSWRV('/modrinth/feature
   const result = await clientModrinthV2.searchProjects({
     index: 'follows',
     limit: 5,
-    facets: getFacatsText('', '', [], '', 'modpack', ''),
+    facets: getFacatsText('', '', [], [], 'modpack', ''),
   })
   return result.hits
 }, inject(kSWRVConfig))
@@ -283,7 +250,7 @@ const { data: modrinthRecent, error: errorRecent, isValidating: isValidatingRece
   const result = await clientModrinthV2.searchProjects({
     index: 'updated',
     limit: 24,
-    facets: getFacatsText('', '', [], '', 'modpack', ''),
+    facets: getFacatsText('', '', [], [], 'modpack', ''),
   })
   return result.hits
 }, inject(kSWRVConfig))
@@ -331,7 +298,7 @@ const { data: modrinthRecentMinecraft } = useSWRV('/modrinth/recent_version', as
   const result = await clientModrinthV2.searchProjects({
     index: 'newest',
     limit: 30,
-    facets: getFacatsText(latestModrinth.value, '', [], '', 'modpack', ''),
+    facets: getFacatsText(latestModrinth.value, '', [], [], 'modpack', ''),
   })
   return result.hits
 }, inject(kSWRVConfig))
@@ -364,7 +331,7 @@ const recentMinecraftItems = computed(() => {
 })
 
 // FTB
-const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: _query }))
+const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
 const ftbItems = ref([] as ExploreProject[])
 const config = inject(kSWRVConfig)
 watch(ftbData, async (packs) => {
@@ -404,174 +371,40 @@ const enter = (type: string, id: string) => {
 }
 
 const sortBy = useSortByItems()
-const { refreshing: refreshingTag, categories, modLoaders, gameVersions, error: tagError } = useModrinthTags()
-const { categories: curseforgeCategories } = useCurseforgeCategories()
-const revMap: Record<string, number> = {
-  multiplayer: 4484,
-  lightweight: 4481,
-  adventure: 4475,
-  combat: 4483,
-  quests: 4478,
-  technology: 4472,
-  magic: 4473,
-}
-const groups = computed(() => {
-  const cfCats = curseforgeCategories.value?.filter(c => c.parentCategoryId === 4471)
+const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = useModrinthTags()
 
-  const groupedCategories: Category[] = []
-  const bin: Record<string, boolean> = {}
-  const binMap: Record<string, string> = {
-    adventure: 'adventure',
-    challenging: 'challenging',
-    combat: 'combat',
-    'kitchen-sink': 'kitchen-sink',
-    lightweight: 'lightweight',
-    magic: 'magic',
-    multiplayer: 'multiplayer',
-    optimization: 'optimization',
-    quests: 'quests',
-    technology: 'technology',
+const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-    Quests: 'quests',
-    Tech: 'technology',
-    Magic: 'magic',
-    'Adventure and RPG': 'adventure',
-    'Combat / PvP': 'combat',
-    'Small / Light': 'lightweight',
-    Multiplayer: 'multiplayer',
-  }
-  for (const c of categories.value.filter(v => v.project_type === 'modpack')) {
-    const key = binMap[c.name]
-    if (!(key in bin) || !key) {
-      groupedCategories.push({
-        id: c.name,
-        text: t(`modrinth.categories.${c.name}`, c.name),
-        iconHTML: c.icon,
-      })
-      if (key) {
-        bin[key] = true
-      }
-    }
-  }
-  for (const c of (cfCats || [])) {
-    const key = binMap[c.name]
-    if (!(key in bin) || !key) {
-      groupedCategories.push({
-        id: c.id.toString(),
-        text: tCategory(c.name),
-        icon: c.iconUrl,
-      })
-      if (key) {
-        bin[key] = true
-      }
-    }
-  }
-
-  const result: ExploreCategoryGroup[] = [{
-    id: 'sortBy',
-    text: t('modrinth.sort.title'),
-    type: 'buttons',
-    categories: sortBy.value.map(s => ({
-      id: s.value,
-      text: s.text,
-      icon: s.icon,
-    })),
-  }, {
-    id: 'gameVersions',
-    text: t('modrinth.gameVersions.name'),
-    type: 'menu',
-    categories: gameVersions.value.map(v => ({
-      id: v.version,
-      text: v.version,
-    })),
-  }, {
-    id: 'modloaders',
-    text: t('modrinth.modLoaders.name'),
-    type: 'checkbox',
-    categories: modLoaders.value.filter(l => l.supported_project_types.includes('modpack')).map(l => ({
-      id: l.name,
-      text: l.name,
-      iconHTML: l.icon,
-    })),
-  }, {
-    id: 'categories',
-    text: t('modrinth.categories.categories'),
-    type: 'checkbox',
-    categories: groupedCategories,
-  }]
-
-  return result
-})
-
-const page = ref(1)
-
-const { sort, modrinthSort, curseforgeSort } = useMarketSort('' as string)
+const _modrinthCategories = useQueryStringArray('modrinthCategories')
 // Modrinth
-const data: ModrinthOptions = reactive({
-  query: _query,
-  gameVersion: _gameVersion,
-  license: '',
-  category: [],
-  modLoader: _modLoader,
-  environment: '',
-  sortBy: modrinthSort as any,
-  projectType: 'modpack',
-  page,
-})
-
-const selected = computed(() => {
-  const result: string[] = []
-
-  if (data.category.length > 0) {
-    result.push(...data.category)
-  }
-  if (curseforgeData.category) {
-    result.push(curseforgeData.category)
-  }
-  if (data.environment) {
-    result.push(data.environment)
-  }
-  if (_gameVersion.value) {
-    result.push(_gameVersion.value)
-  }
-  if (data.license) {
-    result.push(data.license)
-  }
-  if (_modLoader.value) {
-    result.push(_modLoader.value)
-  }
-  if (data.sortBy) {
-    result.push(data.sortBy)
-  }
-
-  return result
-})
 const {
   error: searchError,
   refreshing: isModrinthSearching, projects, pageCount,
-} = useModrinth(data)
+} = useModrinth(
+  query,
+  gameVersion,
+  '',
+  _modrinthCategories,
+  modLoaders,
+  '',
+  modrinthSort,
+  'modpack',
+  page,
+  10,
+)
 
 // Curseforge
-const curseforgeData: CurseforgeProps = reactive({
-  type: 'modpacks',
+const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt }
+const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number)
+const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
+  CurseforgeBuiltinClassId.modpack,
+  query,
   page,
-  keyword: _query,
-  category: '',
-  sortField: curseforgeSort as any,
-  modLoaderType: computed(() => {
-    return _modLoader.value === 'forge'
-      ? FileModLoaderType.Forge
-      : _modLoader.value === 'fabric'
-        ? FileModLoaderType.Fabric
-        : _modLoader.value === 'quilt'
-          ? FileModLoaderType.Quilt
-          : FileModLoaderType.Any
-  }),
-  sortOrder: 'desc',
-  gameVersion: _gameVersion,
-  from: '',
-})
-const { projects: curseforgeProjects, refreshing: isCurseforgeSearching } = useCurseforge(curseforgeData)
+  computed(() => modLoaders.value.map(v => modLoaderMapping[v])),
+  curseforgeCategory,
+  curseforgeSort,
+  gameVersion,
+)
 
 const items = computed(() => {
   const modrinths = projects.value.map((p) => {
@@ -588,7 +421,7 @@ const items = computed(() => {
         { icon: 'edit', text: getDateString(p.date_modified) },
         { icon: 'local_offer', text: p.versions[p.versions.length - 1] },
       ],
-      tags: p.categories.map(c => ({ icon: categories.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c) })),
+      tags: p.categories.map(c => ({ icon: modrinthCategories.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c) })),
       gallery: p.gallery,
     }
     return mapped
@@ -619,10 +452,10 @@ const items = computed(() => {
     return mapped
   })
 
-  if (curseforgeData.category && data.category.length === 0) {
+  if (curseforgeCategory.value && _modrinthCategories.value.length === 0) {
     return curseforges
   }
-  if (data.category.length > 0 && curseforgeData.category === '') {
+  if (_modrinthCategories.value.length > 0 && curseforgeCategory.value === undefined) {
     return modrinths
   }
 
@@ -633,7 +466,7 @@ const items = computed(() => {
 const container = ref<any>(null)
 const exploreHeader = ref<any | null>(null)
 watch(items, (values) => {
-  if (_query.value || _gameVersion.value || _modLoader.value) {
+  if (query.value || gameVersion.value || modLoaders.value) {
     // Scroll to the element
     const component = exploreHeader.value
     const el = component?.$el as HTMLElement | undefined
@@ -665,42 +498,113 @@ const onMouseLeave = (e: any) => {
   }, 300)
 }
 
+// Categories
+const { categories: curseforgeCategories } = useCurseforgeCategories()
+const groups = computed(() => {
+  const modrinthCatResult: Category[] = modrinthCategories.value.filter(v => v.project_type === 'modpack').map(c => ({
+    id: c.name,
+    text: t(`modrinth.categories.${c.name}`, c.name),
+    iconHTML: c.icon,
+  }))
+  const curseforgeCatResult: Category[] = (curseforgeCategories.value?.filter(c => c.parentCategoryId === 4471) || []).map(c => ({
+    id: c.id.toString(),
+    text: tCategory(c.name),
+    icon: c.iconUrl,
+  }))
+
+  const result: ExploreCategoryGroup[] = [{
+    id: 'sortBy',
+    text: t('modrinth.sort.title'),
+    type: 'buttons',
+    categories: sortBy.value.map(s => ({
+      id: s.value,
+      text: s.text,
+      icon: s.icon,
+    })),
+  }, {
+    id: 'gameVersions',
+    text: t('modrinth.gameVersions.name'),
+    type: 'menu',
+    categories: gameVersions.value.map(v => ({
+      id: v.version,
+      text: v.version,
+    })),
+  }, {
+    id: 'modloaders',
+    text: t('modrinth.modLoaders.name'),
+    type: 'checkbox',
+    categories: modrinthModloaders.value.filter(l => l.supported_project_types.includes('modpack')).map(l => ({
+      id: l.name,
+      text: l.name[0].toUpperCase() + l.name.slice(1),
+      iconHTML: l.icon,
+    })),
+  }, {
+    id: 'modrinthCategories',
+    text: t('modrinth.categories.categories'),
+    type: 'checkbox',
+    categories: modrinthCatResult,
+  }, {
+    id: 'curseforgeCategories',
+    text: t('curseforge.category'),
+    type: 'checkbox',
+    categories: curseforgeCatResult,
+  }]
+
+  return result
+})
+
+const selected = computed(() => {
+  const result: string[] = []
+
+  if (_modrinthCategories.value.length > 0) {
+    result.push(..._modrinthCategories.value)
+  }
+  if (typeof curseforgeCategory.value === 'number') {
+    result.push(curseforgeCategory.value.toString())
+  }
+  if (gameVersion.value) {
+    result.push(gameVersion.value)
+  }
+  if (modLoaders.value.length > 0) {
+    result.push(...modLoaders.value)
+  }
+  if (sort.value) {
+    result.push(sort.value)
+  }
+
+  return result
+})
+
 // Category select
 const onSelect = ({ group, category }: { group: string; category: string }) => {
-  if (group === 'categories') {
-    const cat = categories.value.find(c => c.name === category)
-
-    if (cat) {
-      const index = data.category.indexOf(category)
-      if (index === -1) {
-        data.category.push(category)
-      } else {
-        data.category.splice(index, 1)
-      }
-
-      if (revMap[category]) {
-        const cfCat = revMap[category].toString()
-        if (curseforgeData.category === cfCat) {
-          curseforgeData.category = ''
-        } else {
-          curseforgeData.category = cfCat
-        }
-      }
+  if (group === 'modrinthCategories') {
+    // const cat = modrinthCategories.value.find(c => c.name === category)
+    const index = _modrinthCategories.value.indexOf(category)
+    if (index === -1) {
+      _modrinthCategories.value.push(category)
     } else {
-      if (curseforgeData.category === category) {
-        curseforgeData.category = ''
+      _modrinthCategories.value.splice(index, 1)
+    }
+  } else if (group === 'curseforgeCategories') {
+    const cat = curseforgeCategories.value?.find(c => c.id.toString() === category)
+    if (cat) {
+      if (curseforgeCategory.value === cat.id) {
+        curseforgeCategory.value = undefined
       } else {
-        curseforgeData.category = category
+        curseforgeCategory.value = cat.id
       }
     }
   } else if (group === 'modloaders') {
-    _modLoader.value = data.modLoader === category ? '' : category
-  } else if (group === 'environments') {
-    data.environment = category === data.environment ? '' : category
+    if (category) {
+      const index = modLoaders.value.indexOf(category)
+      if (index === -1) {
+        modLoaders.value.push(category)
+      } else {
+        modLoaders.value.splice(index, 1)
+      }
+    }
   } else if (group === 'gameVersions') {
-    _gameVersion.value = category
-  } else if (group === 'licenses') {
-    data.license = category
+    gameVersion.value = category
   } else if (group === 'sortBy') {
     sort.value = category === sort.value ? '' : category
   }

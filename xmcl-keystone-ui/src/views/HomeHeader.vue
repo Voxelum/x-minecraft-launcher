@@ -39,16 +39,26 @@
         :text="currentVersion"
       />
       <div class="flex-grow" />
-      <router-view name="actions" />
+      <transition
+        name="slide-x-transition"
+        mode="out-in"
+      >
+        <router-view name="actions" />
+      </transition>
     </div>
-    <router-view
-      name="extensions"
-      class="pl-4 pr-6"
-      :class="{
-        'mt-5': !compact,
-        'mt-3': compact,
-      }"
-    />
+    <transition
+      name="slide-y-reverse-transition"
+      mode="out-in"
+    >
+      <router-view
+        name="extensions"
+        class="pl-4 pr-6"
+        :class="{
+          'mt-5': !compact,
+          'mt-3': compact,
+        }"
+      />
+    </transition>
 
     <v-divider
       class="transition-all"
@@ -76,8 +86,7 @@ const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
 const currentVersion = computed(() => !isResolvedVersion(resolvedVersion.value) ? t('version.notInstalled') : resolvedVersion.value.id)
-const scrollTop = injection(kCompact)
-const compact = computed(() => scrollTop.value)
+const compact = injection(kCompact)
 const headerFontSize = computed(() => {
   if (compact.value) {
     return '1.8rem'
