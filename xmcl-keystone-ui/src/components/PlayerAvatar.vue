@@ -4,63 +4,57 @@
     :style="{ 'max-width': `${dimension}px`, 'max-height': `${dimension}px`, 'min-height': `${dimension}px`, 'min-width': `${dimension}px` }"
   >
     <img
-      ref="image"
-      :src="src || steve"
-      :width="textureWidth"
-      :height="textureHeight"
+      :src="dataUrlSrc"
+      :width="dimension"
+      :height="dimension"
       style="image-rendering: pixelated; border-radius: 0"
-      :style="style"
-      @load="onload"
+      :style="{ width: `${dimension}px`, height: `${dimension}px` }"
     >
   </div>
 </template>
 
-<script lang=ts>
-import { defineComponent, reactive, ref, toRefs, computed, Ref } from 'vue'
+<script lang=ts setup>
 import steve from '@/assets/steve_skin.png'
+import { ref } from 'vue'
 
-export default defineComponent({
-  props: {
-    src: {
-      type: String,
-      default: steve,
-    },
-    dimension: {
-      type: Number,
-      default: 64,
-    },
-  },
-  setup(props) {
-    const data = reactive({
-      steve,
-      textureWidth: 0,
-      textureHeight: 0,
-    })
-    const image: Ref<any> = ref(null)
-
-    const translateX = computed(() => -props.dimension / 8)
-    const translateY = computed(() => -props.dimension / 8)
-
-    const style = computed(() => ({
-      'transform-origin': '0 0',
-      transform: `scale(8) translate(${translateX.value}px, ${translateY.value}px)`,
-      'min-width': data.textureWidth,
-      'min-height': data.textureHeight,
-    }))
-
-    function onload() {
-      data.textureWidth = image.value.naturalWidth
-      data.textureHeight = image.value.naturalHeight
-    }
-    return {
-      ...toRefs(data),
-      style,
-      image,
-      onload,
-    }
-  },
+const props = withDefaults(
+  defineProps<{
+    src: string
+    dimension: number
+  }>(), {
+  src: steve,
+  dimension: 64,
 })
+
+watch(() => props.src, (s) => {
+  renderMinecraftPlayerTextHead(s)
+}, { immediate: true })
+
+function renderMinecraftPlayerTextHead(textureUrl: string) {
+  // Load minecraft player texture from url into canvas
+  // We need to also render the head part/overlay of the texture
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  const img = new Image()
+  img.crossOrigin = 'anonymous'
+  img.src = textureUrl
+  img.onload = () => {
+    // canvas only show head part
+    canvas.width = 8
+    canvas.height = 8
+    // Draw head
+    ctx.drawImage(img, 8, 8, 8, 8, 0, 0, 8, 8)
+    // Draw front head overlay
+    ctx.drawImage(img, 40, 8, 8, 8, 0, 0, 8, 8)
+    // Convert canvas to data url
+    const dataUrl = canvas.toDataURL()
+    // Set the data url to the image
+    dataUrlSrc.value = dataUrl
+  }
+}
+
+const dataUrlSrc = ref('')
 </script>
 
-<style>
-</style>
+<style></style>
