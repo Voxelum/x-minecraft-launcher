@@ -152,6 +152,8 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
 
+const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.curseforge?.projectId)?.curseforge?.projectId)
+
 </script>
 
 <template>
@@ -168,7 +170,7 @@ const onOpenDependency = (dep: ProjectDependency) => {
     :loading="loading"
     :loading-versions="loadingVersions"
     :modrinth="projectId"
-    :curseforge="curseforge"
+    :curseforge="curseforgeId"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
     @install="onInstall"

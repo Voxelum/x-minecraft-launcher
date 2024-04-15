@@ -335,6 +335,8 @@ const onRefresh = () => {
   mutate()
 }
 
+const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.modrinth?.projectId)?.modrinth?.projectId)
+
 </script>
 <template>
   <MarketProjectDetail
@@ -349,7 +351,7 @@ const onRefresh = () => {
     :updating="innerUpdating || updating || installing"
     :versions="modVersions"
     :curseforge="curseforgeId"
-    :modrinth="modrinth"
+    :modrinth="modrinthId"
     :loading-dependencies="loadingDependencies"
     current-target="curseforge"
     @load-changelog="loadChangelog"
