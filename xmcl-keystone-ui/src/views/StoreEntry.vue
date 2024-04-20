@@ -11,6 +11,7 @@
     />
     <div class="z-8 sticky top-1 mt-4 flex w-full px-4 lg:justify-center">
       <v-text-field
+        id="search-text-field"
         ref="searchTextField"
         v-model="keyword"
         color="green"
@@ -26,7 +27,10 @@
       />
     </div>
     <div class="main px-3">
-      <div class="section">
+      <div
+        id="popular-modpacks"
+        class="section"
+      >
         <v-subheader>
           <v-icon left>
             local_fire_department
@@ -90,9 +94,12 @@
         {{ t('store.explore') }}
       </v-subheader>
 
-      <div class="content">
+      <div
+        class="content"
+      >
         <div
           v-if="!searchError && items.length > 0"
+          id="search-result"
           class="relative flex flex-col gap-3 lg:px-2.5"
         >
           <div
@@ -129,6 +136,7 @@
       </div>
       <div class="category overflow-auto">
         <StoreExploreCategories
+          id="search-category"
           :display="hovered?.gallery"
           :groups="groups"
           :loading="refreshingTag"
@@ -157,12 +165,14 @@ import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/que
 import { useSortByItems } from '@/composables/sortBy'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
+import { useTutorial } from '@/composables/tutorial'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
 import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
+import { DriveStep } from 'driver.js'
 import useSWRV from 'swrv'
 
 const { push } = useRouter()
@@ -605,10 +615,30 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
   }
 }
 
+// Search field
 const searchTextField = ref(undefined as any | undefined)
 const searchTextEl = computed(() => searchTextField.value?.$el as HTMLElement | undefined)
 const { focused } = useFocus(searchTextEl)
 useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, focused), { capture: true })
+
+// Tutorial
+useTutorial(computed(() => {
+  const steps: DriveStep[] = [
+    { element: '#popular-modpacks', popover: { align: 'center', title: t('store.popular'), description: t('tutorial.storePoupularModpackDescription') } },
+    { element: '#search-text-field', popover: { title: t('curseforge.search'), description: t('tutorial.storeSearchDescription') } },
+    {
+      element: '#search-result',
+      popover: {
+        side: 'right',
+        align: 'start',
+        title: t('modInstall.search'),
+        description: t('tutorial.storeSearchResultDescription'),
+      },
+    },
+    { element: '#search-category', popover: { side: 'left', title: t('curseforge.category'), description: t('tutorial.storeSearchCategoryDescription') } },
+  ]
+  return steps
+}))
 </script>
 <style scoped>
 .main {
