@@ -2,7 +2,7 @@ import { useService } from '@/composables'
 import { ResolvedVersion } from '@xmcl/core'
 import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import { InjectionKey, Ref } from 'vue'
+import { InjectionKey, Ref, del, set } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
@@ -15,8 +15,10 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   const { abortRefresh } = useService(UserServiceKey)
   const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
 
-  const launchingStatus = ref('' as '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory')
-  const launching = computed(() => !!launchingStatus.value)
+  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory'
+  const allLaunchingStatus = reactive({} as Record<string, LaunchStatus>)
+  const launchingStatus = computed(() => allLaunchingStatus[instance.value.path] ?? '')
+  const launching = computed(() => Object.keys(allLaunchingStatus).length > 0)
 
   const error = ref<any | undefined>(undefined)
 
@@ -87,7 +89,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function generateLaunchOptions(id: string) {
+  async function generateLaunchOptions(instancePath: string, id: string) {
     const ver = resolvedVersion.value
     if (!ver || 'requirements' in ver) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
@@ -105,7 +107,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
 
     const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
     if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
-      launchingStatus.value = 'preparing-authlib'
+      allLaunchingStatus[instancePath] = 'preparing-authlib'
       yggdrasilAgent = {
         jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
         server: userProfile.value.authority,
@@ -123,7 +125,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     if (assignMemory === true && minMemory > 0) {
       // noop
     } else if (assignMemory === 'auto') {
-      launchingStatus.value = 'assigning-memory'
+      allLaunchingStatus[instancePath] = 'assigning-memory'
       const mem = await track(getMemoryStatus(), 'get-memory-status', id)
       minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
     } else {
@@ -154,13 +156,13 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     return options
   }
 
-  async function _launch(operationId: string) {
+  async function _launch(instancePath: string, operationId: string) {
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(operationId)
+      const options = await generateLaunchOptions(instancePath, operationId)
 
       if (!options.skipAssetsCheck) {
-        launchingStatus.value = 'refreshing-user'
+        allLaunchingStatus[instancePath] = 'refreshing-user'
         try {
           await track(Promise.race([
             new Promise((resolve, reject) => { setTimeout(() => reject(new Error('Timeout')), 5_000) }),
@@ -170,7 +172,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
         }
       }
 
-      launchingStatus.value = 'spawning-process'
+      allLaunchingStatus[instancePath] = 'spawning-process'
       const pid = await launch(options)
       if (pid) {
         data.value?.push({
@@ -184,13 +186,17 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       error.value = e as any
       throw e
     } finally {
-      launchingStatus.value = ''
+      del(allLaunchingStatus, '')
     }
   }
 
   async function launchWithTracking() {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
-    await track(_launch(operationId), 'launch', operationId)
+    const instancePath = instance.value.path
+    if (!(instancePath in allLaunchingStatus)) {
+      set(allLaunchingStatus, instancePath, '')
+    }
+    await track(_launch(instancePath, operationId), 'launch', operationId)
   }
 
   async function killGame() {
