@@ -98,7 +98,6 @@ export function useGameDirectory() {
 }
 
 export function useSettings() {
-  const hideNews = useLocalStorageCacheBool('hideNews', false)
   const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
   const { state, error, isValidating } = injection(kSettingsState)
 
@@ -200,7 +199,6 @@ export function useSettings() {
     apiSetsPreference,
     apiSets,
     disableTelemetry,
-    hideNews,
     error,
     isValidating,
   }

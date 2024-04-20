@@ -1,8 +1,9 @@
 <template>
   <v-dialog
-    v-model="isShown"
+    :value="value"
     :persistent="persistent"
     :width="width"
+    @input="emit('input', $event)"
   >
     <v-card>
       <v-card-title
@@ -41,8 +42,6 @@
 </template>
 
 <script lang="ts" setup>
-import { useDialog } from '../composables/dialog'
-
 const props = defineProps<{
   title: string
   width?: number
@@ -50,22 +49,20 @@ const props = defineProps<{
   confirm?: string
   confirmIcon?: string
   persistent?: boolean
-  dialog?: string
+  value?: boolean
 }>()
 
-const { isShown } = useDialog(props.dialog ?? 'deletion')
 const { t } = useI18n()
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel', 'input'])
 
 const onDelete = () => {
   emit('confirm')
-  isShown.value = false
 }
 
 const onCancel = () => {
+  emit('input', false)
   emit('cancel')
-  isShown.value = false
 }
 
 const onKeypress = (e: KeyboardEvent) => {

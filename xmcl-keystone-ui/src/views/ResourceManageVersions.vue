@@ -1,135 +1,107 @@
 <template>
-  <v-tab-item class="local-version-list h-full flex-col gap-4 overflow-auto overflow-x-hidden py-0">
-    <v-list
-      v-if="versions.length !== 0"
-      class=" flex h-full flex-col overflow-auto bg-transparent pt-0"
+  <div class="local-version-list h-full flex-col gap-4 overflow-auto overflow-x-hidden py-0">
+    <v-data-table
+      :items="items"
+      :headers="headers"
+      :loading="refreshing"
+      :items-per-page="10"
     >
-      <v-list-item class="flex justify-end">
-        <v-select
-          v-model="data.filteredMinecraft"
-          label="Minecraft"
-          class="max-w-40 flex-shrink flex-grow-0"
-          hide-details
-          flat
-          :items="minecraftVersions"
-          clearable
-        />
-      </v-list-item>
-      <v-virtual-scroll
-        id="left-pane"
-        :bench="2"
-        class="visible-scroll ml-2 h-full max-h-full overflow-auto"
-        :items="versions"
-        :item-height="50"
-      >
-        <template #default="{ item }">
-          <LocalVersionItem
-            :key="item.id"
-            :item="item"
-            :open-version-dir="openVersionDir"
-            :start-reinstall="startReinstall"
-            :start-delete="startDelete"
-          />
-        </template>
-      </v-virtual-scroll>
-      <v-dialog
-        v-model="data.deletingVersion"
-        max-width="290"
-      >
-        <v-card>
-          <v-card-title class="headline">
-            {{ t('localVersion.delete') }}
-          </v-card-title>
-          <v-card-text>{{ t('localVersion.deleteDescription') }}</v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              text
-              @click="cancelDeleting()"
-            >
-              {{ t('no') }}
-            </v-btn>
-            <v-btn
-              color="error en-1"
-              text
-              @click="confirmDeleting()"
-            >
-              {{ t('yes') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-      <v-dialog
-        v-model="data.reinstallVersion"
-        max-width="390"
-      >
-        <v-card>
-          <v-card-title
-            class="headline"
-          >
-            {{ t('localVersion.reinstallTitle', { version: data.reinstallVersionId }) }}
-          </v-card-title>
-          <v-card-text>{{ t('localVersion.reinstallDescription') }}</v-card-text>
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              text
-              @click="cancelReinstall()"
-            >
-              {{ t('no') }}
-            </v-btn>
-            <v-btn
-              color="orange en-1"
-              text
-              @click="confirmReinstall()"
-            >
-              <v-icon left>
-                build
-              </v-icon>
-              {{ t('yes') }}
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-list>
-    <v-container
-      v-else
-      fill-height
-    >
-      <v-layout
-        align-center
-        justify-center
-        row
-        fill-height
-      >
-        <v-flex
-          shrink
-          tag="h1"
-          class="white--text gap-3"
+      <template #item.id="{ item }">
+        <v-icon
+          large
+          left
         >
+          {{ item.icon }}
+        </v-icon>
+        {{ item.id }}
+      </template>
+      <template #item.actions="{ item }">
+        <v-btn
+          icon
+          @click="showVersionDirectory(item.id)"
+        >
+          <v-icon>
+            folder
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="reinstallDialog.show(item.id)"
+        >
+          <v-icon>
+            build
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="deleteDialog.show(item.id)"
+        >
+          <v-icon color="red">
+            delete
+          </v-icon>
+        </v-btn>
+      </template>
+      <template #footer.prepend>
+        <div class="ml-2 flex items-center gap-2">
           <v-btn
-            large
-            color="primary"
+            icon
             :loading="refreshing"
             @click="browseVersionsFolder"
           >
-            <v-icon left>
+            <v-icon>
               folder
             </v-icon>
-            {{ t('localVersion.empty') }}
           </v-btn>
           <v-btn
-            large
-            color="primary"
+            v-shared-tooltip="_ => t('localVersion.refresh')"
+            icon
             :loading="refreshing"
             @click="refresh"
           >
-            {{ t('localVersion.refresh') }}
+            <v-icon>
+              refresh
+            </v-icon>
           </v-btn>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-tab-item>
+          <v-select
+            v-model="data.filteredMinecraft"
+            label="Minecraft"
+            class="max-w-40 flex-shrink flex-grow-0 items-center"
+            hide-details
+            flat
+            solo
+            prepend-icon="filter_alt"
+            :items="minecraftVersions"
+            clearable
+          />
+        </div>
+      </template>
+    </v-data-table>
+
+    <SimpleDialog
+      v-model="deleteDialogModel"
+      :title="t('localVersion.delete')"
+      :width="290"
+      :confirm-icon="'delete'"
+      :color="'error en-1'"
+      :confirm="t('yes')"
+      @cancel="deleteDialog.cancel"
+      @confirm="deleteDialog.confirm"
+    >
+      {{ t('localVersion.deleteDescription') }}
+    </SimpleDialog>
+    <SimpleDialog
+      v-model="reinstallDialogModel"
+      :width="390"
+      :title="t('localVersion.reinstallTitle', { version: reinstallDialog.target.value })"
+      :confirm-icon="'build'"
+      :color="'orange en-1'"
+      :confirm="t('yes')"
+      @cancel="reinstallDialog.cancel"
+      @confirm="reinstallDialog.confirm"
+    >
+      {{ t('localVersion.reinstallDescription') }}
+    </SimpleDialog>
+  </div>
 </template>
 
 <script lang=ts setup>
@@ -138,17 +110,60 @@ import { useFilterCombobox, useRefreshable, useService } from '@/composables'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { kLocalVersions } from '@/composables/versionLocal'
-import LocalVersionItem from '@/components/LocalVersionItem.vue'
+import SimpleDialog from '@/components/SimpleDialog.vue'
+import { useSimpleDialog } from '@/composables/dialog'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const data = reactive({
-  deletingVersion: false,
-  deletingVersionId: '',
-
-  reinstallVersion: false,
-  reinstallVersionId: '',
-
   filteredMinecraft: '',
 })
+
+const reinstallDialog = useSimpleDialog<string>((v) => {
+  if (!v) return
+  reinstall(v)
+})
+const reinstallDialogModel = reinstallDialog.model
+
+const deleteDialog = useSimpleDialog<string>((v) => {
+  if (!v) return
+  deleteVersion(v)
+})
+const deleteDialogModel = deleteDialog.model
+
+const headers = computed(() => [{
+  text: t('version.name'),
+  sortable: true,
+  value: 'id',
+}, {
+  text: 'Minecraft',
+  sortable: true,
+  value: 'minecraft',
+}, {
+  text: t('modrinth.modLoaders.name'),
+  sortable: false,
+  value: 'loader',
+}, {
+  value: 'actions',
+  sortable: false,
+}])
+
+const getIcon = (item: LocalVersionHeader) => {
+  if (item.forge) return '$vuetify.icons.forge'
+  if (item.fabric) return '$vuetify.icons.fabric'
+  if (item.quilt) return '$vuetify.icons.quilt'
+  if (item.optifine) return '$vuetify.icons.optifine'
+  if (item.neoForged) return '$vuetify.icons.neoForged'
+  return '$vuetify.icons.minecraft'
+}
+
+const items = computed(() => localVersions.value.filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft).map(v => ({
+  id: v.id,
+  minecraft: v.minecraft,
+  icon: getIcon(v),
+  loader: [v.forge, v.fabric, v.neoForged, v.optifine, v.quilt].filter(v => !!v),
+  header: v,
+})))
+
 const { reinstall } = useService(InstallServiceKey)
 const { versions: localVersions } = injection(kLocalVersions)
 const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
@@ -160,40 +175,12 @@ function getFilterOptions(item: LocalVersionHeader) {
   ]
 }
 const filterOptions = computed(() => localVersions.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.id}`)
-const versions = computed(() => filter(localVersions.value))
 
 function browseVersionsFolder() {
   showVersionsDirectory()
 }
 function openVersionDir(v: LocalVersionHeader) {
   showVersionDirectory(v.id)
-}
-function startDelete(v: LocalVersionHeader) {
-  data.deletingVersion = true
-  data.deletingVersionId = v.id
-}
-function startReinstall(v: LocalVersionHeader) {
-  data.reinstallVersion = true
-  data.reinstallVersionId = v.id
-}
-function confirmDeleting() {
-  deleteVersion(data.deletingVersionId)
-  data.deletingVersion = false
-  data.deletingVersionId = ''
-}
-function confirmReinstall() {
-  reinstall(data.reinstallVersionId)
-  data.reinstallVersion = false
-  data.reinstallVersionId = ''
-}
-function cancelDeleting() {
-  data.deletingVersion = false
-  data.deletingVersionId = ''
-}
-function cancelReinstall() {
-  data.reinstallVersion = false
-  data.reinstallVersionId = ''
 }
 const { refresh, refreshing } = useRefreshable(async () => {
   await refreshVersions()

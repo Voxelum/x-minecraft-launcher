@@ -44,11 +44,6 @@
       :description="t('setting.disableTelemetryDescription')"
     />
     <SettingItemCheckbox
-      v-model="hideNews"
-      :title="t('setting.hideNews')"
-      :description="t('setting.hideNewsDescription')"
-    />
-    <SettingItemCheckbox
       v-if="env?.os === 'linux' || env?.os === 'windows'"
       v-model="enableDedicatedGPUOptimization"
       :title="t('setting.enableDedicatedGPUOptimization')"
@@ -181,7 +176,6 @@ const {
   maxSockets,
   replaceNative,
   disableTelemetry,
-  hideNews,
   enableDiscord,
   locales: rawLocales,
   enableDedicatedGPUOptimization,

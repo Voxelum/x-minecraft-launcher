@@ -125,6 +125,11 @@
       :description="t('setting.backgroundTypeDescription')"
       :items="backgroundTypes"
     />
+    <SettingItemCheckbox
+      v-model="backgroundColorOverlay"
+      :title="t('setting.backgroundColorAbove')"
+      :description="t('setting.backgroundColorAboveDescription')"
+    />
     <SettingItemSelect
       v-if="backgroundType === 'particle'"
       :select.sync="particleMode"
@@ -430,7 +435,7 @@ import { ThemeServiceKey } from '@xmcl/runtime-api'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { blurSidebar, blurAppBar, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()

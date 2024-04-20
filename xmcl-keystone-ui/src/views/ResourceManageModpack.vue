@@ -1,88 +1,142 @@
 <template>
-  <v-tab-item class="h-full flex-col gap-4 overflow-auto overflow-x-hidden py-0">
-    <RefreshingTile
-      v-if="refreshing"
-      class="h-full"
-    />
-    <v-virtual-scroll
-      id="left-pane"
-      :bench="2"
-      class="visible-scroll ml-2 h-full max-h-full overflow-auto"
-      :items="modpacks"
-      :item-height="62"
+  <div class="h-full select-text flex-col gap-4 overflow-auto overflow-x-hidden py-0">
+    <v-data-table
+      :items="items"
+      :loading="refreshing"
+      :headers="headers"
+      :items-per-page="10"
     >
-      <template #default="{ item }">
-        <ModpackListItem
-          :key="item.id"
-          :item="item"
-          @tags="item.tags = $event"
-          @create="onCreate(item)"
-          @delete="startDelete(item)"
-        />
+      <template #item.name="{ item }">
+        <div class="flex items-center gap-2">
+          <v-img
+            :src="item.icon"
+            class="max-w-10 rounded"
+          />
+          {{ item.name }}
+        </div>
       </template>
-    </v-virtual-scroll>
-    <DeleteDialog
+      <template #item.actions="{ item }">
+        <v-btn
+          v-if="item.resource"
+          icon
+          @click="showItemInDirectory(item.resource.path)"
+        >
+          <v-icon>
+            folder
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="onCreate(item)"
+        >
+          <v-icon>
+            add
+          </v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          @click="show(item.resource || item.ftb)"
+        >
+          <v-icon color="red">
+            delete
+          </v-icon>
+        </v-btn>
+      </template>
+
+      <template #footer.prepend>
+        <div class="ml-2 flex items-center gap-2">
+          <v-btn
+            icon
+            :loading="refreshing"
+          >
+            <v-icon>
+              folder
+            </v-icon>
+          </v-btn>
+        </div>
+      </template>
+    </v-data-table>
+    <SimpleDialog
+      v-model="model"
       :title="t('modpack.delete.title')"
       :width="450"
       persistent
-      dialog="delete-modpack"
-      @confirm="confirmDelete"
+      @confirm="confirm"
     >
       {{ t('modpack.delete.hint', { name: deleting ? deleting.name : '' }) }}
       <p style="color: grey">
-        {{ deleting ? deleting.path : '' }}
+        {{ deleting ? (deleting.path || deleting.name) : '' }}
       </p>
-    </DeleteDialog>
-  </v-tab-item>
+    </SimpleDialog>
+  </div>
 </template>
 
 <script lang=ts setup>
-import ModpackListItem from '@/components/ModpackListItem.vue'
-import RefreshingTile from '@/components/RefreshingTile.vue'
-import { useFilterCombobox, useService } from '@/composables'
+import { useService } from '@/composables'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { useModpacks } from '@/composables/modpack'
 import { isStringArrayEquals } from '@/util/equal'
-import { CachedFTBModpackVersionManifest, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { getExpectedSize } from '@/util/size'
+import { BaseServiceKey, CachedFTBModpackVersionManifest, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { useDialog } from '../composables/dialog'
+import SimpleDialog from '../components/SimpleDialog.vue'
+import { useDialog, useSimpleDialog } from '../composables/dialog'
 import { useFeedTheBeastVersionsCache } from '../composables/ftb'
-import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { ModpackItem } from '../composables/modpack'
 
 const { t } = useI18n()
 const { removeResources, updateResources } = useService(ResourceServiceKey)
-const items: Ref<ModpackItem[]> = ref([])
-const { show } = useDialog(AddInstanceDialogKey)
-const deleting = ref(undefined as undefined | Resource)
-const { refreshing, resources } = useModpacks()
-function getFilterOptions(item: ModpackItem) {
-  return [
-    { label: 'info', value: item.type, color: 'lime' },
-    ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
-  ]
-}
-const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
-const { cache: ftb, dispose } = useFeedTheBeastVersionsCache()
-const modpacks = computed(() => filter(items.value))
-const { show: showDelete } = useDialog('delete-modpack')
-function startDelete(item: ModpackItem) {
-  if (item.resource) {
-    deleting.value = item.resource
-    showDelete()
+const { showItemInDirectory } = useService(BaseServiceKey)
+const { show, model, confirm, target: deleting } = useSimpleDialog<undefined | Resource | CachedFTBModpackVersionManifest>((v) => {
+  if (!v) return
+  if ('path' in v) {
+    removeResources([v.hash])
+  } else {
+    ftb.value = ftb.value.filter(f => f.id !== v.id)
   }
-}
-function confirmDelete() {
-  removeResources([deleting.value!.hash])
-}
+})
 
-function getModpackItem (resource: Resource): ModpackItem {
+const headers = computed(() => [
+  {
+    text: t('modpack.name'),
+    sortable: true,
+    value: 'name',
+  },
+  {
+    text: t('modpack.author'),
+    sortable: true,
+    value: 'author',
+  },
+  {
+    text: t('modpack.modpackVersion'),
+    sortable: true,
+    value: 'version',
+  },
+  {
+    text: t('fileDetail.fileSize'),
+    sortable: true,
+    value: 'size',
+  },
+  // {
+  //   text: 'Date',
+  //   value: 'date',
+  //   sortable: true,
+  // },
+  {
+    text: '',
+    value: 'actions',
+    sortable: false,
+  },
+])
+const { refreshing, resources } = useModpacks()
+const { cache: ftb, dispose } = useFeedTheBeastVersionsCache()
+
+function getModpackItem(resource: Resource): ModpackItem {
   const metadata = resource.metadata
-  return reactive({
+  return ({
     resource,
     id: resource.path,
-    size: resource.size,
+    size: getExpectedSize(resource.size),
     icon: resource.icons ? resource.icons[0] : '',
     name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? '',
     version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
@@ -92,10 +146,10 @@ function getModpackItem (resource: Resource): ModpackItem {
   })
 }
 function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): ModpackItem {
-  return reactive({
+  return ({
     ftb: resource,
     id: `${resource.parent}-${resource.id}`,
-    size: resource.files.map(f => f.size).reduce((a, b) => a + b, 0),
+    size: '',
     icon: resource.iconUrl,
     name: resource.projectName,
     version: resource.name,
@@ -104,9 +158,7 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
     type: 'ftb',
   })
 }
-onMounted(async () => {
-  items.value = [...resources.value.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name))
-})
+const items: Ref<ModpackItem[]> = computed(() => [...resources.value.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name)))
 onUnmounted(() => {
   const editedResources = items.value
     .filter(i => !!i.resource)
@@ -118,15 +170,13 @@ onUnmounted(() => {
   })))
   dispose()
 })
-watch(resources, (v) => {
-  items.value = [...v.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
-})
 
+const { show: showCreateDialog } = useDialog(AddInstanceDialogKey)
 const onCreate = (item: ModpackItem) => {
   if (item.resource) {
-    show({ type: 'resource', resource: item.resource })
+    showCreateDialog({ type: 'resource', resource: item.resource })
   } else if (item.ftb) {
-    show({ type: 'ftb', manifest: item.ftb })
+    showCreateDialog({ type: 'ftb', manifest: item.ftb })
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex h-full w-full select-none flex-col items-start justify-start gap-5 overflow-auto"
+    class="flex h-full w-full select-none flex-col items-start justify-start gap-4 overflow-auto"
   >
     <template v-for="(inst, i) of instancesByTime">
       <div
