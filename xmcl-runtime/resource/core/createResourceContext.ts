@@ -1,10 +1,10 @@
-import SQLite from 'better-sqlite3'
 import EventEmitter from 'events'
 import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, SqliteDialect, UnknownRow, ValueNode } from 'kysely'
-import { ResourceContext } from './ResourceContext'
-import { Database } from './schema'
 import { ImageStorage } from '~/imageStore'
 import { Logger } from '~/logger'
+import { SQLiteModule } from '../sqlite'
+import { ResourceContext } from './ResourceContext'
+import { Database } from './schema'
 
 class JSONPlugin implements KyselyPlugin {
   #tranformer = new JSONTransformer()
@@ -39,11 +39,9 @@ class JSONTransformer extends OperationNodeTransformer {
   }
 }
 
-export function createResourceContext(root: string, imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>) {
-  const sqlite = new SQLite(root, {
-  })
+export function createResourceContext(imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>) {
   const dialect = new SqliteDialect({
-    database: sqlite,
+    database: () => SQLiteModule.getInstance(),
   })
 
   // Database interface is passed to Kysely's constructor, and from now on, Kysely
@@ -62,7 +60,7 @@ export function createResourceContext(root: string, imageStore: ImageStorage, ev
 
   const context: ResourceContext = {
     db,
-    sqlite,
+    getSqlite: SQLiteModule.getInstance,
     image: imageStore,
     hash: delegates.hash,
     hashAndFileType: delegates.hashAndFileType,
