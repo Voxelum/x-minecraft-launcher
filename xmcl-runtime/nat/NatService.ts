@@ -67,7 +67,8 @@ export class NatService extends StatefulService<NatState> implements INatService
   async refreshNatType(): Promise<void> {
     this.log('Start to sample the nat type')
 
-    const info = await getNatInfoUDP({ stun: 'stun.qq.com' })
+    const stun = 'stun.l.google.com'
+    const info = await getNatInfoUDP({ stun })
     if (info.type !== 'Blocked') {
       this.state.natInfoSet(info.externalIp, info.externalPort)
     }
@@ -77,7 +78,7 @@ export class NatService extends StatefulService<NatState> implements INatService
     const result = await sampleNatType({
       sampleCount: 3,
       retryInterval: 3_000,
-      stun: 'stun.qq.com',
+      stun,
     })
     if (result) {
       this.state.natTypeSet(result)

@@ -1,5 +1,6 @@
 export const iceServers = [
-  'stun:stun.qq.com',
+  // 'stun:stun.qq.com',
+  'stun.l.google.com',
   // 'stun:stunserver.org',
   // 'stun:stun.voxgratia.org',
   // 'stun:stun.ideasip.com',
