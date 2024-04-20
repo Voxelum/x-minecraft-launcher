@@ -8,7 +8,6 @@ import Mod from '@/views/Mod.vue'
 import ModActions from '@/views/ModActions.vue'
 import ModExtension from '@/views/ModExtension.vue'
 import Multiplayer from '@/views/Multiplayer.vue'
-import ResourceManage from '@/views/ResourceManage.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
@@ -118,16 +117,8 @@ export const router = new Router({
       component: Me,
     },
     {
-      path: '/instances',
-      component: () => import('@/views/Instances.vue'),
-    },
-    {
       path: '/multiplayer',
       component: Multiplayer,
-    },
-    {
-      path: '/local-resources',
-      component: ResourceManage,
     },
   ],
 })

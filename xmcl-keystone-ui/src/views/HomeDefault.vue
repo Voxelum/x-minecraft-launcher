@@ -76,7 +76,7 @@
       v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
       :id="instance.upstream.id"
     />
-    <GridLayout
+    <!-- <GridLayout
       v-else-if="!hideNews"
       :layout.sync="newsLayout"
       :is-draggable="false"
@@ -102,14 +102,13 @@
           :news="news[Number(item.i)]"
         />
       </GridItem>
-    </GridLayout>
+    </GridLayout> -->
   </div>
 </template>
 <script lang="ts" setup>
 import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
-import { useMojangNews } from '@/composables/mojangNews'
 import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { DriveStep } from 'driver.js'
@@ -117,7 +116,6 @@ import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
 import HomeDatabaseError from './HomeDatabaseError.vue'
 import HomeModCard from './HomeModCard.vue'
-import HomeNewsCard from './HomeNewsCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
@@ -245,35 +243,35 @@ const resourcePackRowCount = computed(() => getRowCount(containerWidths[CardType
 const modRowCount = computed(() => getRowCount(containerWidths[CardType.Mod]))
 const saveRowCount = computed(() => getRowCount(containerWidths[CardType.Save]))
 
-const newsLayout = ref([] as GridItemType[])
+// const newsLayout = ref([] as GridItemType[])
 
-const { refresh, news } = useMojangNews()
-onMounted(async () => {
-  await refresh()
-  const layout = [] as GridItemType[]
-  for (let i = 0; i < news.value.length; ++i) {
-    const n = news.value[i]
-    const titleLines = Math.floor(n.title.length / 28)
-    const textLine = Math.floor(n.text.length / 40)
-    const x = (layout.length * 3) % (12)
-    let y: number
-    if ((layout.length - 3) > 0) {
-      const lastLayout = layout[layout.length - 3]
-      y = lastLayout.y + lastLayout.h
-    } else {
-      y = 0
-    }
-    const newLayout = {
-      x,
-      y,
-      w: 3,
-      h: 6 + titleLines + textLine,
-      i: i.toString(),
-    }
-    layout.push(newLayout)
-  }
-  newsLayout.value = layout
-})
+// const { refresh, news } = useMojangNews()
+// onMounted(async () => {
+//   await refresh()
+//   const layout = [] as GridItemType[]
+//   for (let i = 0; i < news.value.length; ++i) {
+//     const n = news.value[i]
+//     const titleLines = Math.floor(n.title.length / 28)
+//     const textLine = Math.floor(n.text.length / 40)
+//     const x = (layout.length * 3) % (12)
+//     let y: number
+//     if ((layout.length - 3) > 0) {
+//       const lastLayout = layout[layout.length - 3]
+//       y = lastLayout.y + lastLayout.h
+//     } else {
+//       y = 0
+//     }
+//     const newLayout = {
+//       x,
+//       y,
+//       w: 3,
+//       h: 6 + titleLines + textLine,
+//       i: i.toString(),
+//     }
+//     layout.push(newLayout)
+//   }
+//   newsLayout.value = layout
+// })
 
 const { t } = useI18n()
 useTutorial(computed(() => {

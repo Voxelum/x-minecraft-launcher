@@ -40,7 +40,6 @@ import debounce from 'lodash.debounce'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
-import { kDatabaseStatus } from '@/composables/databaseStatus'
 import HomeDatabaseError from './HomeDatabaseError.vue'
 
 const { instance } = injection(kInstance)
@@ -48,7 +47,8 @@ const { t } = useI18n()
 useTutorial(computed(() => {
   const steps: DriveStep[] = [
     { element: '#user-avatar', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
-    { element: '#select-game-button', popover: { title: t('instances.choose'), description: t('tutorial.instanceSelectDescription') } },
+    { element: '#my-stuff-button', popover: { title: t('instances.choose'), description: t('tutorial.instanceSelectDescription') } },
+    { element: '#create-game-button', popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') } },
     { element: '#launch-button', popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') } },
     { element: '#feedback-button', popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') } },
   ]

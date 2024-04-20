@@ -52,7 +52,7 @@
       </v-list-item>
       <v-spacer />
     </v-list>
-    <DeleteDialog
+    <SimpleDialog
       :width="500"
       color="primary"
       dialog="saveCopyDialog"
@@ -62,11 +62,11 @@
     >
       {{ copySavePayload?.destInstancePath }}
       {{ copySavePayload?.saveName }}
-    </DeleteDialog>
+    </SimpleDialog>
   </div>
 </template>
 <script setup lang="ts">
-import DeleteDialog from '@/components/DeleteDialog.vue'
+import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'

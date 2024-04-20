@@ -23,10 +23,11 @@
       </v-list-item>
 
       <v-list-item
+        id="my-stuff-button"
         v-shared-tooltip.right="_ => t('myStuff')"
         link
         push
-        to="/local-resources"
+        to="/me"
         class="non-moveable"
       >
         <v-list-item-icon>
@@ -127,14 +128,7 @@ const { state } = injection(kSettingsState)
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
-const { push, back, currentRoute } = useRouter()
-const expanding = ref(false)
-
-const navToMe = () => {
-  if (currentRoute.path !== 'me') {
-    push('/me')
-  }
-}
+const { back } = useRouter()
 
 function goBack() {
   back()

@@ -17,7 +17,7 @@
               controls
               :hide-user-name="streamerMode"
               :refreshing="refreshing"
-              @remove="onShowDeleteDialog()"
+              @remove="deleteDialog.show(true)"
               @abort-refresh="abortRefresh()"
               @refresh="onRefresh(true)"
             />
@@ -91,28 +91,28 @@
         </div>
       </template>
     </transition>
-    <DeleteDialog
-      dialog="user-delete"
+    <SimpleDialog
+      v-model="deleteDialogModel"
       :width="400"
       :title="t('userAccount.removeTitle')"
       @confirm="onRemoveUser"
     >
       {{ t('userAccount.removeDescription') }}
-    </DeleteDialog>
+    </SimpleDialog>
   </v-card>
 </template>
 <script lang="ts" setup>
-import DeleteDialog from '@/components/DeleteDialog.vue'
-import { useRefreshable, useService } from '@/composables'
+import SimpleDialog from '@/components/SimpleDialog.vue'
+import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
-import { useDialog } from '@/composables/dialog'
+import { useSimpleDialog } from '@/composables/dialog'
 import { kUserContext, useUserExpired } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, UserServiceKey } from '@xmcl/runtime-api'
-import UserLoginForm from './UserLoginForm.vue'
 import UserCardMicrosoft from './UserCardMicrosoft.vue'
 import UserCardUserItem from './UserCardUserItem.vue'
 import UserCardYggdrasil from './UserCardYggdrasil.vue'
+import UserLoginForm from './UserLoginForm.vue'
 
 const props = defineProps<{ show: boolean; outlined?: boolean }>()
 
@@ -120,7 +120,16 @@ const { t } = useI18n()
 const { users, select, userProfile: selected } = injection(kUserContext)
 const { abortRefresh, refreshUser, removeUser } = useService(UserServiceKey)
 const expired = useUserExpired(computed(() => selected.value))
-const { show: onShowDeleteDialog } = useDialog('user-delete')
+const deleteDialog = useSimpleDialog<boolean>(async () => {
+  const isLastOne = users.value.length <= 1
+  await removeUser(selected.value)
+  if (isLastOne) {
+    login.value = true
+  } else {
+    select(users.value[0].id)
+  }
+})
+const deleteDialogModel = deleteDialog.model
 const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 
 const onSelectUser = (user: string) => {

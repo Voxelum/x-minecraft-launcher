@@ -88,3 +88,32 @@ export function useDialog<T = any>(dialogName: DialogKey<T> = '', onShown?: (par
     isShown,
   }
 }
+
+export function useSimpleDialog<T>(onConfirm: (target: T | undefined) => void) {
+  const target = ref(undefined as T | undefined)
+  const model = computed({
+    get: () => target.value !== undefined,
+    set: (v: boolean) => {
+      if (!v) {
+        target.value = undefined
+      }
+    },
+  })
+  const cancel = () => {
+    target.value = undefined
+  }
+  const confirm = () => {
+    onConfirm(target.value as any)
+    target.value = undefined
+  }
+  const show = (t: T) => {
+    target.value = (t) as any
+  }
+  return {
+    target,
+    model,
+    show,
+    cancel,
+    confirm,
+  }
+}
