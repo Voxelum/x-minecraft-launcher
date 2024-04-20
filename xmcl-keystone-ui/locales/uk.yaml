@@ -611,8 +611,11 @@ logsCrashes:
   placeholder: Файли не знайдено
   title: Логи або звіти про збої
 me:
+  games: Мої ігри
+  modpacks: Мої модпакети
   news: Новини
   recentPlay: Нещодавня гра
+  versions: Встановлені версії
 minecraftVersion:
   empty: Не вдалося завантажити версію Minecraft
   name: Версія Minecraft
@@ -1073,6 +1076,10 @@ setting:
   autoDownloadDescription: Завантажувати оновлення автоматично, якщо доступне
   autoInstallOnAppQuit: Автоустановка
   autoInstallOnAppQuitDescription: Автоматичне встановлення оновлення при виході з програми
+  backgroundColorAbove: Показати фоновий колір як накладання
+  backgroundColorAboveDescription: >-
+    Це призведе до відображення фонового кольору над фоновим зображенням або
+    відео.
   backgroundImage: Фонове зображення
   backgroundImageBlur: Розмиття зображення
   backgroundImageBlurDescription: Перетягніть, щоб розмити, легко
@@ -1130,8 +1137,7 @@ setting:
   githubRelease: Github Release
   globalSetting: Глобальне налаштування екземпляра
   globalSettingHint: Примірник буде використовувати ці параметри за промовчанням.
-  hideNews: Приховати Новини
-  hideNewsDescription: Це приховає новину під сторінкою екземпляра
+  hideNewsHeader: Сховати News Showcase
   language: Мова
   languageDescription: Мова інтерфейсу
   latestVersion: остання версія
@@ -1168,6 +1174,7 @@ setting:
     all: все
     legacy: Лише застаріла версія
   resetToDefault: Скидання до значення за промовчанням
+  showNewsHeader: Відобразити вітрину новин
   showRoot: Відображати
   streamerMode: Потоковий режим
   streamerModeDescription: >-
@@ -1310,12 +1317,15 @@ transportType:
   srflx: Кандидат Server Reflexive
 tutorial:
   feedbackDescription: Якщо у вас виникли проблеми, натисніть цю кнопку, щоб надіслати відгук!
+  hideNewsHeaderDescription: |-
+    Ви можете побачити новини ліворуч. 
+    Натиснувши цю кнопку, можна приховати цю вітрину.
   instanceAddDescription: >-
     Натисніть цю кнопку, щоб імпортувати існуючий Minecraft або створити новий з
     нуля або модпак.
   instanceSelectDescription: >-
-    Натиснувши цю кнопку, ви перейдете на сторінку вибору та створення нової
-    гри.
+    Натиснувши цю кнопку, ви перейдете на сторінку вибору гри та прочитання
+    новин.
   launchDescription: Натисніть цю кнопку, щоб встановити або запустити гру.
   mod:
     defaultSourceDescription: |-
@@ -1364,6 +1374,19 @@ tutorial:
       вручну. 
 
       Якщо це також не вдалося, проблема може бути в Інтернеті.
+  recentPlayDescription: >-
+    Створені ігри будуть перераховані тут. 
+
+    Ви можете перемикати перегляди тут, щоб також побачити встановлені версії та
+    завантажені пакети модів.
+  storePoupularModpackDescription: >-
+    У цьому розділі ви побачите найпопулярніші пакети модів у Curseforge і
+    Modrinth.
+  storeSearchCategoryDescription: Тут також можна перемикати категорії або фільтри.
+  storeSearchDescription: |-
+    Ви можете шукати Modpack, ввівши в це текстове поле. 
+    Натисніть Enter для пошуку.
+  storeSearchResultDescription: Тут ви побачите всі результати пошуку.
   userAccountDescription: >-
     Клацніть цю піктограму, щоб додати обліковий запис Minecraft або керувати
     ним.
@@ -1372,6 +1395,8 @@ universalDrop:
   start: Імпорт запущено
   title: Перетягніть файл(и) сюди, щоб імпортувати як
   unknownResource: Невідомо
+update:
+  goOfficialWebDownload: Повторне завантаження на офіційному сайті
 upstream:
   downgrade: Понизити
   missingModpackMetadata: >-

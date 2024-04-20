@@ -432,7 +432,7 @@
                   color="error"
                   icon
                   v-on="on"
-                  @click="startDelete(c.id)"
+                  @click="showDelete(c.id)"
                 >
                   <v-icon>link_off</v-icon>
                 </v-btn>
@@ -445,7 +445,7 @@
 
       <MultiplayerDialogInitiate />
       <MultiplayerDialogReceive />
-      <DeleteDialog
+      <SimpleDialog
         :title="t('multiplayer.disconnected')"
         :persistent="false"
         :width="400"
@@ -454,31 +454,35 @@
         @confirm="doDelete"
       >
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
-      </DeleteDialog>
+      </SimpleDialog>
     </v-layout>
   </div>
 </template>
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
-import { useBusy, useService, useServiceBusy } from '@/composables'
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import SimpleDialog from '@/components/SimpleDialog.vue'
+import { useService, useServiceBusy } from '@/composables'
 import { useNatState } from '@/composables/nat'
 import { kPeerState } from '@/composables/peers'
 import { kSettingsState } from '@/composables/setting'
+import { kTheme } from '@/composables/theme'
 import { useTutorial } from '@/composables/tutorial'
 import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import PlayerAvatar from '../components/PlayerAvatar.vue'
-import { useDialog } from '../composables/dialog'
+import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { kTheme } from '@/composables/theme'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
-const { show: showDelete } = useDialog('deletion')
+const { show: showDelete, target: deleting, confirm: doDelete } = useSimpleDialog<string>((v) => {
+  if (!v) return
+  console.log(`drop connection ${v}`)
+  drop(v)
+})
 const { drop } = useService(PeerServiceKey)
 const { connections, group, groupState, joinGroup, leaveGroup } = injection(kPeerState)
 const { t } = useI18n()
@@ -549,7 +553,6 @@ const tNatType = computed(() => ({
 }))
 
 const groupId = ref(group.value)
-const deleting = ref('')
 const deletingName = computed(() => connections.value.find(c => c.id === deleting.value)?.userInfo.name)
 const copied = ref(false)
 
@@ -575,10 +578,6 @@ const tConnectionStates = computed(() => ({
   new: t('peerConnectionState.new'),
 }))
 
-const startDelete = (id: string) => {
-  deleting.value = id
-  showDelete()
-}
 const startUnmap = (m: MappingInfo) => {
 
 }
@@ -591,12 +590,6 @@ const edit = (id: string, init: boolean) => {
       showReceive(id)
     }
   }
-}
-
-const doDelete = () => {
-  console.log(`drop connection ${deleting.value}`)
-  drop(deleting.value)
-  deleting.value = ''
 }
 
 const onDrop = (e: DragEvent) => {

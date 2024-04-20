@@ -605,8 +605,11 @@ logsCrashes:
   placeholder: 没有找到文件
   title: 日志或崩溃报告
 me:
+  games: 我的游戏
+  modpacks: 我的整合包
   news: 新闻
   recentPlay: 最近游玩
+  versions: 已安装版本
 minecraftVersion:
   empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本
@@ -1051,6 +1054,8 @@ setting:
   autoDownloadDescription: 自动下载最新的版本
   autoInstallOnAppQuit: 自动安装
   autoInstallOnAppQuitDescription: 每次 App 退出后自动安装更新
+  backgroundColorAbove: 将背景颜色显示为叠加层
+  backgroundColorAboveDescription: 这将使背景颜色显示在背景图像或视频上方。
   backgroundImage: 背景图片
   backgroundImageBlur: 背景模糊
   backgroundImageBlurDescription: 拖动以模糊背景
@@ -1106,8 +1111,7 @@ setting:
   githubRelease: Github
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
-  hideNews: 隐藏新闻
-  hideNewsDescription: 隐藏实例页面下的新闻
+  hideNewsHeader: 隐藏新闻展示
   language: 语言
   languageDescription: 当前显示的语言
   latestVersion: 最新版本
@@ -1141,6 +1145,7 @@ setting:
     all: 全部
     legacy: 仅旧版本
   resetToDefault: 重置到默认配色
+  showNewsHeader: 取消隐藏新闻展示
   showRoot: 浏览
   streamerMode: 串流模式
   streamerModeDescription: 这将隐藏您的私人信息，例如启动器中的电子邮件。
@@ -1156,7 +1161,7 @@ setting:
   themeSelectFont: 选择字体
   themeShare: 分享主题
   themeShareDescription: 您可以与您的朋友分享主题。
-  update: 升级设置
+  update: 升级
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
   useProxy: HTTP 代理设置
@@ -1257,6 +1262,9 @@ transportType:
   srflx: 服务端反射地址
 tutorial:
   feedbackDescription: 如果你遇到了问题，请点击这个按钮来联系开发团队。
+  hideNewsHeaderDescription: |-
+    您可以在左侧看到新闻展示柜。
+    单击此按钮可以隐藏该展示案例。
   instance:
     iconDescription: 点击更改图标。
     iconTitle: 游戏图标
@@ -1265,7 +1273,7 @@ tutorial:
     javaImportTitle: 导入java
     javaTitle: 已有java列表
   instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从 modpack 创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
-  instanceSelectDescription: 单击此按钮将导航到选择并创建新游戏的页面。
+  instanceSelectDescription: 单击此按钮将导航至选择游戏和阅读新闻的页面。
   launchDescription: 点击此按钮安装或启动游戏。
   mod:
     defaultSourceDescription: |-
@@ -1302,12 +1310,23 @@ tutorial:
       如果您或您的朋友无法连接到群组。
       您可以尝试通过点击“手动连接”来手动交换令牌。
       如果也失败，则可能是互联网问题。
+  recentPlayDescription: |-
+    创建的游戏将在此处列出。
+    您可以在此处切换视图以查看已安装的版本和下载的模组包。
+  storePoupularModpackDescription: 您将在这里看到 Curseforge 和 Modrinth 中最流行的模组包。
+  storeSearchCategoryDescription: 您还可以在此处切换类别或过滤器。
+  storeSearchDescription: |-
+    您可以通过在此文本框中输入来搜索 Modpack。
+    按 Enter 进行搜索。
+  storeSearchResultDescription: 您将看到此处列出的所有搜索结果。
   userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
 universalDrop:
   enableModsAfterImport: Mod 导入后自动启用
   start: 开始导入
   title: 将文件拖到这并导入为
   unknownResource: 无法解析
+update:
+  goOfficialWebDownload: 到官网重新下载
 upstream:
   downgrade: 降级
   missingModpackMetadata: >-

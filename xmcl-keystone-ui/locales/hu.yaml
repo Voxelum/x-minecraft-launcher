@@ -629,8 +629,11 @@ logsCrashes:
   placeholder: Nem találhatóak fájlok
   title: Napló vagy összeomlás jelentések
 me:
+  games: Játékaim
+  modpacks: Az én Modpackeim
   news: Hírek
   recentPlay: Legutóbbi játék
+  versions: Telepített verziók
 minecraftVersion:
   empty: Nem tudja betölteni a Minecraft verziókat
   name: Minecraft Verzió
@@ -1129,6 +1132,8 @@ setting:
   autoDownloadDescription: Automatikus letöltés, ha van elérhető frissítés
   autoInstallOnAppQuit: Automatikus telepítés
   autoInstallOnAppQuitDescription: A frissítés automatikus telepítése az alkalmazás bezárásakor
+  backgroundColorAbove: Háttérszín megjelenítése fedvényként
+  backgroundColorAboveDescription: Ezzel a háttérszín jelenik meg a háttérkép vagy a videó felett.
   backgroundImage: Háttérkép
   backgroundImageBlur: Kép elmosódása
   backgroundImageBlurDescription: Húzd az elmosódáshoz, egyszerű
@@ -1186,8 +1191,7 @@ setting:
   githubRelease: Github kiadás
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
-  hideNews: Hírek elrejtése
-  hideNewsDescription: Ez elrejti a híreket a példány oldal alatt
+  hideNewsHeader: Hírek kirakat elrejtése
   language: Nyelv
   languageDescription: A megjelenített nyelv
   latestVersion: Legújabb verzió
@@ -1225,6 +1229,7 @@ setting:
     all: Összes
     legacy: Csak a Legacy verzió
   resetToDefault: Visszaállítás alapértelmezettre
+  showNewsHeader: Hírek kirakatának megjelenítése
   showRoot: Megjelenítés
   streamerMode: Közvetítés mód
   streamerModeDescription: Ez elrejti a személyes adatait, például az e-mail címét az launcherben.
@@ -1311,6 +1316,8 @@ shaderPack:
   selectSearchHint: Keresés és Shader Pack kiválasztása
   showDirectory: Shader pack könyvtár megjelenítése
   showFile: Shader pack megjelenítése a mappában
+shared:
+  accept: Elfogad
 store:
   explore: Felfedezés
   latestMinecraft: Legfrissebb Minecraft verzió
@@ -1353,6 +1360,9 @@ tutorial:
   feedbackDescription: >-
     Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy
     visszajelzést küldj!
+  hideNewsHeaderDescription: |-
+    Bal oldalon a Hírek bemutatója látható. 
+    Erre a gombra kattintva elrejtheti ezt a kirakatot.
   instance:
     iconDescription: Kattints az ikon megváltoztatásához.`
     iconTitle: Példány ikonja
@@ -1364,8 +1374,8 @@ tutorial:
     Erre a gombra kattintva importálhatsz létező Minecraftot vagy hozhatsz létre
     egy újat a vagy modcsomagot.
   instanceSelectDescription: >-
-    Erre a gombra kattintva az új játék kiválasztására és létrehozására szolgáló
-    oldalra navigál.
+    Erre a gombra kattintva a játék kiválasztásához és a hírek olvasásához
+    szükséges oldalra navigál.
   launchDescription: Kattints erre a gombra a játék telepítéséhez vagy elindításához.
   mod:
     defaultSourceDescription: >-
@@ -1402,12 +1412,25 @@ tutorial:
       Ha Ön vagy barátja nem tud csatlakozni a csoporthoz. Megpróbálhatja
       manuálisan kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha
       ez is sikertelen, akkor az internetprobléma lehet.
+  recentPlayDescription: >-
+    A létrehozott játékok itt lesznek felsorolva. 
+
+    Itt váltogathatja a nézeteket, hogy megtekinthesse a telepített verziókat és
+    a letöltött modpackokat is.
+  storePoupularModpackDescription: Ebben a részben láthatja a Curseforge és Modrinth legnépszerűbb modpackjait.
+  storeSearchCategoryDescription: Itt is válthat a kategóriák és a szűrők között.
+  storeSearchDescription: |-
+    Ebbe a szövegmezőbe beírva kereshet a Modpack között. 
+    Nyomja meg az Entert a kereséshez.
+  storeSearchResultDescription: Itt látni fogja az összes keresési eredményt.
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
 universalDrop:
   enableModsAfterImport: Modok engedélyezése importálás után
   start: Importálás megkezdődött
   title: Húzd ide a fájl(oka)t az importáláshoz
   unknownResource: Ismeretlen
+update:
+  goOfficialWebDownload: Töltse le újra a hivatalos webhelyről
 upstream:
   downgrade: Visszaváltás
   missingModpackMetadata: >-

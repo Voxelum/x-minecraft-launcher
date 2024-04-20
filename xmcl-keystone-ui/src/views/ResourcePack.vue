@@ -81,11 +81,11 @@
         class="h-full"
       />
     </template>
-    <DeleteDialog
+    <SimpleDialog
       :title="t('resourcepack.delete.title')"
     >
       {{ t('resourcepack.delete.content') }}
-    </DeleteDialog>
+    </SimpleDialog>
   </MarketBase>
 </template>
 
@@ -110,7 +110,7 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
-import DeleteDialog from '@/components/DeleteDialog.vue'
+import SimpleDialog from '@/components/SimpleDialog.vue'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
