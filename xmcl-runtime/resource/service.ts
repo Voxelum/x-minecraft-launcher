@@ -19,6 +19,7 @@ import { resolveDomain } from './core/resolveDomain'
 import { tryPersistResource } from './core/tryPersistResource'
 import { upsertMetadata } from './core/upsertMetadata'
 import { watchResources } from './core/watchResources'
+import { SQLiteModule } from './sqlite'
 import { ResourceWorker, kResourceWorker } from './worker'
 
 const EMPTY_RESOURCE_SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
@@ -106,7 +107,9 @@ export class ResourceService extends AbstractService implements IResourceService
         this.error(new Error('Fail to initialize resource-images folder', { cause: e }))
       })
     })
-    this.context = createResourceContext(this.getAppDataPath('resources.sqlite'), imageStore, this, this, worker)
+
+    SQLiteModule.init(this.getAppDataPath())
+    this.context = createResourceContext(imageStore, this, this, worker)
 
     app.registryDisposer(async () => {
       for (const watcher of Object.values(this.watchers)) {
@@ -117,7 +120,8 @@ export class ResourceService extends AbstractService implements IResourceService
   }
 
   async isResourceDatabaseOpened() {
-    return this.context.sqlite.open
+    const db = await this.context.getSqlite()
+    return db.open
   }
 
   async getResourceMetadataByUri(uri: string): Promise<ResourceMetadata[]> {

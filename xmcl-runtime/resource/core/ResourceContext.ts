@@ -8,7 +8,8 @@ import type { Database as SQLite } from 'better-sqlite3'
 
 export interface ResourceContext {
   readonly db: Kysely<Database>
-  readonly sqlite: SQLite
+
+  getSqlite(): Promise<SQLite>
 
   readonly image: ImageStorage
 

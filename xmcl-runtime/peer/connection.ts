@@ -1,7 +1,7 @@
 import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
+import type { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { Logger } from '~/logger'
@@ -13,6 +13,7 @@ import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
 import { iceServers as _iceServers } from './stun'
+import { NodeDataChannelModule } from './NodeDataChannel'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -32,7 +33,6 @@ const handlers = getRegistry([
 ])
 
 export class PeerSession {
-  readonly connection: PeerConnection
   /**
    * The basic communicate channel
    */
@@ -47,24 +47,32 @@ export class PeerSession {
 
   public lastGameChannelId = undefined as undefined | number
 
-  constructor(
-    /**
-     * The session id
-     */
-    readonly id: string,
-    readonly iceServers: (string | IceServer)[],
-    readonly host: PeerHost,
-    readonly logger: Logger,
+  static async createPeerSession(
+    id: string,
+    iceServers: (string | IceServer)[],
+    host: PeerHost,
+    logger: Logger,
     portBegin?: number,
   ) {
-    this.connection = new PeerConnection(this.id, {
+    const { PeerConnection } = await NodeDataChannelModule.getInstance()
+    return new PeerSession(new PeerConnection(id, {
       iceServers: [..._iceServers, ...iceServers],
       iceTransportPolicy: 'all',
       portRangeBegin: portBegin,
       portRangeEnd: portBegin,
       enableIceUdpMux: true,
-    })
+    }), id, host, logger)
+  }
 
+  constructor(
+    readonly connection: PeerConnection,
+    /**
+     * The session id
+     */
+    readonly id: string,
+    readonly host: PeerHost,
+    readonly logger: Logger,
+  ) {
     const updateDescriptor = debounce(() => {
       const description = this.description!
       host.onDescriptorUpdate(this.id, description.sdp, description.type, this.candidates)

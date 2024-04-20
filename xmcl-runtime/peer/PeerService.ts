@@ -5,7 +5,7 @@ import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra'
-import { IceServer, initLogger } from 'node-datachannel'
+import type { IceServer } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -24,6 +24,7 @@ import { PeerSession } from './connection'
 import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
+import { NodeDataChannelModule } from './NodeDataChannel'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -79,27 +80,31 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.discoverV6.destroy()
     })
 
+    NodeDataChannelModule.init(this.getAppDataPath())
+    const logger = this.app.getLogger('wrtc', 'wrtc')
     if (IS_DEV) {
-      const logger = this.app.getLogger('wrtc', 'wrtc')
-      initLogger('Verbose', (level, message) => {
-        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-          logger.log(message)
-        } else if (level === 'Fatal' || level === 'Error') {
-          logger.warn(message)
-        } else if (level === 'Warning') {
-          logger.warn(message)
-        }
+      NodeDataChannelModule.getInstance().then(m => {
+        m.initLogger('Verbose', (level, message) => {
+          if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+            logger.log(message)
+          } else if (level === 'Fatal' || level === 'Error') {
+            logger.warn(message)
+          } else if (level === 'Warning') {
+            logger.warn(message)
+          }
+        })
       })
     } else {
-      const logger = this.app.getLogger('wrtc', 'wrtc')
-      initLogger('Info', (level, message) => {
-        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-          logger.log(message)
-        } else if (level === 'Fatal' || level === 'Error') {
-          logger.warn(message)
-        } else if (level === 'Warning') {
-          logger.warn(message)
-        }
+      NodeDataChannelModule.getInstance().then(m => {
+        m.initLogger('Info', (level, message) => {
+          if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+            logger.log(message)
+          } else if (level === 'Fatal' || level === 'Error') {
+            logger.warn(message)
+          } else if (level === 'Warning') {
+            logger.warn(message)
+          }
+        })
       })
     }
 
@@ -262,7 +267,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const natService = this.natService
     const privatePort = this.portCandidate
 
-    const conn = new PeerSession(sessionId, this.settings.allowTurn ? this.iceServers : [], {
+    const conn = await PeerSession.createPeerSession(sessionId, this.settings.allowTurn ? this.iceServers : [], {
       onHeartbeat: (session, ping) => {
         this.state.connectionPing({ id: session, ping })
       },
