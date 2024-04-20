@@ -232,6 +232,12 @@ jobs:
     - name: Emit Version File
       run: |
         echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_number }} > ./build/version
+    - name: Patch download links
+      uses: ./.github/actions/patch-release-note
+      id: release_note
+      with:
+        body: ${{ steps.prepare_release.outputs.changelog }}
+        version: ${{ steps.prepare_release.outputs.version }}
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@xmcl
@@ -242,7 +248,7 @@ jobs:
         release_name: ${{ steps.prepare_release.outputs.tag }}
         draft: true
         prerelease: false
-        body: ${{ steps.prepare_release.outputs.changelog }}
+        body: ${{ steps.release_note.outputs.body }}
         asset_dir_path: ./build
     - name: Checkout Website
       uses: actions/checkout@v3

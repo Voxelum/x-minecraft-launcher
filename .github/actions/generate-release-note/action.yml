@@ -1,8 +1,10 @@
-name: TEST
-description: Prepare Pull Request for the current change
-outputs:
-  build_number:
-    description: The release body
+name: Generate release note
+description: Generate release note
+inputs:
+  body:
+    description: Body
+  version:
+    description: Version
 runs:
   using: 'node16'
   main: index.js
