@@ -235,7 +235,6 @@ const curseforgeSelectModel = computed({
 })
 const gameVersionModel = computed({
   get() {
-    console.log(props.gameVersion, versionIds.value.findIndex(v => v === props.gameVersion))
     return versionIds.value.findIndex(v => v === props.gameVersion)
   },
   set(v) {

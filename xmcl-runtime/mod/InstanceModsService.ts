@@ -1,4 +1,4 @@
-import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, MutableState, PartialResourceHash, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, MutableState, PartialResourceHash, Resource, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
 import { ensureDir, rename, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
@@ -39,7 +39,23 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async ({ defineAsyncOperation }) => {
       const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,
         (all) => {
+          const badResources = [] as any[]
+          for (const s of state.mods) {
+            if (!s.path) {
+              badResources.push(s)
+            }
+          }
+          for (const [r, a] of all) {
+            if (a === InstanceModUpdatePayloadAction.Remove || a === InstanceModUpdatePayloadAction.Upsert) {
+              if (!r.path) {
+                badResources.push(r)
+              }
+            }
+          }
           state.instanceModUpdates(all)
+          if (badResources.length > 0) {
+            this.error(new AnyError('InstanceModUpdateError', 'Some resources are not valid', {}, { resources: badResources }))
+          }
         },
         500)
 

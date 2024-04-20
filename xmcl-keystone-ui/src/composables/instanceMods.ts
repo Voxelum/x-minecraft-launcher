@@ -16,7 +16,6 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     return mods as any
   }, class extends InstanceModsState {
     override instanceModUpdates(ops: [Resource, number][]) {
-      console.log('instanceModUpdates', ops.length)
       for (const o of ops) {
         markRaw(o[0])
       }
