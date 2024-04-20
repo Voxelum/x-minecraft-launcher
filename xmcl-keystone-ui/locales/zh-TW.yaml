@@ -247,6 +247,10 @@ logsCrashes:
   logs: 日誌
   placeholder: 沒有找到文件
   title: 日誌或崩潰報告
+me:
+  games: 我的遊戲
+  modpacks: 我的模組包
+  versions: 已安裝版本
 minecraftVersion:
   empty: 無法加載 Minecraft 版本列表
   name: Minecraft 版本
@@ -456,6 +460,8 @@ setting:
   autoDownloadDescription: 自動下載最新的版本
   autoInstallOnAppQuit: 自動安裝
   autoInstallOnAppQuitDescription: 每次 App 退出後自動安裝更新
+  backgroundColorAbove: 將背景顏色顯示為疊加層
+  backgroundColorAboveDescription: 這將使背景顏色顯示在背景圖像或影片上方。
   backgroundImage: 背景圖片
   backgroundImageBlur: 背景模糊
   backgroundImageBlurDescription: 拖動以模糊背景
@@ -498,6 +504,7 @@ setting:
   darkThemeDescription: 選擇深色或淺色主題
   general: 基本設置
   githubRelease: Github
+  hideNewsHeader: 隱藏新聞展示
   language: 語言
   languageDescription: 當前顯示的語言
   latestVersion: 最新版本
@@ -511,6 +518,7 @@ setting:
     remove: 移除
     repulse: 擊退
   particleModeDescription: 選擇當你點擊粒子時的特效
+  showNewsHeader: 取消隱藏新聞展示
   showRoot: 瀏覽
   theme:
     dark: 暗色主題
@@ -522,7 +530,7 @@ setting:
   themeSelectFont: 選擇字體
   themeShare: 分享主題
   themeShareDescription: 您可以與您的朋友分享主題。
-  update: 升級設置
+  update: 升級
   useBmclAPI: 使用 BMCL API
   useBmclAPIDescription: 當你在大陸時，優先使用 BMCLAPI 來下載 Minecraft
   useProxy: HTTP 代理設置
@@ -556,11 +564,27 @@ theme:
   selectImage: 選擇影像
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
+tutorial:
+  hideNewsHeaderDescription: |-
+    您可以在左側看到新聞展示櫃。
+    按一下此按鈕可以隱藏該展示案例。
+  instanceSelectDescription: 點擊此按鈕將導航至選擇遊戲和閱讀新聞的頁面。
+  recentPlayDescription: |-
+    創建的遊戲將在此處列出。
+    您可以在此處切換視圖以查看已安裝的版本和下載的模組包。
+  storePoupularModpackDescription: 您將在这里看到 Curseforge 和 Modrinth 中最受歡迎的模組包。
+  storeSearchCategoryDescription: 您也可以在此切換類別或篩選器。
+  storeSearchDescription: |-
+    您可以透過在此文字方塊中輸入來搜尋 Modpack。
+    按 Enter 進行搜尋。
+  storeSearchResultDescription: 您將看到此處列出的所有搜尋結果。
 universalDrop:
   enableModsAfterImport: Mod 導入後自動啓用
   start: 開始導入
   title: 將文件拖到這並導入為
   unknownResource: 無法解析
+update:
+  goOfficialWebDownload: 到官網重新下載
 user:
   accessToken: 訪問令牌
   authMode: 驗證服務

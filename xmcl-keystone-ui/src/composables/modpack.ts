@@ -10,7 +10,7 @@ export interface ModpackItem {
   name: string
   version: string
   author: string
-  size: number
+  size: number | string
   icon: string | undefined
   id: string
 }

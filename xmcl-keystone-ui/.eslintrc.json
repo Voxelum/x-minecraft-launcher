@@ -37,6 +37,7 @@
         "vue/multi-word-component-names": "off",
         "vue/no-v-text-v-html-on-component": "off",
         "func-call-spacing": "off",
-        "@typescript-eslint/func-call-spacing": "error"
+        "@typescript-eslint/func-call-spacing": "error",
+        "vue/valid-v-slot": "off"
     }
 }

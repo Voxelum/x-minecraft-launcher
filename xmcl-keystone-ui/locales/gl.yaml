@@ -238,6 +238,10 @@ launchBlocked:
       Comproba o teu java ou dálle máis permisos ao iniciador e téntao de novo. 
       Se isto aínda non funciona, póñase en contacto cos desenvolvedores.
     title: Non se puido iniciar o proceso de xogo
+me:
+  games: Os meus xogos
+  modpacks: Os meus Modpacks
+  versions: Versións instaladas
 mod:
   searchOnCurseforge: Busca {name} en curseforge
 resourcepack:
@@ -246,9 +250,12 @@ resourcepack:
 save:
   showDirectory: Mostrar o directorio de gardar
 setting:
+  backgroundColorAbove: Mostra a cor de fondo como superposición
+  backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.
   backgroundMusic: Tema Música de fondo
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
+  hideNewsHeader: Ocultar a presentación de noticias
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
     Volve descargar o iniciador do sitio web!
@@ -257,6 +264,7 @@ setting:
   replaceNatives:
     all: Todos
     legacy: Só a versión legada
+  showNewsHeader: Mostrar Mostra de noticias
   streamerMode: Modo de transmisión
   streamerModeDescription: >-
     Isto ocultará a túa información privada como o correo electrónico no
@@ -267,6 +275,9 @@ setting:
   themeSelectFont: Seleccione Fonte
   themeShare: Compartir tema
   themeShareDescription: Podes compartir o tema co teu amigo.
+  update: Actualizar
+shared:
+  accept: Aceptar
 task:
   connection:
     connected: Conectado
@@ -281,3 +292,23 @@ theme:
   selectImage: Seleccione Imaxe
   selectMusic: Seleccione Música
   selectVideo: Seleccione Vídeo
+tutorial:
+  hideNewsHeaderDescription: |-
+    Podes ver o Showacse de noticias á esquerda. 
+    Facendo clic neste botón pódese ocultar este caso.
+  instanceSelectDescription: >-
+    Facendo clic neste botón, navegará ata a páxina para seleccionar o xogo e
+    ler noticias.
+  recentPlayDescription: >-
+    Os xogos creados listaranse aquí. 
+
+    Podes cambiar as vistas aquí para ver tamén as versións instaladas e os
+    modpacks descargados.
+  storePoupularModpackDescription: Verás os modpacks máis populares en Curseforge e Modrinth nesta sección.
+  storeSearchCategoryDescription: Tamén podes cambiar as categorías ou os filtros aquí.
+  storeSearchDescription: |-
+    Podes buscar Modpack introducindo neste cadro de texto. 
+    Preme Intro para buscar.
+  storeSearchResultDescription: Verá todos os resultados da busca listados aquí.
+update:
+  goOfficialWebDownload: Volve descargar no sitio web oficial

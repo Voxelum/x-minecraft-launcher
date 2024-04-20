@@ -603,8 +603,11 @@ logsCrashes:
   placeholder: Файлы не найдены
   title: Логи или отчёты о сбоях
 me:
+  games: Мои игры
+  modpacks: Мои модпаки
   news: Новости
   recentPlay: Последние игры
+  versions: Установленные версии
 minecraftVersion:
   empty: Не удаётся загрузить версии Minecraft
   name: Версия Minecraft
@@ -1063,6 +1066,8 @@ setting:
   autoDownloadDescription: Скачивать обновление автоматически, если доступно
   autoInstallOnAppQuit: Автоустановка
   autoInstallOnAppQuitDescription: Автоматическая установка обновления при выходе из приложения
+  backgroundColorAbove: Показывать цвет фона в виде наложения
+  backgroundColorAboveDescription: Это позволит отобразить цвет фона над фоновым изображением или видео.
   backgroundImage: Фоновое изображение
   backgroundImageBlur: Размытие изображения
   backgroundImageBlurDescription: Перетащите чтобы размыть, легко
@@ -1118,8 +1123,7 @@ setting:
   githubRelease: Github Release
   globalSetting: Глобальная настройка экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
-  hideNews: Скрыть новости
-  hideNewsDescription: Скрыть новости под страницей экземпляров
+  hideNewsHeader: Скрыть витрину новостей
   language: Язык
   languageDescription: Язык интерфейса
   latestVersion: Последняя версия
@@ -1155,6 +1159,7 @@ setting:
     all: Все
     legacy: Только устаревшая версия
   resetToDefault: Сброс к значению по умолчанию
+  showNewsHeader: Показать витрину новостей
   showRoot: Отображать
   streamerMode: Режим потоковой передачи
   streamerModeDescription: >-
@@ -1244,6 +1249,8 @@ shaderPack:
   name: Шейдер
   showDirectory: Открыть расположение шейдеров
   showFile: Открыть этот шейдер в папке
+shared:
+  accept: Принимать
 summery: Летний
 tag:
   create: Создать тег
@@ -1280,10 +1287,13 @@ tutorial:
   feedbackDescription: >-
     Если у вас возникнут какие-либо проблемы, нажмите эту кнопку, чтобы
     отправить отзыв!
+  hideNewsHeaderDescription: |-
+    Вы можете увидеть витрину новостей слева. 
+    Нажатие на эту кнопку может скрыть эту витрину.
   instanceAddDescription: >-
     Нажмите эту кнопку, чтобы импортировать существующий Minecraft или создать
     новый с нуля или модпак.
-  instanceSelectDescription: Нажав эту кнопку, вы перейдете на страницу выбора и создания новой игры.
+  instanceSelectDescription: Нажав на эту кнопку, вы перейдете на страницу выбора игры и чтения новостей.
   launchDescription: Нажмите эту кнопку, чтобы установить или запустить игру.
   mod:
     defaultSourceDescription: |-
@@ -1335,6 +1345,17 @@ tutorial:
       вручную». 
 
       Если и это не помогло, возможно, это проблема с Интернетом.
+  recentPlayDescription: >-
+    Здесь будут перечислены созданные игры. 
+
+    Здесь вы можете переключить вид, чтобы также увидеть установленные версии и
+    загруженные пакеты модов.
+  storePoupularModpackDescription: В этом разделе вы увидите самые популярные модпаки в Curseforge и Modrinth.
+  storeSearchCategoryDescription: Здесь вы также можете переключать категории или фильтры.
+  storeSearchDescription: |-
+    Вы можете выполнить поиск Modpack, введя его в это текстовое поле. 
+    Нажмите Enter для поиска.
+  storeSearchResultDescription: Здесь вы увидите все результаты поиска.
   userAccountDescription: >-
     Щелкните этот значок, чтобы добавить или управлять своей учетной записью
     Minecraft.
@@ -1343,6 +1364,8 @@ universalDrop:
   start: Импорт запущен
   title: Перетащите файл(ы) сюда, чтобы импортировать как
   unknownResource: Неизвестно
+update:
+  goOfficialWebDownload: Перезагрузить на официальном сайте
 upstream:
   downgrade: Понизить версию
   missingModpackMetadata: >-

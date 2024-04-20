@@ -608,8 +608,11 @@ logsCrashes:
   placeholder: No Files Found
   title: Logs or Crash Reports
 me:
+  games: My Games
+  modpacks: My Modpacks
   news: News
   recentPlay: Recent Play
+  versions: Installed Versions
 minecraftVersion:
   empty: Cannot load Minecraft versions
   name: Minecraft Version
@@ -1098,6 +1101,8 @@ setting:
   autoDownloadDescription: Auto Download Update if it's Avaiable
   autoInstallOnAppQuit: Autoinstall
   autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
+  backgroundColorAbove: Show background color as overlay
+  backgroundColorAboveDescription: This will make background color display above the background image or video.
   backgroundImage: Background image
   backgroundImageBlur: Image blur
   backgroundImageBlurDescription: Drag to blur, easy
@@ -1153,8 +1158,7 @@ setting:
   githubRelease: Github Release
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
-  hideNews: Hide News
-  hideNewsDescription: This will hide the news under the instance page
+  hideNewsHeader: Hide News Showcase
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version
@@ -1190,6 +1194,7 @@ setting:
     all: All
     legacy: Legacy Version Only
   resetToDefault: Reset to Default
+  showNewsHeader: Unhide News showcase
   showRoot: Show
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
@@ -1277,6 +1282,8 @@ shaderPack:
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
+shared:
+  accept: Accept
 store:
   explore: Explore
   latestMinecraft: Latest Minecraft Version
@@ -1317,6 +1324,9 @@ transportType:
   srflx: Server Reflexive Candidate
 tutorial:
   feedbackDescription: If you encounter any problem, please click this button to send feedback!
+  hideNewsHeaderDescription: >-
+    You can see the News showacse on the left. Clicking this button can hide
+    this show case.
   instance:
     iconDescription: Click to change icon.`
     iconTitle: Instance icon
@@ -1327,9 +1337,7 @@ tutorial:
   instanceAddDescription: >-
     Click this button to import existed Minecraft or create a new one from
     scratch or modpack.
-  instanceSelectDescription: >-
-    Clicking this button will navigate to the page to select and create new
-    game.
+  instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
     defaultSourceDescription: >-
@@ -1366,12 +1374,23 @@ tutorial:
       If you or your friend cannot connect to group. You can try to manually
       exchange the token by clicking manually connect. If that also failed, it
       might be the internet issue.
+  recentPlayDescription: >-
+    The created games will listed here. You can switch the views here to also
+    see the installed versions and downloaded modpacks.
+  storePoupularModpackDescription: >-
+    You will see the most popular modpacks in Curseforge and Modrinth in this
+    section.
+  storeSearchCategoryDescription: You can also toggle the categories or filters here.
+  storeSearchDescription: You can search Modpack by inputing in this text box. Press Enter to search.
+  storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
   start: Import Started
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
+update:
+  goOfficialWebDownload: Re-download on official website
 upstream:
   downgrade: Downgrade
   missingModpackMetadata: >-

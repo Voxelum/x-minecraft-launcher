@@ -19,49 +19,48 @@
           :key="s.path"
           :source="s"
           :export-save="doExport"
-          @dragstart="dragging = true"
-          @dragend="dragging = false"
-          @remove="onStartDelete(s.path)"
+          @remove="show(s.path)"
         />
       </TransitionGroup>
     </div>
-    <SaveViewPageCopyFromDialog v-model="isCopyFromDialogShown" />
+    <!-- <SaveViewPageCopyFromDialog v-model="isCopyFromDialogShown" />
     <SaveViewPageCopyToDialog
       :value="copying"
       :operate="doCopy"
       :cancel="cancelCopy"
       :instances="instancePaths"
-    />
-    <DeleteDialog
+    /> -->
+    <SimpleDialog
+      v-model="model"
       :title="t('save.deleteTitle')"
       :width="500"
       persistent
-      @confirm="doDelete"
-      @cancel="cancelDelete"
+      @confirm="doDelete()"
     >
       {{ t('save.deleteHint') }}
       <div style="color: grey">
         {{ deleting }}
       </div>
-    </DeleteDialog>
+    </SimpleDialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import Hint from '@/components/Hint.vue'
-import { useDrop, useOperation, useService } from '@/composables'
+import { useDrop, useService } from '@/composables'
 import { kInstances } from '@/composables/instances'
 import { usePresence } from '@/composables/presence'
 import { kInstanceSave } from '@/composables/save'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { useDialog } from '../composables/dialog'
+import SimpleDialog from '../components/SimpleDialog.vue'
+import { useSimpleDialog } from '../composables/dialog'
 import { kInstance } from '../composables/instance'
 import SaveViewPagePreviewCard from './SaveCard.vue'
-import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
-import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
-import SaveViewPageFloatButton from './SaveFloatButton.vue'
+// import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
+// import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
+// import SaveViewPageFloatButton from './SaveFloatButton.vue'
 
 const { path } = injection(kInstance)
 const { saves } = injection(kInstanceSave)
@@ -70,22 +69,16 @@ const { instances } = injection(kInstances)
 const { deleteSave, importSave, exportSave, cloneSave: copySave } = useService(InstanceSavesServiceKey)
 const { showSaveDialog, showOpenDialog } = windowController
 const { t } = useI18n()
-const { isShown: isCopyFromDialogShown } = useDialog('save-copy-from')
-const {
-  data: deleting,
-  operate: doDelete,
-  begin: startDelete,
-  cancel: cancelDelete,
-} = useOperation('', (save) => deleteSave({ saveName: save, instancePath: path.value }))
-const {
-  data: copying,
-  begin: startCopy,
-  operate: doCopy,
-  cancel: cancelCopy,
-} = useOperation<string, string[]>('', (save, instances) => {
-  copySave({ saveName: save, destInstancePath: instances, srcInstancePath: path.value })
-})
-const dragging = ref(false)
+// const { isShown: isCopyFromDialogShown } = useDialog('save-copy-from')
+const { target: deleting, confirm: doDelete, model, show } = useSimpleDialog<string>((save) => deleteSave({ saveName: basename(save!), instancePath: path.value }))
+// const {
+//   data: copying,
+//   begin: startCopy,
+//   operate: doCopy,
+//   cancel: cancelCopy,
+// } = useOperation<string, string[]>('', (save, instances) => {
+//   copySave({ saveName: save, destInstancePath: instances, srcInstancePath: path.value })
+// })
 const { onDrop } = useDrop((files) => {
   files.map(f => ({ path: f.path, instancePath: path.value })).forEach(importSave)
 })
@@ -95,11 +88,6 @@ function onDropSave(e: DragEvent) {
   for (let i = 0; i < e.dataTransfer.files.length; ++i) {
     importSave({ path: e.dataTransfer.files.item(i)!.path, instancePath: path.value })
   }
-}
-const { show } = useDialog('deletion')
-function onStartDelete(id: string) {
-  deleting.value = id
-  show()
 }
 
 const { name } = injection(kInstance)
@@ -127,5 +115,5 @@ async function doExport(name: string) {
   }
 }
 const instancePaths = computed(() => instances.value.map(i => i.path))
-function showCopyFromDialog() { isCopyFromDialogShown.value = true }
+// function showCopyFromDialog() { isCopyFromDialogShown.value = true }
 </script>

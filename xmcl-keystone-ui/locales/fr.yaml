@@ -669,8 +669,11 @@ logsCrashes:
   placeholder: Aucun fichier trouvé
   title: Journaux ou rapports de plantage
 me:
+  games: Mes jeux
+  modpacks: Mes packs de modules
   news: Nouvelles
   recentPlay: Joué Récemment
+  versions: Versions installées
 minecraftVersion:
   empty: Impossible de charger les versions de Minecraft
   name: Version Minecraft
@@ -1136,6 +1139,10 @@ setting:
   autoDownloadDescription: Mise à jour du téléchargement automatique si elle est disponible
   autoInstallOnAppQuit: Installation automatique
   autoInstallOnAppQuitDescription: Installer automatiquement la mise à jour à la fermeture de l'application
+  backgroundColorAbove: Afficher la couleur d'arrière-plan en superposition
+  backgroundColorAboveDescription: >-
+    Cela affichera la couleur d’arrière-plan au-dessus de l’image ou de la vidéo
+    d’arrière-plan.
   backgroundImage: Image de fond
   backgroundImageBlur: Image floue
   backgroundImageBlurDescription: Faites glisser pour flouter
@@ -1195,8 +1202,7 @@ setting:
   githubRelease: Version Github
   globalSetting: Paramètres d'instances global
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
-  hideNews: Masquer les nouvelles
-  hideNewsDescription: Cela masquera les nouvelles sous la page de l'instance
+  hideNewsHeader: Masquer la vitrine des actualités
   language: Langue
   languageDescription: Langue d'affichage
   latestVersion: Dernière version
@@ -1236,6 +1242,7 @@ setting:
     all: Tous
     legacy: Version héritée uniquement
   resetToDefault: Réinitialiser
+  showNewsHeader: Afficher la vitrine des actualités
   showRoot: Afficher
   streamerMode: Mode diffusion
   streamerModeDescription: Cela masquera vos informations privées comme les e-mails dans le lanceur.
@@ -1326,6 +1333,8 @@ shaderPack:
   name: Shaderpack
   showDirectory: Afficher le répertoire du shaderpack
   showFile: Afficher ce pack de shaders dans le dossier
+shared:
+  accept: Accepter
 summery: Résumé
 tag:
   create: Créer un tag
@@ -1362,12 +1371,15 @@ transportType:
   srflx: Candidat Server Reflexive
 tutorial:
   feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires\_!"
+  hideNewsHeaderDescription: |-
+    Vous pouvez voir la vitrine Actualités sur la gauche. 
+    Cliquer sur ce bouton peut masquer cette vitrine.
   instanceAddDescription: >-
     Cliquez sur ce bouton pour importer Minecraft existant ou en créer un
     nouveau à partir de zéro ou un modpack.
   instanceSelectDescription: >-
-    En cliquant sur ce bouton, vous accéderez à la page pour sélectionner et
-    créer un nouveau jeu.
+    En cliquant sur ce bouton, vous accéderez à la page pour sélectionner le jeu
+    et lire les actualités.
   launchDescription: Cliquez sur ce bouton pour installer ou lancer le jeu.
   mod:
     defaultSourceDescription: |-
@@ -1418,12 +1430,27 @@ tutorial:
       connecter manuellement. 
 
       Si cela échoue également, cela pourrait être un problème Internet.
+  recentPlayDescription: >-
+    Les jeux créés seront répertoriés ici. 
+
+    Vous pouvez changer les vues ici pour voir également les versions installées
+    et les modpacks téléchargés.
+  storePoupularModpackDescription: >-
+    Vous verrez les modpacks les plus populaires de Curseforge et Modrinth dans
+    cette section.
+  storeSearchCategoryDescription: Vous pouvez également basculer les catégories ou les filtres ici.
+  storeSearchDescription: |-
+    Vous pouvez rechercher Modpack en saisissant dans cette zone de texte. 
+    Appuyez sur Entrée pour lancer la recherche.
+  storeSearchResultDescription: Vous verrez tous les résultats de recherche répertoriés ici.
   userAccountDescription: Cliquez sur cette icône pour ajouter ou gérer votre compte Minecraft.
 universalDrop:
   enableModsAfterImport: Activer les mods après l'importation
   start: Importation commencée
   title: Déposez le ou les fichiers ici pour les importer en tant que
   unknownResource: Inconnu
+update:
+  goOfficialWebDownload: Re-télécharger sur le site officiel
 upstream:
   downgrade: Rétrograder
   missingModpackMetadata: >-

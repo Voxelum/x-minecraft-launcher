@@ -671,8 +671,11 @@ logsCrashes:
   placeholder: Dateien nicht gefunden
   title: Protokolle oder Fehlerberichte
 me:
+  games: Meine Spiele
+  modpacks: Meine Modpacks
   news: Nachrichten
   recentPlay: Neuestes Spiel
+  versions: Installierte Versionen
 minecraftVersion:
   empty: Kann keine Version von Minecraft herunterladen
   name: Minecraft-Version
@@ -1172,6 +1175,10 @@ setting:
   autoDownloadDescription: Updates automatisch herunterladen, falls verfügbar
   autoInstallOnAppQuit: Auto-Installation
   autoInstallOnAppQuitDescription: Installiert automatisch Updates, wenn Sie die Anwendung beenden
+  backgroundColorAbove: Hintergrundfarbe als Overlay anzeigen
+  backgroundColorAboveDescription: >-
+    Dadurch wird die Hintergrundfarbe über dem Hintergrundbild oder Video
+    angezeigt.
   backgroundImage: Hintergrundbild
   backgroundImageBlur: Unschärfe des Bildes
   backgroundImageBlurDescription: Einfaches Ziehen und Ablegen zum Verwischen
@@ -1233,8 +1240,7 @@ setting:
   githubRelease: Github Release
   globalSetting: Globale Instanzkonfiguration
   globalSettingHint: Die Instanz wird diese Parameter standardmäßig verwenden.
-  hideNews: Nachrichten ausblenden
-  hideNewsDescription: Dadurch werden die Nachrichten unter der Instanzseite ausgeblendet
+  hideNewsHeader: News Showcase ausblenden
   language: Sprache.
   languageDescription: Sprache der Schnittstelle
   latestVersion: neueste Version
@@ -1273,6 +1279,7 @@ setting:
     all: Alle
     legacy: Nur Legacy-Version
   resetToDefault: Zurücksetzen auf den Standardwert
+  showNewsHeader: Nachrichtenpräsentation einblenden
   showRoot: ВідображатиAnzeige
   streamerMode: Streaming-Modus
   streamerModeDescription: >-
@@ -1368,6 +1375,8 @@ shaderPack:
   manage: Shader verwalten
   name: Shader
   showFile: Відкрити цей шейдер у папці
+shared:
+  accept: Akzeptieren
 summery: Sommer
 tag:
   create: Einen Tag erstellen
@@ -1404,13 +1413,16 @@ tutorial:
   feedbackDescription: >-
     Wenn Sie Probleme haben, klicken Sie auf diese Schaltfläche, um eine
     Bewertung abzugeben!
+  hideNewsHeaderDescription: |-
+    Sie können die News-Show links sehen. 
+    Durch Klicken auf diese Schaltfläche kann diese Vitrine ausgeblendet werden.
   instanceAddDescription: >-
     Klicken Sie auf diese Schaltfläche, um ein bestehendes Minecraft zu
     importieren oder ein neues Minecraft von Grund auf zu erstellen oder ein von
     Grund auf oder ein Mod-Pack.
   instanceSelectDescription: >-
-    Wenn Sie auf diese Schaltfläche klicken, gelangen Sie auf die Seite zum
-    Auswählen und Erstellen einer neuen Spiel.
+    Wenn Sie auf diese Schaltfläche klicken, gelangen Sie zu der Seite, auf der
+    Sie ein Spiel auswählen und Nachrichten lesen können.
   launchDescription: >-
     Klicken Sie auf diese Schaltfläche, um das Spiel zu installieren oder zu
     starten.
@@ -1469,6 +1481,21 @@ tutorial:
       „Manuell verbinden“ klicken. 
 
       Wenn auch das fehlschlägt, liegt möglicherweise ein Internetproblem vor.
+  recentPlayDescription: >-
+    Die erstellten Spiele werden hier aufgelistet. 
+
+    Sie können hier die Ansichten wechseln, um auch die installierten Versionen
+    und heruntergeladenen Modpacks anzuzeigen.
+  storePoupularModpackDescription: >-
+    In diesem Abschnitt sehen Sie die beliebtesten Modpacks in Curseforge und
+    Modrinth.
+  storeSearchCategoryDescription: Sie können hier auch die Kategorien oder Filter umschalten.
+  storeSearchDescription: >-
+    Sie können nach Modpack suchen, indem Sie in dieses Textfeld etwas
+    eingeben. 
+
+    Drücken Sie die Eingabetaste, um zu suchen.
+  storeSearchResultDescription: Hier sehen Sie alle Suchergebnisse aufgelistet.
   userAccountDescription: >-
     Klicken Sie auf dieses Symbol, um ein Minecraft-Konto hinzuzufügen oder zu
     verwalten. ein Konto.
@@ -1479,6 +1506,8 @@ universalDrop:
     Ziehen Sie Ihre Datei(en) per Drag & Drop hierher und importieren Sie sie
     als
   unknownResource: Unbekannt
+update:
+  goOfficialWebDownload: Erneuter Download auf der offiziellen Website
 upstream:
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.

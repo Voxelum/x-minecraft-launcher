@@ -65,7 +65,7 @@
     >
       {{ t('modpack.delete.hint', { name: deleting ? deleting.name : '' }) }}
       <p style="color: grey">
-        {{ deleting ? (deleting.path || deleting.name) : '' }}
+        {{ deleting ? 'path' in deleting ? deleting.path : deleting.name : '' }}
       </p>
     </SimpleDialog>
   </div>
