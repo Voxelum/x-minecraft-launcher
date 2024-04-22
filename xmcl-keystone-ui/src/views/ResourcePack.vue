@@ -39,14 +39,15 @@
         class="h-full"
       />
       <MarketProjectDetailModrinth
-        v-else-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
-        :modrinth="selectedItem.modrinth"
+        v-else-if="selectedItem?.modrinth || selectedModrinthId"
+        :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
-        :installed="selectedItem.installed"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedItem?.modrinth?.project_id || selectedModrinthId)"
         :game-version="gameVersion"
         :loaders="modrinthLoaders"
         :categories="modrinthCategories"
         :all-files="files"
+        :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         @install="onInstall"
         @uninstall="onUninstall"
         @enable="onEnable"
@@ -54,14 +55,15 @@
         @category="toggleCategory"
       />
       <MarketProjectDetailCurseforge
-        v-else-if="selectedItem && selectedCurseforgeId"
-        :curseforge="selectedItem.curseforge"
-        :curseforge-id="selectedItem.curseforge?.id || selectedCurseforgeId"
-        :installed="selectedItem.installed"
+        v-else-if="selectedItem?.curseforge || selectedCurseforgeId"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedItem?.curseforge?.id || selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedItem?.curseforge?.id || selectedCurseforgeId))"
         :loaders="[]"
         :game-version="gameVersion"
         :category="curseforgeCategory"
         :all-files="files"
+        :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
         @install="onInstall"
         @uninstall="onUninstall"
         @enable="onEnable"
@@ -258,6 +260,13 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
 )
+
+const getInstalledModrinth = (projectId: string) => {
+  return files.value.filter((m) => m.modrinth?.projectId === projectId)
+}
+const getInstalledCurseforge = (modId: number | undefined) => {
+  return files.value.filter((m) => m.curseforge?.projectId === modId)
+}
 
 </script>
 
