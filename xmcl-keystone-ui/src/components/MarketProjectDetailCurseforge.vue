@@ -163,7 +163,7 @@ const modVersions = computed(() => {
   for (const file of files.value) {
     const loaders = getCursforgeFileModLoaders(file)
     if (props.loaders.length > 0 && loaders.length > 0) {
-      if (!loaders.some(l => props.loaders.indexOf(l.toLowerCase() as any) !== -1)) {
+      if (!loaders.some(l => props.loaders.indexOf(l as any) !== -1)) {
         continue
       }
     }
@@ -238,7 +238,7 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
 
 const { data: deps, error, isValidating: loadingDependencies } = useSWRVModel(
   getCurseforgeDependenciesModel(
-    computed(() => files.value.find(f => f.modId === props.curseforgeId)),
+    computed(() => files.value.find(f => f.id === Number(selectedVersion.value?.id))),
     computed(() => props.gameVersion),
     computed(() => props.loaders.includes('forge')
       ? FileModLoaderType.Forge

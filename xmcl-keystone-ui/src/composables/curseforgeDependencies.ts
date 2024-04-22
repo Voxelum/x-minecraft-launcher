@@ -44,7 +44,7 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
   return [dep, ...dependencies.reduce((a, b) => a.concat(b), [])]
 }
 
-function getModLoaderTypes(file: File) {
+export function getModLoaderTypes(file: File) {
   const modLoaderTypes = new Set<FileModLoaderType>()
   if (file.sortableGameVersions) {
     for (const ver of file.sortableGameVersions) {

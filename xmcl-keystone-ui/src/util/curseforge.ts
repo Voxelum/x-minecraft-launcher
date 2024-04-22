@@ -14,7 +14,7 @@ export function getCurseforgeRelationType(type: FileRelationType) {
 }
 
 export function getCursforgeFileModLoaders(file: File): string[] {
-  return file.gameVersions.filter(v => !Number.isInteger(Number(v[0])))
+  return file.gameVersions.filter(v => !Number.isInteger(Number(v[0]))).map(v => v.toLocaleLowerCase())
 }
 
 export function getCurseforgeFileGameVersions(file: File): string[] {

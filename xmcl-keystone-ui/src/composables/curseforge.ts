@@ -129,7 +129,7 @@ export function useCurseforgeSearchFunc(
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
-  const files = ref([] as File[])
+  const files = shallowRef([] as File[])
   const data = shallowReactive({
     index: 0,
     pageSize: 30,

@@ -10,7 +10,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
   const { getQuiltVersionList, getFabricVersionList, getForgeVersionList, getNeoForgedVersionList } = useService(VersionMetadataServiceKey)
 
   async function apply(loaders: Array<'forge' | 'quilt' | 'neoforge' | 'fabric' | string>) {
-    for (const loader of loaders.map(l => l.toLowerCase())) {
+    for (const loader of loaders) {
       if (loader === 'fabric') {
         const versions = await swrvGet('/fabric-versions', () => getFabricVersionList(), cache, dedupingInterval)
         if (versions.yarns.some(v => v.gameVersion === runtime.value.minecraft)) {
