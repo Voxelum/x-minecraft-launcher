@@ -90,6 +90,10 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       const e = contextObjects?.error
       if (e instanceof Error) {
         handleException(exception, e)
+        if (e.name === 'NodeInternalError') {
+          // Only log 1/3 of the internal error
+          envelope.sampleRate = 33
+        }
       }
     }
     return true
@@ -108,20 +112,21 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
-    const shouldTrack = () => {
-      if (serviceName === 'LaunchService' && serviceMethod === 'launch') return true
-      if (serviceName === 'UserSerivce' && serviceMethod === 'refreshUser') return true
-      return false
-    }
-    if (shouldTrack()) {
-      client.trackRequest({
-        name: `${serviceName}.${serviceMethod}`,
-        url: `/${serviceName}/${serviceMethod}`,
-        resultCode: success ? 200 : 500,
-        duration,
-        success,
-      })
-    }
+    // Disable request to reduce cost
+    // const shouldTrack = () => {
+    //   if (serviceName === 'LaunchService' && serviceMethod === 'launch') return true
+    //   if (serviceName === 'UserSerivce' && serviceMethod === 'refreshUser') return true
+    //   return false
+    // }
+    // if (shouldTrack()) {
+    //   client.trackRequest({
+    //     name: `${serviceName}.${serviceMethod}`,
+    //     url: `/${serviceName}/${serviceMethod}`,
+    //     resultCode: success ? 200 : 500,
+    //     duration,
+    //     success,
+    //   })
+    // }
   })
 
   app.on('engine-ready', async () => {
@@ -244,26 +249,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       }
     })
 
-    process.on('uncaughtException', (e) => {
-      if (settings.disableTelemetry) return
-      if (client) {
-        client.trackException({
-          exception: e,
-          properties: e ? { ...e } : undefined,
-        })
-      }
-    })
-    process.on('unhandledRejection', (e) => {
-      if (settings.disableTelemetry) return
-      if (client) {
-        client.trackException({
-          exception: e as any, // the applicationinsights will convert it to error automatically
-          properties: e ? { ...e } : undefined,
-        })
-      }
-    })
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
+      if (e.name === 'NodeInternalError') {
+
+      }
       client.trackException({
         exception: e,
         properties: e ? { ...e } : undefined,

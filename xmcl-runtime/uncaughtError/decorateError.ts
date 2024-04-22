@@ -20,7 +20,7 @@ export function decorateError(e: unknown) {
         }
       }
     }
-    if (e.stack?.includes('This is caused by either a bug in Node.js or incorrect usage of Node.js internals.')) {
+    if (e.message?.includes('This is caused by either a bug in Node.js or incorrect usage of Node.js internals')) {
       e.name = 'NodeInternalError'
     }
   }
