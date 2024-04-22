@@ -8,6 +8,7 @@
     }"
     :error="modrinthError"
     :loading="loading"
+    @load="onLoad"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <v-subheader
@@ -122,6 +123,8 @@ const {
   curseforgeCategory,
   enabled,
   disabled,
+  loadMoreCurseforge,
+  loadMoreModrinth,
   keyword,
   networkOnly,
   gameVersion,
@@ -190,6 +193,11 @@ const onDrop = (item: ResourcePackProject, id: string) => {
   if (target !== -1 && from !== -1) {
     insert(from, target)
   }
+}
+
+const onLoad = () => {
+  loadMoreCurseforge()
+  loadMoreModrinth()
 }
 
 const toggleCategory = useToggleCategories(modrinthCategories)

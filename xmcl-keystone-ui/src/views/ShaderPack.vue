@@ -8,6 +8,7 @@
       dragover,
     }"
     :loading="loading"
+    @load="loadMoreModrinth"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <v-subheader
@@ -111,6 +112,7 @@ const {
   shaderProjectFiles,
   shaderLoaderFilters,
   modrinthCategories,
+  loadMoreModrinth,
   gameVersion,
   effect,
 } = injection(kShaderPackSearch)
