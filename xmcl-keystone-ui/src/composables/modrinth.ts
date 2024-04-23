@@ -73,9 +73,11 @@ export function getFacatsText(
   if (license) {
     facets.push([`license:${license}`])
   }
-  const cats = [...modLoaders, ...category].filter(v => !!v)
-  if (cats.length > 0) {
-    facets.push(cats.map(c => `categories:${c}`))
+  if (modLoaders.length > 0) {
+    facets.push(modLoaders.map(v => `categories:${v}`))
+  }
+  if (category.length > 0) {
+    facets.push(category.map(c => `categories:${c}`))
   }
   if (projectType) {
     facets.push([`project_type:${projectType}`])
