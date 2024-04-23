@@ -5,7 +5,7 @@
 
 - [Git](https://git-scm.com/). You **must** install git to getting stared
 - [VSCode](https://code.visualstudio.com/). The highly recommended editor for translator to translate. It have integrated UI tool to help you find the translation key.
-- [Node.js 16](https://nodejs.org/). If you want to test your translation locally, you need this. You can just install latest version.
+- [Node.js >=18.17.0](https://nodejs.org/). If you want to test your translation locally, you need this. You can just install latest version.
 - [pnpm](https://pnpm.io/installation). If you want to test your translation locally, you need this. You can follow its installation page to install.
 
 ## Getting Started
