@@ -87,7 +87,7 @@ watch(backgroundType, (t) => {
   background: radial-gradient(ellipse at top right, transparent, v-bind(sideBarColor) 72%);
   position: absolute;
   min-width: 100%;
-  min-height: 120%;
+  min-height: 100%;
   z-index: 4;
 }
 </style>
