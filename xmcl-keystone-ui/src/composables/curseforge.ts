@@ -1,10 +1,10 @@
 import { clientCurseforgeV1 } from '@/util/clients'
+import { formatKey } from '@/util/swrvGet'
 import { MaybeRef, get } from '@vueuse/core'
 import { File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import useSWRV from 'swrv'
-import { Ref, computed, reactive, ref, toRefs, watch } from 'vue'
+import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
-import { formatKey } from '@/util/swrvGet'
 
 export interface CurseforgeProps {
   classId: number
@@ -221,3 +221,5 @@ export function useCurseforgeCategories() {
   }, inject(kSWRVConfig))
   return { categories, refreshing, refresh, error }
 }
+
+export const kCurseforgeCategories: InjectionKey<ReturnType<typeof useCurseforgeCategories>> = Symbol('CurseforgeCategories')

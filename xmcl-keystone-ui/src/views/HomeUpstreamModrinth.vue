@@ -7,7 +7,7 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useMarkdown } from '@/composables/markdown'
-import { useModrinthTags } from '@/composables/modrinth'
+import { kModrinthTags } from '@/composables/modrinth'
 import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
@@ -28,7 +28,7 @@ const upstream = computed(() => instance.value?.upstream as ModrinthUpstream)
 
 const { t } = useI18n()
 const { data: project } = useSWRVModel(getModrinthProjectModel(computed(() => props.id)))
-const { categories } = useModrinthTags()
+const { categories } = injection(kModrinthTags)
 const { getDateString } = useDateString()
 const headerData = computed(() => {
   if (!project.value) return undefined

@@ -1,4 +1,5 @@
 import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores } from '@/composables'
+import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
@@ -21,6 +22,7 @@ import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
+import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
@@ -127,6 +129,8 @@ export default defineComponent({
     provide(kFilterCombobox, useFilterComboboxData())
     provide(kYggdrasilServices, useYggdrasilServices())
     provide(kTutorial, useTutorialModel())
+    provide(kModrinthTags, useModrinthTags())
+    provide(kCurseforgeCategories, useCurseforgeCategories())
 
     return () => ctx.slots.default?.()
   },

@@ -653,6 +653,7 @@ modInstall:
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   noVersionSupported: Mod 不支持当前 Minecraft 版本
+  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} mod！
   search: 搜索结果
   searchHint: 搜索并选择 Mod
   source: Mod 来源

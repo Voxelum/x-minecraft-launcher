@@ -76,12 +76,12 @@
         :installed="selectedItem.installed"
         :runtime="runtime"
       />
-      <Hint
+      <MarketRecommendation
         v-else
-        icon="playlist_add"
-        :text="
-          t('resourcepack.selectSearchHint')"
-        class="h-full"
+        curseforge="texture-packs"
+        modrinth="resourcepack"
+        @modrinth="modrinthCategories.push($event.name)"
+        @curseforge="curseforgeCategory = $event.id"
       />
     </template>
     <SimpleDialog
@@ -114,6 +114,7 @@ import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
+import MarketRecommendation from '@/components/MarketRecommendation.vue'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)

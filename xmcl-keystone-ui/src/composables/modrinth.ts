@@ -1,4 +1,4 @@
-import { Category } from '@xmcl/modrinth'
+import { Category, GameVersion, License } from '@xmcl/modrinth'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
 import { clientModrinthV2 } from '@/util/clients'
@@ -20,7 +20,7 @@ export interface ModrinthOptions {
   page: number
 }
 
-export const ModrinthCategoriesKey: InjectionKey<Ref<Category[]>> = Symbol('ModrinthCategoriesKey')
+export const kModrinthTags: InjectionKey<ReturnType<typeof useModrinthTags>> = Symbol('ModrinthTags')
 
 export function useModrinthTags() {
   const { data, isValidating: refreshing, error } = useSWRV('/modrinth/tags', async () => {
@@ -30,16 +30,14 @@ export function useModrinthTags() {
       clientModrinthV2.getCategoryTags(),
       clientModrinthV2.getLoaderTags(),
     ])
-    return {
+    return markRaw({
       gameVersions,
       licenses,
       categories,
       modLoaders,
       environments: ['client', 'server'],
-    }
+    })
   }, inject(kSWRVConfig))
-
-  provide(ModrinthCategoriesKey, computed(() => data.value?.categories || []))
 
   const gameVersions = computed(() => data.value?.gameVersions || [])
   const licenses = computed(() => data.value?.licenses || [])

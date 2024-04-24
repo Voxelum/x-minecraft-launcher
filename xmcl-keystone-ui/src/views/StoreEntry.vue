@@ -156,17 +156,18 @@ import Hint from '@/components/Hint.vue'
 import StoreExploreCard, { ExploreProject } from '@/components/StoreExploreCard.vue'
 import StoreExploreCategories, { Category, ExploreCategoryGroup } from '@/components/StoreExploreCategories.vue'
 import StoreGallery, { GameGallery } from '@/components/StoreGallery.vue'
-import { CurseforgeBuiltinClassId, useCurseforge, useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
+import { CurseforgeBuiltinClassId, kCurseforgeCategories, useCurseforge, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 import { useDateString } from '@/composables/date'
 import { getFeedTheBeastProjectModel, useFeedTheBeast } from '@/composables/ftb'
 import { useMarketSort } from '@/composables/marketSort'
-import { getFacatsText, useModrinth, useModrinthTags } from '@/composables/modrinth'
+import { getFacatsText, kModrinthTags, useModrinth } from '@/composables/modrinth'
 import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/query'
 import { useSortByItems } from '@/composables/sortBy'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useTutorial } from '@/composables/tutorial'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
@@ -381,7 +382,7 @@ const enter = (type: string, id: string) => {
 }
 
 const sortBy = useSortByItems()
-const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = useModrinthTags()
+const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
 
 const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
@@ -509,7 +510,7 @@ const onMouseLeave = (e: any) => {
 }
 
 // Categories
-const { categories: curseforgeCategories } = useCurseforgeCategories()
+const { categories: curseforgeCategories } = injection(kCurseforgeCategories)
 const groups = computed(() => {
   const modrinthCatResult: Category[] = modrinthCategories.value.filter(v => v.project_type === 'modpack').map(c => ({
     id: c.name,

@@ -244,6 +244,8 @@ me:
   versions: Versións instaladas
 mod:
   searchOnCurseforge: Busca {name} en curseforge
+modInstall:
+  recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
 resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos

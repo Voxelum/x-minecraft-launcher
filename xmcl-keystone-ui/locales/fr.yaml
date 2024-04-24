@@ -710,6 +710,7 @@ mod:
 modInstall:
   install: Installer
   installed: Installé
+  recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
   search: Résultats
   searchHint: Rechercher et sélectionner un projet
 modSearchType:

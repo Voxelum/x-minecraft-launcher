@@ -1,15 +1,16 @@
+import type { ExternalResource, Info, ModGallery, ProjectDetail } from '@/components/MarketProjectDetail.vue'
+import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useMarkdown } from '@/composables/markdown'
-import { useModrinthTags } from '@/composables/modrinth'
+import { kModrinthTags } from '@/composables/modrinth'
+import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
+import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { Ref } from 'vue'
-import type { ExternalResource, Info, ProjectDetail, ModGallery } from '@/components/MarketProjectDetail.vue'
-import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { ProjectFile } from '@/util/search'
 
 export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>) {
   const { render } = useMarkdown()
-  const { categories } = useModrinthTags()
+  const { categories } = injection(kModrinthTags)
   const { t } = useI18n()
   const getEnv = (v: string) => {
     if (v === 'required') return t('modrinth.environments.required')

@@ -149,10 +149,12 @@
         :runtime="runtime"
         :installed="selectedItem.installed"
       />
-      <Hint
+      <MarketRecommendation
         v-else
-        :text="t('modInstall.searchHint')"
-        icon="playlist_add"
+        curseforge="mc-mods"
+        modrinth="mod"
+        @modrinth="modrinthCategories.push($event.name)"
+        @curseforge="curseforgeCategory = $event.id"
       />
     </template>
   </MarketBase>
@@ -163,6 +165,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'

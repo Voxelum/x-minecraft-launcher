@@ -84,21 +84,12 @@
         column
         multiple
       >
-        <v-chip
+        <ModrinthCategoryChip
           v-for="tag in _modrinthCategories"
           :key="tag.name"
-          filter
+          :tag="tag"
           :disabled="!enableModrinth"
-          outlined
-          label
-        >
-          <v-avatar
-            v-if="tag.icon"
-            left
-            v-html="tag.icon"
-          />
-          {{ t('modrinth.categories.' + tag.name) }}
-        </v-chip>
+        />
       </v-chip-group>
       <template v-if="curseforgeCategoryFilter">
         <v-subheader class="flex">
@@ -117,24 +108,12 @@
           column
           :disabled="!enableCurseforge"
         >
-          <v-chip
+          <CurseforgeCategoryChip
             v-for="c of curseforgeCategories"
             :key="c.id"
-            filter
             :disabled="!enableCurseforge"
-            outlined
-            label
-          >
-            <v-avatar
-              left
-            >
-              <v-img
-                :src="c.iconUrl"
-              />
-            </v-avatar>
-
-            {{ tCategory(c.name) }}
-          </v-chip>
+            :value="c"
+          />
         </v-chip-group>
       </template>
     </v-card>
@@ -142,14 +121,16 @@
 </template>
 <script setup lang="ts">
 import MarketTextField from '@/components/MarketTextField.vue'
-import { useCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
+import { kCurseforgeCategories, useCurseforgeCategoryI18n } from '@/composables/curseforge'
 import { kInstance } from '@/composables/instance'
-import { useModrinthTags } from '@/composables/modrinth'
+import { kModrinthTags } from '@/composables/modrinth'
 import { useSortByItems } from '@/composables/sortBy'
 import { useMinecraftVersions } from '@/composables/version'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModsSearchSortField } from '@xmcl/curseforge'
+import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
+import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
@@ -183,7 +164,7 @@ const { versions } = useMinecraftVersions()
 const focused = ref(false)
 provide('focused', focused)
 
-const { refresh, refreshing, categories: cCategories } = useCurseforgeCategories()
+const { refresh, refreshing, categories: cCategories } = injection(kCurseforgeCategories)
 const curseforgeCategories = computed(() => {
   if (!props.curseforgeCategoryFilter) return []
   const result = cCategories.value
@@ -192,7 +173,7 @@ const curseforgeCategories = computed(() => {
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
 
-const { refreshing: refreshingTag, categories: mCategories, error: tagError } = useModrinthTags()
+const { refreshing: refreshingTag, categories: mCategories, error: tagError } = injection(kModrinthTags)
 const _modrinthCategories = computed(() => {
   const result = mCategories.value
   if (!result) return []

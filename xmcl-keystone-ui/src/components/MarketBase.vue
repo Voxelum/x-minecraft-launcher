@@ -99,6 +99,14 @@ const selectedItem = computed(() => {
   return props.items.find((i) => typeof i === 'object' && i.id === selectedId.value) as ProjectEntry | undefined
 })
 
+watch(() => props.items, (i, old) => {
+  if (!old || old.length === 0) {
+    if (i.length > 0) {
+      selectedId.value = i[0].id
+    }
+  }
+})
+
 const selectedModrinthId = computed(() => {
   const id = selectedId.value
   if (id && id?.startsWith('modrinth:')) {

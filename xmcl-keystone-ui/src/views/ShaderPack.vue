@@ -58,12 +58,10 @@
         :installed="selectedItem.files?.map(i => i.resource) || []"
         :runtime="runtime"
       />
-      <Hint
+      <MarketRecommendation
         v-else
-        icon="playlist_add"
-        :text="
-          t('shaderPack.selectSearchHint')"
-        class="h-full"
+        modrinth="shader"
+        @modrinth="modrinthCategories.push($event.name)"
       />
     </template>
     <!-- <DeleteDialog
@@ -102,6 +100,7 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
+import MarketRecommendation from '@/components/MarketRecommendation.vue'
 
 const {
   modrinthError,

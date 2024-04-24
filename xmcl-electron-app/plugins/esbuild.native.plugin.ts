@@ -52,18 +52,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
-      // node_modules\.pnpm\undici@6.11.1\node_modules\undici\lib\dispatcher\client.js
-      build.onLoad(
-        { filter: /^.+[\\/]undici[\\/]lib[\\/]dispatcher[\\/]client\.js$/g },
-        async ({ path }) => {
-          const content = await readFile(path, 'utf-8')
-          return {
-            contents: content.replace('client[kHTTPContext]?.destroy(new InformationalError(\'servername changed\'))', 'client[kHTTPContext]?.destroy(new InformationalError(\'servername changed\'), () => {})'),
-            loader: 'js',
-          }
-        },
-      )
-
       build.onResolve(
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
         async ({ path, resolveDir }) => {

@@ -4,7 +4,7 @@ import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDial
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
-import { useModrinthTags } from '@/composables/modrinth'
+import { kModrinthTags } from '@/composables/modrinth'
 import { useModrinthInstallModpack } from '@/composables/modrinthInstall'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthVersions } from '@/composables/modrinthVersions'
@@ -22,7 +22,7 @@ const props = defineProps<{ id: string }>()
 const { t } = useI18n()
 const projectId = computed(() => props.id)
 
-const { categories: modrinthCategories } = useModrinthTags()
+const { categories: modrinthCategories } = injection(kModrinthTags)
 const { project: proj, isValidating: refreshing } = useModrinthProject(projectId)
 const { render } = useMarkdown()
 const project = computed(() => {

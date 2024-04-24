@@ -277,6 +277,8 @@ mod:
   showFile: 打開 Mod 所在位置 {file}
   showInCurseforge: 在 Curseforge 上顯示該 Mod
   showInModrinth: 在 Modrinth 中顯示 {name}
+modInstall:
+  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} mod！
 modpack:
   author: 署名
   authorHint: 在導出成各種整合包時使用

@@ -721,6 +721,7 @@ modInstall:
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Die Mod unterstützt nicht die aktuelle Version von Minecraft
+  recommendation: Entdecken Sie die {first} oder {second} Mods in {modrinth} und {curseforge}!
   search: Suchergebnis
   searchHint: Projektsuche und -auswahl
   source: Quelle.

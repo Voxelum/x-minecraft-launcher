@@ -651,6 +651,7 @@ mod:
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} to update'
 modInstall:
+  recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
   checkUpgrade: Check Mods Update
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
