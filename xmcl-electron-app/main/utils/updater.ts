@@ -10,7 +10,7 @@ import { BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { shell } from 'electron'
 import { CancellationToken, Provider, UpdateInfo, UpdaterSignal, autoUpdater } from 'electron-updater'
-import { stat, writeFile } from 'fs-extra'
+import { stat, writeFile, readFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
@@ -22,6 +22,7 @@ import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
 import { checksum } from './fs'
+import { AnyError, isSystemError } from '~/util/error'
 
 /**
  * Only download asar file update.
@@ -220,11 +221,19 @@ export class ElectronUpdater implements LauncherAppUpdater {
     } else {
       await promisify(rename)(appAsarPath, appAsarPath + '.bk').catch(() => { })
       try {
-        await promisify(rename)(updateAsarPath, appAsarPath)
+        try {
+          await promisify(rename)(updateAsarPath, appAsarPath)
+        } catch (e) {
+          if (isSystemError(e) && e.code === 'EXDEV') {
+            await writeFile(appAsarPath, await readFile(updateAsarPath))
+          } else {
+            throw e
+          }
+        }
         await promisify(unlink)(appAsarPath + '.bk').catch(() => { })
         this.app.relaunch()
       } catch (e) {
-        this.logger.error(new Error(`Fail to rename update the file: ${appAsarPath}`, { cause: e }))
+        this.logger.error(new AnyError('UpdateError', `Fail to rename update the file: ${appAsarPath}`, { cause: e }))
         await promisify(rename)(appAsarPath + '.bk', appAsarPath)
       }
     }
