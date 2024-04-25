@@ -31,6 +31,16 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
   ) {
     super(app, async () => {
       const apis = await this.yggdrasilFile.read()
+      const litteSkin = apis.yggdrasilServices.find(a => new URL(a.url).host === 'littleskin.cn')
+      if (litteSkin && !litteSkin.authlibInjector) {
+        apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(litteSkin), 1)
+        apis.yggdrasilServices.push(await loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil'))
+      }
+      const ely = apis.yggdrasilServices.find(a => new URL(a.url).host === 'authserver.ely.by')
+      if (ely && !ely.authlibInjector) {
+        apis.yggdrasilServices.splice(apis.yggdrasilServices.indexOf(ely), 1)
+        apis.yggdrasilServices.push(await loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector'))
+      }
       this.yggdrasilServices.push(...apis.yggdrasilServices)
     })
 
@@ -72,6 +82,17 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
     this.log(`Add ${url} as yggdrasil (authlib-injector) api service ${domain}`)
 
     const api = await loadYggdrasilApiProfile(url)
+    // check dup
+    const existed = this.yggdrasilServices.find(a => new URL(a.url).host === new URL(url).host)
+    if (existed) {
+      if (existed.authlibInjector && !api.authlibInjector) {
+        return
+      }
+      if (!existed.authlibInjector && api.authlibInjector) {
+        this.yggdrasilServices = this.yggdrasilServices.filter(a => new URL(a.url).host !== new URL(url).host)
+      }
+    }
+
     this.yggdrasilServices.push(api)
     await this.yggdrasilFile.write({ yggdrasilServices: this.yggdrasilServices })
   }

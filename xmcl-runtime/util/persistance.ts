@@ -42,7 +42,9 @@ export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logge
         }
       }
       if (isMissing && defaultVal) {
-        return await defaultVal()
+        const val = await defaultVal()
+        await this.write(val)
+        return val
       }
       return await serializer.deserialize(await readFile(path).catch(e => Buffer.from('')))
     },
