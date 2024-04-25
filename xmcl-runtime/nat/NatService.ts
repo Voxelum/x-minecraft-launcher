@@ -4,6 +4,7 @@ import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { kIceServerProvider } from '~/iceServers'
 @ExposeServiceKey(NatServiceKey)
 export class NatService extends StatefulService<NatState> implements INatService {
   private client = createPromiseSignal<UpnpClient>()
@@ -67,7 +68,11 @@ export class NatService extends StatefulService<NatState> implements INatService
   async refreshNatType(): Promise<void> {
     this.log('Start to sample the nat type')
 
-    const stun = 'stun.l.google.com'
+    const p = await this.app.registry.get(kIceServerProvider)
+    const servers = p.getIceServers(false)
+
+    // randomly pick one
+    const stun = servers[Math.floor(Math.random() * servers.length)]
     const info = await getNatInfoUDP({ stun })
     if (info.type !== 'Blocked') {
       this.state.natInfoSet(info.externalIp, info.externalPort)

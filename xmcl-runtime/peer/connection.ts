@@ -12,7 +12,6 @@ import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEn
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
-import { iceServers as _iceServers } from './stun'
 import { NodeDataChannelModule } from './NodeDataChannel'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
@@ -56,7 +55,7 @@ export class PeerSession {
   ) {
     const { PeerConnection } = await NodeDataChannelModule.getInstance()
     return new PeerSession(new PeerConnection(id, {
-      iceServers: [..._iceServers, ...iceServers],
+      iceServers,
       iceTransportPolicy: 'all',
       portRangeBegin: portBegin,
       portRangeEnd: portBegin,

@@ -1,30 +1,29 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, InitiateOptions, InstanceManifest, PeerService as IPeerService, MutableState, SetRemoteDescriptionOptions, PeerServiceKey, PeerState, Settings, ShareInstanceOptions, TransferDescription } from '@xmcl/runtime-api'
+import { PeerService as IPeerService, InitiateOptions, InstanceManifest, MutableState, PeerServiceKey, PeerState, SetRemoteDescriptionOptions, Settings, ShareInstanceOptions, TransferDescription } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra'
-import type { IceServer } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
-import { request } from 'undici'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
-import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { IS_DEV } from '~/constant'
+import { kIceServerProvider } from '~/iceServers'
 import { ImageStorage } from '~/imageStore'
 import { NatService } from '~/nat'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { kSettings } from '~/settings'
-import { kResourceWorker, ResourceWorker } from '../resource'
+import { ResourceWorker, kResourceWorker } from '../resource'
 import { UserService } from '../user'
+import { NodeDataChannelModule } from './NodeDataChannel'
 import { PeerSession } from './connection'
 import { mapLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
-import { NodeDataChannelModule } from './NodeDataChannel'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -38,7 +37,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
-  private iceServers: IceServer[] = []
 
   private portCandidate = 35565
 
@@ -52,19 +50,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => store.registerStatic(new PeerState(), PeerServiceKey), async () => {
-      const initCredential = async () => {
-        await this.fetchCredential()
-        const state = await userService.getUserState()
-        state.subscribe('userProfile', (profile) => {
-          if (profile.authority === AUTHORITY_MICROSOFT && this.iceServers.length === 0) {
-            this.fetchCredential()
-          }
-        })
-      }
-
-      initCredential().catch(e => {
-        this.warn('Fail to init credential', e)
-      })
       // mapAndGetPortCandidate(natService, this.portCandidate, this).then(port => {
       //   this.portCandidate = port
       // }, (e) => {
@@ -198,47 +183,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return this.state
   }
 
-  @Singleton()
-  async fetchCredential() {
-    this.log('Try to fetch rtc credential')
-    const officialAccount = await this.userService.getOfficialUserProfile()
-    if (officialAccount) {
-      this.log(`Use minecraft xbox ${officialAccount.username} to fetch rtc credential`)
-      const response = await request('https://api.xmcl.app/rtc/official', {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${officialAccount.accessToken}`,
-        },
-      })
-      if (response.statusCode === 200) {
-        const credential: {
-          password: string
-          username: string
-          uris: string[]
-        } = await response.body.json() as any
-        this.iceServers.splice(0, this.iceServers.length)
-        this.iceServers.push(...credential.uris
-          .filter(u => u.startsWith('turn:'))
-          .map(u => u.substring('turn:'.length))
-          .map(u => {
-            const [hostname, port] = u.split(':')
-            return {
-              username: credential.username,
-              password: credential.password,
-              hostname,
-              port: port ? Number.parseInt(port) : 3478,
-              relayType: 'TurnUdp' as any,
-            }
-          }))
-        this.log(`Updated the rtc credential by xbox ${officialAccount.username}.`)
-      } else if (response.statusCode === 401) {
-        this.warn(`The xbox ${officialAccount.username} is not valid. Try to refresh the access token.`)
-      } else {
-        this.error(new Error(`Fail to fetch the rtc credential by xbox ${officialAccount.username}. Status ${response.statusCode}.`))
-      }
-    }
-  }
-
   protected async decode(description: string): Promise<TransferDescription> {
     return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
   }
@@ -266,8 +210,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
     const natService = this.natService
     const privatePort = this.portCandidate
+    const iceServers = await this.app.registry.get(kIceServerProvider)
 
-    const conn = await PeerSession.createPeerSession(sessionId, this.settings.allowTurn ? this.iceServers : [], {
+    const conn = await PeerSession.createPeerSession(sessionId, iceServers.getIceServers(this.settings.allowTurn), {
       onHeartbeat: (session, ping) => {
         this.state.connectionPing({ id: session, ping })
       },
