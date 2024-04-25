@@ -16,9 +16,9 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
 
   type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory'
-  const allLaunchingStatus = reactive({} as Record<string, LaunchStatus>)
-  const launchingStatus = computed(() => allLaunchingStatus[instance.value.path] ?? '')
-  const launching = computed(() => Object.keys(allLaunchingStatus).length > 0)
+  const allLaunchingStatus = shallowRef({} as Record<string, LaunchStatus>)
+  const launchingStatus = computed(() => allLaunchingStatus.value[instance.value.path] ?? '')
+  const launching = computed(() => Object.values(allLaunchingStatus.value).some(v => v.length > 0))
 
   const error = ref<any | undefined>(undefined)
 
@@ -107,7 +107,11 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
 
     const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
     if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
-      allLaunchingStatus[instancePath] = 'preparing-authlib'
+      allLaunchingStatus.value = {
+        ...allLaunchingStatus.value,
+        [instancePath]: 'preparing-authlib',
+      }
+      console.log('preparing authlib')
       yggdrasilAgent = {
         jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
         server: userProfile.value.authority,
@@ -125,7 +129,11 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     if (assignMemory === true && minMemory > 0) {
       // noop
     } else if (assignMemory === 'auto') {
-      allLaunchingStatus[instancePath] = 'assigning-memory'
+      allLaunchingStatus.value = {
+        ...allLaunchingStatus.value,
+        [instancePath]: 'assigning-memory',
+      }
+      console.log('assigning memory')
       const mem = await track(getMemoryStatus(), 'get-memory-status', id)
       minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
     } else {
@@ -162,7 +170,12 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       const options = await generateLaunchOptions(instancePath, operationId)
 
       if (!options.skipAssetsCheck) {
-        allLaunchingStatus[instancePath] = 'refreshing-user'
+        allLaunchingStatus.value = {
+          ...allLaunchingStatus.value,
+          [instancePath]: 'refreshing-user',
+        }
+
+        console.log('refreshing user')
         try {
           await track(Promise.race([
             new Promise((resolve, reject) => { setTimeout(() => reject(new Error('Timeout')), 5_000) }),
@@ -172,7 +185,12 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
         }
       }
 
-      allLaunchingStatus[instancePath] = 'spawning-process'
+      allLaunchingStatus.value = {
+        ...allLaunchingStatus.value,
+        [instancePath]: 'spawning-process',
+      }
+
+      console.log('spawning process')
       const pid = await launch(options)
       if (pid) {
         data.value?.push({
@@ -186,16 +204,13 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       error.value = e as any
       throw e
     } finally {
-      del(allLaunchingStatus, '')
+      allLaunchingStatus.value = { ...allLaunchingStatus.value, [instancePath]: '' }
     }
   }
 
   async function launchWithTracking() {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
-    if (!(instancePath in allLaunchingStatus)) {
-      set(allLaunchingStatus, instancePath, '')
-    }
     await track(_launch(instancePath, operationId), 'launch', operationId)
   }
 
