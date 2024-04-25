@@ -62,9 +62,7 @@ export interface UIThemeData {
   blurAppBar?: number
 }
 
-export function useTheme(framework: Framework) {
-  const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
-
+export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
   const darkTheme = useLocalStorageCacheStringValue<'dark' | 'light' | 'system'>('darkTheme', 'system')
   const currentTheme = ref<UIThemeData>({

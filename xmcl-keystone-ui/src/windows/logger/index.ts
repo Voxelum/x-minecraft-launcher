@@ -6,6 +6,9 @@ import Vue, { h } from 'vue'
 import App from './App.vue'
 import { baseService } from './baseService'
 import { usePreferredDark } from '@vueuse/core'
+import { kTheme, useTheme } from '@/composables/theme'
+import { ServiceFactoryImpl } from '@/composables'
+import { ThemeServiceKey } from '@xmcl/runtime-api'
 
 const search = window.location.search.slice(1)
 const pairs = search.split('&').map((pair) => pair.split('='))
@@ -17,6 +20,7 @@ const app = new Vue(defineComponent({
   i18n,
   setup(props, context) {
     provide(kVuetify, vuetify.framework)
+    provide(kTheme, useTheme(vuetify.framework, new ServiceFactoryImpl().getService(ThemeServiceKey)))
 
     baseService.call('getSettings').then(state => state).then(state => {
       i18n.locale = state.locale
