@@ -31,7 +31,8 @@ jobs:
       with:
         version: 8.3.0
     - name: Fix node-gyp and Python
-      run: python3 -m pip install packaging setuptools
+      if: ${{ runner.os == 'macOS' }} 
+      run: python3 -m pip install --break-system-packages --user packaging setuptools
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
