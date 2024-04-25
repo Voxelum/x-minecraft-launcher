@@ -206,7 +206,7 @@ jobs:
         cache: 'pnpm'
     - name: Install
       run: |
-        pnpm install --filter ./.github/actions
+        pnpm install --filter action-*
     - name: Download Build
       uses: actions/download-artifact@v4
       with:

@@ -1,5 +1,5 @@
 {
-  "name": "get-build-number",
+  "name": "action-get-build-number",
   "private": true,
   "dependencies": {
   }

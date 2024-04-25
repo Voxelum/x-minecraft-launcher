@@ -1,5 +1,5 @@
 {
-  "name": "get-build-number",
+  "name": "action-generate-release-note",
   "private": true,
   "dependencies": {
     "@actions/core": "^1.6.0"
