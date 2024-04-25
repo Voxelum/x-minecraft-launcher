@@ -1,6 +1,11 @@
 import { isSystemError } from '~/util/error'
 
 export function decorateError(e: unknown) {
+  if (e instanceof AggregateError) {
+    for (const error of e.errors) {
+      decorateError(error)
+    }
+  }
   if (e instanceof Error) {
     if (e.name === 'Error') {
       if (isSystemError(e)) {
