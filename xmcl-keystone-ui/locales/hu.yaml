@@ -1,9 +1,9 @@
 AppAddInstanceDialog:
-  choiceTitle: Multiple launch profiles detected. Please select one to import.
-  configTitle: Configuration
-  createTitle: Create Game
+  choiceTitle: Több profil észlelve. Válassz egyet az importáláshoz.
+  configTitle: Konfiguráció
+  createTitle: Játék létrehozása
   downloadedNotification: A modpack {name} letöltődött. Szeretnél létrehozni egy példányt hozzá?
-  serverTitle: Input your server address
+  serverTitle: Add meg a kiszolgáló címét
 AppShareInstanceDialog:
   baseInfo: Alapvető beállítások
   cancelShare: Megosztás visszavonása
