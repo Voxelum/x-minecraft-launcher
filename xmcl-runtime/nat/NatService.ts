@@ -1,10 +1,10 @@
 import { createSsdp, UpnpClient, UpnpMapOptions, UpnpUnmapOptions } from '@xmcl/nat-api'
-import { NatService as INatService, MutableState, NatServiceKey, NatState, createPromiseSignal } from '@xmcl/runtime-api'
-import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
-import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { createPromiseSignal, NatService as INatService, MutableState, NatServiceKey, NatState } from '@xmcl/runtime-api'
+import { getNatInfoUDP, sampleNatType, UnblockedNatInfo } from '@xmcl/stun-client'
+import { Inject, LauncherAppKey } from '~/app'
 import { kIceServerProvider } from '~/iceServers'
+import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
+import { LauncherApp } from '../app/LauncherApp'
 @ExposeServiceKey(NatServiceKey)
 export class NatService extends StatefulService<NatState> implements INatService {
   private client = createPromiseSignal<UpnpClient>()
@@ -69,26 +69,44 @@ export class NatService extends StatefulService<NatState> implements INatService
     this.log('Start to sample the nat type')
 
     const p = await this.app.registry.get(kIceServerProvider)
-    const servers = p.getIceServers(false)
+    const stuns = p.getIceServers().map(ice => ({ ip: ice.hostname, port: ice.port }))
 
-    // randomly pick one
-    const ice = servers[Math.floor(Math.random() * servers.length)]
-    const stun = { ip: ice.hostname, port: ice.port }
-    const info = await getNatInfoUDP({ stun })
-    if (info.type !== 'Blocked') {
+    const winner = createPromiseSignal<{
+      stun: {
+        ip: string
+        port: number
+      }
+      info: UnblockedNatInfo
+    }>()
+    const all = Promise.all(stuns.map(async (stun) => {
+      const info = await getNatInfoUDP({ stun })
+      if (info.type !== 'Blocked') {
+        winner.resolve({ stun, info })
+      }
+    }))
+    const winOrBlocked = await Promise.race([winner.promise, all])
+    if (winOrBlocked instanceof Array) {
+      // All blocked
+      this.state.natTypeSet('Blocked')
+    } else {
+      const { stun, info } = winOrBlocked
       this.state.natInfoSet(info.externalIp, info.externalPort)
-    }
-    this.state.natTypeSet(info.type)
-    this.log('Fast nat detection: %o', info)
+      this.state.natTypeSet(info.type)
+      this.log('Fast nat detection: %o', info)
+      p.setValidIceServers([{
+        hostname: stun.ip,
+        port: stun.port,
+      }])
 
-    const result = await sampleNatType({
-      sampleCount: 3,
-      retryInterval: 3_000,
-      stun,
-    })
-    if (result) {
-      this.state.natTypeSet(result)
+      const result = await sampleNatType({
+        sampleCount: 3,
+        retryInterval: 3_000,
+        stun,
+      })
+      if (result) {
+        this.state.natTypeSet(result)
+      }
+      this.log(`Refresh nat type ${result}`)
     }
-    this.log(`Refresh nat type ${result}`)
   }
 }

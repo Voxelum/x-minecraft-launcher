@@ -212,7 +212,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const privatePort = this.portCandidate
     const iceServers = await this.app.registry.get(kIceServerProvider)
 
-    const conn = await PeerSession.createPeerSession(sessionId, iceServers.getIceServers(this.settings.allowTurn), {
+    const valid = iceServers.getValidIceServers()
+    const turns = iceServers.getTurnServers()
+    const ice = this.settings.allowTurn && turns.length > 0 ? turns : valid.length > 0 ? valid : iceServers.getIceServers()
+    this.log('Use ice servers: %o', ice)
+    const conn = await PeerSession.createPeerSession(sessionId, ice, {
       onHeartbeat: (session, ping) => {
         this.state.connectionPing({ id: session, ping })
       },

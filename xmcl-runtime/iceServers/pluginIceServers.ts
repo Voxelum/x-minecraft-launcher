@@ -19,8 +19,15 @@ export const pluginIceServers: LauncherAppPlugin = async (app) => {
   } catch (e) {
     logger.error(e as any)
   }
+
+  let validIceServers: IceServer[] = []
   app.registry.register(kIceServerProvider, {
-    getIceServers: (allowTurn) => allowTurn ? iceServers : iceServers.filter(s => !s.password),
+    getIceServers: () => iceServers,
+    getTurnServers: () => iceServers.filter(s => !!s.password),
+    setValidIceServers: (servers) => {
+      validIceServers = servers
+    },
+    getValidIceServers: () => validIceServers,
   })
   const userService = await app.registry.get(UserService)
   userService.getUserState().then((state) => {

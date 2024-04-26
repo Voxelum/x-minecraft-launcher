@@ -286,8 +286,10 @@ export class PeerSession {
 
   close() {
     this.#isClosed = true
+    if (this.channel?.isOpen()) {
+      this.channel?.close()
+    }
     this.connection.close()
-    this.channel?.close()
     for (const p of this.proxies) {
       p.server.close()
     }
