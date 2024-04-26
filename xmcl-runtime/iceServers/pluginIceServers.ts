@@ -94,4 +94,5 @@ export const pluginIceServers: LauncherAppPlugin = async (app) => {
       logger.error(new Error(`Fail to fetch the rtc credential by xbox ${username}. Status ${response.statusCode}.`))
     }
   }
+  update()
 }

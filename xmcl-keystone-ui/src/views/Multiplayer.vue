@@ -446,6 +446,7 @@
       <MultiplayerDialogInitiate />
       <MultiplayerDialogReceive />
       <SimpleDialog
+        v-model="model"
         :title="t('multiplayer.disconnected')"
         :persistent="false"
         :width="400"
@@ -478,7 +479,7 @@ import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
-const { show: showDelete, target: deleting, confirm: doDelete } = useSimpleDialog<string>((v) => {
+const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimpleDialog<string>((v) => {
   if (!v) return
   console.log(`drop connection ${v}`)
   drop(v)
