@@ -95,7 +95,7 @@
       v-model="deleteDialogModel"
       :width="400"
       :title="t('userAccount.removeTitle')"
-      @confirm="onRemoveUser"
+      @confirm="deleteDialog.confirm"
     >
       {{ t('userAccount.removeDescription') }}
     </SimpleDialog>
@@ -166,16 +166,6 @@ watch(() => props.show, (s) => {
   if (!s) return
   onRefresh()
 }, { immediate: true })
-
-async function onRemoveUser() {
-  const isLastOne = users.value.length <= 1
-  await removeUser(selected.value)
-  if (isLastOne) {
-    login.value = true
-  } else {
-    select(users.value[0].id)
-  }
-}
 
 const options = ref(undefined as any)
 const reset = (o?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }) => {
