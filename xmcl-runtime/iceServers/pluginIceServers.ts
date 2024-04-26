@@ -51,36 +51,44 @@ export const pluginIceServers: LauncherAppPlugin = async (app) => {
         : undefined,
     })
     if (response.statusCode === 200) {
-      const credential: {
-        password: string
-        username: string
-        uris: string[]
-        stuns: string[]
-      } = await response.body.json() as any
-      iceServers = [
-        ...credential.uris
-          .filter(u => u.startsWith('turn:'))
-          .map(u => u.substring('turn:'.length))
-          .map(u => {
-            const [hostname, port] = u.split(':')
+      try {
+        const credential: {
+          password: string
+          username: string
+          uris: string[]
+          stuns: string[]
+        } = await response.body.json() as any
+        iceServers = [
+          ...credential.uris
+            .filter(u => u.startsWith('turn:'))
+            .map(u => u.substring('turn:'.length))
+            .map(u => {
+              const [hostname, port] = u.split(':')
+              return {
+                username: credential.username,
+                password: credential.password,
+                hostname,
+                port: port ? Number.parseInt(port) : 3478,
+                relayType: 'TurnUdp' as any,
+              }
+            }),
+          ...credential.stuns.map((s) => {
+            const [hostname, port] = s.split(':')
             return {
-              username: credential.username,
-              password: credential.password,
               hostname,
               port: port ? Number.parseInt(port) : 3478,
-              relayType: 'TurnUdp' as any,
             }
           }),
-        ...credential.stuns.map((s) => {
-          const [hostname, port] = s.split(':')
-          return {
-            hostname,
-            port: port ? Number.parseInt(port) : 3478,
-          }
-        }),
-      ]
-      await writeJson(cachePath, iceServers)
+        ]
+      } catch (e) {
+        logger.error(e as any)
+        iceServers = [{
+          hostname: 'stun.l.google.com',
+          port: 19302,
+        }]
+      }
 
+      await writeJson(cachePath, iceServers)
       logger.log(`Updated the rtc credential by xbox ${username}.`)
     } else {
       logger.error(new Error(`Fail to fetch the rtc credential by xbox ${username}. Status ${response.statusCode}.`))

@@ -73,7 +73,7 @@ export class NatService extends StatefulService<NatState> implements INatService
 
     // randomly pick one
     const stun = servers[Math.floor(Math.random() * servers.length)]
-    const info = await getNatInfoUDP({ stun })
+    const info = await getNatInfoUDP({ stun: { ip: stun.hostname, port: stun.port } })
     if (info.type !== 'Blocked') {
       this.state.natInfoSet(info.externalIp, info.externalPort)
     }
