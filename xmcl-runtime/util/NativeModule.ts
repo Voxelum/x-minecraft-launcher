@@ -24,7 +24,7 @@ export class NativeModuleLoader<T> {
       const nativeModule = getDependencyIfExists(root, this.nodeFileName)
       const result = this.loader(root, nativeModule)
       this.#signal.resolve(result)
-    } catch {
+    } catch (e) {
       if (this.#retryCount > 3) {
         this.#signal.reject(new AnyError('NativeInitError', 'Failed to load ' + this.nodeFileName))
         return

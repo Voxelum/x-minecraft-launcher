@@ -40,7 +40,7 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
 
       // Intercept node_modules\node-datachannel\lib\index.js
       build.onLoad(
-        { filter: /^.+node-datachannel[\\/]lib[\\/]index\.js$/g },
+        { filter: /^.+node-datachannel[\\/]lib[\\/]index\.c?js$/g },
         async ({ path }) => {
           return {
             contents: `
