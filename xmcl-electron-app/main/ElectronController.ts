@@ -21,6 +21,7 @@ import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
+import { kNativeWindowHandle } from '~/app/WindowHandle'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -101,6 +102,8 @@ export class ElectronController implements LauncherAppController {
 
   constructor(protected app: ElectronLauncherApp) {
     plugins.forEach(p => p.call(this))
+
+    app.registry.register(kNativeWindowHandle, { get: () => this.mainWin?.getNativeWindowHandle() })
 
     if (app.platform.os === 'windows') {
       this.windowsVersion = app.windowsUtils?.getWindowsVersion()

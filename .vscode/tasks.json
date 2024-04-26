@@ -13,7 +13,10 @@
         },
         {
             "label": "dev",
-            "dependsOn": ["dev:main", "dev:renderer"]
+            "dependsOn": [
+                "dev:main",
+                "dev:renderer"
+            ],
         },
         {
             "label": "dev:main",
@@ -23,7 +26,8 @@
             "isBackground": true,
             "options": {
                 "env": {
-                    "LAUNCH_BY": "vscode"
+                    "LAUNCH_BY": "vscode",
+                    "PORT": "4000"
                 }
             },
             "problemMatcher": [
@@ -42,14 +46,20 @@
                         "endsPattern": "^electron main ready",
                     }
                 }
-            ]
+            ],
         },
         {
             "label": "dev:renderer",
             "type": "npm",
-            "script": "dev:renderer",
+            "script": "dev",
             "group": "none",
             "isBackground": true,
+            "path": "xmcl-keystone-ui",
+            "options": {
+                "env": {
+                    "PORT": "4000"
+                }
+            },
             "problemMatcher": [
                 {
                     "pattern": [

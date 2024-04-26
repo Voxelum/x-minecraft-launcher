@@ -42,6 +42,7 @@ const config = {
     '.class': 'binary',
     '.html': 'file',
     '.wasm': 'binary',
+    '.dll': 'file',
   },
   plugins: [
     pluginRenderer(),

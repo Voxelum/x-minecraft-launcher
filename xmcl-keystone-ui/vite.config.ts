@@ -15,7 +15,7 @@ const entries = readdirSync(join(__dirname, './src'))
  */
 export default defineConfig({
   server: {
-    port: 3000,
+    port: isNaN(Number(process.env.PORT)) ? 3000 : Number(process.env.PORT),
   },
   root: join(__dirname, './src'),
   base: '', // has to set to empty string so the html assets path will be relative

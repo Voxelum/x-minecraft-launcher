@@ -68,6 +68,13 @@ export default function createStaticPlugin(): Plugin {
             pluginData: { resolveDir },
           })
         })
+        build.onResolve({ filter: /^.+\.dll$/g }, async ({ path, resolveDir }) => {
+          return ({
+            path: path + '?static',
+            namespace: 'pre-static',
+            pluginData: { resolveDir },
+          })
+        })
         build.onLoad({ filter: /^.+\?static$/g, namespace: 'pre-static' }, async ({ path, pluginData: { resolveDir, external } }) => {
           const dirPath = external ? '__dirname.replace("app.asar", "app.asar.unpacked")' : '__dirname'
           return {

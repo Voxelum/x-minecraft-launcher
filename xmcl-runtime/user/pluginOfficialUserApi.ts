@@ -11,6 +11,8 @@ import { MicrosoftAccountSystem } from './accountSystems/MicrosoftAccountSystem'
 import { MicrosoftOAuthClient } from './accountSystems/MicrosoftOAuthClient'
 import { normalizeGameProfile } from './user'
 import { kUserTokenStorage } from './userTokenStore'
+import { kNativeWindowHandle } from '~/app/WindowHandle'
+import { UrlUtils } from '@azure/msal-common'
 
 const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 
@@ -43,17 +45,17 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
       async (url, signal) => {
         app.shell.openInBrowser(url)
         userService.emit('microsoft-authorize-url', url)
-        return await new Promise<string>((resolve, reject) => {
+        return await new Promise<any>((resolve, reject) => {
           const abort = () => {
             reject(new AnyError('AuthCodeTimeoutError', 'Timeout to wait the auth code! Please try again later!'))
           }
           (signal as any)?.addEventListener('abort', abort)
-          userService.once('microsoft-authorize-code', (err, code) => {
+          userService.once('microsoft-authorize-code', (err, response) => {
             app.controller.requireFocus()
             if (err) {
               reject(err)
             } else {
-              resolve(code!)
+              resolve(response)
             }
           })
         })
@@ -68,6 +70,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
         app.shell.openInBrowser(response.verificationUri)
       },
       app.secretStorage,
+      async () => (await app.registry.get(kNativeWindowHandle)).get(),
     ))
 
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)
@@ -82,8 +85,8 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
         error = new Error(unescape(errDescription));
         (error as any).error = err
       }
-      const code = parsed.searchParams.get('code') as string
-      userService.emit('microsoft-authorize-code', error, code)
+      const authCodeResponse = UrlUtils.getDeserializedResponse(parsed.search) || {}
+      userService.emit('microsoft-authorize-code', error, authCodeResponse)
       response.status = 200
     }
   })

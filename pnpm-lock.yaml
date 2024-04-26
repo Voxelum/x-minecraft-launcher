@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .: {}
@@ -56,7 +52,7 @@ importers:
         version: 2.4.2
       '@vue/runtime-dom':
         specifier: latest
-        version: 3.4.21
+        version: 3.3.4
       '@xmcl/client':
         specifier: workspace:*
         version: link:../xmcl/packages/client
@@ -343,6 +339,9 @@ importers:
       '@azure/msal-node':
         specifier: ^2.6.0
         version: 2.6.0
+      '@azure/msal-node-runtime':
+        specifier: 0.13.6-alpha.0
+        version: 0.13.6-alpha.0
       '@xmcl/client':
         specifier: workspace:*
         version: link:../xmcl/packages/client
@@ -723,8 +722,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -739,8 +738,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ~18
@@ -797,8 +796,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ~18.15.11
@@ -905,8 +904,8 @@ importers:
         specifier: workspace:^*
         version: link:../unzip
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -995,8 +994,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -1014,8 +1013,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -1163,8 +1162,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1191,8 +1190,8 @@ importers:
         specifier: ~18.15.11
         version: 18.15.13
       undici:
-        specifier: 6.14.0
-        version: 6.14.0
+        specifier: 6.11.1
+        version: 6.11.1
 
 packages:
 
@@ -1306,6 +1305,11 @@ packages:
   /@azure/msal-common@14.5.0:
     resolution: {integrity: sha512-Gx5rZbiZV/HiZ2nEKfjfAF/qDdZ4/QWxMvMo2jhIFVz528dVKtaZyFAOtsX2Ak8+TQvRsGCaEfuwJFuXB6tu1A==}
     engines: {node: '>=0.8.0'}
+    dev: false
+
+  /@azure/msal-node-runtime@0.13.6-alpha.0:
+    resolution: {integrity: sha512-Tu5e4wBFiaiBLrOu7bsJF7FYknFH9XIOvUyCqCnmLJFMMOUnYULZ7fOFYuintFFcNPMOT2u8BVfSCPxETri5ng==}
+    requiresBuild: true
     dev: false
 
   /@azure/msal-node@2.6.0:
@@ -4716,7 +4720,7 @@ packages:
       '@volar/source-map': 1.10.1
       '@vue/compiler-dom': 3.3.4
       '@vue/reactivity': 3.4.22
-      '@vue/shared': 3.4.23
+      '@vue/shared': 3.4.25
       minimatch: 9.0.3
       muggle-string: 0.3.1
       typescript: 5.2.2
@@ -4733,10 +4737,10 @@ packages:
       magic-string: 0.25.9
     dev: true
 
-  /@vue/reactivity@3.4.21:
-    resolution: {integrity: sha512-UhenImdc0L0/4ahGCyEzc/pZNwVgcglGy9HVzJ1Bq2Mm9qXOpP8RyNTjookw/gOCUlXSEtuZ2fUg5nrHcoqJcw==}
+  /@vue/reactivity@3.3.4:
+    resolution: {integrity: sha512-kLTDLwd0B1jG08NBF3R5rqULtv/f8x3rOFByTDz4J53ttIQEDmALqKqXY0J+XQeN0aV2FBxY8nJDf88yvOPAqQ==}
     dependencies:
-      '@vue/shared': 3.4.21
+      '@vue/shared': 3.3.4
     dev: true
 
   /@vue/reactivity@3.4.22:
@@ -4745,18 +4749,18 @@ packages:
       '@vue/shared': 3.4.22
     dev: true
 
-  /@vue/runtime-core@3.4.21:
-    resolution: {integrity: sha512-pQthsuYzE1XcGZznTKn73G0s14eCJcjaLvp3/DKeYWoFacD9glJoqlNBxt3W2c5S40t6CCcpPf+jG01N3ULyrA==}
+  /@vue/runtime-core@3.3.4:
+    resolution: {integrity: sha512-R+bqxMN6pWO7zGI4OMlmvePOdP2c93GsHFM/siJI7O2nxFRzj55pLwkpCedEY+bTMgp5miZ8CxfIZo3S+gFqvA==}
     dependencies:
-      '@vue/reactivity': 3.4.21
-      '@vue/shared': 3.4.21
+      '@vue/reactivity': 3.3.4
+      '@vue/shared': 3.3.4
     dev: true
 
-  /@vue/runtime-dom@3.4.21:
-    resolution: {integrity: sha512-gvf+C9cFpevsQxbkRBS1NpU8CqxKw0ebqMvLwcGQrNpx6gqRDodqKqA+A2VZZpQ9RpK2f9yfg8VbW/EpdFUOJw==}
+  /@vue/runtime-dom@3.3.4:
+    resolution: {integrity: sha512-Aj5bTJ3u5sFsUckRghsNjVTtxZQ1OyMWCr5dZRAPijF/0Vy4xEoRCwLyHXcj4D0UFbJ4lbx3gPTgg06K/GnPnQ==}
     dependencies:
-      '@vue/runtime-core': 3.4.21
-      '@vue/shared': 3.4.21
+      '@vue/runtime-core': 3.3.4
+      '@vue/shared': 3.3.4
       csstype: 3.1.3
     dev: true
 
@@ -4768,16 +4772,8 @@ packages:
     resolution: {integrity: sha512-7OjdcV8vQ74eiz1TZLzZP4JwqM5fA94K6yntPS5Z25r9HDuGNzaGdgvwKYq6S+MxwF0TFRwe50fIR/MYnakdkQ==}
     dev: true
 
-  /@vue/shared@3.4.21:
-    resolution: {integrity: sha512-PuJe7vDIi6VYSinuEbUIQgMIRZGgM8e4R+G+/dQTk0X1NEdvgvvgv7m+rfmDH1gZzyA1OjjoWskvHlfRNfQf3g==}
-    dev: true
-
   /@vue/shared@3.4.22:
     resolution: {integrity: sha512-cg7R9XNk4ovV3bKka/1a464O2oY0l5Fyt0rwGR4hSJRPjUJ0WVjrPdsr4W0JbUriwiM8EKcCcCjeKN5pRMs2Zg==}
-    dev: true
-
-  /@vue/shared@3.4.23:
-    resolution: {integrity: sha512-wBQ0gvf+SMwsCQOyusNw/GoXPV47WGd1xB5A1Pgzy0sQ3Bi5r5xm3n+92y3gCnB3MWqnRDdvfkRGxhKtbBRNgg==}
     dev: true
 
   /@vue/shared@3.4.25:
@@ -4983,6 +4979,7 @@ packages:
   /ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
+    requiresBuild: true
 
   /ansi-regex@6.0.1:
     resolution: {integrity: sha512-n5M855fKb2SsfMIiFFoVrABHJC8QtHwVx+mHWP3QcEqBHYienj5dHSgjbxtC0WEZXYt4wcD6zrQElDPhFuZgfA==}
@@ -10604,6 +10601,11 @@ packages:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
     dev: true
 
+  /undici@6.11.1:
+    resolution: {integrity: sha512-KyhzaLJnV1qa3BSHdj4AZ2ndqI0QWPxYzaIOio0WzcEJB9gvuysprJSLtpvc2D9mhR9jPDUk7xlJlZbH2KR5iw==}
+    engines: {node: '>=18.0'}
+    dev: false
+
   /undici@6.14.0:
     resolution: {integrity: sha512-esJ/x2QU5boTG6thdA0o4qP3cv/oPx9mcQGcp8TAHI+ZBTa0EvM9Jiyp0ILdPGLGxs5HATTKrJqAK+YhrSFicg==}
     engines: {node: '>=18.17'}
@@ -11523,3 +11525,7 @@ packages:
       compress-commons: 4.1.2
       readable-stream: 3.6.2
     dev: true
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
