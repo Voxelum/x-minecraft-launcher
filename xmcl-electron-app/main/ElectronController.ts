@@ -33,7 +33,7 @@ export class ElectronController implements LauncherAppController {
 
   protected i18n = createI18n(definedLocales, 'en')
 
-  private logger: Logger
+  readonly logger: Logger
 
   protected tray: Tray | undefined
 
