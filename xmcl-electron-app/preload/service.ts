@@ -188,4 +188,6 @@ function createServiceChannels(): ServiceChannels {
   }
 }
 
+export const serviceChannels = createServiceChannels()
+
 contextBridge.exposeInMainWorld('serviceChannels', createServiceChannels())

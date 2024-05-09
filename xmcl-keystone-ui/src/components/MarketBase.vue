@@ -102,7 +102,10 @@ const selectedItem = computed(() => {
 watch(() => props.items, (i, old) => {
   if (!old || old.length === 0) {
     if (i.length > 0) {
-      selectedId.value = i[0].id
+      const first = i[0]
+      if (typeof first === 'object') {
+        selectedId.value = first.id
+      }
     }
   }
 })

@@ -957,6 +957,12 @@ multiplayer:
   joinManual: Rejoindre
   joinOrCreateGroup: Rejoindre/Créer un groupe
   joinOrCreateGroupHint: Obtenez l'identifiant de groupe de vos amis ou créez un groupe
+  kernel: Noyau P2P
+  kernelDescription: >-
+    Utilisez soit WebRTC natif, soit node-datachannel. 
+
+    Ne changez cette option que lorsque votre connexion P2P plante parfois la
+    fenêtre du lanceur.
   leaveGroup: Quitter le groupe
   localToken: Token local
   manualConnect: Connecter manuellement

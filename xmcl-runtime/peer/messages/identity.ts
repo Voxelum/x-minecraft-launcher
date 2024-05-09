@@ -18,5 +18,5 @@ export const MessageIdentityEntry = defineMessage(MessageIdentity, function (inf
   if (info.textures.ELYTRA) {
     info.textures.ELYTRA.url = tranform(info.textures.ELYTRA.url)
   }
-  this.host.onIdentity(this.id, info)
+  this.context.onIdentity(this.id, info)
 })

@@ -6,83 +6,37 @@
     <AppSystemBar
       no-task
       no-user
-      back
-    >
-      <span
-        v-if="router.currentRoute.path.startsWith('/modrinth')"
-        class="flex items-center"
-      >
-        <v-icon small>
-          $vuetify.icons.modrinth
-        </v-icon>
-        Modrinth
-      </span>
-      <span
-        v-else-if="router.currentRoute.path.startsWith('/curseforge')"
-        class="flex items-center"
-      >
-        <v-icon small>
-          $vuetify.icons.curseforge
-        </v-icon>
-        CurseForge
-      </span>
-      <span
-        v-else
-        class="flex items-center"
-      >
-        <v-icon small>
-          $vuetify.icons.ftb
-        </v-icon>
-        FeedTheBeast
-      </span>
-    </AppSystemBar>
+      no-debug
+    />
     <div
       class="relative flex h-full overflow-auto"
     >
       <main
         class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
       >
-        <transition
-          name="fade-transition"
-          mode="out-in"
-          @after-enter="end"
-          @leave="start"
-        >
-          <router-view class="z-2" />
-        </transition>
+        <Multiplayer />
       </main>
     </div>
     <AppContextMenu />
-    <AppNotifier />
-    <AppImageDialog />
     <AppSharedTooltip />
   </v-app>
 </template>
 
 <script lang=ts setup>
 import '@/assets/common.css'
-import AppImageDialog from '@/components/AppImageDialog.vue'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
-import { useExternalRoute } from '@/composables'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
-import { useBlockSharedTooltip } from '@/composables/sharedTooltip'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
-import AppNotifier from '@/views/AppNotifier.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
+import Multiplayer from '@/views/Multiplayer.vue'
 
 const vuetify = injection(kVuetify)
 
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
-
-const router = useRouter()
-useExternalRoute(router)
-
-const { start, end } = useBlockSharedTooltip()
-
 </script>
 
 <style scoped>

@@ -984,6 +984,12 @@ multiplayer:
   joinOrCreateGroupHint: >-
     Erhalten Sie eine Gruppen-ID von Ihren Freunden oder erstellen Sie eine
     Gruppe
+  kernel: P2P-Kernel
+  kernelDescription: >-
+    Verwenden Sie entweder natives WebRTC oder Node-Datachannel. 
+
+    Ändern Sie dies nur, wenn Ihre P2P-Verbindung irgendwann das Startfenster
+    zum Absturz bringt.
   leaveGroup: Verlassen Sie die Gruppe
   localToken: Lokaler Token
   manualConnect: Manuelle Verbindung

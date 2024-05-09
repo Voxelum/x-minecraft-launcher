@@ -51,11 +51,11 @@ export class ReadWriteLock {
         const isNextWrite = !(this.#queue[0]?.[2] ?? true)
         if (thisIsWrite || isNextWrite) {
           // Wait write if next is write or current is writing
-          await signal.promise
+          await signal.promise.catch(() => { })
           while (this.#free.length > 0) {
             // Wait all read operation to finish
             const freeRead = this.#free.shift()!
-            await freeRead.promise
+            await freeRead.promise.catch(() => { })
           }
         }
       }

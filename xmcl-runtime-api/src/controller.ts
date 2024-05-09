@@ -109,6 +109,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    */
   maximize(): void
 
+  openMultiplayerWindow(): void
+
   findInPage(text: string, options?: {
     /**
      * Whether to search forward or backward, defaults to `true`.

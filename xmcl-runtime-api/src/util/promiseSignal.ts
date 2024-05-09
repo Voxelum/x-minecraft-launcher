@@ -10,6 +10,7 @@ export function createPromiseSignal<T = void>(): PromiseSignal<T> {
     resolve: __resolve,
     reject: __reject,
     accept: (p) => p.then(__resolve, __reject),
+    then: promise.then.bind(promise),
   }
 }
 
@@ -18,4 +19,5 @@ export interface PromiseSignal<T> {
   resolve: (v: T) => void
   reject: (e: any) => void
   accept: (p: Promise<T>) => void
+  then: Promise<T>['then']
 }

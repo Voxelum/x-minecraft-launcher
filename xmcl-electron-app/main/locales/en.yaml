@@ -20,3 +20,4 @@ task:
 title: X Minecraft Launcher
 urlFailed: Unknown url {url}. Please check your url or contact developer!
 urlSuccess: Succeed! Now you can close this window and return to the launcher!
+multiplayer: P2P Multiplayer

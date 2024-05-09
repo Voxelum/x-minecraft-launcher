@@ -1,6 +1,6 @@
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { CachedFTBModpackVersionManifest, InstanceFile, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, PeerConnection, Resource } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, InstanceFile, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, Peer, Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { useService } from './service'
@@ -31,7 +31,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
   const { t } = useI18n()
   const { getModpackInstallFiles } = useService(ModpackServiceKey)
 
-  const getTemplates = (modpackResources: Resource[], peers: PeerConnection[], ftb: CachedFTBModpackVersionManifest[]) => {
+  const getTemplates = (modpackResources: Resource[], peers: Peer[], ftb: CachedFTBModpackVersionManifest[]) => {
     const all = [] as Array<Template>
     for (const resource of modpackResources) {
       const config = resolveModpackInstanceConfig(resource)

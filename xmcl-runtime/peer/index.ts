@@ -1,2 +1,2 @@
 export * from './PeerService'
-export * from './PeerGroupService'
+export * from './PeerServiceFacade'

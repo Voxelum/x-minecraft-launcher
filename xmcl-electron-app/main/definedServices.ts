@@ -12,8 +12,7 @@ import { InstanceModsService } from '@xmcl/runtime/mod'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { ModrinthService } from '@xmcl/runtime/modrinth'
-import { NatService } from '@xmcl/runtime/nat'
-import { PeerGroupService, PeerService } from '@xmcl/runtime/peer'
+import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
 import { ResourceService } from '@xmcl/runtime/resource'
 import { InstanceResourcePackService, ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
@@ -30,7 +29,6 @@ export const definedServices = [
   CurseForgeService,
   AuthlibInjectorService,
   ImportService,
-  NatService,
   InstallService,
   InstanceIOService,
   InstanceLogService,
@@ -60,6 +58,5 @@ export const definedServices = [
   InstanceInstallService,
   ModMetadataService,
   PeerService,
-  PeerGroupService,
   ThemeService,
 ]

@@ -2,6 +2,7 @@ import { AccentState, HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/const
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
+import multiplayerPreload from '@preload/multiplayer'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
@@ -10,9 +11,8 @@ import { Logger } from '@xmcl/runtime/logger'
 import { kUserAgent } from '@xmcl/runtime/network'
 import { kSettings } from '@xmcl/runtime/settings'
 import { UserService } from '@xmcl/runtime/user'
-import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
+import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
 import { createReadStream } from 'fs'
-import { readFile } from 'fs-extra'
 import { join } from 'path'
 import { Readable } from 'stream'
 import ElectronLauncherApp from './ElectronLauncherApp'
@@ -20,7 +20,7 @@ import { plugins } from './controllers'
 import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
-import { trackWindowSize } from './utils/windowSizeTracker'
+import { createWindowTracker } from './utils/windowSizeTracker'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -30,6 +30,8 @@ export class ElectronController implements LauncherAppController {
   protected loggerWin: BrowserWindow | undefined = undefined
 
   protected browserRef: BrowserWindow | undefined = undefined
+
+  protected multiplayerRef: BrowserWindow | undefined = undefined
 
   protected i18n = createI18n(definedLocales, 'en')
 
@@ -50,8 +52,13 @@ export class ElectronController implements LauncherAppController {
 
   private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
     const url = new URL(detail.url)
-    if (url.host === 'app' || detail.frameName === '' || detail.frameName === 'app') {
-      const man = this.activatedManifest!
+    const features = detail.features.split(',')
+    const width = parseInt(features.find(f => f.startsWith('width'))?.split('=')[1] ?? '1024', 10)
+    const height = parseInt(features.find(f => f.startsWith('height'))?.split('=')[1] ?? '768', 10)
+    const minWidth = parseInt(features.find(f => f.startsWith('min-width'))?.split('=')[1] ?? '600', 10)
+    const minHeight = parseInt(features.find(f => f.startsWith('min-height'))?.split('=')[1] ?? '600', 10)
+    const man = this.activatedManifest!
+    if (url.host === 'app' || detail.frameName === 'app' || (url.host.startsWith('localhost') && HAS_DEV_SERVER)) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
@@ -59,18 +66,14 @@ export class ElectronController implements LauncherAppController {
           icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
           titleBarStyle: this.getTitlebarStyle(),
           trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
-          minWidth: 600,
-          minHeight: 600,
-          width: 1024,
-          height: 768,
+          minWidth,
+          minHeight,
+          width,
+          height,
           show: false,
           frame: this.getFrameOption(),
 
           webPreferences: {
-            contextIsolation: true,
-            nodeIntegration: false,
-            nodeIntegrationInWorker: false,
-            nodeIntegrationInSubFrames: false,
             preload: indexPreload,
             devTools: IS_DEV,
           },
@@ -82,8 +85,7 @@ export class ElectronController implements LauncherAppController {
     return { action: 'deny' }
   }
 
-  private onWebContentCreateWindow = (window: BrowserWindow,
-    details: DidCreateWindowDetails) => {
+  private onWebContentCreateWindow = (window: BrowserWindow) => {
     window.webContents.setWindowOpenHandler(this.windowOpenHandler)
     window.webContents.on('will-navigate', this.onWebContentWillNavigate)
     window.webContents.on('did-create-window', this.onWebContentCreateWindow)
@@ -105,6 +107,10 @@ export class ElectronController implements LauncherAppController {
     if (app.platform.os === 'windows') {
       this.windowsVersion = app.windowsUtils?.getWindowsVersion()
     }
+
+    this.handle('open-multiplayer-window', () => {
+      this.openMultiplayerWindow()
+    })
 
     this.app.on('window-all-closed', () => {
       if (process.platform !== 'darwin' && !this.parking) {
@@ -199,10 +205,12 @@ export class ElectronController implements LauncherAppController {
     }
   }
 
-  private getSharedSession(userAgent: string) {
+  private async getSharedSession() {
     if (this.sharedSession) {
       return this.sharedSession
     }
+
+    const userAgent = await this.app.registry.get(kUserAgent)
 
     const restoredSession = session.fromPartition('persist:main')
     restoredSession.setUserAgent(userAgent)
@@ -226,7 +234,8 @@ export class ElectronController implements LauncherAppController {
         detail.requestHeaders['User-Agent'] = userAgent
       }
       if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
-        detail.url.startsWith('https://api.xmcl.app/curseforge')
+        detail.url.startsWith('https://api.xmcl.app/curseforge') ||
+        detail.url.startsWith('https://api.xmcl.app/rtc/official')
       ) {
         this.app.registry.get(UserService).then(userService => {
           userService.getOfficialUserProfile().then(profile => {
@@ -311,7 +320,7 @@ export class ElectronController implements LauncherAppController {
     this.activatedManifest = manifest
 
     try {
-      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(manifest.url))
+      await this.createAppWindow()
     } finally {
       this.parking = false
     }
@@ -341,25 +350,62 @@ export class ElectronController implements LauncherAppController {
     this.browserRef = browser
   }
 
-  async createAppWindow(appDir: string) {
-    const man = this.activatedManifest!
-    const configPath = man === this.app.builtinAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
-    this.logger.log(`Creating app window by config ${configPath}`)
-    const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
-      width: -1,
-      height: -1,
-      x: null,
-      y: null,
-    }))
-    const config = {
-      width: typeof configData.width === 'number' ? configData.width as number : -1,
-      height: typeof configData.height === 'number' ? configData.height as number : -1,
-      x: typeof configData.x === 'number' ? configData.x as number : null,
-      y: typeof configData.y === 'number' ? configData.y as number : null,
-    }
+  async openMultiplayerWindow() {
+    if (!this.multiplayerRef || this.multiplayerRef.isDestroyed()) {
+      const man = this.activatedManifest!
+      const tracker = createWindowTracker(this.app, 'multiplayer', man)
+      const config = await tracker.getConfig()
 
-    const ua = await this.app.registry.get(kUserAgent)
-    const restoredSession = this.getSharedSession(ua)
+      const win = new BrowserWindow({
+        icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
+        titleBarStyle: this.getTitlebarStyle(),
+        trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
+        minWidth: 400,
+        minHeight: 600,
+        width: config.width,
+        height: config.height,
+        x: config.x,
+        y: config.y,
+        show: false,
+        frame: this.getFrameOption(),
+
+        webPreferences: {
+          session: await this.getSharedSession(),
+          contextIsolation: true,
+          sandbox: false,
+          preload: multiplayerPreload,
+          devTools: IS_DEV,
+        },
+      })
+
+      tracker.track(win)
+
+      const url = new URL(man.url)
+      url.pathname = '/app.html'
+      win.loadURL(url.toString())
+      this.onWebContentCreateWindow(win)
+      win.once('ready-to-show', () => {
+        win.show()
+      })
+      win.on('close', (e) => {
+        if (this.mainWin && !this.mainWin.isDestroyed()) {
+          win.hide()
+          e.preventDefault()
+        }
+      })
+      this.multiplayerRef = win
+    } else {
+      this.multiplayerRef.show()
+      this.multiplayerRef.focus()
+    }
+  }
+
+  async createAppWindow() {
+    const man = this.activatedManifest!
+    const tracker = createWindowTracker(this.app, 'app-manager', man)
+    const config = await tracker.getConfig()
+
+    const restoredSession = await this.getSharedSession()
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600
 
@@ -372,8 +418,8 @@ export class ElectronController implements LauncherAppController {
 
     const browser = new BrowserWindow({
       title: man.name,
-      width: config.width > 0 ? config.width : undefined,
-      height: config.height > 0 ? config.height : undefined,
+      width: config.width,
+      height: config.height,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
@@ -394,7 +440,6 @@ export class ElectronController implements LauncherAppController {
       browser.setAspectRatio(minWidth / minHeight)
     }
 
-    this.logger.log(`Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
       this.logger.log('App Window is ready to show!')
 
@@ -408,10 +453,12 @@ export class ElectronController implements LauncherAppController {
     browser.webContents.on('will-navigate', this.onWebContentWillNavigate)
     browser.webContents.on('did-create-window', this.onWebContentCreateWindow)
     browser.webContents.setWindowOpenHandler(this.windowOpenHandler)
+    browser.on('closed', () => {
+      this.multiplayerRef?.close()
+    })
 
     this.setupBrowserLogger(browser, 'app')
-
-    trackWindowSize(browser, config, configPath)
+    tracker.track(browser)
 
     let url = man.url
     if (await this.app.isGameDataPathMissing()) {
@@ -434,11 +481,16 @@ export class ElectronController implements LauncherAppController {
     return this.loggerWin
   }
 
-  createMonitorWindow() {
+  async createMonitorWindow() {
+    const tracker = createWindowTracker(this.app, 'monitor', this.activatedManifest!)
+
+    const config = await tracker.getConfig()
     const browser = new BrowserWindow({
       title: 'KeyStone Monitor',
-      width: 770,
-      height: 580,
+      width: config.width,
+      height: config.height,
+      x: config.x,
+      y: config.y,
       minWidth: 600,
       minHeight: 400,
       frame: false,
@@ -457,6 +509,8 @@ export class ElectronController implements LauncherAppController {
 
     browser.loadURL(loggerWinUrl)
     browser.show()
+
+    tracker.track(browser)
 
     this.loggerWin = browser
   }

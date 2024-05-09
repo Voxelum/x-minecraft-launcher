@@ -1,7 +1,8 @@
 {
     "root": true,
     "globals": {
-        "ErrorOptions": true
+        "ErrorOptions": true,
+        "RTCIceServer": true
     },
     "extends": [
         "./xmcl/packages/eslint-config/.eslintrc.json"

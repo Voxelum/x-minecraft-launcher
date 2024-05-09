@@ -1,7 +1,7 @@
 <template>
   <div
     style="z-index: 2; overflow: auto"
-    class="h-full w-full overflow-auto p-2 px-8"
+    class="h-full w-full select-none overflow-auto"
     @dragover.prevent
   >
     <v-layout
@@ -10,9 +10,8 @@
       @drop="onDrop"
     >
       <v-card
-        class="z-5 flex-shrink flex-grow-0 rounded-lg px-2 py-1"
-        outlined
-        elevation="1"
+        class="z-5 flex-shrink flex-grow-0 rounded-none px-2 py-1 pb-2"
+        tiled
       >
         <div class="flex items-center gap-2">
           <v-progress-circular
@@ -22,37 +21,6 @@
             :width="3"
           />
           {{ tGroupState[groupState] }}
-          <v-text-field
-            id="group-input"
-            v-model="groupId"
-            class="max-w-40"
-            hide-details
-            dense
-            outlined
-            filled
-            :label="t('multiplayer.groupId')"
-            @click="onCopy(groupId)"
-          />
-          <v-btn
-            :disabled="!group"
-            text
-            @click="onCopy(groupId)"
-          >
-            <v-icon
-              v-if="!copied"
-              left
-            >
-              content_copy
-            </v-icon>
-            <v-icon
-              v-else
-              left
-              color="success"
-            >
-              check
-            </v-icon>
-            {{ copied ? t('multiplayer.copied') : t('multiplayer.copy') }}
-          </v-btn>
 
           <div class="hidden text-sm text-gray-400 lg:block">
             <template v-if="group">
@@ -64,29 +32,6 @@
           </div>
 
           <div class="flex-grow" />
-          <v-btn
-            id="join-group-button"
-            text
-            :loading="joiningGroup"
-            @click="onJoin()"
-          >
-            <template v-if="!group">
-              <v-icon left>
-                add
-              </v-icon>
-              {{ t('multiplayer.joinOrCreateGroup') }}
-            </template>
-            <template v-else>
-              <v-icon
-                color="red"
-                left
-              >
-                delete
-              </v-icon>
-              {{ t('multiplayer.leaveGroup') }}
-            </template>
-          </v-btn>
-
           <v-tooltip
             bottom
             color="black"
@@ -150,12 +95,64 @@
             </v-list>
           </v-menu>
         </div>
+        <div class="mt-1 flex items-center gap-2">
+          <v-text-field
+            id="group-input"
+            v-model="groupId"
+            hide-details
+            dense
+            filled
+            prepend-inner-icon="group"
+            :label="t('multiplayer.groupId')"
+            @click="onCopy(groupId)"
+          />
+          <v-btn
+            id="join-group-button"
+            v-shared-tooltip="_ => !group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup')"
+            text
+            icon
+            :loading="joiningGroup"
+            @click="onJoin()"
+          >
+            <template v-if="!group">
+              <v-icon>
+                add
+              </v-icon>
+            </template>
+            <template v-else>
+              <v-icon
+                color="red"
+              >
+                delete
+              </v-icon>
+            </template>
+          </v-btn>
+          <v-btn
+            v-shared-tooltip.left="_ => copied ? t('multiplayer.copied') : t('multiplayer.copy')"
+            :disabled="!group"
+            text
+            icon
+            @click="onCopy(groupId)"
+          >
+            <v-icon
+              v-if="!copied"
+            >
+              content_copy
+            </v-icon>
+            <v-icon
+              v-else
+              color="success"
+            >
+              check
+            </v-icon>
+          </v-btn>
+        </div>
       </v-card>
 
       <v-list
         two-line
         subheader
-        class="flex flex-col justify-start gap-2 py-2"
+        class="flex flex-col justify-start gap-2 overflow-auto py-2"
         style="width: 100%; background: transparent;"
       >
         <v-subheader class>
@@ -165,6 +162,7 @@
         <v-list-item
           v-if="device"
           class="flex-1 flex-grow-0"
+          @click="open(device.modelURL, '_blank')"
         >
           <v-list-item-avatar>
             <v-icon>
@@ -176,7 +174,7 @@
               {{ t("multiplayer.routerInfo") }}
             </v-list-item-title>
             <v-list-item-subtitle class="flex items-center gap-2">
-              {{ device.friendlyName }}
+              {{ device.friendlyName }} ({{ device.modelName }})
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action
@@ -194,21 +192,6 @@
               </a>
             </v-chip>
           </v-list-item-action>
-          <v-list-item-action
-            class="self-center"
-          >
-            <v-chip
-              label
-              outlined
-            >
-              <v-icon left>
-                devices
-              </v-icon>
-              <a :href="device.modelURL">
-                {{ device.modelName }}
-              </a>
-            </v-chip>
-          </v-list-item-action>
         </v-list-item>
 
         <v-list-item
@@ -223,15 +206,12 @@
             <v-list-item-title>
               {{ t('multiplayer.currentNatTitle') }}
             </v-list-item-title>
-            <v-list-item-subtitle>
-              <span v-if="localIp">
-                {{ localIp }}
-              </span>
+            <v-list-item-subtitle v-shared-tooltip="_ => ips.join(', ')">
               <span>
                 {{ t('multiplayer.currentIpTitle') }}
               </span>
               <span class="font-bold">
-                {{ externalIp }}{{ externalPort ? `:${externalPort}` : '' }}
+                {{ ips.join(', ') }}
               </span>
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -263,11 +243,38 @@
           <v-list-item-action>
             <v-btn
               icon
-              :loading="isLoadingNetwork"
+              :loading="refreshingNatType"
               @click="refreshNatType"
             >
               <v-icon>refresh</v-icon>
             </v-btn>
+          </v-list-item-action>
+        </v-list-item>
+
+        <v-list-item
+          class="flex-1 flex-grow-0"
+        >
+          <v-list-item-avatar>
+            <v-icon>
+              favorite
+            </v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ t("multiplayer.kernel") }}
+            </v-list-item-title>
+            <v-list-item-subtitle v-shared-tooltip="_ => t('multiplayer.kernelDescription')">
+              {{ t("multiplayer.kernelDescription") }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-select
+              v-model="kernel"
+              filled
+              style="max-width: 105px"
+              hide-details
+              :items="kernels"
+            />
           </v-list-item-action>
         </v-list-item>
 
@@ -284,7 +291,10 @@
             <v-list-item-title>
               {{ t("multiplayer.allowTurn") }}
             </v-list-item-title>
-            <v-list-item-subtitle class="flex items-center gap-2">
+            <v-list-item-subtitle
+              v-shared-tooltip="_ => t('multiplayer.allowTurnHint')"
+              class="flex items-center gap-2"
+            >
               {{ t("multiplayer.allowTurnHint") }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -299,7 +309,7 @@
         <Hint
           v-if="connections.length === 0"
           icon="sports_kabaddi"
-          class="multiplayer-content h-full"
+          class="multiplayer-content h-full px-4"
           :size="120"
           :text="t('multiplayer.placeholder')"
         />
@@ -463,46 +473,43 @@
 import Hint from '@/components/Hint.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
-import { useService, useServiceBusy } from '@/composables'
-import { useNatState } from '@/composables/nat'
+import { useService } from '@/composables'
 import { kPeerState } from '@/composables/peers'
 import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
-import { useTutorial } from '@/composables/tutorial'
 import { kUserContext } from '@/composables/user'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { AUTHORITY_MICROSOFT, BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
+import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
+
+const open = (...args: any[]) => window.open(...args)
+
 const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimpleDialog<string>((v) => {
   if (!v) return
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { drop } = useService(PeerServiceKey)
-const { connections, group, groupState, joinGroup, leaveGroup } = injection(kPeerState)
+const { connections, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
-const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
 const { state } = injection(kSettingsState)
 const { users } = injection(kUserContext)
 const hasMicrosoft = computed(() => !!users.value.find(u => u.authority === AUTHORITY_MICROSOFT))
 
-const allowTurn = computed({
-  get() {
-    return state.value?.allowTurn
-  },
-  set(v) {
-    if (state.value) {
-      state.value.allowTurnSet(v ?? false)
-    }
-  },
-})
+const allowTurn = useLocalStorageCacheBool('peerAllowTurn', false)
+const kernel = useLocalStorageCacheStringValue('peerKernel', 'node-datachannel' as 'node-datachannel' | 'webrtc')
+const kernels = computed(() => [
+  { value: 'node-datachannel', text: 'node-datachannel' },
+  { value: 'webrtc', text: 'WebRTC' },
+])
 
 const { errorColor, successColor, warningColor } = injection(kTheme)
 
@@ -533,8 +540,6 @@ const natColors = computed(() => ({
   'Symmetric NAT': errorColor.value,
   Unknown: t('natType.unknown'),
 }))
-const { refreshNatType } = useService(NatServiceKey)
-const { natDevice: device, natType, localIp, externalIp, externalPort } = useNatState()
 
 const tTransportType = computed(() => ({
   relay: t('transportType.relay'),
@@ -553,15 +558,17 @@ const tNatType = computed(() => ({
   Unknown: t('natType.unknown'),
 }))
 
-const groupId = ref(group.value)
+const groupId = ref(group.value || '')
 const deletingName = computed(() => connections.value.find(c => c.id === deleting.value)?.userInfo.name)
 const copied = ref(false)
 
 const joiningGroup = computed(() => groupState.value === 'connecting')
 
 watch(group, (newVal) => {
-  groupId.value = newVal
-})
+  if (newVal) {
+    groupId.value = newVal
+  }
+}, { immediate: true })
 
 const stateToColor: Record<string, string> = {
   failed: 'error',
@@ -579,9 +586,6 @@ const tConnectionStates = computed(() => ({
   new: t('peerConnectionState.new'),
 }))
 
-const startUnmap = (m: MappingInfo) => {
-
-}
 const edit = (id: string, init: boolean) => {
   const conn = connections.value.find(c => c.id === id)
   if (conn) {
@@ -615,10 +619,10 @@ const onJoin = () => {
   }
 }
 
-useTutorial(computed(() => [
-  { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
-  { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
-  { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
-  { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
-]))
+// useTutorial(computed(() => [
+//   { element: '#group-input', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.groupDescription') } },
+//   { element: '#join-group-button', popover: { title: t('tutorial.multiplayer.groupTitle'), description: t('tutorial.multiplayer.joinDescription') } },
+//   { element: '.multiplayer-content', popover: { title: t('tutorial.multiplayer.contentTitle'), description: t('tutorial.multiplayer.contentDescription') } },
+//   { element: '#manual-connect-button', popover: { title: t('multiplayer.manualConnect'), description: t('tutorial.multiplayer.manualDescription') } },
+// ]))
 </script>

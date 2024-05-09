@@ -913,6 +913,12 @@ multiplayer:
   joinManual: Приєднатися
   joinOrCreateGroup: Приєднатися/Створити групу
   joinOrCreateGroupHint: Отримайте ідентифікатор групи від своїх друзів або створіть групу
+  kernel: Ядро P2P
+  kernelDescription: >-
+    Використовуйте рідний WebRTC або node-datachannel. 
+
+    Перемикайте це лише тоді, коли ваше p2p-з’єднання призведе до збою вікна
+    запуску.
   leaveGroup: Залишити групу
   localToken: Локальний токен
   manualConnect: Ручне підключення

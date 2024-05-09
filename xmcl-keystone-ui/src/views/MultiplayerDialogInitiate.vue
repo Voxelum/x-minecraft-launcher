@@ -1,7 +1,10 @@
 <template>
   <v-dialog
     v-model="isShown"
-    class="mx-20"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+    scrollable
   >
     <v-stepper
       v-model="step"
@@ -146,18 +149,17 @@
   </v-dialog>
 </template>
 <script lang=ts setup>
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { useRefreshable } from '@/composables'
+import { kPeerState } from '@/composables/peers'
 import { injection } from '@/util/inject'
-import { createOfferAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
+import { createOfferAppUrl } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kUserContext } from '../composables/user'
-import { kPeerState } from '@/composables/peers'
 
 const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription, initiate: _initiate } = injection(kPeerState)
 const { isShown, dialog } = useDialog('peer-initiate')
 
-const service = useService(PeerServiceKey)
 const id = ref('')
 const gatheringState = computed(() => connection.value?.iceGatheringState)
 const connection = computed(() => connections.value.find(c => c.id === id.value))
@@ -195,10 +197,7 @@ function copyLocalDescription() {
   copied.value = true
 }
 
-const connecting = useServiceBusy(PeerServiceKey, 'setRemoteDescription', id)
-const initiating = useServiceBusy(PeerServiceKey, 'initiate', id)
-
-const { refresh: connect } = useRefreshable(async () => {
+const { refresh: connect, refreshing: connecting } = useRefreshable(async () => {
   try {
     if (remoteDescription.value === localDescription.value) {
       errorText.value = t('multiplayer.illegalTokenDescription')
@@ -217,7 +216,7 @@ const { refresh: connect } = useRefreshable(async () => {
   }
 })
 
-const { refresh: initiate } = useRefreshable(async () => {
+const { refresh: initiate, refreshing: initiating } = useRefreshable(async () => {
   step.value += 1
   id.value = await _initiate()
   setTimeout(() => { freeze.value = false }, 4000)

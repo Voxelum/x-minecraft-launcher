@@ -30,8 +30,8 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
   })
   ipcMain.handle('focus', (event) => {
     const window = BrowserWindow.fromWebContents(event.sender)
-    if (window && !window.isFocused()) {
-      window.focus()
+    if (window) {
+      window.show()
     }
   })
   ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {

@@ -6,5 +6,6 @@ declare const taskMonitor: import('.').TaskMonitor
 declare const resourceMonitor: import('.').ResourceMonitor
 declare const serviceChannels: import('.').ServiceChannels
 declare const windowController: import('.').WindowController
+declare const multiplayer: import('.').Multiplayer
 declare const appsHost: import('.').AppsHost
 declare const bootstrap: import('.').Bootstrap

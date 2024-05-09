@@ -889,6 +889,10 @@ multiplayer:
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
   joinOrCreateGroupHint: 从你的小伙伴那获得群组 ID 或自己创建一个群组
+  kernel: P2P内核
+  kernelDescription: |-
+    使用本机 WebRTC 或节点数据通道。
+    仅当您的 p2p 连接有时导致启动器窗口崩溃时才切换此选项。
   leaveGroup: 离开群组
   localToken: 本地令牌
   manualConnect: 手动连接

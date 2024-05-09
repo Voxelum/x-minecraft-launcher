@@ -42,6 +42,7 @@ function createController(): WindowController {
       emitter.on(channel, listener)
       return this
     },
+    openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     once(channel, listener) {
       emitter.once(channel, listener)
       return this

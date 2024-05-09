@@ -24,7 +24,7 @@ import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { kPeerState, usePeerState } from '@/composables/peers'
+import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kInstanceSave, useInstanceSaves } from '@/composables/save'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
@@ -59,9 +59,8 @@ export default defineComponent({
     const java = useJavaContext()
     const localVersions = useLocalVersions()
     const instances = useInstances()
-    const peerState = usePeerState(user.gameProfile)
-    provide(kPeerState, peerState)
     const instance = useInstance(instances.selectedInstance, instances.instances)
+    provide(kPeerShared, usePeerConnections())
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions)

@@ -1,13 +1,12 @@
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
-import { computed } from 'vue'
+import { Ref, computed } from 'vue'
 import { kTaskManager } from './taskManager'
 
 export function useTaskCount() {
-  const proxy = injection(kTaskManager)
-  const { tasks } = proxy
-  const count = computed(() => tasks.value.filter(t => t.state === TaskState.Running).length)
+  const { tasks } = inject(kTaskManager, { tasks: { value: [] as TaskItem[] } as any as Ref<TaskItem[]> } as any)
+  const count = computed(() => tasks.value.filter((t: TaskItem) => t.state === TaskState.Running).length)
   return { count }
 }
 
