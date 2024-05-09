@@ -937,6 +937,10 @@ modrinthCard:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
   projectLastUpdateDate: Dernière mise à jour du projet :"
 multiplayer:
+  allowTurn: Activer le serveur relais
+  allowTurnHint: >-
+    Autoriser le serveur relais si vous ne pouvez pas vous connecter avec votre ami. Cependant, l'utilisation d'un
+    peut ralentir votre connexion. Utilisez-le avec prudence.
   complete: Compléter
   confirm: Confirmer
   connections: Connexions
