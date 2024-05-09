@@ -24,12 +24,12 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     getLabyModManifest,
   } = useService(VersionMetadataServiceKey)
 
-  async function install(runtime: RuntimeVersions) {
+  async function install(runtime: RuntimeVersions, jar = false) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
     const local = versions.value
     const localMinecraft = local.find(v => v.id === minecraft)
-    if (!localMinecraft) {
+    if (!localMinecraft || jar) {
       const metadata = mcVersions.versions.find(v => v.id === minecraft)!
       await installMinecraft(metadata)
     } else {

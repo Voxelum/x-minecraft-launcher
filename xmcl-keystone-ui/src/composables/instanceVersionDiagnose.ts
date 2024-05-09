@@ -72,7 +72,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if (jarIssue) {
       const options = { version: jarIssue.version }
       operations.push(async () => {
-        const version = await install(runtime.value)
+        const version = await install(runtime.value, true)
         if (version) {
           await installDependencies(version)
         }
