@@ -1,58 +1,57 @@
 import { InstanceManifest } from '../entities/instanceManifest.schema'
-import { GameProfileAndTexture } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
+import { ConnectionState, ConnectionUserInfo, IceGatheringState, Peer, SelectedCandidateInfo, SignalingState } from '../multiplayer'
 import { MutableState } from '../util/MutableState'
 import { ServiceKey } from './Service'
 
-export interface RTCSessionDescription {
-  sdp: string
-  type: 'answer' | 'offer' | 'pranswer' | 'rollback'
-}
+export type NatType = 'Blocked'| 'Open Internet'| 'Full Cone'| 'Symmetric UDP Firewall'| 'Restrict NAT'| 'Restrict Port NAT'| 'Symmetric NAT' | 'Unknown'
 
-export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
-export type IceGatheringState = 'complete' | 'gathering' | 'new'
-export type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
-
-export interface SelectedCandidateInfo {
-  address: string
-  port: number
-  type: 'host' | 'prflx' | 'srflx' | 'relay'
-  transportType: 'udp' | 'tcp'
+export interface NatDeviceInfo {
+  deviceType: string
+  friendlyName: string
+  manufacturer: string
+  manufacturerURL: string
+  modelDescription: string
+  modelName: string
+  modelURL: string
+  serialNumber: string
+  UDN: string
 }
+export class PeerState {
+  connections = [] as Peer[]
+  validIceServers = [] as string[]
+  ips = [] as string[]
+  group = ''
+  groupState: 'connecting' | 'connected' | 'closing' | 'closed' = 'closed'
+  groupError?: Error
 
-export interface ConnectionUserInfo extends GameProfileAndTexture {
-  /**
-   * The readable text
-   */
-  name: string
-  /**
-   * The avatar url
-   */
-  avatar: string
-}
-export interface PeerConnection {
-  id: string
-  remoteId: string
-  userInfo: ConnectionUserInfo
-  initiator: boolean
-  selectedCandidate?: {
-    local: SelectedCandidateInfo
-    remote: SelectedCandidateInfo
+  natDeviceInfo?: NatDeviceInfo
+  natType: NatType = 'Unknown'
+
+  natDeviceSet(device: NatDeviceInfo) {
+    this.natDeviceInfo = device
   }
 
-  localDescriptionSDP: string
-  ping: number
-  connectionState: ConnectionState
-  iceGatheringState: IceGatheringState
-  signalingState: SignalingState
-  /**
-   * The instance that this peer is sharing
-   */
-  sharing?: InstanceManifest
-}
+  natTypeSet(type: NatType) {
+    this.natType = type
+  }
 
-export class PeerState {
-  connections = [] as PeerConnection[]
+  groupSet({ group, state }: { group: string; state: 'connecting' | 'connected' | 'closing' | 'closed' }) {
+    this.group = group
+    this.groupState = state
+  }
+
+  groupStateSet(state: 'connecting' | 'connected' | 'closing' | 'closed') {
+    this.groupState = state
+  }
+
+  groupErrorSet(error: Error) {
+    this.groupError = error
+  }
+
+  connectionClear() {
+    this.connections = []
+  }
 
   connectionUserInfo({ id, info }: { id: string; info: ConnectionUserInfo }) {
     const conn = this.connections.find(c => c.id === id)
@@ -75,7 +74,7 @@ export class PeerState {
     }
   }
 
-  connectionAdd(connection: PeerConnection) {
+  connectionAdd(connection: Peer) {
     if (this.connections.find(c => c.id === connection.id)) {
       return
     }
@@ -84,6 +83,16 @@ export class PeerState {
 
   connectionDrop(connectionId: string) {
     this.connections = this.connections.filter(c => c.id !== connectionId)
+  }
+
+  connectionIceServerSet({ id, iceServer }: { id: string; iceServer: RTCIceServer }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      if (conn.iceServer) {
+        conn.triedIceServers.push(conn.iceServer)
+      }
+      conn.iceServer = iceServer
+    }
   }
 
   connectionLocalDescription(update: { id: string; description: string }) {
@@ -121,6 +130,13 @@ export class PeerState {
     }
   }
 
+  connectionPreferredIceServers({ id, servers }: { id: string; servers: RTCIceServer[] }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      conn.preferredIceServers = servers
+    }
+  }
+
   iceGatheringStateChange(update: { id: string; iceGatheringState: IceGatheringState }) {
     const conn = this.connections.find(c => c.id === update.id)
     if (conn) {
@@ -134,6 +150,22 @@ export class PeerState {
       conn.signalingState = update.signalingState
     }
   }
+
+  connectionIceServersSet({ id, iceServer }: { id: string; iceServer: RTCIceServer }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      conn.iceServer = iceServer
+      conn.triedIceServers = [...conn.triedIceServers, conn.iceServer]
+    }
+  }
+
+  validIceServerSet(servers: string[]) {
+    this.validIceServers = servers
+  }
+
+  ipsSet(ips: string[]) {
+    this.ips = ips
+  }
 }
 
 export interface ShareInstanceOptions {
@@ -143,39 +175,6 @@ export interface ShareInstanceOptions {
 
 interface PeerServiceEvents {
   share: { id: string; manifest?: InstanceManifest }
-  'connection-local-description': { description: TransferDescription; type: 'offer' | 'answer' }
-}
-
-export interface TransferDescription {
-  /**
-   * The peer id
-   */
-  id: string
-  session: string
-  sdp: string
-  candidates: Array<{ candidate: string; mid: string }>
-}
-
-export interface SetRemoteDescriptionOptions {
-  type: 'offer' | 'answer'
-  /**
-   * The remote description
-   */
-  description: string | TransferDescription
-  gameProfile?: GameProfileAndTexture
-}
-
-export interface InitiateOptions {
-  /**
-   * Peer id
-   */
-  remoteId?: string
-  /**
-   * Peer connection id
-   */
-  session?: string
-  initiate?: boolean
-  gameProfile?: GameProfileAndTexture
 }
 
 export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
@@ -184,22 +183,6 @@ export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
     * Share the instance to other peers
     */
   shareInstance(options: ShareInstanceOptions): Promise<void>
-  /**
-   * Initiate a peer connection, and return the session description payload.
-   * You need to manually send this offer payload to other user
-   */
-  initiate(options: InitiateOptions): Promise<string>
-  /**
-   * Receive the offer/answer from other user.
-   */
-  setRemoteDescription(options: SetRemoteDescriptionOptions): Promise<string>
-  /**
-   * Low level api to create peer
-   *
-   * Drop the existed session
-   * @param id The session to drop
-   */
-  drop(id: string): Promise<void>
 }
 
 export const PeerServiceKey: ServiceKey<PeerService> = 'PeerServiceKey'

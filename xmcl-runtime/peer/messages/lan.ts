@@ -3,12 +3,12 @@ import { createServer } from 'net'
 import { defineMessage, MessageType } from './message'
 import { ServerProxy } from '../ServerProxy'
 import type { DataChannelInitConfig } from 'node-datachannel'
-import { listen } from '~/util/server'
+import { listen } from '../../util/server'
 
 export const MessageLan: MessageType<LanServerInfo> = 'lan'
 
 export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
-  const pair = this.connection.getSelectedCandidatePair()
+  // const pair = this.connection.getSelectedCandidatePair()
   // if (pair && pair.remote.type === 'host') {
   // 'host' means we are in same local network or public network
   // return
@@ -19,15 +19,15 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     p.originalPort === info.port)
   if (proxy) {
     // Re-broadcast message
-    this.host.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
+    this.context.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
     return
   }
 
-  this.logger.log('Try create proxy server:')
+  console.log('Try create proxy server:')
 
   const server = createServer((socket) => {
     // create game data channel to pipe message
-    this.logger.log(`Create datachannel to actual port ${info.port}`)
+    console.log(`Create datachannel to actual port ${info.port}`)
     const init: DataChannelInitConfig = {
       protocol: 'minecraft', // protocol minecraft
       ordered: true,
@@ -37,8 +37,8 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     }
     const gameChannel = this.connection.createDataChannel(`${info.port}`, init)
 
-    const id = gameChannel.getId()
-    if (!this.lastGameChannelId) {
+    const id = gameChannel.id
+    if (!this.lastGameChannelId && id) {
       this.lastGameChannelId = id
     }
     // the data send before channel connected will be buffered
@@ -47,46 +47,48 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     socket.on('data', (buf) => {
       if (!opened) {
         buffers.push(buf)
-      } else if (gameChannel.isOpen()) {
-        if (!gameChannel.sendMessageBinary(buf)) {
-          gameChannel.close()
-        }
+      } else if (gameChannel.readyState === 'open') {
+        gameChannel.send(buf)
+        // if (!gameChannel.send(buf)) {
+        //   gameChannel.close()
+        // }
       }
     })
-    gameChannel.onMessage((data) => {
-      socket.write(data)
-    })
+    gameChannel.onmessage = (ev) => {
+      socket.write(Buffer.from(ev.data))
+    }
 
     socket.on('close', () => {
-      this.logger.log(`Close game channel due to socket closed ${info.port}(${id})`)
-      if (gameChannel.isOpen()) {
+      console.log(`Close game channel due to socket closed ${info.port}(${id})`)
+      if (gameChannel.readyState === 'open') {
         gameChannel.close()
       }
     })
-    gameChannel.onClosed(() => {
-      this.logger.log(`Destroy socket due to game channel is closed ${info.port}(${id})`)
+    gameChannel.onclose = () => {
+      console.log(`Destroy socket due to game channel is closed ${info.port}(${id})`)
       socket.destroy()
       gameChannel.close()
-    })
-    gameChannel.onError((e) => {
-      this.logger.log(`Game channel ${info.port}(${id}) error: %o`, e)
-    })
-    gameChannel.onOpen(() => {
-      this.logger.log(`Game channel ${info.port}(${id}) opened!`)
+    }
+    gameChannel.onerror = (e) => {
+      console.log(`Game channel ${info.port}(${id}) error: %o`, e)
+    }
+    gameChannel.onopen = () => {
+      console.log(`Game channel ${info.port}(${id}) opened!`)
 
       for (const buf of buffers) {
-        if (!gameChannel.sendMessageBinary(buf)) {
-          break
-        }
+        gameChannel.send(buf)
+        // if (!gameChannel.send(buf)) {
+        //   break
+        // }
       }
       buffers = []
       opened = true
-    })
+    }
   })
   proxy = new ServerProxy(info.port, listen(server, info.port, (p) => p + 1), server)
-  this.logger.log(`Create new server proxy: ${info.port}`)
+  console.log(`Create new server proxy: ${info.port}`)
   // must first push the proxy to list to avoid race condition
   this.proxies.push(proxy)
   // find proper port
-  this.host.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
+  this.context.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
 })

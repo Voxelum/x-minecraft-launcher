@@ -121,7 +121,7 @@ import { useGetFeedTheBeastVersionsCache } from '@/composables/ftb'
 import { kInstanceCreation } from '@/composables/instanceCreation'
 import { kJavaContext } from '@/composables/java'
 import { useModpacks } from '@/composables/modpack'
-import { kPeerState } from '@/composables/peers'
+import { kPeerShared } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
@@ -130,7 +130,7 @@ const emit = defineEmits(['select'])
 
 // Templates
 const { all } = injection(kJavaContext)
-const { connections } = injection(kPeerState)
+const { connections } = injection(kPeerShared)
 const { getFeaturedModpacks } = useGetFeedTheBeastVersionsCache()
 const { getTemplates } = useInstanceTemplates(all)
 const { resources } = useModpacks()

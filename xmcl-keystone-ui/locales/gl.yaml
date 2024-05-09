@@ -250,6 +250,13 @@ mod:
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
+multiplayer:
+  kernel: Núcleo P2P
+  kernelDescription: >-
+    Use WebRTC nativo ou canle de datos de nodos. 
+
+    Cambia isto só cando a túa conexión p2p nalgún momento falla a xanela do
+    lanzador.
 resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos

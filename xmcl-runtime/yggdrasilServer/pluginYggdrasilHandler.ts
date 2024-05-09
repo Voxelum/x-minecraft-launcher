@@ -3,17 +3,16 @@ import { YggdrasilTexture, YggdrasilTexturesInfo } from '@xmcl/user'
 import { sign } from 'crypto'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
-import { PeerService } from '~/peer'
-import { UserService } from '~/user'
 import { LauncherAppPlugin } from '~/app'
-import { getUUID } from '~/util/offlineUser'
+import { kPeerFacade } from '~/peer'
+import { UserService } from '~/user'
 
 export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('YggdrasilServer')
 
   const getProfile = async (name: string) => {
     const userService = await app.registry.get(UserService)
-    const peerService = await app.registry.get(PeerService)
+    const peerService = await app.registry.get(kPeerFacade)
     const offline = Object.values(userService.state.users).find(v => v.authority === AUTHORITY_DEV)
     if (offline) {
       const profiles = Object.values(offline.profiles)
@@ -22,7 +21,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
         return founded
       }
     }
-    const founded = peerService.state.connections.map(c => c.userInfo).find(c => c.id === name || c.name === name)
+    const founded = await peerService.queryGameProfile(name)
     if (founded) {
       return founded
     }

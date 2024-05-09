@@ -2,27 +2,13 @@ import filenamify from 'filenamify'
 import { WriteStream, createWriteStream, ensureDir, readFile, readdir, stat, unlink } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { PassThrough, Transform } from 'stream'
-import { format } from 'util'
 import { LauncherAppPlugin } from '~/app'
-import { kLogRoot } from '~/logger'
 import { IS_DEV } from '../constant'
 import { isSystemError } from '../util/error'
 import { ZipTask } from '../util/zip'
-import { filterSensitiveData } from './complaince'
+import { formatLogMessage, getMessageFromError, kLogRoot } from './logger'
 
-function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
-
-function getMessageFromError(e: Error): string {
-  let message = e.stack ?? e.message
-  if (e instanceof AggregateError || ('errors' in e && Array.isArray(e.errors))) {
-    message = (e as any).errors.map(getMessageFromError).join('\n')
-  }
-  if (e.cause && e.cause instanceof Error) {
-    return `${message}\nCaused by: ${getMessageFromError(e.cause)}`
-  }
-  return message
-}
 
 class LogSink {
   readonly entries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }
@@ -66,7 +52,7 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
         sinks[destination].init(logRoot)
       }
     }
-    sinks[destination].entries.log.write(`[${tag}] ${formatMsg(message, args)}`)
+    sinks[destination].entries.log.write(`[${tag}] ${formatLogMessage(message, args)}`)
   })
   app.logEmitter.on('warn', (destination, tag, message, ...args) => {
     if (!sinks[destination]) {
@@ -75,7 +61,7 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
         sinks[destination].init(logRoot)
       }
     }
-    sinks[destination].entries.warn.write(`[${tag}] ${formatMsg(message, args)}`)
+    sinks[destination].entries.warn.write(`[${tag}] ${formatLogMessage(message, args)}`)
   })
   app.logEmitter.on('failure', (destination, tag, e) => {
     hasError = true

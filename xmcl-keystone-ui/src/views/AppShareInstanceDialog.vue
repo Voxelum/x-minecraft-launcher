@@ -233,6 +233,7 @@ const onDownloadInstance = () => {
 
 watch(isShown, async (shown) => {
   if (shown) {
+    windowController.focus()
     if (dialog.value.parameter) {
       manifest.value = dialog.value.parameter as any
     } else {

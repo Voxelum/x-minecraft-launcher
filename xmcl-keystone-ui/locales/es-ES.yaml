@@ -674,6 +674,13 @@ modrinth:
   updateAt: Actualizado
   versions: Versiones
   wikiUrl: Wiki
+multiplayer:
+  kernel: Núcleo P2P
+  kernelDescription: >-
+    Utilice WebRTC nativo o canal de datos de nodo. 
+
+    Cambie esto solo cuando su conexión p2p en algún momento bloquee la ventana
+    del iniciador.
 next: Siguiente
 'no': 'No'
 ok: Aceptar

@@ -9,7 +9,7 @@
       "DOM"
     ],
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "baseUrl": ".",
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -27,6 +27,6 @@
   ],
   "exclude": [
     "node_modules",
-    "../../xmcl-runtime"
+    "../../xmcl-runtime/**/*"
   ]
 }

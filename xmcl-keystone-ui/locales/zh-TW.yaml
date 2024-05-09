@@ -366,6 +366,10 @@ multiplayer:
   initiateConnection: 發起連接
   joinConnection: 如果你的夥伴已經創建了連接，你需要選擇加入鏈接
   joinManual: 加入連接
+  kernel: P2P內核
+  kernelDescription: |-
+    使用本機 WebRTC 或節點資料通道。
+    僅當您的 p2p 連線有時導致啟動器視窗崩潰時才切換此選項。
   localToken: 本地令牌
   name: 跨局域網聯機
   next: 下一步

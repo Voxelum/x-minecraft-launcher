@@ -1,20 +1,19 @@
-import { kFlights } from '~/flights'
-import { PeerService } from '~/peer'
-import { ResourceService } from '~/resource'
-import { UserService } from '~/user'
 import { LaunchService as ILaunchService, InstanceModsState, PartialResourceHash, Resource, ResourceDomain, ResourceMetadata, getInstanceModStateKey } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
-import { IS_DEV } from '../constant'
 import { kClientToken, kIsNewClient } from '~/clientToken'
-import { kSettings } from '~/settings'
-import { APP_INSIGHT_KEY, parseStack } from './telemetry'
+import { kFlights } from '~/flights'
 import { InstanceService } from '~/instance'
 import { JavaService } from '~/java'
 import { LaunchService } from '~/launch'
-import { NatService } from '~/nat'
+import { PeerService, kPeerFacade } from '~/peer'
+import { ResourceService } from '~/resource'
 import { ServiceStateManager } from '~/service'
+import { kSettings } from '~/settings'
+import { UserService } from '~/user'
+import { IS_DEV } from '../constant'
+import { APP_INSIGHT_KEY, parseStack } from './telemetry'
 
 const getSdkVersion = () => {
   let sdkVersion = ''
@@ -131,19 +130,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
   app.on('engine-ready', async () => {
     const settings = await app.registry.get(kSettings)
-    app.registry.getOrCreate(NatService).then(async (service) => {
-      const state = await service.getNatState()
-      if (state.natDevice) {
-        client.trackEvent({
-          name: 'nat-device',
-          properties: {
-            natDeviceSupported: !!state.natDevice,
-          },
-        })
-      }
-    }, (e) => {
-      /* no-op */
-    })
 
     let javaService: JavaService | undefined
     app.registry.get(JavaService).then(service => {
@@ -252,7 +238,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
       if (e.name === 'NodeInternalError') {
-
+        // Only log 1/3 of the internal error
       }
       client.trackException({
         exception: e,

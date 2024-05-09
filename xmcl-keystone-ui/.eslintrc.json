@@ -4,6 +4,7 @@
         "resourceMonitor": true,
         "serviceChannels": true,
         "windowController": true,
+        "multiplayer": true,
         "appsHost": true,
         "bootstrap": true,
         "gameMonitor": true,

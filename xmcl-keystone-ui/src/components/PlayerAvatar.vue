@@ -27,7 +27,7 @@ const props = withDefaults(
 })
 
 watch(() => props.src, (s) => {
-  renderMinecraftPlayerTextHead(s)
+  renderMinecraftPlayerTextHead(s || steve)
 }, { immediate: true })
 
 function renderMinecraftPlayerTextHead(textureUrl: string) {

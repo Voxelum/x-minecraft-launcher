@@ -6,7 +6,7 @@ import { PassThrough } from 'stream'
 import { extract } from 'tar-stream'
 import { stream } from 'undici'
 import { createGunzip } from 'zlib'
-import { AnyError } from '~/util/error'
+import { AnyError } from '../util/error'
 
 export class NativeModuleLoader<T> {
   #retryCount = 0

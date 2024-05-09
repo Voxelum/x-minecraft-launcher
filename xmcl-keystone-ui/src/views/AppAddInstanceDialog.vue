@@ -101,6 +101,7 @@
 </template>
 
 <script lang=ts setup>
+import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
 import StepChoice from '@/components/StepChoice.vue'
 import StepConfig from '@/components/StepConfig.vue'
 import StepSelect from '@/components/StepSelect.vue'
@@ -110,19 +111,18 @@ import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances } from '@/composables/instances'
-import { kPeerState } from '@/composables/peers'
+import { kJavaContext } from '@/composables/java'
 import { kUserContext } from '@/composables/user'
+import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
+import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
-import { useNotifier } from '../composables/notifier'
-import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { getFTBTemplateAndFile } from '@/util/ftb'
-import { kJavaContext } from '@/composables/java'
-import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
+import { useNotifier } from '@/composables/notifier'
+import { kPeerShared } from '@/composables/peers'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
@@ -324,7 +324,7 @@ function next() {
 // Peer
 const { on: onPeerService } = useService(PeerServiceKey)
 const { notify } = useNotifier()
-const { connections } = injection(kPeerState)
+const { connections } = injection(kPeerShared)
 onPeerService('share', (event) => {
   if (!event.manifest) {
     return

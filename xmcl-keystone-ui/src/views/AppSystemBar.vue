@@ -50,6 +50,7 @@
       @click="tutor.start()"
     />
     <AppSystemBarBadge
+      v-if="!noDebug"
       id="feedback-button"
       icon="bug_report"
       :text="t('feedback.name')"
@@ -98,21 +99,27 @@ import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 import AppAudioPlayer from '@/components/AppAudioPlayer.vue'
 import { kTheme } from '@/composables/theme'
 
-defineProps<{
+const props = defineProps<{
   noUser?: boolean
   noTask?: boolean
+  noDebug?: boolean
   back?: boolean
 }>()
 
 const { appBarColor, blurAppBar } = injection(kTheme)
-const { maximize, minimize, close } = windowController
+const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
-const tutor = inject(kTutorial)
+const tutor = inject(kTutorial, undefined)
 
-const { back: onBack } = useRouter()
-
+let onBack = () => {}
+if (props.back) {
+  const router = useRouter()
+  onBack = () => {
+    router.back()
+  }
+}
 </script>

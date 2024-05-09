@@ -15,9 +15,9 @@ export const MessageShareManifestEntry = defineMessage(MessageShareManifest, fun
       }
     }
   }
-  this.host.onInstanceShared(this.id, msg.manifest)
+  this.context.onInstanceShared(this.id, msg.manifest)
 })
 
 export const MessageGetSharedManifestEntry = defineMessage(MessageGetSharedManifest, function (msg) {
-  this.send(MessageShareManifest, { manifest: this.host.getSharedInstance() })
+  this.send(MessageShareManifest, { manifest: this.context.getSharedInstance() })
 })

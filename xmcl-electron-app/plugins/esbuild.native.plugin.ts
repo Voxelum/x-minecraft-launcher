@@ -38,6 +38,25 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      // Intercept node_modules\node-datachannel\polyfill\RTCPeerConnection.js
+      build.onLoad(
+        { filter: /^.+node-datachannel[\\/]polyfill[\\/]RTCPeerConnection\.js$/g },
+        async ({ path }) => {
+          let content = (await
+            readFile(path, 'utf-8'))
+
+          // replace `constructor(init = {}) {` to `constructor(init = {}, NodeDataChannel) {`
+          content = content.replace('constructor(init = {}) {', 'constructor(init = {}, NodeDataChannel) {')
+          // remove the line `import NodeDataChannel from '../lib/index.js';`
+          content = content.replace(/import NodeDataChannel from '..\/lib\/index.js';/g, '')
+
+          return {
+            contents: content,
+            loader: 'js',
+          }
+        },
+      )
+
       // Intercept node_modules\node-datachannel\lib\index.js
       build.onLoad(
         { filter: /^.+node-datachannel[\\/]lib[\\/]index\.c?js$/g },

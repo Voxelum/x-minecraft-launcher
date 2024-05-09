@@ -944,6 +944,12 @@ multiplayer:
   joinManual: Dołącz
   joinOrCreateGroup: Dołącz/utwórz grupę
   joinOrCreateGroupHint: Uzyskaj identyfikator grupy od znajomych lub utwórz grupę
+  kernel: Jądro P2P
+  kernelDescription: >-
+    Użyj natywnego WebRTC lub kanału danych węzła. 
+
+    Przełącz tę opcję tylko wtedy, gdy połączenie p2p spowoduje awarię okna
+    programu uruchamiającego.
   leaveGroup: Opuścić grupę
   localToken: Token lokalny
   manualConnect: Połączenie ręczne

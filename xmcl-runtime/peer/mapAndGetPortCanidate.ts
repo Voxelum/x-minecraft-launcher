@@ -1,7 +1,5 @@
-import { UpnpUnmapOptions } from '@xmcl/nat-api'
-import { MappingInfo, UpnpMapOptions } from '@xmcl/runtime-api'
-import { Logger } from '~/logger'
-import { NatService } from '~/nat'
+import type { MappingInfo, UpnpMapOptions, UpnpUnmapOptions } from '@xmcl/nat-api'
+import { getMappings, getNatAddress, isSupported, map, unmap } from './ssdpClient'
 
 export function parseCandidate(candidate: string) {
   // a=candidate:6 1 UDP 1686108927 120.245.66.237 11675 typ srflx raddr 0.0.0.0 rport 0
@@ -13,8 +11,15 @@ export function parseCandidate(candidate: string) {
   return [undefined, undefined]
 }
 
-export async function mapLocalPort(natService: NatService, ip: string, priv: number, pub: number, logger: Logger) {
-  if (!await natService.isSupported()) return false
+/**
+ * Expose localhost port to public network
+ * @param priv The private/local port
+ * @param pub The public port
+ * @returns If the port is exposed successfully
+ */
+export async function exposeLocalPort(priv: number, pub: number) {
+  if (!await isSupported()) return false
+  const ip = await getNatAddress()
   const mappings = [{
     description: `XMCL Multiplayer - udp - ${priv} - ${pub}`,
     protocol: 'udp',
@@ -29,7 +34,7 @@ export async function mapLocalPort(natService: NatService, ip: string, priv: num
     ttl: 24 * 60 * 60,
   }] as UpnpMapOptions[]
 
-  const currentMappings = await natService.getMappings()
+  const currentMappings = await getMappings()
   const existedMappings = currentMappings.filter(m => m.description.indexOf('XMCL Multiplayer') !== -1 &&
     m.private.port === priv &&
     m.private.host === ip &&
@@ -37,28 +42,28 @@ export async function mapLocalPort(natService: NatService, ip: string, priv: num
     m.enabled)
 
   if (existedMappings.length > 0) {
-    logger.log('Reuse the existed upnp mapping %o', existedMappings)
+    console.log('Reuse the existed upnp mapping %o', existedMappings)
     return true
   }
 
   try {
-    await Promise.all(mappings.map(n => natService.map(n)))
+    await Promise.all(mappings.map(n => map(n)))
   } catch (e) {
     const err = e as any
     if (err.detail?.UPnPError && err.detail?.UPnPError.errorCode === 501) {
       // Table is full
       const candidates = getUnmapCandidates(currentMappings, mappings)
       for (const c of candidates) {
-        await natService.unmap(c).catch(() => {})
+        await unmap(c).catch(() => {})
       }
-      await Promise.all(mappings.map(n => natService.map(n)))
+      await Promise.all(mappings.map(n => map(n)))
     } else if (err.detail?.UPnPError && err.detail.UPnPError.errorCode === 718) {
       // Conflict
       const candidates = getUnmapCandidates(currentMappings, mappings)
       for (const c of candidates) {
-        await natService.unmap(c).catch(() => {})
+        await unmap(c).catch(() => {})
       }
-      await Promise.all(mappings.map(n => natService.map(n)))
+      await Promise.all(mappings.map(n => map(n)))
     } else {
       throw e
     }

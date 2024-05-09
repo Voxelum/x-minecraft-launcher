@@ -944,6 +944,12 @@ multiplayer:
   joinManual: Csatlakozás
   joinOrCreateGroup: Csatlakozás/Csoport létrehozása
   joinOrCreateGroupHint: Csoport azonosító kérése barátaidtól vagy csoport létrehozása
+  kernel: P2P kernel
+  kernelDescription: >-
+    Használjon natív WebRTC-t vagy node-datachannel-t. 
+
+    Csak akkor váltsa ezt, ha a p2p kapcsolata valamikor összeomlik az
+    indítóablakban.
   leaveGroup: Csoport elhagyása
   localToken: Helyi token
   manualConnect: Manuális csatlakozás

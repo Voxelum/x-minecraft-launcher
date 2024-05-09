@@ -6,7 +6,7 @@ import { rename, unlink } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
-import { PeerService } from '~/peer'
+import { kPeerFacade } from '~/peer'
 import { ResourceService, ResourceWorker } from '~/resource'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
@@ -182,8 +182,8 @@ export class InstanceFileOperationHandler {
   async #getPeerTask(file: InstanceFile, destination: string, sha1?: string) {
     const peerUrl = file.downloads!.find(u => u.startsWith('peer://'))
     if (peerUrl) {
-      if (this.app.registry.has(PeerService)) {
-        const peerService = await this.app.registry.get(PeerService)
+      if (this.app.registry.has(kPeerFacade)) {
+        const peerService = await this.app.registry.get(kPeerFacade)
         // Use peer download if none of above existed
         return peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
       }

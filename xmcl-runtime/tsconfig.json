@@ -9,7 +9,7 @@
       "ESNext", "DOM"
     ],
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Bundler",
     "baseUrl": "./",
     "paths": {
       "~/*": ["./*"]
