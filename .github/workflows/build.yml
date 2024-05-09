@@ -29,14 +29,14 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.3.0
+        version: 8.15.7
     - name: Fix node-gyp and Python
       if: ${{ runner.os == 'macOS' }} 
       run: python3 -m pip install --break-system-packages --user packaging setuptools
-    - name: Use Node.js 16
+    - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:
-        node-version: 16
+        node-version: 20
         cache: 'pnpm'
     # - name: Restore cached Electron
     #   id: cache-electron
@@ -126,11 +126,11 @@ jobs:
         fetch-depth: 0
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.3.0
-    - name: Use Node.js 16
+        version: 8.15.7
+    - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:
-        node-version: 16
+        node-version: 20
     - name: Install
       run: |
         pnpm install --filter ./.github/actions
@@ -198,11 +198,11 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.3.0
-    - name: Use Node.js 16
+        version: 8.15.7
+    - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:
-        node-version: 16
+        node-version: 20
         cache: 'pnpm'
     - name: Install
       run: |
@@ -261,6 +261,8 @@ jobs:
       with:
         body: ${{ steps.prepare_release.outputs.changelog }}
         version: ${{ steps.prepare_release.outputs.version }}
+      env:
+        DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
     - name: Create Release Note PR
       uses: peter-evans/create-pull-request@v3
       with:
