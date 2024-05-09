@@ -35,13 +35,6 @@ export function useInstanceJavaDiagnose(path: Ref<string>, all: Ref<JavaRecord[]
       }
     }
     if (javaRecommendation.value) {
-      if (javaRecommendation.value.recommendedLevel && javaRecommendation.value.recommendedLevel >= 1 &&
-        javaRecommendation.value.recommendedDownload) {
-        return {
-          title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.requirement, javaVersion: javaRecommendation.value.selectedJava?.version || '' }),
-          description: t('diagnosis.incompatibleJava.message'),
-        }
-      }
       return {
         title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.requirement, javaVersion: javaRecommendation.value.selectedJava?.version || '' }),
         description: t('diagnosis.incompatibleJava.message'),
