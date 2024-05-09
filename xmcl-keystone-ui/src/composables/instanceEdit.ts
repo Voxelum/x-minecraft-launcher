@@ -423,9 +423,18 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
   function onSelectLabyMod(version: string) {
     if (data.runtime) {
       const runtime = data.runtime
-      runtime.labyMod = version
+      if ('labyMod' in runtime) {
+        runtime.labyMod = version
+      } else {
+        set(runtime, 'labyMod', version)
+      }
       if (version) {
         data.version = ''
+        // Select all other to empty
+        runtime.quiltLoader = runtime.fabricLoader = ''
+        runtime.neoForged = ''
+        runtime.optifine = ''
+        runtime.forge = ''
       }
     }
   }
