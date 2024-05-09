@@ -335,7 +335,7 @@ const recentMinecraftItems = computed(() => {
       type: 'curseforge',
       title: r.name,
       image: r.logo.thumbnailUrl,
-      gameVersion: r.latestFilesIndexes[0].gameVersion,
+      gameVersion: r.latestFilesIndexes[0]?.gameVersion,
       categories: r.categories.map(c => tCategory(c.name)),
     })),
   )
