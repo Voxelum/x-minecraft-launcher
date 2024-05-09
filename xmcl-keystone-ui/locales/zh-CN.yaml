@@ -210,13 +210,13 @@ diagnosis:
     name: '库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏'
   corruptedVersionJar:
     message: 启动器将重新下载损坏的文件
-    name: Minecraft %{version} 游戏 Jar 文件损坏.
+    name: Minecraft {version} 游戏 Jar 文件损坏.
   corruptedVersionJson:
     message: 启动器将重新下载损坏的文件
-    name: Minecraft %{version} 版本 Json 文件损坏.
+    name: Minecraft {version} 版本 Json 文件损坏.
   incompatibleJava:
     message: 你可以选择自己让启动器帮你下载，或者自己下载
-    name: 版本 {version} 可能不兼容 Java {javaVersion}!
+    name: Java {javaVersion} 可能不符合版本需求 {version}!
   instanceFiles:
     description: 实例安装包括 {counts} 个文件。
     title: 实例安装未完成
@@ -225,10 +225,10 @@ diagnosis:
     name: 当前 Java 路径已经失效
   missingAssets:
     message: 启动器将自动下载并安装游戏文件
-    name: 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源'
+    name: 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少{count}个游戏资源'
   missingAssetsIndex:
     message: 启动器将自动下载并安装游戏资源目录
-    name: '%{version}缺少游戏资源目录'
+    name: '{version}缺少游戏资源目录'
   missingAuthlibInjector: {}
   missingJava:
     message: 点击来解决这个问题
@@ -241,7 +241,7 @@ diagnosis:
     name: 未安装 {version}
   missingVersionJar:
     message: 启动器将自动下载JAR文件
-    name: '%{version}版本JAR文件缺失'
+    name: '{version}版本JAR文件缺失'
 disable: 禁用
 disk:
   available: 可用
@@ -334,7 +334,7 @@ importModpack:
 importResource: 导入资源
 install: 安装
 installAssets:
-  asset: 下载资源文件%{hash}
+  asset: 下载资源文件{hash}
   assetIndex: 下载资源文件目录
   name: 下载游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
@@ -383,7 +383,7 @@ installResource:
 installVersion:
   jar: 安装游戏JAR文件
   json: 安装游戏JSON文件
-  name: 安装%{id}的游戏本体
+  name: 安装{id}的游戏本体
 instance:
   addServer: 添加服务器
   current: 当前实例
