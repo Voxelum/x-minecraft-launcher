@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .: {}
@@ -3350,8 +3354,8 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 10.0.0-alpha.2
-      '@intlify/shared': 10.0.0-alpha.2
+      '@intlify/message-compiler': 10.0.0-alpha.4
+      '@intlify/shared': 10.0.0-alpha.4
       jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
       vue-i18n: 8.28.2(vue@2.7.16)
@@ -3391,7 +3395,7 @@ packages:
       '@intlify/bundle-utils': 7.0.0(vue-i18n@8.28.2)
       '@intlify/core': 9.3.0-beta.27
       '@intlify/shared': 9.3.0-beta.27
-      '@vue/compiler-sfc': 3.4.25
+      '@vue/compiler-sfc': 3.4.27
       colorette: 2.0.20
       cosmiconfig: 7.1.0
       debug: 4.3.4
@@ -3451,11 +3455,11 @@ packages:
       '@intlify/shared': 9.3.0-beta.27
     dev: true
 
-  /@intlify/message-compiler@10.0.0-alpha.2:
-    resolution: {integrity: sha512-OGwttsMwB2BUzhZLraoAfAqcza5UyLMEU013ort3LbmdE6ke/pFONFyxjNQdmFWzW2K868AIVgwx4zo8lbmhjg==}
+  /@intlify/message-compiler@10.0.0-alpha.4:
+    resolution: {integrity: sha512-EqspSHIRkDDZrrnROMgrHphsbUfNUaqgf7rhwWEZr9YgsWFZADny1au/9+CH0dEwjToYfKVYQFRY3LR0P43joA==}
     engines: {node: '>= 16'}
     dependencies:
-      '@intlify/shared': 10.0.0-alpha.2
+      '@intlify/shared': 10.0.0-alpha.4
       source-map-js: 1.2.0
     dev: true
 
@@ -3482,8 +3486,8 @@ packages:
       source-map-js: 1.2.0
     dev: true
 
-  /@intlify/shared@10.0.0-alpha.2:
-    resolution: {integrity: sha512-pWlpsC3IqkDuIH/5bNlyyiUbAXYymeNXkznORzPWT3qpAe8MazPOm14wMHGn/wESCdB5b9txQson4+CH0ym1hQ==}
+  /@intlify/shared@10.0.0-alpha.4:
+    resolution: {integrity: sha512-uyHMMbDa10WXfeMIyfNBoD0slQKqq6i10z7QdjVvZWBcVPe6YMYtjDN+/c9HxuW/SOF1A0u4ETjxJnCgQ59OtQ==}
     engines: {node: '>= 16'}
     dev: true
 
@@ -3517,7 +3521,7 @@ packages:
         optional: true
     dependencies:
       '@intlify/bundle-utils': 3.4.0(vue-i18n@8.28.2)
-      '@intlify/shared': 10.0.0-alpha.2
+      '@intlify/shared': 10.0.0-alpha.4
       '@rollup/pluginutils': 4.2.1
       '@vue/compiler-sfc': 3.2.47
       debug: 4.3.4
@@ -4389,7 +4393,7 @@ packages:
       graphemer: 1.4.0
       ignore: 5.2.4
       natural-compare: 1.4.0
-      semver: 7.5.4
+      semver: 7.6.0
       ts-api-utils: 1.0.3(typescript@5.3.3)
       typescript: 5.3.3
     transitivePeerDependencies:
@@ -4545,11 +4549,11 @@ packages:
       source-map-js: 1.2.0
     dev: true
 
-  /@vue/compiler-core@3.4.25:
-    resolution: {integrity: sha512-Y2pLLopaElgWnMNolgG8w3C5nNUVev80L7hdQ5iIKPtMJvhVpG0zhnBG/g3UajJmZdvW0fktyZTotEHD1Srhbg==}
+  /@vue/compiler-core@3.4.27:
+    resolution: {integrity: sha512-E+RyqY24KnyDXsCuQrI+mlcdW3ALND6U7Gqa/+bVwbcpcR3BRRIckFoz7Qyd4TTlnugtwuI7YgjbvsLmxb+yvg==}
     dependencies:
       '@babel/parser': 7.24.4
-      '@vue/shared': 3.4.25
+      '@vue/shared': 3.4.27
       entities: 4.5.0
       estree-walker: 2.0.2
       source-map-js: 1.2.0
@@ -4569,11 +4573,11 @@ packages:
       '@vue/shared': 3.3.4
     dev: true
 
-  /@vue/compiler-dom@3.4.25:
-    resolution: {integrity: sha512-Ugz5DusW57+HjllAugLci19NsDK+VyjGvmbB2TXaTcSlQxwL++2PETHx/+Qv6qFwNLzSt7HKepPe4DcTE3pBWg==}
+  /@vue/compiler-dom@3.4.27:
+    resolution: {integrity: sha512-kUTvochG/oVgE1w5ViSr3KUBh9X7CWirebA3bezTbB5ZKBQZwR2Mwj9uoSKRMFcz4gSMzzLXBPD6KpCLb9nvWw==}
     dependencies:
-      '@vue/compiler-core': 3.4.25
-      '@vue/shared': 3.4.25
+      '@vue/compiler-core': 3.4.27
+      '@vue/shared': 3.4.27
     dev: true
 
   /@vue/compiler-sfc@2.7.16:
@@ -4600,14 +4604,14 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /@vue/compiler-sfc@3.4.25:
-    resolution: {integrity: sha512-m7rryuqzIoQpOBZ18wKyq05IwL6qEpZxFZfRxlNYuIPDqywrXQxgUwLXIvoU72gs6cRdY6wHD0WVZIFE4OEaAQ==}
+  /@vue/compiler-sfc@3.4.27:
+    resolution: {integrity: sha512-nDwntUEADssW8e0rrmE0+OrONwmRlegDA1pD6QhVeXxjIytV03yDqTey9SBDiALsvAd5U4ZrEKbMyVXhX6mCGA==}
     dependencies:
       '@babel/parser': 7.24.4
-      '@vue/compiler-core': 3.4.25
-      '@vue/compiler-dom': 3.4.25
-      '@vue/compiler-ssr': 3.4.25
-      '@vue/shared': 3.4.25
+      '@vue/compiler-core': 3.4.27
+      '@vue/compiler-dom': 3.4.27
+      '@vue/compiler-ssr': 3.4.27
+      '@vue/shared': 3.4.27
       estree-walker: 2.0.2
       magic-string: 0.30.10
       postcss: 8.4.38
@@ -4621,11 +4625,11 @@ packages:
       '@vue/shared': 3.2.47
     dev: true
 
-  /@vue/compiler-ssr@3.4.25:
-    resolution: {integrity: sha512-H2ohvM/Pf6LelGxDBnfbbXFPyM4NE3hrw0e/EpwuSiYu8c819wx+SVGdJ65p/sFrYDd6OnSDxN1MB2mN07hRSQ==}
+  /@vue/compiler-ssr@3.4.27:
+    resolution: {integrity: sha512-CVRzSJIltzMG5FcidsW0jKNQnNRYC8bT21VegyMMtHmhW3UOI7knmUehzswXLrExDLE6lQCZdrhD4ogI7c+vuw==}
     dependencies:
-      '@vue/compiler-dom': 3.4.25
-      '@vue/shared': 3.4.25
+      '@vue/compiler-dom': 3.4.27
+      '@vue/shared': 3.4.27
     dev: true
 
   /@vue/component-compiler-utils@3.3.0:
@@ -4776,8 +4780,8 @@ packages:
     resolution: {integrity: sha512-wBQ0gvf+SMwsCQOyusNw/GoXPV47WGd1xB5A1Pgzy0sQ3Bi5r5xm3n+92y3gCnB3MWqnRDdvfkRGxhKtbBRNgg==}
     dev: true
 
-  /@vue/shared@3.4.25:
-    resolution: {integrity: sha512-k0yappJ77g2+KNrIaF0FFnzwLvUBLUYr8VOwz+/6vLsmItFp51AcxLL7Ey3iPd7BIRyWPOcqUjMnm7OkahXllA==}
+  /@vue/shared@3.4.27:
+    resolution: {integrity: sha512-DL3NmY2OFlqmYYrzp39yi3LDkKxa5vZVwxWdQ3rG0ekuWscHraeIbnI8t+aZK7qhYqEqWKTUdijadunb9pnrgA==}
     dev: true
 
   /@vue/typescript@1.8.15(typescript@5.2.2):
@@ -6389,7 +6393,7 @@ packages:
     resolution: {integrity: sha512-t3UczsYugm4OAbqvdImMCImIMVdFzJAHgbwHpkl5jmfu1izVgUcP/mnrPqJIpEeCK1uZGpt+yHgWEN+9EwoYhQ==}
     dependencies:
       rimraf: 3.0.2
-      semver: 7.5.4
+      semver: 7.6.0
       tslib: 2.5.0
       unzip-crx-3: 0.2.0
     dev: true
@@ -6421,7 +6425,7 @@ packages:
       lazy-val: 1.0.5
       lodash.escaperegexp: 4.1.2
       lodash.isequal: 4.5.0
-      semver: 7.5.4
+      semver: 7.6.0
       tiny-typed-emitter: 2.1.0
     transitivePeerDependencies:
       - supports-color
@@ -7037,7 +7041,7 @@ packages:
       is-core-module: 2.13.0
       minimatch: 3.1.2
       resolve: 1.22.6
-      semver: 7.5.4
+      semver: 7.6.0
     dev: false
 
   /eslint-plugin-promise@6.1.1(eslint@8.40.0):
@@ -8315,7 +8319,7 @@ packages:
       jws: 3.2.2
       lodash: 4.17.21
       ms: 2.1.3
-      semver: 7.5.4
+      semver: 7.6.0
     dev: false
 
   /jszip@3.10.1:
@@ -11064,7 +11068,7 @@ packages:
     dependencies:
       '@vue/language-core': 1.8.15(typescript@5.2.2)
       '@vue/typescript': 1.8.15(typescript@5.2.2)
-      semver: 7.5.4
+      semver: 7.6.0
       typescript: 5.2.2
     dev: true
 
@@ -11275,6 +11279,7 @@ packages:
 
   /workbox-google-analytics@6.6.0:
     resolution: {integrity: sha512-p4DJa6OldXWd6M9zRl0H6vB9lkrmqYFkRQ2xEiNdBFp9U0LhsGO7hsBscVEyH9H2/3eZZt8c97NB2FD9U2NJ+Q==}
+    deprecated: It is not compatible with newer versions of GA starting with v4, as long as you are using GAv3 it should be ok, but the package is not longer being maintained
     dependencies:
       workbox-background-sync: 6.6.0
       workbox-core: 6.6.0
@@ -11519,7 +11524,3 @@ packages:
       compress-commons: 4.1.2
       readable-stream: 3.6.2
     dev: true
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
