@@ -100,6 +100,9 @@ async function displayCrash() {
   data.isShown = true
 }
 on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog }) => {
+  if (!code && signal === 'SIGTERM') {
+    return
+  }
   if (code !== 0) {
     console.log(errorLog)
     data.errorLog = errorLog
