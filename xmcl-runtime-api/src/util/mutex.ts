@@ -1,4 +1,4 @@
-import { createPromiseSignal } from './promiseSignal'
+import { PromiseSignal, createPromiseSignal } from './promiseSignal'
 
 export enum LockStatus {
   Idle,
@@ -16,7 +16,8 @@ export interface SemaphoreListener {
  * This ensure all operations accessing the resource by this lock will not violate the mutual exclusion.
  */
 export class ReadWriteLock {
-  private queue: Array<[() => Promise<void>, (() => void) | undefined]> = []
+  #queue: Array<[() => Promise<any>, PromiseSignal<any>, boolean]> = []
+  #free: PromiseSignal<any>[] = []
   private status: LockStatus = LockStatus.Idle
   /**
    * The integer representing number of worker is occuping the lock.
@@ -24,45 +25,50 @@ export class ReadWriteLock {
    * - For the write operation, it can only be 1.
    */
   private semaphore = 0
-  /**
-   * The handle to release current read lock. Only exist if the status is Reading.
-   */
-  private release: (() => void) | undefined = undefined
 
   constructor(private listener?: SemaphoreListener) { }
 
-  private async processIfIdle() {
+  async #processOperation<T>(operation: () => Promise<T>, signal: PromiseSignal<T>, isRead: boolean) {
+    try {
+      this.status = isRead ? LockStatus.Reading : LockStatus.Writing
+      this.#up()
+      const result = await operation()
+      signal.resolve(result)
+    } catch (e) {
+      signal.reject(e)
+      // no-op
+    } finally {
+      this.#down()
+    }
+  }
+
+  async #processIfIdle() {
     if (this.status === LockStatus.Idle) {
-      while (this.queue.length > 0) {
-        try {
-          const [operation, release] = this.queue.shift()!
-          this.release = release
-          this.status = release ? LockStatus.Reading : LockStatus.Writing
-          await operation()
-        } catch {
-          // no-op
+      while (this.#queue.length > 0) {
+        const [operation, signal, isRead] = this.#queue.shift()!
+        this.#processOperation(operation, signal, isRead)
+        const thisIsWrite = !isRead
+        const isNextWrite = !(this.#queue[0]?.[2] ?? true)
+        if (thisIsWrite || isNextWrite) {
+          // Wait write if next is write or current is writing
+          await signal.promise
+          while (this.#free.length > 0) {
+            // Wait all read operation to finish
+            const freeRead = this.#free.shift()!
+            await freeRead.promise
+          }
         }
       }
       this.status = LockStatus.Idle
     }
   }
 
-  private perform<T>(operation: () => Promise<T>) {
-    this.up()
-    return operation().finally(() => {
-      this.down()
-      if (this.semaphore === 0 && this.release) {
-        this.release() // release the current read section
-      }
-    })
-  }
-
-  private up() {
+  #up() {
     this.semaphore += 1
     this.listener?.(1, this.semaphore)
   }
 
-  private down() {
+  #down() {
     this.semaphore -= 1
     this.listener?.(-1, this.semaphore)
   }
@@ -79,19 +85,16 @@ export class ReadWriteLock {
    * @param operation The read operation
    */
   async read<T>(operation: () => Promise<T>): Promise<T> {
+    const signal = createPromiseSignal<T>()
     if (this.status === LockStatus.Reading) {
-      return this.perform(operation)
+      this.#free.push(signal)
+      this.#processOperation(operation, signal, true)
+      return signal.promise
     }
-    return new Promise<T>((resolve, reject) => {
-      // the shared read section promise
-      const readingPromise = createPromiseSignal()
-      const wrapper = () => {
-        this.perform(operation).then(resolve, reject)
-        return readingPromise.promise
-      }
-      this.queue.push([wrapper, readingPromise.resolve])
-      this.processIfIdle()
-    })
+
+    this.#queue.push([operation, signal, true])
+    this.#processIfIdle()
+    return signal.promise
   }
 
   async acquireRead(): Promise<() => void> {
@@ -115,14 +118,11 @@ export class ReadWriteLock {
    * Submit a write operation to the resource. A write operation can only execute if the status is idel.
    * @param operation The write operation.
    */
-  async write<T>(operation: () => Promise<T>): Promise<T> {
-    return new Promise<T>((resolve, reject) => {
-      const wrapper = () => {
-        return this.perform(operation).then(resolve, reject)
-      }
-      this.queue.push([wrapper, undefined])
-      this.processIfIdle()
-    })
+  write<T>(operation: () => Promise<T>): Promise<T> {
+    const signal = createPromiseSignal<T>()
+    this.#queue.push([operation, signal, false])
+    this.#processIfIdle()
+    return signal.promise
   }
 
   async acquireWrite() {
