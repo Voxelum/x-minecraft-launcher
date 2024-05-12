@@ -54,10 +54,10 @@ export class ElyByService extends AbstractService implements IElyByService {
 
     const entries = caches
     const valid = entries.filter(e => minecraftVersion.startsWith(e.name))
-    const latest = valid.find(e => e.name === minecraftVersion) ?? valid[0] ?? entries[0]
-    const resolvedVersion = latest.id
+    const resolvedVersion = valid.find(e => e.name === minecraftVersion) ||
+      (valid.length > 0 ? valid[0] : undefined)
 
-    if (!resolvedVersion.endsWith('authlib')) {
+    if (!resolvedVersion || !resolvedVersion.id.endsWith('authlib')) {
       return undefined
     }
 
