@@ -72,7 +72,7 @@
         "tsx": "^3.12.1",
         "typescript": "5.2.2",
         "unplugin-auto-import": "^0.11.5",
-        "vite": "^3.2.5",
+        "vite": "^3.2.10",
         "vite-plugin-pwa": "^0.13.3",
         "vite-plugin-windicss": "^1.8.10",
         "vue-i18n-locale-message": "^1.14.0",
