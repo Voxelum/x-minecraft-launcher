@@ -31,8 +31,11 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if (!version) return
     abortController.abort()
     abortController = new AbortController()
-    loading.value = true
+    abortController.signal.addEventListener('abort', () => {
+      loading.value = false
+    })
     try {
+      loading.value = true
       await lock.read(() => update(version))
     } finally {
       loading.value = false
