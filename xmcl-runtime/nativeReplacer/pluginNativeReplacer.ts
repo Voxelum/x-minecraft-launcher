@@ -3,6 +3,10 @@ import { LauncherAppPlugin } from '~/app'
 import { kSettings } from '~/settings'
 import { VersionService } from '~/version'
 
+/**
+ * Reference:
+ * https://github.com/HMCL-dev/HMCL/blob/main/HMCL/src/main/java/org/jackhuang/hmcl/util/NativePatcher.java
+ */
 export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
   const settings = await app.registry.get(kSettings)
   const logger = app.getLogger('nativeReplacer')
@@ -21,11 +25,22 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
           logger.log('Skip native replacement because it is disabled for modern version.')
           return
         }
-        libraries = libraries.filter((lib) =>
-          !(lib.groupId === 'org.lwjgl' &&
+        if ((process.platform === 'linux' || process.platform === 'openbsd' || process.platform === 'freebsd')) {
+          libraries = libraries.filter((lib) => !(lib.groupId === 'org.lwjgl' &&
             lib.classifier?.startsWith('natives') &&
             (lib.artifactId === 'lwjgl-glfw' || lib.artifactId === 'lwjgl-openal')
           ))
+        }
+      }
+
+      if ((process.arch === 'ia32' || process.arch === 'x64') && (process.platform === 'win32' || process.platform === 'linux' || process.platform === 'darwin')) {
+        version.libraries = libraries
+        return
+      }
+
+      if (process.arch === 'arm64' && (process.platform === 'darwin' || process.platform === 'win32') && minor >= 19) {
+        version.libraries = libraries
+        return
       }
 
       logger.log('Replace natives for version', version.id)
@@ -36,7 +51,7 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
         arm: 'arm32',
         x64: 'x86_64',
       }
-      let arch = archMapping[app.platform.arch] ?? app.platform.arch
+      let arch = archMapping[app.platform.arch] ?? process.arch
       if (arch === 'loongarch64' && app.platform.osRelease.localeCompare('5.19') < 0) {
         arch += '_ow'
       }
