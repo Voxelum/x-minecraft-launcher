@@ -44,9 +44,9 @@ winget install CI010.XMinecraftLauncher
 <kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](README/README.ru.md)</kbd>
 <kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](README/README.gr.md)</kbd>
 
-[中文 README](README.zh.md) [Українська README](README.uk.md)
 
 ## Features
+
 
 - 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
 - ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
