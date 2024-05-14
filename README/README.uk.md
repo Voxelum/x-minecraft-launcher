@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://xmcl.app" target="_blank">
-    <img alt="Logo" width="100" src="xmcl-electron-app/icons/dark@256x256.png">
+    <img alt="Logo" width="100" src="https://github.com/BANSAFAn/x-minecraft-launcher/blob/master/README/dark%40256x256.png">
   </a>
 </p>
 
