@@ -39,8 +39,9 @@ If you have winget, you can use winget to install
 winget install CI010.XMinecraftLauncher
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](README/README-ua.md)</kbd>
-<kbd>[<img title="Chine" alt="Chine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](README/README-zh.md)</kbd>
+<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](README/README.uk.md)</kbd>
+<kbd>[<img title="Chine" alt="Chine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png![img.png](img.png)" width="22">](README/README.zh.md)</kbd>
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png![img.png](img.png)" width="22">](README/README-ru.md)</kbd>
 
 [中文 README](README.zh.md) [Українська README](README.uk.md)
 
