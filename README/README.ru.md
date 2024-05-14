@@ -31,45 +31,37 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+Посетите [официальный сайт](https://xmcl.app) чтобы скачать программу !
 
-If you have winget, you can use winget to install
+Если у вас есть winget, вы можете использовать его для установки
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](README/README.uk.md)</kbd>
-<kbd>[<img title="Chine" alt="Chine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Flag_of_the_People%27s_Republic_of_China.svg/1280px-Flag_of_the_People%27s_Republic_of_China.svg.png" width="22">](README/README.zh.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](README/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](README/README.gr.md)</kbd>
+## Возможности
 
-[中文 README](README.zh.md) [Українська README](README.uk.md)
+- 📥 **Загрузка и автоматическое завершение**. Поддерживает загрузку `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` с официальных или сторонних зеркал.
+- ⚡️ **Загружайте быстро**. Повторно используйте сокет через HTTP/HTTPS-агентов и загружайте файлы частями одновременно.
+- 💻 **Кросс-платформенный**. Лаунчер создан на базе Electron, и поддерживает 🗔 Windows 10/11, 🍎 MacOS, и 🐧 Linux.
+- 📚 **Мульти-инсталляция**. Пользователи могут создавать несколько экземпляров, чтобы изолировать различные версии, модификации и настройки запуска.
+- 🗂 **Управляйте всеми ресурсами**. Используйте (твердые/символические) ссылки для установки ресурсов в отдельных случаях, чтобы оптимально использовать диск. Никаких копий модов везде! 😆
+- 🔥 **Встроенная поддержка CurseForge, Modrinth**. Вы можете загрузить ресурсы внутри лаунчера.
+- 📦 **Поддержка импорта/экспорта** CurseForge & Modrinth Модпаки с соблюдением требований!
+- 🔒 **Поддержка нескольких учетных записей**. Встроенный логин Microsoft и API Mojang Yggdrasil. Он также имеет встроенную поддержку [ely.by](https://ely.by/) и [littleskin.cn](https://littleskin.cn). Вы также можете добавить сторонние серверы аутентификации!
+- 🔗 **Одноранговое соединение между пользователями**. Вы можете играть в многопользовательскую игру по локальной сети, даже если вы не находитесь в одной физической локальной сети!
+- 🔑 **Кодовый знак и современная упаковка**. В Windows вы можете использовать `appx` и `appinstaller` для установки приложения. Вы больше не будете получать сообщения о блокировке от вашего браузера или видеть ошибки SmartScreen! 😎
 
-## Features
+## Сделали вклад
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
+Для общего разработчика, смотрите [Вклад](./CONTRIBUTING.md)
 
-## Contribute
-
-For general developer, see [Contributing](./CONTRIBUTING.md)
-
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
-
-## LICENSE
+Для разработчика локализации i18n, пожалуйста, перейдите по ссылке [Начало работы с локализацией](https://docs.xmcl.app/en/guide/i18n)
+## ЛИЦЕНЗИЯ
 
 [MIT](LICENSE)
 
-## Sponsor (AFDIAN)
+## Спонсор (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -89,20 +81,20 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+## Кредит
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), ведение реестра пакетов AUR.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), обслуживание winget.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) и [BANSAFAn](https://github.com/BANSAFAn), полностью перевели на украинский язык!
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanja-san](https://github.com/vanja-san), предоставил русский язык!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10) и [HoldYourWaffle](https://github.com/HoldYourWaffle) помогают мне в ядре программы запуска.
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726), который очень помог в разработке панели запуска.
 
-Also special thanks to
+Также отдельная благодарность
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)

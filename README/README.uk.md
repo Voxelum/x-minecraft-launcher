@@ -92,7 +92,7 @@ winget install CI010.XMinecraftLauncher
 
 [Marmur2020](https://github.com/Marmur2020) та [BANSAFAn](https://github.com/BANSAFAn), повністю переклали українською мовою!
 
-[vanja-san](https://github.com/vanja-san), хто надав російську мову!
+[vanja-san](https://github.com/vanja-san), надав російську мову!
 
 [lukechu10](https://github.com/lukechu10) та [HoldYourWaffle](https://github.com/HoldYourWaffle) допомагає мені в ядрі програми запуску.
 
