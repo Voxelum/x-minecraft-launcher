@@ -359,7 +359,7 @@ installOptifine:
   json: Generowanie Json
   name: Instalacja Optifine
 installResource:
-    fail: Nie można zainstalować {file}
+  fail: Nie można zainstalować {file}
   success: Zainstaluj zasób {file} powiodło się
 installVersion:
   jar: Wersja instalacyjna słoika
@@ -492,8 +492,7 @@ launchBlocked:
     title: Uruchomienie nie powiodło się
   launchInvalidJavaPath:
     description: >-
-  Brakuje wybranej Java lub jest ona nieprawidłowa. Proszę wybrać nowy. <span
-      class="highlight"> {javaPath} </span>
+      Brakuje wybranej Java lub jest ona nieprawidłowa. Proszę wybrać nowy. <span class="highlight"> {javaPath} </span>
     title: Nieprawidłowa ścieżka Java
   launchJavaNoPermission:
     description: >-
@@ -504,7 +503,7 @@ launchBlocked:
   launchNoProperJava:
     description: >-
       Nie można wybrać odpowiedniej javy do uruchomienia gry. ({javaPath} jest
-     nieważny?)
+      nieważny?)
     title: Nie znaleziono odpowiedniej javy
   launchNoVersionInstalled:
     description: Nie można rozpoznać wersji <span class="highlight">{version}</span> do uruchomienia.
@@ -889,24 +888,24 @@ multiplayer:
     Gdy użytkownik wprowadzi swój token, należy wprowadzić jego token w polu tekstowym poniżej.
     poniżej. Kliknij przycisk Potwierdź, aby się połączyć.
   gatheringIce: >
-  Proszę poczekać, aż serwer ICE zbierze wystarczającą ilość informacji o Twoim
-  sieć. Jeśli jesteś niecierpliwy i jest wystarczająco dużo informacji, możesz dać
-  aktualny SDP drugiej stronie z wyprzedzeniem i kliknij Dalej. Proszę o przesłanie
-  <span class="v-chip v-chip--label v-size--small" style="text-font: pogrubienie">
-  Token lokalny</span> do partnera, wprowadź swój token w <span
-  class="v-chip v-chip--label v-size--small" style="text-font: pogrubienie"> Dołącz
-  Sekcja połączenia </span>. <br> Serwer ICE może potrzebować trochę czasu
-  zbierz swoje dane, aby utworzyć <span class="v-chip v-chip--label v-size--small"
-  style="text-font: Bolt">Token lokalny</span>.<br> Nie musisz czekać
-  aż do uzyskania statusu ICE. Jeśli poniższy token pozostanie niezmieniony, możesz to zrobić
-  skopiuj go i wyślij swojemu koledze.”
+    Proszę poczekać, aż serwer ICE zbierze wystarczającą ilość informacji o Twoim
+    sieć. Jeśli jesteś niecierpliwy i jest wystarczająco dużo informacji, możesz dać
+    aktualny SDP drugiej stronie z wyprzedzeniem i kliknij Dalej. Proszę o przesłanie
+    <span class="v-chip v-chip--label v-size--small" style="text-font: pogrubienie">
+    Token lokalny</span> do partnera, wprowadź swój token w <span
+    class="v-chip v-chip--label v-size--small" style="text-font: pogrubienie"> Dołącz
+    Sekcja połączenia </span>. <br> Serwer ICE może potrzebować trochę czasu
+    zbierz swoje dane, aby utworzyć <span class="v-chip v-chip--label v-size--small"
+    style="text-font: Bolt">Token lokalny</span>.<br> Nie musisz czekać
+    aż do uzyskania statusu ICE. Jeśli poniższy token pozostanie niezmieniony, możesz to zrobić
+    skopiuj go i wyślij swojemu koledze.”
   groupId: Identyfikator grupy
   illegalTokenDescription: Nielegalny token. Upewnij się, że token od innego partnera jest poprawny
   initiateConnection: Zainicjuj połączenie
   inviteLink: Zaproś łącze
   joinConnection: >-
-  Jeśli Twój partner już zainicjował połączenie, musisz dołączyć
-  Połączenie.
+    Jeśli Twój partner już zainicjował połączenie, musisz dołączyć
+    Połączenie.
   joinManual: Dołącz
   joinOrCreateGroup: Dołącz/utwórz grupę
   joinOrCreateGroupHint: Uzyskaj identyfikator grupy od znajomych lub utwórz grupę
