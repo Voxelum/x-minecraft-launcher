@@ -29,47 +29,39 @@
   </a>
 </p>
 
+
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+请去 [官网](https://xmcl.app) 下载启动器！
 
-If you have winget, you can use winget to install
+如果你有 winget，你可以使用 winget 安装
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.gr.md)</kbd>
-<kbd>[<img title="Chine" alt="Chine" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
+## 特性
 
+- 📥 支持下载 `Minecraft`, `Forge`, `Fabric`, `Optifine`, `Quilt` 以及**自动补全**。在使用 BMCLAPI，MCBBS API 时，当 API 不可用的时候会自动切换回官方，减少不必要的下载失败。
+- ⚡️ **极速下载**。Node.js 天生高并发，Socket 复用让我们能够消耗最少的资源得到可观的下载速度。
+- 💻 **跨平台**。启动器基于 Electron，支持 🗔 Windows，🍎 MacOS 和 🐧 Linux。
+- 📚 **多实例**。使用多实例实现完全的版本隔离，保证不同启动配置不会互相影响。
+- 🗂 **统一管理一切资源**。使用多实例时 Mods 使用链接来安装，节省您大量的空间。Mod 再也不用复制的到处都是了！😆
+- 🔥 **内置支持 CurseForge，Modrinth 下载**。您可以在启动器内完成下载与安装！
+- 📦 支持 CurseForge, Modrinth 与 MCBBS 格式整合包的导入与导出。
+- 🔒 **支持多种账号系统**。内置支持 Microsoft 和 Mojang Yggdrasil API。内置支持 [LittleSkin](https://littleskin.cn)，您也可以自行添加新的第三方验证服务！
+- 🔗 **用户之间的 P2P 联机**。两人不用担心不在一个局域网下没法 LAN 联机的问题了！
+- 🔑 **代码签名与现代的安装模式**。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
 
-## Features
+## 参与开发
 
+请看 [Contribute](./CONTRIBUTING.zh.md)
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
-
-## Contribute
-
-For general developer, see [Contributing](./CONTRIBUTING.md)
-
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
-
-## LICENSE
+## 协议
 
 [MIT](LICENSE)
 
-## Sponsor (AFDIAN)
+## 赞助（爱发电）
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -89,20 +81,20 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+## 致谢
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), 维护 AUR package registry.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), 维护 winget.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), 完全创建了乌克兰语翻译!
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanja-san](https://github.com/vanja-san), 提供俄语！
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我.
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726), 给我启动器提供了很多灵感
 
-Also special thanks to
+同时，向以下人员致敬
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)

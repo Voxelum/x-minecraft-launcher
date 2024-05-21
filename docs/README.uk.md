@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://xmcl.app" target="_blank">
-    <img alt="Logo" width="100" src="xmcl-electron-app/icons/dark@256x256.png">
+    <img alt="Logo" width="100" src="https://github.com/Voxelum/x-minecraft-launcher/blob/master/xmcl-electron-app/icons/dark@256x256.png">
   </a>
 </p>
 
@@ -29,42 +29,42 @@
   </a>
 </p>
 
-
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-请去 [官网](https://xmcl.app) 下载启动器！
+Відвідайте [оффіційну сторінку](https://xmcl.app) щоб завантажити програму!
 
-如果你有 winget，你可以使用 winget 安装
+Якщо у вас є winget, ви можете використовувати його для встановлення
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
+[中文 README](README.zh.md) [English README](README.md)
 
-[English README](./README.md) [Українська README](README.uk.md)
+## Можливості
 
-## 特性
+- 📥 **Завантаження та автоматичне завершення**. Підтримує завантаження `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` з офіційних або сторонніх дзеркал.
+- ⚡️ **Завантажуйте швидко**. Повторно використовуйте сокет через HTTP/HTTPS-агентів і завантажуйте файли частинами одночасно.
+- 💻 **Крос-платформенний**. Лаунчер створений на базі Electron, та підтримує 🗔 Windows 10/11, 🍎 MacOS, та 🐧 Linux.
+- 📚 **Мульти-Інсталяція**. Користувачі можуть створювати кілька екземплярів, щоб ізолювати різні версії, модифікації та налаштування запуску.
+- 🗂 **Керуйте всіма ресурсами**. Використовуйте (тверді/символічні) посилання для встановлення ресурсів в окремих випадках, щоб оптимально використовувати диск. Ніяких копій модів скрізь! 😆
+- 🔥 **Вбудована підтримка CurseForge, Modrinth**. Ви можете завантажити ресурси всередині лаунчера.
+- 📦 **Підтримка імпорту/експорту** CurseForge & Modrinth Модпаки з дотриманням вимог!
+- 🔒 **Підтримка декількох облікових записів**. Вбудований логін Microsoft та API Mojang Yggdrasil. Він також має вбудовану підтримку [ely.by](https://ely.by/) та [littleskin.cn](https://littleskin.cn). Ви також можете додати сторонні сервери автентифікації!
+- 🔗 **Однорангове з'єднання між користувачами**. Ви можете грати в багатокористувацьку гру по локальній мережі, навіть якщо ви не перебуваєте в одній фізичній локальній мережі!
+- 🔑 **Кодовий знак та сучасне пакування**. У Windows ви можете використовувати `appx` та `appinstaller` для встановлення програми. Ви більше не будете отримувати повідомлення про блокування від вашого браузера або бачити помилки SmartScreen! 😎
 
-- 📥 支持下载 `Minecraft`, `Forge`, `Fabric`, `Optifine`, `Quilt` 以及**自动补全**。在使用 BMCLAPI，MCBBS API 时，当 API 不可用的时候会自动切换回官方，减少不必要的下载失败。
-- ⚡️ **极速下载**。Node.js 天生高并发，Socket 复用让我们能够消耗最少的资源得到可观的下载速度。
-- 💻 **跨平台**。启动器基于 Electron，支持 🗔 Windows，🍎 MacOS 和 🐧 Linux。
-- 📚 **多实例**。使用多实例实现完全的版本隔离，保证不同启动配置不会互相影响。
-- 🗂 **统一管理一切资源**。使用多实例时 Mods 使用链接来安装，节省您大量的空间。Mod 再也不用复制的到处都是了！😆
-- 🔥 **内置支持 CurseForge，Modrinth 下载**。您可以在启动器内完成下载与安装！
-- 📦 支持 CurseForge, Modrinth 与 MCBBS 格式整合包的导入与导出。
-- 🔒 **支持多种账号系统**。内置支持 Microsoft 和 Mojang Yggdrasil API。内置支持 [LittleSkin](https://littleskin.cn)，您也可以自行添加新的第三方验证服务！
-- 🔗 **用户之间的 P2P 联机**。两人不用担心不在一个局域网下没法 LAN 联机的问题了！
-- 🔑 **代码签名与现代的安装模式**。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
+## Зробили внесок
 
-## 参与开发
+Для загального розробника, дивіться [Внесок](./CONTRIBUTING.md)
 
-请看 [Contribute](./CONTRIBUTING.zh.md)
+Для розробника локалізації i18n, будь ласка, перейдіть за посиланням [Початок роботи з локалізацією](https://docs.xmcl.app/en/guide/i18n)
 
-## 协议 
+## ЛІЦЕНЗІЯ
 
 [MIT](LICENSE)
 
-## 赞助（爱发电）
+## Спонсор (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -84,20 +84,20 @@ winget install CI010.XMinecraftLauncher
 </div>
 <!-- afdian-end -->
 
-## 致谢
+## Кредит
 
-[GodLeaveMe](https://github.com/GodLeaveMe), 维护 AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), ведення реєстру пакетів AUR.
 
-[0xc0000142](https://github.com/0xc0000142), 维护 winget.
+[0xc0000142](https://github.com/0xc0000142), обслуговування winget.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), 完全创建了乌克兰语翻译!
+[Marmur2020](https://github.com/Marmur2020) та [BANSAFAn](https://github.com/BANSAFAn), повністю переклали українською мовою!
 
-[vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
+[vanja-san](https://github.com/vanja-san), надав російську мову!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我.
+[lukechu10](https://github.com/lukechu10) та [HoldYourWaffle](https://github.com/HoldYourWaffle) допомагає мені в ядрі програми запуску.
 
-[laolarou726](https://github.com/laolarou726), 给我启动器提供了很多灵感
+[laolarou726](https://github.com/laolarou726), який дуже допоміг в розробці панелі запуску.
 
-同时，向以下人员致敬
+Також окрема подяка
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)

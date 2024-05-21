@@ -31,39 +31,30 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+Besuchen Sie die [offizielle Seite] (https://xmcl.app), um die App herunterzuladen!
 
-If you have winget, you can use winget to install
+Wenn Sie winget haben, können Sie es verwenden, um zu installieren
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.gr.md)</kbd>
-<kbd>[<img title="Chine" alt="Chine" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
+## Merkmale- 📥 **Herunterladen und automatische Vervollständigung**. Unterstützt das Herunterladen von `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` von offiziellen oder Drittanbieter-Spiegeln.
+- ⚡️ **schnell herunterladen**. Wiederverwendung des Sockets über HTTP/HTTPS-Agenten und gleichzeitiges Herunterladen von Dateien in Teilen.
+- 💻 **Plattformübergreifend**. Der Launcher basiert auf Electron und unterstützt 🗔 Windows 10/11, 🍎 MacOS, und 🐧 Linux.
+- 📚 **Mehrfach-Installation**. Benutzer können mehrere Instanzen erstellen, um verschiedene Versionen, Änderungen und Starteinstellungen zu isolieren.
+- 🗂 Verwalten Sie alle Ressourcen. Verwenden Sie (harte/symbolische) Links, um Ressourcen in einzelnen Fällen zu installieren, um die Disc optimal zu nutzen. Keine Kopien von Mods überall!
+- 🔥 **Eingebaute Unterstützung für CurseForge, Modrinth**. Sie können Ressourcen innerhalb des Launcher herunterladen.
+- 📦 **Import/Export Unterstützung** CurseForge & Modrinth Modpacks mit Compliance!
+- 🔒 **Unterstützung für mehrere Konten**. Eingebaute Microsoft-Anmeldung und Mojang Yggdrasil API.Es hat auch integrierte Unterstützung für [ely.by](https://ely.by/) und [littleskin.cn](https://littleskin.cn). Sie können auch Authentifizierungsserver von Drittanbietern hinzufügen!
+- 🔗 **Peer-to-Peer-Verbindung zwischen Benutzern**. Sie können ein Multiplayer-Spiel über ein lokales Netzwerk spielen, auch wenn Sie sich nicht im selben physischen LAN befinden!
+- 🔑 **Code und moderne Verpackung**. Unter Windows können Sie `appx` und `appinstaller` verwenden, um die Anwendung zu installieren. Sie werden keine blockierenden Meldungen mehr von Ihrem Browser erhalten oder SmartScreen-Fehler sehen!!!!
 
+## Beigetragen
 
-## Features
+Für den allgemeinen Entwickler, siehe [Contributing](./CONTRIBUTING.md)
 
-
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
-
-## Contribute
-
-For general developer, see [Contributing](./CONTRIBUTING.md)
-
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
+Für einen i18n-Lokalisierungsentwickler folgen Sie bitte dem Link [Erste Schritte mit der Lokalisierung](https://docs.xmcl.app/en/guide/i18n)
 
 ## LICENSE
 
@@ -89,20 +80,20 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+## Kredit
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), Pflege des AUR-Paketregisters.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), winget maintenance.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) und [BANSAFAn](https://github.com/BANSAFAn), vollständig ins Ukrainische übersetzt!
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanja-san](https://github.com/vanja-san), sofern russische Sprache!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10) und [HoldYourWaffle](https://github.com/HoldYourWaffle), die mir mit dem Kern des Launcher geholfen haben.
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726), der mir bei der Entwicklung des Launchers sehr geholfen hat.
 
-Also special thanks to
+Außerdem geht ein besonderer Dank an
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)

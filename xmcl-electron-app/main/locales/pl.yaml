@@ -1,0 +1,22 @@
+browseApps: Przeglądaj niestandardowy interfejs użytkownika programu uruchamiającego
+checkUpdate: Sprawdź aktualizację
+openUrl:
+  cancel: Anuluj
+  message: >-
+    Program uruchamiający chce otworzyć {url} w domyślnej przeglądarce. Czy zezwalasz na
+    tę operację?
+  title: Otwórz w przeglądarce
+  trust: Zaufaj tej stronie i nie pokazuj następnym razem
+  'yes': 'Tak'
+quit: Odejdź
+relaunch: Ponowne uruchomienie
+showDiagnosis: Pokaż diagnostykę
+showLauncher: Pokaż program uruchamiający
+showLogsFolder: Pokaż folder dzienników
+task:
+  continue: Widok w programie uruchamiającym
+  fail: Jedno zadanie nie powiodło się
+  success: Sukces jednego zadania
+title: X Minecraft Launcher
+urlFailed: Nieznany adres url {url}. Sprawdź swój adres url lub skontaktuj się z deweloperem!
+urlSuccess: Udało się! Teraz możesz zamknąć to okno i powrócić do programu uruchamiającego!
