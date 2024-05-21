@@ -192,10 +192,6 @@ export class ModpackService extends AbstractService implements IModpackService {
     return hash
   }
 
-  async getModpackInstallManifest(modpackPath: string): Promise<EditInstanceOptions & { name: string; runtime: RuntimeVersions }> {
-    throw new Error('Method not implemented.')
-  }
-
   async getModpackInstallFiles(modpackFile: string): Promise<InstanceFile[]> {
     const cacheOrHash = await this.getCachedInstallProfile(modpackFile)
 
@@ -277,18 +273,16 @@ export class ModpackService extends AbstractService implements IModpackService {
     const files = (await Promise.all(entries
       .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
       .map(async (e) => {
-        const sha1 = await checksumFromStream(await openEntryReadStream(zip, e), 'sha1')
         const relativePath = handler.resolveUnpackPath(manifest, e)!
         const file: InstanceFile = {
           path: relativePath,
           size: e.uncompressedSize,
           hashes: {
-            sha1,
             crc32: e.crc32.toString(),
           },
           downloads: [
             `zip:///${path}?entry=${encodeURIComponent(e.fileName)}`,
-            `zip://${sha1}/${e.fileName}`,
+            `zip://${cacheOrHash}/${e.fileName}`,
           ],
         }
         return file

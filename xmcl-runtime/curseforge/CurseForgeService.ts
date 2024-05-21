@@ -11,6 +11,7 @@ import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
 import { guessCurseforgeFileUrl, resolveCurseforgeHash } from '../util/curseforge'
 import { requireObject, requireString } from '../util/object'
+import filenamify from 'filenamify'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends AbstractService implements ICurseForgeService {
@@ -47,7 +48,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resourceService = this.resourceService
     const getTemp = await this.app.registry.get(kTempDataPath)
-    const destination = getTemp(file.fileName)
+    const destination = getTemp(filenamify(file.fileName))
 
     const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
     // Try to find the resource in cache

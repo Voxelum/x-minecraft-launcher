@@ -7,6 +7,8 @@ import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { ResourceService } from '../resource'
+import { isNonnull } from '~/util/object'
+import filenamify from 'filenamify'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
@@ -29,7 +31,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
     const resources = await Promise.all(files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const getTemp = await this.app.registry.get(kTempDataPath)
-      const destination = getTemp(basename(file.filename))
+      const destination = getTemp(filenamify(basename(file.filename)))
       const hashes = Object.entries(file.hashes)
       const urls = [file.url]
       if (version) {
@@ -77,6 +79,9 @@ export class ModrinthService extends AbstractService implements IModrinthService
           icons: icon ? [icon] : [],
         }])
 
+        if (!result) {
+          return
+        }
         result.path = result.storedPath || result.path
 
         await unlink(destination).catch(() => undefined)
@@ -99,7 +104,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
 
     return {
       version,
-      resources,
+      resources: resources.filter(isNonnull),
     }
   }
 }

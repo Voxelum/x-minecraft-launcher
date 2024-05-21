@@ -5,6 +5,11 @@
 
 // declare electron static for static file serving
 
+declare module '@node-rs/crc32-wasm32-wasi' {
+  export function crc32(input: Buffer, crc?: number): number
+  export function crc32c(input: Buffer, crc?: number): number
+}
+
 declare module '*?worker' {
   import { Worker, WorkerOptions } from 'worker_threads'
 
