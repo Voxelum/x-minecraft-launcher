@@ -1151,8 +1151,8 @@ setting:
   resetToDefault: 重置到默认配色
   showNewsHeader: 取消隐藏新闻展示
   showRoot: 浏览
-  streamerMode: 串流模式
-  streamerModeDescription: 这将隐藏您的私人信息，例如启动器中的电子邮件。
+  streamerMode: 屏幕共享屏蔽
+  streamerModeDescription: 这个功能可以保护你的隐私。打开这个功能后，你的邮箱地址等私人信息将会被藏起来。
   theme:
     dark: 暗色主题
     light: 亮色主题
