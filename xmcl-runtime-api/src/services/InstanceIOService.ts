@@ -58,8 +58,18 @@ export interface InstanceIOService {
   exportInstance(options: ExportInstanceOptions): Promise<void>
 
   getGameDefaultPath(type?: 'modrinth-root' | 'modrinth-instances' | 'vanilla'): Promise<string>
+  /**
+   * Parse instances folders
+   * @param path The instance or .minecraft folder path
+   * @param type Determine if this is a vanilla, mmc or modrinth folder
+   */
   parseInstances(path: string, type?: InstanceType): Promise<CreateInstanceManifest[]>
-  parseInstanceFiles(instancePath: string, type?: InstanceType): Promise<InstanceFile[]>
+  /**
+   * Parse the files from the path of instance or .minecraft folder
+   * @param path The instance or .minecraft folder path
+   * @param type Determine if this is a vanilla, mmc or modrinth folder
+   */
+  parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

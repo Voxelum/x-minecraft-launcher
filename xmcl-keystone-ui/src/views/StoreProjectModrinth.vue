@@ -8,6 +8,7 @@ import { kModrinthTags } from '@/composables/modrinth'
 import { useModrinthInstallModpack } from '@/composables/modrinthInstall'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthVersions } from '@/composables/modrinthVersions'
+import { useNotifier } from '@/composables/notifier'
 import { usePresence } from '@/composables/presence'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
@@ -105,10 +106,13 @@ const project = computed(() => {
 const { versions, error } = useModrinthVersions(computed(() => props.id))
 
 const _installing = ref(false)
+const { notify } = useNotifier()
 const onInstall = (v: StoreProjectVersion) => {
   const ver = v as ProjectVersion
   _installing.value = true
-  installModpack(ver).finally(() => {
+  installModpack(ver).catch((e) => {
+    notify({ level: 'error', title: e.message })
+  }).finally(() => {
     _installing.value = false
   })
 }

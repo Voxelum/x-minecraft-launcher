@@ -97,9 +97,12 @@ export function useModrinthInstallModpack(icon: Ref<string | undefined>) {
   const installModpack = async (v: ProjectVersion) => {
     const result = await installVersion({ version: v, icon: icon.value })
     const resource = result.resources[0]
+
+    if (!resource) throw new Error('NO_RESOURCE')
+
     const config = resolveModpackInstanceConfig(resource)
 
-    if (!config) return
+    if (!config) throw new Error('NO_MODPACK_CONFIG')
     const name = generateDistinctName(config.name, instances.value.map(i => i.name))
     const path = await createInstance({
       ...config,

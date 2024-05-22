@@ -105,6 +105,9 @@ export interface ImportModpackCreateInstanceOptions {
 }
 
 export interface ModpackInstallProfile {
+  /**
+   * @deprecated This can be derived from the modpack metadata
+   */
   instance: CreateInstanceOption & {
     runtime: RuntimeVersions
   }
@@ -112,21 +115,22 @@ export interface ModpackInstallProfile {
 }
 
 /**
- * Provide the abilities to import/export instance from/to modpack file.
- * For json format modpack like FTB, you can use the `InstanceIOService`
+ * Provide the abilities to parse the modpack files data.
+ * For json format modpack like FTB, you can use the `InstanceIOService` to do the actual install operation.
  */
 export interface ModpackService {
   /**
-   * Export the instance as an curseforge modpack
-   * @param options The curseforge modpack export options
+   * Export the instance as an curseforge/modrinth/mcbbs modpack
+   * @param options The curseforge/modrinth/mcbbs modpack export options
    */
   exportModpack(options: ExportModpackOptions): Promise<void>
+  /**
+   * Get modpack installable files from the modpack. Use the `installInstanceFiles` to create an instance.
+   */
   getModpackInstallFiles(modpackPath: string): Promise<InstanceFile[]>
   /**
-   * Get modpack install profile from the modpack. Use the `installInstanceFiles` to create an instance.
+   * Show the modpack folder
    */
-  getModpackInstallProfile(modpackPath: string): Promise<ModpackInstallProfile>
-
   showModpacksFolder(): Promise<void>
 }
 
