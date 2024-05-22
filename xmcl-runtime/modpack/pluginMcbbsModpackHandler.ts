@@ -12,7 +12,7 @@ import { resolveHashes } from './resolveHashes'
 export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
   modpackService.registerHandler<McbbsModpackManifest>('mcbbs', {
-    readMetadata: async (zip, entries) => {
+    readManifest: async (zip, entries) => {
       const mcbbsManifest = entries.find(e => e.fileName === 'mcbbs.packmeta')
       if (mcbbsManifest) {
         return readEntry(zip, mcbbsManifest).then(b => JSON.parse(b.toString()) as McbbsModpackManifest)

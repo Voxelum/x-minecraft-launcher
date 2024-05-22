@@ -8,10 +8,21 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { ModpackService } from './ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
 import { resolveHashes } from './resolveHashes'
+import { kResourceWorker } from '~/resource'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
   modpackService.registerHandler<CurseforgeModpackManifest>('curseforge', {
+    async resolveModpackMetadata(path, sha1) {
+      const client = await app.registry.getOrCreate(CurseforgeV1Client)
+      const worker = await app.registry.getOrCreate(kResourceWorker)
+
+      const print = await worker.fingerprint(path)
+      const result = await client.getFingerprintsMatchesByGameId(432, [print])
+      const f = result.exactMatches[0]
+      if (!f) return undefined
+      return { curseforge: { projectId: f.file.modId, fileId: f.file.id } }
+    },
     resolveUnpackPath: function (manifest: CurseforgeModpackManifest, e: Entry) {
       let overridePrefix = manifest.overrides ?? 'overrides/'
       if (!overridePrefix.endsWith('/')) overridePrefix += '/'
@@ -19,7 +30,7 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
         return e.fileName.substring(overridePrefix.length)
       }
     },
-    readMetadata: async (zipFile: ZipFile, entries: Entry[]): Promise<CurseforgeModpackManifest | undefined> => {
+    readManifest: async (zipFile: ZipFile, entries: Entry[]): Promise<CurseforgeModpackManifest | undefined> => {
       const curseforgeManifest = entries.find(e => e.fileName === 'manifest.json')
       if (curseforgeManifest) {
         const b = await readEntry(zipFile, curseforgeManifest)

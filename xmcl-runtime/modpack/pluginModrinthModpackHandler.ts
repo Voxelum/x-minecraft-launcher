@@ -3,11 +3,27 @@ import { LauncherAppPlugin } from '~/app'
 import { ModpackService } from './ModpackService'
 import { readEntry } from '@xmcl/unzip'
 import { Entry } from 'yauzl'
+import { ModrinthV2Client } from '@xmcl/modrinth'
 
 export const pluginModrinthModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
   modpackService.registerHandler<ModrinthModpackManifest>('modrinth', {
-    async readMetadata(zip, entries) {
+    async resolveModpackMetadata(path, sha1) {
+      const client = await app.registry.getOrCreate(ModrinthV2Client)
+      const hashes = await client.getProjectVersionsByHash([sha1], 'sha1')
+      const content = hashes[sha1]
+      if (!content) return undefined
+      const file = content.files.find(f => f.hashes.sha1 === sha1)
+      return {
+        modrinth: {
+          projectId: content.project_id,
+          versionId: content.id,
+          filename: file?.filename,
+          url: file?.url,
+        },
+      }
+    },
+    async readManifest(zip, entries) {
       const modrinthManifest = entries.find(e => e.fileName === 'modrinth.index.json')
       if (modrinthManifest) {
         const b = await readEntry(zip, modrinthManifest)
