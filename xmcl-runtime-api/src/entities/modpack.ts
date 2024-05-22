@@ -125,6 +125,7 @@ export interface ModrinthModpackManifest {
   dependencies: {
     minecraft: string
     forge?: string
+    neoforge?: string
     'fabric-loader'?: string
     'quilt-loader'?: string
   }
@@ -292,6 +293,7 @@ export function getInstanceConfigFromModrinthModpack(manifest: ModrinthModpackMa
     runtime: {
       minecraft: manifest.dependencies.minecraft,
       forge: manifest.dependencies.forge,
+      neoForged: manifest.dependencies.neoforge,
       fabricLoader: manifest.dependencies['fabric-loader'],
       quiltLoader: manifest.dependencies['quilt-loader'],
     },
