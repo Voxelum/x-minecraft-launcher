@@ -180,6 +180,10 @@ instanceTemplate:
   importing: 模板導入
   preview: 預覽
   title: 模板設置
+instanceUpdate:
+  loaderChanged: |-
+    該實例的模組載入器已變更。
+    舊的 modloader 是 {modloader}，新的 modloader 是 {newModloader}。
 instances:
   add: 創建遊戲
   addManually: 手動建立

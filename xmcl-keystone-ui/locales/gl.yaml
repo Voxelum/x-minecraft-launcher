@@ -230,6 +230,10 @@ disable: Desactivar
 downloadUpdate: Descargar actualización
 errors:
   NotFoundError: 404 non atopado
+instanceUpdate:
+  loaderChanged: |-
+    Cambiouse o modloader desta instancia. 
+    O modloader antigo é {modloader} e o novo modloader é {newModloader}.
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
 launchBlocked:

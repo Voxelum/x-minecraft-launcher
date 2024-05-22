@@ -9,9 +9,7 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 
 type Upstream = Required<Instance>['upstream']
 
-type UpstreamResolver = (upstream: Upstream) => Promise<{
-  files: InstanceFile[]
-} | undefined>
+type UpstreamResolver = (upstream: Upstream) => Promise<InstanceFile[] | undefined>
 
 @ExposeServiceKey(InstanceUpdateServiceKey)
 export class InstanceUpdateService extends AbstractService implements IInstanceUpdateService {
@@ -30,13 +28,13 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
         const res = upstream.sha1 ? await resourceService.getResourceByHash(upstream.sha1) : (await resourceService.getResourcesByUris([`modrinth:${upstream.projectId}:${upstream.versionId}`]))[0]
         if (res) {
           if (res.metadata.instance) {
-            return res.metadata.instance
+            return res.metadata.instance.files
           }
-          return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
+          return await this.modpackService.getModpackInstallFiles(res.path).catch(() => undefined)
         }
         const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`modrinth:${upstream.projectId}:${upstream.versionId}`))[0]
         if (resMetadata?.instance) {
-          return resMetadata.instance
+          return resMetadata.instance.files
         }
       }
       return undefined
@@ -47,13 +45,13 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
         const res = upstream.sha1 ? await resourceService.getResourceByHash(upstream.sha1) : (await resourceService.getResourcesByUris([`curseforge:${upstream.modId}:${upstream.fileId}`]))[0]
         if (res) {
           if (res.metadata.instance) {
-            return res.metadata.instance
+            return res.metadata.instance.files
           }
-          return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
+          return await this.modpackService.getModpackInstallFiles(res.path).catch(() => undefined)
         }
         const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`curseforge:${upstream.modId}:${upstream.fileId}`))[0]
         if (resMetadata?.instance) {
-          return resMetadata.instance
+          return resMetadata.instance.files
         }
       }
       return undefined
@@ -67,8 +65,8 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
   private async resolveOldFiles(instancePath: string, instance: InstanceData, oldModpack?: string): Promise<InstanceFile[]> {
     if (oldModpack) {
       // If old modpack path present, try to get modpack content
-      const profile = await this.modpackService.getModpackInstallProfile(oldModpack)
-      return profile.files
+      const files = await this.modpackService.getModpackInstallFiles(oldModpack)
+      return files
     }
 
     if (instance.upstream) {
@@ -78,7 +76,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
       for (const resolver of this.resolvers) {
         const result = await resolver(upstream)
         if (result) {
-          return result.files
+          return result
         }
       }
     }
@@ -160,15 +158,12 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
     const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
 
-    const { files: newFiles, instance: instanceOptions } = await this.modpackService.getModpackInstallProfile(options.newModpack)
+    const newFiles = await this.modpackService.getModpackInstallFiles(options.newModpack)
 
     const manifest = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
 
     const result = this.#getInstanceFilesUpdate(oldFiles, manifest.files, newFiles)
 
-    return {
-      instance: instanceOptions,
-      files: result.filter(r => !r.file.path.endsWith('/')),
-    }
+    return result.filter(r => !r.file.path.endsWith('/'))
   }
 }

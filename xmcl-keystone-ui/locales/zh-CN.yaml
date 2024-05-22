@@ -446,6 +446,9 @@ instanceTemplate:
 instanceUpdate:
   basic: 设置更新
   files: 文件更新
+  loaderChanged: |-
+    该实例的模组加载器已更改。
+    旧的 modloader 是 {modloader}，新的 modloader 是 {newModloader}。
   title: 更新实例
   update: 开始更新实例
 instances:

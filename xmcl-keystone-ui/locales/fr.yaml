@@ -475,6 +475,11 @@ instanceTemplate:
 instanceUpdate:
   basic: Mise à jour des Paramètres
   files: Mise à jour des Fichiers
+  loaderChanged: >-
+    Le modloader de cette instance a été modifié. 
+
+    L'ancien modloader est {modloader} et le nouveau modloader est
+    {newModloader}.
   title: Mettre à jour l'Instance
   update: Démarrer la Mise à Jour
 instances:

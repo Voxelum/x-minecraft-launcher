@@ -432,6 +432,9 @@ instanceTemplate:
 instanceUpdate:
   basic: Оновлення налаштувань
   files: Оновлення файлів
+  loaderChanged: |-
+    Завантажувач модів цього екземпляра змінено. 
+    Старий завантажувач модів — {modloader}, а новий — {newModloader}.
   title: Оновити екземпляр
   update: Почати оновлення
 instances:

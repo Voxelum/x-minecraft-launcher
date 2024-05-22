@@ -440,6 +440,9 @@ instanceTemplate:
 instanceUpdate:
   basic: Beállítás frissítése
   files: Fájl frissítések
+  loaderChanged: |-
+    Ennek a példánynak a modloadere megváltozott. 
+    A régi modloader {modloader}, az új modloader pedig {newModloader}.
   title: Példány frissítése
   update: Frissítés indítása
 instances:

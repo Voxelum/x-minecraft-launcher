@@ -432,6 +432,7 @@ instanceUpdate:
   files: File Updates
   title: Update Instance
   update: Start Update
+  loaderChanged: The modloader of this instance has been changed. The old modloader is {modloader}, and the new modloader is {newModloader}.
 instances:
   add: Create Game
   addDescription: Create a new instance from scratch

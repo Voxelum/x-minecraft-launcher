@@ -470,6 +470,11 @@ instanceTemplate:
 instanceUpdate:
   basic: Aktualisieren Sie Ihre Einstellungen
   files: Dateien aktualisieren
+  loaderChanged: >-
+    Der Modloader dieser Instanz wurde geändert. 
+
+    Der alte Modloader ist {modloader} und der neue Modloader ist
+    {newModloader}.
   title: Aktualisieren Sie Ihre Instanz
   update: Aktualisierung beginnen
 instances:

@@ -20,10 +20,6 @@ export type UpgradeModpackRawOptions = {
   oldVersionFiles: InstanceFile[]
   newVersionFiles: InstanceFile[]
 }
-export interface InstanceUpdateProfile {
-  instance: EditInstanceOptions
-  files: InstanceFileUpdate[]
-}
 
 export type InstanceFileUpdate = {
   file: InstanceFile
@@ -35,7 +31,7 @@ export type InstanceFileUpdate = {
 }
 
 export interface InstanceUpdateService {
-  getInstanceUpdateProfile(options: UpgradeModpackOptions): Promise<InstanceUpdateProfile>
+  getInstanceUpdateProfile(options: UpgradeModpackOptions): Promise<InstanceFileUpdate[]>
   getInstanceUpdateProfileRaw(options: UpgradeModpackRawOptions): Promise<InstanceFileUpdate[]>
 }
 

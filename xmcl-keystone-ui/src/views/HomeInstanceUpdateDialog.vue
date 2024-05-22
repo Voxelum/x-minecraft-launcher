@@ -80,6 +80,38 @@
           </v-text-field>
         </div>
 
+        <v-alert
+          v-if="loaderDifferences.old.length > 0 || loaderDifferences.new.length > 0"
+          colored-border
+          outlined
+          type="error"
+          color="error"
+        >
+          <i18n-t
+            tag="p"
+            keypath="instanceUpdate.loaderChanged"
+          >
+            <template #modloader>
+              <v-chip
+                label
+                small
+                outlined
+              >
+                {{ loaderDifferences.old.join(', ') }}
+              </v-chip>
+            </template>
+            <template #newModloader>
+              <v-chip
+                label
+                small
+                outlined
+              >
+                {{ loaderDifferences.new.join(', ') }}
+              </v-chip>
+            </template>
+          </i18n-t>
+        </v-alert>
+
         <v-subheader>
           {{ t('instanceUpdate.files') }}
         </v-subheader>
@@ -140,8 +172,9 @@ import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
 import { getUpstreamFromResource } from '@/util/upstream'
-import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey, Resource } from '@xmcl/runtime-api'
+import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 
 const selected = ref([] as string[])
 
@@ -229,6 +262,7 @@ const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 const { all: javas } = injection(kJavaContext)
 const { refresh, refreshing, error } = useRefreshable(async () => {
   if (newManifest.value && oldManifest.value) {
+    // FTB
     const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest.value, javas.value)
     const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest.value, javas.value)
     upgrade.value = {
@@ -246,16 +280,43 @@ const { refresh, refreshing, error } = useRefreshable(async () => {
     }
     return
   }
-  const path = newResource.value?.path
-  if (path) {
+  const res = newResource.value
+  const path = res?.path
+  if (res && path) {
+    const config = resolveModpackInstanceConfig(res) as EditInstanceOptions
+
+    const files = await getInstanceUpdateProfile({
+      instancePath: instancePath.value,
+      oldModpack: oldResource.value && 'path' in oldResource.value ? oldResource.value.path : undefined,
+      newModpack: res.path,
+    })
+
     upgrade.value = {
-      ...await getInstanceUpdateProfile({
-        instancePath: instancePath.value,
-        oldModpack: oldResource.value && 'path' in oldResource.value ? oldResource.value.path : undefined,
-        newModpack: newResource.value.path,
-      }),
+      instance: config,
+      files,
       upstream: getUpstreamFromResource(newResource.value),
     }
+  }
+})
+
+const loaderDifferences = computed(() => {
+  const old = oldRuntime.value
+  const newR = runtime.value
+  const loaders = ['forge', 'fabricLoader', 'quiltLoader', 'neoForged']
+  const oldL = [] as string[]
+  const newL = [] as string[]
+  for (const l of loaders) {
+    if (!!old[l] !== !!newR[l]) {
+      if (old[l]) {
+        oldL.push(l)
+      } else {
+        newL.push(l)
+      }
+    }
+  }
+  return {
+    old: oldL,
+    new: newL,
   }
 })
 

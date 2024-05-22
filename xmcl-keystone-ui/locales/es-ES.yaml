@@ -394,6 +394,9 @@ instanceTemplate:
 instanceUpdate:
   basic: Actualización de Ajustes
   files: Actualización de Archivos
+  loaderChanged: |-
+    Se ha cambiado el cargador de mods de esta instancia. 
+    El antiguo modloader es {modloader} y el nuevo modloader es {newModloader}.
   title: Actualizar Instancia
   update: Iniciar Actualización
 instances:

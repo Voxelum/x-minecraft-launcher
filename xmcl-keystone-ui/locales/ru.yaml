@@ -429,6 +429,11 @@ instanceTemplate:
 instanceUpdate:
   basic: Обновление настроек
   files: Обновление файлов
+  loaderChanged: >-
+    Модлоадер этого экземпляра был изменен. 
+
+    Старый загрузчик модов — {modloader}, а новый загрузчик модов —
+    {newModloader}.
   title: Обновление экземпляра
   update: Начать обновление
 instances:
