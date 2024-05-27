@@ -19,8 +19,7 @@
       />
     </template>
     <v-card
-      color="secondary"
-      class="max-w-100 max-h-120 overflow-auto px-2"
+      class="max-w-100 max-h-120 overflow-auto px-2 dark:bg-[#424242]"
       @mousedown.prevent
     >
       <v-subheader class="flex">
