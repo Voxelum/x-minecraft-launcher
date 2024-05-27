@@ -185,8 +185,8 @@ dataMigration:
   waitReload: 迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。
 delete:
   name: 删除 {name}
-  'no': 不
-  'yes': 是
+  'no': 取消
+  'yes': 删除
 dependencies:
   embedded: 内嵌
   incompatible: 不兼容
@@ -234,7 +234,7 @@ diagnosis:
     message: 点击来解决这个问题
     name: 当前电脑上没有找到任何 Java
   missingLibraries:
-    message: 启动器将自动下载并安装Libraries 文件
+    message: 启动器将自动下载并安装 Libraries 文件
     name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个Libraries 文件 | 缺少{count}个Libraries 文件
   missingVersion:
     message: 启动器将自动安装该版本
@@ -362,7 +362,7 @@ installLabyMod:
   json: 生成 {version} JSON
   name: 安装 LabyMod
 installLibraries:
-  library: 检查Libraries 文件
+  library: 检查 Libraries 文件
   name: 安装依赖运行库
 installModpack:
   deploy: 部署
@@ -1172,7 +1172,8 @@ setting:
   themeShareDescription: 您可以与您的朋友分享主题。
   update: 升级
   useBmclAPI: 使用 BMCLAPI 镜像
-  useBmclAPIDescription: BMCLAPI是由@bangbang93创建的镜像服务。这个服务由@bangbang93和OpenBMCLAPI社区共同提供。它通过提供国内下载服务器来改善从Mojang官方S3对象存储下载文件慢的问题。由于MCBBS源已停服，BMCLAPI会在下载高峰期时下载缓慢。有关OpenBMCLAPI服务器的服务状态，请访问OpenBMCLAPI榜单网站bd.bangbang93.com
+  useBmclAPIDescription: |
+    "BMCLAPI是由bangbang93创建的镜像服务。这个服务由bangbang93和OpenBMCLAPI社区共同提供。它通过提供国内下载服务器来改善从Mojang官方S3对象存储下载文件慢的问题。由于MCBBS源已停服，BMCLAPI会在下载高峰期时下载缓慢。有关OpenBMCLAPI服务器的服务状态，请访问OpenBMCLAPI榜单网站bd.bangbang93.com"
   useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
   viewBackgroundMusic: 查看背景音乐
@@ -1410,8 +1411,8 @@ version:
   name: 版本 | 版本
   notInstalled: 未安装该版本
 versionType:
-  alpha: 早期测试版
-  beta: 测试版
+  alpha: Alpha (早期测试版)
+  beta: Beta (测试版)
   name: 类型
   release: 稳定版
 'yes': 是
