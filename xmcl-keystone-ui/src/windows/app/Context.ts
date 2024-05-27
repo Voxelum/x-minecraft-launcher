@@ -1,4 +1,4 @@
-import { kSemaphores, useI18nSync, useSemaphores } from '@/composables'
+import { useI18nSync } from '@/composables'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
