@@ -113,6 +113,7 @@ help: 幫助
 home: 主頁
 importModpack:
   failed: 創建 {modpack} 整合包失敗
+  name: 導入模組包
   success: 成功導入 {modpack} 整合包
 importResource: 導入資源
 installAssets:

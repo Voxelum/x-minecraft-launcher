@@ -346,6 +346,7 @@ help: Referenz.
 home: Startseite
 importModpack:
   failed: Importieren fehlgeschlagen {modpack}
+  name: Modpack importieren
   success: Import von {modpack} erfolgreich abgeschlossen
 importResource: Importieren einer Ressource
 install: Installieren Sie

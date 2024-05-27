@@ -313,6 +313,7 @@ help: Справка
 home: Главная
 importModpack:
   failed: Не удалось импортировать {modpack}
+  name: Импортировать модпак
   success: Импорт {modpack} успешно завершено
 importResource: Импорт ресурса
 install: Установить

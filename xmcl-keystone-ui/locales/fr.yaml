@@ -353,6 +353,7 @@ help: Aider
 home: Accueil
 importModpack:
   failed: Échec de l'importation de {modpack}
+  name: Importer un pack de modules
   success: L'importation de {modpack} a réussi
 importResource: Importer une ressource
 install: Installer

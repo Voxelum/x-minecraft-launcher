@@ -279,6 +279,7 @@ help: Ayuda
 home: Inicio
 importModpack:
   failed: Error al importar {modpack}
+  name: Importar paquete de modificaciones
   success: Importación de {modpack} exitosa
 importResource: Importar Recurso
 install: Instalar
