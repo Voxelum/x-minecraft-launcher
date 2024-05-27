@@ -26,13 +26,12 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
         })
         const resultFile = Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js'))[0]
         const watching = Object.keys(result.metafile?.inputs || {})
-        console.log(join(build.initialOptions.outdir!, resultFile), resultFile, build.initialOptions.outdir)
         return {
           errors: result.errors,
           warnings: result.warnings,
           contents: build.initialOptions.plugins!.find(v => v.name === 'dev')
             ? `export default ${JSON.stringify(join(build.initialOptions.outdir!, basename(resultFile)))}`
-            : `import { join } from 'path'; export default join(__dirname, ${JSON.stringify(resultFile)})`,
+            : `import { join } from 'path'; export default join(__dirname, ${JSON.stringify(basename(resultFile))})`,
           watchFiles: build.initialOptions.plugins!.find(v => v.name === 'dev') ? watching : undefined,
         }
       })
