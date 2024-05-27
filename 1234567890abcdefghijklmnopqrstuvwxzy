@@ -1,0 +1,108 @@
+<p align="center">
+  <a href="https://xmcl.app" target="_blank">
+    <img alt="Logo" width="100" src="https://github.com/Voxelum/x-minecraft-launcher/blob/master/xmcl-electron-app/icons/dark@256x256.png">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Voxelum/x-minecraft-launcher">
+    <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
+  </a>
+  <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
+    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
+  </a>
+  <a href="https://conventionalcommits.org">
+    <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
+  </a>
+  <br>
+  <a href="https://discord.gg/W5XVwYY7GQ">
+    <img src="https://discord.com/api/guilds/405213567118213121/widget.png" alt="Discord">
+  </a>
+  <a href="https://kook.top/gqjSHh">
+    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/kook-badge" alt="Kook">
+  </a>
+  <a href="https://afdian.net/@ci010">
+    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/afdian-badge" alt="afdian">
+  </a>
+  <a href="https://patreon.com/xmcl">
+    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxmcl%26type%3Dpledges" alt="patreon">
+  </a>
+</p>
+
+![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
+
+前往我们的 [官方网站](https://xmcl.app) 来下载适合自己的XMCL！
+
+如果你的设备支持用winget，那么可以使用下面的命令来安装XMCL
+
+```bash
+winget install CI010.XMinecraftLauncher
+```
+
+<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
+<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.gr.md)</kbd>
+<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
+
+
+## 特色功能
+
+
+- 📥 **下载与安装一气呵成**. 支持从官方来源与BMCLAPI源安装`Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` 等一切你需要安装的东西
+- ⚡️ **下载更快**. 通过 HTTP/HTTPS 代理重用套接字，并同时分批下载文件
+- 💻 **跨平台**. XMCL基于Electron， 兼容 🗔 Windows 10/11， 🍎 macOS， 和 🐧 Linux 
+- 📚 **多游戏副本**. 用户可以创建多个游戏副本来隔离不同的版本、模组和启动设置
+- 🗂 **省空间**. 通过复用相同的文件，使得最终存储到您设备上文件**只有1份**——可以玩耍更多得整合包啦（~~某些数据不能节省空间：比如地图和截屏~~）
+- 🔥 **集成CurseForge, Modrinth**. 下载整合包再也不需要安装官方的App啦
+- 📦 **简单的导入导出** CurseForge & Modrinth 规范的整合包可以轻松导入和导出
+- 🔒 **支持多种登录方式**. 集成 Microsoft 帐户 和 Yggdrasil API，也自带了社区最流行的 [ely.by](https://ely.by/) 和 [littleskin.cn](https://littleskin.cn)。 就算是没有收录的第三方皮肤站也能轻松添加！
+- 🔗 **P2P联机**. 不会也没有关系，XMCL 可以帮你在 Minecraft 里连上你的所有伙伴
+
+
+## 共建
+
+开发人员可以通过 [这个文稿](./CONTRIBUTING.md) 参与共建
+
+翻译官可以通过 [这个文稿](https://docs.xmcl.app/en/guide/i18n) 参与共建
+
+## 开源协议与知识共享
+
+使用**MIT**开放原始码协议
+
+## 打赏人员名单 (AFDIAN)
+
+<!-- afdian-start -->
+<div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
+<a title="爱发电用户_9d663: ￥390.00" href="https://afdian.net/u/9d663ec6fb6711ec9ace52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
+<a title="爱发电用户_19e29: ￥300.00" href="https://afdian.net/u/19e292c21a1d11ee929a52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
+<a title="ahdg: ￥180.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
+<a title="Kandk: ￥30.00" href="https://afdian.net/u/404b86a078e111ecab3652540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/404b86a078e111ecab3652540025c377/avatar/dfa3e35a696d8d8af5425dd400d68a8d_w607_h527_s432.png"> </a>
+<a title="白雨 楠: ￥30.00" href="https://afdian.net/u/7f6ad7161b3e11eb8d0e52540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/7f6ad7161b3e11eb8d0e52540025c377/avatar/1fa3b75648a15aea8da202c6108d659b_w1153_h1153_s319.jpeg"> </a>
+<a title="圣剑: ￥30.00" href="https://afdian.net/u/ef50bc78b3d911ecb85352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/user_upload_osl/8a1c4eb2e580b4b8b463ceb2114b6381_w132_h132_s3.jpeg"> </a>
+<a title="同谋者: ￥30.00" href="https://afdian.net/u/7c3c65dc004a11eb9a6052540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png"> </a>
+<a title="染川瞳: ￥5.00" href="https://afdian.net/u/89b1218c86e011eaa4d152540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/89b1218c86e011eaa4d152540025c377/avatar/9bf08f81d231f3054c98f9e5c1c8ce40_w640_h640_s57.jpg"> </a>
+<a title="爱发电用户_CvQb: ￥5.00" href="https://afdian.net/u/177bea3cf47211ec990352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+<a title="水合: ￥5.00" href="https://afdian.net/u/039508f2b17d11ebad1052540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-orange.png"> </a>
+<a title="爱发电用户_0c5c8: ￥5.00" href="https://afdian.net/u/0c5c865e08ee11ecba1352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
+<a title="DIO: ￥5.00" href="https://afdian.net/u/7ac297b4722211eab4a752540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+<a title="爱发电用户_DJpu: ￥5.00" href="https://afdian.net/u/8c23a236cf7311ec9c3452540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+</div>
+<!-- afdian-end -->
+
+## 感谢
+
+[GodLeaveMe](https://github.com/GodLeaveMe), 维护AUR套件注册表
+
+[0xc0000142](https://github.com/0xc0000142), 维护winget安装方式
+
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn)，完全翻译了乌克兰语
+
+[vanja-san](https://github.com/vanja-san)，提供了俄语
+
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在XMCL的核心代码上帮了我
+
+[laolarou726](https://github.com/laolarou726)，帮我设计了XMCL的前端
+
+还特别感谢
+
+[Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
