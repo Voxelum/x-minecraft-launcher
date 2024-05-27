@@ -230,6 +230,8 @@ disable: Desactivar
 downloadUpdate: Descargar actualización
 errors:
   NotFoundError: 404 non atopado
+importModpack:
+  name: Importar Modpack
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 

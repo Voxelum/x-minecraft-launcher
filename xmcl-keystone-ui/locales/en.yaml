@@ -312,6 +312,7 @@ home: Home
 importModpack:
   failed: Import {modpack} failed
   success: Import {modpack} succeed
+  name: Import Modpack
 importResource: Import Resource
 install: Install
 installAssets:

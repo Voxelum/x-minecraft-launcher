@@ -313,6 +313,7 @@ help: Súgó
 home: Kezdőlap
 importModpack:
   failed: '{modpack} importálása sikertelen'
+  name: Modpack importálása
   success: '{modpack} importálása sikeres'
 importResource: Forrás importálása
 install: Telepítés

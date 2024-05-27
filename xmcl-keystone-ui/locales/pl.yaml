@@ -325,6 +325,7 @@ help: Pomoc
 home: Strona główna
 importModpack:
   failed: Import {modpack} nieudany
+  name: Importuj pakiet modów
   success: Import {modpack} odnieść sukces
 importResource: Import zasobów
 install: Instalacja

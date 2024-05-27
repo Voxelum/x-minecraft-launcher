@@ -312,6 +312,7 @@ help: Довідка
 home: Головна
 importModpack:
   failed: Не вдалося імпортувати {modpack}
+  name: Імпорт Modpack
   success: Імпорт {modpack} успішно завершено
 importResource: Імпорт ресурсу
 install: Встановити

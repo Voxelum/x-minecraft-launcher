@@ -11,7 +11,7 @@
       <v-btn
         icon
         :style="{ visibility: step === 1 ? 'hidden' : 'visible' }"
-        @click="step -= 1"
+        @click="back"
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
@@ -80,6 +80,18 @@
         @next="next"
         @quit="quit"
       >
+        <div v-if="type === 'template' || type === 'manual' || !type">
+          <v-btn
+            text
+            :loading="loading"
+            @click="onImportModpack"
+          >
+            <v-icon left>
+              note_add
+            </v-icon>
+            {{ t('importModpack.name') }}
+          </v-btn>
+        </div>
         <div
           v-if="error"
           class="pointer-events-none absolute left-0 flex w-full justify-center"
@@ -116,7 +128,7 @@ import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
@@ -319,6 +331,41 @@ function next() {
   if (step.value < steps.value.length) {
     step.value += 1
   }
+}
+function back() {
+  if (step.value > 1) {
+    step.value -= 1
+  }
+  if (step.value === 1) {
+    type.value = undefined
+  }
+}
+
+// Manuall import
+const { importResources } = useService(ResourceServiceKey)
+const onImportModpack = () => {
+  windowController.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
+  }).then(async (res) => {
+    if (res.canceled) return
+    const file = res.filePaths[0]
+    try {
+      loading.value = true
+      const [result] = await importResources([{ path: file, domain: ResourceDomain.Modpacks }])
+      if (result) {
+        await onSelectResource(result)
+        type.value = 'template'
+        nextTick(() => {
+          step.value = 3
+        })
+      }
+    } catch (e) {
+      error.value = e
+    } finally {
+      loading.value = false
+    }
+  })
 }
 
 // Peer

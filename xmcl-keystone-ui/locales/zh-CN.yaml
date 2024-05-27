@@ -330,6 +330,7 @@ help: 帮助
 home: 主页
 importModpack:
   failed: 创建 {modpack} 整合包失败
+  name: 导入整合包
   success: 成功导入 {modpack} 整合包
 importResource: 导入资源
 install: 安装
