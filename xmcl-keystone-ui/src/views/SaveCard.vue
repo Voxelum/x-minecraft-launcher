@@ -6,7 +6,7 @@
     hover
     outlined
     draggable
-    class="white--text draggable-card p-2"
+    class="dark:white--text draggable-card p-2"
     style="margin-top: 10px; transition-duration: 0.2s; margin-bottom: 20px"
     @dragstart="onDragStart"
     @dragend="emit('dragend', $event)"
