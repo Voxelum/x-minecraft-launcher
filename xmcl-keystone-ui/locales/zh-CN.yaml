@@ -1,10 +1,10 @@
 AppAddInstanceDialog:
   choiceTitle: |-
-    检测到多个启动配置文件。
-    请选择一项进行导入。
+    我们发现多个启动配置文件。
+    请选择其中的一项进行导入。
   configTitle: 实例配置
   createTitle: 创建游戏
-  downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
+  downloadedNotification: 整合包 {name} 下载成功。现在就创建整合包实例吗？
   serverTitle: 输入您的服务器地址
 AppShareInstanceDialog:
   baseInfo: 分享的基本配置
@@ -167,7 +167,7 @@ curseforgeCategory:
   Traditional: 传统
   Twitch Integration: Twitch 集成
   Utility & QoL: 工具和 QoL
-  Vanilla+: 原版+
+  Vanilla+: 原版改良
   World Gen: 世界生成
 dataMigration:
   apply: 开始迁移
@@ -185,8 +185,8 @@ dataMigration:
   waitReload: 迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。
 delete:
   name: 删除 {name}
-  'no': 取消
-  'yes': 删除
+  'no': 不
+  'yes': 是
 dependencies:
   embedded: 内嵌
   incompatible: 不兼容
@@ -201,19 +201,19 @@ diagnosis:
     name: 版本安装失败 {version}
   corruptedAssets:
     message: 启动器将重新下载游戏文件
-    name: 'Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏'
+    name: 'Asset 文件不完整: {name} | Asset 文件不完整: {name} | 有 {count} 个游戏资源可能损不完整'
   corruptedAssetsIndex:
     message: 启动器将重新下载游戏资源目录
-    name: '{version}游戏资源目录可能损坏.'
+    name: '{version}游戏资源目录可能不完整'
   corruptedLibraries:
-    message: 启动器将重新下载损坏的文件
-    name: '库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏'
+    message: 启动器将重新下载不完整的文件
+    name: 'Libraries 文件不完整: {name} | Libraries 文件不完整: {name} | {count} 个Libraries 文件不完整 | {count} 个Libraries 文件不完整'
   corruptedVersionJar:
-    message: 启动器将重新下载损坏的文件
-    name: Minecraft {version} 游戏 Jar 文件损坏.
+    message: 启动器将重新下载不完整的文件
+    name: Minecraft {version} 游戏 Jar 文件不完整.
   corruptedVersionJson:
-    message: 启动器将重新下载损坏的文件
-    name: Minecraft {version} 版本 Json 文件损坏.
+    message: 启动器将重新下载不完整的文件
+    name: Minecraft {version} 版本 Json 文件不完整.
   incompatibleJava:
     message: 你可以选择自己让启动器帮你下载，或者自己下载
     name: Java {javaVersion} 可能不符合版本需求 {version}!
@@ -234,8 +234,8 @@ diagnosis:
     message: 点击来解决这个问题
     name: 当前电脑上没有找到任何 Java
   missingLibraries:
-    message: 启动器将自动下载并安装库文件
-    name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件
+    message: 启动器将自动下载并安装Libraries 文件
+    name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个Libraries 文件 | 缺少{count}个Libraries 文件
   missingVersion:
     message: 启动器将自动安装该版本
     name: 未安装 {version}
@@ -361,7 +361,7 @@ installLabyMod:
   json: 生成 {version} JSON
   name: 安装 LabyMod
 installLibraries:
-  library: 检查库文件
+  library: 检查Libraries 文件
   name: 安装依赖运行库
 installModpack:
   deploy: 部署
@@ -582,23 +582,23 @@ logLevel:
 login:
   dropHint: 将验证链接拖入此处手工验证
   forgetPassword: 忘记密码?
-  login: 登陆
+  login: 登录
   manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证!
   signup: 注册
   signupDescription: 没有账号?
-  userRelogin: 用户信息过期了，请重新登陆！
+  userRelogin: 用户信息过期了，请重新登录！
 loginError:
   acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
   badNetworkOrServer: 请检查你的网络连接！当然也可能是验证服务器挂了:/
   checkOwnershipFailed: 在检查你是否拥有 Minecraft 时发生错误，请重试
   connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
   fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
-  illegalEmail: 当前Email格式不合法
+  illegalEmail: 当前邮箱格式不合法
   invalidCredentials: 无法验证. 用户名或密码错误.
   loginMinecraftByXboxFailed: 在通过  Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认你的 Xbox 账号拥有 Minecraft。你可以尝试重试登录
   loginXboxFailed: 请求 xbox 通证失败，请确保你的微软账号已经绑定了一个 Xbox 账号！
   requestFailed: 由于未知原因登录失败，请重试
-  requireEmail: 必须要Email才能登陆
+  requireEmail: 必须要邮箱才能登录
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
   timeout: 登录超时，请重试或检查你的网络！
@@ -688,7 +688,7 @@ modpack:
   export: 导出整合包
   general: 基本信息
   includeAssets: 是否包含游戏资源 (assets) 文件
-  includeLibraries: 是否包含库文件
+  includeLibraries: 是否包含Libraries 文件
   includes: 打包文件
   modpackVersion: 整合包版本
   name: 整合包
@@ -1151,8 +1151,8 @@ setting:
   resetToDefault: 重置到默认配色
   showNewsHeader: 取消隐藏新闻展示
   showRoot: 浏览
-  streamerMode: 串流模式
-  streamerModeDescription: 这将隐藏您的私人信息，例如启动器中的电子邮件。
+  streamerMode: 屏幕共享屏蔽
+  streamerModeDescription: 这个功能可以保护你的隐私。打开这个功能后，你的邮箱地址等私人信息将会被藏起来。
   theme:
     dark: 暗色主题
     light: 亮色主题
@@ -1166,11 +1166,11 @@ setting:
   themeShare: 分享主题
   themeShareDescription: 您可以与您的朋友分享主题。
   update: 升级
-  useBmclAPI: 使用 BMCL API
-  useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
-  useProxy: HTTP 代理设置
+  useBmclAPI: 使用 BMCLAPI 镜像
+  useBmclAPIDescription: BMCLAPI是由@bangbang93创建的镜像服务。这个服务由@bangbang93和OpenBMCLAPI社区共同提供。它通过提供国内下载服务器来改善从Mojang官方S3对象存储下载文件慢的问题。由于MCBBS源已停服，BMCLAPI会在下载高峰期时下载缓慢。有关OpenBMCLAPI服务器的服务状态，请访问OpenBMCLAPI榜单网站bd.bangbang93.com
+  useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
-  viewBackgroundMusic: 查看音乐
+  viewBackgroundMusic: 查看背景音乐
 settingLabel:
   global: 全局配置
   globalHint: 这个配置使用的是全局配置
@@ -1180,7 +1180,7 @@ setup:
   account:
     description: 添加你常用的账号。如果你还没有账号，你可先跳过这步。
     name: 添加游戏账号
-    skip: 先不登陆了
+    skip: 先不登录了
   appearance:
     name: '@:setting.appearance'
   dataRoot:
@@ -1375,7 +1375,7 @@ userServices:
   microsoft:
     account: 微软账号
     deviceCode: 设备码
-    deviceCodeHint: 设备码会在点击登陆后自动生成
+    deviceCodeHint: 设备码会在点击登录后自动生成
     fastLogin: 快速登录
     name: 微软
     password: 在浏览器中输入密码
@@ -1388,7 +1388,7 @@ userServices:
     account: 用户名
     name: 离线模式
     password: 无需密码
-    uuid: 用户的 UUID (可不写)
+    uuid: 用户的 UUID (除了特殊用途，否则不填写)
 userSkin:
   import: 导入皮肤
   importFile: 从文件导入
@@ -1405,8 +1405,8 @@ version:
   name: 版本 | 版本
   notInstalled: 未安装该版本
 versionType:
-  alpha: Alpha
-  beta: Beta
+  alpha: 早期测试版
+  beta: 测试版
   name: 类型
   release: 稳定版
 'yes': 是
