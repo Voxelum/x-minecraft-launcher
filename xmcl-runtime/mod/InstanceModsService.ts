@@ -73,7 +73,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
-          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+          if (resource) {
+            updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
+          }
           pending.delete(filePath)
         } catch (e) {
           if (isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY') && retryLimit > 0) {
