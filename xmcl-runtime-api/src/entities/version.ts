@@ -131,7 +131,7 @@ export interface LiteloaderVersions {
   }
 }
 
-interface FabricArtifactVersion {
+export interface FabricArtifactVersion {
   gameVersion?: string
   separator?: string
   build?: number

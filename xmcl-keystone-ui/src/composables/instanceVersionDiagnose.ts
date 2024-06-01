@@ -1,18 +1,18 @@
+import { getSWRV } from '@/util/swrvGet'
 import type { LibraryIssue } from '@xmcl/core'
-import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey, getExpectVersion, parseOptifineVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, getExpectVersion, parseOptifineVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useInstanceVersionInstall } from './instanceVersionInstall'
 import { LaunchMenuItem } from './launchButton'
 import { useService } from './service'
-import { useCacheFetch } from './cache'
+import { kSWRVConfig } from './swrvConfig'
+import { getMinecraftVersionsModel } from './version'
 
 export const kInstanceVersionDiagnose: InjectionKey<ReturnType<typeof useInstanceVersionDiagnose>> = Symbol('InstanceVersionDiagnose')
 
 export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<RuntimeVersions>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, versions: Ref<LocalVersionHeader[]>) {
-  const { getMinecraftVersionList } = useService(VersionMetadataServiceKey)
   const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
-  const getCacheOrFetch = useCacheFetch()
   const issueItems = ref([] as LaunchMenuItem[])
   const { t } = useI18n()
   const { install } = useInstanceVersionInstall(versions)
@@ -187,7 +187,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
 
     if (assetIndexIssue) {
       operations.push(async () => {
-        const list = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
+        const list = await getSWRV(getMinecraftVersionsModel(), inject(kSWRVConfig))
         await installAssetsForVersion(version.id, list.versions.filter(v => v.id === version.minecraftVersion || v.id === version.assets))
       })
       items.push(assetIndexIssue.type === 'corrupted'

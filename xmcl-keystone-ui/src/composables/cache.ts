@@ -1,25 +1,9 @@
-import { injection } from '@/util/inject'
 import { Ref, ref, watch } from 'vue'
-import { kSWRVConfig } from './swrvConfig'
 
 export interface LocalStorageOptions {
   deep?: boolean
   legacyKey?: string
   migrate?: (v: string) => string
-}
-
-export function useCacheFetch() {
-  const { cache } = injection(kSWRVConfig)
-  const getCacheOrFetch = async <T>(key: string, fetcher: () => Promise<T>) => {
-    const cached = cache.get(key)
-    if (cached && cached.data?.data) {
-      return cached.data.data as T
-    }
-    const data = await fetcher()
-    cache.set(key, data, 1000 * 60 * 60 * 24)
-    return data
-  }
-  return getCacheOrFetch
 }
 
 export function useLocalStorageCache<T>(key: Ref<string> | string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, options?: LocalStorageOptions): Ref<T> {
