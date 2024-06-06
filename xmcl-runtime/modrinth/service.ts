@@ -31,7 +31,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
     const resources = await Promise.all(files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const getTemp = await this.app.registry.get(kTempDataPath)
-      const destination = getTemp(filenamify(basename(file.filename)))
+      const destination = getTemp(filenamify(basename(file.filename), { replacement: '-' }))
       const hashes = Object.entries(file.hashes)
       const urls = [file.url]
       if (version) {

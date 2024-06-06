@@ -48,7 +48,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resourceService = this.resourceService
     const getTemp = await this.app.registry.get(kTempDataPath)
-    const destination = getTemp(filenamify(file.fileName))
+    const destination = getTemp(filenamify(file.fileName, { replacement: '-' }))
 
     const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
     // Try to find the resource in cache
