@@ -86,6 +86,9 @@ export const config = {
       'appx',
     ],
   },
+  deb: {
+    packageName: 'x-minecraft-launcher',
+  },
   linux: {
     desktop: {
       MimeType: 'x-scheme-handler/xmcl',

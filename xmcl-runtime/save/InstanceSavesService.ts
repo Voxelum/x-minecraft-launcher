@@ -1,14 +1,13 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
-CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-InstanceSavesService as IInstanceSavesService,
-ImportSaveOptions,
-InstanceSaveException,
-InstanceSavesServiceKey,
-LaunchServiceKey,
-ResourceDomain, Saves,
-getInstanceSaveKey,
-isSaveResource,
+  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
+  InstanceSavesService as IInstanceSavesService,
+  ImportSaveOptions,
+  InstanceSaveException,
+  InstanceSavesServiceKey,
+  ResourceDomain, Saves,
+  getInstanceSaveKey,
+  isSaveResource,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'

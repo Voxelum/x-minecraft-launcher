@@ -1,6 +1,5 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
-import filenamify from 'filenamify'
 import { constants } from 'fs'
 import { access, copy, copyFile, ensureDir, link, readdir, stat, unlink } from 'fs-extra'
 import { extname, join, resolve } from 'path'
@@ -57,12 +56,6 @@ export async function clearDirectoryNarrow(dir: string) {
       await unlink(join(dir, f))
     }
   }))
-}
-
-export function getSuggestedFilename(name: string) {
-  name = filenamify(name)
-  name = name.replace('§', '')
-  return name
 }
 
 export function sha1(data: Buffer) {
