@@ -1,15 +1,47 @@
-import { useService } from '@/composables'
-import { VersionMetadataServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
+import { parse } from '@/util/forgeWebParser'
+import { MaybeRef, get } from '@vueuse/core'
+import type { LabyModManifest } from '@xmcl/installer'
+import { FabricArtifactVersion, ForgeVersion, MinecraftVersions, OptifineVersion, QuiltArtifactVersion, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { Ref, computed } from 'vue'
+import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
+import { useService } from './service'
+
+async function getJson<T>(url: string) {
+  const res = await fetch(url)
+  if (res.ok) {
+    const result = await res.json()
+    return result as T
+  }
+  throw new Error('Failed to load ' + url)
+}
+
+export function getMinecraftVersionsModel() {
+  return {
+    key: '/minecraft-versions',
+    fetcher: async () => {
+      const result = await Promise.race([
+        getJson<MinecraftVersions>('https://launchermeta.mojang.com/mc/game/version_manifest.json'),
+        getJson<MinecraftVersions>('https://bmclapi2.bangbang93.com/mc/game/version_manifest.json'),
+      ])
+      result.versions = result.versions.map(markRaw)
+      return markRaw(result)
+    },
+  }
+}
 
 export function useMinecraftVersions() {
-  const { getMinecraftVersionList } = useService(VersionMetadataServiceKey)
+  const { data, isValidating, mutate, error } = useSWRVModel(
+    getMinecraftVersionsModel(),
+    inject(kSWRVConfig),
+  )
 
-  const { data, isValidating, mutate, error } = useSWRV('/minecraft-versions',
-    () => getMinecraftVersionList(),
-    inject(kSWRVConfig))
+  const { setLatestMinecraft } = useService(VersionMetadataServiceKey)
+  watch(data, (d) => {
+    if (d) {
+      setLatestMinecraft(d.latest.release, d.latest.snapshot)
+    }
+  }, { immediate: true })
 
   const versions = computed(() => !data.value ? [] : data.value.versions)
   const release = computed(() => !data.value ? undefined : data.value.versions.find(v => v.id === data.value!.latest.release))
@@ -26,17 +58,18 @@ export function useMinecraftVersions() {
 }
 
 export function useFabricVersions(minecraftVersion: Ref<string>) {
-  const { getFabricVersionList } = useService(VersionMetadataServiceKey)
-
-  const { data: allVersions, isValidating, mutate, error } = useSWRV('/fabric-versions',
-    () => getFabricVersionList(),
+  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getFabricVersionsModel(),
     inject(kSWRVConfig))
 
+  const { data: int } = useSWRVModel(getFabricIntermediaryVersionsModel(minecraftVersion), inject(kSWRVConfig))
+
   const versions = computed(() => {
+    if (!int.value || int.value.length === 0) {
+      return []
+    }
     const all = allVersions.value
     if (!all) return []
-    if (!all.yarns.some(v => v.gameVersion === minecraftVersion.value)) return []
-    return all.loaders
+    return all
   })
 
   return {
@@ -44,21 +77,53 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
     versions,
     mutate,
     isValidating,
+  }
+}
+
+export function getFabricIntermediaryVersionsModel(minecraftVersion: MaybeRef<string>) {
+  return {
+    key: computed(() => `/fabric-intermediary-versions/${get(minecraftVersion)}`),
+    fetcher: async () => {
+      const v = get(minecraftVersion)
+      const int = await Promise.race([
+        getJson<FabricArtifactVersion[]>('https://meta.fabricmc.net/v2/versions/intermediary/' + v).catch(() => []),
+        getJson<FabricArtifactVersion[]>('https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/intermediary/' + v).catch(() => []),
+      ])
+      return int
+    },
+  }
+}
+
+export function getFabricVersionsModel() {
+  return {
+    key: computed(() => '/fabric-versions'),
+    fetcher: async () => {
+      const loaders = await Promise.race([
+        getJson<FabricArtifactVersion[]>('https://meta.fabricmc.net/v2/versions/loader'),
+        getJson<FabricArtifactVersion[]>('https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/loader'),
+      ])
+
+      return loaders.map(markRaw)
+    },
   }
 }
 
 export function useLabyModManifest() {
-  const { getLabyModManifest } = useService(VersionMetadataServiceKey)
-  return useSWRV('/labymod',
-    () => getLabyModManifest(),
+  return useSWRVModel(getLabyModManifestModel(),
     inject(kSWRVConfig))
 }
 
-export function useQuiltVersions(minecraftVersion: Ref<string>) {
-  const { getQuiltVersionList } = useService(VersionMetadataServiceKey)
+export function getLabyModManifestModel() {
+  return {
+    key: '/labymod',
+    fetcher: async () => {
+      return getJson<LabyModManifest>('https://laby-releases.s3.de.io.cloud.ovh.net/api/v1/manifest/production/latest.json')
+    },
+  }
+}
 
-  const { data: versions, isValidating, mutate, error } = useSWRV(computed(() => `/quilt-versions/${minecraftVersion.value}`),
-    () => minecraftVersion.value ? getQuiltVersionList(minecraftVersion.value).then(v => v.map(markRaw)) : [],
+export function useQuiltVersions(minecraftVersion: Ref<string>) {
+  const { data: versions, isValidating, mutate, error } = useSWRVModel(getQuiltVersionModel(minecraftVersion),
     inject(kSWRVConfig))
 
   return {
@@ -69,30 +134,36 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function useNeoForgedVersions(minecraft: Ref<string>) {
-  const { getNeoForgedVersionList } = useService(VersionMetadataServiceKey)
+export function getQuiltVersionModel(minecraftVersion: MaybeRef<string>) {
+  return {
+    key: computed(() => '/quilt-versions/' + get(minecraftVersion)),
+    fetcher: async () => {
+      const loaders = await Promise.race([
+        getJson<QuiltArtifactVersion[]>('https://meta.quiltmc.org/v3/versions/loader/' + get(minecraftVersion)),
+        getJson<QuiltArtifactVersion[]>('https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/loader/' + get(minecraftVersion)),
+      ])
 
-  const { data, isValidating, mutate, error } = useSWRV(computed(() => `/neoforged-versions/${minecraft.value}`),
-    async () => {
-      const result = await getNeoForgedVersionList(minecraft.value).then(markRaw)
-      return result
+      return loaders.map(markRaw)
     },
+  }
+}
+
+export function useNeoForgedVersions(minecraft: Ref<string>) {
+  const { data, isValidating, mutate, error } = useSWRVModel(getNeoForgedVersionModel(minecraft),
     inject(kSWRVConfig))
 
   const recommended = computed(() => {
-    const vers = data.value
-    if (!vers) return undefined
-    return vers.release
+    return ''
   })
   const latest = computed(() => {
     const vers = data.value
     if (!vers) return undefined
-    return vers.latest
+    return vers[0] ?? ''
   })
   const versions = computed(() => {
     const vers = data.value
     if (!vers) return []
-    return vers.versions
+    return vers
   })
 
   return {
@@ -105,20 +176,23 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
   }
 }
 
-export function useForgeVersions(minecraftVersion: Ref<string>) {
-  const { getForgeVersionList } = useService(VersionMetadataServiceKey)
-
-  const { data: versions, isValidating, mutate, error } = useSWRV(computed(() => minecraftVersion.value && `/forge-versions/${minecraftVersion.value}`),
-    async () => {
-      console.log('forge version!')
-      const version = minecraftVersion.value
-      const result = version ? await getForgeVersionList(version).then(v => v.map(markRaw)) : []
-      if (version !== minecraftVersion.value) {
-        return []
-      }
-      return result
+export function getNeoForgedVersionModel(minecraft: MaybeRef<string>) {
+  return {
+    key: computed(() => `/neoforged-versions/${get(minecraft)}`),
+    fetcher: async () => {
+      const content = await Promise.race([
+        getJson<{ versions: string[] }>('https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge')
+          .then((v) => v.versions.filter(v => v.startsWith(get(minecraft).substring(2)))),
+        getJson<{ version: string }[]>(`https://bmclapi2.bangbang93.com/neoforge/list/${get(minecraft)}`)
+          .then(v => v.map(v => v.version)),
+      ])
+      return content
     },
-    inject(kSWRVConfig))
+  }
+}
+
+export function useForgeVersions(minecraftVersion: Ref<string>) {
+  const { data: versions, isValidating, mutate, error } = useSWRVModel(getForgeVersionsModel(minecraftVersion), inject(kSWRVConfig))
 
   const recommended = computed(() => {
     const vers = versions.value
@@ -131,8 +205,6 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     return vers.find(v => v.type === 'latest')
   })
 
-  // watch(minecraftVersion, () => mutate())
-
   return {
     error,
     versions,
@@ -143,35 +215,37 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-// export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-//   const { getLiteloaderVersionList } = useService(VersionMetadataServiceKey)
-
-//   const versions = ref([] as LiteloaderVersions)
-//   const refreshing = useServiceBusy(VersionMetadataServiceKey, 'getLiteloaderVersionList')
-//   onMounted(() => {
-//     watch(minecraftVersion, () => {
-//       if (!versions.value) {
-//         getLiteloaderVersionList()
-//       }
-//     })
-//   })
-
-//   async function refresh() {
-//     await getLiteloaderVersionList()
-//   }
-
-//   return {
-//     versions,
-//     refresh,
-//     refreshing,
-//   }
-// }
+export function getForgeVersionsModel(minecraftVersion: MaybeRef<string>) {
+  return {
+    key: computed(() => '/forge-versions/' + get(minecraftVersion)),
+    fetcher: async () => {
+      const version = get(minecraftVersion)
+      if (!version) {
+        return []
+      }
+      const result = await Promise.race([
+        fetch(`https://files.minecraftforge.net/net/minecraftforge/forge/index_${get(minecraftVersion)}.html`)
+          .then((res) => res.ok ? res.text() : '')
+          .then((text) => {
+            // parse text as HTML
+            if (!text) return []
+            return parse(text)
+          }),
+        getJson<any[]>(`https://bmclapi2.bangbang93.com/forge/minecraft/${get(minecraftVersion)}`)
+          .then(forges => forges.map(v => ({
+            mcversion: v.mcversion,
+            version: v.version,
+            type: 'common',
+            date: v.modified,
+          } as ForgeVersion))),
+      ])
+      return result
+    },
+  }
+}
 
 export function useOptifineVersions() {
-  const { getOptifineVersionList } = useService(VersionMetadataServiceKey)
-
-  const { data: allVersions, isValidating, mutate, error } = useSWRV('/optifine-versions',
-    () => getOptifineVersionList().then(v => v.map(markRaw)),
+  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getOptifineVersionsModel(),
     inject(kSWRVConfig))
 
   const versions = computed(() => allVersions.value ?? [])
@@ -181,5 +255,15 @@ export function useOptifineVersions() {
     versions,
     isValidating,
     mutate,
+  }
+}
+
+export function getOptifineVersionsModel() {
+  return {
+    key: '/optifine-versions',
+    fetcher: async () => {
+      const versions = await getJson<OptifineVersion[]>('https://bmclapi2.bangbang93.com/optifine/versionList')
+      return versions.map(markRaw)
+    },
   }
 }

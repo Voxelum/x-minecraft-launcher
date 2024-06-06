@@ -1,10 +1,11 @@
-import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionMetadataServiceKey, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { getSWRV } from '@/util/swrvGet'
+import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { useCacheFetch } from './cache'
 import { useService } from './service'
+import { kSWRVConfig } from './swrvConfig'
+import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
 
 export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
-  const getCacheOrFetch = useCacheFetch()
   const {
     installForge,
     installNeoForged,
@@ -17,16 +18,11 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
 
   const { refreshVersion } = useService(VersionServiceKey)
 
-  const {
-    getMinecraftVersionList,
-    getForgeVersionList,
-    getNeoForgedVersionList,
-    getLabyModManifest,
-  } = useService(VersionMetadataServiceKey)
+  const cfg = inject(kSWRVConfig)
 
   async function install(runtime: RuntimeVersions, jar = false) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
-    const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
+    const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
     const local = versions.value
     const localMinecraft = local.find(v => v.id === minecraft)
     if (!localMinecraft || jar) {
@@ -40,7 +36,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (forge) {
       const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
       if (!localForge) {
-        const forgeVersions = await getCacheOrFetch(`/forge-versions/${minecraft}`, () => getForgeVersionList(minecraft))
+        const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
         forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
@@ -53,8 +49,8 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     if (neoForged) {
       const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft)
       if (!localNeoForge) {
-        const neoForgedVersion = await getCacheOrFetch(`/neoforged-versions/${minecraft}`, () => getNeoForgedVersionList(minecraft))
-        const found = neoForgedVersion.versions.find(v => v === neoForged)
+        const neoForgedVersion = await getSWRV(getNeoForgedVersionModel(minecraft), cfg)
+        const found = neoForgedVersion.find(v => v === neoForged)
         const id = found ?? neoForged
         forgeVersion = await installNeoForged({ version: id, minecraft })
       } else {
@@ -105,7 +101,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         return localLabyMod.id
       }
 
-      const manifest = await getCacheOrFetch('/labymod', () => getLabyModManifest())
+      const manifest = await getSWRV(getLabyModManifestModel(), cfg)
 
       return await installLabyModVersion({ manifest, minecraftVersion: minecraft })
     }
