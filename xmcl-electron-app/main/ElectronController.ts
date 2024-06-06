@@ -418,8 +418,8 @@ export class ElectronController implements LauncherAppController {
 
     const browser = new BrowserWindow({
       title: man.name,
-      width: config.width,
-      height: config.height,
+      width: (config.width || 0) < minWidth ? minWidth : config.width,
+      height: (config.height || 0) < minHeight ? minHeight : config.height,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
