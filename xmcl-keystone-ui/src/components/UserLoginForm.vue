@@ -305,6 +305,7 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
     authority: authority.value,
     properties: {
       mode: data.useDeviceCode ? 'device' : data.useFast ? 'fast' : '',
+      uuid: data.uuid,
     },
   })
   select(profile.id)
