@@ -81,8 +81,7 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 
-const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
-const showSetup = ref(isFirstLaunch.value)
+const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))

@@ -32,7 +32,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
     const profile = await getProfile(id)
     logger.log(`Get profile for ${id}: %o`, profile)
 
-    const addr = `http://localhost:${await app.localhostServerPort}/yggdrasil`
+    const addr = `http://localhost:${await app.serverPort}/yggdrasil`
     const transformTexture = (text?: YggdrasilTexture) => {
       if (!text) return text
       return { ...text, url: `${addr}/textures?href=${encodeURIComponent(text.url)}` }

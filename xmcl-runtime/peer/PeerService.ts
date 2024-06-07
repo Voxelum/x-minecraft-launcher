@@ -1,6 +1,6 @@
 import { DownloadTask } from '@xmcl/installer'
 import { PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
-import { Inject, LauncherApp, LauncherAppKey } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken } from '~/clientToken'
@@ -18,7 +18,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       port = p
     })
     app.controller.handle('multiplayer-init', async () => {
-      const resourcePath = await app.getGameDataPath()
+      const resourcePath = (await app.registry.get(kGameDataPath))()
       const sessionId = await app.registry.get(kClientToken)
       return {
         appDataPath: app.appDataPath,

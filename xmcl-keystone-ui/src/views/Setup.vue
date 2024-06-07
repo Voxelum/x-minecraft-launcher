@@ -120,6 +120,7 @@ import SetupFooter from './SetupFooter.vue'
 import SetupAccount from './SetupAccount.vue'
 import SetLocale from './SetupLocale.vue'
 import { usePreferredDark } from '@vueuse/core'
+import { kSettingsState } from '@/composables/setting'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary } = useService(BaseServiceKey)
@@ -194,9 +195,17 @@ watch(() => data.theme, () => {
   updateTheme(data.theme as any)
 })
 
+const { state } = injection(kSettingsState)
+
 async function setup() {
-  await bootstrap.bootstrap(data.path, data.instancePath, locale.value)
+  await bootstrap.bootstrap(data.path)
   emit('ready', data)
+  const dismiss = watch(state, (s) => {
+    if (s) {
+      s.localeSet(locale.value)
+      dismiss()
+    }
+  }, { immediate: true })
   data.loading = true
 }
 </script>

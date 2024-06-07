@@ -17,8 +17,6 @@ export interface Bootstrap {
     drives: Drive[]
   }>
   bootstrap(
-    path: string,
-    instancePath: string,
-    locale: string,
+    path: string
   ): Promise<void>
 }

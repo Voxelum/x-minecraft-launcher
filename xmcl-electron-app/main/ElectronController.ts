@@ -141,8 +141,11 @@ export class ElectronController implements LauncherAppController {
     }])
   }
 
-  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any) {
-    return ipcMain.handle(channel, handler)
+  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any, once = false) {
+    if (!once) {
+      return ipcMain.handle(channel, handler)
+    }
+    return ipcMain.handleOnce(channel, handler)
   }
 
   broadcast(channel: string, ...payload: any[]): void {
@@ -308,7 +311,7 @@ export class ElectronController implements LauncherAppController {
     return restoredSession
   }
 
-  async activate(manifest: InstalledAppManifest): Promise<void> {
+  async activate(manifest: InstalledAppManifest, isBootstrap = false): Promise<void> {
     this.logger.log(`Activate app ${manifest.name} ${manifest.url}`)
     this.parking = true
 
@@ -320,7 +323,7 @@ export class ElectronController implements LauncherAppController {
     this.activatedManifest = manifest
 
     try {
-      await this.createAppWindow()
+      await this.createAppWindow(isBootstrap)
     } finally {
       this.parking = false
     }
@@ -400,7 +403,7 @@ export class ElectronController implements LauncherAppController {
     }
   }
 
-  async createAppWindow() {
+  async createAppWindow(isBootstrap: boolean) {
     const man = this.activatedManifest!
     const tracker = createWindowTracker(this.app, 'app-manager', man)
     const config = await tracker.getConfig()
@@ -411,9 +414,7 @@ export class ElectronController implements LauncherAppController {
 
     // Ensure the settings is loaded
     if (this.app.platform.os === 'linux' && !this.settings) {
-      if (!await this.app.isGameDataPathMissing()) {
-        this.settings = await this.app.registry.get(kSettings)
-      }
+      this.settings = await this.app.registry.get(kSettings)
     }
 
     const browser = new BrowserWindow({
@@ -461,8 +462,8 @@ export class ElectronController implements LauncherAppController {
     tracker.track(browser)
 
     let url = man.url
-    if (await this.app.isGameDataPathMissing()) {
-      url += '?setup'
+    if (isBootstrap) {
+      url += '?bootstrap'
     }
     this.logger.log(url)
     browser.loadURL(url)
@@ -533,14 +534,6 @@ export class ElectronController implements LauncherAppController {
       buttons: [t('openUrl.cancel'), t('openUrl.yes')],
     })
     return result.response === 1
-  }
-
-  async processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }> {
-    return new Promise<{ path: string; instancePath: string; locale: string }>((resolve) => {
-      ipcMain.handleOnce('bootstrap', (_, path, instancePath, locale) => {
-        resolve({ path, instancePath, locale })
-      })
-    })
   }
 
   private getFrameOption() {
