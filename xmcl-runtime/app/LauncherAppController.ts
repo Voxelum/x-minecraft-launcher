@@ -6,6 +6,10 @@ import { Client } from './Client'
  */
 export interface LauncherAppController {
   /**
+   * Get the login success html content with current locale
+   */
+  getLoginSuccessHTML(): string
+  /**
    * The api to request the launcher window focus
    */
   requireFocus(): void

@@ -21,6 +21,7 @@ import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { createWindowTracker } from './utils/windowSizeTracker'
+import { getLoginSuccessHTML } from './utils/login'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -553,6 +554,12 @@ export class ElectronController implements LauncherAppController {
 
   get activeWindow() {
     return this.mainWin ?? this.loggerWin
+  }
+
+  getLoginSuccessHTML() {
+    const title = this.i18n.t('urlSuccess')
+    const body = this.i18n.t('autoCloseHint').replace('{time}', '<span id="countdown">10</span>')
+    return getLoginSuccessHTML(title, body)
   }
 
   openDevTools() {

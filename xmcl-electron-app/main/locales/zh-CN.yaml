@@ -18,4 +18,5 @@ task:
 title: X Minecraft Launcher
 urlFailed: 未知 URL {url}. 请检查你复制的链接或联系作者！
 urlSuccess: 验证成功！现在你可以关掉这个窗口回到启动器了
+autoCloseHint: 本窗口将在 {time} 秒后自动关闭
 multiplayer: 多人联机
