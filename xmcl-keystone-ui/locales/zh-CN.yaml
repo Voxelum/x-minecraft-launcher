@@ -4,7 +4,7 @@ AppAddInstanceDialog:
     请选择其中的一项进行导入。
   configTitle: 实例配置
   createTitle: 创建游戏
-  downloadedNotification: {name} 整合包下载完成，您想要现在创建吗？
+  downloadedNotification: '{name} 整合包下载完成，您想要现在创建吗？'
   serverTitle: 输入您的服务器地址
 AppShareInstanceDialog:
   baseInfo: 分享的基本配置
@@ -198,7 +198,7 @@ detail: 细节
 diagnosis:
   badInstall:
     message: 也许您应该尝试重新安装此版本
-    name: {version} 版本安装失败
+    name: '{version} 版本安装失败'
   corruptedAssets:
     message: 启动器将重新下载游戏文件
     name: 'Assets 文件不完整: {name} | Assets 文件不完整: {name} | {count} 个游戏资源不完整'
