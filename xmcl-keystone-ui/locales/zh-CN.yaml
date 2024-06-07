@@ -53,7 +53,7 @@ HomeJavaIssueDialog:
   selectSecondaryHint: 本地找到了几个 Java 版本，但都不是完全符合要求的 Java。您仍然可以选择这些 Java 来启动，但此提示还会再次出现。
 HomeLaunchMultiInstanceDialog:
   confirm: 是的，多实例启动
-  description: 您正在尝试启动多个 Minecraft 示例，您确定么？
+  description: 正在尝试启动多个 Minecraft 实例，您确定么？
   title: 多实例启动
 HomeSyncButton: {}
 HomeSyncDialog:
@@ -104,7 +104,7 @@ curseforge:
   file:
     gameVersion: 游戏版本
     modLoader: 模组加载器类型
-  install: 安裝
+  install: 安装
   installTo: 安装到 {path}
   installToStorage: 安装到库
   lastUpdate: 上次更新日期
@@ -215,7 +215,7 @@ diagnosis:
     message: 启动器将重新下载不完整的文件
     name: Minecraft {version} 版本 Json 文件不完整。
   incompatibleJava:
-    message: 您可以选择自己让启动器帮您下载，或者自己下载
+    message: 您可以选择让启动器帮您下载，或者手动下载
     name: Java {javaVersion} 可能不符合 {version} 版本需求！
   instanceFiles:
     description: 实例安装包括 {counts} 个文件。
@@ -297,7 +297,7 @@ feedback:
   discordDescription: 加入 Discord 频道
   discordJoin: 加入
   github: Github Issue
-  githubDescription: 通过 Github Issue 来反应您的想法
+  githubDescription: 通过 Github Issue 来反馈您的想法
   githubOpenIssue: Github
   kook: Kook
   kookDescription: 加入 Kook (国外请选 Discord)
@@ -571,7 +571,7 @@ localVersion:
   auto: 自动选择
   delete: 删除本地版本
   deleteDescription: 这将删除本地版本游戏
-  empty: 本地没有安裝任何版本
+  empty: 本地没有安装任何版本
   hint: 直接启动某个本地版本
   refresh: 刷新本地版本
   reinstallDescription: 如果您觉得此版本安装的有问题，可以尝试重新安装该版本。
@@ -638,7 +638,7 @@ mod:
   manage: 管理模组
   maybeCompatible: 也许兼容于当前版本。
   name: 模组 | 模组
-  noModLoaderHint: 不要忘记请选择模组加载器来加载模组
+  noModLoaderHint: 请不要忘记选择模组加载器来加载模组
   openLink: 打开模组链接 {url}
   search: 搜索模组
   searchOnCurseforge: 在 Curseforge 上搜索 {name}
@@ -1007,7 +1007,7 @@ save:
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
   createdWorlds: 创建了 {count} 个世界
-  deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要刪除此存档吗？
+  deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
   deleteTitle: 删除该存档
   detail: 显示更多信息
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
@@ -1201,7 +1201,7 @@ setup:
     它还受到其他游戏启动器应用程序（如 Steam 等）的启发。
   defaultPath: 默认位置
   error:
-    badDataRoot: 启动器无法使用当前文件目录作为数据文件夹！请尝试其他的文件夹！
+    badDataRoot: 启动器无法使用当前文件地址作为数据文件夹！请尝试其它文件夹！
     exists: |-
       所选目录里面已经有文件了。
       您仍然可以选择它作为数据目录，但请确保已经备份数据。
@@ -1210,13 +1210,13 @@ setup:
       请尝试选择其他的文件夹。
     nonDictionary: 已选择的文件路径是一个文件！请选择一个文件夹！
   focusLayoutDescription: |-
-    焦点布局是 Minecraft Launcher 最大众的布局。
+    焦点布局是 Minecraft Launcher 最主流的布局。
     它设计用于单个实例或几个实例的情况。
   game:
-    description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的启动目标。同时让启动器能复用已有的版本文件，库，模组，资源包等。
+    description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的文件地址。同时让启动器能狗复用已有的版本文件、库、模组、资源包等。
     name: 导入已有的游戏
   locale:
-    description: 选择您的语言，如果您在这没看到您想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request 来添加新语言！
+    description: 选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request 来添加新语言！
     language: 当前语言
     name: 设置语言
   path: 当前位置
