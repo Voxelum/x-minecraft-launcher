@@ -25,6 +25,7 @@
         "lint:fix": "npm run lint -- --fix"
     },
     "devDependencies": {
+        "app-builder-lib": "~24",
         "@electron/rebuild": "^3.6.0",
         "@types/electron-devtools-installer": "^2.2.2",
         "@types/fs-extra": "~11",
