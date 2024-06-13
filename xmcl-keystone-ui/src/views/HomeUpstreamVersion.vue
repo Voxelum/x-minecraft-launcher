@@ -2,6 +2,7 @@
   <v-card
     class="grid-cols-13 grid items-center gap-y-1 p-3 text-gray-700 dark:text-gray-300"
     :outlined="outlined"
+    :style="{ 'content-visibility': 'auto' }"
     :color="color"
   >
     <div class="col-span-4">
