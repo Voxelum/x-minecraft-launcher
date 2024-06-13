@@ -173,7 +173,7 @@ import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/i
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
 
-const { isShown, dialog } = useDialog('share-instance')
+const { isShown, parameter } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -182,7 +182,7 @@ const { path } = injection(kInstance)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
 
-const sharing = computed(() => isShown.value && !dialog.value.parameter)
+const sharing = computed(() => isShown.value && !parameter.value)
 /**
  * The sharing user name. Only for sharing == false
  */
@@ -234,8 +234,8 @@ const onDownloadInstance = () => {
 watch(isShown, async (shown) => {
   if (shown) {
     windowController.focus()
-    if (dialog.value.parameter) {
-      manifest.value = dialog.value.parameter as any
+    if (parameter.value) {
+      manifest.value = parameter.value as any
     } else {
       loading.value = true
       manifest.value = await getInstanceManifest({ path: path.value, hashes: ['sha1'] }).finally(() => { loading.value = false })

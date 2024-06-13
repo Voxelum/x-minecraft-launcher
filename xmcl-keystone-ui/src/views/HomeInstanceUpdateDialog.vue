@@ -178,15 +178,15 @@ import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 
 const selected = ref([] as string[])
 
-const { isShown, dialog } = useDialog(InstanceInstallDialog, () => {
+const { isShown, parameter } = useDialog(InstanceInstallDialog, () => {
   refresh()
 }, () => {
   upgrade.value = undefined
 })
-const oldResource = computed(() => dialog.value.parameter?.type !== 'ftb' ? dialog.value.parameter?.currentResource as Resource : undefined)
-const newResource = computed(() => dialog.value.parameter?.type !== 'ftb' ? dialog.value.parameter?.resource : undefined)
-const oldManifest = computed(() => dialog.value.parameter?.type === 'ftb' ? dialog.value.parameter?.oldManifest : undefined)
-const newManifest = computed(() => dialog.value.parameter?.type === 'ftb' ? dialog.value.parameter?.newManifest : undefined)
+const oldResource = computed(() => parameter.value?.type !== 'ftb' ? parameter.value?.currentResource as Resource : undefined)
+const newResource = computed(() => parameter.value?.type !== 'ftb' ? parameter.value?.resource : undefined)
+const oldManifest = computed(() => parameter.value?.type === 'ftb' ? parameter.value?.oldManifest : undefined)
+const newManifest = computed(() => parameter.value?.type === 'ftb' ? parameter.value?.newManifest : undefined)
 const { getInstanceUpdateProfile, getInstanceUpdateProfileRaw } = useService(InstanceUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 
