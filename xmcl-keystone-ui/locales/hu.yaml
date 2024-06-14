@@ -683,7 +683,7 @@ modInstall:
   install: Telepítés
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   installed: Telepítve
-  noVersionSupported: A mod nem támogatja az aktuális Minecraft verziót
+  noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.
   recommendation: >-
     Fedezze fel a {first} vagy {second} modokat a {modrinth} és a {curseforge}
     oldalon!

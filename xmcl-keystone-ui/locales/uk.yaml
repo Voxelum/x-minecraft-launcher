@@ -664,7 +664,7 @@ modInstall:
   install: Встановити
   installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
   installed: Встановлено
-  noVersionSupported: Мод не підтримує поточну версію Minecraft
+  noVersionSupported: Мод підтримує тільки Minecraft {supported}.
   recommendation: Дослідіть {first} або {second} моди в {modrinth} і {curseforge}!
   search: Результат пошуку
   searchHint: Пошук та вибір проекту

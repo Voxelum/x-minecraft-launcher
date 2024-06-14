@@ -49,9 +49,16 @@ const modVersions = useModrinthProjectDetailVersions(versions, computed(() => pr
 const selectedVersion = ref(modVersions.value.find(v => v.installed) ?? modVersions.value[0] as ProjectDetailVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
+const supportedVersions = computed(() => {
+  if (!project.value) return []
+  return project.value.game_versions
+})
+
 // Dependencies
-const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))))
+const version = computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))
+const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(version))
 const dependencies = computed(() => {
+  if (!version.value) return []
   if (!deps.value) return []
 
   return deps.value.map(({ recommendedVersion, versions, project, type }) => {
@@ -161,6 +168,7 @@ const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v =>
     :detail="model"
     :has-more="false"
     :enabled="enabled"
+    :supported-versions="supportedVersions"
     :selected-installed="installed"
     :has-installed-version="hasInstalledVersion"
     :versions="modVersions"

@@ -311,8 +311,8 @@ help: Help
 home: Home
 importModpack:
   failed: Import {modpack} failed
-  success: Import {modpack} succeed
   name: Import Modpack
+  success: Import {modpack} succeed
 importResource: Import Resource
 install: Install
 installAssets:
@@ -662,7 +662,7 @@ modInstall:
   install: Install
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
-  noVersionSupported: Mod does not support current Minecraft version
+  noVersionSupported: Mod only support Minecraft {supported}.
   recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
   search: Search Result
   searchHint: Search and select project

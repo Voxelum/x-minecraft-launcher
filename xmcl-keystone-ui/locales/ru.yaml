@@ -649,6 +649,7 @@ mod:
 modInstall:
   install: Скачать
   installed: Скачан
+  noVersionSupported: Мод поддерживает только Minecraft {supported}.
   recommendation: Изучите {first} или {second} моды в {modrinth} и ​​{curseforge}!
   search: Результаты поиска
   searchHint: Найдите и выберите проект

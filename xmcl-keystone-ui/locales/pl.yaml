@@ -691,7 +691,7 @@ modInstall:
   install: Instalacja
   installHint: Zainstaluje się {file} plik z {dependencies} zależności
   installed: Zainstalowany
-  noVersionSupported: Mod nie obsługuje aktualnej wersji Minecrafta
+  noVersionSupported: Mod obsługuje tylko Minecrafta {supported}.
   recommendation: Odkryj {first} lub {second} mod w {modrinth} i {curseforge}!
   search: Wynik wyszukiwania
   searchHint: SWyszukaj i wybierz projekt

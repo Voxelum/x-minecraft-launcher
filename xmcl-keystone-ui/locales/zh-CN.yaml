@@ -207,7 +207,9 @@ diagnosis:
     name: '{version} 游戏资源目录损坏。'
   corruptedLibraries:
     message: 启动器将重新下载不完整的文件
-    name: 'Libraries 文件不完整: {name} | Libraries 文件不完整: {name} | {count} 个 Libraries 文件不完整 | {count} 个 Libraries 文件不完整'
+    name: >-
+      Libraries 文件不完整: {name} | Libraries 文件不完整: {name} | {count} 个 Libraries
+      文件不完整 | {count} 个 Libraries 文件不完整
   corruptedVersionJar:
     message: 启动器将重新下载不完整的文件
     name: Minecraft {version} 游戏 Jar 文件不完整。
@@ -235,7 +237,9 @@ diagnosis:
     name: 当前电脑上没有找到任何 Java
   missingLibraries:
     message: 启动器将自动下载并安装 Libraries 文件
-    name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少 {count} 个 Libraries 文件 | 缺少 {count} 个 Libraries 文件
+    name: >-
+      缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少 {count} 个 Libraries 文件 | 缺少 {count} 个
+      Libraries 文件
   missingVersion:
     message: 启动器将自动安装该版本
     name: 未安装 {version}
@@ -256,7 +260,7 @@ duration:
   second: '{duration} 秒'
 edit: 编辑
 enable: 启用
-error: 
+error:
   name: 错误 | 错误
 errors:
   BadForgeInstallerJarError: 无法解析 Forge 安装包 Jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到此问题，请联系开发团队。
@@ -658,7 +662,7 @@ modInstall:
   install: 安装
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
-  noVersionSupported: 模组不支持当前 Minecraft 版本
+  noVersionSupported: Mod 仅支持 Minecraft {supported}。
   recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模组！
   search: 搜索结果
   searchHint: 搜索并选择模组
@@ -1174,7 +1178,7 @@ setting:
   themeShareDescription: 您可以与您的朋友分享主题。
   update: 升级
   useBmclAPI: 使用 BMCLAPI 镜像
-  useBmclAPIDescription: |
+  useBmclAPIDescription: >
     "BMCLAPI是由bangbang93创建的镜像服务。这个服务由bangbang93和OpenBMCLAPI社区共同提供。它通过提供国内下载服务器来改善从Mojang官方S3对象存储下载文件慢的问题。由于MCBBS源已停服，BMCLAPI会在下载高峰期时下载缓慢。有关OpenBMCLAPI服务器的服务状态，请访问OpenBMCLAPI榜单网站bd.bangbang93.com"
   useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
@@ -1216,7 +1220,9 @@ setup:
     description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的文件地址。同时让启动器能狗复用已有的版本文件、库、模组、资源包等。
     name: 导入已有的游戏
   locale:
-    description: 选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request 来添加新语言！
+    description: >-
+      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request
+      来添加新语言！
     language: 当前语言
     name: 设置语言
   path: 当前位置

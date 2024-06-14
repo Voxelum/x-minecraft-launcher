@@ -150,7 +150,9 @@
                 {{
                   versions.length > 0 ?
                     t('modInstall.installHint', { file: 1, dependencies: dependencies.filter(d => d.type === 'required').length })
-                    : t('modInstall.noVersionSupported')
+                    : t('modInstall.noVersionSupported', {
+                      supported: supportedVersions?.join(', ')
+                    })
                 }}
               </div>
             </div>
@@ -652,6 +654,7 @@ const props = defineProps<{
   loadingDependencies?: boolean
   loadingVersions: boolean
   selectedInstalled: boolean
+  supportedVersions?: string[]
   noDelete?: boolean
   noEnabled?: boolean
   hasMore: boolean
