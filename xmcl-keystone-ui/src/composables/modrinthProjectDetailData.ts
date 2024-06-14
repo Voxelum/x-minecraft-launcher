@@ -67,7 +67,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       info.push({
         icon: 'description',
         name: t('modrinth.license'),
-        value: project.value.license.name,
+        value: project.value.license.name || project.value.license.id,
         url: project.value.license.url,
       })
     }
