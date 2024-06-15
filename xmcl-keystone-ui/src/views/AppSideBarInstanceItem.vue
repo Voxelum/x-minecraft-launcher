@@ -8,17 +8,17 @@
     <template #activator="{ on: tooltip }">
       <div class="relative">
         <div
-          class="min-h-1 absolute left-0 max-h-1 min-w-full px-2"
+          class="absolute left-0 max-h-1 min-h-1 min-w-full px-2"
         >
           <div
-            class="transition-300 min-h-1 max-h-1 min-w-full rounded transition-colors"
+            class="transition-300 max-h-1 min-h-1 min-w-full rounded transition-colors"
             :class="{ 'bg-yellow-400': dragover > 0, 'bg-transparent': dragover > 0 }"
           >
             {{ ' ' }}
           </div>
         </div>
         <v-list-item
-          v-context-menu="items"
+          v-context-menu="getItems"
           push
           link
           draggable
@@ -151,7 +151,7 @@ const dragover = ref(0)
 
 const favicon = computed(() => getInstanceIcon(props.instance, props.instance.server ? status.value : undefined))
 
-const items = useInstanceContextMenuItems(computed(() => props.instance))
+const getItems = useInstanceContextMenuItems(computed(() => props.instance))
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
