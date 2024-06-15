@@ -45,7 +45,6 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
@@ -53,17 +52,17 @@ import { useDialog } from '../composables/dialog'
 const { t } = useI18n()
 const name = ref('')
 const path = ref('')
-const { dialog, isShown } = useDialog('delete-instance')
+const { parameter, isShown } = useDialog('delete-instance')
 watch(isShown, (shown) => {
   if (shown) {
-    name.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).name ?? '' : ''
-    path.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).path ?? '' : ''
+    name.value = (typeof parameter.value === 'object') ? (parameter.value).name ?? '' : ''
+    path.value = (typeof parameter.value === 'object') ? (parameter.value).path ?? '' : ''
   }
 })
 const router = useRouter()
 const { remove, selectedInstance } = injection(kInstances)
 const doDelete = () => {
-  const val = dialog.value.parameter
+  const val = parameter.value
   remove((val as any).path)
   const instancePath = (val as any).path
   if (router.currentRoute.fullPath !== '/' && selectedInstance.value === instancePath) {

@@ -3,7 +3,7 @@ import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { InstanceInstallServiceKey, InstanceModsServiceKey, InstanceServiceKey, ModpackServiceKey, ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey, getModrinthVersionFileUri } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { kInstanceFiles } from './instanceFiles'
@@ -15,21 +15,6 @@ import { useNotifier } from './notifier'
 import { useService } from './service'
 
 export const kModrinthInstall: InjectionKey<ReturnType<typeof useModrinthInstall>> = Symbol('ModrinthInstall')
-
-export function useModrinthInstallVersion(path: Ref<string>) {
-  const { getResourcesByUris } = useService(ResourceServiceKey)
-  const { install: installMod } = useService(InstanceModsServiceKey)
-  const { installVersion } = useService(ModrinthServiceKey)
-  const installModrinthVersion = async (v: ProjectVersion, icon?: string) => {
-    const resources = await getResourcesByUris(v.files.map(f => getModrinthVersionFileUri({ project_id: v.project_id, filename: f.filename, id: v.id })))
-    if (resources.length > 0) {
-      await installMod({ mods: resources, path: path.value })
-    } else {
-      await installVersion({ version: v, icon, instancePath: path.value })
-    }
-  }
-  return installModrinthVersion
-}
 
 export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref<Record<string, TaskItem>>, installTo: Ref<string>, getResource: (version: ProjectVersion) => Resource | undefined, currentVersionResource: Ref<Resource | undefined>) {
   const { installVersion } = useService(ModrinthServiceKey)

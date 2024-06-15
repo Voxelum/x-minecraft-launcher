@@ -3,15 +3,15 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { swrvGet } from '@/util/swrvGet'
-import { File, FileModLoaderType } from '@xmcl/curseforge'
+import { File, FileModLoaderType, HashAlgo } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useCurseforgeInstallModFile } from './curseforgeInstall'
-import { useModrinthInstallVersion } from './modrinthInstall'
+import { useDialog } from './dialog'
+import { InstanceInstallDialog } from './instanceUpdate'
 import { useRefreshable } from './refreshable'
-import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
+import { useTask } from './task'
 
 export type UpgradePlan = {
   /**
@@ -39,6 +39,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = ref({} as Record<string, UpgradePlan>)
   const checked = ref(false)
+  const { show } = useDialog(InstanceInstallDialog)
 
   watch([path, runtime], () => {
     checked.value = false
@@ -106,32 +107,72 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     checked.value = true
   })
 
-  const { uninstall: uninstallMod, install } = useService(InstanceModsServiceKey)
-  const installCurseforgeFile = useCurseforgeInstallModFile(path, (r) => {
-    install({ path: path.value, mods: r })
-  })
-  const installModrinthVersion = useModrinthInstallVersion(path)
-  const { refresh: upgrade, refreshing: upgrading, error: upgradeError } = useRefreshable(async () => {
+  const updates = computed(() => {
+    const updates: InstanceFileUpdate[] = []
     for (const plan of Object.values(plans.value)) {
+      updates.push(...plan.mod.installed.map(r => ({
+        operation: 'remove',
+        file: {
+          path: `mods/${r.resource.fileName}`,
+          hashes: {
+            sha1: r.hash,
+          },
+          size: r.resource.size,
+        },
+      } as InstanceFileUpdate)))
       if ('file' in plan) {
-        plan.updating = true
-        try {
-          await uninstallMod({ mods: plan.mod.installed.map(i => i.resource), path: path.value })
-          await installCurseforgeFile(plan.file)
-        } finally {
-          plan.updating = false
-        }
+        updates.push({
+          operation: 'add',
+          file: {
+            path: `mods/${(plan.file.fileName)}`,
+            hashes: {
+              sha1: plan.file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
+            },
+            size: plan.file.fileLength,
+            curseforge: {
+              projectId: plan.file.modId,
+              fileId: plan.file.id,
+            },
+          },
+        })
       } else {
-        plan.updating = true
-        try {
-          await uninstallMod({ mods: plan.mod.installed.map(i => i.resource), path: path.value })
-          await installModrinthVersion(plan.version)
-        } finally {
-          plan.updating = false
-        }
+        const primary = plan.version.files.find(f => f.primary) || plan.version.files[0]
+        updates.push({
+          operation: 'add',
+          file: {
+            path: `mods/${(primary.filename)}`,
+            hashes: primary.hashes,
+            size: 0,
+            modrinth: {
+              projectId: plan.version.project_id,
+              versionId: plan.version.id,
+            },
+          },
+        })
       }
     }
-    plans.value = {}
+    return updates
+  })
+
+  function upgrade() {
+    show({
+      type: 'updates',
+      updates: updates.value,
+    })
+  }
+
+  const { task } = useTask((i) => {
+    if (i.path === 'installInstance') {
+      return true
+    }
+    return false
+  })
+  watch(task, (newV, oldV) => {
+    if (oldV && oldV.id === 'installInstance' && !newV) {
+      if (oldV.state === TaskState.Succeed) {
+        plans.value = {}
+      }
+    }
   })
 
   return {
@@ -141,7 +182,6 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     plans,
     checked,
     upgrade,
-    upgrading,
-    upgradeError,
+    upgrading: computed(() => !!task.value),
   }
 }

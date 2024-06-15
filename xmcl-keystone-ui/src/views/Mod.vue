@@ -47,8 +47,8 @@
         <v-btn
           text
           small
-          :disabled="Object.keys(plans).length === 0"
           :loading="upgrading"
+          :disabled="Object.keys(plans).length === 0"
           @click="upgrade"
         >
           <v-icon left>
@@ -184,10 +184,11 @@ import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey, TaskState } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
+import { useTask } from '@/composables/task'
 
 const { runtime, path } = injection(kInstance)
 
@@ -243,7 +244,7 @@ const isModProject = (v: ProjectEntry<ProjectFile> | undefined): v is (ProjectEn
 const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is ProjectEntry<ModFile> =>
   v?.id === 'OptiFine'
 
-const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgradeError, upgrading } = injection(kModUpgrade)
+const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
 
 const defaultSource = injection(kInstanceDefaultSource)
 const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModrinthId: string, selectedCurseforgeId: number | undefined) => {

@@ -113,7 +113,7 @@ export function useDialog<T = any>(dialogName: DialogKey<T> = '', onShown?: (par
 
   return {
     parameter: parameter as Ref<T | undefined>,
-    show,
+    show: show as (param?: T) => void,
     hide,
     isShown,
   }

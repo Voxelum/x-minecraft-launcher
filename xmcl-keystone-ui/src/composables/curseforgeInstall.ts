@@ -19,21 +19,6 @@ import { useSWRVModel } from './swrv'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
-export function useCurseforgeInstallModFile(path: Ref<string>, install: (r: Resource[]) => void) {
-  const { getResourcesByUris } = useService(ResourceServiceKey)
-  const { installFile } = useService(CurseForgeServiceKey)
-  const installCurseforgeFile = async (v: File, icon?: string) => {
-    const resources = await getResourcesByUris([getCurseforgeFileUri(v)])
-    if (resources.length > 0) {
-      install(resources)
-    } else {
-      const { resource } = await installFile({ file: v, icon, type: 'mc-mods', instancePath: path.value })
-      install([resource])
-    }
-  }
-  return installCurseforgeFile
-}
-
 export function useCurseforgeInstanceResource() {
   const { getResourceByHash, getResourcesByUris } = useService(ResourceServiceKey)
   async function getResourceByUpstream(upstream: CurseforgeUpstream) {
