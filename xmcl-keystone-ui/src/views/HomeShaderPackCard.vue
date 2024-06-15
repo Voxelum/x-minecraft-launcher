@@ -20,7 +20,7 @@
       <v-btn
         text
         color="teal accent-4"
-        @click="push('/shader-pack-setting')"
+        @click="push('/shaderpacks')"
       >
         {{ t('shaderPack.manage') }}
       </v-btn>

@@ -8,6 +8,7 @@ import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
+import { clientCurseforgeV1 } from '@/util/clients'
 import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -338,7 +339,35 @@ const onRefresh = () => {
   mutate()
 }
 
-const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.modrinth?.projectId)?.modrinth?.projectId)
+const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.curseforge?.projectId === props.curseforgeId && v.modrinth)?.modrinth?.projectId)
+
+function onDescriptionLinkClicked(e: MouseEvent, href: string) {
+  const url = new URL(href)
+  if ((url.host === 'www.curseforge.com' || url.host === 'curseforge.com') && url.pathname.startsWith('/minecraft')) {
+    const slug = url.pathname.split('/')[3] ?? ''
+    let domain: string = ''
+    if (url.pathname.startsWith('/minecraft/mc-mods/')) {
+      domain = 'mods'
+    } else if (url.pathname.startsWith('/texture-packs/')) {
+      domain = 'resourcepacks'
+    } else if (url.pathname.startsWith('/modpacks')) {
+      domain = 'modpacks'
+    }
+
+    if (domain && domain !== 'modpacks' && slug) {
+      clientCurseforgeV1.searchMods({ slug, pageSize: 4 }).then((result) => {
+        const id = result.data[0]?.id
+        if (id) {
+          push({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
+        } else {
+          window.open(href, '_blank')
+        }
+      })
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+}
 
 </script>
 <template>
@@ -367,5 +396,6 @@ const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.m
     @install-dependency="installDependency"
     @select:category="emit('category', Number($event))"
     @refresh="onRefresh"
+    @description-link-clicked="onDescriptionLinkClicked"
   />
 </template>

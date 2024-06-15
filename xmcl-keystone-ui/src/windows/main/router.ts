@@ -58,7 +58,7 @@ export const router = new Router({
           },
         },
         {
-          path: '/resource-pack-setting',
+          path: '/resourcepacks',
           components: {
             default: ResourcePack,
             extensions: ResourcePackExtension,
@@ -66,7 +66,7 @@ export const router = new Router({
           },
         },
         {
-          path: '/shader-pack-setting',
+          path: '/shaderpacks',
           components: {
             default: ShaderPack,
             extensions: ShaderPackExtension,
