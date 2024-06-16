@@ -29,6 +29,7 @@
             <img
               v-if="a.icon"
               :src="a.icon"
+              draggable="false"
             >
             <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
           </v-avatar>
