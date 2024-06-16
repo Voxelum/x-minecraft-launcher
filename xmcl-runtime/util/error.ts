@@ -66,7 +66,7 @@ export async function serializeError(e: unknown): Promise<any> {
       type: 'httpException',
       code: e.code,
       method: options?.method || '',
-      url: (e as any).url ?? (options ? new URL(options?.path, options.origin).toString() : ''),
+      url: (e as any).url ?? (options ? new URL(options?.path, options.origin as any).toString() : ''),
       statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
       body,
     })

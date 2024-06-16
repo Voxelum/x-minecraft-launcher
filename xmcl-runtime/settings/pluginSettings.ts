@@ -43,7 +43,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
 
   settingFile.read().then(async () => {
     const data = await settingFile.read()
-    data.locale = data.locale || app.getPreferredLocale() || app.host.getLocale()
+    data.locale = data.locale || app.host.getLocale()
     state.config(data)
   }).finally(() => {
     app.registry.register(kSettings, state)

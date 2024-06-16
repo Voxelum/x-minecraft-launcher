@@ -3,7 +3,6 @@ import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, res
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
-import { URL } from 'url'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { GFW } from '~/gfw'
 import { JavaValidation, validateJavaPath } from '~/java'

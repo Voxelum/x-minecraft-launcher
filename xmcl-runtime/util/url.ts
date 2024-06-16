@@ -1,5 +1,3 @@
-import { URL } from 'url'
-
 export const isValidUrl = (url: string) => {
   try {
     // eslint-disable-next-line no-new
