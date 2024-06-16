@@ -112,15 +112,24 @@ export class ModpackService extends AbstractService implements IModpackService {
         }
 
         if (!file.override && resource) {
+          let handled = false
           if (resource.metadata.curseforge) {
             // curseforge
             curseforgeConfig?.files.push({ projectID: resource.metadata.curseforge.projectId, fileID: resource.metadata.curseforge.fileId, required: true })
             mcbbsManifest?.files!.push({ projectID: resource.metadata.curseforge.projectId, fileID: resource.metadata.curseforge.fileId, type: 'curse', force: false })
-            continue
-          } else if (!file.override && resource) {
+            handled = true
+          }
+          if (resource.metadata.modrinth) {
             // modrinth not allowed to include curseforge source by regulation
             const availableDownloads = resource.uris.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
             if (availableDownloads.length > 0) {
+              const env = {} as Record<string, string>
+              if (file.env?.client) {
+                env.client = file.env.client
+              }
+              if (file.env?.server) {
+                env.server = file.env.server
+              }
               modrinthManifest?.files.push({
                 path: file.path,
                 hashes: {
@@ -129,15 +138,13 @@ export class ModpackService extends AbstractService implements IModpackService {
                 },
                 downloads: availableDownloads,
                 fileSize: (await stat(filePath)).size,
-                env: file.env
-                  ? {
-                    client: file.env.client ?? 'required',
-                    server: file.env.server ?? 'required',
-                  }
-                  : undefined,
+                env: Object.keys(env).length > 0 ? env as any : undefined,
               })
-              continue
+              handled = true
             }
+          }
+          if (handled) {
+            continue
           }
         }
       }
