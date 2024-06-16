@@ -19,6 +19,7 @@ export enum ModLoaderFilter {
   fabric = 'fabric',
   forge = 'forge',
   quilt = 'quilt',
+  neoforge = 'neoforge',
 }
 
 export function useSearchPattern<T>(search: (offset: number) => Promise<{
@@ -98,9 +99,10 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   const useForge = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1)
   const useFabric = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1)
   const useQuilt = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1)
+  const useNeoforge = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.neoforge) !== -1)
 
   const isValidResource = (r: Resource) => {
-    if (useForge.value) return !!r.metadata.forge
+    if (useForge.value || useNeoforge.value) return !!r.metadata.forge
     if (useFabric.value) return !!r.metadata.fabric
     if (useQuilt.value) return !!r.metadata.quilt
     return false
@@ -312,16 +314,19 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   const getModloaders = (version: RuntimeVersions) => {
     const items = [] as ModLoaderFilter[]
     if (isNoModLoader(version)) {
-      items.push(ModLoaderFilter.fabric, ModLoaderFilter.forge, ModLoaderFilter.quilt)
+      items.push(ModLoaderFilter.fabric, ModLoaderFilter.forge, ModLoaderFilter.quilt, ModLoaderFilter.neoforge)
     } else {
       if (version.fabricLoader) {
         items.push(ModLoaderFilter.fabric)
       }
-      if (version.forge || version.neoForged) {
+      if (version.forge) {
         items.push(ModLoaderFilter.forge)
       }
       if (version.quiltLoader) {
         items.push(ModLoaderFilter.quilt, ModLoaderFilter.fabric)
+      }
+      if (version.neoForged) {
+        items.push(ModLoaderFilter.neoforge)
       }
     }
     return items

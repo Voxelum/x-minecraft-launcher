@@ -25,6 +25,18 @@
 
           <v-btn
             icon
+            text
+            class="h-10"
+            value="neoforge"
+          >
+            <v-img
+              width="28"
+              :src="'http://launcher/icons/neoForged'"
+            />
+          </v-btn>
+
+          <v-btn
+            icon
             class="h-10"
             text
             value="fabric"
