@@ -28,7 +28,7 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
         }
       } else if (loader === 'quilt') {
         const versions = await getSWRV(getQuiltVersionModel(runtime.value.minecraft), config)
-        const version = versions[0]
+        const version = versions[0]?.loader
 
         if (version) {
           await editInstance({
