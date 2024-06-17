@@ -63,7 +63,7 @@ export class Peers {
   }
 
   get(id: string, remoteId?: string): PeerSession | undefined {
-    const sess = this.peers[id] || Object.values(this.peers).find(p => p.remoteId === remoteId || id)
+    const sess = this.peers[id] || Object.values(this.peers).find(p => p.remoteId === (remoteId || id))
 
     return this.#validate(sess)
   }
