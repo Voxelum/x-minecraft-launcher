@@ -67,12 +67,57 @@
               flat
               dense
               label="Fabric"
-              :value="'fabricLoader'"
+              :value="fabricLoader"
               readonly
             >
               <template #prepend-inner>
                 <img
                   :src="'http://launcher/icons/fabric'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="fabricLoader"
+              flat
+              dense
+              label="Fabric"
+              :value="fabricLoader"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/fabric'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="quiltLoader"
+              flat
+              dense
+              label="Fabric"
+              :value="quiltLoader"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/quilt'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="neoForged"
+              flat
+              dense
+              label="Fabric"
+              :value="neoForged"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/neoForged'"
                   width="32"
                 >
               </template>
@@ -195,6 +240,8 @@ provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.fi
 const minecraft = computed(() => manifest.value?.runtime.minecraft)
 const forge = computed(() => manifest.value?.runtime.forge)
 const fabricLoader = computed(() => manifest.value?.runtime.fabricLoader)
+const quiltLoader = computed(() => manifest.value?.runtime.quiltLoader)
+const neoForged = computed(() => manifest.value?.runtime.neoForged)
 const optifine = computed(() => manifest.value?.runtime.optifine)
 const mcOptions = computed(() => manifest.value?.mcOptions || [])
 const vmOptions = computed(() => manifest.value?.vmOptions || [])
