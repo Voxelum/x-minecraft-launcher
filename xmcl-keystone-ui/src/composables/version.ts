@@ -136,7 +136,7 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
 
 export function getQuiltVersionModel(minecraftVersion: MaybeRef<string>) {
   return {
-    key: computed(() => '/quilt-versions/' + get(minecraftVersion)),
+    key: computed(() => get(minecraftVersion) && '/quilt-versions/' + get(minecraftVersion)),
     fetcher: async () => {
       const loaders = await Promise.race([
         getJson<QuiltArtifactVersion[]>('https://meta.quiltmc.org/v3/versions/loader/' + get(minecraftVersion)),
