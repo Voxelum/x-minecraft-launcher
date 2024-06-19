@@ -6,7 +6,7 @@ export function useTelemetryTrack() {
   const router = useRouter()
   const { getEnvironment, getSessionId } = useService(BaseServiceKey)
   router.afterEach((to, from) => {
-    appInsights.trackPageView({ uri: to.fullPath, refUri: from.fullPath })
+    appInsights.trackPageView({ uri: to.path, refUri: from.path, properties: to.query })
   })
   getEnvironment().then(({ version, build }) => {
     appInsights.context.application.ver = version
