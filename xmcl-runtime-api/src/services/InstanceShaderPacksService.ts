@@ -6,7 +6,17 @@ export interface InstanceShaderPacksService {
    * Try to link the `shaderpacks` directory to the central `shaderpacks` directory.
    * @param instancePath The instance absolute path
    */
-  link(instancePath: string): Promise<boolean>
+  link(instancePath: string, force?: boolean): Promise<boolean>
+  /**
+   * Unlink the `shaderpacks` directory under the instance path.
+   * @param instancePath The instance path to unlink.
+   */
+  unlink(instancePath: string): Promise<void>
+  /**
+   * Check if the `shaderpacks` directory under the instance path is linked.
+   * @param instancePath The instance path
+   */
+  isLinked(instancePath: string): Promise<boolean>
   /**
    * This will scan the `shaderpacks` directory and import all shaderpacks into the resource service.
    * @param instancePath The instance absolute path
@@ -19,10 +29,8 @@ export interface InstanceShaderPacksService {
    *
    * @param instancePath The instance absolute path
    * @param shaderPackFilePath The shaderpack file path. This file must existed in the central `shaderpacks` directory.
-   *
-   * @returns `true` mean this is installed by link. `false` mean this is installed by copy.
    */
-  install(instancePath: string, shaderPackFilePath: string): Promise<boolean>
+  install(instancePath: string, shaderPackFilePath: string): Promise<void>
   /**
    * Show shaderPacks folder under the instance path
    * @param instancePath The instance absolute path
