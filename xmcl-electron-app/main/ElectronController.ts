@@ -366,8 +366,8 @@ export class ElectronController implements LauncherAppController {
         trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
         minWidth: 400,
         minHeight: 600,
-        width: Math.max(config.width || 0, 400),
-        height: Math.max(config.height || 0, 600),
+        width: config.getWidth(400),
+        height: config.getHeight(600),
         x: config.x,
         y: config.y,
         show: false,
@@ -420,8 +420,8 @@ export class ElectronController implements LauncherAppController {
 
     const browser = new BrowserWindow({
       title: man.name,
-      width: (config.width || 0) < minWidth ? minWidth : config.width,
-      height: (config.height || 0) < minHeight ? minHeight : config.height,
+      width: config.getWidth(minWidth),
+      height: config.getHeight(minHeight),
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
@@ -489,8 +489,8 @@ export class ElectronController implements LauncherAppController {
     const config = await tracker.getConfig()
     const browser = new BrowserWindow({
       title: 'KeyStone Monitor',
-      width: config.width,
-      height: config.height,
+      width: config.getWidth(600),
+      height: config.getHeight(400),
       x: config.x,
       y: config.y,
       minWidth: 600,
@@ -502,7 +502,7 @@ export class ElectronController implements LauncherAppController {
       icon: darkIcon,
       webPreferences: {
         preload: monitorPreload,
-        session: session.fromPartition('persist:logger'),
+        session: await this.getSharedSession(),
       },
     })
 

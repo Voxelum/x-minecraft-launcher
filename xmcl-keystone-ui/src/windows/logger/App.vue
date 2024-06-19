@@ -68,6 +68,8 @@ import { set } from 'vue'
 import { baseService } from './baseService'
 import LogView from '@/components/LogView.vue'
 import { LogRecord, parseLog } from '@/util/log'
+import { kTheme } from '@/composables/theme'
+import { injection } from '@/util/inject'
 
 export interface Log extends LogRecord {
   id: number
@@ -79,24 +81,14 @@ const logsRecord: Record<number, Log[]> = reactive({})
 const tab = ref(0)
 
 // window.location.search.
-const currentTheme = ref('dark' as 'dark' | 'light' | 'system')
-
-baseService.call('getSettings').then(settings => settings).then(settings => {
-  currentTheme.value = settings.theme
-  settings.subscribe('themeSet', (val) => {
-    currentTheme.value = val
-  })
-  watch(currentTheme, (val) => {
-    settings.themeSet(val)
-  })
-})
+const { darkTheme } = injection(kTheme)
 
 const iconSets = {
   dark: 'dark_mode',
   light: 'light_mode',
   system: 'settings_brightness',
 }
-const themeIcon = computed(() => iconSets[currentTheme.value])
+const themeIcon = computed(() => iconSets[darkTheme.value])
 function accept(pid: number, log: string) {
   let logs: Log[]
   if (logsRecord[pid]) {
@@ -148,12 +140,12 @@ onMounted(() => {
   })
 })
 function changeTheme() {
-  if (currentTheme.value === 'dark') {
-    currentTheme.value = 'light'
-  } else if (currentTheme.value === 'light') {
-    currentTheme.value = 'system'
-  } else if (currentTheme.value === 'system') {
-    currentTheme.value = 'dark'
+  if (darkTheme.value === 'dark') {
+    darkTheme.value = 'light'
+  } else if (darkTheme.value === 'light') {
+    darkTheme.value = 'system'
+  } else if (darkTheme.value === 'system') {
+    darkTheme.value = 'dark'
   }
 }
 function onClick(log: Log) {

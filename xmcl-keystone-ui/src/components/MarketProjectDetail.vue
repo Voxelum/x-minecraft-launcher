@@ -639,13 +639,13 @@
 <script setup lang="ts">
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
-import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
+import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -801,8 +801,7 @@ const goCurseforgeProject = (id: number) => {
 const goModrinthProject = (id: string) => {
   replace({ query: { ...currentRoute.query, id: `modrinth:${id}` } })
 }
-const vuetify = injection(kVuetify)
-const isDark = computed(() => vuetify.theme.dark)
+const { isDark } = injection(kTheme)
 
 const selectedVersion = inject('selectedVersion', ref(props.versions.find(v => v.installed) || props.versions[0] as ProjectVersion | undefined))
 const onVersionClicked = (version: ProjectVersion) => {

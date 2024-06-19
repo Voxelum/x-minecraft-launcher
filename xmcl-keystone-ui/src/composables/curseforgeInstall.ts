@@ -1,23 +1,13 @@
-import { clientCurseforgeV1 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { File, FileIndex, HashAlgo } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, CurseforgeUpstream, InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
-import { getCurseforgeProjectModel } from './curseforge'
-import { useDialog } from './dialog'
+import { File, HashAlgo } from '@xmcl/curseforge'
+import { CurseForgeServiceKey, CurseforgeUpstream, InstanceInstallServiceKey, InstanceServiceKey, ModpackServiceKey, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 import { kInstanceFiles } from './instanceFiles'
-import { AddInstanceDialogKey } from './instanceTemplates'
-import { InstanceInstallDialog } from './instanceUpdate'
 import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
 import { kInstances } from './instances'
-import { useNotifier } from './notifier'
-import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
-import { useSWRVModel } from './swrv'
-
-export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
 export function useCurseforgeInstanceResource() {
   const { getResourceByHash, getResourcesByUris } = useService(ResourceServiceKey)
@@ -50,54 +40,6 @@ export function useCurseforgeInstanceResource() {
   return {
     getResourceByUpstream,
     getResourceByFile,
-  }
-}
-
-export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, 'modId' | 'id'>[]>, from: Ref<string | undefined>, type: Ref<ProjectType>, currentFileResource: Ref<Resource | undefined>) {
-  const { install: installResource } = useService(ResourceServiceKey)
-  const { t } = useI18n()
-  const { notify } = useNotifier()
-  const { installFile } = useService(CurseForgeServiceKey)
-
-  const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
-  const { show: showInstanceUpdateDialog } = useDialog(InstanceInstallDialog)
-  const { resources } = useResourceUrisDiscovery(computed(() => files.value.map(getCurseforgeFileUri)))
-  const isDownloaded = (file: Pick<File, 'modId' | 'id'>) => {
-    return !!resources.value[getCurseforgeFileUri(file)]
-  }
-  const { data: project } = useSWRVModel(getCurseforgeProjectModel(modId))
-  async function install(input: File | FileIndex) {
-    const file = 'modId' in input ? input : await clientCurseforgeV1.getModFile(modId.value, input.fileId)
-    const resource = resources.value[getCurseforgeFileUri(file)]
-    if (resource) {
-      if (currentFileResource.value) {
-        showInstanceUpdateDialog({
-          type: 'curseforge',
-          currentResource: currentFileResource.value,
-          resource,
-        })
-      } else if (type.value === 'modpacks') {
-        showAddInstanceDialog({ type: 'resource', resource })
-      } else if (from.value) {
-        installResource({ instancePath: from.value, resource }).then(() => {
-          notify({ title: t('installResource.success', { file: resource.fileName }), level: 'success', full: true })
-        }, (e) => {
-          notify({
-            title: t('installResource.fail', { file: resource.fileName }),
-            level: 'error',
-            body: e.toString(),
-            full: true,
-          })
-        })
-      }
-    } else {
-      await installFile({ file, type: type.value, icon: project.value?.logo.url, instancePath: from.value })
-    }
-  }
-  return {
-    install,
-    resources,
-    isDownloaded,
   }
 }
 

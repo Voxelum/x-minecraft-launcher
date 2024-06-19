@@ -37,7 +37,6 @@ import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kUserDiagnose, useUserDiagnose } from '@/composables/userDiagnose'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
-import { kVuetify } from '@/composables/vuetify'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import 'virtual:windi.css'
@@ -46,7 +45,6 @@ import { provide } from 'vue'
 export default defineComponent({
   setup(props, ctx) {
     useTelemetryTrack()
-    provide(kVuetify, vuetify.framework)
     provide(kSemaphores, useSemaphores())
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
