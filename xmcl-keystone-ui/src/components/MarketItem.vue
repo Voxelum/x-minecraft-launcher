@@ -22,9 +22,9 @@
     @dragstart="onDragStart"
     @dragend="onDragEnd"
     @drop="onDrop"
-    @click="emit('click')"
+    @click="emit('click', $event)"
   >
-    <v-list-item-avatar v-if="!selectionMode">
+    <v-list-item-avatar :size="dense ? 30 : 40">
       <img
         ref="iconImage"
         :class="{ 'opacity-20': item.installed.length === 0 && hover }"
@@ -46,13 +46,6 @@
         </v-icon>
       </v-btn>
     </v-list-item-avatar>
-    <v-list-item-action v-else>
-      <v-checkbox
-        v-model="isChecked"
-        hide-details
-        @click.stop
-      />
-    </v-list-item-action>
     <v-list-item-content>
       <v-badge
         class="w-full"
@@ -70,6 +63,14 @@
             v-if="item.installed.length > 0 && getContextMenuItems"
           >
             <div class="flex-grow" />
+            <v-icon
+              v-if="hasDuplicate"
+              v-shared-tooltip="props.item.installed.map(v => v.resource.fileName).join(', ')"
+              size="15"
+              color="red"
+            >
+              warning
+            </v-icon>
             <v-btn
               x-small
               icon
@@ -83,9 +84,15 @@
               </v-icon>
             </v-btn>
           </template>
+          <template v-else-if="dense">
+            <div class="flex-grow" />
+            <v-icon small>
+              {{ item.modrinth || item.modrinthProjectId ? '$vuetify.icons.modrinth' : '$vuetify.icon.curseforge' }}
+            </v-icon>
+          </template>
         </v-list-item-title>
       </v-badge>
-      <v-list-item-subtitle>
+      <v-list-item-subtitle v-if="!dense">
         <template v-if="description">
           {{ description }}
         </template>
@@ -96,7 +103,10 @@
           {{ item.description }}
         </template>
       </v-list-item-subtitle>
-      <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
+      <v-list-item-subtitle
+        v-if="!dense"
+        class="invisible-scroll flex flex-grow-0 gap-2"
+      >
         <slot
           v-if="slots.labels"
           name="labels"
@@ -154,6 +164,7 @@ const props = defineProps<{
   selectionMode: boolean
   checked: boolean
   selected: boolean
+  dense?: boolean
   hasUpdate?: boolean
   height?: number
   draggable?: boolean
@@ -164,16 +175,6 @@ const slots = useSlots()
 const emit = defineEmits(['click', 'checked', 'drop', 'install'])
 
 const hover = ref(false)
-
-const isChecked = computed({
-  get() {
-    return props.checked
-  },
-  set(v) {
-    emit('checked', v)
-  },
-})
-
 const config = injection(kSWRVConfig)
 const icon = ref(undefined as undefined | string)
 const title = ref(undefined as undefined | string)
@@ -181,6 +182,8 @@ const description = ref(undefined as undefined | string)
 const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
 const { open } = useContextMenu()
+
+const hasDuplicate = computed(() => props.item.installed.length > 1)
 
 const dragover = ref(0)
 const onDragEnter = (e: DragEvent) => {

@@ -654,6 +654,7 @@ mod:
     Ezt a modot és metaadatait örökre elveszíted. Biztos vagy benne, hogy hogy
     ezt akarod?
   deletionRestHint: És további {rest} mod...
+  denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
   enabled: '{count} Modok engedélyezve'
   filter: Modok szűrése
@@ -663,6 +664,7 @@ mod:
   incompatible: Inkompatibilis mod.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
+  mods: '{count} Mod'
   name: Mod | Modok
   noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
   openLink: A mod url {url} megnyitása

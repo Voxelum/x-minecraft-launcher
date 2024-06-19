@@ -696,6 +696,7 @@ mod:
     vouloir le supprimer ? | Vous perdrez ces mods et ces métadonnées pour
     toujours. Êtes-vous sûr de vouloir faire ça?
   deletionRestHint: Et {rest} plus de Mods...
+  denseView: Vue dense
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
   enabled: '{count} mods activés'
   filter: Mods de filtrage
@@ -704,6 +705,7 @@ mod:
   incompatible: Mod incompatible.
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
+  mods: "{count}\_mods"
   name: Mod | Mods
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
   openLink: Ouvrir l'url du mod {url}

@@ -662,6 +662,7 @@ mod:
     Utracisz ten mod i jego metadane na zawsze. Czy na pewno chcesz go usunąć? |
     Utracisz ten mod i jego metadane na zawsze. Czy na pewno chcesz to zrobić?
   deletionRestHint: I {rest} więcej modów...
+  denseView: Gęsty widok
   dropHint: Upuść .jar/.litemod moda tutaj, aby zaimportować.
   enabled: '{count} Modyfikacje włączone'
   filter: Modyfikacje filtra
@@ -671,6 +672,7 @@ mod:
   incompatible: Niekompatybilny mod.
   manage: Zarządzanie modami
   maybeCompatible: Może być kompatybilny.
+  mods: '{count} Mody'
   name: Mod | Mody
   noModLoaderHint: Nie zapomnij włączyć modloadera, aby korzystać z modów!
   openLink: Otwórz adres url moda {url}

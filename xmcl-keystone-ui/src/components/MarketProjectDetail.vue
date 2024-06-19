@@ -3,7 +3,7 @@
     class="mod-detail contained w-full overflow-auto"
     @scroll="onScroll"
   >
-    <div class="flex flex-grow gap-4 p-4">
+    <div class="header-container flex flex-grow gap-4 p-4">
       <div class="self-center">
         <v-skeleton-loader
           v-if="loading"
@@ -270,7 +270,7 @@
     <div class="grid w-full grid-cols-4 gap-2">
       <v-tabs-items
         v-model="tab"
-        class="col-span-3 h-full max-h-full max-w-full bg-transparent p-4"
+        class="main-content h-full max-h-full max-w-full bg-transparent p-4"
       >
         <v-tab-item>
           <v-expansion-panels
@@ -457,8 +457,9 @@
           />
         </v-tab-item>
       </v-tabs-items>
-
-      <aside>
+      <aside
+        class="side-content"
+      >
         <template v-if="curseforge || modrinth">
           <v-subheader>
             {{ t('modInstall.source') }}
@@ -888,6 +889,32 @@ function onDescriptionDivClicked(e: MouseEvent) {
 }
 </style>
 <style scoped>
+
+.main-content {
+  grid-column: span 4 / span 4;
+}
+.side-content {
+  grid-column: span 4 / span 4;
+  margin-bottom: 10px;
+}
+.header-container {
+  flex-direction: column;
+}
+
+@container (min-width: 450px) {
+  .main-content {
+    -ms-grid-column-span: span 3 / span 3;
+    grid-column: span 3 / span 3;
+  }
+  .side-content {
+    -ms-grid-column-span: span 1 / span 1;
+    grid-column: span 1 / span 1;
+  }
+  .header-container {
+    flex-direction: row;
+  }
+}
+
 .item {
   @apply flex items-center gap-2 overflow-x-auto overflow-y-hidden w-full;
 }

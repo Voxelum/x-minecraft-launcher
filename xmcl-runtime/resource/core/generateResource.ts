@@ -98,7 +98,7 @@ export async function getResourceAndMetadata(context: ResourceContext, query: Qu
   } as ResourceDecoratedMetadata & ResourceSnapshotTable))
 }
 
-export function generateResource(root: string, entry: ResourceSnapshotTable | ResourceEntryPath, metadata?: ResourceDecoratedMetadata, overwrite?: { path?: string; domain?: ResourceDomain }): Resource {
+export function generateResource(root: string, entry: ResourceSnapshotTable | ResourceEntryPath, metadata?: ResourceDecoratedMetadata, overwrite?: { path?: string; domain?: ResourceDomain; mtime?: number }): Resource {
   let fileName: string
   let path: string
   let storedPath: string | undefined
@@ -134,5 +134,6 @@ export function generateResource(root: string, entry: ResourceSnapshotTable | Re
     hash: entry.sha1,
     name: metadata?.name ?? fileName,
     fileType: entry.fileType,
+    mtime: overwrite?.mtime ?? entry.mtime,
   }
 }

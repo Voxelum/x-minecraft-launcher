@@ -281,7 +281,7 @@ export class ResourceService extends AbstractService implements IResourceService
       const resolved = await getResourceEntry(path, this.context)
       if ('domainedPath' in resolved) {
         const metadata = await getResourceAndMetadata(this.context, { domainedPath: resolved.domainedPath })
-        return generateResource(this.getPath(), metadata[0], metadata[0], { path, domain })
+        return generateResource(this.getPath(), metadata[0], metadata[0], { path, domain, mtime: resolved.mtime })
       }
 
       try {

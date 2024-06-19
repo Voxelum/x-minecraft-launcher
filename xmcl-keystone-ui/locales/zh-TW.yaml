@@ -633,6 +633,7 @@ mod:
   deletion: 刪除模組
   deletionHint: 您將移除這個模組的檔案和資訊。您確定嗎？| 您將移除這些模組的檔案和資訊。您確定嗎？
   deletionRestHint: 等 {rest} 個模組……
+  denseView: 密集視圖
   dropHint: 將模組 Jar 檔案拖入此處來匯入
   enabled: 一共啟用了 {count} 個模組
   filter: 篩選模組
@@ -641,6 +642,7 @@ mod:
   incompatible: 可能不相容目前版本。
   manage: 管理模組
   maybeCompatible: 也許相容於目前版本。
+  mods: '{count} 個模組'
   name: 模組 | 模組
   noModLoaderHint: 請不要忘記選擇模組載入器來載入模組
   openLink: 開啟模組連結 {url}

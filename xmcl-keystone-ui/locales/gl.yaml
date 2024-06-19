@@ -249,6 +249,8 @@ me:
   modpacks: Os meus Modpacks
   versions: Versións instaladas
 mod:
+  denseView: Vista Densa
+  mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.

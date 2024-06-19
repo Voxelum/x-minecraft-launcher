@@ -698,6 +698,7 @@ mod:
     dass Sie sie löschen wollen? | Du wirst diese Mod und ihre Metadaten für
     immer verschwinden lassen. Sind Sie sicher, dass Sie dies tun wollen?
   deletionRestHint: Und der {rest} der Mods...
+  denseView: Dichte Sicht
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
   enabled: 'Inklusive Mods: {count}'
   filter: Mod-Filter
@@ -706,6 +707,7 @@ mod:
   incompatible: Inkompatible Mods.
   manage: Mods verwalten
   maybeCompatible: Möglicherweise kompatibel.
+  mods: '{count} Mods'
   name: Mods | Mods
   noModLoaderHint: Vergessen Sie nicht, den Modloader zu aktivieren, um Mods zu verwenden!
   openLink: Link zur Mod öffnen {url}

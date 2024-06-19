@@ -46,6 +46,36 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     plans.value = {}
   })
 
+  async function check(mod: ProjectEntry<ModFile>, result: Record<string, UpgradePlan>) {
+      const gameVersion = runtime.value.minecraft
+      const modLoaderType = (runtime.value.forge || runtime.value.neoForged)
+        ? FileModLoaderType.Forge
+        : runtime.value.fabricLoader
+          ? FileModLoaderType.Fabric
+          : runtime.value.quiltLoader
+            ? FileModLoaderType.Quilt
+            : FileModLoaderType.Any
+      // this is a curseforge project and installed
+      const files = await swrvGet(`/curseforge/${mod.curseforgeProjectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
+        modId: mod.curseforgeProjectId!,
+        gameVersion,
+        modLoaderType,
+      }), cache, dedupingInterval)
+      if (files.data.length > 0) {
+        const file = markRaw(files.data[0])
+        const current = mod.installed[0]
+        if (file.id !== current.curseforge?.fileId) {
+          // this is the new version
+          result[mod.id] = {
+            file,
+            mod,
+            updating: false,
+          }
+        }
+        // if (file.id !== mod.installed[0].version) {
+      }
+  }
+
   const { refresh, refreshing, error } = useRefreshable(async () => {
     const result: Record<string, UpgradePlan> = {}
 
@@ -72,36 +102,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       }
     }
 
-    for (const mod of instanceMods.value) {
-      if (mod.installed.length > 0 && mod.curseforgeProjectId) {
-        const gameVersion = runtime.value.minecraft
-        const modLoaderType = (runtime.value.forge || runtime.value.neoForged)
-          ? FileModLoaderType.Forge
-          : runtime.value.fabricLoader
-            ? FileModLoaderType.Fabric
-            : runtime.value.quiltLoader
-              ? FileModLoaderType.Quilt
-              : FileModLoaderType.Any
-        // this is a curseforge project and installed
-        const files = await swrvGet(`/curseforge/${mod.curseforgeProjectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
-          modId: mod.curseforgeProjectId!,
-          gameVersion,
-          modLoaderType,
-        }), cache, dedupingInterval)
-        if (files.data.length > 0) {
-          const file = markRaw(files.data[0])
-          const current = mod.installed[0]
-          if (file.id !== current.curseforge?.fileId) {
-            // this is the new version
-            result[mod.id] = {
-              file,
-              mod,
-              updating: false,
-            }
-          }
-          // if (file.id !== mod.installed[0].version) {
-        }
-      }
+    // batch 8 curseforge requests each time
+    const batch = 8
+    const curseforgeTarget = instanceMods.value.filter(mod => mod.installed.length > 0 && mod.curseforgeProjectId)
+    for (let i = 0; i < curseforgeTarget.length; i += batch) {
+      await Promise.all(curseforgeTarget.slice(i, i + batch).map(m => check(m, result)))
     }
     plans.value = result
     checked.value = true

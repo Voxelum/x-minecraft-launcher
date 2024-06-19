@@ -83,6 +83,7 @@ const EMPTY_RESOURCE: Resource = ({
   hash: '',
   name: '',
   uris: [],
+  mtime: 0,
 })
 
 /**

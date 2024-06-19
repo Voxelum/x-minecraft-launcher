@@ -454,6 +454,7 @@ mod:
     eliminarlo? | Perderás estos mods y sus metadatos para siempre. ¿Estás
     seguro de que deseas hacerlo?
   deletionRestHint: Y otros {rest} mods...
+  denseView: Vista densa
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
@@ -462,6 +463,7 @@ mod:
   incompatible: Mod Incompatible.
   manage: Administrar Mods
   maybeCompatible: Posiblemente Compatible.
+  mods: '{count} modificaciones'
   name: Mod | Mods
   noModLoaderHint: ¡No olvides habilitar un modloader para usar mods!
   openLink: Abrir la URL del mod {url}

@@ -633,6 +633,7 @@ mod:
     delete it? | You will lose these mod & these metadata forever. Are you sure
     you want to do that?
   deletionRestHint: And {rest} more Mods...
+  denseView: Dense View
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
   filter: Filter Mods
@@ -642,6 +643,7 @@ mod:
   incompatible: Incompatible Mod.
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
+  mods: '{count} Mods'
   name: Mod | Mods
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
