@@ -22,6 +22,6 @@ if (process.platform === 'linux' || process.platform === 'openbsd' || process.pl
     .replace('installPrefix}/${appInfo.sanitizedProductName}', 'installPrefix}/xmcl'), 'utf-8')
   writeFileSync(linuxAfterInstallShPath, readFileSync(linuxAfterInstallShPath, 'utf-8')
     // eslint-disable-next-line no-template-curly-in-string
-    .replace('${sanitizedProductName}', 'xmcl'), 'utf-8')
+    .replaceAll('${sanitizedProductName}', 'xmcl'), 'utf-8')
   console.log('Patched linux build target')
 }
