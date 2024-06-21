@@ -239,6 +239,7 @@ export class ElectronController implements LauncherAppController {
       }
       if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
         detail.url.startsWith('https://api.xmcl.app/curseforge') ||
+        detail.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
         detail.url.startsWith('https://api.xmcl.app/rtc/official')
       ) {
         this.app.registry.get(UserService).then(userService => {

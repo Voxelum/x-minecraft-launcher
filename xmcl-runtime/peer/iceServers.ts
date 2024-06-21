@@ -18,9 +18,12 @@ const BUILTIN = [
 
 export async function getIceServers() {
   console.log('Try to fetch rtc credential')
-  const response = await fetch('https://api.xmcl.app/rtc/official', {
-    method: 'POST',
-  })
+  const response = await fetch(
+    // 'https://api.xmcl.app/rtc/official',
+    'https://xmcl-web-api--dogfood.deno.dev/rtc/official',
+    {
+      method: 'POST',
+    })
   if (response.status === 200) {
     const credential: RTCIceServer & {
       stuns: string[]
@@ -109,6 +112,13 @@ async function testIceServers(
   portBegin?: number) {
   const ipSet = new Set<string>()
   await Promise.all(servers.map(async (server) => {
+    if (server.credential) {
+      const key = getKey(server)
+      passed[getKey(server)] = server
+      delete blocked[key]
+      onValidIceServer(server)
+      return
+    }
     const ips = await test(factory, server, portBegin).catch(() => [])
     console.log('Test ice server', server, ips)
     const key = getKey(server)
@@ -147,6 +157,9 @@ export function createIceServersProvider(
   })
 
   return {
+    whenReady() {
+      return initPromise
+    },
     async init(cachePath: string) {
       console.log('Init ice servers')
       loadIceServers(cachePath).then(cached => {
@@ -164,9 +177,7 @@ export function createIceServersProvider(
       const fetched = await getIceServers()
       testIceServers(factory, fetched, passed, blocked, onValidIceServer, onIp)
     },
-    async get(preferredIceServers: RTCIceServer[] = []) {
-      await initPromise
-
+    get(preferredIceServers: RTCIceServer[] = []) {
       const servers = Object.keys(passed).length > 0 ? Object.values(passed) : Object.values(blocked)
       // sort all servers by preferredIceServers
       if (preferredIceServers.length > 0) {
