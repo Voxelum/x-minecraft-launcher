@@ -163,29 +163,6 @@ const onOpenDependency = (dep: ProjectDependency) => {
 
 const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId)
 
-function onDescriptionLinkClicked(e: MouseEvent, href: string) {
-  const url = new URL(href)
-  if (url.host === 'modrinth.com') {
-    const slug = url.pathname.split('/')[2] ?? ''
-    let domain: string = ''
-    if (url.pathname.startsWith('/mod/')) {
-      domain = 'mods'
-    } else if (url.pathname.startsWith('/shaders/')) {
-      domain = 'shaderpacks'
-    } else if (url.pathname.startsWith('/resourcepacks/')) {
-      domain = 'resourcepacks'
-    } else if (url.pathname.startsWith('/modpacks')) {
-      domain = 'modpacks'
-    }
-
-    if (domain !== 'modpacks' && slug && domain) {
-      push({ query: { ...currentRoute.query, id: `modrinth:${slug}` } })
-      e.preventDefault()
-      e.stopPropagation()
-    }
-  }
-}
-
 </script>
 
 <template>
@@ -212,6 +189,5 @@ function onDescriptionLinkClicked(e: MouseEvent, href: string) {
     @install-dependency="onInstallDependency"
     @select:category="emit('category', $event)"
     @refresh="refresh()"
-    @description-link-clicked="onDescriptionLinkClicked"
   />
 </template>

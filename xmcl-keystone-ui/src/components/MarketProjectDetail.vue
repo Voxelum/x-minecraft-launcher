@@ -646,6 +646,7 @@ import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
+import { clientCurseforgeV1 } from '@/util/clients'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -794,7 +795,7 @@ const detailsHeaders = computed(() => {
 const { getDateString } = useDateString()
 const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
 
-const { replace, currentRoute } = useRouter()
+const { push, replace, currentRoute } = useRouter()
 const goCurseforgeProject = (id: number) => {
   replace({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
 }
@@ -870,11 +871,58 @@ function onDescriptionDivClicked(e: MouseEvent) {
       const href = ele.getAttribute('href')
 
       if (href) {
-        emit('description-link-clicked', e, href)
+        onDescriptionLinkClicked(e, href)
         break
       }
     }
     ele = ele.parentElement
+  }
+}
+
+function onDescriptionLinkClicked(e: MouseEvent, href: string) {
+  const url = new URL(href)
+  if (url.host === 'modrinth.com') {
+    const slug = url.pathname.split('/')[2] ?? ''
+    let domain: string = ''
+    if (url.pathname.startsWith('/mod/')) {
+      domain = 'mods'
+    } else if (url.pathname.startsWith('/shaders/')) {
+      domain = 'shaderpacks'
+    } else if (url.pathname.startsWith('/resourcepacks/')) {
+      domain = 'resourcepacks'
+    } else if (url.pathname.startsWith('/modpacks')) {
+      domain = 'modpacks'
+    }
+
+    if (domain !== 'modpacks' && slug && domain) {
+      push({ query: { ...currentRoute.query, id: `modrinth:${slug}` } })
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+  if ((url.host === 'www.curseforge.com' || url.host === 'curseforge.com') && url.pathname.startsWith('/minecraft')) {
+    const slug = url.pathname.split('/')[3] ?? ''
+    let domain: string = ''
+    if (url.pathname.startsWith('/minecraft/mc-mods/')) {
+      domain = 'mods'
+    } else if (url.pathname.startsWith('/texture-packs/')) {
+      domain = 'resourcepacks'
+    } else if (url.pathname.startsWith('/modpacks')) {
+      domain = 'modpacks'
+    }
+
+    if (domain && domain !== 'modpacks' && slug) {
+      clientCurseforgeV1.searchMods({ slug, pageSize: 1 }).then((result) => {
+        const id = result.data[0]?.id
+        if (id) {
+          push({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
+        } else {
+          window.open(href, '_blank')
+        }
+      })
+      e.preventDefault()
+      e.stopPropagation()
+    }
   }
 }
 
