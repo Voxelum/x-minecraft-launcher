@@ -405,7 +405,7 @@ const {
 )
 
 // Curseforge
-const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt }
+const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt, neoforge: FileModLoaderType.NeoForge }
 const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number)
 const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
   CurseforgeBuiltinClassId.modpack,
