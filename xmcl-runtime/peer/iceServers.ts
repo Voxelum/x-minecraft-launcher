@@ -25,18 +25,22 @@ export async function getIceServers() {
       method: 'POST',
     })
   if (response.status === 200) {
-    const credential: RTCIceServer & {
+    const credential: {
+      uris: string[]
+      ttl: number
+      password: string
+      username: string
       stuns: string[]
     } = await response.json() as any
     const result: RTCIceServer[] = credential.stuns.map((s) => ({
       urls: `stun:${s}`,
     }))
 
-    if (credential.urls) {
+    if (credential.uris) {
       result.unshift({
-        urls: credential.urls,
+        urls: credential.uris,
         username: credential.username,
-        credential: credential.credential,
+        credential: credential.password,
       })
     }
 

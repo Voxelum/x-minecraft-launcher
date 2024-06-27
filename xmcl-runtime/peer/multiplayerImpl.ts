@@ -165,12 +165,12 @@ export function createMultiplayer() {
     const isAllowTurn = () => localStorage.getItem('peerAllowTurn') === 'true'
     let stunIndex = 0
     let turnIndex = 0
-    const [stuns, turns] = iceServers.get(preferredIceServers)
     return {
       getCurrentIceServer: () => {
         throw new Error('Method not implemented.')
       },
       getNextIceServer: () => {
+        const [stuns, turns] = iceServers.get(preferredIceServers)
         if (isAllowTurn() && turns.length > 0) {
           const cur = turns[turnIndex]
           turnIndex = (turnIndex + 1) % turns.length
@@ -205,6 +205,7 @@ export function createMultiplayer() {
         if (remoteId) {
           console.log(`Send local description ${remoteId}: ${sdp} ${type}`)
           // Send to the group if the remoteId is set
+          const [stuns] = iceServers.get(preferredIceServers)
           group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, stuns[stunIndex], stuns)
         }
 

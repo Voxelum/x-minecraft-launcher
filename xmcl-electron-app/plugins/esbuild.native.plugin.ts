@@ -50,6 +50,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           // remove the line `import NodeDataChannel from '../lib/index.js';`
           content = content.replace(/import NodeDataChannel from '..\/lib\/index.js';/g, '')
 
+          content = content.replace('const [protocol, rest] = url.split(/:(.*)/);',
+              "const [protocol, hostname, port] = url.split(':');" +
+              'return { hostname, port, username: server.username, password: server.credential };\n',
+          )
+
           return {
             contents: content,
             loader: 'js',
