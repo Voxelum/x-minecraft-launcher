@@ -11,6 +11,7 @@ import { kInstanceFiles } from './instanceFiles'
 import { kInstanceVersion } from './instanceVersion'
 import { kInstance } from './instance'
 import { kInstanceLaunch } from './instanceLaunch'
+import { kInstances } from './instances'
 
 export interface LaunchMenuItem {
   title: string
@@ -25,6 +26,7 @@ export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
 
   const { path } = injection(kInstance)
+  const { isValidating } = injection(kInstances)
   const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionDiagnose)
   const { issue: javaIssue, fix: fixJavaIssue } = injection(kInstanceJavaDiagnose)
   const { issue: filesIssue, fix: fixInstanceFileIssue } = injection(kInstanceFilesDiagnose)
@@ -142,6 +144,7 @@ export function useLaunchButton() {
     loadingVersionIssues.value ||
     refreshingFiles.value ||
     isRefreshingVersion.value ||
+    isValidating.value ||
     dirty.value)
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
   const menuItems = computed<LaunchMenuItem[]>(() => launchButtonFacade.value.menu || [])

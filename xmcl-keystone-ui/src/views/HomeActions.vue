@@ -7,7 +7,7 @@
       v-shared-tooltip="_ => t('modpack.export')"
       text
       icon
-      :loading="refreshing"
+      :loading="isValidating"
       @click="showExport()"
     >
       <v-icon>
@@ -19,6 +19,7 @@
       v-shared-tooltip="_ => t('logsCrashes.title')"
       text
       icon
+      :loading="isValidating"
       @click="showLogDialog()"
     >
       <v-icon>
@@ -30,6 +31,7 @@
       v-shared-tooltip="_ => t('instance.showInstance')"
       text
       icon
+      :loading="isValidating"
       @click="showInstanceFolder"
     >
       <v-icon>
@@ -41,6 +43,7 @@
       v-shared-tooltip="_ => t('baseSetting.title', 2)"
       text
       icon
+      :loading="isValidating"
       to="/base-setting"
     >
       <v-icon>
@@ -59,10 +62,12 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
+import { kInstances } from '@/composables/instances'
 
 const isFocus = useInFocusMode()
 
-const { path, refreshing } = injection(kInstance)
+const { path } = injection(kInstance)
+const { isValidating } = injection(kInstances)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
