@@ -17,7 +17,7 @@ AppShareInstanceDialog:
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l'istanza corrente con te'
+  instanceShare: "{user} ha appena condiviso l'istanza corrente con te"
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -124,7 +124,6 @@ curseforge:
   releasedDate: Data di rilascio
   search: Cerca
   totalDownloads: Download totali
-curseforgeCard: {}
 dataMigration:
   apply: Applica impostazioni
   directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
@@ -220,140 +219,9 @@ duration:
   hour: '{duration} ora fa | {duration} ore fa'
   minute: '{duration} minuto fa | {duration} minuti fa'
   second: '{duration} secondo fa | {duration} seconid fa'
-authProfileAddedNotification: Profilo Auth {name} aggiunto
-author: Autore
-back: Indietro
-baseSetting:
-  title: Impostazioni di base
-browse: Sfoglia
-browseApp:
-  createShortcut: Crea collegamento
-  default: DEFAULT
-  delete: Elimina
-  launch: Avvia e imposta come predefinito
-cancel: Annulla
-checkUpdate:
-  name: Controlla aggiornamenti
-confirm: Inizia
-copyClipboard:
-  success: Copia negli appunti
-create: Crea
-curseforge:
-  authors: Autori
-  category: Categoria
-  createdDate: Data di creazione
-  downloadOnly: Download
-  file:
-    gameVersion: Versione gioco
-    modLoader: Mod Loader
-  install: Installa
-  installTo: Installa in {path}
-  installToStorage: Installa in memoria
-  lastUpdate: Ultima data di aggiornamento
-  project:
-    description: Descrizione
-    files: File
-    images: Immagini
-  recentFiles: File recenti
-  releasedDate: Data di rilascio
-  search: Cerca
-  totalDownloads: Download totali
-curseforgeCard: {}
-dataMigration:
-  apply: Applica impostazioni
-  directoryCriteriaHint: Assicurati che la nuova directory di destinazione sia VUOTA!
-  migrationDestinationIsFile: La destinazione della migrazione è un file! Seleziona una directory vuota!
-  migrationDestinationIsNotEmptyDirectory: >-
-    La destinazione della migrazione non è una directory vuota! Assicurati di
-    selezionare una directory vuota!
-  migrationNoPermission: >-
-    Nessun permesso per rinominare la vecchia directory nella nuova! Assicurati che
-    il launcher abbia accesso a entrambi i percorsi!
-  placeholder: Fai clic qui per selezionare la directory
-  setRootCause: >-
-    Perdi i tuoi dati (Mappe, Pacchetti di risorse, Mod) se chiudi il Launcher durante
-    questo processo!
-  setRootDescription: Questo cambierà la cartella dati radice di questo launcher e minecraft.
-  setRootTitle: Imposta una nuova posizione di archiviazione
-  unknownError: Errore sconosciuto! Riprova o contatta lo sviluppatore!
-  waitReload: Migrazione dei dati in corso. Non chiudere il Launcher o perderai i tuoi dati.
-delete:
   name: Elimina {name}
   'no': 'No'
   'yes': Elimina
-dependencies:
-  embedded: Incorporato
-  incompatible: Incompatibile
-  name: Dipendenze
-  optional: Opzionale
-  required: Richiesto
-description: Descrizione
-detail: Dettaglio
-diagnosis:
-  badInstall:
-    message: Fai clic per provare a reinstallare questa versione.
-    name: Cattiva installazione su {version}
-  corruptedAssets:
-    message: Il launcher installerà gli asset per te
-    name: >-
-      Asset danneggiato: {name} | Asset danneggiato {name} | {count} asset
-      danneggiati
-  corruptedAssetsIndex:
-    message: Il launcher scaricherà l'indice degli asset per te
-    name: File indice degli asset danneggiati di {version}.
-  corruptedLibraries:
-    message: Il launcher installerà le librerie per te
-    name: >-
-      Libreria danneggiata: {name} | Libreria danneggiata: {name} | {count} librerie
-      danneggiate
-  corruptedVersionJar:
-    message: Fai clic per installare questa versione
-    name: File jar della versione danneggiato per Minecraft %{version}.
-  corruptedVersionJson:
-    message: Fai clic per installare questa versione
-    name: Versione danneggiata %{version} json.
-  incompatibleJava:
-    message: Puoi chiedere al launcher di scaricarlo per te.
-    name: La versione di java {javaVersion} non è adatta a {version}!
-  instanceFiles:
-    description: L'installazione dell'istanza include {counts} file.
-    title: Installazione istanza incompleta
-  invalidJava:
-    message: Fai clic per utilizzare un altro java per il lancio.
-    name: Percorso Java non valido.
-  missingAssets:
-    message: Il launcher installerà gli asset per te
-    name: 'Asset mancante: {name} | Asset mancante: {name} | Mancante %{count} asset.'
-  missingAssetsIndex:
-    message: Il launcher scaricherà l'indice degli asset
-    name: File indice degli asset mancanti di {version}.
-  missingAuthlibInjector: {}
-  missingJava:
-    message: Fai clic per risolvere il problema
-    name: Impossibile trovare Java per avviare Minecraft!
-  missingLibraries:
-    message: Il launcher installerà le librerie per te
-    name: >-
-      Libreria {name} mancante | Librerie {name} mancanti | {count} librerie
-      mancanti | {count} librerie mancanti
-  missingVersion:
-    message: Fai clic per installare questa versione
-    name: La versione {version} non è installata!
-  missingVersionJar:
-    message: Fai clic per installare questa versione
-    name: Mancante versione jar per Minecraft %{version}
-disable: Disabilita
-disk:
-  available: Disponibile
-  used: Usato
-download: Scarica
-downloadCount: '{count} download'
-downloadUpdate: Scarica aggiornamento
-duration:
-  day: '{duration} giorno | {duration} giorni'
-  hour: '{duration} ora | {duration} ore'
-  minute: '{duration} minuto | {duration} minuti'
-  second: '{duration} secondo | {duration} secondi'
 edit: Modifica
 enable: Abilita
 error:
@@ -363,7 +231,7 @@ errors:
       Impossibile analizzare il file jar dell'installatore di Forge. Forse
       Forge ha un nuovo formato di file di installazione? Contattare gli sviluppatori
       se il problema persiste.
-    BadInstanceType: 'Non è un'istanza valida: {type}'
+    BadInstanceType: "Non è un'istanza valida: {type}"
     BodyTimeoutError: Timeout del corpo HTTP
     ChecksumNotMatchError: Checksum non corrispondente! Aspettarsi {expect}. Reale {actual}.
     ConnectTimeoutError: Timeout della connessione al server.
@@ -770,316 +638,311 @@ mod:
   denseView: Vista densa
   dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
   enabled: '{count} Mod abilitati'
-    filtro: Filtra Mod
-    groupInstalled: Gruppo Mod Installati
-    hasUpdate: Il Mod ha una nuova versione!
-    hideIncompatible: Nascondi Mod Incompatibili
-    incompatible: Mod Incompatibile.
-    manage: Gestisci Mod
-    maybeCompatible: Forse Compatibile.
-    mods: '{count} Mods'
-    name: Mod | Mods
-    noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare i mod!
-    openLink: Apri il mod url {url}
-    search: Cerca Mod
-    searchOnCurseforge: Cerca {name} in curseforge
-    searchOnModrinth: Cerca {name} in Modrinth
-    showDirectory: Mostra la directory dei mod
-    showFile: Mostra il percorso del mod {file}
-    showInCurseforge: Mostra il mod in curseforge
-    showInModrinth: Mostra {name} in Modrinth
-    switchDefaultSource: Sorgente Mod Predefinita
-    toUpdate: '{count} da aggiornare'
-  modInstall:
-    checkUpgrade: Controlla Aggiornamento Mod
-    checkedUpgrade: Aggiornamento controllato
-    currentVersion: Versione Selezionata
-    dependencyHint: Installata un'altra versione {version}
-    install: Installa
-    installHint: Verrà installato il file {file} con {dependencies} dipendenze
-    installed: Installato
-    noVersionSupported: Il mod supporta solo Minecraft {supported}.
-    recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
-    search: Risultato della ricerca
-    searchHint: Cerca e seleziona il progetto
-    source: Sorgente Mod
-    switch: Versione di commutazione
-    upgrade: Aggiorna Mod
-  modSearchType:
-    all: Tutti
-    explore: Esplora il mercato
-    installed: Installato
-    local: Cache del disco
-  modified:
-    reset: Reimposta
-    save: Salva
-    unsaved: La tua modifica non è stata salvata!
-  modpack:
-    author: Nome autore
-    authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
-    delete:
-      hint: Questo eliminerà il modpack {name} con i suoi metadati. Sei sicuro?
-      title: Elimina il Modpack
-    description: Descrizione
-    descriptionHint: >-
-      Descrizione generale del tuo modpack. Potrebbe essere utilizzato per
-      l'esportazione come modpack curseforge.
-    dropHint: Rilascia lo zip del modpack qui per importare
-    emitCurseforge: Emisfero Curseforge Modpack
-    emitMcbbs: Emisfero MCBBS Modpack
-    emitModrinth: Emisfero Modrinth Modpack
-    emitModrinthStrict: Formato Modrinth Strict
-    emitModrinthStrictDescription: Sono consentiti solo gli URL dei 4 domini elencati nel documento modrinth
-    export: Esporta come Modpack
-    general: Informazioni generali
-    includeAssets: Includi risorse
-    includeLibraries: Includi librerie
-    includes: File da includere
-    modpackVersion: Versione Modpack
-    name: Modpack | Modpacks
-    overrides: Sostituisce
-    showFile: Mostra il file {file}
-    showInCurseforge: Mostra {name} in Curseforge
-    showInFtb: Mostra {name} in FTB
-    showInModrinth: Mostra {name} in Modrinth
-    url: URL
-    urlHint: L'homepage del tuo modpack
-  modrinth:
-    browseUrl: Apri nel browser {url}
-    categories:
-      128x: 128x
-      16x: 16x
-      256x: 256x
-      32x: 32x
-      48x: 48x
-      512x+: 512x+
-      64x: 64x
-      8x-: 8x-
-      adventure: Avventura
-      atmosphere: Atmosfera
-      audio: Audio
-      blocks: Blocchi
-      bloom: Bloom
-      bukkit: Bukkit
-      bungeecord: Bungeecord
-      canvas: Tela
-      cartoon: Cartone animato
-      categories: Categorie
-      challenging: Stimolante
-      colored-lighting: Illuminazione a colori
-      combat: Combattimento
-      core-shaders: Core-shaders
-      cursed: Maledetto
-      datapack: Pacchetto dati
-      decoration: Decorazione
-      economy: Economia
-      entities: Entità
-      environment: Ambiente
-      equipment: Attrezzatura
-      fabric: Tessuto
-      fantasy: Fantasia
-      features: Caratteristiche
-      folia: Folia
-      foliage: Fogliame
-      fonts: Font
-      food: Cibo
-      forge: Forgia
-      game-mechanics: Meccaniche di gioco
-      gui: Gui
-      high: Alto
-      iris: Iris
-      items: Articoli
-      kitchen-sink: Lavello della cucina
-      library: Biblioteca
-      lightweight: Leggero
-      liteloader: Liteloader
-      locale: Locale
-      low: Basso
-      magic: Magia
-      management: Gestione
-      medium: Medio
-      minecraft: Minecraft
-      minigame: Mini Giochi
-      misc: Misc
-      mobs: Mob
-      modded: Modificato
-      models: Modelli
-      modloader: Mod Loader
-      multiplayer: Multigiocatore
-      neoforge: NeoForge
-      optifine: Optifine
-      optimization: Ottimizzazioni
-      paper: Carta
-      path-tracing: Tracciamento del percorso
-      pbr: PBR
-      performance impact: Impatto sulle prestazioni
-      potato: Patata
-      purpur: Purpur
-      quests: Quest
-      quilt: Quilt
-      realistic: Realistico
-      reflections: Riflessioni
-      resolutions: Risoluzioni
-      rift: Rift
-      screenshot: Screenshot
-      semi-realistic: Semi realistico
-      shadows: Ombre
-      simplistic: Semplice
-      social: Sociale
-      spigot: Spigot
-      sponge: Spugna
-      storage: Deposito
-      technology: Tecnologia
-      themed: Tematico
-      transportation: Trasporto
-      tweaks: Tweaks
-      utility: Utilità
-      vanilla: Vaniglia
-      vanilla-like: Simile alla vaniglia
-      velocity: Velocità
-      waterfall: Cascata
-      worldgen: Generatore di mondi
-    clientSide: Lato client
-    copyTitle: Copia il testo {title} negli appunti
-    createAt: Creato
-    description: Descrizione
-    downloads: Download
-    environments:
-      client: Client
-      default: Predefinito
-      name: Ambiente
-      optional: Opzionale
-      required: Richiesto
-      server: Server
-      unsupported: Non supportato
-    externalResources: Risorse esterne
-    featuredVersions: Versioni in primo piano
-    followers: Seguaci
-    gallery: Galleria
-    gameVersions:
-      name: Versioni del gioco
-    headers:
-      status: Statistiche
-      support: Supporti
-      version: Versione
-    issueUrl: Problema URL
-    license: Licenza
-    licenses:
-      name: Licenze
-    modLoaders:
-      name: Mod Loaders
-    perPage: Per pagina
-    projectId: ID progetto
-    projectMembers: Membri del progetto
-    projectType:
-      mod: Mod
-      modpack: Modpack
-      name: Tipo di progetto
-      resourcePack: Pacchetto di risorse
-      shader: Shader
-    quickSearch: Cerca {title}
-    searchText: Cerca
-    serverSide: Lato server
-    sort:
-      downloads: Conteggio dei download
-      follows: Conteggio dei follower
-      newest: Creato di recente
-      relevance: Rilevanza
-      title: Ordina per
-      updated: Aggiornato di recente
-    sourceUrl: URL di origine
-    technicalInformation: Informazioni tecniche
-    updateAt: Aggiornato
-    versions: Versioni
-    wikiUrl: Wiki
-  modrinthCard:
-    currentVersion: Versione corrente
-    projectHint: >
-      Questa istanza è stata creata da Modrinth modpack da <code class="rounded p-1"
-      style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-            <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
-  multiplayer:
-    allowTurn: Abilita il server di relay
-    allowTurnHint: >-
-      Abilita il server di relay se non riesci a connetterti con il tuo amico.
-      Tuttavia, l'utilizzo di un server di relay potrebbe rallentare la tua
-      connessione. Usalo con cautela.
-    complete: Completo
-    confirm: Conferma
-    connections: Connessioni
-    copied: Copiato!
-    copy: Copia
-    copyGroupToFriendHint: Consenti ai tuoi amici di unirsi al gruppo con questo ID
-    copyLocalHint: >
-      "Per favore copia il testo SDP locale e invialo al tuo amico affinché il
-      tuo amico inserisca questo testo nella connessione di join <span>Un token
-      può essere utilizzato solo per <span style="color: red; font-weight:
-      bold;">un peer</span>! Non puoi inviare lo stesso token a più peer!</span>
-      
- <span class="hint-text"
-      style="font-style: italic;">Se è necessario connettere più peer, è necessario
-      creare <span style="font-weight: bold; color: rgba(245, 158,
-      11)">più</span> connessioni.</span>"
-    createLocalToken: Crea token locale
-creaLocalToken: Crea token locale
-currentIpTitle: Rileva IP pubblico
-currentNatTitle: 'Rete corrente (NAT):'
-difficultyLevelHint: 'Livello di difficoltà per creare una connessione peer con altri:'
-disconnect: Disconnetti
-disconnectDescription: 'Sei sicuro di voler disconnettere l''utente {user}({id})?'
-disconnected: Disconnesso
-enterRemoteToken: Inserisci il token remoto
-enterRemoteTokenHint: >-
-  Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo token
-  nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
-gatheringIce: >
-  "Attendere che il server ICE raccolga informazioni sufficienti sulla rete. Se
-  si è impazienti e ci sono informazioni sufficienti, è possibile fornire l'SDP
-  corrente all'altra parte in anticipo e fare clic su Avanti Invia il <span
-  class="v-chip v-chip--label v-size--small" style="text-font: bold">Local Token
-  </span> al tuo peer, il tuo peer inserisce il tuo token in <span class="v-chip
-  v-chip--label v-size--small" style="text-font"> Join Connection </span>
-  section. 
- Il server ICE potrebbe aver bisogno di tempo per raccogliere le
-  tue informazioni per creare <span class="v-chip v-chip--label v-size--small"
-  style="text-font: bold">Local token</span>.
- Non è necessario attendere fino a
-  quando lo stato ICE non è completo. Se il token riportato di seguito rimane
-  invariato, è possibile copiarlo e inviarlo al proprio peer."
-groupId: ID gruppo
-illegalTokenDescription: Token non valido, assicurarsi che il token del proprio peer sia corretto
-initiateConnection: Inizia la connessione
-inviteLink: Invita link
-joinConnection: >-
-  Se il tuo peer ha già avviato una connessione, è necessario Unirsi alla
-  connessione.
-joinManual: Unisciti
-joinOrCreateGroup: Unisciti/Crea gruppo
-joinOrCreateGroupHint: Ottieni l'ID gruppo dai tuoi amici o crea un gruppo
-kernel: Kernel P2P
-kernelDescription: >-
-  Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione solo se
-  la connessione peer-to-peer si blocca occasionalmente la finestra del
-  launcher.
-leaveGroup: Abbandona il gruppo
-localToken: Token locale
-manualConnect: Connettersi manualmente
-name: Multiplayer su LAN
-networkInfo: Informazioni sulla rete
-next: Avanti
-placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
-previous: Precedente
-receiveHint: >-
-  Dopo che l'altra parte ha inserito il proprio token, la connessione verrà
-  creata automaticamente. Ora è possibile chiudere la finestra di dialogo.
-receiveRemoteTokenHint: Inserisci qui il token del tuo peer.
-remoteToken: Token remoto
-routerInfo: Informazioni sul router
-sendTokenToRemote: Invia token al remoto
-share: Condividi configurazione istanza
-sharing: Condivisione file...
-start: Inizia
-startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
+  filter: Filtra Mod
+  groupInstalled: Gruppo Mod Installati
+  hasUpdate: Il Mod ha una nuova versione!
+  hideIncompatible: Nascondi Mod Incompatibili
+  incompatible: Mod Incompatibile.
+  manage: Gestisci Mod
+  maybeCompatible: Forse Compatibile.
+  mods: '{count} Mods'
+  name: Mod | Mods
+  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare i mod!
+  openLink: Apri il mod url {url}
+  search: Cerca Mod
+  searchOnCurseforge: Cerca {name} in curseforge
+  searchOnModrinth: Cerca {name} in Modrinth
+  showDirectory: Mostra la directory dei mod
+  showFile: Mostra il percorso del mod {file}
+  showInCurseforge: Mostra il mod in curseforge
+  showInModrinth: Mostra {name} in Modrinth
+  switchDefaultSource: Sorgente Mod Predefinita
+  toUpdate: '{count} da aggiornare'
+modInstall:
+  checkUpgrade: Controlla Aggiornamento Mod
+  checkedUpgrade: Aggiornamento controllato
+  currentVersion: Versione Selezionata
+  dependencyHint: Installata un'altra versione {version}
+  install: Installa
+  installHint: Verrà installato il file {file} con {dependencies} dipendenze
+  installed: Installato
+  noVersionSupported: Il mod supporta solo Minecraft {supported}.
+  recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
+  search: Risultato della ricerca
+  searchHint: Cerca e seleziona il progetto
+  source: Sorgente Mod
+  switch: Versione di commutazione
+  upgrade: Aggiorna Mod
+modSearchType:
+  all: Tutti
+  explore: Esplora il mercato
+  installed: Installato
+  local: Cache del disco
+modified:
+  reset: Reimposta
+  save: Salva
+  unsaved: La tua modifica non è stata salvata!
+modpack:
+  author: Nome autore
+  authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
+  delete:
+    hint: Questo eliminerà il modpack {name} con i suoi metadati. Sei sicuro?
+    title: Elimina il Modpack
+  description: Descrizione
+  descriptionHint: >-
+    Descrizione generale del tuo modpack. Potrebbe essere utilizzato per
+    l'esportazione come modpack curseforge.
+  dropHint: Rilascia lo zip del modpack qui per importare
+  emitCurseforge: Emisfero Curseforge Modpack
+  emitMcbbs: Emisfero MCBBS Modpack
+  emitModrinth: Emisfero Modrinth Modpack
+  emitModrinthStrict: Formato Modrinth Strict
+  emitModrinthStrictDescription: Sono consentiti solo gli URL dei 4 domini elencati nel documento modrinth
+  export: Esporta come Modpack
+  general: Informazioni generali
+  includeAssets: Includi risorse
+  includeLibraries: Includi librerie
+  includes: File da includere
+  modpackVersion: Versione Modpack
+  name: Modpack | Modpacks
+  overrides: Sostituisce
+  showFile: Mostra il file {file}
+  showInCurseforge: Mostra {name} in Curseforge
+  showInFtb: Mostra {name} in FTB
+  showInModrinth: Mostra {name} in Modrinth
+  url: URL
+  urlHint: L'homepage del tuo modpack
+modrinth:
+  browseUrl: Apri nel browser {url}
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    adventure: Avventura
+    atmosphere: Atmosfera
+    audio: Audio
+    blocks: Blocchi
+    bloom: Bloom
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: Tela
+    cartoon: Cartone animato
+    categories: Categorie
+    challenging: Stimolante
+    colored-lighting: Illuminazione a colori
+    combat: Combattimento
+    core-shaders: Core-shaders
+    cursed: Maledetto
+    datapack: Pacchetto dati
+    decoration: Decorazione
+    economy: Economia
+    entities: Entità
+    environment: Ambiente
+    equipment: Attrezzatura
+    fabric: Tessuto
+    fantasy: Fantasia
+    features: Caratteristiche
+    folia: Folia
+    foliage: Fogliame
+    fonts: Font
+    food: Cibo
+    forge: Forgia
+    game-mechanics: Meccaniche di gioco
+    gui: Gui
+    high: Alto
+    iris: Iris
+    items: Articoli
+    kitchen-sink: Lavello della cucina
+    library: Biblioteca
+    lightweight: Leggero
+    liteloader: Liteloader
+    locale: Locale
+    low: Basso
+    magic: Magia
+    management: Gestione
+    medium: Medio
+    minecraft: Minecraft
+    minigame: Mini Giochi
+    misc: Misc
+    mobs: Mob
+    modded: Modificato
+    models: Modelli
+    modloader: Mod Loader
+    multiplayer: Multigiocatore
+    neoforge: NeoForge
+    optifine: Optifine
+    optimization: Ottimizzazioni
+    paper: Carta
+    path-tracing: Tracciamento del percorso
+    pbr: PBR
+    performance impact: Impatto sulle prestazioni
+    potato: Patata
+    purpur: Purpur
+    quests: Quest
+    quilt: Quilt
+    realistic: Realistico
+    reflections: Riflessioni
+    resolutions: Risoluzioni
+    rift: Rift
+    screenshot: Screenshot
+    semi-realistic: Semi realistico
+    shadows: Ombre
+    simplistic: Semplice
+    social: Sociale
+    spigot: Spigot
+    sponge: Spugna
+    storage: Deposito
+    technology: Tecnologia
+    themed: Tematico
+    transportation: Trasporto
+    tweaks: Tweaks
+    utility: Utilità
+    vanilla: Vaniglia
+    vanilla-like: Simile alla vaniglia
+    velocity: Velocità
+    waterfall: Cascata
+    worldgen: Generatore di mondi
+  clientSide: Lato client
+  copyTitle: Copia il testo {title} negli appunti
+  createAt: Creato
+  description: Descrizione
+  downloads: Download
+  environments:
+    client: Client
+    default: Predefinito
+    name: Ambiente
+    optional: Opzionale
+    required: Richiesto
+    server: Server
+    unsupported: Non supportato
+  externalResources: Risorse esterne
+  featuredVersions: Versioni in primo piano
+  followers: Seguaci
+  gallery: Galleria
+  gameVersions:
+    name: Versioni del gioco
+  headers:
+    status: Statistiche
+    support: Supporti
+    version: Versione
+  issueUrl: Problema URL
+  license: Licenza
+  licenses:
+    name: Licenze
+  modLoaders:
+    name: Mod Loaders
+  perPage: Per pagina
+  projectId: ID progetto
+  projectMembers: Membri del progetto
+  projectType:
+    mod: Mod
+    modpack: Modpack
+    name: Tipo di progetto
+    resourcePack: Pacchetto di risorse
+    shader: Shader
+  quickSearch: Cerca {title}
+  searchText: Cerca
+  serverSide: Lato server
+  sort:
+    downloads: Conteggio dei download
+    follows: Conteggio dei follower
+    newest: Creato di recente
+    relevance: Rilevanza
+    title: Ordina per
+    updated: Aggiornato di recente
+  sourceUrl: URL di origine
+  technicalInformation: Informazioni tecniche
+  updateAt: Aggiornato
+  versions: Versioni
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Versione corrente
+  projectHint: >
+    Questa istanza è stata creata da Modrinth modpack da <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+multiplayer:
+  allowTurn: Abilita il server di relay
+  allowTurnHint: >-
+    Abilita il server di relay se non riesci a connetterti con il tuo amico.
+    Tuttavia, l'utilizzo di un server di relay potrebbe rallentare la tua
+    connessione. Usalo con cautela.
+  complete: Completo
+  confirm: Conferma
+  connections: Connessioni
+  copied: Copiato!
+  copy: Copia
+  copyGroupToFriendHint: Consenti ai tuoi amici di unirsi al gruppo con questo ID
+  copyLocalHint: >
+    "Per favore copia il testo SDP locale e invialo al tuo amico affinché il
+    tuo amico inserisca questo testo nella connessione di join <span>Un token
+    può essere utilizzato solo per <span style="color: red; font-weight:
+    bold;">un peer</span>! Non puoi inviare lo stesso token a più peer!</span>
+    <span class="hint-text" style="font-style: italic;">Se è necessario connettere più peer, è necessario
+    creare <span style="font-weight: bold; color: rgba(245, 158, 11)">più</span> connessioni.</span>"
+  createLocalToken: Crea token locale
+  creaLocalToken: Crea token locale
+  currentIpTitle: Rileva IP pubblico
+  currentNatTitle: 'Rete corrente (NAT):'
+  difficultyLevelHint: 'Livello di difficoltà per creare una connessione peer con altri:'
+  disconnect: Disconnetti
+  disconnectDescription: 'Sei sicuro di voler disconnettere l''utente {user}({id})?'
+  disconnected: Disconnesso
+  enterRemoteToken: Inserisci il token remoto
+  enterRemoteTokenHint: >-
+    Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo token
+    nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
+  gatheringIce: >
+    "Attendere che il server ICE raccolga informazioni sufficienti sulla rete. Se
+    si è impazienti e ci sono informazioni sufficienti, è possibile fornire l'SDP
+    corrente all'altra parte in anticipo e fare clic su Avanti Invia il <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold">Local Token
+    </span> al tuo peer, il tuo peer inserisce il tuo token in <span class="v-chip
+    v-chip--label v-size--small" style="text-font"> Join Connection </span>
+    section. Il server ICE potrebbe aver bisogno di tempo per raccogliere le
+    tue informazioni per creare <span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">Local token</span>. Non è necessario attendere fino a
+    quando lo stato ICE non è completo. Se il token riportato di seguito rimane
+    invariato, è possibile copiarlo e inviarlo al proprio peer."
+  groupId: ID gruppo
+  illegalTokenDescription: Token non valido, assicurarsi che il token del proprio peer sia corretto
+  initiateConnection: Inizia la connessione
+  inviteLink: Invita link
+  joinConnection: >-
+    Se il tuo peer ha già avviato una connessione, è necessario Unirsi alla
+    connessione.
+  joinManual: Unisciti
+  joinOrCreateGroup: Unisciti/Crea gruppo
+  joinOrCreateGroupHint: Ottieni l'ID gruppo dai tuoi amici o crea un gruppo
+  kernel: Kernel P2P
+  kernelDescription: >-
+    Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione solo se
+    la connessione peer-to-peer si blocca occasionalmente la finestra del
+    launcher.
+  leaveGroup: Abbandona il gruppo
+  localToken: Token locale
+  manualConnect: Connettersi manualmente
+  name: Multiplayer su LAN
+  networkInfo: Informazioni sulla rete
+  next: Avanti
+  placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
+  previous: Precedente
+  receiveHint: >-
+    Dopo che l'altra parte ha inserito il proprio token, la connessione verrà
+    creata automaticamente. Ora è possibile chiudere la finestra di dialogo.
+  receiveRemoteTokenHint: Inserisci qui il token del tuo peer.
+  remoteToken: Token remoto
+  routerInfo: Informazioni sul router
+  sendTokenToRemote: Invia token al remoto
+  share: Condividi configurazione istanza
+  sharing: Condivisione file...
+  start: Inizia
+  startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
 myStuff: Le mie cose
 name: Nome
 natType:
@@ -1189,22 +1052,22 @@ save:
     fromProfile: Da altre istanze
     fromResource: Da risorse gestite
     title: Importa salvataggio da fonte gestita
-createdWorlds: Hai {count} mondi
-deleteHint: >-
-  Questa operazione non può essere annullata. Si perderanno definitivamente questi
-  dati di salvataggio. Sei sicuro di voler eliminare questo salvataggio?
-deleteTitle: Elimina il salvataggio
-detail: Altre informazioni
-dropHint: Trascina il salvataggio zip qui per importare
-export: Esporta salvataggio
-exportMessage: Esporta il salvataggio come zip
-exportTitle: Esporta il salvataggio
-import: Importa salvataggio
-importMessage: Importa un salvataggio da zip
-importTitle: Importa un salvataggio
-manage: Gestisci salvataggi
-name: Salva | Salva
-showDirectory: Mostra la directory di salvataggio
+  createdWorlds: Hai {count} mondi
+  deleteHint: >-
+    Questa operazione non può essere annullata. Si perderanno definitivamente questi
+    dati di salvataggio. Sei sicuro di voler eliminare questo salvataggio?
+  deleteTitle: Elimina il salvataggio
+  detail: Altre informazioni
+  dropHint: Trascina il salvataggio zip qui per importare
+  export: Esporta salvataggio
+  exportMessage: Esporta il salvataggio come zip
+  exportTitle: Esporta il salvataggio
+  import: Importa salvataggio
+  importMessage: Importa un salvataggio da zip
+  importTitle: Importa un salvataggio
+  manage: Gestisci salvataggi
+  name: Salva | Salva
+  showDirectory: Mostra la directory di salvataggio
 screenshots:
   empty: Non hai screenshot
   goto: Apri cartella
@@ -1449,8 +1312,7 @@ task:
     pending: In attesa
     queued: In coda
     running: Connessione attiva
-	Size: Totale
-
+    size: Totale
   connections: Consessioni di rete
   empty: Nessuna attività in esecuzione
   failed: Falitto
@@ -1468,12 +1330,11 @@ transportType:
   prflx: Peer Reflexive Scelto
   relay: Relay Scelto
   srflx: Server Reflexive Scelto
-
 tutorial:
   feedbackDescription: Se incontri qualche problema, Perfavore clicca questo bottone per inviare feedback!
   hideNewsHeaderDescription: >-
     Tu puoi vedere i nuovi showacse Sulla sinistra, cliccando questo bottone 
-	puoi nascondere questo showacse.
+    puoi nascondere questo showacse.
   instance:
     iconDescription: Clicca per cambiare icon.`
     iconTitle: Icona istanza
@@ -1481,31 +1342,31 @@ tutorial:
     javaImportDescription: Importa java dallo storage locale.
     javaImportTitle: Importa istanza
     javaTitle: Lista java
-instanceAddDescription: Fai clic su questo pulsante per importare Minecraft esistente o crearne uno nuovo da zero o da un modpack.
-instanceSelectDescription: Facendo clic su questo pulsante si passerà alla pagina per selezionare il gioco e leggere le notizie.
-launchDescription: Fai clic su questo pulsante per installare o avviare il gioco.
-mod:
-  defaultSourceDescription: Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate sia su Modrinth che su Curseforge. Se si desidera passare tra questi due provider di contenuti, è possibile modificare il valore qui.
-  defaultSourceTitle: Seleziona la fonte del contenuto Mod
-  detailDescription: Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il contenuto può provenire da Modrinth, Curseforge o dal contenuto del mod analizzato.
-  detailTitle: Dettaglio Mod
-  listDescription: Visualizzeremo i mod installati quando non hai alcun input. Vedrai i mod cercati una volta inserito un termine di ricerca o selezionata una categoria.
-  listTitle: Installato o cercato
-  searchDescription: Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
-  searchTitle: Cerca Mod
-multiplayer:
-  contentDescription: Le connessioni tra te e i tuoi colleghi saranno elencate qui.
-  contentTitle: '@:multiplayer.connections'
-  groupDescription: Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico tuo.
-  groupTitle: Unisciti a un gruppo
-  joinDescription: Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher genererà un nome per te.
-  manualDescription: Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare a scambiare manualmente il token facendo clic su Connetti manualmente. Se anche questo tentativo fallisce, potrebbe trattarsi di un problema di connessione a Internet.
-recentPlayDescription: I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
-storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.
-storeSearchCategoryDescription: Puoi anche attivare/disattivare le categorie o i filtri qui.
-storeSearchDescription: Puoi cercare un Modpack inserendo il testo in questa casella. Premi Invio per cercare.
-storeSearchResultDescription: Vedrai tutti i risultati della ricerca elencati qui.
-userAccountDescription: Fai clic su questa icona per aggiungere o gestire il tuo account Minecraft.
+  instanceAddDescription: Fai clic su questo pulsante per importare Minecraft esistente o crearne uno nuovo da zero o da un modpack.
+  instanceSelectDescription: Facendo clic su questo pulsante si passerà alla pagina per selezionare il gioco e leggere le notizie.
+  launchDescription: Fai clic su questo pulsante per installare o avviare il gioco.
+  mod:
+    defaultSourceDescription: Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate sia su Modrinth che su Curseforge. Se si desidera passare tra questi due provider di contenuti, è possibile modificare il valore qui.
+    defaultSourceTitle: Seleziona la fonte del contenuto Mod
+    detailDescription: Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il contenuto può provenire da Modrinth, Curseforge o dal contenuto del mod analizzato.
+    detailTitle: Dettaglio Mod
+    listDescription: Visualizzeremo i mod installati quando non hai alcun input. Vedrai i mod cercati una volta inserito un termine di ricerca o selezionata una categoria.
+    listTitle: Installato o cercato
+    searchDescription: Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
+    searchTitle: Cerca Mod
+  multiplayer:
+    contentDescription: Le connessioni tra te e i tuoi colleghi saranno elencate qui.
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico tuo.
+    groupTitle: Unisciti a un gruppo
+    joinDescription: Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher genererà un nome per te.
+    manualDescription: Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare a scambiare manualmente il token facendo clic su Connetti manualmente. Se anche questo tentativo fallisce, potrebbe trattarsi di un problema di connessione a Internet.
+  recentPlayDescription: I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
+  storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.
+  storeSearchCategoryDescription: Puoi anche attivare/disattivare le categorie o i filtri qui.
+  storeSearchDescription: Puoi cercare un Modpack inserendo il testo in questa casella. Premi Invio per cercare.
+  storeSearchResultDescription: Vedrai tutti i risultati della ricerca elencati qui.
+  userAccountDescription: Fai clic su questa icona per aggiungere o gestire il tuo account Minecraft.
 universalDrop:
   enableModsAfterImport: Abilita mod dopo l'importazione
   start: Importazione avviata
