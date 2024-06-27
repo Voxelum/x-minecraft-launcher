@@ -4,11 +4,8 @@
     :class="{ 'absoluted': absolute }"
     @click="$emit('click', $event)"
   >
-    <v-layout
-      align-center
-      justify-center
-      row
-      fill-height
+    <div
+      class="flex h-full items-center justify-center"
     >
       <div
         v-if="!button"
@@ -37,7 +34,7 @@
           {{ text }}
         </v-btn>
       </div>
-    </v-layout>
+    </div>
   </div>
 </template>
 

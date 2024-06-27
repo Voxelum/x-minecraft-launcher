@@ -4,8 +4,8 @@
     class="h-full w-full select-none overflow-auto"
     @dragover.prevent
   >
-    <v-layout
-      class="h-full flex-col gap-2 overflow-auto"
+    <div
+      class="flex h-full flex-col gap-2 overflow-auto"
       @dragover.prevent
       @drop="onDrop"
     >
@@ -466,7 +466,7 @@
       >
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
       </SimpleDialog>
-    </v-layout>
+    </div>
   </div>
 </template>
 <script lang=ts setup>

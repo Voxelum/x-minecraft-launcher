@@ -1,5 +1,5 @@
 <template>
-  <v-layout class="gap-4">
+  <div class="flex gap-4">
     <v-btn
       text
       :disabled="creating"
@@ -27,7 +27,7 @@
     >
       {{ t('create') }}
     </v-btn>
-  </v-layout>
+  </div>
 </template>
 <script lang=ts setup>
 

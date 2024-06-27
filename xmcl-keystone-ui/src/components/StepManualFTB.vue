@@ -12,43 +12,32 @@
         style="background: transparent; width: 100%"
       >
         <v-list-item>
-          <div class="mt-4 flex gap-4">
-            <v-flex
-              d-flex
-              xs3
-            >
-              <v-text-field
-                v-model="content.name"
-                outlined
-                persistent-hint
-                :hint="t('instance.nameHint')"
-                :label="t('name')"
-                :rules="nameRules"
-                required
-              />
-            </v-flex>
-            <v-flex
-              d-flex
-              xs3
-            >
-              <v-text-field
-                v-model="content.author"
-                outlined
-                persistent-hint
-                :hint="t('modpack.authorHint')"
-                :label="t('author')"
-                required
-              />
-            </v-flex>
-            <v-flex d-flex>
-              <v-text-field
-                v-model="content.description"
-                outlined
-                persistent-hint
-                :hint="t('modpack.descriptionHint')"
-                :label="t('description')"
-              />
-            </v-flex>
+          <div class="mt-4 grid grid-cols-4 gap-4">
+            <v-text-field
+              v-model="content.name"
+              outlined
+              persistent-hint
+              :hint="t('instance.nameHint')"
+              :label="t('name')"
+              :rules="nameRules"
+              required
+            />
+            <v-text-field
+              v-model="content.author"
+              outlined
+              persistent-hint
+              :hint="t('modpack.authorHint')"
+              :label="t('author')"
+              required
+            />
+            <v-text-field
+              v-model="content.description"
+              class="col-span-2"
+              outlined
+              persistent-hint
+              :hint="t('modpack.descriptionHint')"
+              :label="t('description')"
+            />
           </div>
         </v-list-item>
       </v-list>
