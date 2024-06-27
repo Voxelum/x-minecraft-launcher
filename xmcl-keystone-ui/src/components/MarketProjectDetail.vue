@@ -505,6 +505,29 @@
           />
         </template>
 
+        <template v-if="detail.modLoaders.length > 0">
+          <v-subheader>
+            {{ t('modrinth.modLoaders.name') }}
+          </v-subheader>
+          <span class="flex flex-wrap gap-2 px-2">
+            <div
+              v-for="l of detail.modLoaders"
+              :key="l"
+              style="width: 36px; height: 36px;"
+            >
+              <v-icon
+                v-shared-tooltip="l"
+                size="32px"
+              >
+                {{ iconMapping[l] }}
+              </v-icon>
+            </div>
+          </span>
+          <v-divider
+            class="mt-4 w-full"
+          />
+        </template>
+
         <v-subheader v-if="detail.categories.length > 0">
           {{ t('modrinth.categories.categories') }}
         </v-subheader>
@@ -647,6 +670,7 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { clientCurseforgeV1 } from '@/util/clients'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -747,6 +771,7 @@ export interface ProjectDetail {
   follows: number
   url: string
   categories: CategoryItem[]
+  modLoaders: string[]
   htmlContent: string
   externals: ExternalResource[]
   galleries: ModGallery[]
@@ -878,6 +903,14 @@ function onDescriptionDivClicked(e: MouseEvent) {
     ele = ele.parentElement
   }
 }
+
+const iconMapping = {
+  forge: '$vuetify.icons.forge',
+  fabric: '$vuetify.icons.fabric',
+  quilt: '$vuetify.icons.quilt',
+  optifine: '$vuetify.icons.optifine',
+  neoforge: '$vuetify.icons.neoForged',
+} as Record<string, string>
 
 function onDescriptionLinkClicked(e: MouseEvent, href: string) {
   const url = new URL(href)

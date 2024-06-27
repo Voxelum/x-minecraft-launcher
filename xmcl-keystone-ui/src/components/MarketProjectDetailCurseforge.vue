@@ -8,7 +8,6 @@ import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
-import { clientCurseforgeV1 } from '@/util/clients'
 import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -122,6 +121,13 @@ const model = computed(() => {
       })
     }
   }
+  const mapping = {
+    [FileModLoaderType.Forge]: 'forge',
+    [FileModLoaderType.Fabric]: 'fabric',
+    [FileModLoaderType.Quilt]: 'quilt',
+    [FileModLoaderType.NeoForge]: 'neoforge',
+  } as Record<FileModLoaderType, string>
+  const modLoaders = [...new Set(mod?.latestFilesIndexes.map(v => mapping[v.modLoader]) || [])]
   const detail: ProjectDetail = {
     id: props.curseforgeId.toString(),
     title: mod?.name ?? '',
@@ -133,6 +139,7 @@ const model = computed(() => {
     url: mod?.links.websiteUrl ?? '',
     categories,
     htmlContent: description.value ?? '',
+    modLoaders,
     externals,
     galleries,
     info,

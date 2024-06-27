@@ -102,6 +102,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       url: `https://modrinth.com/${project.value?.project_type ?? search.value?.project_type}/${project.value?.slug ?? search.value?.slug}`,
       categories: getCategories(project.value?.categories ?? search.value?.categories ?? []),
       htmlContent: project.value?.body ? render(project.value.body) : '',
+      modLoaders: project.value?.loaders || [],
       externals,
       galleries,
       info,
