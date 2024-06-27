@@ -31,22 +31,32 @@ export async function getIceServers() {
       password: string
       username: string
       stuns: string[]
+      meta: Record<string, string>
+    } | {
+      stuns: string[]
     } = await response.json() as any
     const result: RTCIceServer[] = credential.stuns.map((s) => ({
       urls: `stun:${s}`,
     }))
 
-    if (credential.uris) {
-      result.unshift({
-        urls: credential.uris,
-        username: credential.username,
-        credential: credential.password,
-      })
+    if ('uris' in credential && credential.uris) {
+      for (const uri of credential.uris) {
+        result.unshift({
+          urls: uri,
+          username: credential.username,
+          credential: credential.password,
+        })
+      }
     }
 
-    return result
+    return {
+      servers: result,
+      meta: 'meta' in credential ? credential.meta : undefined,
+    }
   } else {
-    return []
+    return {
+      servers: [],
+    }
   }
 }
 
@@ -151,6 +161,7 @@ export function createIceServersProvider(
   factory: PeerConnectionFactory,
   onValidIceServer: (server: RTCIceServer) => void,
   onIp: (ip: string) => void,
+  onMeta: (meta: Record<string, string>) => void,
 ) {
   const passed: Record<string, RTCIceServer> = {}
   const blocked: Record<string, RTCIceServer> = {}
@@ -178,8 +189,11 @@ export function createIceServersProvider(
       }, _resolve)
     },
     async update() {
-      const fetched = await getIceServers()
-      testIceServers(factory, fetched, passed, blocked, onValidIceServer, onIp)
+      const { servers, meta } = await getIceServers()
+      if (meta) {
+        onMeta(meta)
+      }
+      testIceServers(factory, servers, passed, blocked, onValidIceServer, onIp)
     },
     get(preferredIceServers: RTCIceServer[] = []) {
       const servers = Object.keys(passed).length > 0 ? Object.values(passed) : Object.values(blocked)

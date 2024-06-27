@@ -1333,6 +1333,10 @@ transportType:
   prflx: Peer Reflexive Candidate
   relay: Relay Candidate
   srflx: Server Reflexive Candidate
+turnRegion:
+  guangzhou: Guangzhou, China
+  hk: Hong Kong
+  liaoning: Liaoning, China
 tutorial:
   feedbackDescription: If you encounter any problem, please click this button to send feedback!
   hideNewsHeaderDescription: >-

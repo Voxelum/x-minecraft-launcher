@@ -39,6 +39,10 @@ export interface InitiateOptions {
    */
   initiate?: boolean
   /**
+   * The using ice server
+   */
+  targetIceServer?: RTCIceServer
+  /**
    * Use the ice server
    */
   preferredIceServers?: RTCIceServer[]
@@ -158,27 +162,58 @@ export function createMultiplayer() {
       console.log('Public ip', ip)
       state.then(s => s.ipsSet(Array.from(new Set([...s.ips, ip]))))
     },
+    (meta) => {
+      state.then(s => s.turnserversSet(meta))
+    },
   )
   const portCandidate = 35565
 
-  const getContext = (remoteId: string | undefined, preferredIceServers: Array<RTCIceServer>): PeerContext => {
+  const createContext = (remoteId: string | undefined, targetIceServer: RTCIceServer | undefined, preferredIceServers: Array<RTCIceServer>): PeerContext => {
     const isAllowTurn = () => localStorage.getItem('peerAllowTurn') === 'true'
     let stunIndex = 0
     let turnIndex = 0
+    let current: RTCIceServer | undefined
+    let triedTargetIceServer = false
     return {
-      getCurrentIceServer: () => {
-        throw new Error('Method not implemented.')
+      getCurrentIceServer: () => current,
+      setTargetIceServer: (ice: RTCIceServer) => {
+        targetIceServer = ice
       },
       getNextIceServer: () => {
+        // select priority follow targetIceServer (turn) > common turns > common stuns
+
+        if (!triedTargetIceServer && targetIceServer && targetIceServer.credential) {
+          triedTargetIceServer = true
+          current = targetIceServer
+          return targetIceServer
+        }
+
         const [stuns, turns] = iceServers.get(preferredIceServers)
         if (isAllowTurn() && turns.length > 0) {
+          const preferredTurn = localStorage.getItem('peerPreferredTurn')
+          if (preferredTurn) {
+            const index = turns.findIndex(s => s.urls.includes(preferredTurn))
+            if (index !== -1) {
+              const cur = turns[index]
+              current = cur
+              return cur
+            }
+          }
           const cur = turns[turnIndex]
           turnIndex = (turnIndex + 1) % turns.length
+          if (turnIndex === 0) {
+            triedTargetIceServer = false
+          }
+          current = cur
           return cur
         }
 
         const cur = stuns[stunIndex]
         stunIndex = (stunIndex + 1) % stuns.length
+        if (stunIndex === 0) {
+          triedTargetIceServer = false
+        }
+        current = cur
         return cur
       },
       onHeartbeat: (session, ping) => {
@@ -206,7 +241,9 @@ export function createMultiplayer() {
           console.log(`Send local description ${remoteId}: ${sdp} ${type}`)
           // Send to the group if the remoteId is set
           const [stuns] = iceServers.get(preferredIceServers)
-          group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, stuns[stunIndex], stuns)
+          if (current) {
+            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns)
+          }
         }
 
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
@@ -326,7 +363,7 @@ export function createMultiplayer() {
       selectedCandidate: undefined,
     }))
 
-    const ctx = getContext(remoteId, preferredIceServers)
+    const ctx = createContext(remoteId, options.targetIceServer, preferredIceServers)
     const sess = new PeerSession(sessionId, await create(ctx, sessionId), ctx)
 
     peers.add(sess)
@@ -348,7 +385,9 @@ export function createMultiplayer() {
     if (!sess) {
       console.log(`Not found the ${sender}. Initiate new connection`)
       // Try to connect to the sender
-      sess = await initiate({ remoteId: sender, session, initiate: false, preferredIceServers })
+      sess = await initiate({ remoteId: sender, session, initiate: false, targetIceServer, preferredIceServers })
+    } else if (targetIceServer) {
+      sess.context.setTargetIceServer(targetIceServer)
     }
 
     // const currentIceServer = sess.context.getCurrentIceServer()

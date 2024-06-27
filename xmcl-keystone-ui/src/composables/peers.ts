@@ -51,6 +51,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const group = computed(() => state.value?.group)
   const groupState = computed(() => state.value?.groupState || 'closed')
   const error = computed(() => state.value?.groupError)
+  const turnservers = computed(() => state.value?.turnservers || {})
 
   function _setRemoteDescription(type: 'offer' | 'answer', description: string) {
     return setRemoteDescription({
@@ -61,6 +62,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
 
   return {
     device,
+    turnservers,
     validIceServers,
     natType,
     refreshNatType: refreshNatType.refresh,

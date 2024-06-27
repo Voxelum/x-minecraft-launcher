@@ -21,6 +21,7 @@ export class PeerState {
   connections = [] as Peer[]
   validIceServers = [] as string[]
   ips = [] as string[]
+  turnservers = {} as Record<string, string>
   group = ''
   groupState: 'connecting' | 'connected' | 'closing' | 'closed' = 'closed'
   groupError?: Error
@@ -165,6 +166,10 @@ export class PeerState {
 
   ipsSet(ips: string[]) {
     this.ips = ips
+  }
+
+  turnserversSet(meta: Record<string, string>) {
+    this.turnservers = meta
   }
 }
 

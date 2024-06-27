@@ -32,48 +32,33 @@
           </div>
 
           <div class="flex-grow" />
-          <v-tooltip
-            bottom
-            color="black"
+          <v-btn
+            v-shared-tooltip.left="_ => t('multiplayer.share')"
+            text
+            icon
+            @click="showShareInstance()"
           >
-            <template #activator="{ on }">
-              <v-btn
-                text
-                icon
-                v-on="on"
-                @click="showShareInstance()"
-              >
-                <v-icon>
-                  share
-                </v-icon>
-              </v-btn>
-            </template>
-            {{ t('multiplayer.share') }}
-          </v-tooltip>
+            <v-icon>
+              share
+            </v-icon>
+          </v-btn>
 
           <v-menu
             left
             offset-y
           >
             <template #activator="{ on }">
-              <v-tooltip
-                left
-                color="black"
+              <v-btn
+                id="manual-connect-button"
+                v-shared-tooltip.left="_ => t('multiplayer.manualConnect')"
+                text
+                icon
+                v-on="on"
               >
-                <template #activator="{ on: onTooltip }">
-                  <v-btn
-                    id="manual-connect-button"
-                    text
-                    icon
-                    v-on="{ ...on, ...onTooltip }"
-                  >
-                    <v-icon>
-                      build
-                    </v-icon>
-                  </v-btn>
-                </template>
-                {{ t('multiplayer.manualConnect') }}
-              </v-tooltip>
+                <v-icon>
+                  build
+                </v-icon>
+              </v-btn>
             </template>
             <v-list>
               <v-list-item @click="show()">
@@ -303,6 +288,28 @@
           </v-list-item-action>
         </v-list-item>
 
+        <v-list-item
+          v-if="allowTurn && turnserversItems.length > 0"
+          class="flex-1 flex-grow-0"
+        >
+          <v-list-item-avatar>
+            <!-- <v-icon>
+              swap_vert
+            </v-icon> -->
+          </v-list-item-avatar>
+          <v-list-item-content />
+          <v-list-item-action>
+            <v-select
+              v-model="preferredTurnserver"
+              filled
+              clearable
+              hide-details
+              :items="turnserversItems"
+              :placeholder="turnserversItems[0].text"
+            />
+          </v-list-item-action>
+        </v-list-item>
+
         <v-subheader class>
           {{ t("multiplayer.connections") }}
         </v-subheader>
@@ -497,7 +504,7 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { connections, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { connections, turnservers, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { state } = injection(kSettingsState)
@@ -510,6 +517,14 @@ const kernels = computed(() => [
   { value: 'node-datachannel', text: 'node-datachannel' },
   { value: 'webrtc', text: 'WebRTC' },
 ])
+
+const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
+const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value} (${key})` })))
+const tLocale = computed(() => ({
+  liaoning: t('turnRegion.liaoning'),
+  guangzhou: t('turnRegion.guangzhou'),
+  hk: t('turnRegion.hk'),
+} as Record<string, string>))
 
 const { errorColor, successColor, warningColor } = injection(kTheme)
 
