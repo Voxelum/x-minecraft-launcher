@@ -242,10 +242,12 @@ export class PeerGroup {
       const { wasClean, reason, code } = e
       if (!this.#closed) {
         // Try to reconnect as this is closed unexpected
-        this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
         this.state = 'connecting'
-        this.#initiate()
         this.onstate?.(this.state)
+        setTimeout(1000).then(() => {
+          this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
+          this.#initiate()
+        })
       } else {
         this.state = 'closed'
         this.onstate?.(this.state)

@@ -96,7 +96,6 @@
             v-shared-tooltip="_ => !group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup')"
             text
             icon
-            :loading="joiningGroup"
             @click="onJoin()"
           >
             <template v-if="!group">
