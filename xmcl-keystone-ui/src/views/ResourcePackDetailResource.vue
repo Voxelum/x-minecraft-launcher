@@ -85,6 +85,7 @@ const model = computed(() => {
     follows: 0,
     url: '',
     htmlContent: '',
+    modLoaders: [],
     installed: !!props.resourcePack.installed,
     enabled: true,
   })

@@ -79,6 +79,7 @@ const model = computed(() => {
     url: '',
     htmlContent: props.shaderPack.description,
     installed: !!props.shaderPack.installed,
+    modLoaders: [],
     enabled: true,
   })
   return result

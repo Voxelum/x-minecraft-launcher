@@ -4,7 +4,7 @@
     subheader
     style="background: transparent; width: 100%"
   >
-    <v-list-item class="grid grid-cols-4 gap-4">
+    <div class="mx-4 grid grid-cols-4 gap-4">
       <v-select
         v-model="data.java"
         outlined
@@ -34,7 +34,7 @@
         :placeholder="t('java.allocatedShort')"
         required
       />
-    </v-list-item>
+    </div>
 
     <VersionInputMinecraft
       v-if="showMinecraft"

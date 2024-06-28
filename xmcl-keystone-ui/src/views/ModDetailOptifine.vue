@@ -84,6 +84,7 @@ const model = computed(() => {
     follows: 0,
     url: 'https://www.optifine.net/home',
     htmlContent: _optifineHome,
+    modLoaders: [],
     installed: computed(() => props.mod.installed.length > 0),
     enabled: false,
   })

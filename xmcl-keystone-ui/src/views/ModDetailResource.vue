@@ -126,6 +126,7 @@ const model = computed(() => {
     url: computed(() => file?.links.home ?? ''),
     htmlContent: props.mod.description,
     installed: !!props.mod.installed,
+    modLoaders: [],
     enabled: computed(() => file?.enabled ?? false),
   })
   return result
