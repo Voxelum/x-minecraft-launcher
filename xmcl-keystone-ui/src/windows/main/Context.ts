@@ -44,7 +44,6 @@ import { provide } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
-    useTelemetryTrack()
     provide(kSemaphores, useSemaphores())
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
@@ -83,6 +82,8 @@ export default defineComponent({
     const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)
+
+    useTelemetryTrack(settings.state)
 
     provide(kDatabaseStatus, useDatabaseStatus())
 
