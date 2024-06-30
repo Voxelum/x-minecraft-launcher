@@ -34,7 +34,7 @@ export function useTask(finder: (i: TaskItem) => boolean) {
 
   const tTask = useTaskName()
   const name = computed(() => task.value ? tTask(task.value.path, task.value.param) : '')
-  const task = computed(() => tasks.value.find((i) => i.state === TaskState.Running && finder(i)))
+  const task = computed(() => tasks.value.find((i) => (i.state === TaskState.Running || i.state === TaskState.Paused) && finder(i)))
   const time = computed(() => task.value?.time ?? '')
   const status = computed(() => task.value?.state ?? TaskState.Idle)
   const progress = computed(() => task.value?.progress ?? -1)

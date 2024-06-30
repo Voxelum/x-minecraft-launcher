@@ -20,6 +20,11 @@ export class InstanceFileOperationHandler {
   #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
   #resourceLinkQueue: Array<{ file: InstanceFile; destination: string; resource: Resource }> = []
 
+  /**
+   * Finished file operations
+   */
+  readonly finished: Set<InstanceFileWithOperation> = new Set()
+
   constructor(private app: LauncherApp, private resourceService: ResourceService, private worker: ResourceWorker,
     private logger: Logger,
     private instancePath: string) { }
@@ -75,7 +80,10 @@ export class InstanceFileOperationHandler {
     const task = await this.#getFileTask(file, destination, metadata, pending, sha1)
     if (task) {
       task.setName('file', { file: file.path })
-      this.#tasks.push(task)
+      this.#tasks.push(task.map((v) => {
+        this.finished.add(file)
+        return v
+      }))
     }
 
     if (file.operation === 'backup-add') {
