@@ -57,7 +57,7 @@ export default defineComponent({
     const localVersions = useLocalVersions()
     const instances = useInstances()
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections())
+    provide(kPeerShared, usePeerConnections(queue))
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions)

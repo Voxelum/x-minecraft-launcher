@@ -381,7 +381,6 @@ onPeerService('share', (event) => {
     notify({
       level: 'info',
       title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
-      full: true,
       more() {
         if (!isShown.value && event.manifest) {
           show({ type: 'manifest', manifest: event.manifest })

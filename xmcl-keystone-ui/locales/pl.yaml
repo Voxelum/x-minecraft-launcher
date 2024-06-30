@@ -5,14 +5,19 @@ AppAddInstanceDialog:
   downloadedNotification: Pobrano modpack {name}. Czy chcesz utworzyć dla niego instancję?
   serverTitle: Wprowadź adres serwera
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    Jeśli nie chcesz zepsuć bieżącej instancji. 
+    Możesz także utworzyć nową instancję na podstawie konfiguracji partnera. 
+    Kliknij przycisk poniżej, aby utworzyć instancję.
   baseInfo: Ustawienia podstawowe
   cancelShare: Anuluj udostępnianie
   description: >-
     Po udostępnieniu profilu inne miejsce może pobrać te pliki za pośrednictwem
     komputera.
-  downloadDescription: >-
-    Zweryfikuj pliki dostarczone przez partnera. Wybierz plik, który chcesz
-    pobrać.
+  downloadDescription: |-
+    Sprawdź pliki, które dostarczył Ci inny użytkownik. 
+    Wybierz plik, który chcesz pobrać. 
+    Zostanie umieszczony w bieżącej instancji {name}.
   downloadNotifyTitle: Pobierz instancję z {user}
   downloadTitle: Pobieranie plików z innych urządzeń równorzędnych
   downloadToLocal: Pobierz do bieżącej instancji
@@ -970,6 +975,8 @@ multiplayer:
   sendTokenToRemote: Wyślij token do pilota
   share: Konfiguracja wystąpienia udostępnionego
   sharing: Udostępnianie plików...
+  sharingNotificationBody: Możesz pobrać lub utworzyć instancję ze udostępnionej konfiguracji {name}.
+  sharingNotificationTitle: Kolega udostępnia konfigurację gry
   start: Start
   startNewP2PConnection: Kliknij przycisk Start, aby utworzyć nowe połączenie peer
 myStuff: Moje rzeczy

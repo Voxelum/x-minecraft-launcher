@@ -27,8 +27,11 @@
             {{ t('AppShareInstanceDialog.description') }}
           </template>
           <template v-else>
-            {{ t('AppShareInstanceDialog.downloadDescription') }}
+            {{ t('AppShareInstanceDialog.downloadDescription', { name }) }}
           </template>
+        </v-card-text>
+        <v-card-text v-if="!sharing">
+          {{ t('AppShareInstanceDialog.alterDownloadDescription') }}
         </v-card-text>
         <v-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-subheader>
         <div class="flex flex-col p-5 ">
@@ -195,6 +198,15 @@
         <v-spacer />
         <v-btn
           text
+          @click="onCreateInstance"
+        >
+          <v-icon left>
+            add
+          </v-icon>
+          {{ t('instances.add') }}
+        </v-btn>
+        <v-btn
+          text
           color="primary"
           @click="onDownloadInstance"
         >
@@ -217,13 +229,14 @@ import { useNotifier } from '../composables/notifier'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 
 const { isShown, parameter } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { shareInstance } = useService(PeerServiceKey)
-const { path } = injection(kInstance)
+const { path, name } = injection(kInstance)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
 
@@ -275,6 +288,16 @@ const onDownloadInstance = () => {
     }), t('AppShareInstanceDialog.downloadNotifyTitle', { user: currentUser.value }))
 
     isShown.value = false
+  }
+}
+
+const { show } = useDialog(AddInstanceDialogKey)
+const onCreateInstance = () => {
+  if (manifest.value) {
+    show({
+      type: 'manifest',
+      manifest: manifest.value,
+    })
   }
 }
 

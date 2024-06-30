@@ -5,6 +5,9 @@ AppAddInstanceDialog:
   downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
   serverTitle: Input your server address
 AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    If you don't want to mess up current instance. You can also create a new
+    instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
   cancelShare: Cancel Share
   description: >-
@@ -12,7 +15,7 @@ AppShareInstanceDialog:
     your PC.
   downloadDescription: >-
     Please verify the files your peer provided to you. Select the file you want
-    to download.
+    to download. It will be placed to current instance {name}.
   downloadNotifyTitle: Download Instance from {user}
   downloadTitle: Download files from other peers
   downloadToLocal: Download to current instance
@@ -937,6 +940,8 @@ multiplayer:
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
+  sharingNotificationBody: You can download or create instance from {name} shared config.
+  sharingNotificationTitle: A peer is sharing game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff

@@ -16,7 +16,6 @@ export function useDefaultErrorHandler(notify: Notify) {
       more() {
         show()
       },
-      full: true,
     })
   })
 }

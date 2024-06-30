@@ -5,14 +5,25 @@ AppAddInstanceDialog:
   downloadedNotification: Modpack {name} ist installiert. Soll ich eine Instanz dafür erstellen?
   serverTitle: Geben Sie Ihre Serveradresse ein
 AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    Wenn Sie die aktuelle Instanz nicht durcheinander bringen möchten. 
+
+    Sie können auch eine neue Instanz aus der Konfiguration Ihres Peers
+    erstellen. 
+
+    Klicken Sie auf die Schaltfläche unten, um eine Instanz zu erstellen.
   baseInfo: Grundlegende Einrichtung
   cancelShare: Verteilen Sie nicht
   description: >-
     Nachdem Sie Ihr Profil freigegeben haben, können andere Benutzer die diese
     Dateien über Ihren PC installieren.
   downloadDescription: >-
-    Überprüfen Sie die Dateien, die Ihr Freund freigegeben hat. Wählen Sie die
-    Dateien aus, die Sie installieren möchten.
+    Bitte überprüfen Sie die Dateien, die Ihnen Ihr Kollege zur Verfügung
+    gestellt hat. 
+
+    Wählen Sie die Datei aus, die Sie herunterladen möchten. 
+
+    Es wird in der aktuellen Instanz {name} platziert.
   downloadNotifyTitle: Installieren Sie eine Instanz von {user}
   downloadTitle: Dateien von anderen Peers installieren
   downloadToLocal: Installation in der Streaming-Instanz
@@ -1012,6 +1023,10 @@ multiplayer:
   sendTokenToRemote: Senden eines Tokens an eine entfernte
   share: die Instanzkonfiguration freigeben
   sharing: Filesharing...
+  sharingNotificationBody: >-
+    Sie können eine Instanz aus der freigegebenen Konfiguration „{name}“
+    herunterladen oder erstellen.
+  sharingNotificationTitle: Ein Peer teilt die Spielkonfiguration
   start: Los geht's
   startNewP2PConnection: Klicken Sie auf Start, um eine neue Peer-to-Peer-Verbindung zu erstellen
 myStuff: Meine Materialien

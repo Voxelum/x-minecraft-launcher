@@ -415,47 +415,52 @@
           </v-list-item-action>
 
           <v-list-item-action
-            v-if="c.sharing"
-            class="self-center"
+            class="flex flex-grow-0 flex-row gap-2 self-center"
           >
-            <v-btn
-              color="primary"
-              outlined
-              @click="showShareInstance(c.sharing)"
+            <template
+              v-if="c.sharing"
             >
-              {{ t('multiplayer.sharing') }}
-            </v-btn>
-          </v-list-item-action>
+              <v-btn
+                v-shared-tooltip="_ => t('multiplayer.sharing') "
+                icon
+                @click="showShareInstance(c.sharing)"
+              >
+                <v-icon>
+                  download
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-if="c.sharing"
+                v-shared-tooltip="_ => t('multiplayer.sharing') "
+                color="primary"
+                icon
+                @click="c.sharing ? showAddInstasnce({
+                  type: 'manifest',
+                  manifest: c.sharing,
+                }) : undefined"
+              >
+                <v-icon>
+                  add
+                </v-icon>
+              </v-btn>
+            </template>
 
-          <v-list-item-action
-            v-if="c.connectionState !== 'connected'"
-            class="self-center"
-          >
             <v-btn
+              v-if="c.connectionState !== 'connected'"
               icon
               @click="edit(c.id, c.initiator)"
             >
               <v-icon>edit</v-icon>
             </v-btn>
           </v-list-item-action>
-          <v-list-item-action class="self-center">
-            <v-tooltip
-              color="black"
-              top
-            >
-              <template #activator="{ on }">
-                <v-btn
-                  color="error"
-                  icon
-                  v-on="on"
-                  @click="showDelete(c.id)"
-                >
-                  <v-icon>link_off</v-icon>
-                </v-btn>
-              </template>
-              {{ t('multiplayer.disconnect') }}
-            </v-tooltip>
-          </v-list-item-action>
+          <v-btn
+            v-shared-tooltip.left="_ => t('multiplayer.disconnect') "
+            color="error"
+            icon
+            @click="showDelete(c.id)"
+          >
+            <v-icon>link_off</v-icon>
+          </v-btn>
         </v-list-item>
       </v-list>
 
@@ -491,9 +496,11 @@ import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
+const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
 
 const open = (...args: any[]) => window.open(...args)
