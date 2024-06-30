@@ -518,7 +518,7 @@ const kernels = computed(() => [
 ])
 
 const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
-const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value} (${key})` })))
+const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value}` })))
 const tLocale = computed(() => ({
   liaoning: t('turnRegion.liaoning'),
   guangzhou: t('turnRegion.guangzhou'),
