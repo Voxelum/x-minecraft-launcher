@@ -208,21 +208,20 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.log(`Parse modpack profile ${modpackFile}`)
 
     const zip = await open(modpackFile)
+
     const entries = await readAllEntries(zip)
 
     const [manifest, handler] = await this.getManifestAndHandler(zip, entries)
 
     if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path: modpackFile })
 
-    const metadata = await handler.resolveModpackMetadata?.(modpackFile, cacheOrHash) || {}
-
     const instance = handler.resolveInstanceOptions(manifest)
 
     const instanceFiles = await handler.resolveInstanceFiles(manifest)
 
-    const files = (await Promise.all(entries
+    const files = entries
       .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
-      .map(async (e) => {
+      .map((e) => {
         const relativePath = handler.resolveUnpackPath(manifest, e)!
         const file: InstanceFile = {
           path: relativePath,
@@ -236,7 +235,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           ],
         }
         return file
-      })))
+      })
       .concat(instanceFiles)
       .filter(f => !f.path.endsWith('/'))
 
@@ -244,22 +243,24 @@ export class ModpackService extends AbstractService implements IModpackService {
       transformFile(file)
     }
 
-    try {
-      // Update the resource
-      this.log(`Update instance resource modpack profile ${modpackFile}`)
-      await this.resourceService.updateResources([{
-        hash: cacheOrHash,
-        metadata: {
-          ...metadata,
-          instance: {
-            instance,
-            files,
-          },
+    this.log(`Update instance resource modpack profile ${modpackFile}`)
+    await this.resourceService.updateResources([{
+      hash: cacheOrHash,
+      metadata: {
+        instance: {
+          instance,
+          files,
         },
-      }])
-    } catch (e) {
+      },
+    }])
+    handler.resolveModpackMetadata?.(modpackFile, cacheOrHash).then((metadata) => this.resourceService.updateResources([{
+      hash: cacheOrHash,
+      metadata: {
+        ...metadata,
+      },
+    }])).catch((e) => {
       this.error(new AnyError('ModpackInstallProfileError', 'Fail to update resource', { cause: e }))
-    }
+    })
 
     return files
   }
