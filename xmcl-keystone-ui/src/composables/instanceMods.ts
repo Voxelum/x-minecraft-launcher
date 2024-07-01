@@ -80,6 +80,10 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     provideRuntime.value = runtime
   }
 
+  function revalidate() {
+    state.value?.revalidate()
+  }
+
   return {
     mods,
     modsIconsMap,
@@ -87,5 +91,6 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     enabledModCounts,
     isValidating,
     error,
+    revalidate,
   }
 }

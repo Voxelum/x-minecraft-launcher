@@ -368,7 +368,7 @@ const shouldShowCurseforge = (selectedItem: undefined | ProjectEntry, selectedMo
   return true
 }
 
-const { mods } = injection(kInstanceModsContext)
+const { mods, revalidate } = injection(kInstanceModsContext)
 const getInstalledModrinth = (projectId: string) => {
   return mods.value.filter((m) => m.modrinth?.projectId === projectId)
 }
@@ -389,16 +389,24 @@ const onLoad = () => {
 // install / uninstall / enable / disable
 const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
 const onInstall = (f: Resource[]) => {
-  install({ path: path.value, mods: f })
+  install({ path: path.value, mods: f }).then(() => {
+    setTimeout(revalidate, 1500)
+  })
 }
 const onUninstall = (f: ProjectFile[]) => {
-  uninstall({ path: path.value, mods: f.map(f => f.resource) })
+  uninstall({ path: path.value, mods: f.map(f => f.resource) }).then(() => {
+    setTimeout(revalidate, 1500)
+  })
 }
 const onEnable = (f: ProjectFile) => {
-  enable({ path: path.value, mods: [f.resource] })
+  enable({ path: path.value, mods: [f.resource] }).then(() => {
+    setTimeout(revalidate, 1500)
+  })
 }
 const onDisable = (f: ProjectFile) => {
-  disable({ path: path.value, mods: [f.resource] })
+  disable({ path: path.value, mods: [f.resource] }).then(() => {
+    setTimeout(revalidate, 1500)
+  })
 }
 
 // Categories
