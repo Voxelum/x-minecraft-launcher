@@ -32,7 +32,7 @@ pnpm install
 
 ### Install i18n Extension
 
-**Optional** if you are using VSCocde.
+**Optional** if you are using VSCode.
 
 Install the i18n-ally (lokalise.i18n-ally) extension. The VSCode might hint you to install recommended extensions, which should already include this extension.
 
@@ -81,7 +81,7 @@ adding a new line at the end
   "en": "English",
   "ru": "Русский язык",
   "es-ES": "Español",
-  'fr': 'French'
+  "fr": "French"
 }
 ```
 
