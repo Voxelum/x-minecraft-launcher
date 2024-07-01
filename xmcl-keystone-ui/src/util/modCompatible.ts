@@ -88,7 +88,7 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
         if (valid(version)) {
           compatible = satisfies(version, requirements, { includePrerelease: true })
         } else {
-          const v = coerce(version, { loose: true, includePrerelease: true })
+          const v = coerce(version, { loose: true })
           if (v) {
             compatible = satisfies(v, requirements, { includePrerelease: true })
           } else {

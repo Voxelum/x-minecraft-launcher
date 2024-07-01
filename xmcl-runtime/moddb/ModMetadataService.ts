@@ -1,13 +1,14 @@
 import { isNotNull } from '@xmcl/core/utils'
 import { DownloadTask } from '@xmcl/installer'
 import { ModMetadataService as IModMetadataService, ModMetadata, ModMetadataServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
-import SQLite from 'better-sqlite3'
 import { createReadStream } from 'fs'
-import { Kysely, SqliteDialect } from 'kysely'
+import { Kysely } from 'kysely'
+import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { request } from 'undici'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { SqliteWASMDialect } from '~/sql'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
@@ -229,10 +230,10 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
       })
       await this.submit(task)
     }
-    const sqlite = new SQLite(dbPath, {
-      readonly: true,
+    const sqlite = new SQLDatabase(dbPath, {
+      readOnly: true,
     })
-    const dialect = new SqliteDialect({
+    const dialect = new SqliteWASMDialect({
       database: sqlite,
     })
     const db = new Kysely<Database>({

@@ -41,7 +41,7 @@ const config = {
     '.ico': 'file',
     '.class': 'binary',
     '.html': 'file',
-    '.wasm': 'binary',
+    '.wasm': 'file',
   },
   plugins: [
     pluginRenderer(),

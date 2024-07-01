@@ -3,7 +3,7 @@ import { ResourceContext } from './ResourceContext'
 import { ResourceEntryPath, ResourceSnapshotTable } from './schema'
 
 export async function getResourceEntry(path: string, context: ResourceContext, skipCache = false): Promise<ResourceEntryPath | ResourceSnapshotTable> {
-  const status = await stat(path)
+  const status = await stat(path, { bigint: false })
   if (!skipCache) {
     const cache = await context.db.selectFrom('snapshots').where('ino', '=', status.ino).selectAll().executeTakeFirst()
     if (cache) {

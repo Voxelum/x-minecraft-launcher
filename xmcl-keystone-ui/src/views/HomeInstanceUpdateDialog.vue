@@ -235,7 +235,7 @@ function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   return {
     name: basename(f.file.path),
     path: f.file.path,
-    size: f.file.size,
+    size: f.file.size ?? 0,
     style: {
       textDecorationLine: f.operation === 'remove' || f.operation === 'backup-remove' ? 'line-through' : '',
       color: f.operation !== 'keep' ? getColorCode(cOperations[f.operation]) : '',

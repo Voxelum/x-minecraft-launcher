@@ -59,7 +59,7 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     existedEntry = await context.db.selectFrom('snapshots').where('domainedPath', '=', `${resource.domain}/${fileName}`).selectAll().executeTakeFirst()
   }
 
-  const fstat = await stat(filePath).catch(e => {
+  const fstat = await stat(filePath, { bigint: false }).catch(e => {
     if (isSystemError(e) && e.code === 'ENOENT') {
       return undefined
     }

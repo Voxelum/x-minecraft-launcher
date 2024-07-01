@@ -1,15 +1,14 @@
 import { Kysely } from 'kysely'
 import { EventEmitter } from 'stream'
-import { ParseResourceArgs, ParseResourceResult } from '../parsers'
 import { ImageStorage } from '~/imageStore'
 import { Logger } from '~/logger'
+import { ParseResourceArgs, ParseResourceResult } from '../parsers'
 import { Database } from './schema'
-import type { Database as SQLite } from 'better-sqlite3'
 
 export interface ResourceContext {
   readonly db: Kysely<Database>
 
-  getSqlite(): Promise<SQLite>
+  isDatabaseOpened(): Promise<boolean>
 
   readonly image: ImageStorage
 
