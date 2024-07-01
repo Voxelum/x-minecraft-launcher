@@ -4,8 +4,8 @@ import { createHash } from 'crypto'
 import { Configuration, build as electronBuilder } from 'electron-builder'
 import { BuildOptions, build as esbuild } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
-import { copy, ensureFile } from 'fs-extra'
-import { copyFile, readdir, rm, stat, writeFile } from 'fs/promises'
+import { copy, emptyDir, ensureFile } from 'fs-extra'
+import { copyFile, readdir, stat, writeFile } from 'fs/promises'
 import path, { join, resolve } from 'path'
 import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { pipeline } from 'stream'
@@ -27,7 +27,7 @@ async function writeHash(algorithm: string, path: string, destination: string) {
  * Use esbuild to build main process
  */
 async function buildMain(options: BuildOptions, slient = false) {
-  await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
+  await emptyDir(path.join(__dirname, './dist'))
   if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
   if (!slient) options.plugins?.push(createPrintPlugin())

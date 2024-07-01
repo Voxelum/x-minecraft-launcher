@@ -34,7 +34,16 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             'get isFinalized(){return this._ptr===null}' +
             'isReader(){return sqlite3.column_count(this._ptr)>=1}',
           )
-          content = content.replace('"node-sqlite3-wasm.wasm"', 'require("./node-sqlite3-wasm.wasm")')
+          if (isDev) {
+            content = content.replace('"node-sqlite3-wasm.wasm"', 'require("./node-sqlite3-wasm.wasm")')
+          } else {
+            const dir = dirname(path)
+            const wasmPath = join(dir, 'node-sqlite3-wasm.wasm')
+            const base64WasmContent = await readFile(wasmPath, 'base64')
+            content = content.replace('function getBinarySync(file){',
+              'function getBinarySync(file){' + `return Buffer.from(${JSON.stringify(base64WasmContent)}, 'base64');`,
+            )
+          }
           return {
             contents: content,
             loader: 'js',

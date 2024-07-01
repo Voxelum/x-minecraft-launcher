@@ -24,7 +24,7 @@ export function useQueryNumber<T extends number | undefined>(key: string, defaul
   const router = useRouter()
   return computed({
     get() { return route.query[key] ? Number(route.query[key] as string) : defaultValue },
-    set(v) { if (route.query[key] !== v?.toString() ?? '') router.replace({ path: route.path, query: { ...route.query, [key]: v?.toString() ?? '' } }) },
+    set(v) { if (route.query[key] !== (v?.toString() ?? '')) router.replace({ path: route.path, query: { ...route.query, [key]: v?.toString() ?? '' } }) },
   })
 }
 
