@@ -49,6 +49,7 @@
           </div>
           <PreviewView
             v-else
+            class="flex-grow"
             :previews="previews"
             @remove="remove"
             @cancel="cancel"

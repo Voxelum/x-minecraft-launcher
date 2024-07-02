@@ -1,6 +1,6 @@
 import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
-import 'virtual:windi.css'
+import 'virtual:uno.css'
 import Vue, { h } from 'vue'
 import VueI18n from 'vue-i18n'
 import BrowseVue from './Browse.vue'

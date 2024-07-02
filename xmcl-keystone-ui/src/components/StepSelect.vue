@@ -1,6 +1,7 @@
 <template>
   <v-list
-    class="w-200 stepper-select mx-auto flex max-h-full flex-grow-0 flex-col gap-2 overflow-auto bg-transparent px-2"
+    color="transparent"
+    class="w-200 stepper-select mx-auto flex max-h-full flex-grow-0 flex-col gap-2 overflow-auto px-2"
   >
     <v-list-item
       v-for="item of items"

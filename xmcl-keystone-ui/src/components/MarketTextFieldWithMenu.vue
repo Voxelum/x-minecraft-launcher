@@ -26,6 +26,7 @@
         {{ t('modrinth.sort.title') }}
       </v-subheader>
       <v-btn-toggle
+        background-color="transparent"
         :value="sort"
         class="bg-transparent px-1"
         @change="emit('update:sort', $event)"

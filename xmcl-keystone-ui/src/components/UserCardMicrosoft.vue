@@ -77,21 +77,19 @@
             >
               <v-card
                 :color="active ? 'primary' : 'grey lighten-1'"
-                class="ma-4"
+                class="ma-4 py-2"
                 height="200"
                 width="100"
                 @click="toggle"
               >
-                <v-row
-                  class="fill-height"
-                  align="center"
-                  justify="center"
+                <div
+                  class="flex flex-col justify-around items-center fill-height"
                 >
                   <div class="mt-4 min-h-[120px] min-w-[80px] border-2 border-dashed" />
                   <div class="text-sm font-bold text-white">
                     {{ t('userCape.noCape') }}
                   </div>
-                </v-row>
+                </div>
               </v-card>
             </v-slide-item>
             <v-slide-item
@@ -101,24 +99,22 @@
             >
               <v-card
                 :color="active ? 'primary' : 'grey lighten-1'"
-                class="ma-4"
+                class="ma-4 py-2"
                 height="200"
                 width="100"
                 @click="toggle"
               >
-                <v-row
-                  class="fill-height"
-                  align="center"
-                  justify="center"
+                <div
+                  class="flex flex-col justify-around items-center fill-height"
                 >
                   <PlayerCape
-                    class=" mt-4"
+                    class="mt-4"
                     :src="c.url"
                   />
                   <div class="text-sm font-bold text-white">
                     {{ c.alias }}
                   </div>
-                </v-row>
+                </div>
               </v-card>
             </v-slide-item>
           </v-slide-group>

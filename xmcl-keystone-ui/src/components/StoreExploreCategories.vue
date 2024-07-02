@@ -75,7 +75,8 @@
         >
           <v-btn-toggle
             :value="g.categories.findIndex(v => selected.includes(v.id))"
-            class="bg-transparent px-1"
+            background-color="transparent"
+            class="px-1"
             @change="emit('select', { category: g.categories.at($event)?.id ?? '', group: g.id })"
           >
             <v-btn

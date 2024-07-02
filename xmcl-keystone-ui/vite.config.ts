@@ -4,7 +4,7 @@ import { readdirSync } from 'fs'
 import { join, resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
-import WindiCSS from 'vite-plugin-windicss'
+import UnoCSS from 'unocss/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -55,20 +55,23 @@ export default defineConfig({
   },
   plugins: [
     createVuePlugin(),
-    WindiCSS({
-      config: {
-        important: true,
-      },
-      scan: {
-        dirs: [join(__dirname, './src')],
-        fileExtensions: ['vue', 'ts'],
-      },
-    }),
+    UnoCSS(),
+    // WindiCSS({
+    //   config: {
+    //     important: true,
+    //   },
+    //   scan: {
+    //     dirs: [join(__dirname, './src')],
+    //     fileExtensions: ['vue', 'ts'],
+    //   },
+    // }),
 
     VueI18n({
       include: [
         resolve(__dirname, 'locales/**'),
       ],
+      esm: true,
+      strictMessage: false,
       bridge: false,
     }),
 

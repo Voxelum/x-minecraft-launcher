@@ -39,7 +39,7 @@ import { kUserDiagnose, useUserDiagnose } from '@/composables/userDiagnose'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
-import 'virtual:windi.css'
+import 'virtual:uno.css'
 import { provide } from 'vue'
 
 export default defineComponent({
