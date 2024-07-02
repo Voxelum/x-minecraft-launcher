@@ -4,6 +4,7 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
 import { kClientToken } from '~/clientToken'
+import { ExposeServerHandler } from './ExposeServerHandler'
 
 @ExposeServiceKey(PeerServiceKey)
 export class PeerService extends StatefulService<PeerState> implements IPeerService {
@@ -13,6 +14,19 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   ) {
     super(app, () => store.registerStatic(new PeerState(), PeerServiceKey), async () => { })
 
+    // this.exposePortHandler = new ExposeServerHandler((infos) => {
+    //   const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
+    //   for (const conn of peers) {
+    //     if (conn.isOnSameLan()) {
+    //       return
+    //     }
+    //   }
+    //   for (const conn of peers) {
+    //     for (const info of infos) {
+    //       conn.send(MessageLan, info)
+    //     }
+    //   }
+    // })
     let port = 25566
     app.controller.handle('multiplayer-port', async (ev, p: number) => {
       port = p
@@ -60,4 +74,16 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   async shareInstance(options: ShareInstanceOptions): Promise<void> {
     this.app.controller.broadcast('peer-instance-shared', options)
   }
+
+  // async exposePort(port: number, protocol: number): Promise<void> {
+  //   this.exposePortHandler.expose(port, protocol)
+  // }
+
+  // async unexposePort(port: number): Promise<void> {
+  //   this.exposePortHandler.unexpose(port)
+  // }
+
+  // async getExposedPorts(): Promise<number[]> {
+  //   return this.exposePortHandler.ports
+  // }
 }

@@ -51,7 +51,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     if ('requirements' in version) {
       const runtime = version.requirements
       operation = async () => {
-        const version = await install(runtime)
+        const version = await install(runtime, 'client', path.value)
         if (version) {
           await installDependencies(version)
         }
@@ -69,15 +69,15 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
 
     const items: LaunchMenuItem[] = []
     const operations: Array<() => Promise<void>> = []
-    const jarIssue = await diagnoseJar(version)
+    const jarIssue = await diagnoseJar(version, 'client')
     if (abortSignal.aborted) { return }
 
     if (jarIssue) {
       const options = { version: jarIssue.version }
       operations.push(async () => {
-        const version = await install(runtime.value, true)
+        const version = await install(runtime.value, 'client', path.value, true)
         if (version) {
-          await installDependencies(version)
+          await installDependencies(version, false)
         }
       })
       items.push(jarIssue.type === 'corrupted'
@@ -91,15 +91,16 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         }))
     }
 
-    const profileIssue = await diagnoseProfile(version.id)
+    const profileIssue = await diagnoseProfile(version.id, 'client', path.value)
     if (abortSignal.aborted) { return }
     if (profileIssue) {
-      console.log(profileIssue)
       if (runtime.value.forge) {
         operations.push(async () => {
           await installForge({
             mcversion: version.minecraftVersion,
             version: runtime.value.forge!,
+            // side: side.value,
+            root: path.value,
           })
         })
       } else if (runtime.value.neoForged) {
@@ -145,19 +146,26 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
           })
           items.push(commonIssues.some(v => v.type === 'corrupted')
             ? reactive({
-              title: computed(() => t('diagnosis.corruptedLibraries.name', options, { plural: commonIssues.length })),
+              title: computed(() => t('diagnosis.corruptedLibraries.name', options, commonIssues.length)),
               description: computed(() => t('diagnosis.corruptedLibraries.message')),
             })
             : reactive({
-              title: computed(() => t('diagnosis.missingLibraries.name', options, { plural: commonIssues.length })),
+              title: computed(() => t('diagnosis.missingLibraries.name', options, commonIssues.length)),
               description: computed(() => t('diagnosis.missingLibraries.message')),
             }))
         }
         if (optifinesIssues.length > 0) {
-          items.push(reactive({
-            title: computed(() => t('diagnosis.badInstall.name')),
-            description: computed(() => t('diagnosis.badInstall.message')),
-          }))
+          const options = { count: optifinesIssues.length, name: optifinesIssues[0].file }
+          items.push(
+            optifinesIssues.some(v => v.type === 'corrupted')
+              ? reactive({
+                title: computed(() => t('diagnosis.corruptedLibraries.name', options, optifinesIssues.length)),
+                description: computed(() => t('diagnosis.corruptedLibraries.message')),
+              })
+              : reactive({
+                title: computed(() => t('diagnosis.missingLibraries.name', options, optifinesIssues.length)),
+                description: computed(() => t('diagnosis.missingLibraries.message')),
+              }))
           const { type, patch } = parseOptifineVersion(runtime.value.optifine!)
           operations.push(async () => {
             await installOptifine({
@@ -211,11 +219,11 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
         })
         items.push(assetsIssue.some(v => v.type === 'corrupted')
           ? reactive({
-            title: computed(() => t('diagnosis.corruptedAssets.name', options, 2)),
+            title: computed(() => t('diagnosis.corruptedAssets.name', options, assetsIssue.length)),
             description: computed(() => t('diagnosis.corruptedAssets.message')),
           })
           : reactive({
-            title: computed(() => t('diagnosis.missingAssets.name', options, 2)),
+            title: computed(() => t('diagnosis.missingAssets.name', options, assetsIssue.length)),
             description: computed(() => t('diagnosis.missingAssets.message')),
           }),
         )

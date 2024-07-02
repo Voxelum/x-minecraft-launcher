@@ -36,6 +36,10 @@ export interface LaunchOptions {
    */
   gameDirectory: string
   /**
+   * Launch client or server
+   */
+  side?: 'client' | 'server'
+  /**
    * The user to launch
    */
   user: UserProfile
