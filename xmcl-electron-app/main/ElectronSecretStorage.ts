@@ -16,7 +16,7 @@ function decrypt(s: Buffer) {
   try {
     return safeStorage.decryptString(s)
   } catch {
-    return s.toString('utf-8')
+    return undefined
   }
 }
 
