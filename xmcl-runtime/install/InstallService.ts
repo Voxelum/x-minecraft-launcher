@@ -255,11 +255,11 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v: MinecraftVersion) => LockKey.version(v.id))
-  async installMinecraft(meta: MinecraftVersion) {
+  async installMinecraft(meta: MinecraftVersion, side: 'client' | 'server' = 'client') {
     const id = meta.id
 
     const option = this.getInstallOptions()
-    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion', { id: meta.id })
+    const task = installVersionTask(meta, this.getPath(), { ...option, side }).setName('installVersion', { id: meta.id })
     try {
       await this.submit(task)
     } catch (e) {
@@ -269,10 +269,10 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v: MinecraftVersion) => LockKey.version(v.id))
-  async installMinecraftJar(version: ResolvedVersion) {
+  async installMinecraftJar(version: ResolvedVersion, side: 'client' | 'server' = 'client') {
     const option = this.getInstallOptions()
 
-    const task = new InstallJarTask(version, this.getPath(), option).setName('installVersion.jar', { id: version.id })
+    const task = new InstallJarTask(version, this.getPath(), { ...option, side }).setName('installVersion.jar', { id: version.id })
     try {
       await this.submit(task)
     } catch (e) {
@@ -347,6 +347,7 @@ export class InstallService extends AbstractService implements IInstallService {
   async installForge(options: _InstallForgeOptions) {
     const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
+    const side = options.side ?? 'client'
 
     validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
 
@@ -354,9 +355,10 @@ export class InstallService extends AbstractService implements IInstallService {
     for (const java of validJavaPaths) {
       try {
         this.log(`Start to install forge ${options.version} on ${options.mcversion} by ${java.path}`)
-        version = await this.submit(installForgeTask(options, this.getPath(), {
+        version = await this.submit(installForgeTask(options, options.root || this.getPath(), {
           ...installOptions,
           java: java.path,
+          side,
           inheritsFrom: options.mcversion,
         }).setName('installForge', { id: options.version }))
         this.log(`Success to install forge ${options.version} on ${options.mcversion}`)

@@ -20,14 +20,14 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
 
   const cfg = inject(kSWRVConfig)
 
-  async function install(runtime: RuntimeVersions, jar = false) {
+  async function install(runtime: RuntimeVersions, side: 'client' | 'server', path: string | undefined = undefined, jar = false) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
     const local = versions.value
     const localMinecraft = local.find(v => v.id === minecraft)
     if (!localMinecraft || jar) {
       const metadata = mcVersions.versions.find(v => v.id === minecraft)!
-      await installMinecraft(metadata)
+      await installMinecraft(metadata, side)
     } else {
       await refreshVersion(localMinecraft.id)
     }
@@ -39,7 +39,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
-        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
+        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side, root: side === 'server' ? path : undefined })
       } else {
         forgeVersion = localForge.id
         await refreshVersion(localForge.id)

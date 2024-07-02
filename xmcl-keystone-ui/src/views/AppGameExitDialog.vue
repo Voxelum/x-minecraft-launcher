@@ -81,12 +81,6 @@ watch(error, (e) => {
   data.errorLog = JSON.stringify(e, null, 2)
 })
 function decorate(log: string) {
-  // let lines = log.split('\n');
-  // let result: string[] = [];
-  // for (let i = 0; i < lines.length; i++) {
-  //   result.push(lines[i].trim(), ' ');
-  // }
-  // return result.join('\n');
   return log
 }
 async function displayLog() {
