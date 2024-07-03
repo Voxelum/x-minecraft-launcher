@@ -9,6 +9,7 @@ export interface DiagnoseService {
   diagnoseAssets(currentVersion: ResolvedVersion, strict?: boolean): Promise<AssetIssue[]>
   diagnoseJar(currentVersion: ResolvedVersion, side?: 'client' | 'server'): Promise<MinecraftJarIssue | undefined>
   diagnoseProfile(version: string, side?: 'client' | 'server', path?: string): Promise<InstallProfileIssueReport | undefined>
+  getVanillaServerJar(resolvedVersion: ResolvedVersion | undefined): Promise<string | undefined>
 }
 
 export const DiagnoseServiceKey: ServiceKey<DiagnoseService> = 'DiagnoseService'

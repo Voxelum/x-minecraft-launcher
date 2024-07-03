@@ -38,6 +38,10 @@ export class InstallService extends AbstractService implements IInstallService {
     super(app)
   }
 
+  installVersion(version: Version): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.downloadOptions,
@@ -207,15 +211,15 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v) => [LockKey.version(v), LockKey.assets, LockKey.libraries])
-  async installDependencies(version: string) {
+  async installDependencies(version: string, noAsset = false) {
     const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
-    await this.installDependenciesUnsafe(resolvedVersion)
+    await this.installDependenciesUnsafe(resolvedVersion, noAsset)
   }
 
   @Lock((v) => [LockKey.version(v.id), LockKey.assets, LockKey.libraries])
   async installDependenciesResolved(resolvedVersion: ResolvedVersion) {
-    await this.installDependenciesUnsafe(resolvedVersion)
+    await this.installDependenciesUnsafe(resolvedVersion, false)
   }
 
   @Lock((v) => [LockKey.version(v.minecraftVersion)])
@@ -226,10 +230,12 @@ export class InstallService extends AbstractService implements IInstallService {
     return version
   }
 
-  private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion) {
+  private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion, noAsset: boolean) {
     const option = this.getInstallOptions()
     await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: resolvedVersion.id }))
-    await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
+    if (!noAsset) {
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
+    }
   }
 
   @Lock(v => [LockKey.version(v)])
@@ -283,6 +289,20 @@ export class InstallService extends AbstractService implements IInstallService {
       await this.submit(task)
     } catch (e) {
       this.warn(`An error ocurred during download version ${id}`)
+      this.warn(e)
+    }
+  }
+
+  @Lock((v: string) => LockKey.version(v))
+  async installMinecraftServerJar(version: string) {
+    const option = this.getInstallOptions()
+    option.side = 'server'
+    const folder = MinecraftFolder.from(this.getPath())
+    const parsed = await this.versionService.resolveLocalVersion(version)
+    try {
+      await this.submit(new InstallJarTask(parsed, folder, option).setName('version.jar'))
+    } catch (e) {
+      this.warn(`An error ocurred during download server version ${version}`)
       this.warn(e)
     }
   }
@@ -374,12 +394,14 @@ export class InstallService extends AbstractService implements IInstallService {
     for (const java of validJavaPaths) {
       try {
         this.log(`Start to install forge ${options.version} on ${options.mcversion} by ${java.path}`)
-        version = await this.submit(installForgeTask(options, options.root || this.getPath(), {
+        const mc = MinecraftFolder.from(this.getPath())
+        version = await this.submit(installForgeTask(options, mc, {
           ...installOptions,
           java: java.path,
           side,
           inheritsFrom: options.mcversion,
         }).setName('installForge', { id: options.version }))
+
         this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
         break
       } catch (err) {
@@ -398,11 +420,6 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Lock((v: InstallFabricOptions) => LockKey.version(`fabric-${v.minecraft}-${v.loader}`))
   async installFabric(options: InstallFabricOptions) {
-    return await this.installFabricInternal(options)
-  }
-
-  @Lock((v: InstallFabricOptions) => LockKey.version(`fabric-${v.minecraft}-${v.loader}`))
-  async installFabricUnsafe(options: InstallFabricOptions) {
     return await this.installFabricInternal(options)
   }
 

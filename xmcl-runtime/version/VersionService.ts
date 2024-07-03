@@ -1,8 +1,8 @@
-import { ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { VersionService as IVersionService, LocalVersionHeader, LocalVersions, MutableState, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
+import { LibraryInfo, ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
+import { VersionService as IVersionService, LocalVersionHeader, LocalVersions, MutableState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { FSWatcher } from 'fs'
-import { ensureDir, readdir, rm } from 'fs-extra'
+import { FSWatcher, existsSync } from 'fs'
+import { ensureDir, readFile, readFileSync, readdir, rm } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -12,6 +12,7 @@ import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
+import { InstallProfile } from '@xmcl/installer'
 
 export interface VersionResolver {
   (version: ResolvedVersion): Promise<void> | void
@@ -58,10 +59,20 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
         },
       })
       this.watcher.on('change', (event, file) => {
+        const id = basename(dirname(file as string))
         if (event === 'update') {
-          this.refreshVersion(basename(dirname(file as string)))
+          if ((file as string).endsWith('server.json')) {
+            this.refreshServerVersion(id)
+          } else {
+            this.refreshVersion(id)
+          }
         } else if (event === 'remove') {
-          this.state.localVersionRemove(basename(dirname(file as string)))
+          if ((file as string).endsWith('server.json')) {
+            this.refreshServerVersion(file as string)
+          } else {
+            this.refreshVersion(id)
+          }
+          // this.state.localVersionRemove(basename(dirname(file as string)))
         }
       })
     })
@@ -115,14 +126,14 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     }
   }
 
-  public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
+  public async resolveLocalVersion(versionId: string, root: string = this.getPath()): Promise<ResolvedVersion> {
     try {
-      const resolved = await Version.parse(root, versionFolder)
+      const resolved = await Version.parse(root, versionId)
       for (const resolver of this.resolvers) {
         try {
           await resolver(resolved)
         } catch (e) {
-          this.warn(`An error occurred during post resolve version ${versionFolder}`)
+          this.warn(`An error occurred during post resolve version ${versionId}`)
           if (e instanceof Error) {
             this.error(e)
           }
@@ -132,7 +143,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     } catch (e) {
       if (e instanceof Error && e.name === 'MissingVersionJson') {
         Object.assign(e, {
-          files: await readdir(join(root, 'versions', versionFolder)).catch(() => []),
+          files: await readdir(join(root, 'versions', versionId)).catch(() => []),
         })
       }
       throw e
@@ -165,6 +176,43 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     }
   }
 
+  async resolveServerVersion(id: string): Promise<ResolvedServerVersion> {
+    const filePath = this.getPath('versions', id, 'server.json')
+    const content = await readFile(filePath, 'utf-8')
+    const profile = JSON.parse(content) as Version
+    if (!profile._minecraftVersion) {
+      throw new Error('Missing minecraft version in server profile')
+    }
+    return {
+      id,
+      minecraftVersion: profile._minecraftVersion,
+      mainClass: profile.mainClass,
+      jar: profile.jar,
+      libraries: profile.libraries.map(l => Version.resolveLibrary(l)).filter(isNonnull),
+      arguments: profile.arguments as any,
+    }
+  }
+
+  async refreshServerVersion(id: string) {
+    try {
+      const filePath = this.getPath('versions', id, 'server.json')
+      const content = await readFile(filePath, 'utf-8')
+      const profile = JSON.parse(content) as Version
+      if (profile._minecraftVersion) {
+        this.state.serverProfileAdd({
+          id,
+          type: !profile._forgeVersion && !profile._fabricLoaderVersion ? 'vanilla' : profile._forgeVersion ? 'forge' : 'fabric',
+          minecraft: profile._minecraftVersion,
+          version: profile._forgeVersion ?? profile._fabricLoaderVersion,
+        })
+      } else {
+        this.warn(`Missing minecraft version in ${id}`)
+      }
+    } catch (e) {
+      this.state.serverProfileRemove(id)
+    }
+  }
+
   @Singleton()
   async refreshVersions() {
     const dir = this.getPath('versions')
@@ -178,6 +226,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
         const realPath = join(dir, versionId)
         if (await isDirectory(realPath)) {
           const version = await this.resolveLocalVersion(versionId)
+          this.refreshServerVersion(versionId)
           return version
         }
       } catch (e) {

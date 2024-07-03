@@ -54,6 +54,8 @@ export interface InstallForgeOptions {
    */
   version: string
 
+  side?: 'client' | 'server'
+
   root?: string
 }
 
@@ -81,6 +83,8 @@ export interface InstallFabricOptions {
    * The minecraft version to install
    */
   minecraft: string
+
+  side?: 'client' | 'server'
 }
 
 export type InstallableLibrary = Version.Library | ResolvedLibrary
@@ -131,6 +135,7 @@ export interface InstallService {
    * Download and install a minecraft version
    */
   installMinecraft(meta: MinecraftVersion, side?: 'client' | 'server'): Promise<void>
+  installMinecraftServerJar(version: string): Promise<void>
   /**
    * Install provided libraries to game.
    */
@@ -164,6 +169,11 @@ export interface InstallService {
   installQuilt(meta: InstallQuiltOptions): Promise<string>
 
   installByProfile(profile: InstallProfile): Promise<void>
+  /**
+   * Install customized version
+   * @param version The version json
+   */
+  installVersion(version: Version): Promise<void>
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'

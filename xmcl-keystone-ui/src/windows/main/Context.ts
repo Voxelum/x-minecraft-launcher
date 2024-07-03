@@ -17,6 +17,7 @@ import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/
 import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionDiagnose, useInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
+import { kInstanceVersionInstall, useInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
@@ -60,7 +61,7 @@ export default defineComponent({
     provide(kPeerShared, usePeerConnections(queue))
 
     const settings = useSettingsState()
-    const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions)
+    const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions, localVersions.servers)
     const instanceJava = useInstanceJava(instance.instance, instanceVersion.resolvedVersion, java.all)
     const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.path)
@@ -78,7 +79,10 @@ export default defineComponent({
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
-    const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
+    const install = useInstanceVersionInstall(localVersions.versions)
+    provide(kInstanceVersionInstall, install)
+
+    const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, install)
     const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)

@@ -1,5 +1,5 @@
-import { MinecraftFolder, MinecraftServerOptions, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, createMinecraftProcessWatcher, generateArguments, launch, launchServer } from '@xmcl/core'
-import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload } from '@xmcl/runtime-api'
+import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, createMinecraftProcessWatcher, generateArguments, launch, launchServer } from '@xmcl/core'
+import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload, ResolvedServerVersion } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { ChildProcess } from 'child_process'
 import { randomUUID } from 'crypto'
@@ -40,7 +40,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     return (Object.keys(this.processes).map(v => Number(v)))
   }
 
-  #generateServerOptions(options: LaunchOptions, version: ResolvedVersion) {
+  #generateServerOptions(options: LaunchOptions, version: ResolvedServerVersion) {
     const javaPath = options.java
     const yggdrasilAgent = options.yggdrasilAgent
 
@@ -48,21 +48,40 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
     const minMemory: number | undefined = options.maxMemory
     const maxMemory: number | undefined = options.minMemory
+    const jvmArgs = [...version.arguments.jvm]
+    if (options.vmOptions) {
+      jvmArgs.push(...options.vmOptions)
+    }
+    const mcArgs = [...version.arguments.game]
+    if (options.mcOptions) {
+      mcArgs.push(...options.mcOptions)
+    }
+
+    const mc = MinecraftFolder.from(options.gameDirectory)
+    const classPath = [
+      ...version.libraries.filter((lib) => !lib.isNative).map((lib) => mc.getLibraryByPath(lib.download.path)),
+    ]
+
     /**
      * Build launch condition
      */
-    const launchOptions: MinecraftServerOptions & { version: ResolvedVersion } = {
-      path: minecraftFolder.root,
+    const launchOptions: ServerOptions & { version: ResolvedServerVersion } = {
       version,
       javaPath,
       minMemory,
       maxMemory,
+
+      mainClass: version.mainClass,
+      serverExectuableJarPath: version.jar ? mc.getLibraryByPath(version.jar) : undefined,
+      classPath,
+
       extraExecOption: {
         detached: true,
         cwd: minecraftFolder.root,
       },
-      extraJVMArgs: options.vmOptions?.filter(v => !!v),
-      extraMCArgs: options.mcOptions?.filter(v => !!v),
+
+      extraJVMArgs: jvmArgs,
+      extraMCArgs: mcArgs,
     }
 
     return launchOptions
@@ -211,20 +230,16 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const javaPath = options.java
       const side = options.side ?? 'client'
 
-      let version: ResolvedVersion | undefined
+      let version: ResolvedVersion | ResolvedServerVersion | undefined
       const operationId = options.operationId || randomUUID()
 
-      if (options.version) {
-        this.log(`Override the version: ${options.version}`)
-        try {
+      try {
+        if (side === 'client') {
           version = await this.#track(this.versionService.resolveLocalVersion(options.version), 'parse-version', operationId)
-        } catch (e) {
-          this.warn(`Cannot use override version: ${options.version}`)
-          this.warn(e)
+        } else {
+          version = await this.#track(this.versionService.resolveServerVersion(options.version), 'parse-version', operationId)
         }
-      }
-
-      if (!version) {
+      } catch {
         throw new LaunchException({
           type: 'launchNoVersionInstalled',
           options,
@@ -239,31 +254,31 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       let process: ChildProcess
       const context = {}
-      let launchOptions: (ResolvedLaunchOptions | MinecraftServerOptions) & { version: ResolvedVersion }
-      if (side === 'client') {
+      let launchOptions: (ResolvedLaunchOptions | ServerOptions)
+      if ('inheritances' in version) {
         const accessToken = user ? await this.#track(this.userTokenStorage.get(user).catch(() => undefined), 'get-user-token', operationId) : undefined
-        launchOptions = this.#generateOptions(options, version, accessToken)
+        const op = this.#generateOptions(options, version, accessToken)
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, launchOptions.version, launchOptions, context), plugin.name, operationId)
+            await this.#track(plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context), plugin.name, operationId)
           } catch (e) {
             this.warn('Fail to run plugin')
             this.error(e as any)
           }
         }
 
-        if (launchOptions.server) {
+        if (op.server) {
           this.log('Launching a server')
         }
 
         this.log('Launching with these option...')
-        this.log(JSON.stringify(launchOptions, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        process = await this.#track(launch(launchOptions), 'spawn-minecraft-process', operationId)
+        this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
+        process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
       } else {
         launchOptions = this.#generateServerOptions(options, version)
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, launchOptions.version, launchOptions, context), plugin.name, operationId)
+            await this.#track(plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context), plugin.name, operationId)
           } catch (e) {
             this.warn('Fail to run plugin', plugin)
             this.error(e as any)
@@ -353,7 +368,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
           for (const plugin of this.middlewares) {
             try {
-              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation }, launchOptions.version, launchOptions, context)
+              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation }, { version, options: launchOptions, side } as any, context)
             } catch (e) {
               this.warn('Fail to run plugin')
               this.error(e as any)

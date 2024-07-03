@@ -31,6 +31,18 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     })
   }
 
+  getEULA(instancePath: string): Promise<boolean> {
+    const optionsPath = join(instancePath, 'eula.txt')
+    return readFile(optionsPath, 'utf-8').then((content) => {
+      return content.includes('eula=true')
+    }).catch(() => false)
+  }
+
+  setEULA(instancePath: string, value: boolean): Promise<void> {
+    const optionsPath = join(instancePath, 'eula.txt')
+    return writeFile(optionsPath, `eula=${Boolean(value)}`)
+  }
+
   async watch(path: string) {
     requireString(path)
     const stateManager = await this.app.registry.get(ServiceStateManager)

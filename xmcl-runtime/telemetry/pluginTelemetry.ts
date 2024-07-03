@@ -199,8 +199,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       if (!flights.disableMinecraftRunLog) {
         service.registerMiddleware({
           name: 'minecraft-run-telemetry',
-          async onBeforeLaunch(_, version, options, ctx) {
-            const path = 'path' in options ? options.path : options.gamePath
+          async onBeforeLaunch(_, payload, ctx) {
+            const path = payload.side === 'client' ? payload.options.gamePath : payload.options.cwd!
             const state = stateManager.get<InstanceModsState>(getInstanceModStateKey(path))
             const mods = state?.mods.map(m => m.hash)
             const runtime = instanceService?.state.all[path]?.runtime
@@ -209,7 +209,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
               ctx.runtime = runtime
             }
           },
-          async onAfterLaunch(result, version, opts, ctx) {
+          async onAfterLaunch(result, opt, ctx) {
             if (result.code !== 0) {
               return
             }
@@ -220,7 +220,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
                   mods: ctx.mods.join(','),
                   runtime: ctx.runtime,
                   java: await javaService?.getJavaState().then((javaState) => {
-                    const javaVersion = javaState.all.find(s => s.path === opts.javaPath)
+                    const javaVersion = javaState.all.find(s => s.path === opt.options.javaPath)
                     if (javaVersion) {
                       return {
                         majorVersion: javaVersion.majorVersion,

@@ -12,6 +12,7 @@ import { kInstanceVersion } from './instanceVersion'
 import { kInstance } from './instance'
 import { kInstanceLaunch } from './instanceLaunch'
 import { kInstances } from './instances'
+import { InjectionKey } from 'vue'
 
 export interface LaunchMenuItem {
   title: string
@@ -21,6 +22,8 @@ export interface LaunchMenuItem {
   color?: string
   onClick?: () => void
 }
+
+export const kLaunchButton: InjectionKey<ReturnType<typeof useLaunchButton>> = Symbol('LaunchButton')
 
 export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)

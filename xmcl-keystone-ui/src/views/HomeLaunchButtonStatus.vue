@@ -1,0 +1,108 @@
+<template>
+  <v-menu
+    v-model="showMenu"
+    offset-y
+    left
+    transition="scroll-y-transition"
+    :top="inFoucsMode"
+    :bottom="!inFoucsMode"
+  >
+    <template #activator="{ attrs }">
+      <HomeLaunchButtonStatusItem
+        v-bind="attrs"
+        :active="active || showMenu"
+        :item="menuItems[0]"
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeave"
+      />
+    </template>
+    <div
+      v-show="menuItems.length > 1"
+      class="select-none"
+      @mouseenter="$emit('mouseenter', $event)"
+      @mouseleave="$emit('mouseleave', $event)"
+    >
+      <v-list
+        nav
+        color="rgba(0,0,0,0.5)"
+      >
+        <template v-for="(item, index) in menuItems.slice(1)">
+          <HomeLaunchButtonStatusItem
+            :key="index"
+            :item="item"
+            :active="true"
+            @mouseenter="onMouseEnter"
+            @mouseleave="onMouseLeave"
+          />
+          <!-- <v-list-item
+            :key="index"
+            v-on="item.onClick ? { click: item.onClick } : {}"
+          >
+            <v-list-item-avatar class="flex-grow-0">
+              <v-icon :color="item.color ?? 'warning darken-1'">
+                {{ item.icon ?? 'info' }}
+              </v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ item.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ item.description }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action
+              v-if="item.rightIcon"
+              class="flex-grow-0"
+            >
+              <v-icon> {{ item.rightIcon }} </v-icon>
+            </v-list-item-action>
+
+            <v-list-item-action
+              v-if="item.onClick"
+              class="flex-grow-0"
+            >
+              <v-chip
+                label
+                outlined
+                color="grey darken-1"
+              >
+                {{ t('optional') }}
+              </v-chip>
+            </v-list-item-action>
+          </v-list-item> -->
+        </template>
+      </v-list>
+    </div>
+  </v-menu>
+</template>
+<script lang="ts" setup>
+import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
+import { useInFocusMode } from '@/composables/uiLayout'
+import { injection } from '@/util/inject'
+import HomeLaunchButtonStatusItem from './HomeLaunchButtonStatusItem.vue'
+
+defineProps<{ active?: boolean }>()
+
+const inFoucsMode = useInFocusMode()
+const { t } = useI18n()
+
+const { loading, menuItems } = injection(kLaunchButton)
+
+let handle: any
+const showMenu = ref(false)
+
+function onMouseEnter() {
+  if (handle) clearTimeout(handle)
+  if (loading.value) return
+  showMenu.value = true
+}
+
+function onMouseLeave() {
+  if (handle) clearTimeout(handle)
+  handle = setTimeout(() => {
+    showMenu.value = false
+  }, 100)
+}
+
+</script>

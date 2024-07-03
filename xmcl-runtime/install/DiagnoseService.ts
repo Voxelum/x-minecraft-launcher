@@ -1,6 +1,6 @@
 import { AssetIndexIssue, AssetIssue, diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService, RuntimeVersions, Version } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
@@ -12,8 +12,8 @@ import { exists } from '../util/fs'
 @ExposeServiceKey(DiagnoseServiceKey)
 export class DiagnoseService extends AbstractService implements IDiagnoseService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-  @Inject(kGameDataPath) private getPath: PathResolver,
-  @Inject(kResourceWorker) private worker: ResourceWorker,
+    @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app)
   }
@@ -71,5 +71,21 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
         return report
       }
     }
+  }
+
+  async getVanillaServerJar(resolvedVersion: ResolvedVersion | undefined) {
+    const minecraft = new MinecraftFolder(this.getPath())
+
+    const resolved = resolvedVersion
+
+    if (!resolved) return undefined
+
+    const jarIssue = await diagnoseJar(resolved, minecraft, { side: 'server' })
+    if (jarIssue) {
+      return undefined
+    }
+
+    const jarPath = minecraft.getVersionJar(resolvedVersion.minecraftVersion, 'server')
+    return jarPath
   }
 }

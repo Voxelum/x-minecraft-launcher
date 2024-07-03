@@ -1249,6 +1249,8 @@ shaderPack:
   selectSearchHint: 檢視已選擇的光影包
   showDirectory: 顯示光影資料夾
   showFile: 在資料夾中顯示此光影包
+shared:
+  accept: 接受
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

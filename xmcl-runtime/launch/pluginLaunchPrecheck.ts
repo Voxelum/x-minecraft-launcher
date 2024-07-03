@@ -1,4 +1,4 @@
-import { LaunchPrecheck, MinecraftFolder, diagnoseJar, diagnoseLibraries, launchServer } from '@xmcl/core'
+import { LaunchPrecheck, MinecraftFolder, diagnoseJar, diagnoseLibraries } from '@xmcl/core'
 import { LaunchException, protocolToMinecraft, resolveForgeVersion } from '@xmcl/runtime-api'
 import { move, readlink, stat, symlink, unlink } from 'fs-extra'
 import { join } from 'path'
@@ -58,7 +58,9 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   })
   launchService.registerMiddleware({
     name: 'check-assets',
-    async onBeforeLaunch(input, resolvedVersion) {
+    async onBeforeLaunch(input, payload) {
+      if (payload.side === 'server') return
+      const resolvedVersion = payload.version
       if (!input?.skipAssetsCheck) {
         const resourceFolder = new MinecraftFolder(getPath())
         await Promise.all([
@@ -91,26 +93,27 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   })
   launchService.registerMiddleware({
     name: 'check-natives',
-    async onBeforeLaunch(input, resolvedVersion, options) {
-      if ('gamePath' in options) {
-        const resourceFolder = new MinecraftFolder(getPath())
-        await LaunchPrecheck.checkNatives(resourceFolder, resolvedVersion, options)
-      }
+    async onBeforeLaunch(input, payload, options) {
+      if (payload.side === 'server') return
+      const resourceFolder = new MinecraftFolder(getPath())
+      await LaunchPrecheck.checkNatives(resourceFolder, payload.version, payload.options)
     },
   })
   launchService.registerMiddleware({
     name: 'expose-server',
-    async onBeforeLaunch(input, version, options) {
+    async onBeforeLaunch(input, payload, options) {
+      if (payload.side === 'client') return
+
       const peer = await app.registry.getIfPresent(PeerService)
-      if (peer && 'path' in options) {
-        const ver = version.minecraftVersion
+      if (peer && payload.side === 'server') {
+        const ver = payload.version.minecraftVersion
         const minecraftToProtocol: Record<string, number> = {}
         for (const [protocol, vers] of Object.entries(protocolToMinecraft)) {
           for (const v of vers) {
             minecraftToProtocol[v] = parseInt(protocol)
           }
         }
-        peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
+        // peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
       }
     },
   })
@@ -123,8 +126,9 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   })
   launchService.registerMiddleware({
     name: 'link-assets',
-    async onBeforeLaunch(input, version, options) {
-      if ('gamePath' in options) {
+    async onBeforeLaunch(input, payload) {
+      if (payload.side === 'client') {
+        const { version, options } = payload
         const resourceFolder = new MinecraftFolder(getPath())
         await LaunchPrecheck.linkAssets(resourceFolder, version, options)
 

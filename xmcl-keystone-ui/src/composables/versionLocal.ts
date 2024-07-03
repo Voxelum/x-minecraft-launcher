@@ -10,9 +10,11 @@ export function useLocalVersions() {
   const { getLocalVersions } = useService(VersionServiceKey)
   const { state, isValidating, error } = useState(getLocalVersions, LocalVersions)
   const versions = computed(() => state.value?.local ?? [])
+  const servers = computed(() => state.value?.servers ?? [])
 
   return {
     versions,
+    servers,
     isValidating,
     error,
   }

@@ -1,4 +1,4 @@
-import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, VersionServiceKey, getExpectVersion, getResolvedVersion } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, ServerVersionHeader, VersionServiceKey, getExpectVersion, getResolvedVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref, InjectionKey } from 'vue'
 import { useService } from './service'
@@ -28,7 +28,7 @@ export function isResolvedVersion(v?: InstanceResolveVersion): v is ResolvedVers
   return !!v && 'id' in v
 }
 
-export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVersionHeader[]>) {
+export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVersionHeader[]>, servers: Ref<ServerVersionHeader[]>) {
   const { resolveLocalVersion } = useService(VersionServiceKey)
   const versionHeader = computed(() => {
     let result: LocalVersionHeader | undefined
@@ -70,12 +70,36 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     }
   }, { revalidateOnFocus: false, errorRetryCount: 0, shouldRetryOnError: false })
 
+  function getResolvedServerVersion() {
+    const runtime = instance.value.runtime
+    const isOnlyMinecraft = Object.keys(runtime).length === 1 && runtime.minecraft
+    for (const s of servers.value) {
+      if (isOnlyMinecraft) {
+        if (s.minecraft === runtime.minecraft && s.type === 'vanilla') {
+          return s
+        }
+      }
+      if (runtime.forge) {
+        if (s.minecraft === runtime.minecraft && s.version === runtime.forge && s.type === 'forge') {
+          return s
+        }
+      }
+      if (runtime.fabricLoader) {
+        if (s.minecraft === runtime.minecraft && s.version === runtime.fabricLoader && s.type === 'fabric') {
+          return s
+        }
+      }
+    }
+    return undefined
+  }
+
   watch([versionHeader, local], () => {
     mutate()
   }, { deep: true })
 
   return {
     ...useInstanceVersionBase(instance),
+    getResolvedServerVersion,
     folder,
     error,
     versionHeader,

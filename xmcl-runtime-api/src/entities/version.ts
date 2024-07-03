@@ -1,4 +1,4 @@
-import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import type { LibraryInfo, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 
@@ -547,11 +547,31 @@ export interface LocalVersionHeader {
   labyMod: string
 }
 
+export type ServerVersionHeader = {
+  id: string
+  minecraft: string
+  type: 'vanilla' | 'forge' | 'fabric'
+  version?: string
+}
+export interface ResolvedServerVersion {
+  id: string
+  libraries: ResolvedLibrary[]
+  mainClass: string
+  jar?: string
+  minecraftVersion: string
+  arguments: {
+    game: string[]
+    jvm: string[]
+  }
+}
+
 export class LocalVersions {
   /**
    * All the local versions installed in the disk
    */
   local = [] as LocalVersionHeader[]
+
+  servers = [] as ServerVersionHeader[]
 
   localVersions(local: LocalVersionHeader[]) {
     local.forEach(Object.freeze)
@@ -571,5 +591,13 @@ export class LocalVersions {
 
   localVersionRemove(folder: string) {
     this.local = this.local.filter(v => v.id !== folder)
+  }
+
+  serverProfileAdd(profile: ServerVersionHeader) {
+    this.servers.push(profile)
+  }
+
+  serverProfileRemove(id: string) {
+    this.servers = this.servers.filter(p => p.id !== id)
   }
 }

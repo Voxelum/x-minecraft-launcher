@@ -89,7 +89,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, id: string) {
+  async function generateLaunchOptions(instancePath: string, id: string, side = 'client' as 'client' | 'server') {
     const ver = resolvedVersion.value
     if (!ver || 'requirements' in ver) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
@@ -159,15 +159,16 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       mcOptions,
       yggdrasilAgent,
       disableElyByAuthlib,
+      side,
       server: inst.server ?? undefined,
     }
     return options
   }
 
-  async function _launch(instancePath: string, operationId: string) {
+  async function _launch(instancePath: string, operationId: string, side: 'client' | 'server') {
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(instancePath, operationId)
+      const options = await generateLaunchOptions(instancePath, operationId, side)
 
       if (!options.skipAssetsCheck) {
         allLaunchingStatus.value = {
@@ -208,10 +209,10 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function launchWithTracking() {
+  async function launchWithTracking(side = 'client' as 'client' | 'server') {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
-    await track(_launch(instancePath, operationId), 'launch', operationId)
+    await track(_launch(instancePath, operationId, side), 'launch', operationId)
   }
 
   async function killGame() {
