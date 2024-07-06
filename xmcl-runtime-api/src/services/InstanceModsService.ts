@@ -43,9 +43,14 @@ export class InstanceModsState {
         const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)
         if (index === -1) {
           mods.push(r)
-        } else if (process.env.NODE_ENV === 'development') {
-          // eslint-disable-next-line no-debugger
-          console.debug(`The mod ${r.path} is already in the list!`)
+        } else {
+          const existed = mods[index]
+          if (existed.path !== r.path) {
+            mods[index] = r
+          } else if (process.env.NODE_ENV === 'development') {
+            // eslint-disable-next-line no-debugger
+            console.debug(`The mod ${r.path} is already in the list!`)
+          }
         }
       } else if (a === InstanceModUpdatePayloadAction.Remove) {
         const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)

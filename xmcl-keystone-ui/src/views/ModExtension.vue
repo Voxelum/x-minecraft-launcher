@@ -87,6 +87,7 @@ import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModsSearch } from '@/composables/modSearch'
 import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
@@ -95,6 +96,7 @@ import debounce from 'lodash.debounce'
 
 const { runtime: version } = injection(kInstance)
 const { modrinth, curseforge, instanceMods, gameVersion, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
+const { mods: modFiles } = injection(kInstanceModsContext)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
@@ -139,7 +141,7 @@ const extensionItems = computed(() => [
   {
     icon: 'folder_zip',
     title: t('mod.name', { count: 2 }),
-    text: t('mod.enabled', { count: instanceMods.value.length }),
+    text: t('mod.enabled', { count: modFiles.value.filter(v => v.enabled).length }),
   },
   ...getExtensionItemsFromRuntime(version.value),
 ])

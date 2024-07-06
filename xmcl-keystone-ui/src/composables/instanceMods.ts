@@ -1,6 +1,6 @@
 import { ModFile, getModFileFromResource } from '@/util/mod'
-import { InstanceModsServiceKey, InstanceModsState, JavaRecord, Resource, RuntimeVersions } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
+import { InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, JavaRecord, PartialResourceHash, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import { InjectionKey, Ref, set } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 
@@ -19,7 +19,35 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       for (const o of ops) {
         markRaw(o[0])
       }
-      super.instanceModUpdates(ops)
+      const mods = [...this.mods]
+      for (const [r, a] of ops) {
+        if (a === InstanceModUpdatePayloadAction.Upsert) {
+          const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)
+          if (index === -1) {
+            mods.push(r)
+          } else {
+            const existed = mods[index]
+            if (existed.path !== r.path) {
+              mods[index] = r
+            } else if (process.env.NODE_ENV === 'development') {
+              // eslint-disable-next-line no-debugger
+              console.debug(`The mod ${r.path} is already in the list!`)
+            }
+          }
+        } else if (a === InstanceModUpdatePayloadAction.Remove) {
+          const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)
+          if (index !== -1) mods.splice(index, 1)
+        } else {
+          for (const update of r as any as PartialResourceHash[]) {
+            for (const m of mods) {
+              if (m.hash === update.hash) {
+                applyUpdateToResource(m, update)
+              }
+            }
+          }
+        }
+      }
+      set(this, 'mods', mods)
     }
   })
 
