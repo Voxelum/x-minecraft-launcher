@@ -4,19 +4,15 @@ import { setTimeout as timeout } from 'timers/promises'
 import { Agent, Dispatcher, Pool, buildConnector, setGlobalDispatcher } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
-import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
 import { NetworkAgent, ProxySettingController } from './dispatchers/NetworkAgent'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
-import { kUserAgent } from './userAgent'
 
 type DispatchOptions = Dispatcher.DispatchOptions
 
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
-  const version = IS_DEV ? '0.0.0' : app.version
-  const userAgent = `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
-  app.registry.register(kUserAgent, userAgent)
+  const userAgent = app.userAgent
 
   const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
   const dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
