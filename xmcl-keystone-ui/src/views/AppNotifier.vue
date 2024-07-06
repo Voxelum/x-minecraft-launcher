@@ -113,19 +113,6 @@ function consume() {
     data.operations = not.operations ?? []
   }
 }
-
-useEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    queue.value.push({
-      level: 'info',
-      title: 'test',
-      operations: [
-        { text: 'Create New', handler: () => { console.log('test') } },
-        { text: 'Apply To Current', handler: () => { console.log('test') } },
-      ],
-    })
-  }
-})
 watch(queueLength, (newLength, oldLength) => {
   if (newLength > oldLength && !data.show) {
     consume()
