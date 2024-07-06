@@ -8,20 +8,15 @@ import loggerWinUrl from '@renderer/logger.html'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
 import { Client, LauncherAppController } from '@xmcl/runtime/app'
 import { Logger } from '@xmcl/runtime/logger'
-import { kUserAgent } from '@xmcl/runtime/network'
 import { kSettings } from '@xmcl/runtime/settings'
-import { UserService } from '@xmcl/runtime/user'
-import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
-import { createReadStream } from 'fs'
-import { join } from 'path'
-import { Readable } from 'stream'
+import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, shell } from 'electron'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
 import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
-import { createWindowTracker } from './utils/windowSizeTracker'
 import { getLoginSuccessHTML } from './utils/login'
+import { createWindowTracker } from './utils/windowSizeTracker'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -209,110 +204,6 @@ export class ElectronController implements LauncherAppController {
     }
   }
 
-  private async getSharedSession() {
-    if (this.sharedSession) {
-      return this.sharedSession
-    }
-
-    const userAgent = await this.app.registry.get(kUserAgent)
-
-    const restoredSession = session.fromPartition('persist:main')
-    restoredSession.setUserAgent(userAgent)
-
-    for (const e of session.defaultSession.getAllExtensions()) {
-      restoredSession.loadExtension(e.path)
-    }
-
-    restoredSession.webRequest.onHeadersReceived((detail, cb) => {
-      if (detail.responseHeaders &&
-        !detail.responseHeaders['access-control-allow-origin'] &&
-        !detail.responseHeaders['Access-Control-Allow-Origin']) {
-        detail.responseHeaders['access-control-allow-origin'] = ['*']
-      }
-
-      cb({ responseHeaders: detail.responseHeaders })
-    })
-
-    restoredSession.webRequest.onBeforeSendHeaders((detail, cb) => {
-      if (detail.requestHeaders) {
-        detail.requestHeaders['User-Agent'] = userAgent
-      }
-      if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
-        detail.url.startsWith('https://api.xmcl.app/curseforge') ||
-        detail.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
-        detail.url.startsWith('https://api.xmcl.app/rtc/official')
-      ) {
-        this.app.registry.get(UserService).then(userService => {
-          userService.getOfficialUserProfile().then(profile => {
-            if (profile && profile.accessToken) {
-              detail.requestHeaders.Authorization = `Bearer ${profile.accessToken}`
-            }
-            cb({ requestHeaders: detail.requestHeaders })
-          }).catch(() => {
-            cb({ requestHeaders: detail.requestHeaders })
-          })
-        }).catch(e => {
-          cb({ requestHeaders: detail.requestHeaders })
-        })
-      } else if (detail.url.startsWith('https://api.curseforge.com')) {
-        detail.requestHeaders['x-api-key'] = process.env.CURSEFORGE_API_KEY || ''
-        cb({ requestHeaders: detail.requestHeaders })
-      } else {
-        cb({ requestHeaders: detail.requestHeaders })
-      }
-    })
-
-    const handler = async (request: Request): Promise<Response> => {
-      const url = new URL(request.url)
-      if (url.host === HOST && !HAS_DEV_SERVER) {
-        const realPath = join(__dirname, 'renderer', url.pathname)
-        const mimeType =
-          url.pathname.endsWith('.js')
-            ? 'text/javascript'
-            : url.pathname.endsWith('.css')
-              ? 'text/css'
-              : url.pathname.endsWith('.html')
-                ? 'text/html'
-                : url.pathname.endsWith('.json')
-                  ? 'application/json'
-                  : url.pathname.endsWith('.png')
-                    ? 'image/png'
-                    : url.pathname.endsWith('.svg')
-                      ? 'image/svg+xml'
-                      : url.pathname.endsWith('.ico')
-                        ? 'image/x-icon'
-                        : url.pathname.endsWith('.woff')
-                          ? 'font/woff'
-                          : url.pathname.endsWith('.woff2')
-                            ? 'font/woff2'
-                            : url.pathname.endsWith('.ttf')
-                              ? 'font/ttf'
-                              // webp
-                              : url.pathname.endsWith('.webp') ? 'image/webp' : ''
-        return new Response(Readable.toWeb(createReadStream(realPath)) as any, {
-          headers: {
-            'Content-Type': mimeType,
-          },
-        })
-      }
-      const response = await this.app.protocol.handle({
-        url: new URL(url),
-        method: request.method,
-        headers: request.headers,
-        body: request.body ? Readable.fromWeb(request.body as any) : request.body as any,
-      })
-      return new Response(response.body instanceof Readable ? Readable.toWeb(response.body) as any : response.body, {
-        status: response.status,
-        headers: response.headers,
-      })
-    }
-
-    restoredSession.protocol.handle('http', handler)
-    this.sharedSession = restoredSession
-
-    return restoredSession
-  }
-
   async activate(manifest: InstalledAppManifest, isBootstrap = false): Promise<void> {
     this.logger.log(`Activate app ${manifest.name} ${manifest.url}`)
     this.parking = true
@@ -375,7 +266,7 @@ export class ElectronController implements LauncherAppController {
         frame: this.getFrameOption(),
 
         webPreferences: {
-          session: await this.getSharedSession(),
+          session: this.app.session.getSession(this.activatedManifest!.url),
           contextIsolation: true,
           sandbox: false,
           preload: multiplayerPreload,
@@ -410,7 +301,7 @@ export class ElectronController implements LauncherAppController {
     const tracker = createWindowTracker(this.app, 'app-manager', man)
     const config = await tracker.getConfig()
 
-    const restoredSession = await this.getSharedSession()
+    const restoredSession = this.app.session.getSession(man.url)
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600
 
@@ -503,7 +394,7 @@ export class ElectronController implements LauncherAppController {
       icon: darkIcon,
       webPreferences: {
         preload: monitorPreload,
-        session: await this.getSharedSession(),
+        session: this.app.session.getSession(this.activatedManifest!.url),
       },
     })
 
