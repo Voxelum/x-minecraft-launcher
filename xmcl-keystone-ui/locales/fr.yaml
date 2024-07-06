@@ -298,6 +298,10 @@ errors:
   HeadersTimeoutError: Délai d'expiration du Header HTTP
   NotFoundError: 404 introuvable
   SocketError: Erreur de socket du serveur
+eula:
+  body: >-
+    En cliquant sur le bouton {accept} ci-dessous, vous indiquez votre accord
+    avec notre {eula}.
 exception:
   http: >-
     La requête HTTP à {url} a échoué. Code d'état {statusCode}. {code}. Veuillez
@@ -432,6 +436,7 @@ instance:
     Inclure les versions
   lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
+  launchServer: Lancer le serveur localhost
   mcOptions: Options Minecraft
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil

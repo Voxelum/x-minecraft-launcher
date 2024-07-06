@@ -239,7 +239,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         } else {
           version = await this.#track(this.versionService.resolveServerVersion(options.version), 'parse-version', operationId)
         }
-      } catch {
+      } catch (e) {
         throw new LaunchException({
           type: 'launchNoVersionInstalled',
           options,
@@ -318,6 +318,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         pid: process.pid,
         options,
         process,
+        side,
         ready: false,
       }
       this.processes[process.pid] = processData
@@ -416,6 +417,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     if (!proc) return undefined
     return {
       pid: proc.pid,
+      side: proc.side,
       ready: proc.ready,
       options: proc.options,
     }
@@ -424,6 +426,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
   async getGameProcesses(): Promise<GameProcess[]> {
     return Object.values(this.processes).map(v => ({
       pid: v.pid,
+      side: v.side,
       ready: v.ready,
       options: v.options,
     }))

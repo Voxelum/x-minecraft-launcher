@@ -248,6 +248,10 @@ errors:
   HeadersTimeoutError: HTTP Header timeout
   NotFoundError: 404 Not Found
   SocketError: Server socket error
+eula:
+  body: >-
+    By click {accept} button below, you are indicating your agreement to our
+    {eula}.
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
@@ -390,6 +394,7 @@ instance:
   includeVersion: Include Version | Include Versions
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
+  launchServer: Launch localhost server
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arugments
   name: Profile Name

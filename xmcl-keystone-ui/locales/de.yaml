@@ -288,6 +288,10 @@ errors:
   HeadersTimeoutError: HTTP-Header-Zeitüberschreitung ist aufgetreten
   NotFoundError: 404 Nicht gefunden
   SocketError: Server-Socket-Fehler
+eula:
+  body: >-
+    Indem Sie unten auf die Schaltfläche {accept} klicken, erklären Sie sich mit
+    unserer {eula} einverstanden.
 exception:
   http: >-
     HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}.
@@ -431,6 +435,7 @@ instance:
   includeVersion: Version freigeben | Versionen freigeben
   lastPlayed: Das letzte Mal spielten sie
   launchArguments: Vorschau der Startargumente
+  launchServer: Starten Sie den Localhost-Server
   mcOptions: Minecraft Einstellungen
   mcOptionsHint: Zusätzliche Anweisungen zum Starten von Minecraft
   name: Profilname

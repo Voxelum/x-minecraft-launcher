@@ -19,6 +19,8 @@ export interface InstallQuiltOptions {
   version: string
 
   minecraftVersion: string
+
+  side?: 'client' | 'server'
 }
 
 export interface RefreshForgeOptions {

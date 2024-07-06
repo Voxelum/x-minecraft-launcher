@@ -233,6 +233,14 @@ errors:
   HeadersTimeoutError: Истекло время ожидания заголовков HTTP
   NotFoundError: 404 Не найдено
   SocketError: Ошибка сокета сервера
+eula:
+  body: Нажимая кнопку {accept} ниже, вы подтверждаете свое согласие с нашим {eula}.
+exception:
+  http: >-
+    HTTP-запрос к {url} не выполнен. Код состояния {statusCode}. {code}.
+    Повторите попытку или проверьте свой интернет. Если эта ошибка сохраняется,
+    то отправьте отчёт команде разработчиков.
+existed: Существует
 exportModpackTarget:
   curseforge: Файл CurseForge
   modrinth: Файл Modrinth
@@ -352,6 +360,7 @@ instance:
   includeVersion: Включить версию | Включить версии
   lastPlayed: Последняя игра
   launchArguments: Предпросмотр аргументов запуска
+  launchServer: Запустить локальный сервер
   mcOptions: Опции Minecraft
   mcOptionsHint: Дополнительные аргументы запуска Minecraft
   name: Имя экземпляра

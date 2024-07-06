@@ -9,6 +9,7 @@
   >
     <template #activator="{ attrs }">
       <HomeLaunchButtonStatusItem
+        v-if="menuItems[0]"
         v-bind="attrs"
         :active="active || showMenu"
         :item="menuItems[0]"
@@ -34,43 +35,6 @@
             @mouseenter="onMouseEnter"
             @mouseleave="onMouseLeave"
           />
-          <!-- <v-list-item
-            :key="index"
-            v-on="item.onClick ? { click: item.onClick } : {}"
-          >
-            <v-list-item-avatar class="flex-grow-0">
-              <v-icon :color="item.color ?? 'warning darken-1'">
-                {{ item.icon ?? 'info' }}
-              </v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ item.title }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ item.description }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action
-              v-if="item.rightIcon"
-              class="flex-grow-0"
-            >
-              <v-icon> {{ item.rightIcon }} </v-icon>
-            </v-list-item-action>
-
-            <v-list-item-action
-              v-if="item.onClick"
-              class="flex-grow-0"
-            >
-              <v-chip
-                label
-                outlined
-                color="grey darken-1"
-              >
-                {{ t('optional') }}
-              </v-chip>
-            </v-list-item-action>
-          </v-list-item> -->
         </template>
       </v-list>
     </div>

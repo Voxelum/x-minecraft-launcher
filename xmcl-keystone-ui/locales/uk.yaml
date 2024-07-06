@@ -249,6 +249,8 @@ errors:
   HeadersTimeoutError: Вийшов час очікування HTTP Header
   NotFoundError: 404 Не знайдено
   SocketError: Помилка сокету сервера
+eula:
+  body: Натиснувши кнопку {accept} нижче, ви підтверджуєте свою згоду з {eula}.
 exception:
   http: >-
     HTTP-запит з {url} не виконано. Код стану {statusCode}. {code}. Повторіть
@@ -389,6 +391,7 @@ instance:
   includeVersion: Увімкнути версію | Вмикати версії
   lastPlayed: Востаннє грали
   launchArguments: Попередній перегляд аргументів запуску
+  launchServer: Запустіть локальний сервер
   mcOptions: Параметри Minecraft
   mcOptionsHint: Додаткові інструкції із запуску Minecraft
   name: Ім'я профілю

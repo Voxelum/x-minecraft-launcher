@@ -258,6 +258,10 @@ errors:
   HeadersTimeoutError: Timeout intestazione HTTP
   NotFoundError: 404 Non trovato
   SocketError: Errore del socket del server
+eula:
+  body: >-
+    Facendo clic sul pulsante {accept} qui sotto, indichi il tuo consenso alla
+    nostra {eula}.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -401,6 +405,7 @@ instance:
   includeVersion: Includi versione | Includi versioni
   lastPlayed: Giocato l'ultima volta
   launchArguments: Anteprima argomenti di avvio
+  launchServer: Avvia il server localhost
   mcOptions: Opzioni Minecraft
   mcOptionsHint: Argomenti di avvio aggiuntivi di Minecraft
   name: Nome profilo

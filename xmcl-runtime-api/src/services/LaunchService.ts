@@ -116,6 +116,7 @@ export interface LaunchOptions {
 export interface GameProcess {
   pid: number
   ready: boolean
+  side: 'client' | 'server'
   options: LaunchOptions
 }
 

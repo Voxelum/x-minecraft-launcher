@@ -281,6 +281,8 @@ errors:
   HeadersTimeoutError: 等待 HTTP 头信息超时
   NotFoundError: 404 未找到资源
   SocketError: 服务器连接断开
+eula:
+  body: 点击下面的{accept}按钮，即表示您同意我们的{eula}。
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
 existed: 已导入过的
@@ -413,6 +415,7 @@ instance:
   includeVersion: 包含游戏版本
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
+  launchServer: 启动本地服务端
   mcOptions: Minecraft 启动选项
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称

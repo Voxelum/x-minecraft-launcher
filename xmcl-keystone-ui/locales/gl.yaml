@@ -238,8 +238,14 @@ disable: Desactivar
 downloadUpdate: Descargar actualización
 errors:
   NotFoundError: 404 non atopado
+eula:
+  body: >-
+    Ao facer clic no botón {aceptar} a continuación, indicas o teu acordo co
+    accept{eula}.
 importModpack:
   name: Importar Modpack
+instance:
+  launchServer: Inicia o servidor localhost
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 

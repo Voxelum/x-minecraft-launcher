@@ -252,6 +252,8 @@ errors:
     róla, hogy az Launchernej van írási jogosultsága.
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   SocketError: Kiszolgálói foglalathiba
+eula:
+  body: Az alábbi {accept} gombra kattintva jelzi, hogy beleegyezik {eula}-unkba.
 exception:
   http: >-
     A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek,
@@ -392,6 +394,7 @@ instance:
   includeVersion: Verzió beépítése | Verzió beépítése
   lastPlayed: Utoljára játszott
   launchArguments: Indítási argumentumok Előnézet
+  launchServer: Indítsa el a localhost szervert
   mcOptions: Minecraft beállítások
   mcOptionsHint: Kiegészítő Minecraft indítási beállítások
   name: Profil név

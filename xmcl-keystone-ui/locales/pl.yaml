@@ -262,6 +262,8 @@ errors:
   HeadersTimeoutError: Limit czasu nagłówka HTTP
   NotFoundError: 404 Nie znaleziono
   SocketError: Błąd gniazda serwera
+eula:
+  body: Klikając przycisk {accept} poniżej, wyrażasz zgodę na naszą {eula}.
 exception:
   http: >-
     Żądanie HTTP do {url} nie powiodło się. Kod statusu {statusCode}. {code}.
@@ -404,6 +406,7 @@ instance:
   includeVersion: Dołącz wersję | Dołącz wersje
   lastPlayed: Ostatnio grane
   launchArguments: Podgląd uruchamiania argumentów
+  launchServer: Uruchom serwer localhost
   mcOptions: Opcje Minecraft
   mcOptionsHint: Dodatkowe poprawki dotyczące uruchomienia gry Minecraft
   name: Nazwa profilu

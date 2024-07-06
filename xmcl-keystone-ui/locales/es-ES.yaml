@@ -239,6 +239,10 @@ errors:
     Seleccione un directorio de datos al que pueda acceder el iniciador. 
     Puede intentar restablecer la raíz de datos en la página de configuración.
   NotFoundError: 404 No encontrado
+eula:
+  body: >-
+    Al hacer clic en el botón {accept} a continuación, estás indicando que estás
+    de acuerdo con nuestra {eula}.
 fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}
@@ -356,6 +360,7 @@ instance:
   includeVersion: Incluir Versión | Incluir Versiones
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
+  launchServer: Iniciar el servidor localhost
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
