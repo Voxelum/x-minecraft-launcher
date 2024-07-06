@@ -31,7 +31,10 @@ class LogSink {
   }
 
   dispose() {
+    this.passthrough.end()
+    this.passthrough.on('error', () => { /* ignore */ })
     this.stream?.close()
+    this.stream?.on('error', () => { /* ignore */ })
   }
 }
 
