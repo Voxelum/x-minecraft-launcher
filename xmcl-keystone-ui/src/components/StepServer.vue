@@ -105,7 +105,7 @@
                   <v-icon left>
                     wifi
                   </v-icon>
-                  {{ t('server.ping') }}
+                  {{ t('refresh') }}
                 </v-btn>
               </div>
             </div>

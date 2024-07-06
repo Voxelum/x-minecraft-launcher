@@ -1,7 +1,7 @@
 <template>
   <HomeCard
-    title="Mod"
     icon="extension"
+    :title="t('mod.name', 2)"
     :text="t('mod.enabled', { count: enabledModCounts })"
     :icons="icons"
     :refreshing="isValidating"
