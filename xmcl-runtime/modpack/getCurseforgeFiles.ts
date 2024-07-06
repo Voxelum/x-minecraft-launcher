@@ -1,12 +1,13 @@
 import { File, CurseforgeApiError, CurseforgeV1Client, Mod } from '@xmcl/curseforge'
 
 export async function getCurseforgeProjects(client: CurseforgeV1Client, ids: number[]): Promise<Mod[]> {
+  if (ids.length === 0) return []
   try {
     const mods = await client.getMods(ids)
     return mods
   } catch (e) {
     if (e instanceof CurseforgeApiError && e.status === 400) {
-      if (ids.length === 1) {
+      if (ids.length <= 1) {
         // TODO: handle this
         return []
       }
@@ -23,12 +24,13 @@ export async function getCurseforgeProjects(client: CurseforgeV1Client, ids: num
 }
 
 export async function getCurseforgeFiles(client: CurseforgeV1Client, ids: number[]): Promise<File[]> {
+  if (ids.length === 0) return []
   try {
     const files = await client.getFiles(ids)
     return files
   } catch (e) {
     if (e instanceof CurseforgeApiError && e.status === 400) {
-      if (ids.length === 1) {
+      if (ids.length <= 1) {
         // TODO: handle this
         return []
       }
