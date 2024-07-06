@@ -4,6 +4,7 @@ import { CachedFTBModpackVersionManifest, InstanceFile, InstanceManifest, JavaRe
 import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { useService } from './service'
+import { renderMinecraftPlayerTextHead } from '@/util/avatarRenderer'
 
 export type AddInstanceDialogParameter = {
   type: 'resource'
@@ -80,7 +81,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
   }
 
   function getPeerTemplate(id: string, name: string, icon: string, man: InstanceManifest) {
-    const result: Template = {
+    const result: Template = reactive({
       filePath: id,
       name: `${man.name ?? 'Instance'}@${name}`,
       description: '',
@@ -105,7 +106,11 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
       },
       loadFiles: () => Promise.resolve(man.files),
       type: 'peer',
-    }
+    })
+
+    renderMinecraftPlayerTextHead(icon)?.then((rendered) => {
+      result.instance.icon = rendered
+    })
 
     return result
   }
