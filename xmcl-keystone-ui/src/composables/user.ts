@@ -76,6 +76,17 @@ export function useUserContext() {
     } else {
       refreshUser(profile.id)
     }
+  }, { immediate: true })
+
+  watch(state, (s) => {
+    if (!s) return
+    if (userProfile.value === NO_USER_PROFILE) {
+      // Select the first user
+      const first = users.value[0]
+      if (first) {
+        select(first.id)
+      }
+    }
   })
 
   return {
