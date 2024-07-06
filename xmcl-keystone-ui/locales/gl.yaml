@@ -4,14 +4,22 @@ AppAddInstanceDialog:
     O rematou a descarga do paquete de mods {name}. ¿Queres crear unha instancia
     para el?
 AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    Se non queres desordenar a instancia actual. 
+
+    Tamén podes crear unha nova instancia a partir da configuración do teu
+    compañeiro. 
+
+    Fai clic no botón de abaixo para crear unha instancia.
   baseInfo: Configuración Básica
   cancelShare: Cancelar Compartir
   description: >-
     Despois de compartir, outros compañeiros poderan descargar os archivos do
     xogo que compartiste a través do teu PC.
-  downloadDescription: >-
-    Verifique os arquivos que o seu compañeiro lle proporcionou. Seleccione o
-    arquivo que desexa descargar.
+  downloadDescription: |-
+    Verifique os ficheiros que che proporcionou o teu compañeiro. 
+    Seleccione o ficheiro que quere descargar. 
+    Colocarase na instancia actual {name}.
   downloadNotifyTitle: Descargar instancia de {user}
   downloadTitle: Descargar arquivos de outros compañeiros
   downloadToLocal: Descargar a instancia actual
@@ -249,8 +257,11 @@ me:
   modpacks: Os meus Modpacks
   versions: Versións instaladas
 mod:
+  denseView: Vista Densa
+  mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
+  noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
 multiplayer:
   kernel: Núcleo P2P
@@ -259,6 +270,10 @@ multiplayer:
 
     Cambia isto só cando a túa conexión p2p nalgún momento falla a xanela do
     lanzador.
+  sharingNotificationBody: >-
+    Podes descargar ou crear unha instancia desde a configuración compartida de
+    {name}.
+  sharingNotificationTitle: Un compañeiro está compartindo a configuración do xogo
 resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos

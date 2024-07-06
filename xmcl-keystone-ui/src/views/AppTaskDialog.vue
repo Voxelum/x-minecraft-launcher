@@ -14,13 +14,10 @@
 import { useDialog } from '../composables/dialog'
 import TaskView from './AppTaskDialogTaskView.vue'
 
-const { hide, isShown } = useDialog('task')
-const router = useRouter()
-watch(isShown, (v) => {
-  if (v) {
-    windowController.focus()
-  }
+const { hide, isShown } = useDialog('task', () => {
+  windowController.focus()
 })
+const router = useRouter()
 router.afterEach((g) => {
   if (isShown.value) {
     hide()

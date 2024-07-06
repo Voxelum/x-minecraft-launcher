@@ -30,163 +30,122 @@
         class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>{{ t('modpack.general') }}</v-subheader>
-        <v-container
-          grid-list-md
-          style="padding-top: 0px"
+        <div
+          class="grid grid-cols-2 gap-4 gap-y-2"
         >
-          <v-layout row>
-            <v-flex d-flex>
-              <v-text-field
-                v-model="name"
-                prepend-inner-icon="edit"
-                persistent-hint
-                :hint="t('instance.nameHint')"
-                :label="t('name')"
-                required
-              />
-            </v-flex>
-            <v-flex d-flex>
-              <v-text-field
-                v-model="author"
-                prepend-inner-icon="person"
-                persistent-hint
-                :hint="t('modpack.authorHint')"
-                :label="t('author')"
-                required
-              />
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex d-flex>
-              <v-text-field
-                v-model="data.version"
-                prepend-inner-icon="history"
-                persistent-hint
-                :hint="t('modpack.modpackVersion')"
-                :label="t('modpack.modpackVersion')"
-                required
-              />
-            </v-flex>
-            <v-flex
-              d-flex
-              xs6
-            >
-              <v-select
-                v-model="data.gameVersion"
-                :items="localVersions"
-                prepend-inner-icon="games"
-                persistent-hint
-                class="visible-scroll"
-                :hint="t('instance.includeVersion', 2)"
-                :label="t('instance.gameVersion')"
-                required
-              />
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex d-flex>
-              <v-checkbox
-                v-model="data.emitCurseforge"
-                :label="t('modpack.emitCurseforge')"
-                prepend-icon="$vuetify.icons.curseforge"
-                hide-details
-              />
-            </v-flex>
-            <v-flex
-              d-flex
-              xs6
-            >
-              <v-checkbox
-                v-model="data.emitMcbbs"
-                :label="t('modpack.emitMcbbs')"
-                hide-details
-              />
-            </v-flex>
-          </v-layout>
-          <v-layout row>
-            <v-flex d-flex>
-              <v-checkbox
-                v-model="data.emitModrinth"
-                :label="t('modpack.emitModrinth')"
-                hide-details
-                prepend-icon="$vuetify.icons.modrinth"
-              />
-            </v-flex>
+          <v-text-field
+            v-model="name"
+            prepend-inner-icon="edit"
+            persistent-hint
+            :hint="t('instance.nameHint')"
+            :label="t('name')"
+            required
+          />
+          <v-text-field
+            v-model="author"
+            prepend-inner-icon="person"
+            persistent-hint
+            :hint="t('modpack.authorHint')"
+            :label="t('author')"
+            required
+          />
+          <v-text-field
+            v-model="data.version"
+            prepend-inner-icon="history"
+            persistent-hint
+            :hint="t('modpack.modpackVersion')"
+            :label="t('modpack.modpackVersion')"
+            required
+          />
+          <v-select
+            v-model="data.gameVersion"
+            :items="localVersions"
+            prepend-inner-icon="games"
+            persistent-hint
+            class="visible-scroll"
+            :hint="t('instance.includeVersion', 2)"
+            :label="t('instance.gameVersion')"
+            required
+          />
+          <v-checkbox
+            v-model="data.emitCurseforge"
+            :label="t('modpack.emitCurseforge')"
+            prepend-icon="$vuetify.icons.curseforge"
+            hide-details
+          />
+          <v-checkbox
+            v-model="data.emitMcbbs"
+            :label="t('modpack.emitMcbbs')"
+            hide-details
+          />
+          <v-checkbox
+            v-model="data.emitModrinth"
+            :label="t('modpack.emitModrinth')"
+            hide-details
+            prepend-icon="$vuetify.icons.modrinth"
+          />
 
-            <v-flex
-              d-flex
-              xs6
-            >
-              <v-checkbox
-                v-model="data.emitModrinthStrict"
-                :label="t('modpack.emitModrinthStrict')"
-                hide-details
-                prepend-icon="$vuetify.icons.modrinth"
+          <v-checkbox
+            v-if="data.emitModrinth"
+            v-model="data.emitModrinthStrict"
+            :label="t('modpack.emitModrinthStrict')"
+            hide-details
+            prepend-icon="$vuetify.icons.modrinth"
+          >
+            <template #append>
+              <v-tooltip
+                top
               >
-                <template #append>
-                  <v-tooltip
-                    top
-                  >
-                    <template #activator="{ on }">
-                      <!-- <v-btn
+                <template #activator="{ on }">
+                  <!-- <v-btn
                         text
                         icon
                       > -->
-                      <a
-                        class="rounded border border-dashed border-green-300 pb-[2px]"
-                        target="browser"
-                        href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
-                        v-on="on"
-                      >
-                        <v-icon
-                          color="primary"
-                          class="cursor-pointer"
-                          small
-                        >
-                          question_mark
-                        </v-icon>
-                      </a>
-                      <!-- </v-btn> -->
-                    </template>
-                    {{ t('modpack.emitModrinthStrictDescription') }}
-                    <ul class="list-disc">
-                      <li> cdn.modrinth.com </li>
-                      <li>github.com</li>
-                      <li>raw.githubusercontent.com</li>
-                      <li>gitlab.com</li>
-                    </ul>
-                  </v-tooltip>
+                  <a
+                    class="rounded border border-dashed border-green-300 pb-[2px]"
+                    target="browser"
+                    href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
+                    v-on="on"
+                  >
+                    <v-icon
+                      color="primary"
+                      class="cursor-pointer"
+                      small
+                    >
+                      question_mark
+                    </v-icon>
+                  </a>
+                  <!-- </v-btn> -->
                 </template>
-              </v-checkbox>
-            </v-flex>
-          </v-layout>
-          <v-layout
+                {{ t('modpack.emitModrinthStrictDescription') }}
+                <ul class="list-disc">
+                  <li> cdn.modrinth.com </li>
+                  <li>github.com</li>
+                  <li>raw.githubusercontent.com</li>
+                  <li>gitlab.com</li>
+                </ul>
+              </v-tooltip>
+            </template>
+          </v-checkbox>
+          <template
             v-if="!(data.emitCurseforge || data.emitMcbbs || data.emitModrinth)"
-            row
           >
-            <v-flex d-flex>
-              <v-checkbox
-                v-model="data.includeAssets"
-                :label="t('modpack.includeAssets')"
-                prepend-icon="texture"
-                hide-details
-              />
-            </v-flex>
-            <v-flex
-              d-flex
-              xs6
-            >
-              <v-checkbox
-                v-model="data.includeLibraries"
-                :label="t('modpack.includeLibraries')"
-                prepend-icon="camera_roll"
-                hide-details
-              />
-            </v-flex>
-          </v-layout>
-        </v-container>
+            <v-checkbox
+              v-model="data.includeAssets"
+              :label="t('modpack.includeAssets')"
+              prepend-icon="texture"
+              hide-details
+            />
+            <v-checkbox
+              v-model="data.includeLibraries"
+              :label="t('modpack.includeLibraries')"
+              prepend-icon="camera_roll"
+              hide-details
+            />
+          </template>
+        </div>
 
-        <v-layout class="items-center">
+        <div class="flex items-center">
           <v-subheader v-if="data.emitCurseforge || data.emitMcbbs">
             {{ t('modpack.overrides') }}
           </v-subheader>
@@ -200,9 +159,9 @@
             class="max-w-50"
             :label="t('filter')"
           />
-        </v-layout>
-        <v-layout
-          row
+        </div>
+
+        <div
           style="padding: 5px; margin-bottom: 5px"
         >
           <v-skeleton-loader
@@ -266,7 +225,7 @@
               </template>
             </template>
           </InstanceManifestFileTree>
-        </v-layout>
+        </div>
       </div>
       <div class="flex-grow" />
       <v-card-actions class="items-baseline gap-5">

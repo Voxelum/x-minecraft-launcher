@@ -1,8 +1,8 @@
 <template>
   <v-app
     v-if="!showSetup"
-    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
-    :class="{ 'dark': vuetify.theme.dark }"
+    class="h-full max-h-screen overflow-auto overflow-x-hidden"
+    :class="{ 'dark': isDark }"
   >
     <AppBackground />
     <AppSystemBar />
@@ -37,8 +37,8 @@
   </v-app>
   <v-app
     v-else
-    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
-    :class="{ 'dark': vuetify.theme.dark }"
+    class="h-full max-h-screen overflow-auto overflow-x-hidden"
+    :class="{ 'dark': isDark }"
   >
     <AppSystemBar
       no-user
@@ -62,8 +62,8 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
 import { kSettingsState } from '@/composables/setting'
+import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
-import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
@@ -81,8 +81,7 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 
-const isFirstLaunch = computed(() => location.search.indexOf('setup') !== -1)
-const showSetup = ref(isFirstLaunch.value)
+const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
@@ -107,7 +106,7 @@ const onReady = async (data: any) => {
 }
 
 // color theme sync
-const vuetify = injection(kVuetify)
+const { isDark } = injection(kTheme)
 
 // Notifier
 const { notify } = useNotifier()

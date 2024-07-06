@@ -3,12 +3,60 @@ import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { useRefreshable } from './refreshable'
+import { LocalNotification, useNotifier } from './notifier'
+import { useDialog } from './dialog'
+import { AddInstanceDialogKey } from './instanceTemplates'
 
 export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
 
-export function usePeerConnections() {
+export function usePeerConnections(notification: Ref<LocalNotification[]>) {
   const { getPeerState } = useService(PeerServiceKey)
   const { state } = useState(getPeerState, PeerState)
+  const { notify } = useNotifier(notification)
+  const { t } = useI18n()
+  const { show: showShareInstance } = useDialog('share-instance')
+  const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
+  watch(state, (s) => {
+    if (!s) return
+    s.subscribe('connectionShareManifest', ({ id, manifest }) => {
+      const info = s.connections.find(c => c.id === id)
+      const name = info?.userInfo.name || id.substring(0, 6)
+      const show = () => {
+        if (manifest) {
+          notify({
+            icon: info?.userInfo.avatar,
+            title: t('multiplayer.sharingNotificationTitle'),
+            body: t('multiplayer.sharingNotificationBody', { name }),
+            operations: [{
+              text: t('download'),
+              icon: 'download',
+              handler() {
+                showShareInstance(manifest)
+              },
+            }, {
+              text: t('instances.add'),
+              icon: 'add',
+              color: 'primary',
+              handler() {
+                showAddInstance({
+                  type: 'manifest',
+                  manifest,
+                })
+              },
+            }],
+          })
+        }
+      }
+      if (!document.hasFocus()) {
+        windowController.flashFrame()
+        window.addEventListener('focus', () => {
+          show()
+        }, { once: true })
+      } else {
+        show()
+      }
+    })
+  })
   return {
     connections: computed(() => state.value?.connections ?? []),
   }
@@ -51,6 +99,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const group = computed(() => state.value?.group)
   const groupState = computed(() => state.value?.groupState || 'closed')
   const error = computed(() => state.value?.groupError)
+  const turnservers = computed(() => state.value?.turnservers || {})
 
   function _setRemoteDescription(type: 'offer' | 'answer', description: string) {
     return setRemoteDescription({
@@ -61,6 +110,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
 
   return {
     device,
+    turnservers,
     validIceServers,
     natType,
     refreshNatType: refreshNatType.refresh,

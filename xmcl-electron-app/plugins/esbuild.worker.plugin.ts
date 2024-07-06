@@ -43,15 +43,13 @@ export default function createWorkerPlugin(): Plugin {
           errors: result.errors,
           warnings: result.warnings,
           contents: build.initialOptions.plugins!.find(v => v.name === 'dev')
-            ? `
-          import { Worker } from 'worker_threads';
-          export const path = ${JSON.stringify(join(outDir, fileName))};
-          export default function (options) { return new Worker(path, options); }`
-            : `
-          import { join, dirname } from 'path';
-          import { Worker } from 'worker_threads';
-          export const path = join(__dirname.replace("app.asar", "app.asar"), ${JSON.stringify(fileName)});
-          export default function (options) { return new Worker(path, options); }`,
+            ? `import { Worker } from 'worker_threads';
+export const path = ${JSON.stringify(join(outDir, fileName))};
+export default function (options) { return new Worker(path, options); }`
+            : `import { join, dirname } from 'path';
+import { Worker } from 'worker_threads';
+export const path = join(__dirname.replace("app.asar", "app.asar"), ${JSON.stringify(fileName)});
+export default function (options) { return new Worker(path, options); }`,
           resolveDir: outDir,
         }
       })

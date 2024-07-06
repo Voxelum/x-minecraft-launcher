@@ -4,7 +4,6 @@ import { AuthlibInjectorApiProfile, GameProfileAndTexture, YggdrasilApi } from '
 import { GameProfile } from '@xmcl/user'
 import { readFile } from 'fs-extra'
 import { request } from 'undici'
-import { URL } from 'url'
 
 export interface OAuthTokenResponse {
   token_type: string

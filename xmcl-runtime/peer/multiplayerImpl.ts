@@ -39,6 +39,10 @@ export interface InitiateOptions {
    */
   initiate?: boolean
   /**
+   * The using ice server
+   */
+  targetIceServer?: RTCIceServer
+  /**
    * Use the ice server
    */
   preferredIceServers?: RTCIceServer[]
@@ -63,7 +67,7 @@ export class Peers {
   }
 
   get(id: string, remoteId?: string): PeerSession | undefined {
-    const sess = this.peers[id] || Object.values(this.peers).find(p => p.remoteId === remoteId || id)
+    const sess = this.peers[id] || Object.values(this.peers).find(p => p.remoteId === (remoteId || id))
 
     return this.#validate(sess)
   }
@@ -117,20 +121,20 @@ export function createMultiplayer() {
   }
 
   const facotry: PeerConnectionFactory = {
-    createConnection: async (ice, privatePort) => {
+    createConnection: async (server, privatePort) => {
       if (localStorage.getItem('peerKernel') === 'webrtc') {
-        console.log('Use webrtc')
+        console.log('Use webrtc', server)
         return new RTCPeerConnection({
-          iceServers: ice ? [ice] : [],
+          iceServers: server ? [server] : [],
           iceCandidatePoolSize: 8,
         })
       }
-      console.log('Use node data channel')
+      console.log('Use node data channel', server)
       try {
         const { PeerConnection } = await NodeDataChannelModule.getInstance()
         const { RTCPeerConnection } = await import('node-datachannel/polyfill')
         return new RTCPeerConnection({
-          iceServers: ice ? [ice] : [],
+          iceServers: server ? [server] : [],
           iceTransportPolicy: 'all',
           portRangeBegin: privatePort,
           portRangeEnd: privatePort,
@@ -138,9 +142,9 @@ export function createMultiplayer() {
           // @ts-ignore
         }, { PeerConnection })
       } catch {
-        console.log('Use webrtc fallback')
+        console.log('Use webrtc fallback', server)
         return new RTCPeerConnection({
-          iceServers: ice ? [ice] : [],
+          iceServers: server ? [server] : [],
           iceCandidatePoolSize: 8,
         })
       }
@@ -158,16 +162,58 @@ export function createMultiplayer() {
       console.log('Public ip', ip)
       state.then(s => s.ipsSet(Array.from(new Set([...s.ips, ip]))))
     },
+    (meta) => {
+      state.then(s => s.turnserversSet(meta))
+    },
   )
   const portCandidate = 35565
 
-  const getContext = (remoteId: string | undefined, stuns: Array<RTCIceServer>): PeerContext => {
-    let index = 0
+  const createContext = (remoteId: string | undefined, targetIceServer: RTCIceServer | undefined, preferredIceServers: Array<RTCIceServer>): PeerContext => {
+    const isAllowTurn = () => localStorage.getItem('peerAllowTurn') === 'true'
+    let stunIndex = 0
+    let turnIndex = 0
+    let current: RTCIceServer | undefined
+    let triedTargetIceServer = false
     return {
-      getCurrentIceServer: () => stuns[index],
+      getCurrentIceServer: () => current,
+      setTargetIceServer: (ice: RTCIceServer) => {
+        targetIceServer = ice
+      },
       getNextIceServer: () => {
-        const cur = stuns[index]
-        index = (index + 1) % stuns.length
+        // select priority follow targetIceServer (turn) > common turns > common stuns
+
+        if (!triedTargetIceServer && targetIceServer && targetIceServer.credential) {
+          triedTargetIceServer = true
+          current = targetIceServer
+          return targetIceServer
+        }
+
+        const [stuns, turns] = iceServers.get(preferredIceServers)
+        if (isAllowTurn() && turns.length > 0) {
+          const preferredTurn = localStorage.getItem('peerPreferredTurn')
+          if (preferredTurn) {
+            const index = turns.findIndex(s => s.urls.includes(preferredTurn))
+            if (index !== -1) {
+              const cur = turns[index]
+              current = cur
+              return cur
+            }
+          }
+          const cur = turns[turnIndex]
+          turnIndex = (turnIndex + 1) % turns.length
+          if (turnIndex === 0) {
+            triedTargetIceServer = false
+          }
+          current = cur
+          return cur
+        }
+
+        const cur = stuns[stunIndex]
+        stunIndex = (stunIndex + 1) % stuns.length
+        if (stunIndex === 0) {
+          triedTargetIceServer = false
+        }
+        current = cur
         return cur
       },
       onHeartbeat: (session, ping) => {
@@ -194,7 +240,10 @@ export function createMultiplayer() {
         if (remoteId) {
           console.log(`Send local description ${remoteId}: ${sdp} ${type}`)
           // Send to the group if the remoteId is set
-          group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, stuns[index], stuns)
+          const [stuns] = iceServers.get(preferredIceServers)
+          if (current) {
+            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns)
+          }
         }
 
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
@@ -237,17 +286,14 @@ export function createMultiplayer() {
     console.log(`Create peer connection to [${remoteId}]. Is initiator: ${initiator}`)
     const privatePort = portCandidate
 
-    const [stuns, turns] = await iceServers.get(preferredIceServers)
     const create = async (ctx: PeerContext, sessionId: string) => {
       const ice = ctx.getNextIceServer()
-      console.log('Use ice servers: %o', ice)
 
       if (ice) {
         state.then(s => s.connectionIceServersSet({ id: sessionId, iceServer: ice }))
       }
 
-      const allowTurn = localStorage.getItem('peerAllowTurn') === 'true'
-      const co = await facotry.createConnection(ice, privatePort, allowTurn ? turns[0] : undefined)
+      const co = await facotry.createConnection(ice, privatePort)
 
       co.onsignalingstatechange = () => {
         state.then(s => s.signalingStateChange({ id: sessionId, signalingState: co.signalingState }))
@@ -317,7 +363,7 @@ export function createMultiplayer() {
       selectedCandidate: undefined,
     }))
 
-    const ctx = getContext(remoteId, stuns)
+    const ctx = createContext(remoteId, options.targetIceServer, preferredIceServers)
     const sess = new PeerSession(sessionId, await create(ctx, sessionId), ctx)
 
     peers.add(sess)
@@ -339,7 +385,9 @@ export function createMultiplayer() {
     if (!sess) {
       console.log(`Not found the ${sender}. Initiate new connection`)
       // Try to connect to the sender
-      sess = await initiate({ remoteId: sender, session, initiate: false, preferredIceServers })
+      sess = await initiate({ remoteId: sender, session, initiate: false, targetIceServer, preferredIceServers })
+    } else if (targetIceServer) {
+      sess.context.setTargetIceServer(targetIceServer)
     }
 
     // const currentIceServer = sess.context.getCurrentIceServer()

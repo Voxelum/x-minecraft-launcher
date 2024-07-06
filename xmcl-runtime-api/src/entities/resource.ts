@@ -152,6 +152,8 @@ export interface Resource {
   storedPath?: string
 
   storedDate?: number
+
+  mtime: number
   /**
    * The resource metadata
    */

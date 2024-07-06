@@ -1,13 +1,12 @@
-import { DefaultRangePolicy, createRedirectInterceptor, getDefaultAgentOptions } from '@xmcl/file-transfer'
+import { DefaultRangePolicy } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { setTimeout as timeout } from 'timers/promises'
-import { Agent, Dispatcher, Pool, RetryAgent, buildConnector, setGlobalDispatcher } from 'undici'
+import { Agent, Dispatcher, Pool, buildConnector, setGlobalDispatcher } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kSettings } from '~/settings'
 import { NetworkAgent, ProxySettingController } from './dispatchers/NetworkAgent'
-import { createInterceptOptionsInterceptor } from './dispatchers/dispatcher'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 import { kUserAgent } from './userAgent'
 
@@ -76,7 +75,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       connect,
       factory(origin, opts: Agent.Options) {
         let dispatcher: Dispatcher | undefined
-        for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin, opts) }
+        for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin as any, opts) }
         if (!dispatcher) { dispatcher = new Pool(origin, opts) }
         return patchIfPool(dispatcher)
       },

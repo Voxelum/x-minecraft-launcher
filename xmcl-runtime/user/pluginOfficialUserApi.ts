@@ -59,7 +59,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
         })
       },
       async (directRedirectToLauncher) => {
-        const port = await app.localhostServerPort ?? 25555
+        const port = await app.serverPort ?? 25555
         directRedirectToLauncher = true // force to use localhost before the website is fixed
         return (directRedirectToLauncher ? `http://localhost:${port}/auth` : `https://xmcl.app/auth?port=${port}`)
       },
@@ -85,6 +85,16 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
       const code = parsed.searchParams.get('code') as string
       userService.emit('microsoft-authorize-code', error, code)
       response.status = 200
+      try {
+        response.body = app.controller.getLoginSuccessHTML()
+        response.headers = {
+          'Content-Type': 'text/html',
+        }
+      } catch (e) {
+        if (e instanceof Error) {
+          logger.error(e)
+        }
+      }
     }
   })
 

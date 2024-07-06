@@ -67,7 +67,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       info.push({
         icon: 'description',
         name: t('modrinth.license'),
-        value: project.value.license.name,
+        value: project.value.license.name || project.value.license.id,
         url: project.value.license.url,
       })
     }
@@ -102,6 +102,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       url: `https://modrinth.com/${project.value?.project_type ?? search.value?.project_type}/${project.value?.slug ?? search.value?.slug}`,
       categories: getCategories(project.value?.categories ?? search.value?.categories ?? []),
       htmlContent: project.value?.body ? render(project.value.body) : '',
+      modLoaders: project.value?.loaders || [],
       externals,
       galleries,
       info,

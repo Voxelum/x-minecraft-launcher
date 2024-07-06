@@ -4,8 +4,8 @@
     class="h-full w-full select-none overflow-auto"
     @dragover.prevent
   >
-    <v-layout
-      class="h-full flex-col gap-2 overflow-auto"
+    <div
+      class="flex h-full flex-col gap-2 overflow-auto"
       @dragover.prevent
       @drop="onDrop"
     >
@@ -32,48 +32,33 @@
           </div>
 
           <div class="flex-grow" />
-          <v-tooltip
-            bottom
-            color="black"
+          <v-btn
+            v-shared-tooltip.left="_ => t('multiplayer.share')"
+            text
+            icon
+            @click="showShareInstance()"
           >
-            <template #activator="{ on }">
-              <v-btn
-                text
-                icon
-                v-on="on"
-                @click="showShareInstance()"
-              >
-                <v-icon>
-                  share
-                </v-icon>
-              </v-btn>
-            </template>
-            {{ t('multiplayer.share') }}
-          </v-tooltip>
+            <v-icon>
+              share
+            </v-icon>
+          </v-btn>
 
           <v-menu
             left
             offset-y
           >
             <template #activator="{ on }">
-              <v-tooltip
-                left
-                color="black"
+              <v-btn
+                id="manual-connect-button"
+                v-shared-tooltip.left="_ => t('multiplayer.manualConnect')"
+                text
+                icon
+                v-on="on"
               >
-                <template #activator="{ on: onTooltip }">
-                  <v-btn
-                    id="manual-connect-button"
-                    text
-                    icon
-                    v-on="{ ...on, ...onTooltip }"
-                  >
-                    <v-icon>
-                      build
-                    </v-icon>
-                  </v-btn>
-                </template>
-                {{ t('multiplayer.manualConnect') }}
-              </v-tooltip>
+                <v-icon>
+                  build
+                </v-icon>
+              </v-btn>
             </template>
             <v-list>
               <v-list-item @click="show()">
@@ -111,7 +96,6 @@
             v-shared-tooltip="_ => !group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup')"
             text
             icon
-            :loading="joiningGroup"
             @click="onJoin()"
           >
             <template v-if="!group">
@@ -303,6 +287,28 @@
           </v-list-item-action>
         </v-list-item>
 
+        <v-list-item
+          v-if="allowTurn && turnserversItems.length > 0"
+          class="flex-1 flex-grow-0"
+        >
+          <v-list-item-avatar>
+            <!-- <v-icon>
+              swap_vert
+            </v-icon> -->
+          </v-list-item-avatar>
+          <v-list-item-content />
+          <v-list-item-action>
+            <v-select
+              v-model="preferredTurnserver"
+              filled
+              clearable
+              hide-details
+              :items="turnserversItems"
+              :placeholder="turnserversItems[0].text"
+            />
+          </v-list-item-action>
+        </v-list-item>
+
         <v-subheader class>
           {{ t("multiplayer.connections") }}
         </v-subheader>
@@ -409,47 +415,52 @@
           </v-list-item-action>
 
           <v-list-item-action
-            v-if="c.sharing"
-            class="self-center"
+            class="flex flex-grow-0 flex-row gap-2 self-center"
           >
-            <v-btn
-              color="primary"
-              outlined
-              @click="showShareInstance(c.sharing)"
+            <template
+              v-if="c.sharing"
             >
-              {{ t('multiplayer.sharing') }}
-            </v-btn>
-          </v-list-item-action>
+              <v-btn
+                v-shared-tooltip="_ => t('multiplayer.sharing') "
+                icon
+                @click="showShareInstance(c.sharing)"
+              >
+                <v-icon>
+                  download
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-if="c.sharing"
+                v-shared-tooltip="_ => t('multiplayer.sharing') "
+                color="primary"
+                icon
+                @click="c.sharing ? showAddInstasnce({
+                  type: 'manifest',
+                  manifest: c.sharing,
+                }) : undefined"
+              >
+                <v-icon>
+                  add
+                </v-icon>
+              </v-btn>
+            </template>
 
-          <v-list-item-action
-            v-if="c.connectionState !== 'connected'"
-            class="self-center"
-          >
             <v-btn
+              v-if="c.connectionState !== 'connected'"
               icon
               @click="edit(c.id, c.initiator)"
             >
               <v-icon>edit</v-icon>
             </v-btn>
           </v-list-item-action>
-          <v-list-item-action class="self-center">
-            <v-tooltip
-              color="black"
-              top
-            >
-              <template #activator="{ on }">
-                <v-btn
-                  color="error"
-                  icon
-                  v-on="on"
-                  @click="showDelete(c.id)"
-                >
-                  <v-icon>link_off</v-icon>
-                </v-btn>
-              </template>
-              {{ t('multiplayer.disconnect') }}
-            </v-tooltip>
-          </v-list-item-action>
+          <v-btn
+            v-shared-tooltip.left="_ => t('multiplayer.disconnect') "
+            color="error"
+            icon
+            @click="showDelete(c.id)"
+          >
+            <v-icon>link_off</v-icon>
+          </v-btn>
         </v-list-item>
       </v-list>
 
@@ -466,7 +477,7 @@
       >
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
       </SimpleDialog>
-    </v-layout>
+    </div>
   </div>
 </template>
 <script lang=ts setup>
@@ -485,9 +496,11 @@ import { useDialog, useSimpleDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
+const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
 
 const open = (...args: any[]) => window.open(...args)
@@ -497,7 +510,7 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { connections, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { connections, turnservers, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { state } = injection(kSettingsState)
@@ -510,6 +523,14 @@ const kernels = computed(() => [
   { value: 'node-datachannel', text: 'node-datachannel' },
   { value: 'webrtc', text: 'WebRTC' },
 ])
+
+const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
+const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value}` })))
+const tLocale = computed(() => ({
+  liaoning: t('turnRegion.liaoning'),
+  guangzhou: t('turnRegion.guangzhou'),
+  hk: t('turnRegion.hk'),
+} as Record<string, string>))
 
 const { errorColor, successColor, warningColor } = injection(kTheme)
 

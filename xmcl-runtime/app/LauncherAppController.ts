@@ -6,25 +6,26 @@ import { Client } from './Client'
  */
 export interface LauncherAppController {
   /**
-   * Should launch windows as wizard to let user select the workspace
-   * @return the workspace user selected
+   * Get the login success html content with current locale
    */
-  processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }>
+  getLoginSuccessHTML(): string
   /**
    * The api to request the launcher window focus
    */
   requireFocus(): void
   /**
    * Boot the app manifest.
+   * @param app The app manifest to boot
+   * @param isBootstrap If the app is in bootstarap mode
    */
-  activate(app: InstalledAppManifest): Promise<void>
+  activate(app: InstalledAppManifest, isBootstrap?: boolean): Promise<void>
   /**
    * Handle a invoke operation from client
    *
    * @param channel The invoke channel to listen
    * @param handler The listener callback will be called during this event received
    */
-  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any): void
+  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any, once?: boolean): void
   /**
     * Broadcast a event with payload to client.
     *

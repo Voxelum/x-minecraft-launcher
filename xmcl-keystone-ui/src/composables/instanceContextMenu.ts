@@ -9,7 +9,8 @@ export function useInstanceContextMenuItems(instance: Ref<Instance>) {
   const { duplicateInstance } = useService(InstanceServiceKey)
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { t } = useI18n()
-  const items = computed(() => {
+
+  return () => {
     const result: ContextMenuItem[] = [
       {
         text: t('instance.showInstance', { file: instance.value.path }),
@@ -35,7 +36,5 @@ export function useInstanceContextMenuItems(instance: Ref<Instance>) {
       },
     ]
     return result
-  })
-
-  return items
+  }
 }

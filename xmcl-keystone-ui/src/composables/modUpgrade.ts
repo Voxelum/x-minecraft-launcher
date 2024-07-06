@@ -3,15 +3,15 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { swrvGet } from '@/util/swrvGet'
-import { File, FileModLoaderType } from '@xmcl/curseforge'
+import { File, FileModLoaderType, HashAlgo } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useCurseforgeInstallModFile } from './curseforgeInstall'
-import { useModrinthInstallVersion } from './modrinthInstall'
+import { useDialog } from './dialog'
+import { InstanceInstallDialog } from './instanceUpdate'
 import { useRefreshable } from './refreshable'
-import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
+import { useTask } from './task'
 
 export type UpgradePlan = {
   /**
@@ -39,11 +39,42 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = ref({} as Record<string, UpgradePlan>)
   const checked = ref(false)
+  const { show } = useDialog(InstanceInstallDialog)
 
   watch([path, runtime], () => {
     checked.value = false
     plans.value = {}
   })
+
+  async function check(mod: ProjectEntry<ModFile>, result: Record<string, UpgradePlan>) {
+      const gameVersion = runtime.value.minecraft
+      const modLoaderType = (runtime.value.forge || runtime.value.neoForged)
+        ? FileModLoaderType.Forge
+        : runtime.value.fabricLoader
+          ? FileModLoaderType.Fabric
+          : runtime.value.quiltLoader
+            ? FileModLoaderType.Quilt
+            : FileModLoaderType.Any
+      // this is a curseforge project and installed
+      const files = await swrvGet(`/curseforge/${mod.curseforgeProjectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
+        modId: mod.curseforgeProjectId!,
+        gameVersion,
+        modLoaderType,
+      }), cache, dedupingInterval)
+      if (files.data.length > 0) {
+        const file = markRaw(files.data[0])
+        const current = mod.installed[0]
+        if (file.id !== current.curseforge?.fileId) {
+          // this is the new version
+          result[mod.id] = {
+            file,
+            mod,
+            updating: false,
+          }
+        }
+        // if (file.id !== mod.installed[0].version) {
+      }
+  }
 
   const { refresh, refreshing, error } = useRefreshable(async () => {
     const result: Record<string, UpgradePlan> = {}
@@ -71,67 +102,82 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       }
     }
 
-    for (const mod of instanceMods.value) {
-      if (mod.installed.length > 0 && mod.curseforgeProjectId) {
-        const gameVersion = runtime.value.minecraft
-        const modLoaderType = (runtime.value.forge || runtime.value.neoForged)
-          ? FileModLoaderType.Forge
-          : runtime.value.fabricLoader
-            ? FileModLoaderType.Fabric
-            : runtime.value.quiltLoader
-              ? FileModLoaderType.Quilt
-              : FileModLoaderType.Any
-        // this is a curseforge project and installed
-        const files = await swrvGet(`/curseforge/${mod.curseforgeProjectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
-          modId: mod.curseforgeProjectId!,
-          gameVersion,
-          modLoaderType,
-        }), cache, dedupingInterval)
-        if (files.data.length > 0) {
-          const file = markRaw(files.data[0])
-          const current = mod.installed[0]
-          if (file.id !== current.curseforge?.fileId) {
-            // this is the new version
-            result[mod.id] = {
-              file,
-              mod,
-              updating: false,
-            }
-          }
-          // if (file.id !== mod.installed[0].version) {
-        }
-      }
+    // batch 8 curseforge requests each time
+    const batch = 8
+    const curseforgeTarget = instanceMods.value.filter(mod => mod.installed.length > 0 && mod.curseforgeProjectId)
+    for (let i = 0; i < curseforgeTarget.length; i += batch) {
+      await Promise.all(curseforgeTarget.slice(i, i + batch).map(m => check(m, result)))
     }
     plans.value = result
     checked.value = true
   })
 
-  const { uninstall: uninstallMod, install } = useService(InstanceModsServiceKey)
-  const installCurseforgeFile = useCurseforgeInstallModFile(path, (r) => {
-    install({ path: path.value, mods: r })
-  })
-  const installModrinthVersion = useModrinthInstallVersion(path)
-  const { refresh: upgrade, refreshing: upgrading, error: upgradeError } = useRefreshable(async () => {
+  const updates = computed(() => {
+    const updates: InstanceFileUpdate[] = []
     for (const plan of Object.values(plans.value)) {
+      updates.push(...plan.mod.installed.map(r => ({
+        operation: 'remove',
+        file: {
+          path: `mods/${r.resource.fileName}`,
+          hashes: {
+            sha1: r.hash,
+          },
+          size: r.resource.size,
+        },
+      } as InstanceFileUpdate)))
       if ('file' in plan) {
-        plan.updating = true
-        try {
-          await uninstallMod({ mods: plan.mod.installed.map(i => i.resource), path: path.value })
-          await installCurseforgeFile(plan.file)
-        } finally {
-          plan.updating = false
-        }
+        updates.push({
+          operation: 'add',
+          file: {
+            path: `mods/${(plan.file.fileName)}`,
+            hashes: {
+              sha1: plan.file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
+            },
+            size: plan.file.fileLength,
+            curseforge: {
+              projectId: plan.file.modId,
+              fileId: plan.file.id,
+            },
+          },
+        })
       } else {
-        plan.updating = true
-        try {
-          await uninstallMod({ mods: plan.mod.installed.map(i => i.resource), path: path.value })
-          await installModrinthVersion(plan.version)
-        } finally {
-          plan.updating = false
-        }
+        const primary = plan.version.files.find(f => f.primary) || plan.version.files[0]
+        updates.push({
+          operation: 'add',
+          file: {
+            path: `mods/${(primary.filename)}`,
+            hashes: primary.hashes,
+            size: 0,
+            modrinth: {
+              projectId: plan.version.project_id,
+              versionId: plan.version.id,
+            },
+          },
+        })
       }
     }
-    plans.value = {}
+    return updates
+  })
+
+  function upgrade() {
+    show({
+      type: 'updates',
+      updates: updates.value,
+    })
+  }
+
+  const { task } = useTask((i) => {
+    if (i.path === 'installInstance') {
+      return true
+    }
+    return false
+  })
+  watch(task, (newV, oldV) => {
+    if (oldV && oldV.id === 'installInstance' && !newV) {
+      if (oldV.state === TaskState.Succeed) {
+        plans.value = {}
+      }
+    }
   })
 
   return {
@@ -141,7 +187,6 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     plans,
     checked,
     upgrade,
-    upgrading,
-    upgradeError,
+    upgrading: computed(() => !!task.value),
   }
 }

@@ -21,6 +21,7 @@ import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { createWindowTracker } from './utils/windowSizeTracker'
+import { getLoginSuccessHTML } from './utils/login'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -141,8 +142,11 @@ export class ElectronController implements LauncherAppController {
     }])
   }
 
-  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any) {
-    return ipcMain.handle(channel, handler)
+  handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any, once = false) {
+    if (!once) {
+      return ipcMain.handle(channel, handler)
+    }
+    return ipcMain.handleOnce(channel, handler)
   }
 
   broadcast(channel: string, ...payload: any[]): void {
@@ -235,6 +239,7 @@ export class ElectronController implements LauncherAppController {
       }
       if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
         detail.url.startsWith('https://api.xmcl.app/curseforge') ||
+        detail.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
         detail.url.startsWith('https://api.xmcl.app/rtc/official')
       ) {
         this.app.registry.get(UserService).then(userService => {
@@ -308,7 +313,7 @@ export class ElectronController implements LauncherAppController {
     return restoredSession
   }
 
-  async activate(manifest: InstalledAppManifest): Promise<void> {
+  async activate(manifest: InstalledAppManifest, isBootstrap = false): Promise<void> {
     this.logger.log(`Activate app ${manifest.name} ${manifest.url}`)
     this.parking = true
 
@@ -320,7 +325,7 @@ export class ElectronController implements LauncherAppController {
     this.activatedManifest = manifest
 
     try {
-      await this.createAppWindow()
+      await this.createAppWindow(isBootstrap)
     } finally {
       this.parking = false
     }
@@ -362,8 +367,8 @@ export class ElectronController implements LauncherAppController {
         trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
         minWidth: 400,
         minHeight: 600,
-        width: config.width,
-        height: config.height,
+        width: config.getWidth(400),
+        height: config.getHeight(600),
         x: config.x,
         y: config.y,
         show: false,
@@ -400,7 +405,7 @@ export class ElectronController implements LauncherAppController {
     }
   }
 
-  async createAppWindow() {
+  async createAppWindow(isBootstrap: boolean) {
     const man = this.activatedManifest!
     const tracker = createWindowTracker(this.app, 'app-manager', man)
     const config = await tracker.getConfig()
@@ -411,15 +416,13 @@ export class ElectronController implements LauncherAppController {
 
     // Ensure the settings is loaded
     if (this.app.platform.os === 'linux' && !this.settings) {
-      if (!await this.app.isGameDataPathMissing()) {
-        this.settings = await this.app.registry.get(kSettings)
-      }
+      this.settings = await this.app.registry.get(kSettings)
     }
 
     const browser = new BrowserWindow({
       title: man.name,
-      width: config.width,
-      height: config.height,
+      width: config.getWidth(minWidth),
+      height: config.getHeight(minHeight),
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
@@ -461,8 +464,8 @@ export class ElectronController implements LauncherAppController {
     tracker.track(browser)
 
     let url = man.url
-    if (await this.app.isGameDataPathMissing()) {
-      url += '?setup'
+    if (isBootstrap) {
+      url += '?bootstrap'
     }
     this.logger.log(url)
     browser.loadURL(url)
@@ -487,8 +490,8 @@ export class ElectronController implements LauncherAppController {
     const config = await tracker.getConfig()
     const browser = new BrowserWindow({
       title: 'KeyStone Monitor',
-      width: config.width,
-      height: config.height,
+      width: config.getWidth(600),
+      height: config.getHeight(400),
       x: config.x,
       y: config.y,
       minWidth: 600,
@@ -500,7 +503,7 @@ export class ElectronController implements LauncherAppController {
       icon: darkIcon,
       webPreferences: {
         preload: monitorPreload,
-        session: session.fromPartition('persist:logger'),
+        session: await this.getSharedSession(),
       },
     })
 
@@ -535,14 +538,6 @@ export class ElectronController implements LauncherAppController {
     return result.response === 1
   }
 
-  async processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }> {
-    return new Promise<{ path: string; instancePath: string; locale: string }>((resolve) => {
-      ipcMain.handleOnce('bootstrap', (_, path, instancePath, locale) => {
-        resolve({ path, instancePath, locale })
-      })
-    })
-  }
-
   private getFrameOption() {
     if (this.app.platform.os === 'linux') {
       return this.settings?.linuxTitlebar
@@ -562,10 +557,16 @@ export class ElectronController implements LauncherAppController {
     return this.mainWin ?? this.loggerWin
   }
 
+  getLoginSuccessHTML() {
+    const title = this.i18n.t('urlSuccess')
+    const body = this.i18n.t('autoCloseHint').replace('{time}', '<span id="countdown">10</span>')
+    return getLoginSuccessHTML(title, body)
+  }
+
   openDevTools() {
     for (const win of BrowserWindow.getAllWindows()) {
       win.webContents.closeDevTools()
-      win.webContents.openDevTools()
+      win.webContents.openDevTools({ mode: 'detach' })
     }
   }
 }

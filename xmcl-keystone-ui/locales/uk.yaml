@@ -5,14 +5,19 @@ AppAddInstanceDialog:
   downloadedNotification: Модпак {name} встановлен. Зробити для нього екземпляр?
   serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    Якщо ви не хочете зіпсувати поточний екземпляр. 
+    Ви також можете створити новий екземпляр із конфігурації свого вузла. 
+    Натисніть кнопку нижче, щоб створити екземпляр.
   baseInfo: Базове налаштування
   cancelShare: Не розповсюджувати
   description: >-
     Після того як ви поділілись профілем, інші користувачі зможуть встановлювати
     ці файли через ваш ПК.
-  downloadDescription: >-
-    Перевірте файли, якими поділився ващ товариш. Оберіть потрібні файли для
-    встановлювання.
+  downloadDescription: |-
+    Будь ласка, перевірте файли, надані вам колегою. 
+    Виберіть файл, який хочете завантажити. 
+    Його буде розміщено в поточному екземплярі {name}.
   downloadNotifyTitle: Встановити екземпляр від {user}
   downloadTitle: Встановити файли з інших пірів
   downloadToLocal: Встановити в поточний екземпляр
@@ -636,6 +641,7 @@ mod:
     його? | Ви витратите цей мод и ці метадані назавжди. Впевнені що хочете це
     зробити?
   deletionRestHint: И ще {rest} модів...
+  denseView: Щільний вид
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
@@ -644,6 +650,7 @@ mod:
   incompatible: Несумістні мод.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
+  mods: '{count} модів'
   name: Мод | Моди
   noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
   openLink: Відкрити посилання на мод {url}
@@ -664,7 +671,7 @@ modInstall:
   install: Встановити
   installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
   installed: Встановлено
-  noVersionSupported: Мод не підтримує поточну версію Minecraft
+  noVersionSupported: Мод підтримує тільки Minecraft {supported}.
   recommendation: Дослідіть {first} або {second} моди в {modrinth} і {curseforge}!
   search: Результат пошуку
   searchHint: Пошук та вибір проекту
@@ -939,6 +946,10 @@ multiplayer:
   sendTokenToRemote: Надіслати токен на віддалений
   share: Поділитись конфігурацією екземпляра
   sharing: Обмін файлами...
+  sharingNotificationBody: >-
+    Ви можете завантажити або створити екземпляр зі спільної конфігурації
+    {name}.
+  sharingNotificationTitle: Одноранговий користувач ділиться конфігурацією гри
   start: Почати
   startNewP2PConnection: Натисніть «Почати», щоб створити нове однорангове з'єднання
 myStuff: Мої матеріали

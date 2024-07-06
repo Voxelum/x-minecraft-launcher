@@ -26,6 +26,7 @@ export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[])
     [ModLoaderFilter.fabric]: FileModLoaderType.Fabric,
     [ModLoaderFilter.forge]: FileModLoaderType.Forge,
     [ModLoaderFilter.quilt]: FileModLoaderType.Quilt,
+    [ModLoaderFilter.neoforge]: FileModLoaderType.NeoForge,
   }
   return loaderTypes.map(loaderType => mapping[loaderType])
 }
@@ -35,12 +36,14 @@ export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, 
   const modLoaderType =
     noModLoader && returnAnyIfNoModLoader
       ? FileModLoaderType.Any
-      : (runtime.forge || runtime.neoForged)
+      : (runtime.forge)
         ? FileModLoaderType.Forge
         : runtime.fabricLoader
           ? FileModLoaderType.Fabric
           : runtime.quiltLoader
             ? FileModLoaderType.Quilt
+            : runtime.neoForged
+            ? FileModLoaderType.NeoForge
             : FileModLoaderType.Any
   return modLoaderType
 }

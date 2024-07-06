@@ -5,13 +5,15 @@ function isWhitespaceCharacter(b: number): boolean {
   return b === 9 || b === 10 || b === 13 || b === 32
 }
 function normalizeBuffer(buf: Buffer): Buffer {
-  const newArray = []
-  for (const b of buf) {
+  let j = 0
+  for (let i = 0; i < buf.length; ++i) {
+    const b = buf[i]
     if (!isWhitespaceCharacter(b)) {
-      newArray.push(b)
+      buf[j] = b
+      j++
     }
   }
-  return Buffer.from(newArray)
+  return buf.slice(0, j)
 }
 
 export async function fingerprint(filePath: string) {

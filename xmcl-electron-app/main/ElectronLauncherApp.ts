@@ -2,9 +2,9 @@ import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { Menu, app, shell } from 'electron'
 import { join } from 'path'
-import { URL } from 'url'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
+import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
 import { isDirectory } from './utils/fs'
@@ -92,7 +92,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   constructor() {
     super(app,
       new ElectronShell(),
-      new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, 'secret')),
+      new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),
       (app) => new ElectronController(app as ElectronLauncherApp),
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,

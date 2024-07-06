@@ -1,4 +1,4 @@
-import { computed, InjectionKey, Ref, ref } from 'vue'
+import { computed, InjectionKey, Ref, ref, ShallowRef } from 'vue'
 
 import { injection } from '@/util/inject'
 
@@ -22,10 +22,20 @@ export function useModrinthFilter() {
   return filter
 }
 
-export type DialogModel<T = any> = Ref<{
+export type DialogModelData<T> = {
   dialog: string
   parameter: T
-}>
+}
+
+export type DialogModel = {
+  current: ShallowRef<DialogModelData<any>>
+  registered: Record<string, {
+    isShown: Ref<boolean>
+    parameter: Ref<any>
+    show: (param?: any) => void
+    hide: () => void
+  }>
+}
 
 export function useDialogModel(): DialogModel {
   const model = shallowRef({ dialog: '', parameter: undefined })
@@ -41,49 +51,69 @@ export function useDialogModel(): DialogModel {
       parameter: value.parameter ? JSON.parse(JSON.stringify(value.parameter)) : value.parameter,
     })
   })
-  return model
+  return {
+    current: model,
+    registered: {},
+  }
 }
 
 export interface DialogKey<T> extends String { }
+
+function getOrCreate(model: DialogModel, dialogName: DialogKey<any>) {
+  const current = model.current
+  if (!model.registered[dialogName as string]) {
+    const isShown = computed({
+      get: () => current.value.dialog === dialogName,
+      set: (v: boolean) => {
+        if (v) {
+          show()
+        } else {
+          hide()
+        }
+      },
+    })
+    function hide() {
+      if (current.value.dialog === dialogName) {
+        console.log(`hide ${dialogName}`)
+        current.value = { dialog: '', parameter: undefined }
+      }
+    }
+    function show(param?: any) {
+      if (current.value.dialog !== dialogName) {
+        console.log(`show ${dialogName}`)
+        current.value = { dialog: dialogName as string, parameter: param }
+      }
+    }
+    model.registered[dialogName as string] = {
+      isShown,
+      parameter: computed(() => isShown.value ? current.value.parameter : undefined),
+      show,
+      hide,
+    }
+  }
+  return model.registered[dialogName as string]
+}
 
 /**
  * Use a shared dialog between pages
  */
 export function useDialog<T = any>(dialogName: DialogKey<T> = '', onShown?: (param: T) => void, onHide?: () => void) {
   const model = injection(kDialogModel)
-  const isShown = computed({
-    get: () => model.value.dialog === dialogName,
-    set: (v: boolean) => {
-      if (v) {
-        show()
+  const { parameter, isShown, show, hide } = getOrCreate(model, dialogName)
+
+  if (onShown || onHide) {
+    watch(isShown, (value) => {
+      if (value) {
+        onShown?.(model.current.value.parameter)
       } else {
-        hide()
+        onHide?.()
       }
-    },
-  })
-  function hide() {
-    if (model.value.dialog === dialogName) {
-      console.log(`hide ${dialogName}`)
-      model.value = { dialog: '', parameter: undefined }
-    }
+    })
   }
-  function show(param?: T) {
-    if (model.value.dialog !== dialogName) {
-      console.log(`show ${dialogName}`)
-      model.value = { dialog: dialogName as string, parameter: param }
-    }
-  }
-  watch(isShown, (value) => {
-    if (value) {
-      onShown?.(model.value.parameter)
-    } else {
-      onHide?.()
-    }
-  })
 
   return {
-    dialog: model as DialogModel<T>,
-    show,
+    parameter: parameter as Ref<T | undefined>,
+    show: show as (param?: T) => void,
     hide,
     isShown,
   }

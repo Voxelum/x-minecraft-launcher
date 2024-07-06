@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import { config as dotenv } from 'dotenv'
-import { Configuration } from 'electron-builder'
+import type { Configuration } from 'electron-builder'
 
 dotenv()
 
@@ -87,6 +87,7 @@ export const config = {
     ],
   },
   linux: {
+    executableName: 'xmcl',
     desktop: {
       MimeType: 'x-scheme-handler/xmcl',
       StartupWMClass: 'xmcl',

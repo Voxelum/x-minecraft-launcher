@@ -21,102 +21,107 @@
       <ErrorView :error="error" />
       <div
         v-if="upgrade && !refreshing"
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll mx-0 max-h-screen items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
-        <v-subheader>
-          {{ t('instanceUpdate.basic') }}
-        </v-subheader>
+        <template v-if="upgrade && upgrade.instance">
+          <v-subheader>
+            {{ t('instanceUpdate.basic') }}
+          </v-subheader>
 
-        <div class="grid grid-cols-2 gap-4">
-          <v-text-field
-            :value="getVersionString(oldRuntime.minecraft, runtime.minecraft)"
-            persistent-hint
-            label="Minecraft"
-            readonly
-            flat
-            dense
-            required
+          <div
+            class="grid grid-cols-2 gap-4"
           >
-            <template #prepend-inner>
-              <img
-                :src="'http://launcher/icons/minecraft'"
-                width="32"
-              >
-            </template>
-          </v-text-field>
-          <v-text-field
-            v-if="runtime.forge"
-            :value="getVersionString(oldRuntime.forge, runtime.forge)"
-            persistent-hint
-            label="Forge"
-            readonly
-            flat
-            dense
-            required
-          >
-            <template #prepend-inner>
-              <img
-                :src="'http://launcher/icons/forge'"
-                width="32"
-              >
-            </template>
-          </v-text-field>
-          <v-text-field
-            v-if="runtime.fabricLoader"
-            :value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
-            persistent-hint
-            readonly
-            label="Fabric"
-            flat
-            dense
-            required
-          >
-            <template #prepend-inner>
-              <img
-                :src="'http://launcher/icons/fabric'"
-                width="32"
-              >
-            </template>
-          </v-text-field>
-        </div>
+            <v-text-field
+              :value="getVersionString(oldRuntime.minecraft, runtime.minecraft)"
+              persistent-hint
+              label="Minecraft"
+              readonly
+              flat
+              dense
+              required
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/minecraft'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="runtime.forge"
+              :value="getVersionString(oldRuntime.forge, runtime.forge)"
+              persistent-hint
+              label="Forge"
+              readonly
+              flat
+              dense
+              required
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/forge'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="runtime.fabricLoader"
+              :value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
+              persistent-hint
+              readonly
+              label="Fabric"
+              flat
+              dense
+              required
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/fabric'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+          </div>
 
-        <v-alert
-          v-if="loaderDifferences.old.length > 0 || loaderDifferences.new.length > 0"
-          colored-border
-          outlined
-          type="error"
-          color="error"
-        >
-          <i18n-t
-            tag="p"
-            keypath="instanceUpdate.loaderChanged"
+          <v-alert
+            v-if="loaderDifferences.old.length > 0 || loaderDifferences.new.length > 0"
+            colored-border
+            outlined
+            type="error"
+            color="error"
           >
-            <template #modloader>
-              <v-chip
-                label
-                small
-                outlined
-              >
-                {{ loaderDifferences.old.join(', ') }}
-              </v-chip>
-            </template>
-            <template #newModloader>
-              <v-chip
-                label
-                small
-                outlined
-              >
-                {{ loaderDifferences.new.join(', ') }}
-              </v-chip>
-            </template>
-          </i18n-t>
-        </v-alert>
+            <i18n-t
+              tag="p"
+              keypath="instanceUpdate.loaderChanged"
+            >
+              <template #modloader>
+                <v-chip
+                  label
+                  small
+                  outlined
+                >
+                  {{ loaderDifferences.old.join(', ') }}
+                </v-chip>
+              </template>
+              <template #newModloader>
+                <v-chip
+                  label
+                  small
+                  outlined
+                >
+                  {{ loaderDifferences.new.join(', ') }}
+                </v-chip>
+              </template>
+            </i18n-t>
+          </v-alert>
+        </template>
 
         <v-subheader>
           {{ t('instanceUpdate.files') }}
         </v-subheader>
         <InstanceManifestFileTree
           v-model="selected"
+          open-all
           :multiple="false"
         >
           <template #default="{ item }">
@@ -171,22 +176,19 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { getUpstreamFromResource } from '@/util/upstream'
-import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useDialog } from '../composables/dialog'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
+import { getUpstreamFromResource } from '@/util/upstream'
+import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
+import { useDialog } from '../composables/dialog'
 
 const selected = ref([] as string[])
 
-const { isShown, dialog } = useDialog(InstanceInstallDialog, () => {
+const { isShown, parameter } = useDialog(InstanceInstallDialog, () => {
   refresh()
 }, () => {
   upgrade.value = undefined
 })
-const oldResource = computed(() => dialog.value.parameter?.type !== 'ftb' ? dialog.value.parameter?.currentResource as Resource : undefined)
-const newResource = computed(() => dialog.value.parameter?.type !== 'ftb' ? dialog.value.parameter?.resource : undefined)
-const oldManifest = computed(() => dialog.value.parameter?.type === 'ftb' ? dialog.value.parameter?.oldManifest : undefined)
-const newManifest = computed(() => dialog.value.parameter?.type === 'ftb' ? dialog.value.parameter?.newManifest : undefined)
+
 const { getInstanceUpdateProfile, getInstanceUpdateProfileRaw } = useService(InstanceUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 
@@ -194,9 +196,8 @@ const { edit } = injection(kInstances)
 const { t } = useI18n()
 
 const upgrade = ref(undefined as undefined | {
-  instance: EditInstanceOptions
+  instance?: EditInstanceOptions
   files: InstanceFileUpdate[]
-  upstream: InstanceData['upstream']
 })
 
 const tOperations = computed(() => ({
@@ -208,7 +209,7 @@ const tOperations = computed(() => ({
 } as Record<string, string>))
 
 const { getColorCode } = useVuetifyColor()
-const runtime = computed(() => upgrade.value?.instance.runtime || {} as Record<string, string>)
+const runtime = computed(() => upgrade.value?.instance?.runtime || {} as Record<string, string>)
 
 const getVersionString = (oldVersion?: string, newVersion?: string) => oldVersion !== newVersion ? `${oldVersion} -> ${newVersion}` : newVersion
 
@@ -234,7 +235,7 @@ function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   return {
     name: basename(f.file.path),
     path: f.file.path,
-    size: f.file.size,
+    size: f.file.size ?? 0,
     style: {
       textDecorationLine: f.operation === 'remove' || f.operation === 'backup-remove' ? 'line-through' : '',
       color: f.operation !== 'keep' ? getColorCode(cOperations[f.operation]) : '',
@@ -261,10 +262,22 @@ const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
 const { all: javas } = injection(kJavaContext)
 const { refresh, refreshing, error } = useRefreshable(async () => {
-  if (newManifest.value && oldManifest.value) {
+  const param = parameter.value
+  if (!param) {
+    return
+  }
+
+  if (param.type === 'ftb') {
+    const oldManifest = param.oldManifest
+    const newManifest = param.newManifest
     // FTB
-    const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest.value, javas.value)
-    const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest.value, javas.value)
+    const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest, javas.value)
+    const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest, javas.value)
+    config.upstream = {
+      type: 'ftb-modpack',
+      id: newManifest.parent,
+      versionId: newManifest.id,
+    }
     upgrade.value = {
       instance: config,
       files: markRaw(await getInstanceUpdateProfileRaw({
@@ -272,29 +285,27 @@ const { refresh, refreshing, error } = useRefreshable(async () => {
         oldVersionFiles,
         newVersionFiles,
       })),
-      upstream: {
-        type: 'ftb-modpack',
-        id: newManifest.value.parent,
-        versionId: newManifest.value.id,
-      },
     }
-    return
-  }
-  const res = newResource.value
-  const path = res?.path
-  if (res && path) {
+  } else if (param.type === 'modrinth' || param.type === 'curseforge') {
+    const oldResource = param.currentResource
+    const res = param.resource
+
     const config = resolveModpackInstanceConfig(res) as EditInstanceOptions
 
     const files = await getInstanceUpdateProfile({
       instancePath: instancePath.value,
-      oldModpack: oldResource.value && 'path' in oldResource.value ? oldResource.value.path : undefined,
+      oldModpack: oldResource && 'path' in oldResource ? oldResource.path : undefined,
       newModpack: res.path,
     })
+    config.upstream = getUpstreamFromResource(res)
 
     upgrade.value = {
       instance: config,
       files,
-      upstream: getUpstreamFromResource(newResource.value),
+    }
+  } else if (param.type === 'updates') {
+    upgrade.value = {
+      files: param.updates,
     }
   }
 })
@@ -322,24 +333,26 @@ const loaderDifferences = computed(() => {
 
 const confirm = async () => {
   if (upgrade.value) {
-    const { instance, files, upstream } = upgrade.value
+    const { instance, files } = upgrade.value
     isShown.value = false
     await installInstanceFiles({
       path: instancePath.value,
       files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
     })
-    await edit({
-      instancePath: instancePath.value,
-      runtime: {
-        minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
-        forge: instance.runtime?.forge,
-        fabricLoader: instance.runtime?.fabricLoader,
-        quiltLoader: instance.runtime?.quiltLoader,
-        neoForged: instance.runtime?.neoForged,
-      },
-      modpackVersion: instance.modpackVersion,
-      upstream,
-    })
+    if (instance) {
+      await edit({
+        instancePath: instancePath.value,
+        runtime: {
+          minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
+          forge: instance.runtime?.forge,
+          fabricLoader: instance.runtime?.fabricLoader,
+          quiltLoader: instance.runtime?.quiltLoader,
+          neoForged: instance.runtime?.neoForged,
+        },
+        modpackVersion: instance.modpackVersion,
+        upstream: instance.upstream,
+      })
+    }
   }
 }
 

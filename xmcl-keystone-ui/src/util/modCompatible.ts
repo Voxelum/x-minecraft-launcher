@@ -1,5 +1,5 @@
 import { parseVersion, VersionRange } from '@xmcl/runtime-api'
-import { satisfies } from 'semver'
+import { coerce, satisfies, valid } from 'semver'
 import { ModDependencies, ModDependency } from './modDependencies'
 
 const satisfiesMinecraft = (version: string, range: string) => {
@@ -85,7 +85,16 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
       if (id === 'minecraft') {
         compatible = satisfiesMinecraft(version, requirements)
       } else {
-        compatible = satisfies(version, requirements)
+        if (valid(version)) {
+          compatible = satisfies(version, requirements, { includePrerelease: true })
+        } else {
+          const v = coerce(version, { loose: true })
+          if (v) {
+            compatible = satisfies(v, requirements, { includePrerelease: true })
+          } else {
+            compatible = false
+          }
+        }
       }
     } else if (requirements) {
       for (const v of requirements) {

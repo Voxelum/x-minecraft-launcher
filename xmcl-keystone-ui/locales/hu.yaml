@@ -5,14 +5,19 @@ AppAddInstanceDialog:
   downloadedNotification: A modpack {name} letöltődött. Szeretnél létrehozni egy példányt hozzá?
   serverTitle: Add meg a kiszolgáló címét
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    Ha nem akarja elrontani az aktuális példányt. 
+    Létrehozhat egy új példányt a partner konfigurációjából is. 
+    Példány létrehozásához kattintson az alábbi gombra.
   baseInfo: Alapvető beállítások
   cancelShare: Megosztás visszavonása
   description: >-
     Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat 
     az alábbi módon a számítógépeden keresztül.
-  downloadDescription: >-
-    Kérlek, ellenőrizd a társad által átadott fájlokat. Válaszd ki a letölteni
-    kívánt fájlt.
+  downloadDescription: |-
+    Kérjük, ellenőrizze a társától kapott fájlokat. 
+    Válassza ki a letölteni kívánt fájlt. 
+    Az aktuális példányba kerül: {name}.
   downloadNotifyTitle: Példány letöltése {user}-től
   downloadTitle: Fájlok letöltése más társaidtól
   downloadToLocal: Letöltés az aktuális példányba
@@ -654,6 +659,7 @@ mod:
     Ezt a modot és metaadatait örökre elveszíted. Biztos vagy benne, hogy hogy
     ezt akarod?
   deletionRestHint: És további {rest} mod...
+  denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
   enabled: '{count} Modok engedélyezve'
   filter: Modok szűrése
@@ -663,6 +669,7 @@ mod:
   incompatible: Inkompatibilis mod.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
+  mods: '{count} Mod'
   name: Mod | Modok
   noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
   openLink: A mod url {url} megnyitása
@@ -683,7 +690,7 @@ modInstall:
   install: Telepítés
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   installed: Telepítve
-  noVersionSupported: A mod nem támogatja az aktuális Minecraft verziót
+  noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.
   recommendation: >-
     Fedezze fel a {first} vagy {second} modokat a {modrinth} és a {curseforge}
     oldalon!
@@ -968,6 +975,10 @@ multiplayer:
   sendTokenToRemote: Token küldése a távolra
   share: Példány konfigurációjánask megosztása
   sharing: Fájlok megosztása...
+  sharingNotificationBody: >-
+    Letöltheti vagy létrehozhatja a példányt a {name} megosztott
+    konfigurációjából.
+  sharingNotificationTitle: Egy társ megosztja a játék konfigurációját
   start: Indítás
   startNewP2PConnection: Kattints az Indítás gombra egy új kapcsolat létrehozásához.
 myStuff: Dolgaid

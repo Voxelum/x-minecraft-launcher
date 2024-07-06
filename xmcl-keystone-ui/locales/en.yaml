@@ -5,6 +5,9 @@ AppAddInstanceDialog:
   downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
   serverTitle: Input your server address
 AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    If you don't want to mess up current instance. You can also create a new
+    instance from your peer's config. Click the button below to create instance.
   baseInfo: Basic Setting
   cancelShare: Cancel Share
   description: >-
@@ -12,7 +15,7 @@ AppShareInstanceDialog:
     your PC.
   downloadDescription: >-
     Please verify the files your peer provided to you. Select the file you want
-    to download.
+    to download. It will be placed to current instance {name}.
   downloadNotifyTitle: Download Instance from {user}
   downloadTitle: Download files from other peers
   downloadToLocal: Download to current instance
@@ -311,8 +314,8 @@ help: Help
 home: Home
 importModpack:
   failed: Import {modpack} failed
-  success: Import {modpack} succeed
   name: Import Modpack
+  success: Import {modpack} succeed
 importResource: Import Resource
 install: Install
 installAssets:
@@ -633,6 +636,7 @@ mod:
     delete it? | You will lose these mod & these metadata forever. Are you sure
     you want to do that?
   deletionRestHint: And {rest} more Mods...
+  denseView: Dense View
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
   filter: Filter Mods
@@ -642,6 +646,7 @@ mod:
   incompatible: Incompatible Mod.
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
+  mods: '{count} Mods'
   name: Mod | Mods
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
@@ -662,7 +667,7 @@ modInstall:
   install: Install
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
-  noVersionSupported: Mod does not support current Minecraft version
+  noVersionSupported: Mod only support Minecraft {supported}.
   recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
   search: Search Result
   searchHint: Search and select project
@@ -935,6 +940,8 @@ multiplayer:
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
+  sharingNotificationBody: You can download or create instance from {name} shared config.
+  sharingNotificationTitle: A peer is sharing game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
@@ -1331,6 +1338,10 @@ transportType:
   prflx: Peer Reflexive Candidate
   relay: Relay Candidate
   srflx: Server Reflexive Candidate
+turnRegion:
+  guangzhou: Guangzhou, China
+  hk: Hong Kong
+  liaoning: Liaoning, China
 tutorial:
   feedbackDescription: If you encounter any problem, please click this button to send feedback!
   hideNewsHeaderDescription: >-

@@ -61,7 +61,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
 
     for (const c of peers) {
       if (c.sharing) {
-        all.push(getPeerTemplate(c.id, c.userInfo.name, c.sharing))
+        all.push(getPeerTemplate(c.id, c.userInfo.name, c.userInfo.avatar, c.sharing))
       }
     }
 
@@ -79,12 +79,13 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
     return t('instanceTemplate.modpack')
   }
 
-  function getPeerTemplate(id: string, name: string, man: InstanceManifest) {
+  function getPeerTemplate(id: string, name: string, icon: string, man: InstanceManifest) {
     const result: Template = {
       filePath: id,
       name: `${man.name ?? 'Instance'}@${name}`,
       description: '',
       instance: {
+        icon,
         name: `${man.name ?? 'Instance'}@${name}`,
         description: man.description,
         runtime: {

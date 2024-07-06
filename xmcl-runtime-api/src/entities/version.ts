@@ -131,7 +131,7 @@ export interface LiteloaderVersions {
   }
 }
 
-interface FabricArtifactVersion {
+export interface FabricArtifactVersion {
   gameVersion?: string
   separator?: string
   build?: number
@@ -168,13 +168,38 @@ export interface OptifineVersion {
 }
 
 export interface QuiltArtifactVersion {
-  separator: string
-  build: number
-  /**
-    * e.g. "org.quiltmc:quilt-loader:0.16.1",
-    */
-  maven: string
-  version: string
+  loader: {
+    separator: string
+    build: number
+    /**
+      * e.g. "org.quiltmc:quilt-loader:0.16.1",
+      */
+    version: string
+    maven: string
+  }
+  hashed: {
+    maven: string
+    version: string
+  }
+  intermediary: {
+    maven: string
+    version: string
+  }
+  launcherMeta: {
+    version: number
+    min_java_version: number
+    libraries: {
+      client: LibraryInfo[]
+      common: LibraryInfo[]
+      server: LibraryInfo[]
+      development: LibraryInfo[]
+    }
+    mainClass: {
+      client: string
+      server: string
+      serverLauncher: string
+    }
+  }
 }
 
 export interface OptifineVersions {

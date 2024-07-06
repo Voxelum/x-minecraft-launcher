@@ -29,7 +29,7 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.15.7
+        version: 9.2.0
     - name: Fix node-gyp and Python
       if: ${{ runner.os == 'macOS' }} 
       run: python3 -m pip install --break-system-packages --user packaging setuptools
@@ -126,7 +126,7 @@ jobs:
         fetch-depth: 0
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.15.7
+        version: 9.2.0
     - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:
@@ -198,7 +198,7 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 8.15.7
+        version: 9.2.0
     - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:

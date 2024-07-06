@@ -37,7 +37,6 @@ import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kUserDiagnose, useUserDiagnose } from '@/composables/userDiagnose'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
-import { kVuetify } from '@/composables/vuetify'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import 'virtual:windi.css'
@@ -45,8 +44,6 @@ import { provide } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
-    useTelemetryTrack()
-    provide(kVuetify, vuetify.framework)
     provide(kSemaphores, useSemaphores())
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
@@ -60,7 +57,7 @@ export default defineComponent({
     const localVersions = useLocalVersions()
     const instances = useInstances()
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections())
+    provide(kPeerShared, usePeerConnections(queue))
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions)
@@ -85,6 +82,8 @@ export default defineComponent({
     const javaDiagnose = useInstanceJavaDiagnose(instance.path, java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)
+
+    useTelemetryTrack(settings.state)
 
     provide(kDatabaseStatus, useDatabaseStatus())
 

@@ -141,6 +141,13 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
 
     if (app.dock) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? darkIcon : lightIcon)
+      app.on('activate', () => {
+        if (this.mainWin && !this.mainWin.isDestroyed()) {
+          this.mainWin?.show()
+        } else if (this.activatedManifest) {
+          this.activate(this.activatedManifest, false)
+        }
+      })
     }
     app.on('before-quit', () => {
       this.tray?.destroy()

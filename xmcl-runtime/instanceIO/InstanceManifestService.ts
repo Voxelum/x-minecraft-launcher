@@ -1,16 +1,17 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceManifest, InstanceManifestServiceKey, Resource } from '@xmcl/runtime-api'
+import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceIOException, InstanceManifest, InstanceManifestServiceKey, Resource } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
+import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
+import { InstanceService } from '~/instance'
 import { ResourceService, ResourceWorker, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
+import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { isNonnull } from '../util/object'
 import { decoareteInstanceFileFromResourceCache, discover } from './InstanceFileDiscover'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
-import { AnyError } from '~/util/error'
-import { join } from 'path'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -29,12 +30,13 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     await this.resourceService.initialize()
     const instancePath = options?.path
 
-    // const instance = this.instanceService.state.all[instancePath]
+    const instanceService = await this.app.registry.get(InstanceService)
 
-    // if (!instance) {
-    //   throw new Error('Instance not found')
-    //   // throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    // }
+    const instance = instanceService.state.all[instancePath]
+
+    if (!instance) {
+      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
+    }
 
     let files = [] as Array<InstanceFile>
     const undecorated = [] as Array<InstanceFile>
@@ -97,13 +99,13 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     return {
       files,
-      name: '', // instance.name,
-      description: '', // instance.description,
-      mcOptions: [], // instance.mcOptions,
-      vmOptions: [], // instance.vmOptions,
-      runtime: {} as any, // instance.runtime,
-      maxMemory: 0, // instance.maxMemory,
-      minMemory: 0, // instance.minMemory,
+      name: instance.name,
+      description: instance.description,
+      mcOptions: instance.mcOptions,
+      vmOptions: instance.vmOptions,
+      runtime: instance.runtime,
+      maxMemory: instance.maxMemory,
+      minMemory: instance.minMemory,
     }
   }
 }

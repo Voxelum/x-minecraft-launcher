@@ -1,17 +1,11 @@
 <template>
   <div class="mb-0 flex flex-col">
-    <div
-      class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
-    >
-      <div
-        class="flex flex-grow-0 flex-row items-center justify-center gap-1"
-      >
+    <div class="flex flex-1 flex-grow-0 flex-row items-center justify-center">
+      <div class="flex flex-grow-0 flex-row items-center justify-center gap-1">
         <AvatarItemList :items="extensionItems" />
       </div>
       <div class="flex-grow" />
-      <div
-        class="invisible-scroll flex justify-end gap-4 overflow-x-auto"
-      >
+      <div class="invisible-scroll flex justify-end gap-4 overflow-x-auto">
         <v-btn-toggle
           v-model="modLoaderFilters"
           multiple
@@ -26,6 +20,18 @@
             <v-img
               width="28"
               :src="'http://launcher/icons/forge'"
+            />
+          </v-btn>
+
+          <v-btn
+            icon
+            text
+            class="h-10"
+            value="neoforge"
+          >
+            <v-img
+              width="28"
+              :src="'http://launcher/icons/neoForged'"
             />
           </v-btn>
 
@@ -85,6 +91,7 @@ import { kModsSearch } from '@/composables/modSearch'
 import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import debounce from 'lodash.debounce'
 
 const { runtime: version } = injection(kInstance)
 const { modrinth, curseforge, instanceMods, gameVersion, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
@@ -92,16 +99,28 @@ const curseforgeCount = computed(() => curseforge.value ? curseforge.value.lengt
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
 
-const search = (v: string | undefined) => {
-  if (v !== route.query.keyword) {
-    replace({ query: { ...route.query, keyword: v } })
+let buffer = undefined as undefined | string
+const updateSearch = debounce(() => {
+  if (typeof buffer === 'string') {
+    replace({ query: { ...route.query, keyword: buffer } })
+    buffer = undefined
   }
-}
+}, 500)
 const { replace } = useRouter()
 const route = useRoute()
 const _keyword = computed({
   get: () => route.query.keyword as string ?? '',
-  set: (v) => { search(v) },
+  set: (v) => {
+    if (v !== buffer) {
+      if (v === '') {
+        replace({ query: { ...route.query, keyword: v } })
+        buffer = undefined
+      } else {
+        buffer = v ?? ''
+        updateSearch()
+      }
+    }
+  },
 })
 const modLoader = useQuery('modLoader')
 

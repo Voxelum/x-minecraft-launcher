@@ -55,6 +55,7 @@ export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, java
     forge: man.targets.find(f => f.name === 'forge')?.version || '',
     fabricLoader: man.targets.find(f => f.name === 'fabric')?.version || '',
     quiltLoader: man.targets.find(f => f.name === 'quilt')?.version || '',
+    neoForged: man.targets.find(f => f.name === 'neoforge')?.version || '',
     optifine: '',
     liteloader: '',
     yarn: '',

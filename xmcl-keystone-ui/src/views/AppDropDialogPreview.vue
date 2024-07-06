@@ -1,5 +1,5 @@
 <template>
-  <v-flex
+  <div
     style="display: flex; flex-direction: column; height: 100%;"
   >
     <v-card-text class="headline font-weight-bold">
@@ -40,7 +40,7 @@
         {{ t('universalDrop.start') }}
       </v-btn>
     </v-card-actions>
-  </v-flex>
+  </div>
 </template>
 
 <script lang=ts setup>

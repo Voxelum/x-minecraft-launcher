@@ -1,6 +1,6 @@
 import './controller'
 import { serviceChannels } from './service'
-import { PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import { createMultiplayer } from '@xmcl/runtime/peer/multiplayerImpl'
 import { listen } from '@xmcl/runtime/util/server'
 import { contextBridge, ipcRenderer } from 'electron/renderer'
@@ -26,13 +26,13 @@ peerServ.call('getPeerState').then((state) => state).then(state => {
 const userServ = serviceChannels.open(UserServiceKey)
 userServ.call('getUserState').then((state) => state).then(state => {
   let updated = false
-  if (Object.values(state.users).some(u => u.authority === 'microsoft')) {
+  if (Object.values(state.users).some(u => u.authority === AUTHORITY_MICROSOFT)) {
     updateIceServers()
     updated = true
   }
   if (!updated) {
     state.subscribe('userProfile', (p) => {
-      if (p.authority === 'microsoft') {
+      if (p.authority === AUTHORITY_MICROSOFT) {
         updateIceServers()
         updated = true
       }

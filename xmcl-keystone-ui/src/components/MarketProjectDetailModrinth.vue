@@ -4,14 +4,16 @@ import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProje
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
 import { kModrinthInstaller } from '@/composables/modrinthInstaller'
-import { useModrinthProject } from '@/composables/modrinthProject'
+import { getModrinthProjectModel, useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
+import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
-import { SearchResultHit } from '@xmcl/modrinth'
+import { getSWRV } from '@/util/swrvGet'
+import { ModrinthV2Client, SearchResultHit } from '@xmcl/modrinth'
 import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{
@@ -49,9 +51,16 @@ const modVersions = useModrinthProjectDetailVersions(versions, computed(() => pr
 const selectedVersion = ref(modVersions.value.find(v => v.installed) ?? modVersions.value[0] as ProjectDetailVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
+const supportedVersions = computed(() => {
+  if (!project.value) return []
+  return project.value.game_versions
+})
+
 // Dependencies
-const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))))
+const version = computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))
+const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(version))
 const dependencies = computed(() => {
+  if (!version.value) return []
   if (!deps.value) return []
 
   return deps.value.map(({ recommendedVersion, versions, project, type }) => {
@@ -152,7 +161,7 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
 
-const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.curseforge?.projectId)?.curseforge?.projectId)
+const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId)
 
 </script>
 
@@ -161,6 +170,7 @@ const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v =>
     :detail="model"
     :has-more="false"
     :enabled="enabled"
+    :supported-versions="supportedVersions"
     :selected-installed="installed"
     :has-installed-version="hasInstalledVersion"
     :versions="modVersions"

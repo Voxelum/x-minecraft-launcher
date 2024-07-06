@@ -7,6 +7,7 @@
     :items="files"
     item-key="path"
     :open="opened"
+    :open-all="openAll"
     :selectable="selectable"
     open-on-click
     item-children="children"
@@ -72,6 +73,7 @@ defineProps<{
   value: string[]
   multiple?: boolean
   selectable?: boolean
+  openAll?: boolean
   search?: string
 }>()
 

@@ -4,54 +4,37 @@
     subheader
     style="background: transparent; width: 100%"
   >
-    <v-list-item>
-      <v-layout
-        row
-        class="max-w-full gap-4"
-      >
-        <v-flex d-flex>
-          <v-select
-            v-model="data.java"
-            outlined
-            class="java-select"
-            :label="t('java.location')"
-            :placeholder="t('java.allocatedLong')"
-            :items="javaItems"
-            :menu-props="{ auto: true, overflowY: true }"
-            hide-details
-            required
-          />
-        </v-flex>
-        <v-flex
-          d-flex
-          xs2
-        >
-          <v-text-field
-            v-model="data.minMemory"
-            outlined
-            hide-details
-            type="number"
-            :label="t('java.minMemory')"
-            :placeholder="t('java.allocatedShort')"
-            required
-          />
-        </v-flex>
-        <v-flex
-          d-flex
-          xs2
-        >
-          <v-text-field
-            v-model="data.maxMemory"
-            outlined
-            hide-details
-            type="number"
-            :label="t('java.maxMemory')"
-            :placeholder="t('java.allocatedShort')"
-            required
-          />
-        </v-flex>
-      </v-layout>
-    </v-list-item>
+    <div class="mx-4 grid grid-cols-4 gap-4">
+      <v-select
+        v-model="data.java"
+        outlined
+        class="java-select col-span-2"
+        :label="t('java.location')"
+        :placeholder="t('java.allocatedLong')"
+        :items="javaItems"
+        :menu-props="{ auto: true, overflowY: true }"
+        hide-details
+        required
+      />
+      <v-text-field
+        v-model="data.minMemory"
+        outlined
+        hide-details
+        type="number"
+        :label="t('java.minMemory')"
+        :placeholder="t('java.allocatedShort')"
+        required
+      />
+      <v-text-field
+        v-model="data.maxMemory"
+        outlined
+        hide-details
+        type="number"
+        :label="t('java.maxMemory')"
+        :placeholder="t('java.allocatedShort')"
+        required
+      />
+    </div>
 
     <VersionInputMinecraft
       v-if="showMinecraft"

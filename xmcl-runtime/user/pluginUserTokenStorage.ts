@@ -24,7 +24,13 @@ export const pluginUserTokenStorage: LauncherAppPlugin = (app) => {
       const cached = cache[`xmcl/${getStorageKey(user.authority)}/${user.id}`]
       if (cached) return cached
       const token = await app.secretStorage.get(`xmcl/${getStorageKey(user.authority)}`, user.id)
-      cache[`xmcl/${getStorageKey(user.authority)}/${user.id}`] = token || ''
+      if (token) {
+        const isValidJWT = /^[\w-]+\.[\w-]+\.[\w-]+$/g.test(token)
+        if (!isValidJWT) {
+          return undefined
+        }
+        cache[`xmcl/${getStorageKey(user.authority)}/${user.id}`] = token
+      }
       return token || undefined
     },
   }

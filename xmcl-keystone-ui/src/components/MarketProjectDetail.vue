@@ -3,7 +3,7 @@
     class="mod-detail contained w-full overflow-auto"
     @scroll="onScroll"
   >
-    <div class="flex flex-grow gap-4 p-4">
+    <div class="header-container flex flex-grow gap-4 p-4">
       <div class="self-center">
         <v-skeleton-loader
           v-if="loading"
@@ -150,7 +150,9 @@
                 {{
                   versions.length > 0 ?
                     t('modInstall.installHint', { file: 1, dependencies: dependencies.filter(d => d.type === 'required').length })
-                    : t('modInstall.noVersionSupported')
+                    : t('modInstall.noVersionSupported', {
+                      supported: supportedVersions?.join(', ')
+                    })
                 }}
               </div>
             </div>
@@ -203,7 +205,7 @@
                     outlined
                     hide-details
                   >
-                    <span class="max-w-40 xl:max-w-50 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full">
+                    <span class="xl:max-w-50 max-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap 2xl:max-w-full">
 
                       {{ selectedVersion?.name }}
                     </span>
@@ -268,7 +270,7 @@
     <div class="grid w-full grid-cols-4 gap-2">
       <v-tabs-items
         v-model="tab"
-        class="col-span-3 h-full max-h-full max-w-full bg-transparent p-4"
+        class="main-content h-full max-h-full max-w-full bg-transparent p-4"
       >
         <v-tab-item>
           <v-expansion-panels
@@ -379,8 +381,10 @@
           </v-card-text>
           <div
             v-else-if="detail.htmlContent"
+            data-description-div
             class="markdown-body select-text whitespace-normal"
             :class="{ 'project-description': curseforge }"
+            @click="onDescriptionDivClicked"
             v-html="detail.htmlContent"
           />
           <template v-else-if="detail.description.includes('§')">
@@ -453,8 +457,9 @@
           />
         </v-tab-item>
       </v-tabs-items>
-
-      <aside>
+      <aside
+        class="side-content"
+      >
         <template v-if="curseforge || modrinth">
           <v-subheader>
             {{ t('modInstall.source') }}
@@ -495,6 +500,29 @@
             </v-btn>
           </span>
 
+          <v-divider
+            class="mt-4 w-full"
+          />
+        </template>
+
+        <template v-if="detail.modLoaders.length > 0">
+          <v-subheader>
+            {{ t('modrinth.modLoaders.name') }}
+          </v-subheader>
+          <span class="flex flex-wrap gap-2 px-2">
+            <div
+              v-for="l of detail.modLoaders"
+              :key="l"
+              style="width: 36px; height: 36px;"
+            >
+              <v-icon
+                v-shared-tooltip="l"
+                size="32px"
+              >
+                {{ iconMapping[l] }}
+              </v-icon>
+            </div>
+          </span>
           <v-divider
             class="mt-4 w-full"
           />
@@ -634,13 +662,15 @@
 <script setup lang="ts">
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
-import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
 import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
+import { kTheme } from '@/composables/theme'
+import { clientCurseforgeV1 } from '@/util/clients'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -652,6 +682,7 @@ const props = defineProps<{
   loadingDependencies?: boolean
   loadingVersions: boolean
   selectedInstalled: boolean
+  supportedVersions?: string[]
   noDelete?: boolean
   noEnabled?: boolean
   hasMore: boolean
@@ -670,6 +701,7 @@ const emit = defineEmits<{
   (event: 'open-dependency', dep: ProjectDependency): void
   (event: 'select:category', category: string): void
   (event: 'refresh'): void
+  (event: 'description-link-clicked', e: MouseEvent, href: string): void
 }>()
 
 export interface ProjectDependency {
@@ -739,6 +771,7 @@ export interface ProjectDetail {
   follows: number
   url: string
   categories: CategoryItem[]
+  modLoaders: string[]
   htmlContent: string
   externals: ExternalResource[]
   galleries: ModGallery[]
@@ -787,15 +820,14 @@ const detailsHeaders = computed(() => {
 const { getDateString } = useDateString()
 const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
 
-const { replace, currentRoute } = useRouter()
+const { push, replace, currentRoute } = useRouter()
 const goCurseforgeProject = (id: number) => {
   replace({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
 }
 const goModrinthProject = (id: string) => {
   replace({ query: { ...currentRoute.query, id: `modrinth:${id}` } })
 }
-const vuetify = injection(kVuetify)
-const isDark = computed(() => vuetify.theme.dark)
+const { isDark } = injection(kTheme)
 
 const selectedVersion = inject('selectedVersion', ref(props.versions.find(v => v.installed) || props.versions[0] as ProjectVersion | undefined))
 const onVersionClicked = (version: ProjectVersion) => {
@@ -829,10 +861,6 @@ watch(() => props.versions, (vers) => {
 
 const showDependencies = ref(false)
 
-const onSwitchVersion = () => {
-
-}
-
 const installed = computed(() => props.versions.find(v => v.installed))
 const notInstalled = computed(() => props.versions.filter(v => !v.installed))
 
@@ -856,6 +884,81 @@ const imageDialog = injection(kImageDialog)
 const onShowImage = (img: ModGallery) => {
   imageDialog.show(img.url, { description: img.description, date: img.date })
 }
+
+// Content clicked
+function onDescriptionDivClicked(e: MouseEvent) {
+  const isHTMLElement = (e: unknown): e is HTMLElement => {
+    return !!e && e instanceof HTMLElement
+  }
+  let ele = e.target
+  while (isHTMLElement(ele) && !ele.attributes.getNamedItem('data-description-div')) {
+    if (ele.tagName === 'A') {
+      const href = ele.getAttribute('href')
+
+      if (href) {
+        onDescriptionLinkClicked(e, href)
+        break
+      }
+    }
+    ele = ele.parentElement
+  }
+}
+
+const iconMapping = {
+  forge: '$vuetify.icons.forge',
+  fabric: '$vuetify.icons.fabric',
+  quilt: '$vuetify.icons.quilt',
+  optifine: '$vuetify.icons.optifine',
+  neoforge: '$vuetify.icons.neoForged',
+} as Record<string, string>
+
+function onDescriptionLinkClicked(e: MouseEvent, href: string) {
+  const url = new URL(href)
+  if (url.host === 'modrinth.com') {
+    const slug = url.pathname.split('/')[2] ?? ''
+    let domain: string = ''
+    if (url.pathname.startsWith('/mod/')) {
+      domain = 'mods'
+    } else if (url.pathname.startsWith('/shaders/')) {
+      domain = 'shaderpacks'
+    } else if (url.pathname.startsWith('/resourcepacks/')) {
+      domain = 'resourcepacks'
+    } else if (url.pathname.startsWith('/modpacks')) {
+      domain = 'modpacks'
+    }
+
+    if (domain !== 'modpacks' && slug && domain) {
+      push({ query: { ...currentRoute.query, id: `modrinth:${slug}` } })
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+  if ((url.host === 'www.curseforge.com' || url.host === 'curseforge.com') && url.pathname.startsWith('/minecraft')) {
+    const slug = url.pathname.split('/')[3] ?? ''
+    let domain: string = ''
+    if (url.pathname.startsWith('/minecraft/mc-mods/')) {
+      domain = 'mods'
+    } else if (url.pathname.startsWith('/texture-packs/')) {
+      domain = 'resourcepacks'
+    } else if (url.pathname.startsWith('/modpacks')) {
+      domain = 'modpacks'
+    }
+
+    if (domain && domain !== 'modpacks' && slug) {
+      clientCurseforgeV1.searchMods({ slug, pageSize: 1 }).then((result) => {
+        const id = result.data[0]?.id
+        if (id) {
+          push({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
+        } else {
+          window.open(href, '_blank')
+        }
+      })
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+}
+
 </script>
 
 <style>
@@ -866,6 +969,32 @@ const onShowImage = (img: ModGallery) => {
 }
 </style>
 <style scoped>
+
+.main-content {
+  grid-column: span 4 / span 4;
+}
+.side-content {
+  grid-column: span 4 / span 4;
+  margin-bottom: 10px;
+}
+.header-container {
+  flex-direction: column;
+}
+
+@container (min-width: 450px) {
+  .main-content {
+    -ms-grid-column-span: span 3 / span 3;
+    grid-column: span 3 / span 3;
+  }
+  .side-content {
+    -ms-grid-column-span: span 1 / span 1;
+    grid-column: span 1 / span 1;
+  }
+  .header-container {
+    flex-direction: row;
+  }
+}
+
 .item {
   @apply flex items-center gap-2 overflow-x-auto overflow-y-hidden w-full;
 }

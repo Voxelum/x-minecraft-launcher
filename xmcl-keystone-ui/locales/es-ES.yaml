@@ -2,14 +2,19 @@ AppAddInstanceDialog:
   downloadedNotification: El modpack {name} se ha descargado. ¿Quieres crear una instancia para ello?
   serverTitle: Ingrese la dirección de su servidor
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    Si no quiere estropear la instancia actual. 
+    También puede crear una nueva instancia desde la configuración de su par. 
+    Haga clic en el botón a continuación para crear una instancia.
   baseInfo: Configuración Básica
   cancelShare: Cancelar Compartir
   description: >-
     Después de compartir, otros compañeros podran descargar los archivos del
     juego que compartiste a través de tu PC.
-  downloadDescription: >-
-    Verifique los archivos que su compañero le proporcionó. Seleccione el
-    archivo que desea descargar.
+  downloadDescription: |-
+    Verifique los archivos que le proporcionó su compañero. 
+    Seleccione el archivo que desea descargar. 
+    Se colocará en la instancia actual {name}.
   downloadNotifyTitle: Descargar instancia de {user}
   downloadTitle: Descargar archivos de otros compañeros
   downloadToLocal: Descargar a la instancia actual
@@ -454,6 +459,7 @@ mod:
     eliminarlo? | Perderás estos mods y sus metadatos para siempre. ¿Estás
     seguro de que deseas hacerlo?
   deletionRestHint: Y otros {rest} mods...
+  denseView: Vista densa
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
@@ -462,6 +468,7 @@ mod:
   incompatible: Mod Incompatible.
   manage: Administrar Mods
   maybeCompatible: Posiblemente Compatible.
+  mods: '{count} modificaciones'
   name: Mod | Mods
   noModLoaderHint: ¡No olvides habilitar un modloader para usar mods!
   openLink: Abrir la URL del mod {url}
@@ -482,7 +489,7 @@ modInstall:
   install: Instalar
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
-  noVersionSupported: El Mod no es compatible con la versión actual de Minecraft
+  noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
   recommendation: ¡Explora las modificaciones {first} o {second} en {modrinth} y {curseforge}!
   search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto
@@ -682,6 +689,10 @@ multiplayer:
 
     Cambie esto solo cuando su conexión p2p en algún momento bloquee la ventana
     del iniciador.
+  sharingNotificationBody: >-
+    Puede descargar o crear una instancia desde la configuración compartida de
+    {nombre}.
+  sharingNotificationTitle: Un compañero está compartiendo la configuración del juego.
 next: Siguiente
 'no': 'No'
 ok: Aceptar

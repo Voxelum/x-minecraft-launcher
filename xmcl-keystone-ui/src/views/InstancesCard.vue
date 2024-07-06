@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-draggable-card
-    v-context-menu.force="contextMenuItems"
+    v-context-menu.force="getContextMenuItems"
     :ripple="!isBusy"
     class="draggable-card flex flex-grow-0 flex-col"
     :color="isSelected ? 'primary' : ''"
@@ -16,7 +16,7 @@
   >
     <div
       v-if="isBusy"
-      class="absolute flex h-full w-full items-center justify-center"
+      class="absolute flex size-full items-center justify-center"
     >
       <v-progress-circular
         class="z-10"
@@ -188,15 +188,16 @@ const image = computed(() => {
 })
 const description = computed(() => props.instance.description)
 const { open } = useContextMenu()
-const contextMenuItems = useInstanceContextMenuItems(computed(() => props.instance))
+const getContextMenuItems = useInstanceContextMenuItems(computed(() => props.instance))
 const onSettingClick = (event: MouseEvent) => {
   const button = event.target as any // Get the button element
   const rect = button.getBoundingClientRect() // Get the position of the button
   const bottomLeftX = rect.left // X-coordinate of the bottom-left corner
   const bottomLeftY = rect.bottom // Y-coordinate of the bottom-left corner
 
-  if (contextMenuItems.value) {
-    open(bottomLeftX, bottomLeftY, contextMenuItems.value)
+  const items = getContextMenuItems()
+  if (items) {
+    open(bottomLeftX, bottomLeftY, items)
   }
 }
 

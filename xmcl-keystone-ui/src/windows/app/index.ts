@@ -3,7 +3,6 @@ import { kServiceFactory, useServiceFactory } from '@/composables'
 import { kDialogModel, useDialogModel } from '@/composables/dialog'
 import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
 import { kTaskManager, useTaskManager } from '@/composables/taskManager'
-import { kVuetify } from '@/composables/vuetify'
 import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
 import 'virtual:windi.css'
@@ -22,7 +21,6 @@ const app = new Vue(defineComponent({
   i18n,
   vuetify,
   setup() {
-    provide(kVuetify, vuetify.framework)
     provide(kServiceFactory, useServiceFactory())
     provide(kDialogModel, useDialogModel())
     provide(kSWRVConfig, useSWRVConfig())

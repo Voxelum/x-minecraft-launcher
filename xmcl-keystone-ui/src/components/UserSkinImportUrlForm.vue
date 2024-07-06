@@ -1,42 +1,26 @@
 <template>
-  <v-card>
-    <v-container
-      fluid
-      grid-list-md
-    >
-      <v-layout
-        row
-        wrap
+  <v-card class="m-8">
+    <v-text-field
+      v-model="data.url"
+      class="w-full"
+      :rules="rules"
+      :label="t('userSkin.placeUrlHere')"
+      validate-on-blur
+      clearable
+      @input="validate"
+    />
+    <div class="flex w-full">
+      <v-spacer />
+      <v-btn
+        :disabled="data.error"
+        @click="submit"
       >
-        <v-flex
-          d-flex
-          xs12
-        >
-          <v-text-field
-            v-model="data.url"
-            :rules="rules"
-            :label="t('userSkin.placeUrlHere')"
-            validate-on-blur
-            clearable
-            @input="validate"
-          />
-        </v-flex>
-        <v-flex
-          d-flex
-          xs12
-        >
-          <v-btn
-            :disabled="data.error"
-            @click="submit"
-          >
-            <v-icon left>
-              inbox
-            </v-icon>
-            {{ t('userSkin.import') }}
-          </v-btn>
-        </v-flex>
-      </v-layout>
-    </v-container>
+        <v-icon left>
+          inbox
+        </v-icon>
+        {{ t('userSkin.import') }}
+      </v-btn>
+    </div>
   </v-card>
 </template>
 

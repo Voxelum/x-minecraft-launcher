@@ -12,8 +12,8 @@ const items = computed(() => {
   const result: VersionItem[] = (versions.value ?? [])
     .map((v) => {
       return markRaw({
-        name: v.version,
-        description: v.maven,
+        name: v.loader.version,
+        description: v.loader.maven,
         // tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),
         // tagColor: v.stable ? 'primary' : undefined,
       })

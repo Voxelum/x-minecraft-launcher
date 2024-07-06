@@ -158,7 +158,7 @@ import { kUserContext } from '../composables/user'
 
 const { gameProfile } = injection(kUserContext)
 const { connections, setRemoteDescription, initiate: _initiate } = injection(kPeerState)
-const { isShown, dialog } = useDialog('peer-initiate')
+const { isShown, parameter } = useDialog('peer-initiate')
 
 const id = ref('')
 const gatheringState = computed(() => connection.value?.iceGatheringState)
@@ -176,8 +176,8 @@ const errorText = ref('')
 const error = computed(() => !!errorText.value)
 
 watch(isShown, (v) => {
-  if (v && typeof dialog.value.parameter === 'string') {
-    id.value = dialog.value.parameter
+  if (v && typeof parameter.value === 'string') {
+    id.value = parameter.value
     if (gatheringState.value === 'complete') {
       step.value = 3
     } else {

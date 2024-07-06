@@ -17,4 +17,5 @@ export interface PeerContext {
 
   getNextIceServer(): RTCIceServer | undefined
   getCurrentIceServer(): RTCIceServer | undefined
+  setTargetIceServer(server: RTCIceServer): void
 }

@@ -1,7 +1,7 @@
 <template>
   <v-app
     class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
-    :class="{ 'dark': vuetify.theme.dark }"
+    :class="{ 'dark': isDark }"
   >
     <AppSystemBar
       no-task
@@ -27,13 +27,13 @@ import '@/assets/common.css'
 import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { useNotifier } from '@/composables/notifier'
-import { kVuetify } from '@/composables/vuetify'
+import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import Multiplayer from '@/views/Multiplayer.vue'
 
-const vuetify = injection(kVuetify)
+const { isDark } = injection(kTheme)
 
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)

@@ -26,11 +26,24 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         )
       }
 
-      // Intercept node_modules\better-sqlite3\lib\database.js
       build.onLoad(
-        { filter: /^.+better-sqlite3[\\/]lib[\\/]database\.js$/g },
+        { filter: /^.+node-sqlite3-wasm[\\/]dist[\\/]node-sqlite3-wasm\.js$/g },
         async ({ path }) => {
-          const content = (await readFile(path, 'utf-8')).replace(/require\('bindings'\)\('better_sqlite3\.node'\)/g, 'require(\'../build/Release/better_sqlite3.node\')')
+          let content = (await readFile(path, 'utf-8'))
+          content = content.replace('get isFinalized(){return this._ptr===null}',
+            'get isFinalized(){return this._ptr===null}' +
+            'isReader(){return sqlite3.column_count(this._ptr)>=1}',
+          )
+          if (isDev) {
+            content = content.replace('"node-sqlite3-wasm.wasm"', 'require("./node-sqlite3-wasm.wasm")')
+          } else {
+            const dir = dirname(path)
+            const wasmPath = join(dir, 'node-sqlite3-wasm.wasm')
+            const base64WasmContent = await readFile(wasmPath, 'base64')
+            content = content.replace('function getBinarySync(file){',
+              'function getBinarySync(file){' + `return Buffer.from(${JSON.stringify(base64WasmContent)}, 'base64');`,
+            )
+          }
           return {
             contents: content,
             loader: 'js',
@@ -50,6 +63,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           // remove the line `import NodeDataChannel from '../lib/index.js';`
           content = content.replace(/import NodeDataChannel from '..\/lib\/index.js';/g, '')
 
+          content = content.replace('const [protocol, rest] = url.split(/:(.*)/);',
+            "const [protocol, hostname, port] = url.split(':');" +
+            'return { hostname, port, username: server.username, password: server.credential };\n',
+          )
+
           return {
             contents: content,
             loader: 'js',
@@ -67,135 +85,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             export { default as DataChannelStream } from './datachannel-stream.js';
             `,
             loader: 'js',
-          }
-        },
-      )
-
-      build.onResolve(
-        { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
-        async ({ path, resolveDir }) => {
-          return {
-            path,
-            pluginData: {
-              resolveDir,
-            },
-          }
-        },
-      )
-      build.onLoad(
-        { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
-        async ({ path }) => {
-          type Tuple = ReturnType<typeof parseTuple>
-          function matchTuple(platform9: string, arch4: string) {
-            return function (tuple: Tuple) {
-              if (tuple == null) { return false }
-              if (tuple.platform !== platform9) { return false }
-              return tuple.architectures.includes(arch4)
-            }
-          }
-          function parseTuple(name: string) {
-            const arr = name.split('-')
-            if (arr.length !== 2) { return }
-            const platform9 = arr[0]
-            const architectures = arr[1].split('+')
-            if (!platform9) { return }
-            if (!architectures.length) { return }
-            if (!architectures.every(Boolean)) { return }
-            return { name, platform: platform9, architectures }
-          }
-          function compareTuples(a: any, b: any) {
-            return a.architectures.length - b.architectures.length
-          }
-          function parseTags(file: string) {
-            const arr = file.split('.')
-            const extension = arr.pop()
-            const tags: any = { file, specificity: 0 }
-            if (extension !== 'node') { return }
-            for (let i = 0; i < arr.length; i++) {
-              const tag = arr[i]
-              if (tag === 'node' || tag === 'electron' || tag === 'node-webkit') {
-                tags.runtime = tag
-              } else if (tag === 'napi') {
-                tags.napi = true
-              } else if (tag.slice(0, 3) === 'abi') {
-                tags.abi = tag.slice(3)
-              } else if (tag.slice(0, 2) === 'uv') {
-                tags.uv = tag.slice(2)
-              } else if (tag.slice(0, 4) === 'armv') {
-                tags.armv = tag.slice(4)
-              } else if (tag === 'glibc' || tag === 'musl') {
-                tags.libc = tag
-              } else {
-                continue
-              }
-              tags.specificity++
-            }
-            return tags
-          }
-          function matchTags(runtime2: any, abi2: any) {
-            function runtimeAgnostic(tags: any) {
-              return tags.runtime === 'node' && tags.napi
-            }
-            return function (tags: any) {
-              if (tags == null) { return false }
-              if (tags.runtime !== runtime2 && !runtimeAgnostic(tags)) { return false }
-              if (tags.abi !== abi2 && !tags.napi) { return false }
-              if (tags.uv && tags.uv !== uv) { return false }
-              if (tags.armv && tags.armv !== armv) { return false }
-              if (tags.libc && tags.libc !== libc) { return false }
-              return true
-            }
-          }
-          function compareTags(runtime2: any) {
-            return function (a: any, b: any) {
-              if (a.runtime !== b.runtime) {
-                return a.runtime === runtime2 ? -1 : 1
-              } else if (a.abi !== b.abi) {
-                return a.abi ? -1 : 1
-              } else if (a.specificity !== b.specificity) {
-                return a.specificity > b.specificity ? -1 : 1
-              } else {
-                return 0
-              }
-            }
-          }
-          function isAlpine(platform9: any) {
-            return platform9 === 'linux' && existsSync('/etc/alpine-release')
-          }
-          const abi = process.versions.modules
-          const runtime = 'electron'
-          const arch3 = arch()
-          const platform8 = platform()
-
-          const libc = process.env.LIBC || (isAlpine(platform8) ? 'musl' : 'glibc')
-          const vars = process.config && (process.config.variables || {}) as any
-          const armv = process.env.ARM_VERSION || (arch3 === 'arm64' ? '8' : vars.arm_version) || ''
-          const uv = (process.versions.uv || '').split('.')[0]
-          const dir = dirname(path)
-          const tuples = (await readdir(join(dir, 'prebuilds'))).map(parseTuple)
-          const tuple = tuples.filter(matchTuple(platform8, arch3)).sort(compareTuples)[0]
-          if (!tuple) throw new Error()
-          const prebuilds = join(dir, 'prebuilds', tuple.name)
-          const parsed = (await readdir(prebuilds)).map(parseTags)
-          const candidates = parsed.filter(matchTags(runtime, abi))
-          const winner = candidates.sort(compareTags(runtime))[0]
-          if (!winner) throw new Error()
-          const targetPath = join(prebuilds, winner.file)
-          const linkedPath = join(dir, 'classic-level.node')
-          if (existsSync(linkedPath)) {
-            const s = await stat(linkedPath)
-            const d = await stat(targetPath)
-            if (s.ino !== d.ino) {
-              await unlink(linkedPath)
-              await link(targetPath, linkedPath)
-            }
-          } else {
-            await link(targetPath, linkedPath)
-          }
-          const relativePath = './' + relative(dir, linkedPath).replace(/\\/g, '/')
-          return {
-            contents: `module.exports = require(${JSON.stringify(relativePath)})`,
-            resolveDir: dir,
           }
         },
       )

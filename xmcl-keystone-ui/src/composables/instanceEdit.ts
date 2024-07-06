@@ -228,7 +228,9 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     return false
   })
 
-  watch(computed(() => instance.value.version), () => load())
+  watch(computed(() => instance.value), () => load(), {
+    immediate: true,
+  })
 
   async function save() {
     const payload = {

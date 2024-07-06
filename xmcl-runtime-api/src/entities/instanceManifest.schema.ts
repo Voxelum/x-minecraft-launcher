@@ -32,8 +32,10 @@ export interface InstanceFile {
     projectId: string
     versionId: string
   }
-
-  size: number
+  /**
+   * The file size in bytes
+   */
+  size?: number
 }
 
 type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions' | 'name'>

@@ -27,23 +27,17 @@
           v-else-if="content === '' && files.length === 0"
           style="height: 420px"
         >
-          <v-container fill-height>
-            <v-layout
-              fill-height
-              justify-center
-              align-center
-            >
-              <h1 v-if="!pending">
-                {{ t('logsCrashes.placeholder') }}
-              </h1>
-              <v-progress-circular
-                v-else
-                :size="100"
-                color="white"
-                indeterminate
-              />
-            </v-layout>
-          </v-container>
+          <div class="flex h-full items-center justify-center">
+            <h1 v-if="!pending">
+              {{ t('logsCrashes.placeholder') }}
+            </h1>
+            <v-progress-circular
+              v-else
+              :size="100"
+              color="white"
+              indeterminate
+            />
+          </div>
         </div>
         <div
           v-else

@@ -6,7 +6,7 @@
     :icons="icons"
     :button="t('resourcepack.manage')"
     :refreshing="false"
-    @navigate="push('/resource-pack-setting')"
+    @navigate="push('/resourcepacks')"
   />
 </template>
 <script lang="ts" setup>

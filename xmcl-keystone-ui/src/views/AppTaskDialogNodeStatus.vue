@@ -34,7 +34,7 @@
       v-else-if="indeterminate || !showNumber"
       style="margin-left: 6px; padding: 3px;"
       class="mb-0"
-      color="white"
+      :color="darkTheme ? 'white' : undefined"
       small
       :size="20"
       :value="percentage"
@@ -49,7 +49,9 @@
 </template>
 
 <script lang=ts setup>
+import { kTheme, useTheme } from '@/composables/theme'
 import { TaskItem } from '@/entities/task'
+import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
 
 const props = defineProps<{
@@ -60,6 +62,7 @@ const emit = defineEmits(['cancel', 'resume', 'pause'])
 
 const hover = ref(false)
 const { t } = useI18n()
+const { darkTheme } = injection(kTheme)
 const color = computed(() => {
   switch (props.item.state) {
     case TaskState.Succeed:

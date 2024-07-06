@@ -1,5 +1,3 @@
-import { URL } from 'url'
-
 export function parseSourceControlUrl(url: string) {
   if (url.startsWith('https://github.com')) {
     const resolvedUrl = new URL(url)

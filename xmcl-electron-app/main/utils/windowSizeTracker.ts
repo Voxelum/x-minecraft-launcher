@@ -22,6 +22,12 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
     height: undefined as undefined | number,
     x: undefined as undefined | number,
     y: undefined as undefined | number,
+    getWidth(min: number) {
+      return Math.max(this.width || 0, min)
+    },
+    getHeight(min: number) {
+      return Math.max(this.height || 0, min)
+    },
   }
   async function getConfig() {
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({

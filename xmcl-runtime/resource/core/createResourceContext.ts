@@ -1,8 +1,8 @@
 import EventEmitter from 'events'
-import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, SqliteDialect, UnknownRow, ValueNode } from 'kysely'
+import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, UnknownRow, ValueNode } from 'kysely'
 import { ImageStorage } from '~/imageStore'
 import { Logger } from '~/logger'
-import { SQLiteModule } from '../sqlite'
+import { DatabaseWorker, SqliteWASMDialect, SqliteWASMDialectConfig } from '~/sql'
 import { ResourceContext } from './ResourceContext'
 import { Database } from './schema'
 
@@ -39,10 +39,8 @@ class JSONTransformer extends OperationNodeTransformer {
   }
 }
 
-export function createResourceContext(imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>) {
-  const dialect = new SqliteDialect({
-    database: () => SQLiteModule.getInstance(),
-  })
+export function createResourceContext(imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>, dbOptions: SqliteWASMDialectConfig) {
+  const dialect = new SqliteWASMDialect(dbOptions)
 
   // Database interface is passed to Kysely's constructor, and from now on, Kysely
   // knows your database structure.
@@ -60,7 +58,7 @@ export function createResourceContext(imageStore: ImageStorage, eventBus: EventE
 
   const context: ResourceContext = {
     db,
-    getSqlite: SQLiteModule.getInstance,
+    isDatabaseOpened: async () => 'database' in dbOptions ? dbOptions.database.isOpen : dbOptions.worker.init().then(() => true, () => false),
     image: imageStore,
     hash: delegates.hash,
     hashAndFileType: delegates.hashAndFileType,

@@ -1,14 +1,14 @@
 <template>
-  <v-container
+  <div
     grid-list-lg
     fill-height
     class="resource-pack-preview-page"
   >
-    <v-layout
+    <div
       v-if="!loading"
       style="height: 100%"
     >
-      <v-flex
+      <div
         style="height: 100%"
         xs4
       >
@@ -20,18 +20,18 @@
             :data-component="PreviewItem"
           /> -->
         </v-list>
-      </v-flex>
-      <v-flex xs8>
+      </div>
+      <div xs8>
         <displayer
           v-if="data.displayed"
           :value="data.displayed"
         />
-        <v-layout
+        <div
           style="overflow-x: auto; max-height: 70px"
           row
           wrap
         >
-          <v-flex
+          <div
             v-for="item in selects"
             :key="item.name"
             xs4
@@ -42,12 +42,12 @@
               :label="item.name"
               hide-details
             />
-          </v-flex>
-        </v-layout>
-      </v-flex>
-    </v-layout>
+          </div>
+        </div>
+      </div>
+    </div>
     <refreshing-tile v-else />
-  </v-container>
+  </div>
 </template>
 
 <script lang=ts setup>

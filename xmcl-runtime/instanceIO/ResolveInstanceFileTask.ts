@@ -63,16 +63,17 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
     const processModrinthLike = async () => {
       if (modrinthFileHashProjects.length === 0) return
       const result = await this.modrinthClient.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), 'sha1', controller.signal)
-      for (const r of Object.entries(result)) {
-        const p = modrinthFileHashProjects.find(p => p.hashes.sha1 === r[0])!
-        if (!p.downloads) { p.downloads = [] }
-        if (p.downloads.indexOf(r[1].files[0].url) === -1) {
-          p.downloads.push(r[1].files[0].url)
+      for (const [sha1, version] of Object.entries(result)) {
+        const instanceFile = modrinthFileHashProjects.find(p => p.hashes.sha1 === sha1)!
+        const file = version.files.find(f => f.hashes.sha1 === sha1) ?? version.files[0]
+        if (!instanceFile.downloads) { instanceFile.downloads = [] }
+        if (instanceFile.downloads.indexOf(file.url) === -1) {
+          instanceFile.downloads.push(file.url)
         }
-        if (!p.modrinth) {
-          p.modrinth = {
-            projectId: r[1].project_id,
-            versionId: r[1].id,
+        if (!instanceFile.modrinth) {
+          instanceFile.modrinth = {
+            projectId: version.project_id,
+            versionId: version.id,
           }
         }
       }

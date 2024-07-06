@@ -97,21 +97,15 @@
       target="browser"
       push
     >
-      <v-container fill-height>
-        <v-layout
-          fill-height
-          justify-space-around
-          align-center
-        >
-          <h3 v-if="!checkingUpdate">
-            {{ t('launcherUpdate.noUpdateAvailable') }}
-          </h3>
-          <v-progress-circular
-            v-else
-            indeterminate
-          />
-        </v-layout>
-      </v-container>
+      <div class="m-8 flex h-full items-center justify-around">
+        <h3 v-if="!checkingUpdate">
+          {{ t('launcherUpdate.noUpdateAvailable') }}
+        </h3>
+        <v-progress-circular
+          v-else
+          indeterminate
+        />
+      </div>
     </v-card>
   </v-dialog>
 </template>

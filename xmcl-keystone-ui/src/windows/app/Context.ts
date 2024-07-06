@@ -11,14 +11,12 @@ import { kTheme, useTheme } from '@/composables/theme'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
-import { kVuetify } from '@/composables/vuetify'
 import { vuetify } from '@/vuetify'
 import 'virtual:windi.css'
 import { provide } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
-    provide(kVuetify, vuetify.framework)
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
     provide(kNotificationQueue, useNotificationQueue())

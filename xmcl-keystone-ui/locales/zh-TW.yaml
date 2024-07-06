@@ -1,483 +1,1089 @@
-add: 添加
+AppAddInstanceDialog:
+  choiceTitle: |-
+    我們發現多個啟動配置檔案。
+    請選擇其中的一項進行匯入。
+  configTitle: 例項配置
+  createTitle: 建立遊戲
+  downloadedNotification: '{name} 整合包下載完成，您想要現在建立嗎？'
+  serverTitle: 輸入您的伺服器地址
+AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    如果您不想搞亂當前實例。
+    您也可以從對等方的配置建立一個新實例。
+    點擊下面的按鈕建立實例。
+  baseInfo: 分享的基本配置
+  cancelShare: 取消分享
+  description: 分享後，您的聯機夥伴將可以下載您分享的遊戲資源
+  downloadDescription: 請選擇從您的小夥伴那下載的檔案。檔案將下載到目前例項 {name} 中。
+  downloadTitle: 從其他玩家那獲得遊戲資源
+  downloadToLocal: 下載到目前例項中
+  filesToDownload: 選擇您想下載的檔案
+  filesToShare: 選擇分享的檔案
+  instanceShare: '{user} 給您分享了他的遊戲配置'
+  share: 分享
+  shareNotifyTitle: 分享配置
+  shareTitle: 分享啟動配置給其他玩家
+BaseSetting: {}
+BaseSettingGeneral:
+  title: 常規設定
+FeedTheBeast:
+  search: 在 FTB 中搜尋
+FeedTheBeastCard: {}
+FeedTheBeastProject:
+  changelog: 更新日誌
+  details: 具體資訊
+  install: 安裝 {version}
+  overview: 總覽
+  versions: 版本
+HomeJavaIssueDialog:
+  incompatibleJava: 目前的 Java 版本可能不相容
+  incompatibleJavaHint: Java {javaVersion} 可能無法執行已選擇的 Minecraft 版本
+  missingJava: 沒有找到 Java
+  missingJavaHint: 啟動器在您的電腦上沒有找到任何Java。您可以嘗試：
+  needDownloadHint: 在您的電腦上沒找到合適的 Java 版本，推薦下載新的 Java。
+  optionAutoDownload:
+    message: 啟動器將從 Mojang 源下載並安裝 Java {version}
+    name: 自動下載
+  optionManualDownload: {}
+  optionSelectJava:
+    message: 也許只是啟動器沒找到您電腦上的 Java，您可以手動選擇一下。
+    name: 手動選擇 Java 的位置
+  optionSwitch:
+    disabled: 在電腦上沒有檢測到 Java {version}，無法切換！
+    message: 啟動器將使用您現在安裝的 {version}
+    name: 切換到已有的 Java {version}
+  recommendedVersionHint: 版本 {version} 推薦使用 Java 版本範圍 {range}。
+  selectMatchedHint: 本地找到了符合的 Java 版本，您可以選擇本地 Java。
+  selectSecondaryHint: 本地找到了幾個 Java 版本，但都不是完全符合要求的 Java。您仍然可以選擇這些 Java 來啟動，但此提示還會再次出現。
+HomeLaunchMultiInstanceDialog:
+  confirm: 是的，多例項啟動
+  description: 正在嘗試啟動多個 Minecraft 例項，您確定麼？
+  title: 多例項啟動
+HomeSyncButton: {}
+HomeSyncDialog:
+  pull: 拉取更新
+  push: 上傳例項
+HomeSyncDialogPull:
+  failText: 獲取更新失敗。{url}
+  refresh: 重新整理
+  update: 更新
+HomeSyncDialogPush:
+  authError: 使用者驗證失敗，請確定您是更新伺服器的管理員！
+  refresh: 重新整理
+  unknownError: 未知錯誤，請重試
+  upload: 上傳更新
+MultiplayerDialogInitiate:
+  multiplayer: {}
+SettingMigrationDialog:
+  selectRootDirectory: 選擇新的根目錄
+add: 新增
+ago:
+  day: '{duration} 天前'
+  hour: '{duration} 小時前'
+  minute: '{duration} 分鐘前'
+  second: '{duration} 秒前'
+authProfileAddedNotification: 已新增第三方驗證 {name}
 author: 作者
 back: 返回
 baseSetting:
-  title: 基礎設置
+  title: 基礎設定
+browse: 瀏覽
 browseApp:
-  createShortcut: 創建快捷方式
-  default: 默認
+  createShortcut: 建立快捷方式
+  default: 預設
   delete: 刪除
-  launch: 啟動並設置為默認
+  launch: 啟動並設定為預設
 cancel: 取消
-checkUpdate: 檢查更新
+checkUpdate:
+  name: 檢查更新
+confirm: 開始
 copyClipboard:
-  success: 複製到剪貼板
-create: 創建
+  success: 複製到剪貼簿
+create: 建立
 curseforge:
-  createdDate: 創建日期
+  authors: 作者
+  category: 分類
+  createdDate: 建立日期
+  downloadOnly: 只下載
   file:
     gameVersion: 遊戲版本
+    modLoader: 模組載入器型別
+  install: 安裝
   installTo: 安裝到 {path}
   installToStorage: 安裝到庫
   lastUpdate: 上次更新日期
   project:
     description: 簡介
-    files: 文件
+    files: 檔案
     images: 圖片
-  recentFiles: 近期文件
-  search: 搜索
+  recentFiles: 近期檔案
+  releasedDate: 釋出日期
+  search: 搜尋
   totalDownloads: 總下載量
+curseforgeCard: {}
+curseforgeCategory:
+  API and Library: API 和庫
+  Addons: 外掛
+  Adventure: 冒險
+  Adventure and RPG: 冒險和劇情
+  Animated: 動畫
+  Armor， Tools， and Weapons: 護甲、工具和武器
+  Combat / PvP: 競技/PVP
+  Cosmetic: 外觀/裝飾
+  Creation: 創造模式
+  Data Packs: 資料包
+  Education: 教育
+  Exploration: 探索
+  Extra Large: 超大型
+  FTB Official Pack: FTB 官方包
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: 字型
+  Food: 食物
+  Game Map: 遊戲地圖
+  Hardcore: 硬核
+  MCreator: MCreator
+  Magic: 魔法
+  Map Based: 基於地圖
+  Map and Information: 地圖和資訊
+  Medieval: 中世紀
+  Mini Game: 小遊戲
+  Miscellaneous: 雜項
+  Mod Support: 相容模組
+  Modded World: 模組化世界
+  Modern: 現代
+  Multiplayer: 多人聯機
+  Parkour: 跑酷
+  Photo Realistic: 真實風格
+  Puzzle: 解密
+  QoL: QoL
+  Quests: 任務
+  Redstone: 紅石
+  Sci-Fi: 科幻
+  Server Utility: 伺服器工具
+  Skyblock: 空島
+  Small / Light: 輕量級
+  Steampunk: 蒸汽朋克
+  Storage: 儲存
+  Survival: 生存
+  Tech: 科技
+  Technology: 科技
+  Traditional: 傳統
+  Twitch Integration: Twitch 整合
+  Utility & QoL: 工具和 QoL
+  Vanilla+: 原版改良
+  World Gen: 世界生成
 dataMigration:
   apply: 開始遷移
-  setRootCause: 請確保啓動器在此過程中不被中斷，不然您的數據可能丟失
-  setRootDescription: 這將改變啓動器識別的Minecraft根目錄。
-  setRootTitle: 遷移啓動器到新的位置
-  waitReload: 遷移數據中。請勿在此時關閉啓動器，否則你將可能失去一部分數據。
+  directoryCriteriaHint: 請確保您選擇的新資料夾<span class="font-bold text-lg mx-1">是空的！</span>
+  migrationDestinationIsFile: 檔案遷移地址不是一個資料夾，請重新選擇一個空資料夾！
+  migrationDestinationIsNotEmptyDirectory: 檔案遷移地址下的資料夾裡面有檔案，請選擇一個空資料夾！
+  migrationNoPermission: |-
+    許可權不足：無法更名原資料夾和新資料夾
+    請確保啟動器有許可權訪問這兩個資料夾
+  placeholder: 點選此處以選擇新的根目錄
+  setRootCause: 請確保啟動器在此過程中不被中斷，否則某些資料會遺失！
+  setRootDescription: 啟動器的根目錄將會被改變
+  setRootTitle: 遷移根目錄到新的位置
+  unknownError: 未知錯誤，請聯絡作者或重試。
+  waitReload: 遷移資料中。請不要關閉啟動器，否則您可能會丟失一部分資料
 delete:
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
+dependencies:
+  embedded: 內嵌
+  incompatible: 不相容
+  name: 依賴
+  optional: 可選
+  required: 必需
 description: 簡介
 detail: 細節
 diagnosis:
   badInstall:
-    message: 也許你應該嘗試重新安裝此版本
-    name: 版本安裝失敗 {version}
+    message: 也許您應該嘗試重新安裝此版本
+    name: '{version} 版本安裝失敗'
   corruptedAssets:
-    message: 啓動器將重新下載遊戲文件
-    name: 'Asset 文件損壞: {name} | Asset 文件損壞: {name} | 有 {count} 個遊戲資源可能損壞'
+    message: 啟動器將重新下載遊戲檔案
+    name: 'Assets 檔案不完整: {name} | Assets 檔案不完整: {name} | {count} 個遊戲資源不完整'
   corruptedAssetsIndex:
-    message: 啓動器將重新下載遊戲資源目錄
-    name: '{version}遊戲資源目錄可能損壞.'
+    message: 啟動器將重新下載遊戲資源目錄
+    name: '{version} 遊戲資源目錄損壞。'
   corruptedLibraries:
-    message: 啓動器將重新下載損壞的文件
-    name: '庫文件損壞: {name} | 庫文件損壞: {name} | {count} 個庫文件損壞 | {count} 個庫文件損壞'
+    message: 啟動器將重新下載不完整的檔案
+    name: >-
+      Libraries 檔案不完整: {name} | Libraries 檔案不完整: {name} | {count} 個 Libraries
+      檔案不完整 | {count} 個 Libraries 檔案不完整
   corruptedVersionJar:
-    message: 啓動器將重新下載損壞的文件
-    name: Minecraft %{version} 遊戲 Jar 文件損壞.
+    message: 啟動器將重新下載不完整的檔案
+    name: Minecraft {version} 遊戲 Jar 檔案不完整。
   corruptedVersionJson:
-    message: 啓動器將重新下載損壞的文件
-    name: Minecraft %{version} 版本 Json 文件損壞.
+    message: 啟動器將重新下載不完整的檔案
+    name: Minecraft {version} 版本 Json 檔案不完整。
   incompatibleJava:
-    message: 你可以選擇自己讓啓動器幫你下載，或者自己下載
-    name: 版本 {mcversion} 可能不兼容 Java {java}!
+    message: 您可以選擇讓啟動器幫您下載，或者手動下載
+    name: Java {javaVersion} 可能不符合 {version} 版本需求！
   instanceFiles:
-    description: 實例安裝包括 {counts} 個檔案。
-    title: 實例安裝未完成
+    description: 例項安裝包括 {counts} 個檔案。
+    title: 例項安裝未完成
   invalidJava:
-    message: 請選擇一個有效的 Java 路徑.
-    name: 當前 Java 路徑已經失效
+    message: 請選擇一個有效的 Java 路徑。
+    name: 目前 Java 路徑已經失效
   missingAssets:
-    message: 啓動器將自動下載並安裝遊戲文件
-    name: 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}個遊戲資源'
+    message: 啟動器將自動下載並安裝遊戲檔案
+    name: 'Assets 檔案缺失: {name} | Assets 檔案缺失: {name} | 缺少 {count} 個遊戲資源'
   missingAssetsIndex:
-    message: 啓動器將自動下載並安裝遊戲資源目錄
-    name: '%{version}缺少遊戲資源目錄'
+    message: 啟動器將自動下載並安裝遊戲資源目錄
+    name: '{version} 缺少遊戲資源目錄'
   missingAuthlibInjector: {}
   missingJava:
-    message: Click to resolve this problem
-    name: 沒有分配Java
+    message: 點選來解決這個問題
+    name: 目前電腦上沒有找到任何 Java
   missingLibraries:
-    message: 啓動器將自動下載並安裝庫文件
-    name: 缺少 {name} 依賴 | 缺少 {name} 依賴 | 缺少{count}個庫文件 | 缺少{count}個庫文件
+    message: 啟動器將自動下載並安裝 Libraries 檔案
+    name: >-
+      缺少 {name} 依賴 | 缺少 {name} 依賴 | 缺少 {count} 個 Libraries 檔案 | 缺少 {count} 個
+      Libraries 檔案
+  missingVersion:
+    message: 啟動器將自動安裝該版本
+    name: 未安裝 {version}
   missingVersionJar:
-    message: 啓動器將自動下載JAR文件
-    name: '%{version}版本JAR文件缺失'
+    message: 啟動器將自動下載 Jar 檔案
+    name: '{version} 版本 Jar 檔案缺失'
+disable: 禁用
 disk:
   available: 可用
   used: 已用
+download: 下載
+downloadCount: '{count} 次下載'
+downloadUpdate: 下載更新
+duration:
+  day: '{duration} 天'
+  hour: '{duration} 小時'
+  minute: '{duration} 分鐘'
+  second: '{duration} 秒'
 edit: 編輯
-existed: 已導入過的
+enable: 啟用
+error:
+  name: 錯誤 | 錯誤
+errors:
+  BadForgeInstallerJarError: 無法解析 Forge 安裝包 Jar 檔案。也許 Forge 有了新的安裝包格式？如果經常遇到此問題，請聯絡開發團隊。
+  BadInstanceType: '不是一個合法的例項: {type}'
+  BodyTimeoutError: 等待 HTTP 資料超時
+  ChecksumNotMatchError: 檔案校驗失敗！期望的雜湊值是 {expect}，實際獲取到的是 {actual}。
+  ConnectTimeoutError: 與伺服器建立連線超時
+  DatabaseNotOpened: |-
+    資料庫無法開啟！
+    啟動器將無法正常工作！
+    請選擇啟動器可以訪問的資料目錄。您可以在設定頁面重新選擇資料目錄。
+  DownloadAggregateError: 下載檔案失敗。
+  DownloadFileSystemError: 無法訪問下載目標路徑，請確認啟動器有權寫入目標路徑。
+  HeadersTimeoutError: 等待 HTTP 頭資訊超時
+  NotFoundError: 404 未找到資源
+  SocketError: 伺服器連線斷開
+exception:
+  http: '{url} 的 HTTP 請求失敗。狀態碼 {statusCode}。{code}，請重試或檢查您的網路。如果此問題持續出現，請聯絡開發團隊。'
+existed: 已匯入過的
+exportModpackTarget:
+  curseforge: Curseforge 檔案
+  github: Github
+  modrinth: Modrinth 檔案
+  override: Override 檔案 (打包)
+extensions:
+  mrpack: Modrinth 整合包
+  zip: Zip 壓縮包
 fabricVersion:
-  disable: 不啓用 Fabric
-  empty: 在 Minecraft {version} 下未找到任何 Fabric 版本
+  disable: 不使用 Fabric
+  empty: Minecraft {version} 沒有找到可用的 Fabric 版本
   showSnapshot: 顯示快照版
   stable: 穩定版
   unstable: 預覽版
+feedback:
+  channel: 聯絡渠道
+  description: 我找到了漏洞/我想反饋
+  discord: Discord
+  discordDescription: 加入 Discord 頻道
+  discordJoin: 加入
+  github: Github Issue
+  githubDescription: 透過 Github Issue 來反饋您的想法
+  githubOpenIssue: Github
+  kook: Kook
+  kookDescription: 加入 Kook (僅限大陸地區)
+  name: 反饋
+  qq: QQ 群
+  qqDescription: 加入反饋群直接和作者聊聊吧，群號 {number}
+  qqEnterGroup: 加群
+fileDetail:
+  fileSize: 檔案大小
+  hash: 雜湊值
 filter: 檢索
 finish: 完成
 forgeConfig:
-  hint: 請始用該mod進入遊戲，以便自動檢測配置文件
+  hint: 第一次請啟用該模組進入遊戲，以便自動檢測配置檔案
 forgeVersion:
   common: 所有
-  disable: 不使用Forge
-  empty: Forge 不支持 Minecraft {version}
+  disable: 不使用 Forge
+  empty: Minecraft {version} 不支援 Forge
   latest: 最新版
   name: Forge
   recommended: 穩定版
-  showBuggy: 顯示Buggy版
+  showBuggy: 顯示 Buggy 版
   showRecommendedAndLatestOnly: 只顯示最新版和穩定版
   version: Forge
 gameSetting: {}
+gameType:
+  adventure: 冒險模式
+  creative: 創造模式
+  spectator: 旁觀者模式
+  survival: 生存模式
 help: 幫助
 home: 主頁
 importModpack:
-  failed: 創建 {modpack} 整合包失敗
-  name: 導入模組包
-  success: 成功導入 {modpack} 整合包
-importResource: 導入資源
+  failed: 建立 {modpack} 整合包失敗
+  name: 匯入整合包
+  success: 成功匯入 {modpack} 整合包
+importResource: 匯入資源
+install: 安裝
 installAssets:
-  asset: 下載資源文件%{hash}
-  assetIndex: 下載資源文件目錄
-  name: 下載遊戲資源文件
+  asset: 下載資原始檔 {hash}
+  assetIndex: 下載資原始檔目錄
+  name: 下載遊戲資原始檔
 installAuthlibInjector: 安裝 authlib-injector
-installCurseforgeFile: 安裝 Curseforge 文件
+installCurseforgeFile: 安裝 Curseforge 檔案
 installFabric:
   name: 安裝 Fabric
 installForge:
   downloadInstaller: 下載 Forge 安裝器
-  library: 安裝依賴庫
+  library: 檢查庫
   name: 安裝 Forge
-  postProcessing: 處理 Minecraft Jar 文件
+  postProcessing: 處理 Minecraft Jar 檔案
+installInstance:
+  file: 更新/安裝例項檔案 {file}
+  link: 複製或連結 {count} 個檔案
+  name: 更新/安裝例項
+  resolve: 解析例項安裝資訊
+  unzip: 解壓 {count} 個檔案
 installJre:
-  decompress: 解壓縮JRE文件到本地
-  download: 下載壓縮的JRE文件
-  name: 安裝Java運行庫
+  decompress: 解壓 JRE 檔案到本地
+  download: 下載壓縮的 JRE 檔案
+  name: 安裝 Java 執行庫
+installLabyMod:
+  asset: 安裝資源 {name}
+  json: 生成 {version} JSON
+  name: 安裝 LabyMod
 installLibraries:
-  library: 檢查庫文件
-  name: 安裝依賴運行庫
+  library: 檢查 Libraries 檔案
+  name: 安裝依賴執行庫
 installModpack:
   deploy: 部署
   download:
-    file: 下載文件
+    file: 下載檔案
     name: 下載
   name: 安裝整合包
-  unpack: 解壓縮
+  unpack: 解壓
 installModrinthFile:
   name: 從 Modrinth 下載
 installOptifine:
   download: 下載 Optifine Universal
   jar: 生成 Optifine Jar
-  json: 生成 Json
+  json: 生成 JSON
   name: 安裝 Optifine
+installResource:
+  fail: 安裝 {file} 失敗
+  success: '{file} 安裝成功'
 installVersion:
-  jar: 安裝遊戲JAR文件
-  json: 安裝遊戲JSON文件
-  name: 安裝%{version}的遊戲本體
+  jar: 安裝遊戲 Jar 檔案
+  json: 安裝遊戲 JSON 檔案
+  name: 安裝{id}的遊戲本體
 instance:
-  addServer: 添加服務器
+  addServer: 新增伺服器
+  current: 目前例項
   delete: 刪除遊戲
-  deleteHint: 遊戲的數據將完全被移除。你確定繼續此操作嗎？
-  fileApi: 遠程同步文件服務器 API 地址
-  fileApiHint: 用于远程同步实例文件的链接
+  deleteHint: 遊戲資料將完全被移除。您確定繼續此操作嗎？
+  duplicate: 建立備份
+  duplicatedName: 名字衝突！
+  fileApi: 遠端同步檔案伺服器 API 地址
+  fileApiHint: 用於遠端同步例項檔案的連結
   gameVersion: 遊戲版本
+  icon: 例項圖示
+  iconUrl: 圖片 URL
   includeVersion: 包含遊戲版本
-  launchArguments: 啓動命令預覽
-  mcOptions: Minecraft 啓動選項
-  mcOptionsHint: 額外的 Minecraft 啓動參數
+  lastPlayed: 上次遊玩
+  launchArguments: 啟動命令預覽
+  mcOptions: Minecraft 啟動選項
+  mcOptionsHint: 額外的 Minecraft 啟動引數
   name: 名稱
-  openCrashReportFolder: 打開崩潰日誌文件夾
-  openLogFolder: 打開日誌文件夾
+  nameHint: 名稱便於以後識別
+  neverPlayed: 從未遊玩
+  openLogFolder: 開啟日誌資料夾
+  playtime: 遊玩時長
   requireName: 必須填寫名稱
-  showInstance: 顯示文件夾
-  versionHint: 這個遊戲使用的Minecraft版本
-  vmOptions: JVM 啓動選項
-  vmOptionsHint: 額外的 JVM 的啓動參數
+  showInstance: 開啟資料夾
+  versionHint: 此遊戲使用的 Minecraft 版本
+  vmOptions: JVM 啟動選項
+  vmOptionsHint: 額外的 JVM 的啟動引數
 instanceAge:
   older: 三天前
   threeDay: 三天內
   today: 今天
+instanceFileOperation:
+  add: 新增
+  backup-add: 備份並替換
+  backup-remove: 移除（備份）
+  keep: 保留
+  remove: 移除
+instanceSetting:
+  disableAuthlibInjector: 禁用 authlib 注入器
+  disableAuthlibInjectorDescription: |-
+    如果您使用的是第三方皮膚系統。 
+    authlib 注入器可以幫助您在遊戲中顯示皮膚。
+  disableElyByAuthlib: 禁用 ely.by 的 authlib 替換
+  disableElyByAuthlibDescription: Ely.by 有一個獨特的 authlib 替代品，可以在任何伺服器中普遍顯示皮膚。
+  fastLaunch: 快速啟動
+  fastLaunchHint: 啟動時跳過重新整理使用者和沒有修復的問題
+  hideLauncher: Minecraft 啟動後隱藏啟動器
+  icon: 選擇圖片
+  showLog: Minecraft 啟動後顯示日誌
+  showLogHint: 遊戲開啟後將彈出一個顯示 Minecraft 日誌的視窗
 instanceTemplate:
-  importing: 模板導入
+  curseforge: 這是一個 Curseforge 整合包
+  ftb: 這是一個 FTB 的整合包配置
+  importing: 模板匯入
+  mcbbs: 這是一個 MCBBS 整合包
+  modpack: 這是一個整合包配置
+  modrinth: 這是一個 Modrinth 的整合包
   preview: 預覽
-  title: 模板設置
+  title: 模板設定
 instanceUpdate:
+  basic: 設定更新
+  files: 檔案更新
   loaderChanged: |-
-    該實例的模組載入器已變更。
-    舊的 modloader 是 {modloader}，新的 modloader 是 {newModloader}。
+    該例項的模組載入器已更改。
+    以前的模組載入器是 {modloader}，現在的模組載入器是 {newModloader}。
+  title: 更新例項
+  update: 開始更新例項
 instances:
-  add: 創建遊戲
+  add: 建立遊戲
+  addDescription: 從頭開始建立一個新例項
+  addMMCDescription: 匯入已有的 MultiMC 例項，您需要選擇 MultiMC 例項的資料夾
   addManually: 手動建立
-  addServer: 從伺服器創建
-  importFolder: 從文件夾導入
-  importFolderDescription: 導入 Minecraft 到啓動器
-  refreshServers: 刷新服務器
+  addModrinthDescription: |-
+    匯入現有的 Modrinth 例項。
+    您需要選擇 Modrinth 例項資料夾。
+  addServer: 從伺服器建立
+  addServerDescription: 這將建立一個直接啟動到伺服器的遊戲。
+  addTemplate: 從模板建立
+  addTemplateDescription: 從下載的整合包匯入
+  addVanilla: 從原版 Minecraft 建立
+  addVanillaDescription: |-
+    從通用 .minecraft 資料夾匯入。
+    這會將原始遊戲配置檔案複製到 XMCL。
+  choose: 選擇遊戲
+  importFolder: 從資料夾匯入
+  importFolderDescription: 匯入 Minecraft 到啟動器
+  loadingFiles: 載入整合包檔案
+  refreshServers: 重新整理伺服器
+items:
+  count: '{count} 個'
+  total: 共 {total} 個
 java:
-  allocatedLong: 啓動器自動選擇 Java
+  allocatedLong: 啟動器自動選擇 Java
   allocatedShort: 自動分配
-  browse: 瀏覽java可執行文件
-  importFromFile: 從文件導入 Java
+  browse: 瀏覽 Java 可執行檔案
+  importFromFile: 從檔案匯入 Java
   invalid: 無效的 Java 路徑
   location: Java 路徑
-  maxMemory: 最大內存
-  memory: Java 內存
-  minMemory: 最小內存
+  maxMemory: 最大記憶體
+  memory: Java 記憶體
+  memoryAuto: 自動
+  memoryManual: 手動指定
+  memoryUnassigned: 不指定記憶體
+  minMemory: 最小記憶體
   modifyInstance: 更改 Java 路徑
-  noMemory: 不設置內存限制
-  refresh: 刷新本地 Java
-launch: 啓動
+  noMemory: 不設定記憶體限制
+  refresh: 重新整理本地 Java
+  systemMemory: 目前系統記憶體
+labyMod:
+  disable: 不使用 LabyMod
+  empty: 目前 Minecraft 不支援 LabyMod
+launch:
+  cancel: 中止
+  kill: 停止
+  launch: 啟動
 launchBlocked:
-  ignore: 強行啓動
+  ignore: 強制啟動
+  launchBadVersion:
+    description: 版本 {version} 的 JSON 內有無法解析的庫，也許您需要重新安裝此版本？
+    title: 版本 JSON 可能損壞
+  launchGeneralException:
+    description: 一些未知錯誤導致啟動失敗。
+    title: 無法啟動
+  launchInvalidJavaPath:
+    description: >-
+      目前 Java 路徑可能無效，請檢查 Java 可執行檔案是否存在 <span class="highlight"> {javaPath}
+      </span>
+    title: Java 路徑無效
+  launchJavaNoPermission:
+    description: >-
+      沒有許可權執行 <span class="highlight"> {javaPath} </span>，請嘗試給啟動器更高許可權，給 Java
+      檔案增加可執行許可權，或者更換 Java。
+    title: 無許可權使用 Java
+  launchNoProperJava:
+    description: 找不到合適的 Java 來啟動遊戲。({javaPath} 可能無效？)
+    title: 沒有合適的 Java
+  launchNoVersionInstalled:
+    description: 找不到 Minecraft 啟動。目前版本是 <span class="highlight">{version}</span>。
+    title: 無法找到安裝的 Minecraft
+  launchSpawnProcessFailed:
+    description: |-
+      請檢查您的 Java，或向啟動器授予更多許可權，然後重試。
+      如果仍然無法解決問題，請聯絡開發人員。
+    title: 無法啟動遊戲程序
+  launchUserStatusRefreshFailed:
+    description: 無法驗證目前賬戶資訊
+    title: 驗證賬戶失敗
+  unexpectedText: 這是意料之外的錯誤，您可以重新啟動啟動器來嘗試緩解問題，請聯絡作者來修復。
+  userAcquireMicrosoftTokenFailed: 微軟令牌獲取失敗。請重試或者檢查您的微軟賬號。
+  userCheckGameOwnershipFailed: 檢測 Minecraft 所有權失敗。請重試或檢查您的網路。
+  userExchangeXboxTokenFailed: 透過微軟令牌交換 Xbox 令牌失敗。請重試或檢查您的網路。
+  userLoginMinecraftByXboxFailed: 使用 Xbox 令牌登入 Minecraft 失敗。請重試或者檢查您的網路。
 launchFailed:
   crash: 遊戲崩潰了！
-  description: 沒有找到崩潰報告，這裏是遊戲輸出和最新的日誌文件
-  latestLog: 最新日誌文件
+  description: 沒有找到崩潰報告，這裡是遊戲輸出和最新的日誌檔案
+  failedToLaunch: 啟動器啟動失敗
+  latestLog: 最新日誌檔案
   title: 遊戲未正常退出
+launchGeneralException: {}
+launchInvalidJavaPath: {}
+launchJavaNoPermission: {}
+launchNoProperJava: {}
+launchNoVersionInstalled: {}
 launchStatus:
-  launching: 啓動中...
-  launchingSlow: 還在啓動…Minecraft圖形界面啓動的會比較慢呢~
+  assigningMemory: 正在分配記憶體
+  exit: 關閉遊戲？
+  injectingAuthLib: 配置第三方驗證中
+  launching: 啟動中...
+  launchingSlow: 還在啟動…Minecraft的啟動會比較慢呢~
+  refreshingUser: 重新整理使用者令牌
+  spawningProcess: 正在啟動遊戲
+launchUserStatusRefreshFailed: {}
 launcherUpdate:
-  installAndQuit: 重啓並安裝更新
+  alreadyLatest: 已是最新
+  installAndQuit: 重新啟動並安裝更新
   noUpdateAvailable: 目前沒有可用更新
+  reinstall: 重新安裝
+  updateToThisVersion: 下載並安裝
 liteloader:
   name: Liteloader
 localVersion:
+  auto: 自動選擇
   delete: 刪除本地版本
   deleteDescription: 這將刪除本地版本遊戲
   empty: 本地沒有安裝任何版本
-  refresh: 刷新本地版本
-  reinstallDescription: 如果你覺得此版本安裝的有問題，可以嘗試重新安裝該版本。
+  hint: 直接啟動某個本地版本
+  refresh: 重新整理本地版本
+  reinstallDescription: 如果您覺得此版本安裝的有問題，可以嘗試重新安裝該版本。
   reinstallTitle: 重新安裝 {version}
   title: 本地版本
 logLevel:
   error: 錯誤
-  info: 信息
+  info: 資訊
   success: 成功
   warning: 警告
 login:
-  dropHint: 將驗證鏈接拖入此處手工驗證
-  forgetPassword: 忘記密碼?
-  login: 登陸
-  manualLoginUrl: 如果瀏覽器沒有自動打開，請點擊此鏈接來驗證!
+  dropHint: 將驗證連結拖入此處手動驗證
+  forgetPassword: 忘記密碼？
+  login: 登入
+  manualLoginUrl: 如果瀏覽器沒有自動開啟，請點選此連結來驗證！
   signup: 註冊
   signupDescription: 沒有賬號?
+  userRelogin: 使用者資訊過期，請重新登入！
 loginError:
-  illegalEmail: 當前Email格式不合法
-  invalidCredentials: 無法驗證. 用户名或密碼錯誤.
-  requireEmail: 必須要Email才能登陸
+  acquireMicrosoftTokenFailed: 獲取 Microsoft 通證失敗。這可能是一個網路問題，請重試。
+  badNetworkOrServer: 請檢查您的網路連線！當然也可能是驗證伺服器掛了:/
+  checkOwnershipFailed: 在檢查您是否擁有 Minecraft 時發生錯誤，請重試
+  connectionReset: 因為伺服器斷開了連線導致登入失敗，請重試或檢查網路
+  fetchMinecraftProfileFailed: '獲取 Minecraft 使用者資訊失敗: {reason}'
+  illegalEmail: 目前的郵箱格式不合法
+  invalidCredentials: 無法驗證。使用者名稱或密碼錯誤。
+  loginMinecraftByXboxFailed: 在透過 Xbox 通證交換 Minecraft 通證的過程中發生錯誤，請確認您的 Xbox 賬號擁有 Minecraft。您可以嘗試重試登入
+  loginXboxFailed: 請求 Xbox 通證失敗，請確保您的微軟賬號已經繫結了一個 Xbox 賬號！
+  requestFailed: 由於未知原因登入失敗，請重試
+  requireEmail: 必須使用郵箱登入
   requirePassword: 請輸入密碼
-  requireUsername: 用户名不能為空
+  requireUsername: 使用者名稱不能為空
+  timeout: 登入超時，請重試或檢查您的網路！
 logsCrashes:
   crashes: 崩潰報告
   logs: 日誌
-  placeholder: 沒有找到文件
+  placeholder: 沒有找到檔案
   title: 日誌或崩潰報告
 me:
   games: 我的遊戲
-  modpacks: 我的模組包
+  modpacks: 我的整合包
+  news: 新聞
+  recentPlay: 最近遊玩
   versions: 已安裝版本
 minecraftVersion:
-  empty: 無法加載 Minecraft 版本列表
+  empty: 無法載入 Minecraft 版本列表
   name: Minecraft 版本
   release: 正式版
   showAlpha: 顯示快照版
   snapshot: 快照版
 mod:
   acceptVersion: 推薦 {version}
-  compatible: 可用於當前版本。
-  currentVersion: 當前是 {current}
-  deletion: 刪除 Mod
-  deletionHint: 你將移除這個 Mod 的文件和信息。你確定嗎？| 你將移除這些 Mod 的文件和信息。你確定嗎？
+  compatible: 可用於目前版本。
+  currentVersion: 目前是 {current}
+  deletion: 刪除模組
+  deletionHint: 您將移除這個模組的檔案和資訊。您確定嗎？| 您將移除這些模組的檔案和資訊。您確定嗎？
   deletionRestHint: 等 {rest} 個模組……
-  dropHint: 將Mod的jar文件拖入此處來導入
-  filter: 過濾 Mods
-  hideIncompatible: 隱藏不兼容 Mods
-  incompatible: 可能不兼容當前版本。
-  maybeCompatible: 也許兼容於當前版本。
-  name: Mod | Mods
-  openLink: 打開 Mod 鏈接 {url}
-  searchOnCurseforge: 在 Curseforge 上搜索 {name}
-  searchOnMcWiki: 在 MC 百科中查找 {name}
-  searchOnModrinth: 在 Modrinth 中搜素 {name}
-  showFile: 打開 Mod 所在位置 {file}
-  showInCurseforge: 在 Curseforge 上顯示該 Mod
+  denseView: 密集視圖
+  dropHint: 將模組 Jar 檔案拖入此處來匯入
+  enabled: 一共啟用了 {count} 個模組
+  filter: 篩選模組
+  groupInstalled: 分開顯示已安裝模組
+  hideIncompatible: 隱藏不相容模組
+  incompatible: 可能不相容目前版本。
+  manage: 管理模組
+  maybeCompatible: 也許相容於目前版本。
+  mods: '{count} 個模組'
+  name: 模組 | 模組
+  noModLoaderHint: 請不要忘記選擇模組載入器來載入模組
+  openLink: 開啟模組連結 {url}
+  search: 搜尋模組
+  searchOnCurseforge: 在 Curseforge 上搜尋 {name}
+  searchOnMcWiki: 在 MC 百科中查詢 {name}
+  searchOnModrinth: 在 Modrinth 中搜尋 {name}
+  showDirectory: 顯示模組資料夾
+  showFile: 開啟模組所在位置 {file}
+  showInCurseforge: 在 Curseforge 上顯示該模組
   showInModrinth: 在 Modrinth 中顯示 {name}
+  switchDefaultSource: 例項預設的模組下載源
+  toUpdate: '{count} 個有新版本'
 modInstall:
-  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} mod！
+  checkUpgrade: 檢查模組更新
+  checkedUpgrade: 已重新整理更新列表
+  currentVersion: 已選版本
+  dependencyHint: 安裝了其他版本 {version}
+  install: 安裝
+  installHint: 安裝 {file} 個檔案和 {dependencies} 個依賴檔案
+  installed: 已安裝
+  noVersionSupported: Mod 僅支援 Minecraft {supported}。
+  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模組！
+  search: 搜尋結果
+  searchHint: 搜尋並選擇模組
+  source: 模組來源
+  switch: 切換版本
+  upgrade: 更新模組
+modSearchType:
+  all: 所有
+  explore: 瀏覽市場
+  installed: 本地
+  local: 磁碟快取
+modified:
+  reset: 重置
+  save: 儲存
+  unsaved: 注意！您尚未儲存更改！
 modpack:
   author: 署名
-  authorHint: 在導出成各種整合包時使用
+  authorHint: 這個遊戲/整合包的製作人
   delete:
-    hint: 這將刪除整合包 {name} 和他的基本資料。你確定麼？
+    hint: 這將刪除整合包 {name} 和它的基本資料。您確定麼？
     title: 刪除整合包
   description: 遊戲簡介
-  descriptionHint: 通用的 modpack 簡介。在導出成 curseforge 整合包或者其他格式時會使用
-  dropHint: 通過拖拽導入整合包文件
+  descriptionHint: 通用的整合包簡介。在匯出成 Curseforge 整合包或者其他格式時會使用
+  dropHint: 透過拖拽匯入整合包檔案
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
-  export: 導出整合包
-  general: 基本信息
-  includeAssets: 是否包含遊戲資源 (assets) 文件
-  includeLibraries: 是否包含庫文件
-  includes: 打包文件
+  emitModrinth: 生成 Modrinth 整合包
+  emitModrinthStrict: 嚴格遵守 Modrinth 整合包格式
+  emitModrinthStrictDescription: 下載連結只允許包含 Modrinth 官網定義的四個域名
+  export: 匯出整合包
+  general: 基本資訊
+  includeAssets: 是否包含遊戲資源 (Assets) 檔案
+  includeLibraries: 是否包含 Libraries 檔案
+  includes: 打包檔案
   modpackVersion: 整合包版本
   name: 整合包
   overrides: 整合包打包覆蓋 (overrides)
   showFile: 顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
+  showInFtb: 在 FTB 中顯示 {name}
   url: URL
   urlHint: 整合包的主頁 URL 地址
 modrinth:
+  browseUrl: 在瀏覽器中開啟 {url}
   categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    48x: 48x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
     adventure: 冒險
+    atmosphere: 氛圍
+    audio: 音效
+    blocks: 方塊
+    bloom: 炫光 (Bloom)
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    canvas: Canvas
+    cartoon: 卡通風格
     categories: 分類
-    cursed: Cursed
+    challenging: 挑戰
+    colored-lighting: 燈光著色
+    combat: 戰鬥
+    core-shaders: 光影
+    cursed: 怪異
+    datapack: 資料包
     decoration: 裝飾
+    economy: 經濟
+    entities: 實體
+    environment: 環境
     equipment: 裝備
+    fabric: Fabric
+    fantasy: 幻想
+    features: 特性
+    folia: Folia
+    foliage: 最佳化植被
+    fonts: 字型
     food: 食物
-    library: 庫
+    forge: Forge
+    game-mechanics: 遊戲機制
+    gui: 介面
+    high: 高
+    iris: Iris
+    items: 物品
+    kitchen-sink: 雜燴
+    library: 程式庫
+    lightweight: 輕量
+    liteloader: Liteloader
+    locale: 本地化
+    low: 低
     magic: 魔法
+    management: 管理
+    medium: 中等
+    minecraft: Minecraft
+    minigame: 小遊戲
     misc: 雜項
-    optimization: 優化
-    storage: 存儲
+    mobs: 怪物
+    modded: 相容模組
+    models: 模型
+    modloader: 模組載入器
+    multiplayer: 多人遊戲
+    optifine: Optifine
+    optimization: 最佳化
+    paper: Paper
+    path-tracing: 光線追蹤
+    pbr: PBR
+    performance impact: 效能需求
+    potato: 土豆（非常低）
+    purpur: Purpur
+    quests: 任務導向
+    quilt: Quilt
+    realistic: 真實風格
+    reflections: 水反
+    resolutions: 解析度
+    rift: Rift
+    screenshot: 隨便截圖就能當桌布
+    semi-realistic: 半真實風
+    shadows: 光影
+    simplistic: 簡約
+    social: 社交
+    spigot: Spigot
+    sponge: Sponge
+    storage: 儲存
     technology: 科技
-    utility: 工具
+    themed: 主體化
+    transportation: 交通
+    tweaks: Tweaks
+    utility: 實用工具
+    vanilla: 原版
+    vanilla-like: 原版風格
+    velocity: Velocity
+    waterfall: Waterfall
     worldgen: 世界生成
-  clientSide: 客户端
-  createAt: 創建日期
+  clientSide: 用戶端
+  copyTitle: 複製 "{title}" 到剪貼簿
+  createAt: 建立日期
   description: 詳情
   downloads: 下載量
   environments:
-    client: 客户端
-    name: 環境
-    server: 服務端
+    client: 用戶端
+    default: 預設
+    name: 執行環境
+    optional: 可選
+    required: 必裝
+    server: 伺服器
+    unsupported: 不支援
+  externalResources: 第三方連結
+  featuredVersions: 推薦版本
+  followers: 關注數
+  gallery: 圖片展示
   gameVersions:
     name: 遊戲版本
+  headers:
+    status: 狀態
+    support: 支援
+    version: 版本
+  issueUrl: 反饋連結
   license: 協議
   licenses:
     name: 協議
   modLoaders:
-    name: Mod 加載器
+    name: 模組載入器
   perPage: 顯示數量
-  projectId: 項目 ID
+  projectId: 專案 ID
+  projectMembers: 專案成員
   projectType:
-    mod: Mod
+    mod: 模組
     modpack: 整合包
-    name: 項目類型
-  searchText: 搜素
-  serverSide: 服務端
+    name: 專案型別
+    resourcePack: 資源包
+    shader: 光影包
+  quickSearch: 搜尋 {title}
+  searchText: 搜尋
+  serverSide: 伺服器
   sort:
     downloads: 下載數量
     follows: 關注數
-    newest: 創建時間
-    relevance: 相關性
+    newest: 建立時間
+    relevance: 相關程度
     title: 排序
     updated: 更新時間
+  sourceUrl: 原始碼
+  technicalInformation: 技術資訊
   updateAt: 更新於
   versions: 版本
+  wikiUrl: 百科連結
+modrinthCard:
+  currentVersion: 目前版本
+  projectHint: >
+    這個例項是從 Modrinth 整合包 <code class="rounded bg-[rgba(123，123，123，0.2)] p-1">{
+    title}</code> (專案 ID:
+          <code class="rounded bg-[rgba(123，123，123，0.2)] p-1">{id}</code>) 建立的
 multiplayer:
+  allowTurn: 允許轉發服務
+  allowTurnHint: 當您和您的朋友連不上時可以嘗試允許轉發服務，但是轉發服務可能會增加您的聯機延遲。使用時請注意。
   complete: 完成
   confirm: 確定
+  connections: 使用者連線管理
+  copied: 已複製！
   copy: 複製
-  createLocalToken: 創建本地令牌
-  disconnectDescription: 你確定你要斷開和 {user}({id}) 的連接麼
-  disconnected: 斷開連接
+  copyGroupToFriendHint: 讓您的小夥伴使用此 ID 加入聯機群組
+  copyLocalHint: >
+    <span>一段令牌只能用<span style="color: red;
+    font-weight:bold;">一次</span>！您不能將一個令牌傳送給多個小夥伴！</span> <br> <span
+    class="hint-text" style="font-style: italic;">如果有多個小夥伴要加入您需要<span
+    style="font-weight: bold; color: rgba(245， 158， 11)">多次</span>建立連線。</span>
+  createLocalToken: 建立本地令牌
+  currentIpTitle: 檢測到公網 IP
+  currentNatTitle: 目前網路 (NAT) 環境
+  difficultyLevelHint: 與他人聯機難度由低到高
+  disconnect: 斷開連線
+  disconnectDescription: 您確定您要斷開與 {user}({id}) 的連線麼
+  disconnected: 斷開連線
   enterRemoteToken: 輸入對方的令牌
-  illegalTokenDescription: 非法的令牌，請確認對方給你的令牌是完整、正確的。
-  initiateConnection: 發起連接
-  joinConnection: 如果你的夥伴已經創建了連接，你需要選擇加入鏈接
-  joinManual: 加入連接
-  kernel: P2P內核
+  enterRemoteTokenHint: 當您的聯機夥伴輸入您的令牌後，您需要將他的令牌輸入到下面的文字框中，並點選確定開始連線。
+  gatheringIce: >
+    請將<span class="v-chip v-chip--label v-size--small" style="text-font:
+    bold">本地令牌</span>傳送給您的聯機夥伴，您的聯機夥伴在 <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold"> 加入連線 </span> 中輸入這段文字。 <br> 期間 ICE
+    伺服器可能需要時間收集足夠資訊來建立<span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE
+    伺服器完全收集完畢，當下面的令牌已經有內容並且不怎麼變化後，您可以提前將令牌複製給對方。 </span>
+  groupId: 小組 ID
+  illegalTokenDescription: 非法的令牌，請確認對方給您的令牌是完整且正確的。
+  initiateConnection: 發起連線
+  inviteLink: 邀請連結
+  joinConnection: 如果您的夥伴已經建立了連線，您需要選擇加入連結。
+  joinManual: 加入連線
+  joinOrCreateGroup: 加入/建立群組
+  joinOrCreateGroupHint: 從您的小夥伴那獲得群組 ID 或自己建立一個群組
+  kernel: P2P核心
   kernelDescription: |-
     使用本機 WebRTC 或節點資料通道。
     僅當您的 p2p 連線有時導致啟動器視窗崩潰時才切換此選項。
+  leaveGroup: 離開群組
   localToken: 本地令牌
-  name: 跨局域網聯機
+  manualConnect: 手動連線
+  name: 跨區域網聯機
+  networkInfo: 目前網路狀況
   next: 下一步
-  placeholder: 和其他玩家建立連接，跨局域網聯機 Minecraft！
+  placeholder: 和其他玩家建立連線，跨區域網聯機 Minecraft！
   previous: 上一步
+  receiveHint: 在對方輸入您的令牌後，您們之間的連線會自動建立。現在您已經可以點選完成了。
+  receiveRemoteTokenHint: 請將聯機夥伴的令牌貼上在此處，並點選下一步。
   remoteToken: 對方的令牌
+  routerInfo: 路由器資訊
+  sendTokenToRemote: 將本地令牌給您的聯機夥伴
+  share: 分享啟動配置
+  sharing: 正在共享遊戲配置...
+  sharingNotificationBody: 您可以從 {name} 共用設定下載或建立實例。
+  sharingNotificationTitle: 同伴正在共享遊戲配置
   start: 開始
-  startNewP2PConnection: 點擊開始按鈕來新建一個新的點對點連接
+  startNewP2PConnection: 點選開始按鈕來新建一個新的點對點連線
+myStuff: 個人中心
 name: 名稱
-next: 下一項
+natType:
+  blocked: 無法訪問外網
+  fullCone: 完全錐形
+  openInternet: 公網
+  restrictNat: 地址受限錐形
+  restrictPortNat: 埠受限錐形
+  symmetricNat: 對稱 NAT
+  symmetricUDPFirewall: 對稱 UDP 防火牆
+  unknown: 未知
+neoForgedVersion:
+  disable: 不使用 NeoForge
+  empty: Minecraft {version} 不支援 NeoForge
+  name: NeoForge
+news:
+  name: 新聞
+  readMore: 閱讀更多
+next: 下一步
 'no': 否
 ok: 好的
 optifineVersion:
-  disable: 不啓用 Optifine
-  empty: Optifine 不支持 Minecraft {version}
-optional: 可選的
+  disable: 不使用 Optifine
+  empty: Minecraft {version} 不支援 Optifine
+optional: 可選
 peerConnectionState:
   closed: 已關閉
-  connected: 已連接
-  connecting: 連接中
+  connected: 已連線
+  connecting: 連線中
   disconnected: 掉線
   failed: 失敗
-  new: 等待連接
+  name: 連線狀態
+  new: 等待連線
+peerGroupState:
+  closed: 未加入小組
+  closing: 斷開中
+  connected: 小組線上
+  connecting: 加入中
 peerIceGatheringState:
-  gathering: 收集本地信息中
+  gathering: 收集本地資訊中
+peerSignalingState:
+  have-local-offer: 等待對方資訊中
 popular: 熱度
+presence:
+  instance: 瀏覽例項 {instance}
+previous: 上一步
 proxy:
-  host: 服務器地址
-  port: 端口號
-refreshResource: 刷新資源
+  host: 伺服器地址
+  port: 埠號
+quiltVersion:
+  disable: 不使用 Quilt
+  empty: Minecraft {version} 不支援 Quilt
+refresh: 重新整理
+refreshResource: 重新整理資源
 remove: 移除
 resourcepack:
   available: 可用的資源包
-  compatible: 當前格式({format})可用於當前版本 {version}
-  defaultDescription: Minecraft 的默認材質
+  compatible: 目前格式({format}) 可用於目前版本 {version}
+  defaultDescription: Minecraft 的預設材質
   delete:
-    content: 將從磁盤中刪除資源包，該操作不可逆，確定繼續執行嗎
+    content: 將從磁碟中刪除資源包，該操作不可逆，確定繼續執行嗎
     title: 刪除資源包
-  dropHint: 將資源包zip或文件夾拖入此處導入
-  import: 導入資源包
-  incompatible: 不兼容的資源包格式({format})。適用範圍 {accept}。當前版本 {actual}。
+  dropHint: 將資源包zip或資料夾拖入此處匯入
+  enable: 一共啟用了 {count} 個資源包
+  import: 匯入資源包
+  incompatible: 不相容的資源包格式({format})。適用範圍 {accept}。目前版本 {actual}。
+  independent: 例項使用獨立資源包資料夾
+  manage: 管理資源包
   name: 資源包 | 資源包
-  searchOnCurseforge: 在 Curseforge 中查找 {name}
+  searchHint: 搜尋資源包
+  searchOnCurseforge: 在 Curseforge 中查詢 {name}
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: 檢視選擇的資源包
   selected: 已選資源包
-  shared: 實例使用共享資源包資料夾
-  showFile: 在文件夾中顯示 {file}
+  shared: 例項使用共享資源包資料夾
+  showFile: 在資料夾中顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
   unselected: 未選資源包
 save:
+  copy:
+    cancel: 取消複製
+    confirm: 開始複製
+    description: 請勾選您想讓存檔複製到的啟動配置（目標啟動配置）
+    name: 複製存檔
+    title: 複製存檔到其他啟動配置
   copyFrom:
     cancel: 取消
-    confirm: 開始導入
-    description: 你可以從其他啓動配置中導入存檔，或者從已有資源中導入 (如從 curseforge 下載的地圖)
+    confirm: 開始匯入
+    description: 您可以從其他啟動配置中匯入存檔，或者從已有資源中匯入 (如從 curseforge 下載的地圖)
     from: 來自 {src}
-    fromProfile: 來自其他啓動配置
-    fromResource: 來自已導入資源
-    title: 從已有資源導入存檔
-  deleteHint: 該操作不可逆，你將永遠失去這個存檔的記錄，你確定要刪除此存檔嗎？
+    fromProfile: 來自其他啟動配置
+    fromResource: 來自已匯入資源
+    title: 從已有資源匯入存檔
+  createdWorlds: 建立了 {count} 個世界
+  deleteHint: 該操作不可逆，您將永遠失去這個存檔的記錄，您確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
-  detail: 顯示更多信息
-  dropHint: 將地圖zip或文件夾拖入此處來導入
-  export: 導出地圖
-  exportMessage: 將存檔導出為 zip
-  exportTitle: 導出存檔
-  import: 從文件導入
-  importMessage: 將 zip 存檔導入
-  importTitle: 導入存檔
+  detail: 顯示更多資訊
+  dropHint: 將地圖 Zip 或資料夾拖入此處來匯入
+  export: 匯出地圖
+  exportMessage: 將存檔匯出為 Zip
+  exportTitle: 匯出存檔
+  import: 從檔案匯入
+  importMessage: 將 Zip 存檔匯入
+  importTitle: 匯入存檔
+  manage: 管理存檔
   name: 地圖存檔 | 地圖存檔
-  showDirectory: 顯示保存目錄
+  showDirectory: 顯示儲存目錄
+screenshots:
+  empty: 您還沒有截圖
+  goto: 顯示資料夾
+  name: 截圖
+  playRandom: 隨機播放
+  playSequence: 順序播放
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
-  creationHint: 請填寫服務器地址並嘗試 Ping 服務器
-  expectedVersions: 已支持的版本
-  filterVersion: 過濾服務器相應的 Minecraft 版本
-  host: 服務器地址
-  hostHint: 服務器的ip地址（和端口號）
-  ipAddress: IP地址
-  motd: 服務器 MOTD
-  name: 服務器名
-  ping: Ping 服務器
+  creationHint: 請填寫伺服器地址並嘗試 Ping 伺服器
+  delete: {}
+  error: {}
+  expectedVersions: 已支援的版本
+  filterVersion: 篩選伺服器相應的 Minecraft 版本
+  host: 伺服器地址
+  hostHint: 伺服器的 IP 地址（和埠號）
+  ipAddress: IP 地址
+  motd: 伺服器 MOTD
+  name: 伺服器名
+  ping: Ping 伺服器
   pings: 延遲
   players: 玩家
-  port: 端口
+  port: 埠
   recommendedMinecraftVersion: Minecraft 版本
-  unknown: 未知服務器
-  unknownDescription: 未知服務器，請刷新。
-  version: 服務器推薦版本
+  status: 伺服器狀態
+  unknown: 未知伺服器
+  unknownDescription: 未知伺服器，請重新整理。
+  version: 伺服器推薦版本
+  versionHint: Ping 使用的 Minecraft 版本
 serverStatus:
-  nohost: 找不到服務器!
+  nohost: 找不到伺服器！
   ping: 延遲
-  refuse: 服務器斷開了連接!
-  timeout: 服務器響應超時!
+  refuse: 伺服器斷開了連線！
+  timeout: 伺服器響應超時！
 setting:
   allowPrerelease: 是否下載搶先版
   allowPrereleaseDescription: 搶先版可能不是那麼穩定
+  apiSets:
+    auto: 自動 (根據網路決定)
+    official: 官方 (Mojang)
   appearance: 外觀
+  appxUpdateHint: 啟動器將下載並執行安裝包，如果安裝包解析失敗，請嘗試自行開啟安裝檔案更新。
   autoDownload: 自動下載
   autoDownloadDescription: 自動下載最新的版本
   autoInstallOnAppQuit: 自動安裝
   autoInstallOnAppQuitDescription: 每次 App 退出後自動安裝更新
   backgroundColorAbove: 將背景顏色顯示為疊加層
-  backgroundColorAboveDescription: 這將使背景顏色顯示在背景圖像或影片上方。
+  backgroundColorAboveDescription: 這將使背景顏色顯示在背景影象或影片上方。
   backgroundImage: 背景圖片
   backgroundImageBlur: 背景模糊
   backgroundImageBlurDescription: 拖動以模糊背景
   backgroundImageClear: 清空
-  backgroundImageDescription: 選擇一張背景圖片或清空當前圖片
+  backgroundImageDescription: 選擇一張背景圖片或清空目前圖片
   backgroundImageFit:
     contain: 包含
     cover: 覆蓋
@@ -491,19 +1097,22 @@ setting:
     image: 圖片
     none: 無
     particle: 粒子
-    video: 視頻
-  backgroundVideo: 背景視頻
-  backgroundVideoDescription: 選擇一個背景視頻或清空當前
+    video: 影片
+  backgroundVideo: 背景影片
+  backgroundVideoDescription: 選擇一個背景影片或清空目前
   backgroundVideoSelect: 選擇
-  backgroundVideoVolume: 視頻音量
+  backgroundVideoVolume: 影片音量
   backgroundVideoVolumeDescription: 拖動以調整音量
-  blurMainBody: 模糊窗口主體
-  blurMainBodyDescription: 是否將啓動器窗口右側主體模糊
+  blurAppBar: 頂端欄模糊
+  blurMainBody: 模糊視窗主體
+  blurMainBodyDescription: 是否將啟動器視窗右側主體模糊
+  blurSidebar: 側邊欄模糊
   browseRoot: 更改
   checkUpdate: 檢查更新
   colorTheme:
     appBarColor: 頂端欄
     backgroundColor: 背景顏色
+    cardColor: 卡片顏色
     description: 改變主題中的配色
     errorColor: 錯誤顏色
     name: 主題顏色
@@ -513,14 +1122,38 @@ setting:
     warningColor: 警告顏色
   darkTheme: 主題
   darkThemeDescription: 選擇深色或淺色主題
-  general: 基本設置
+  developerMode: 開發者模式
+  developerModeDescription: 開發者模式旨在幫助您測試自己寫的模組
+  disableTelemetry: 關閉遙測
+  disableTelemetryDescription: XMCL 會收集遊戲啟動以及使用者登入事件
+  enableDedicatedGPUOptimization: 分配專用 GPU
+  enableDedicatedGPUOptimizationDescription: 此選項將為 Minecraft 程序分配專用 GPU。
+  enableDiscord: 啟用 Discord Presence
+  enableDiscordDescription: 根據 XMCL 實時更新 Discord 的狀態
+  general: 基本設定
   githubRelease: Github
+  globalSetting: 全域性例項設定
+  globalSettingHint: 例項預設情況下會使用這些全域性設定
   hideNewsHeader: 隱藏新聞展示
   language: 語言
-  languageDescription: 當前顯示的語言
+  languageDescription: 目前顯示的語言
   latestVersion: 最新版本
-  location: 數據存儲位置
-  name: 設置
+  layout:
+    default: 預設佈局
+    focus: 聚焦佈局
+  layoutDescription: 不同的佈局有不同的 UI 互動邏輯
+  layoutTitle: 佈局
+  linuxTitlebar: 原生頂端欄
+  linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
+  location: 資料儲存位置
+  maunalUpdateHint: |-
+    版本無法自動更新。
+    請從網站重新下載啟動器！
+  maxSockets: (每個網站)最大連線數
+  maxSocketsDescription: 控制最大的併發 HTTP 連結數量。0 代表不限制數量。
+  maxSocketsTitle: 最大 HTTP 連線數量
+  name: 設定
+  network: 網路設定
   officialWebsite: 官網地址
   particleMode:
     bubble: 氣泡
@@ -528,129 +1161,274 @@ setting:
     push: 增加
     remove: 移除
     repulse: 擊退
-  particleModeDescription: 選擇當你點擊粒子時的特效
+  particleModeDescription: 選擇當您點選粒子時的特效
+  replaceNative: 替換庫為 Native (原生)
+  replaceNativeDescription: 根據您的計算機架構替換本機庫。
+  replaceNatives:
+    all: 全部
+    legacy: 僅舊版本
+  resetToDefault: 重置到預設配色
   showNewsHeader: 取消隱藏新聞展示
   showRoot: 瀏覽
+  streamerMode: 螢幕共享遮蔽
+  streamerModeDescription: 此功能可以保護您的隱私。開啟後，您的郵箱地址等隱私資訊將會被隱藏。
   theme:
     dark: 暗色主題
     light: 亮色主題
     system: 跟隨系統
-  themeFont: 字體
-  themeFontDescription: 更改啟動器的字體。
-  themeResetFont: 重置字體
-  themeSelectFont: 選擇字體
+  themeExport: 匯出主題
+  themeFont: 字型
+  themeFontDescription: 更改啟動器的字型。
+  themeImport: 匯入主題
+  themeResetFont: 重置字型
+  themeSelectFont: 選擇字型
   themeShare: 分享主題
   themeShareDescription: 您可以與您的朋友分享主題。
   update: 升級
-  useBmclAPI: 使用 BMCL API
-  useBmclAPIDescription: 當你在大陸時，優先使用 BMCLAPI 來下載 Minecraft
-  useProxy: HTTP 代理設置
-  useProxyDescription: 使用代理服務器可以某些服務的訪問
-  viewBackgroundMusic: 查看音樂
+  useBmclAPI: 使用 BMCLAPI 映象
+  useBmclAPIDescription: >
+    "BMCLAPI是由bangbang93建立的映象服務。這個服務由bangbang93和OpenBMCLAPI社羣共同提供。它透過提供國內下載伺服器來改善從Mojang官方S3物件儲存下載檔案慢的問題。由於MCBBS源已停服，BMCLAPI會在下載高峰期時下載緩慢。有關OpenBMCLAPI伺服器的服務狀態，請訪問OpenBMCLAPI榜單網站bd.bangbang93.com"
+  useProxy: HTTP 代理伺服器設定
+  useProxyDescription: 使用代理伺服器可以某些服務的訪問
+  viewBackgroundMusic: 檢視背景音樂
+settingLabel:
+  global: 全域性配置
+  globalHint: 此配置已使用全域性配置
+  local: 例項配置
+  localHint: 此配置已被目前例項修改
+setup:
+  account:
+    description: 新增您常用的賬號。如果您還沒有賬號，您可以跳過此步驟。
+    name: 新增遊戲賬號
+    skip: 先不登入了
+  appearance:
+    name: '@:setting.appearance'
+  dataRoot:
+    description: 資料儲存目錄不是常規的 .minecraft 目錄。因為 XMCL 的資料目錄格式特殊，不建議將常規 .minecraft 目錄設定為資料目錄。
+    drives: 推薦路徑
+    name: 設定資料儲存目錄
+  defaultLayoutDescription: |-
+    預設佈局試圖強化遊戲「例項」的概念。
+    佈局上有點像 Discord 之類的應用程式。
+    它還受到其他遊戲啟動器應用程式（如 Steam 等）的啟發。
+  defaultPath: 預設位置
+  error:
+    badDataRoot: 啟動器無法使用目前檔案地址作為資料資料夾！請嘗試其它資料夾！
+    exists: |-
+      所選目錄裡面已經有檔案了。
+      您仍然可以選擇它作為資料目錄，但請確保已經備份資料。
+    noPermission: |-
+      啟動器沒有訪問所選目錄的許可權！
+      請嘗試選擇其他的資料夾。
+    nonDictionary: 已選擇的檔案路徑是一個檔案！請選擇一個資料夾！
+  focusLayoutDescription: |-
+    焦點佈局是 Minecraft Launcher 最主流的佈局。
+    它設計用於單個例項或幾個例項的情況。
+  game:
+    description: 選擇已有的遊戲目錄 (.minecraft) 作為啟動器初始的檔案地址。同時讓啟動器能狗複用已有的版本檔案、庫、模組、資源包等。
+    name: 匯入已有的遊戲
+  locale:
+    description: >-
+      選擇您的語言，如果您在這裡沒有看到想要的語言，並且您有興趣幫助我們的話，您可以去我們的 GitHub 上開啟 Pull Request
+      來新增新語言！
+    language: 目前語言
+    name: 設定語言
+  path: 目前位置
+  title: 歡迎使用 X Minecraft Launcher。在開始前，需要您先
 shaderPack:
   deletion: 刪除光影包
-  deletionHint: 這將把光影包文件 {path} 永久刪除。
+  deletionHint: 這將把光影包檔案 {path} 永久刪除。
+  disabled: 未啟用的光影
+  dropHint: 匯入光影包
+  empty: 沒有啟用光影包
+  enable: 使用了 {name} 作為光影包
+  enabled: 已啟用的光影
+  manage: 管理光影包
   name: 光影包
-  showFile: 在文件夾中顯示此 shader pack
+  searchHint: 搜尋光影包
+  selectSearchHint: 檢視已選擇的光影包
+  showDirectory: 顯示光影資料夾
+  showFile: 在資料夾中顯示此光影包
+store:
+  explore: 探索
+  latestMinecraft: 使用近期 Minecraft 版本
+  name: 整合包市場
+  popular: 熱門整合包
+  recentUpdated: 最近更新
 summery: 簡介
 tag:
-  create: 創建標籤
+  create: 建立標籤
+  createSelected: 為所有選中的建立標籤
   newTag: 新標籤
 task:
   cancelled: 已取消
   clear: 清除已完成的任務
   connection:
-    connected: 連接的
-    free: 空闲
+    connected: 已連線
+    free: 空閒
     pending: 等待
     queued: 排隊中
-    running: 連接中
+    running: 連線中
     size: 總數
   connections: 網路連線
-  empty: 目前沒有運行中的任務
+  empty: 目前沒有執行中的任務
   failed: 失敗
-  manager: 任務管理器
+  manager: 工作管理員
+  nTaskRunning: '{count} 個任務執行中'
   name: 任務 | 任務
+  pause: 暫停
 theme:
-  selectImage: 選擇影像
+  selectImage: 選擇影象
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
+transportType:
+  host: 公網地址
+  prflx: 同伴反射地址
+  relay: 轉發地址
+  srflx: 伺服器反射地址
 tutorial:
+  feedbackDescription: 如果您遇到了問題，請點選這個按鈕來聯絡開發團隊。
   hideNewsHeaderDescription: |-
     您可以在左側看到新聞展示櫃。
-    按一下此按鈕可以隱藏該展示案例。
-  instanceSelectDescription: 點擊此按鈕將導航至選擇遊戲和閱讀新聞的頁面。
+    單擊此按鈕可以隱藏該展示案例。
+  instance:
+    iconDescription: 點選更改圖示。
+    iconTitle: 遊戲圖示
+    javaDescription: 切換 Java 版本。
+    javaImportDescription: 從本地匯入 Java。
+    javaImportTitle: 匯入 Java
+    javaTitle: 已有 Java 列表
+  instanceAddDescription: 單擊此按鈕可匯入現有的 Minecraft，從整合包建立一個新的 Minecraft，或從頭開始建立一個新的 Minecraft 例項
+  instanceSelectDescription: 單擊此按鈕將導航至選擇遊戲和閱讀新聞的頁面。
+  launchDescription: 點選此按鈕安裝或啟動遊戲。
+  mod:
+    defaultSourceDescription: |-
+      您可以在此處選擇模組詳細資訊的來源。 
+      Modrinth 和 Curseforge 均釋出了模組。
+      如果您想在這兩個內容提供商之間切換。
+      您可以在此處更改該值。
+    defaultSourceTitle: 選擇模組詳情來源
+    detailDescription: |-
+      當您選擇左側的專案時。
+      您將看到該模組的詳細資訊。
+      內容可以來自 Modrinth、Curseforge 或解析的模組內容。
+    detailTitle: 模組詳情
+    listDescription: |-
+      這裡會顯示已安裝的模組。
+      當您輸入關鍵字或選擇類別後，這裡會顯示搜尋到的模組。
+    listTitle: 安裝/搜尋的模組
+    searchDescription: 您可以透過此搜尋框從 Modrinth、Curseforge 或本地快取中搜尋模組。
+    searchTitle: 搜尋、發現模組
+  multiplayer:
+    contentDescription: 您和您的同伴之間的聯絡將在此處列出。
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: |-
+      您可以與其他玩家建立或加入群組。
+      啟動器會嘗試根據群組在您和您的朋友之間建立 P2P 連線。
+      您可以輸入好友提供的群組名稱。
+      或者您可以自己建立一個獨特的名稱。
+    groupTitle: 和其他玩家組隊
+    joinDescription: |-
+      輸入組名稱後。
+      您可以單擊此按鈕加入或建立群組。
+      如果組名稱為空，啟動器將為您生成一個名稱。
+    manualDescription: |-
+      如果您或您的朋友無法連線到群組。
+      您可以嘗試透過點選「手動連線」來手動交換令牌。
+      如果也失敗，則可能是網際網路問題。
   recentPlayDescription: |-
-    創建的遊戲將在此處列出。
-    您可以在此處切換視圖以查看已安裝的版本和下載的模組包。
-  storePoupularModpackDescription: 您將在这里看到 Curseforge 和 Modrinth 中最受歡迎的模組包。
-  storeSearchCategoryDescription: 您也可以在此切換類別或篩選器。
+    建立的遊戲將在此處列出。
+    您可以在此處切換檢視以檢視已安裝的版本和下載的整合包。
+  storePoupularModpackDescription: 您將在這裡看到 Curseforge 和 Modrinth 中最流行的整合包。
+  storeSearchCategoryDescription: 您還可以在此處切換類別或過濾器。
   storeSearchDescription: |-
-    您可以透過在此文字方塊中輸入來搜尋 Modpack。
-    按 Enter 進行搜尋。
+    您可以透過在此文字框中輸入來搜尋整合包。
+    按 Enter 鍵搜尋。
   storeSearchResultDescription: 您將看到此處列出的所有搜尋結果。
+  userAccountDescription: 單擊此圖示可新增或管理您的 Minecraft 帳戶。
 universalDrop:
-  enableModsAfterImport: Mod 導入後自動啓用
-  start: 開始導入
-  title: 將文件拖到這並導入為
+  enableModsAfterImport: 當模組匯入後自動啟用
+  start: 開始匯入
+  title: 將檔案拖到這並匯入為
   unknownResource: 無法解析
 update:
   goOfficialWebDownload: 到官網重新下載
+upstream:
+  downgrade: 降級
+  missingModpackMetadata: >-
+    無法找到目前例項使用的整合包後設資料。雖然您不會因此沒法更新到最新的整合包版本，但這樣更新的結果可能不正確，強烈推薦重新建立新例項。若要更新請備份您的檔案。
+  onlyShowCurrentVersion: 只顯示適合目前 Minecraft 的版本
+  update: 更新
 user:
   accessToken: 訪問令牌
   authMode: 驗證服務
   authService: 驗證服務
   birth: 登記的生日
-  challenges: 請回答下列問題來驗證你的身份
+  challenges: 請回答下列問題來驗證您的身份
   email: 郵箱
-  forgetChallenges: '我忘記了這些問題的答案，我想重新設置它們 '
-  id: 用户 Id
-  info: 賬户信息
-  insecureClient: Minecraft 服務器無法驗證您的身份，請回答密保問題!
-  name: 用户名
-  profile: 個人信息
-  refreshAccount: 刷新賬號
-  refreshSkin: 刷新皮膚
+  forgetChallenges: '我忘記了這些問題的答案，我想重新設定它們 '
+  id: 使用者 ID
+  info: 賬戶資訊
+  insecureClient: Minecraft 伺服器無法驗證您的身份，請回答密保問題！
+  name: 使用者名稱
+  nameHint: 遊戲中顯示的名字
+  profile: 個人資訊
+  refreshAccount: 重新整理賬號
+  refreshSkin: 重新整理皮膚
   submitChallenges: 提交答案
+  tokenExpired: 已過期
+  tokenValidUntil: 有效期至
 userAccount:
-  add: 添加賬號
-  removeDescription: 這將抹去所有關於此賬號的信息，您是否確定？
+  add: 新增賬號
+  removeDescription: 這將抹去所有關於此賬號的資訊，您是否確定？
   removeTitle: 移除賬號
+userCape:
+  changeTitle: 披風設定
+  description: 披風是玩家參與活動獲得的特殊獎勵，或在特定事件發生後的紀念品
+  noCape: 隱藏披風
 userService:
-  add: 添加更多驗證或玩家信息服務器
-  authLibInjector: 按照 authlib-injector 推薦流程創建
-  baseUrlHint: 第三方服務器的根 URL
-  title: 第三方玩家信息服務
+  add: 新增更多驗證或玩家資訊伺服器
+  authLibInjector: 按照 authlib-injector 推薦流程建立
+  baseUrlHint: 第三方伺服器的根 URL
+  service: null
+  title: 第三方玩家資訊服務
   validateHint: 用來檢驗玩家憑證有效性
 userServices:
   microsoft:
     account: 微軟賬號
+    deviceCode: 裝置碼
+    deviceCodeHint: 裝置碼會在點選登入後自動生成
+    fastLogin: 快速登入
     name: 微軟
     password: 在瀏覽器中輸入密碼
+    useDeviceCode: 使用裝置碼登入
   mojang:
     account: 郵箱地址
     name: Mojang
     password: 密碼
   offline:
-    account: 用户名
+    account: 使用者名稱
     name: 離線模式
     password: 無需密碼
+    uuid: 使用者的 UUID (除了特殊用途，否則不填寫)
 userSkin:
-  import: 導入皮膚
-  importFile: 從文件導入
-  importLink: 從鏈接導入
-  placeUrlHere: 填寫待導入皮膚URL
-  save: 保存當前皮膚
-  saveTitle: 保存皮膚到本地
-  skinType: 皮膚類型
-  urlNotEmpty: 皮膚URL不能為空
-  urlNotValid: 請輸入有效的皮膚URL
+  import: 匯入皮膚
+  importFile: 從檔案匯入
+  importLink: 從連結匯入
+  placeUrlHere: 填寫待匯入皮膚 URL
+  save: 儲存
+  saveTitle: 儲存皮膚到本地
+  skinType: 皮膚型別
+  upload: 上傳
+  urlNotEmpty: 皮膚 URL 不能為空
+  urlNotValid: 請輸入有效的皮膚 URL
+  useSlim: 使用細胳膊模型
 version:
   name: 版本 | 版本
   notInstalled: 未安裝該版本
 versionType:
-  alpha: Alpha
-  beta: Beta
-  name: 類型
+  alpha: Alpha (早期測試版)
+  beta: Beta (測試版)
+  name: 型別
   release: 穩定版
 'yes': 是

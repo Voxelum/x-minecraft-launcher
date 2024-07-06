@@ -8,14 +8,22 @@ AppAddInstanceDialog:
     Voulez-vous créer une instance pour cela ?
   serverTitle: Saisissez l'adresse de votre serveur
 AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    Si vous ne voulez pas gâcher l'instance actuelle. 
+
+    Vous pouvez également créer une nouvelle instance à partir de la
+    configuration de votre homologue. 
+
+    Cliquez sur le bouton ci-dessous pour créer une instance.
   baseInfo: Réglage de base
   cancelShare: Annuler le Partage
   description: >-
     Après avoir partagé le profil, un autre endroit peut télécharger ces
     fichiers via votre PC.
   downloadDescription: |-
-    Veuillez vérifier les fichiers que l'on vous a fournis. 
-    Sélectionnez le fichier que vous souhaitez télécharger.
+    Veuillez vérifier les fichiers que votre homologue vous a fournis. 
+    Sélectionnez le fichier que vous souhaitez télécharger. 
+    Il sera placé dans l'instance actuelle {name}.
   downloadNotifyTitle: Télécharger l'instance de {user}
   downloadTitle: Télécharger des fichiers externes
   downloadToLocal: Télécharger dans l'instance actuelle
@@ -696,6 +704,7 @@ mod:
     vouloir le supprimer ? | Vous perdrez ces mods et ces métadonnées pour
     toujours. Êtes-vous sûr de vouloir faire ça?
   deletionRestHint: Et {rest} plus de Mods...
+  denseView: Vue dense
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
   enabled: '{count} mods activés'
   filter: Mods de filtrage
@@ -704,6 +713,7 @@ mod:
   incompatible: Mod incompatible.
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
+  mods: "{count}\_mods"
   name: Mod | Mods
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
   openLink: Ouvrir l'url du mod {url}
@@ -716,6 +726,7 @@ mod:
 modInstall:
   install: Installer
   installed: Installé
+  noVersionSupported: Le mod prend uniquement en charge Minecraft {supported}.
   recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
   search: Résultats
   searchHint: Rechercher et sélectionner un projet
@@ -981,6 +992,10 @@ multiplayer:
   sendTokenToRemote: Envoyer le token à distance
   share: Partager la configuration de l'instance
   sharing: Partage de fichiers...
+  sharingNotificationBody: >-
+    Vous pouvez télécharger ou créer une instance à partir de la configuration
+    partagée {name}.
+  sharingNotificationTitle: Un pair partage la configuration du jeu
   start: Démarrer
   startNewP2PConnection: Cliquez sur le bouton Démarrer pour créer une nouvelle connexion homologue
 myStuff: Mon inventaire

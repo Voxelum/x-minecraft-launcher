@@ -1,6 +1,5 @@
 import { Socket } from 'net'
 import { Agent, Client, Dispatcher, RetryHandler, buildConnector, errors, util } from 'undici'
-import { URL } from 'url'
 
 type DispatchHandlers = Dispatcher.DispatchHandlers
 const { InvalidArgumentError, RequestAbortedError } = errors

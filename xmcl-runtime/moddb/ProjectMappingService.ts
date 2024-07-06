@@ -1,11 +1,12 @@
 import { download } from '@xmcl/file-transfer'
 import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey } from '@xmcl/runtime-api'
-import SQLite from 'better-sqlite3'
 import { readFile, writeFile } from 'fs-extra'
-import { Kysely, SqliteDialect } from 'kysely'
+import { Kysely } from 'kysely'
+import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { request } from 'undici'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { SqliteWASMDialect } from '~/sql'
 import { LauncherApp } from '../app/LauncherApp'
 import { missing } from '../util/fs'
 
@@ -51,9 +52,12 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       }
     })
 
+    const sqlite = new SQLDatabase(getPath('project-mapping.sqlite'), {
+      readOnly: true,
+    })
     this.#db = new Kysely<Database>({
-      dialect: new SqliteDialect({
-        database: new SQLite(getPath('project-mapping.sqlite'), {}),
+      dialect: new SqliteWASMDialect({
+        database: sqlite,
       }),
       log: (e) => {
         if (e.level === 'error') {

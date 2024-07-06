@@ -27,8 +27,11 @@
             {{ t('AppShareInstanceDialog.description') }}
           </template>
           <template v-else>
-            {{ t('AppShareInstanceDialog.downloadDescription') }}
+            {{ t('AppShareInstanceDialog.downloadDescription', { name }) }}
           </template>
+        </v-card-text>
+        <v-card-text v-if="!sharing">
+          {{ t('AppShareInstanceDialog.alterDownloadDescription') }}
         </v-card-text>
         <v-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-subheader>
         <div class="flex flex-col p-5 ">
@@ -67,12 +70,57 @@
               flat
               dense
               label="Fabric"
-              :value="'fabricLoader'"
+              :value="fabricLoader"
               readonly
             >
               <template #prepend-inner>
                 <img
                   :src="'http://launcher/icons/fabric'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="fabricLoader"
+              flat
+              dense
+              label="Fabric"
+              :value="fabricLoader"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/fabric'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="quiltLoader"
+              flat
+              dense
+              label="Fabric"
+              :value="quiltLoader"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/quilt'"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
+              v-if="neoForged"
+              flat
+              dense
+              label="Fabric"
+              :value="neoForged"
+              readonly
+            >
+              <template #prepend-inner>
+                <img
+                  :src="'http://launcher/icons/neoForged'"
                   width="32"
                 >
               </template>
@@ -150,6 +198,15 @@
         <v-spacer />
         <v-btn
           text
+          @click="onCreateInstance"
+        >
+          <v-icon left>
+            add
+          </v-icon>
+          {{ t('instances.add') }}
+        </v-btn>
+        <v-btn
+          text
           color="primary"
           @click="onDownloadInstance"
         >
@@ -172,17 +229,18 @@ import { useNotifier } from '../composables/notifier'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 
-const { isShown, dialog } = useDialog('share-instance')
+const { isShown, parameter } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { shareInstance } = useService(PeerServiceKey)
-const { path } = injection(kInstance)
+const { path, name } = injection(kInstance)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
 
-const sharing = computed(() => isShown.value && !dialog.value.parameter)
+const sharing = computed(() => isShown.value && !parameter.value)
 /**
  * The sharing user name. Only for sharing == false
  */
@@ -195,6 +253,8 @@ provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.fi
 const minecraft = computed(() => manifest.value?.runtime.minecraft)
 const forge = computed(() => manifest.value?.runtime.forge)
 const fabricLoader = computed(() => manifest.value?.runtime.fabricLoader)
+const quiltLoader = computed(() => manifest.value?.runtime.quiltLoader)
+const neoForged = computed(() => manifest.value?.runtime.neoForged)
 const optifine = computed(() => manifest.value?.runtime.optifine)
 const mcOptions = computed(() => manifest.value?.mcOptions || [])
 const vmOptions = computed(() => manifest.value?.vmOptions || [])
@@ -231,11 +291,21 @@ const onDownloadInstance = () => {
   }
 }
 
+const { show } = useDialog(AddInstanceDialogKey)
+const onCreateInstance = () => {
+  if (manifest.value) {
+    show({
+      type: 'manifest',
+      manifest: manifest.value,
+    })
+  }
+}
+
 watch(isShown, async (shown) => {
   if (shown) {
     windowController.focus()
-    if (dialog.value.parameter) {
-      manifest.value = dialog.value.parameter as any
+    if (parameter.value) {
+      manifest.value = parameter.value as any
     } else {
       loading.value = true
       manifest.value = await getInstanceManifest({ path: path.value, hashes: ['sha1'] }).finally(() => { loading.value = false })

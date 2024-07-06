@@ -39,7 +39,7 @@
         v-shared-tooltip.right="_ => t('resourcepack.name', 2)"
         link
         push
-        to="/resource-pack-setting"
+        to="/resourcepacks"
         class="non-moveable"
       >
         <v-list-item-icon>
@@ -51,7 +51,7 @@
         v-shared-tooltip.right="_ => t('shaderPack.name', 2)"
         link
         push
-        to="/shader-pack-setting"
+        to="/shaderpacks"
         class="non-moveable"
       >
         <v-list-item-icon>
@@ -87,8 +87,8 @@ const subRoutes = new Set([
   '/',
   '/base-setting',
   '/mods',
-  '/resource-pack-setting',
-  '/shader-pack-setting',
+  '/resourcepacks',
+  '/shaderpacks',
 ])
 expanding.value = subRoutes.has(router.currentRoute.fullPath)
 
