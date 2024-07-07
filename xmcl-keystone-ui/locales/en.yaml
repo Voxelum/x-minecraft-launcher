@@ -1034,6 +1034,7 @@ resourcepack:
   selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
   shared: Instance use shared resource pack folder
+  showDirectory: Show resource packs directory
   showFile: Show resource pack in folder {file}
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
@@ -1069,7 +1070,7 @@ save:
   importTitle: Import a Save
   manage: Manage Saves
   name: Save | Saves
-  showDirectory: Show save directory
+  showDirectory: Show saves directory
 screenshots:
   empty: You don't have screenshots
   goto: Open Folder
