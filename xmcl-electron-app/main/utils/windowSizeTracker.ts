@@ -50,6 +50,7 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
   }
   async function track(browserWindow: BrowserWindow) {
     const update = () => {
+      if (browserWindow.isDestroyed()) return
       if (browserWindow.isMaximized()) return
       const [width, height] = browserWindow.getSize()
       const [x, y] = browserWindow.getPosition()
@@ -60,6 +61,7 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
       writeToFile()
     }
     const updateViaMaximized = () => {
+      if (browserWindow.isDestroyed()) return
       config.maximized = browserWindow.isMaximized()
       writeToFile()
     }
@@ -72,6 +74,13 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
     browserWindow.on('maximize', updateViaMaximized)
     browserWindow.on('unmaximize', updateViaMaximized)
     browserWindow.on('will-move', update)
+    browserWindow.on('closed', () => {
+      browserWindow.removeListener('resize', update)
+      browserWindow.removeListener('moved', update)
+      browserWindow.removeListener('move', update)
+      browserWindow.removeListener('will-move', update)
+      browserWindow.removeListener('closed', update)
+    })
   }
   return {
     getConfig,
