@@ -4,7 +4,7 @@ import { useTask } from './task'
 
 export const kLaunchTask: InjectionKey<ReturnType<typeof useLaunchTask>> = Symbol('LaunchTask')
 
-export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<LocalVersionHeader>) {
+export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<string | undefined>) {
   return useTask((i) => {
     if (!path.value) return false
     const p = i.param as any
@@ -17,16 +17,16 @@ export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime'
     if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
       return true
     }
-    if (i.path === 'installVersion.jar' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
+    if (i.path === 'installVersion.jar' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
       return true
     }
-    if (i.path === 'installLibraries' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
+    if (i.path === 'installLibraries' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
       return true
     }
-    if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
+    if (i.path === 'installAssets' && (p?.id === localVersion.value || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
       return true
     }
-    if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value.id || p?.id === version.value.neoForged)) {
+    if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value || p?.id === version.value.neoForged)) {
       return true
     }
     if (i.path === 'installLabyMod' && (p?.version === version.value.labyMod)) {
@@ -35,7 +35,7 @@ export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime'
     if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
       return true
     }
-    if (i.path === 'installByProfile' && p?.id === localVersion.value.id) {
+    if (i.path === 'installByProfile' && p?.id === localVersion.value) {
       return true
     }
     if (i.path === 'installFabric' && p?.id === version.value.minecraft) {

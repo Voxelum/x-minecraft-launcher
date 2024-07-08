@@ -253,7 +253,7 @@ errors:
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   SocketError: Kiszolgálói foglalathiba
 eula:
-  body: Az alábbi {accept} gombra kattintva jelzi, hogy beleegyezik {eula}-unkba.
+  body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik {eula}-unkba.
 exception:
   http: >-
     A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek,
@@ -1096,6 +1096,7 @@ save:
     fromProfile: Más példányokból
     fromResource: Kezelt forrásokból
     title: Mentés importálása kezelt forrásból
+  createNew: Új világ létrehozása
   createdWorlds: '{count} db világod van'
   deleteHint: >-
     Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre
@@ -1112,6 +1113,7 @@ save:
   manage: Mentések kezelése
   name: Mentés | Mentések
   showDirectory: Mentés könyvtár megjelenítése
+saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid
   goto: Mappa megnyitása
@@ -1128,8 +1130,10 @@ server:
   host: Kiszolgáló
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
   ipAddress: IP cím
+  maxPlayers: ''
   motd: Szerver MOTD
   name: Szerver | Szerverek
+  onlineMode: Online mód
   ping: Ping
   pings: Pingek
   players: Játékosok

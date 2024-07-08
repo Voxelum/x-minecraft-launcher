@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     :value="isShown"
-    width="600"
+    width="800"
   >
     <v-card class="select-none overflow-auto flex flex-col">
       <v-toolbar
@@ -23,21 +23,54 @@
         </v-btn>
       </v-toolbar>
       <div
-        class="visible-scroll flex flex-col max-h-[600px] mx-0  overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll flex flex-col max-h-[600px] mx-0 overflow-y-auto overflow-x-hidden px-6 py-2"
       >
+        <v-subheader>{{ t('baseSetting.title') }}</v-subheader>
+        <div class="grid grid-cols-3 gap-3 pt-2 px-2">
+          <v-text-field
+            v-model="motd"
+            :label="t('server.motd')"
+            outlined
+            hide-details
+          />
+          <v-text-field
+            v-model="port"
+            :label="t('server.port')"
+            outlined
+            type="number"
+            hide-details
+          />
+          <v-text-field
+            v-model="maxPlayers"
+            :label="t('server.maxPlayers')"
+            outlined
+            type="number"
+            hide-details
+          />
+          <v-checkbox
+            v-model="onlineMode"
+            class="col-start-3"
+            :label="t('server.onlineMode')"
+          />
+        </div>
         <v-subheader>{{ t('save.name') }}</v-subheader>
-        <v-item-group mandatory>
+        {{ linkedWorld }}
+        <v-item-group
+          v-model="selectedSave"
+          mandatory
+          class="pt-2 px-2"
+        >
           <div class="grid grid-cols-3 gap-2 max-h-40 overflow-auto">
             <v-item v-slot="{ active, toggle }">
               <v-card
                 :color="active ? 'primary' : ''"
-                class="flex flex-col items-center justify-center h-[120px]"
+                class="flex flex-col items-center justify-center h-[120px] gap-1"
                 @click="toggle"
               >
                 <v-icon size="80">
                   add
                 </v-icon>
-                Create New
+                {{ t('save.createNew') }}
               </v-card>
             </v-item>
             <v-item
@@ -47,7 +80,7 @@
             >
               <v-card
                 :color="active ? 'primary' : ''"
-                class="flex flex-col items-center justify-center"
+                class="flex flex-col items-center justify-center gap-1"
                 @click="toggle"
               >
                 <img
@@ -63,88 +96,183 @@
           </div>
         </v-item-group>
 
-        <v-subheader>{{ t('mod.name') }}</v-subheader>
-        <div>
-          <v-list
-            dense
-            class="max-h-80 overflow-auto"
+        <template v-if="enabled.length > 0">
+          <v-subheader>{{ t('mod.name') }}</v-subheader>
+          <div
+            class="pt-2 px-2"
           >
-            <v-list-item
-              v-for="m of enabled"
-              :key="m.path"
+            <v-list
+              dense
+              class="max-h-80 overflow-auto"
             >
-              <v-list-item-avatar :size="30">
-                <img
-                  ref="iconImage"
-                  :src="m.icon || unknownPack"
-                >
-              </v-list-item-avatar>
-              <v-list-item-title class="flex overflow-hidden">
-                {{ m.name }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </div>
-        <div class="flex items-center">
-          <i18n-t
-            keypath="eula.body"
-            tag="p"
-          >
-            <template #accept>
-              <v-chip
-                color="primary"
-                label
-                class="mx-2"
-                small
+              <v-list-item
+                v-for="m of enabled"
+                :key="m.path"
               >
-                {{ t('shared.accept') }}
-              </v-chip>
+                <v-list-item-avatar :size="30">
+                  <img
+                    ref="iconImage"
+                    :src="m.icon || unknownPack"
+                  >
+                </v-list-item-avatar>
+                <v-list-item-title class="flex overflow-hidden">
+                  {{ m.name }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </div>
+        </template>
+
+        <div class="flex items-center pt-2 px-2">
+          <v-checkbox
+            v-model="isAcceptEula"
+          >
+            <template #label>
+              <i18n-t
+                keypath="eula.body"
+                tag="span"
+              >
+                <template #eula>
+                  <a
+                    href="https://aka.ms/MinecraftEULA"
+                    target="_blank"
+                    @click.stop
+                  >EULA</a>
+                </template>
+              </i18n-t>
             </template>
-            <template #eula>
-              <a
-                href="https://aka.ms/MinecraftEULA"
-                target="_blank"
-              >EULA</a>
-            </template>
-          </i18n-t>
-          <div class="flex-grow" />
-          <v-checkbox />
+          </v-checkbox>
         </div>
+      </div>
+      <v-divider />
+      <div class="flex p-4">
+        <v-btn text>
+          <v-icon>
+            close
+          </v-icon>
+          {{ t('cancel') }}
+        </v-btn>
+        <div class="flex-grow" />
+        <v-btn
+          color="primary"
+          :disabled="!isAcceptEula"
+          :loading="loading"
+          @click="onPlay"
+        >
+          <v-icon>
+            play_arrow
+          </v-icon>
+          {{ t('instance.launchServer') }}
+        </v-btn>
       </div>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { useDialog, useSimpleDialog } from '@/composables/dialog'
+import unknownPack from '@/assets/unknown_pack.png'
+import { useRefreshable } from '@/composables'
+import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstanceSave } from '@/composables/save'
 import { useService } from '@/composables/service'
-import { injection } from '@/util/inject'
-import { InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import unknownPack from '@/assets/unknown_pack.png'
-import { kInstanceModsContext } from '@/composables/instanceMods'
 import { vFallbackImg } from '@/directives/fallbackImage'
+import { injection } from '@/util/inject'
+import { InstallServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ }>()
 
-const { isShown } = useDialog('launch-server')
-const { t } = useI18n()
+const port = ref(25565)
+const motd = ref('')
+const maxPlayers = ref(20)
+const onlineMode = ref(false)
+const isAcceptEula = ref(false)
+const linkedWorld = ref('')
+const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
+const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
 
-watch(isShown, (value) => {
-  console.log(value)
+let _serverProperties: any
+let _eula: boolean
+
+const { launch } = injection(kInstanceLaunch)
+const { installServer } = injection(kInstanceVersionInstall)
+const { versionId, serverVersionId } = injection(kInstanceVersion)
+
+const selectedSave = computed({
+  get() {
+    if (linkedWorld.value === '') return 0
+    const i = saves.value.findIndex(s => s.path === linkedWorld.value)
+    console.log(i)
+    return i + 1
+  },
+  set(v) {
+    if (v === 0) {
+      linkedWorld.value = ''
+      return
+    }
+    linkedWorld.value = saves.value[v - 1]?.path ?? ''
+  },
 })
 
-const { getEULA, setEULA } = useService(InstanceOptionsServiceKey)
+const { isShown } = useDialog('launch-server', () => {
+  getServerProperties(path.value).then((p) => {
+    const parsedPort = parseInt(p.port, 10)
+    port.value = isNaN(parsedPort) ? 25565 : parsedPort
+    motd.value = p.motd || 'A Minecraft Server'
+    const parsedMaxPlayers = parseInt(p.maxPlayers, 10)
+    maxPlayers.value = isNaN(parsedMaxPlayers) ? 20 : parsedMaxPlayers
+    onlineMode.value = Boolean(p.onlineMode)
+    _serverProperties = p
+  })
+  getEULA(path.value).then((v) => {
+    isAcceptEula.value = v
+    _eula = v
+  })
+  getLinkedSaveWorld(path.value).then((v) => {
+    linkedWorld.value = v ?? ''
+  })
+})
+const { t } = useI18n()
+
 const { runtime, path } = injection(kInstance)
 const { saves } = injection(kInstanceSave)
 const { mods } = injection(kInstanceModsContext)
 const enabled = computed(() => mods.value.filter(m => m.enabled))
 
-async function onAcceptEULA() {
-  await setEULA(path.value, true)
-}
+const { installDependencies, installMinecraftServerJar } = useService(InstallServiceKey)
+
+const { refresh: onPlay, refreshing: loading } = useRefreshable(async () => {
+  if (!_eula) {
+    await setEULA(path.value, true)
+  }
+  if (_serverProperties) {
+    await setServerProperties(path.value, {
+      ..._serverProperties,
+      port: port.value ?? 25565,
+      motd: motd.value || 'A Minecraft Server',
+      maxPlayers: maxPlayers.value ?? 20,
+      onlineMode: onlineMode.value ?? false,
+    })
+  }
+  const runtimeValue = runtime.value
+  if (!serverVersionId.value) {
+    const versionIdToInstall = await installServer(runtimeValue, path.value, versionId.value)
+    await installMinecraftServerJar(runtimeValue.minecraft)
+    await installDependencies(versionIdToInstall, 'server')
+  } else {
+    await installMinecraftServerJar(runtimeValue.minecraft)
+    await installDependencies(serverVersionId.value, 'server')
+  }
+  if (linkedWorld.value) {
+    await linkSaveAsServerWorld({
+      instancePath: path.value,
+      saveName: linkedWorld.value,
+    })
+  }
+  await launch('server')
+})
 
 </script>

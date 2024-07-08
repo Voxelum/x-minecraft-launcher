@@ -72,20 +72,4 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
       }
     }
   }
-
-  async getVanillaServerJar(resolvedVersion: ResolvedVersion | undefined) {
-    const minecraft = new MinecraftFolder(this.getPath())
-
-    const resolved = resolvedVersion
-
-    if (!resolved) return undefined
-
-    const jarIssue = await diagnoseJar(resolved, minecraft, { side: 'server' })
-    if (jarIssue) {
-      return undefined
-    }
-
-    const jarPath = minecraft.getVersionJar(resolvedVersion.minecraftVersion, 'server')
-    return jarPath
-  }
 }

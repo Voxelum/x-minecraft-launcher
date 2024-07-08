@@ -25,7 +25,7 @@
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
         <AvatarItem
-          v-if="isResolvedVersion(resolvedVersion)"
+          v-if="versionId"
           v-ripple
           icon="fact_check"
           class="ml-2 cursor-pointer"
@@ -76,19 +76,19 @@
 import AvatarItem from '@/components/AvatarItem.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { isResolvedVersion, kInstanceVersion } from '@/composables/instanceVersion'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { VersionServiceKey } from '@xmcl/runtime-api'
 
 const { name, runtime: version } = injection(kInstance)
-const { resolvedVersion } = injection(kInstanceVersion)
+const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
-const currentVersion = computed(() => !isResolvedVersion(resolvedVersion.value) ? t('version.notInstalled') : resolvedVersion.value.id)
+const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {
   if (compact.value) {
@@ -101,8 +101,8 @@ const headerFontSize = computed(() => {
 })
 
 const onShowLocalVersion = () => {
-  if (isResolvedVersion(resolvedVersion.value)) {
-    showVersionDirectory(resolvedVersion.value?.id)
+  if (versionId.value) {
+    showVersionDirectory(versionId.value)
   }
 }
 

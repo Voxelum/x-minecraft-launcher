@@ -240,8 +240,8 @@ errors:
   NotFoundError: 404 non atopado
 eula:
   body: >-
-    Ao facer clic no botón {aceptar} a continuación, indicas o teu acordo co
-    accept{eula}.
+    Ao marcar o botón da caixa de verificación, estás a indicar o teu acordo co
+    noso {eula}.
 importModpack:
   name: Importar Modpack
 instance:
@@ -284,7 +284,12 @@ resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
+  createNew: Crea un mundo novo
   showDirectory: Mostrar o directorio de gardar
+saves: {}
+server:
+  maxPlayers: Máximo xogadores
+  onlineMode: Modo en liña
 setting:
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.

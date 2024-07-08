@@ -250,7 +250,7 @@ errors:
   SocketError: Server socket error
 eula:
   body: >-
-    By click {accept} button below, you are indicating your agreement to our
+    By check the checkbox button, you are indicating your agreement to our
     {eula}.
 exception:
   http: >-
@@ -284,8 +284,8 @@ feedback:
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: >-
-    Click the button to create the report and contact the developer team.
-    The report will contains your device info including operating system type,
+    Click the button to create the report and contact the developer team. The
+    report will contains your device info including operating system type,
     version, user name (in your os), etc.
   kook: Kook
   kookDescription: Kook is an alter app for discord for Chinese Mainland users
@@ -1066,6 +1066,7 @@ save:
     fromProfile: From Other Instances
     fromResource: From Managed Resources
     title: Import Save from Managed Source
+  createNew: Create New World
   createdWorlds: You have {count} worlds
   deleteHint: >-
     This operation cannot be revert. You will lose this save data forever. Are
@@ -1082,6 +1083,7 @@ save:
   manage: Manage Saves
   name: Save | Saves
   showDirectory: Show saves directory
+saves: {}
 screenshots:
   empty: You don't have screenshots
   goto: Open Folder
@@ -1098,8 +1100,10 @@ server:
   host: Host
   hostHint: The host (with port) of the server
   ipAddress: IP Address
+  maxPlayers: Max Players
   motd: Server MOTD
   name: Server | Servers
+  onlineMode: Online Mode
   ping: Ping
   pings: Pings
   players: Players

@@ -299,9 +299,7 @@ errors:
   NotFoundError: 404 introuvable
   SocketError: Erreur de socket du serveur
 eula:
-  body: >-
-    En cliquant sur le bouton {accept} ci-dessous, vous indiquez votre accord
-    avec notre {eula}.
+  body: En cochant la case à cocher, vous indiquez votre accord avec notre {eula}.
 exception:
   http: >-
     La requête HTTP à {url} a échoué. Code d'état {statusCode}. {code}. Veuillez
@@ -1107,6 +1105,7 @@ save:
     fromProfile: À partir d'autres instances
     fromResource: À partir des ressources gérées
     title: Importer la sauvegarde à partir de la source gérée
+  createNew: Créer un nouveau monde
   createdWorlds: Vous avez {count} mondes
   deleteHint: |-
     Cette opération ne peut pas être annulée. 
@@ -1124,6 +1123,7 @@ save:
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
   showDirectory: Afficher le répertoire de sauvegarde
+saves: {}
 screenshots:
   empty: Vous n'avez pas de capture d'écran
   goto: Ouvrir Dossier
@@ -1140,8 +1140,10 @@ server:
   host: Héberger
   hostHint: L'hôte (avec le port) du serveur
   ipAddress: Adresse IP
+  maxPlayers: Le maximum de joueurs
   motd: Serveur MOTD
   name: Serveur | Serveurs
+  onlineMode: Mode en ligne
   ping: Ping
   pings: Pings
   players: Joueurs

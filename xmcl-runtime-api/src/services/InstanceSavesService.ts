@@ -90,6 +90,17 @@ export function getInstanceSaveKey(path: string) {
   return `instance-saves://${path}`
 }
 
+export interface LinkSaveAsServerWorldOptions {
+  /**
+   * The instance path
+   */
+  instancePath: string
+  /**
+   * The save name
+   */
+  saveName: string
+}
+
 /**
  * Provide the ability to preview saves data of an instance
  */
@@ -129,6 +140,15 @@ export interface InstanceSavesService {
    * You can choose export the save to zip or a folder.
    */
   exportSave(options: ExportSaveOptions): Promise<void>
+
+  linkSaveAsServerWorld(options: LinkSaveAsServerWorldOptions): Promise<void>
+
+  /**
+   * Get the linked save world path.
+   * @param instancePath
+   * @return The linked save world path. Should if it's a origial world folder them it's unlinked folder existed. `undefined` if no folder existed.
+   */
+  getLinkedSaveWorld(instancePath: string): Promise<string | undefined>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

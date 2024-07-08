@@ -290,8 +290,8 @@ errors:
   SocketError: Server-Socket-Fehler
 eula:
   body: >-
-    Indem Sie unten auf die Schaltfläche {accept} klicken, erklären Sie sich mit
-    unserer {eula} einverstanden.
+    Indem Sie das Kontrollkästchen aktivieren, erklären Sie sich mit unserer
+    {eula} einverstanden.
 exception:
   http: >-
     HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}.
@@ -1145,6 +1145,7 @@ save:
     fromProfile: Aus anderen Beispielen
     fromResource: Aus verwalteten Ressourcen
     title: Importieren einer Sicherung aus einer verwalteten Quelle
+  createNew: Erschaffe eine neue Welt
   createdWorlds: 'Ihre Welten: {count}'
   deleteHint: >-
     Dieser Vorgang kann nicht abgebrochen werden. Die gespeicherten Daten gehen
@@ -1162,6 +1163,7 @@ save:
   manage: Verwaltung der Reservate
   name: Speichern | Speichern
   showDirectory: Speicherverzeichnis anzeigen
+saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos
   goto: Öffnen Sie den Ordner
@@ -1178,8 +1180,10 @@ server:
   host: Gastgeber
   hostHint: Server-Host (mit Port)
   ipAddress: IP-Adressen
+  maxPlayers: Maximale Spieleranzahl
   motd: Beschreibung des Servers
   name: Server | Server
+  onlineMode: Onlinemodus
   ping: Ping
   pings: Pings
   players: Spieler.

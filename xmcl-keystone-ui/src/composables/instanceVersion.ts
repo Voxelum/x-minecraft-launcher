@@ -1,8 +1,8 @@
-import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, ServerVersionHeader, VersionServiceKey, getExpectVersion, getResolvedVersion } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
-import { Ref, InjectionKey } from 'vue'
-import { useService } from './service'
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
+import { Instance, LocalVersionHeader, RuntimeVersions, ServerVersionHeader, VersionServiceKey, getResolvedVersion } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
+import { InjectionKey, Ref } from 'vue'
+import { useService } from './service'
 
 function useInstanceVersionBase(instance: Ref<Instance>) {
   const minecraft = computed(() => instance.value.runtime.minecraft)
@@ -43,19 +43,15 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
         instance.value.runtime.quiltLoader,
         instance.value.runtime.labyMod)
     }
-    if (!result) {
-      result = { ...EMPTY_VERSION, id: getExpectVersion(instance.value.runtime) }
-    }
     return result
   })
-  const folder = computed(() => versionHeader.value.id)
 
   const { isValidating, mutate, data: resolvedVersion, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/version`, async () => {
     console.log('update instance version')
     if (!instance.value.path) {
       return undefined
     }
-    if (!versionHeader.value.path) {
+    if (!versionHeader.value?.path) {
       return { requirements: { ...instance.value.runtime } }
     }
     try {
@@ -70,28 +66,42 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     }
   }, { revalidateOnFocus: false, errorRetryCount: 0, shouldRetryOnError: false })
 
-  function getResolvedServerVersion() {
+  const serverVersionHeader = computed(() => {
     const runtime = instance.value.runtime
-    const isOnlyMinecraft = Object.keys(runtime).length === 1 && runtime.minecraft
+    const onlyMinecraft = Object.entries(runtime).filter(([k, v]) => k !== 'minecraft' && !!v).length === 0
     for (const s of servers.value) {
-      if (isOnlyMinecraft) {
-        if (s.minecraft === runtime.minecraft && s.type === 'vanilla') {
-          return s
-        }
+      if (s.minecraft !== runtime.minecraft) {
+        continue
       }
       if (runtime.forge) {
-        if (s.minecraft === runtime.minecraft && s.version === runtime.forge && s.type === 'forge') {
+        if (s.version === runtime.forge && s.type === 'forge') {
           return s
         }
       }
       if (runtime.fabricLoader) {
-        if (s.minecraft === runtime.minecraft && s.version === runtime.fabricLoader && s.type === 'fabric') {
+        if (s.version === runtime.fabricLoader && s.type === 'fabric') {
           return s
         }
       }
+      if (runtime.neoForged) {
+        if (s.version === runtime.neoForged && s.type === 'neoforge') {
+          return s
+        }
+      }
+      if (runtime.quiltLoader) {
+        if (s.version === runtime.quiltLoader && s.type === 'quilt') {
+          return s
+        }
+      }
+      if (s.type === 'vanilla' && onlyMinecraft) {
+        return s
+      }
     }
     return undefined
-  }
+  })
+
+  const serverVersionId = computed(() => serverVersionHeader.value?.id)
+  const versionId = computed(() => versionHeader.value?.id)
 
   watch([versionHeader, local], () => {
     mutate()
@@ -99,10 +109,11 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
 
   return {
     ...useInstanceVersionBase(instance),
-    getResolvedServerVersion,
-    folder,
     error,
+    versionId,
+    serverVersionId,
     versionHeader,
+    serverVersionHeader,
     resolvedVersion,
     isValidating,
   }

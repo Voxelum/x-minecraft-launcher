@@ -260,8 +260,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    Facendo clic sul pulsante {accept} qui sotto, indichi il tuo consenso alla
-    nostra {eula}.
+    Selezionando il pulsante della casella di controllo, indichi il tuo consenso
+    alla nostra {eula}.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -1094,6 +1094,7 @@ save:
     fromProfile: Da altre istanze
     fromResource: Da risorse gestite
     title: Importa salvataggio da fonte gestita
+  createNew: Crea un nuovo mondo
   createdWorlds: Hai {count} mondi
   deleteHint: >-
     Questa operazione non può essere annullata. Si perderanno definitivamente
@@ -1111,6 +1112,7 @@ save:
   manage: Gestisci salvataggi
   name: Salva | Salva
   showDirectory: Mostra la directory di salvataggio
+saves: {}
 screenshots:
   empty: Non hai screenshot
   goto: Apri cartella
@@ -1127,8 +1129,10 @@ server:
   host: Host
   hostHint: L'host (con porta) del server
   ipAddress: Indirizzo IP
+  maxPlayers: Giocatori massimi
   motd: MOTD server
   name: Server | Server
+  onlineMode: Modalità online
   ping: Ping
   pings: Ping
   players: Giocatori

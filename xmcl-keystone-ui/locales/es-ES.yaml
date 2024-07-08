@@ -241,7 +241,7 @@ errors:
   NotFoundError: 404 No encontrado
 eula:
   body: >-
-    Al hacer clic en el botón {accept} a continuación, estás indicando que estás
+    Al marcar el botón de la casilla de verificación, estás indicando que estás
     de acuerdo con nuestra {eula}.
 fabricVersion:
   disable: Desactivar Fabric
@@ -788,6 +788,7 @@ save:
     fromProfile: Desde Otras Instancias
     fromResource: Desde Recursos Administrados
     title: Importar Partida desde Fuente Administrada
+  createNew: Crear nuevo mundo
   createdWorlds: Tienes {count} mundos
   deleteHint: >-
     Esta operación no se puede revertir. Perderás estos datos de partida
@@ -804,6 +805,7 @@ save:
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
   showDirectory: Mostrar directorio de guardado
+saves: {}
 screenshots:
   empty: No tienes capturas de pantalla
   goto: Abrir Carpeta
@@ -820,8 +822,10 @@ server:
   host: Anfitrión
   hostHint: El anfitrión (con puerto) del servidor
   ipAddress: Dirección IP
+  maxPlayers: Jugadores máximos
   motd: MOTD del Servidor
   name: Servidor | Servidores
+  onlineMode: Modo en línea
   ping: Ping
   pings: Pings
   players: Jugadores

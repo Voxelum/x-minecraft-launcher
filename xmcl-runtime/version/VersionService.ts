@@ -180,16 +180,16 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     const filePath = this.getPath('versions', id, 'server.json')
     const content = await readFile(filePath, 'utf-8')
     const profile = JSON.parse(content) as Version
-    if (!profile._minecraftVersion) {
-      throw new Error('Missing minecraft version in server profile')
-    }
     return {
       id,
-      minecraftVersion: profile._minecraftVersion,
+      minecraftVersion: profile.inheritsFrom || profile.id,
       mainClass: profile.mainClass,
       jar: profile.jar,
       libraries: profile.libraries.map(l => Version.resolveLibrary(l)).filter(isNonnull),
-      arguments: profile.arguments as any,
+      arguments: {
+        jvm: profile.arguments?.jvm || [] as any,
+        game: profile.arguments?.game || [] as any,
+      },
     }
   }
 
@@ -198,16 +198,28 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
       const filePath = this.getPath('versions', id, 'server.json')
       const content = await readFile(filePath, 'utf-8')
       const profile = JSON.parse(content) as Version
-      if (profile._minecraftVersion) {
-        this.state.serverProfileAdd({
-          id,
-          type: !profile._forgeVersion && !profile._fabricLoaderVersion ? 'vanilla' : profile._forgeVersion ? 'forge' : 'fabric',
-          minecraft: profile._minecraftVersion,
-          version: profile._forgeVersion ?? profile._fabricLoaderVersion,
-        })
-      } else {
-        this.warn(`Missing minecraft version in ${id}`)
+      const libs = profile.libraries.map(l => LibraryInfo.resolve(l)).filter(isNonnull)
+      let type = 'vanilla' as 'vanilla' | 'forge' | 'fabric' | 'quilt' | 'neoforge'
+      let minecraft = profile.id
+      let version = undefined as string | undefined
+      if (profile.inheritsFrom) {
+        const resolved = {
+          neoforge: findNeoForgedVersion(profile.inheritsFrom, { libraries: libs, arguments: profile.arguments as any }),
+          forge: filterForgeVersion(libs.find(isForgeLibrary)?.version ?? ''),
+          fabric: libs.find(isFabricLoaderLibrary)?.version ?? '',
+          quilt: libs.find(isQuiltLibrary)?.version ?? '',
+        }
+        const [existed] = Object.entries(resolved).filter(([_, v]) => !!v)
+        type = existed?.[0] as any
+        minecraft = profile.inheritsFrom
+        version = existed?.[1]
       }
+      this.state.serverProfileAdd({
+        id,
+        type,
+        minecraft,
+        version,
+      })
     } catch (e) {
       this.state.serverProfileRemove(id)
     }

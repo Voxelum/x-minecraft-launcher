@@ -70,8 +70,8 @@ export default defineComponent({
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
-    const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
-    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.resolvedVersion, instanceJava.java, user.userProfile, settings)
+    const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
+    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings)
 
     const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
@@ -79,7 +79,7 @@ export default defineComponent({
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
-    const install = useInstanceVersionInstall(localVersions.versions)
+    const install = useInstanceVersionInstall(localVersions.versions, localVersions.servers)
     provide(kInstanceVersionInstall, install)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, install)

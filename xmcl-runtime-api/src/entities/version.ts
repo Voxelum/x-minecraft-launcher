@@ -261,7 +261,7 @@ export function isQuiltLibrary(lib: LibraryInfo) {
   return lib.groupId === 'org.quiltmc' && lib.artifactId === 'quilt-loader'
 }
 
-export function findNeoForgedVersion(minecraft: string, resolvedVersion: ResolvedVersion) {
+export function findNeoForgedVersion(minecraft: string, resolvedVersion: { libraries: LibraryInfo[]; arguments: ResolvedVersion['arguments'] }) {
   const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
   if (!hasNeoForged) return ''
   const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
@@ -550,7 +550,7 @@ export interface LocalVersionHeader {
 export type ServerVersionHeader = {
   id: string
   minecraft: string
-  type: 'vanilla' | 'forge' | 'fabric'
+  type: 'vanilla' | 'forge' | 'fabric' | 'quilt' | 'neoforge'
   version?: string
 }
 export interface ResolvedServerVersion {

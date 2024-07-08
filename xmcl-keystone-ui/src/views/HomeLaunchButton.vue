@@ -81,16 +81,6 @@ const { isValidating } = injection(kInstances)
 const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
 
 const isShown = ref(false)
-
-watch(isShown, (v) => {
-  if (!v) return
-  // diagnoseVanillaServerJar().then((hasIssue) => {
-  //   isReady.value = !hasIssue
-  // }, () => {
-  //   isReady.value = false
-  // })
-})
-
 </script>
 
 <style scoped>

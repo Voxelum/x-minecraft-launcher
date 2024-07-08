@@ -269,15 +269,20 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock((v) => [LockKey.version(v), LockKey.assets, LockKey.libraries])
-  async installDependencies(version: string, noAsset = false) {
+  async installDependencies(version: string, side = 'client') {
     const location = this.getPath()
-    const resolvedVersion = await Version.parse(location, version)
-    await this.installDependenciesUnsafe(resolvedVersion, noAsset)
-  }
-
-  @Lock((v) => [LockKey.version(v.id), LockKey.assets, LockKey.libraries])
-  async installDependenciesResolved(resolvedVersion: ResolvedVersion) {
-    await this.installDependenciesUnsafe(resolvedVersion, false)
+    const option = this.getInstallOptions()
+    if (side === 'client') {
+      const resolvedVersion = await Version.parse(location, version)
+      await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: resolvedVersion.id }))
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
+    } else {
+      const resolvedVersion = await this.versionService.resolveServerVersion(version)
+      await this.submit(installLibrariesTask({
+        libraries: resolvedVersion.libraries,
+        minecraftDirectory: location,
+      }, option).setName('installLibraries', { id: resolvedVersion.id }))
+    }
   }
 
   @Lock((v) => [LockKey.version(v.minecraftVersion)])
@@ -286,14 +291,6 @@ export class InstallService extends AbstractService implements IInstallService {
     const task = installLabyMod4Task(options.manifest, options.minecraftVersion, location, this.getInstallOptions()).setName('installLabyMod', { version: options.manifest.labyModVersion })
     const version = await this.submit(task)
     return version
-  }
-
-  private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion, noAsset: boolean) {
-    const option = this.getInstallOptions()
-    await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: resolvedVersion.id }))
-    if (!noAsset) {
-      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
-    }
   }
 
   @Lock(v => [LockKey.version(v)])
@@ -423,6 +420,7 @@ export class InstallService extends AbstractService implements IInstallService {
           ...installOptions,
           java: java.path,
           inheritsFrom: options.minecraft,
+          side: options.side,
         }).setName('installForge', { id: options.version }))
         this.log(`Success to install neoforge ${options.version} on ${options.minecraft}`)
         break
@@ -437,6 +435,9 @@ export class InstallService extends AbstractService implements IInstallService {
         throw err
       }
     }
+    if (!version) {
+      throw new AnyError('ForgeInstallError', `Cannot install forge ${options.version} on ${options.minecraft}`)
+    }
     return version
   }
 
@@ -447,6 +448,7 @@ export class InstallService extends AbstractService implements IInstallService {
     const side = options.side ?? 'client'
 
     validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
+    const setting = await this.app.registry.get(kSettings)
 
     let version: string | undefined
     for (const java of validJavaPaths) {
@@ -458,6 +460,22 @@ export class InstallService extends AbstractService implements IInstallService {
           java: java.path,
           side,
           inheritsFrom: options.mcversion,
+          spawn: (cmd, args) => {
+            const newArgs = args ? [...args] : []
+            const proxy = setting.httpProxyEnabled ? setting.httpProxy : undefined
+            if (proxy) {
+              const url = new URL(proxy)
+              newArgs.unshift(
+                `-Dhttp.proxyHost=${url.hostname}`,
+                `-Dhttp.proxyPort=${url.port}`,
+                `-Dhttps.proxyHost=${url.hostname}`,
+                `-Dhttps.proxyPort=${url.port}`,
+              )
+            } else {
+              newArgs.unshift('-Djava.net.useSystemProxies=true')
+            }
+            return spawn(cmd, args)
+          },
         }).setName('installForge', { id: options.version }))
 
         this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
@@ -473,15 +491,14 @@ export class InstallService extends AbstractService implements IInstallService {
         throw err
       }
     }
+    if (!version) {
+      throw new AnyError('ForgeInstallError', `Cannot install forge ${options.version} on ${options.mcversion}`)
+    }
     return version
   }
 
   @Lock((v: InstallFabricOptions) => LockKey.version(`fabric-${v.minecraft}-${v.loader}`))
   async installFabric(options: InstallFabricOptions) {
-    return await this.installFabricInternal(options)
-  }
-
-  private async installFabricInternal(options: InstallFabricOptions) {
     try {
       this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const path = this.getPath()
@@ -508,146 +525,155 @@ export class InstallService extends AbstractService implements IInstallService {
     } catch (e) {
       this.warn(`An error ocurred during install fabric yarn-${options.yarn}, loader-${options.loader}`)
       this.warn(e)
+      throw e
     }
-    return undefined
   }
 
   @Lock(v => LockKey.version(`quilt-${v.minecraftVersion}-${v.version}`))
   async installQuilt(options: InstallQuiltOptions) {
     const side = options.side ?? 'client'
+    const mc = MinecraftFolder.from(this.getPath())
     if (side === 'client') {
       const version = await installQuiltVersion({
-        minecraft: this.getPath(),
+        minecraft: mc,
         minecraftVersion: options.minecraftVersion,
         version: options.version,
       })
       return version
     }
+    const resp = await this.app.fetch(`https://meta.quiltmc.org/v3/versions/loader/${options.minecraftVersion}/${options.version}/server/json`)
+    const versionJson = await resp.json() as Version
+    const serverJsonPath = mc.getVersionServerJson(versionJson.id)
+    await ensureFile(serverJsonPath)
+    await writeFile(serverJsonPath, JSON.stringify(versionJson, null, 2))
+    const libs = Version.resolveLibraries(versionJson.libraries)
+    await this.installLibraries(libs, versionJson.id)
+    return versionJson.id
   }
 
   async installOptifineAsResource(options: InstallOptifineOptions) {
-      const optifineVersion = `${options.type}_${options.patch}`
-      const version = `${options.mcversion}_${optifineVersion}`
-      const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
-      const resourceService = this.resourceService
-      if (await missing(path)) {
-        const urls = [] as string[]
-        if (getApiSets(this.settings)[0].name === 'bmcl') {
-          urls.push(
-            `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-          )
-        }
-        const downloadOptions = this.downloadOptions
-        await this.submit(task('installOptifine', async function () {
-          await this.yield(new DownloadTask({
-            ...downloadOptions,
-            url: urls,
-            destination: path,
-          }).setName('download'))
-        }))
-      }
-      const [resource] = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
-      return resource
-    }
-
-    @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
-    async installOptifine(options: InstallOptifineOptions) {
-      const minecraft = new MinecraftFolder(this.getPath())
-      const optifineVersion = `${options.type}_${options.patch}`
-      const version = `${options.mcversion}_${optifineVersion}`
-      const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
-      const downloadOptions = await this.app.registry.get(kDownloadOptions)
-
-      this.log(`Install optifine ${version} on ${options.inheritFrom ?? options.mcversion}`)
-
-      let installFromForge = false
-      if (options.inheritFrom === options.mcversion) {
-        options.inheritFrom = undefined
-      }
-
-      if (options.inheritFrom) {
-        const from = await Version.parse(minecraft, options.inheritFrom)
-        if (from.libraries.some(isForgeLibrary)) {
-          installFromForge = true
-          // install over forge
-        } else if (from.libraries.some(isFabricLoaderLibrary)) {
-          this.warn('Installing optifine over a fabric! This might not work!')
-        }
-      }
-
-      const java = this.javaService.getPreferredJava()?.path
-      const resourceService = this.resourceService
-      const error = this.error
-
+    const optifineVersion = `${options.type}_${options.patch}`
+    const version = `${options.mcversion}_${optifineVersion}`
+    const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
+    const resourceService = this.resourceService
+    if (await missing(path)) {
       const urls = [] as string[]
-      if (getApiSets(this.settings)[0].name === 'mcbbs') {
-        urls.push(
-          `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-        )
-      } else {
+      if (getApiSets(this.settings)[0].name === 'bmcl') {
         urls.push(
           `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
         )
       }
-      const result = await this.submit(task('installOptifine', async function () {
+      const downloadOptions = this.downloadOptions
+      await this.submit(task('installOptifine', async function () {
         await this.yield(new DownloadTask({
           ...downloadOptions,
           url: urls,
           destination: path,
         }).setName('download'))
-        const resources = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
-        let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
+      }))
+    }
+    const [resource] = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
+    return resource
+  }
 
-        if (options.inheritFrom) {
-          const parentJson: Version = JSON.parse(await readFile(minecraft.getVersionJson(options.inheritFrom), 'utf8'))
-          const json: Version = JSON.parse(await readFile(minecraft.getVersionJson(id), 'utf8'))
-          json.inheritsFrom = options.inheritFrom
-          json.id = `${options.inheritFrom}-Optifine-${version}`
-          if (installFromForge) {
-            json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker']
-            json.mainClass = parentJson.mainClass
-          }
-          const dest = minecraft.getVersionJson(json.id)
-          await ensureFile(dest)
-          await writeFile(dest, JSON.stringify(json, null, 4))
-          id = json.id
-        }
-        return [id, resources[0]] as [string, Resource]
-      }, { id: optifineVersion }))
+  @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
+  async installOptifine(options: InstallOptifineOptions) {
+    const minecraft = new MinecraftFolder(this.getPath())
+    const optifineVersion = `${options.type}_${options.patch}`
+    const version = `${options.mcversion}_${optifineVersion}`
+    const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
-      this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${result[0]}`)
+    this.log(`Install optifine ${version} on ${options.inheritFrom ?? options.mcversion}`)
 
-      return result
+    let installFromForge = false
+    if (options.inheritFrom === options.mcversion) {
+      options.inheritFrom = undefined
     }
 
-    @Singleton()
-    async installLiteloader(meta: LiteloaderVersion) {
-      try {
-        await this.submit(installLiteloaderTask(meta, this.getPath()))
-      } catch (err) {
-        this.warn(err)
+    if (options.inheritFrom) {
+      const from = await Version.parse(minecraft, options.inheritFrom)
+      if (from.libraries.some(isForgeLibrary)) {
+        installFromForge = true
+        // install over forge
+      } else if (from.libraries.some(isFabricLoaderLibrary)) {
+        this.warn('Installing optifine over a fabric! This might not work!')
       }
     }
 
-  async installByProfile(profile: InstallProfile, version ?: string) {
-      try {
-        await this.submit(installByProfileTask(profile, this.getPath(), {
-          ...this.getForgeInstallOptions(),
-        }).setName('installForge', { id: version ?? profile.version }))
-      } catch (err) {
-        if (err instanceof CancelledError) {
-          return
+    const java = this.javaService.getPreferredJava()?.path
+    const resourceService = this.resourceService
+    const error = this.error
+
+    const urls = [] as string[]
+    if (getApiSets(this.settings)[0].name === 'mcbbs') {
+      urls.push(
+        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+      )
+    } else {
+      urls.push(
+        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+      )
+    }
+    const result = await this.submit(task('installOptifine', async function () {
+      await this.yield(new DownloadTask({
+        ...downloadOptions,
+        url: urls,
+        destination: path,
+      }).setName('download'))
+      const resources = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
+      let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
+
+      if (options.inheritFrom) {
+        const parentJson: Version = JSON.parse(await readFile(minecraft.getVersionJson(options.inheritFrom), 'utf8'))
+        const json: Version = JSON.parse(await readFile(minecraft.getVersionJson(id), 'utf8'))
+        json.inheritsFrom = options.inheritFrom
+        json.id = `${options.inheritFrom}-Optifine-${version}`
+        if (installFromForge) {
+          json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker']
+          json.mainClass = parentJson.mainClass
         }
-        const forgeVersion = profile.version.indexOf('-forge-') !== -1
-          ? profile.version.replace(/-forge-/, '-')
-          : profile.version.indexOf('-forge') !== -1
-            ? profile.version.replace(/-forge/, '-')
-            : profile.version
-        await this.installForge({
-          version: forgeVersion,
-          mcversion: profile.minecraft,
-        })
-        this.warn(err)
+        const dest = minecraft.getVersionJson(json.id)
+        await ensureFile(dest)
+        await writeFile(dest, JSON.stringify(json, null, 4))
+        id = json.id
       }
+      return [id, resources[0]] as [string, Resource]
+    }, { id: optifineVersion }))
+
+    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${result[0]}`)
+
+    return result
+  }
+
+  @Singleton()
+  async installLiteloader(meta: LiteloaderVersion) {
+    try {
+      await this.submit(installLiteloaderTask(meta, this.getPath()))
+    } catch (err) {
+      this.warn(err)
     }
   }
+
+  async installByProfile(profile: InstallProfile, version?: string) {
+    try {
+      await this.submit(installByProfileTask(profile, this.getPath(), {
+        ...this.getForgeInstallOptions(),
+      }).setName('installForge', { id: version ?? profile.version }))
+    } catch (err) {
+      if (err instanceof CancelledError) {
+        return
+      }
+      const forgeVersion = profile.version.indexOf('-forge-') !== -1
+        ? profile.version.replace(/-forge-/, '-')
+        : profile.version.indexOf('-forge') !== -1
+          ? profile.version.replace(/-forge/, '-')
+          : profile.version
+      await this.installForge({
+        version: forgeVersion,
+        mcversion: profile.minecraft,
+      })
+      this.warn(err)
+    }
+  }
+}

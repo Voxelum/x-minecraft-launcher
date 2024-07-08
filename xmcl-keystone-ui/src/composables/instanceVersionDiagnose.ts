@@ -1,15 +1,14 @@
+import { injection } from '@/util/inject'
 import { getSWRV } from '@/util/swrvGet'
 import type { LibraryIssue } from '@xmcl/core'
-import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, LocalVersionHeader, ReadWriteLock, RuntimeVersions, ServerVersionHeader, getExpectVersion, parseOptifineVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, ReadWriteLock, RuntimeVersions, ServerVersionHeader, getExpectVersion, parseOptifineVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
-import { kInstanceVersionInstall, useInstanceVersionInstall } from './instanceVersionInstall'
+import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { LaunchMenuItem } from './launchButton'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getMinecraftVersionsModel } from './version'
-import { injection } from '@/util/inject'
-import { kLocalVersions } from './versionLocal'
 
 export const kInstanceVersionDiagnose: InjectionKey<ReturnType<typeof useInstanceVersionDiagnose>> = Symbol('InstanceVersionDiagnose')
 
@@ -54,7 +53,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       operation = async () => {
         const version = await install(runtime)
         if (version) {
-          await installDependencies(version)
+          await installDependencies(version, 'client')
         }
         await editInstance({
           instancePath: path.value,
@@ -78,7 +77,7 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
       operations.push(async () => {
         const version = await install(runtime.value, true)
         if (version) {
-          await installDependencies(version, false)
+          await installDependencies(version, 'client')
         }
       })
       items.push(jarIssue.type === 'corrupted'
@@ -260,29 +259,5 @@ export function useInstanceVersionDiagnose(path: Ref<string>, runtime: Ref<Runti
     issues: issueItems,
     fix,
     loading,
-  }
-}
-
-export function useInstanceServerDiagnose(runtime: Ref<RuntimeVersions>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, getResolvedServer: () => ServerVersionHeader | undefined) {
-  const { diagnoseJar, diagnoseProfile, getVanillaServerJar } = useService(DiagnoseServiceKey)
-  const { versions, servers } = injection(kLocalVersions)
-
-  async function diagnoseServerJar() {
-    const isMinecraftOnly = Object.keys(runtime.value).length === 1 && 'minecraft' in runtime.value
-
-    if (isMinecraftOnly) {
-      const resolved = resolvedVersion.value
-      if (resolved && 'requirements' in resolved) return undefined
-      const jar = await getVanillaServerJar(resolved)
-      return jar
-    }
-
-    const server = getResolvedServer()
-
-    return server
-  }
-
-  return {
-    diagnoseServerJar,
   }
 }

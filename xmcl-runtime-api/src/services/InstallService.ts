@@ -70,6 +70,8 @@ export interface InstallNeoForgedOptions {
    * The forge version (without minecraft version)
    */
   version: string
+
+  side?: 'client' | 'server'
 }
 
 export interface InstallFabricOptions {
@@ -117,7 +119,7 @@ export interface InstallService {
    * @param version The local version id
    * @param noAsset If true, will not install assets
    */
-  installDependencies(version: string, noAsset?: boolean): Promise<void>
+  installDependencies(version: string, side?: 'client' | 'server'): Promise<void>
   /**
    * Install labymod to a minecraft version
    * @param options The install option
@@ -145,16 +147,16 @@ export interface InstallService {
   /**
    * Install neoForged to the minecraft
    */
-  installNeoForged(options: InstallNeoForgedOptions): Promise<string | undefined>
+  installNeoForged(options: InstallNeoForgedOptions): Promise<string>
   /**
    * Install forge by forge version metadata and minecraft
    */
-  installForge(options: InstallForgeOptions): Promise<string | undefined>
+  installForge(options: InstallForgeOptions): Promise<string>
   /**
    * Install fabric to the minecraft
    * @param options Install options for fabric
    */
-  installFabric(options: InstallFabricOptions): Promise<string | undefined>
+  installFabric(options: InstallFabricOptions): Promise<string>
   /**
    * Install the optifine to the minecraft
    */

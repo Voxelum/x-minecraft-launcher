@@ -31,11 +31,31 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     })
   }
 
-  getEULA(instancePath: string): Promise<boolean> {
+  getServerProperties(instancePath: string): Promise<Record<string, string>> {
+    const path = join(instancePath, 'server.properties')
+    const content = readFile(path, 'utf-8').catch(() => '')
+    const properties = content.then((content) => {
+      const lines = content.split('\n').filter(v => v.trim().length > 0)
+      const mapped = lines.map((l) => l.split('='))
+      return mapped.reduce((a, b) => Object.assign(a, { [b[0]]: b[1] }), {})
+    })
+    return properties
+  }
+
+  async setServerProperties(instancePath: string, properties: Record<string, string>): Promise<void> {
+    const path = join(instancePath, 'server.properties')
+    const content = Object.entries(properties).map(([k, v]) => `${k}=${v}`).join('\n') + '\n'
+    await writeFile(path, content)
+  }
+
+  async getEULA(instancePath: string): Promise<boolean> {
     const optionsPath = join(instancePath, 'eula.txt')
-    return readFile(optionsPath, 'utf-8').then((content) => {
+    try {
+      const content = await readFile(optionsPath, 'utf-8')
       return content.includes('eula=true')
-    }).catch(() => false)
+    } catch {
+      return false
+    }
   }
 
   setEULA(instancePath: string, value: boolean): Promise<void> {

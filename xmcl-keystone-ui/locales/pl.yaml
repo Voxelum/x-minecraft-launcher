@@ -263,7 +263,7 @@ errors:
   NotFoundError: 404 Nie znaleziono
   SocketError: Błąd gniazda serwera
 eula:
-  body: Klikając przycisk {accept} poniżej, wyrażasz zgodę na naszą {eula}.
+  body: Zaznaczając przycisk pola wyboru, wyrażasz zgodę na naszą {eula}.
 exception:
   http: >-
     Żądanie HTTP do {url} nie powiodło się. Kod statusu {statusCode}. {code}.
@@ -1094,6 +1094,7 @@ save:
     fromProfile: Z innych instancji
     fromResource: Z zarządzanych zasobów
     title: Importuj zapis z zarządzanego źródła
+  createNew: Stworzyć nowy świat
   createdWorlds: Masz {count} światów
   deleteHint: >-
     Tej operacji nie można przywrócić. Zapisane dane zostaną utracone na zawsze.
@@ -1110,6 +1111,7 @@ save:
   manage: Zarządzanie oszczędnościami
   name: Save | Saves
   showDirectory: Pokaż katalog zapisu
+saves: {}
 screenshots:
   empty: Nie masz zrzutów ekranu
   goto: Otwórz folder
@@ -1126,8 +1128,10 @@ server:
   host: Host
   hostHint: Host (z portem) serwera
   ipAddress: Adres IP
+  maxPlayers: Maksimum graczy
   motd: MOTD serwera
   name: Serwer | Serwery
+  onlineMode: Tryb online
   ping: Ping
   pings: Pings
   players: Gracze

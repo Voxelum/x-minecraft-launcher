@@ -282,7 +282,7 @@ errors:
   NotFoundError: 404 未找到资源
   SocketError: 服务器连接断开
 eula:
-  body: 点击下面的{accept}按钮，即表示您同意我们的{eula}。
+  body: 选中右侧的选择框按钮即表示您同意我们的{eula}。
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
 existed: 已导入过的
@@ -1024,6 +1024,7 @@ save:
     fromProfile: 来自其他启动配置
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
+  createNew: 新存档
   createdWorlds: 创建了 {count} 个世界
   deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
   deleteTitle: 删除该存档
@@ -1038,6 +1039,7 @@ save:
   manage: 管理存档
   name: 地图存档 | 地图存档
   showDirectory: 显示保存目录
+saves: {}
 screenshots:
   empty: 您还没有截图
   goto: 显示文件夹
@@ -1054,8 +1056,10 @@ server:
   host: 服务器地址
   hostHint: 服务器的 IP 地址（和端口号）
   ipAddress: IP 地址
+  maxPlayers: 最大玩家数
   motd: 服务器 MOTD
   name: 服务器名
+  onlineMode: 在线模式 (只允许正版)
   ping: Ping 服务器
   pings: 延迟
   players: 玩家

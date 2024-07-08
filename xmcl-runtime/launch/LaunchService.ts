@@ -60,6 +60,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const mc = MinecraftFolder.from(options.gameDirectory)
     const classPath = [
       ...version.libraries.filter((lib) => !lib.isNative).map((lib) => mc.getLibraryByPath(lib.download.path)),
+      mc.getVersionJar(version.minecraftVersion, 'server'),
     ]
 
     /**
@@ -271,7 +272,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           this.log('Launching a server')
         }
 
-        this.log('Launching with these option...')
+        this.log('Launching client with these option...')
         this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
         process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
       } else {
@@ -285,7 +286,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           }
         }
 
-        this.log('Launching with these option...')
+        this.log('Launching server with these option...')
         this.log(JSON.stringify(launchOptions, (k, v) => (k === 'accessToken' ? '***' : v), 2))
         process = await this.#track(launchServer(launchOptions), 'spawn-minecraft-process', operationId)
       }

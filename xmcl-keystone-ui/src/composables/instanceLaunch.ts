@@ -7,7 +7,14 @@ import { useGlobalSettings, useSettingsState } from './setting'
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
 
-export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
+export function useInstanceLaunch(
+  instance: Ref<Instance>,
+  version: Ref<string | undefined>,
+  serverVersion: Ref<string | undefined>,
+  java: Ref<JavaRecord | undefined>,
+  userProfile: Ref<UserProfile>,
+  globalState: ReturnType<typeof useSettingsState>,
+) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
@@ -89,11 +96,13 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, id: string, side = 'client' as 'client' | 'server') {
-    const ver = resolvedVersion.value
-    if (!ver || 'requirements' in ver) {
+  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server') {
+    const ver = side === 'client' ? version.value : serverVersion.value
+
+    if (!ver) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
+
     const javaRec = java.value
     if (!javaRec) {
       throw new LaunchException({ type: 'launchNoProperJava', javaPath: '' })
@@ -113,7 +122,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       }
       console.log('preparing authlib')
       yggdrasilAgent = {
-        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
+        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', operationId),
         server: userProfile.value.authority,
       }
     }
@@ -134,7 +143,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
         [instancePath]: 'assigning-memory',
       }
       console.log('assigning memory')
-      const mem = await track(getMemoryStatus(), 'get-memory-status', id)
+      const mem = await track(getMemoryStatus(), 'get-memory-status', operationId)
       minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
     } else {
       minMemory = undefined
@@ -145,8 +154,8 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     const mcOptions = inst.mcOptions ?? globalMcOptions.value.filter(v => !!v)
 
     const options: LaunchOptions = {
-      operationId: id,
-      version: ver.id,
+      operationId,
+      version: ver,
       gameDirectory: instance.value.path,
       user: userProfile.value,
       java: javaRec.path,
@@ -198,6 +207,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
           pid,
           ready: false,
           options,
+          side,
         })
       }
     } catch (e) {

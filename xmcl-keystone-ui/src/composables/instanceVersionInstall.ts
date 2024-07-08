@@ -1,6 +1,6 @@
 import { getSWRV } from '@/util/swrvGet'
 import { ResolvedVersion } from '@xmcl/core'
-import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { InstallServiceKey, LocalVersionHeader, RuntimeVersions, ServerVersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
@@ -8,7 +8,7 @@ import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsMod
 
 export const kInstanceVersionInstall = Symbol('InstanceVersionInstall') as InjectionKey<ReturnType<typeof useInstanceVersionInstall>>
 
-export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
+export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>, servers: Ref<ServerVersionHeader[]>) {
   const {
     installForge,
     installNeoForged,
@@ -113,10 +113,10 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     return minecraft
   }
 
-  async function installServer(runtime: RuntimeVersions, path: string, resolvedVersion: ResolvedVersion | undefined) {
+  async function installServer(runtime: RuntimeVersions, path: string, versionId: string | undefined) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
 
-    if (resolvedVersion) {
+    if (versionId) {
       await installMinecraftServerJar(minecraft)
     } else {
       const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
@@ -125,24 +125,37 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     }
 
     if (forge) {
+      const forgeServer = servers.value.find(v => v.version === forge && v.minecraft === minecraft && v.type === 'forge')
+      if (forgeServer) return forgeServer.id
       const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
       const found = forgeVersions.find(v => v.version === forge)
       const forgeVersionId = found?.version ?? forge
-      await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side: 'server', root: path })
-      return
+      const id = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side: 'server', root: path })
+      return id
     }
 
     if (neoForged) {
-      return
+      const neoForgeServer = servers.value.find(v => v.version === neoForged && v.minecraft === minecraft && v.type === 'neoforge')
+      if (neoForgeServer) return neoForgeServer.id
+
+      return await installNeoForged({ version: neoForged, minecraft, side: 'server' })
     }
 
     if (fabricLoader) {
+      const fabricServer = servers.value.find(v => v.version === fabricLoader && v.minecraft === minecraft && v.type === 'fabric')
+      if (fabricServer) return fabricServer.id
+
       return await installFabric({ loader: fabricLoader, minecraft, side: 'server' })
     }
 
     if (quiltLoader) {
-      return
+      const quiltServer = servers.value.find(v => v.version === quiltLoader && v.minecraft === minecraft && v.type === 'quilt')
+      if (quiltServer) return quiltServer.id
+
+      return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft, side: 'server' })
     }
+
+    return minecraft
   }
 
   return {
