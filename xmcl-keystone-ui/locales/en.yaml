@@ -274,11 +274,11 @@ feedback:
   discord: Discord
   discordDescription: Join Discord Channel
   discordJoin: Join
+  generateReport: Generate Report
+  generateSaveAs: Save the report to
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
-  generateReport: Generate Report
-  generateSaveAs: Save the report to
   hint: >-
     Click the button to create the report and contact the developer team.
     The report will contains your device info including operating system type,
