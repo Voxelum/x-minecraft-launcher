@@ -41,7 +41,16 @@ export class LaunchService extends AbstractService implements ILaunchService {
   }
 
   #generateServerOptions(options: LaunchOptions, version: ResolvedServerVersion) {
-    const javaPath = options.java
+    let javaPath = options.java
+
+    if (javaPath.endsWith('java.exe')) {
+      // use javaw.exe
+      javaPath = javaPath.substring(0, javaPath.length - 4) + 'w.exe'
+    } else if (javaPath.endsWith('java')) {
+      // use javaw
+      javaPath = javaPath + 'w'
+    }
+
     const yggdrasilAgent = options.yggdrasilAgent
 
     const minecraftFolder = new MinecraftFolder(options.gameDirectory)
@@ -83,6 +92,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       extraJVMArgs: jvmArgs,
       extraMCArgs: mcArgs,
+
+      nogui: options.nogui,
     }
 
     return launchOptions
@@ -409,7 +420,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const process = this.processes[pid]
     delete this.processes[pid]
     if (process) {
-      process.process.kill()
+      if (process.side === 'client') {
+        process.process.kill()
+      } else {
+        process.process.stdin?.write('/stop\n')
+      }
     }
   }
 

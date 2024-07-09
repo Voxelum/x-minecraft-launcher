@@ -111,6 +111,8 @@ export interface LaunchOptions {
   mcOptions?: string[]
 
   disableElyByAuthlib?: boolean
+
+  nogui?: boolean
 }
 
 export interface GameProcess {

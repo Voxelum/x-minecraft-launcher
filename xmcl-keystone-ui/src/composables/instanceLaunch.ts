@@ -96,7 +96,7 @@ export function useInstanceLaunch(
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server') {
+  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server', nogui?: boolean) {
     const ver = side === 'client' ? version.value : serverVersion.value
 
     if (!ver) {
@@ -170,14 +170,15 @@ export function useInstanceLaunch(
       disableElyByAuthlib,
       side,
       server: inst.server ?? undefined,
+      nogui,
     }
     return options
   }
 
-  async function _launch(instancePath: string, operationId: string, side: 'client' | 'server') {
+  async function _launch(instancePath: string, operationId: string, side: 'client' | 'server', nogui?: boolean) {
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(instancePath, operationId, side)
+      const options = await generateLaunchOptions(instancePath, operationId, side, nogui)
 
       if (!options.skipAssetsCheck) {
         allLaunchingStatus.value = {
@@ -219,10 +220,10 @@ export function useInstanceLaunch(
     }
   }
 
-  async function launchWithTracking(side = 'client' as 'client' | 'server') {
+  async function launchWithTracking(side = 'client' as 'client' | 'server', nogui?: boolean) {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
-    await track(_launch(instancePath, operationId, side), 'launch', operationId)
+    await track(_launch(instancePath, operationId, side, nogui), 'launch', operationId)
   }
 
   async function killGame() {

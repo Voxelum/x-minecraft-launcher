@@ -1131,6 +1131,7 @@ server:
   maxPlayers: Maksimum graczy
   motd: MOTD serwera
   name: Serwer | Serwery
+  nogui: Brak interfejsu graficznego serwera
   onlineMode: Tryb online
   ping: Ping
   pings: Pings

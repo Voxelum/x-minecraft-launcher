@@ -14,28 +14,24 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
 
   const linkFolder = async (gameDirectory: string, folder: string) => {
-    const libPath = getPath(folder)
-    const destPath = join(gameDirectory, folder)
-    const linkTarget = await readlink(destPath).catch(() => undefined)
-    if (linkTarget && linkTarget !== libPath) {
+    const fromPath = getPath(folder)
+    const toPath = join(gameDirectory, folder)
+    const linkTarget = await readlink(toPath).catch(() => undefined)
+    if (linkTarget) {
       // relink
-      await unlink(destPath)
-      await symlink(libPath, destPath)
+      if (linkTarget !== fromPath) {
+        await unlink(toPath)
+        await symlink(fromPath, toPath)
+      }
       return
     }
-    const fstat = await stat(destPath).catch((e) => undefined)
+    const fstat = await stat(toPath).catch((e) => undefined)
     if (!fstat) {
-      await symlink(libPath, destPath)
+      await symlink(fromPath, toPath)
       return
     }
-    if (fstat.isSymbolicLink() && (await readlink(destPath) !== libPath)) {
-      // relink
-      await unlink(destPath)
-      await symlink(libPath, destPath)
-      return
-    }
-    await move(destPath, join(gameDirectory, folder + '.bk'))
-    await symlink(libPath, destPath)
+    await move(toPath, join(gameDirectory, folder + '.bk'))
+    await symlink(fromPath, toPath)
   }
 
   launchService.registerMiddleware({

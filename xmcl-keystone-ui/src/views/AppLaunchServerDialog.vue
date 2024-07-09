@@ -48,6 +48,11 @@
             hide-details
           />
           <v-checkbox
+            v-model="nogui"
+            class="col-start-1"
+            :label="t('server.nogui')"
+          />
+          <v-checkbox
             v-model="onlineMode"
             class="col-start-3"
             :label="t('server.onlineMode')"
@@ -146,12 +151,6 @@
       </div>
       <v-divider />
       <div class="flex p-4">
-        <v-btn text>
-          <v-icon>
-            close
-          </v-icon>
-          {{ t('cancel') }}
-        </v-btn>
         <div class="flex-grow" />
         <v-btn
           color="primary"
@@ -190,6 +189,7 @@ const motd = ref('')
 const maxPlayers = ref(20)
 const onlineMode = ref(false)
 const isAcceptEula = ref(false)
+const nogui = ref(false)
 const linkedWorld = ref('')
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
@@ -272,7 +272,7 @@ const { refresh: onPlay, refreshing: loading } = useRefreshable(async () => {
       saveName: linkedWorld.value,
     })
   }
-  await launch('server')
+  await launch('server', nogui.value)
 })
 
 </script>

@@ -825,6 +825,7 @@ server:
   maxPlayers: Jugadores máximos
   motd: MOTD del Servidor
   name: Servidor | Servidores
+  nogui: Sin interfaz gráfica de usuario
   onlineMode: Modo en línea
   ping: Ping
   pings: Pings

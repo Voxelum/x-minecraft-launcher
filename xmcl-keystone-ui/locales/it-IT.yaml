@@ -1132,6 +1132,7 @@ server:
   maxPlayers: Giocatori massimi
   motd: MOTD server
   name: Server | Server
+  nogui: Nessuna GUI del server
   onlineMode: Modalità online
   ping: Ping
   pings: Ping

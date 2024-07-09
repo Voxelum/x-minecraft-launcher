@@ -1133,6 +1133,7 @@ server:
   maxPlayers: ''
   motd: Szerver MOTD
   name: Szerver | Szerverek
+  nogui: Nincs Server Gui
   onlineMode: Online mód
   ping: Ping
   pings: Pingek

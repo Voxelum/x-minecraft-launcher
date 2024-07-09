@@ -1059,6 +1059,7 @@ server:
   maxPlayers: 最大玩家数
   motd: 服务器 MOTD
   name: 服务器名
+  nogui: 隐藏服务器 GUI
   onlineMode: 在线模式 (只允许正版)
   ping: Ping 服务器
   pings: 延迟

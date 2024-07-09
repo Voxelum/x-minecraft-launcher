@@ -1183,6 +1183,7 @@ server:
   maxPlayers: Maximale Spieleranzahl
   motd: Beschreibung des Servers
   name: Server | Server
+  nogui: Keine Server-GUI
   onlineMode: Onlinemodus
   ping: Ping
   pings: Pings
