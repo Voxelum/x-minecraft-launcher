@@ -190,13 +190,27 @@
             <v-list-item-title>
               {{ t('multiplayer.currentNatTitle') }}
             </v-list-item-title>
-            <v-list-item-subtitle v-shared-tooltip="_ => ips.join(', ')">
+            <v-list-item-subtitle>
               <span>
                 {{ t('multiplayer.currentIpTitle') }}
               </span>
-              <span class="font-bold">
+              <v-chip
+                label
+                small
+                outlined
+                @click="hideIp = !hideIp"
+              >
+                <v-icon
+                  left
+                  small
+                >
+                  {{ !hideIp ? 'visibility' : 'visibility_off' }}
+                </v-icon>
+                {{ hideIp ? '***.***.***.***' : ips.join(', ') }}
+              </v-chip>
+              <!-- <span class="font-bold">
                 {{ ips.join(', ') }}
-              </span>
+              </span> -->
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action class="flex flex-shrink flex-grow-0 flex-row self-center">
@@ -502,6 +516,8 @@ const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
+
+const hideIp = ref(true)
 
 const open = (...args: any[]) => window.open(...args)
 
