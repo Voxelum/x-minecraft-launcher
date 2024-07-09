@@ -18,6 +18,7 @@ import { joinUrl } from '~/util/url'
 import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
 import { missing } from '../util/fs'
+import { spawn } from 'child_process'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -41,6 +42,24 @@ export class InstallService extends AbstractService implements IInstallService {
     const options: InstallForgeOptions = {
       ...this.downloadOptions,
       java: this.javaService.getPreferredJava()?.path,
+      spawn: (cmd, args, opts) => {
+        const a = args ? [...args] : []
+        if (this.settings.httpProxy && this.settings.httpProxyEnabled) {
+          const parsed = new URL(this.settings.httpProxy)
+          if (parsed.hostname && parsed.port) {
+            a.unshift(
+              `-Dhttp.proxyHost=${parsed.hostname}`, `-Dhttp.proxyPort=${parsed.port}`,
+              `-Dhttps.proxyHost=${parsed.hostname}`, `-Dhttps.proxyPort=${parsed.port}`,
+            )
+          } else {
+            // use system proxy
+            a.unshift(
+              '-Djava.net.useSystemProxies=true',
+            )
+          }
+        }
+        return spawn(cmd, a, opts || {})
+      },
     }
 
     const allSets = getApiSets(this.settings)

@@ -1,6 +1,7 @@
 <template>
   <v-list
-    class="w-200 stepper-select mx-auto flex flex-grow-0 flex-col gap-2 bg-transparent px-2"
+    color="transparent"
+    class="w-200 stepper-select mx-auto flex flex-grow-0 flex-col gap-2 px-2"
     three-line
   >
     <v-list-item

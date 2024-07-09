@@ -92,6 +92,10 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    * Show current window
    */
   show(): void
+  /**
+   * Flash the window's frame and taskbar icon
+   */
+  flashFrame(): void
 
   focus(): void
   /**

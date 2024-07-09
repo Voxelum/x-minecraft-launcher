@@ -11,7 +11,8 @@
       <v-list
         three-line
         subheader
-        style="background: transparent; width: 100%"
+        color="transparent"
+        style="width: 100%"
       >
         <v-list-item>
           <div class="mt-4 grid grid-cols-4 gap-4">

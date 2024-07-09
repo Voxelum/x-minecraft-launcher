@@ -11,7 +11,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
     if (request.url.host === 'launcher') return
     const body = request.body
     try {
-      const resp = await net.fetch(request.url.toString(), {
+      const resp = await app.fetch(request.url.toString(), {
         headers: request.headers,
         method: request.method,
         body: body instanceof Readable ? Readable.toWeb(body) as any : body,

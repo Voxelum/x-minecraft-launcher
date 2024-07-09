@@ -69,7 +69,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await this.submit(updateInstanceTask)
       await removeInstallProfile(instancePath)
     } catch (e) {
-      await writeInstallProfile(instancePath, files)
+      const unfinished = files.filter(f => !handler.finished.has(f))
+      await writeInstallProfile(instancePath, unfinished)
       throw Object.assign(e as any, {
         name: (e as any).name === 'Error' ? 'InstallInstanceFilesError' : (e as any).name,
         installInstance: {

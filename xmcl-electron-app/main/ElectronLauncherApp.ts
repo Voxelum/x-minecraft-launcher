@@ -1,14 +1,16 @@
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
-import { Menu, app, shell } from 'electron'
+import { Menu, app, net, shell } from 'electron'
 import { join } from 'path'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
+import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
 import { isDirectory } from './utils/fs'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
+import { ElectronSession } from './ElectronSession'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -88,17 +90,24 @@ const getEnv = () => {
 }
 
 export default class ElectronLauncherApp extends LauncherApp {
+  readonly session: ElectronSession
+
   constructor() {
     super(app,
       new ElectronShell(),
-      new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, 'secret')),
+      new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),
       (app) => new ElectronController(app as ElectronLauncherApp),
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,
       getEnv(),
       definedPlugins,
     )
+    this.session = new ElectronSession(this)
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
+  }
+
+  fetch = (...args: any[]) => {
+    return net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
   }
 
   windowsUtils = getWindowsUtils(this, this.logger)

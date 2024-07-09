@@ -7,10 +7,14 @@ AppAddInstanceDialog:
   downloadedNotification: '{name} 整合包下载完成，您想要现在创建吗？'
   serverTitle: 输入您的服务器地址
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    如果您不想搞乱当前实例。
+    您还可以从对等方的配置创建一个新实例。
+    单击下面的按钮创建实例。
   baseInfo: 分享的基本配置
   cancelShare: 取消分享
   description: 分享后，您的联机伙伴将可以下载您分享的游戏资源
-  downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例中。
+  downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
   downloadTitle: 从其他玩家那获得游戏资源
   downloadToLocal: 下载到当前实例中
   filesToDownload: 选择您想下载的文件
@@ -917,6 +921,8 @@ multiplayer:
   sendTokenToRemote: 将本地令牌给您的联机伙伴
   share: 分享启动配置
   sharing: 正在共享游戏配置...
+  sharingNotificationBody: 您可以从 {name} 共享配置下载或创建实例。
+  sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
 myStuff: 个人中心

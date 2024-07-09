@@ -270,7 +270,7 @@
     <div class="grid w-full grid-cols-4 gap-2">
       <v-tabs-items
         v-model="tab"
-        class="main-content h-full max-h-full max-w-full bg-transparent p-4"
+        class="main-content h-full max-h-full max-w-full bg-transparent! p-4"
       >
         <v-tab-item>
           <v-expansion-panels

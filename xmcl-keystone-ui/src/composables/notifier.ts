@@ -4,11 +4,17 @@ export type Level = 'success' | 'info' | 'warning' | 'error'
 export const kNotificationQueue: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')
 
 export interface LocalNotification {
-  level: Level
+  level?: Level
+  icon?: string
   title: string
   body?: string
   more?(): void
-  full?: boolean
+  operations?: Array<{
+    text: string
+    icon?: string
+    color?: string
+    handler(): void
+  }>
 }
 export type Notify = (notification: LocalNotification) => void
 export type SubscribeOptions = {
@@ -44,8 +50,6 @@ export function useNotifier(queue = inject(kNotificationQueue)) {
   return {
     notify,
     subscribeTask,
-    // subscribe,
-    // watcher,
     watcherTask,
   }
 }

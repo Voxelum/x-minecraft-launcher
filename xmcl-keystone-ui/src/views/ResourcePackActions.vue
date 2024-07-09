@@ -10,7 +10,7 @@
       <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip="_ => t('resourcepack.name', 2)"
+      v-shared-tooltip="_ => t('resourcepack.showDirectory')"
       icon
       large
       @click="showDirectory(path)"

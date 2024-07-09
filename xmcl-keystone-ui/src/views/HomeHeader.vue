@@ -23,7 +23,6 @@
       <AvatarItem
         v-if="isResolvedVersion(resolvedVersion)"
         v-ripple
-        color="primary"
         icon="fact_check"
         class="ml-2 cursor-pointer"
         :title="t('version.name', 2)"

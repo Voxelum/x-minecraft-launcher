@@ -10,6 +10,7 @@ import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import debounce from 'lodash.debounce'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -53,6 +54,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             }
           }
           state.instanceModUpdates(all)
+          if (all.length > 10) {
+            debouncedRevalidate()
+          }
           if (badResources.length > 0) {
             this.error(new AnyError('InstanceModUpdateError', 'Some resources are not valid', {}, { resources: badResources }))
           }
@@ -142,21 +146,16 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
       this.log(`Mounted on instance mods: ${basePath}`)
 
-      return [state, () => {
-        watcher.close()
-        listener.removeListener('resourceAdd', onResourceUpdate)
-          .removeListener('resourceUpdate', onResourceUpdate)
-      }, async () => {
-        // relvaidate
+      const revalidate = async () => {
         const files = await readdirIfPresent(basePath)
         const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
         const current = state.mods.length
-        if (current !== expectFiles.length) {
+        // Find differences
+        const currentFiles = state.mods.map(r => r.path)
+        const added = expectFiles.filter(f => !currentFiles.includes(f))
+        const removed = currentFiles.filter(f => !expectFiles.includes(f))
+        if (current !== expectFiles.length || added.length > 0 || removed.length > 0) {
           this.log(`Instance mods count mismatch: ${current} vs ${expectFiles.length}`)
-          // Find differences
-          const currentFiles = state.mods.map(r => r.path)
-          const added = expectFiles.filter(f => !currentFiles.includes(f))
-          const removed = currentFiles.filter(f => !expectFiles.includes(f))
           if (added.length > 0) {
             this.log(`Instance mods added: ${added.length}`)
             for (const f of added) { processUpdate(f) }
@@ -166,7 +165,14 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             for (const f of removed) { processRemove(f) }
           }
         }
-      }]
+      }
+      const debouncedRevalidate = debounce(revalidate, 500)
+
+      return [state, () => {
+        watcher.close()
+        listener.removeListener('resourceAdd', onResourceUpdate)
+          .removeListener('resourceUpdate', onResourceUpdate)
+      }, revalidate]
     })
   }
 

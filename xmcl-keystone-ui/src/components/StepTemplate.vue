@@ -9,7 +9,8 @@
     />
     <v-list
       v-else
-      class="flex flex-col overflow-auto bg-transparent p-0"
+      color="transparent"
+      class="flex flex-col overflow-auto p-0"
       two-line
     >
       <v-list-item class="mb-2">

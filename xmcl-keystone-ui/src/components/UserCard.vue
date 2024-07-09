@@ -151,7 +151,7 @@ async function onRefresh(force = false) {
     if (selected.value?.id || selected.value.invalidated || expired.value) {
       // Try to refresh
       const authority = selected.value?.authority
-      await refreshUser(selected.value.id, false, true).catch((e) => {
+      await refreshUser(selected.value.id, false, force).catch((e) => {
         console.error(e)
         reset({ username: selected.value?.username, authority, error: t('login.userRelogin') })
         login.value = true

@@ -1,7 +1,7 @@
 <template>
   <v-list
     two-line
-    class="overflow-y-auto bg-transparent"
+    class="overflow-y-auto bg-transparent!"
   >
     <v-list-item
       key="DEFAULT"

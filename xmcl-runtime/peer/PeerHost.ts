@@ -7,8 +7,9 @@ export function createHosting(peers: Peers) {
     const url = req.url ?? '/'
     if (url.startsWith('/files')) {
       // /files/<id>?path=<path>
-      const peerId = url.split('/')[2]
-      const filePath = new URL(url, 'http://localhost').searchParams.get('path')
+      const fullUrl = new URL(url, 'http://localhost')
+      const peerId = fullUrl.pathname.split('/')[2]
+      const filePath = fullUrl.searchParams.get('path')
       if (!filePath) {
         res.writeHead(400)
         res.end()

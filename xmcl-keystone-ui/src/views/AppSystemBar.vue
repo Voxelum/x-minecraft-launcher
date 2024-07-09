@@ -27,6 +27,7 @@
     <slot />
 
     <AppAudioPlayer
+      v-if="!noDebug"
       class="ml-22"
     />
     <div class="grow " />

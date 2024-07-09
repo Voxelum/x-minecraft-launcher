@@ -53,7 +53,7 @@ import { ResourcePackProject } from '@/composables/resourcePackSearch'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
+import { BaseServiceKey, ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   pack: ResourcePackProject
@@ -93,11 +93,19 @@ const tooltip = computed(() => compatible.value
 
 const { t } = useI18n()
 const { removeResources } = useService(ResourceServiceKey)
+const { showItemInDirectory } = useService(BaseServiceKey)
 
 const isBuiltIn = computed(() => props.pack.id === 'vanilla' || props.pack.id === 'fabric' || props.pack.id === 'file/mod_resources')
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
   if (props.pack.installed.length > 0) {
+    all.push({
+      text: t('resourcepack.showFile', { file: props.pack.installed[0].resource.path }),
+      onClick: () => {
+        showItemInDirectory(props.pack.installed[0].resource.path)
+      },
+      icon: 'folder',
+    })
     all.push({
       text: t('delete.name', { name: props.pack.title }),
       onClick: () => {

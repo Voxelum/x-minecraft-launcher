@@ -18,7 +18,7 @@ export class LinkFilesTask extends AbortableTask<void> {
     this.param = { count: this._total }
   }
 
-  tryLink = async (filePath: string, destination: string, size: number, fstat?: Stats) => {
+  tryLink = async (filePath: string, destination: string, size?: number, fstat?: Stats) => {
     if (fstat) {
       // existed file
       await unlink(destination)
@@ -30,7 +30,7 @@ export class LinkFilesTask extends AbortableTask<void> {
       await copyFile(filePath, destination)
     }
     this._progress++
-    this.update(size)
+    this.update(size ?? 0)
   }
 
   handleFile = async (job: { file: InstanceFile; destination: string; done?: boolean }) => {

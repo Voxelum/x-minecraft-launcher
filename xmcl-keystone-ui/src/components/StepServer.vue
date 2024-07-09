@@ -14,7 +14,8 @@
         <v-list
           three-line
           subheader
-          class="w-full bg-transparent pb-0"
+          color="transparent"
+          class="w-full pb-0"
         >
           <v-list-item>
             <v-card
@@ -105,7 +106,7 @@
                   <v-icon left>
                     wifi
                   </v-icon>
-                  {{ t('server.ping') }}
+                  {{ t('refresh') }}
                 </v-btn>
               </div>
             </div>

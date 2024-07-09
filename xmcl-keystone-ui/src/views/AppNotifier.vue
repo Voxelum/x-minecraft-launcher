@@ -1,19 +1,59 @@
 <template>
   <v-snackbar
     v-model="data.show"
+    :multi-line="data.operations.length > 0"
     :top="true"
     :right="true"
+    class="select-none"
   >
     <v-icon
+      v-if="data.level"
       :color="colors[data.level]"
       left
     >
       {{ icons[data.level] }}
     </v-icon>
 
-    <span v-if="!data.full">{{ levelText }}</span>
+    <span v-if="data.level === 'error' || data.level === 'warning'">{{ levelText }}</span>
 
-    {{ data.title }}
+    <span v-if="!data.body && !data.operations">
+      {{ data.title }}
+    </span>
+    <div
+      v-else
+      class="w-full"
+    >
+      <v-card
+        color="transparent"
+        flat
+      >
+        <v-card-title>
+          {{ data.title }}
+        </v-card-title>
+        <v-card-text v-if="data.body">
+          {{ data.body }}
+        </v-card-text>
+        <v-card-actions v-if="data.operations.length > 0">
+          <div class="flex-grow" />
+          <v-btn
+            v-for="op in data.operations"
+            :key="op.text"
+            text
+            small
+            :color="op.color"
+            @click="op.handler(); close()"
+          >
+            <v-icon
+              v-if="op.icon"
+              left
+            >
+              {{ op.icon }}
+            </v-icon>
+            {{ op.text }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
     <template #action>
       <v-btn
         v-if="data.more"
@@ -38,14 +78,20 @@
 <script lang=ts setup>
 import { Level, kNotificationQueue } from '../composables/notifier'
 import { injection } from '@/util/inject'
+import { useEventListener } from '@vueuse/core'
 
 const data = reactive({
   show: false,
-  level: 'info' as Level,
+  level: '' as Level | '',
   title: '',
   body: '',
   more: (() => { }) as ((() => void) | undefined),
-  full: false,
+  operations: [] as {
+    text: string
+    icon?: string
+    color?: string
+    handler: () => void
+  }[],
 })
 const queue = injection(kNotificationQueue)
 const queueLength = computed(() => queue.value.length)
@@ -59,14 +105,14 @@ const more = () => {
 function consume() {
   const not = queue.value.pop()
   if (not) {
-    data.level = not.level
+    data.level = not.level ?? ''
     data.title = not.title
-    data.full = not.full ?? false
     data.show = true
     data.more = not.more
+    data.body = not.body ?? ''
+    data.operations = not.operations ?? []
   }
 }
-
 watch(queueLength, (newLength, oldLength) => {
   if (newLength > oldLength && !data.show) {
     consume()
@@ -104,25 +150,12 @@ const colors = {
   info: 'white',
   warning: 'orange',
 }
-
-// return {
-//   ...refs,
-// }
-
-// export default defineComponent({
-//   setup() {
-//     const { level, title, more, show, full } = useNotifyQueueConsumer()
-//     return {
-//       close() { show.value = false },
-//       level,
-//       title,
-//       show,
-//       more,
-//       full,
-//     }
-//   },
-// })
 </script>
 
 <style>
+.v-snack__content {
+  display: flex;
+  padding-top: 0;
+  padding-bottom: 4px;
+}
 </style>

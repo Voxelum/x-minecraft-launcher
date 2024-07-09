@@ -88,6 +88,12 @@ export class LauncherApp extends EventEmitter {
    * The version of the launcher
    */
   get version() { return this.host.getVersion() }
+
+  get userAgent() {
+    const version = IS_DEV ? '0.0.0' : this.host.getVersion()
+    return `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
+  }
+
   /**
    * The launcher server/non-server protocol handler. Register the protocol handler to handle the request.
    */
@@ -406,4 +412,6 @@ export class LauncherApp extends EventEmitter {
     this.logger.log(`Current launcher core version is ${this.version}.`)
     this.logger.log('App booted')
   }
+
+  fetch = fetch
 }

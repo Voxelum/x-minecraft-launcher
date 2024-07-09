@@ -29,7 +29,7 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
     return reactive({
       name: basename(f.path),
       path: f.path,
-      size: f.size,
+      size: f.size ?? 0,
       data: {
         client: '',
         server: '',

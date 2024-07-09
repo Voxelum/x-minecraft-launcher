@@ -1,6 +1,6 @@
 import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
-import 'virtual:windi.css'
+import 'virtual:uno.css'
 import Vue, { h } from 'vue'
 import App from './App.vue'
 import { baseService } from './baseService'

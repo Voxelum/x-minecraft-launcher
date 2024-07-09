@@ -36,9 +36,12 @@ export class ReadWriteLock {
       signal.resolve(result)
     } catch (e) {
       signal.reject(e)
-      // no-op
     } finally {
       this.#down()
+      if (this.semaphore === 0) {
+        this.status = LockStatus.Idle
+        this.#processIfIdle()
+      }
     }
   }
 
@@ -59,7 +62,6 @@ export class ReadWriteLock {
           }
         }
       }
-      this.status = LockStatus.Idle
     }
   }
 

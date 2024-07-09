@@ -5,19 +5,25 @@ AppAddInstanceDialog:
   downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
+  alterDownloadDescription: |-
+    Se non vuoi rovinare l'istanza corrente. 
+    Puoi anche creare una nuova istanza dalla configurazione del tuo peer. 
+    Fai clic sul pulsante qui sotto per creare un'istanza.
   baseInfo: Impostazioni di base
   cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file
     tramite il tuo PC.
-  downloadDescription: >-
-    Verificare i file forniti dal peer. Selezionare il file da scaricare.
+  downloadDescription: |-
+    Verifica i file che ti sono stati forniti dal tuo collega. 
+    Seleziona il file che desideri scaricare. 
+    Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: "{user} ha appena condiviso l'istanza corrente con te"
+  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -55,7 +61,9 @@ HomeJavaIssueDialog:
     message: Usa Java {version} esistente nel tuo PC
     name: Passa a {version}
   recommendedVersionHint: La {version} consiglia di utilizzare Java con range {range}.
-  selectMatchedHint: Trovate versioni Java locali corrette. È possibile scegliere queste versioni Java locali.
+  selectMatchedHint: >-
+    Trovate versioni Java locali corrette. È possibile scegliere queste versioni
+    Java locali.
   selectSecondaryHint: >-
     Trovate alcune versioni Java locali, ma potrebbero non essere adatte ai
     criteri. Puoi comunque usarli per lanciare, ma questo problema persisterà.
@@ -141,7 +149,9 @@ dataMigration:
   setRootDescription: Questo cambierà la cartella dati radice di questo launcher e minecraft.
   setRootTitle: Imposta una nuova posizione di archiviazione
   unknownError: Errore sconosciuto! Riprova o contatta lo sviluppatore!
-  waitReload: Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i dati.
+  waitReload: >-
+    Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i
+    dati.
 delete:
   name: Elimina {name}
   'no': 'No'
@@ -218,38 +228,40 @@ duration:
   day: '{duration} giorno fa | {duration} giorni fa'
   hour: '{duration} ora fa | {duration} ore fa'
   minute: '{duration} minuto fa | {duration} minuti fa'
-  second: '{duration} secondo fa | {duration} seconid fa'
   name: Elimina {name}
   'no': 'No'
+  second: '{duration} secondo fa | {duration} seconid fa'
   'yes': Elimina
 edit: Modifica
 enable: Abilita
 error:
   name: Errore | Errori
 errors:
-    BadForgeInstallerJarError: >-
-      Impossibile analizzare il file jar dell'installatore di Forge. Forse
-      Forge ha un nuovo formato di file di installazione? Contattare gli sviluppatori
-      se il problema persiste.
-    BadInstanceType: "Non è un'istanza valida: {type}"
-    BodyTimeoutError: Timeout del corpo HTTP
-    ChecksumNotMatchError: Checksum non corrispondente! Aspettarsi {expect}. Reale {actual}.
-    ConnectTimeoutError: Timeout della connessione al server.
-    DNSNotFoundError: Errore di ricerca DNS
-    DatabaseNotOpened: >-
-      Il database non è aperto! Il launcher non funzionerà correttamente! Selezionare
-      una directory dati a cui il launcher può accedere. È possibile provare a
-      reimpostare la directory radice dei dati nella pagina delle impostazioni.
-    DownloadAggregateError: Impossibile scaricare il file.
-    DownloadFileSystemError: >-
-      Errore durante l'accesso al percorso del file di download. Assicurarsi che il
-      launcher abbia l'autorizzazione di scrittura su di esso.
-    HeadersTimeoutError: Timeout intestazione HTTP
-    NotFoundError: 404 Non trovato
-    SocketError: Errore del socket del server
+  BadForgeInstallerJarError: >-
+    Impossibile analizzare il file jar dell'installatore di Forge. Forse Forge
+    ha un nuovo formato di file di installazione? Contattare gli sviluppatori se
+    il problema persiste.
+  BadInstanceType: 'Non è un''istanza valida: {type}'
+  BodyTimeoutError: Timeout del corpo HTTP
+  ChecksumNotMatchError: Checksum non corrispondente! Aspettarsi {expect}. Reale {actual}.
+  ConnectTimeoutError: Timeout della connessione al server.
+  DNSNotFoundError: Errore di ricerca DNS
+  DatabaseNotOpened: >-
+    Il database non è aperto! Il launcher non funzionerà correttamente!
+    Selezionare una directory dati a cui il launcher può accedere. È possibile
+    provare a reimpostare la directory radice dei dati nella pagina delle
+    impostazioni.
+  DownloadAggregateError: Impossibile scaricare il file.
+  DownloadFileSystemError: >-
+    Errore durante l'accesso al percorso del file di download. Assicurarsi che
+    il launcher abbia l'autorizzazione di scrittura su di esso.
+  HeadersTimeoutError: Timeout intestazione HTTP
+  NotFoundError: 404 Non trovato
+  SocketError: Errore del socket del server
 exception:
   http: >-
-    La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}. {code}.
+    La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
+    {code}.
       Riprova o controlla la tua rete. Se il problema persiste, invia un report
       allo sviluppatore team.
 existed: Esistito
@@ -281,7 +293,8 @@ feedback:
   name: Feedback
   qq: Gruppo QQ
   qqDescription: >-
-    Entra nel gruppo di feedback QQ e parla direttamente con gli autori. Numero di
+    Entra nel gruppo di feedback QQ e parla direttamente con gli autori. Numero
+    di
       gruppo: {number}
   qqEnterGroup: Unisciti
 fileDetail:
@@ -291,7 +304,8 @@ filter: Filtro
 finish: Finito
 forgeConfig:
   hint: >-
-    Avvia almeno una volta il gioco con questa mod, in modo che possiamo rilevare
+    Avvia almeno una volta il gioco con questa mod, in modo che possiamo
+    rilevare
       il suo file di configurazione!
 forgeVersion:
   common: Comune
@@ -372,11 +386,15 @@ instance:
   addServer: Aggiungi server
   current: Istanza corrente
   delete: Elimina gioco
-  deleteHint: I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro di voler fare questo?
+  deleteHint: >-
+    I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
+    di voler fare questo?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
   fileApi: L'URL API del server di sincronizzazione dei file
-  fileApiHint: L'URL per sincronizzare i file dell'istanza da un server di configurazione remoto.
+  fileApiHint: >-
+    L'URL per sincronizzare i file dell'istanza da un server di configurazione
+    remoto.
   gameVersion: Versione del gioco
   icon: Icona profilo
   iconUrl: Icona Url
@@ -408,11 +426,11 @@ instanceFileOperation:
   remove: Rimuovi
 instanceSetting:
   disableAuthlibInjector: Disabilita l'iniezione di authlib
-  disableAuthlibInjectorDescription: >-
+  disableAuthlibInjectorDescription: |-
     Se si utilizza un sistema di skin di terze parti. L'iniezione di authlib può
       aiutarti a visualizzare la pelle nel gioco.
   disableElyByAuthlib: Disabilita la sostituzione di authlib di ely.by
-  disableElyByAuthlibDescription: >-
+  disableElyByAuthlibDescription: |-
     Ely.by ha una sostituzione di authlib unica per visualizzare la pelle
       universalmente in qualsiasi server.
   fastLaunch: Lancio Turbo
@@ -420,7 +438,9 @@ instanceSetting:
   hideLauncher: Nascondi il launcher dopo l'avvio
   icon: Scegli un'immagine
   showLog: Mostra il registro di Minecraft
-  showLogHint: Verrà visualizzata una finestra per trasmettere il registro di Minecraft dopo l'avvio del gioco
+  showLogHint: >-
+    Verrà visualizzata una finestra per trasmettere il registro di Minecraft
+    dopo l'avvio del gioco
 instanceTemplate:
   curseforge: Questo è un modpack Curseforge
   ftb: Questo è un modpack FTB
@@ -454,8 +474,8 @@ instances:
   addTemplateDescription: Importa da Modpack scaricato
   addVanilla: Crea da Minecraft vanilla
   addVanillaDescription: >-
-    Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di gioco
-    originale in XMCL.
+    Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
+    gioco originale in XMCL.
   choose: Seleziona gioco
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
@@ -491,7 +511,9 @@ launch:
 launchBlocked:
   ignore: Forza avvio
   launchBadVersion:
-    description: Il file json della versione {version} è danneggiato. Forse reinstallare questa versione?
+    description: >-
+      Il file json della versione {version} è danneggiato. Forse reinstallare
+      questa versione?
     title: File json non valido
   launchGeneralException:
     description: Alcuni errori hanno causato l'arresto dell'avvio.
@@ -503,17 +525,19 @@ launchBlocked:
     title: Percorso Java non valido
   launchJavaNoPermission:
     description: >-
-      Il launcher non ha i permessi per eseguire Java <span
-      class="highlight"> {javaPath} </span>. Modificare i permessi del file Java o
-      elevare i permessi del launcher.
+      Il launcher non ha i permessi per eseguire Java <span class="highlight">
+      {javaPath} </span>. Modificare i permessi del file Java o elevare i
+      permessi del launcher.
     title: Nessun permesso di avvio
   launchNoProperJava:
     description: >-
-      Nessuna versione Java corretta può essere selezionata per avviare il gioco.
-      ({javaPath} non è valido?)
+      Nessuna versione Java corretta può essere selezionata per avviare il
+      gioco. ({javaPath} non è valido?)
     title: Java corretto non trovato
   launchNoVersionInstalled:
-    description: Impossibile risolvere la versione <span class="highlight">{version}</span> per l'avvio.
+    description: >-
+      Impossibile risolvere la versione <span class="highlight">{version}</span>
+      per l'avvio.
     title: Nessuna versione selezionata
   launchSpawnProcessFailed:
     description: >-
@@ -527,18 +551,22 @@ launchBlocked:
     Questo è inaspettato. È possibile riavviare il launcher per attenuare il
     problema. Contattare l'autore se il problema si verifica nuovamente.
   userAcquireMicrosoftTokenFailed: >-
-    Impossibile acquisire il token Microsoft. Controllare la connessione di rete o
-    l'account Microsoft.
-  userCheckGameOwnershipFailed: Impossibile verificare la proprietà del gioco. Riprovare o controllare la connessione di rete.
+    Impossibile acquisire il token Microsoft. Controllare la connessione di rete
+    o l'account Microsoft.
+  userCheckGameOwnershipFailed: >-
+    Impossibile verificare la proprietà del gioco. Riprovare o controllare la
+    connessione di rete.
   userExchangeXboxTokenFailed: >-
     Impossibile scambiare il token Xbox con il token Microsoft. Riprovare o
     controllare la connessione di rete.
   userLoginMinecraftByXboxFailed: >-
-    Impossibile accedere a Minecraft con il token Xbox. Riprovare o controllare la
-    connessione di rete.
+    Impossibile accedere a Minecraft con il token Xbox. Riprovare o controllare
+    la connessione di rete.
 launchFailed:
   crash: Gioco bloccato!!
-  description: Non è presente alcun report di arresto anomalo. Questo è il log degli errori e l'ultimo log.
+  description: >-
+    Non è presente alcun report di arresto anomalo. Questo è il log degli errori
+    e l'ultimo log.
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
@@ -547,7 +575,9 @@ launchStatus:
   exit: Uscire dal gioco?
   injectingAuthLib: Configurazione AuthLib di terze parti
   launching: Avvio in corso...
-  launchingSlow: Avvio ancora in corso... L'avvio del motore grafico potrebbe richiedere tempo...
+  launchingSlow: >-
+    Avvio ancora in corso... L'avvio del motore grafico potrebbe richiedere
+    tempo...
   refreshingUser: Aggiornamento token utente
   spawningProcess: Avvio processo
 launcherUpdate:
@@ -568,8 +598,8 @@ localVersion:
   hint: Avvia una versione locale specifica
   refresh: Aggiorna versioni
   reinstallDescription: >-
-    Se si ritiene che l'installazione di questa versione presenti dei problemi, è
-    possibile provare a reinstallarla.
+    Se si ritiene che l'installazione di questa versione presenti dei problemi,
+    è possibile provare a reinstallarla.
   reinstallTitle: Reinstalla {version}
   title: Versione locale | Versioni locali
 logLevel:
@@ -587,11 +617,11 @@ login:
   userRelogin: Il token di accesso utente è scaduto. Effettuare nuovamente l'accesso!
 loginError:
   acquireMicrosoftTokenFailed: >-
-    Impossibile acquisire il token Microsoft. Potrebbe trattarsi di un problema di
-    rete. Riprovare.
+    Impossibile acquisire il token Microsoft. Potrebbe trattarsi di un problema
+    di rete. Riprovare.
   badNetworkOrServer: >-
-    Controllare la connessione di rete! Oppure il server di autenticazione potrebbe
-    essere inattivo!
+    Controllare la connessione di rete! Oppure il server di autenticazione
+    potrebbe essere inattivo!
   checkOwnershipFailed: Impossibile verificare la proprietà del gioco. Riprovare.
   connectionReset: Impossibile accedere poiché la connessione è stata reimpostata dal server
   fetchMinecraftProfileFailed: 'Impossibile recuperare il profilo Minecraft: {reason}'
@@ -601,8 +631,8 @@ loginError:
     Impossibile scambiare il token Minecraft con il token Xbox. Assicurarsi di
     disporre di Minecraft in Xbox o riprovare.
   loginXboxFailed: >-
-    Impossibile accedere a Xbox con il token Microsoft. Assicurarsi di disporre di
-    un account Xbox indipendente dall'account Microsoft. Riprovare.
+    Impossibile accedere a Xbox con il token Microsoft. Assicurarsi di disporre
+    di un account Xbox indipendente dall'account Microsoft. Riprovare.
   requestFailed: Accesso non riuscito, motivo sconosciuto. Riprovare.
   requireEmail: L'e-mail è obbligatoria
   requirePassword: La password è obbligatoria
@@ -631,9 +661,9 @@ mod:
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
-    Si perderà questa mod e i relativi metadati per sempre. Sei sicuro di volerla
-    eliminare? | Si perderanno queste mod e questi metadati per sempre. Sei sicuro
-    di volerlo fare?
+    Si perderà questa mod e i relativi metadati per sempre. Sei sicuro di
+    volerla eliminare? | Si perderanno queste mod e questi metadati per sempre.
+    Sei sicuro di volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
@@ -684,7 +714,9 @@ modified:
   unsaved: La tua modifica non è stata salvata!
 modpack:
   author: Nome autore
-  authorHint: Questo potrebbe essere utilizzato per firmare l'esportazione del modpack (Curseforge)
+  authorHint: >-
+    Questo potrebbe essere utilizzato per firmare l'esportazione del modpack
+    (Curseforge)
   delete:
     hint: Questo eliminerà il modpack {name} con i suoi metadati. Sei sicuro?
     title: Elimina il Modpack
@@ -863,8 +895,8 @@ modrinth:
 modrinthCard:
   currentVersion: Versione corrente
   projectHint: >
-    Questa istanza è stata creata da Modrinth modpack da <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+    Questa istanza è stata creata da Modrinth modpack da <code class="rounded
+    p-1" style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Abilita il server di relay
@@ -879,36 +911,38 @@ multiplayer:
   copy: Copia
   copyGroupToFriendHint: Consenti ai tuoi amici di unirsi al gruppo con questo ID
   copyLocalHint: >
-    "Per favore copia il testo SDP locale e invialo al tuo amico affinché il
-    tuo amico inserisca questo testo nella connessione di join <span>Un token
-    può essere utilizzato solo per <span style="color: red; font-weight:
-    bold;">un peer</span>! Non puoi inviare lo stesso token a più peer!</span>
-    <span class="hint-text" style="font-style: italic;">Se è necessario connettere più peer, è necessario
-    creare <span style="font-weight: bold; color: rgba(245, 158, 11)">più</span> connessioni.</span>"
-  createLocalToken: Crea token locale
+    "Per favore copia il testo SDP locale e invialo al tuo amico affinché il tuo
+    amico inserisca questo testo nella connessione di join <span>Un token può
+    essere utilizzato solo per <span style="color: red; font-weight: bold;">un
+    peer</span>! Non puoi inviare lo stesso token a più peer!</span> <span
+    class="hint-text" style="font-style: italic;">Se è necessario connettere più
+    peer, è necessario creare <span style="font-weight: bold; color: rgba(245,
+    158, 11)">più</span> connessioni.</span>"
   creaLocalToken: Crea token locale
+  createLocalToken: Crea token locale
   currentIpTitle: Rileva IP pubblico
   currentNatTitle: 'Rete corrente (NAT):'
   difficultyLevelHint: 'Livello di difficoltà per creare una connessione peer con altri:'
   disconnect: Disconnetti
-  disconnectDescription: 'Sei sicuro di voler disconnettere l''utente {user}({id})?'
+  disconnectDescription: Sei sicuro di voler disconnettere l'utente {user}({id})?
   disconnected: Disconnesso
   enterRemoteToken: Inserisci il token remoto
   enterRemoteTokenHint: >-
-    Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo token
-    nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
+    Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo
+    token nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
   gatheringIce: >
-    "Attendere che il server ICE raccolga informazioni sufficienti sulla rete. Se
-    si è impazienti e ci sono informazioni sufficienti, è possibile fornire l'SDP
-    corrente all'altra parte in anticipo e fare clic su Avanti Invia il <span
-    class="v-chip v-chip--label v-size--small" style="text-font: bold">Local Token
-    </span> al tuo peer, il tuo peer inserisce il tuo token in <span class="v-chip
-    v-chip--label v-size--small" style="text-font"> Join Connection </span>
-    section. Il server ICE potrebbe aver bisogno di tempo per raccogliere le
-    tue informazioni per creare <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">Local token</span>. Non è necessario attendere fino a
-    quando lo stato ICE non è completo. Se il token riportato di seguito rimane
-    invariato, è possibile copiarlo e inviarlo al proprio peer."
+    "Attendere che il server ICE raccolga informazioni sufficienti sulla rete.
+    Se si è impazienti e ci sono informazioni sufficienti, è possibile fornire
+    l'SDP corrente all'altra parte in anticipo e fare clic su Avanti Invia il
+    <span class="v-chip v-chip--label v-size--small" style="text-font:
+    bold">Local Token </span> al tuo peer, il tuo peer inserisce il tuo token in
+    <span class="v-chip v-chip--label v-size--small" style="text-font"> Join
+    Connection </span> section. Il server ICE potrebbe aver bisogno di tempo per
+    raccogliere le tue informazioni per creare <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold">Local token</span>. Non è necessario
+    attendere fino a quando lo stato ICE non è completo. Se il token riportato
+    di seguito rimane invariato, è possibile copiarlo e inviarlo al proprio
+    peer."
   groupId: ID gruppo
   illegalTokenDescription: Token non valido, assicurarsi che il token del proprio peer sia corretto
   initiateConnection: Inizia la connessione
@@ -921,9 +955,9 @@ multiplayer:
   joinOrCreateGroupHint: Ottieni l'ID gruppo dai tuoi amici o crea un gruppo
   kernel: Kernel P2P
   kernelDescription: >-
-    Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione solo se
-    la connessione peer-to-peer si blocca occasionalmente la finestra del
-    launcher.
+    Utilizzare WebRTC nativo o node-datachannel. Cambiare questa impostazione
+    solo se la connessione peer-to-peer si blocca occasionalmente la finestra
+    del launcher.
   leaveGroup: Abbandona il gruppo
   localToken: Token locale
   manualConnect: Connettersi manualmente
@@ -941,6 +975,8 @@ multiplayer:
   sendTokenToRemote: Invia token al remoto
   share: Condividi configurazione istanza
   sharing: Condivisione file...
+  sharingNotificationBody: Puoi scaricare o creare un'istanza dalla configurazione condivisa di {name}.
+  sharingNotificationTitle: Un peer sta condividendo la configurazione del gioco
   start: Inizia
   startNewP2PConnection: Fare clic sul pulsante Start per creare una nuova connessione peer
 myStuff: Le mie cose
@@ -963,7 +999,7 @@ news:
   readMore: Leggi di più
 next: Prossimo
 'no': 'No'
-'ok': 'OK'
+ok: OK
 optifineVersion:
   disable: Disabilita Optifine
   empty: Optifine non supporta Minecraft {version}
@@ -1022,7 +1058,8 @@ resourcepack:
   enable: '{count} Resource Pack è abilitato'
   import: Importa pacchetto risorse
   incompatible: >-
-    Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente {actual}.
+    Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente
+    {actual}.
   independent: Istanza che utilizza la cartella del pacchetto risorse indipendente
   manage: Gestisci pacchetti risorse
   name: Pacchetto risorse | Pacchetti risorse
@@ -1054,8 +1091,9 @@ save:
     title: Importa salvataggio da fonte gestita
   createdWorlds: Hai {count} mondi
   deleteHint: >-
-    Questa operazione non può essere annullata. Si perderanno definitivamente questi
-    dati di salvataggio. Sei sicuro di voler eliminare questo salvataggio?
+    Questa operazione non può essere annullata. Si perderanno definitivamente
+    questi dati di salvataggio. Sei sicuro di voler eliminare questo
+    salvataggio?
   deleteTitle: Elimina il salvataggio
   detail: Altre informazioni
   dropHint: Trascina il salvataggio zip qui per importare
@@ -1109,14 +1147,16 @@ setting:
     official: Ufficiale (Mojang)
   appearance: Aspetto
   appxUpdateHint: >-
-    Il launcher scaricherà ed eseguirà l'installer. Se l'installer popup non funziona,
-    eseguilo manualmente.
+    Il launcher scaricherà ed eseguirà l'installer. Se l'installer popup non
+    funziona, eseguilo manualmente.
   autoDownload: Aggiornamento automatico
   autoDownloadDescription: Aggiornamento automatico se disponibile
   autoInstallOnAppQuit: Installazione automatica
   autoInstallOnAppQuitDescription: Installa automaticamente l'aggiornamento alla chiusura dell'app
   backgroundColorAbove: Mostra il colore di sfondo come overlay
-  backgroundColorAboveDescription: Questa opzione farà sì che il colore di sfondo venga visualizzato sopra l'immagine o il video di sfondo.
+  backgroundColorAboveDescription: >-
+    Questa opzione farà sì che il colore di sfondo venga visualizzato sopra
+    l'immagine o il video di sfondo.
   backgroundImage: Immagine di sfondo
   backgroundImageBlur: Sfocatura immagine
   backgroundImageBlurDescription: Trascina per sfocare, facile
@@ -1185,11 +1225,12 @@ setting:
   linuxTitlebarDescription: Usa la barra del titolo nativa di Linux per il launcher
   location: Posizione di archiviazione
   maunalUpdateHint: >-
-    La versione non può essere aggiornata automaticamente. Per favore, riscarica il launcher dal
-    sito web!
+    La versione non può essere aggiornata automaticamente. Per favore, riscarica
+    il launcher dal sito web!
   maxSockets: Per host
   maxSocketsDescription: >-
-    Limita il numero massimo di socket consentiti per host o per tutti gli host in totale. 0 significa senza limiti.
+    Limita il numero massimo di socket consentiti per host o per tutti gli host
+    in totale. 0 significa senza limiti.
   maxSocketsTitle: Max socket HTTP
   name: Impostazioni globali | Impostazioni globali
   network: Impostazioni di rete
@@ -1210,7 +1251,9 @@ setting:
   showNewsHeader: Mostra lo showcase delle notizie
   showRoot: Mostra
   streamerMode: Modalità streaming
-  streamerModeDescription: Questa opzione nasconderà le tue informazioni private, come l'email, nel launcher.
+  streamerModeDescription: >-
+    Questa opzione nasconderà le tue informazioni private, come l'email, nel
+    launcher.
   theme:
     dark: Tema scuro
     light: Tema chiaro
@@ -1226,8 +1269,8 @@ setting:
   update: Aggiorna
   useBmclAPI: Usa BMCL API
   useBmclAPIDescription: >-
-    Usa BMCLAPI per scaricare Minecraft quando ti trovi nella Cina continentale. (Questo
-    non influenzerà se non ti trovi in Cina)
+    Usa BMCLAPI per scaricare Minecraft quando ti trovi nella Cina continentale.
+    (Questo non influenzerà se non ti trovi in Cina)
   useProxy: Proxy HTTP
   useProxyDescription: L'indirizzo del server proxy per la richiesta http
   viewBackgroundMusic: Visualizza musiche
@@ -1238,47 +1281,61 @@ settingLabel:
   localHint: Questa impostazione è modificata dall'istanza corrente
 setup:
   account:
-    description: Accedi al tuo account di gioco. Se non ne hai uno, puoi saltare questo passaggio per ora.
+    description: >-
+      Accedi al tuo account di gioco. Se non ne hai uno, puoi saltare questo
+      passaggio per ora.
     name: Aggiungi account di gioco
     skip: Salta per ora
   appearance:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      La directory dei dati non è una directory .minecraft standard. Poiché la struttura dei dati di XMCL è diversa da quella standard,
-      non consigliamo di utilizzare la directory .minecraft standard come directory dei dati.
+      La directory dei dati non è una directory .minecraft standard. Poiché la
+      struttura dei dati di XMCL è diversa da quella standard, non consigliamo
+      di utilizzare la directory .minecraft standard come directory dei dati.
     drives: Posizioni consigliate
     name: Imposta directory dati
   defaultLayoutDescription: >-
-    Il layout predefinito è progettato per migliorare il concetto di "istanza" del gioco. Assomiglia ad app come Discord. È anche ispirato ad altri launcher di giochi
-    come Steam, ecc.
+    Il layout predefinito è progettato per migliorare il concetto di "istanza"
+    del gioco. Assomiglia ad app come Discord. È anche ispirato ad altri
+    launcher di giochi come Steam, ecc.
   defaultPath: Percorso predefinito
   error:
-    badDataRoot: Directory non valida per i dati del launcher! Per favore, prova un'altra directory!
+    badDataRoot: >-
+      Directory non valida per i dati del launcher! Per favore, prova un'altra
+      directory!
     exists: >-
-      La directory selezionata non è vuota. Va bene, ma assicurati di eseguire il backup
-      dei tuoi dati.
+      La directory selezionata non è vuota. Va bene, ma assicurati di eseguire
+      il backup dei tuoi dati.
     noPermission: >-
-      Il launcher non ha i permessi per accedere alla directory selezionata! Per favore, prova un'altra.
+      Il launcher non ha i permessi per accedere alla directory selezionata! Per
+      favore, prova un'altra.
     nonDictionary: Il percorso selezionato è un file! Per favore seleziona una directory!
   focusLayoutDescription: >-
-    Il layout a fuoco è il layout legacy di Minecraft Launcher. È progettato per essere utilizzato con una singola istanza o poche istanze.
+    Il layout a fuoco è il layout legacy di Minecraft Launcher. È progettato per
+    essere utilizzato con una singola istanza o poche istanze.
   game:
     description: >-
-      Scegli una directory di gioco esistente (.minecraft) per importare le risorse esistenti.
-      In questo modo puoi identificare rapidamente i mod, i pacchetti di risorse, ecc.
+      Scegli una directory di gioco esistente (.minecraft) per importare le
+      risorse esistenti. In questo modo puoi identificare rapidamente i mod, i
+      pacchetti di risorse, ecc.
     name: Importa gioco esistente
   locale:
     description: >-
-      Seleziona la tua lingua preferita, se disponibile. Se non vedi la tua lingua nativa e vuoi aiutare, puoi visitare il nostro
-      Github per inviare richieste pull per tradurre!
+      Seleziona la tua lingua preferita, se disponibile. Se non vedi la tua
+      lingua nativa e vuoi aiutare, puoi visitare il nostro Github per inviare
+      richieste pull per tradurre!
     language: Lingua
     name: Imposta lingua
   path: Percorso corrente
-  title: 'Benvenuto in X Minecraft Launcher. Prima di iniziare, abbiamo bisogno che tu '
+  title: >-
+    Benvenuto in X Minecraft Launcher. Prima di iniziare, abbiamo bisogno che
+    tu 
 shaderPack:
   deletion: Elimina Shader Pack
-  deletionHint: Questa azione eliminerà il file del pacchetto shader {path} e non potrà essere annullata.
+  deletionHint: >-
+    Questa azione eliminerà il file del pacchetto shader {path} e non potrà
+    essere annullata.
   disabled: Shader Pack disabilitato
   dropHint: Importa Shader Pack
   empty: Nessun shader pack allocato
@@ -1331,7 +1388,9 @@ transportType:
   relay: Relay Scelto
   srflx: Server Reflexive Scelto
 tutorial:
-  feedbackDescription: Se incontri qualche problema, Perfavore clicca questo bottone per inviare feedback!
+  feedbackDescription: >-
+    Se incontri qualche problema, Perfavore clicca questo bottone per inviare
+    feedback!
   hideNewsHeaderDescription: >-
     Tu puoi vedere i nuovi showacse Sulla sinistra, cliccando questo bottone 
     puoi nascondere questo showacse.
@@ -1342,29 +1401,59 @@ tutorial:
     javaImportDescription: Importa java dallo storage locale.
     javaImportTitle: Importa istanza
     javaTitle: Lista java
-  instanceAddDescription: Fai clic su questo pulsante per importare Minecraft esistente o crearne uno nuovo da zero o da un modpack.
-  instanceSelectDescription: Facendo clic su questo pulsante si passerà alla pagina per selezionare il gioco e leggere le notizie.
+  instanceAddDescription: >-
+    Fai clic su questo pulsante per importare Minecraft esistente o crearne uno
+    nuovo da zero o da un modpack.
+  instanceSelectDescription: >-
+    Facendo clic su questo pulsante si passerà alla pagina per selezionare il
+    gioco e leggere le notizie.
   launchDescription: Fai clic su questo pulsante per installare o avviare il gioco.
   mod:
-    defaultSourceDescription: Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate sia su Modrinth che su Curseforge. Se si desidera passare tra questi due provider di contenuti, è possibile modificare il valore qui.
+    defaultSourceDescription: >-
+      Puoi scegliere la fonte dei dettagli dei mod qui. Ci sono mod pubblicate
+      sia su Modrinth che su Curseforge. Se si desidera passare tra questi due
+      provider di contenuti, è possibile modificare il valore qui.
     defaultSourceTitle: Seleziona la fonte del contenuto Mod
-    detailDescription: Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il contenuto può provenire da Modrinth, Curseforge o dal contenuto del mod analizzato.
+    detailDescription: >-
+      Quando selezioni un elemento a sinistra, vedrai il dettaglio del mod. Il
+      contenuto può provenire da Modrinth, Curseforge o dal contenuto del mod
+      analizzato.
     detailTitle: Dettaglio Mod
-    listDescription: Visualizzeremo i mod installati quando non hai alcun input. Vedrai i mod cercati una volta inserito un termine di ricerca o selezionata una categoria.
+    listDescription: >-
+      Visualizzeremo i mod installati quando non hai alcun input. Vedrai i mod
+      cercati una volta inserito un termine di ricerca o selezionata una
+      categoria.
     listTitle: Installato o cercato
-    searchDescription: Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale utilizzando questa casella di ricerca.
+    searchDescription: >-
+      Puoi cercare mod da Modrinth, Curseforge o dalla tua cache locale
+      utilizzando questa casella di ricerca.
     searchTitle: Cerca Mod
   multiplayer:
     contentDescription: Le connessioni tra te e i tuoi colleghi saranno elencate qui.
     contentTitle: '@:multiplayer.connections'
-    groupDescription: Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico tuo.
+    groupDescription: >-
+      Puoi creare o unirti a un gruppo con altri giocatori. Il launcher tenterà
+      di creare connessioni P2P tra te e i tuoi amici in base al gruppo. Puoi
+      inserire il nome del gruppo fornito dai tuoi amici o crearne uno unico
+      tuo.
     groupTitle: Unisciti a un gruppo
-    joinDescription: Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher genererà un nome per te.
-    manualDescription: Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare a scambiare manualmente il token facendo clic su Connetti manualmente. Se anche questo tentativo fallisce, potrebbe trattarsi di un problema di connessione a Internet.
-  recentPlayDescription: I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui per vedere anche le versioni installate e i modpack scaricati.
+    joinDescription: >-
+      Una volta inserito un nome di gruppo, puoi fare clic su questo pulsante
+      per unirti o creare il gruppo. Se il nome del gruppo è vuoto, il launcher
+      genererà un nome per te.
+    manualDescription: >-
+      Se tu o un tuo amico non riuscite a connettervi al gruppo, potete provare
+      a scambiare manualmente il token facendo clic su Connetti manualmente. Se
+      anche questo tentativo fallisce, potrebbe trattarsi di un problema di
+      connessione a Internet.
+  recentPlayDescription: >-
+    I giochi creati saranno elencati qui. Puoi cambiare le visualizzazioni qui
+    per vedere anche le versioni installate e i modpack scaricati.
   storePoupularModpackDescription: In questa sezione vedrai i modpack più popolari in Curseforge e Modrinth.
   storeSearchCategoryDescription: Puoi anche attivare/disattivare le categorie o i filtri qui.
-  storeSearchDescription: Puoi cercare un Modpack inserendo il testo in questa casella. Premi Invio per cercare.
+  storeSearchDescription: >-
+    Puoi cercare un Modpack inserendo il testo in questa casella. Premi Invio
+    per cercare.
   storeSearchResultDescription: Vedrai tutti i risultati della ricerca elencati qui.
   userAccountDescription: Fai clic su questa icona per aggiungere o gestire il tuo account Minecraft.
 universalDrop:
@@ -1377,8 +1466,9 @@ update:
 upstream:
   downgrade: Downgrade
   missingModpackMetadata: >-
-    I vecchi metadati del modpack non sono stati trovati.
-    Puoi comunque eseguire l'aggiornamento, ma il risultato potrebbe essere errato. Effettua il backup dei file dell'istanza.
+    I vecchi metadati del modpack non sono stati trovati. Puoi comunque eseguire
+    l'aggiornamento, ma il risultato potrebbe essere errato. Effettua il backup
+    dei file dell'istanza.
   onlyShowCurrentVersion: Mostra solo la versione corrente di Minecraft
   update: Aggiornare
 user:
@@ -1391,7 +1481,9 @@ user:
   forgetChallenges: Ho dimenticato queste domande e voglio cambiarle
   id: ID utente
   info: Informazioni utente
-  insecureClient: Il client non è sicuro! Per favore, convalida la tua identità per caricare la skin!
+  insecureClient: >-
+    Il client non è sicuro! Per favore, convalida la tua identità per caricare
+    la skin!
   name: Nome utente
   nameHint: Il nome visualizzato nel gioco
   profile: Profilo
@@ -1402,12 +1494,16 @@ user:
   tokenValidUntil: Token valido fino a
 userAccount:
   add: Aggiungi account
-  removeDescription: Questa operazione eliminerà tutte le informazioni di questo account. Sei sicuro?
+  removeDescription: >-
+    Questa operazione eliminerà tutte le informazioni di questo account. Sei
+    sicuro?
   removeTitle: Rimuovi account
 userCape:
   changeTitle: Cambia il tuo mantello
   description: >-
-    I mantelli sono ricompense speciali che i giocatori possono sbloccare attraverso diversi eventi, campagne e altri eventi fortunati. Qui puoi scegliere tra i mantelli che possiedi attualmente:
+    I mantelli sono ricompense speciali che i giocatori possono sbloccare
+    attraverso diversi eventi, campagne e altri eventi fortunati. Qui puoi
+    scegliere tra i mantelli che possiedi attualmente:
   noCape: Nessun mantello
 userService:
   add: Aggiungi più servizi
@@ -1454,4 +1550,4 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-'yes': 'Si'
+'yes': Si

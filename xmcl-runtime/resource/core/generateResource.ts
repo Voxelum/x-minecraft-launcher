@@ -95,6 +95,10 @@ export async function getResourceAndMetadata(context: ResourceContext, query: Qu
     icons: r.icons.map((i) => i.icon),
     uris: r.uris.map((u) => u.uri),
     tags: r.tags.map((t) => t.tag),
+    ino: Number(r.ino),
+    size: Number(r.size),
+    mtime: Number(r.mtime),
+    ctime: Number(r.ctime),
   } as ResourceDecoratedMetadata & ResourceSnapshotTable))
 }
 
