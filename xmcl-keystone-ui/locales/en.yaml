@@ -277,6 +277,12 @@ feedback:
   github: Github Issue
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
+  generateReport: Generate Report
+  generateSaveAs: Save the report to
+  hint: >-
+    Click the button to create the report and contact the developer team.
+    The report will contains your device info including operating system type,
+    version, user name (in your os), etc.
   kook: Kook
   kookDescription: Kook is an alter app for discord in China Mainland user
   name: Feedback
