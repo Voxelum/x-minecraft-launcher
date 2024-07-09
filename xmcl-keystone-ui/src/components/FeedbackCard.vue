@@ -57,17 +57,3 @@ const { refresh: generateReport, refreshing: loading } = useRefreshable(async ()
 })
 
 </script>
-
-<i18n locale="en" lang="yaml">
-feedback:
-  hint: Click the button to create the report and contact the developer team. The report will contains your device info including operating system type, version, user name (in your os), etc.
-  generateSaveAs: Save the report to
-  generateReport: Generate Report
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-feedback:
-  hint: 点击生成报告按钮并联系开发团队。这个报告会包含你的设备信息，如操作系统，版本，操作系统的用户名等。
-  generateSaveAs: 将报告保存在
-  generateReport: 生成报告
-</i18n>
