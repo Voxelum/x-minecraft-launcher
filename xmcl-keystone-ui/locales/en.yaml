@@ -1340,9 +1340,11 @@ transportType:
   relay: Relay Candidate
   srflx: Server Reflexive Candidate
 turnRegion:
+  fr: Frence
   guangzhou: Guangzhou, China
   hk: Hong Kong
   liaoning: Liaoning, China
+  po: Poland
 tutorial:
   feedbackDescription: If you encounter any problem, please click this button to send feedback!
   hideNewsHeaderDescription: >-

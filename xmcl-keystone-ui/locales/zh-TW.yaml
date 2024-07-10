@@ -1286,6 +1286,9 @@ transportType:
   prflx: 同伴反射地址
   relay: 轉發地址
   srflx: 伺服器反射地址
+turnRegion:
+  fr: 法國
+  po: 波蘭
 tutorial:
   feedbackDescription: 如果您遇到了問題，請點選這個按鈕來聯絡開發團隊。
   hideNewsHeaderDescription: |-

@@ -322,6 +322,9 @@ theme:
   selectImage: Seleccione Imaxe
   selectMusic: Seleccione Música
   selectVideo: Seleccione Vídeo
+turnRegion:
+  fr: Francia
+  po: Polonia
 tutorial:
   hideNewsHeaderDescription: |-
     Podes ver o Showacse de noticias á esquerda. 

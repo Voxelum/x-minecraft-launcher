@@ -19,8 +19,7 @@ const BUILTIN = [
 export async function getIceServers() {
   console.log('Try to fetch rtc credential')
   const response = await fetch(
-    // 'https://api.xmcl.app/rtc/official',
-    'https://xmcl-web-api--dogfood.deno.dev/rtc/official',
+    'https://api.xmcl.app/rtc/official',
     {
       method: 'POST',
     })

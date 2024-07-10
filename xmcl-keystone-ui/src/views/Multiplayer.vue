@@ -546,6 +546,8 @@ const tLocale = computed(() => ({
   liaoning: t('turnRegion.liaoning'),
   guangzhou: t('turnRegion.guangzhou'),
   hk: t('turnRegion.hk'),
+  fr: t('turnRegion.fr'),
+  po: t('turnRegion.po'),
 } as Record<string, string>))
 
 const { errorColor, successColor, warningColor } = injection(kTheme)

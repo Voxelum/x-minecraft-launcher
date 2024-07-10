@@ -1337,6 +1337,9 @@ transportType:
   prflx: Кандидат Peer Reflexive
   relay: Кандидат Relay
   srflx: Кандидат Server Reflexive
+turnRegion:
+  fr: Франція
+  po: Польща
 tutorial:
   feedbackDescription: Якщо у вас виникли проблеми, натисніть цю кнопку, щоб надіслати відгук!
   hideNewsHeaderDescription: |-

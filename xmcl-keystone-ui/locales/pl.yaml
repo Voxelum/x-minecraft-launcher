@@ -1385,6 +1385,9 @@ transportType:
   prflx: Refleksyjny kandydat na rówieśnika
   relay: Kandydat na sztafetę
   srflx: Kandydat refleksyjny serwera
+turnRegion:
+  fr: Francja
+  po: Polska
 tutorial:
   feedbackDescription: >-
     Jeśli napotkasz jakikolwiek problem, kliknij ten przycisk, aby wysłać
