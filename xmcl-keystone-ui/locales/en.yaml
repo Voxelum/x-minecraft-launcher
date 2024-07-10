@@ -278,7 +278,7 @@ feedback:
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   kook: Kook
-  kookDescription: Kook is an alter app for discord in China Mainland user
+  kookDescription: Kook is an alter app for discord for Chinese Mainland users
   name: Feedback
   qq: QQ Group
   qqDescription: >-
@@ -1230,8 +1230,8 @@ setting:
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
-    Use BMCLAPI to download Minecraft when you are in China Mainland. (This
-    won't affect if you're not in China mainland)
+    Use BMCLAPI to download Minecraft when you are in Chinese Mainland. (This
+    won't affect if you're not in Chinese Mainland)
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
