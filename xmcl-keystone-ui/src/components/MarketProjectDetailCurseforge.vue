@@ -286,6 +286,7 @@ const dependencies = computed(() => !versionKey.value
       version: resolvedDep.file.displayName,
       description: resolvedDep.file.fileName,
       type: getCurseforgeRelationType(resolvedDep.type),
+      parent: resolvedDep.parent?.name ?? '',
       installedVersion: computed(() => file.value?.version),
       installedDifferentVersion: computed(() => otherFile.value?.version),
       progress: computed(() => task.value ? task.value.progress / task.value.total : -1),

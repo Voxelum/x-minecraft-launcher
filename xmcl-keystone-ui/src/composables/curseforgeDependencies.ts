@@ -9,31 +9,47 @@ import { kSWRVConfig } from './swrvConfig'
 import { kTaskManager } from './taskManager'
 
 type ProjectDependency = {
+  /**
+   * The type of the dependency relative to the root mod
+   */
   type: FileRelationType
+  /**
+   * The type of the dependency relative to the parent mod
+   */
+  relativeType: FileRelationType
   file: File
   files: File[]
   project: Mod
+  parent: Mod
 }
 
 const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderType>, gameVersion: Ref<string | undefined>, visited: Set<number>, config = injection(kSWRVConfig)): Promise<ProjectDependency[]> => {
   const { file } = dep
+  if (dep.relativeType === FileRelationType.EmbeddedLibrary ||
+    dep.relativeType === FileRelationType.Include ||
+    dep.relativeType === FileRelationType.Incompatible
+  ) {
+    return [dep]
+  }
   if (visited.has(file.modId)) {
     return []
   }
   visited.add(file.modId)
 
-  const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
+  const dependencies = await Promise.all(file.dependencies.map(async (d) => {
     try {
       const modLoaderTypes = getModLoaderTypes(file)
       const loaderType = modLoaderTypes.has(modLoaderType.value) ? modLoaderType.value : FileModLoaderType.Any
-      const project = await getSWRV(getCurseforgeProjectModel(ref(dep.modId)), config)
-      const files = await getSWRV(getCurseforgeProjectFilesModel(ref(dep.modId), gameVersion, ref(loaderType)), config)
+      const project = await getSWRV(getCurseforgeProjectModel(ref(d.modId)), config)
+      const files = await getSWRV(getCurseforgeProjectFilesModel(ref(d.modId), gameVersion, ref(loaderType)), config)
       if (project && files) {
         return await visit({
-          type: dep.relationType,
+          type: dep.relativeType || d.relationType,
           files: files.data,
           file: files.data[0],
+          relativeType: d.relationType,
           project,
+          parent: dep.project,
         }, modLoaderType, gameVersion, visited, config)
       }
     } catch (e) {
