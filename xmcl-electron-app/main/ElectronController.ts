@@ -314,6 +314,8 @@ export class ElectronController implements LauncherAppController {
       title: man.name,
       width: config.getWidth(minWidth),
       height: config.getHeight(minHeight),
+      x: config.x,
+      y: config.y,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
@@ -339,6 +341,10 @@ export class ElectronController implements LauncherAppController {
 
       if (man.vibrancy) {
         this.setWindowBlurEffect(browser)
+      }
+
+      if (config.maximized) {
+        browser.maximize()
       }
 
       browser.show()

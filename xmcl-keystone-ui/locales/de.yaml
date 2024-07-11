@@ -1439,6 +1439,9 @@ transportType:
   prflx: Gastgeber-Peer Reflexive
   relay: Gastgeber-Relay
   srflx: Gastgeber-Server Reflexive
+turnRegion:
+  fr: Frankreich
+  po: Polen
 tutorial:
   feedbackDescription: >-
     Wenn Sie Probleme haben, klicken Sie auf diese Schaltfläche, um eine

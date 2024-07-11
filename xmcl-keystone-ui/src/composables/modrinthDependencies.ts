@@ -6,15 +6,28 @@ import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { IConfig } from 'swrv'
 import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
+
 type ResolvedDependency = {
   project: Project
   versions: ProjectVersion[]
   recommendedVersion: ProjectVersion
+  /**
+   * The type of the dependency relative to the root mod
+   */
   type: 'required' | 'optional' | 'incompatible' | 'embedded'
+  /**
+   * The type of the dependency relative to the parent mod
+   */
+  relativeType: 'required' | 'optional' | 'incompatible' | 'embedded'
+
+  parent: Project
 }
 
 const visit = async (resolvedDep: ResolvedDependency, visited: Set<string>, config: IConfig): Promise<ResolvedDependency[]> => {
   const { recommendedVersion: version } = resolvedDep
+  if (resolvedDep.relativeType === 'incompatible' || resolvedDep.type === 'embedded') {
+    return [resolvedDep]
+  }
   if (visited.has(version.project_id)) {
     return []
   }
@@ -27,10 +40,10 @@ const visit = async (resolvedDep: ResolvedDependency, visited: Set<string>, conf
     if (dep.version_id) {
       const id = dep.version_id
       const recommendedVersion = versions.find(v => v.id === id)!
-      const result = await visit({ project, versions, recommendedVersion, type: dep.dependency_type }, visited, config)
+      const result = await visit({ project, versions, recommendedVersion, parent: resolvedDep.project, type: resolvedDep.type || dep.dependency_type, relativeType: dep.dependency_type }, visited, config)
       return result
     } else {
-      const result = await visit({ project, versions, recommendedVersion: versions[0], type: dep.dependency_type }, visited, config)
+      const result = await visit({ project, versions, parent: resolvedDep.project, recommendedVersion: versions[0], type: resolvedDep.type || dep.dependency_type, relativeType: dep.dependency_type }, visited, config)
       return result
     }
   }))

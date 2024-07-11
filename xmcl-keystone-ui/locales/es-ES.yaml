@@ -1039,6 +1039,9 @@ transportType:
   prflx: Candidato Reflexivo de Par
   relay: Candidato de Relevo
   srflx: Candidato Reflexivo de Servidor
+turnRegion:
+  fr: francia
+  po: Polonia
 tutorial:
   hideNewsHeaderDescription: |-
     Puedes ver el show de noticias a la izquierda. 

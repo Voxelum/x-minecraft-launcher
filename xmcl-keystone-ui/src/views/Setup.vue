@@ -88,7 +88,7 @@
         <SetupFooter
           :prev="data.step !== 1"
           next
-          :disabled="hasError"
+          :disabled="data.step === 3 && hasError"
           :loading="data.loading"
           :finish="data.step === 4"
           @prev="prev"

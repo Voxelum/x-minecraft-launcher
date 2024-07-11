@@ -1380,6 +1380,9 @@ transportType:
   prflx: Peer Reflexív jelölt
   relay: Relay jelölt
   srflx: Kiszolgáló Reflexív jelölt
+turnRegion:
+  fr: Franciaország
+  po: Lengyelország
 tutorial:
   feedbackDescription: >-
     Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy

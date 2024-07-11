@@ -321,6 +321,9 @@
                           {{ dep.description }}
                         </v-list-item-subtitle>
                         <v-list-item-subtitle class="flex gap-2">
+                          <div v-if="dep.parent">
+                            {{ dep.parent }}
+                          </div>
                           <div
                             class="inline font-bold"
                             :class="{
@@ -723,6 +726,10 @@ export interface ProjectDependency {
    */
   version: string
   type: 'required' | 'optional' | 'incompatible' | 'embedded'
+  /**
+   * The parent project. Only present when the dependency's parent is not the current project
+   */
+  parent?: string
   /**
    * The progress of the installation. <= 0 means not installing
    */

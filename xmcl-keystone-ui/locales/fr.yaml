@@ -1397,6 +1397,9 @@ transportType:
   prflx: Candidat Peer Reflexive
   relay: Candidat Relay
   srflx: Candidat Server Reflexive
+turnRegion:
+  fr: France
+  po: Pologne
 tutorial:
   feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires\_!"
   hideNewsHeaderDescription: |-

@@ -1290,9 +1290,11 @@ transportType:
   relay: 转发地址
   srflx: 服务端反射地址
 turnRegion:
+  fr: 法国
   guangzhou: 广州
   hk: 香港
   liaoning: 辽宁
+  po: 波兰
 tutorial:
   feedbackDescription: 如果您遇到了问题，请点击这个按钮来联系开发团队。
   hideNewsHeaderDescription: |-

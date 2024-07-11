@@ -1387,6 +1387,9 @@ transportType:
   prflx: Peer Reflexive Scelto
   relay: Relay Scelto
   srflx: Server Reflexive Scelto
+turnRegion:
+  fr: Francia
+  po: Polonia
 tutorial:
   feedbackDescription: >-
     Se incontri qualche problema, Perfavore clicca questo bottone per inviare

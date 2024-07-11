@@ -63,7 +63,7 @@ const dependencies = computed(() => {
   if (!version.value) return []
   if (!deps.value) return []
 
-  return deps.value.map(({ recommendedVersion, versions, project, type }) => {
+  return deps.value.map(({ recommendedVersion, versions, project, type, parent }) => {
     // TODO: optimize this perf
     const file = computed(() => {
       for (const file of props.allFiles) {
@@ -89,6 +89,7 @@ const dependencies = computed(() => {
       version: recommendedVersion.name,
       description: recommendedVersion.files[0].filename,
       type,
+      parent: parent?.title ?? '',
       installedVersion: computed(() => file.value?.version),
       installedDifferentVersion: computed(() => otherFile.value?.version),
       progress: computed(() => task.value ? task.value.progress / task.value.total : -1),
