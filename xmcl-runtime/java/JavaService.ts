@@ -1,5 +1,5 @@
 import { JavaVersion } from '@xmcl/core'
-import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
+import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
@@ -94,15 +94,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const apis = getApiSets(this.settings)
       apiHost = apis.map(a => new URL(a.url).hostname)
     }
-    const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    const manifest = await fetchJavaRuntimeManifest({
-      apiHost,
-      ...downloadOptions,
-      target: target.component,
-    })
-    this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
-    const dest = this.getPath('jre', target.component)
-
     if (!apiHost) {
       const apis = getApiSets(this.settings)
       apiHost = apis.map(a => new URL(a.url).hostname)
@@ -111,6 +102,97 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         apiHost.unshift('https://launcher.mojang.com')
       }
     }
+
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
+
+    const resolveTarget = (manifest: JavaRuntimes) => {
+      if (process.platform === 'win32') {
+        if (process.arch === 'x64') {
+          return manifest['windows-x64']
+        }
+        if (process.arch === 'ia32') {
+          return manifest['windows-x86']
+        }
+        if (process.arch === 'arm64') {
+          return manifest['windows-arm64']
+        }
+        return manifest['windows-x64']
+      }
+      if (process.platform === 'darwin') {
+        if (process.arch === 'arm64') {
+          return manifest['mac-os-arm64']
+        }
+        return manifest['mac-os']
+      }
+      if (process.platform === 'linux' || process.platform === 'openbsd' || process.platform === 'freebsd') {
+        if (process.arch === 'ia32') {
+          return manifest['linux-i386']
+        }
+        if (process.arch === 'x64') {
+          return manifest.linux
+        }
+        return manifest.linux
+      }
+    }
+
+    function normalizeUrls(url: string, fileHost?: string | string[]): string[] {
+      if (!fileHost) {
+        return [url]
+      }
+      if (typeof fileHost === 'string') {
+        const u = new URL(url)
+        u.hostname = fileHost
+        const result = u.toString()
+        if (result !== url) {
+          return [result, url]
+        }
+        return [result]
+      }
+      const result = fileHost.map((host) => {
+        const u = new URL(url)
+        u.hostname = host
+        return u.toString()
+      })
+
+      if (result.indexOf(url) === -1) {
+        result.push(url)
+      }
+
+      return result
+    }
+
+    const app = this.app
+    async function fetchJava(runtimeTarget: string) {
+      const resp = await app.fetch(normalizeUrls(DEFAULT_RUNTIME_ALL_URL, apiHost)[0])
+      const runtimes = await resp.json() as JavaRuntimes
+      const current = resolveTarget(runtimes)
+
+      if (!current) {
+        throw new Error('')
+      }
+      let targets = current[runtimeTarget]
+      const iterator = [JavaRuntimeTargetType.Gamma, JavaRuntimeTargetType.Delta, JavaRuntimeTargetType.Beta, JavaRuntimeTargetType.Alpha, JavaRuntimeTargetType.Legacy]
+      while (iterator.length > 0 && (!targets || targets.length === 0)) {
+        const cur = iterator.shift()
+        if (cur) {
+          targets = current[cur]
+        }
+      }
+      const target = targets[0]
+      const manifestUrl = normalizeUrls(target.manifest.url, apiHost)[0]
+      const response = await app.fetch(manifestUrl)
+      const manifest: JavaRuntimeManifest = await response.json()
+      const result: JavaRuntimeManifest = {
+        files: manifest.files,
+        target: runtimeTarget,
+        version: target.version,
+      }
+      return result
+    }
+
+    const manifest = await fetchJava(target.component)
+    this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
+    const dest = this.getPath('jre', target.component)
 
     const task = installJavaRuntimeTask({
       manifest,
