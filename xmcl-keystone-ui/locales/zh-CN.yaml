@@ -304,9 +304,12 @@ feedback:
   discord: Discord
   discordDescription: 加入 Discord 频道
   discordJoin: 加入
+  generateReport: 生成报告
+  generateSaveAs: 将报告保存在
   github: Github Issue
   githubDescription: 通过 Github Issue 来反馈您的想法
   githubOpenIssue: Github
+  hint: 点击生成报告按钮并联系开发团队。这个报告会包含你的设备信息，如操作系统，版本，操作系统的用户名等。
   kook: Kook
   kookDescription: 加入 Kook (国外请选 Discord)
   name: 反馈
