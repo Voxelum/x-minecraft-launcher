@@ -22,6 +22,9 @@ import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
 import { checksum } from './fs'
 import { AnyError, isSystemError } from '~/util/error'
+import { JavaService } from '~/java'
+// @ts-ignore
+import UpdaterBinary from './AutoUpdate.class'
 
 /**
  * Only download asar file update.
@@ -119,6 +122,48 @@ export class DownloadFullUpdateTask extends BaseTask<void> {
   }
 }
 
+async function getUpdateAsarViaJavaArgs(appAsarPath: string, updateAsarPath: string, app: ElectronLauncherApp) {
+  const serv = await app.registry.get(JavaService)
+  const java = serv.state.all.find(v => v.valid)?.path
+  if (!java) return false
+
+  await writeFile(join(app.appDataPath, 'AutoUpdate.class'), UpdaterBinary)
+  const args = [
+    java,
+    'AutoUpdate',
+    updateAsarPath,
+    appAsarPath,
+    process.argv[0],
+  ]
+
+  return args
+}
+
+async function getUpdateAsarViaPowerShellArgs(appAsarPath: string, updateAsarPath: string, app: ElectronLauncherApp) {
+  const psPath = join(app.appDataPath, 'AutoUpdate.ps1')
+  let startProcessCmd = `Start-Process -FilePath "${process.argv[0]}"`
+  if (process.argv.slice(1).length > 0) {
+    startProcessCmd += ` -ArgumentList ${process.argv.slice(1).map((s) => `"${s}"`).join(', ')}`
+  }
+  startProcessCmd += ` -WorkingDirectory "${process.cwd()}"`
+  await writeFile(psPath, [
+    'Start-Sleep -s 1',
+    `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}" -force`,
+    `Remove-Item -Path "${updateAsarPath}"`,
+    startProcessCmd,
+  ].join('\r\n'))
+
+  const args = [
+    'powershell.exe',
+    '-ExecutionPolicy',
+    'RemoteSigned',
+    '-File',
+    `"${psPath}"`,
+  ]
+
+  return args
+}
+
 export class ElectronUpdater implements LauncherAppUpdater {
   private logger: Logger
 
@@ -165,10 +210,13 @@ export class ElectronUpdater implements LauncherAppUpdater {
     if (this.app.platform.os === 'windows') {
       const elevatePath = await ensureElevateExe(this.app.appDataPath)
 
+      const appAsarPath = join(dirname(__dirname), 'app.asar')
+      const updateAsarPath = join(this.app.appDataPath, 'pending_update')
+
       if (!existsSync(updateAsarPath)) {
         throw new Error(`No update found: ${updateAsarPath}`)
       }
-      const psPath = join(this.app.appDataPath, 'AutoUpdate.ps1')
+
       let hasWriteAccess = await new Promise((resolve) => {
         open(appAsarPath, 'a', (e, fd) => {
           if (e) {
@@ -182,32 +230,21 @@ export class ElectronUpdater implements LauncherAppUpdater {
 
       // force elevation for now
       hasWriteAccess = false
-
       this.logger.log(hasWriteAccess ? `Process has write access to ${appAsarPath}` : `Process does not have write access to ${appAsarPath}`)
-      let startProcessCmd = `Start-Process -FilePath "${process.argv[0]}"`
-      if (process.argv.slice(1).length > 0) {
-        startProcessCmd += ` -ArgumentList ${process.argv.slice(1).map((s) => `"${s}"`).join(', ')}`
-      }
-      startProcessCmd += ` -WorkingDirectory "${process.cwd()}"`
-      await writeFile(psPath, [
-        'Start-Sleep -s 1',
-        `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}" -force`,
-        `Remove-Item -Path "${updateAsarPath}"`,
-        startProcessCmd,
-      ].join('\r\n'))
 
-      const args = [
-        'powershell.exe',
-        '-ExecutionPolicy',
-        'RemoteSigned',
-        '-File',
-        `"${psPath}"`,
-      ]
-      if (!hasWriteAccess) {
-        args.unshift(elevatePath)
+      let args: string[]
+
+      const jArgs = await getUpdateAsarViaJavaArgs(appAsarPath, updateAsarPath, this.app)
+      if (!jArgs) {
+        args = await getUpdateAsarViaPowerShellArgs(appAsarPath, updateAsarPath, this.app)
+        if (!hasWriteAccess) {
+          args.unshift(elevatePath)
+        }
+      } else {
+        args = jArgs
       }
+
       this.logger.log(`Install from windows: ${args.join(' ')}`)
-      this.logger.log(`Relaunch the process by: ${startProcessCmd}`)
 
       spawn(args[0], args.slice(1), {
         detached: true,
