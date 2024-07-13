@@ -1,314 +1,284 @@
 AppAddInstanceDialog:
-  choiceTitle: |-
-    Обнаружено несколько профилей запуска. 
-    Пожалуйста, выберите один для импорта.
+  choiceTitle:
+    Обнаружено несколько профилей запуска. Пожалуйста, выберите один для
+    импорта.
   configTitle: Конфигурация
-  downloadedNotification: Модпак {name} скачан. Создать для него экземпляр?
+  createTitle: Создать экземпляр
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
-  alterDownloadDescription: |-
-    Если вы не хотите испортить текущий экземпляр. 
-    Вы также можете создать новый экземпляр из конфигурации вашего партнера. 
-    Нажмите кнопку ниже, чтобы создать экземпляр.
-  baseInfo: Базовая настройка
-  cancelShare: Не делиться
-  description: >-
-    После того как вы поделитесь профилем, другие пользователи смогут скачать
-    эти файлы через ваш ПК.
-  downloadDescription: |-
-    Пожалуйста, проверьте файлы, которые ваш коллега предоставил вам. 
-    Выберите файл, который хотите скачать. 
-    Он будет помещен в текущий экземпляр {name}.
-  downloadNotifyTitle: Скачать экземпляр от {user}
-  downloadTitle: Скачивать файлы с других пиров
-  downloadToLocal: Скачать в текущий экземпляр
-  filesToDownload: Выберите файлы для скачивания
-  filesToShare: Выберите файлы которыми хотите поделиться
-  instanceShare: '{user} только что поделился с вами текущим экземпляром'
-  share: Поделиться
-  shareNotifyTitle: Поделиться экземпляром
-  shareTitle: Поделитесь игровыми файлами с другим игроком
-BaseSetting: {}
+  alterDownloadDescription:
+    Если вы не хотите менять текущий экземпляр, вы можете
+    создать новый экземпляр из конфигурации вашего пользователя. Нажмите на кнопку
+    ниже, чтобы создать экземпляр.
+  baseInfo: Локальные настройки
+  cancelShare: Отменить обмен
+  description:
+    После того, как вы разрешите обмен экземпляром, другие пользователи
+    смогут загружать эти файлы через ваш компьютер.
+  downloadDescription:
+    Пожалуйста, проверьте файлы, предоставленные вашим пользователем.
+    Выберите файлы, которые вы хотите скачать. Они будут размещены в текущем экземпляре
+    {name}.
+  downloadNotifyTitle: Скачивание экземпляра от {user}
+  downloadTitle: Скачивание файлов от других пользователей
+  filesToDownload: Выберите файлы для загрузки
+  filesToShare: Выберите файлы для обмена
+  instanceShare: "{user} только что поделился текущим экземпляром с вами"
+  share: Обмен
+  shareNotifyTitle: Обмен экземпляром
+  shareTitle: Обмен игровыми файлами с другими игроками
 BaseSettingGeneral:
   title: Общие
-FeedTheBeast:
-  search: Поиск в FTB
-FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Список изменений
-  details: Подробности
-  install: Установить {version}
-  overview: Обзор
-  versions: Версии
 HomeJavaIssueDialog:
-  incompatibleJava: Несовместимая Java
-  incompatibleJavaHint: Текущая Java может быть несовместима с выбранным Minecraft!
+  incompatibleJava: Несовместимая версия Java
+  incompatibleJavaHint:
+    Текущая версия Java может быть несовместима с выбранной версией
+    Minecraft!
   missingJava: Отсутствует Java
-  missingJavaHint: 'Лаунчер не может найти Java на вашем компьютере. Вы можете:'
-  needDownloadHint: >-
-    Не удаётся найти подходящую версию Java на вашем компьютере. Рекомендуем
+  missingJavaHint:
+    "Лаунчер не может обнаружить ни одной версии Java на вашем компьютере.
+    Вы можете:"
+  needDownloadHint:
+    Не удаётся найти подходящую версию Java на вашем компьютере. Рекомендуется
     скачать новую.
   optionAutoDownload:
-    message: Лаунчер скачает и установит Java из исходного кода Mojang.
-    name: Скачать автоматически
-  optionManualDownload: {}
+    message: Лаунчер скачает и установит Java из источника Mojang для вас.
+    name: Автоматическая загрузка
   optionSelectJava:
-    message: Лаунчер не нашёл у вас Java. Укажите лаунчеру где он находится.
-    name: Выберите Java на своём компьютере
+    message:
+      Возможно, лаунчер не нашёл вашу версию Java. Вы можете указать лаунчеру,
+      где она находится
+    name: Выбрать Java на вашем компьютере
   optionSwitch:
     disabled: В базе данных не найдена Java {version}!
-    message: Используйте имеющуюся Java {version} на вашем компьютере
-    name: Сменить на {version}
-  recommendedVersionHint: '{version} рекомендует использовать Java в диапазоне {range}.'
-  selectMatchedHint: Найдены подходящие локальные версии Java. Можно выбрать эти локальные Java.
-  selectSecondaryHint: >-
-    Найдено несколько локальных версий Java, но они могут не соответствовать
-    критериям. Вы можете использовать их для запуска, но могут быть проблемы.
+    message: Использовать существующую версию Java {version} на вашем компьютере
+    name: Переключиться на {version}
+  recommendedVersionHint:
+    Для {version} рекомендуется использовать Java с диапазоном
+    {range}.
+  selectMatchedHint:
+    Найдено несколько подходящих локальных версий Java. Вы можете
+    выбрать эти локальные версии.
+  selectSecondaryHint:
+    Найдено несколько локальных версий Java, но они могут не подходить
+    для запуска. Вы всё ещё можете использовать их для запуска, но это предупреждение
+    всё ещё будет отображаться.
 HomeLaunchMultiInstanceDialog:
-  confirm: Запустить
+  confirm: Да, запустить
   description: Вы запускаете несколько экземпляров Minecraft. Вы уверены?
   title: Несколько экземпляров
-HomeSyncButton: {}
 HomeSyncDialog:
   pull: Получить
   push: Отправить
 HomeSyncDialogPull:
   failText: Не удалось получить обновление. {url}
-  refresh: Перезагрузить
+  refresh: Обновить
   update: Обновить
 HomeSyncDialogPush:
-  authError: >-
-    Неправильная аутентификация пользователя. Убедитесь, что у вас есть
-    привилегия скачивать файлы с сервера!
-  refresh: Перезагрузить
-  unknownError: Неизвестная ошибка сервера. Повторите попытку.
+  authError:
+    Неверная аутентификация пользователя. Убедитесь, что у вас есть права
+    на загрузку файлов на сервер!
+  refresh: Обновить
+  unknownError: Неизвестная ошибка сервера. Пожалуйста, попробуйте ещё раз.
   upload: Загрузить экземпляр
 SettingMigrationDialog:
-  selectRootDirectory: Выберите корневой каталог
-add: Добавить
+  selectRootDirectory: Выбрать корневой каталог
 ago:
-  day: '{duration} день назад | {duration} дней назад'
-  hour: '{duration} час назад | {duration} часов назад'
-  minute: '{duration} минуту назад | {duration} минут назад'
-  second: '{duration} секунду назад | {duration} секунд назад'
+  day: "{duration} день назад | {duration} дней назад"
+  hour: "{duration} час назад | {duration} часов назад"
+  minute: "{duration} минуту назад | {duration} минут назад"
+  second: "{duration} секунду назад | {duration} секунд назад"
 authProfileAddedNotification: Профиль аутентификации {name} добавлен
 author: Автор
 back: Назад
 baseSetting:
-  title: Базовые настройки
+  title: Локальные настройки
 browse: Обзор
 browseApp:
   createShortcut: Создать ярлык
-  default: ПО УМОЛЧАНИЮ
+  default: По умолчанию
   delete: Удалить
   launch: Запустить и установить по умолчанию
 cancel: Отмена
-checkUpdate:
-  name: Проверить обновление
-confirm: Запуск
+confirm: Подтвердить
 copyClipboard:
-  success: Скопировать в буфер обмена
+  success: Скопировано в буфер обмена
 create: Создать
 curseforge:
-  authors: Авторы
   category: Категория
   createdDate: Дата создания
-  downloadOnly: Скачать
-  file:
-    gameVersion: Версия игры
-    modLoader: Загрузчик модов
-  install: Установить
   installTo: Установить в {path}
   installToStorage: Установить в хранилище
   lastUpdate: Дата последнего обновления
-  project:
-    description: Описание
-    files: Файлы
-    images: Изображения
-  recentFiles: Последние файлы
+  releasedDate: Дата релиза
   search: Поиск
-  totalDownloads: Всего скачиваний
-curseforgeCard: {}
 dataMigration:
-  apply: Применить настройку
-  directoryCriteriaHint: Убедитесь что новый каталог является ПУСТЫМ каталогом!
-  migrationDestinationIsFile: Местом переноса является файл! Выберите пустой каталог!
-  migrationDestinationIsNotEmptyDirectory: >-
-    Место переноса не является пустым каталогом! Убедитесь что выбран пустой
-    каталог!
-  migrationNoPermission: |-
-    Нет разрешения на переименование старого каталога в новый! 
-    Пожалуйста, убедитесь, что программа запуска имеет доступ к обоим местам!
+  apply: Применить настройки
+  directoryCriteriaHint: Пожалуйста, убедитесь, что новое расположение является пустым каталогом!
+  migrationDestinationIsFile:
+    Место назначения миграции является файлом! Выберите
+    пустой каталог!
+  migrationDestinationIsNotEmptyDirectory:
+    Место назначения миграции не является пустым
+    каталогом! Выберите пустой каталог!
+  migrationNoPermission:
+    Нет разрешения на переименование старого каталога в новый!
+    Убедитесь, что лаунчер имеет доступ к обоим местам!
   placeholder: Нажмите здесь, чтобы выбрать каталог
-  setRootCause: >-
-    Вы потеряете свои данные (карты, текстурпаки, моды), если закроете лаунчер
-    на этом процессе!
-  setRootDescription: Это изменит корневую папку данных этого лаунчера и minecraft.
-  setRootTitle: Установить новое место хранения
-  unknownError: Неизвестная ошибка! Повторите попытку или свяжитесь с разработчиком!
-  waitReload: Перенос данных. Не закрывайте лаунчер, иначе вы потеряете свои данные.
+  setRootCause:
+    Вы потеряете свои данные (карты, наборы ресурсов, моды), если закроете
+    лаунчер во время переноса!
+  setRootDescription: Это изменит корневой каталог данных этого лаунчера и Minecraft.
+  setRootTitle: Установить новое расположение хранилища
+  unknownError:
+    Неизвестная ошибка! Пожалуйста, попробуйте ещё раз или свяжитесь с
+    разработчиком!
+  waitReload:
+    Миграция данных. Пожалуйста, не закрывайте лаунчер или вы потеряете
+    свои данные.
 delete:
   name: Удалить {name}
-  'no': Нет
-  'yes': Удалить
+  no: Нет
+  yes: Удалить
 dependencies:
-  embedded: Встроенные
   incompatible: Несовместимые
+  name: Зависимости
   optional: Необязательные
   required: Необходимые
 description: Описание
-detail: Подробности
 diagnosis:
   badInstall:
     message: Нажмите, чтобы попытаться переустановить эту версию.
-    name: Неправильная установка на {version}
+    name: Неудачная установка на {version}
   corruptedAssets:
-    message: Лаунчер установит assets вместо вас
-    name: >-
-      Повреждён asset: {name} | Повреждён asset {name} | Assets повреждено:
-      {count}
+    message: Лаунчер установит ресурсы для вас
+    name:
+      Повреждённый ресурс {name} | Повреждённый ресурс {name} | {count} повреждённых
+      ресурсов
   corruptedAssetsIndex:
-    message: Лаунчер скачает индексный assets вместо вас
-    name: Повреждён индексный файл assets {version}.
+    message: Лаунчер скачает файл индекса ресурсов для вас
+    name: Повреждённый файл индекса ресурсов версии {version}.
   corruptedLibraries:
-    message: Лаунчер установит библиотеки вместо вас
-    name: >-
-      Повреждена библиотека: {name} | Библиотека повреждена: {name} | Повреждено
-      библиотек: {count}
+    message: Лаунчер установит библиотеки для вас
+    name:
+      Повреждённая библиотека {name} | Повреждённая библиотека {name} | {count}
+      повреждённых библиотек
   corruptedVersionJar:
     message: Нажмите, чтобы установить эту версию
-    name: Версия jar для Minecraft %{version} повреждена.
-  corruptedVersionJson:
-    message: Нажмите, чтобы установить эту версию
-    name: Версия json %{version} повреждена.
+    name: Повреждён jar файл версии Minecraft {version}.
   incompatibleJava:
-    message: Можно запросить лаунчер скачать его за вас.
-    name: Версия java {javaVersion} не подходит для {version}!
+    message: Вы можете попросить лаунчер скачать её для вас.
+    name: Версия Java {javaVersion} не подходит для {version}!
   instanceFiles:
-    description: 'Установка экземпляра включает файлы: {counts}.'
-    title: Незавершенная установка экземпляра
+    description: Установка экземпляра включает {counts} файлов.
+    title: Незавершённая установка экземпляра
   invalidJava:
-    message: Нажмите, чтобы использовать другую java для запуска.
-    name: Неверное расположение java.
+    message: Нажмите, чтобы использовать другую версию Java для запуска.
+    name: Неверное расположение Java.
   missingAssets:
-    message: Лаунчер установит assets вместо вас
-    name: >-
-      Отсутствует asset: {name} | Отсутсвующий asset: {name} | Отсутствует
-      assets: %{count}
+    message: Лаунчер установит ресурсы для вас
+    name:
+      Отсутствует ресурс {name} | Отсутствует ресурс {name} | {count} отсутствующих
+      ресурсов
   missingAssetsIndex:
-    message: Лаунчер скачает индексные assets вместо вас
-    name: Отсутсвует индексный файл assets {version}.
-  missingAuthlibInjector: {}
+    message: Лаунчер скачает файл индекса ресурсов для вас
+    name: Отсутствует файл индекса ресурсов версии {version}.
   missingJava:
-    message: Нажмите, чтобы устранить эту проблему
+    message: Нажмите, чтобы решить эту проблему
     name: Не удаётся найти Java для запуска Minecraft!
   missingLibraries:
-    message: Лаунчер установит библиотеки вместо вас
-    name: >-
-      Библиотека {name} отсутствует | Отсутствует библиотека {name} | Отсутсвует
-      библиотек: {count} Отсутствует {count} библиотеки
+    message: Лаунчер установит библиотеки для вас
+    name:
+      Отсутствует библиотека {name} | Отсутствует библиотека {name} | {count}
+      отсутствующих библиотек | {count} отсутствующих библиотек
   missingVersion:
     message: Нажмите, чтобы установить эту версию
     name: Версия {version} не установлена!
   missingVersionJar:
     message: Нажмите, чтобы установить эту версию
-    name: Версия jar для Minecraft %{version} отсутсвует
-disable: Запрещать
+    name: Отсутствует файл jar версии Minecraft {version}
+disable: Отключить
 disk:
   available: Доступно
   used: Использовано
 download: Скачать
-downloadCount: 'Скачиваний: {count}'
-downloadUpdate: Скачать обновление
+downloadCount: "{count} загрузок"
 duration:
-  day: '{duration} день | {duration} дней'
-  hour: '{duration} час | {duration} часов'
-  minute: '{duration} минута | {duration} минут'
-  second: '{duration} секунда | {duration} секунд'
+  day: "{duration} день | {duration} дней"
+  hour: "{duration} час | {duration} часов"
+  minute: "{duration} минута | {duration} минут"
+  second: "{duration} секунда | {duration} секунд"
 edit: Изменить
-error:
-  name: Ошибка | Ошибки
+enable: Включить
 errors:
-  BadForgeInstallerJarError: >-
-    Не получилось скачать установочный jar файл forge. Возможно forge обновил
-    формат установочного файла. Свяжитесь с разработчиками если проблема
-    сохраниться.
-  BodyTimeoutError: Истекло время ожидания HTTP Body
-  ChecksumNotMatchError: Контрольная сумма не совпадает! Должно быть {expect}. Сейчас {actual}.
-  ConnectTimeoutError: Вышло время ожидания подключения к серверу.
+  BadForgeInstallerJarError:
+    Не удаётся получить файл загрузчика forge. Возможно,
+    у forge новый формат файла загрузчика? Обратитесь к разработчикам, если эта проблема
+    будет повторяться.
+  BadInstanceType: "Недопустимый экземпляр: {type}"
+  BodyTimeoutError: Истекло время ожидания ответа сервера
+  ChecksumNotMatchError:
+    Контрольная сумма не совпадает! Ожидалась {expect}. Получена
+    {actual}.
+  ConnectTimeoutError: Истекло время ожидания соединения с сервером.
   DNSNotFoundError: Ошибка поиска DNS
-  DatabaseNotOpened: >-
-    База данных не открывается! 
-
-    Лаунчер не будет работать должным образом! 
-
-    Пожалуйста, выберите каталог данных, к которому будет иметь доступ программа
-    запуска. 
-
-    Вы можете попробовать сбросить корень данных на странице настроек.
-  DownloadAggregateError: Не удаётся скачать файл.
-  DownloadFileSystemError: >-
-    Возникла ошибка доступа к расположению файла загрузки. Пожалуйста, убедитесь
-    что лаунчер имеет разрешение на запись.
-  HeadersTimeoutError: Вышло время ожидания HTTP заголовка
-  NotFoundError: 404 Не Найдено
+  DatabaseNotOpened:
+    База данных не открыта! Лаунчер не будет работать должным образом!
+    Пожалуйста, выберите каталог данных, к которому лаунчер может получить доступ.
+    Вы можете попробовать сбросить корневой каталог данных на странице настроек.
+  DownloadAggregateError: Не удалось скачать файл.
+  DownloadFileSystemError:
+    Ошибка при доступе к пути сохранения скачанного файла.
+    Убедитесь, что лаунчер имеет разрешение на запись в него.
+  HeadersTimeoutError: Истекло время ожидания заголовков HTTP
+  NotFoundError: 404 Не найдено
   SocketError: Ошибка сокета сервера
-exception:
-  http: >-
-    HTTP-запрос к {url} не выполнен. Код состояния {statusCode}. {code}.
-    Повторите попытку или проверьте свой интернет. Если эта ошибка сохраняется,
-    то отправьте отчёт команде разработчиков.
-existed: Существует
 exportModpackTarget:
-  curseforge: Файл Curseforge
-  github: Файл Github
+  curseforge: Файл CurseForge
   modrinth: Файл Modrinth
-  override: Файл переопределения (raw)
+  override: Файл переопределения (Raw)
 extensions:
-  mrpack: Модпак Modrinth
+  mrpack: Сборка модов Modrinth
   zip: Zip-файл
 fabricVersion:
-  disable: Отключить Fabric
-  empty: Нет версии Fabric для Minecraft {version}
-  showSnapshot: Показывать Snapshot
-  stable: Стабильные
-  unstable: Нестабильные
+  disable: Fabric не выбран
+  empty: Не найдено соответствующей версии Fabric для Minecraft {version}
+  showSnapshot: Показывать снапшоты
+  stable: Стабильная
+  unstable: Нестабильная
 feedback:
   channel: Каналы
-  description: Я нашёл ошибку или хочу внести предложение
+  description: Сообщите о своей проблеме/идее здесь.
   discord: Discord
-  discordDescription: Присоединиться к каналу Discord
+  discordDescription: Присоединяйтесь к каналу Discord.
   discordJoin: Присоединиться
-  github: Github Issue
-  githubDescription: Откройте GitHub Issue, чтобы рассказать о своей мысли
+  generateReport: Создать отчёт
+  generateSaveAs: Сохранить отчёт
+  github: Проблема в Github
+  githubDescription: Создайте проблему на Github, чтобы сообщить о своей проблеме/идее.
   githubOpenIssue: Github
+  hint:
+    Нажмите на кнопку, чтобы создать отчёт и связаться с командой разработчиков.
+    Отчёт будет содержать информацию о вашем устройстве, включая тип операционной
+    системы, версию, имя пользователя (в операционной системе) и другие данные.
   kook: Kook
-  kookDescription: >-
-    Kook - это альтернативное приложение для пользователей discord на
-    материковой части Китая
+  kookDescription: Kook - это альтернатива Discord на территории материкового Китая
   name: Обратная связь
   qq: Группа QQ
-  qqDescription: >-
-    Вступите в группу обратной связи QQ и поговорите с авторами напрямую. Номер
-    группы: {number}
+  qqDescription:
+    "Войдите в группу обратной связи QQ и напрямую поговорите с авторами.
+    Номер группы: {number}"
   qqEnterGroup: Присоединиться
+fileDetail:
+  fileSize: Размер файла
+  hash: Hash
 filter: Фильтр
 finish: Завершить
-forgeConfig:
-  hint: >-
-    Запустите игру с этим модом хотя бы один раз, чтобы мы могли обнаружить его
-    файл конфигурации!
 forgeVersion:
-  common: Общий
-  disable: Отключить Forge
-  empty: Forge не имеет релиза для Minecraft {version}
-  latest: Последний
-  name: Forge
-  recommended: Рекомендуемый
-  showBuggy: Показать с проблемами
-  showRecommendedAndLatestOnly: Только рекомендуемые и последние версии
-  version: Версия Forge
-gameSetting: {}
+  disable: Forge не выбран
+  empty: Для Minecraft {version} нет выпусков Forge
+  latest: Последняя
+  recommended: Рекомендуемая
 gameType:
   adventure: Режим приключения
   creative: Творческий режим
@@ -317,34 +287,34 @@ gameType:
 help: Справка
 home: Главная
 importModpack:
-  failed: Не удалось импортировать {modpack}
-  name: Импортировать модпак
-  success: Импорт {modpack} успешно завершено
-importResource: Импорт ресурса
+  name: Импортировать сборку модов
 install: Установить
 installAssets:
-  asset: Установить Asset {hash}
-  assetIndex: Проверить индексный файл assets
-  name: Установить файлы Asset
+  asset: Установить ресурс {hash}
+  assetIndex: Проверить файл индекса ресурсов
+  name: Установить файлы ресурсов
 installAuthlibInjector: Установить authlib-injector
-installCurseforgeFile: Установить файл Curseforge
+installCurseforgeFile: Установить файл CurseForge
 installFabric:
   name: Установить Fabric
 installForge:
-  downloadInstaller: Скачать установщик
   library: Установить библиотеку {lib}
   name: Установить Forge
-  postProcessing: Постобработка
+  postProcessing: Дополнительная обработка
 installInstance:
   file: Обновить файл экземпляра {file}
-  link: Скопируйте или свяжите {count} файлов
+  link: Копировать или соединить {count} файлов
   name: Обновить экземпляр
-  resolve: Определить конфигурацию экземпляра
-  unzip: Разархивируйте {count} файлов
+  resolve: Разрешить конфигурацию экземпляра
+  unzip: Распаковать {count} файлов
 installJre:
   decompress: Распаковать файлы JRE в папку
   download: Скачать сжатый файл JRE
-  name: Установить библиотеку Java Runtime Library
+  name: Установить среду выполнения Java
+installLabyMod:
+  asset: Установить ресурс {name}
+  json: Сгенерировать JSON {version}
+  name: Установить LabyMod
 installLibraries:
   library: Установить библиотеку
   name: Установить библиотеки
@@ -353,8 +323,8 @@ installModpack:
   download:
     file: Скачать файл
     name: Скачать
-  name: Установить модпак
-  unpack: Распаковать модпак
+  name: Установить сборку модов
+  unpack: Распаковать сборку модов
 installModrinthFile:
   name: Установить Modrinth
 installOptifine:
@@ -362,588 +332,556 @@ installOptifine:
   jar: Сгенерировать Jar
   json: Сгенерировать Json
   name: Установить Optifine
-installResource:
-  fail: Не удалось установить {file}
-  success: Установка ресурса {file} выполнена успешно
 installVersion:
-  jar: Установить версию Jar
-  json: Установить версию Json
+  jar: Установить Jar-файл версии
+  json: Установить Json-файл версии
   name: Установить клиент Minecraft {version}
 instance:
-  addServer: Добавить сервер
   current: Текущий экземпляр
-  delete: Удалить игру
-  deleteHint: Данные экземпляра будут перемещены с диска навсегда. Точно сделать это?
-  duplicatedName: Повторяющееся имя
-  fileApi: URL-адрес API синхронизации файлового сервера
-  fileApiHint: >-
-    URL-адрес для синхронизации файлов экземпляров с удалённого сервера
-    конфигурации.
-  gameVersion: Версия игры
+  delete: Удалить экземпляр
+  deleteHint:
+    Данные экземпляра будут удалены с диска навсегда. Вы уверены, что хотите
+    это сделать?
+  duplicate: Дублировать экземпляр
+  duplicatedName: Дублированное имя
+  fileApi: URL API сервера синхронизации файлов
+  fileApiHint: URL для синхронизации файлов экземпляра с удалённым сервером конфигурации.
+  gameVersion: Версия игры экземпляра
   icon: Иконка профиля
-  iconUrl: Ссылка на иконку
-  includeVersion: Включать версию | Включать версии
+  iconUrl: URL-адрес иконки
+  includeVersion: Включить версию | Включить версии
   lastPlayed: Последняя игра
-  launchArguments: Предварительный просмотр аргументов запуска
-  mcOptions: Параметры Minecraft
-  mcOptionsHint: Дополнительные инструкции по запуску Minecraft
-  name: Имя профиля
-  nameHint: Название, используемое для идентификации игры
-  neverPlayed: Не играли
-  openCrashReportFolder: Открыть папку отчётов о сбоях
-  openLogFolder: Открыть папку логов
+  launchArguments: Предпросмотр аргументов запуска
+  mcOptions: Опции Minecraft
+  mcOptionsHint: Дополнительные аргументы запуска Minecraft
+  name: Имя экземпляра
+  nameHint: Имя, используемое для идентификации экземпляра.
+  neverPlayed: Никогда не играли
+  openCrashReportFolder: Открыть папку с отчётами об ошибках
+  openLogFolder: Открыть папку с журналами
   playtime: Время игры
-  requireName: Имя обязательно
-  showInstance: Показать папку с игрой
-  versionHint: Версия игры для этой Minecraft
-  vmOptions: Параметры JVM
-  vmOptionsHint: Дополнительные аргументы, передаваемые в JVM
+  requireName: Требуется имя
+  showInstance: Открыть папку экземпляра
+  vmOptions: Опции JVM
+  vmOptionsHint: Дополнительные аргументы, передаваемые JVM
 instanceAge:
   older: Старые
   threeDay: В течение трёх дней
   today: Сегодня
 instanceFileOperation:
   add: Добавить
-  backup-add: Заменить (Бэкап)
-  backup-remove: Удалить (Бэкап)
+  backup-add: Заменить (создать резервную копию)
+  backup-remove: Удалить (создать резервную копию)
   keep: Оставить
   remove: Удалить
 instanceSetting:
-  disableAuthlibInjector: Отключить инжектор authlib
-  disableAuthlibInjectorDescription: |-
-    Если вы используете стороннюю систему скинов. 
-    Инжектор authlib может помочь вам отобразить скин в игре.
-  disableElyByAuthlib: Отключить замену authlib ely.by
-  disableElyByAuthlibDescription: >-
-    Ely.by имеет уникальную замену authlib для универсального отображения скина
-    на любом сервере.
-  fastLaunch: Турбозапуск
-  fastLaunchHint: Игнорировать статус пользователя и существующие нерешённые проблемы
+  disableAuthlibInjector: Отключить authlib injector
+  disableAuthlibInjectorDescription:
+    Если вы используете систему скинов от сторонних
+    разработчиков, authlib injector может помочь отображать скины в игре.
+  disableElyByAuthlib: Отключить замену authlib от ely.by
+  disableElyByAuthlibDescription:
+    Ely.by имеет уникальную замену authlib для универсального
+    отображения скинов на любом сервере.
+  fastLaunch: Быстрый запуск
+  fastLaunchHint: Игнорировать статус пользователя и существующие неисправленные проблемы.
   hideLauncher: Скрыть лаунчер после запуска
-  icon: Выберите изображение
-  showLog: Показать логи Minecraft
-  showLogHint: Это выведет окно для просмотра логов Minecraft после запуска игры
+  icon: Выбрать изображение
+  showLog: Показывать журнал Minecraft
+  showLogHint: Это откроет окно журнала Minecraft после запуска экземпляра
 instanceTemplate:
-  curseforge: Это модпак Curseforge
-  ftb: Это модпак FTB
-  importing: Импорт шаблона
-  mcbbs: Это модпак MCBBS
-  modpack: Это raw модпак
-  modrinth: Это модпак Modrinth
-  preview: Предварительный просмотр модпака
-  title: Шаблон настройки
+  curseforge: Это сборка модов CurseForge
+  ftb: Это сборка модов FTB
+  mcbbs: Это сборка модов MCBBS
+  modpack: Это сырая сборка модов (Raw)
+  modrinth: Это сборка модов Modrinth
+  preview: Предварительный просмотр сборки модов
+  title: Настройки шаблона
 instanceUpdate:
   basic: Обновление настроек
   files: Обновление файлов
-  loaderChanged: >-
-    Модлоадер этого экземпляра был изменен. 
-
-    Старый загрузчик модов — {modloader}, а новый загрузчик модов —
-    {newModloader}.
   title: Обновление экземпляра
   update: Начать обновление
 instances:
-  add: Создать игру
+  add: Создать экземпляр
   addDescription: Создать новый экземпляр с нуля
-  addMMCDescription: |-
-    Импортируйте существующий экземпляр MultiMC. 
-    Вам нужно выбрать папку экземпляра из MultiMC.
+  addMMCDescription:
+    Импортировать существующий экземпляр MultiMC. Вам нужно выбрать
+    папку экземпляра из MultiMC.
   addManually: Создать вручную
-  addModrinthDescription: |-
-    Импортировать существующий экземпляр Modrinth. 
-    Вам нужно выбрать папку экземпляра Modrinth.
-  addServer: Создать с сервера
-  addServerDescription: Это создаст игру, запускаемую напрямую на сервер.
+  addModrinthDescription:
+    Импортировать существующий экземпляр Modrinth. Вам нужно
+    выбрать папку экземпляра Modrinth.
+  addServer: Создать из сервера
+  addServerDescription:
+    Это создаст экземпляр, который запустится непосредственно
+    на сервере.
   addTemplate: Создать из шаблона
-  addTemplateDescription: Импортировать из скачанного модпака
-  addVanilla: Создайте из ванильного Minecraft
-  addVanillaDescription: |-
-    Импортируйте из общей папки .minecraft. 
-    Это приведет к дублированию исходного игрового профиля в XMCL.
-  choose: Выберите игру
-  importFolder: Импорт из папки
-  importFolderDescription: Импорт Minecraft в лаунчер
-  loadingFiles: Загрузка файлов модпака
+  addTemplateDescription: Импортировать из загруженной сборки модов
+  addVanilla: Создать из стандартного Minecraft
+  addVanillaDescription:
+    Импортировать из обычной папки (.minecraft). Это дублирует
+    оригинальный профиль экземпляра в XMCL.
+  choose: Выбрать экземпляр
+  importFolder: Импортировать из папки
+  importFolderDescription: Импортировать Minecraft в лаунчер
+  loadingFiles: Загрузка файлов сборки модов
   refreshServers: Обновить серверы
-items:
-  count: '{count} предметов'
-  total: '{total} всего'
 java:
-  allocatedLong: Использовать Java в системе по умолчанию
-  allocatedShort: Автовыделение
-  browse: Просмотр исполняемого файла Java
-  importFromFile: Импорт Java из файла
-  invalid: Неверное местоположение Java
+  allocatedLong: Использовать системный Java по умолчанию
+  allocatedShort: Автоматическое выделение
+  browse: Обзор выполняемого файла Java
+  importFromFile: Импортировать Java из файла
+  invalid: Неверное расположение Java
   location: Расположение Java
-  maxMemory: Макс. объём памяти
+  maxMemory: Максимальная память
   memory: Память Java
-  memoryAuto: Авто
+  memoryAuto: Автоматически
   memoryManual: Вручную
-  memoryUnassigned: Отменить назначение
-  minMemory: Мин. объём памяти
+  memoryUnassigned: Не назначено
+  minMemory: Минимальная память
   modifyInstance: Изменить путь к Java
   noMemory: Не ограничивать использование памяти
-  refresh: Обновить локальную Java
-  systemMemory: Текущая системная память
+  refresh: Обновить локальный Java
+  systemMemory: Текущая оперативная память
+labyMod:
+  disable: LabyMod не выбран
+  empty: LabyMod не поддерживает текущую версию Minecraft
 launch:
-  launch: Запуск
+  cancel: Отменить
+  kill: Остановить
+  launch: Запустить
 launchBlocked:
-  ignore: Принудительный запуск
+  launchBadVersion:
+    description:
+      Файл версии {version} повреждён или отсутствует. Возможно, вам нужно
+      переустановить эту версию?
+    title: Ошибка файла версии
   launchGeneralException:
-    description: Некоторые ошибки приводят к неудачному запуску.
-    title: Запуск не удался
+    description: Возникли ошибки, из-за которых запуск не удался.
+    title: Ошибка запуска
   launchInvalidJavaPath:
-    description: >-
-      Выбранный Java отсутствует или выбран не правильно. Выберите новый. <span
-      class="highlight"> {javaPath} </span>
+    description:
+      Выбранный путь к Java неверен или файл отсутствует. Пожалуйста, выберите
+      другой путь. <span class="highlight"> {javaPath} </span>
     title: Неверный путь к Java
   launchJavaNoPermission:
-    description: >-
-      Лаунчер не имеет разрешения на выполнение java <span class="highlight">
-      {javaPath} </span>. Либо измените разрешение файла java, либо предоставьте
-      разрешение лаунчеру.
-    title: Нет разрешения на запуск
+    description:
+      У лаунчера нет разрешения на выполнение Java по указанному пути.
+      Измените разрешения файла или запустите лаунчер от имени администратора. <span
+      class="highlight"> {javaPath} </span>
+    title: Отсутствуют права на выполнение
   launchNoProperJava:
-    description: >-
-      Невозможно выбрать подходящую java для запуска игры. ({javaPath} является
-      неправильным?)
-    title: Подходящей java не найдено
+    description:
+      Не найдена подходящая версия Java для запуска экземпляра. ({javaPath}
+      неверен?)
+    title: Отсутствует подходящая версия Java
   launchNoVersionInstalled:
-    description: >-
-      Невозможно определить версию <span class="highlight">{version}</span> для
-      запуска.
-    title: Версия не выбрана
+    description:
+      Не удаётся разрешить версию <span class="highlight">{version}</span>
+      для запуска.
+    title: Отсутствует выбранная версия
   launchSpawnProcessFailed:
-    description: >-
-      Пожалуйста, проверьте свою Java или предоставьте дополнительные разрешения
-      программе запуска и повторите попытку. 
-
-      Если это по-прежнему не работает, обратитесь к разработчикам.
-    title: Не могу запустить игровой процесс
+    description:
+      Произошла ошибка при запуске процесса экземпляра. Проверьте, что
+      указана правильная версия Java, и попробуйте предоставить больше разрешений
+      лаунчеру. Если это не поможет, свяжитесь с разработчиками.
+    title: Ошибка запуска процесса экземпляра
   launchUserStatusRefreshFailed:
-    description: Невозможно обновить текущий выбранный статус пользователя.
-    title: Не удалось проверить статус пользователя
-  unexpectedText: >-
-    Неожиданно. Вы можете перезапустить лаунчер, чтобы устранить проблему.
-    Свяжитесь с автором, если эта проблема остаётся.
-  userAcquireMicrosoftTokenFailed: >-
-    Не удалось получить токен Microsoft. Повторите попытку или проверьте свой
-    Microsoft аккаунт.
-  userCheckGameOwnershipFailed: >-
-    Не удалось проверить право собственности на Minecraft. Повторите попытку или
-    проверьте свой интернет.
-  userExchangeXboxTokenFailed: >-
-    Не удалось обменять токен xbox на токен Microsoft. Повторите попытку или
-    проверьте свой интернет.
-  userLoginMinecraftByXboxFailed: >-
-    Не удалось войти в Minecraft с помощью токена xbox. Повторите попытку или
-    проверьте свой интернет.
+    description: Не удалось обновить статус выбранного пользователя.
+    title: Ошибка обновления статуса пользователя
+  unexpectedText:
+    Это неожиданно. Вы можете перезапустить лаунчер, чтобы устранить
+    проблему. Если проблема повторится, свяжитесь с автором.
+  userAcquireMicrosoftTokenFailed:
+    Не удалось получить токен Microsoft. Проверьте
+    свой аккаунт Microsoft и повторите попытку.
+  userCheckGameOwnershipFailed:
+    Не удалось проверить права на владение игрой. Проверьте
+    ваше подключение к интернету и повторите попытку.
+  userExchangeXboxTokenFailed:
+    Не удалось обменять токен Xbox на токен Microsoft.
+    Проверьте ваше подключение к интернету и повторите попытку.
+  userLoginMinecraftByXboxFailed:
+    Не удалось войти в Minecraft с помощью токена Xbox.
+    Проверьте ваше подключение к интернету и повторите попытку.
 launchFailed:
-  crash: Игра вылетела!!
-  description: Отчета о сбое нет. Это логи ошибок и последний журнал.
-  latestLog: Последние логи
+  crash: Игра вылетела!
+  failedToLaunch: Не удалось запустить запуск
   title: Игра завершилась с аномальным кодом
 launchStatus:
-  assigningMemory: Назначение памяти
-  injectingAuthLib: Настройка стороннего AuthLib
-  launching: Запуск...
-  launchingSlow: Все еще запускается... Запуск графического движка может быть медленным...
+  assigningMemory: Распределение памяти
+  exit: Выйти из игры?
+  injectingAuthLib: Настройка сторонней библиотеки AuthLib
+  launching: Запуск игры...
+  launchingSlow:
+    Запуск игры всё ещё выполняется... Для инициализации графического движка
+    может потребоваться некоторое время...
   refreshingUser: Обновление токена пользователя
-  spawningProcess: ''
+  spawningProcess: Запуск процесса
 launcherUpdate:
   alreadyLatest: Последняя версия
   installAndQuit: Перезапустите, чтобы установить
   noUpdateAvailable: Нет доступных обновлений
-  reinstall: Переустановить
   updateToThisVersion: Скачать и установить
-liteloader:
-  name: LiteLoader
 localVersion:
-  auto: Автовычисление
+  auto: Определить автоматически
   delete: Удалить локальную версию
-  deleteDescription: >-
-    Эта операция удалит локальную версию json и jar. Вам нужно снова скачать их,
-    если вы хотите использовать их.
+  deleteDescription:
+    Эта операция удалит локальную версию json & jar. Вам придётся
+    переустановить её, если вы захотите использовать её снова.
   empty: Версия не установлена
   hint: Запустить конкретную локальную версию напрямую
   refresh: Обновить версии
-  reinstallDescription: >-
-    Если вы считаете, что установка этой версии имеет некоторые проблемы, вы
-    можете попробовать переустановить её.
+  reinstallDescription:
+    Если вы считаете, что установка этой версии вызывает проблемы,
+    вы можете попробовать переустановить её.
   reinstallTitle: Переустановить {version}
   title: Локальная версия | Локальные версии
 logLevel:
   error: Ошибка
   info: Информация
-  success: Успешно
+  success: Успех
   warning: Предупреждение
 login:
-  dropHint: Сбросьте ссылку с кодом авторизации здесь, чтобы войти в систему вручную
+  dropHint: Перетащите сюда ссылку с кодом авторизации для ручного входа
   forgetPassword: Забыли пароль?
-  login: Вход
-  manualLoginUrl: Если браузер не открывается, перейдите по этой ссылке для авторизации!
+  login: Войти
+  manualLoginUrl:
+    Если браузер не открывается, пожалуйста, нажмите на эту ссылку для
+    авторизации!
   signup: Зарегистрироваться
-  signupDescription: Новичок у нас?
-  userRelogin: Срок действия токена доступа пользователя истек. Повторите вход!
+  signupDescription: Нет учётной записи?
+  userRelogin:
+    Срок действия токена доступа пользователя истёк. Пожалуйста, повторите
+    вход!
 loginError:
-  acquireMicrosoftTokenFailed: >-
-    Не удаётся получить токен Microsoft. Это может быть проблема с интернетом.
-    Повторите попытку.
-  badNetworkOrServer: >-
-    Проверьте подключение к интернету! Или, может быть сервер авторизации не
-    работает!
-  checkOwnershipFailed: Не удалось проверить право собственности на игру. Повторите попытку.
-  connectionReset: Не удаётся войти, так как соединение сброшено сервером
-  fetchMinecraftProfileFailed: 'Не удаётся получить профиль Minecraft: {reason}'
-  illegalEmail: Электронная почта должна быть действующей
+  acquireMicrosoftTokenFailed:
+    Не удалось получить токен Microsoft. Это может быть
+    проблема с сетью. Пожалуйста, повторите попытку.
+  badNetworkOrServer: Проверьте соединение с сетью! Возможно, сервер авторизации недоступен!
+  checkOwnershipFailed:
+    Не удалось подтвердить владение игрой. Пожалуйста, попробуйте
+    ещё раз.
+  connectionReset: Не удалось войти, так как соединение было сброшено сервером
+  fetchMinecraftProfileFailed: "Не удалось получить профиль Minecraft: {reason}"
+  illegalEmail: Необходим корректный адрес электронной почты
   invalidCredentials: Неверные учётные данные. Неверное имя пользователя или пароль.
-  loginMinecraftByXboxFailed: >-
-    Не удалось обменять токен Minecraft на токен XBox. Пожалуйста, убедитесь,
-    что у вас есть Minecraft на Xbox или повторите попытку.
-  loginXboxFailed: >-
-    Не удаётся войти в Xbox с помощью токена Microsoft. Убедитесь, что у вас
-    есть связанный аккаунт xbox с аккаунтом Microsoft. Повторите попытку.
-  requestFailed: Не удалось войти, мы не знаем точной причины. Повторите попытку.
-  requireEmail: Требуется электронная почта
+  loginMinecraftByXboxFailed:
+    Не удалось получить токен Minecraft с помощью токена
+    Xbox. Убедитесь, что у вас есть Minecraft в Xbox, или попробуйте ещё раз.
+  loginXboxFailed:
+    Не удалось войти в Xbox с помощью токена Microsoft. Убедитесь,
+    что у вас есть независимый аккаунт Xbox от вашего аккаунта Microsoft. Пожалуйста,
+    попробуйте ещё раз.
+  requestFailed: Ошибка входа, причина неизвестна. Пожалуйста, попробуйте ещё раз.
+  requireEmail: Требуется адрес электронной почты
   requirePassword: Требуется пароль
   requireUsername: Требуется имя пользователя
-  timeout: Вышло время ожидания на вход. Повторите попытку или проверьте свой интернет.
+  timeout:
+    Время ожидания входа истекло. Пожалуйста, попробуйте ещё раз или проверьте
+    соединение с сетью.
 logsCrashes:
-  crashes: Отчёты о сбоях
-  logs: Логи
+  crashes: Отчёты об ошибках
+  logs: Журналы
   placeholder: Файлы не найдены
-  title: Логи или отчёты о сбоях
+  title: Журналы и отчёты об ошибках
 me:
-  games: Мои игры
-  modpacks: Мои модпаки
+  games: Мои экземпляры
+  modpacks: Мои сборки модов
   news: Новости
   recentPlay: Последние игры
   versions: Установленные версии
 minecraftVersion:
-  empty: Не удаётся загрузить версии Minecraft
   name: Версия Minecraft
   release: Релиз
-  showAlpha: Показывать Snapshot
-  snapshot: Snapshot
+  snapshot: Снапшот
 mod:
-  acceptVersion: Принять {version}
+  acceptVersion: Принимает {version}
   compatible: Совместимый мод.
   currentVersion: Текущая {current}
-  deletion: Удаление мода
-  deletionHint: >-
-    Вы навсегда потеряете этот мод и его метаданные. Точно хотите удалить его? |
-    Вы потеряете этот мод и эти метаданные навсегда. Точно это сделать?
+  deletionHint:
+    Вы потеряете этот мод и его метаданные навсегда. Вы уверены, что хотите
+    удалить его? | Вы потеряете эти моды и эти метаданные навсегда. Вы уверены, что
+    хотите это сделать?
   deletionRestHint: И ещё {rest} модов...
-  denseView: Плотный просмотр
-  dropHint: Перетащите мод .jar/.litemod сюда для импорта.
-  enabled: 'Модов включено: {count}'
+  denseView: Компактное отображение модов
+  dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
+  enabled: "Всего модов включено: {count}"
   filter: Фильтр модов
-  groupInstalled: Групповые установленные моды
-  hideIncompatible: Скрыть несовместимые моды
+  groupInstalled: Группировать установленные моды
+  hasUpdate: У мода есть новая версия!
   incompatible: Несовместимый мод.
   manage: Управление модами
-  maybeCompatible: Возможно совместим.
-  mods: '{count} Модов'
+  maybeCompatible: Возможно, совместим.
+  mods: "{count} модов"
   name: Мод | Моды
-  noModLoaderHint: Не забудьте включить modloader для использование модов!
-  openLink: Открыть ссылку на мод {url}
-  searchOnCurseforge: Исать на curseforge {name}
-  searchOnModrinth: Искать {name} на Modrinth
-  showDirectory: Показать расположение модов
-  showFile: Показать путь к моду {file}
-  showInCurseforge: Показать мод на curseforge
+  openLink: Открыть URL мода {url}
+  search: Поиск модов
+  showDirectory: Открыть папку с модами
+  showFile: Показать путь к файлу мода {file}
   showInModrinth: Показать {name} на Modrinth
+  switchDefaultSource: Источник контента модов по умолчанию
 modInstall:
-  install: Скачать
-  installed: Скачан
+  checkUpgrade: Проверить обновления модов
+  checkedUpgrade: Обновления проверены
+  currentVersion: Выбранная версия
+  dependencyHint: Установлена ​​другая версия {version}
+  install: Установить
+  installHint: Будет установлен файл {file} с зависимостями {dependents}
+  installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
-  recommendation: Изучите {first} или {second} моды в {modrinth} и ​​{curseforge}!
+  recommendation: Исследуйте {first} или {second} в {modrinth} и {curseforge}!
   search: Результаты поиска
-  searchHint: Найдите и выберите проект
-modSearchType:
-  all: Все
-  local: Дисковый кэш
+  searchHint: Поиск и выбор проекта
+  source: Источник контента мода
+  switch: Переключить версию
+  upgrade: Обновить моды
 modified:
   reset: Сбросить
   save: Сохранить
-  unsaved: Изменения не сохранены!
+  unsaved: Ваши изменения не сохранены!
 modpack:
   author: Имя автора
-  authorHint: >-
-    Это может быть использовано для подписи экспортированного модпака.
-    (Curseforge)
+  authorHint: Используется для подписи экспортируемой сборки модов (CurseForge).
   delete:
-    hint: Это приведёт к удалению модпака {name} с его метаданными. Вы уверены?
-    title: Удалить модпак
+    hint: Это удалит сборку модов {name} вместе с её метаданными. Вы уверены?
+    title: Удалить сборку модов
   description: Описание
-  descriptionHint: >-
-    Общее описание для вашего модпака. Может использоваться для экспорта в
-    качестве модпака curseforge.
-  dropHint: Перетащите zip-архив модпака сюда, чтобы импортировать
-  emitCurseforge: Выпустить модпак Curseforge
-  emitMcbbs: Выпустить модпак MCBBS
-  emitModrinth: Выпустить модпак Modrinth
+  descriptionHint: Общее описание для вашей сборки модов. Используется при
+    экспорте в формат CurseForge.
+  emitCurseforge: Создать сборку модов для CurseForge
+  emitMcbbs: Создать сборку модов для MCBBS
+  emitModrinth: Создать сборку модов для Modrinth
   emitModrinthStrict: Строгий формат Modrinth
-  emitModrinthStrictDescription: Разрешены только ссылки из 4 доменов, перечисленных в документе modrinth
-  export: Экспортировать как модпак
-  general: Основная информация
-  includeAssets: Включать Assets
-  includeLibraries: Включать библиотеки
+  emitModrinthStrictDescription:
+    Разрешены только URL-адреса из 4 доменов, перечисленных
+    в документе Modrinth
+  export: Экспортировать как сборку модов
+  general: Общая информация
+  includeAssets: Включить ресурсы
+  includeLibraries: Включить библиотеки
   includes: Файлы для включения
-  modpackVersion: Версия модпака
-  name: Модпак | Модпаки
-  overrides: Переопределяет
-  showFile: Показать файл {file}
-  showInCurseforge: Показать {name} на Curseforge
-  showInFtb: Показать {name} на FTB
-  url: Ссылка
-  urlHint: Ссылка домашней страницы вашего модпака
+  modpackVersion: Версия сборки модов
+  name: Сборка модов | Сборки модов
+  overrides: Переопределения
+  url: URL-адрес
+  urlHint: URL-адрес домашней страницы вашей сборки модов.
 modrinth:
-  browseUrl: Открыть в браузере {url}
   categories:
-    128x: 128x
-    16x: 16x
-    256x: 256x
-    32x: 32x
-    512x+: 512x+
-    64x: 64x
-    8x-: 8x-
     adventure: Приключение
     atmosphere: Атмосфера
-    audio: Звук
+    audio: Аудио
     blocks: Блоки
-    bloom: Bloom
-    bukkit: Bukkit
-    bungeecord: Bungeecord
-    canvas: Canvas
-    cartoon: Cartoon
+    bloom: Рассеянный свет
+    canvas: Полотно
+    cartoon: Мультипликация
     categories: Категории
-    challenging: Challenging
-    colored-lighting: Цветное освещение
-    combat: Сражения
-    core-shaders: Шейдеры
-    cursed: Странные
-    datapack: Датапаки
-    decoration: Косметика
+    challenging: Высокая сложность
+    colored-lighting: Разноцветное освещение
+    combat: Бой
+    core-shaders: Базовые шейдеры
+    cursed: Странность
+    datapack: Набор данных
+    decoration: Декорация
     economy: Экономика
-    entities: Entities
+    entities: Существа
     environment: Окружение
-    equipment: Снаряжение
-    fabric: Fabric
-    fantasy: Фантастика
-    features: Features
-    folia: Лист
+    equipment: Экипировка
+    fantasy: Фэнтези
+    features: Функции
     foliage: Листва
     fonts: Шрифты
     food: Еда
-    forge: Forge
-    game-mechanics: Механики игры
-    gui: Gui
-    high: Высота
-    iris: Iris
+    game-mechanics: Игровые механики
+    gui: Графический интерфейс
+    high: Высокая требовательность
     items: Предметы
     kitchen-sink: Кухонная мойка
     library: Библиотека
-    lightweight: Упрощенный
-    liteloader: Liteloader
-    locale: Locale
-    low: Low
-    magic: Magic
-    management: Management
-    medium: Medium
-    minecraft: Minecraft
-    minigame: Mini Games
-    misc: Misc
-    mobs: Mobs
-    modded: Modded
-    models: Models
-    modloader: Mod Loader
-    multiplayer: Multiplayer
-    optifine: Optifine
-    optimization: Optimizations
-    paper: Paper
-    path-tracing: Path Tracing
-    pbr: PBR
-    performance impact: Performance Impact
-    potato: Potato
-    purpur: Purpur
-    quests: Quests
-    quilt: Quilt
-    realistic: Realistic
-    reflections: Reflections
-    resolutions: Resolutions
-    rift: Rift
-    screenshot: Screenshot
-    semi-realistic: Semi Realistic
-    shadows: Shadows
-    simplistic: Simplistic
-    social: Social
-    spigot: Spigot
-    sponge: Sponge
-    storage: Storage
-    technology: Technology
-    themed: Themed
-    transportation: Transportation
-    tweaks: Tweaks
-    utility: Utility
-    vanilla: Vanilla
-    vanilla-like: Vanilla-like
-    velocity: Velocity
-    waterfall: Waterfall
-    worldgen: World Gen
-  clientSide: Client Side
-  copyTitle: Текст {title} скопирован в буфер обмена
+    lightweight: Малый размер
+    locale: Локализация
+    low: Низкая требовательность
+    magic: Магия
+    management: Управление
+    medium: Средняя требовательность
+    minigame: Мини-игры
+    misc: Разнообразие
+    mobs: Мобы
+    modded: Модификация
+    models: Модели
+    modloader: Загрузчик модов
+    multiplayer: Сетевая игра
+    optimization: Оптимизация
+    path-tracing: Трассировка пути
+    pbr: Физически корректный рендеринг (PBR)
+    performance impact: Влияние на производительность
+    potato: Для картофельных ПК
+    quests: Квесты
+    realistic: Реализм
+    reflections: Отражения
+    resolutions: Разрешения
+    screenshot: Для снимков экрана
+    semi-realistic: Полуреализм
+    shadows: Тени
+    simplistic: Простота
+    social: Социальность
+    storage: Хранение
+    technology: Технологии
+    themed: Тема
+    transportation: Транспортировка
+    tweaks: Твики
+    utility: Полезность
+    vanilla: Ванилла
+    vanilla-like: Похожее на ваниллу
+    worldgen: Генерация мира
+  clientSide: Клиентская сторона
   createAt: Создано
   description: Описание
   downloads: Скачиваний
   environments:
     client: Клиент
     default: По умолчанию
-    name: Окружающая среда
     optional: Необязательно
     required: Требуется
     server: Сервер
-    unsupported: Неподдерживаемый
+    unsupported: Не поддерживается
   externalResources: Внешние ресурсы
-  featuredVersions: Популярные версии
+  featuredVersions: Рекомендуемые версии
   followers: Подписчики
-  gallery: Галлерея
+  gallery: Галерея
   gameVersions:
-    name: Версии игр
-  headers:
-    status: Статы
-    support: Поддерживает
-    version: Версия
+    name: Версии игры
+  issueUrl: Проблемы
   license: Лицензия
-  licenses:
-    name: Лицензии
   modLoaders:
     name: Загрузчики модов
-  perPage: На страницу
-  projectId: Id проекта
+  projectId: ID проекта
   projectMembers: Участники проекта
   projectType:
-    mod: Мод
-    modpack: Модпак
-    name: Тип проекта
-    resourcePack: Пакет текстур
-    shader: Шейдер
-  quickSearch: Поиск {title}
+    modpack: Сборка модов
   searchText: Поиск
   serverSide: Серверная часть
   sort:
-    downloads: Скачиваний
-    follows: Подписчиков
-    newest: Недавно созданный
-    relevance: Актуальность
+    downloads: Количество загрузок
+    follows: Количество подписчиков
+    newest: Недавно созданные
+    relevance: Релевантность
     title: Сортировать по
-    updated: Недавно обновлено
+    updated: Недавно обновлённые
+  sourceUrl: Исходный код
   technicalInformation: Техническая информация
-  updateAt: Обновлен
+  updateAt: Обновлено
   versions: Версии
+  wikiUrl: Вики
 modrinthCard:
   currentVersion: Текущая версия
-  projectHint: >
-    Этот экземпляр создан с помощью Modrinth модпака <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
-  complete: Готовый
+  allowTurn: Разрешить сервер-ретранслятор
+  allowTurnHint:
+    Разрешите сервер-ретранслятор, если вы не можете подключиться к пользователю.
+    Однако, использование сервера-ретранслятора может замедлить ваше соединение. Используйте
+    его с осторожностью.
+  complete: Завершено
   confirm: Подтвердить
-  connections: Связи
-  copied: Скопированно!
-  copy: Скопировать
-  copyGroupToFriendHint: Позвольте своим друзьям присоединиться к группе по этому идентификатору
-  copyLocalHint: >
-    "Скопируйте текст локального SDP и отправьте его своему товарищу, чтобы ваш
-    он ввёл этот текст в соединении присоединения <span>Токен может быть
-    использован только для <span style="color: red; font-weight:
-    bold;">ондого</span>! Нельзя отправлять один и тот же токен нескольким
-    узлам!</span> <br> <span class="hint-text" style="font-style: italic;">Если
-    вам нужно подключить несколько товарищей, вам нужно создать <span
-    style="font-weight: bold; color: rgba(245, 158, 11)">несколько</span>
-    соединений.</span>"
+  connections: Соединения
+  copied: Скопировано!
+  copy: Копировать
+  copyGroupToFriendHint:
+    Позвольте пользователям присоединиться к группе с помощью
+    этого ID
+  copyLocalHint:
+    'Скопируйте локальный токен SDP и отправьте его пользователю, чтобы
+    он ввёл этот токен в раздел присоединения к соединению. <span>Токен может быть
+    использован только для <span style="color: red; font-weight: bold">одного пользователя</span>!
+    Вы не можете отправлять один и тот же токен нескольким пользователям!</span> <br>
+    <span class="hint-text" style="font-style: italic;"> Если вам необходимо подключить
+    нескольких пользователей, необходимо создать <span style="font-weight: bold; color:
+    rgba(245, 158, 11)">несколько</span> соединений.</span>'
   createLocalToken: Создать локальный токен
-  currentIpTitle: Обнаружен общедоступный IP-адрес
-  currentNatTitle: 'Текущая сеть (NAT):'
-  difficultyLevelHint: Уровень сложности для установления связи с другими
+  currentIpTitle: Обнаруженный общедоступный IP
+  currentNatTitle: "Текущая сеть (NAT):"
+  difficultyLevelHint: Уровень сложности для создания соединения с другими пользователями
   disconnect: Отключиться
-  disconnectDescription: Точно отключиться от пользователя {user}({id})?
-  disconnected: Отключен
+  disconnectDescription: Вы уверены, что хотите прервать соединение с пользователем {user}({id})?
+  disconnected: отключено
   enterRemoteToken: Введите удалённый токен
-  enterRemoteTokenHint: >-
-    Как только товарищ введёт ваш токен, вам нужно ввести его токен в текстовое
-    поле ниже. Нажмите «Подтвердить», чтобы подключиться.
-  gatheringIce: >
-    "Подождите, пока сервер ICE соберет достаточно информации о вашей сети. Если
-    вы нетерпеливы и у вас достаточно информации, вы можете заранее предоставить
-    текущий SDP другой стороне и нажать далее, отправьте <span class="v-chip
-    v-chip--label v-size--small" style="text-font: bold"> локальный токен</span>
-    своему товарищу, вы можете ввести свой токен в области <span class="v-chip
-    v-chip--label v-size--small" style="text-font: bold"> Присоединиться к
-    подлкючению</span>.<br> Серверу ICE может потребоваться некоторое время для
-    сбора данных для создания <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">локального токена</span>.<br> Вам не нужно ждать,
-    пока статус ICE будет завершён. Если приведённый ниже токен останется
-    неизменным, вы можете скопировать его и отправить своему товарищу."
-  groupId: Идентификатор группы
-  illegalTokenDescription: Незаконный токен, убедитесь, что токен от вашего товарища правильный
-  initiateConnection: Начать подключение
-  inviteLink: Ссылка для приглашения
-  joinConnection: >-
-    Если ваш товарищ уже начал поключение, вам необходимо присоединиться к его
-    подключению.
+  enterRemoteTokenHint:
+    После того, как пользователь введёт ваш токен, необходимо
+    ввести его токен в приведённое ниже текстовое поле. Нажмите "Подтвердить", чтобы
+    установить соединение.
+  gatheringIce:
+    'Пожалуйста, подождите, пока сервер ICE соберёт необходимую информацию
+    о вашей сети. Если вы нетерпеливы и информации достаточно, вы можете отправить
+    текущий SDP другому пользователю наперёд и нажать "Далее". <br> Затем, отправьте
+    <span class="v-chip v-chip--label v-size--small" style="font-weight: bold">Локальный
+    токен</span> пользователю, который должен будет его ввести в разделе <span class="v-chip
+    v-chip--label v-size--small" style="font-weight: bold">Присоединиться к соединению</span>.
+    <br> Серверу ICE может потребоваться некоторое время, чтобы собрать вашу информацию
+    для создания <span class="v-chip v-chip--label v-size--small" style="font-weight:
+    bold">Локального токена</span>. <br> Вам не нужно ждать, пока статус ICE будет
+    завершён. Если токен ниже остаётся неизменным, вы можете скопировать и отправить
+    его пользователю.'
+  groupId: ID группы
+  illegalTokenDescription:
+    Недопустимый токен, убедитесь, что токен от пользователя
+    введён верно
+  initiateConnection: Инициировать соединение
+  joinConnection:
+    Если пользователь уже инициировал соединение, вам нужно присоединиться
+    к соединению.
   joinManual: Присоединиться
   joinOrCreateGroup: Присоединиться/Создать группу
-  joinOrCreateGroupHint: Получите идентификатор группы от своих друзей или создайте группу
-  kernel: P2P-ядро
-  kernelDescription: >-
-    Используйте либо собственный WebRTC, либо канал данных узла. 
-
-    Переключайте это значение только в том случае, если ваше p2p-соединение
-    когда-нибудь приведет к сбою окна запуска.
+  joinOrCreateGroupHint: Получите ID группы от пользователя или создайте группу
+  kernel: Ядро P2P
+  kernelDescription:
+    Используйте либо нативный WebRTC, либо node-datachannel. Переключайте
+    этот параметр только в том случае, если ваше p2p-соединение иногда вызывает ошибку
+    окна запуска.
   leaveGroup: Покинуть группу
   localToken: Локальный токен
-  manualConnect: Ручное подключение
-  name: Мультиплеер по локальной сети
+  manualConnect: Ручное соединение
+  name: Игра по локальной сети
   networkInfo: Информация о сети
   next: Далее
-  placeholder: >-
-    Подсоединяйтесь к другим пользователям, чтобы играть в Minecraft по
-    локальной сети!
+  placeholder:
+    Соединитесь с другим пользователем, чтобы играть в Minecraft в локальной
+    сети!
   previous: Назад
-  receiveHint: >-
-    После того как другая сторона введёт ваш токен, ваше подключение будет
-    создано автоматически. Теперь вы можете закрыть диалоговое окно.
-  receiveRemoteTokenHint: Введите здесь токен вашего товарища.
+  receiveHint:
+    После того, как пользователь введёт ваш токен, соединение будет создано
+    автоматически. Теперь вы можете закрыть диалоговое окно.
+  receiveRemoteTokenHint: Пожалуйста, введите удалённый токен от пользователя здесь.
   remoteToken: Удалённый токен
-  routerInfo: Информация о маршрутизаторе
-  sendTokenToRemote: Отправить токен на удаленный
+  routerInfo: Информация о роутере
+  sendTokenToRemote: Отправить токен
   share: Поделиться конфигурацией экземпляра
   sharing: Обмен файлами...
-  sharingNotificationBody: Вы можете загрузить или создать экземпляр из общей конфигурации {name}.
-  sharingNotificationTitle: Партнер делится конфигурацией игры
+  sharingNotificationBody:
+    Вы можете загрузить или создать экземпляр из общих настроек
+    {name}.
+  sharingNotificationTitle: Пользователь делится настройками экземпляра
   start: Начать
-  startNewP2PConnection: Нажмите «Начать», чтобы создать новое одноранговое соединение
-myStuff: Мои материалы
-name: Имя
+  startNewP2PConnection: Нажмите на кнопку "Начать", чтобы создать новое p2p-соединение
+myStuff: Мой контент
+name: Name
 natType:
-  blocked: Заблокировано
-  fullCone: Полный конус
-  openInternet: Открытый Интернет
-  restrictNat: Ограничение NAT
-  restrictPortNat: Ограничение порта NAT
+  blocked: Заблокирован
+  fullCone: Полный конус (Full Cone)
+  openInternet: Открытый интернет
+  restrictNat: Ограниченный NAT
+  restrictPortNat: Ограниченный порт NAT
   symmetricNat: Симметричный NAT
   symmetricUDPFirewall: Симметричный межсетевой экран UDP
   unknown: Неизвестно
+neoForgedVersion:
+  disable: NeoForged не выбран
+  empty: NeoForged не поддерживает {version}
 news:
-  name: Новости
   readMore: Подробнее
 next: Далее
-'no': Нет
-ok: ОК
 optifineVersion:
-  disable: Отключить Optifine
+  disable: Optifine не выбран
   empty: Optifine не поддерживает Minecraft {version}
 optional: Необязательно
 peerConnectionState:
@@ -951,527 +889,501 @@ peerConnectionState:
   connected: Подключено
   connecting: Подключение
   disconnected: Отключено
-  failed: Неудачно
-  name: Состояние подключения
+  failed: Ошибка
   new: Новое
 peerGroupState:
   closed: Не в группе
-  closing: Закрыта
-  connected: Присоединённая группа
-  connecting: Подключение
+  closing: Закрытие
+  connected: Подключён к группе
+  connecting: Подключение к группе
 peerIceGatheringState:
-  gathering: Сбор ледяного сервера
+  gathering: Сбор информации с сервера ICE
 peerSignalingState:
-  have-local-offer: Описание ожидающего узла
-popular: Популярность
+  have-local-offer: Ожидание описания от пользователя
 presence:
-  curseforge: Просматривает CurseForge
-  curseforgeProject: Просматривает {name} в Curseforge
-  instance: Находится в {instance}
-  instanceSetting: 'Настраивает: {instance}'
+  instance: Неактивен в экземпляре {instance}
+  instanceSetting: "Редактирует настройки экземпляра: {instance}"
   mod: Просматривает моды в {instance}
-  modrinth: Просматривает Modrinth
   modrinthProject: Просматривает {name} в Modrinth
-  resourcePack: Просматривает ресурспаки в {instance}
-  save: Просматривает сохранения в {instance}
+  resourcePack: Просматривает наборы ресурсов в {instance}
+  save: Просматривает миры в {instance}
   setting: Просматривает страницу настроек
-  shaderPack: Просматривает шейдерпаки в {instance}
-  version: Просматривает версии
-previous: Предыдущая
+  shaderPack: Просматривает наборы шейдеров в {instance}
+  version: Просматривает страницу версий
+previous: Назад
 proxy:
   host: Хост
   port: Порт
 quiltVersion:
-  disable: Отключить Quilt
+  disable: Quilt не выбран
   empty: Quilt не поддерживает Minecraft {version}
 refresh: Обновить
-refreshResource: Обновить ресурсы
 remove: Удалить
 resourcepack:
-  available: Доступно
   compatible: Формат {format} совместим с {version}
   defaultDescription: Внешний вид Minecraft по умолчанию
   delete:
-    content: >-
-      Это приведёт к удалению файла текстурпака с диска, и мы не сможем его
-      восстановить. Вы уверены, что сможете его восстановить?
-    title: Удалить текстурпак
-  dropHint: Перетащите сюда папку/zip текстурпака для импорта.
-  enable: 'Включено текстурпаков: {count}'
-  import: Импорт текстурпака
-  incompatible: >-
-    Несовместимый формат текстурпака ({format}). Подходящий {accept}. Текущий
-    {actual}.
-  independent: Экземпляр использует независимую папку пакета ресурсов
-  manage: Управление текстурпаками
-  name: Текстурпак | Текстурпаки
-  searchOnCurseforge: Искать {name} на curseforge
-  selected: Выбранные текстурпаки
-  shared: Экземпляр использует общую папку пакета ресурсов
-  showFile: Открыть текстурпак {file} в папке
-  showInCurseforge: Показать {name} на curseforge
-  unselected: Невыбранные текстурпаки
+    content:
+      Это приведёт к удалению файла набора ресурсов с диска, и мы не сможем
+      его восстановить. Вы уверены, что хотите это сделать?
+    title: Удалить набор ресурсов
+  dropHint: Перетащите сюда папку/zip-архив с набором ресурсов для импорта.
+  enable: "Всего наборов ресурсов выбрано: {count}"
+  incompatible:
+    Несовместимый формат набора ресурсов ({format}). Подходящий {accept}.
+    Текущий {actual}.
+  independent: Экземпляр использует независимую папку для наборов ресурсов
+  manage: Управление наборами ресурсов
+  name: Набор ресурсов | Наборы ресурсов
+  searchHint: Поиск набора ресурсов
+  searchOnCurseforge: Поиск {name} на CurseForge
+  selected: Выбранные наборы ресурсов
+  shared: Экземпляр использует общую папку для наборов ресурсов
+  showDirectory: Открыть папку с наборами ресурсов
+  showInCurseforge: Показать {name} на CurseForge
+  unselected: Невыбранные наборы ресурсов
+  showFile: Показать путь к набору ресурсов {file}
 save:
   copy:
     cancel: Отменить копирование
     confirm: Начать копирование
-    description: Выберите профили назначения, которые вы хотите сохранить.
-    name: Копировать сохранение
-    title: Копировать сохранение в другой профиль
+    description: Пожалуйста, выберите профиль(и), которые вы хотите сохранить.
+    name: Копировать мир
+    title: Копировать мир в другой профиль
   copyFrom:
     cancel: Отмена
     confirm: Начать копирование
-    description: >-
-      Можно развернуть сохранение на этом экземпляре из других или из
-      управляемых ресурсов (curseforge)
+    description:
+      Вы можете развернуть мир на этом экземпляре из других экземпляров
+      или из управляемых ресурсов (CurseForge)
     from: Из {src}
     fromProfile: Из других экземпляров
     fromResource: Из управляемых ресурсов
-    title: Импорт сохранения из управляемого источника
-  createdWorlds: 'Ваших миров: {count}'
-  deleteHint: >-
-    Эта операция не может быть отменена. Вы навсегда потеряете данные
-    сохранения. Вы уверены, что хотите удалить это сохранение?
-  deleteTitle: Удалить
-  detail: Больше информации
+    title: Импорт мира из управляемого источника
+  createdWorlds: "Всего миров: {count}"
+  deleteHint:
+    Эта операция не может быть отменена. Вы навсегда потеряете данные этого
+    мира. Вы уверены, что хотите удалить это мир?
+  deleteTitle: Удалить мир
   dropHint: Перетащите zip-архив сюда, чтобы импортировать
-  export: Экспорт сохранения
-  exportMessage: Экспорт сохранения в zip
-  exportTitle: Экспорт сохранения
-  import: Импорт сохранения
-  importMessage: Импорт сохранения из zip
-  importTitle: Импорт сохранения
-  manage: Управление сохранениями
-  name: Сохранение | Сохранения
-  showDirectory: Показать каталог сохранения
+  exportMessage: Экспортировать мир в zip-архив
+  exportTitle: Экспортировать мир
+  import: Импортировать мир
+  importMessage: Импортировать мир из zip-архива
+  importTitle: Импортировать мир
+  manage: Управление мирами
+  name: Мир | Миры
+  showDirectory: Открыть папку с мирами
 screenshots:
-  empty: У вас нет скриншотов
-  goto: Открыть папку
-  name: Скриншоты
-  playRandom: Играть случайным образом
-  playSequence: Играйте по порядку
+  empty: У вас нет снимков экрана
+  goto: Открыть папку со снимками экрана
+  playRandom: Показывать случайным образом
+  playSequence: Показывать по порядку
 server:
-  acceptingMinecraftVersion: Принятие версии Minecraft
-  creationHint: Укажите адрес сервера и пинг сервера
-  expectedVersions: Поддерживаемые версии
-  filterVersion: Фильтр-сервер ответил на версию Minecraft
+  creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
   host: Хост
   hostHint: Хост (с портом) сервера
-  ipAddress: IP-адрес
-  motd: Описание сервера
-  name: Сервер | Сервера
+  name: Сервер | Серверы
   ping: Пинг
-  pings: Пинги
   players: Игроки
   port: Порт
-  recommendedMinecraftVersion: Версия Minecraft
-  status: Состояние сервера
+  status: Статус сервера
   unknown: Неизвестный сервер
-  unknownDescription: Неизвестный сервер. Обновите
-  version: Серверу требуется версия
-  versionHint: Версия Minecraft для пинга
+  unknownDescription: Неизвестный сервер. Пожалуйста, обновите.
+  version: Сервер требует версию
 serverStatus:
   nohost: §4Невозможно найти хост!
-  ping: Пинг...
-  refuse: §4Серверу отказано!
+  ping: Соединение...
+  refuse: §4Сервер отказал!
   timeout: §4Вышло время подключения к серверу!
 setting:
   allowPrerelease: Скачать предварительную версию
-  allowPrereleaseDescription: Предварительная версия может быть нестабильной
+  allowPrereleaseDescription: Предварительная версия может быть нестабильной.
   apiSets:
-    auto: Автоматически (Определяется сетью)
+    auto: Автоматически (определяется сетью)
     official: Официальный (Mojang)
   appearance: Внешний вид
-  appxUpdateHint: >-
-    Лаунчер скачает и выполнит установку. Если всплывающее окна с установкой не
-    появилось, запустите его вручную.
-  autoDownload: Автоскачивание
-  autoDownloadDescription: Скачивать обновление автоматически, если доступно
+  appxUpdateHint:
+    Лаунчер скачает и запустит установщик. Если всплывающее окно установщика
+    не откроется автоматически, пожалуйста, запустите его вручную.
+  autoDownload: Автоматическая загрузка
+  autoDownloadDescription: Автоматическая загрузка обновлений, если они доступны.
   autoInstallOnAppQuit: Автоустановка
-  autoInstallOnAppQuitDescription: Автоматическая установка обновления при выходе из приложения
-  backgroundColorAbove: Показывать цвет фона в виде наложения
-  backgroundColorAboveDescription: Это позволит отобразить цвет фона над фоновым изображением или видео.
+  autoInstallOnAppQuitDescription:
+    Автоматическая установка обновлений при выходе
+    из приложения.
+  backgroundColorAbove: Показать цвет фона как наложение
+  backgroundColorAboveDescription: Это позволит отобразить цвет фона над фоновым эффектом.
   backgroundImage: Фоновое изображение
   backgroundImageBlur: Размытие изображения
-  backgroundImageBlurDescription: Перетащите чтобы размыть, легко
+  backgroundImageBlurDescription:
+    Перетащите, чтобы размыть изображение. Дальше ползунок
+    - больше размытия. Всё просто.
   backgroundImageClear: Очистить
-  backgroundImageDescription: Выберите изображение в качестве фона или очистите его
+  backgroundImageDescription: Выберите изображение в качестве фона или очистите его.
   backgroundImageFit:
     contain: Вместить
     cover: Обрезать
     name: Подогнать
-  backgroundImageSelect: Выбрать
-  backgroundMusic: Тематическая фоновая музыка
-  backgroundType: Тип фона
-  backgroundTypeDescription: Отображать особый эффект на фоне (Может повлиять на производительность)
+  backgroundImageSelect: Изменить
+  backgroundMusic: Фоновая музыка
+  backgroundType: Фоновой эффект
+  backgroundTypeDescription:
+    Показывать специальный эффект на фоне (это может повлиять
+    на производительность).
   backgroundTypes:
     halo: Ореол
     image: Изображение
-    none: Ничего
+    none: Нет
     particle: Частицы
     video: Видео
   backgroundVideo: Фоновое видео
-  backgroundVideoDescription: Выбрать или очистить видео
-  backgroundVideoSelect: Выбрать
+  backgroundVideoDescription: Изменить или очистить видео.
+  backgroundVideoSelect: Изменить
   backgroundVideoVolume: Громкость
-  backgroundVideoVolumeDescription: Перетащите, чтобы отрегулировать громкость
+  backgroundVideoVolumeDescription: Перетащите, чтобы отрегулировать громкость.
   blurAppBar: Размытие панели приложения
-  blurMainBody: Размытие основного окна
-  blurMainBodyDescription: Должна ли правая сторона лаунчера быть размытой
   blurSidebar: Размытие боковой панели
-  browseRoot: Обзор
+  browseRoot: Изменить
   checkUpdate: Проверить обновление
   colorTheme:
-    appBarColor: Панель приложения
+    appBarColor: Цвет панели приложения
     backgroundColor: Цвет фона
     cardColor: Цвет карточки
     description: Изменить цвета в теме
     errorColor: Цвет ошибки
     name: Цвет темы
     primaryColor: Основной цвет
-    secondaryColor: Вторичный цвет
-    sideBarColor: Боковая панель
+    sideBarColor: Цвет боковой панели
     warningColor: Цвет предупреждения
   darkTheme: Тема
-  darkThemeDescription: Выберите тёмную или светлую тему
+  darkThemeDescription: Выберите тёмную или светлую тему.
   developerMode: Режим разработчика
-  developerModeDescription: Режим разработчика нацелен на тестирование ваших модов
-  disableTelemetry: Отключить сбор данных
-  disableTelemetryDescription: XMCL будет собирать информацию о запусках игр и входы в аккаунт.
+  developerModeDescription: Эта опция предназначена для тестирования ваших
+    собственных модов.
+  disableTelemetry: Отключить телеметрию
+  disableTelemetryDescription: Если включено, XMCL будет собирать информацию о
+    запуске экземпляра и входа пользователя.
   enableDedicatedGPUOptimization: Назначить выделенный графический процессор
-  enableDedicatedGPUOptimizationDescription: Эта опция назначит выделенный графический процессор процессу Minecraft.
+  enableDedicatedGPUOptimizationDescription:
+    Эта опция назначит выделенный графический
+    процессор процессу Minecraft.
   enableDiscord: Включить активность Discord
-  enableDiscordDescription: Ваш статус лаунчера будет отображаться в discord
-  general: Общие
-  githubRelease: Github Release
-  globalSetting: Глобальная настройка экземпляра
+  enableDiscordDescription: Эта опция будет показывать статус лаунчера в Discord.
+  general: Общее
+  githubRelease: Релиз GitHub
+  globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   hideNewsHeader: Скрыть витрину новостей
   language: Язык
-  languageDescription: Язык интерфейса
+  languageDescription: Отображаемый язык интерфейса.
   latestVersion: Последняя версия
   layout:
-    default: Макет по умолчанию
-    focus: Макет фокусировки
-  layoutDescription: Макет лаунчера, отражающий различную логику пользовательского интерфейса
-  layoutTitle: Макет
+    default: Стандартный
+    focus: Для фокусировки
+  layoutDescription:
+    Вид интерфейса лаунчера, представляющий различную логику пользовательского
+    интерфейса.
+  layoutTitle: Вид интерфейса
   linuxTitlebar: Нативный заголовок окна
-  linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера
-  location: Расположение хранилища
-  maunalUpdateHint: |-
-    Версия не может быть обновлена ​​автоматически. 
-    Пожалуйста, перезагрузите лаунчер с сайта!
-  maxSockets: На хост
-  maxSocketsDescription: >-
-    Ограничьте максимальное количество сокетов, разрешённых за каждого хоста или
-    для всех хостов в целом. 0 означает отсутствие ограничений.
+  linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера.
+  location: Место для хранения файлов лаунчера
+  maunalUpdateHint:
+    Данная версия не может быть обновлена автоматически. Пожалуйста,
+    скачайте лаунчер с сайта ещё раз!
+  maxSockets: Максимум сокетов
+  maxSocketsDescription:
+    Ограничение максимального количества сокетов для разрешения
+    на хосте или для всех хостов в целом. 0 означает отсутствие ограничений.
   maxSocketsTitle: Максимальное количество HTTP-сокетов
-  name: Глобальная настройка | Глобальные настройки
+  name: Глобальные настройки | Глобальные настройки
   network: Настройки сети
   officialWebsite: Официальный сайт
   particleMode:
-    bubble: Пузыри
-    name: Режим частиц
-    push: Пуш
-    remove: Убрать
-    repulse: Репульс
-  particleModeDescription: Выберите поведение частицы при нажатии
-  replaceNative: Замените собственные библиотеки
-  replaceNativeDescription: Замените родные библиотеки в соответствии с аркой вашего компьютера.
+    bubble: Надувание
+    name: Поведение частиц
+    push: Добавление
+    remove: Удаление
+    repulse: Отталкивание
+  particleModeDescription: Выберите поведение частиц при нажатии.
+  replaceNative: Заменить нативные библиотеки
+  replaceNativeDescription:
+    Заменить нативные библиотеки в соответствии с архитектурой
+    вашего компьютера.
   replaceNatives:
     all: Все
-    legacy: Только устаревшая версия
-  resetToDefault: Сброс к значению по умолчанию
+    legacy: Только старые версии
+  resetToDefault: Сбросить к значениям по умолчанию
   showNewsHeader: Показать витрину новостей
-  showRoot: Отображать
-  streamerMode: Режим потоковой передачи
-  streamerModeDescription: >-
-    Это скроет вашу личную информацию, например адрес электронной почты, в
-    панели запуска.
+  showRoot: Открыть папку
+  streamerMode: Режим стримера
+  streamerModeDescription:
+    Эта опция скроет вашу личную информацию, такую как электронная
+    почта, в лаунчере.
   theme:
     dark: Тёмная тема
     light: Светлая тема
-    system: Использовать тему системы
+    system: Использовать системную тему
+  themeExport: Экспортировать тему
   themeFont: Шрифт
-  themeFontDescription: Измените шрифт лаунчера.
-  themeResetFont: Сбросить шрифт
-  themeSelectFont: Выберите шрифт
+  themeFontDescription: Изменить шрифт лаунчера.
+  themeImport: Импортировать тему
+  themeResetFont: Сбросить
+  themeSelectFont: Изменить
   themeShare: Поделиться темой
-  themeShareDescription: Вы можете поделиться темой со своим другом.
+  themeShareDescription: Вы можете поделиться темой с вашим другом.
   update: Обновить
   useBmclAPI: Использовать BMCL API
-  useBmclAPIDescription: >-
-    Используйте BMCLAPI для скачивания Minecraft, когда вы находитесь в
-    материковом Китае. (Не поможет, если вы не находитесь в материковом Китае)
+  useBmclAPIDescription:
+    Использовать BMCLAPI для скачивания Minecraft, когда вы находитесь
+    в материковом Китае. (Не поможет, если вы не находитесь в материковом Китае)
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
 settingLabel:
-  global: Глобальные
-  globalHint: Эта настройка будет соответствовать глобальной настройке
-  local: Локальная
-  localHint: Эта настройка изменяется текущим экземпляром
+  global: Глобальный
+  globalHint: Это настройка будет следовать глобальной настройке.
+  local: Локальный
+  localHint: Эта настройка может быть изменена текущим экземпляром.
 setup:
-  appearance:
-    name: '@:setting.appearance'
+  account:
+    description:
+      Авторизуйтесь в своей игровой учётной записи. Если у вас её нет,
+      вы можете пропустить это на данный момент.
+    name: Добавить игровую учётную запись
+    skip: Пока пропустить
   dataRoot:
-    description: >-
-      Корень данных - это не обычный каталог .minecraft. Поскольку данные XMCL
-      структура каталогов отличается от ванильной, мы не рекомендуем
-      использовать общий каталог .minecraft в качестве корня данных.
-    drives: Рекомендовать места
-    name: Установить корень данных
-  defaultLayoutDescription: >-
-    Макет по умолчанию пытается улучшить концепцию «экземпляра» игры. 
-
-    Похоже на такие приложения, как Discord. 
-
-    Он также вдохновлен другими приложениями для запуска игр, такими как Steam и
-    т. д.
+    description:
+      Корневая папка не является обычной папкой (.minecraft). Поскольку
+      структура каталогов данных XMCL отличается от оригинальной, мы не рекомендуем
+      использовать общую папку (.minecraft) в качестве корневой папки данных.
+    drives: Рекомендуемые расположения
+    name: Установить корневую папку
+  defaultLayoutDescription:
+    Вид интерфейса "Стандартный" пытается улучшить концепцию
+    "игрового экземпляра". Он выглядит как приложения, такие как Discord. Он также
+    вдохновлён другими приложениями запуска игр, такими как Steam и т.д.
   defaultPath: Путь по умолчанию
   error:
-    badDataRoot: |-
-      Неверный каталог для данных лаунчера! 
-      Пожалуйста, попробуйте другой каталог!
-    exists: |-
-      Выбранный каталог не пуст. 
-      Это нормально, но обязательно сделайте резервную копию своих данных.
-    noPermission: |-
-      У лаунчера нет разрешения на доступ к выбранному каталогу! 
+    badDataRoot:
+      Недопустимый каталог для данных лаунчера! Пожалуйста, попробуйте
+      другой.
+    exists:
+      Выбранный каталог не пуст. Это нормально, но убедитесь, что вы сделали
+      резервную копию своих данных.
+    noPermission:
+      У лаунчера нет необходимых прав на доступ к выбранному каталогу!
       Пожалуйста, попробуйте другой.
-    nonDictionary: |-
-      Выбранный путь является файлом! 
-      Пожалуйста, выберите каталог!
-  focusLayoutDescription: |-
-    Макет фокуса — это устаревший макет Minecraft Launcher. 
-    Он предназначен для использования с одним или несколькими экземплярами.
+    nonDictionary: Выбранный путь является файлом! Пожалуйста, выберите каталог!
+  focusLayoutDescription:
+    Вид интерфейса "Для фокусировки" - это устаревший вид интерфейса
+    Minecraft. Он предназначен для использования с одним экземпляром или небольшим
+    количеством экземпляров.
   game:
-    description: >-
-      Выберите существующий каталог игры (.minecraft) для импорта существующих
-      ресурсов. Так вы сможете быстро определить моды, текстурпаки и т.д.
     name: Импортировать существующую игру
   locale:
-    description: >-
-      Выберите предпочтительный язык, если он есть! Если вы не видите своего
-      родного язык и вы хотите помочь, вы можете посетить наш Github для
-      отправки pull просьбы о переводе!
+    description:
+      Выберите ваш предпочитаемый язык, если он доступен. Если вы не видите
+      необходимый язык и хотите помочь, вы можете посетить наш Github, чтобы отправить
+      Pool Request для перевода.
     language: Язык
     name: Установить язык
   path: Текущий путь
-  title: >-
-    Добро пожаловать в X Minecraft Launcher. Перед запуском нам необходимо,
-    чтобы вы 
 shaderPack:
-  deletion: Удалить шейдер
-  deletionHint: Это удалит файл шейдера {path} и будет невозможно восстановить его.
-  disabled: Отключенный пакет шейдеров
-  empty: Шейдер не выделен
-  enable: Использование шейдера {name}
-  enabled: Включенный пакет шейдеров
-  manage: Управление шейдерами
-  name: Шейдер
-  showDirectory: Открыть расположение шейдеров
-  showFile: Открыть этот шейдер в папке
-shared:
-  accept: Принимать
-summery: Летний
+  deletion: Удалить набор шейдеров
+  deletionHint: Это приведёт к удалению файла набора шейдеров {path} и его будет
+    невозможно восстановить.
+  disabled: Невыбранные наборы шейдеров
+  dropHint: Перетащите сюда файл набора шейдеров (.zip)
+  empty: Не выделен ни один набор шейдеров
+  enable: "Используется набор шейдеров: {name}"
+  enabled: Выбранные наборы шейдеров
+  manage: Управление наборами шейдеров
+  name: Набор шейдеров | Наборы шейдеров
+  searchHint: Поиск набора шейдеров
+  showDirectory: Открыть папку с наборами шейдеров
+  showFile: Показать путь к набору шейдеров {file}
+store:
+  explore: Исследовать
+  latestMinecraft: Последняя версия Minecraft
+  name: Магазин сборок модов
+  popular: Популярные сборки модов
+  recentUpdated: Недавно обновлённые
 tag:
   create: Создать тег
   createSelected: Создать тег для выбранного
   newTag: Новый тег
 task:
   cancelled: Отменено
-  clear: Очистить завершенные задачи
+  clear: Очистить выполненные задачи
   connection:
-    connected: Связанный
+    connected: Подключён
     free: Бесплатно
     pending: В ожидании
     queued: В очереди
     running: Текущее соединение
-    size: общее количество
-  connections: Сетевые соединения
+    size: Общее количество
+  connections: Сетевые подключения
   empty: Нет запущенных задач
-  failed: Не удалось
-  manager: Диспетчер задач
-  nTaskRunning: 'Запущено задач: {count}'
+  failed: Не удалось выполнить
+  manager: Менеджер задач
+  nTaskRunning: "{count} задач выполняется"
   name: Задача | Задачи
-  pause: Пауза
+  pause: Приостановить
 theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
 title: X Minecraft Launcher
 transportType:
-  host: Кандидат Host
-  prflx: Кандидат Peer Reflexive
-  relay: Кандидат Relay
-  srflx: Кандидат Server Reflexive
+  host: Хост-кандидат
+  prflx: Пиринг-рефлексивный кандидат
+  relay: Ретранслятор-кандидат
+  srflx: Сервер-рефлексивный кандидат
 turnRegion:
   fr: Франция
+  guangzhou: Гуанчжоу, Китай
+  hk: Гонконг
+  liaoning: Ляонин, Китай
   po: Польша
 tutorial:
-  feedbackDescription: >-
-    Если у вас возникнут какие-либо проблемы, нажмите эту кнопку, чтобы
-    отправить отзыв!
-  hideNewsHeaderDescription: |-
-    Вы можете увидеть витрину новостей слева. 
-    Нажатие на эту кнопку может скрыть эту витрину.
-  instanceAddDescription: >-
-    Нажмите эту кнопку, чтобы импортировать существующий Minecraft или создать
-    новый с нуля или модпак.
-  instanceSelectDescription: Нажав на эту кнопку, вы перейдете на страницу выбора игры и чтения новостей.
-  launchDescription: Нажмите эту кнопку, чтобы установить или запустить игру.
+  feedbackDescription:
+    Если у вас возникнут какие-либо проблемы, нажмите на эту кнопку,
+    чтобы отправить отзыв!
+  hideNewsHeaderDescription:
+    Вы можете увидеть новости слева. Нажатие на эту кнопку
+    может скрыть этот раздел.
+  instance:
+    iconDescription: Нажмите, чтобы изменить иконку.
+    iconTitle: Иконка экземпляра
+    javaDescription: Выберите или измените версию Java.
+    javaImportDescription: Импортировать Java из локального хранилища.
+    javaImportTitle: Импорт Java
+    javaTitle: Список Java
+  instanceAddDescription:
+    Нажмите на эту кнопку, чтобы импортировать существующий
+    Minecraft или создать новый экземпляр/сборку модов с нуля.
+  instanceSelectDescription:
+    Нажатие на эту кнопку откроет страницу выбора экземпляра
+    и прочтения новостей.
+  launchDescription: Нажмите на эту кнопку, чтобы установить или запустить экземпляр.
   mod:
-    defaultSourceDescription: |-
-      Здесь вы можете выбрать источник подробностей о модах. 
-      Модификации опубликованы как для Modrinth, так и для Curseforge. 
-      Если вы хотите переключиться между этими двумя поставщиками контента. 
-      Здесь вы можете изменить значение.
+    defaultSourceDescription:
+      Вы можете выбрать источник контента модов здесь. Есть
+      моды, опубликованные как в Modrinth, так и в CurseForge. Если вы хотите переключаться
+      между этими двумя поставщиками контента, вы можете изменить значение здесь.
     defaultSourceTitle: Выберите источник контента мода
-    detailDescription: >-
-      При выборе элемента слева. 
-
-      Вы увидите детали мода. 
-
-      Содержимое может быть получено из Modrinth, Curseforge или содержимого
-      проанализированного мода.
+    detailDescription:
+      Когда вы выбираете элемент слева, вы увидите детали мода. Контент
+      может быть получен из Modrinth, CurseForge или содержимого проанализированного
+      контента мода.
     detailTitle: Детали мода
-    listDescription: >-
-      Мы будем отображать установленные моды, когда вы не введете никаких
-      данных. 
-
-      Вы увидите найденные моды после того, как введете ключевое слово или
-      выберете категорию.
-    listTitle: Установленный или найденный мод
-    searchDescription: >-
-      С помощью этого поля поиска вы можете искать моды из Modrinth, Curseforge
-      или вашего локального кэша.
+    listDescription:
+      Мы отобразим установленные моды, когда строка поиска будет пуста.
+      Вы увидите искомые моды, как только у вас будет введено ключевое слово или выбрана
+      категория.
+    listTitle: Установленные моды
+    searchDescription:
+      Вы можете искать моды из Modrinth, CurseForge или вашего локального
+      кэша с помощью этого поля поиска.
     searchTitle: Поиск модов
   multiplayer:
-    contentDescription: Здесь будут перечислены связи между вами и вашими сверстниками.
-    contentTitle: '@:multiplayer.connections'
-    groupDescription: >-
-      Вы можете создать группу или присоединиться к ней с другими игроками. 
-
-      Лаунчер попытается создать P2P-соединения между вами и вашими друзьями
-      согласно группе. 
-
-      Вы можете ввести название группы, данное вашими друзьями. 
-
-      Или вы можете создать уникальное имя самостоятельно.
-    groupTitle: Присоединяйтесь к группе
-    joinDescription: |-
-      После ввода имени группы. 
-      Вы можете нажать эту кнопку, чтобы присоединиться или создать группу. 
-      Если имя группы пусто, программа запуска сгенерирует для вас имя.
-    manualDescription: >-
-      Если вы или ваш друг не можете подключиться к группе. 
-
-      Вы можете попробовать обменять токен вручную, нажав кнопку «Подключиться
-      вручную». 
-
-      Если и это не помогло, возможно, это проблема с Интернетом.
-  recentPlayDescription: >-
-    Здесь будут перечислены созданные игры. 
-
-    Здесь вы можете переключить вид, чтобы также увидеть установленные версии и
-    загруженные пакеты модов.
-  storePoupularModpackDescription: В этом разделе вы увидите самые популярные модпаки в Curseforge и Modrinth.
-  storeSearchCategoryDescription: Здесь вы также можете переключать категории или фильтры.
-  storeSearchDescription: |-
-    Вы можете выполнить поиск Modpack, введя его в это текстовое поле. 
-    Нажмите Enter для поиска.
-  storeSearchResultDescription: Здесь вы увидите все результаты поиска.
-  userAccountDescription: >-
-    Щелкните этот значок, чтобы добавить или управлять своей учетной записью
-    Minecraft.
+    contentDescription: Соединения между вами и пользователями будут перечислены здесь.
+    groupDescription:
+      Вы можете создать или присоединиться к группе с другими пользователями.
+      Лаунчер попытается создать P2P-соединения между вами и пользователями в соответствии
+      с группой. Вы можете ввести имя группы, предоставленное пользователями. Или
+      же вы можете создать уникальное имя самостоятельно.
+    groupTitle: Присоединиться к группе
+    joinDescription:
+      Как только вы введёте имя группы, вы можете нажать на эту кнопку,
+      чтобы присоединиться или создать группу. Если имя группы пустое, лаунчер сгенерирует
+      имя для вас.
+    manualDescription:
+      Если вы или пользователь не можете подключиться к группе, вы
+      можете попытаться вручную обменяться токеном, нажав на "ручное соединение". Если
+      это также не удалось, возможно у вас могут быть проблемы с интернетом.
+  recentPlayDescription:
+    Созданные экземпляры будут перечислены здесь. Вы можете переключать
+    представления здесь, чтобы также увидеть установленные версии и загруженные сборки
+    модов.
+  storePoupularModpackDescription:
+    Вы увидите самые популярные сборки модов в CurseForge
+    и Modrinth в этом разделе.
+  storeSearchCategoryDescription:
+    Вы также можете переключать категории или фильтры
+    здесь.
+  storeSearchDescription:
+    Вы можете найти сборку модов, введя необходимый запрос в
+    это поле поиска. Нажмите клавишу Enter для начала поиска.
+  storeSearchResultDescription: Вы увидите все результаты поиска перечисленными здесь.
+  userAccountDescription:
+    Нажмите на эту иконку, чтобы добавить или изменить свою
+    учётную запись Minecraft.
 universalDrop:
-  enableModsAfterImport: Включить моды после импорта
   start: Импорт запущен
   title: Перетащите файл(ы) сюда, чтобы импортировать как
   unknownResource: Неизвестно
-update:
-  goOfficialWebDownload: Перезагрузить на официальном сайте
 upstream:
   downgrade: Понизить версию
-  missingModpackMetadata: >-
-    Не найдена metadata старого модпака
-
-    Вы всё ещё можете обновиться, но в результате может возникнуть ошибка.
-    Пожалуйста, сделайте бэкап своих файлов
+  onlyShowCurrentVersion: Показывать только текущую версию Minecraft
+  update: Обновить
 user:
-  accessToken: Токен доступа
-  authMode: Служба авторизации
-  authService: Авторизация службы
-  birth: Зарегистрированный день рождения
-  challenges: Ответьте на вопросы ниже, чтобы подтвердить свою личность
-  email: Адрес электронной почты
-  forgetChallenges: Я забыл эти вопросы и хочу их изменить
-  id: Идентификатор пользователя
-  info: Информация о пользователе
-  insecureClient: Клиент небезопасен! Подтвердите свою личность, чтобы загрузить скин!
+  authMode: Сервис аутентификации
+  authService: Сервис авторизации
   name: Имя пользователя
-  nameHint: Отображаемое имя в игре
-  profile: Профиль
-  refreshAccount: Обновить аккаунт
-  refreshSkin: Обновить скин
-  submitChallenges: Отправить ответы
-  tokenExpired: Истёк
-  tokenValidUntil: Токен действителен до
+  nameHint: Имя, отображаемое в игре
+  tokenExpired: Срок действия токена истёк
+  tokenValidUntil: Срок действия токена
 userAccount:
   add: Добавить аккаунт
-  removeDescription: Это сотрет всю информацию об этом аккаунте. Вы уверены?
+  removeDescription: Это удалит все данные этого аккаунта. Вы уверены?
   removeTitle: Удалить аккаунт
 userCape:
-  changeTitle: Сменить плащ
-  description: >-
-    Плащи - это специальные награды, которые игроки могут получить в различных
-    событиях, кампании и других активностях. Здесь вы можете выбрать между
-    плащами которой вы владеете в настоящее время:
-  noCape: Нет плащей
+  changeTitle: Изменить плащ
+  description:
+    "Плащи - это специальные награды, которые игроки могут разблокировать,
+    участвуя в различных мероприятиях, кампаниях и других счастливых событиях. Здесь
+    вы можете выбрать между плащами, которые у вас есть:"
+  noCape: Без плаща
 userService:
-  add: Добавить доп. службы
-  authLibInjector: Следуйте рекомендациям по инжектору auth-lib
-  baseUrlHint: Базовая ссылка вашей пользовательской службы
-  title: Службы пользователя
-  validateHint: Используется для проверки того, что токен пользователя всё ещё действителен
+  add: Добавить ещё один сервис
+  baseUrlHint: Базовый URL-адрес вашего пользовательского сервиса
+  title: Сторонние сервисы пользователя
 userServices:
   microsoft:
     account: Аккаунт Microsoft
     deviceCode: Код устройства
-    deviceCodeHint: Код устройства будет сгенерирован после нажатия кнопки входа в систему
-    fastLogin: Быстрый вход
+    deviceCodeHint: Будет сгенерирован после нажатия "Войти"
+    fastLogin: Быстрая авторизация
     name: Microsoft
     password: Введите пароль в браузере
-    useDeviceCode: Вход по коду устройства
+    useDeviceCode: Войти по коду устройства
   mojang:
-    account: Адрес электронной почты
+    account: Электронная почта
     name: Mojang
     password: Пароль
   offline:
     account: Имя пользователя
-    name: Автономный режим
-    password: Пароль не требуется
-    uuid: UUID пользователя (Необязательно)
+    name: Автономная учётная запись
+    password: Нет пароля
+    uuid: UUID пользователя (необязательно)
 userSkin:
-  import: Импорт скина
-  importFile: Открыть из файла
-  importLink: Открыть по ссылке
-  placeUrlHere: Поместите URL-адрес скина здесь для импорта
-  reset: Сброс
+  import: Импортировать скин
+  importFile: Импортировать из файла
+  importLink: Импортировать из ссылки
+  placeUrlHere: Вставьте сюда URL-адрес скина для импорта
+  reset: Сбросить
   save: Сохранить
   saveTitle: Сохранить скин на диск
   skinType: Тип скина
   upload: Загрузить скин
-  urlNotEmpty: URL-адрес на скина не может быть пустым
-  urlNotValid: Недопустимый URL-адрес на скина
-  useSlim: Использовать тонкую модель
+  urlNotEmpty: URL-адрес скина не может быть пустым
+  urlNotValid: URL-адрес скина неверный
+  useSlim: Использовать тонкие руки
 version:
   name: Версия | Версии
   notInstalled: Версия не установлена
 versionType:
-  alpha: Альфа
-  beta: Бета
-  name: Состояние
-  release: Релиз
-'yes': Да
+  name: Статус
+yes: Да
