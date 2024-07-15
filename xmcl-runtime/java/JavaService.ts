@@ -1,5 +1,5 @@
 import { JavaVersion } from '@xmcl/core'
-import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
+import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'

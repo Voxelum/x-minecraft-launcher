@@ -75,6 +75,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
       yggdrasilAgent,
+      platform: {
+        arch: process.arch,
+        name: this.app.platform.os,
+        version: this.app.platform.osRelease,
+      },
       prechecks: [],
     }
 

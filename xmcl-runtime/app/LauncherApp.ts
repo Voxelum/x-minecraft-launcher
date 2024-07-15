@@ -171,7 +171,9 @@ export class LauncherApp extends EventEmitter {
 
     const plat = getPlatform()
     this.platform = {
-      os: plat.name,
+      os: plat.name === 'unknown'
+        ? process.platform === 'win32' ? 'windows' : process.platform === 'darwin' ? 'osx' : 'linux'
+        : plat.name,
       osRelease: plat.version,
       arch: plat.arch as any,
     }
