@@ -7,7 +7,7 @@
     <v-card
       v-if="updateInfo"
       outlined
-      class="visible-scroll max-h-90vh overflow-auto"
+      class="visible-scroll max-h-90vh overflow-auto flex flex-col"
     >
       <v-alert
         v-if="isAppX"
@@ -22,7 +22,7 @@
       <v-card-subtitle>
         {{ getLocalDateString(updateInfo.date) }}
       </v-card-subtitle>
-      <v-card-text class="markdown-body">
+      <v-card-text class="markdown-body flex flex-col overflow-auto">
         <div v-html="body" />
       </v-card-text>
       <v-alert

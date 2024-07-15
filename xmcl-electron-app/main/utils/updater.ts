@@ -1,30 +1,31 @@
-import { AZURE_CDN, AZURE_MS_CDN, HAS_DEV_SERVER } from '@/constant'
-import { ChecksumNotMatchError } from '@xmcl/file-transfer'
+import { AZURE_CDN, AZURE_MS_CDN, BUILTIN_TRUSTED_SITES, HAS_DEV_SERVER } from '@/constant'
+import { ChecksumNotMatchError, resolveRangePolicy } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/app'
 import { BaseService } from '@xmcl/runtime/base'
 import { GFW } from '@xmcl/runtime/gfw'
 import { Logger } from '@xmcl/runtime/logger'
-import { BaseTask, Task, task } from '@xmcl/task'
+import { AbortableTask, BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { shell } from 'electron'
 import { CancellationToken, Provider, UpdateInfo, UpdaterSignal, autoUpdater } from 'electron-updater'
-import { stat, writeFile, readFile } from 'fs-extra'
+import { readFile, writeFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { request } from 'undici'
 import { promisify } from 'util'
+import { JavaService } from '~/java'
+import { AnyError, isSystemError } from '~/util/error'
 import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
 import { checksum } from './fs'
-import { AnyError, isSystemError } from '~/util/error'
-import { JavaService } from '~/java'
 // @ts-ignore
 import UpdaterBinary from './AutoUpdate.class'
+import { kDownloadOptions } from '~/network'
 
 /**
  * Only download asar file update.
@@ -33,7 +34,7 @@ import UpdaterBinary from './AutoUpdate.class'
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-  constructor(destination: string, version: string) {
+  constructor(private app: ElectronLauncherApp, destination: string, version: string) {
     let sha256 = ''
     version = version.startsWith('v') ? version.substring(1) : version
     const pl = platform()
@@ -49,18 +50,17 @@ export class DownloadAsarUpdateTask extends DownloadTask {
         `${AZURE_MS_CDN}/app-${version}-${platformFlag}.asar`,
       ],
       destination,
+      rangePolicy: resolveRangePolicy({
+        rangeThreshold: 1000 * 1024 * 1024,
+      }),
       validator: {
         async validate(file, url) {
-          const missed = await stat(file).then(s => s.size === 0, () => false)
-          if (missed) {
-            return
-          }
           if (!sha256) {
-            const response = await request(`${url}.sha256`, { throwOnError: true })
-            sha256 = await response.body.text().catch(() => '')
+            const response = await app.fetch(`${url}.sha256`)
+            sha256 = await response.text().catch(() => '')
           }
           if (!sha256 || sha256.length !== 64) {
-            return
+            throw new ChecksumNotMatchError('sha256', '', '', file, url)
           }
           const expect = sha256
           const actual = await checksum(file, 'sha256')
@@ -70,6 +70,48 @@ export class DownloadAsarUpdateTask extends DownloadTask {
         },
       },
     })
+  }
+
+  protected async process(): Promise<void> {
+    const op = await this.app.registry.get(kDownloadOptions)
+    this.options.dispatcher = op.dispatcher
+    return super.process()
+  }
+}
+
+export class DownloadAsarUpdateFetchTask extends AbortableTask<void> {
+  urls: string[] = []
+  controller: AbortController = new AbortController()
+
+  constructor(private app: ElectronLauncherApp, private destination: string, version: string) {
+    super()
+    version = version.startsWith('v') ? version.substring(1) : version
+    const pl = platform()
+    let platformFlag = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
+    if (process.arch === 'arm64') {
+      platformFlag += '-arm64'
+    } else if (process.arch === 'ia32') {
+      platformFlag += '-ia32'
+    }
+    this.urls = [
+      `${AZURE_CDN}/app-${version}-${platformFlag}.asar`,
+      `${AZURE_MS_CDN}/app-${version}-${platformFlag}.asar`,
+    ]
+  }
+
+  protected async process(): Promise<void> {
+    this.controller = new AbortController()
+    const resp = await this.app.fetch(this.urls[0])
+    const buf = await resp.arrayBuffer()
+    return writeFile(this.destination, Buffer.from(buf))
+  }
+
+  protected abort(isCancelled: boolean): void {
+    this.controller.abort(Object.assign(new Error(), { name: 'AbortError' }))
+  }
+
+  protected isAbortedError(e: any): boolean {
+    return e.name === 'AbortError'
   }
 }
 
@@ -127,9 +169,11 @@ async function getUpdateAsarViaJavaArgs(appAsarPath: string, updateAsarPath: str
   const java = serv.state.all.find(v => v.valid)?.path
   if (!java) return false
 
+  const javawPath = join(dirname(java), 'javaw.exe')
+
   await writeFile(join(app.appDataPath, 'AutoUpdate.class'), UpdaterBinary)
   const args = [
-    java,
+    existsSync(javawPath) ? javawPath : java,
     'AutoUpdate',
     updateAsarPath,
     appAsarPath,
@@ -244,15 +288,21 @@ export class ElectronUpdater implements LauncherAppUpdater {
         args = jArgs
       }
 
+      args = args.map(s => '"' + s + '"')
       this.logger.log(`Install from windows: ${args.join(' ')}`)
-
-      spawn(args[0], args.slice(1), {
+      const x = spawn(args[0], args.slice(1), {
+        cwd: this.app.appDataPath,
         detached: true,
-      }).on('error', (e) => {
+        shell: true,
+        stdio: 'ignore',
+      })
+      x.on('exit', (code) => {
+        this.logger.log(`Java Exit with code ${code}`)
+      })
+      x.on('error', (e) => {
         this.logger.error(e)
-      }).on('exit', (code, s) => {
-        this.logger.log(`Update process exit ${code}`)
-      }).unref()
+      })
+      x.unref()
       this.app.quit()
     } else {
       await promisify(rename)(appAsarPath, appAsarPath + '.bk').catch(() => { })
@@ -339,7 +389,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
     if (updateInfo.incremental && this.app.env === 'raw') {
       this.logger.log('Download asar from selfhost')
       const updatePath = join(this.app.appDataPath, 'pending_update')
-      return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
+      return new DownloadAsarUpdateTask(this.app, updatePath, updateInfo.name)
         .map(() => undefined)
     }
     if (updateInfo.useAutoUpdater) {
