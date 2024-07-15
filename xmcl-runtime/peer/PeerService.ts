@@ -46,7 +46,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     }
     app.registry.register(kPeerFacade, {
       queryGameProfile,
-      createDownloadTask(url: string, destination: string, sha1: string, size?: number) {
+      createDownloadOptions(url: string, destination: string, sha1: string, size?: number) {
         const peerUrl = new URL(url)
         if (peerUrl.protocol !== 'peer:') {
           throw new Error(`Bad url: ${url}`)
@@ -54,7 +54,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
         const realUrl = `http://localhost:${port}/files/${peerUrl.host}?path=${peerUrl.pathname}`
 
-        return new DownloadTask({
+        return ({
           url: realUrl,
           destination,
           skipHead: true,

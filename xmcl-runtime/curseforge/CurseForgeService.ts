@@ -1,9 +1,8 @@
-import { DownloadTask } from '@xmcl/installer'
-import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain, TaskInstallCurseforgeFile, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { unlink } from 'fs-extra'
-import { join } from 'path'
-import { Inject, LauncherAppKey, kGameDataPath, kTempDataPath } from '~/app'
+import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
@@ -11,12 +10,12 @@ import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
 import { guessCurseforgeFileUrl, resolveCurseforgeHash } from '../util/curseforge'
 import { requireObject, requireString } from '../util/object'
-import filenamify from 'filenamify'
+import { download } from '@xmcl/file-transfer'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends AbstractService implements ICurseForgeService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTaskExecutor) private routine: TaskFn,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
@@ -57,13 +56,22 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
       this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
     } else {
       const downloadOptions = await this.app.registry.get(kDownloadOptions)
-      const task = new DownloadTask({
+      const task = this.routine(TaskInstallCurseforgeFile)
+      await task.wrap(download({
         ...downloadOptions,
         url: downloadUrls,
         validator: resolveCurseforgeHash(file.hashes),
         destination,
-      }).setName('installCurseforgeFile', { modId: file.modId, fileId: file.id })
-      await this.submit(task)
+        signal: task.signal,
+        progressController: (url, chunkSizeOrStatus, progress, total) => {
+          task.update({
+            url,
+            progress,
+            total,
+            chunkSizeOrStatus,
+          })
+        },
+      }))
 
       const icons = icon ? [icon] : []
       const [imported] = await resourceService.importResources([{

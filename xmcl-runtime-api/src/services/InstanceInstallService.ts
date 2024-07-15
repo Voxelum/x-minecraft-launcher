@@ -1,3 +1,4 @@
+import { defineTask } from 'src/task'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
@@ -52,3 +53,9 @@ export class InstanceInstallException extends Exception<InstanceInstallException
 }
 
 export const InstanceInstallServiceKey: ServiceKey<InstanceInstallService> = 'InstanceInstallService'
+
+export const TaskInstanceInstall = defineTask<{ instance: string }>('instanceInstall')({
+  file: defineTask<{ file: string }>('file'),
+  link: defineTask<{ count: number }>('link'),
+  unzip: defineTask<{ count: number }>('unzip'),
+})

@@ -1,6 +1,6 @@
 import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
-import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
+import { DefinedSubTask, DefinedTask, TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskRoutine, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
 import { Logger } from '~/logger'
 import { InjectionKey } from '~/app'
 
@@ -13,7 +13,10 @@ export const kTasks: InjectionKey<{
   getActiveTask: () => Task<any> | undefined
 }> = Symbol('kTasks')
 
-export type TaskFn = <T>(task: Task<T>) => Promise<T>
+export type TaskFn = {
+  <T, C extends Record<string, DefinedSubTask<unknown>>>(task: DefinedTask<T, C>, context: T): TaskRoutine<T, C>
+  (task: DefinedTask<void, {}>): TaskRoutine<void, {}>
+}
 
 export interface TaskEventEmitter extends EventEmitter {
   on(event: 'update', handler: (uuid: string, task: Task<any>, chunkSize: number) => void): this
@@ -30,7 +33,7 @@ export interface TaskMonitor {
   destroy(): void
 }
 
-export function mapTaskToTaskPayload (uuid: string, task: Task<any>): TaskPayload {
+export function mapTaskToTaskPayload(uuid: string, task: Task<any>): TaskPayload {
   return {
     id: task.id,
     path: task.path,
@@ -50,17 +53,17 @@ export function mapTaskToTaskPayload (uuid: string, task: Task<any>): TaskPayloa
 /**
  * Create a monitor to a task runtime.
  */
-export function createTaskMonitor (
+export function createTaskMonitor(
   emitter: TaskEventEmitter,
   onEventQueued: (total: number) => void = () => { },
 ): TaskMonitor {
   let adds: TaskAddedPayload[] = []
   let updates: Record<string, TaskUpdatePayload> = {}
 
-  function notify () {
+  function notify() {
     onEventQueued(adds.length + Object.keys(updates).length)
   }
-  function getUpdate (uuid: string, task: Task<any>): TaskUpdatePayload {
+  function getUpdate(uuid: string, task: Task<any>): TaskUpdatePayload {
     const uuidWithId = `${uuid}@${task.id}`
     if (uuidWithId in updates) {
       return updates[uuidWithId]
@@ -72,18 +75,18 @@ export function createTaskMonitor (
     return update
   }
 
-  function status (uuid: string, task: Task<any>) {
+  function status(uuid: string, task: Task<any>) {
     const partial = getUpdate(uuid, task)
     partial.state = task.state
     notify()
   }
-  function fail (uuid: string, task: Task<any>, error: any) {
+  function fail(uuid: string, task: Task<any>, error: any) {
     const partial = getUpdate(uuid, task)
     partial.error = error
     partial.state = task.state
     notify()
   }
-  function update (uuid: string, task: Task<any>, size?: number) {
+  function update(uuid: string, task: Task<any>, size?: number) {
     const partial = getUpdate(uuid, task)
     partial.progress = Number(task.progress)
     partial.total = Number(task.total)
@@ -98,7 +101,7 @@ export function createTaskMonitor (
     }
     notify()
   }
-  function start (uuid: string, task: Task) {
+  function start(uuid: string, task: Task) {
     adds.push({
       from: task.from,
       to: task.to,
@@ -120,7 +123,7 @@ export function createTaskMonitor (
   emitter.on('cancel', status)
   emitter.on('fail', fail)
 
-  function flush (): TaskBatchUpdatePayloads {
+  function flush(): TaskBatchUpdatePayloads {
     const result: TaskBatchUpdatePayloads = {
       adds,
       updates: Object.values(updates),
@@ -131,7 +134,7 @@ export function createTaskMonitor (
 
     return result
   }
-  function destroy () {
+  function destroy() {
     emitter.removeListener('start', start)
     emitter.removeListener('update', update)
     emitter.removeListener('pause', status)
@@ -153,7 +156,7 @@ export function createTaskMonitor (
  * @param consume The actual push implementation
  * @returns The destroy function of this push. You can destroy the pusher by calling it.
  */
-export function createTaskPusher (
+export function createTaskPusher(
   logger: Logger,
   emitter: TaskEventEmitter,
   interval: number,

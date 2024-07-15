@@ -1,7 +1,8 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { InstallProfile, LabyModManifest, LiteloaderVersion, MinecraftVersion } from '@xmcl/installer'
+import type { InstallProfile, LabyModManifest, MinecraftVersion } from '@xmcl/installer'
 import { Resource } from '../entities/resource'
 import { OptifineVersion } from '../entities/version'
+import { defineTask } from '../task'
 import { ServiceKey } from './Service'
 
 export interface InstallOptifineOptions extends OptifineVersion {
@@ -21,11 +22,6 @@ export interface InstallQuiltOptions {
   minecraftVersion: string
 
   side?: 'client' | 'server'
-}
-
-export interface RefreshForgeOptions {
-  force?: boolean
-  mcversion: string
 }
 
 export interface Asset {
@@ -50,7 +46,7 @@ export interface InstallForgeOptions {
   /**
    * The minecraft version
    */
-  mcversion: string
+  minecraft: string
   /**
    * The forge version (without minecraft version)
    */
@@ -75,10 +71,6 @@ export interface InstallNeoForgedOptions {
 }
 
 export interface InstallFabricOptions {
-  /**
-   * Forcing fabric yarn version
-   */
-  yarn?: string
   /**
    * The fabric loader version to install
    */
@@ -134,12 +126,15 @@ export interface InstallService {
    * Install assets to the version
    * @param version The local version id
    */
-  installAssets(assets: Asset[], version?: string, force?: boolean): Promise<void>
+  installAssets(assets: Asset[], version: string, force?: boolean): Promise<void>
   /**
    * Download and install a minecraft version
    */
-  installMinecraft(meta: MinecraftVersion, side?: 'client' | 'server'): Promise<void>
-  installMinecraftServerJar(version: string): Promise<void>
+  installMinecraft(meta: MinecraftVersion, side?: 'client' | 'server'): Promise<string>
+  /**
+   * Install a minecraft jar to the game
+   */
+  installMinecraftJar(version: string, side?: 'client' | 'server'): Promise<void>
   /**
    * Install provided libraries to game.
    */
@@ -166,18 +161,52 @@ export interface InstallService {
    */
   installOptifineAsResource(options: InstallOptifineOptions): Promise<Resource>
   /**
-   * Install a specific liteloader version
+   * Install the quilt to the minecraft
    */
-  installLiteloader(meta: LiteloaderVersion): Promise<void>
-
   installQuilt(meta: InstallQuiltOptions): Promise<string>
-
-  installByProfile(profile: InstallProfile): Promise<void>
   /**
-   * Install customized version
-   * @param version The version json
+   * Install by forge profile
    */
-  installVersion(version: Version): Promise<void>
+  installByProfile(profile: InstallProfile, side?: 'client' | 'server'): Promise<void>
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'
+
+export const TaskInstallVersion = defineTask<{ id: string }>('installVersion')({
+  jar: defineTask<{ id: string }>('jar')(),
+  json: defineTask<{ id: string }>('json')(),
+})
+
+export const TaskInstallAssets = defineTask<{ id: string }>('installAssets')({
+  asset: defineTask<{ asset: string }>('asset')(),
+  assetIndex: defineTask<{ id: string }>('assetIndex')(),
+})
+
+export const TaskInstallLibraries = defineTask<{ id: string }>('installLibraries')({
+  library: defineTask<{ name: string }>('library')(),
+})
+
+export const TaskInstallForge = defineTask<{ id: string }>('installForge')({
+  installer: defineTask<{ id: string }>('forge')(),
+  library: defineTask<{ name: string }>('library')(),
+  postprocess: defineTask<{ jar: string }>('postprocess')(),
+})
+
+export const TaskInstallProfile = defineTask<{ id: string }>('installProfile')({
+  library: defineTask<{ name: string }>('library')(),
+  postprocess: defineTask<{ jar: string }>('postprocess')(),
+})
+
+export const TaskInstallOptifine = defineTask<{ id: string }>('installOptifine')()
+
+export const TaskInstallFabric = defineTask<{ id: string }>('installFabric')()
+
+export const TaskInstallQuilt = defineTask<{ id: string }>('installQuilt')()
+
+export const TaskInstallNeoForged = defineTask<{ id: string }>('installNeoForged')({
+  installer: defineTask<{ id: string }>('installer')(),
+  library: defineTask<{ name: string }>('library')(),
+  postprocess: defineTask<{ jar: string }>('postprocess')(),
+})
+
+export const TaskInstallLabyMod = defineTask<{ version: string }>('installLabyMod')()

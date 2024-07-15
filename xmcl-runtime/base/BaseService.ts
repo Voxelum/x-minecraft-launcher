@@ -105,7 +105,7 @@ export class BaseService extends AbstractService implements IBaseService {
     try {
       const settings = await this.getSettings()
       this.log('Check update')
-      const info = await this.submit(this.app.updater.checkUpdateTask())
+      const info = await this.submit(this.app.updater.checkUpdate())
       settings.updateInfoSet(info)
       if (info.newUpdate) {
         settings.updateStatusSet('pending')
@@ -126,7 +126,7 @@ export class BaseService extends AbstractService implements IBaseService {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
     this.log(`Start to download update: ${settings.updateInfo.name} incremental=${settings.updateInfo.incremental}`)
-    await this.submit(this.app.updater.downloadUpdateTask(settings.updateInfo).setName('downloadUpdate'))
+    await this.submit(this.app.updater.downloadUpdate(settings.updateInfo).setName('downloadUpdate'))
     settings.updateStatusSet('ready')
   }
 

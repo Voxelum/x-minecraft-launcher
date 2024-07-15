@@ -1,12 +1,42 @@
+import { DownloadProgressPayload } from '@xmcl/installer'
 import { GenericEventEmitter } from './events'
 
 export enum TaskState {
   Idle,
   Running,
   Cancelled,
-  Paused,
   Succeed,
   Failed,
+}
+
+type RealType<X> = X extends DefinedSubTask<infer V>
+  ? V
+  : unknown
+
+export interface TaskRoutine<T, C extends Record<string, DefinedSubTask<unknown>>> {
+  update(progress: DownloadProgressPayload): void
+  update<K extends keyof C, V extends RealType<C[K]>>(progress: DownloadProgressPayload, subtask: K, context: V): void
+  signal: AbortSignal
+  abort(): void
+  wrap<X>(p: Promise<X>): Promise<X>
+  child<K extends keyof C, X>(name: K, p: Promise<X>): Promise<X>
+  resolve(): void
+  reject(reason: any): void
+}
+
+export interface Task {
+  state: TaskState
+  name: string
+}
+
+export type DefinedSubTask<T> = { name: string }
+export type DefinedTask<T, C extends Record<string, DefinedSubTask<unknown>>, N = string> = {
+  [k in keyof C]: C[k];
+} & { name: N }
+
+export function defineTask<T>(name: string):
+  <C extends Record<string, DefinedSubTask<unknown>>>(children?: C) => DefinedTask<T, C> {
+  return (children) => ({ name, children: children as any }) as any
 }
 
 export interface TaskPayloadBase {

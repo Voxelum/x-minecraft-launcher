@@ -1,5 +1,5 @@
 import { JavaVersion } from '@xmcl/core'
-import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
+import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntime, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
@@ -73,7 +73,8 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
    * Get java preferred java 8 for installing forge or other purpose. (non launching Minecraft)
    */
   getPreferredJava() {
-    return this.state.all.find(j => j.valid && j.majorVersion === 8) || this.state.all.find(j => j.valid)
+    return this.state.all.filter(v => v.valid)
+      .sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
   }
 
   /**
@@ -194,7 +195,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = this.getPath('jre', target.component)
 
-    const task = installJavaRuntimeTask({
+    const task = installJavaRuntime({
       manifest,
       apiHost,
       destination: dest,

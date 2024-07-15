@@ -4,6 +4,7 @@ import { EventEmitter } from 'events'
 import { Client, LauncherAppPlugin } from '~/app'
 import { serializeError } from '../util/error'
 import { TaskEventEmitter, createTaskPusher, kTaskExecutor, kTasks, mapTaskToTaskPayload } from './task'
+import { DefinedTask, TaskRoutine } from '@xmcl/runtime-api'
 
 export const pluginTasks: LauncherAppPlugin = (app) => {
   const emitter: TaskEventEmitter = new EventEmitter()
@@ -109,20 +110,46 @@ export const pluginTasks: LauncherAppPlugin = (app) => {
   /**
    * Submit a task to run
    */
-  const submit = async <T>(task: Task<T>): Promise<T> => {
+  const submit = <T>(task: DefinedTask<T, any>): any => {
     const uid = randomUUID()
     const listener = createTaskListener(uid)
-    record[uid] = task
-    task.start(listener)
-    const index = tasks.length
-    tasks.push(task)
-    try {
-      return await task.wait()
-    } finally {
-      logger.log('Task done and delete record!')
-      delete record[uid]
-      tasks.splice(index, 1)
+    // record[uid] = task
+    // const index = tasks.length
+    // tasks.push(task)
+    const controller = new AbortController()
+    const routine: TaskRoutine<T, any> = {
+      update: (prog) => {
+      },
+      signal: controller.signal,
+      abort: controller.abort,
+      wrap: async <X>(p: Promise<X>): Promise<X> => {
+        listener.onStart(task)
+        return p.then((x) => {
+          listener.onSucceed(task, x)
+          return x
+        }, (e) => {
+          listener.onFailed(task, e)
+          throw e
+        })
+      },
+      child: function <K extends string | number | symbol, X>(name: K, p: Promise<X>): Promise<X> {
+        throw new Error('Function not implemented.')
+      },
+      resolve: function (): void {
+        throw new Error('Function not implemented.')
+      },
+      reject: function (reason: any): void {
+        throw new Error('Function not implemented.')
+      },
     }
+    return routine
+    // try {
+
+    // } finally {
+    //   logger.log('Task done and delete record!')
+    //   delete record[uid]
+    //   tasks.splice(index, 1)
+    // }
   }
 
   const getActiveTask = (): Task<any> | undefined => {

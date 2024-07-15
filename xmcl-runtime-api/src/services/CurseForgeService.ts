@@ -2,6 +2,7 @@ import type { File, FileModLoaderType } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { Resource } from '../entities/resource'
 import { ServiceKey } from './Service'
+import { defineTask } from '../task'
 export interface InstallFileOptions {
   /**
    * The curseforge file
@@ -68,3 +69,5 @@ export function getInstallFileLockKey(options: InstallFileOptions): string {
 }
 
 export const CurseForgeServiceKey: ServiceKey<CurseForgeService> = 'CurseForgeService'
+
+export const TaskInstallCurseforgeFile = defineTask<{ modId: number; fileId: number }>('installCurseforgeFile')

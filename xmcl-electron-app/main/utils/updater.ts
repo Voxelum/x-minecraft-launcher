@@ -1,31 +1,30 @@
-import { AZURE_CDN, AZURE_MS_CDN, BUILTIN_TRUSTED_SITES, HAS_DEV_SERVER } from '@/constant'
-import { ChecksumNotMatchError, resolveRangePolicy } from '@xmcl/file-transfer'
+import { AZURE_CDN, AZURE_MS_CDN, HAS_DEV_SERVER } from '@/constant'
+import { ChecksumNotMatchError, download, resolveRangePolicy } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/app'
 import { BaseService } from '@xmcl/runtime/base'
 import { GFW } from '@xmcl/runtime/gfw'
 import { Logger } from '@xmcl/runtime/logger'
-import { AbortableTask, BaseTask, Task, task } from '@xmcl/task'
+import { AbortableTask, BaseTask } from '@xmcl/task'
 import { spawn } from 'child_process'
-import { shell } from 'electron'
+import { app, shell } from 'electron'
 import { CancellationToken, Provider, UpdateInfo, UpdaterSignal, autoUpdater } from 'electron-updater'
 import { readFile, writeFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
-import { request } from 'undici'
 import { promisify } from 'util'
 import { JavaService } from '~/java'
 import { AnyError, isSystemError } from '~/util/error'
 import ElectronLauncherApp from '../ElectronLauncherApp'
-import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
 import { checksum } from './fs'
+import { setTimeout } from 'timers/promises'
+import { kDownloadOptions } from '~/network'
 // @ts-ignore
 import UpdaterBinary from './AutoUpdate.class'
-import { kDownloadOptions } from '~/network'
 
 /**
  * Only download asar file update.
@@ -215,18 +214,20 @@ export class ElectronUpdater implements LauncherAppUpdater {
     this.logger = app.getLogger('ElectronUpdater')
   }
 
-  private async getUpdateFromSelfHost(): Promise<ReleaseInfo> {
+  private async getUpdateFromSelfHost(signal?: AbortSignal): Promise<ReleaseInfo> {
     const app = this.app
     this.logger.log('Try get update from selfhost')
     const baseService = await app.registry.get(BaseService)
     const { allowPrerelease, locale } = await baseService.getSettings()
     const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
-    const response = await request(url, {
+    const response = await this.app.fetch(url, {
       headers: {
         'Accept-Language': locale,
       },
-      throwOnError: true,
-    }).catch(() => request('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
+      signal,
+    }).catch(() => this.app.fetch('https://xmcl.blob.core.windows.net/releases/latest_version.json', {
+      signal,
+    }))
     const result = await response.body.json() as any
     const updateInfo: ReleaseInfo = {
       name: result.tag_name,
@@ -246,7 +247,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
     return updateInfo
   }
 
-  private async quitAndInstallAsar() {
+  private async quitAndInstallAsar(signal?: AbortSignal) {
     const appAsarPath = join(dirname(__dirname), 'app.asar')
     const updateAsarPath = join(this.app.appDataPath, 'pending_update')
 
@@ -325,66 +326,72 @@ export class ElectronUpdater implements LauncherAppUpdater {
     }
   }
 
-  checkUpdateTask(): Task<ReleaseInfo> {
-    return task('checkUpdate', async () => {
-      try {
-        if (this.app.env === 'appx') {
-          return this.getUpdateFromSelfHost()
-        }
-
-        let newUpdate = false
-        autoUpdater.once('update-available', () => {
-          this.logger.log('Update available and set status to pending')
-          if (release) {
-            release.newUpdate = true
-          } else {
-            newUpdate = true
-          }
-        })
-        this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
-        const gfw = await this.app.registry.get(GFW)
-        const info = await autoUpdater.checkForUpdates()
-        if (!info) throw new Error('No update info found')
-        if (await gfw.signal && !injectedUpdate) {
-          injectedUpdate = true
-          const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
-          const originalResolve = provider.resolveFiles
-          provider.resolveFiles = function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
-            const result = originalResolve.bind(provider)(inf)
-            result.forEach((i) => {
-              const pathname = i.url.pathname;
-              (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`)
-            })
-            return result
-          }
-        }
-
-        const currentVersion = autoUpdater.currentVersion
-        const newVersion = new SemVer(info.updateInfo.version)
-
-        const release = {
-          name: info.updateInfo.version,
-          body: (info.updateInfo.releaseNotes ?? '') as string,
-          date: info.updateInfo.releaseDate,
-          files: info.updateInfo.files.map(f => ({ name: basename(f.url), url: f.url })),
-          useAutoUpdater: true,
-          newUpdate,
-          incremental: newVersion.major === currentVersion.major,
-        }
-
-        release.incremental = release.files.some(f => f.name.endsWith('.asar'))
-
-        return release
-      } catch (e) {
-        return this.getUpdateFromSelfHost()
+  async checkUpdate(signal?: AbortSignal): Promise<ReleaseInfo> {
+    try {
+      if (this.app.env === 'appx') {
+        return this.getUpdateFromSelfHost(signal)
       }
-    })
+
+      let newUpdate = false
+      autoUpdater.once('update-available', () => {
+        this.logger.log('Update available and set status to pending')
+        if (release) {
+          release.newUpdate = true
+        } else {
+          newUpdate = true
+        }
+      })
+      this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
+      const gfw = await this.app.registry.get(GFW)
+      const info = await autoUpdater.checkForUpdates()
+      if (!info) throw new Error('No update info found')
+      if (await gfw.signal && !injectedUpdate) {
+        injectedUpdate = true
+        const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
+        const originalResolve = provider.resolveFiles
+        provider.resolveFiles = function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
+          const result = originalResolve.bind(provider)(inf)
+          result.forEach((i) => {
+            const pathname = i.url.pathname;
+            (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`)
+          })
+          return result
+        }
+      }
+
+      const currentVersion = autoUpdater.currentVersion
+      const newVersion = new SemVer(info.updateInfo.version)
+
+      const release = {
+        name: info.updateInfo.version,
+        body: (info.updateInfo.releaseNotes ?? '') as string,
+        date: info.updateInfo.releaseDate,
+        files: info.updateInfo.files.map(f => ({ name: basename(f.url), url: f.url })),
+        useAutoUpdater: true,
+        newUpdate,
+        incremental: newVersion.major === currentVersion.major,
+      }
+
+      release.incremental = release.files.some(f => f.name.endsWith('.asar'))
+
+      return release
+    } catch (e) {
+      return this.getUpdateFromSelfHost(signal)
+    }
   }
 
-  downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
+  async downloadUpdate(updateInfo: ReleaseInfo): Promise<void> {
     if (this.app.env === 'appx') {
       this.logger.log('Download appx from selfhost')
-      return new DownloadAppInstallerTask(this.app)
+      const destination = join(app.getPath('downloads'), 'X Minecraft Launcher.appinstaller')
+      await download({
+        url: 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller',
+        destination,
+      })
+      shell.showItemInFolder(destination)
+      await setTimeout(1000)
+      await shell.openPath(destination)
+      this.app.exit()
     }
     if (updateInfo.incremental && this.app.env === 'raw') {
       this.logger.log('Download asar from selfhost')

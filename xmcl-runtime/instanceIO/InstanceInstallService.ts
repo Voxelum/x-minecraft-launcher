@@ -1,6 +1,6 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceInstallService as IInstanceInstallService, InstallInstanceOptions, InstanceFile, InstanceInstallServiceKey, LockKey } from '@xmcl/runtime-api'
+import { InstanceInstallService as IInstanceInstallService, InstallInstanceOptions, InstanceFile, InstanceInstallServiceKey, LockKey, TaskInstanceInstall } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { existsSync } from 'fs'
 import { readFile, unlink } from 'fs-extra'
@@ -11,7 +11,7 @@ import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { AnyError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
-import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
+import { resolveInstanceFiles, ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { removeInstallProfile, writeInstallProfile } from './instanceInstall'
 
 /**
@@ -21,7 +21,7 @@ import { removeInstallProfile, writeInstallProfile } from './instanceInstall'
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(kTaskExecutor) private submit: TaskFn,
+    @Inject(kTaskExecutor) private routine: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
     @Inject(ModrinthV2Client) private modrinthClient: ModrinthV2Client,
@@ -51,22 +51,19 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
 
-    const updateInstanceTask = task('installInstance', async function () {
+    try {
+      const task = this.routine(TaskInstanceInstall, { instance: instancePath })
       await lock.write(async () => {
         try {
-          await this.yield(new ResolveInstanceFileTask(files, curseforgeClient, modrinthClient))
+          await resolveInstanceFiles(files, curseforgeClient, modrinthClient, task.signal)
           await writeInstallProfile(instancePath, files)
         } catch {
           // Ignore
         }
-        const tasks = await handler.process(files)
-        await this.all(tasks, { throwErrorImmediately: false })
+        await handler.process(files)
         await handler.postprocess(modrinthClient)
       })
-    }, { instance: instancePath })
 
-    try {
-      await this.submit(updateInstanceTask)
       await removeInstallProfile(instancePath)
     } catch (e) {
       const unfinished = files.filter(f => !handler.finished.has(f))

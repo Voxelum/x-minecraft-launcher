@@ -1,18 +1,15 @@
 import { LibraryInfo, ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
 import { VersionService as IVersionService, LocalVersionHeader, LocalVersions, MutableState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
-import { task } from '@xmcl/task'
-import { FSWatcher, existsSync } from 'fs'
-import { ensureDir, readFile, readFileSync, readdir, rm } from 'fs-extra'
+import { FSWatcher } from 'fs'
+import { ensureDir, readFile, readdir, rm } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
-import { InstallProfile } from '@xmcl/installer'
 
 export interface VersionResolver {
   (version: ResolvedVersion): Promise<void> | void
@@ -29,7 +26,6 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ServiceStateManager) store: ServiceStateManager,
-    @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app, () => store.registerStatic(new LocalVersions(), VersionServiceKey), async () => {
@@ -99,15 +95,11 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     const root = this.getPath()
     if (mcPath === root) return
     this.log(`Try to migrate the version from ${mcPath}`)
-    const copyTask = task('cloneMinecraft', async () => {
-      await this.worker.copyPassively([
-        { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
-        { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
-        { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
-      ])
-    })
-    Reflect.set(copyTask, '_from', mcPath)
-    await this.submit(copyTask)
+    await this.worker.copyPassively([
+      { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
+      { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
+      { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
+    ])
   }
 
   private getHeader(ver: ResolvedVersion): LocalVersionHeader {

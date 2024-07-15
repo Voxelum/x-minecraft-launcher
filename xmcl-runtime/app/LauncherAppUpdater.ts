@@ -5,12 +5,12 @@ export interface LauncherAppUpdater {
   /**
    * Check update for the x-minecraft-launcher-core
    */
-  checkUpdateTask(): Task<ReleaseInfo>
+  checkUpdate(signal?: AbortSignal): Promise<ReleaseInfo>
 
   /**
     * Download the update to the disk. You should first call `checkUpdate`
     */
-  downloadUpdateTask(updateInfo: ReleaseInfo): Task<void>
+  downloadUpdate(updateInfo: ReleaseInfo, signal?: AbortSignal): Promise<void>
 
   /**
     * Install update and quit the app.

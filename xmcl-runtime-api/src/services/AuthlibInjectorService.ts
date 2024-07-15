@@ -1,3 +1,4 @@
+import { defineTask } from '../task'
 import { ServiceKey } from './Service'
 
 export interface AuthlibInjectorService {
@@ -7,3 +8,5 @@ export interface AuthlibInjectorService {
 }
 
 export const AuthlibInjectorServiceKey: ServiceKey<AuthlibInjectorService> = 'AuthlibInjectorService'
+
+export const TaskInstallAuthlibInjector = defineTask('installAuthlibInjector')()

@@ -1,3 +1,4 @@
+import { defineTask } from '../task'
 import { Exception } from '../entities/exception'
 import { LauncherProfile } from '../entities/launcherProfile'
 import { Platform } from '../entities/platform'
@@ -131,3 +132,5 @@ export type BaseServiceExceptions = {
 export class BaseServiceException extends Exception<BaseServiceExceptions> { }
 
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'
+
+export const TaskUnzip = defineTask<{ count: number }>('unzip')()
