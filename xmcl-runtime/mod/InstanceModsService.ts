@@ -65,6 +65,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
       const state = new InstanceModsState()
       const pending: Set<string> = new Set()
+      const basePath = join(instancePath, 'mods')
 
       const processUpdate = defineAsyncOperation(async (filePath: string, retryLimit = 7) => {
         try {
@@ -100,6 +101,27 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
         }
       }
+      const revalidate = async () => {
+        const files = await readdirIfPresent(basePath)
+        const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
+        const current = state.mods.length
+        // Find differences
+        const currentFiles = state.mods.map(r => r.path)
+        const added = expectFiles.filter(f => !currentFiles.includes(f))
+        const removed = currentFiles.filter(f => !expectFiles.includes(f))
+        if (current !== expectFiles.length || added.length > 0 || removed.length > 0) {
+          this.log(`Instance mods count mismatch: ${current} vs ${expectFiles.length}`)
+          if (added.length > 0) {
+            this.log(`Instance mods added: ${added.length}`)
+            for (const f of added) { processUpdate(f) }
+          }
+          if (removed.length > 0) {
+            this.log(`Instance mods removed: ${removed.length}`)
+            for (const f of removed) { processRemove(f) }
+          }
+        }
+      }
+      const debouncedRevalidate = debounce(revalidate, 500)
 
       const listener = this.resourceService as IResourceService
       const onResourceUpdate = (res: PartialResourceHash[]) => {
@@ -112,9 +134,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       listener
         .on('resourceUpdate', onResourceUpdate)
 
-      const basePath = join(instancePath, 'mods')
       await ensureDir(basePath)
       await this.resourceService.whenReady(ResourceDomain.Mods)
+
       const scan = async (dir: string) => {
         const files = (await readdirIfPresent(dir))
           .filter((file) => !shouldIgnoreFile(file))
@@ -145,28 +167,6 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       })
 
       this.log(`Mounted on instance mods: ${basePath}`)
-
-      const revalidate = async () => {
-        const files = await readdirIfPresent(basePath)
-        const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
-        const current = state.mods.length
-        // Find differences
-        const currentFiles = state.mods.map(r => r.path)
-        const added = expectFiles.filter(f => !currentFiles.includes(f))
-        const removed = currentFiles.filter(f => !expectFiles.includes(f))
-        if (current !== expectFiles.length || added.length > 0 || removed.length > 0) {
-          this.log(`Instance mods count mismatch: ${current} vs ${expectFiles.length}`)
-          if (added.length > 0) {
-            this.log(`Instance mods added: ${added.length}`)
-            for (const f of added) { processUpdate(f) }
-          }
-          if (removed.length > 0) {
-            this.log(`Instance mods removed: ${removed.length}`)
-            for (const f of removed) { processRemove(f) }
-          }
-        }
-      }
-      const debouncedRevalidate = debounce(revalidate, 500)
 
       return [state, () => {
         watcher.close()
