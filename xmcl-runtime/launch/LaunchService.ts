@@ -3,7 +3,9 @@ import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchExce
 import { offline } from '@xmcl/user'
 import { ChildProcess } from 'child_process'
 import { randomUUID } from 'crypto'
+import { existsSync } from 'fs-extra'
 import { EOL } from 'os'
+import { dirname, join } from 'path'
 import { setTimeout } from 'timers/promises'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { EncodingWorker, kEncodingWorker } from '~/encoding'
@@ -50,6 +52,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const maxMemory: number | undefined = options.maxMemory
 
     const launcherName = `X Minecraft Launcher (${this.app.version})`
+    const javawPath = join(dirname(javaPath), process.platform === 'win32' ? 'javaw.exe' : 'java')
     /**
      * Build launch condition
      */
@@ -59,7 +62,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       properties: {},
       gamePath: minecraftFolder.root,
       resourcePath: this.getPath(),
-      javaPath,
+      javaPath: existsSync(javawPath) ? javawPath : javaPath,
       minMemory,
       maxMemory,
       version,
