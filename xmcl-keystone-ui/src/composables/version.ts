@@ -58,13 +58,15 @@ export function useMinecraftVersions() {
 }
 
 export function useFabricVersions(minecraftVersion: Ref<string>) {
-  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getFabricVersionsModel(),
+  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getFabricLoaderVersionsModel(),
     inject(kSWRVConfig))
 
-  const { data: int } = useSWRVModel(getFabricIntermediaryVersionsModel(minecraftVersion), inject(kSWRVConfig))
+  const { data: int } = useSWRVModel(getFabricGameVersionsModel(), inject(kSWRVConfig))
 
   const versions = computed(() => {
-    if (!int.value || int.value.length === 0) {
+    console.log(int.value)
+    console.log(minecraftVersion.value)
+    if (!int.value || !int.value.includes(minecraftVersion.value)) {
       return []
     }
     const all = allVersions.value
@@ -80,21 +82,20 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function getFabricIntermediaryVersionsModel(minecraftVersion: MaybeRef<string>) {
+export function getFabricGameVersionsModel() {
   return {
-    key: computed(() => `/fabric-intermediary-versions/${get(minecraftVersion)}`),
+    key: computed(() => '/fabric-game-versions'),
     fetcher: async () => {
-      const v = get(minecraftVersion)
       const int = await Promise.race([
-        getJson<FabricArtifactVersion[]>('https://meta.fabricmc.net/v2/versions/intermediary/' + v).catch(() => []),
-        getJson<FabricArtifactVersion[]>('https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/intermediary/' + v).catch(() => []),
+        getJson<{ version: string }[]>('https://meta.fabricmc.net/v2/versions/game'),
+        getJson<{ version: string }[]>('https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/game'),
       ])
-      return int
+      return int.map(v => v.version)
     },
   }
 }
 
-export function getFabricVersionsModel() {
+export function getFabricLoaderVersionsModel() {
   return {
     key: computed(() => '/fabric-versions'),
     fetcher: async () => {
@@ -122,29 +123,54 @@ export function getLabyModManifestModel() {
   }
 }
 
+export function getQuiltGameVersionsModel() {
+  return {
+    key: computed(() => '/quilt-game-versions'),
+    fetcher: async () => {
+      const int = await Promise.race([
+        getJson<{ version: string }[]>('https://meta.quiltmc.org/v3/versions/game'),
+        getJson<{ version: string }[]>('https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/game'),
+      ])
+      return int.map(v => v.version)
+    },
+  }
+}
+
+export function getQuiltLoaderVersionsModel() {
+  return {
+    key: computed(() => '/quilt-versions'),
+    fetcher: async () => {
+      const loaders = await Promise.race([
+        getJson<FabricArtifactVersion[]>('https://meta.quiltmc.org/v3/versions/loader'),
+        getJson<FabricArtifactVersion[]>('https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/loader'),
+      ])
+
+      return loaders.map(markRaw)
+    },
+  }
+}
+
 export function useQuiltVersions(minecraftVersion: Ref<string>) {
-  const { data: versions, isValidating, mutate, error } = useSWRVModel(getQuiltVersionModel(minecraftVersion),
+  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getQuiltLoaderVersionsModel(),
     inject(kSWRVConfig))
+
+  const { data: int } = useSWRVModel(getQuiltGameVersionsModel(), inject(kSWRVConfig))
+
+  const versions = computed(() => {
+    console.log(int)
+    if (!int.value || !int.value.includes(minecraftVersion.value)) {
+      return []
+    }
+    const all = allVersions.value
+    if (!all) return []
+    return all
+  })
 
   return {
     error,
     versions,
     mutate,
     isValidating,
-  }
-}
-
-export function getQuiltVersionModel(minecraftVersion: MaybeRef<string>) {
-  return {
-    key: computed(() => get(minecraftVersion) && '/quilt-versions/' + get(minecraftVersion)),
-    fetcher: async () => {
-      const loaders = await Promise.race([
-        getJson<QuiltArtifactVersion[]>('https://meta.quiltmc.org/v3/versions/loader/' + get(minecraftVersion)),
-        getJson<QuiltArtifactVersion[]>('https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/loader/' + get(minecraftVersion)),
-      ])
-
-      return loaders.map(markRaw)
-    },
   }
 }
 

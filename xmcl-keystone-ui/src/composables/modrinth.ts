@@ -23,31 +23,37 @@ export interface ModrinthOptions {
 export const kModrinthTags: InjectionKey<ReturnType<typeof useModrinthTags>> = Symbol('ModrinthTags')
 
 export function useModrinthTags() {
-  const { data, isValidating: refreshing, error } = useSWRV('/modrinth/tags', async () => {
-    const [gameVersions, licenses, categories, modLoaders] = await Promise.all([
-      clientModrinthV2.getGameVersionTags(),
-      clientModrinthV2.getLicenseTags(),
-      clientModrinthV2.getCategoryTags(),
-      clientModrinthV2.getLoaderTags(),
-    ])
-    return markRaw({
-      gameVersions,
-      licenses,
-      categories,
-      modLoaders,
-      environments: ['client', 'server'],
-    })
-  }, inject(kSWRVConfig))
+  const { data: gameVersions_, isValidating: isGameVersionValidating, error: errorGameVersions } = useSWRV('/modrinth/tags/gameVersions', () => clientModrinthV2.getGameVersionTags().then(markRaw), inject(kSWRVConfig))
+  const { data: licenses_, isValidating: isLicenseValidating, error: errorLicenses } = useSWRV('/modrinth/tags/licenses', () => clientModrinthV2.getLicenseTags().then(markRaw), inject(kSWRVConfig))
+  const { data: categories_, isValidating: isCategoryValidating, error: errorCategories } = useSWRV('/modrinth/tags/categories', () => clientModrinthV2.getCategoryTags().then(markRaw), inject(kSWRVConfig))
+  const { data: modLoaders_, isValidating: isModLoaderValidating, error: errorModLoaders } = useSWRV('/modrinth/tags/modLoaders', () => clientModrinthV2.getLoaderTags().then(markRaw), inject(kSWRVConfig))
 
-  const gameVersions = computed(() => data.value?.gameVersions || [])
-  const licenses = computed(() => data.value?.licenses || [])
-  const categories = computed(() => data.value?.categories || [])
-  const modLoaders = computed(() => data.value?.modLoaders || [])
-  const environments = computed(() => data.value?.environments || [])
+  const gameVersions = computed(() => gameVersions_.value || [])
+  const licenses = computed(() => licenses_.value || [])
+  // const categories = computed(() => data.value?.categories || [])
+  const categories = computed(() => categories_.value || [])
+  // const modLoaders = computed(() => data.value?.modLoaders || [])
+  const modLoaders = computed(() => modLoaders_.value || [])
+  // const environments = computed(() => data.value?.environments || [])
+  const environments = computed(() => ['client', 'server'])
+
+  const refreshing = computed(() => isGameVersionValidating.value || isLicenseValidating.value || isCategoryValidating.value || isModLoaderValidating.value)
+
+  const error = computed(() => errorGameVersions.value || errorLicenses.value || errorCategories.value || errorModLoaders.value)
 
   return {
-    error,
+    errorGameVersions,
+    errorLicenses,
+    errorCategories,
+    errorModLoaders,
+
+    isGameVersionValidating,
+    isLicenseValidating,
+    isCategoryValidating,
+    isModLoaderValidating,
+
     refreshing,
+    error,
     gameVersions,
     licenses,
     categories,

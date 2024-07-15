@@ -173,7 +173,7 @@ const curseforgeCategories = computed(() => {
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
 
-const { refreshing: refreshingTag, categories: mCategories, error: tagError } = injection(kModrinthTags)
+const { categories: mCategories } = injection(kModrinthTags)
 const _modrinthCategories = computed(() => {
   const result = mCategories.value
   if (!result) return []

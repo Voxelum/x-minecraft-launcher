@@ -2,11 +2,6 @@
   <v-card
     class="flex overflow-auto rounded-lg"
   >
-    <v-skeleton-loader
-      v-if="loading"
-      class="flex flex-col gap-3 overflow-auto"
-      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
-    />
     <Transition
       name="fade-transition"
       mode="out-in"
@@ -24,14 +19,18 @@
         />
       </v-card>
     </Transition>
-
+    <v-skeleton-loader
+      v-if="loading && groups.length === 0"
+      class="flex flex-col gap-3 overflow-auto"
+      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+    />
     <ErrorView
-      v-if="error"
+      v-if="groups.length === 0 && error"
       :error="error"
       @refresh="emit('refresh')"
     />
     <div
-      v-else-if="!loading"
+      v-else
       class="invisible-scroll flex max-h-full w-full flex-grow-0 flex-col overflow-auto p-4"
     >
       <template

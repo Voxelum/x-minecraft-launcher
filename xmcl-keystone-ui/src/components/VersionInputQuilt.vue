@@ -12,10 +12,10 @@ const items = computed(() => {
   const result: VersionItem[] = (versions.value ?? [])
     .map((v) => {
       return markRaw({
-        name: v.loader.version,
-        description: v.loader.maven,
-        // tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),
-        // tagColor: v.stable ? 'primary' : undefined,
+        name: v.version,
+        description: v.maven,
+        tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),
+        tagColor: v.stable ? 'primary' : undefined,
       })
     })
   return result

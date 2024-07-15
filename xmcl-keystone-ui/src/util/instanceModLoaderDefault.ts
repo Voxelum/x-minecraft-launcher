@@ -1,6 +1,6 @@
 import { useService } from '@/composables'
 import { useSWRVConfig } from '@/composables/swrvConfig'
-import { getFabricIntermediaryVersionsModel, getFabricVersionsModel, getForgeVersionsModel, getNeoForgedVersionModel, getQuiltVersionModel } from '@/composables/version'
+import { getFabricGameVersionsModel, getFabricLoaderVersionsModel, getForgeVersionsModel, getNeoForgedVersionModel, getQuiltGameVersionsModel, getQuiltLoaderVersionsModel } from '@/composables/version'
 import { InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { getSWRV } from './swrvGet'
@@ -12,9 +12,9 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
   async function apply(loaders: Array<'forge' | 'quilt' | 'neoforge' | 'fabric' | string>) {
     for (const loader of loaders) {
       if (loader === 'fabric') {
-        const fit = await getSWRV(getFabricIntermediaryVersionsModel(runtime.value.minecraft), config)
-        if (fit.length > 0) {
-          const versions = await getSWRV(getFabricVersionsModel(), config)
+        const fit = await getSWRV(getFabricGameVersionsModel(), config)
+        if (fit.includes(runtime.value.minecraft)) {
+          const versions = await getSWRV(getFabricLoaderVersionsModel(), config)
           const version = versions[0]
           await editInstance({
             instancePath: path.value,
@@ -27,10 +27,10 @@ export function useInstanceModLoaderDefault(path: Ref<string>, runtime: Ref<Runt
           return true
         }
       } else if (loader === 'quilt') {
-        const versions = await getSWRV(getQuiltVersionModel(runtime.value.minecraft), config)
-        const version = versions[0]?.loader
-
-        if (version) {
+        const fit = await getSWRV(getQuiltGameVersionsModel(), config)
+        if (fit.includes(runtime.value.minecraft)) {
+          const versions = await getSWRV(getQuiltLoaderVersionsModel(), config)
+          const version = versions[0]
           await editInstance({
             instancePath: path.value,
             runtime: {
