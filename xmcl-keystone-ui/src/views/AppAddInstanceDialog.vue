@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     width="900"
-    :persistent="!loading"
+    :persistent="true"
   >
     <v-toolbar
       elevation="4"
@@ -47,7 +47,7 @@
             @select="onSelectType"
           />
           <AppLoadingCircular
-            v-if="tStep === 'create' &&loading"
+            v-if="tStep === 'create' && loading"
             :texts="[t('instances.loadingFiles') + '...']"
           />
           <StepChoice
