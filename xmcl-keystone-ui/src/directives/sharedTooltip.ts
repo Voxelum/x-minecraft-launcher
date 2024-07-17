@@ -3,14 +3,11 @@ import { FunctionDirective } from 'vue'
 
 export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string) | string | [string, string]> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
-  const { blocked, data, isShown, stack, shouldPushStack, setValue } = useSharedTooltipData()
+  const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
     if (blocked.value) return
     const target = e.target as HTMLElement
     const rect = target.getBoundingClientRect()
-    if (shouldPushStack() && data.value) {
-      stack.push(data.value)
-    }
 
     const newData: SharedTooltipData = {
       text: '',
@@ -53,27 +50,27 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string
       newData.text = val()
     }
 
-    data.value = newData
+    stack.value = [...stack.value, markRaw(newData)]
+
     isShown.value = false
     setValue(true)
   })
   el.addEventListener('click', (e) => {
     if (blocked.value) return
-    stack.pop()
+    stack.value = stack.value.slice(0, stack.value.length - 1)
     setValue(false)
   })
   el.addEventListener('mouseleave', (e) => {
     if (blocked.value) return
-    const last = stack.pop()
-    if (last) {
-      data.value = last
+    stack.value = stack.value.slice(0, stack.value.length - 1)
+    if (stack.value.length > 0) {
       setValue(true)
     } else {
       setValue(false)
     }
   })
   el.addEventListener('DOMNodeRemoved', (e) => {
-    stack.pop()
+    stack.value = stack.value.slice(0, stack.value.length - 1)
     setValue(false)
   })
 }
