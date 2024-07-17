@@ -6,14 +6,20 @@ export class AggregateExecutor<T, A = T> {
   private commit: () => void
 
   constructor(
-    aggregator: Aggregator<T, A>,
-    flush: (value: A) => void,
+    private aggregator: Aggregator<T, A>,
+    private _flush: (value: A) => void,
     timeout: number) {
     this.commit = debounce(() => {
       const aggregated = aggregator(this.queue)
       this.queue = []
-      flush(aggregated)
+      _flush(aggregated)
     }, timeout)
+  }
+
+  flush() {
+    const aggregated = this.aggregator(this.queue)
+    this.queue = []
+    return this._flush(aggregated)
   }
 
   push(value: T) {

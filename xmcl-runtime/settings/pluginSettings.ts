@@ -11,35 +11,40 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
   const state = stateManager.registerStatic(new Settings(), 'settings')
   const logger = app.getLogger('Settings')
   const settingFile = createSafeFile(join(app.appDataPath, 'setting.json'), SettingSchema, logger, [])
-  const saver = new AggregateExecutor<void, void>(() => { }, () => settingFile.write({
-    locale: state.locale,
-    autoInstallOnAppQuit: state.autoInstallOnAppQuit,
-    autoDownload: state.autoDownload,
-    allowPrerelease: state.allowPrerelease,
-    apiSets: state.apiSets,
-    apiSetsPreference: state.apiSetsPreference,
-    allowTurn: state.allowTurn,
-    httpProxy: state.httpProxy,
-    httpProxyEnabled: state.httpProxyEnabled,
-    theme: state.theme,
-    maxSockets: state.maxSockets,
-    globalMinMemory: state.globalMinMemory,
-    globalMaxMemory: state.globalMaxMemory,
-    globalAssignMemory: state.globalAssignMemory,
-    globalVmOptions: state.globalVmOptions,
-    globalMcOptions: state.globalMcOptions,
-    globalFastLaunch: state.globalFastLaunch,
-    globalHideLauncher: state.globalHideLauncher,
-    globalShowLog: state.globalShowLog,
-    discordPresence: state.discordPresence,
-    developerMode: state.developerMode,
-    disableTelemetry: state.disableTelemetry,
-    linuxTitlebar: state.linuxTitlebar,
-    globalDisableAuthlibInjector: state.globalDisableAuthlibInjector,
-    globalDisableElyByAuthlib: state.globalDisableElyByAuthlib,
-    enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
-    replaceNatives: state.replaceNatives,
-  }), 1000)
+  const saver = new AggregateExecutor<void, void>(() => { }, () =>
+    settingFile.write({
+      locale: state.locale,
+      autoInstallOnAppQuit: state.autoInstallOnAppQuit,
+      autoDownload: state.autoDownload,
+      allowPrerelease: state.allowPrerelease,
+      apiSets: state.apiSets,
+      apiSetsPreference: state.apiSetsPreference,
+      allowTurn: state.allowTurn,
+      httpProxy: state.httpProxy,
+      httpProxyEnabled: state.httpProxyEnabled,
+      theme: state.theme,
+      maxSockets: state.maxSockets,
+      globalMinMemory: state.globalMinMemory,
+      globalMaxMemory: state.globalMaxMemory,
+      globalAssignMemory: state.globalAssignMemory,
+      globalVmOptions: state.globalVmOptions,
+      globalMcOptions: state.globalMcOptions,
+      globalFastLaunch: state.globalFastLaunch,
+      globalHideLauncher: state.globalHideLauncher,
+      globalShowLog: state.globalShowLog,
+      discordPresence: state.discordPresence,
+      developerMode: state.developerMode,
+      disableTelemetry: state.disableTelemetry,
+      linuxTitlebar: state.linuxTitlebar,
+      globalDisableAuthlibInjector: state.globalDisableAuthlibInjector,
+      globalDisableElyByAuthlib: state.globalDisableElyByAuthlib,
+      enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
+      replaceNatives: state.replaceNatives,
+    }), 1000)
+
+  app.registryDisposer(async () => {
+    return saver.flush()
+  })
 
   settingFile.read().then(async () => {
     const data = await settingFile.read()

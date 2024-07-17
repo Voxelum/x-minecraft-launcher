@@ -93,6 +93,7 @@ import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
+import { useEventListener } from '@vueuse/core'
 
 const { t } = useI18n()
 const {
@@ -133,7 +134,7 @@ onMounted(() => {
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
 })
 
-onUnmounted(() => {
+const save = () => {
   setGlobalSettings({
     globalAssignMemory: assignMemory.value,
     globalMaxMemory: maxMem.value,
@@ -146,6 +147,10 @@ onUnmounted(() => {
     globalDisableAuthlibInjector: disableAuthlibInjector.value,
     globalDisableElyByAuthlib: disableElyByAuthlib.value,
   })
-})
+}
+
+useEventListener('beforeunload', save)
+
+onUnmounted(save)
 
 </script>
