@@ -30,7 +30,7 @@ export interface NewsItem {
 }
 export function useMojangNews() {
   const { data, error, isValidating, mutate } = useSWRV('/news', async () => {
-    const resp = await fetch('https://launchercontent.mojang.com/news.json')
+    const resp = await fetch('https://launchercontent.mojang.com/v2/news.json')
     const result: { version: number; entries: NewsItem[] } = await resp.json()
     if (result.version === 1) {
       const entries = result.entries.filter(e => e.category === 'Minecraft: Java Edition')

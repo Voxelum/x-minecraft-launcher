@@ -64,7 +64,7 @@
         v-if="!hideWindowControl"
         v-ripple
         tabindex="-1"
-        class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
+        class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden! hover:bg-[rgba(255,255,255,0.5)]"
 
         small
         @click="minimize"
@@ -73,14 +73,14 @@
         v-if="!hideWindowControl"
         v-ripple
         tabindex="-1"
-        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
+        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden! hover:bg-[rgba(255,255,255,0.5)]"
         small
         @click="maximize"
       >crop_din</v-icon>
       <v-icon
         v-if="!hideWindowControl"
         v-ripple
-        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgb(209,12,12)]"
+        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden! hover:bg-[rgb(209,12,12)]"
         small
         @click="close"
       >close</v-icon>
