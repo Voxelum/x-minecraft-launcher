@@ -2,9 +2,12 @@
   <v-list-item @click="emit('input', !value)">
     <v-list-item-action class="self-center">
       <v-checkbox
-        v-model="model"
         hide-details
-        @click.stop
+        :readonly="true"
+        :input-value="value"
+        :value="value"
+        @click.stop.prevent.capture="emit('input', !value)"
+        @change="emit('input', !value)"
       />
     </v-list-item-action>
     <v-list-item-content>

@@ -149,13 +149,13 @@
                     ]
                 },
                 "size": {
+                    "description": "The file size in bytes",
                     "type": "number"
                 }
             },
             "required": [
                 "hashes",
-                "path",
-                "size"
+                "path"
             ]
         }
     },

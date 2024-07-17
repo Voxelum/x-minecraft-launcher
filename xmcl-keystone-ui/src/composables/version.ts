@@ -64,8 +64,6 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   const { data: int } = useSWRVModel(getFabricGameVersionsModel(), inject(kSWRVConfig))
 
   const versions = computed(() => {
-    console.log(int.value)
-    console.log(minecraftVersion.value)
     if (!int.value || !int.value.includes(minecraftVersion.value)) {
       return []
     }
@@ -157,7 +155,6 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   const { data: int } = useSWRVModel(getQuiltGameVersionsModel(), inject(kSWRVConfig))
 
   const versions = computed(() => {
-    console.log(int)
     if (!int.value || !int.value.includes(minecraftVersion.value)) {
       return []
     }
