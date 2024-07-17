@@ -289,12 +289,6 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
   )
 
   const networkOnly = computed(() => {
-    if (keyword.value.length > 0) {
-      return true
-    }
-    if ((modrinth.value.length > 0 || curseforge.value.length > 0)) {
-      return true
-    }
     if (modrinthCategories.value.length > 0) {
       return true
     }

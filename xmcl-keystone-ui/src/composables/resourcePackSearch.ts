@@ -138,7 +138,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     computed(() => enabled.value.filter(v => v.title.toLowerCase().includes(keyword.value.toLowerCase()))),
   )
 
-  const networkOnly = computed(() => keyword.value.length > 0 || modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
+  const networkOnly = computed(() => modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
 
   const items = useProjectsFilterSearch(
     keyword,

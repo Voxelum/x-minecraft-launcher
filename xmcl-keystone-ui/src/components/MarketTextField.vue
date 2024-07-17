@@ -30,7 +30,7 @@
         v-if="clearable || _keyword"
         text
         icon
-        class="h-[24px] w-[24px]"
+        class="max-h-[24px] max-w-[24px]"
         @click="clear"
       >
         <v-icon>

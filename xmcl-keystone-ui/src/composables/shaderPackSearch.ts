@@ -151,7 +151,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     cached,
   )
 
-  const networkOnly = computed(() => keyword.value.length > 0 || modrinthCategories.value.length > 0)
+  const networkOnly = computed(() => modrinthCategories.value.length > 0)
 
   const items = useProjectsFilterSearch(
     keyword,
