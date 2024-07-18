@@ -47,7 +47,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   appInsight.setup(APP_INSIGHT_KEY)
     .setDistributedTracingMode(appInsight.DistributedTracingModes.AI_AND_W3C)
     .setAutoCollectExceptions(true)
-    .setAutoCollectPerformance(true)
+    .setAutoCollectPerformance(false)
     .setAutoCollectConsole(false)
     .setAutoCollectDependencies(false)
     .setAutoCollectRequests(false)
