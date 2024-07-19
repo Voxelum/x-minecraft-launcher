@@ -51,6 +51,10 @@ jobs:
       if: steps.cache-electron.outputs.cache-hit != 'true'
       run: |
         echo "Cache not found"
+    - name: Success if cache
+      if: steps.cache-electron.outputs.cache-hit == 'true'
+      run: |
+        echo "Cache found"
     - name: Install
       run: pnpm install
     - name: Build
