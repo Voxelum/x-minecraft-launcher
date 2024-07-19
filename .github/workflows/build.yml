@@ -104,16 +104,8 @@ jobs:
         name: mac-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/mac-arm64/
-
-  cache-electron:
-    needs: build
-    if: needs.build.outputs.cache-hit != 'true'
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    steps:
     - name: Save cached Electron
+      if: steps.cache-electron.outputs.cache-hit != 'true'
       uses: actions/cache/save@v3
       with:
         path: |
