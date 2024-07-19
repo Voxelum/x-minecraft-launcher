@@ -14,10 +14,6 @@ on:
       - 'pnpm-lock.yaml'
       - '.github/**'
 
-# env:
-#   ELECTRON_CACHE: ~/.cache/electron
-#   ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -48,15 +44,9 @@ jobs:
         path: |
           ~/.cache/electron
           ~/.cache/electron-builder
-        key: ${{ runner.os }}--${{ hashFiles('**/pnpm-lock.yaml') }}
-    - name: Fail if no cache
-      if: steps.cache-electron.outputs.cache-hit != 'true'
-      run: |
-        echo "Cache not found"
-    - name: Success if cache
-      if: steps.cache-electron.outputs.cache-hit == 'true'
-      run: |
-        echo "Cache found"
+        key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-electron-build-
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build
@@ -66,13 +56,6 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-    - name: Save cached Electron
-      uses: actions/cache/save@v3
-      with:
-        path: |
-          ~/.cache/electron
-          ~/.cache/electron-builder
-        key: ${{ runner.os }}--${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Upload Source Maps
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
@@ -121,6 +104,22 @@ jobs:
         name: mac-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/mac-arm64/
+
+  cache-electron:
+    needs: build
+    if: needs.build.outputs.cache-hit != 'true'
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+    - name: Save cached Electron
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
 
   prepare-release:
     runs-on: ubuntu-latest
