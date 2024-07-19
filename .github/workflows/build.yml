@@ -39,7 +39,7 @@ jobs:
       run: pnpm install
     - name: Restore cached Electron
       id: cache-electron
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: |
           ~/.cache/electron
@@ -106,7 +106,7 @@ jobs:
           xmcl-electron-app/build/output/mac-arm64/
     - name: Save cached Electron
       if: steps.cache-electron.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       with:
         path: |
           ~/.cache/electron
@@ -120,15 +120,15 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 0
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
         version: 9.2.0
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
     - name: Install
