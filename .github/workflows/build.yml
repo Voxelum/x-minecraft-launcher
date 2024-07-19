@@ -39,6 +39,8 @@ jobs:
       with:
         node-version: 20
         cache: 'pnpm'
+    - name: Install
+      run: pnpm install
     - name: Restore cached Electron
       id: cache-electron
       uses: actions/cache/restore@v3
@@ -55,8 +57,6 @@ jobs:
       if: steps.cache-electron.outputs.cache-hit == 'true'
       run: |
         echo "Cache found"
-    - name: Install
-      run: pnpm install
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build
