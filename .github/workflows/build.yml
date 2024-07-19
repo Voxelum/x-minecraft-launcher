@@ -13,10 +13,6 @@ on:
       - 'pnpm-lock.yaml'
       - '.github/**'
 
-# env:
-#   ELECTRON_CACHE: ~/.cache/electron
-#   ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -24,30 +20,32 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Fix node-gyp and Python
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       run: python3 -m pip install --break-system-packages --user packaging setuptools
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
-    # - name: Restore cached Electron
-    #   id: cache-electron
-    #   uses: actions/cache/restore@v3
-    #   with:
-    #     path: |
-    #       ~/.cache/electron
-    #       ~/.cache/electron-builder
-    #     key: ${{ runner.os }}-electron
     - name: Install
       run: pnpm install
+    - name: Restore cached Electron
+      id: cache-electron
+      uses: actions/cache/restore@v4
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-electron-build-
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build
@@ -57,15 +55,8 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-    # - name: Save cached Electron
-    #   uses: actions/cache/save@v3
-    #   with:
-    #     path: |
-    #       ~/.cache/electron
-    #       ~/.cache/electron-builder
-    #     key: ${{ runner.os }}-electron
     - name: Upload Source Maps
-      if: ${{ runner.os == 'Windows' }} 
+      if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
       with:
         name: sourcemap
@@ -78,57 +69,65 @@ jobs:
         path: |
           xmcl-electron-app/build/output/
     - name: Upload Windows Zip Build
-      if: ${{ runner.os == 'Windows' }} 
+      if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
       with:
         name: win-b${{ github.run_number }}
         path: |
           xmcl-electron-app/build/output/win-unpacked/
     - name: Upload Linux x64 Zip Build
-      if: ${{ runner.os == 'Linux' }} 
+      if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/linux-unpacked/
     - name: Upload Linux arm64 Zip Build
-      if: ${{ runner.os == 'Linux' }} 
+      if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/linux-arm64-unpacked/
     - name: Upload Mac x64 Zip Build
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/mac/
     - name: Upload Mac arm64 Zip Build
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/mac-arm64/
+    - name: Save cached Electron
+      if: steps.cache-electron.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}-electron-build-${{ hashFiles('**/pnpm-lock.yaml') }}
 
   prepare-release:
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - build
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 0
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
     - name: Install
@@ -192,15 +191,15 @@ jobs:
     needs:
       - build
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
@@ -252,7 +251,7 @@ jobs:
         body: ${{ steps.release_note.outputs.body }}
         asset_dir_path: ./build
     - name: Checkout Website
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: Voxelum/xmcl-page
         path: xmcl-page
