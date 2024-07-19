@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - user/herman/cache
     paths:
       - 'xmcl-runtime/**'
       - 'xmcl-runtime-api/**'
@@ -31,21 +32,24 @@ jobs:
       with:
         version: 9.2.0
     - name: Fix node-gyp and Python
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       run: python3 -m pip install --break-system-packages --user packaging setuptools
     - name: Use Node.js 20
       uses: actions/setup-node@v2
       with:
         node-version: 20
         cache: 'pnpm'
-    # - name: Restore cached Electron
-    #   id: cache-electron
-    #   uses: actions/cache/restore@v3
-    #   with:
-    #     path: |
-    #       ~/.cache/electron
-    #       ~/.cache/electron-builder
-    #     key: ${{ runner.os }}-electron
+    - name: Restore cached Electron
+      id: cache-electron
+      uses: actions/cache/restore@v3
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}--${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Fail if no cache
+      if: steps.cache-electron.outputs.cache-hit != 'true'
+      run: exit 1
     - name: Install
       run: pnpm install
     - name: Build
@@ -57,15 +61,15 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-    # - name: Save cached Electron
-    #   uses: actions/cache/save@v3
-    #   with:
-    #     path: |
-    #       ~/.cache/electron
-    #       ~/.cache/electron-builder
-    #     key: ${{ runner.os }}-electron
+    - name: Save cached Electron
+      uses: actions/cache/save@v3
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}--${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Upload Source Maps
-      if: ${{ runner.os == 'Windows' }} 
+      if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
       with:
         name: sourcemap
@@ -78,35 +82,35 @@ jobs:
         path: |
           xmcl-electron-app/build/output/
     - name: Upload Windows Zip Build
-      if: ${{ runner.os == 'Windows' }} 
+      if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
       with:
         name: win-b${{ github.run_number }}
         path: |
           xmcl-electron-app/build/output/win-unpacked/
     - name: Upload Linux x64 Zip Build
-      if: ${{ runner.os == 'Linux' }} 
+      if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/linux-unpacked/
     - name: Upload Linux arm64 Zip Build
-      if: ${{ runner.os == 'Linux' }} 
+      if: ${{ runner.os == 'Linux' }}
       uses: actions/upload-artifact@v4
       with:
         name: linux-b${{ github.run_number }}-arm64
         path: |
           xmcl-electron-app/build/output/linux-arm64-unpacked/
     - name: Upload Mac x64 Zip Build
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-x64
         path: |
           xmcl-electron-app/build/output/mac/
     - name: Upload Mac arm64 Zip Build
-      if: ${{ runner.os == 'macOS' }} 
+      if: ${{ runner.os == 'macOS' }}
       uses: actions/upload-artifact@v4
       with:
         name: mac-b${{ github.run_number }}-arm64
@@ -115,7 +119,7 @@ jobs:
 
   prepare-release:
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - build
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
