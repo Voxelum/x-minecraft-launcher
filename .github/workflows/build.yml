@@ -21,17 +21,17 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Fix node-gyp and Python
       if: ${{ runner.os == 'macOS' }}
       run: python3 -m pip install --break-system-packages --user packaging setuptools
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
@@ -126,7 +126,7 @@ jobs:
         fetch-depth: 0
     - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Use Node.js 20
       uses: actions/setup-node@v4
       with:
@@ -192,15 +192,15 @@ jobs:
     needs:
       - build
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Use Node.js 20
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
@@ -252,7 +252,7 @@ jobs:
         body: ${{ steps.release_note.outputs.body }}
         asset_dir_path: ./build
     - name: Checkout Website
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: Voxelum/xmcl-page
         path: xmcl-page

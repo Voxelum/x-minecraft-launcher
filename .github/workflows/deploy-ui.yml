@@ -10,14 +10,14 @@ jobs:
       matrix:
         os: [ubuntu-latest]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
+    - uses: pnpm/action-setup@v4
       with:
-        version: 9.2.0
+        version: 9.3.0
     - name: Use Node.js 16
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: 'pnpm'
