@@ -1,6 +1,15 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
+      v-shared-tooltip="_ => isInstanceLinked ? t('save.shared') : t('save.independent')"
+      icon
+      :loading="loading"
+      large
+      @click="onLinkClicked"
+    >
+      <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
+    </v-btn>
+    <v-btn
       v-shared-tooltip.left="_ => t('save.showDirectory')"
       icon
       large
@@ -12,14 +21,37 @@
 </template>
 <script lang="ts" setup>
 import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { kInstanceSave } from '@/composables/save'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import { kInstance } from '@/composables/instance'
+import useSWRV from 'swrv'
 
 const { path } = injection(kInstance)
-const { showDirectory } = useService(InstanceSavesServiceKey)
+const { showDirectory, linkSharedSave, unlinkSharedSave, isSaveLinked } = useService(InstanceSavesServiceKey)
 const { t } = useI18n()
+const { data: isInstanceLinked, isValidating, mutate } = useSWRV(computed(() => path.value), isSaveLinked)
+const { revalidate } = injection(kInstanceSave)
+
+const linking = ref(false)
+const loading = computed(() => linking.value || isValidating.value)
+const onLinkClicked = async () => {
+  linking.value = true
+  if (isInstanceLinked.value) {
+    unlinkSharedSave(path.value).finally(() => {
+      linking.value = false
+      mutate()
+      revalidate()
+    })
+  } else {
+    await linkSharedSave(path.value).finally(() => {
+      linking.value = false
+      mutate()
+      revalidate()
+    })
+  }
+}
 </script>
 
 <style scoped>

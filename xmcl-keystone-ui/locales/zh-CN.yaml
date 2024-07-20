@@ -1032,8 +1032,10 @@ save:
   import: 从文件导入
   importMessage: 将 Zip 存档导入
   importTitle: 导入存档
+  independent: 实例使用独立的存档文件夹
   manage: 管理存档
   name: 地图存档 | 地图存档
+  shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录
 screenshots:
   empty: 您还没有截图

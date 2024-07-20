@@ -129,6 +129,22 @@ export interface InstanceSavesService {
    * You can choose export the save to zip or a folder.
    */
   exportSave(options: ExportSaveOptions): Promise<void>
+  /**
+   * Link saves folder to shared-saves.
+   *
+   * If the saves exists, it will move all saves to shared-saves and link the saves folder to shared-saves.
+   */
+  linkSharedSave(instancePath: string): Promise<void>
+
+  isSaveLinked(instancePath: string): Promise<boolean>
+  /**
+   * Unlink saves folder from shared-saves.
+   */
+  unlinkSharedSave(instancePath: string): Promise<void>
+  /**
+   * Get the shared saves. The saves `instanceName` will be an empty string.
+   */
+  getSharedSaves(): Promise<InstanceSave[]>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

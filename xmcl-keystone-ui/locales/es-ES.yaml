@@ -796,8 +796,10 @@ save:
   import: Importar Partida
   importMessage: Importar una Partida desde un archivo zip
   importTitle: Importar una Partida
+  independent: La instancia utiliza una carpeta de guardado independiente
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
+  shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado
 screenshots:
   empty: No tienes capturas de pantalla

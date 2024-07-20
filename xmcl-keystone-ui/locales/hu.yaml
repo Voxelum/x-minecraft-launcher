@@ -1106,8 +1106,10 @@ save:
   import: Mentés importálása
   importMessage: Mentés importálása zip-ből
   importTitle: Mentés importálása
+  independent: Példány használjon független mentési mappát
   manage: Mentések kezelése
   name: Mentés | Mentések
+  shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
 screenshots:
   empty: Nincsenek képernyőképeid

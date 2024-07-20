@@ -280,8 +280,8 @@ feedback:
   githubDescription: Open an Github Issue to tell your thought
   githubOpenIssue: Github
   hint: >-
-    Click the button to create the report and contact the developer team.
-    The report will contains your device info including operating system type,
+    Click the button to create the report and contact the developer team. The
+    report will contains your device info including operating system type,
     version, user name (in your os), etc.
   kook: Kook
   kookDescription: Kook is an alter app for discord for Chinese Mainland users
@@ -1074,8 +1074,10 @@ save:
   import: Import Save
   importMessage: Import a Save from zip
   importTitle: Import a Save
+  independent: Instance use independent saves folder
   manage: Manage Saves
   name: Save | Saves
+  shared: Instance use shared saves folder
   showDirectory: Show saves directory
 screenshots:
   empty: You don't have screenshots

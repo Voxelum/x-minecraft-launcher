@@ -1104,8 +1104,10 @@ save:
   import: Importuj i zapisz
   importMessage: Importuj plik Save z pliku zip
   importTitle: Importuj zapis
+  independent: Instancja korzysta z niezależnego folderu zapisu
   manage: Zarządzanie oszczędnościami
   name: Save | Saves
+  shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu
 screenshots:
   empty: Nie masz zrzutów ekranu

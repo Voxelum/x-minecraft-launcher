@@ -278,6 +278,8 @@ resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
+  independent: A instancia utiliza un cartafol de gardados independentes
+  shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
 setting:
   backgroundColorAbove: Mostra a cor de fondo como superposición

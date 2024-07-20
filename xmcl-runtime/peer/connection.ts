@@ -139,19 +139,27 @@ export class PeerSession {
             if (!existsSync(absPath)) {
               return 'NOT_FOUND'
             }
-            return createReadStream(absPath)
+            return createReadStream(absPath, {
+              highWaterMark: 16 * 1024,
+            })
           } else if (filePath.startsWith('/image')) {
             filePath = filePath.substring('/image'.length)
             if (filePath.startsWith('/')) {
               filePath = filePath.substring(1)
             }
-            return createReadStream(this.context.getSharedImagePath(filePath))
+            return createReadStream(this.context.getSharedImagePath(filePath), {
+              highWaterMark: 16 * 1024,
+            })
           } else if (filePath.startsWith('/assets')) {
             filePath = filePath.substring('/assets'.length)
-            return createReadStream(join(this.context.getSharedAssetsPath(), filePath))
+            return createReadStream(join(this.context.getSharedAssetsPath(), filePath), {
+              highWaterMark: 16 * 1024,
+            })
           } else if (filePath.startsWith('/libraries')) {
             filePath = filePath.substring('/libraries'.length)
-            return createReadStream(join(this.context.getSharedLibrariesPath(), filePath))
+            return createReadStream(join(this.context.getSharedLibrariesPath(), filePath), {
+              highWaterMark: 16 * 1024,
+            })
           }
           return 'NOT_FOUND'
         }

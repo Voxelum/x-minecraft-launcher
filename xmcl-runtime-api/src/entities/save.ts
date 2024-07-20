@@ -57,6 +57,10 @@ export interface ResourceSaveMetadata extends SaveMetadata {
 export class Saves {
   saves = [] as InstanceSaveMetadata[]
 
+  instanceSaves(save: InstanceSaveMetadata[]) {
+    this.saves = save
+  }
+
   instanceSaveUpdate(save: InstanceSaveMetadata) {
     const existed = this.saves.find(s => s.path === save.path)
     if (existed) {

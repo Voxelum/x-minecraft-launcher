@@ -51,5 +51,6 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     isValidating,
     state,
     error,
+    revalidate: revalidateCall,
   }
 }

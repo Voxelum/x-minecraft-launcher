@@ -1103,8 +1103,10 @@ save:
   import: Importa salvataggio
   importMessage: Importa un salvataggio da zip
   importTitle: Importa un salvataggio
+  independent: L'istanza utilizza una cartella di salvataggio indipendente
   manage: Gestisci salvataggi
   name: Salva | Salva
+  shared: L'istanza utilizza la cartella di salvataggio condivisa
   showDirectory: Mostra la directory di salvataggio
 screenshots:
   empty: Non hai screenshot

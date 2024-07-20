@@ -1029,8 +1029,10 @@ save:
   import: 從檔案匯入
   importMessage: 將 Zip 存檔匯入
   importTitle: 匯入存檔
+  independent: 實例使用獨立的存档資料夾
   manage: 管理存檔
   name: 地圖存檔 | 地圖存檔
+  shared: 實例使用共享存档資料夾
   showDirectory: 顯示儲存目錄
 screenshots:
   empty: 您還沒有截圖

@@ -1,11 +1,9 @@
 <template>
   <v-card
-    v-draggable-card
     v-data-transfer:id="source.name"
     v-data-transfer-image="icon"
     hover
     outlined
-    draggable
     class="dark:white--text draggable-card p-2"
     style="margin-top: 10px; transition-duration: 0.2s; margin-bottom: 20px"
     @dragstart="onDragStart"

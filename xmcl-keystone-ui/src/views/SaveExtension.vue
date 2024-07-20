@@ -8,24 +8,8 @@
       'mb-2': compact,
     }"
   >
-    <div
-      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
-    >
-      <template
-        v-for="ver of versions"
-      >
-        <AvatarItem
-          :key="ver.title"
-          :avatar="ver.icon"
-          :title="ver.title"
-          responsive
-          :text="ver.version"
-        />
-        <v-divider
-          :key="`${ver.title}-divider`"
-          vertical
-        />
-      </template>
+    <div class="flex flex-grow-0 flex-row items-center justify-center gap-1">
+      <AvatarItemList :items="items" />
     </div>
     <v-spacer />
     <v-text-field
@@ -59,66 +43,30 @@
 </template>
 
 <script lang="ts" setup>
-import AvatarItem from '@/components/AvatarItem.vue'
+import AvatarItemList from '@/components/AvatarItemList.vue'
+import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kCompact } from '@/composables/scrollTop'
+import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
 
 // const { importSave } = useInstanceSaves()
-const { instance, runtime: version } = injection(kInstance)
-const versions = computed(() => {
-  const ver = version.value
-  const result: Array<{icon: string; title: string; version: string}> = []
-  if (ver.minecraft) {
-    result.push({
-      icon: 'http://launcher/icons/minecraft',
-      title: 'Minecraft',
-      version: ver.minecraft,
-    })
-  }
-  if (ver.forge) {
-    result.push({
-      icon: 'http://launcher/icons/forge',
-      title: 'Forge',
-      version: ver.forge,
-    })
-  }
-  if (ver.neoForged) {
-    result.push({
-      icon: 'http://launcher/icons/neoForged',
-      title: 'NeoForged',
-      version: ver.neoForged,
-    })
-  }
-  if (ver.fabricLoader) {
-    result.push({
-      icon: 'http://launcher/icons/fabric',
-      title: 'Fabric',
-      version: ver.fabricLoader,
-    })
-  }
-  if (ver.quiltLoader) {
-    result.push({
-      icon: 'http://launcher/icons/quilt',
-      title: 'Quilt',
-      version: ver.quiltLoader,
-    })
-  }
-  if (ver.optifine) {
-    result.push({
-      icon: 'http://launcher/icons/optifine',
-      title: 'Optifine',
-      version: ver.optifine,
-    })
-  }
-  if (ver.labyMod) {
-    result.push({
-      icon: 'http://launcher/icons/labyMod',
-      title: 'LabyMod',
-      version: ver.labyMod,
-    })
-  }
-  return result
+const { path, runtime: version } = injection(kInstance)
+const { isSaveLinked } = useService(InstanceSavesServiceKey)
+const { data: isInstanceLinked, isValidating, mutate } = useSWRV(computed(() => path.value), isSaveLinked)
+const { t } = useI18n()
+
+const items = computed(() => {
+  return [
+    ...getExtensionItemsFromRuntime({ minecraft: version.value.minecraft }),
+    {
+      icon: isInstanceLinked.value ? 'account_tree' : 'looks_one',
+      title: t('save.name', 2),
+      text: isInstanceLinked.value ? t('save.shared') : t('save.independent'),
+    },
+  ]
 })
 const { showOpenDialog } = windowController
 // const { isShown: isCopyFromDialogShown } = useDialog('save-copy-from')
