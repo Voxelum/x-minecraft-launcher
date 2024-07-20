@@ -27,9 +27,15 @@ const props = withDefaults(
   dimension: 64,
 })
 
+const steveSrc = renderMinecraftPlayerTextHead(steve)
+
 watch(() => props.src, (s) => {
-  renderMinecraftPlayerTextHead(s || steve)?.then((v) => {
+  renderMinecraftPlayerTextHead(s)?.then((v) => {
     dataUrlSrc.value = v
+  }, () => {
+    steveSrc?.then((v) => {
+      dataUrlSrc.value = v
+    })
   })
 }, { immediate: true })
 
