@@ -76,12 +76,12 @@ jobs:
       uses: signpath/github-action-submit-signing-request@v0.4
       with:
         api-token: '${{ secrets.CODE_SIGN_TOKEN }}'
-        organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
-        project-slug: x-minecraft-launcher
-        signing-policy-slug: test-signing
+        organization-id: 'ab51b40d-a5bd-4d25-ae54-66ccabf86161'
+        project-slug: 'x-minecraft-launcher'
+        signing-policy-slug: 'test-signing'
         github-artifact-id: '${{steps.upload-appx.outputs.artifact-id}}'
         wait-for-completion: true
-        output-artifact-directory: xmcl-electron-app/build/output/
+        output-artifact-directory: 'xmcl-electron-app/build/output/'
         # parameters: |
         #   Version: ${{ toJSON(vars.version) }}
         #   Release_Tag: "v1.0"
