@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - signpath
     paths:
       - 'xmcl-runtime/**'
       - 'xmcl-runtime-api/**'
