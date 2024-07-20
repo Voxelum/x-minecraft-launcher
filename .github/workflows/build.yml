@@ -70,7 +70,7 @@ jobs:
       with:
         name: build-${{ runner.os }}-signed
         path: |
-          xmcl-electron-app/build/output/
+          xmcl-electron-app/build/output/*.appx
     - name: Sign appx
       if: ${{ runner.os == 'Windows' }}
       uses: signpath/github-action-submit-signing-request@v0.4
@@ -79,7 +79,7 @@ jobs:
         organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
         project-slug: x-minecraft-launcher
         signing-policy-slug: test-signing
-        github-artifact-id: '${{steps.upload-artifact.outputs.artifact-id}}'
+        github-artifact-id: '${{steps.upload-appx.outputs.artifact-id}}'
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
         # parameters: |
