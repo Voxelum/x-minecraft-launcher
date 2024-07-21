@@ -263,6 +263,35 @@ mod:
 modInstall:
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
+modrinth:
+  categories:
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    fabric: Fabric
+    folia: Folia
+    forge: Forge
+    iris: Iris
+    liteloader: Liteloader
+    minecraft: Minecraft
+    optifine: Optifine
+    paper: Paper
+    purpur: Purpur
+    quilt: Quilt
+    rift: Rift
+    spigot: Spigot
+    sponge: Sponge
+    velocity: Velocity
+    waterfall: Waterfall
+  projectType:
+    mod: Mod
+    shader: Shader
 multiplayer:
   kernel: Núcleo P2P
   kernelDescription: >-
@@ -274,8 +303,12 @@ multiplayer:
     Podes descargar ou crear unha instancia desde a configuración compartida de
     {name}.
   sharingNotificationTitle: Un compañeiro está compartindo a configuración do xogo
+neoForgedVersion:
+  name: NeoForged
+ok: ОК
 resourcepack:
   independent: A instancia utiliza o cartafol do paquete de recursos independente
+  searchOnModrinth: '@:mod.searchOnModrinth'
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
   independent: A instancia utiliza un cartafol de gardados independentes
@@ -308,6 +341,9 @@ setting:
   themeShare: Compartir tema
   themeShareDescription: Podes compartir o tema co teu amigo.
   update: Actualizar
+setup:
+  appearance:
+    name: '@:setting.appearance'
 shared:
   accept: Aceptar
 task:
@@ -347,3 +383,8 @@ tutorial:
   storeSearchResultDescription: Verá todos os resultados da busca listados aquí.
 update:
   goOfficialWebDownload: Volve descargar no sitio web oficial
+user:
+  profile: Profile
+versionType:
+  alpha: Alpha
+  beta: Beta
