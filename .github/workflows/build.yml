@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - signpath
     paths:
       - 'xmcl-runtime/**'
       - 'xmcl-runtime-api/**'
@@ -19,7 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -64,26 +63,6 @@ jobs:
         name: sourcemap
         path: |
           xmcl-electron-app/dist/*.js.map
-    # - name: Upload AppX
-    #   id: upload-appx
-    #   if: ${{ runner.os == 'Windows' }}
-    #   uses: actions/upload-artifact@v4
-    #   with:
-    #     name: build-${{ runner.os }}-signed
-    #     path: |
-    #       xmcl-electron-app/build/output/*.appx
-    # - name: Sign appx
-    #   if: ${{ runner.os == 'Windows' }}
-    #   uses: signpath/github-action-submit-signing-request@v0.4
-    #   with:
-    #     api-token: ${{ secrets.CODE_SIGN_TOKEN }}
-    #     organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
-    #     project-slug: x-minecraft-launcher
-    #     signing-policy-slug: test-signing
-    #     github-artifact-id: ${{ steps.upload-appx.outputs.artifact-id }}
-    #     artifact-configuration-slug: appx
-    #     wait-for-completion: true
-    #     output-artifact-directory: xmcl-electron-app/build/output/
     - name: Upload Build
       id: upload-artifact
       uses: actions/upload-artifact@v4
