@@ -56,6 +56,7 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+        PUBLISHER: CN=Test certificate for 'X Minecraft Launcher [OSS]'
     - name: Upload Source Maps
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
@@ -63,15 +64,34 @@ jobs:
         name: sourcemap
         path: |
           xmcl-electron-app/dist/*.js.map
-    - name: Upload AppX
-      id: upload-appx
-      if: ${{ runner.os == 'Windows' }}
+    # - name: Upload AppX
+    #   id: upload-appx
+    #   if: ${{ runner.os == 'Windows' }}
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: build-${{ runner.os }}-signed
+    #     path: |
+    #       xmcl-electron-app/build/output/*.appx
+    # - name: Sign appx
+    #   if: ${{ runner.os == 'Windows' }}
+    #   uses: signpath/github-action-submit-signing-request@v0.4
+    #   with:
+    #     api-token: ${{ secrets.CODE_SIGN_TOKEN }}
+    #     organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
+    #     project-slug: x-minecraft-launcher
+    #     signing-policy-slug: test-signing
+    #     github-artifact-id: ${{ steps.upload-appx.outputs.artifact-id }}
+    #     artifact-configuration-slug: appx
+    #     wait-for-completion: true
+    #     output-artifact-directory: xmcl-electron-app/build/output/
+    - name: Upload Build
+      id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build-${{ runner.os }}-signed
+        name: build-${{ runner.os }}
         path: |
-          xmcl-electron-app/build/output/*.appx
-    - name: Sign appx
+          xmcl-electron-app/build/output/
+    - name: Sign Build
       if: ${{ runner.os == 'Windows' }}
       uses: signpath/github-action-submit-signing-request@v0.4
       with:
@@ -79,12 +99,11 @@ jobs:
         organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
         project-slug: x-minecraft-launcher
         signing-policy-slug: test-signing
-        github-artifact-id: ${{ steps.upload-appx.outputs.artifact-id }}
-        artifact-configuration-slug: appx
+        github-artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
+        artifact-configuration-slug: build
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
-    - name: Upload Build
-      id: upload-artifact
+    - name: Upload Signed Build
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ runner.os }}
