@@ -108,7 +108,9 @@ jobs:
       with:
         name: build-${{ runner.os }}
         path: |
-          xmcl-electron-app/build/output/
+          xmcl-electron-app/build/output/*.zip
+          xmcl-electron-app/build/output/*.appx
+        overwrite: true
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
