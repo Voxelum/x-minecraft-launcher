@@ -25,12 +25,16 @@ export async function parseModrinthInstance(instancePath: string) {
       forge: modrinth.metadata.loader === 'forge' ? modrinth.metadata.loader_version.id : undefined,
       fabricLoader: modrinth.metadata.loader === 'fabric' ? modrinth.metadata.loader_version.id : undefined,
       quiltLoader: modrinth.metadata.loader === 'quilt' ? modrinth.metadata.loader_version.id : undefined,
+      neoForged: modrinth.metadata.loader === 'neoforge' ? modrinth.metadata.loader_version.id : undefined,
     },
-    upstream: {
+  }
+
+  if (modrinth.metadata.linked_data) {
+    options.upstream = {
       type: 'modrinth-modpack',
       projectId: modrinth.metadata.linked_data.project_id,
       versionId: modrinth.metadata.linked_data.version_id,
-    },
+    }
   }
 
   return options
