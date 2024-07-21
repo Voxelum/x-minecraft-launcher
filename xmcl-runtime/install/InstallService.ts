@@ -407,45 +407,31 @@ export class InstallService extends AbstractService implements IInstallService {
   private async installFabricInternal(options: InstallFabricOptions) {
     class InstallFabricTask extends AbortableTask<string> {
       private controller: AbortController | undefined
-      private apis: string[]
 
-      constructor(url: URL, apiSets: string[], preferDefault: boolean, private dest: string, id: string) {
+      constructor(private app: LauncherApp, private apiSets: string[], private dest: string, id: string) {
         super()
         this.name = 'installFabric'
         this.param = { id }
-        const apis = apiSets.map(a => a + '/fabric-meta')
-        if (preferDefault) {
-          apis.unshift(url.protocol + '//' + url.host)
-        } else {
-          apis.push(url.protocol + '//' + url.host)
-        }
-        this.apis = apis.map(a => new URL(a)).map(a => {
-          const realUrl = new URL(url.toString())
-          realUrl.host = a.host
-          realUrl.pathname = (a.pathname === '/' ? '' : a.pathname) + url.pathname
-          return realUrl.toString()
-        })
         this._to = dest
       }
 
       protected async process(): Promise<string> {
-        let err: any
         this.controller = new AbortController()
-        while (this.apis.length > 0) {
-          try {
-            const api = this.apis[0]
-            this._from = api
-            this.update(0)
-            const resp = await request(api, { throwOnError: true, signal: this.controller.signal, skipOverride: true })
-            const artifact = await resp.body.json() as any
-            const result = await installFabric(artifact, this.dest, { side: 'client' })
-            return result
-          } catch (e) {
-            err = e
-            this.apis.shift()
-          }
-        }
-        throw err
+        const result = await installFabric({
+          minecraft: this.dest,
+          minecraftVersion: options.minecraft,
+          version: options.loader,
+          side: 'client',
+          signal: this.controller.signal,
+          fetch: async (url, init) => {
+            const parsed = new URL(url)
+            return await Promise.race(
+              this.apiSets.map(a => a + '/fabric-meta' + parsed.pathname)
+                .concat(url).map(u => this.app.fetch(u, init)),
+            )
+          },
+        })
+        return result
       }
 
       protected abort(): void {
@@ -462,9 +448,8 @@ export class InstallService extends AbstractService implements IInstallService {
 
       const result = await this.submit(
         new InstallFabricTask(
-          new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader),
+          this.app,
           getApiSets(this.settings).map(a => a.url),
-          shouldOverrideApiSet(this.settings, this.gfw.inside),
           path,
           options.minecraft,
         ))
