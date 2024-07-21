@@ -19,7 +19,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [windows-latest]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -79,12 +79,10 @@ jobs:
         organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
         project-slug: x-minecraft-launcher
         signing-policy-slug: test-signing
-        github-artifact-id: ${{steps.upload-appx.outputs.artifact-id}}
+        github-artifact-id: ${{ steps.upload-appx.outputs.artifact-id }}
+        artifact-configuration-slug: appx
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
-        # parameters: |
-        #   Version: ${{ toJSON(vars.version) }}
-        #   Release_Tag: "v1.0"
     - name: Upload Build
       id: upload-artifact
       uses: actions/upload-artifact@v4
