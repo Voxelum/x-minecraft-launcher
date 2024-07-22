@@ -1,6 +1,6 @@
 import { InstanceResourcePacksService as IInstanceResourcePacksService, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { mkdir, readdir, remove, stat, unlink } from 'fs-extra'
+import { ensureDir, mkdir, readdir, remove, rename, stat, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
@@ -63,7 +63,23 @@ export abstract class AbstractInstanceDoaminService extends AbstractService impl
     const destPath = join(instancePath, this.domain)
     const srcPath = this.getPath(this.domain)
     try {
-      if (force) await remove(destPath)
+      if (force) {
+        const isLinked = await this.isLinked(instancePath)
+        if (!isLinked) {
+          // Backup the old folder
+          const files = await readdir(destPath)
+          const backupDir = join(destPath, '.backup')
+          await ensureDir(backupDir)
+          for (const f of files) {
+            const s = await stat(join(destPath, f))
+            if (s.isDirectory()) {
+              // move to backup dir
+              await rename(join(destPath, f), join(backupDir, f))
+            }
+          }
+          await remove(destPath)
+        }
+      }
       const isLinked = await tryLink(srcPath, destPath, this, (path) => this.instanceService.isUnderManaged(path))
       return isLinked
     } catch (e) {
