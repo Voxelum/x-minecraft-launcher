@@ -5,7 +5,8 @@
     :selected="selected"
     :has-update="hasUpdate"
     :checked="checked"
-    :height="80"
+    :dense="dense"
+    :height="itemHeight"
     :get-context-menu-items="getContextMenuItems"
     :install="install"
     @click="emit('click', $event)"
@@ -25,6 +26,8 @@ const props = defineProps<{
   checked: boolean
   selected: boolean
   hasUpdate?: boolean
+  dense?: boolean
+  itemHeight?: number
   install: (p: ShaderPackProject) => Promise<void>
 }>()
 
