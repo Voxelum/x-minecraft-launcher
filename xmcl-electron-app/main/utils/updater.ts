@@ -382,6 +382,11 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
+    if (this.app.platform.os === 'linux') {
+      if (updateInfo.useAutoUpdater) {
+        return new DownloadFullUpdateTask()
+      }
+    }
     if (this.app.env === 'appx') {
       this.logger.log('Download appx from selfhost')
       return new DownloadAppInstallerTask(this.app)
