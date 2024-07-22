@@ -256,7 +256,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -271,6 +271,7 @@ import { kLocalVersions } from '@/composables/versionLocal'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
 const { exportInstance } = useService(InstanceIOServiceKey)
+const { editInstance } = useService(InstanceServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { exportModpack } = useService(ModpackServiceKey)
 const { showSaveDialog } = windowController
@@ -430,6 +431,7 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
           emitModrinth: data.emitModrinth,
           strictModeInModrinth: data.emitModrinthStrict,
         })
+        await editInstance({ instancePath: instance.value.path, modpackVersion: data.version })
       } catch (e) {
         console.error(e)
       }
