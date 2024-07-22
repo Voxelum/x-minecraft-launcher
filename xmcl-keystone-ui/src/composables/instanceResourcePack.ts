@@ -91,11 +91,14 @@ const EMPTY_RESOURCE: Resource = ({
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
   const { link, scan } = useService(InstanceResourcePacksServiceKey)
+  const local = ref([] as Resource[])
   async function mount(path: string) {
+    local.value = []
     if (!path) return
     const linked = await link(path)
     if (!linked) {
-      await scan(path)
+      const scanned = await scan(path)
+      local.value = scanned
     }
   }
   watch(path, mount, { immediate: true })
@@ -137,7 +140,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
     const mapped = [] as InstanceResourcePack[]
     const index: Record<string, InstanceResourcePack> = {}
     const disabled = [] as InstanceResourcePack[]
-    for (const r of resources.value) {
+    for (const r of resources.value.concat(local.value)) {
       const val = getResourcePackItem(r, enabledSet)
       if (val.enabled) {
         index[val.id] = val

@@ -279,6 +279,9 @@ export class ResourceService extends AbstractService implements IResourceService
 
       try {
         const parsed = await parseMetadata(path, resolved.fileType, domain ?? ResourceDomain.Unclassified, this.context)
+        if (resolved.fileType === 'directory') {
+          return generateResource(this.getPath(), resolved, undefined, { path, domain })
+        }
         const data = await upsertMetadata(parsed.metadata, parsed.uris, parsed.icons, parsed.name, resolved.sha1, this.context)
         return generateResource(this.getPath(), resolved, data, { path, domain })
       } catch (e) {
