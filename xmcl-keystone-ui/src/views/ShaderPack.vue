@@ -15,7 +15,7 @@
         v-if="typeof item === 'string'"
         class="h-[76px]"
       >
-        {{ item === 'enabled' ? t("shaderPack.enabled") : t("shaderPack.disabled") }}
+        {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") : t('modInstall.search') }}
       </v-subheader>
       <ShaderPackItem
         v-else
@@ -105,8 +105,11 @@ import MarketRecommendation from '@/components/MarketRecommendation.vue'
 const {
   modrinthError,
   loading,
-  networkOnly,
-  items,
+
+  enabled,
+  disabled,
+  others,
+
   keyword,
   shaderProjectFiles,
   shaderLoaderFilters,
@@ -120,28 +123,29 @@ const { runtime, path } = injection(kInstance)
 effect()
 
 const all = computed(() => {
-  if (networkOnly.value) return items.value
-  const rest = [] as ProjectEntry<ProjectFile>[]
-  const enabled = [] as ProjectEntry<ProjectFile>[]
-  for (const i of items.value) {
-    if (!i.disabled) {
-      enabled.push(i)
-    } else {
-      rest.push(i)
-    }
-  }
-  if (enabled.length > 0) {
-    return [
+  const result: (string | ProjectEntry)[] = []
+
+  if (enabled.value.length > 0) {
+    result.push(
       'enabled' as string,
-      ...enabled,
-      'disabled' as string,
-      ...rest,
-    ] as (string | ProjectEntry<ProjectFile>)[]
+      ...enabled.value,
+    )
   }
-  return [
-    'disabled' as string,
-    ...rest,
-  ]
+  if (disabled.value.length > 0) {
+    result.push(
+      'disabled' as string,
+      ...disabled.value,
+    )
+  }
+
+  if (others.value.length > 0) {
+    result.push(
+      'search' as string,
+      ...others.value,
+    )
+  }
+
+  return result
 })
 
 const toggleCategory = useToggleCategories(modrinthCategories)

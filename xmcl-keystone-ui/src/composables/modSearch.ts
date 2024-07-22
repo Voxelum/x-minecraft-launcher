@@ -352,7 +352,6 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     loadingModrinth,
     curseforgeError,
     cachedMods,
-    instanceMods: instances,
     loadingCached,
     loadingCurseforge,
     modrinth,

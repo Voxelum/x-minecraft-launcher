@@ -143,7 +143,7 @@
             </v-btn>
             <div
               v-if="!selectedInstalled"
-              class="v-card border-transparent bg-transparent"
+              class="v-card border-transparent bg-transparent!"
               :class="{ 'theme--dark': isDark, 'theme--light': !isDark }"
             >
               <div class="v-card__subtitle overflow-hidden overflow-ellipsis whitespace-nowrap p-0">

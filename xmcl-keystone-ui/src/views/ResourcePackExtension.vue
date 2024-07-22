@@ -50,7 +50,7 @@ const extensionItems = computed(() => {
     text: t('resourcepack.enable', { count: enabled.value.length }),
   }, {
     icon: isInstanceLinked.value ? 'account_tree' : 'looks_one',
-    title: t('resourcepack.name', 2),
+    title: t('resourcepack.name', 2) + ' ',
     text: isInstanceLinked.value ? t('resourcepack.shared') : t('resourcepack.independent'),
   }]
 })
@@ -58,7 +58,7 @@ const { isLinked } = useService(InstanceResourcePacksServiceKey)
 const { data: isInstanceLinked } = useSWRV(computed(() => path.value), isLinked)
 const {
   keyword, modrinthCategories, curseforgeCategory,
-  modrinth, curseforge, enabled, items, sort, local,
+  modrinth, curseforge, enabled, sort, local,
   isCurseforgeActive, isModrinthActive,
   gameVersion,
 } = injection(kResourcePackSearch)

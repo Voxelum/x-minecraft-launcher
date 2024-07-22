@@ -75,7 +75,7 @@ export default defineComponent({
     const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
 
-    const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)
+    const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled, resourcePacks.enabledSet)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.path, instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
