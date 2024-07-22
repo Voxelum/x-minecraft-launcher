@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="col-span-4">
-        <div>
+        <div v-if="version.downloadCount">
           {{ t('downloadCount', { count: version.downloadCount }) }}
         </div>
         <div

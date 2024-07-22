@@ -167,6 +167,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   const enabled = computed(() => result.value[2])
   const disabled = computed(() => result.value[1])
   const files = computed(() => result.value[0])
+  const enabledSet = computed(() => new Set(result.value[2].map(e => e.id)))
 
   const { editGameSetting } = useService(InstanceOptionsServiceKey)
   function enable(pack: (InstanceResourcePack | string)[]) {
@@ -195,6 +196,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   }
 
   return {
+    enabledSet,
     enabled,
     disabled,
     files,

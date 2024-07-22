@@ -6,7 +6,8 @@
     :has-update="hasUpdate"
     :checked="checked"
     :draggable="draggable"
-    :height="76"
+    :dense="dense"
+    :height="itemHeight"
     :get-context-menu-items="isBuiltIn ? undefined : getContextMenuItems"
     :install="install"
     @drop="emit('drop', $event)"
@@ -62,6 +63,8 @@ const props = defineProps<{
   draggable?: boolean
   selected: boolean
   hasUpdate?: boolean
+  dense?: boolean
+  itemHeight?: number
   install: (p: ProjectEntry) => Promise<void>
 }>()
 

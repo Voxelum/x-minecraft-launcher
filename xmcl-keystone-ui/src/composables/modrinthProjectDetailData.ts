@@ -131,7 +131,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
         disabled: false,
         type: v.version_type as any,
         downloadCount: v.downloads,
-        loaders: v.loaders,
+        loaders: v.loaders || [],
         installed: !!file,
         minecraftVersion: v.game_versions.join(', '),
         createdDate: v.date_published,
@@ -154,7 +154,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
         type: 'release',
         installed: true,
         downloadCount: 0,
-        loaders: (i as ModFile).modLoaders,
+        loaders: (i as ModFile).modLoaders || [],
         minecraftVersion,
         createdDate: '',
       })
