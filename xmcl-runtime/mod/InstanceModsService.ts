@@ -54,9 +54,6 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             }
           }
           state.instanceModUpdates(all)
-          if (all.length > 10) {
-            debouncedRevalidate()
-          }
           if (badResources.length > 0) {
             this.error(new AnyError('InstanceModUpdateError', 'Some resources are not valid', {}, { resources: badResources }))
           }
@@ -121,7 +118,6 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           }
         }
       }
-      const debouncedRevalidate = debounce(revalidate, 500)
 
       const listener = this.resourceService as IResourceService
       const onResourceUpdate = (res: PartialResourceHash[]) => {
@@ -153,14 +149,26 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       }
       state.mods = await scan(basePath)
 
+      let events = 0
       const watcher = watch(basePath, async (event, filePath) => {
         if (shouldIgnoreFile(filePath) || filePath === basePath) return
+
+        events++
+        debouncedRevalidate()
+
         if (event === 'update') {
           processUpdate(filePath)
         } else {
           processRemove(filePath)
         }
       })
+
+      const debouncedRevalidate = debounce(() => {
+        if (events > 10) {
+          revalidate()
+        }
+        events = 0
+      }, 500)
 
       watcher.on('close', () => {
         this.log(`Unwatch on instance mods: ${basePath}`)
