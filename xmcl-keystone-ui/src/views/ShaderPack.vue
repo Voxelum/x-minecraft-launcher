@@ -1,7 +1,7 @@
 <template>
   <MarketBase
     :items="all"
-    :item-height="80"
+    :item-height="itemHeight"
     :plans="{}"
     :error="modrinthError"
     :class="{
@@ -13,15 +13,27 @@
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <v-subheader
         v-if="typeof item === 'string'"
-        class="h-[76px]"
+        :style="{ height: itemHeight + 'px' }"
+        class="flex"
       >
         {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") : t('modInstall.search') }}
+
+        <div class="flex-grow" />
+        <v-btn
+          v-shared-tooltip="_ => t('mod.denseView')"
+          icon
+          @click="denseView = !denseView"
+        >
+          <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
+        </v-btn>
       </v-subheader>
       <ShaderPackItem
         v-else
         :pack="item"
         :selection-mode="selectionMode"
         :selected="selected"
+        :dense="denseView"
+        :item-height="itemHeight"
         :has-update="hasUpdate"
         :checked="checked"
         :install="onInstallProject"
@@ -101,6 +113,8 @@ import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import { useLocalStorageCacheBool } from '@/composables/cache'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const {
   modrinthError,
@@ -222,5 +236,9 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
 )
+
+// dense
+const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
+const itemHeight = computed(() => denseView.value ? 48 : 80)
 
 </script>

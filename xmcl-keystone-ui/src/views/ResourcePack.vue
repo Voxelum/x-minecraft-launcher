@@ -13,6 +13,7 @@
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <v-subheader
         v-if="typeof item === 'string'"
+        class="flex"
         :style="{ height: itemHeight + 'px' }"
       >
         {{
@@ -20,6 +21,14 @@
           item === 'disabled' ? t("resourcepack.unselected") :
           t("modInstall.search")
         }}
+        <div class="flex-grow" />
+        <v-btn
+          v-shared-tooltip="_ => t('mod.denseView')"
+          icon
+          @click="denseView = !denseView"
+        >
+          <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
+        </v-btn>
       </v-subheader>
       <ResourcePackItem
         v-else-if="(typeof item === 'object')"
@@ -119,6 +128,7 @@ import ResourcePackItem from './ResourcePackItem.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
@@ -284,7 +294,7 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 }
 
 // dense
-const denseView = ref(false)
+const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
 const itemHeight = computed(() => denseView.value ? 48 : 76)
 
 </script>
