@@ -1562,7 +1562,7 @@ tutorial:
     Minecraft.
 universalDrop:
   enableModsAfterImport: Включение модов после импорта
-  start: Импорт запущен
+  start: Начать импорт
   title: Перетащите файл(ы) сюда, чтобы импортировать как
   unknownResource: Неизвестно
 update:
