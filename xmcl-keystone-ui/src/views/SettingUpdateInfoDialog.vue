@@ -130,7 +130,12 @@ const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
 const { state } = injection(kSettingsState)
 const updateInfo = computed(() => state.value?.updateInfo)
 const updateStatus = computed(() => state.value?.updateStatus)
-const body = computed(() => state.value?.updateInfo?.useAutoUpdater ? state.value?.updateInfo.body : render(state.value?.updateInfo?.body ?? ''))
+function renderUpdate() {
+  const body = state.value?.updateInfo?.body ?? ''
+  const transformed = body.replace(/## \[(.+)\]\(#.+\)/g, (str, v) => `## ${v}`)
+  return render(transformed)
+}
+const body = computed(() => state.value?.updateInfo?.useAutoUpdater ? state.value?.updateInfo.body : renderUpdate())
 const env = useEnvironment()
 const isAppX = computed(() => env.value?.env === 'appx')
 const isAppImage = computed(() => env.value?.env === 'appimage')
