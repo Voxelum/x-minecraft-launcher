@@ -129,6 +129,9 @@ curseforge:
   search: Search
   totalDownloads: Total Downloads
 curseforgeCard: {}
+curseforgeCategory:
+  Fabric: Fabric
+  Food: Food
 dataMigration:
   apply: Apply Setting
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!

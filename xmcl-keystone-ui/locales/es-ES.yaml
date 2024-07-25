@@ -432,6 +432,8 @@ launchBlocked:
 launchStatus:
   refreshingUser: Actualizar token de usuario
   spawningProcess: ''
+liteloader:
+  name: LiteLoader
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros
@@ -542,6 +544,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x+
     64x: 64x
     8x-: 8x-
@@ -693,6 +696,8 @@ multiplayer:
     Puede descargar o crear una instancia desde la configuración compartida de
     {nombre}.
   sharingNotificationTitle: Un compañero está compartiendo la configuración del juego.
+neoForgedVersion:
+  name: NeoForged
 next: Siguiente
 'no': 'No'
 ok: Aceptar
@@ -975,6 +980,8 @@ settingLabel:
   local: Local
   localHint: Esta configuración está modificada por la instancia actual
 setup:
+  appearance:
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       El directorio de datos no es un directorio .minecraft común. Dado que la

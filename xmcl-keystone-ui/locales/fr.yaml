@@ -777,6 +777,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x
     64x: 64x
     8x-: 8x-
@@ -1009,6 +1010,8 @@ natType:
   symmetricNat: NAT symétrique
   symmetricUDPFirewall: Pare-feu UDP symétrique
   unknown: Inconnu
+neoForgedVersion:
+  name: NeoForged
 next: Suivant
 'no': Non
 ok: OK
@@ -1078,6 +1081,7 @@ resourcepack:
   manage: Gérer les packs de ressources
   name: Pack de Ressources | Packs de Ressources
   searchOnCurseforge: Rechercher {name} dans curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Packs de ressources sélectionnés
   shared: L'instance utilise le dossier du pack de ressources partagé
   showFile: Afficher le pack de ressources dans le dossier {file}

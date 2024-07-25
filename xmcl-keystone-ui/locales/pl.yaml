@@ -136,6 +136,13 @@ curseforge:
   search: Wyszukiwanie
   totalDownloads: Łączna liczba pobrań
 curseforgeCard: {}
+curseforgeCategory:
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Skyblock: SkyBlock
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Zastosuj ustawienia
   directoryCriteriaHint: Upewnij się, że nowa lokalizacja katalogu to pusty katalog!
@@ -656,7 +663,7 @@ minecraftVersion:
   empty: Nie można załadować wersji Minecraft
   name: Wersja Minecraft
   release: Zwolnienie
-  showAlpha: Pokaż migawkę
+  showAlpha: Pokaż snapshot
   snapshot: Migawka
 mod:
   acceptVersion: Akceptuj {version}
@@ -808,6 +815,7 @@ modrinth:
     models: Modele
     modloader: Mod Loader
     multiplayer: Multiplayer
+    name: Kategorie
     neoforge: NeoForge
     optifine: Optifine
     optimization: Optymalizacje
@@ -822,7 +830,7 @@ modrinth:
     realistic: Realistyczny
     reflections: Refleksje
     resolutions: Uchwały
-    rift: Szczelina
+    rift: Rift
     screenshot: Zrzut ekranu
     semi-realistic: Półrealistyczny
     shadows: Cienie
@@ -1377,6 +1385,7 @@ task:
   nTaskRunning: '{count} zadania są uruchomione'
   name: Zadanie | Zadania
   pause: Pauza
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Wybierz obraz
   selectMusic: Wybierz muzykę

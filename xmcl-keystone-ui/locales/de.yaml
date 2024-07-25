@@ -148,6 +148,15 @@ curseforge:
   totalDownloads: Downloads insgesamt
   worlds: {}
 curseforgeCard: {}
+curseforgeCategory:
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Redstone: Redstone
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Einstellungen anwenden
   directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
@@ -697,7 +706,7 @@ minecraftVersion:
   empty: Kann keine Version von Minecraft herunterladen
   name: Minecraft-Version
   release: Freigabe
-  showAlpha: Schnappschuss anzeigen
+  showAlpha: Schnappschuss snapshot
   snapshot: Snapshot
 mod:
   acceptVersion: Akzeptieren {version}
@@ -794,6 +803,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x+
     64x: 64x
     8x-: 8x-
@@ -849,6 +859,7 @@ modrinth:
     modloader: ModLoader
     multiplayer: Multiplayer-Spiel
     name: Kategorien.
+    neoforge: NeoForge
     optifine: Optifine
     optimization: Optimierung
     paper: Paper
@@ -1431,6 +1442,7 @@ task:
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik
