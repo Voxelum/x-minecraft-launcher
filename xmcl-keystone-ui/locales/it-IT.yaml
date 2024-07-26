@@ -234,6 +234,11 @@ duration:
   'yes': Elimina
 edit: Modifica
 enable: Abilita
+env:
+  select:
+    all: Seleziona tutto
+    fit: Seleziona Adatta
+    none: Non selezionare niente
 error:
   name: Errore | Errori
 errors:
@@ -258,6 +263,10 @@ errors:
   HeadersTimeoutError: Timeout intestazione HTTP
   NotFoundError: 404 Non trovato
   SocketError: Errore del socket del server
+eula:
+  body: >-
+    Selezionando il pulsante della casella di controllo, indichi il tuo accordo
+    con {eula} di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -332,7 +341,7 @@ importModpack:
 importResource: Importa risorsa
 install: Installa
 installAssets:
-  asset: Installa Asset {hash}
+  asset: Installa {count} risorse
   assetIndex: Controlla il file di indice degli asset
   name: Installa file di asset
 installAuthlibInjector: Installa authlib-injector
@@ -401,6 +410,7 @@ instance:
   includeVersion: Includi versione | Includi versioni
   lastPlayed: Giocato l'ultima volta
   launchArguments: Anteprima argomenti di avvio
+  launchServer: Avvia il server localhost
   mcOptions: Opzioni Minecraft
   mcOptionsHint: Argomenti di avvio aggiuntivi di Minecraft
   name: Nome profilo
@@ -507,6 +517,7 @@ labyMod:
 launch:
   cancel: Annulla
   kill: Arresta
+  killServer: Uccidi il server Localhost
   launch: Avvia
 launchBlocked:
   ignore: Forza avvio
@@ -689,11 +700,14 @@ mod:
   switchDefaultSource: Sorgente Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
+  checkDependencies: Controlla le dipendenze
   checkUpgrade: Controlla Aggiornamento Mod
+  checkedDependencies: Dipendenze controllate
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
   install: Installa
+  installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
   noVersionSupported: Il mod supporta solo Minecraft {supported}.
@@ -1089,6 +1103,7 @@ save:
     fromProfile: Da altre istanze
     fromResource: Da risorse gestite
     title: Importa salvataggio da fonte gestita
+  createNew: Crea un nuovo mondo
   createdWorlds: Hai {count} mondi
   deleteHint: >-
     Questa operazione non può essere annullata. Si perderanno definitivamente
@@ -1108,6 +1123,7 @@ save:
   name: Salva | Salva
   shared: L'istanza utilizza la cartella di salvataggio condivisa
   showDirectory: Mostra la directory di salvataggio
+saves: {}
 screenshots:
   empty: Non hai screenshot
   goto: Apri cartella
@@ -1124,8 +1140,11 @@ server:
   host: Host
   hostHint: L'host (con porta) del server
   ipAddress: Indirizzo IP
+  maxPlayers: Giocatori massimi
   motd: MOTD server
   name: Server | Server
+  nogui: Nessuna GUI del server
+  onlineMode: Modalità online
   ping: Ping
   pings: Ping
   players: Giocatori

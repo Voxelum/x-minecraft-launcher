@@ -291,6 +291,11 @@ duration:
   second: '{duration} секунда | {duration} секунд'
 edit: Изменить
 enable: Включить
+env:
+  select:
+    all: Выбрать все
+    fit: Выберите «Подогнать»
+    none: Выберите Нет
 error:
   name: Ошибка | Ошибки
 errors:
@@ -315,6 +320,8 @@ errors:
   HeadersTimeoutError: Истекло время ожидания заголовков HTTP
   NotFoundError: 404 Не найдено
   SocketError: Ошибка сокета сервера
+eula:
+  body: Устанавливая флажок, вы подтверждаете свое согласие с {eula} Minecraft.
 exception:
   http: >-
     HTTP-запрос с {url} не выполнен. Код состояния {statusCode}. {code}.
@@ -392,7 +399,7 @@ importModpack:
 importResource: Импортный ресурс
 install: Установить
 installAssets:
-  asset: Установить ресурс {hash}
+  asset: Установить {count} ресурсов
   assetIndex: Проверить файл индекса ресурсов
   name: Установить файлы ресурсов
 installAuthlibInjector: Установить authlib-injector
@@ -459,6 +466,7 @@ instance:
   includeVersion: Включить версию | Включить версии
   lastPlayed: Последняя игра
   launchArguments: Предпросмотр аргументов запуска
+  launchServer: Запустить локальный сервер
   mcOptions: Опции Minecraft
   mcOptionsHint: Дополнительные аргументы запуска Minecraft
   name: Имя экземпляра
@@ -563,6 +571,7 @@ labyMod:
 launch:
   cancel: Отменить
   kill: Остановить
+  killServer: Убить локальный сервер
   launch: Запустить
 launchBlocked:
   ignore: Насильный запуск
@@ -748,11 +757,14 @@ mod:
   switchDefaultSource: Источник контента модов по умолчанию
   toUpdate: '{count} для обновления'
 modInstall:
+  checkDependencies: Проверьте зависимости
   checkUpgrade: Проверить обновления модов
+  checkedDependencies: Проверенные зависимости
   checkedUpgrade: Обновления проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
   install: Установить
+  installDependencies: Установите недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
@@ -960,8 +972,8 @@ modrinthCard:
 multiplayer:
   allowTurn: Разрешить сервер-ретранслятор
   allowTurnHint: >-
-    Включите ретранслятор, если связь напрямую не работает. 
-    Он может замедлить соединение, используйте осторожно.
+    Включите ретранслятор, если связь напрямую не работает.  Он может замедлить
+    соединение, используйте осторожно.
   complete: Завершено
   confirm: Подтвердить
   connections: Соединения
@@ -1015,9 +1027,8 @@ multiplayer:
   joinOrCreateGroupHint: Получите ID группы от пользователя или создайте группу
   kernel: Ядро P2P
   kernelDescription: >-
-    Используйте WebRTC или node-datachannel. 
-    Переключайтесь между ними только если
-    p2p-соединение иногда вызывает ошибку окна запуска.
+    Используйте WebRTC или node-datachannel.  Переключайтесь между ними только
+    если p2p-соединение иногда вызывает ошибку окна запуска.
   leaveGroup: Покинуть группу
   localToken: Локальный токен
   manualConnect: Ручное соединение
@@ -1152,6 +1163,7 @@ save:
     fromProfile: Из других экземпляров
     fromResource: Из управляемых ресурсов
     title: Импорт мира из управляемого источника
+  createNew: Создать новый мир
   createdWorlds: 'Всего миров: {count}'
   deleteHint: >-
     Эта операция не может быть отменена. Вы навсегда потеряете данные этого
@@ -1184,8 +1196,11 @@ server:
   host: Хост
   hostHint: Хост (с портом) сервера
   ipAddress: IP-адрес
+  maxPlayers: Максимум игроков
   motd: Сервер MOTD
   name: Сервер | Серверы
+  nogui: Нет графического интерфейса сервера
+  onlineMode: Онлайн режим
   ping: Пинг
   pings: Пинг
   players: Игроки
@@ -1298,8 +1313,7 @@ setting:
     Данная версия не может быть обновлена автоматически. Пожалуйста, скачайте
     лаунчер с сайта ещё раз!
   maxSockets: Максимум сокетов
-  maxSocketsDescription: >-
-    Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
+  maxSocketsDescription: Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
   maxSocketsTitle: Максимальное количество HTTP-сокетов
   name: Глобальные настройки | Глобальные настройки
   network: Настройки сети
@@ -1339,8 +1353,7 @@ setting:
   themeShareDescription: Вы можете поделиться темой с вашим другом.
   update: Обновить
   useBmclAPI: Использовать BMCL API
-  useBmclAPIDescription: >-
-    Скачайте Minecraft в Китае с помощью BMCL-API
+  useBmclAPIDescription: Скачайте Minecraft в Китае с помощью BMCL-API
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки

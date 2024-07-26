@@ -232,6 +232,11 @@ diagnosis:
     name: Falta el archivo de índice de activos de {version}.
 disable: Desactivar
 downloadUpdate: Descarga de la actualización
+env:
+  select:
+    all: Seleccionar todo
+    fit: Seleccionar Ajustar
+    none: Seleccionar Ninguno
 errors:
   DatabaseNotOpened: |-
     ¡La base de datos no está abierta! 
@@ -239,6 +244,10 @@ errors:
     Seleccione un directorio de datos al que pueda acceder el iniciador. 
     Puede intentar restablecer la raíz de datos en la página de configuración.
   NotFoundError: 404 No encontrado
+eula:
+  body: >-
+    Al marcar el botón de la casilla de verificación, estás indicando que estás
+    de acuerdo con la {eula} de Minecraft.
 fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}
@@ -289,7 +298,7 @@ importModpack:
 importResource: Importar Recurso
 install: Instalar
 installAssets:
-  asset: Instalar Recurso {hash}
+  asset: Instalar {count} recursos
   assetIndex: Verificar Archivos de Índice de Recursos
   name: Instalar Archivos de Recursos
 installAuthlibInjector: Instalar authlib-injector
@@ -356,6 +365,7 @@ instance:
   includeVersion: Incluir Versión | Incluir Versiones
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
+  launchServer: Iniciar el servidor localhost
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
@@ -421,6 +431,8 @@ items:
 java:
   allocatedLong: Usar Java predeterminada del sistema
   allocatedShort: Asignación Automática
+launch:
+  killServer: Matar el servidor localhost
 launchBlocked:
   launchSpawnProcessFailed:
     description: >-
@@ -484,11 +496,14 @@ mod:
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
 modInstall:
+  checkDependencies: Verificar dependencias
   checkUpgrade: Verificar Actualizaciones de Mods
+  checkedDependencies: Dependencias comprobadas
   checkedUpgrade: Actualizaciones verificadas
   currentVersion: Versión Seleccionada
   dependencyHint: 'Otra versión instalada: {version}'
   install: Instalar
+  installDependencies: Instalar dependencias faltantes
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
@@ -788,6 +803,7 @@ save:
     fromProfile: Desde Otras Instancias
     fromResource: Desde Recursos Administrados
     title: Importar Partida desde Fuente Administrada
+  createNew: Crear nuevo mundo
   createdWorlds: Tienes {count} mundos
   deleteHint: >-
     Esta operación no se puede revertir. Perderás estos datos de partida
@@ -806,6 +822,7 @@ save:
   name: Partida Guardada | Partidas Guardadas
   shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado
+saves: {}
 screenshots:
   empty: No tienes capturas de pantalla
   goto: Abrir Carpeta
@@ -822,8 +839,11 @@ server:
   host: Anfitrión
   hostHint: El anfitrión (con puerto) del servidor
   ipAddress: Dirección IP
+  maxPlayers: Jugadores máximos
   motd: MOTD del Servidor
   name: Servidor | Servidores
+  nogui: Sin interfaz gráfica de usuario
+  onlineMode: Modo en línea
   ping: Ping
   pings: Pings
   players: Jugadores

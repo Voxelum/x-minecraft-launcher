@@ -236,16 +236,29 @@ diagnosis:
     name: Falta o arquivo de índice de activos de {version}.
 disable: Desactivar
 downloadUpdate: Descargar actualización
+env:
+  select:
+    all: Seleccionar todo
+    fit: Seleccione Axustar
+    none: Seleccione Ningún
 errors:
   NotFoundError: 404 non atopado
+eula:
+  body: >-
+    Marcando o botón da caixa de verificación, estás a indicar o teu acordo co
+    {eula} de Minecraft.
 importModpack:
   name: Importar Modpack
+instance:
+  launchServer: Inicia o servidor localhost
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 
     O modloader antigo é {modloader} e o novo modloader é {newModloader}.
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
+launch:
+  killServer: Eliminar o servidor Localhost
 launchBlocked:
   launchSpawnProcessFailed:
     description: |-
@@ -261,6 +274,9 @@ mod:
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
+  checkDependencies: Comproba as dependencias
+  checkedDependencies: Dependencias verificadas
+  installDependencies: Instalar dependencias que faltan
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
 modrinth:
@@ -311,9 +327,15 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
+  createNew: Crea un mundo novo
   independent: A instancia utiliza un cartafol de gardados independentes
   shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
+saves: {}
+server:
+  maxPlayers: Máximo xogadores
+  nogui: Sen servidor Gui
+  onlineMode: Modo en liña
 setting:
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.

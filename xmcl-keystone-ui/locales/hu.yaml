@@ -230,6 +230,11 @@ duration:
   second: '{duration} másodperc | {duration} másodperc'
 edit: Szerkesztés
 enable: Engedélyezés
+env:
+  select:
+    all: Mindet kiválaszt
+    fit: Válassza az Illesztés lehetőséget
+    none: Válassza a Nincs lehetőséget
 error:
   name: Hiba | Hiba
 errors:
@@ -252,6 +257,8 @@ errors:
     róla, hogy az Launchernej van írási jogosultsága.
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   SocketError: Kiszolgálói foglalathiba
+eula:
+  body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik a Minecraft {eula}-be.
 exception:
   http: >-
     A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek,
@@ -323,7 +330,7 @@ importModpack:
 importResource: Forrás importálása
 install: Telepítés
 installAssets:
-  asset: Elem telepítése {hash}
+  asset: Telepítsen {count} eszközt
   assetIndex: Elem indexfájl ellenőrzése
   name: Elemek telepítése
 installAuthlibInjector: Authlib-injector telepítése
@@ -392,6 +399,7 @@ instance:
   includeVersion: Verzió beépítése | Verzió beépítése
   lastPlayed: Utoljára játszott
   launchArguments: Indítási argumentumok Előnézet
+  launchServer: Indítsa el a localhost szervert
   mcOptions: Minecraft beállítások
   mcOptionsHint: Kiegészítő Minecraft indítási beállítások
   name: Profil név
@@ -500,6 +508,7 @@ labyMod:
 launch:
   cancel: Mégsem
   kill: Leállítás
+  killServer: Öld meg a Localhost szervert
   launch: Indítás
 launchBlocked:
   ignore: Indítás erőltetve
@@ -683,11 +692,14 @@ mod:
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
 modInstall:
+  checkDependencies: Ellenőrizze a függőségeket
   checkUpgrade: Modok frissítésének ellenőrzése
+  checkedDependencies: Ellenőrzött függőségek
   checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
   install: Telepítés
+  installDependencies: Hiányzó függőségek telepítése
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   installed: Telepítve
   noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.
@@ -1093,6 +1105,7 @@ save:
     fromProfile: Más példányokból
     fromResource: Kezelt forrásokból
     title: Mentés importálása kezelt forrásból
+  createNew: Új világ létrehozása
   createdWorlds: '{count} db világod van'
   deleteHint: >-
     Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre
@@ -1111,6 +1124,7 @@ save:
   name: Mentés | Mentések
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
+saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid
   goto: Mappa megnyitása
@@ -1127,8 +1141,11 @@ server:
   host: Kiszolgáló
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
   ipAddress: IP cím
+  maxPlayers: ''
   motd: Szerver MOTD
   name: Szerver | Szerverek
+  nogui: Nincs Server Gui
+  onlineMode: Online mód
   ping: Ping
   pings: Pingek
   players: Játékosok

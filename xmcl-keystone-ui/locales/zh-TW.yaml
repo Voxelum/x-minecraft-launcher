@@ -264,6 +264,11 @@ duration:
   second: '{duration} 秒'
 edit: 編輯
 enable: 啟用
+env:
+  select:
+    all: 全選
+    fit: 選擇適合的
+    none: 選擇無
 error:
   name: 錯誤 | 錯誤
 errors:
@@ -281,6 +286,8 @@ errors:
   HeadersTimeoutError: 等待 HTTP 頭資訊超時
   NotFoundError: 404 未找到資源
   SocketError: 伺服器連線斷開
+eula:
+  body: 勾選方塊按鈕即表示您同意 Minecraft 的 {eula}。
 exception:
   http: '{url} 的 HTTP 請求失敗。狀態碼 {statusCode}。{code}，請重試或檢查您的網路。如果此問題持續出現，請聯絡開發團隊。'
 existed: 已匯入過的
@@ -345,7 +352,7 @@ importModpack:
 importResource: 匯入資源
 install: 安裝
 installAssets:
-  asset: 下載資原始檔 {hash}
+  asset: 下載 {count} 个資原始檔
   assetIndex: 下載資原始檔目錄
   name: 下載遊戲資原始檔
 installAuthlibInjector: 安裝 authlib-injector
@@ -410,6 +417,7 @@ instance:
   includeVersion: 包含遊戲版本
   lastPlayed: 上次遊玩
   launchArguments: 啟動命令預覽
+  launchServer: 啟動本機主機伺服器
   mcOptions: Minecraft 啟動選項
   mcOptionsHint: 額外的 Minecraft 啟動引數
   name: 名稱
@@ -509,6 +517,7 @@ labyMod:
 launch:
   cancel: 中止
   kill: 停止
+  killServer: 停止本地伺服器
   launch: 啟動
 launchBlocked:
   ignore: 強制啟動
@@ -661,11 +670,14 @@ mod:
   switchDefaultSource: 例項預設的模組下載源
   toUpdate: '{count} 個有新版本'
 modInstall:
+  checkDependencies: 檢查依賴關係
   checkUpgrade: 檢查模組更新
+  checkedDependencies: 已檢查依賴關係
   checkedUpgrade: 已重新整理更新列表
   currentVersion: 已選版本
   dependencyHint: 安裝了其他版本 {version}
   install: 安裝
+  installDependencies: 安裝缺少的依賴項
   installHint: 安裝 {file} 個檔案和 {dependencies} 個依賴檔案
   installed: 已安裝
   noVersionSupported: Mod 僅支援 Minecraft {supported}。
@@ -1018,6 +1030,7 @@ save:
     fromProfile: 來自其他啟動配置
     fromResource: 來自已匯入資源
     title: 從已有資源匯入存檔
+  createNew: 新存档
   createdWorlds: 建立了 {count} 個世界
   deleteHint: 該操作不可逆，您將永遠失去這個存檔的記錄，您確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
@@ -1034,6 +1047,7 @@ save:
   name: 地圖存檔 | 地圖存檔
   shared: 實例使用共享存档資料夾
   showDirectory: 顯示儲存目錄
+saves: {}
 screenshots:
   empty: 您還沒有截圖
   goto: 顯示資料夾
@@ -1050,8 +1064,11 @@ server:
   host: 伺服器地址
   hostHint: 伺服器的 IP 地址（和埠號）
   ipAddress: IP 地址
+  maxPlayers: 最大玩家數
   motd: 伺服器 MOTD
   name: 伺服器名
+  nogui: 無伺服器 GUI
+  onlineMode: 線上模式
   ping: Ping 伺服器
   pings: 延遲
   players: 玩家
@@ -1251,6 +1268,8 @@ shaderPack:
   selectSearchHint: 檢視已選擇的光影包
   showDirectory: 顯示光影資料夾
   showFile: 在資料夾中顯示此光影包
+shared:
+  accept: 接受
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

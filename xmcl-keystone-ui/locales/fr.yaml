@@ -274,6 +274,11 @@ duration:
     {duration} minutes
   second: '{duration} seconde | {duration} secondes'
 edit: Éditer
+env:
+  select:
+    all: Tout sélectionner
+    fit: Sélectionnez Ajuster
+    none: Ne rien sélectionner
 error:
   name: |-
     Erreur | 
@@ -298,6 +303,8 @@ errors:
   HeadersTimeoutError: Délai d'expiration du Header HTTP
   NotFoundError: 404 introuvable
   SocketError: Erreur de socket du serveur
+eula:
+  body: En cochant la case, vous indiquez votre accord avec {eula} de Minecraft.
 exception:
   http: >-
     La requête HTTP à {url} a échoué. Code d'état {statusCode}. {code}. Veuillez
@@ -366,7 +373,7 @@ importModpack:
 importResource: Importer une ressource
 install: Installer
 installAssets:
-  asset: Installer l'asset {hash}
+  asset: "Installer {count}\_éléments"
   assetIndex: Vérifier le fichier d'index des assets
   name: Installer les fichiers d'assets
 installAuthlibInjector: Installer authlib-injecteur
@@ -432,6 +439,7 @@ instance:
     Inclure les versions
   lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
+  launchServer: Lancer le serveur localhost
   mcOptions: Options Minecraft
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil
@@ -535,6 +543,7 @@ java:
   refresh: Actualiser l'exécutable Java Local
   systemMemory: Mémoire Système Actuelle
 launch:
+  killServer: Tuer le serveur Localhost
   launch: Jouer
 launchBlocked:
   ignore: Forcer le Lancement
@@ -724,7 +733,10 @@ mod:
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
 modInstall:
+  checkDependencies: Vérifier les dépendances
+  checkedDependencies: Dépendances vérifiées
   install: Installer
+  installDependencies: Installer les dépendances manquantes
   installed: Installé
   noVersionSupported: Le mod prend uniquement en charge Minecraft {supported}.
   recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
@@ -1106,6 +1118,7 @@ save:
     fromProfile: À partir d'autres instances
     fromResource: À partir des ressources gérées
     title: Importer la sauvegarde à partir de la source gérée
+  createNew: Créer un nouveau monde
   createdWorlds: Vous avez {count} mondes
   deleteHint: |-
     Cette opération ne peut pas être annulée. 
@@ -1125,6 +1138,7 @@ save:
   name: Sauvegarde | Sauvegardes
   shared: L'instance utilise le dossier de sauvegarde partagé
   showDirectory: Afficher le répertoire de sauvegarde
+saves: {}
 screenshots:
   empty: Vous n'avez pas de capture d'écran
   goto: Ouvrir Dossier
@@ -1141,8 +1155,11 @@ server:
   host: Héberger
   hostHint: L'hôte (avec le port) du serveur
   ipAddress: Adresse IP
+  maxPlayers: Le maximum de joueurs
   motd: Serveur MOTD
   name: Serveur | Serveurs
+  nogui: Pas d'interface graphique du serveur
+  onlineMode: Mode en ligne
   ping: Ping
   pings: Pings
   players: Joueurs

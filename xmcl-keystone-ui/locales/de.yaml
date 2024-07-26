@@ -267,6 +267,11 @@ duration:
   second: '{duration} zweite | {duration} zweiten'
 edit: bearbeiten
 enable: Aktivieren Sie
+env:
+  select:
+    all: Wählen Sie Alle
+    fit: Wählen Sie „Anpassen“.
+    none: Nichts ausgewählt
 error:
   name: Fehler | Fehler
 errors:
@@ -297,6 +302,10 @@ errors:
   HeadersTimeoutError: HTTP-Header-Zeitüberschreitung ist aufgetreten
   NotFoundError: 404 Nicht gefunden
   SocketError: Server-Socket-Fehler
+eula:
+  body: >-
+    Indem Sie das Kontrollkästchen aktivieren, erklären Sie sich mit der {eula}
+    von Minecraft einverstanden.
 exception:
   http: >-
     HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}.
@@ -371,7 +380,7 @@ importModpack:
 importResource: Importieren einer Ressource
 install: Installieren Sie
 installAssets:
-  asset: Asset setzen {hash}
+  asset: Installieren Sie {count} Assets
   assetIndex: Prüfen Sie die Asset-Indexdatei
   name: Asset-Dateien installieren
 installAuthlibInjector: Installieren Sie  authlib-injector
@@ -440,6 +449,7 @@ instance:
   includeVersion: Version freigeben | Versionen freigeben
   lastPlayed: Das letzte Mal spielten sie
   launchArguments: Vorschau der Startargumente
+  launchServer: Starten Sie den Localhost-Server
   mcOptions: Minecraft Einstellungen
   mcOptionsHint: Zusätzliche Anweisungen zum Starten von Minecraft
   name: Profilname
@@ -548,6 +558,7 @@ labyMod:
 launch:
   cancel: Ablehnen
   kill: Stopp
+  killServer: Töte den Localhost-Server
   launch: Los geht's
 launchBlocked:
   ignore: Erzwungener Start
@@ -741,11 +752,14 @@ mod:
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
 modInstall:
+  checkDependencies: Abhängigkeiten prüfen
   checkUpgrade: Prüfen Sie auf Aktualisierungen von Änderungen
+  checkedDependencies: Überprüfte Abhängigkeiten
   checkedUpgrade: Aktualisierung geprüft
   currentVersion: Ausgewählte Version
   dependencyHint: Eine andere Version ist installiert {version}
   install: Installieren Sie
+  installDependencies: Fehlende Abhängigkeiten installieren
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.
@@ -1151,6 +1165,7 @@ save:
     fromProfile: Aus anderen Beispielen
     fromResource: Aus verwalteten Ressourcen
     title: Importieren einer Sicherung aus einer verwalteten Quelle
+  createNew: Erschaffe eine neue Welt
   createdWorlds: 'Ihre Welten: {count}'
   deleteHint: >-
     Dieser Vorgang kann nicht abgebrochen werden. Die gespeicherten Daten gehen
@@ -1170,6 +1185,7 @@ save:
   name: Speichern | Speichern
   shared: Instanz verwendet freigegebenen Speicherordner
   showDirectory: Speicherverzeichnis anzeigen
+saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos
   goto: Öffnen Sie den Ordner
@@ -1186,8 +1202,11 @@ server:
   host: Gastgeber
   hostHint: Server-Host (mit Port)
   ipAddress: IP-Adressen
+  maxPlayers: Maximale Spieleranzahl
   motd: Beschreibung des Servers
   name: Server | Server
+  nogui: Keine Server-GUI
+  onlineMode: Onlinemodus
   ping: Ping
   pings: Pings
   players: Spieler.

@@ -246,6 +246,11 @@ duration:
   second: '{duration} drugi | {duration} sekundy'
 edit: Edytuj
 enable: Włącz
+env:
+  select:
+    all: Zaznacz wszystko
+    fit: Wybierz Dopasuj
+    none: Wybierz opcję Brak
 error:
   name: Błąd | Błędy
 errors:
@@ -269,6 +274,8 @@ errors:
   HeadersTimeoutError: Limit czasu nagłówka HTTP
   NotFoundError: 404 Nie znaleziono
   SocketError: Błąd gniazda serwera
+eula:
+  body: Zaznaczając przycisk pola wyboru, wyrażasz zgodę na {eula} gry Minecraft.
 exception:
   http: >-
     Żądanie HTTP do {url} nie powiodło się. Kod statusu {statusCode}. {code}.
@@ -342,7 +349,7 @@ importModpack:
 importResource: Import zasobów
 install: Instalacja
 installAssets:
-  asset: Zainstaluj zasób {hash}
+  asset: 'Zainstaluj zasoby: {count}'
   assetIndex: Sprawdź plik indeksu aktywów
   name: Instalowanie plików zasobów
 installAuthlibInjector: Zainstaluj authlib-injector
@@ -411,6 +418,7 @@ instance:
   includeVersion: Dołącz wersję | Dołącz wersje
   lastPlayed: Ostatnio grane
   launchArguments: Podgląd uruchamiania argumentów
+  launchServer: Uruchom serwer localhost
   mcOptions: Opcje Minecraft
   mcOptionsHint: Dodatkowe poprawki dotyczące uruchomienia gry Minecraft
   name: Nazwa profilu
@@ -519,6 +527,7 @@ labyMod:
 launch:
   cancel: Anuluj
   kill: Stop
+  killServer: Zabij serwer Localhost
   launch: Uruchomienie
 launchBlocked:
   ignore: Force Launch
@@ -698,11 +707,14 @@ mod:
   switchDefaultSource: Domyślne źródło modów
   toUpdate: '{count} aktualizować'
 modInstall:
+  checkDependencies: Sprawdź zależności
   checkUpgrade: Sprawdź aktualizację modów
+  checkedDependencies: Sprawdzone zależności
   checkedUpgrade: Aktualizacja sprawdzona
   currentVersion: Wybrana wersja
   dependencyHint: Zainstalowana inna wersja {version}
   install: Instalacja
+  installDependencies: Zainstaluj brakujące zależności
   installHint: Zainstaluje się {file} plik z {dependencies} zależności
   installed: Zainstalowany
   noVersionSupported: Mod obsługuje tylko Minecrafta {supported}.
@@ -1099,6 +1111,7 @@ save:
     fromProfile: Z innych instancji
     fromResource: Z zarządzanych zasobów
     title: Importuj zapis z zarządzanego źródła
+  createNew: Stworzyć nowy świat
   createdWorlds: Masz {count} światów
   deleteHint: >-
     Tej operacji nie można przywrócić. Zapisane dane zostaną utracone na zawsze.
@@ -1117,6 +1130,7 @@ save:
   name: Save | Saves
   shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu
+saves: {}
 screenshots:
   empty: Nie masz zrzutów ekranu
   goto: Otwórz folder
@@ -1133,8 +1147,11 @@ server:
   host: Host
   hostHint: Host (z portem) serwera
   ipAddress: Adres IP
+  maxPlayers: Maksimum graczy
   motd: MOTD serwera
   name: Serwer | Serwery
+  nogui: Brak interfejsu graficznego serwera
+  onlineMode: Tryb online
   ping: Ping
   pings: Pings
   players: Gracze

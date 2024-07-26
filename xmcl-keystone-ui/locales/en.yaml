@@ -229,6 +229,11 @@ duration:
   second: '{duration} second | {duration} seconds'
 edit: Edit
 enable: Enable
+env:
+  select:
+    all: Select All
+    fit: Select Fit
+    none: Select None
 error:
   name: Error | Errors
 errors:
@@ -251,6 +256,10 @@ errors:
   HeadersTimeoutError: HTTP Header timeout
   NotFoundError: 404 Not Found
   SocketError: Server socket error
+eula:
+  body: >-
+    By check the checkbox button, you are indicating your agreement to
+    Minecraft's {eula}.
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
@@ -328,7 +337,7 @@ importModpack:
 importResource: Import Resource
 install: Install
 installAssets:
-  asset: Install Asset {hash}
+  asset: Install {count} Assets
   assetIndex: Check Assets Index File
   name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
@@ -393,6 +402,7 @@ instance:
   includeVersion: Include Version | Include Versions
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
+  launchServer: Launch localhost server
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arugments
   name: Profile Name
@@ -497,6 +507,7 @@ labyMod:
 launch:
   cancel: Cancel
   kill: Stop
+  killServer: Kill Localhost Server
   launch: Launch
 launchBlocked:
   ignore: Force Launch
@@ -669,11 +680,14 @@ mod:
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} to update'
 modInstall:
+  checkDependencies: Check Dependencies
   checkUpgrade: Check Mods Update
+  checkedDependencies: Checked Dependencies
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   install: Install
+  installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   noVersionSupported: Mod only support Minecraft {supported}.
@@ -1064,6 +1078,7 @@ save:
     fromProfile: From Other Instances
     fromResource: From Managed Resources
     title: Import Save from Managed Source
+  createNew: Create New World
   createdWorlds: You have {count} worlds
   deleteHint: >-
     This operation cannot be revert. You will lose this save data forever. Are
@@ -1082,6 +1097,7 @@ save:
   name: Save | Saves
   shared: Instance use shared saves folder
   showDirectory: Show saves directory
+saves: {}
 screenshots:
   empty: You don't have screenshots
   goto: Open Folder
@@ -1098,8 +1114,11 @@ server:
   host: Host
   hostHint: The host (with port) of the server
   ipAddress: IP Address
+  maxPlayers: Max Players
   motd: Server MOTD
   name: Server | Servers
+  nogui: No Server Gui
+  onlineMode: Online Mode
   ping: Ping
   pings: Pings
   players: Players
