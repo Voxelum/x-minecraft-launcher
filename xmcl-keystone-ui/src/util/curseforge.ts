@@ -1,5 +1,5 @@
-import { File, FileModLoaderType, FileRelationType } from '@xmcl/curseforge'
-import { RuntimeVersions } from '@xmcl/runtime-api'
+import { File, FileModLoaderType, FileRelationType, HashAlgo } from '@xmcl/curseforge'
+import { InstanceFile, RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
 import { ModLoaderFilter } from '@/composables/modSearch'
 
@@ -46,4 +46,18 @@ export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, 
             ? FileModLoaderType.NeoForge
             : FileModLoaderType.Any
   return modLoaderType
+}
+
+export function getInstanceFileFromCurseforgeFile(file: File): InstanceFile {
+  return {
+    path: `mods/${(file.fileName)}`,
+    hashes: {
+      sha1: file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
+    },
+    size: file.fileLength,
+    curseforge: {
+      projectId: file.modId,
+      fileId: file.id,
+    },
+  }
 }

@@ -13,6 +13,7 @@ export type InstanceInstallOptions = {
 } | {
   type: 'updates'
   updates: InstanceFileUpdate[]
+  id: string
 }
 
 export const InstanceInstallDialog: DialogKey<InstanceInstallOptions> = 'instance-install'

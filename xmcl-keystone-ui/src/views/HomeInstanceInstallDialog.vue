@@ -122,6 +122,7 @@
         <InstanceManifestFileTree
           v-model="selected"
           open-all
+          selectable
           :multiple="false"
         >
           <template #default="{ item }">
@@ -169,7 +170,7 @@ import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
-import { InstanceInstallDialog } from '@/composables/instanceUpdate'
+import { InstanceInstallDialog, InstanceInstallOptions } from '@/composables/instanceUpdate'
 import { kInstances } from '@/composables/instances'
 import { kJavaContext } from '@/composables/java'
 import { useVuetifyColor } from '@/composables/vuetify'
@@ -183,8 +184,8 @@ import { useDialog } from '../composables/dialog'
 
 const selected = ref([] as string[])
 
-const { isShown, parameter } = useDialog(InstanceInstallDialog, () => {
-  refresh()
+const { isShown } = useDialog(InstanceInstallDialog, (parm) => {
+  refresh(parm)
 }, () => {
   upgrade.value = undefined
 })
@@ -198,6 +199,7 @@ const { t } = useI18n()
 const upgrade = ref(undefined as undefined | {
   instance?: EditInstanceOptions
   files: InstanceFileUpdate[]
+  id?: string
 })
 
 const tOperations = computed(() => ({
@@ -261,8 +263,7 @@ const { leaves } = provideFileNodes(result)
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
 const { all: javas } = injection(kJavaContext)
-const { refresh, refreshing, error } = useRefreshable(async () => {
-  const param = parameter.value
+const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
   if (!param) {
     return
   }
@@ -306,7 +307,12 @@ const { refresh, refreshing, error } = useRefreshable(async () => {
   } else if (param.type === 'updates') {
     upgrade.value = {
       files: param.updates,
+      id: param.id,
     }
+  }
+
+  if (upgrade.value) {
+    selected.value = upgrade.value.files.map(f => f.file.path)
   }
 })
 
@@ -333,11 +339,14 @@ const loaderDifferences = computed(() => {
 
 const confirm = async () => {
   if (upgrade.value) {
-    const { instance, files } = upgrade.value
+    const { instance, files, id } = upgrade.value
     isShown.value = false
+    const select = selected.value
+    const filtered = files.filter(f => f.operation !== 'keep' && select.includes(f.file.path))
     await installInstanceFiles({
       path: instancePath.value,
-      files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
+      files: filtered.map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
+      id,
     })
     if (instance) {
       await edit({
