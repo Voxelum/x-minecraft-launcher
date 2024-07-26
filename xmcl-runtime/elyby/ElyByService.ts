@@ -3,15 +3,14 @@ import { ElyByServiceKey, ElyByService as IElyByService } from '@xmcl/runtime-ap
 import { open, openEntryReadStream, walkEntriesGenerator } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import { ensureDir, readFile, stat, writeFile } from 'fs-extra'
+import { dirname } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
-import { request } from 'undici'
 import { ResourceWorker, kResourceWorker } from '~/resource'
 import { AnyError } from '~/util/error'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '../app'
 import { AbstractService, ExposeServiceKey } from '../service'
 import caches from './cache.json'
-import { dirname } from 'path'
 
 @ExposeServiceKey(ElyByServiceKey)
 export class ElyByService extends AbstractService implements IElyByService {
@@ -62,8 +61,8 @@ export class ElyByService extends AbstractService implements IElyByService {
     }
 
     const url = `https://ely.by/minecraft/system/${resolvedVersion}.zip`
-    const resp = await request(url)
-    const buf = await resp.body.arrayBuffer()
+    const resp = await this.app.fetch(url)
+    const buf = await resp.arrayBuffer()
     const zip = await open(Buffer.from(buf))
     for await (const e of walkEntriesGenerator(zip)) {
       if (e.fileName.endsWith('.jar')) {

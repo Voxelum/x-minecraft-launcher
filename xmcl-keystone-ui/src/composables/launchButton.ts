@@ -1,17 +1,18 @@
 import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
+import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
-import { LaunchStatusDialogKey } from './launch'
-import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
-import { kInstanceJavaDiagnose } from './instanceJavaDiagnose'
-import { kInstanceFilesDiagnose } from './instanceFilesDiagnose'
-import { kUserDiagnose } from './userDiagnose'
-import { kLaunchTask } from './launchTask'
-import { kInstanceFiles } from './instanceFiles'
-import { kInstanceVersion } from './instanceVersion'
 import { kInstance } from './instance'
+import { kInstanceFiles } from './instanceFiles'
+import { useInstanceFilesDiagnose } from './instanceFilesDiagnose'
+import { useInstanceJavaDiagnose } from './instanceJavaDiagnose'
 import { kInstanceLaunch } from './instanceLaunch'
+import { kInstanceVersion } from './instanceVersion'
+import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
+import { LaunchStatusDialogKey } from './launch'
+import { kLaunchTask } from './launchTask'
+import { useUserDiagnose } from './userDiagnose'
 
 export interface LaunchMenuItem {
   title: string
@@ -22,17 +23,20 @@ export interface LaunchMenuItem {
   onClick?: () => void
 }
 
+export const kLaunchButton: InjectionKey<ReturnType<typeof useLaunchButton>> = Symbol('LaunchButton')
+
 export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
 
   const { path } = injection(kInstance)
   const { isValidating } = injection(kInstances)
-  const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionDiagnose)
-  const { issue: javaIssue, fix: fixJavaIssue } = injection(kInstanceJavaDiagnose)
-  const { issue: filesIssue, fix: fixInstanceFileIssue } = injection(kInstanceFilesDiagnose)
-  const { issue: userIssue, fix: fixUserIssue } = injection(kUserDiagnose)
-  const { status, pause, resume } = injection(kLaunchTask)
   const { isValidating: refreshingFiles, mutate } = injection(kInstanceFiles)
+
+  const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
+  const { issue: javaIssue, fix: fixJavaIssue } = useInstanceJavaDiagnose()
+  const { issue: filesIssue, fix: fixInstanceFileIssue } = useInstanceFilesDiagnose()
+  const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
+  const { status, pause, resume } = injection(kLaunchTask)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
   const { launch, launching, count, kill } = injection(kInstanceLaunch)
 
@@ -147,7 +151,7 @@ export function useLaunchButton() {
     isValidating.value ||
     dirty.value)
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
-  const menuItems = computed<LaunchMenuItem[]>(() => launchButtonFacade.value.menu || [])
+  const menuItems = computed<LaunchMenuItem[]>(() => dirty.value ? [] : launchButtonFacade.value.menu || [])
 
   /**
    * The button click listener.

@@ -152,7 +152,7 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
   f => emit('disable', f),
 )
 
-const onDelete = async () => {
+const onDelete = () => {
   innerUpdating.value = true
   emit('uninstall', props.installed)
 }

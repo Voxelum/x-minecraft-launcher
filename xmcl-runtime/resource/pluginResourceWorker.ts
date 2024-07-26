@@ -1,14 +1,14 @@
-import { LauncherAppPlugin } from '~/app'
-import { createLazyWorker } from '../worker'
-import createResourceWorker from './resource.worker?worker'
-import createDbWorker from '../sql/sqlite.worker?worker'
-import { kResourceDatabaseOptions, ResourceWorker, kResourceWorker } from './worker'
+import { existsSync, rmSync } from 'fs'
+import { Database } from 'node-sqlite3-wasm'
 import { join } from 'path'
-import { DatabaseWorker } from '~/sql/type'
+import { LauncherAppPlugin } from '~/app'
 import { kFlights } from '~/flights'
 import { SqliteWASMDialectConfig } from '~/sql'
-import { Database } from 'node-sqlite3-wasm'
-import { existsSync, rmdirSync } from 'fs'
+import { DatabaseWorker } from '~/sql/type'
+import createDbWorker from '../sql/sqlite.worker?worker'
+import { createLazyWorker } from '../worker'
+import createResourceWorker from './resource.worker?worker'
+import { kResourceDatabaseOptions, kResourceWorker, ResourceWorker } from './worker'
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('ResourceWorker')
@@ -35,8 +35,8 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     }
   }
   try {
-    if (existsSync(dbPath)) {
-      rmdirSync(dbPath, { recursive: true })
+    if (existsSync(dbPath + '.lock')) {
+      rmSync(dbPath, { recursive: true })
     }
   } catch { }
   app.registry.register(kResourceDatabaseOptions, config)

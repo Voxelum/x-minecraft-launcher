@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header sticky mb-0 flex max-w-full flex-1 flex-grow-0 select-none flex-col transition-all"
+    class="header sticky max-w-full select-none transition-all"
     :class="{
       'backdrop-filter': !isInFocusMode,
       'backdrop-blur-sm': !isInFocusMode,
@@ -11,56 +11,60 @@
     @wheel.stop
   >
     <div
-      class="align-center flex max-h-20 w-full flex-1 flex-grow-0 items-baseline px-6"
+      class="flex flex-col header-content"
+      style="margin: auto"
     >
-      <span
-        :style="{
-          fontSize: headerFontSize
-        }"
-        class="text-shadow-lg overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
-      >{{ name || `Minecraft ${version.minecraft}` }}</span>
-      <router-view name="route" />
-      <AvatarItem
-        v-if="isResolvedVersion(resolvedVersion)"
-        v-ripple
-        icon="fact_check"
-        class="ml-2 cursor-pointer"
-        :title="t('version.name', 2)"
-        :text="currentVersion"
-        @click="onShowLocalVersion"
-      />
-      <AvatarItem
-        v-else
-        color="warning"
-        icon="fact_check"
-        class="ml-2"
-        :title="t('version.name', 2)"
-        :text="currentVersion"
-      />
-      <div class="flex-grow" />
+      <div
+        class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline px-6"
+      >
+        <span
+          :style="{
+            fontSize: headerFontSize
+          }"
+          class="text-shadow-lg overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
+        >{{ name || `Minecraft ${version.minecraft}` }}</span>
+        <router-view name="route" />
+        <AvatarItem
+          v-if="versionId"
+          v-ripple
+          icon="fact_check"
+          class="ml-2 cursor-pointer"
+          :title="t('version.name', 2)"
+          :text="currentVersion"
+          @click="onShowLocalVersion"
+        />
+        <AvatarItem
+          v-else
+          color="warning"
+          icon="fact_check"
+          class="ml-2"
+          :title="t('version.name', 2)"
+          :text="currentVersion"
+        />
+        <div class="flex-grow" />
+        <transition
+          name="slide-x-transition"
+          mode="out-in"
+        >
+          <router-view name="actions" />
+        </transition>
+      </div>
       <transition
-        name="slide-x-transition"
+        name="slide-y-reverse-transition"
         mode="out-in"
       >
-        <router-view name="actions" />
+        <router-view
+          name="extensions"
+          class="pl-4 pr-6"
+          :class="{
+            'mt-5': !compact,
+            'mt-3': compact,
+          }"
+        />
       </transition>
     </div>
-    <transition
-      name="slide-y-reverse-transition"
-      mode="out-in"
-    >
-      <router-view
-        name="extensions"
-        class="pl-4 pr-6"
-        :class="{
-          'mt-5': !compact,
-          'mt-3': compact,
-        }"
-      />
-    </transition>
-
     <v-divider
-      class="transition-all"
+      class="transition-all divider"
       :class="{
         'mx-4': !compact,
       }"
@@ -72,19 +76,19 @@
 import AvatarItem from '@/components/AvatarItem.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { isResolvedVersion, kInstanceVersion } from '@/composables/instanceVersion'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { VersionServiceKey } from '@xmcl/runtime-api'
 
 const { name, runtime: version } = injection(kInstance)
-const { resolvedVersion } = injection(kInstanceVersion)
+const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
-const currentVersion = computed(() => !isResolvedVersion(resolvedVersion.value) ? t('version.notInstalled') : resolvedVersion.value.id)
+const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {
   if (compact.value) {
@@ -97,8 +101,8 @@ const headerFontSize = computed(() => {
 })
 
 const onShowLocalVersion = () => {
-  if (isResolvedVersion(resolvedVersion.value)) {
-    showVersionDirectory(resolvedVersion.value?.id)
+  if (versionId.value) {
+    showVersionDirectory(versionId.value)
   }
 }
 
@@ -112,4 +116,22 @@ const onShowLocalVersion = () => {
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* .header-content {
+  max-width: 1300px;
+  width: 1220px;
+}
+
+.divider {
+  margin-top: 10px;
+}
+
+@media screen and (max-width: 1300px) {
+  .header-content {
+    max-width: 100%;
+  }
+
+  .divider {
+    margin-top: 0px;
+  }
+} */
 </style>

@@ -13,9 +13,11 @@
         :value="keyword"
         :placeholder="placeholder"
         :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
+        :category="!!curseforgeCategory || modrinthCategories.length > 0"
         @clear="onClear"
         @clear-version="emit('update:gameVersion', runtime.minecraft)"
         @input="emit('update:keyword', $event)"
+        @clear-category="onClear"
       />
     </template>
     <v-card

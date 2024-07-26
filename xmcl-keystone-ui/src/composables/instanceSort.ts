@@ -7,23 +7,30 @@ export function useSortedInstance(instances: Ref<Instance[]>) {
   const unordered = instances
   const sorted = computed(() => unordered.value.slice().reverse().sort((a, b) => ordered.value.indexOf(a.path) - ordered.value.indexOf(b.path)))
 
-  const setToPrevious = (instancePath: string, pivot: string) => {
+  const moveInstanceTo = (instancePath: string, pivot: string, previous?: boolean) => {
     const targetIndex = sorted.value.findIndex(v => v.path === pivot)
-    const result = [] as string[]
+    const newOrders = [] as string[]
     for (let i = 0; i < sorted.value.length; i++) {
       const current = sorted.value[i]
-      if (i === targetIndex) {
-        result.push(instancePath)
+      if (previous) {
+        if (i === targetIndex) {
+          newOrders.push(instancePath)
+        }
       }
       if (current.path !== instancePath) {
-        result.push(current.path)
+        newOrders.push(current.path)
+      }
+      if (!previous) {
+        if (i === targetIndex) {
+          newOrders.push(instancePath)
+        }
       }
     }
-    ordered.value = result
+    ordered.value = newOrders
   }
 
   return {
     instances: sorted,
-    setToPrevious,
+    moveInstanceTo,
   }
 }

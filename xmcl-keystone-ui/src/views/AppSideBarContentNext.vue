@@ -17,7 +17,7 @@
         v-for="(i, index) of instances"
         :key="i.path + ' ' + index"
         :instance="i"
-        @drop="setToPrevious($event, i.path)"
+        @arrange="moveInstanceTo($event.targetPath, i.path, $event.previous)"
         @drop-save="onCopySave"
       />
 
@@ -79,7 +79,7 @@ import { useNotifier } from '@/composables/notifier'
 
 const { t } = useI18n()
 
-const { instances, setToPrevious, isValidating, selectedInstance } = injection(kInstances)
+const { instances, moveInstanceTo, isValidating, selectedInstance } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
 

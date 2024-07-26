@@ -121,9 +121,11 @@ import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { kInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
+import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstances } from '@/composables/instances'
 import { kJavaContext } from '@/composables/java'
+import { useNotifier } from '@/composables/notifier'
+import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
@@ -133,8 +135,6 @@ import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
-import { useNotifier } from '@/composables/notifier'
-import { kPeerShared } from '@/composables/peers'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
@@ -296,7 +296,7 @@ provide(kInstanceCreation, creation)
 
 // Install
 const router = useRouter()
-const { fix } = injection(kInstanceVersionDiagnose)
+const { fix } = injection(kInstanceVersionInstall)
 const onCreate = async () => {
   await create((newPath) => {
     path.value = newPath

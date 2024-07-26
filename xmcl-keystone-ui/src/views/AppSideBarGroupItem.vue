@@ -19,12 +19,10 @@
           </div>
         </div>
         <v-list-item
-          v-context-menu="getItems"
           push
           link
           draggable
           class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-          :class="{ 'v-list-item--active': path === instance.path }"
           v-on="tooltip"
           @click="navigate"
           @dragover.prevent
@@ -40,67 +38,31 @@
             class="transition-all duration-300 hover:rounded"
             large
           >
-            <v-img
+            <v-sheet
               v-if="!dragging"
-              width="54"
-              height="54"
-              :src="favicon"
-              @dragenter="onDragEnter"
-              @dragleave="onDragLeave"
-            />
+              color="rgba(20,30,100,0.5)"
+              class="grid cols-2 rows-2 gap-[2px] p-[2px]"
+            >
+              <v-img
+                v-for="i in instance.slice(0, 4)"
+                :key="i.path"
+                :style="{ maxHeight: '20px', maxWidth: '20px' }"
+                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+                @dragenter="onDragEnter"
+                @dragleave="onDragLeave"
+              />
+            </v-sheet>
+
             <v-skeleton-loader
               v-else
               type="avatar"
             />
           </v-list-item-avatar>
-          <v-list-item-title>{{ instance.name }}</v-list-item-title>
+          <v-list-item-title>123</v-list-item-title>
         </v-list-item>
       </div>
     </template>
-    {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
-    <div>
-      <v-avatar size="28">
-        <img :src="'http://launcher/icons/minecraft'">
-      </v-avatar>
-      {{ instance.runtime.minecraft }}
-
-      <span v-if="instance.runtime.forge">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/forge'">
-        </v-avatar>
-        {{ instance.runtime.forge }}
-      </span>
-      <span v-if="instance.runtime.labyMod">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/labyMod'">
-        </v-avatar>
-        {{ instance.runtime.labyMod }}
-      </span>
-      <span v-if="instance.runtime.neoForged">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/neoForged'">
-        </v-avatar>
-        {{ instance.runtime.neoForged }}
-      </span>
-      <span v-if="instance.runtime.fabricLoader">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/fabric'">
-        </v-avatar>
-        {{ instance.runtime.fabricLoader }}
-      </span>
-      <span v-if="instance.runtime.quiltLoader">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/quilt'">
-        </v-avatar>
-        {{ instance.runtime.quiltLoader }}
-      </span>
-      <span v-if="instance.runtime.optifine">
-        <v-avatar size="28">
-          <img :src="'http://launcher/icons/optifine'">
-        </v-avatar>
-        {{ instance.runtime.optifine }}
-      </span>
-    </div>
+    {{ instance.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`).join(', ') }}
   </v-tooltip>
 </template>
 <script lang="ts" setup>
@@ -112,46 +74,46 @@ import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
 
-const props = defineProps<{ instance: Instance }>()
+const props = defineProps<{ instance: Instance[] }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])
 
 const router = useRouter()
 const { t } = useI18n()
 
 const { select, path } = injection(kInstance)
-const { status } = useInstanceServerStatus(computed(() => props.instance))
 
 const dragging = ref(false)
 const dragover = ref(0)
 
-const favicon = computed(() => getInstanceIcon(props.instance, props.instance.server ? status.value : undefined))
+// const { status } = useInstanceServerStatus(computed(() => props.instance))
+// const favicon = computed(() => getInstanceIcon(props.instance, props.instance.server ? status.value : undefined))
 
-const getItems = useInstanceContextMenuItems(computed(() => props.instance))
+// const getItems = useInstanceContextMenuItems(computed(() => props.instance))
 
 const navigate = () => {
-  if (router.currentRoute.path !== '/') {
-    router.push('/').then(() => {
-      select(props.instance.path)
-    })
-  } else {
-    select(props.instance.path)
-  }
+  // if (router.currentRoute.path !== '/') {
+  //   router.push('/').then(() => {
+  //     select(props.instance.path)
+  //   })
+  // } else {
+  //   select(props.instance.path)
+  // }
 }
 
 const onDragStart = (e: DragEvent) => {
-  const img = new Image(64, 64)
-  img.style.maxHeight = '54px'
-  img.style.maxWidth = '54px'
-  img.src = favicon.value
-  e.dataTransfer?.setDragImage(img, 0, 0)
-  e.dataTransfer!.effectAllowed = 'move'
-  e.dataTransfer!.dropEffect = 'move'
-  img.onload = () => {
-    img.height = 54
-    img.width = 54
-  }
-  e.dataTransfer!.setData('instance', props.instance.path)
-  dragging.value = true
+  // const img = new Image(64, 64)
+  // img.style.maxHeight = '54px'
+  // img.style.maxWidth = '54px'
+  // img.src = favicon.value
+  // e.dataTransfer?.setDragImage(img, 0, 0)
+  // e.dataTransfer!.effectAllowed = 'move'
+  // e.dataTransfer!.dropEffect = 'move'
+  // img.onload = () => {
+  //   img.height = 54
+  //   img.width = 54
+  // }
+  // e.dataTransfer!.setData('instance', props.instance.path)
+  // dragging.value = true
 }
 
 const onDragEnd = (e: DragEvent) => {
@@ -178,13 +140,12 @@ const getOverState = (e: DragEvent) => {
 
   const y = e.clientY - rect.top
   const height = rect.height
-  if (y < height / 2) {
+  if (y < height / 4) {
     state = OverState.TopQuad
-  // eslint-disable-next-line brace-style
-  } /* else if (y > (height / 4 * 3)) {
+  } else if (y > (height / 4 * 3)) {
     state = OverState.BottomQuad
-  } */ else {
-    state = OverState.BottomQuad
+  } else {
+    state = OverState.Middle
   }
 
   return state
@@ -214,7 +175,7 @@ const onDrop = (e: DragEvent) => {
       emit('group', targetPath)
     }
   } else if (savePath) {
-    emit('drop-save', props.instance.path, savePath)
+    // emit('drop-save', props.instance.path, savePath)
   }
   dragging.value = false
   dragover.value = 0

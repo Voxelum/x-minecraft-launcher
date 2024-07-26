@@ -9,9 +9,11 @@ export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMod
 export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<RuntimeVersions>, java: Ref<JavaRecord | undefined>) {
   const { watch: watchMods } = useService(InstanceModsServiceKey)
   const { isValidating, error, state } = useState(async () => {
-    if (!instancePath.value) { return undefined }
-    console.log('watch mods', instancePath.value)
-    const mods = await watchMods(instancePath.value)
+    const inst = instancePath.value
+    if (!inst) { return undefined }
+    console.time('[watchMods] ' + inst)
+    const mods = await watchMods(inst)
+    console.timeEnd('[watchMods] ' + inst)
     mods.mods = mods.mods.map(m => markRaw(m))
     return mods as any
   }, class extends InstanceModsState {

@@ -593,17 +593,18 @@
           <template
             v-else
           >
-            <a
+            <span
               v-for="item of detail.externals"
               :key="item.name + item.url"
-              :href="item.url"
               class="flex flex-grow-0 items-center gap-1"
             >
-              <v-icon>{{ item.icon }}</v-icon>
-              <span class="hover:underline">
+              <v-icon>
+                {{ item.icon }}
+              </v-icon>
+              <a :href="item.url">
                 {{ item.name }}
-              </span>
-            </a>
+              </a>
+            </span>
           </template>
         </div>
 

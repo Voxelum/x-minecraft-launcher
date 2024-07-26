@@ -333,7 +333,7 @@ const installDependency = async (dep: ProjectDependency) => {
   }
 }
 
-const onDelete = async () => {
+const onDelete = () => {
   innerUpdating.value = true
   emit('uninstall', props.installed)
 }

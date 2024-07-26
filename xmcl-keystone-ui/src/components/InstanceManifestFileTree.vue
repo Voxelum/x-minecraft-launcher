@@ -2,6 +2,7 @@
   <v-treeview
     class="export-dialog-files"
     :value="value"
+    :input-value="value"
     style="width: 100%"
     :search="search"
     :items="files"

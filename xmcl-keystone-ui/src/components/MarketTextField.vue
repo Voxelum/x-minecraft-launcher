@@ -26,17 +26,18 @@
       >
         {{ gameVersion }}
       </v-chip>
-      <v-btn
-        v-if="clearable || _keyword"
-        text
-        icon
-        class="max-h-[24px] max-w-[24px]"
-        @click="clear"
+      <v-chip
+        v-if="category"
+        label
+        outlined
+        small
+        close
+        @click:close="emit('clear-category')"
       >
-        <v-icon>
-          clear
+        <v-icon small>
+          filter_alt
         </v-icon>
-      </v-btn>
+      </v-chip>
     </template>
   </v-text-field>
 </template>
@@ -50,6 +51,7 @@ const props = defineProps<{
   clearable?: boolean
   placeholder?: string
   gameVersion?: string
+  category?: boolean
 }>()
 
 const _keyword = computed({
@@ -62,6 +64,7 @@ const emit = defineEmits<{
   (event: 'click', e: MouseEvent): void
   (event: 'clear'): void
   (event: 'clear-version'): void
+  (event: 'clear-category'): void
 }>()
 
 const search = (v: string | undefined) => {

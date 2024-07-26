@@ -70,11 +70,11 @@ const color = computed(() => {
     case TaskState.Cancelled:
     case TaskState.Running:
     case TaskState.Paused:
-      return 'white'
+      return darkTheme.value ? 'white' : ''
     case TaskState.Failed:
       return 'error'
     default:
-      return 'white'
+      return darkTheme.value ? 'white' : ''
   }
 })
 const indeterminate = computed(() => !props.item.total || props.item.total === -1)

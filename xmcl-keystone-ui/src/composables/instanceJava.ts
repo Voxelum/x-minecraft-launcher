@@ -4,6 +4,7 @@ import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { InstanceResolveVersion, UnresolvedVersion } from './instanceVersion'
+import { useRefreshable } from './refreshable'
 
 export enum JavaCompatibleState {
   Matched,
@@ -26,22 +27,59 @@ export interface JavaRecommendation {
 
 export const kInstanceJava: InjectionKey<ReturnType<typeof useInstanceJava>> = Symbol('InstanceJava')
 
+export type InstanceJavaStatus = {
+  instance: string
+  /**
+   * The selected java path of the instance
+   */
+  javaPath: string | undefined
+  noJava?: boolean
+  recomendation?: JavaRecommendation
+  java?: JavaRecord
+}
+
 export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>) {
   const { resolveJava } = useService(JavaServiceKey)
 
-  const { data, mutate, isValidating, error } = useSWRV(computed(() => instance.value.path && `/instance/${instance.value.path}/java-version?version=${version.value && 'id' in version.value ? version.value.id : undefined}`), async () => {
-    return await computeJava(all.value, resolveJava, instance.value, version.value)
-  }, { revalidateOnFocus: false })
+  const data: Ref<InstanceJavaStatus | undefined> = ref(undefined)
+  const { refresh: mutate, refreshing: isValidating, error } = useRefreshable(async () => {
+    const _version = version.value
+    const inst = instance.value
+    const path = inst.path
+    const javaPath = inst.java
+    const minecraft = inst.runtime.minecraft
+    const forge = inst.runtime.forge
+    const _all = all.value
+    data.value = undefined
+    if (version.value && version.value.instance !== path) {
+      return
+    }
+    const result = await computeJava(_all, resolveJava, javaPath, minecraft, forge, _version)
+    if (version.value !== _version ||
+      instance.value.java !== javaPath ||
+      instance.value.runtime.minecraft !== minecraft ||
+      instance.value.runtime.forge !== forge ||
+      all.value !== _all) {
+      return
+    }
+    data.value = {
+      instance: path,
+      javaPath,
+      noJava: _all.length === 0,
+      ...result,
+    }
+  })
 
   const java = computed(() => data.value?.java)
   const recommendation = computed(() => data.value?.recomendation)
 
-  watch([all, version, computed(() => instance.value.java)], () => {
+  watch([all, version, computed(() => instance.value.java), computed(() => instance.value.runtime)], () => {
     mutate()
   }, { deep: true })
 
   return {
     java,
+    status: data,
     recommendation,
     isValidating,
     error,
@@ -81,9 +119,14 @@ function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference
   return [bad[0], JavaCompatibleState.VeryLikelyIncompatible] as const
 }
 
-async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Promise<Java | undefined>, instance: Instance, selectedVersion?: InstanceResolveVersion) {
-  const { minecraft, forge } = instance.runtime
-  const javaPath = instance.java
+async function computeJava(
+  all: JavaRecord[],
+  resolveJava: (path: string) => Promise<Java | undefined>,
+  javaPath: string | undefined,
+  minecraft: string,
+  forge: string | undefined,
+  selectedVersion?: InstanceResolveVersion,
+) {
   let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
   const versionId = selectedVersion && 'id' in selectedVersion ? selectedVersion.id : undefined
   const resolvedMcVersion = parseVersion(minecraft)
@@ -118,7 +161,7 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
       }
     }
   } else if (minecraftMinor >= 13 && minecraftMinor < 17) {
-    if (instance.runtime.forge) {
+    if (forge) {
       // use java 8 if forge as forge only compatible with jre8
       versionPref = {
         match: (j) => j.majorVersion === 8 && getBuilderNumber(j.version) < 321,
@@ -229,7 +272,7 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
         recommendedLevel: computedQuality,
         version: versionId || '',
         minecraft,
-        forge: instance.runtime.forge || '',
+        forge: forge || '',
         requirement: versionPref.requirement,
       } as JavaRecommendation,
       java: {

@@ -1,5 +1,5 @@
-import { GameOptionsState, Instance, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { Ref, InjectionKey } from 'vue'
+import { GameOptionsState, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
+import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
 

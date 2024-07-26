@@ -13,22 +13,9 @@ const LITTLE_SKIN_HOST = 'littleskin.cn'
 export class LittleSkinUserService extends AbstractService implements ILittleSkinUserService {
   private client: LittleSkinClient
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kNetworkInterface) networkInterface: NetworkInterface,
-    ) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app)
-
-    const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, options) => {
-      if (origin.hostname === LITTLE_SKIN_HOST) {
-        return new Pool(origin, {
-          ...options,
-          pipelining: 1,
-          connections: 6,
-          keepAliveMaxTimeout: 60_000,
-        })
-      }
-    })
-    this.client = new LittleSkinClient(dispatcher)
+    this.client = new LittleSkinClient((...args) => this.app.fetch(...args))
 
     // const ygg = new YggdrasilAccountSystem(
     //   this,

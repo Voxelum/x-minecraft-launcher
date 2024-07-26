@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { LocalVersionHeader } from '@xmcl/runtime-api'
+import { VersionHeader } from '@xmcl/runtime-api'
 import VersionInput, { VersionItem } from './VersionInput.vue'
 
 const props = defineProps<{
-  versions: LocalVersionHeader[]
+  versions: VersionHeader[]
   value?: string
 }>()
 

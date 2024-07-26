@@ -9,6 +9,7 @@ import { useResourceUriStartsWithDiscovery, useResourceUrisDiscovery } from './r
 import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
 import { kTaskManager } from './taskManager'
+import { get, MaybeRef } from '@vueuse/core'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
@@ -40,11 +41,11 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
   }
 }
 
-export function getModrinthVersionModel(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
+export function getModrinthVersionModel(project: MaybeRef<string>, featured?: boolean, loaders?: MaybeRef<string[] | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
   return {
-    key: computed(() => getModrinthVersionKey(project.value, featured, loaders?.value, gameVersions?.value)),
+    key: computed(() => getModrinthVersionKey(get(project), featured, get(loaders), get(gameVersions))),
     fetcher: async () => {
-      const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
+      const result = (await clientModrinthV2.getProjectVersions(get(project), { loaders: get(loaders), gameVersions: get(gameVersions), featured })).map(markRaw)
       return result
     },
   }

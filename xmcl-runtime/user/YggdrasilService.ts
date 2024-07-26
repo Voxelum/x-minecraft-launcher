@@ -1,8 +1,6 @@
 import { YggdrasilService as IYggdrasilService, YggdrasilApi, YggdrasilSchema, YggdrasilServiceKey } from '@xmcl/runtime-api'
-import { Pool } from 'undici'
-import { LauncherApp, LauncherAppKey, Inject } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { kClientToken } from '~/clientToken'
-import { NetworkInterface, kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { createSafeFile } from '~/util/persistance'
 import { YggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
@@ -27,7 +25,6 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kClientToken) clientToken: string,
     @Inject(kUserTokenStorage) tokenStorage: UserTokenStorage,
-    @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {
     super(app, async () => {
       const apis = await this.yggdrasilFile.read()
@@ -44,21 +41,9 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
       this.yggdrasilServices.push(...apis.yggdrasilServices)
     })
 
-    const dispatcher = networkInterface.registerClientFactoryInterceptor((origin, options) => {
-      const hosts = this.yggdrasilServices.map(v => new URL(v.url).hostname)
-      if (hosts.indexOf(origin.hostname) !== -1) {
-        return new Pool(origin, {
-          ...options,
-          pipelining: 1,
-          connections: 6,
-          keepAliveMaxTimeout: 60_000,
-        })
-      }
-    })
-
     this.yggdrasilAccountSystem = new YggdrasilAccountSystem(
+      app,
       this,
-      dispatcher,
       clientToken,
       tokenStorage,
     )

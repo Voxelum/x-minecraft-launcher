@@ -13,7 +13,7 @@
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
       <AvatarItem
         v-ripple
-        :color="!isResolvedVersion(resolvedVersion) ? 'warning' : 'primary'"
+        :color="!versionId ? 'warning' : 'primary'"
         icon="fact_check"
         class="ml-2 cursor-pointer"
         :title="t('version.name', 2)"
@@ -212,10 +212,10 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import { kInstance } from '@/composables/instance'
 import { kLaunchTask } from '@/composables/launchTask'
-import { isResolvedVersion, kInstanceVersion } from '@/composables/instanceVersion'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 
 const { runtime: version, path, refreshing, name, instance } = injection(kInstance)
-const { resolvedVersion } = injection(kInstanceVersion)
+const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { total, progress, pause, resume, status, name: taskName } = injection(kLaunchTask)
 const { openDirectory } = useService(BaseServiceKey)
@@ -224,7 +224,7 @@ const { show: showExport } = useDialog(AppExportDialogKey)
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
-const currentVersion = computed(() => !isResolvedVersion(resolvedVersion.value) ? t('version.notInstalled') : resolvedVersion.value.id)
+const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const scrollTop = injection(kCompact)
 const compact = computed(() => scrollTop.value)
 const headerFontSize = computed(() => {
@@ -243,8 +243,8 @@ const lastPlayedText = computed(() => {
 })
 
 const onShowLocalVersion = () => {
-  if (isResolvedVersion(resolvedVersion.value)) {
-    showVersionDirectory(resolvedVersion.value.id)
+  if (versionId.value) {
+    showVersionDirectory(versionId.value)
   }
 }
 

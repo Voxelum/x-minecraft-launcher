@@ -1,4 +1,4 @@
-import { EditInstanceOptions, Instance, InstanceData, LocalVersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
+import { EditInstanceOptions, Instance, InstanceData, VersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
 import { useGlobalSettings } from './setting'
 
@@ -347,7 +347,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
 }
 
-export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 'version'>, versions: Ref<LocalVersionHeader[]>) {
+export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 'version'>, versions: Ref<VersionHeader[]>) {
   function onSelectMinecraft(version: string) {
     if (data?.runtime) {
       const runtime = data.runtime

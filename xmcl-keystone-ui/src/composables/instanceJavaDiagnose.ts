@@ -1,42 +1,47 @@
-import { InstanceServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey, Ref } from 'vue'
+import { injection } from '@/util/inject'
+import { InstanceServiceKey, JavaServiceKey } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 import { useDialog } from './dialog'
-import { JavaRecommendation } from './instanceJava'
+import { kInstanceJava } from './instanceJava'
 import { JavaIssueDialogKey } from './java'
 import { LaunchMenuItem } from './launchButton'
-import { LocalNotification, useNotifier } from './notifier'
+import { useNotifier } from './notifier'
 import { useService } from './service'
+import { kInstances } from './instances'
 
-export const kInstanceJavaDiagnose: InjectionKey<ReturnType<typeof useInstanceJavaDiagnose>> = Symbol('InstanceJavaDiagnose')
-
-export function useInstanceJavaDiagnose(path: Ref<string>, all: Ref<JavaRecord[]>, java: Ref<JavaRecord | undefined>, javaRecommendation: Ref<JavaRecommendation | undefined>, queue: Ref<LocalNotification[]>) {
+export function useInstanceJavaDiagnose() {
   const { t } = useI18n()
-  const { subscribeTask } = useNotifier(queue)
+  const { subscribeTask } = useNotifier()
+  const { status: java, error } = injection(kInstanceJava)
   const { installDefaultJava } = useService(JavaServiceKey)
+  const { instances } = injection(kInstances)
   const { editInstance } = useService(InstanceServiceKey)
-  const issue: Ref<LaunchMenuItem | undefined> = computed(() => {
-    console.log('update java diagnose')
-    if (all.value.length === 0) {
+  const item: Ref<LaunchMenuItem | undefined> = computed(() => {
+    const stat = java.value
+    // if (error.value) {
+    //   return {
+    //     title: error.value.name,
+    //     description: error.value.message,
+    //   }
+    // }
+
+    if (!stat) return undefined
+
+    if (stat.noJava) {
       return {
         title: t('diagnosis.missingJava.name'),
         description: t('diagnosis.missingJava.message'),
       }
     }
-    if (!java.value) {
-      return {
-        title: t('diagnosis.missingJava.name'),
-        description: t('diagnosis.missingJava.message'),
-      }
-    }
-    if (!java.value.valid) {
+    if (!stat.java?.valid) {
       return {
         title: t('diagnosis.invalidJava.name'),
         description: t('diagnosis.invalidJava.message'),
       }
     }
-    if (javaRecommendation.value) {
+    if (stat.recomendation) {
       return {
-        title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.requirement, javaVersion: javaRecommendation.value.selectedJava?.version || '' }),
+        title: t('diagnosis.incompatibleJava.name', { version: stat.recomendation.requirement, javaVersion: stat.recomendation.selectedJava?.version || '' }),
         description: t('diagnosis.incompatibleJava.message'),
         color: 'warning',
         onClick: () => {
@@ -49,23 +54,33 @@ export function useInstanceJavaDiagnose(path: Ref<string>, all: Ref<JavaRecord[]
   const { show: showJavaDialog } = useDialog(JavaIssueDialogKey)
 
   function fix() {
-    if (issue.value) {
-      if (javaRecommendation.value && javaRecommendation.value.recommendedLevel && javaRecommendation.value.recommendedLevel >= 1 &&
-        javaRecommendation.value.recommendedDownload) {
-        const promise = installDefaultJava(javaRecommendation.value.recommendedDownload)
-        subscribeTask(promise.then((java) => editInstance({
-          instancePath: path.value,
-          java: java?.path,
-        })), t('java.modifyInstance'))
-        return promise
-      } else {
-        showJavaDialog()
-      }
+    const stat = java.value
+    if (!stat) {
+      return
+    }
+    const recommendation = stat.recomendation
+    if (recommendation &&
+      recommendation.recommendedLevel &&
+      recommendation.recommendedLevel >= 1 &&
+      recommendation.recommendedDownload) {
+      const promise = installDefaultJava(recommendation.recommendedDownload)
+      subscribeTask(promise.then((java) => {
+        const inst = instances.value.find(i => i.path === stat.instance)
+        if (java && stat.javaPath === inst?.java) {
+          return editInstance({
+            instancePath: stat.instance,
+            java: java.path,
+          })
+        }
+      }), t('java.modifyInstance'))
+      return promise
+    } else {
+      showJavaDialog()
     }
   }
 
   return {
-    issue,
+    issue: item,
     fix,
   }
 }

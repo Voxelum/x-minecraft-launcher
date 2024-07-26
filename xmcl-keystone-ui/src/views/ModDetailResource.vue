@@ -6,7 +6,7 @@ import { kInstance } from '@/composables/instance'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
+import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
@@ -157,7 +157,7 @@ watch(() => props.mod, async () => {
   updateResources(options)
 })
 
-const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
+const installDefaultModLoader = useInstanceModLoaderDefault()
 const onDelete = async () => {
   updating.value = true
   const file = props.files.find(f => f.path === selectedVersion.value.id)
@@ -169,14 +169,16 @@ const onDelete = async () => {
 const onInstall = async () => {
   updating.value = true
 
+  const _path = path.value
+  const runtime = props.runtime
   const file = props.files.find(f => f.path === selectedVersion.value.id)
   if (file) {
     if (isNoModLoader(props.runtime)) {
       // forge, fabric, quilt or neoforge
-      await installDefaultModLoader(file.modLoaders)
+      await installDefaultModLoader(_path, runtime, file.modLoaders)
     }
 
-    await install({ path: path.value, mods: [file.resource] })
+    await install({ path: _path, mods: [file.resource] })
   }
 }
 

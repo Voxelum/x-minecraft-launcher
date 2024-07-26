@@ -16,16 +16,6 @@ const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
 
 export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   app.registry.get(kNetworkInterface).then((networkInterface) => {
-    networkInterface.registerClientFactoryInterceptor((origin, opts) => {
-      if (origin.hostname === 'api.minecraftservices.com' || origin.hostname === 'api.mojang.com') {
-        // keep alive for a long time
-        return new Client(origin, { ...opts, pipelining: 6 })
-      }
-      if (origin.hostname === 'login.microsoftonline.com' || origin.hostname === 'user.auth.xboxlive.com' || origin.hostname === 'xsts.auth.xboxlive.com' || origin.hostname === 'profile.xboxlive.com' || origin.hostname === 'authserver.mojang.com' || origin.hostname === 'textures.minecraft.net') {
-        // short connection for authenticate connection
-        return new Client(origin, { ...opts, pipelining: 6, keepAliveMaxTimeout: 10e3 })
-      }
-    })
   })
 
   const mojangApi = new MojangClient()
@@ -35,10 +25,15 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
 
   const userService = await app.registry.get(UserService)
   const system = new MicrosoftAccountSystem(logger,
-    new MicrosoftAuthenticator(),
+    new MicrosoftAuthenticator({
+      fetch: (...args) => app.fetch(...args),
+    }),
     mojangApi,
     () => app.registry.get(kUserTokenStorage),
-    new MicrosoftOAuthClient(logger,
+    new MicrosoftOAuthClient(
+      (...args) => app.fetch(...args),
+      app,
+      logger,
       CLIENT_ID,
       async (url, signal) => {
         app.shell.openInBrowser(url)

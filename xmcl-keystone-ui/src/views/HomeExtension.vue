@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
+    class="flex flex-1 flex-grow-0 flex-row items-center justify-start"
     :class="{
       'mb-3': !compact,
       'mb-2': compact,
@@ -43,7 +43,7 @@
     <div class="flex-grow" />
     <div
       v-if="!isInFocusMode"
-      class="align-end flex flex-1 flex-grow-0 gap-7"
+      class="align-center flex flex-1 flex-grow-0 lg:gap-7 gap-1"
     >
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"
@@ -51,8 +51,14 @@
         :total="total"
         :progress="progress"
       />
+      <HomeLaunchButtonStatus
+        v-else
+        :active="active"
+      />
       <HomeLaunchButton
         :compact="compact"
+        @mouseenter="active = true"
+        @mouseleave="active = false"
       />
     </div>
   </div>
@@ -69,11 +75,18 @@ import { getHumanizeDuration, TimeUnit } from '@/util/date'
 import { injection } from '@/util/inject'
 import useSWRV from 'swrv'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
+import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 
 const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
 const { total, progress, status, name: taskName } = injection(kLaunchTask)
+
+const active = ref(false)
+const lBtn = useLaunchButton()
+provide(kLaunchButton, lBtn)
+
 const { t } = useI18n()
 
 const compact = injection(kCompact)

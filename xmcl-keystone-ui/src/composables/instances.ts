@@ -44,7 +44,7 @@ export function useInstances() {
     }
   })
   const _instances = computed(() => state.value?.instances ?? [])
-  const { instances, setToPrevious } = useSortedInstance(_instances)
+  const { instances, moveInstanceTo } = useSortedInstance(_instances)
   const _path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
   const path = ref('')
 
@@ -114,7 +114,7 @@ export function useInstances() {
   return {
     selectedInstance: path,
     instances,
-    setToPrevious,
+    moveInstanceTo,
     isValidating,
     error,
     edit,

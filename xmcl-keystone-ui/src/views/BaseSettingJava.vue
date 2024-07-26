@@ -41,7 +41,7 @@
             </v-list-item-title>
             <v-list-item-subtitle>
               {{
-                java && java.path ? java.path : t("java.allocatedLong")
+                java && java.path ? java.path : (selectedJava?.path || t("java.allocatedLong"))
               }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -114,10 +114,12 @@ import JavaList from './BaseSettingJavaList.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { kInstanceJava } from '@/composables/instanceJava'
 
 const { t } = useI18n()
 const { showOpenDialog } = windowController
 const { all: javas, remove: removeJava } = injection(kJavaContext)
+const { java: selectedJava } = injection(kInstanceJava)
 const { resolveJava: add, refreshLocalJava } = useService(JavaServiceKey)
 const refreshingLocalJava = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
 

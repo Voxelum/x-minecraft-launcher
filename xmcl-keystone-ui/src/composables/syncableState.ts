@@ -9,8 +9,11 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
 
   const state = ref<MutableState<T> | undefined>()
   const error = ref(undefined as any)
+  let controller: AbortController | undefined
   const mutate = async (onCleanup?: (abort: () => void) => void) => {
+    controller?.abort()
     const abortController = new AbortController()
+    controller = abortController
     const { signal } = abortController
     let data: MutableState<T> | undefined
     onCleanup?.(() => {

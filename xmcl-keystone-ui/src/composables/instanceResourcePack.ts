@@ -173,6 +173,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   const enabledSet = computed(() => new Set(result.value[2].map(e => e.id)))
 
   const { editGameSetting } = useService(InstanceOptionsServiceKey)
+
   function enable(pack: (InstanceResourcePack | string)[]) {
     const newEnabled = [...pack.map(e => typeof e === 'string' ? e : e.id), ...enabled.value.map(e => e.id)]
     return editGameSetting({

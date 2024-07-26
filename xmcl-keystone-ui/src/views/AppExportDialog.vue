@@ -279,7 +279,7 @@ const { t } = useI18n()
 
 // base data
 const { instance } = injection(kInstance)
-const { folder } = injection(kInstanceVersion)
+const { versionId } = injection(kInstanceVersion)
 const { versions: _locals } = injection(kLocalVersions)
 
 const name = computed(() => instance.value.name)
@@ -308,7 +308,7 @@ const data = reactive({
   name: name.value,
   author: author.value,
   version: inc(baseVersion, 'patch') ?? '0.0.1',
-  gameVersion: folder.value,
+  gameVersion: versionId.value,
   selected: [] as string[],
   fileApi: '',
   files: [] as InstanceFile[],
@@ -357,7 +357,7 @@ function reset() {
   data.author = author.value
   data.files = []
   data.selected = []
-  data.gameVersion = folder.value ?? ''
+  data.gameVersion = versionId.value ?? ''
   data.version = inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1'
 }
 
@@ -415,7 +415,7 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   if (canceled) {
     return
   }
-  if (filePath) {
+  if (filePath && data.gameVersion) {
     if (data.emitCurseforge || data.emitMcbbs || data.emitModrinth) {
       try {
         await exportModpack({
@@ -437,14 +437,16 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
       }
     } else {
       const files = data.selected.filter(p => !!data.files.find(f => f.path === p))
-      await exportInstance({
-        src: instance.value.path,
-        version: folder.value,
-        destinationPath: filePath,
-        includeLibraries: data.includeLibraries,
-        includeAssets: data.includeAssets,
-        files,
-      })
+      if (versionId.value) {
+        await exportInstance({
+          src: instance.value.path,
+          version: versionId.value,
+          destinationPath: filePath,
+          includeLibraries: data.includeLibraries,
+          includeAssets: data.includeAssets,
+          files,
+        })
+      }
     }
     cancel()
   }

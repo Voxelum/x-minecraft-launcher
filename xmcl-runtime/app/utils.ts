@@ -2,8 +2,6 @@ import { createWriteStream } from 'fs'
 import { extname } from 'path'
 import { Writable } from 'stream'
 import { stream } from 'undici'
-import { InjectionKey } from '~/app'
-import { LauncherApp } from './LauncherApp'
 
 export interface ResolvedIcon {
   src: string

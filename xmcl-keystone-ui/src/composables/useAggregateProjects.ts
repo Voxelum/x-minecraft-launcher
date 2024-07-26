@@ -90,7 +90,11 @@ export function useAggregateProjects<T extends ProjectEntry>(
     for (const mod of cached.value) {
       mod.curseforge = undefined
       mod.modrinth = undefined
-      visit(mod)
+      if (indices[mod.id]) {
+        const other = indices[mod.id]
+        assignProject(other, mod)
+        insert(other)
+      }
     }
 
     return all

@@ -15,7 +15,6 @@ import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
-import { request } from 'undici'
 import { promisify } from 'util'
 import { JavaService } from '~/java'
 import { AnyError, isSystemError } from '~/util/error'
@@ -221,13 +220,12 @@ export class ElectronUpdater implements LauncherAppUpdater {
     const baseService = await app.registry.get(BaseService)
     const { allowPrerelease, locale } = await baseService.getSettings()
     const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
-    const response = await request(url, {
+    const response = await this.app.fetch(url, {
       headers: {
         'Accept-Language': locale,
       },
-      throwOnError: true,
-    }).catch(() => request('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
-    const result = await response.body.json() as any
+    }).catch(() => fetch('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
+    const result = await response.json() as any
     const updateInfo: ReleaseInfo = {
       name: result.tag_name,
       body: result.body,
