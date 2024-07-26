@@ -177,11 +177,21 @@ import { DriveStep } from 'driver.js'
 import useSWRV from 'swrv'
 
 const { push } = useRouter()
-const query = useQuery('query')
-const gameVersion = useQuery('gameVersion')
-const modLoaders = useQueryStringArray('modLoaders')
+
+function ensureQuery(query: Record<string, string | (string| null)[] | null | undefined>) {
+  query.page = '1'
+  if (!query.query) {
+    if (query.sort === '0') {
+      query.sort = '1'
+    }
+  }
+}
+
+const query = useQuery('query', ensureQuery)
+const gameVersion = useQuery('gameVersion', ensureQuery)
+const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
+const sort = useQuery('sort', (q) => { q.page = '1' })
 const page = useQueryNumber('page', 1)
-const sort = useQuery('sort')
 
 const keyword = ref(query)
 const { t } = useI18n()
@@ -386,7 +396,7 @@ const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: m
 
 const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-const _modrinthCategories = useQueryStringArray('modrinthCategories')
+const _modrinthCategories = useQueryStringArray('modrinthCategories', ensureQuery)
 // Modrinth
 const {
   error: searchError,
@@ -406,7 +416,7 @@ const {
 
 // Curseforge
 const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt, neoforge: FileModLoaderType.NeoForge }
-const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number)
+const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number, ensureQuery)
 const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
   CurseforgeBuiltinClassId.modpack,
   query,
