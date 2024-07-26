@@ -32,7 +32,6 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
     () => app.registry.get(kUserTokenStorage),
     new MicrosoftOAuthClient(
       (...args) => app.fetch(...args),
-      app,
       logger,
       CLIENT_ID,
       async (url, signal) => {

@@ -140,7 +140,7 @@ export function useFeedTheBeastModpackInstall() {
     const lock = getInstanceLock(path)
     lock.write(async () => {
       const resolved = existed ? await getResolvedVersion(existed) : undefined
-      const instruction = await getInstallInstruction(path, config.runtime, options.version || '' , resolved)
+      const instruction = await getInstallInstruction(path, config.runtime, options.version || '', resolved)
       await handleInstallInstruction(instruction)
     })
   }

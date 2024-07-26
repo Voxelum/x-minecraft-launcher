@@ -13,12 +13,12 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
   const linked = ref(false)
-  const { refresh, refreshing } = useRefreshable(async () => {
-    if (!instancePath.value) return
-    linked.value = await link(instancePath.value)
+  const { refresh, refreshing } = useRefreshable<string>(async (path) => {
+    if (!path) return
+    linked.value = await link(path)
 
     if (!linked.value) {
-      await scan(instancePath.value)
+      await scan(path)
     }
   })
   const shaderMod = computed(() => {

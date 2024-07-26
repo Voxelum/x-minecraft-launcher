@@ -51,6 +51,7 @@ export class MicrosoftOAuthClient {
 
             return {
               body,
+              // @ts-ignore
               headers: Object.fromEntries(response.headers),
               status: response.status,
             }
@@ -63,7 +64,7 @@ export class MicrosoftOAuthClient {
               signal,
             })
 
-            const body = await response.json() 
+            const body = await response.json()
 
             if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
               body.error !== Constants.AUTHORIZATION_PENDING) {
@@ -72,6 +73,7 @@ export class MicrosoftOAuthClient {
 
             return {
               body,
+              // @ts-ignore
               headers: Object.fromEntries(response.headers),
               status: response.status,
             }

@@ -74,6 +74,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const savePath = isAbsolute(saveName) ? saveName : join(instancePath, 'saves', saveName)
 
     if (await missing(savePath)) {
+      // @ts-ignore
       throw new InstanceSaveException({ type: 'instanceLinkSaveNotFound', name: saveName })
     }
 
