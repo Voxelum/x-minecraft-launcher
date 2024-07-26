@@ -33,6 +33,7 @@
     <AppGameExitDialog />
     <AppLaunchBlockedDialog />
     <AppImageDialog />
+    <AppLaunchServerDialog />
     <AppSharedTooltip />
   </v-app>
   <v-app
@@ -75,6 +76,7 @@ import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
+import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'

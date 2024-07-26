@@ -59,10 +59,31 @@ export function createLanDiscover(peers: Peers) {
   setup(discover, set, peers)
   setup(discoverV6, set, peers)
 
+  let ports: number[] = []
+  function setExposedPorts(exposed: number[]) {
+    ports = exposed || []
+  }
+
   return {
     start: (id: string) => {
       setInterval(() => {
         sock.send(id, LAN_MULTICAST_PORT, LAN_MULTICAST_ADDR)
+        if (ports && ports.length > 0) {
+          for (const p of ports) {
+            if (discover.isReady) {
+              discover.broadcast({
+                port: p,
+                motd: 'Minecraft Server',
+              })
+            }
+            if (discoverV6.isReady) {
+              discoverV6.broadcast({
+                port: p,
+                motd: 'Minecraft Server',
+              })
+            }
+          }
+        }
       }, 1000)
     },
     destroy: () => {
@@ -82,5 +103,6 @@ export function createLanDiscover(peers: Peers) {
         discoverV6.broadcast(msg)
       }
     },
+    setExposedPorts,
   }
 }

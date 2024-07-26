@@ -29,7 +29,7 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
         this.app.controller.broadcast('minecraft-exit', status)
         const loggerWin = this.getLoggerWindow()
         if (loggerWin) {
-          if (service.getProcesses().length === 0) {
+          if (service.getProcesses().length === 0 && !status.crashReport && status.code === 0) {
             loggerWin.close()
             this.loggerWin = undefined
           }

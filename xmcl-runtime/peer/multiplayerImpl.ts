@@ -1,4 +1,4 @@
-import { PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
+import { MutableState, PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import EventEmitter from 'events'
 import { promisify } from 'util'
@@ -83,7 +83,7 @@ export class Peers {
 
 export function createMultiplayer() {
   const peers = new Peers()
-  const state = createPromiseSignal<PeerState>()
+  const state = createPromiseSignal<MutableState<PeerState>>()
   const emitter = new EventEmitter()
 
   const discover = createLanDiscover(peers)
@@ -113,6 +113,12 @@ export function createMultiplayer() {
       if (target) {
         s.connectionUserInfo({ id: target.id, info: profile })
       }
+    })
+  })
+
+  state.then((s) => {
+    s.subscribe('exposedPortsSet', (ports) => {
+      discover.setExposedPorts(ports.map(p => p[0]))
     })
   })
 
@@ -441,7 +447,7 @@ export function createMultiplayer() {
     emitter,
     host,
     updateIceServers: iceServers.update,
-    setState: (_state: PeerState) => {
+    setState: (_state: MutableState<PeerState>) => {
       state.resolve(_state)
       _state.connectionClear()
     },

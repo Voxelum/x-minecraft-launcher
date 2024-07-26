@@ -60,4 +60,12 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   async shareInstance(options: ShareInstanceOptions): Promise<void> {
     this.app.controller.broadcast('peer-instance-shared', options)
   }
+
+  async exposePort(port: number, protocol: number): Promise<void> {
+    this.state.exposedPortsSet(this.state.exposedPorts.concat([port, protocol]))
+  }
+
+  async unexposePort(port: number): Promise<void> {
+    this.state.exposedPortsSet(this.state.exposedPorts.filter(([p]) => p !== port))
+  }
 }

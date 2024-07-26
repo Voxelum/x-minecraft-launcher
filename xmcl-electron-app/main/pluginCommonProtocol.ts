@@ -1,5 +1,4 @@
 import { Handler, LauncherAppPlugin } from '@xmcl/runtime/app'
-import { net } from 'electron'
 import { fetch } from 'undici'
 import { Readable } from 'stream'
 

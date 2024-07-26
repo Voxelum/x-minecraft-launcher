@@ -1,7 +1,7 @@
 import type { ResolvedVersion } from '@xmcl/core'
 import { ServiceKey } from './Service'
 import { MutableState } from '../util/MutableState'
-import { LocalVersions } from '../entities/version'
+import { LocalVersions, ResolvedServerVersion } from '../entities/version'
 
 /**
  * The local version service maintains the installed versions on disk
@@ -26,6 +26,8 @@ export interface VersionService {
    */
   refreshVersion(versionFolder: string): Promise<void>
   refreshVersions(force?: boolean): Promise<void>
+
+  resolveServerVersion(id: string): Promise<ResolvedServerVersion>
   /**
    * Delete a local version
    * @param version The version id

@@ -1,5 +1,6 @@
 import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, MutableState, PartialResourceHash, Resource, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
-import { ensureDir, rename, stat, unlink } from 'fs-extra'
+import { emptyDir, ensureDir, rename, stat, unlink } from 'fs-extra'
+import debounce from 'lodash.debounce'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
@@ -10,7 +11,6 @@ import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
-import debounce from 'lodash.debounce'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -245,6 +245,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         this.warn(`Skip to disable disabled mod file on ${resource.path}!`)
       } else {
         promises.push(rename(resource.path, resource.path + '.disabled').catch(e => {
+          this.warn(e)
           // if (e.code === 'ENOENT') {
           //   // Force remove
           //   this.state.instanceModRemove([resource])
@@ -285,5 +286,25 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     }
     await Promise.all(promises)
     this.log(`Finish to uninstall ${mods.length} from ${path}`)
+  }
+
+  async installToServerInstance(options: InstallModsOptions): Promise<void> {
+    const modsDir = join(options.path, 'server', 'mods')
+    await ensureDir(modsDir)
+    await emptyDir(modsDir)
+    await this.install({ ...options, path: join(options.path, 'server') })
+  }
+
+  async getServerInstanceMods(path: string): Promise<Array<{ fileName: string; ino: number }>> {
+    const result: Array<{ fileName: string; ino: number }> = []
+
+    const modsDir = join(path, 'server', 'mods')
+    const files = await readdirIfPresent(modsDir)
+    for (const file of files) {
+      const fstat = await stat(join(modsDir, file))
+      result.push({ fileName: file, ino: fstat.ino })
+    }
+
+    return result
   }
 }

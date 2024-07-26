@@ -1,13 +1,19 @@
 import { useService } from '@/composables'
-import { ResolvedVersion } from '@xmcl/core'
 import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import { InjectionKey, Ref, del, set } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
 
-export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
+export function useInstanceLaunch(
+  instance: Ref<Instance>,
+  version: Ref<string | undefined>,
+  serverVersion: Ref<string | undefined>,
+  java: Ref<JavaRecord | undefined>,
+  userProfile: Ref<UserProfile>,
+  globalState: ReturnType<typeof useSettingsState>,
+) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
@@ -40,7 +46,9 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  const count = computed(() => data.value?.length ?? 0)
+  const gameProcesses = computed(() => data.value || [])
+  const count = computed(() => data.value?.filter(v => v.side === 'client').length ?? 0)
+  const serverCount = computed(() => data.value?.filter(v => v.side === 'server').length ?? 0)
 
   const windowReady = computed(() => {
     return data.value?.every(p => p.ready)
@@ -89,11 +97,13 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, id: string) {
-    const ver = resolvedVersion.value
-    if (!ver || 'requirements' in ver) {
+  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
+    const ver = overrides?.version ?? side === 'client' ? version.value : serverVersion.value
+
+    if (!ver) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
+
     const javaRec = java.value
     if (!javaRec) {
       throw new LaunchException({ type: 'launchNoProperJava', javaPath: '' })
@@ -113,7 +123,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       }
       console.log('preparing authlib')
       yggdrasilAgent = {
-        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', id),
+        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', operationId),
         server: userProfile.value.authority,
       }
     }
@@ -134,7 +144,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
         [instancePath]: 'assigning-memory',
       }
       console.log('assigning memory')
-      const mem = await track(getMemoryStatus(), 'get-memory-status', id)
+      const mem = await track(getMemoryStatus(), 'get-memory-status', operationId)
       minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
     } else {
       minMemory = undefined
@@ -145,8 +155,8 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     const mcOptions = inst.mcOptions ?? globalMcOptions.value.filter(v => !!v)
 
     const options: LaunchOptions = {
-      operationId: id,
-      version: ver.id,
+      operationId,
+      version: ver,
       gameDirectory: instance.value.path,
       user: userProfile.value,
       java: javaRec.path,
@@ -159,15 +169,17 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
       mcOptions,
       yggdrasilAgent,
       disableElyByAuthlib,
+      side,
       server: inst.server ?? undefined,
+      ...(overrides || {}),
     }
     return options
   }
 
-  async function _launch(instancePath: string, operationId: string) {
+  async function _launch(instancePath: string, operationId: string, side: 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     try {
       error.value = undefined
-      const options = await generateLaunchOptions(instancePath, operationId)
+      const options = await generateLaunchOptions(instancePath, operationId, side, overrides)
 
       if (!options.skipAssetsCheck) {
         allLaunchingStatus.value = {
@@ -197,6 +209,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
           pid,
           ready: false,
           options,
+          side,
         })
       }
     } catch (e) {
@@ -208,13 +221,13 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
   }
 
-  async function launchWithTracking() {
+  async function launchWithTracking(side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
-    await track(_launch(instancePath, operationId), 'launch', operationId)
+    await track(_launch(instancePath, operationId, side, overrides), 'launch', operationId)
   }
 
-  async function killGame() {
+  async function killGame(side: 'client' | 'server' = 'client') {
     if (launchingStatus.value === 'refreshing-user') {
       abortRefresh()
     }
@@ -223,7 +236,9 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
     }
     if (data.value) {
       for (const p of data.value) {
-        await kill(p.pid)
+        if (p.side === side) {
+          await kill(p.pid)
+        }
       }
     }
   }
@@ -231,8 +246,10 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   return {
     launch: launchWithTracking,
     kill: killGame,
+    gameProcesses,
     windowReady,
     error,
+    serverCount,
     count,
     launching,
     launchingStatus,

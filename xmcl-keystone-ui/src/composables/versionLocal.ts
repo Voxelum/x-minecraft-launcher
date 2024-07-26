@@ -1,5 +1,5 @@
 import { useService } from '@/composables'
-import { VersionServiceKey, LocalVersions, LocalVersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
+import { VersionServiceKey, LocalVersions, VersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
 import { computed, InjectionKey } from 'vue'
 import { useState } from './syncableState'
 import { MaybeRef, get } from '@vueuse/core'
@@ -10,15 +10,17 @@ export function useLocalVersions() {
   const { getLocalVersions } = useService(VersionServiceKey)
   const { state, isValidating, error } = useState(getLocalVersions, LocalVersions)
   const versions = computed(() => state.value?.local ?? [])
+  const servers = computed(() => state.value?.servers ?? [])
 
   return {
     versions,
+    servers,
     isValidating,
     error,
   }
 }
 
-export function useVersionsWithIcon(_version: MaybeRef<LocalVersionHeader | RuntimeVersions>) {
+export function useVersionsWithIcon(_version: MaybeRef<VersionHeader | RuntimeVersions>) {
   const versions = computed(() => {
     const version = get(_version)
     const result: { icon: string; text: string }[] = []

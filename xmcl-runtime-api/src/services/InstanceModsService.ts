@@ -100,6 +100,12 @@ export interface InstanceModsService {
    * @param options The uninstall options
    */
   uninstall(options: InstallModsOptions): Promise<void>
+  /**
+   * Install mods to the server instance.
+   */
+  installToServerInstance(options: InstallModsOptions): Promise<void>
+
+  getServerInstanceMods(path: string): Promise<Array<{ fileName: string; ino: number }>>
 }
 
 export const InstanceModsServiceKey: ServiceKey<InstanceModsService> = 'InstanceModsService'

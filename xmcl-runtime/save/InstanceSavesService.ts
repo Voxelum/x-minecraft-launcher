@@ -1,32 +1,33 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
+  getInstanceSaveKey,
   InstanceSavesService as IInstanceSavesService,
   ImportSaveOptions,
   InstanceSaveException,
   InstanceSavesServiceKey,
-  ResourceDomain, Saves,
-  getInstanceSaveKey,
   isSaveResource,
+  LinkSaveAsServerWorldOptions,
+  ResourceDomain, Saves,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir, ensureFile, move, readdir, readlink, rename, rm } from 'fs-extra'
+import { ensureDir, ensureFile, readdir, readlink, rename, rm, unlink } from 'fs-extra'
 import throttle from 'lodash.throttle'
 import watch from 'node-watch'
-import { basename, extname, join, resolve } from 'path'
+import { basename, extname, isAbsolute, join, resolve } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
+import { LaunchService } from '~/launch'
 import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
+import { isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, createSymbolicLink, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from './save'
-import { LaunchService } from '~/launch'
-import { unlink } from 'fs/promises'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -48,6 +49,66 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         })
       }
     })
+  }
+
+  async getLinkedSaveWorld(instancePath: string): Promise<string | undefined> {
+    const serverWorldPath = join(instancePath, 'server', 'world')
+    if (await missing(serverWorldPath)) {
+      return undefined
+    }
+    // check if is a link, if so, then read the link and return the link path
+    const linked = await readlink(serverWorldPath).catch(() => '')
+    if (linked) {
+      return linked
+    }
+
+    return serverWorldPath
+  }
+
+  async linkSaveAsServerWorld(options: LinkSaveAsServerWorldOptions): Promise<void> {
+    const { instancePath, saveName } = options
+    this.log(`Link save ${saveName} as server world in instance ${instancePath}.`)
+
+    requireString(saveName)
+
+    const savePath = isAbsolute(saveName) ? saveName : join(instancePath, 'saves', saveName)
+
+    if (await missing(savePath)) {
+      throw new InstanceSaveException({ type: 'instanceLinkSaveNotFound', name: saveName })
+    }
+
+    const serverWorldPath = join(instancePath, 'server', 'world')
+
+    if (existsSync(serverWorldPath)) {
+      const linkedTarget = await this.getLinkedSaveWorld(instancePath)
+      if (linkedTarget === savePath) {
+        this.log(`The save ${saveName} is already linked as server world in instance ${instancePath}.`)
+        return
+      }
+      if (linkedTarget === serverWorldPath) {
+        // Try to rename the world folder to world-backup
+        let backupPath = join(instancePath, 'world-backup')
+        while (await missing(backupPath)) {
+          try {
+            this.log(`Rename the world folder to world-backup in instance ${instancePath}.`)
+            await rename(serverWorldPath, backupPath)
+          } catch (e) {
+            if (isSystemError(e) && e.code === 'EEXIST') {
+              backupPath += '-backup'
+            } else {
+              throw e
+            }
+          }
+        }
+      } else if (linkedTarget) {
+        // remove the linked world
+        this.log(`Remove the linked world in instance ${instancePath}.`)
+        await rm(serverWorldPath)
+      }
+    }
+
+    this.log(`Link save ${saveName} as server world in instance ${instancePath}.`)
+    await createSymbolicLink(savePath, serverWorldPath, this)
   }
 
   async showDirectory(instancePath: string): Promise<void> {
