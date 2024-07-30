@@ -33,7 +33,9 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Mu
     s.subscribe('instanceModUpdates', () => {
       debounced()
     })
-    checkAndUpdate()
+    if (s.mods.length > 0) {
+      checkAndUpdate()
+    }
   }, { immediate: true })
 
   useEventListener('focus', checkAndUpdate)

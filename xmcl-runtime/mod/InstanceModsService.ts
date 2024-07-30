@@ -36,6 +36,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     const stateManager = await this.app.registry.get(ServiceStateManager)
     const state: MutableState<InstanceModsState> | undefined = await stateManager.get(getInstanceModStateKey(instancePath))
     if (state) {
+      await state.revalidate()
       const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
       const curseforgeClient = await this.app.registry.getOrCreate(CurseforgeV1Client)
       const worker = await this.app.registry.getOrCreate(kResourceWorker)
@@ -224,7 +225,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           .filter((file) => !shouldIgnoreFile(file))
           .map((file) => join(dir, file))
 
-        const peekCount = 100
+        const peekCount = 128
         const peekChunks = files.slice(0, peekCount)
         for (const file of files.slice(peekCount)) {
           processUpdate(file)
