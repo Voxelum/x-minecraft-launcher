@@ -78,6 +78,10 @@ export interface InstanceModsService {
    */
   watch(instancePath: string): Promise<MutableState<InstanceModsState>>
   /**
+   * Refresh the metadata of the instance mods
+   */
+  refreshMetadata(instancePath: string): Promise<void>
+  /**
    * Show instance /mods dictionary
    * @param instancePath The instance path
    */

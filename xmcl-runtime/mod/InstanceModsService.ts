@@ -4,13 +4,15 @@ import debounce from 'lodash.debounce'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
-import { ResourceService } from '~/resource'
+import { kResourceWorker, ResourceService } from '~/resource'
 import { shouldIgnoreFile } from '~/resource/core/pathUtils'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { ModrinthV2Client } from '@xmcl/modrinth'
+import { CurseforgeV1Client } from '@xmcl/curseforge'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -28,6 +30,90 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         path: instancePath,
       })
     })
+  }
+
+  async refreshMetadata(instancePath: string): Promise<void> {
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state: MutableState<InstanceModsState> | undefined = await stateManager.get(getInstanceModStateKey(instancePath))
+    if (state) {
+      const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
+      const curseforgeClient = await this.app.registry.getOrCreate(CurseforgeV1Client)
+      const worker = await this.app.registry.getOrCreate(kResourceWorker)
+
+      const onRefreshModrinth = async (all: Resource[]) => {
+        try {
+          const versions = await modrinthClient.getProjectVersionsByHash(all.map(v => v.hash))
+          const options = Object.entries(versions).map(([hash, version]) => {
+            const f = all.find(f => f.hash === hash)
+            if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
+            return undefined
+          }).filter((v): v is any => !!v)
+          if (options.length > 0) {
+            await this.resourceService.updateResources(options)
+            state.instanceModUpdates([[options, InstanceModUpdatePayloadAction.Update]])
+          }
+        } catch (e) {
+          this.error(e as any)
+        }
+      }
+      const onRefreshCurseforge = async (all: Resource[]) => {
+        try {
+          const chunkSize = 8
+          const allChunks = [] as Resource[][]
+          for (let i = 0; i < all.length; i += chunkSize) {
+            allChunks.push(all.slice(i, i + chunkSize))
+          }
+
+          const allPrints: Record<number, Resource> = {}
+          for (const chunk of allChunks) {
+            const prints = (await Promise.all(chunk.map(async (v) => ({ fingerprint: await worker.fingerprint(v.path), file: v }))))
+            for (const { fingerprint, file } of prints) {
+              if (fingerprint in allPrints) {
+                this.error(new Error(`Duplicated fingerprint ${fingerprint} for ${file.path} and ${allPrints[fingerprint].path}`))
+                continue
+              }
+              allPrints[fingerprint] = file
+            }
+          }
+          const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, Object.keys(allPrints).map(v => parseInt(v, 10)))
+          const options = [] as { hash: string; metadata: { curseforge: { projectId: number; fileId: number } } }[]
+          for (const f of result.exactMatches) {
+            const r = allPrints[f.file.fileFingerprint] || Object.values(allPrints).find(v => v.hash === f.file.hashes.find(a => a.algo === 1)?.value)
+            if (r) {
+              r.metadata.curseforge = { projectId: f.file.modId, fileId: f.file.id }
+              options.push({
+                hash: r.hash,
+                metadata: {
+                  curseforge: { projectId: f.file.modId, fileId: f.file.id },
+                },
+              })
+            }
+          }
+
+          if (options.length > 0) {
+            await this.resourceService.updateResources(options)
+            state.instanceModUpdates([[options, InstanceModUpdatePayloadAction.Update]])
+          }
+        } catch (e) {
+          this.error(e as any)
+        }
+      }
+
+      const refreshCurseforge: Resource[] = []
+      const refreshModrinth: Resource[] = []
+      for (const mod of state.mods.filter(v => !v.metadata.curseforge || !v.metadata.modrinth)) {
+        if (!mod.metadata.curseforge) {
+          refreshCurseforge.push(mod)
+        }
+        if (!mod.metadata.modrinth) {
+          refreshModrinth.push(mod)
+        }
+      }
+      await Promise.allSettled([
+        refreshCurseforge.length > 0 ? onRefreshCurseforge(refreshCurseforge) : undefined,
+        refreshModrinth.length > 0 ? onRefreshModrinth(refreshModrinth) : undefined,
+      ])
+    }
   }
 
   async showDirectory(path: string): Promise<void> {

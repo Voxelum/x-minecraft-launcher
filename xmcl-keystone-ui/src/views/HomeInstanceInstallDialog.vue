@@ -312,7 +312,13 @@ const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(as
   }
 
   if (upgrade.value) {
-    selected.value = upgrade.value.files.map(f => f.file.path)
+    if (param.type === 'updates' && param.selectOnlyAdd) {
+      selected.value = upgrade.value.files
+        .filter(f => f.operation === 'add')
+        .map(f => f.file.path)
+    } else {
+      selected.value = upgrade.value.files.map(f => f.file.path)
+    }
   }
 })
 

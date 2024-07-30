@@ -16,9 +16,10 @@ import { getSWRV } from '@/util/swrvGet'
 import { getModrinthVersionModel } from './modrinthVersions'
 import { kSWRVConfig } from './swrvConfig'
 import { TaskItem } from '@/entities/task'
+import { filter as fuzzy } from 'fuzzy'
 
 export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeVersions>) {
-  const { mods: instanceMods } = injection(kInstanceModsContext)
+  const { mods: instanceMods, updateMetadata } = injection(kInstanceModsContext)
   const updates = ref([] as InstanceFileUpdate[])
   const checked = ref(false)
   const config = inject(kSWRVConfig)
@@ -112,6 +113,9 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
   }
 
   const { refresh, refreshing, error } = useRefreshable(async () => {
+    await updateMetadata()
+    await new Promise((resolve) => setTimeout(resolve, 500))
+
     const result: InstanceFileUpdate[] = []
     const mods = instanceMods.value
     const _path = path.value
@@ -121,6 +125,29 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
       checkModrinthDependencies(mods, runtimes, result),
       checkCurseforgeDependencies(mods, runtimes, result),
     ])
+
+    const similarAppend: InstanceFileUpdate[] = []
+    for (const f of result) {
+      similarAppend.push(f)
+      if (f.file.path.startsWith('/mods')) {
+        const fileName = f.file.path.substring(6)
+        const filtered = fuzzy(fileName, mods, {
+          extract: (m) => m.path.substring(6),
+        })
+        const bestMatched = filtered[0]
+        if (bestMatched) {
+          similarAppend.push({
+            operation: 'remove',
+            file: {
+              path: bestMatched.original.path,
+              hashes: {
+                sha1: bestMatched.original.hash,
+              },
+            },
+          })
+        }
+      }
+    }
 
     updates.value = result
     checked.value = true
@@ -140,6 +167,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
       type: 'updates',
       updates: updates.value,
       id: operationId,
+      selectOnlyAdd: true,
     })
   }
 

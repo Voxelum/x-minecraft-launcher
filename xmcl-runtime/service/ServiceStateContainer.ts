@@ -109,8 +109,11 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     if (this.#revalidating) return this.#revalidating
     if (this.#revalidator) {
       this.#revalidating = this.#revalidator()
-      await this.#revalidating
-      this.#revalidating = undefined
+      try {
+        await this.#revalidating
+      } finally {
+        this.#revalidating = undefined
+      }
     }
   }
 

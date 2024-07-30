@@ -1,14 +1,52 @@
 import { ModFile, getModFileFromResource } from '@/util/mod'
-import { InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, JavaRecord, PartialResourceHash, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import { useEventListener } from '@vueuse/core'
+import { InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, JavaRecord, MutableState, PartialResourceHash, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, set } from 'vue'
+import { useLocalStorageCache, useLocalStorageCacheInt } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
+function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<MutableState<InstanceModsState> | undefined>) {
+  const lastUpdateMetadata = useLocalStorageCache<Record<string, number>>('instanceModsLastRefreshMetadata', () => ({}), JSON.stringify, JSON.parse)
+  const { refreshMetadata } = useService(InstanceModsServiceKey)
+  const expireTime = 1000 * 30 * 60 // 0.5 hour
+
+  async function checkAndUpdate() {
+    const last = lastUpdateMetadata.value[instancePath.value] || 0
+    if ((Date.now() - last) > expireTime) {
+      await update()
+    }
+  }
+
+  async function update() {
+    lastUpdateMetadata.value[instancePath.value] = Date.now()
+    await refreshMetadata(instancePath.value)
+  }
+
+  const debounced = debounce(checkAndUpdate, 1000)
+
+  watch(state, (s) => {
+    if (!s) return
+    s.subscribe('instanceModUpdates', () => {
+      debounced()
+    })
+    checkAndUpdate()
+  }, { immediate: true })
+
+  useEventListener('focus', checkAndUpdate)
+
+  return {
+    checkAndUpdate,
+    update,
+  }
+}
+
 export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<RuntimeVersions>, java: Ref<JavaRecord | undefined>) {
   const { watch: watchMods } = useService(InstanceModsServiceKey)
-  const { isValidating, error, state } = useState(async () => {
+  const { isValidating, error, state, revalidate } = useState(async () => {
     const inst = instancePath.value
     if (!inst) { return undefined }
     console.time('[watchMods] ' + inst)
@@ -74,7 +112,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       reset()
       return
     }
-    console.log('update instance mods by state')
+    console.log('[instanceMods] update by state')
     updateItems(state.value?.mods, instanceRuntime.value)
   })
   watch(instanceRuntime, () => {
@@ -82,7 +120,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       reset()
       return
     }
-    console.log('update instance mods by runtime')
+    console.log('[instanceMods] update by runtime')
     updateItems(state.value?.mods, instanceRuntime.value)
   }, { deep: true })
 
@@ -110,9 +148,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     provideRuntime.value = runtime
   }
 
-  function revalidate() {
-    state.value?.revalidate()
-  }
+  const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
 
   return {
     mods,
@@ -120,6 +156,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     provideRuntime,
     enabledModCounts,
     isValidating,
+    updateMetadata,
     error,
     revalidate,
   }

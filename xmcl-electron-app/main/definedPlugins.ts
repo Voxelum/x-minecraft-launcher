@@ -7,6 +7,7 @@ import { pluginGameDataPath } from '@xmcl/runtime/app/pluginGameDataPath'
 import { pluginMediaProtocol } from '@xmcl/runtime/base/pluginMediaProtocol'
 import { pluginClientToken } from '@xmcl/runtime/clientToken/pluginClientToken'
 import { pluginCurseforgeClient } from '@xmcl/runtime/curseforge/pluginCurseforgeClient'
+import { pluinModrinthClient } from '@xmcl/runtime/modrinth/pluginModrinthClient'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
 import { pluginResourceWorker } from '@xmcl/runtime/resource/pluginResourceWorker'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
@@ -32,7 +33,6 @@ import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggd
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
 import { pluginUncaughtError } from '@xmcl/runtime/uncaughtError/pluginUncaughtError'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
-import { pluginInstanceModDiscover } from '@xmcl/runtime/mod/pluginInstanceModDiscover'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
@@ -51,7 +51,6 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginNvdiaGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,
-  pluginInstanceModDiscover,
   elyByPlugin,
 
   pluginMediaProtocol,
@@ -63,6 +62,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginModrinthModpackHandler,
   pluginClientToken,
   pluginCurseforgeClient,
+  pluinModrinthClient,
   pluginServicesHandler(definedServices),
   pluginGameDataPath,
   pluginTelemetry,

@@ -44,9 +44,9 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     }
   }
   watchEffect(mutate)
-  const revalidateCall = () => {
+  const revalidateCall = async () => {
     if (isValidating.value) return
-    state.value?.revalidate()
+    await state.value?.revalidate()
   }
   useEventListener(document, 'visibilitychange', revalidateCall, false)
   useEventListener(window, 'focus', revalidateCall, false)
