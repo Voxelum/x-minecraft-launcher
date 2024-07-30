@@ -75,7 +75,6 @@ import { getHumanizeDuration, TimeUnit } from '@/util/date'
 import { injection } from '@/util/inject'
 import useSWRV from 'swrv'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
-import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 
@@ -84,8 +83,6 @@ const isInFocusMode = useInFocusMode()
 const { total, progress, status, name: taskName } = injection(kLaunchTask)
 
 const active = ref(false)
-const lBtn = useLaunchButton()
-provide(kLaunchButton, lBtn)
 
 const { t } = useI18n()
 

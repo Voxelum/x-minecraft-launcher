@@ -82,11 +82,14 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
+import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+
+provide(kLaunchButton, useLaunchButton())
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial
