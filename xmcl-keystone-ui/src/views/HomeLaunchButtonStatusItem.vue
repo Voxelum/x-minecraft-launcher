@@ -5,10 +5,12 @@
     class="ml-2 transition-opacity duration-500 select-none h-full flex whitespace-nowrap text-sm font-bold flex-col overflow-hidden text-ellipsis"
     :style="{
       opacity: active ? '1' : '0.5',
+      cursor: item?.onClick ? 'pointer' : 'unset',
     }"
     style="cursor: unset"
     @mouseenter="emit('mouseenter')"
     @mouseleave="emit('mouseleave')"
+    @click="item?.onClick?.()"
   >
     <div
       class=" overflow-hidden text-ellipsis"
