@@ -46,6 +46,7 @@
     >
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"
+        class="mr-2"
         :name="taskName"
         :total="total"
         :progress="progress"
