@@ -41,9 +41,8 @@
       />
     </div>
     <div class="flex-grow" />
-    <div
+    <template
       v-if="!isInFocusMode"
-      class="align-center flex flex-1 flex-grow-0 lg:gap-7 gap-1"
     >
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"
@@ -60,7 +59,7 @@
         @mouseenter="active = true"
         @mouseleave="active = false"
       />
-    </div>
+    </template>
   </div>
 </template>
 

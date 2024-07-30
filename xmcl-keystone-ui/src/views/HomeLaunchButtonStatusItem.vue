@@ -1,7 +1,8 @@
 <template>
   <div
     v-if="item"
-    class="ml-2 transition-opacity duration-500 select-none h-full flex flex-grow-0 whitespace-nowrap text-sm font-bold flex-col max-w-40 lg:max-w-full overflow-hidden text-ellipsis"
+    v-shared-tooltip="_ => item ? item.title : ''"
+    class="ml-2 transition-opacity duration-500 select-none h-full flex whitespace-nowrap text-sm font-bold flex-col overflow-hidden text-ellipsis"
     :style="{
       opacity: active ? '1' : '0.5',
     }"
@@ -22,6 +23,7 @@
 </template>
 <script lang="ts" setup>
 import { LaunchMenuItem } from '@/composables/launchButton'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 defineProps<{ active?: boolean; item?: LaunchMenuItem }>()
 const emit = defineEmits(['mouseenter', 'mouseleave'])
