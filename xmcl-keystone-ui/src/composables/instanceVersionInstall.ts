@@ -43,6 +43,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     installFabric,
     installQuilt,
     installLabyModVersion,
+    installByProfile,
   } = useService(InstallServiceKey)
   const { refreshVersion } = useService(VersionServiceKey)
 
@@ -429,12 +430,19 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         version,
       })
     }
-    if (instruction.fresh || instruction.profile) {
+    if (instruction.fresh) {
       const version = await install(instruction.runtime)
       if (version) {
         await installDependencies(version, 'client')
       }
       await commit(version)
+      return
+    }
+    if (instruction.profile) {
+      await installByProfile(instruction.profile.installProfile)
+      if (instruction.version) {
+        await installDependencies(instruction.version, 'client')
+      }
       return
     }
     if (instruction.optifine) {
