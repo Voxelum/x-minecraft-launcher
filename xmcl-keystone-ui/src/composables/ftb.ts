@@ -120,7 +120,7 @@ export function useFeedTheBeastModpackInstall() {
 
     const name = generateDistinctName(config.name, instances.value.map(i => i.name))
 
-    const existed = getVersionHeader(config.runtime)
+    const existed = getVersionHeader(config.runtime, '')
     const options: CreateInstanceOption = {
       ...config,
       name,

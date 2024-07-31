@@ -130,12 +130,12 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
   const serverVersionId = computed(() => serverVersionHeader.value?.id)
   const versionId = computed(() => versionHeader.value?.id)
 
-  function getVersionHeader(runtime: RuntimeVersions) {
+  function getVersionHeader(runtime: RuntimeVersions, version = instance.value.version) {
     if (!instance.value.path) {
       return undefined
     }
     return findMatchedVersion(local.value,
-      instance.value.version,
+      version,
       runtime.minecraft,
       runtime.forge,
       runtime.neoForged,
