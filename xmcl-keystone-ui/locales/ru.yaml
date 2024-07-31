@@ -294,8 +294,8 @@ enable: Включить
 env:
   select:
     all: Выбрать все
-    fit: Выберите «Подогнать»
-    none: Выберите Нет
+    fit: Выбрать подходящие
+    none: Отменить выбор
 error:
   name: Ошибка | Ошибки
 errors:
@@ -571,7 +571,7 @@ labyMod:
 launch:
   cancel: Отменить
   kill: Остановить
-  killServer: Убить локальный сервер
+  killServer: Остановить локальный сервер
   launch: Запустить
 launchBlocked:
   ignore: Насильный запуск
@@ -757,14 +757,14 @@ mod:
   switchDefaultSource: Источник контента модов по умолчанию
   toUpdate: '{count} для обновления'
 modInstall:
-  checkDependencies: Проверьте зависимости
-  checkUpgrade: Проверить обновления модов
-  checkedDependencies: Проверенные зависимости
-  checkedUpgrade: Обновления проверены
+  checkDependencies: Проверить недостающие зависимости
+  checkUpgrade: Проверить обновления для модов
+  checkedDependencies: Недостающие зависимости проверены
+  checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
   install: Установить
-  installDependencies: Установите недостающие зависимости
+  installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
