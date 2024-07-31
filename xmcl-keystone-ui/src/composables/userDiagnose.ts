@@ -5,8 +5,6 @@ import { LaunchMenuItem } from './launchButton'
 import { LoginDialog } from './login'
 import { kUserContext } from './user'
 
-export const kUserDiagnose: InjectionKey<ReturnType<typeof useUserDiagnose>> = Symbol('UserDiagnose')
-
 export function useUserDiagnose() {
   const { userProfile } = injection(kUserContext)
   const { show } = useDialog(LoginDialog)

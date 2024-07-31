@@ -45,7 +45,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/minecraft'"
+                  :src="BUILTIN_IMAGES.minecraft"
                   width="32"
                 >
               </template>
@@ -60,7 +60,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/forge'"
+                  :src="BUILTIN_IMAGES.forge"
                   width="32"
                 >
               </template>
@@ -75,7 +75,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/fabric'"
+                  :src="BUILTIN_IMAGES.fabric"
                   width="32"
                 >
               </template>
@@ -90,7 +90,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/fabric'"
+                  :src="BUILTIN_IMAGES.fabric"
                   width="32"
                 >
               </template>
@@ -105,7 +105,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/quilt'"
+                  :src="BUILTIN_IMAGES.quilt"
                   width="32"
                 >
               </template>
@@ -120,7 +120,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/neoForged'"
+                  :src="BUILTIN_IMAGES.neoForged"
                   width="32"
                 >
               </template>
@@ -230,6 +230,7 @@ import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/i
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { BUILTIN_IMAGES } from '../constant'
 
 const { isShown, parameter } = useDialog('share-instance')
 

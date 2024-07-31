@@ -4,18 +4,6 @@ import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 
-function useInstanceVersionBase(instance: Ref<Instance>) {
-  const minecraft = computed(() => instance.value.runtime.minecraft)
-  const forge = computed(() => instance.value.runtime.forge)
-  const fabricLoader = computed(() => instance.value.runtime.fabricLoader)
-  const quiltLoader = computed(() => instance.value.runtime.quiltLoader)
-  return {
-    minecraft,
-    forge,
-    fabricLoader,
-    quiltLoader,
-  }
-}
 export const kInstanceVersion: InjectionKey<ReturnType<typeof useInstanceVersion>> = Symbol('InstanceVersion')
 
 export interface UnresolvedVersion {
@@ -191,7 +179,6 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
   }
 
   return {
-    ...useInstanceVersionBase(instance),
     getVersionHeader,
     getServerHeader,
     getResolvedVersion,

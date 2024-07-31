@@ -6,7 +6,7 @@ import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
-import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
+import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
@@ -227,7 +227,7 @@ const onLoadMore = () => {
 const selectedVersion = ref(modVersions.value.find(v => v.installed) ?? modVersions.value[0] as ProjectVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
-const innerUpdating = useModDetailUpdate()
+const innerUpdating = useProjectDetailUpdate()
 
 watch(() => props.curseforge, () => {
   innerUpdating.value = false
@@ -236,7 +236,7 @@ watch(() => props.installed, () => {
   innerUpdating.value = false
 }, { deep: true })
 
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.installed),
   innerUpdating,

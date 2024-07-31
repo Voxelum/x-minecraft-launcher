@@ -1,6 +1,7 @@
-import { Handler, LauncherAppPlugin } from '@xmcl/runtime/app'
-import { fetch } from 'undici'
 import { Readable } from 'stream'
+import { fetch } from 'undici'
+import type { LauncherAppPlugin } from './LauncherAppPlugin'
+import type { Handler } from './LauncherProtocolHandler'
 
 /**
  * The plugin to handle builtin icons

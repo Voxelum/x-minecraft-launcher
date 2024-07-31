@@ -3,7 +3,7 @@ import MarketProjectDetail, { Info, ProjectDetail } from '@/components/MarketPro
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
-import { useModDetailUpdate } from '@/composables/modDetail'
+import { useProjectDetailUpdate } from '@/composables/projectDetail'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
@@ -92,7 +92,7 @@ const model = computed(() => {
   return result
 })
 
-const updating = useModDetailUpdate()
+const updating = useProjectDetailUpdate()
 
 const { removeResources } = useService(ResourceServiceKey)
 const onDelete = async () => {

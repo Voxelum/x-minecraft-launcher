@@ -3,7 +3,7 @@ import MarketProjectDetail, { ExternalResource, Info, ProjectDetail } from '@/co
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
+import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
@@ -132,9 +132,9 @@ const model = computed(() => {
   return result
 })
 
-const updating = useModDetailUpdate()
+const updating = useProjectDetailUpdate()
 const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.installed),
   updating,

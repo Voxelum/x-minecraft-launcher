@@ -21,7 +21,7 @@ import { AnyError, isSystemError } from '~/util/error'
 import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
-import { checksum } from './fs'
+import { checksum } from '~/util/fs'
 // @ts-ignore
 import UpdaterBinary from './AutoUpdate.class'
 import { kDownloadOptions } from '~/network'

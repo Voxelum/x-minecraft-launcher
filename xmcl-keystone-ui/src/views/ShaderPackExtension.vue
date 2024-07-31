@@ -19,7 +19,7 @@
         >
           <v-img
             width="28"
-            :src="'http://launcher/icons/iris'"
+            :src="BUILTIN_IMAGES.iris"
           />
         </v-btn>
 
@@ -30,7 +30,7 @@
         >
           <v-img
             width="28"
-            :src="'http://launcher/icons/optifine'"
+            :src="BUILTIN_IMAGES.optifine"
           />
         </v-btn>
       </v-btn-toggle>
@@ -61,6 +61,7 @@ import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
+import { BUILTIN_IMAGES } from '../constant'
 
 const { runtime: version } = injection(kInstance)
 

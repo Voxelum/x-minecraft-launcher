@@ -4,7 +4,7 @@ import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { useMarkdown } from '@/composables/markdown'
-import { useModDetailEnable } from '@/composables/modDetail'
+import { useProjectDetailEnable } from '@/composables/projectDetail'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useOptifineVersions } from '@/composables/version'
 import { injection } from '@/util/inject'
@@ -142,7 +142,7 @@ const onDelete = () => {
     uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.resource) })
   }
 }
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.mod.installed),
   updating,

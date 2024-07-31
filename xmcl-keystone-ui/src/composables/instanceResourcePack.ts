@@ -5,6 +5,7 @@ import { computed, InjectionKey, Ref } from 'vue'
 import { useDomainResources } from './resources'
 import { useService } from './service'
 import { ProjectFile } from '@/util/search'
+import { BUILTIN_IMAGES } from '@/constant'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
   /**
@@ -128,7 +129,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
       pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
       pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
     } else {
-      pack.icon = 'http://launcher/icons/minecraft'
+      pack.icon = BUILTIN_IMAGES.minecraft
       pack.description = t('resourcepack.defaultDescription')
     }
     return pack

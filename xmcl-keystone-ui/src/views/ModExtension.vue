@@ -19,7 +19,7 @@
           >
             <v-img
               width="28"
-              :src="'http://launcher/icons/forge'"
+              :src="BUILTIN_IMAGES.forge"
             />
           </v-btn>
 
@@ -31,7 +31,7 @@
           >
             <v-img
               width="28"
-              :src="'http://launcher/icons/neoForged'"
+              :src="BUILTIN_IMAGES.neoForged"
             />
           </v-btn>
 
@@ -43,7 +43,7 @@
           >
             <v-img
               width="28"
-              :src="'http://launcher/icons/fabric'"
+              :src="BUILTIN_IMAGES.fabric"
             />
           </v-btn>
 
@@ -55,7 +55,7 @@
           >
             <v-img
               width="28"
-              :src="'http://launcher/icons/quilt'"
+              :src="BUILTIN_IMAGES.quilt"
             />
           </v-btn>
         </v-btn-toggle>
@@ -93,6 +93,7 @@ import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
+import { BUILTIN_IMAGES } from '../constant'
 
 const { runtime: version } = injection(kInstance)
 const { modrinth, curseforge, gameVersion, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)

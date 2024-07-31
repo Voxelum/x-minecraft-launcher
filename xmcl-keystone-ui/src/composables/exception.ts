@@ -12,16 +12,6 @@ export function useExceptionHandler<T extends ExceptionBase>(type: { new(...args
   }
 }
 
-export function useExceptionHandlerFromService<T>(serviceName: ServiceKey<T>, handler: (e: any, serviceName: string, serviceMethod: string) => void) {
-  const { serviceErrorHandlers } = injection(kExceptionHandlers)
-  const key = serviceName as string
-  if (!serviceErrorHandlers[key]) {
-    serviceErrorHandlers[key] = [handler]
-  } else {
-    serviceErrorHandlers[key].push(handler)
-  }
-}
-
 export function useExceptionHandlers() {
   const exceptionHandlers: Record<string, [{ new(...args: any[]): Exception<any> }, Array<(e: unknown) => void>]> = {}
   const serviceErrorHandlers: Record<string, Array<(e: any, serviceName: string, serviceMethod: string) => void>> = {}

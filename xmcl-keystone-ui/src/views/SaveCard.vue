@@ -26,7 +26,7 @@
         <div class="flex gap-2">
           <AvatarChip
             small
-            avatar="http://launcher/icons/minecraft"
+            :avatar="BUILTIN_IMAGES.minecraft"
             :text="`Minecraft ${source.gameVersion}`"
           />
 
@@ -86,6 +86,7 @@ import { useService } from '@/composables'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
 import AvatarChip from '@/components/AvatarChip.vue'
+import { BUILTIN_IMAGES } from '@/constant'
 
 const props = defineProps<{
   exportSave(path:string): void

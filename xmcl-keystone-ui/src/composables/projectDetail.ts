@@ -1,9 +1,9 @@
-import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
+import type { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { ProjectFile } from '@/util/search'
 import { Ref } from 'vue'
 
-export function useModDetailEnable(
-  selectedVersion: Ref<ModVersion | undefined>,
+export function useProjectDetailEnable(
+  selectedVersion: Ref<ProjectVersion | undefined>,
   installedFiles: Ref<ProjectFile[]>,
   updating: Ref<boolean>,
   enable: (file: ProjectFile) => void,
@@ -41,7 +41,7 @@ export function useModDetailEnable(
   }
 }
 
-export function useModDetailUpdate() {
+export function useProjectDetailUpdate() {
   let lastTimeout: any
   const updating = ref(false)
   watch(updating, (v) => {

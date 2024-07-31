@@ -42,7 +42,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/minecraft'"
+                  :src="BUILTIN_IMAGES.minecraft"
                   width="32"
                 >
               </template>
@@ -59,7 +59,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/forge'"
+                  :src="BUILTIN_IMAGES.forge"
                   width="32"
                 >
               </template>
@@ -76,7 +76,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/fabric'"
+                  :src="BUILTIN_IMAGES.fabric"
                   width="32"
                 >
               </template>
@@ -181,6 +181,7 @@ import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { getUpstreamFromResource } from '@/util/upstream'
 import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { BUILTIN_IMAGES } from '../constant'
 
 const selected = ref([] as string[])
 

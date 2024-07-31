@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
+import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
 import { kModrinthInstaller } from '@/composables/modrinthInstaller'
 import { getModrinthProjectModel, useModrinthProject } from '@/composables/modrinthProject'
@@ -98,7 +98,7 @@ const dependencies = computed(() => {
   }) ?? []
 })
 
-const innerUpdating = useModDetailUpdate()
+const innerUpdating = useProjectDetailUpdate()
 watch(() => props.modrinth, () => {
   innerUpdating.value = false
 })
@@ -144,7 +144,7 @@ const onInstallDependency = async (dep: ProjectDependency) => {
   }
 }
 
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.installed),
   innerUpdating,
