@@ -9,7 +9,7 @@ import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
-import { useAggregateProjectsSplitted, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
@@ -144,21 +144,21 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
 
   const networkOnly = computed(() => modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
 
-  const _installed = useProjectsFilterSearch(
+  const _installed = useProjectsFilterSort(
     keyword,
     installed,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _notInstalledButCached = useProjectsFilterSearch(
+  const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _others = useProjectsFilterSearch(
+  const _others = useProjectsFilterSort(
     keyword,
     others,
     networkOnly,

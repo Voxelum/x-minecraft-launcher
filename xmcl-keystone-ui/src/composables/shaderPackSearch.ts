@@ -7,7 +7,7 @@ import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { useAggregateProjectsSplitted, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -169,21 +169,21 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
 
   const networkOnly = computed(() => modrinthCategories.value.length > 0)
 
-  const _installed = useProjectsFilterSearch(
+  const _installed = useProjectsFilterSort(
     keyword,
     installed,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _notInstalledButCached = useProjectsFilterSearch(
+  const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _others = useProjectsFilterSearch(
+  const _others = useProjectsFilterSort(
     keyword,
     others,
     networkOnly,

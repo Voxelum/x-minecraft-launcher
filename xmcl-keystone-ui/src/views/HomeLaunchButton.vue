@@ -74,7 +74,7 @@ import { kLaunchButton } from '@/composables/launchButton'
 import { injection } from '@/util/inject'
 import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
 import { kInstances } from '@/composables/instances'
-import { useInFocusMode } from '@/composables/uiLayout';
+import { useInFocusMode } from '@/composables/uiLayout'
 
 defineProps<{ compact?: boolean }>()
 

@@ -14,18 +14,25 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
   a.curseforge = b.curseforge || a.curseforge
 }
 
-export function useProjectsFilterSearch<T extends ProjectEntry>(
+/**
+ * Sort the projects by the keyword. It will also filter the project if the networkOnly is true
+ * @param keyword The keyword to search
+ * @param items The project items
+ * @param networkOnly If only show the network project
+ * @returns The sorted and filtered project
+ */
+export function useProjectsFilterSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
   networkOnly: MaybeRef<boolean>,
-  isCurseforgeActive: Ref<boolean>,
-  isModrinthActive: Ref<boolean>,
+  isCurseforgeActive: MaybeRef<boolean>,
+  isModrinthActive: MaybeRef<boolean>,
 ) {
   const filterSorted = computed(() => {
     const filtered = get(networkOnly)
       ? items.value.filter(p => {
-        if (!isCurseforgeActive.value && p.curseforge) return false
-        if (!isModrinthActive.value && p.modrinth) return false
+        if (!get(isCurseforgeActive) && p.curseforge) return false
+        if (!get(isModrinthActive) && p.modrinth) return false
         return p.curseforge || p.modrinth || p.id === 'OptiFine'
       })
       : items.value
@@ -34,7 +41,6 @@ export function useProjectsFilterSearch<T extends ProjectEntry>(
 
     const result = filtered
       .map(p => [p, getDiceCoefficient(keyword.value, p.title)] as const)
-      // .filter(p => p[1] > 0)
       .sort((a, b) => -a[1] + b[1])
       .map(p => p[0])
 
@@ -43,10 +49,18 @@ export function useProjectsFilterSearch<T extends ProjectEntry>(
   return filterSorted
 }
 
+/**
+ * Aggregate the modrinth/curseforge/local
+ * @param modrinth Project provided by modrinth
+ * @param curseforge Project provided by curseforge
+ * @param local Project provieded by local cache
+ * @param installedProjects The installed project
+ * @returns The aggregated project
+ */
 export function useAggregateProjects<T extends ProjectEntry>(
   modrinth: Ref<T[]>,
   curseforge: Ref<T[]>,
-  cached: Ref<T[]>,
+  local: Ref<T[]>,
   installedProjects: Ref<T[]>,
 ) {
   const items = computed(() => {
@@ -87,14 +101,15 @@ export function useAggregateProjects<T extends ProjectEntry>(
 
     for (const mod of modrinth.value) visit(mod)
     for (const mod of curseforge.value) visit(mod)
-    for (const mod of cached.value) {
+    for (const mod of local.value) {
       mod.curseforge = undefined
       mod.modrinth = undefined
-      if (indices[mod.id]) {
-        const other = indices[mod.id]
-        assignProject(other, mod)
-        insert(other)
-      }
+      visit(mod)
+      // if (indices[mod.id]) {
+      //   const other = indices[mod.id]
+      //   assignProject(other, mod)
+      //   insert(other)
+      // }
     }
 
     return all
@@ -106,7 +121,7 @@ export function useAggregateProjects<T extends ProjectEntry>(
 export function useAggregateProjectsSplitted<T extends ProjectEntry>(
   modrinth: Ref<T[]>,
   curseforge: Ref<T[]>,
-  cached: Ref<T[]>,
+  local: Ref<T[]>,
   installedProjects: Ref<T[]>,
 ) {
   const items = computed(() => {
@@ -147,7 +162,7 @@ export function useAggregateProjectsSplitted<T extends ProjectEntry>(
       }
     }
 
-    for (const mod of cached.value) {
+    for (const mod of local.value) {
       mod.curseforge = undefined
       mod.modrinth = undefined
       if (visit(mod)) {
