@@ -27,9 +27,9 @@
     <v-list-item-avatar :size="dense ? 30 : 40">
       <img
         ref="iconImage"
-        v-fallback-img="BUILTIN_IMAGES.unknownServer"
+        v-fallback-img="BuiltinImages.unknownServer"
         :class="{ 'opacity-20': item.installed.length === 0 && hover }"
-        :src="icon || item.icon || BUILTIN_IMAGES.unknownServer"
+        :src="icon || item.icon || BuiltinImages.unknownServer"
       >
       <v-btn
         v-if="install && item.installed.length === 0"
@@ -161,7 +161,7 @@ import TextComponent from './TextComponent'
 import { Resource } from '@xmcl/runtime-api'
 import { basename } from '@/util/basename'
 import { vFallbackImg } from '@/directives/fallbackImage'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>

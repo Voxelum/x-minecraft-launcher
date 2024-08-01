@@ -12,7 +12,6 @@
     <div class="flex items-center gap-4">
       <img
         ref="icon"
-        v-fallback-img="unknownPack"
         class="rounded-lg object-contain"
         :src="source.icon"
         width="80px"
@@ -26,7 +25,7 @@
         <div class="flex gap-2">
           <AvatarChip
             small
-            :avatar="BUILTIN_IMAGES.minecraft"
+            :avatar="BuiltinImages.minecraft"
             :text="`Minecraft ${source.gameVersion}`"
           />
 
@@ -86,7 +85,7 @@ import { useService } from '@/composables'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
 import AvatarChip from '@/components/AvatarChip.vue'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   exportSave(path:string): void

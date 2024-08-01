@@ -60,43 +60,43 @@
     {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
     <div>
       <v-avatar size="28">
-        <img :src="BUILTIN_IMAGES.minecraft">
+        <img :src="BuiltinImages.minecraft">
       </v-avatar>
       {{ instance.runtime.minecraft }}
 
       <span v-if="instance.runtime.forge">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.forge">
+          <img :src="BuiltinImages.forge">
         </v-avatar>
         {{ instance.runtime.forge }}
       </span>
       <span v-if="instance.runtime.labyMod">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.labyMod">
+          <img :src="BuiltinImages.labyMod">
         </v-avatar>
         {{ instance.runtime.labyMod }}
       </span>
       <span v-if="instance.runtime.neoForged">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.neoForged">
+          <img :src="BuiltinImages.neoForged">
         </v-avatar>
         {{ instance.runtime.neoForged }}
       </span>
       <span v-if="instance.runtime.fabricLoader">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.fabric">
+          <img :src="BuiltinImages.fabric">
         </v-avatar>
         {{ instance.runtime.fabricLoader }}
       </span>
       <span v-if="instance.runtime.quiltLoader">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.quilt">
+          <img :src="BuiltinImages.quilt">
         </v-avatar>
         {{ instance.runtime.quiltLoader }}
       </span>
       <span v-if="instance.runtime.optifine">
         <v-avatar size="28">
-          <img :src="BUILTIN_IMAGES.optifine">
+          <img :src="BuiltinImages.optifine">
         </v-avatar>
         {{ instance.runtime.optifine }}
       </span>
@@ -111,7 +111,7 @@ import { injection } from '@/util/inject'
 import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])

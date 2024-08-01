@@ -1,15 +1,25 @@
-import unknownServer from '@/assets/unknown_server.png'
+import unknownServer from '@/assets/unknown_server.webp'
+import minecraft from '@/assets/minecraft.webp'
+import forge from '@/assets/forge.webp'
+import fabric from '@/assets/fabric.webp'
+import quilt from '@/assets/quilt.svg'
+import optifine from '@/assets/optifine.webp'
+import iris from '@/assets/iris.webp'
+import mmc from '@/assets/mmc.webp'
+import labyMod from '@/assets/labyMod.webp'
+import neoForged from '@/assets/neoForged.webp'
+import craftingTable from '@/assets/craftingTable.webp'
 
-export const BUILTIN_IMAGES = {
-  minecraft: 'http://launcher/icons/minecraft',
-  forge: 'http://launcher/icons/forge',
-  fabric: 'http://launcher/icons/fabric',
-  quilt: 'http://launcher/icons/quilt',
-  neoForged: 'http://launcher/icons/neoForged',
-  optifine: 'http://launcher/icons/optifine',
-  iris: 'http://launcher/icons/iris',
-  mmc: 'http://launcher/icons/mmc',
-  labyMod: 'http://launcher/icons/labyMod',
-  craftingTable: 'http://launcher/icons/craftingTable',
+export const BuiltinImages = {
+  minecraft,
+  forge,
+  fabric,
+  quilt,
+  neoForged,
+  optifine,
+  iris,
+  mmc,
+  labyMod,
+  craftingTable,
   unknownServer,
 }

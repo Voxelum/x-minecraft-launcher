@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { VersionHeader } from '@xmcl/runtime-api'
 import VersionInput, { VersionItem } from './VersionInput.vue'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   versions: VersionHeader[]
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 
 <template>
   <VersionInput
-    :icon="BUILTIN_IMAGES.craftingTable"
+    :icon="BuiltinImages.craftingTable"
     :title="t('localVersion.title', 1)"
     :url="t('localVersion.hint')"
     :is-clearable="true"
