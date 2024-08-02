@@ -25,7 +25,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
     const profile: UserProfile = {
       id: normalizeUserId(authentication.userId, options.authority),
-      username: options.username,
+      username: authentication.username || options.username,
       invalidated: false,
       authority: options.authority,
       expiredAt: authentication.expiredAt,
@@ -44,8 +44,9 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
       try {
-        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal, slientOnly)
+        const { accessToken, expiredAt, gameProfiles, selectedProfile, username } = await this.loginMicrosoft(user.username, undefined, false, true, signal, slientOnly)
 
+        user.username = username || user.username
         user.expiredAt = expiredAt
         user.selectedProfile = selectedProfile?.id ?? ''
         user.profiles = toRecord(gameProfiles, v => v.id)
@@ -198,6 +199,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         },
       }]
       return {
+        username: result.account?.username,
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
         gameProfiles,
