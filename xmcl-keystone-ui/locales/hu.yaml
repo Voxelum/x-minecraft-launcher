@@ -1087,6 +1087,7 @@ resourcepack:
   showInCurseforge: '{name} megjelenítése curseforge-on'
   unselected: Nem kiválasztott forráscsomagok
 save:
+  cheat: Csalás
   copy:
     cancel: Másolás törlése
     confirm: Másolás indítása
@@ -1116,14 +1117,19 @@ save:
   export: Mentés exportálása
   exportMessage: Mentés exportálása zip-ként
   exportTitle: Mentés exportálása
+  gameMode: játék mód
   import: Mentés importálása
   importMessage: Mentés importálása zip-ből
   importTitle: Mentés importálása
   independent: Példány használjon független mentési mappát
+  levelName: Szint neve
   manage: Mentések kezelése
   name: Mentés | Mentések
+  search: Keresés Mentés
+  selected: helyi archívum
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
+  unselected: megosztott archívum
 saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid

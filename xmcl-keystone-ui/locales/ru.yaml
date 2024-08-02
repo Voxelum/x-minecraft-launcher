@@ -1147,6 +1147,7 @@ resourcepack:
   showInCurseforge: Показать {name} на CurseForge
   unselected: Невыбранные наборы ресурсов
 save:
+  cheat: Мошенничество
   copy:
     cancel: Отменить копирование
     confirm: Начать копирование
@@ -1174,14 +1175,19 @@ save:
   export: Экспорт сохранения
   exportMessage: Экспортировать мир в zip-архив
   exportTitle: Экспортировать мир
+  gameMode: игровой режим
   import: Импортировать мир
   importMessage: Импортировать мир из zip-архива
   importTitle: Импортировать мир
   independent: Экземпляр использует независимую папку сохранений
+  levelName: Название уровня
   manage: Управление мирами
   name: Мир | Миры
+  search: Поиск сохранений
+  selected: местный архив
   shared: Экземпляр использует общую папку сохранений
   showDirectory: Открыть папку с мирами
+  unselected: общий архив
 screenshots:
   empty: У вас нет снимков экрана
   goto: Открыть папку со снимками экрана

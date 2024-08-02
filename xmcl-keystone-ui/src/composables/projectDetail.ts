@@ -2,12 +2,12 @@ import type { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue
 import { ProjectFile } from '@/util/search'
 import { Ref } from 'vue'
 
-export function useProjectDetailEnable(
+export function useProjectDetailEnable<T extends ProjectFile>(
   selectedVersion: Ref<ProjectVersion | undefined>,
-  installedFiles: Ref<ProjectFile[]>,
+  installedFiles: Ref<T[]>,
   updating: Ref<boolean>,
-  enable: (file: ProjectFile) => void,
-  disable: (file: ProjectFile) => void,
+  enable: (file: T) => void,
+  disable: (file: T) => void,
 ) {
   const selectedFile = computed(() => {
     const ver = selectedVersion.value

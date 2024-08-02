@@ -33,10 +33,11 @@
           :item-height="itemHeight"
           @scroll="onScroll"
         >
-          <template #default="{ item }">
+          <template #default="{ item, index }">
             <slot
               name="item"
               :item="item"
+              :index="index"
               :has-update="typeof item === 'string' ? false : !!plans[item.id]"
               :checked="typeof item === 'string' ? false : (selections[item.id] || false)"
               :selection-mode="typeof item === 'string' ? false : (selectionMode && item.installed && item.installed.length > 0)"
@@ -121,7 +122,10 @@ const selectedModrinthId = computed(() => {
   if (id && id?.startsWith('modrinth:')) {
     return id.substring('modrinth:'.length)
   }
-  return selectedItem.value?.modrinthProjectId || selectedItem.value?.modrinth?.project_id || ''
+  const item = selectedItem.value
+  return item?.modrinthProjectId ||
+    item?.modrinth?.project_id ||
+    ''
 })
 const selectedCurseforgeId = computed(() => {
   const id = selectedId.value

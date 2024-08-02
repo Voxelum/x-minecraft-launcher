@@ -71,28 +71,58 @@
         </v-chip>
       </v-chip-group>
 
-      <v-subheader class="flex">
-        Modrinth
-        <div class="flex-grow" />
-        <v-switch
-          dense
-          flat
-          :input-value="enableModrinth"
-          @change="emit('update:enableModrinth', $event)"
-        />
-      </v-subheader>
-      <v-chip-group
-        v-model="modrinthSelectModel"
-        column
-        multiple
+      <v-subheader
+        v-if="modLoaders"
       >
-        <ModrinthCategoryChip
-          v-for="tag in _modrinthCategories"
-          :key="tag.name"
-          :tag="tag"
-          :disabled="!enableModrinth"
-        />
-      </v-chip-group>
+        {{ t('modrinth.modLoaders.name') }}
+      </v-subheader>
+      <v-btn-toggle
+        v-if="modLoaders"
+        background-color="transparent"
+        class="px-1"
+        dense
+        :value="modloader"
+        @change="emit('update:modloader', $event)"
+      >
+        <v-btn
+          v-for="loader in modLoaders"
+          :key="loader"
+          outlined
+          text
+          small
+          :value="loader"
+        >
+          <img
+            height="24"
+            :src="getIcon(loader)"
+          >
+        </v-btn>
+      </v-btn-toggle>
+
+      <template v-if="modrinthCategoryFilter">
+        <v-subheader class="flex">
+          Modrinth
+          <div class="flex-grow" />
+          <v-switch
+            dense
+            flat
+            :input-value="enableModrinth"
+            @change="emit('update:enableModrinth', $event)"
+          />
+        </v-subheader>
+        <v-chip-group
+          v-model="modrinthSelectModel"
+          column
+          multiple
+        >
+          <ModrinthCategoryChip
+            v-for="tag in _modrinthCategories"
+            :key="tag.name"
+            :tag="tag"
+            :disabled="!enableModrinth"
+          />
+        </v-chip-group>
+      </template>
       <template v-if="curseforgeCategoryFilter">
         <v-subheader class="flex">
           Curseforge
@@ -133,13 +163,14 @@ import { injection } from '@/util/inject'
 import { ModsSearchSortField } from '@xmcl/curseforge'
 import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
 import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
+import { BUILTIN_IMAGES } from '@/constant'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
   gameVersion: string
   modrinthCategories: string[]
   curseforgeCategoryFilter?: string
-  modrinthCategoryFilter: string
+  modrinthCategoryFilter?: string
   enableCurseforge?: boolean
   enableModrinth?: boolean
   keyword: string
@@ -147,6 +178,9 @@ const props = defineProps<{
   sort?: number
   modrinthSort?: 'relevance'| 'downloads' |'follows' |'newest' |'updated'
   curseforgeSort?: ModsSearchSortField
+
+  modLoaders?: string[]
+  modloader?: string
 }>()
 
 const emit = defineEmits<{
@@ -243,6 +277,12 @@ const onWheel = (e: WheelEvent) => {
   }
   e.preventDefault()
   e.stopPropagation()
+}
+
+function getIcon(loader: string) {
+  if (loader === 'neoforge') loader = 'neoForged'
+  // @ts-ignore
+  return BUILTIN_IMAGES[loader]
 }
 
 </script>

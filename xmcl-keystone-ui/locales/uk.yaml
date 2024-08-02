@@ -1058,6 +1058,7 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   shared: Екземпляр використовує спільну папку пакета ресурсів
 save:
+  cheat: Обман
   copy:
     cancel: Скасувати копіювання
     confirm: Почати копіювання
@@ -1085,14 +1086,19 @@ save:
   export: Експорт збереження
   exportMessage: Експорт збереження у zip
   exportTitle: Експорт збереження
+  gameMode: режим гри
   import: Імпорт збереження
   importMessage: Імпорт збереження з zip
   importTitle: Імпорт збереження
   independent: Примірник використовує незалежну папку збереження
+  levelName: Назва рівня
   manage: Управління збереженнями
   name: Збереження | Збереження
+  search: Пошук Зберігає
+  selected: місцевий архів
   shared: Екземпляр використовує спільну папку збереження
   showDirectory: Показати каталог збереження
+  unselected: спільний архів
 saves: {}
 screenshots:
   empty: У вас немає скріншотів

@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
-import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
 import { kModrinthInstaller } from '@/composables/modrinthInstaller'
-import { getModrinthProjectModel, useModrinthProject } from '@/composables/modrinthProject'
+import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
+import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
-import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
-import { getSWRV } from '@/util/swrvGet'
-import { ModrinthV2Client, SearchResultHit } from '@xmcl/modrinth'
+import { SearchResultHit } from '@xmcl/modrinth'
 import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{

@@ -65,7 +65,7 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-list dense>
+          <v-list dense nav>
             <v-list-item
               class="mx-1"
               @click="denseView = !denseView"
@@ -99,6 +99,33 @@
               </v-list-item-title>
             </v-list-item>
             <v-divider class="my-2" />
+            <v-list-item-group v-model="defaultSourceModel">
+              <v-subheader>
+                {{ t('mod.switchDefaultSource') }}
+              </v-subheader>
+              <v-list-item key="curseforge">
+                <v-list-item-icon>
+                  <v-icon>
+                    $vuetify.icons.curseforge
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>
+                  Curseforge
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item key="modrinth">
+                <v-list-item-icon>
+                  <v-icon>
+                    $vuetify.icons.modrinth
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>
+                  Modrinth
+                </v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+            <v-divider class="my-2" />
+
             <v-list-item
               dense
               class="mx-1"
@@ -236,6 +263,7 @@
         v-if="dragover"
         icon="save_alt"
         :text="t('mod.dropHint')"
+        :size="100"
         class="h-full"
       />
       <MarketProjectDetailModrinth
@@ -265,8 +293,7 @@
         :category="curseforgeCategory"
         :all-files="mods"
         :updating="updating"
-        :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
-        @install="onInstall"
+        :modrinth="selectedModrinthId"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -405,6 +432,11 @@ const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: chec
 const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: checkingDependencies, checked: checkedDependencies, apply: installDependencies, installing: installingDependencies } = useModDependenciesCheck(path, runtime)
 
 const defaultSource = injection(kInstanceDefaultSource)
+// Default source
+const defaultSourceModel = computed({
+  get() { return defaultSource.value === 'curseforge' ? 0 : 1 },
+  set(i: number) { defaultSource.value = i === 0 ? 'curseforge' : 'modrinth' },
+})
 const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModrinthId: string, selectedCurseforgeId: number | undefined) => {
   const hasModrinth = selectedItem?.modrinth || selectedModrinthId
   if (!hasModrinth) return false
@@ -450,17 +482,17 @@ const onInstall = (f: Resource[], _path?: string) => {
   })
 }
 const onUninstall = (f: ProjectFile[], _path?: string) => {
-  uninstall({ path: _path ?? path.value, mods: f.map(f => f.resource) }).then(() => {
+  uninstall({ path: _path ?? path.value, mods: f.map(f => (f as ModFile).resource) }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
 const onEnable = (f: ProjectFile, _path?: string) => {
-  enable({ path: _path ?? path.value, mods: [f.resource] }).then(() => {
+  enable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
 const onDisable = (f: ProjectFile, _path?: string) => {
-  disable({ path: _path ?? path.value, mods: [f.resource] }).then(() => {
+  disable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }

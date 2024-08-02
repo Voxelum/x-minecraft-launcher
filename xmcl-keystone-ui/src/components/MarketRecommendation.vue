@@ -5,12 +5,14 @@
   >
     <div class="flex flex-grow-0 gap-4">
       <v-icon
+        v-if="modrinth"
         size="90"
         color="green"
       >
         $vuetify.icons.modrinth
       </v-icon>
       <v-icon
+        v-if="curseforge"
         size="100"
         color="orange darken-2"
       >
@@ -21,7 +23,10 @@
       keypath="modInstall.recommendation"
       tag="p"
     >
-      <template #first>
+      <template
+        v-if="modrinth"
+        #first
+      >
         <ModrinthCategoryChip
           class="text-yellow-400"
           :tag="randomModrinthCats[0]"
@@ -33,7 +38,10 @@
           @click="emit('modrinth', randomModrinthCats[1])"
         />
       </template>
-      <template #second>
+      <template
+        v-if="curseforge"
+        #second
+      >
         <template v-if="curseforge">
           <CurseforgeCategoryChip
             class="text-blue-400"
@@ -48,11 +56,17 @@
         </template>
       </template>
       <template #curseforge>
-        <span class="text-orange-500">
+        <span
+          v-if="curseforge"
+          class="text-orange-500"
+        >
           Curseforge
         </span>
       </template>
-      <template #modrinth>
+      <template
+        v-if="modrinth"
+        #modrinth
+      >
         <span class="text-green-500">
           Modrinth
         </span>

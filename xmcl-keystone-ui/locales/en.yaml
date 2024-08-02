@@ -1062,6 +1062,7 @@ resourcepack:
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
+  cheat: Cheating
   copy:
     cancel: Cancel Copy
     confirm: Start Copy
@@ -1089,14 +1090,19 @@ save:
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
+  gameMode: game mode
   import: Import Save
   importMessage: Import a Save from zip
   importTitle: Import a Save
   independent: Instance use independent saves folder
+  levelName: Level Name
   manage: Manage Saves
   name: Save | Saves
+  search: Search Saves
+  selected: Local Saves
   shared: Instance use shared saves folder
   showDirectory: Show saves directory
+  unselected: shared archive
 saves: {}
 screenshots:
   empty: You don't have screenshots

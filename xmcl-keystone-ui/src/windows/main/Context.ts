@@ -24,7 +24,8 @@ import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
-import { kInstanceSave, useInstanceSaves } from '@/composables/save'
+import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
+import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
@@ -105,6 +106,7 @@ export default defineComponent({
     provide(kResourcePackSearch, resourcePackSearch)
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
+    provide(kSaveSearch, useSavesSearch(instance.runtime, saves.saves, saves.sharedSaves))
     provide(kModUpgrade, modUpgrade)
     provide(kTheme, useTheme(vuetify.framework))
 

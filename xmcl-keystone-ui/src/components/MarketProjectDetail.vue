@@ -11,13 +11,14 @@
           height="128"
           type="card"
         />
-        <v-img
+        <img
           v-else
+          v-fallback-img="BUILTIN_IMAGES.unknownServer"
           width="128"
           height="128"
           class="rounded-xl"
-          :src="detail.icon || unknownServer"
-        />
+          :src="detail.icon || BUILTIN_IMAGES.unknownServer"
+        >
       </div>
       <div class="flex flex-col">
         <v-skeleton-loader
@@ -175,7 +176,7 @@
           </div>
 
           <div class="flex-grow" />
-          <div class="text-center">
+          <div class="text-center" v-if="!noVersion">
             <v-menu
               open-on-hover
               :disabled="loadingVersions"
@@ -261,7 +262,7 @@
       <v-tab :disabled="props.detail.galleries.length === 0">
         {{ t('modrinth.gallery') }}
       </v-tab>
-      <v-tab>
+      <v-tab v-if="versions.length > 0 && !noVersion">
         {{ t('modrinth.versions') }}
       </v-tab>
     </v-tabs>
@@ -274,6 +275,7 @@
       >
         <v-tab-item>
           <v-expansion-panels
+            v-if="dependencies.length > 0"
             v-model="showDependencies"
             :disabled="dependencies.length === 0"
             class="mb-4"
@@ -508,13 +510,13 @@
           />
         </template>
 
-        <template v-if="detail.modLoaders.length > 0">
+        <template v-if="validModLoaders.length > 0">
           <v-subheader>
             {{ t('modrinth.modLoaders.name') }}
           </v-subheader>
           <span class="flex flex-wrap gap-2 px-2">
             <div
-              v-for="l of detail.modLoaders"
+              v-for="l of validModLoaders"
               :key="l"
               style="width: 36px; height: 36px;"
             >
@@ -675,6 +677,8 @@ import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
 import { clientCurseforgeV1 } from '@/util/clients'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { vFallbackImg } from '@/directives/fallbackImage'
+import { BUILTIN_IMAGES } from '@/constant'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -689,6 +693,7 @@ const props = defineProps<{
   supportedVersions?: string[]
   noDelete?: boolean
   noEnabled?: boolean
+  noVersion?: boolean
   hasMore: boolean
   curseforge?: number
   modrinth?: string
@@ -919,6 +924,10 @@ const iconMapping = {
   optifine: '$vuetify.icons.optifine',
   neoforge: '$vuetify.icons.neoForged',
 } as Record<string, string>
+
+const validModLoaders = computed(() => {
+  return props.detail.modLoaders.filter(l => iconMapping[l])
+})
 
 function onDescriptionLinkClicked(e: MouseEvent, href: string) {
   const url = new URL(href)

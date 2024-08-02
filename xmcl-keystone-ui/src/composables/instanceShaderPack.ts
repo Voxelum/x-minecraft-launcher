@@ -1,4 +1,4 @@
-import { GameOptionsState, Instance, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { GameOptionsState, Instance, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
@@ -6,8 +6,16 @@ import { FabricModMetadata } from '@xmcl/mod-parser'
 import { ModFile } from '@/util/mod'
 import useSWRV from 'swrv'
 import { BUILTIN_IMAGES } from '@/constant'
+import { ProjectFile } from '@/util/search'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
+
+export interface InstanceShaderFile extends ProjectFile {
+  /**
+   * Backed resource
+   */
+  resource: Resource
+}
 
 export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<RuntimeVersions>, mods: Ref<ModFile[]>, gameOptions: Ref<GameOptionsState | undefined>) {
   const { link, scan } = useService(InstanceShaderPacksServiceKey)

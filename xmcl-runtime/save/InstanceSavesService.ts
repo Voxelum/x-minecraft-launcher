@@ -9,11 +9,12 @@ import {
   isSaveResource,
   LinkSaveAsServerWorldOptions,
   ResourceDomain, Saves,
+  ShareSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir, ensureFile, readdir, readlink, rename, rm, unlink } from 'fs-extra'
+import { ensureDir, ensureFile, readdir, readlink, rename, rm, unlink, writeFile } from 'fs-extra'
 import throttle from 'lodash.throttle'
 import watch from 'node-watch'
 import { basename, extname, isAbsolute, join, resolve } from 'path'
@@ -24,10 +25,10 @@ import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, createSymbolicLink, missing, readdirIfPresent } from '../util/fs'
+import { copyPassively, createSymbolicLink, isDirectory, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from './save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata } from './save'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -120,9 +121,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const baseName = basename(path)
     const saveRoot = join(path, 'saves')
     const saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')))
-    const metadatas = saves
+    const metadatas = Promise.all(saves
       .map(s => resolve(saveRoot, s))
-      .map((p) => getInstanceSave(p, baseName))
+      .map((p) => getInstanceSaveHeader(p, baseName)))
     return metadatas
   }
 
@@ -281,7 +282,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
     requireString(saveName)
 
-    const savePath = join(instancePath, 'saves', saveName)
+    const savePath = instancePath ? join(instancePath, 'saves', saveName) : this.getPath('shared-saves', saveName)
 
     if (await missing(savePath)) {
       throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
@@ -290,41 +291,76 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     await rm(savePath, { recursive: true, force: true })
   }
 
+  async shareSave(options: ShareSaveOptions): Promise<void> {
+    const { instancePath, saveName } = options
+
+    requireString(saveName)
+
+    const savePath = join(instancePath, 'saves', saveName)
+
+    if (await missing(savePath)) {
+      throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
+    }
+
+    let destSharedSavePath = this.getPath('shared-saves', saveName)
+
+    if (await missing(destSharedSavePath)) {
+      await rename(savePath, destSharedSavePath)
+    } else {
+      // move the save to shared save with a new name
+      destSharedSavePath = this.getPath('shared-saves', `${saveName}-${Date.now()}`)
+      await rename(savePath, destSharedSavePath)
+    }
+  }
+
   async importSave(options: ImportSaveOptions) {
-    let { instancePath, saveName } = options
+    let { instancePath, saveName, path, curseforge } = options
 
     if (!this.instanceService.state.all[instancePath]) {
       throw new Error(`Cannot find managed instance ${instancePath}`)
     }
 
-    const path = 'directory' in options ? options.directory : options.path
     // normalize the save name
-    saveName = saveName ?? basename(path)
-    saveName = filenamify(saveName)
-    const destinationDir = join(instancePath, 'saves', basename(saveName, extname(saveName)))
+    saveName = filenamify(saveName ?? basename(path))
+    const dest = join(instancePath, 'saves', basename(saveName, extname(saveName)))
 
-    if ('directory' in options) {
+    const isDir = await isDirectory(path)
+
+    if (isDir) {
       if (!existsSync(join(path, 'level.dat'))) {
         throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
-      await copyPassively(options.directory, destinationDir)
+      const sharedSavesDir = this.getPath('shared-saves')
+      // if path is direct child of shared-saves, we need to link it else we copy it
+      if (path.startsWith(sharedSavesDir)) {
+        await createSymbolicLink(path, dest, this)
+      } else {
+        await copyPassively(path, dest)
+      }
     } else {
       // validate the source
-      const levelRoot = options.saveRoot ?? await findLevelRootOnPath(path)
+      const levelRoot = options.saveRoot
       if (!levelRoot) {
         throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
       const zipFile = await open(path)
       const entries = await readAllEntries(zipFile)
-      const task = new UnzipTask(zipFile, entries.filter(e => !e.fileName.endsWith('/')), destinationDir, (e) => {
+      const task = new UnzipTask(zipFile, entries.filter(e => !e.fileName.endsWith('/')), dest, (e) => {
         return e.fileName.substring(levelRoot.length)
       })
       await task.startAndWait()
     }
 
-    return destinationDir
+    if (curseforge) {
+      await writeFile(join(dest, '.curseforge'), JSON.stringify({
+        projectId: curseforge.projectId,
+        fileId: curseforge.fileId,
+      }))
+    }
+
+    return dest
   }
 
   /**
@@ -392,14 +428,22 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     // move all saves to shared
     const saves = await readdir(instanceSave)
     for (const saveName of saves) {
+      const savePath = join(instanceSave, saveName)
       // check if shared folder has the same save
       const sharedSavePath = join(sharedSave, saveName)
+      const isLinked = await readlink(savePath).catch(() => '')
+
+      if (isLinked) {
+        await unlink(savePath)
+        continue
+      }
+
       if (await missing(sharedSavePath)) {
-        await rename(join(instanceSave, saveName), sharedSavePath)
+        await rename(savePath, sharedSavePath)
       } else {
         // move to shared with a new name
         const newName = `${saveName}-${Date.now()}`
-        await rename(join(instanceSave, saveName), join(sharedSave, newName))
+        await rename(savePath, join(sharedSave, newName))
       }
     }
 
@@ -421,9 +465,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async getSharedSaves() {
     const sharedSave = this.getPath('shared-saves')
     const saves = await readdirIfPresent(sharedSave).then(a => a.filter(s => !s.startsWith('.')))
-    const metadatas = saves
+    const metadatas = Promise.all(saves
       .map(s => resolve(sharedSave, s))
-      .map((p) => getInstanceSave(p, ''))
+      .map((p) => readInstanceSaveMetadata(p, '')))
     return metadatas
   }
 }

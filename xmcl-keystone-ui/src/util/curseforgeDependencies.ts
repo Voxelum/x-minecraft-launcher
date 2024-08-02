@@ -1,5 +1,6 @@
 import { File, FileRelationType, FileModLoaderType } from '@xmcl/curseforge'
 import { clientCurseforgeV1 } from './clients'
+import { getModLoaderTypesForFile } from './curseforge'
 
 export async function resolveCurseforgeDependies(file: File) {
   const visited = new Set<number>()
@@ -14,19 +15,12 @@ export async function resolveCurseforgeDependies(file: File) {
     const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
       if (dep.relationType <= 4) {
         let gameVersion = ''
-        const modLoaderTypes: FileModLoaderType[] = []
+        const modLoaderTypes: FileModLoaderType[] = [...getModLoaderTypesForFile(file)]
         if (file.sortableGameVersions) {
           for (const ver of file.sortableGameVersions) {
             if (ver.gameVersion) {
               gameVersion = ver.gameVersion
-            } else if (ver.gameVersionName === 'Forge') {
-              modLoaderTypes.push(FileModLoaderType.Forge)
-            } else if (ver.gameVersionName === 'Fabric') {
-              modLoaderTypes.push(FileModLoaderType.Fabric)
-            } else if (ver.gameVersionName === 'Quilt') {
-              modLoaderTypes.push(FileModLoaderType.Quilt)
-            } else if (ver.gameVersionName === 'LiteLoader') {
-              modLoaderTypes.push(FileModLoaderType.LiteLoader)
+              break
             }
           }
         }
