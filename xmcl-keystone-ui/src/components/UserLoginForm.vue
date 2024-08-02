@@ -97,7 +97,6 @@
       <v-btn
         block
         :loading="isLogining && (!hovered)"
-        :disabled="!data.username"
         color="primary"
         rounded
         large
@@ -242,7 +241,6 @@ const {
 // Login Error
 const errorMessage = computed(() => {
   const e = error.value
-  console.log(e)
   if (isException(UserException, e)) {
     if (e.exception.type === 'loginInvalidCredentials') {
       return t('loginError.invalidCredentials')
@@ -283,18 +281,40 @@ const errorMessage = computed(() => {
     }
   }
 
+  if (e && typeof (e as Error).message === 'string') {
+    return (e as Error).message
+  }
+
   return e ? t('loginError.requestFailed') : ''
 })
 
 // Login
 const accountInput: Ref<any> = ref(null)
 const { refresh: onLogin, error } = useRefreshable(async () => {
+  error.value = undefined
   accountInput.value.blur()
   await nextTick() // wait a tick to make sure username updated.
   if (isLogining.value) {
     await abortLogin()
     return
   }
+
+  for (const rule of usernameRules.value) {
+    const err = rule(data.username)
+    if (err !== true) {
+      throw new Error(err)
+    }
+  }
+
+  if (!isMicrosoft.value) {
+    for (const rule of passwordRules) {
+      const err = rule(data.password)
+      if (err !== true) {
+        throw new Error(err)
+      }
+    }
+  }
+
   const index = history.value.indexOf(data.username)
   if (index === -1) {
     history.value.unshift(data.username)
