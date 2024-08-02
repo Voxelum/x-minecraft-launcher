@@ -3,7 +3,7 @@ import { useEventListener } from '@vueuse/core'
 import { InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, JavaRecord, MutableState, PartialResourceHash, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, set } from 'vue'
-import { useLocalStorageCache, useLocalStorageCacheInt } from './cache'
+import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
 

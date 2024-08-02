@@ -14,11 +14,12 @@
   />
 </template>
 <script setup lang="ts">
-import { ShaderPackProject } from '@/composables/shaderPackSearch'
 import MarketItem from '@/components/MarketItem.vue'
-import { ContextMenuItem } from '@/composables/contextMenu'
-import { BaseServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import { ContextMenuItem } from '@/composables/contextMenu'
+import { ShaderPackProject } from '@/composables/shaderPackSearch'
+import { ProjectEntry } from '@/util/search'
+import { BaseServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   pack: ShaderPackProject
@@ -28,7 +29,7 @@ const props = defineProps<{
   hasUpdate?: boolean
   dense?: boolean
   itemHeight?: number
-  install: (p: ShaderPackProject) => Promise<void>
+  install: (p: ProjectEntry) => Promise<void>
 }>()
 
 const emit = defineEmits<{

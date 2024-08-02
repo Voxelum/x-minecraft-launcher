@@ -1095,6 +1095,7 @@ resourcepack:
   showInCurseforge: Pokaż {name} w curseforge
   unselected: Niewybrane pakiety zasobów
 save:
+  cheat: Oszukiwanie
   copy:
     cancel: Anuluj kopiowanie
     confirm: Rozpocznij kopiowanie
@@ -1122,14 +1123,19 @@ save:
   export: Eksport Zapisz
   exportMessage: Eksportuj plik Zapisz jako zip
   exportTitle: Eksportuj zapis
+  gameMode: tryb gry
   import: Importuj i zapisz
   importMessage: Importuj plik Save z pliku zip
   importTitle: Importuj zapis
   independent: Instancja korzysta z niezależnego folderu zapisu
+  levelName: Nazwa poziomu
   manage: Zarządzanie oszczędnościami
   name: Save | Saves
+  search: Wyszukaj zapisane
+  selected: archiwum lokalne
   shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu
+  unselected: wspólne archiwum
 saves: {}
 screenshots:
   empty: Nie masz zrzutów ekranu

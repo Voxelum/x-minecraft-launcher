@@ -1149,6 +1149,7 @@ resourcepack:
   showInCurseforge: anzeigen {name} in curseforge
   unselected: Unausgewählte Texturpakete
 save:
+  cheat: Schummeln
   copy:
     cancel: Kopie abbrechen
     confirm: Kopieren beginnen
@@ -1177,14 +1178,19 @@ save:
   export: Ausfuhr von Konservierungsmitteln
   exportMessage: Exportieren und Speichern als Zip
   exportTitle: Ausfuhr von Konservierungsmitteln
+  gameMode: Spielmodus
   import: Importieren einer Speicherung
   importMessage: Importieren eines Spielstands aus einer Zip-Datei
   importTitle: Importieren einer Speicherung
   independent: Instanz verwendet unabhängigen Speicherordner
+  levelName: Ebenenname
   manage: Verwaltung der Reservate
   name: Speichern | Speichern
+  search: Suche nach Speichern
+  selected: lokales Archiv
   shared: Instanz verwendet freigegebenen Speicherordner
   showDirectory: Speicherverzeichnis anzeigen
+  unselected: gemeinsames Archiv
 saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos

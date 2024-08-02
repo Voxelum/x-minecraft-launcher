@@ -22,7 +22,7 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { kInstanceSave } from '@/composables/save'
+import { kInstanceSave } from '@/composables/instanceSave'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'

@@ -1087,6 +1087,7 @@ resourcepack:
   showInCurseforge: Mostra {name} in curseforge
   unselected: Pacchetti risorse non selezionati
 save:
+  cheat: Imbrogliare
   copy:
     cancel: Annulla copia
     confirm: Avvia copia
@@ -1115,14 +1116,19 @@ save:
   export: Esporta salvataggio
   exportMessage: Esporta il salvataggio come zip
   exportTitle: Esporta il salvataggio
+  gameMode: modalità di gioco
   import: Importa salvataggio
   importMessage: Importa un salvataggio da zip
   importTitle: Importa un salvataggio
   independent: L'istanza utilizza una cartella di salvataggio indipendente
+  levelName: Nome del livello
   manage: Gestisci salvataggi
   name: Salva | Salva
+  search: Cerca salvataggi
+  selected: archivio locale
   shared: L'istanza utilizza la cartella di salvataggio condivisa
   showDirectory: Mostra la directory di salvataggio
+  unselected: archivio condiviso
 saves: {}
 screenshots:
   empty: Non hai screenshot

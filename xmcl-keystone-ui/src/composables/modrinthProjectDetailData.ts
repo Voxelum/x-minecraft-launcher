@@ -2,6 +2,7 @@ import type { ExternalResource, Info, ModGallery, ProjectDetail } from '@/compon
 import type { ProjectVersion as ModVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useMarkdown } from '@/composables/markdown'
 import { kModrinthTags } from '@/composables/modrinth'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
@@ -146,7 +147,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
       const minecraftVersion = (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange ?? ''
       all.push({
         id: i.modrinth?.versionId.toString() ?? '',
-        name: i.resource.name ?? '',
+        name: basename(i.path) ?? '',
         version: i.version,
         disabled: false,
         changelog: undefined,

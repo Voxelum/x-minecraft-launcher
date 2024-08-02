@@ -327,10 +327,16 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
+  cheat: Trampa
   createNew: Crea un mundo novo
+  gameMode: modo de xogo
   independent: A instancia utiliza un cartafol de gardados independentes
+  levelName: Nome do nivel
+  search: Busca Gardas
+  selected: arquivo local
   shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
+  unselected: arquivo compartido
 saves: {}
 server:
   maxPlayers: Máximo xogadores

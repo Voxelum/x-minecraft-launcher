@@ -263,7 +263,10 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     onLocalEffect()
 
     useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
-    useQueryOverride('modLoaders', modLoaderFilters, computed(() => getModloaders(runtime.value)), searlizers.stringArray)
+    useQueryOverride('modLoader', modLoaderFilters, computed(() => getModloaders(runtime.value)), {
+      fromString: (v) => [v],
+      toString: (v) => v[0],
+    })
     useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
     useQueryOverride('modrinthCategories', modrinthCategories, [], searlizers.stringArray)
     useQueryOverride('keyword', keyword, '', searlizers.string)

@@ -1,6 +1,6 @@
 import { Mod } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
-import { Resource, ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/runtime-api'
+import { ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/runtime-api'
 
 /**
  * Represent a project
@@ -47,7 +47,6 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
 export interface ProjectFile {
   path: string
   version: string
-  resource: Resource
   enabled: boolean
   modrinth?: ResourceSourceModrinth
   curseforge?: ResourceSourceCurseforge

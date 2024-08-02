@@ -19,6 +19,8 @@ export interface InstallFileOptions {
    * Install this to the specific instance
    */
   instancePath?: string
+
+  noPersist?: boolean
 }
 
 export interface GetModFilesOptions {

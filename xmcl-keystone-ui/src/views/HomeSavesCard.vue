@@ -12,7 +12,7 @@
 <script lang="ts" setup>
 import HomeCard from '@/components/HomeCard.vue'
 import { injection } from '@/util/inject'
-import { kInstanceSave } from '@/composables/save'
+import { kInstanceSave } from '@/composables/instanceSave'
 
 const props = defineProps<{ row: number; rowCount: number }>()
 

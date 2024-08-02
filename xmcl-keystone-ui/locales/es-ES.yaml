@@ -787,6 +787,7 @@ resourcepack:
   showInCurseforge: Mostrar {name} en CurseForge
   unselected: Paquetes de Recursos No Seleccionados
 save:
+  cheat: Infiel
   copy:
     cancel: Cancelar Copia
     confirm: Iniciar Copia
@@ -814,14 +815,19 @@ save:
   export: Exportar Partida
   exportMessage: Exportar la Partida como zip
   exportTitle: Exportar la Partida
+  gameMode: modo de juego
   import: Importar Partida
   importMessage: Importar una Partida desde un archivo zip
   importTitle: Importar una Partida
   independent: La instancia utiliza una carpeta de guardado independiente
+  levelName: Nombre del nivel
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
+  search: Buscar guardados
+  selected: archivo local
   shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado
+  unselected: archivo compartido
 saves: {}
 screenshots:
   empty: No tienes capturas de pantalla

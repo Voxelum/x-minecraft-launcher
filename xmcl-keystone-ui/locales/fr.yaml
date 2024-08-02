@@ -1100,6 +1100,7 @@ resourcepack:
   showInCurseforge: Afficher {name} dans curseforge
   unselected: Packs de ressources désélectionnés
 save:
+  cheat: Tricherie
   copy:
     cancel: Annuler la copie
     confirm: Démarrer la copie
@@ -1130,14 +1131,19 @@ save:
   export: Exporter la sauvegarde
   exportMessage: Exporter la sauvegarde en zip
   exportTitle: Exporter la sauvegarde
+  gameMode: mode de jeu
   import: Importer la sauvegarde
   importMessage: Importer une sauvegarde à partir d'un zip
   importTitle: Importer une sauvegarde
   independent: L'instance utilise un dossier de sauvegarde indépendant
+  levelName: Nom du niveau
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
+  search: Rechercher des enregistrements
+  selected: archives locales
   shared: L'instance utilise le dossier de sauvegarde partagé
   showDirectory: Afficher le répertoire de sauvegarde
+  unselected: archives partagées
 saves: {}
 screenshots:
   empty: Vous n'avez pas de capture d'écran

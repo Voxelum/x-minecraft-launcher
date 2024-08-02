@@ -23,7 +23,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
   }
 
   @Singleton((o) => o.file.id)
-  async installFile({ file, type, instancePath, icon }: InstallFileOptions): Promise<InstallFileResult> {
+  async installFile({ file, type, instancePath, icon, noPersist }: InstallFileOptions): Promise<InstallFileResult> {
     requireString(type)
     requireObject(file)
     // instancePath ||= this.instanceService.state.path
@@ -66,22 +66,30 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
       await this.submit(task)
 
       const icons = icon ? [icon] : []
-      const [imported] = await resourceService.importResources([{
-        path: destination,
-        domain,
-        uris,
-        metadata: {
-          curseforge: {
-            projectId: file.modId,
-            fileId: file.id,
+      if (noPersist) {
+        const [res] = await resourceService.resolveResources([{
+          path: destination,
+          domain,
+        }])
+        resource = res
+      } else {
+        const [imported] = await resourceService.importResources([{
+          path: destination,
+          domain,
+          uris,
+          metadata: {
+            curseforge: {
+              projectId: file.modId,
+              fileId: file.id,
+            },
           },
-        },
-        icons,
-      }])
+          icons,
+        }])
+        imported.path = imported.storedPath || imported.path
 
-      imported.path = imported.storedPath || imported.path
+        resource = imported
+      }
 
-      resource = imported
       this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
       await unlink(destination).catch(() => undefined)
     }

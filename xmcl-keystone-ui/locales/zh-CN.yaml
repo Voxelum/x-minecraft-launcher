@@ -670,7 +670,7 @@ mod:
   showFile: 打开模组所在位置 {file}
   showInCurseforge: 在 Curseforge 上显示该模组
   showInModrinth: 在 Modrinth 中显示 {name}
-  switchDefaultSource: 实例默认模组下载源
+  switchDefaultSource: 本地模组默认显示为
   toUpdate: '{count} 个有新版本'
 modInstall:
   checkDependencies: 检查依赖关系
@@ -1019,6 +1019,7 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  cheat: 作弊
   copy:
     cancel: 取消复制
     confirm: 开始复制
@@ -1042,14 +1043,19 @@ save:
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档
+  gameMode: 游戏模式
   import: 从文件导入
   importMessage: 将 Zip 存档导入
   importTitle: 导入存档
   independent: 实例使用独立的存档文件夹
+  levelName: 关卡名称
   manage: 管理存档
   name: 地图存档 | 地图存档
+  search: 搜索地图
+  selected: 本地存档
   shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录
+  unselected: 共享的存档
 saves: {}
 screenshots:
   empty: 您还没有截图

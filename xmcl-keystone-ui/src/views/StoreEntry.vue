@@ -167,11 +167,12 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useTutorial } from '@/composables/tutorial'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
-import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
+import { Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import { DriveStep } from 'driver.js'
 import useSWRV from 'swrv'
@@ -415,13 +416,12 @@ const {
 )
 
 // Curseforge
-const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt, neoforge: FileModLoaderType.NeoForge }
 const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number, ensureQuery)
 const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
   CurseforgeBuiltinClassId.modpack,
   query,
   page,
-  computed(() => modLoaders.value.map(v => modLoaderMapping[v])),
+  computed(() => getCursforgeModLoadersFromString(modLoaders.value)),
   curseforgeCategory,
   curseforgeSort,
   gameVersion,

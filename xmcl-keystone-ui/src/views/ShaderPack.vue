@@ -10,7 +10,7 @@
     :loading="loading"
     @load="loadMoreModrinth"
   >
-    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
         v-if="typeof item === 'string'"
         :style="{ height: itemHeight + 'px' }"
@@ -20,6 +20,7 @@
 
         <div class="flex-grow" />
         <v-btn
+          v-if="index === 0"
           v-shared-tooltip="_ => t('mod.denseView')"
           icon
           @click="denseView = !denseView"
@@ -96,10 +97,12 @@
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
-import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -107,14 +110,12 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
-import { useLocalStorageCacheBool } from '@/composables/cache'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const {
   modrinthError,
@@ -176,10 +177,10 @@ const onInstall = (r: Resource[]) => {
 }
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
-  removeResources(files.map(f => f.resource.hash))
+  removeResources(files.map(f => (f as InstanceShaderFile).resource.hash))
 }
 const onEnable = (f: ProjectFile) => {
-  shaderPack.value = f.resource.fileName
+  shaderPack.value = (f as InstanceShaderFile).resource.fileName
 }
 
 // Reset all filter
