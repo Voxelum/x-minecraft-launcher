@@ -24,7 +24,7 @@
           :style="{
             fontSize: headerFontSize
           }"
-          class="text-shadow-lg overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
+          class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
         <AvatarItem

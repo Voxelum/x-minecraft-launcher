@@ -13,13 +13,21 @@
           type="avatar"
         />
       </template>
-      <AppSideBarInstanceItem
-        v-for="(i, index) of instances"
-        :key="i.path + ' ' + index"
-        :instance="i"
-        @arrange="moveInstanceTo($event.targetPath, i.path, $event.previous)"
-        @drop-save="onCopySave"
-      />
+      <template v-for="i of groups">
+        <AppSideBarInstanceItem
+          v-if="typeof i === 'string'"
+          :key="i"
+          :path="i"
+          @arrange="move($event.targetPath, i, $event.previous)"
+          @group="group($event, i)"
+        />
+        <AppSideBarGroupItem
+          v-else-if="typeof i === 'object'"
+          :key="i.id"
+          :group="i"
+          @group="group($event, i)"
+        />
+      </template>
 
       <v-list-item
         push
@@ -76,33 +84,56 @@ import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 import { useNotifier } from '@/composables/notifier'
+import { useInstanceGroup } from '@/composables/instanceGroup'
+import AppSideBarGroupItem from './AppSideBarGroupItem.vue'
 
 const { t } = useI18n()
 
-const { instances, moveInstanceTo, isValidating, selectedInstance } = injection(kInstances)
+const { instances, isValidating, selectedInstance } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
 
-async function onImport(type: 'zip' | 'folder') {
-  const fromFolder = type === 'folder'
-  const filters = fromFolder
-    ? []
-    : [{ extensions: ['zip'], name: 'Zip' }]
-  const { filePaths } = await showOpenDialog({
-    title: t('instances.importFolder'),
-    message: t('instances.importFolderDescription'),
-    filters,
-    properties: fromFolder ? ['openDirectory'] : ['openFile'],
-  })
-  if (filePaths && filePaths.length > 0) {
-    const filePath = filePaths[0]
-    if (type === 'folder') {
-      addExternalInstance(filePath)
-    }
-  }
+// async function onImport(type: 'zip' | 'folder') {
+//   const fromFolder = type === 'folder'
+//   const filters = fromFolder
+//     ? []
+//     : [{ extensions: ['zip'], name: 'Zip' }]
+//   const { filePaths } = await showOpenDialog({
+//     title: t('instances.importFolder'),
+//     message: t('instances.importFolderDescription'),
+//     filters,
+//     properties: fromFolder ? ['openDirectory'] : ['openFile'],
+//   })
+//   if (filePaths && filePaths.length > 0) {
+//     const filePath = filePaths[0]
+//     if (type === 'folder') {
+//       addExternalInstance(filePath)
+//     }
+//   }
+// }
+
+const onExpand = () => {
+
+}
+
+const onCollapse = () => {
+
+}
+
+const router = useRouter()
+const navigate = () => {
+  // if (router.currentRoute.path !== '/') {
+  //   router.push('/').then(() => {
+  //     select(props.instance.path)
+  //   })
+  // } else {
+  //   select(props.instance.path)
+  // }
 }
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
+
+const { groups, move, group } = useInstanceGroup(instances)
 
 const { isShown } = useDialog('saveCopyDialog')
 const copySavePayload = ref(undefined as {
