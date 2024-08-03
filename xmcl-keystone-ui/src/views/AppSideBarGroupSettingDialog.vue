@@ -26,11 +26,12 @@ const { t } = useI18n()
     width="500"
   >
     <v-card
-      class="flex flex-col overflow-auto max-h-[90vh]"
+      class="flex flex-col overflow-auto max-h-[90vh] visible-scroll"
     >
       <v-card-title>
         {{ t('instances.folderSetting') }}
       </v-card-title>
+      <v-divider />
       <v-card-text class="overflow-auto">
         <v-text-field
           v-model="name"

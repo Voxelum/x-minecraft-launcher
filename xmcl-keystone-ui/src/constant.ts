@@ -6,9 +6,9 @@ import quilt from '@/assets/quilt.svg'
 import optifine from '@/assets/optifine.webp'
 import iris from '@/assets/iris.webp'
 import mmc from '@/assets/mmc.webp'
-import labyMod from '@/assets/labyMod.webp'
-import neoForged from '@/assets/neoForged.webp'
-import craftingTable from '@/assets/craftingTable.webp'
+import labyMod from '@/assets/labymod.webp'
+import neoForged from '@/assets/neoforged.webp'
+import craftingTable from '@/assets/craftingtable.webp'
 
 export const BuiltinImages = {
   minecraft,

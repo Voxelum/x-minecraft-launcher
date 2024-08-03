@@ -93,28 +93,9 @@ const { t } = useI18n()
 
 const { instances, isValidating } = injection(kInstances)
 
-// async function onImport(type: 'zip' | 'folder') {
-//   const fromFolder = type === 'folder'
-//   const filters = fromFolder
-//     ? []
-//     : [{ extensions: ['zip'], name: 'Zip' }]
-//   const { filePaths } = await showOpenDialog({
-//     title: t('instances.importFolder'),
-//     message: t('instances.importFolderDescription'),
-//     filters,
-//     properties: fromFolder ? ['openDirectory'] : ['openFile'],
-//   })
-//   if (filePaths && filePaths.length > 0) {
-//     const filePath = filePaths[0]
-//     if (type === 'folder') {
-//       addExternalInstance(filePath)
-//     }
-//   }
-// }
-
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
-const { groups, move, group } = useInstanceGroup(instances)
+const { groups, move, group } = useInstanceGroup()
 
 const { isShown } = useDialog('saveCopyDialog')
 const copySavePayload = ref(undefined as {
