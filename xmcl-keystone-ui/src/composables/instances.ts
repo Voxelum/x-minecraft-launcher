@@ -1,4 +1,4 @@
-import { EditInstanceOptions, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
+import { EditInstanceOptions, Instance, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
 import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
 import { InjectionKey, set } from 'vue'
 import { useLocalStorageCacheStringValue } from './cache'
@@ -13,6 +13,16 @@ export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol(
 export function useInstances() {
   const { createInstance, getSharedInstancesState, editInstance, deleteInstance, validateInstancePath } = useService(InstanceServiceKey)
   const { state, isValidating, error } = useState(getSharedInstancesState, class extends InstanceState {
+    override instanceAdd(instance: Instance) {
+      if (!this.all[instance.path]) {
+        const object = {
+          ...instance,
+        }
+        this.all[instance.path] = object
+        this.instances = [...this.instances, this.all[instance.path]]
+      }
+    }
+
     override instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
       const inst = this.instances.find(i => i.path === (settings.path))!
       if ('showLog' in settings) {
