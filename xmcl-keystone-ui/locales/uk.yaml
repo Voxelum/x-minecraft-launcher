@@ -105,6 +105,7 @@ browseApp:
 cancel: Відміна
 checkUpdate:
   name: Перевірити оновлення
+color: колір
 confirm: Запуск
 copyClipboard:
   success: Копіювати в буфер обміну
@@ -490,6 +491,7 @@ instances:
     Імпорт із загальної папки .minecraft. 
     Це призведе до копіювання оригінального профілю гри в XMCL.
   choose: Виберіть Гра
+  folderSetting: Параметри папки
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера
   loadingFiles: Завантаження файлів Modpack

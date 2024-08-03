@@ -109,6 +109,7 @@ browseApp:
 cancel: Mégsem
 checkUpdate:
   name: Frissítés keresése
+color: Szín
 confirm: Indítás
 copyClipboard:
   success: Másolás vágólapra
@@ -478,6 +479,7 @@ instances:
     Importálás a közös .minecraft mappából. Ez duplikálja az eredeti
     játékprofilt az XMCL-be.
   choose: Játék kiválasztása
+  folderSetting: Mappa beállításai
   importFolder: Importálás mappából
   importFolderDescription: Minecraft importálása a Launcherbe
   loadingFiles: Modcsomag fájlok betöltése

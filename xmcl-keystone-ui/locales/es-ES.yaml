@@ -98,6 +98,7 @@ browseApp:
   delete: Borrar
   launch: Iniciar y configurar como predeterminado
 cancel: Cancelar
+color: Color
 confirm: Comenzar
 copyClipboard:
   success: Copiar al portapapeles
@@ -421,6 +422,7 @@ instances:
   addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
   addTemplate: Crear desde plantilla
   choose: Selecciona un juego
+  folderSetting: Configuración de carpeta
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   loadingFiles: Cargando archivos Modpack

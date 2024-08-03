@@ -96,6 +96,7 @@ browseApp:
 cancel: 取消
 checkUpdate:
   name: 检查更新
+color: 颜色
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
@@ -490,6 +491,7 @@ instances:
     从通用 .minecraft 文件夹导入。
     这会将原始游戏配置文件复制到 XMCL。
   choose: 选择游戏
+  folderSetting: 文件夹设置
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
   loadingFiles: 加载整合包文件

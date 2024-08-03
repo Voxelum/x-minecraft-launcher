@@ -103,6 +103,7 @@ browseApp:
   delete: Borrar
   launch: Iniciar e configurar como predeterminado
 cancel: Cancelar
+color: Cor
 confirm: Comezar
 copyClipboard:
   success: Copiar o portapapeis
@@ -257,6 +258,7 @@ instanceUpdate:
     O modloader antigo é {modloader} e o novo modloader é {newModloader}.
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
+  folderSetting: Configuración do cartafol
 launch:
   killServer: Eliminar o servidor Localhost
 launchBlocked:

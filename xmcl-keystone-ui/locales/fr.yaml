@@ -133,6 +133,7 @@ browseApps: Parcourir l'interface utilisateur personnalisée du launcher
 cancel: Annuler
 checkUpdate:
   name: Vérifier la mise à jour
+color: Couleur
 confirm: Début
 copyClipboard:
   success: Copier dans le presse-papier
@@ -518,6 +519,7 @@ instances:
     Importer à partir du dossier commun .minecraft. 
     Cela dupliquera le profil de jeu original vers XMLL.
   choose: Sélectionnez un jeu
+  folderSetting: Paramètres du dossier
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
   loadingFiles: Chargement des fichiers Modpack

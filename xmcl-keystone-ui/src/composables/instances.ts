@@ -1,10 +1,9 @@
 import { EditInstanceOptions, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
-import { InjectionKey, Ref, set } from 'vue'
+import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
+import { InjectionKey, set } from 'vue'
+import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
-import { useSortedInstance } from './instanceSort'
-import { useLocalStorageCacheStringValue } from './cache'
 
 export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol('Instances')
 
@@ -43,8 +42,7 @@ export function useInstances() {
       super.instanceEdit(settings)
     }
   })
-  const _instances = computed(() => state.value?.instances ?? [])
-  const { instances, moveInstanceTo } = useSortedInstance(_instances)
+  const instances = computed(() => state.value?.instances ?? [])
   const _path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
   const path = ref('')
 
@@ -111,10 +109,12 @@ export function useInstances() {
       lastAccessDate: Date.now(),
     })
   })
+
+  const ready = computed(() => state.value !== undefined)
   return {
     selectedInstance: path,
+    ready,
     instances,
-    moveInstanceTo,
     isValidating,
     error,
     edit,

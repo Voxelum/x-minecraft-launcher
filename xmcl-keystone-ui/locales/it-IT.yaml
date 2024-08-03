@@ -108,6 +108,7 @@ browseApp:
 cancel: Annulla
 checkUpdate:
   name: Controlla aggiornamenti
+color: Colore
 confirm: Inizia
 copyClipboard:
   success: Copia negli appunti
@@ -487,6 +488,7 @@ instances:
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
     gioco originale in XMCL.
   choose: Seleziona gioco
+  folderSetting: Impostazioni della cartella
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
   loadingFiles: Caricamento file Modpack
