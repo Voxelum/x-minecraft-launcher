@@ -176,7 +176,10 @@
           </div>
 
           <div class="flex-grow" />
-          <div class="text-center" v-if="!noVersion">
+          <div
+            v-if="!noVersion"
+            class="text-center"
+          >
             <v-menu
               open-on-hover
               :disabled="loadingVersions"

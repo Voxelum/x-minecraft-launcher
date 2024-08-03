@@ -65,7 +65,10 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-list dense nav>
+          <v-list
+            dense
+            nav
+          >
             <v-list-item
               class="mx-1"
               @click="denseView = !denseView"
