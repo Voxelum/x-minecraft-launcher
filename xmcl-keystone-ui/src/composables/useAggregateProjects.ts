@@ -12,6 +12,8 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
   a.followerCount = b.followerCount || a.followerCount
   a.modrinth = b.modrinth || a.modrinth
   a.curseforge = b.curseforge || a.curseforge
+  a.files = Array.from(new Set(a.files ? a.files.concat(b.files || []) : b.files || a.files))
+  a.installed = Array.from(new Set(a.installed.concat(b.installed || [])))
 }
 
 /**
@@ -62,6 +64,7 @@ export function useAggregateProjects<T extends ProjectEntry>(
   curseforge: Ref<T[]>,
   local: Ref<T[]>,
   installedProjects: Ref<T[]>,
+  allLocal: Ref<T[]>,
 ) {
   const items = computed(() => {
     const all: T[] = []
@@ -83,16 +86,29 @@ export function useAggregateProjects<T extends ProjectEntry>(
       }
     }
 
+    const get = (mod: T) => {
+      if (indices[mod.id]) {
+        return indices[mod.id]
+      }
+      if (mod.curseforgeProjectId) {
+        return indices[mod.curseforgeProjectId]
+      }
+      if (mod.modrinthProjectId) {
+        return indices[mod.modrinthProjectId]
+      }
+      return undefined
+    }
+
     for (const item of installedProjects.value) {
       insert(item)
       all.push(item)
     }
 
     const visit = (mod: T) => {
-      if (indices[mod.id]) {
-        const other = indices[mod.id]
-        assignProject(other, mod)
-        insert(other)
+      const existed = get(mod)
+      if (existed) {
+        assignProject(existed, mod)
+        insert(existed)
       } else {
         insert(mod)
         all.push(mod)
@@ -105,13 +121,14 @@ export function useAggregateProjects<T extends ProjectEntry>(
       mod.curseforge = undefined
       mod.modrinth = undefined
       visit(mod)
-      // if (indices[mod.id]) {
-      //   const other = indices[mod.id]
-      //   assignProject(other, mod)
-      //   insert(other)
-      // }
     }
-
+    for (const mod of allLocal.value) {
+      const existed = get(mod)
+      if (existed) {
+        assignProject(existed, mod)
+        insert(existed)
+      }
+    }
     return all
   })
 

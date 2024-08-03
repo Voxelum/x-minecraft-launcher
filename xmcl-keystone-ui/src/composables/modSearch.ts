@@ -29,16 +29,12 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   const { getResourcesByKeyword } = useService(ResourceServiceKey)
   const modFiles = ref([] as ModFile[])
 
-  const instanceMods = computed(() => {
-    return keyword.value.length === 0
-      ? instanceModFiles.value
-      : instanceModFiles.value.filter(m => m.name.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1)
-  })
-
   const result = computed(() => {
     const indices: Record<string, ProjectEntry<ModFile>> = {}
     const _all: ProjectEntry<ModFile>[] = []
     const _installed: ProjectEntry<ModFile>[] = []
+    const _installedAll: ProjectEntry<ModFile>[] = []
+    const key = keyword.value
 
     const getOrDecorateProjectEntry = (m: ModFile, instanceFile: boolean) => {
       if (m.modId === 'OptiFine') {
@@ -104,12 +100,16 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       }
     }
 
-    for (const m of instanceMods.value) {
+    for (const m of instanceModFiles.value) {
       const mod = getOrDecorateProjectEntry(m, true)
-      if (mod) {
+      if (!mod) { continue }
+      const matched = m.name.toLocaleLowerCase().indexOf(key.toLocaleLowerCase()) !== -1
+      if (matched) {
         _installed.push(mod)
       }
+      _installedAll.push(mod)
     }
+
     for (const m of modFiles.value) {
       const mod = getOrDecorateProjectEntry(m, false)
       if (mod) {
@@ -130,11 +130,12 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       }
     }
 
-    return markRaw([_all, _installed] as const)
+    return markRaw([_all, _installed, _installedAll] as const)
   })
 
   const all = computed(() => result.value[0])
   const instances = computed(() => result.value[1])
+  const instancesAll = computed(() => result.value[2])
 
   async function searchLocalMods() {
     const kw = keyword.value
@@ -176,6 +177,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     cached: all,
     effect,
     instances,
+    instancesAll,
     loadingCached,
   }
 }
@@ -209,7 +211,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
-  const { cached: cachedMods, instances, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
+  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
   const all = useAggregateProjects<ProjectEntry<ModFile>>(
@@ -217,6 +219,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     curseforge,
     cachedMods,
     instances,
+    instancesAll,
   )
 
   const networkOnly = computed(() => {
