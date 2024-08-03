@@ -38,7 +38,7 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
   }
   const reader = await resolveReader()
   const level = await reader.getLevelData()
-  const adv = await reader.getAdvancementsData()
+  const adv = await reader.getAdvancementsData().catch(() => [])
   let advancements = 0
   if (adv.length !== 0) {
     advancements = adv.length
