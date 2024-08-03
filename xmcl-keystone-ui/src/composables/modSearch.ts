@@ -12,7 +12,7 @@ import { useResourceEffect } from './resources'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
 import { getDiceCoefficient } from '@/util/sort'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -185,7 +185,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
 const getOptifineAsMod = () => {
   const result: ProjectEntry<ModFile> = {
     id: 'OptiFine',
-    icon: BUILTIN_IMAGES.optifine,
+    icon: BuiltinImages.optifine,
     title: 'Optifine',
     author: 'sp614x',
     description: 'Optifine is a Minecraft optimization mod. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useQuiltVersions } from '@/composables/version'
 import VersionInput, { VersionItem } from './VersionInput.vue'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -30,7 +30,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    :icon="BUILTIN_IMAGES.quilt"
+    :icon="BuiltinImages.quilt"
     title="Quilt"
     url="https://quiltmc.org/"
     :is-clearable="true"

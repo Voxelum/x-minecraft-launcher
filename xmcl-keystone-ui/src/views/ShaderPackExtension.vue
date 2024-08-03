@@ -36,7 +36,6 @@ import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kShaderPackSearch, ShaderLoaderFilter } from '@/composables/shaderPackSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
-import { BUILTIN_IMAGES } from '../constant'
 
 const { runtime: version } = injection(kInstance)
 

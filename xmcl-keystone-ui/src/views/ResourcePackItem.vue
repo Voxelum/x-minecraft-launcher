@@ -26,7 +26,7 @@
       >
         <v-avatar left>
           <v-img
-            :src="BUILTIN_IMAGES.minecraft"
+            :src="BuiltinImages.minecraft"
             left
           />
         </v-avatar>
@@ -55,7 +55,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { BaseServiceKey, ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   pack: ResourcePackProject

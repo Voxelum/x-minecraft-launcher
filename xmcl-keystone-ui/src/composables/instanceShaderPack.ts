@@ -5,8 +5,8 @@ import { useRefreshable } from './refreshable'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { ModFile } from '@/util/mod'
 import useSWRV from 'swrv'
-import { BUILTIN_IMAGES } from '@/constant'
 import { ProjectFile } from '@/util/search'
+import { BuiltinImages } from '@/constant'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
 
@@ -37,7 +37,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
         id: 'optifine',
         name: 'Optifine',
         version: runtime.value.optifine,
-        icon: BUILTIN_IMAGES.optifine,
+        icon: BuiltinImages.optifine,
       }
     }
     const shader = mods.value.find(m => {

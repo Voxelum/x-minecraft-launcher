@@ -163,7 +163,7 @@ import { injection } from '@/util/inject'
 import { ModsSearchSortField } from '@xmcl/curseforge'
 import ModrinthCategoryChip from './ModrinthCategoryChip.vue'
 import CurseforgeCategoryChip from './CurseforgeCategoryChip.vue'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   curseforgeCategory?: number | undefined
@@ -282,7 +282,7 @@ const onWheel = (e: WheelEvent) => {
 function getIcon(loader: string) {
   if (loader === 'neoforge') loader = 'neoForged'
   // @ts-ignore
-  return BUILTIN_IMAGES[loader]
+  return BuiltinImages[loader]
 }
 
 </script>

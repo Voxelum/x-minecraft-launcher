@@ -95,7 +95,7 @@
                 @click="toggle"
               >
                 <img
-                  v-fallback-img="unknownPack"
+                  v-fallback-img="BuiltinImages.unknownServer"
                   class="rounded-lg object-contain"
                   :src="s.icon"
                   width="80px"
@@ -174,7 +174,7 @@
                 </v-chip> -->
                 <v-list-item-avatar :size="30">
                   <img
-                    :src="item.icon || unknownPack"
+                    :src="item.icon || BuiltinImages.unknownServer"
                   >
                 </v-list-item-avatar>
 
@@ -234,7 +234,6 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import unknownPack from '@/assets/unknown_pack.png'
 import { useRefreshable } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -244,6 +243,7 @@ import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstanceSave } from '@/composables/instanceSave'
 import { useService } from '@/composables/service'
+import { BuiltinImages } from '@/constant'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'

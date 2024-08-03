@@ -64,7 +64,7 @@
                 >
                   <v-avatar left>
                     <img
-                      :src="BUILTIN_IMAGES.minecraft"
+                      :src="BuiltinImages.minecraft"
                       alt="minecraft"
                     >
                   </v-avatar>
@@ -78,7 +78,7 @@
                 >
                   <v-avatar left>
                     <img
-                      :src="BUILTIN_IMAGES.forge"
+                      :src="BuiltinImages.forge"
                       alt="forge"
                     >
                   </v-avatar>
@@ -92,7 +92,7 @@
                 >
                   <v-avatar left>
                     <img
-                      :src="BUILTIN_IMAGES.fabric"
+                      :src="BuiltinImages.fabric"
                       alt="fabric"
                     >
                   </v-avatar>
@@ -126,7 +126,7 @@ import { kPeerShared } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const emit = defineEmits(['select'])
 

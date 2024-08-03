@@ -17,7 +17,7 @@
     >
       <AvatarChip
         small
-        :avatar="BUILTIN_IMAGES.minecraft"
+        :avatar="BuiltinImages.minecraft"
         :text="installedOne.gameVersion"
       />
     </template>
@@ -31,7 +31,7 @@ import { ContextMenuItem } from '@/composables/contextMenu'
 import { kInstance } from '@/composables/instance'
 import { InstanceSaveFile } from '@/composables/instanceSave'
 import { useService } from '@/composables/service'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { BaseServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'

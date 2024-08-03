@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useNeoForgedVersions } from '@/composables/version'
 import VersionInput, { VersionItem } from './VersionInput.vue'
-import { BUILTIN_IMAGES } from '../constant'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -32,7 +32,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    :icon="BUILTIN_IMAGES.neoForged"
+    :icon="BuiltinImages.neoForged"
     title="NeoForge"
     url="https://github.com/neoforged/NeoForge"
     :is-clearable="true"

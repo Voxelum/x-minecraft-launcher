@@ -3,7 +3,7 @@ import { VersionServiceKey, LocalVersions, VersionHeader, RuntimeVersions } from
 import { computed, InjectionKey } from 'vue'
 import { useState } from './syncableState'
 import { MaybeRef, get } from '@vueuse/core'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 export const kLocalVersions: InjectionKey<ReturnType<typeof useLocalVersions>> = Symbol('LocalVersions')
 
@@ -27,39 +27,39 @@ export function useVersionsWithIcon(_version: MaybeRef<VersionHeader | RuntimeVe
     const result: { icon: string; text: string }[] = []
     if (version.minecraft) {
       result.push({
-        icon: BUILTIN_IMAGES.minecraft,
+        icon: BuiltinImages.minecraft,
         text: version.minecraft,
       })
     }
     if (version.forge) {
       result.push({
-        icon: BUILTIN_IMAGES.forge,
+        icon: BuiltinImages.forge,
         text: version.forge,
       })
     }
     const fabric = 'fabricLoader' in version ? version.fabricLoader : version.fabric
     if (fabric) {
       result.push({
-        icon: BUILTIN_IMAGES.fabric,
+        icon: BuiltinImages.fabric,
         text: fabric,
       })
     }
     const quilt = 'quilt' in version ? version.quilt : version.quiltLoader
     if (quilt) {
       result.push({
-        icon: BUILTIN_IMAGES.quilt,
+        icon: BuiltinImages.quilt,
         text: quilt,
       })
     }
     if (version.optifine) {
       result.push({
-        icon: BUILTIN_IMAGES.optifine,
+        icon: BuiltinImages.optifine,
         text: version.optifine,
       })
     }
     if (version.neoForged) {
       result.push({
-        icon: BUILTIN_IMAGES.neoForged,
+        icon: BuiltinImages.neoForged,
         text: version.neoForged,
       })
     }

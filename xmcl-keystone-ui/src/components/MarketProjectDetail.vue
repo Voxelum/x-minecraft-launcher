@@ -13,11 +13,11 @@
         />
         <img
           v-else
-          v-fallback-img="BUILTIN_IMAGES.unknownServer"
+          v-fallback-img="BuiltinImages.unknownServer"
           width="128"
           height="128"
           class="rounded-xl"
-          :src="detail.icon || BUILTIN_IMAGES.unknownServer"
+          :src="detail.icon || BuiltinImages.unknownServer"
         >
       </div>
       <div class="flex flex-col">
@@ -669,7 +669,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
@@ -681,7 +680,7 @@ import { kTheme } from '@/composables/theme'
 import { clientCurseforgeV1 } from '@/util/clients'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   detail: ProjectDetail

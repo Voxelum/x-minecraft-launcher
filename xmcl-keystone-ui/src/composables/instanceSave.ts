@@ -4,7 +4,7 @@ import { InjectionKey, Ref } from 'vue'
 import { useState } from './syncableState'
 import { ProjectFile } from '@/util/search'
 import useSWRV from 'swrv'
-import { BUILTIN_IMAGES } from '@/constant'
+import { BuiltinImages } from '@/constant'
 import { notNullish } from '@vueuse/core'
 
 export const kInstanceSave: InjectionKey<ReturnType<typeof useInstanceSaves>> = Symbol('InstanceSave')
@@ -24,7 +24,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
     const saves = state.value?.saves || []
     const result: InstanceSaveFile[] = saves.map(s => ({
       ...s,
-      icon: s.icon || BUILTIN_IMAGES.unknownServer,
+      icon: s.icon || BuiltinImages.unknownServer,
       version: '',
       enabled: true,
     }))
@@ -37,7 +37,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
     const all = sharedSavesData.value || []
     const result: InstanceSaveFile[] = all.filter(s => !local.includes(s.path)).map(s => ({
       ...s,
-      icon: s.icon || BUILTIN_IMAGES.unknownServer,
+      icon: s.icon || BuiltinImages.unknownServer,
       version: '',
       enabled: false,
     }))
