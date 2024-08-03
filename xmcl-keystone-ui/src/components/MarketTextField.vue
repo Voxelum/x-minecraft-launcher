@@ -45,6 +45,7 @@
 <script lang=ts setup>
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useEventListener } from '@vueuse/core'
+import { nextTick } from 'vue'
 
 const props = defineProps<{
   value?: string
@@ -80,12 +81,31 @@ const clear = () => {
 
 const searchTextField = ref(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))
+const transitioning = inject('transitioning', ref(false))
+let pendingFocus = false
+watch(transitioning, (v) => {
+  if (!v && pendingFocus) {
+    if (!searchTextFieldFocused.value) {
+      searchTextField.value?.focus()
+      pendingFocus = false
+    }
+  }
+}, { immediate: true })
 useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
 defineExpose({
   focus() {
     if (!searchTextFieldFocused.value) {
-      searchTextField.value?.focus()
+      if (!transitioning.value) {
+        searchTextField.value?.focus()
+      } else {
+        pendingFocus = true
+      }
     }
   },
+})
+onMounted(() => {
+  if (!searchTextFieldFocused.value) {
+    pendingFocus = true
+  }
 })
 </script>

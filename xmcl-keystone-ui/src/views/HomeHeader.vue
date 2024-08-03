@@ -8,6 +8,9 @@
       'pt-10': !compact,
       'pt-5': compact,
     }"
+    @transitionstart="onTransitionStart"
+    @transitionend="onTransitionEnd"
+    @transitioncancel="onTransitionEnd"
     @wheel.stop
   >
     <div
@@ -87,6 +90,18 @@ const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
+
+const transitioning = ref(false)
+provide('transitioning', transitioning)
+
+const onTransitionStart = (e: TransitionEvent) => {
+  if (e.propertyName !== 'transform') return
+  transitioning.value = true
+}
+const onTransitionEnd = (e: TransitionEvent) => {
+  if (e.propertyName !== 'transform') return
+  transitioning.value = false
+}
 
 const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
