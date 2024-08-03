@@ -672,6 +672,9 @@ mod:
   switchDefaultSource: 本地模組默认显示为
   toUpdate: '{count} 個有新版本'
 modInstall:
+  archived: |-
+    {name} 已存檔。
+    除非作者決定取消存檔該項目，否則 {name} 將不會收到任何進一步的更新。
   checkDependencies: 檢查依賴關係
   checkUpgrade: 檢查模組更新
   checkedDependencies: 已檢查依賴關係

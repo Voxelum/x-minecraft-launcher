@@ -162,6 +162,13 @@ const onOpenDependency = (dep: ProjectDependency) => {
 
 const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId)
 
+const archived = computed(() => {
+  return project.value?.status === 'archived'
+})
+// watchEffect(() => {
+//   console.log(project.value.status)
+// })
+
 </script>
 
 <template>

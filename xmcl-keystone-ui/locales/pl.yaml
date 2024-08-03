@@ -709,6 +709,11 @@ mod:
   switchDefaultSource: Domyślne źródło modów
   toUpdate: '{count} aktualizować'
 modInstall:
+  archived: >-
+    {name} zostało zarchiwizowane. 
+
+    {name} nie otrzyma żadnych dalszych aktualizacji, chyba że autor zdecyduje
+    się na rozpakowanie projektu.
   checkDependencies: Sprawdź zależności
   checkUpgrade: Sprawdź aktualizację modów
   checkedDependencies: Sprawdzone zależności

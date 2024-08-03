@@ -754,6 +754,11 @@ mod:
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
 modInstall:
+  archived: >-
+    {name} wurde archiviert. 
+
+    {name} erhält keine weiteren Updates, es sei denn, der Autor beschließt, das
+    Projekt aus der Archivierung zu entfernen.
   checkDependencies: Abhängigkeiten prüfen
   checkUpgrade: Prüfen Sie auf Aktualisierungen von Änderungen
   checkedDependencies: Überprüfte Abhängigkeiten

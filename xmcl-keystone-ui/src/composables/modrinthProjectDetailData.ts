@@ -107,6 +107,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       externals,
       galleries,
       info,
+      archived: project.value?.status === 'archived',
     }
     return detail
   })

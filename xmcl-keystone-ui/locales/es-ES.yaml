@@ -498,6 +498,11 @@ mod:
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
 modInstall:
+  archived: >-
+    {name} ha sido archivado. 
+
+    {name} no recibirá más actualizaciones a menos que el autor decida
+    desarchivar el proyecto.
   checkDependencies: Verificar dependencias
   checkUpgrade: Verificar Actualizaciones de Mods
   checkedDependencies: Dependencias comprobadas

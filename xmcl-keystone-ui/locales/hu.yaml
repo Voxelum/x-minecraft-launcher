@@ -694,6 +694,11 @@ mod:
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
 modInstall:
+  archived: >-
+    {name} archiválva. 
+
+    {name} nem kap további frissítéseket, kivéve, ha a szerző úgy dönt, hogy
+    visszavonja a projekt archiválását.
   checkDependencies: Ellenőrizze a függőségeket
   checkUpgrade: Modok frissítésének ellenőrzése
   checkedDependencies: Ellenőrzött függőségek

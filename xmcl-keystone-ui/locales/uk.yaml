@@ -695,6 +695,11 @@ mod:
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
 modInstall:
+  archived: >-
+    {name} заархівовано. 
+
+    {name} не отримуватиме подальших оновлень, якщо автор не вирішить
+    розархівувати проект.
   checkDependencies: Перевірити залежності
   checkUpgrade: Перевірте оновлення модифікацій
   checkedDependencies: Перевірені залежності

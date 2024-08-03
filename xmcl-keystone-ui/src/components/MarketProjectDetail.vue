@@ -3,6 +3,14 @@
     class="mod-detail contained w-full overflow-auto"
     @scroll="onScroll"
   >
+    <v-alert
+      v-if="detail.archived"
+      type="error"
+      text
+      tile
+    >
+      {{ t('modInstall.archived', { name: detail.title }) }}
+    </v-alert>
     <div class="header-container flex flex-grow gap-4 p-4">
       <div class="self-center">
         <v-skeleton-loader
@@ -791,6 +799,7 @@ export interface ProjectDetail {
   externals: ExternalResource[]
   galleries: ModGallery[]
   info: Info[]
+  archived?: boolean
 }
 const tab = ref(0)
 

@@ -735,6 +735,11 @@ mod:
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
 modInstall:
+  archived: >-
+    {name} a été archivé. 
+
+    {name} ne recevra plus de mises à jour à moins que l'auteur ne décide de
+    désarchiver le projet.
   checkDependencies: Vérifier les dépendances
   checkedDependencies: Dépendances vérifiées
   install: Installer

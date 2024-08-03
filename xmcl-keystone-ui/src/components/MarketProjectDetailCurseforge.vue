@@ -13,7 +13,7 @@ import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeF
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
-import { FileModLoaderType, Mod } from '@xmcl/curseforge'
+import { FileModLoaderType, Mod, ModStatus } from '@xmcl/curseforge'
 import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{
@@ -138,6 +138,7 @@ const model = computed(() => {
     externals,
     galleries,
     info,
+    archived: ModStatus.Inactive === mod?.status || ModStatus.Abandoned === mod?.status,
   }
   return detail
 })
@@ -338,7 +339,6 @@ const onRefresh = () => {
 }
 
 const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.curseforge?.projectId === props.curseforgeId && v.modrinth)?.modrinth?.projectId)
-
 </script>
 <template>
   <MarketProjectDetail

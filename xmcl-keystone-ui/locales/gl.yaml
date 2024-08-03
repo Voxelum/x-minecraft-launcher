@@ -276,6 +276,11 @@ mod:
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
+  archived: >-
+    {name} foi arquivado. 
+
+    {name} non recibirá máis actualizacións a non ser que o autor decida
+    desarquivar o proxecto.
   checkDependencies: Comproba as dependencias
   checkedDependencies: Dependencias verificadas
   installDependencies: Instalar dependencias que faltan

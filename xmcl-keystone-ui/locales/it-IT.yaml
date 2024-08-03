@@ -702,6 +702,11 @@ mod:
   switchDefaultSource: Sorgente Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
+  archived: >-
+    {nome} è stato archiviato. 
+
+    {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida
+    di annullare l'archiviazione del progetto.
   checkDependencies: Controlla le dipendenze
   checkUpgrade: Controlla Aggiornamento Mod
   checkedDependencies: Dipendenze controllate

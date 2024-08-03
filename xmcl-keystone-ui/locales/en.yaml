@@ -682,6 +682,9 @@ mod:
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} to update'
 modInstall:
+  archived: >-
+    {name} has been archived. {name} will not receive any further updates unless
+    the author decides to unarchive the project.
   checkDependencies: Check Dependencies
   checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
@@ -1104,7 +1107,7 @@ save:
   selected: Local Saves
   shared: Instance use shared saves folder
   showDirectory: Show saves directory
-  unselected: shared archive
+  unselected: Shared Saves
 saves: {}
 screenshots:
   empty: You don't have screenshots
