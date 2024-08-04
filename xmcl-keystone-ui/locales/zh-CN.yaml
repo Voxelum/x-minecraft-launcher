@@ -408,6 +408,7 @@ installVersion:
   name: 安装{id}的游戏本体
 instance:
   addServer: 添加服务器
+  changeIcon: 更改图标
   current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏数据将完全被移除。您确定继续此操作吗？
@@ -417,6 +418,7 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
   icon: 实例图标
+  iconHint: 该图标可以是文件或互联网 URL 链接。
   iconUrl: 图片 URL
   includeVersion: 包含游戏版本
   lastPlayed: 上次游玩

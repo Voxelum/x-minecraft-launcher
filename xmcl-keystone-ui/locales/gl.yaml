@@ -251,6 +251,8 @@ eula:
 importModpack:
   name: Importar Modpack
 instance:
+  changeIcon: Cambiar icona
+  iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   launchServer: Inicia o servidor localhost
 instanceUpdate:
   loaderChanged: |-

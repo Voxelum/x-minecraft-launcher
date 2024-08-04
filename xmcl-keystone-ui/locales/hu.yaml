@@ -383,6 +383,7 @@ installVersion:
   name: Minecraft kliens telepítése {version}
 instance:
   addServer: Szerver hozzáadása
+  changeIcon: Ikon módosítása
   current: Jelenlegi példány
   delete: Játék törlése
   deleteHint: >-
@@ -396,6 +397,7 @@ instance:
     kiszolgálóról.
   gameVersion: Játék verzió
   icon: Profil ikon
+  iconHint: Az ikon lehet fájl vagy internetes URL-hivatkozás.
   iconUrl: Ikon Url
   includeVersion: Verzió beépítése | Verzió beépítése
   lastPlayed: Utoljára játszott

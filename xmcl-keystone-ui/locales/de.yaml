@@ -433,6 +433,7 @@ installVersion:
   name: Installieren Sie den Minecraft-Client {version}
 instance:
   addServer: Server hinzufügen
+  changeIcon: Icon ändern
   current: Aktuelle Instanz
   delete: Deinstallieren Sie das Spiel
   deleteHint: >-
@@ -446,6 +447,7 @@ instance:
     Konfiguration.
   gameVersion: Version des Spiels
   icon: Profil-Symbol
+  iconHint: Das Symbol könnte eine Datei oder ein Internet-URL-Link sein.
   iconUrl: Url-Symbol
   includeVersion: Version freigeben | Versionen freigeben
   lastPlayed: Das letzte Mal spielten sie

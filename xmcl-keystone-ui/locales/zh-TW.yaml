@@ -405,6 +405,7 @@ installVersion:
   name: 安裝{id}的遊戲本體
 instance:
   addServer: 新增伺服器
+  changeIcon: 更改圖示
   current: 目前例項
   delete: 刪除遊戲
   deleteHint: 遊戲資料將完全被移除。您確定繼續此操作嗎？
@@ -414,6 +415,7 @@ instance:
   fileApiHint: 用於遠端同步例項檔案的連結
   gameVersion: 遊戲版本
   icon: 例項圖示
+  iconHint: 該圖示可以是文件或網際網路 URL 連結。
   iconUrl: 圖片 URL
   includeVersion: 包含遊戲版本
   lastPlayed: 上次遊玩

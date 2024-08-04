@@ -452,6 +452,7 @@ installVersion:
   name: Установить клиент Minecraft {version}
 instance:
   addServer: Добавить сервер
+  changeIcon: Изменить значок
   current: Текущий экземпляр
   delete: Удалить экземпляр
   deleteHint: >-
@@ -463,6 +464,7 @@ instance:
   fileApiHint: URL для синхронизации файлов экземпляра с удалённым сервером конфигурации.
   gameVersion: Версия игры экземпляра
   icon: Иконка профиля
+  iconHint: Значок может представлять собой файл или ссылку на URL-адрес в Интернете.
   iconUrl: URL-адрес иконки
   includeVersion: Включить версию | Включить версии
   lastPlayed: Последняя игра

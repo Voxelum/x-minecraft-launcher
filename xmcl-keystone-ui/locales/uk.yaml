@@ -402,6 +402,7 @@ installVersion:
   name: Встановити клієнт Minecraft {version}
 instance:
   addServer: Добавить сервер
+  changeIcon: Змінити значок
   current: Поточний екземпляр
   delete: Видалити гру
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
@@ -413,6 +414,7 @@ instance:
     конфігурації.
   gameVersion: Версія гри
   icon: Значок профілю
+  iconHint: Піктограмою може бути файл або URL-адреса-посилання в Інтернеті.
   iconUrl: Значок Url
   includeVersion: Увімкнути версію | Вмикати версії
   lastPlayed: Востаннє грали

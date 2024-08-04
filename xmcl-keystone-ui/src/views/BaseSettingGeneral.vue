@@ -11,6 +11,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <v-menu
+          v-model="changeIconModel"
           :close-on-content-click="false"
           :nudge-width="380"
           offset-x
@@ -19,7 +20,7 @@
             <v-avatar
               id="instance-icon"
               v-ripple
-              size="40"
+              size="80"
               v-bind="attrs"
               v-on="on"
             >
@@ -33,65 +34,37 @@
             </v-avatar>
           </template>
 
-          <v-card>
-            <v-list>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ t('instance.icon') }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
-
-            <v-divider />
-
-            <v-list>
-              <v-list-item>
-                <v-text-field
-                  v-model="data.icon"
-                  :label="t('instance.iconUrl')"
-                  small
-                  hide-details
-                  outlined
-                  filled
-                  dense
-                />
-                <v-list-item-action>
-                  <v-btn
-                    icon
-                    @click="pickIconFile"
-                  >
-                    <v-icon>
-                      upload_file
-                    </v-icon>
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-          </v-card>
+          <AppChangeInstanceIconCard :icon.sync="data.icon" />
         </v-menu>
       </v-list-item-action>
-
       <v-list-item-content>
-        <v-list-item-title>{{ t("instance.name") }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("instance.nameHint") }}
+          {{ t("instance.iconHint") }}
         </v-list-item-subtitle>
+        <div class="mt-1">
+          <v-btn
+            outlined
+            text
+            @click="changeIconModel = true"
+          >
+            {{ t("instance.changeIcon") }}
+          </v-btn>
+        </div>
       </v-list-item-content>
-      <v-list-item-action>
+
+      <div class="w-60">
         <v-text-field
           v-model="data.name"
-          small
-          hide-details
-          outlined
+          :label="t('instance.name')"
+          :hint="t('instance.nameHint')"
           filled
           dense
           :placeholder="`Minecraft ${data.runtime.minecraft}`"
         />
-      </v-list-item-action>
+      </div>
     </v-list-item>
 
+    <v-divider class="mb-4 mt-2" />
     <VersionInputMinecraft
       :value="data.runtime.minecraft"
       @input="onSelectMinecraft"
@@ -207,6 +180,7 @@ import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { kUserContext } from '@/composables/user'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
+import AppChangeInstanceIconCard from '@/components/AppChangeInstanceIconCard.vue'
 
 const {
   data,
@@ -226,31 +200,11 @@ const {
   resetDisableAuthlibInjector,
   resetDisableElyByAuthlib,
 } = injection(InstanceEditInjectionKey)
-const { showOpenDialog } = windowController
 const { versions } = injection(kLocalVersions)
 const { userProfile } = injection(kUserContext)
 
 const isThirdparty = computed(() => userProfile.value.authority !== AUTHORITY_MICROSOFT)
 const isElyBy = computed(() => userProfile.value.authority.startsWith('https://authserver.ely.by'))
-
-function pickIconFile() {
-  showOpenDialog({
-    title: t('instanceSetting.icon'),
-    filters: [
-      {
-        name: t('instanceSetting.icon'),
-        extensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif'],
-      },
-    ],
-    properties: ['openFile'],
-  }).then((result) => {
-    if (result.canceled) return
-    const filePath = result.filePaths[0]
-    if (filePath) {
-      data.icon = `http://launcher/media?path=${filePath}`
-    }
-  })
-}
 
 const {
   onSelectMinecraft,
@@ -264,6 +218,8 @@ const {
 } = useInstanceEditVersions(data, versions)
 
 const { t } = useI18n()
+
+const changeIconModel = ref(false)
 
 </script>
 

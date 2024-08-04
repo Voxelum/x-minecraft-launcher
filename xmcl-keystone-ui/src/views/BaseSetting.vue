@@ -1,5 +1,5 @@
 <template>
-  <div class="base-setting">
+  <div class="base-setting xl:px-20 2xl:px-40">
     <BaseSettingGeneral />
     <v-divider />
     <BaseSettingSync />

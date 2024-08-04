@@ -394,6 +394,7 @@ installVersion:
   name: Installa client Minecraft {version}
 instance:
   addServer: Aggiungi server
+  changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
   deleteHint: >-
@@ -407,6 +408,7 @@ instance:
     remoto.
   gameVersion: Versione del gioco
   icon: Icona profilo
+  iconHint: L'icona potrebbe essere un file o un collegamento URL Internet.
   iconUrl: Icona Url
   includeVersion: Includi versione | Includi versioni
   lastPlayed: Giocato l'ultima volta

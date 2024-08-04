@@ -390,6 +390,7 @@ installVersion:
   name: Install Minecraft Client {version}
 instance:
   addServer: Add Server
+  changeIcon: Change Icon
   current: Current Instance
   delete: Delete Game
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
@@ -399,6 +400,7 @@ instance:
   fileApiHint: The url to synchronize instance files from a remote config server.
   gameVersion: Game Version
   icon: Profile Icon
+  iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url
   includeVersion: Include Version | Include Versions
   lastPlayed: Last Played
