@@ -92,6 +92,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       extraJVMArgs: jvmArgs,
       extraMCArgs: mcArgs,
+      prependCommand: options.prependCommand,
 
       nogui: options.nogui,
     }
@@ -139,6 +140,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraMCArgs: options.mcOptions?.filter(v => !!v),
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
+      prependCommand: options.prependCommand,
       yggdrasilAgent,
       platform: {
         arch: process.arch,

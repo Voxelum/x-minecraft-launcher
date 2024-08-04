@@ -430,6 +430,10 @@ instance:
   openCrashReportFolder: Otwórz folder raportów o wypadkach
   openLogFolder: Otwórz folder dziennika
   playtime: Czas zabawy
+  prependCommand: Dołącz polecenie
+  prependCommandHint: >-
+    Spowoduje to dodanie tego polecenia przed wszystkimi poleceniami
+    uruchamiania
   requireName: Nazwa jest wymagana
   showInstance: Pokaż folder gry
   versionHint: Minecraftowa wersja tej gry

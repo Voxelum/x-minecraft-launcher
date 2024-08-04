@@ -71,7 +71,19 @@
         </template>
       </v-sheet>
     </template>
-    {{ group.name || instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`).join(', ') }}
+    <template v-if="group.name">
+      {{ group.name }}
+    </template>
+    <template v-else>
+      <ul>
+        <li
+          v-for="instance in instances"
+          :key="instance.path"
+        >
+          {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
+        </li>
+      </ul>
+    </template>
   </v-tooltip>
 </template>
 <script lang="ts" setup>
@@ -118,7 +130,7 @@ const { show } = useDialog('folder-setting')
 const { t } = useI18n()
 const getItems = () => {
   const items: ContextMenuItem[] = [{
-    icon: 'edit',
+    icon: 'settings',
     text: t('instances.folderSetting'),
     onClick: () => {
       show(props.group)

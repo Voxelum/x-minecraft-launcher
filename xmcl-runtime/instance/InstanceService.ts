@@ -426,6 +426,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
       }
     }
+    if ('prependCommand' in options && options.prependCommand !== state.prependCommand) {
+      result.prependCommand = options.prependCommand
+    }
     if ('assignMemory' in options && options.assignMemory !== state.assignMemory) {
       result.assignMemory = options.assignMemory
     }

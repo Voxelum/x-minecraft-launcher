@@ -77,6 +77,30 @@
     <v-list-item
       style="margin-top: 5px"
     >
+      <v-list-item-content class="max-w-70 mr-4">
+        <v-list-item-title>
+          {{ t("instance.prependCommand") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalPrependCommand"
+            @clear="resetPrependCommand"
+            @click="gotoSetting"
+          />
+        </v-list-item-title>
+        <v-list-item-subtitle
+          v-shared-tooltip="_ => t('instance.prependCommandHint')"
+        >
+          <v-text-field
+            v-model="prependCommand"
+            class="m-1 mt-2"
+            hide-details
+            required
+            outlined
+            filled
+            dense
+            :placeholder="t('instance.prependCommandHint')"
+          />
+        </v-list-item-subtitle>
+      </v-list-item-content>
       <v-list-item-content>
         <v-list-item-title>
           {{ t("instance.vmOptions") }}
@@ -125,7 +149,11 @@ const refreshingLocalJava = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
 
 const {
   isGlobalAssignMemory,
-  isGlobalVmOptions, assignMemory,
+  isGlobalVmOptions,
+  assignMemory,
+  isGlobalPrependCommand,
+  prependCommand,
+  resetPrependCommand,
   resetAssignMemory,
   resetVmOptions,
   maxMemory: maxMem,

@@ -451,6 +451,8 @@ instance:
   openCrashReportFolder: Ouvrir le dossier de rapport de crash
   openLogFolder: Ouvrir le dossier de logs
   playtime: Temps de jeu
+  prependCommand: Ajouter une commande
+  prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   requireName: Le nom est requis
   showInstance: Afficher le dossier du jeu
   versionHint: La version Minecraft de ce jeu

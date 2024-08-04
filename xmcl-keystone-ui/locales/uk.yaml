@@ -427,6 +427,8 @@ instance:
   neverPlayed: Ніколи не грав
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
+  prependCommand: Команда «Початок».
+  prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Ім'я обов'язкове
   showInstance: Показати папку гри
   versionHint: Версія Minecraft для цієї гри

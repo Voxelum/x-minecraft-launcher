@@ -254,6 +254,8 @@ instance:
   changeIcon: Cambiar icona
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   launchServer: Inicia o servidor localhost
+  prependCommand: Comando anteposto
+  prependCommandHint: Isto antepoñerá este comando antes de todos os comandos de inicio
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 

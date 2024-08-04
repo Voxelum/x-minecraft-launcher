@@ -13,10 +13,11 @@ export function useInstanceLaunch(
   java: Ref<JavaRecord | undefined>,
   userProfile: Ref<UserProfile>,
   globalState: ReturnType<typeof useSettingsState>,
+  enabledModCounts: Ref<number>,
 ) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { abortRefresh } = useService(UserServiceKey)
   const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
@@ -144,8 +145,15 @@ export function useInstanceLaunch(
         [instancePath]: 'assigning-memory',
       }
       console.log('assigning memory')
-      const mem = await track(getMemoryStatus(), 'get-memory-status', operationId)
-      minMemory = Math.floor(mem.free / 1024 / 1024 - 256)
+      const modCount = enabledModCounts.value
+      if (modCount === 0) {
+        minMemory = 1024
+      } else {
+        const level = modCount / 25
+        const rounded = Math.floor(level)
+        const percentage = level - rounded
+        minMemory = Math.max(rounded * 1024 + (percentage > 0.5 ? 512 : 0), 1024)
+      }
     } else {
       minMemory = undefined
     }
@@ -153,6 +161,7 @@ export function useInstanceLaunch(
 
     const vmOptions = inst.vmOptions ?? globalVmOptions.value.filter(v => !!v)
     const mcOptions = inst.mcOptions ?? globalMcOptions.value.filter(v => !!v)
+    const prependCommand = inst.prependCommand ?? globalPrependCommand.value
 
     const options: LaunchOptions = {
       operationId,
@@ -169,6 +178,7 @@ export function useInstanceLaunch(
       mcOptions,
       yggdrasilAgent,
       disableElyByAuthlib,
+      prependCommand,
       side,
       server: inst.server ?? undefined,
       ...(overrides || {}),

@@ -478,6 +478,8 @@ instance:
   openCrashReportFolder: Открыть папку с отчётами об ошибках
   openLogFolder: Открыть папку с журналами
   playtime: Время игры
+  prependCommand: Добавить команду в начало
+  prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
   showInstance: Открыть папку экземпляра
   versionHint: Minecraft-версия этой игры

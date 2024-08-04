@@ -9,6 +9,7 @@ export class Settings implements SettingSchema {
   globalAssignMemory: 'auto' | boolean = false
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
+  globalPrependCommand: string = ''
   globalFastLaunch = false
   globalHideLauncher = false
   globalShowLog = false
@@ -195,6 +196,7 @@ export class Settings implements SettingSchema {
     globalShowLog: boolean
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
+    globalPrependCommand: string
   }) {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
@@ -206,5 +208,6 @@ export class Settings implements SettingSchema {
     this.globalShowLog = settings.globalShowLog
     this.globalDisableAuthlibInjector = settings.globalDisableAuthlibInjector
     this.globalDisableElyByAuthlib = settings.globalDisableElyByAuthlib
+    this.globalPrependCommand = settings.globalPrependCommand
   }
 }

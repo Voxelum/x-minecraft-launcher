@@ -117,6 +117,9 @@
                 "type": "string"
             }
         },
+        "prependCommand": {
+            "type": "string"
+        },
         "url": {
             "default": "",
             "type": "string"

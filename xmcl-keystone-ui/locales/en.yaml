@@ -414,6 +414,8 @@ instance:
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
   playtime: Playtime
+  prependCommand: Prepend Command
+  prependCommandHint: This will prepend this command before all the launch commands
   requireName: The name is required
   showInstance: Show game folder
   versionHint: The Minecraft version of this game

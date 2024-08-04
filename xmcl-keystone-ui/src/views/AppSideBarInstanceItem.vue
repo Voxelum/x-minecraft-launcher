@@ -135,6 +135,8 @@ const onDragStart = (e: DragEvent) => {
   img.onload = () => {
     img.height = 54
     img.width = 54
+    img.style.maxHeight = '54px'
+    img.style.maxWidth = '54px'
   }
   e.dataTransfer!.setData('instance', props.path)
   dragging.value = true

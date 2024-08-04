@@ -377,6 +377,8 @@ instance:
   openCrashReportFolder: Abrir Carpeta de Informes de Errores
   openLogFolder: Abrir Carpeta de Registro
   playtime: Tiempo de Juego
+  prependCommand: Anteponer comando
+  prependCommandHint: Esto antepondrá este comando antes de todos los comandos de inicio.
   requireName: El nombre es obligatorio
   showInstance: Mostrar carpeta del juego
   versionHint: La versión de Minecraft de este juego

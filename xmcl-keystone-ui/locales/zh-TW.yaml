@@ -428,6 +428,8 @@ instance:
   neverPlayed: 從未遊玩
   openLogFolder: 開啟日誌資料夾
   playtime: 遊玩時長
+  prependCommand: 前置命令
+  prependCommandHint: 這將在所有啟動命令之前添加此命令
   requireName: 必須填寫名稱
   showInstance: 開啟資料夾
   versionHint: 此遊戲使用的 Minecraft 版本

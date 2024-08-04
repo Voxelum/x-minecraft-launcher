@@ -411,6 +411,8 @@ instance:
   openCrashReportFolder: Összeomlási jelentések mapppa megnyitása
   openLogFolder: Napló mappa megnyitása
   playtime: Játékidő
+  prependCommand: Parancs elé fűzni
+  prependCommandHint: Ez a parancs az összes indítási parancs elé kerül
   requireName: A név megadása kötelező
   showInstance: Játék mappa megjelenítése
   versionHint: A játék Minecraft verziója

@@ -460,6 +460,8 @@ instance:
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs
+  prependCommand: Befehl voranstellen
+  prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Name ist erforderlich
   showInstance: Spieleordner anzeigen
   versionHint: Minecraft Version für dieses Spiel

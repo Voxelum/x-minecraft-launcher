@@ -109,6 +109,10 @@ export interface LaunchOptions {
    * The extra arguments for minecraft
    */
   mcOptions?: string[]
+  /**
+   * Prepend command before launch
+   */
+  prependCommand?: string
 
   disableElyByAuthlib?: boolean
 

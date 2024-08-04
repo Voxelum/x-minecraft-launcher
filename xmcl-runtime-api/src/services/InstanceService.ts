@@ -115,6 +115,9 @@ export class InstanceState {
     if ('maxMemory' in settings) {
       inst.maxMemory = (typeof settings.maxMemory === 'number') && settings.maxMemory > 0 ? settings.maxMemory : undefined
     }
+    if ('prependCommand' in settings) {
+      inst.prependCommand = settings.prependCommand
+    }
 
     if ('vmOptions' in settings) {
       inst.vmOptions = Object.seal(settings.vmOptions)
