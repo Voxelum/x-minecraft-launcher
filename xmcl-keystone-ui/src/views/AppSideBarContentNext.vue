@@ -25,6 +25,7 @@
           v-else-if="typeof i === 'object'"
           :key="i.id + index"
           :group="i"
+          :color="i.color || defaultColor"
           @arrange="move($event.targetPath, $event.toPath || i, $event.previous)"
           @group="group($event, i)"
         />
@@ -72,7 +73,7 @@
       {{ copySavePayload?.destInstancePath }}
       {{ copySavePayload?.saveName }}
     </SimpleDialog>
-    <AppSideBarGroupSettingDialog />
+    <AppSideBarGroupSettingDialog :default-color="defaultColor" />
   </div>
 </template>
 <script setup lang="ts">
@@ -85,7 +86,7 @@ import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 import { useNotifier } from '@/composables/notifier'
-import { useInstanceGroup } from '@/composables/instanceGroup'
+import { useInstanceGroup, useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 import AppSideBarGroupItem from './AppSideBarGroupItem.vue'
 import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
 
@@ -104,6 +105,7 @@ const copySavePayload = ref(undefined as {
   destInstancePath: string
 } | undefined)
 const { cloneSave } = useService(InstanceSavesServiceKey)
+const defaultColor = useInstanceGroupDefaultColor()
 const { notify } = useNotifier()
 function doCopy() {
   if (copySavePayload.value) {

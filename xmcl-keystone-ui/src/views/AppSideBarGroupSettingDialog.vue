@@ -2,18 +2,24 @@
 import { useDialog } from '@/composables/dialog'
 import { InstanceGroupData } from '@/composables/instanceGroup'
 
+const props = defineProps<{
+  defaultColor: string
+}>()
+
 const name = ref('')
-const color = ref('')
+const color = ref(props.defaultColor)
 let data: InstanceGroupData | undefined
 const { isShown } = useDialog<InstanceGroupData>('folder-setting', (folderData) => {
   data = folderData
   name.value = folderData.name
-  color.value = folderData.color
+  color.value = folderData.color || props.defaultColor
 })
 const onSave = () => {
   if (data) {
     data.name = name.value
-    data.color = color.value
+    if (color.value !== props.defaultColor) {
+      data.color = color.value
+    }
   }
   isShown.value = false
 }

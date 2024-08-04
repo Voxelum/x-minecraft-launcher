@@ -8,7 +8,7 @@
     <template #activator="{ on: tooltip }">
       <v-sheet
         class="relative rounded-xl hover:rounded-lg! transition-all"
-        :color="group.color"
+        :color="color"
       >
         <AppSideBarGroupItemIndicator :state="overState" />
         <v-list-item
@@ -86,7 +86,7 @@ import { vContextMenu } from '@/directives/contextMenu'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 
-const props = defineProps<{ group: InstanceGroupData }>()
+const props = defineProps<{ group: InstanceGroupData; color: string }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])
 
 const { instances: allInstances } = injection(kInstances)

@@ -1,6 +1,7 @@
 import { get, MaybeRef, useLocalStorage } from '@vueuse/core'
 import { kInstances } from './instances'
 import { injection } from '@/util/inject'
+import { kTheme } from './theme'
 
 export interface InstanceGroupData {
   color: string
@@ -106,9 +107,17 @@ export function useGroupDragDropState(emit: (event: 'arrange' | 'group' | 'drop-
   }
 }
 
+export function useInstanceGroupDefaultColor() {
+  const { isDark } = injection(kTheme)
+  return computed(() => {
+    const defaultColor = isDark.value ? '#3e3e3e66' : '#bcbcbc66'
+    return defaultColor
+  })
+}
+
 export function useInstanceGroup() {
-const { instances, ready } = injection(kInstances)
-const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupData[], {
+  const { instances, ready } = injection(kInstances)
+  const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupData[], {
   })
 
   watch(instances, (instances) => {
@@ -161,7 +170,7 @@ const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupD
       const current = data[i]
       if (typeof current === 'string') {
         if (isEqualGroup(current, to)) {
-          newOrders.push({ id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16), name: '', color: '#00000010', instances: [current, from] })
+          newOrders.push({ id: crypto.getRandomValues(new Uint32Array(2))[0].toString(16), name: '', color: '', instances: [current, from] })
         } else if (!isEqualGroup(current, from)) {
           newOrders.push(current)
         }

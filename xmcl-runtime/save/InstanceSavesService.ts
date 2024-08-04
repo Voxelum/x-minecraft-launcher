@@ -154,7 +154,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           this.warn(`Parse save in ${filePath} failed. Skip it.`)
           this.warn(e)
         }),
-      ), 2000)
+      ), 500)
 
       const updateCount = (delta: number) => {
         count += delta
@@ -335,7 +335,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     saveName = filenamify(saveName ?? basename(path))
     let dest = join(instancePath, 'saves', basename(saveName, extname(saveName)))
     let i = 1
-    while (!await missing(dest)) {
+    while (existsSync(dest)) {
       dest = join(instancePath, 'saves', `${saveName} (${i++})`)
     }
 
