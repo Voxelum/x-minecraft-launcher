@@ -12,6 +12,7 @@ import { kInstanceVersion } from './instanceVersion'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { useService } from './service'
+import { kJavaContext } from './java'
 
 export const kModrinthInstaller: InjectionKey<ReturnType<typeof useModrinthInstaller>> = Symbol('modrinthInstaller')
 
@@ -71,6 +72,7 @@ export function useModrinthInstallModpack(icon: Ref<string | undefined>) {
   const { createInstance } = useService(InstanceServiceKey)
   const { installVersion } = useService(ModrinthServiceKey)
   const { installFiles } = injection(kInstanceFiles)
+  const { all } = injection(kJavaContext)
   const { getInstallInstruction, handleInstallInstruction, getInstanceLock } = injection(kInstanceVersionInstall)
   const { currentRoute, push } = useRouter()
   const installModpack = async (v: ProjectVersion) => {
@@ -105,7 +107,7 @@ export function useModrinthInstallModpack(icon: Ref<string | undefined>) {
     const lock = getInstanceLock(path)
     lock.write(async () => {
       const resolved = existed ? await getResolvedVersion(existed) : undefined
-      const instruction = await getInstallInstruction(path, config.runtime, options.version || '', resolved)
+      const instruction = await getInstallInstruction(path, config.runtime, options.version || '', resolved, all.value)
       await handleInstallInstruction(instruction)
     })
   }

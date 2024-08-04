@@ -33,7 +33,7 @@ export function useLaunchButton() {
   const { isValidating: refreshingFiles, mutate } = injection(kInstanceFiles)
 
   const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
-  const { issue: javaIssue, fix: fixJavaIssue } = useInstanceJavaDiagnose()
+  const { issue: javaIssue } = useInstanceJavaDiagnose()
   const { issue: filesIssue, fix: fixInstanceFileIssue } = useInstanceFilesDiagnose()
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
   const { status, pause, resume } = injection(kLaunchTask)
@@ -113,14 +113,6 @@ export function useLaunchButton() {
         color: 'blue',
         menu: versionIssues.value,
         onClick: () => fixVersionIssues(),
-      }
-    } else if (javaIssue.value && !javaIssue.value.onClick) {
-      return {
-        icon: 'get_app',
-        text: t('install'),
-        color: 'blue',
-        menu: [javaIssue.value],
-        onClick: () => fixJavaIssue(),
       }
     } else {
       return {

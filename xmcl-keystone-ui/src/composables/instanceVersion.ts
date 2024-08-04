@@ -1,5 +1,5 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
-import { Instance, VersionHeader, RuntimeVersions, ServerVersionHeader, VersionServiceKey, findMatchedVersion, getResolvedVersionHeader, InstanceServiceKey } from '@xmcl/runtime-api'
+import { findMatchedVersion, getResolvedVersionHeader, Instance, InstanceServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
@@ -86,7 +86,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     console.time('[resolveVersion]')
     const version = await getResolvedVersion(header, _version)
     console.timeEnd('[resolveVersion]')
-    if (instance.value.version !== _version || header !== versionHeader.value || _path !== instance.value.path) {
+    if (instance.value.version !== _version ||
+      header !== versionHeader.value ||
+      _path !== instance.value.path) {
       return
     }
     if (version) {
@@ -117,9 +119,11 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
       }
     }
 
+    const unresolvedVersion: UnresolvedVersion = { requirements: { ...instance.value.runtime }, version: _version, instance: _path }
+
     resolvedVersion.value = version
-      ? { ...version, requirements: { ...instance.value.runtime }, version: _version, instance: _path }
-      : { requirements: { ...instance.value.runtime }, version: _version, instance: _path }
+      ? { ...version, ...unresolvedVersion }
+      : unresolvedVersion
   })
 
   // update on instance/instance version/versions changed

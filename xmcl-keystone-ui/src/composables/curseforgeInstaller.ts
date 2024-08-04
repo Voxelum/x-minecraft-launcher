@@ -13,6 +13,7 @@ import { kInstanceVersion } from './instanceVersion'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { useService } from './service'
+import { kJavaContext } from './java'
 
 export const kCurseforgeInstaller: InjectionKey<ReturnType<typeof useCurseforgeInstaller>> = Symbol('curseforgeInstaller')
 
@@ -78,6 +79,7 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
   const { installFiles } = injection(kInstanceFiles)
   const { getVersionHeader, getResolvedVersion } = injection(kInstanceVersion)
   const { getInstanceLock, getInstallInstruction, handleInstallInstruction } = injection(kInstanceVersionInstall)
+  const { all } = injection(kJavaContext)
   const { currentRoute, push } = useRouter()
   const installModpack = async (f: File) => {
     const result = await installFile({ file: f, type: 'modpacks', icon: icon.value })
@@ -107,7 +109,7 @@ export function useCurseforgeInstallModpack(icon: Ref<string | undefined>) {
     const lock = getInstanceLock(path)
     lock.write(async () => {
       const resolved = existed ? await getResolvedVersion(existed) : undefined
-      const instruction = await getInstallInstruction(path, config.runtime, '', resolved)
+      const instruction = await getInstallInstruction(path, config.runtime, '', resolved, all.value)
       await handleInstallInstruction(instruction)
     })
   }

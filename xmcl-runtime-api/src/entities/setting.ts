@@ -76,6 +76,7 @@ export class Settings implements SettingSchema {
     this.globalVmOptions = config.globalVmOptions
     this.globalMcOptions = config.globalMcOptions
     this.globalFastLaunch = config.globalFastLaunch
+    this.globalPrependCommand = config.globalPrependCommand
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
     this.globalDisableElyByAuthlib = config.globalDisableElyByAuthlib

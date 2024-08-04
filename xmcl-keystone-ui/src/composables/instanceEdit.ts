@@ -246,6 +246,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
   watch(computed(() => instance.value), () => load(), {
     immediate: true,
+    deep: true,
   })
 
   async function save() {

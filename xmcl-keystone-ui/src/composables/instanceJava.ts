@@ -1,10 +1,9 @@
-import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
+import type { JavaVersion } from '@xmcl/core'
 import { Instance, Java, JavaRecord, JavaServiceKey, parseVersion } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
-import { useService } from './service'
-import { InstanceResolveVersion, UnresolvedVersion } from './instanceVersion'
+import { InstanceResolveVersion } from './instanceVersion'
 import { useRefreshable } from './refreshable'
+import { useService } from './service'
 
 export enum JavaCompatibleState {
   Matched,
@@ -12,30 +11,43 @@ export enum JavaCompatibleState {
   VeryLikelyIncompatible,
 }
 
-export interface JavaRecommendation {
-  reason: 'missing' | 'incompatible' | 'invalid'
-  selectedJava?: Java
-  selectedJavaPath?: string
-  recommendedDownload?: JavaVersion
-  recommendedVersion?: Java
-  recommendedLevel?: JavaCompatibleState
-  version: string
-  minecraft: string
-  forge: string
-  requirement: string
+export interface AutoDetectedJava {
+  /**
+   * The prerference of the java version
+   */
+  preference: VersionPreference
+  /**
+   * The auto detected java version
+   */
+  javaVersion: JavaVersion
+  /**
+   * The java will be used
+   */
+  java: JavaRecord | undefined
+  /**
+   * No any java found
+   */
+  noJava?: boolean
+  /**
+   * The version is not installed, so result might be inaccurate
+   */
+  noVersion?: boolean
 }
 
 export const kInstanceJava: InjectionKey<ReturnType<typeof useInstanceJava>> = Symbol('InstanceJava')
 
-export type InstanceJavaStatus = {
+export interface InstanceJavaStatus extends AutoDetectedJava {
   instance: string
   /**
    * The selected java path of the instance
    */
   javaPath: string | undefined
-  noJava?: boolean
-  recomendation?: JavaRecommendation
-  java?: JavaRecord
+  /**
+   * Only present when user has manually selected java
+   */
+  compatible?: JavaCompatibleState
+
+  preferredJava?: JavaRecord
 }
 
 export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>) {
@@ -45,16 +57,17 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
   const { refresh: mutate, refreshing: isValidating, error } = useRefreshable(async () => {
     const _version = version.value
     const inst = instance.value
+    const _all = all.value
+
     const path = inst.path
     const javaPath = inst.java
     const minecraft = inst.runtime.minecraft
     const forge = inst.runtime.forge
-    const _all = all.value
     data.value = undefined
     if (version.value && version.value.instance !== path) {
       return
     }
-    const result = await computeJava(_all, resolveJava, javaPath, minecraft, forge, _version)
+    const result = await getInstanceJavaStatus(_version, inst)
     if (version.value !== _version ||
       instance.value.java !== javaPath ||
       instance.value.runtime.minecraft !== minecraft ||
@@ -62,16 +75,35 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
       all.value !== _all) {
       return
     }
-    data.value = {
-      instance: path,
-      javaPath,
-      noJava: _all.length === 0,
-      ...result,
-    }
+    data.value = result
   })
 
+  function getComputedJava(instance: Instance, version: InstanceResolveVersion | undefined) {
+    return getAutoSelectedJava(
+      all.value,
+      instance.runtime.minecraft,
+      instance.runtime.forge,
+      version,
+    )
+  }
+
+  async function getInstanceJavaStatus(version: InstanceResolveVersion | undefined, inst: Instance) {
+    const javaPath = inst.java
+    const instPath = inst.path
+    const detected = getComputedJava(inst, version)
+    const result = await getAutoOrManuallJava(detected, resolveJava, javaPath)
+    const status: InstanceJavaStatus = {
+      instance: instPath,
+      javaPath,
+      ...result.auto,
+      java: result.java || result.auto.java,
+      compatible: result.quality,
+      preferredJava: result.auto.java,
+    }
+    return status
+  }
+
   const java = computed(() => data.value?.java)
-  const recommendation = computed(() => data.value?.recomendation)
 
   watch([all, version, computed(() => instance.value.java), computed(() => instance.value.runtime)], () => {
     mutate()
@@ -80,8 +112,9 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
   return {
     java,
     status: data,
-    recommendation,
     isValidating,
+    getInstanceJavaStatus,
+    getComputedJava,
     error,
   }
 }
@@ -92,7 +125,7 @@ interface VersionPreference {
   requirement: string
 }
 
-function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference) {
+function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: VersionPreference) {
   const records = [...allJava.filter(v => v.valid)]
   // const root = this.getPath('jre')
   // const isUnderPath = (p: string) => !relative(root, p).startsWith('..')
@@ -119,16 +152,12 @@ function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference
   return [bad[0], JavaCompatibleState.VeryLikelyIncompatible] as const
 }
 
-async function computeJava(
-  all: JavaRecord[],
-  resolveJava: (path: string) => Promise<Java | undefined>,
-  javaPath: string | undefined,
+function getVersionPreference(
   minecraft: string,
   forge: string | undefined,
   selectedVersion?: InstanceResolveVersion,
 ) {
   let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
-  const versionId = selectedVersion && 'id' in selectedVersion ? selectedVersion.id : undefined
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
 
@@ -203,24 +232,62 @@ async function computeJava(
     }
   }
 
+  return {
+    javaVersion,
+    versionPref,
+  }
+}
+
+function getAutoSelectedJava(
+  all: JavaRecord[],
+  minecraft: string,
+  forge: string | undefined,
+  selectedVersion?: InstanceResolveVersion,
+): AutoDetectedJava {
+  const { javaVersion, versionPref } = getVersionPreference(minecraft, forge, selectedVersion)
+
   if (all.length === 0) {
     // No java installed
     return {
-      recomendation: {
-        reason: 'missing',
-        recommendedDownload: javaVersion,
-        requirement: versionPref.requirement,
-        version: versionId || '',
-        minecraft,
-        forge: forge ?? '',
-      } as JavaRecommendation,
+      preference: versionPref,
+      javaVersion,
       java: undefined,
+      noJava: true,
+      noVersion: !selectedVersion,
     }
   }
 
-  const [computedJava, computedQuality] = getSortedJava(all, versionPref)
-  let resultJava: Java = computedJava
-  let resultQuality = computedQuality
+  const [computedJava, computedQuality] = selectJavaByPreference(all, versionPref)
+
+  return computedQuality !== JavaCompatibleState.Matched
+    ? {
+      preference: versionPref,
+      javaVersion,
+      java: undefined,
+      noVersion: !selectedVersion,
+    }
+    : {
+      preference: versionPref,
+      javaVersion,
+      noVersion: !selectedVersion,
+      java: {
+        ...computedJava,
+        valid: true,
+      } as JavaRecord,
+    }
+}
+
+async function getAutoOrManuallJava(
+  criteria: AutoDetectedJava,
+  resolveJava: (path: string) => Promise<Java | undefined>,
+  javaPath: string | undefined,
+) {
+  if (criteria.noJava) {
+    // No java installed
+    return {
+      auto: criteria,
+    }
+  }
 
   const userAssigned = javaPath && javaPath !== ''
   if (userAssigned) {
@@ -230,17 +297,7 @@ async function computeJava(
     if (!record) {
       // Invalid java
       return {
-        recomendation: {
-          reason: 'invalid',
-          selectedJavaPath: javaPath,
-          recommendedDownload: javaVersion,
-          recommendedVersion: computedJava,
-          recommendedLevel: resultQuality,
-          requirement: versionPref.requirement,
-          version: versionId || '',
-          minecraft,
-          forge: forge ?? '',
-        } as JavaRecommendation,
+        auto: criteria,
         java: {
           valid: false,
           path: javaPath,
@@ -250,41 +307,27 @@ async function computeJava(
       }
     }
 
+    let resultQuality: JavaCompatibleState
     // check if this version matched
-    if (versionPref.match(record)) {
+    if (criteria.preference.match(record)) {
       resultQuality = JavaCompatibleState.Matched
-    } else if (versionPref.okay(record)) {
+    } else if (criteria.preference.okay(record)) {
       resultQuality = JavaCompatibleState.MayIncompatible
     } else {
       resultQuality = JavaCompatibleState.VeryLikelyIncompatible
     }
-    resultJava = record
+
+    return {
+      auto: criteria,
+      java: {
+        ...record,
+        valid: true,
+      } as JavaRecord,
+      quality: resultQuality,
+    }
   }
 
-  return resultQuality !== JavaCompatibleState.Matched
-    ? {
-      // Incompatible
-      recomendation: {
-        reason: 'incompatible',
-        selectedJava: resultJava,
-        recommendedDownload: javaVersion,
-        recommendedVersion: computedJava,
-        recommendedLevel: computedQuality,
-        version: versionId || '',
-        minecraft,
-        forge: forge || '',
-        requirement: versionPref.requirement,
-      } as JavaRecommendation,
-      java: {
-        ...resultJava,
-        valid: true,
-      } as JavaRecord,
-    }
-    : {
-      recomendation: undefined,
-      java: {
-        ...resultJava,
-        valid: true,
-      } as JavaRecord,
-    }
+  return {
+    auto: criteria,
+  }
 }
