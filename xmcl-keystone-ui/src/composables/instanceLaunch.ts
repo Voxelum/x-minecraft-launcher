@@ -98,7 +98,7 @@ export function useInstanceLaunch(
     }
   }
 
-  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
+  async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false) {
     const ver = overrides?.version ?? side === 'client' ? version.value : serverVersion.value
 
     if (!ver) {
@@ -118,11 +118,13 @@ export function useInstanceLaunch(
 
     const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
     if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
-      allLaunchingStatus.value = {
-        ...allLaunchingStatus.value,
-        [instancePath]: 'preparing-authlib',
+      if (!dry) {
+        allLaunchingStatus.value = {
+          ...allLaunchingStatus.value,
+          [instancePath]: 'preparing-authlib',
+        }
+        console.log('preparing authlib')
       }
-      console.log('preparing authlib')
       yggdrasilAgent = {
         jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', operationId),
         server: userProfile.value.authority,
@@ -140,10 +142,13 @@ export function useInstanceLaunch(
     if (assignMemory === true && minMemory > 0) {
       // noop
     } else if (assignMemory === 'auto') {
-      allLaunchingStatus.value = {
-        ...allLaunchingStatus.value,
-        [instancePath]: 'assigning-memory',
+      if (!dry) {
+        allLaunchingStatus.value = {
+          ...allLaunchingStatus.value,
+          [instancePath]: 'assigning-memory',
+        }
       }
+
       console.log('assigning memory')
       const modCount = enabledModCounts.value
       if (modCount === 0) {
