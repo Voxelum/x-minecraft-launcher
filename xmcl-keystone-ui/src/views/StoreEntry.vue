@@ -181,6 +181,7 @@ const { push } = useRouter()
 
 function ensureQuery(query: Record<string, string | (string| null)[] | null | undefined>) {
   query.page = '1'
+  scrollToView()
   if (!query.query) {
     if (query.sort === '0') {
       query.sort = '1'
@@ -486,6 +487,13 @@ const items = computed(() => {
 // Scroll to the search result
 const container = ref<any>(null)
 const exploreHeader = ref<any | null>(null)
+function scrollToView() {
+  const component = exploreHeader.value
+  const el = component?.$el as HTMLElement | undefined
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 watch(items, () => {
   if (query.value || gameVersion.value || modLoaders.value.length > 0 || _modrinthCategories.value.length > 0 || curseforgeCategory.value) {
     // Scroll to the element
@@ -499,6 +507,10 @@ watch(items, () => {
       }
     }
   }
+})
+
+watch(page, () => {
+  scrollToView()
 })
 
 // Hovered project
