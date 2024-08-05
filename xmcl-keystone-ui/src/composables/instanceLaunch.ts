@@ -157,7 +157,7 @@ export function useInstanceLaunch(
         const level = modCount / 25
         const rounded = Math.floor(level)
         const percentage = level - rounded
-        minMemory = Math.max(rounded * 1024 + (percentage > 0.5 ? 512 : 0), 1024)
+        minMemory = rounded * 1024 + (percentage > 0.5 ? 512 : 0) + 1024
       }
     } else {
       minMemory = undefined
