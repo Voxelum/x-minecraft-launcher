@@ -1,11 +1,11 @@
-import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
+import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, InstallForgeOptions, InstallJarTask, InstallProfile, LiteloaderVersion, MinecraftVersion, Options, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
 import { Asset, InstallService as IInstallService, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LockKey, MutableState, Resource, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
-import { ensureFile, readFile, unlink, writeFile } from 'fs-extra'
+import { ensureFile, readFile, readFileSync, unlink, writeFile } from 'fs-extra'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { GFW } from '~/gfw'
 import { JavaService } from '~/java'
@@ -14,7 +14,7 @@ import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from '~/service'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
-import { joinUrl } from '~/util/url'
+import { joinUrl, replaceHost } from '~/util/url'
 import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
 import { missing } from '../util/fs'
@@ -58,6 +58,53 @@ export class InstallService extends AbstractService implements IInstallService {
           }
         }
         return spawn(cmd, a, opts || {})
+      },
+      handler: async (postProcessor) => {
+        const parsedArgs = {} as Record<string, string>
+        for (let i = 0; i < postProcessor.args.length; i++) {
+          const arg = postProcessor.args[i]
+          if (arg.startsWith('--')) {
+            const next = postProcessor.args[i + 1]
+            if (next && !next.startsWith('--')) {
+              parsedArgs[arg] = postProcessor.args[i + 1]
+            }
+          }
+        }
+        const task = parsedArgs.task
+
+        if (task !== 'DOWNLOAD_MOJMAPS') return false
+        if (!parsedArgs.version || !parsedArgs.side || !parsedArgs.output) return false
+
+        const versionContent = await readFile(this.getPath('versions', parsedArgs.version, `${parsedArgs.version}.json`), 'utf-8').catch(() => '')
+        if (!versionContent) return false
+
+        const version: Version = JSON.parse(versionContent)
+        const mapping = version.downloads?.[`${parsedArgs.side}_mappings`]
+        if (!mapping) return false
+
+        const output = parsedArgs.output
+        const url = new URL(mapping.url)
+        const urls = allSets.map(api => {
+          if (api.name === 'mojang') {
+            return url.toString()
+          }
+          return replaceHost(url, api.url)
+        })
+        const sha1 = await checksum(output, 'sha1')
+        if (sha1 === mapping.sha1) {
+          return true
+        }
+        for (const u of urls) {
+          try {
+            const response = await this.app.fetch(u)
+            const text = await response.text()
+            await writeFile(output, text)
+            return true
+          } catch (e) {
+            this.warn(`Failed to download mojmap from ${u}`)
+          }
+        }
+        return false
       },
     }
 
@@ -118,11 +165,7 @@ export class InstallService extends AbstractService implements IInstallService {
         if (api.name === 'mojang') {
           return ver.assetIndex.url
         }
-        const url = new URL(ver.assetIndex.url)
-        const host = new URL(api.url).host
-        url.host = host
-        url.hostname = host
-        return url.toString()
+        return replaceHost(ver.assetIndex.url, api.url)
       }
       return ''
     }).filter(v => !!v)
@@ -131,11 +174,7 @@ export class InstallService extends AbstractService implements IInstallService {
       if (api.name === 'mojang') {
         return ver.url
       }
-      const url = new URL(ver.url)
-      const host = new URL(api.url).host
-      url.host = host
-      url.hostname = host
-      return url.toString()
+      return replaceHost(ver.url, api.url)
     })
 
     option.client = (ver) => allSets.map(api => {
@@ -143,11 +182,7 @@ export class InstallService extends AbstractService implements IInstallService {
         if (api.name === 'mojang') {
           return ver.downloads.client.url
         }
-        const url = new URL(ver.downloads.client.url)
-        const host = new URL(api.url).host
-        url.host = host
-        url.hostname = host
-        return url.toString()
+        return replaceHost(ver.downloads.client.url, api.url)
       }
       return ''
     }).filter(v => !!v)
@@ -449,12 +484,12 @@ export class InstallService extends AbstractService implements IInstallService {
             return realUrl.toString()
           })
           return Promise.any(urls.map(async (a) => {
-          const resp = await this.app.fetch(a, init)
-          if (resp.ok) {
-            return resp
-          }
-          throw new Error(`Failed to fetch ${a}`)
-        }))
+            const resp = await this.app.fetch(a, init)
+            if (resp.ok) {
+              return resp
+            }
+            throw new Error(`Failed to fetch ${a}`)
+          }))
         },
       })
       this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${versionId}`)
