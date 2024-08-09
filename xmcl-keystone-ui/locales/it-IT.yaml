@@ -1,5 +1,5 @@
 AppAddInstanceDialog:
-  choiceTitle: Rilevati più profili di lancio. Selezionarne uno da importare.
+  choiceTitle: Rilevati più profili di lancio. Selezionane uno da importare.
   configTitle: Configurazione
   createTitle: Crea gioco
   downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
@@ -1324,9 +1324,9 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      La directory dei dati non è una directory .minecraft standard. Poiché la
+      La directory dei dati non è una directory ".minecraft" standard. perché la
       struttura dei dati di XMCL è diversa da quella standard, non consigliamo
-      di utilizzare la directory .minecraft standard come directory dei dati.
+      di utilizzare la directory ".minecraft" standard come directory dei dati.
     drives: Posizioni consigliate
     name: Imposta directory dati
   defaultLayoutDescription: >-
@@ -1370,23 +1370,23 @@ shaderPack:
   deletionHint: >-
     Questa azione eliminerà il file del pacchetto shader {path} e non potrà
     essere annullata.
-  disabled: Shader Pack disabilitata
+  disabled: Shader Pack disabilitato
   dropHint: Importa Shader Pack
-  empty: Nessun shader pack allocata
+  empty: Nessun shader pack allocato
   enable: Utilizzo del pacchetto shader {name}
-  enabled: Shader Pack abilitata
+  enabled: Shader Pack abilitato
   manage: Gestisci Shader Pack
   name: Shader Pack
   searchHint: Cerca Shader Pack
   selectSearchHint: Cerca e seleziona Shader Pack
-  showDirectory: Mostra la directory shader pack
-  showFile: Mostra questa shader pack nella cartella
+  showDirectory: Mostra la directory degli shader pack
+  showFile: Mostra questo shader pack nella cartella
 shared:
   accept: Accetta
 store:
   explore: Esplora
   latestMinecraft: Ultima versione di Minecraft
-  name: Mercato dei modpack
+  name: Store dei modpack
   popular: Modpack popolari
   recentUpdated: Aggiornamenti recenti
 summery: Riepilogo
