@@ -6,16 +6,14 @@ AppAddInstanceDialog:
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
   alterDownloadDescription: |-
-    Se non vuoi rovinare l'istanza corrente. 
-    Puoi anche creare una nuova istanza dalla configurazione del tuo peer. 
-    Fai clic sul pulsante qui sotto per creare un'istanza.
+    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
   baseInfo: Impostazioni di base
   cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file
     tramite il tuo PC.
-  downloadDescription: |-
-    Verifica i file che ti sono stati forniti dal tuo collega. 
+  downloadDescription: >-
+    Verifica i file che ti sono stati forniti dal tuo peer. 
     Seleziona il file che desideri scaricare. 
     Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
@@ -315,8 +313,7 @@ finish: Finito
 forgeConfig:
   hint: >-
     Avvia almeno una volta il gioco con questa mod, in modo che possiamo
-    rilevare
-      il suo file di configurazione!
+    rilevare il suo file di configurazione!
 forgeVersion:
   common: Comune
   disable: Disabilita Forge
@@ -678,16 +675,16 @@ mod:
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
-    Si perderà questa mod e i relativi metadati per sempre. Sei sicuro di
-    volerla eliminare? | Si perderanno queste mod e questi metadati per sempre.
+    Perderai questa mod e i relativi metadati per sempre. Sei sicuro di
+    volerla eliminare? | Perderai queste mod e questi metadati per sempre.
     Sei sicuro di volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
-  dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
+  dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
   enabled: '{count} Mod abilitate'
   filter: Filtra Mod
   groupInstalled: Raggruppa le mod installate
-  hasUpdate: Il Mod ha una nuova versione!
+  hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
   manage: Gestisci Mod
@@ -701,9 +698,9 @@ mod:
   searchOnModrinth: Cerca {name} in Modrinth
   showDirectory: Mostra la directory delle mod
   showFile: Mostra il percorso della mod {file}
-  showInCurseforge: Mostra le mod in curseforge
+  showInCurseforge: Mostra la mod in curseforge
   showInModrinth: Mostra {name} in Modrinth
-  switchDefaultSource: Sorgente deòòe mod Mod Predefinita
+  switchDefaultSource: Sorgente della Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
   archived: >-
@@ -712,7 +709,7 @@ modInstall:
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida
     di annullare l'archiviazione del progetto.
   checkDependencies: Controlla le dipendenze
-  checkUpgrade: Controlla Aggiornamento Mod
+  checkUpgrade: Controlla Aggiornamento delle Mod
   checkedDependencies: Dipendenze controllate
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
@@ -721,7 +718,7 @@ modInstall:
   installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
-  noVersionSupported: Il mod supporta solo Minecraft {supported}.
+  noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
@@ -1373,17 +1370,17 @@ shaderPack:
   deletionHint: >-
     Questa azione eliminerà il file del pacchetto shader {path} e non potrà
     essere annullata.
-  disabled: Shader Pack disabilitato
+  disabled: Shader Pack disabilitata
   dropHint: Importa Shader Pack
-  empty: Nessun shader pack allocato
+  empty: Nessun shader pack allocata
   enable: Utilizzo del pacchetto shader {name}
-  enabled: Shader Pack abilitato
+  enabled: Shader Pack abilitata
   manage: Gestisci Shader Pack
   name: Shader Pack
   searchHint: Cerca Shader Pack
   selectSearchHint: Cerca e seleziona Shader Pack
   showDirectory: Mostra la directory shader pack
-  showFile: Mostra questo shader pack nella cartella
+  showFile: Mostra questa shader pack nella cartella
 shared:
   accept: Accetta
 store:
