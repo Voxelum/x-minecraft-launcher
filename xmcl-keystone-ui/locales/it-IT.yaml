@@ -1,21 +1,19 @@
 AppAddInstanceDialog:
-  choiceTitle: Rilevati più profili di lancio. Selezionarne uno da importare.
+  choiceTitle: Rilevati più profili di lancio. Selezionane uno da importare.
   configTitle: Configurazione
   createTitle: Crea gioco
   downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
   alterDownloadDescription: |-
-    Se non vuoi rovinare l'istanza corrente. 
-    Puoi anche creare una nuova istanza dalla configurazione del tuo peer. 
-    Fai clic sul pulsante qui sotto per creare un'istanza.
+    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
   baseInfo: Impostazioni di base
   cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file
     tramite il tuo PC.
-  downloadDescription: |-
-    Verifica i file che ti sono stati forniti dal tuo collega. 
+  downloadDescription: >-
+    Verifica i file che ti sono stati forniti dal tuo peer. 
     Seleziona il file che desideri scaricare. 
     Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
@@ -315,8 +313,7 @@ finish: Finito
 forgeConfig:
   hint: >-
     Avvia almeno una volta il gioco con questa mod, in modo che possiamo
-    rilevare
-      il suo file di configurazione!
+    rilevare il suo file di configurazione!
 forgeVersion:
   common: Comune
   disable: Disabilita Forge
@@ -446,7 +443,7 @@ instanceSetting:
       aiutarti a visualizzare la pelle nel gioco.
   disableElyByAuthlib: Disabilita la sostituzione di authlib di ely.by
   disableElyByAuthlibDescription: |-
-    Ely.by ha una sostituzione di authlib unica per visualizzare la pelle
+    Ely.by ha una sostituzione di authlib unica per visualizzare la skin
       universalmente in qualsiasi server.
   fastLaunch: Lancio Turbo
   fastLaunchHint: Ignora lo stato dell'utente e i problemi non risolti esistenti
@@ -678,32 +675,32 @@ mod:
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
-    Si perderà questa mod e i relativi metadati per sempre. Sei sicuro di
-    volerla eliminare? | Si perderanno queste mod e questi metadati per sempre.
+    Perderai questa mod e i relativi metadati per sempre. Sei sicuro di
+    volerla eliminare? | Perderai queste mod e questi metadati per sempre.
     Sei sicuro di volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
-  dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
-  enabled: '{count} Mod abilitati'
+  dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
+  enabled: '{count} Mod abilitate'
   filter: Filtra Mod
-  groupInstalled: Gruppo Mod Installati
-  hasUpdate: Il Mod ha una nuova versione!
+  groupInstalled: Raggruppa le mod installate
+  hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
   manage: Gestisci Mod
   maybeCompatible: Forse Compatibile.
   mods: '{count} Mods'
   name: Mod | Mods
-  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare i mod!
-  openLink: Apri il mod url {url}
+  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare le mod!
+  openLink: Apri l'url della mod {url}
   search: Cerca Mod
   searchOnCurseforge: Cerca {name} in curseforge
   searchOnModrinth: Cerca {name} in Modrinth
-  showDirectory: Mostra la directory dei mod
-  showFile: Mostra il percorso del mod {file}
-  showInCurseforge: Mostra il mod in curseforge
+  showDirectory: Mostra la directory delle mod
+  showFile: Mostra il percorso della mod {file}
+  showInCurseforge: Mostra la mod in curseforge
   showInModrinth: Mostra {name} in Modrinth
-  switchDefaultSource: Sorgente Mod Predefinita
+  switchDefaultSource: Sorgente della Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
   archived: >-
@@ -712,7 +709,7 @@ modInstall:
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida
     di annullare l'archiviazione del progetto.
   checkDependencies: Controlla le dipendenze
-  checkUpgrade: Controlla Aggiornamento Mod
+  checkUpgrade: Controlla Aggiornamento delle Mod
   checkedDependencies: Dipendenze controllate
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
@@ -721,13 +718,13 @@ modInstall:
   installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
-  noVersionSupported: Il mod supporta solo Minecraft {supported}.
+  noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
   source: Sorgente Mod
-  switch: Versione di commutazione
-  upgrade: Aggiorna Mod
+  switch: Cambia versione
+  upgrade: Aggiorna le Mod
 modSearchType:
   all: Tutti
   explore: Esplora il mercato
@@ -985,8 +982,8 @@ multiplayer:
     del launcher.
   leaveGroup: Abbandona il gruppo
   localToken: Token locale
-  manualConnect: Connettersi manualmente
-  name: Multiplayer su LAN
+  manualConnect: Connetti manualmente
+  name: Multiplayer in LAN
   networkInfo: Informazioni sulla rete
   next: Avanti
   placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
@@ -1009,7 +1006,7 @@ name: Nome
 natType:
   blocked: Bloccato
   fullCone: Full Cone
-  openInternet: Open Internet
+  openInternet: Intert Aperto
   restrictNat: Restrizione NAT
   restrictPortNat: Restrizione porta NAT
   symmetricNat: NAT simmetrico
@@ -1017,7 +1014,7 @@ natType:
   unknown: Sconosciuto
 neoForgedVersion:
   disable: Disabilita NeoForged
-  empty: NeoForged non supporta {version}
+  empty: NeoForged non supporto {version}
   name: NeoForged
 news:
   name: Notizie
@@ -1027,7 +1024,7 @@ next: Prossimo
 ok: OK
 optifineVersion:
   disable: Disabilita Optifine
-  empty: Optifine non supporta Minecraft {version}
+  empty: Optifine non supporto Minecraft {version}
 optional: Opzionale
 peerConnectionState:
   closed: Chiuso
@@ -1080,7 +1077,7 @@ resourcepack:
       potrà essere annullata. Sei sicuro di volerlo fare?
     title: Elimina il pacchetto risorse
   dropHint: Trascina la cartella/zip del pacchetto risorse qui per importare.
-  enable: '{count} Resource Pack è abilitato'
+  enable: '{count} Resource Pack sono/è abilitati/o'
   import: Importa pacchetto risorse
   incompatible: >-
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente
@@ -1241,7 +1238,7 @@ setting:
   developerMode: Modalità sviluppatore
   developerModeDescription: La modalità sviluppatore è destinata a testare i mod scritti personalmente
   disableTelemetry: Disabilita telemetria
-  disableTelemetryDescription: XMCL raccoglierà gli eventi di avvio del gioco e di accesso dell'utente.
+  disableTelemetryDescription: "XMCL racoglie gli eventi di avvio del gioco e di accesso dell'utente."
   enableDedicatedGPUOptimization: Assegna GPU dedicata
   enableDedicatedGPUOptimizationDescription: Questa opzione assegnerà una GPU dedicata al processo di Minecraft.
   enableDiscord: Abilita la presenza di Discord
@@ -1249,7 +1246,7 @@ setting:
   general: Generale
   githubRelease: Rilascio Github
   globalSetting: Impostazioni globali
-  globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
+  globalSettingHint: "L'istanza utilizzerà queste impostazioni per impostazione predefinita."
   hideNewsHeader: Nascondi showcase delle notizie
   language: Lingua
   languageDescription: La lingua visualizzata
@@ -1281,7 +1278,7 @@ setting:
     repulse: Ripulsa
   particleModeDescription: Seleziona il comportamento del clic della particella
   replaceNative: Sostituisci librerie native
-  replaceNativeDescription: Sostituisci le librerie native in base all'architettura del tuo computer.
+  replaceNativeDescription: "Sostituisci le librerie native in base all'architettura del tuo computer."
   replaceNatives:
     all: Tutti
     legacy: Solo versione legacy
@@ -1290,8 +1287,7 @@ setting:
   showRoot: Mostra
   streamerMode: Modalità streaming
   streamerModeDescription: >-
-    Questa opzione nasconderà le tue informazioni private, come l'email, nel
-    launcher.
+    "Questa opzione nasconde le tue informazioni private, come l'email, nel launcher."
   theme:
     dark: Tema scuro
     light: Tema chiaro
@@ -1328,9 +1324,9 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      La directory dei dati non è una directory .minecraft standard. Poiché la
+      La directory dei dati non è una directory ".minecraft" standard. perché la
       struttura dei dati di XMCL è diversa da quella standard, non consigliamo
-      di utilizzare la directory .minecraft standard come directory dei dati.
+      di utilizzare la directory ".minecraft" standard come directory dei dati.
     drives: Posizioni consigliate
     name: Imposta directory dati
   defaultLayoutDescription: >-
@@ -1383,14 +1379,14 @@ shaderPack:
   name: Shader Pack
   searchHint: Cerca Shader Pack
   selectSearchHint: Cerca e seleziona Shader Pack
-  showDirectory: Mostra la directory shader pack
+  showDirectory: Mostra la directory degli shader pack
   showFile: Mostra questo shader pack nella cartella
 shared:
   accept: Accetta
 store:
   explore: Esplora
   latestMinecraft: Ultima versione di Minecraft
-  name: Mercato dei modpack
+  name: Store dei modpack
   popular: Modpack popolari
   recentUpdated: Aggiornamenti recenti
 summery: Riepilogo
