@@ -446,7 +446,7 @@ instanceSetting:
       aiutarti a visualizzare la pelle nel gioco.
   disableElyByAuthlib: Disabilita la sostituzione di authlib di ely.by
   disableElyByAuthlibDescription: |-
-    Ely.by ha una sostituzione di authlib unica per visualizzare la pelle
+    Ely.by ha una sostituzione di authlib unica per visualizzare la skin
       universalmente in qualsiasi server.
   fastLaunch: Lancio Turbo
   fastLaunchHint: Ignora lo stato dell'utente e i problemi non risolti esistenti
@@ -684,9 +684,9 @@ mod:
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
-  enabled: '{count} Mod abilitati'
+  enabled: '{count} Mod abilitate'
   filter: Filtra Mod
-  groupInstalled: Gruppo Mod Installati
+  groupInstalled: Raggruppa le mod installate
   hasUpdate: Il Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
@@ -694,16 +694,16 @@ mod:
   maybeCompatible: Forse Compatibile.
   mods: '{count} Mods'
   name: Mod | Mods
-  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare i mod!
-  openLink: Apri il mod url {url}
+  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare le mod!
+  openLink: Apri l'url della mod {url}
   search: Cerca Mod
   searchOnCurseforge: Cerca {name} in curseforge
   searchOnModrinth: Cerca {name} in Modrinth
-  showDirectory: Mostra la directory dei mod
-  showFile: Mostra il percorso del mod {file}
-  showInCurseforge: Mostra il mod in curseforge
+  showDirectory: Mostra la directory delle mod
+  showFile: Mostra il percorso della mod {file}
+  showInCurseforge: Mostra le mod in curseforge
   showInModrinth: Mostra {name} in Modrinth
-  switchDefaultSource: Sorgente Mod Predefinita
+  switchDefaultSource: Sorgente deòòe mod Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
   archived: >-
@@ -726,8 +726,8 @@ modInstall:
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
   source: Sorgente Mod
-  switch: Versione di commutazione
-  upgrade: Aggiorna Mod
+  switch: Cambia versione
+  upgrade: Aggiorna le Mod
 modSearchType:
   all: Tutti
   explore: Esplora il mercato
@@ -985,8 +985,8 @@ multiplayer:
     del launcher.
   leaveGroup: Abbandona il gruppo
   localToken: Token locale
-  manualConnect: Connettersi manualmente
-  name: Multiplayer su LAN
+  manualConnect: Connetti manualmente
+  name: Multiplayer in LAN
   networkInfo: Informazioni sulla rete
   next: Avanti
   placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
@@ -1009,7 +1009,7 @@ name: Nome
 natType:
   blocked: Bloccato
   fullCone: Full Cone
-  openInternet: Open Internet
+  openInternet: Intert Aperto
   restrictNat: Restrizione NAT
   restrictPortNat: Restrizione porta NAT
   symmetricNat: NAT simmetrico
@@ -1017,7 +1017,7 @@ natType:
   unknown: Sconosciuto
 neoForgedVersion:
   disable: Disabilita NeoForged
-  empty: NeoForged non supporta {version}
+  empty: NeoForged non supporto {version}
   name: NeoForged
 news:
   name: Notizie
@@ -1027,7 +1027,7 @@ next: Prossimo
 ok: OK
 optifineVersion:
   disable: Disabilita Optifine
-  empty: Optifine non supporta Minecraft {version}
+  empty: Optifine non supporto Minecraft {version}
 optional: Opzionale
 peerConnectionState:
   closed: Chiuso
@@ -1080,7 +1080,7 @@ resourcepack:
       potrà essere annullata. Sei sicuro di volerlo fare?
     title: Elimina il pacchetto risorse
   dropHint: Trascina la cartella/zip del pacchetto risorse qui per importare.
-  enable: '{count} Resource Pack è abilitato'
+  enable: '{count} Resource Pack sono/è abilitati/o'
   import: Importa pacchetto risorse
   incompatible: >-
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente
@@ -1241,7 +1241,7 @@ setting:
   developerMode: Modalità sviluppatore
   developerModeDescription: La modalità sviluppatore è destinata a testare i mod scritti personalmente
   disableTelemetry: Disabilita telemetria
-  disableTelemetryDescription: XMCL raccoglierà gli eventi di avvio del gioco e di accesso dell'utente.
+  disableTelemetryDescription: "XMCL racoglie gli eventi di avvio del gioco e di accesso dell'utente."
   enableDedicatedGPUOptimization: Assegna GPU dedicata
   enableDedicatedGPUOptimizationDescription: Questa opzione assegnerà una GPU dedicata al processo di Minecraft.
   enableDiscord: Abilita la presenza di Discord
@@ -1249,7 +1249,7 @@ setting:
   general: Generale
   githubRelease: Rilascio Github
   globalSetting: Impostazioni globali
-  globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
+  globalSettingHint: "L'istanza utilizzerà queste impostazioni per impostazione predefinita."
   hideNewsHeader: Nascondi showcase delle notizie
   language: Lingua
   languageDescription: La lingua visualizzata
@@ -1281,7 +1281,7 @@ setting:
     repulse: Ripulsa
   particleModeDescription: Seleziona il comportamento del clic della particella
   replaceNative: Sostituisci librerie native
-  replaceNativeDescription: Sostituisci le librerie native in base all'architettura del tuo computer.
+  replaceNativeDescription: "Sostituisci le librerie native in base all'architettura del tuo computer."
   replaceNatives:
     all: Tutti
     legacy: Solo versione legacy
@@ -1290,8 +1290,7 @@ setting:
   showRoot: Mostra
   streamerMode: Modalità streaming
   streamerModeDescription: >-
-    Questa opzione nasconderà le tue informazioni private, come l'email, nel
-    launcher.
+    "Questa opzione nasconde le tue informazioni private, come l'email, nel launcher."
   theme:
     dark: Tema scuro
     light: Tema chiaro
