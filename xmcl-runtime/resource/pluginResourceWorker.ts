@@ -20,6 +20,14 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const flights = await app.registry.get(kFlights)
   let config: SqliteWASMDialectConfig
   const dbPath = join(app.appDataPath, 'resources.sqlite')
+
+  try {
+    const lockPath = dbPath + '.lock'
+    if (existsSync(lockPath)) {
+      rmSync(lockPath, { recursive: true })
+    }
+  } catch { }
+
   if (flights.enableResourceDatabaseWorker) {
     const dbLogger = app.getLogger('ResourceDbWorker')
     const dbWorker: DatabaseWorker = createLazyWorker(createDbWorker, {
@@ -34,10 +42,5 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       database: new Database(dbPath),
     }
   }
-  try {
-    if (existsSync(dbPath + '.lock')) {
-      rmSync(dbPath, { recursive: true })
-    }
-  } catch { }
   app.registry.register(kResourceDatabaseOptions, config)
 }
