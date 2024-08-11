@@ -13,7 +13,7 @@ export interface InstanceInstallInstruction {
   instance: string
   runtime: RuntimeVersions
   version: string
-  fresh?: boolean
+  resolvedVersion?: string
   jar?: MinecraftJarIssue
   profile?: InstallProfileIssueReport
   libriares?: LibraryIssue[]
@@ -212,7 +212,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     const i = instruction.value
     if (!i) return items
 
-    if (i.fresh) {
+    if (!i.resolvedVersion) {
       items.push(reactive({
         title: computed(() => t('diagnosis.missingVersion.name', { version: getExpectVersion(i.runtime) })),
         description: computed(() => t('diagnosis.missingVersion.message')),
@@ -358,9 +358,10 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       version,
     }
     if (!resolved) {
-      result.fresh = true
       return result
     }
+
+    result.resolvedVersion = resolved.id
 
     result.java = getJavaVersion(javas, resolved, instance)
 
@@ -449,7 +450,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         version,
       })
     }
-    if (instruction.fresh) {
+    if (!instruction.resolvedVersion) {
       const version = await install(instruction.runtime)
       if (version) {
         await installDependencies(version, 'client')
@@ -509,7 +510,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       return
     }
 
-    const resolved = await resolveLocalVersion(instruction.version)
+    const resolved = await resolveLocalVersion(instruction.resolvedVersion)
     const java = getJavaVersion(javas.value, resolved, instruction.instance)
     if (java) {
       await installDefaultJava(java)
