@@ -26,7 +26,7 @@ type ResolvedDependency = {
 const visit = async (resolvedDep: ResolvedDependency, visited: Set<string>, config: IConfig): Promise<ResolvedDependency[]> => {
   const { recommendedVersion: version } = resolvedDep
   if (resolvedDep.relativeType === 'incompatible' || resolvedDep.type === 'embedded') {
-    return [resolvedDep]
+    return []
   }
   if (visited.has(version.project_id)) {
     return []

@@ -30,7 +30,7 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
     dep.relativeType === FileRelationType.Include ||
     dep.relativeType === FileRelationType.Incompatible
   ) {
-    return [dep]
+    return []
   }
   if (visited.has(file.modId)) {
     return []
