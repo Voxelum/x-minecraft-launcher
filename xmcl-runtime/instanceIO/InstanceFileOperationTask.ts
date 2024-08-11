@@ -80,7 +80,7 @@ export class InstanceFileOperationTask extends AbortableTask<void> {
       ...this.resourceLinkQueue.map(async (job) => this.handleResource(job)),
       ...this.filesQueue.map(async (job) => this.handleCommon(job)),
     ])
-    const errors = result.filter((r) => r.status === 'rejected').map((r) => r.reason)
+    const errors = result.filter((r) => r.status === 'rejected').map((r) => (r as any).reason)
     if (errors.length > 0) {
       throw new AggregateError(errors)
     }

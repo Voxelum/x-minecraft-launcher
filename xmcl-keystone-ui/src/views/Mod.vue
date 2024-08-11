@@ -239,7 +239,7 @@
         </v-menu>
       </v-subheader>
       <v-alert v-if="upgradeError">
-        {{ upgradeError.message }}
+        {{ updateErrorMessage }}
       </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
@@ -442,6 +442,13 @@ const { plans, error: upgradeError, refresh: checkUpgrade, refreshing: checkingU
 
 // Dependencies check
 const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: checkingDependencies, checked: checkedDependencies, apply: installDependencies, installing: installingDependencies } = useModDependenciesCheck(path, runtime)
+
+const updateErrorMessage = computed(() => {
+  if (upgradeError) return (upgradeError.value as any).message
+  if (modrinthError.value) return modrinthError.value.message
+  if (curseforgeError.value) return curseforgeError.value.message
+  return ''
+})
 
 const defaultSource = injection(kInstanceDefaultSource)
 // Default source
