@@ -266,7 +266,7 @@ import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue
 import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { kInstanceVersion } from '@/composables/instanceVersion'
-import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { kLocalVersions } from '@/composables/versionLocal'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
@@ -337,6 +337,30 @@ watch(enableCurseforge, (v) => {
 })
 
 const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files)))
+const translatedMods = computed(() => ({
+  curseforge: t('exportModpackTarget.curseforge'),
+  modrinth: t('exportModpackTarget.modrinth'),
+  override: t('exportModpackTarget.override'),
+}))
+
+function getDescription(item: InstanceFileNode<any>) {
+    if (item.path.startsWith('mods/')) {
+    let text = t('intro.struct.modJar')
+    if (item.data) {
+      if (item.data.curseforge) {
+        text += (' 🧬 ' + translatedMods.value.curseforge)
+      }
+      if (item.data.modrinth) {
+        text += (' 🧬 ' + translatedMods.value.modrinth)
+      }
+      if (!item.data.modrinth && !item.data.curseforge) {
+        text += (' 🧬 ' + translatedMods.value.override)
+      }
+    }
+    return text
+  }
+  return ''
+}
 
 function canExport(fileData: InstanceFileExportData) {
   if (!fileData.curseforge && !fileData.downloads) return false

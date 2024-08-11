@@ -53,6 +53,13 @@
         </v-btn>
 
         <div class="flex-grow" />
+        <v-progress-circular
+          v-if="checkingUpgrade || checkingDependencies"
+          size="20"
+          width="2"
+          class="mr-2"
+          indeterminate
+        />
         <v-menu :close-on-content-click="false">
           <template #activator="{ on, attrs }">
             <v-btn
@@ -231,6 +238,9 @@
           </v-list>
         </v-menu>
       </v-subheader>
+      <v-alert v-if="upgradeError">
+        {{ upgradeError.message }}
+      </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
@@ -396,7 +406,6 @@ const groupedItems = computed(() => {
         return bInstalled.resource.mtime - aInstalled.resource.mtime
       })
     } else if (sort.startsWith('alpha')) {
-      console.log(sort)
       result.sort((a, b) => {
         if (sort.endsWith('asc')) return a.title.localeCompare(b.title)
         return b.title.localeCompare(a.title)
@@ -429,7 +438,7 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
   v?.id === 'OptiFine'
 
 // Upgrade
-const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
+const { plans, error: upgradeError, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
 
 // Dependencies check
 const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: checkingDependencies, checked: checkedDependencies, apply: installDependencies, installing: installingDependencies } = useModDependenciesCheck(path, runtime)

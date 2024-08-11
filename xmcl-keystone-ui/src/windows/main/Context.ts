@@ -43,7 +43,6 @@ import { provide } from 'vue'
 export default defineComponent({
   setup(props, ctx) {
     provide(kSemaphores, useSemaphores())
-    provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
     const queue = useNotificationQueue()
     provide(kNotificationQueue, queue)

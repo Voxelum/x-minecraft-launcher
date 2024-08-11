@@ -11,7 +11,9 @@ import { Entry, ZipFile } from 'yauzl'
 export class UnzipFileTask extends AbortableTask<void> {
   #zipInstances: Record<string, [ZipFile, Record<string, Entry>]> = {}
 
-  constructor(private queue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }>) {
+  constructor(private queue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }>,
+    readonly finished: Set<InstanceFile>,
+  ) {
     super()
     this.name = 'unzip'
     this.param = { count: queue.length }
@@ -47,11 +49,13 @@ export class UnzipFileTask extends AbortableTask<void> {
     }
 
     const promises = [] as Promise<unknown>[]
-    for (const { zipPath, entryName, destination } of queue) {
+    for (const { zipPath, entryName, destination, file } of queue) {
       const [zip, entries] = this.#zipInstances[zipPath]
       const entry = entries[entryName]
       if (entry) {
-        promises.push(this.#processEntry(zip, entry, destination).catch((e) => {
+        promises.push(this.#processEntry(zip, entry, destination).then(() => {
+          this.finished.add(file)
+        }, (e) => {
           return Object.assign(e, {
             zipEntry: entry,
             zipPath,

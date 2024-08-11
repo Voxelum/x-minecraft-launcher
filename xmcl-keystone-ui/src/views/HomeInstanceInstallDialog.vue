@@ -246,11 +246,13 @@ function getFileNode(f: InstanceFileUpdate): FileOperationNode {
     data: {
       operation: f.operation,
     },
+    modrinth: !!f.file.modrinth,
+    curseforge: !!f.file.curseforge,
     children: undefined,
   }
 }
 
-const result = ref(upgrade.value?.files.map(getFileNode) || [])
+const result = shallowRef(upgrade.value?.files.map(getFileNode) || [])
 watch(upgrade, (newVal) => {
   if (newVal?.files.length && newVal.files.length > 0) {
     result.value = newVal.files.map(getFileNode)
@@ -259,7 +261,7 @@ watch(upgrade, (newVal) => {
   }
 })
 
-const { leaves } = provideFileNodes(result)
+provideFileNodes(result, false)
 
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
@@ -350,11 +352,18 @@ const confirm = async () => {
     isShown.value = false
     const select = selected.value
     const filtered = files.filter(f => f.operation !== 'keep' && select.includes(f.file.path))
-    await installInstanceFiles({
-      path: instancePath.value,
-      files: filtered.map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
-      id,
-    })
+    try {
+      await installInstanceFiles({
+        path: instancePath.value,
+        files: filtered.map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
+        id,
+      })
+    } catch (e) {
+      Object.assign(e as any, {
+        instanceInstallErrorId: id,
+      })
+      throw e
+    }
     if (instance) {
       await edit({
         instancePath: instancePath.value,

@@ -1,9 +1,12 @@
+import { TaskItem } from '@/entities/task'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
+import { getInstanceFileFromModrinthVersion, getModrinthModLoaders } from '@/util/modrinth'
 import { ProjectEntry } from '@/util/search'
 import { swrvGet } from '@/util/swrvGet'
-import { File, FileModLoaderType, HashAlgo } from '@xmcl/curseforge'
+import { File } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
@@ -12,9 +15,8 @@ import { InstanceInstallDialog } from './instanceUpdate'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
-import { getInstanceFileFromModrinthVersion, getModrinthModLoaders } from '@/util/modrinth'
-import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
-import { TaskItem } from '@/entities/task'
+import { useErrorHandler } from './exception'
+import { basename } from '@/util/basename'
 
 export type UpgradePlan = {
   /**
@@ -46,10 +48,19 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
 
+  useErrorHandler((e) => {
+    if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operationId) {
+      error.value = e
+      return true
+    }
+    return false
+  })
+
   watch([path, runtime], () => {
     checked.value = false
     plans.value = {}
     operationId = ''
+    error.value = null
     operationPath = path.value
   })
 
@@ -67,10 +78,12 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       const current = mod.installed[0]
       if (file.id !== current.curseforge?.fileId) {
         // this is the new version
-        result[mod.id] = {
-          file,
-          mod,
-          updating: false,
+        if (!result[mod.id]) {
+          result[mod.id] = {
+            file,
+            mod,
+            updating: false,
+          }
         }
       }
       // if (file.id !== mod.installed[0].version) {
@@ -128,7 +141,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       updates.push(...plan.mod.installed.map(r => ({
         operation: 'remove',
         file: {
-          path: `mods/${r.resource.fileName}`,
+          path: `mods/${basename(r.path)}`,
           hashes: {
             sha1: r.hash,
           },
