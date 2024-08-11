@@ -120,6 +120,7 @@ export function createMultiplayer() {
     s.subscribe('exposedPortsSet', (ports) => {
       discover.setExposedPorts(ports.map(p => p[0]))
     })
+    discover.setExposedPorts(s.exposedPorts.map(p => p[0]))
   })
 
   peers.onremove = (id) => {

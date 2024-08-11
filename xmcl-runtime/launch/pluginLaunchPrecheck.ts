@@ -116,7 +116,15 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
             minecraftToProtocol[v] = parseInt(protocol)
           }
         }
-        // peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
+        peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
+      }
+    },
+    async onAfterLaunch(result, payload, context) {
+      if (payload.side === 'server') {
+        const peer = await app.registry.getIfPresent(PeerService)
+        if (peer) {
+          peer.unexposePort(25565)
+        }
       }
     },
   })

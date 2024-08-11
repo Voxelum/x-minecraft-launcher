@@ -54,7 +54,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async exposePort(port: number, protocol: number): Promise<void> {
-    this.state.exposedPortsSet(this.state.exposedPorts.concat([port, protocol]))
+    this.state.exposedPortsSet([...this.state.exposedPorts, [port, protocol]])
   }
 
   async unexposePort(port: number): Promise<void> {
