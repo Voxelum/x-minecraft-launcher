@@ -12,6 +12,7 @@ import { quiltModParser } from './quiltMod'
 import { resourcePackParser } from './resourcePack'
 import { saveParser } from './save'
 import { shaderPackParser } from './shaderPack'
+import { mmcModpackParser } from './mmcModpack'
 
 export interface IResourceParser<T> {
   type: ResourceType
@@ -51,6 +52,7 @@ export class ResourceParser {
     saveParser,
     mcbbsModpackParser,
     curseforgeModpackParser,
+    mmcModpackParser,
   ]) { }
 
   async parse(args: ParseResourceArgs): Promise<ParseResourceResult> {

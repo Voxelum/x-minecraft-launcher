@@ -156,7 +156,10 @@ export function useAppDropHandler() {
     item.status = 'loading'
     if (item.resource) {
       let resource = item.resource
-      if (!isPersistedResource(item.resource)) {
+      const isModpack = !!resource.metadata['modrinth-modpack'] || !!resource.metadata['curseforge-modpack'] || !!resource.metadata['mcbbs-modpack'] ||
+       !!resource.metadata['mmc-modpack']
+
+      if (!isPersistedResource(item.resource) && !isModpack) {
         try {
           [resource] = await importResources([{
             path: resource.path,
@@ -172,7 +175,6 @@ export function useAppDropHandler() {
           item.status = 'failed'
         }
       }
-      const isModpack = !!resource.metadata['modrinth-modpack'] || !!resource.metadata['curseforge-modpack'] || !!resource.metadata['mcbbs-modpack']
 
       if (isModpack) {
         if (shouldHandleModpack) {

@@ -131,6 +131,20 @@ export interface ModrinthModpackManifest {
   }
 }
 
+export interface MMCModpackManifest {
+  json: {
+    components: Array<{
+      uid: 'net.minecraft' | 'net.minecraftforge' | 'net.fabricmc.fabric-loader' | 'net.quiltmc.quilt-loader' | 'net.neoforge'
+      version: string
+    }>
+    formatVersion: 1
+  }
+  cfg: {
+    name: string
+    notes: string
+  }
+}
+
 export interface McbbsModpackManifest extends ModpackManifest {
   /**
    * The manifest type. For mcbbs should be "minecraftModpack"
@@ -269,6 +283,25 @@ export function getInstanceConfigFromMcbbsModpack(manifest: McbbsModpackManifest
     minMemory: manifest.launchInfo ? Number(manifest.launchInfo.minMemory) : undefined,
   }
 }
+
+export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
+  const forge = manifest.json.components.find(c => c.uid === 'net.minecraftforge')
+  const fabric = manifest.json.components.find(c => c.uid === 'net.fabricmc.fabric-loader')
+  const quilt = manifest.json.components.find(c => c.uid === 'net.quiltmc.quilt-loader')
+  const neoForge = manifest.json.components.find(c => c.uid === 'net.neoforge')
+  return {
+    name: manifest.cfg.name,
+    modpackVersion: '',
+    runtime: {
+      minecraft: manifest.json.components.find(c => c.uid === 'net.minecraft')!.version,
+      forge: forge ? forge.version : '',
+      fabricLoader: fabric ? fabric.version : '',
+      quiltLoader: quilt ? quilt.version : '',
+      neoForged: neoForge ? neoForge.version : '',
+    },
+  }
+}
+
 export function getInstanceConfigFromCurseforgeModpack(manifest: CurseforgeModpackManifest) {
   const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
   const fabricId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))

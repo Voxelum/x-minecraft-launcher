@@ -17,6 +17,7 @@ import { pluginLogConsumer } from '@xmcl/runtime/logger/pluginLogConsumer'
 import { pluginCurseforgeModpackHandler } from '@xmcl/runtime/modpack/pluginCurseforgeModpackHandler'
 import { pluginMcbbsModpackHandler } from '@xmcl/runtime/modpack/pluginMcbbsModpackHandler'
 import { pluginModrinthModpackHandler } from '@xmcl/runtime/modpack/pluginModrinthModpackHandler'
+import { pluginMmcModpackHandler } from '@xmcl/runtime/modpack/pluginMmcModpackHandler'
 import { pluinModrinthClient } from '@xmcl/runtime/modrinth/pluginModrinthClient'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
@@ -59,6 +60,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginMcbbsModpackHandler,
   pluginCurseforgeModpackHandler,
   pluginModrinthModpackHandler,
+  pluginMmcModpackHandler,
   pluginClientToken,
   pluginCurseforgeClient,
   pluinModrinthClient,
