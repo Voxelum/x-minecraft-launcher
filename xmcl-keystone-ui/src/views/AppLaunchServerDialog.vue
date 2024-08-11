@@ -405,8 +405,8 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
       ..._serverProperties,
       port: _port ?? 25565,
       motd: _motd || 'A Minecraft Server',
-      maxPlayers: _maxPlayers ?? 20,
-      onlineMode: _onlineMode ?? false,
+      'max-players': _maxPlayers ?? 20,
+      'online-mode': _onlineMode ?? false,
     })
   }
   if (!version) {
