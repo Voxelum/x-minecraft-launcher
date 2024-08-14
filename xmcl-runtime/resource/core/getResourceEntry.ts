@@ -7,7 +7,15 @@ export async function getResourceEntry(path: string, context: ResourceContext, s
   if (!skipCache) {
     const cache = await context.db.selectFrom('snapshots').where('ino', '=', status.ino).selectAll().executeTakeFirst()
     if (cache) {
-      return cache
+      return {
+        path,
+        fileType: cache.fileType,
+        sha1: cache.sha1,
+        size: Number(status.size),
+        mtime: Number(status.mtimeMs),
+        ctime: Number(status.ctimeMs),
+        ino: Number(status.ino),
+      }
     }
   }
 
@@ -23,12 +31,6 @@ export async function getResourceEntry(path: string, context: ResourceContext, s
     }
   }
   const [sha1, fileType] = await context.hashAndFileType(path, status.size)
-  if (!skipCache) {
-    const cache = await context.db.selectFrom('snapshots').where('sha1', '=', sha1).selectAll().executeTakeFirst()
-    if (cache) {
-      return cache
-    }
-  }
   return {
     path,
     fileType,

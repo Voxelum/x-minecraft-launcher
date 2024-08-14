@@ -1,4 +1,4 @@
-import { Pagination, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { Pagination, Resource, ResourceDomain, ResourceMetadata, ResourceType } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
 import { ResourceDecoratedMetadata, ResourceEntryPath, ResourceSnapshotTable } from './schema'
 import { jsonArrayFrom } from './helper'
@@ -85,6 +85,7 @@ export async function getResourceAndMetadata(context: ResourceContext, query: Qu
       'resources.shaderpack',
       'resources.modpack',
       'resources.modrinth-modpack', 'resources.curseforge-modpack', 'resources.mcbbs-modpack',
+      'resources.mmc-modpack',
     ])
     .$if(!!pagination, (eb) => eb.limit(pagination!.count).offset(pagination!.offset))
     .execute()
@@ -100,6 +101,28 @@ export async function getResourceAndMetadata(context: ResourceContext, query: Qu
     mtime: Number(r.mtime),
     ctime: Number(r.ctime),
   } as ResourceDecoratedMetadata & ResourceSnapshotTable))
+}
+
+export function pickMetadata(metadata: ResourceMetadata): ResourceMetadata {
+  return {
+    [ResourceType.Forge]: metadata[ResourceType.Forge],
+    [ResourceType.Fabric]: metadata[ResourceType.Fabric],
+    [ResourceType.Liteloader]: metadata[ResourceType.Liteloader],
+    [ResourceType.Quilt]: metadata[ResourceType.Quilt],
+    [ResourceType.ResourcePack]: metadata[ResourceType.ResourcePack],
+    [ResourceType.CurseforgeModpack]: metadata[ResourceType.CurseforgeModpack],
+    [ResourceType.McbbsModpack]: metadata[ResourceType.McbbsModpack],
+    [ResourceType.MMCModpack]: metadata[ResourceType.MMCModpack],
+    [ResourceType.ModrinthModpack]: metadata[ResourceType.ModrinthModpack],
+    [ResourceType.Modpack]: metadata[ResourceType.Modpack],
+    [ResourceType.Save]: metadata[ResourceType.Save],
+    [ResourceType.ShaderPack]: metadata[ResourceType.ShaderPack],
+    instance: metadata.instance,
+    github: metadata.github,
+    curseforge: metadata.curseforge,
+    modrinth: metadata.modrinth,
+    gitlab: metadata.gitlab,
+  }
 }
 
 export function generateResource(root: string, entry: ResourceSnapshotTable | ResourceEntryPath, metadata?: ResourceDecoratedMetadata, overwrite?: { path?: string; domain?: ResourceDomain; mtime?: number }): Resource {
@@ -124,20 +147,22 @@ export function generateResource(root: string, entry: ResourceSnapshotTable | Re
   }
   return {
     version: 2,
-    ino: entry.ino,
+    ino: Number(entry.ino),
     domain: domain || ResourceDomain.Unclassified,
     fileName,
     path,
-    metadata: metadata ?? {},
+    metadata: metadata
+      ? pickMetadata(metadata)
+      : {},
     icons: metadata?.icons || [],
     storedPath,
-    storedDate: entry.ctime,
+    storedDate: Number(entry.ctime),
     tags: metadata?.tags || [],
     uris: metadata?.uris || [],
     size: entry.size,
     hash: entry.sha1,
     name: metadata?.name ?? fileName,
     fileType: entry.fileType,
-    mtime: overwrite?.mtime ?? entry.mtime,
+    mtime: Number(overwrite?.mtime ?? entry.mtime),
   }
 }

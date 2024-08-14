@@ -1,4 +1,4 @@
-import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, MutableState, PartialResourceHash, Resource, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModUpdatePayload, InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, LockKey, LockStatus, MutableState, PartialResourceHash, Resource, ResourceDomain, getInstanceModStateKey, isModResource } from '@xmcl/runtime-api'
 import { emptyDir, ensureDir, rename, stat, unlink } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import watch from 'node-watch'
@@ -123,6 +123,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
     if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
+    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
     const stateManager = await this.app.registry.get(ServiceStateManager)
     return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async ({ defineAsyncOperation }) => {
       const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,
@@ -152,6 +153,10 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const basePath = join(instancePath, 'mods')
 
       const processUpdate = defineAsyncOperation(async (filePath: string, retryLimit = 7) => {
+        if (lock.getStatus() === LockStatus.Writing) {
+          lock.read(async () => debouncedRevalidate())
+          return
+        }
         try {
           if (pending.has(filePath)) return
           pending.add(filePath)
@@ -165,15 +170,15 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           if (resource) {
             updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
           }
-          pending.delete(filePath)
         } catch (e) {
           if (isSystemError(e) && (e.code === 'EMFILE' || e.code === 'EBUSY') && retryLimit > 0) {
             // Retry
             setTimeout(() => processUpdate(filePath, retryLimit - 1), Math.random() * 2000 + 1000)
           } else {
             this.error(new AnyError('InstanceModAddError', `Fail to add instance mod ${filePath}`, { cause: e }))
-            pending.delete(filePath)
           }
+        } finally {
+          pending.delete(filePath)
         }
       })
       const processRemove = (filePath: string) => {
@@ -185,7 +190,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
         }
       }
-      const revalidate = async () => {
+      const revalidate = () => lock.read(async () => {
         const files = await readdirIfPresent(basePath)
         const expectFiles = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(basePath, file))
         const current = state.mods.length
@@ -204,7 +209,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             for (const f of removed) { processRemove(f) }
           }
         }
-      }
+      })
 
       const listener = this.resourceService as IResourceService
       const onResourceUpdate = (res: PartialResourceHash[]) => {
@@ -234,7 +239,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         const resources = await this.resourceService.importResources(peekChunks.map(f => ({ path: f, domain: ResourceDomain.Mods })), true)
         return resources.map((r, i) => ({ ...r, path: peekChunks[i] }))
       }
-      state.mods = await scan(basePath)
+      state.mods = await lock.read(() => scan(basePath))
 
       let events = 0
       const watcher = watch(basePath, async (event, filePath) => {

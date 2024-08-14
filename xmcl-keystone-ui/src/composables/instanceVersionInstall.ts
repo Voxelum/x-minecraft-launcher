@@ -1,10 +1,9 @@
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, VersionHeader, ReadWriteLock, RuntimeVersions, ServerVersionHeader, VersionServiceKey, getExpectVersion, parseOptifineVersion, Java, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, ReadWriteLock, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
-import { LaunchMenuItem } from './launchButton'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
@@ -191,7 +190,6 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
 
 export function useInstanceVersionInstallInstruction(path: Ref<string>, instances: Ref<Instance[]>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, javas: Ref<JavaRecord[]>) {
   const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
-  const { t } = useI18n()
   const { installAssetsForVersion, installForge, installAssets, installMinecraftJar, installLibraries, installNeoForged, installDependencies, installOptifine, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
@@ -205,95 +203,6 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   const config = inject(kSWRVConfig)
 
   const instanceLock: Record<string, ReadWriteLock> = {}
-
-  const launcMenuItems = computed(() => {
-    const items = [] as LaunchMenuItem[]
-
-    const i = instruction.value
-    if (!i) return items
-
-    if (!i.resolvedVersion) {
-      items.push(reactive({
-        title: computed(() => t('diagnosis.missingVersion.name', { version: getExpectVersion(i.runtime) })),
-        description: computed(() => t('diagnosis.missingVersion.message')),
-      }))
-    }
-    if (i.java) {
-      items.push({
-        title: t('diagnosis.missingJava.name'),
-        description: t('diagnosis.missingJava.message'),
-      })
-    }
-    if (i.profile) {
-      items.push(reactive({
-        title: computed(() => t('diagnosis.badInstall.name', { version: (resolvedVersion.value as ResolvedVersion)!.id })),
-        description: computed(() => t('diagnosis.badInstall.message')),
-      }))
-    }
-    if (i.jar) {
-      items.push(i.jar.type === 'corrupted'
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedVersionJar.name', { version: i.jar!.version })),
-          description: computed(() => t('diagnosis.corruptedVersionJar.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingVersionJar.name', { version: i.jar!.version })),
-          description: computed(() => t('diagnosis.missingVersionJar.message')),
-        }))
-    }
-    if (i.libriares) {
-      const libs = i.libriares
-      const options = { count: libs.length, name: libs[0].library.path }
-      items.push(libs.some(v => v.type === 'corrupted')
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedLibraries.name', options, libs.length)),
-          description: computed(() => t('diagnosis.corruptedLibraries.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingLibraries.name', options, libs.length)),
-          description: computed(() => t('diagnosis.missingLibraries.message')),
-        }))
-    }
-    if (i.assets) {
-      const assets = i.assets
-      const count = assets.length
-      const name = assets[0]?.asset.name ?? ''
-      items.push(assets.some(v => v.type === 'corrupted')
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedAssets.name', { count, name })),
-          description: computed(() => t('diagnosis.corruptedAssets.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingAssets.name', { count, name })),
-          description: computed(() => t('diagnosis.missingAssets.message')),
-        }))
-    }
-    if (i.assetIndex) {
-      items.push(i.assetIndex.type === 'corrupted'
-        ? reactive({
-          title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: i.assetIndex!.version })),
-          description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
-        })
-        : reactive({
-          title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: i.assetIndex!.version })),
-          description: computed(() => t('diagnosis.missingAssetsIndex.message')),
-        }))
-    }
-    if (i.forge) {
-      items.push(reactive({
-        title: computed(() => t('diagnosis.badInstall.name')),
-        description: computed(() => t('diagnosis.badInstall.message')),
-      }))
-    }
-    if (i.optifine) {
-      items.push(reactive({
-        title: computed(() => t('diagnosis.badInstall.name')),
-        description: computed(() => t('diagnosis.badInstall.message')),
-      }))
-    }
-
-    return items
-  })
 
   async function update(version: InstanceResolveVersion | undefined) {
     if (!version) return
@@ -343,12 +252,13 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     return newLock
   }
 
-  function getJavaVersion(javas: JavaRecord[], resolved: ResolvedVersion, instance: string) {
+  function getJavaInstall(javas: JavaRecord[], resolved: ResolvedVersion, instance: string) {
     const inst = instances.value.find(i => i.path === instance)
     if (inst?.java) {
       return undefined
     }
-    return javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid) ? undefined : resolved.javaVersion
+    const validJava = javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid)
+    return validJava ? undefined : resolved.javaVersion
   }
 
   async function getInstallInstruction(instance: string, runtime: RuntimeVersions, version: string, resolved: ResolvedVersion | undefined, javas: JavaRecord[], abortSignal?: AbortSignal): Promise<InstanceInstallInstruction> {
@@ -363,7 +273,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
 
     result.resolvedVersion = resolved.id
 
-    result.java = getJavaVersion(javas, resolved, instance)
+    result.java = getJavaInstall(javas, resolved, instance)
 
     const profileIssue = await diagnoseProfile(resolved.id, 'client', path.value)
     if (abortSignal?.aborted) { throw kAbort }
@@ -455,7 +365,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (version) {
         await installDependencies(version, 'client')
         const resolved = await resolveLocalVersion(version)
-        const java = getJavaVersion(javas.value, resolved, instruction.instance)
+        const java = getJavaInstall(javas.value, resolved, instruction.instance)
         if (java) {
           await installDefaultJava(java)
         }
@@ -469,7 +379,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (instruction.version) {
         await installDependencies(instruction.version, 'client')
         const resolved = await resolveLocalVersion(instruction.version)
-        const java = getJavaVersion(javas.value, resolved, instruction.instance)
+        const java = getJavaInstall(javas.value, resolved, instruction.instance)
         if (java) {
           await installDefaultJava(java)
         }
@@ -485,7 +395,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (version) {
         await installDependencies(version, 'client')
         const resolved = await resolveLocalVersion(version)
-        const java = getJavaVersion(javas.value, resolved, instruction.instance)
+        const java = getJavaInstall(javas.value, resolved, instruction.instance)
         if (java) {
           await installDefaultJava(java)
         }
@@ -501,7 +411,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (version) {
         await installDependencies(version, 'client')
         const resolved = await resolveLocalVersion(version)
-        const java = getJavaVersion(javas.value, resolved, instruction.instance)
+        const java = getJavaInstall(javas.value, resolved, instruction.instance)
         if (java) {
           await installDefaultJava(java)
         }
@@ -511,7 +421,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     }
 
     const resolved = await resolveLocalVersion(instruction.resolvedVersion)
-    const java = getJavaVersion(javas.value, resolved, instruction.instance)
+    const java = getJavaInstall(javas.value, resolved, instruction.instance)
     if (java) {
       await installDefaultJava(java)
     }
@@ -548,7 +458,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   }, { immediate: true })
 
   return {
-    issues: launcMenuItems,
+    instruction,
     fix,
     loading,
     getInstanceLock,

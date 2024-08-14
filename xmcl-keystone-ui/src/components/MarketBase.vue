@@ -18,7 +18,6 @@
       <template #left>
         <div
           v-if="items.length > 0"
-          class="flex flex-grow-0 items-center "
         >
           <slot
             name="actions"
