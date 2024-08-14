@@ -238,7 +238,11 @@
           </v-list>
         </v-menu>
       </v-subheader>
-      <v-alert v-if="upgradeError">
+      <v-alert
+        v-if="upgradeError"
+        dense
+        type="error"
+      >
         {{ updateErrorMessage }}
       </v-alert>
     </template>
@@ -445,8 +449,8 @@ const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: c
 
 const updateErrorMessage = computed(() => {
   if (upgradeError) return (upgradeError.value as any).message
-  if (modrinthError.value) return modrinthError.value.message
-  if (curseforgeError.value) return curseforgeError.value.message
+  // if (modrinthError.value) return modrinthError.value.message
+  // if (curseforgeError.value) return curseforgeError.value.message
   return ''
 })
 

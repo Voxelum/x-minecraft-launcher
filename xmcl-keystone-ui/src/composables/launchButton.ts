@@ -13,6 +13,7 @@ import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kLaunchTask } from './launchTask'
 import { useUserDiagnose } from './userDiagnose'
+import { useInstanceVersionDiagnose } from './instanceVersionDiagnose'
 
 export interface LaunchMenuItem {
   title: string
@@ -32,7 +33,8 @@ export function useLaunchButton() {
   const { isValidating } = injection(kInstances)
   const { isValidating: refreshingFiles, mutate } = injection(kInstanceFiles)
 
-  const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
+  const { fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
+  const versionIssues = useInstanceVersionDiagnose()
   const { issue: javaIssue } = useInstanceJavaDiagnose()
   const { issue: filesIssue, fix: fixInstanceFileIssue } = useInstanceFilesDiagnose()
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
