@@ -1,3 +1,4 @@
+import type { LanServerInfo } from '@xmcl/client'
 import { InstanceManifest } from './entities/instanceManifest.schema'
 import { GameProfileAndTexture } from './entities/user.schema'
 import { GenericEventEmitter } from './events'
@@ -71,6 +72,7 @@ export interface Peer {
 interface MultiplayerEvents {
   share: { id: string; manifest?: InstanceManifest }
   'connection-unexpected-closed': { id: string }
+  lan: LanServerInfo & { session: string }
 }
 
 export interface TransferDescription {

@@ -15,7 +15,7 @@
       >
         <div class="flex items-center gap-2">
           <v-progress-circular
-            v-if="groupState ==='connecting'"
+            v-if="groupState === 'connecting'"
             indeterminate
             :size="20"
             :width="3"
@@ -89,7 +89,7 @@
             filled
             prepend-inner-icon="group"
             :label="t('multiplayer.groupId')"
-            @click="onCopy(groupId)"
+            @click="groupState === 'connected' ? onCopy(groupId) : undefined"
           />
           <v-btn
             id="join-group-button"
@@ -104,9 +104,7 @@
               </v-icon>
             </template>
             <template v-else>
-              <v-icon
-                color="red"
-              >
+              <v-icon color="red">
                 delete
               </v-icon>
             </template>
@@ -118,9 +116,7 @@
             icon
             @click="onCopy(groupId)"
           >
-            <v-icon
-              v-if="!copied"
-            >
+            <v-icon v-if="!copied">
               content_copy
             </v-icon>
             <v-icon
@@ -139,344 +135,407 @@
         class="flex flex-col justify-start gap-2 overflow-auto py-2"
         style="width: 100%; background: transparent;"
       >
-        <v-subheader class>
-          {{ t("multiplayer.networkInfo") }}
-        </v-subheader>
-
-        <v-list-item
-          v-if="device"
-          class="flex-1 flex-grow-0"
-          @click="open(device.modelURL, '_blank')"
-        >
-          <v-list-item-avatar>
-            <v-icon>
-              router
-            </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ t("multiplayer.routerInfo") }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="flex items-center gap-2">
-              {{ device.friendlyName }} ({{ device.modelName }})
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action
-            class="self-center"
+        <template v-if="navigation === 'connections'">
+          <v-subheader class>
+            {{ t("multiplayer.networkInfo") }}
+          </v-subheader>
+          <v-list-item
+            v-if="device"
+            class="flex-1 flex-grow-0"
+            @click="open(device.modelURL, '_blank')"
           >
-            <v-chip
-              label
-              outlined
-            >
-              <v-icon left>
-                precision_manufacturing
+            <v-list-item-avatar>
+              <v-icon>
+                router
               </v-icon>
-              <a :href="device.manufacturerURL">
-                {{ device.manufacturer }}
-              </a>
-            </v-chip>
-          </v-list-item-action>
-        </v-list-item>
-
-        <v-list-item
-          class="flex-1 flex-grow-0"
-        >
-          <v-list-item-avatar>
-            <v-icon>
-              wifi
-            </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ t('multiplayer.currentNatTitle') }}
-            </v-list-item-title>
-            <v-list-item-subtitle>
-              <span>
-                {{ t('multiplayer.currentIpTitle') }}
-              </span>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ t("multiplayer.routerInfo") }}
+              </v-list-item-title>
+              <v-list-item-subtitle class="flex items-center gap-2">
+                {{ device.friendlyName }} ({{ device.modelName }})
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action class="self-center">
               <v-chip
                 label
-                small
                 outlined
-                @click="hideIp = !hideIp"
-              >
-                <v-icon
-                  left
-                  small
-                >
-                  {{ !hideIp ? 'visibility' : 'visibility_off' }}
-                </v-icon>
-                {{ hideIp ? '***.***.***.***' : ips.join(', ') }}
-              </v-chip>
-              <!-- <span class="font-bold">
-                {{ ips.join(', ') }}
-              </span> -->
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action class="flex flex-shrink flex-grow-0 flex-row self-center">
-            <v-tooltip
-              bottom
-              transition="scroll-y-transition"
-              color="black"
-            >
-              <template #activator="{on}">
-                <span
-                  class="font-bold"
-                  :style="{color: natColors[natType]}"
-                  v-on="on"
-                >
-                  {{ natIcons[natType] }}   {{ tNatType[natType] }}
-                </span>
-              </template>
-
-              {{ t('multiplayer.difficultyLevelHint') }}
-              <div
-                v-for="(type, key, index) of tNatType"
-                :key="key"
-              >
-                {{ index + 1 }}. {{ type }} {{ natIcons[key] }}
-              </div>
-            </v-tooltip>
-          </v-list-item-action>
-          <v-list-item-action>
-            <v-btn
-              icon
-              :loading="refreshingNatType"
-              @click="refreshNatType"
-            >
-              <v-icon>refresh</v-icon>
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
-
-        <v-list-item
-          class="flex-1 flex-grow-0"
-        >
-          <v-list-item-avatar>
-            <v-icon>
-              favorite
-            </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ t("multiplayer.kernel") }}
-            </v-list-item-title>
-            <v-list-item-subtitle v-shared-tooltip="_ => t('multiplayer.kernelDescription')">
-              {{ t("multiplayer.kernelDescription") }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-select
-              v-model="kernel"
-              filled
-              style="max-width: 105px"
-              hide-details
-              :items="kernels"
-            />
-          </v-list-item-action>
-        </v-list-item>
-
-        <v-list-item
-          v-if="hasMicrosoft"
-          class="flex-1 flex-grow-0"
-        >
-          <v-list-item-avatar>
-            <v-icon>
-              swap_vert
-            </v-icon>
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ t("multiplayer.allowTurn") }}
-            </v-list-item-title>
-            <v-list-item-subtitle
-              v-shared-tooltip="_ => t('multiplayer.allowTurnHint')"
-              class="flex items-center gap-2"
-            >
-              {{ t("multiplayer.allowTurnHint") }}
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action>
-            <v-checkbox v-model="allowTurn" />
-          </v-list-item-action>
-        </v-list-item>
-
-        <v-list-item
-          v-if="allowTurn && turnserversItems.length > 0"
-          class="flex-1 flex-grow-0"
-        >
-          <v-list-item-avatar>
-            <!-- <v-icon>
-              swap_vert
-            </v-icon> -->
-          </v-list-item-avatar>
-          <v-list-item-content />
-          <v-list-item-action>
-            <v-select
-              v-model="preferredTurnserver"
-              filled
-              clearable
-              hide-details
-              :items="turnserversItems"
-              :placeholder="turnserversItems[0].text"
-            />
-          </v-list-item-action>
-        </v-list-item>
-
-        <v-subheader class>
-          {{ t("multiplayer.connections") }}
-        </v-subheader>
-        <Hint
-          v-if="connections.length === 0"
-          icon="sports_kabaddi"
-          class="multiplayer-content h-full px-4"
-          :size="120"
-          :text="t('multiplayer.placeholder')"
-        />
-        <v-list-item
-          v-for="c of connections"
-          :key="c.id"
-          class="multiplayer-content flex-1 flex-grow-0"
-        >
-          <v-progress-linear
-            v-if="c.sharing"
-            buffer-value="0"
-            class="absolute bottom-0"
-            stream
-          />
-          <v-progress-linear
-            v-if="c.sharing"
-            buffer-value="0"
-            class="absolute top-0"
-            stream
-          />
-          <v-list-item-avatar class="mr-4">
-            <PlayerAvatar
-              :dimension="40"
-              :src="c.userInfo.avatar"
-            />
-          </v-list-item-avatar>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ c.userInfo.name || c.id }}
-            </v-list-item-title>
-            <v-list-item-subtitle class="flex items-center gap-2">
-              <v-chip
-                label
-                small
-                :color="stateToColor[c.connectionState]"
               >
                 <v-icon left>
-                  signal_cellular_alt
+                  precision_manufacturing
                 </v-icon>
-                <span class="hidden lg:inline">
-                  {{ t(`peerConnectionState.name`) }}:
-                </span>
-                {{ tConnectionStates[c.connectionState] }}
-                <template v-if="c.connectionState === 'connected'">
-                  ({{ c.ping }}ms)
-                </template>
+                <a :href="device.manufacturerURL">
+                  {{ device.manufacturer }}
+                </a>
               </v-chip>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action
-            v-if="c.selectedCandidate"
-            class="mr-5 self-center"
-          >
-            <v-list-item-subtitle class="flex flex-col">
-              <span>
-                <v-icon>
-                  place
-                </v-icon>
-                <span class="hidden lg:inline">
-                  {{ tTransportType[c.selectedCandidate.local.type] }}
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item class="flex-1 flex-grow-0">
+            <v-list-item-avatar>
+              <v-icon>
+                wifi
+              </v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ t('multiplayer.currentNatTitle') }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <span>
+                  {{ t('multiplayer.currentIpTitle') }}
                 </span>
-                {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
-              </span>
-              <span>
-                <v-icon>
-                  person_pin_circle
-                </v-icon>
-                <span class="hidden lg:inline">
-                  {{ tTransportType[c.selectedCandidate.remote.type] }}
-                </span>
-                {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
-              </span>
-            </v-list-item-subtitle>
-          </v-list-item-action>
-          <v-list-item-action
-            v-if="c.signalingState === 'have-local-offer'"
-            class="mr-5 self-center"
-          >
-            <v-list-item-subtitle>
-              {{ t('peerSignalingState.have-local-offer') }}
-            </v-list-item-subtitle>
-          </v-list-item-action>
-          <v-list-item-action
-            v-if="c.iceGatheringState !== 'complete'"
-            class="mr-5 self-center"
-          >
-            <v-list-item-subtitle>
-              <div class="flex flex-grow-0 items-center gap-2">
-                <v-progress-circular
-                  indeterminate
-                  :size="18"
-                  :width="1"
-                />
-                {{ t('peerIceGatheringState.gathering') }}
-              </div>
-            </v-list-item-subtitle>
-          </v-list-item-action>
+                <v-chip
+                  label
+                  small
+                  outlined
+                  @click="hideIp = !hideIp"
+                >
+                  <v-icon
+                    left
+                    small
+                  >
+                    {{ !hideIp ? 'visibility' : 'visibility_off' }}
+                  </v-icon>
+                  {{ hideIp ? '***.***.***.***' : ips.join(', ') }}
+                </v-chip>
+                <!-- <span class="font-bold">
+                {{ ips.join(', ') }}
+              </span> -->
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action class="flex flex-shrink flex-grow-0 flex-row self-center">
+              <v-tooltip
+                bottom
+                transition="scroll-y-transition"
+                color="black"
+              >
+                <template #activator="{ on }">
+                  <span
+                    class="font-bold"
+                    :style="{ color: natColors[natType] }"
+                    v-on="on"
+                  >
+                    {{ natIcons[natType] }} {{ tNatType[natType] }}
+                  </span>
+                </template>
 
-          <v-list-item-action
-            class="flex flex-grow-0 flex-row gap-2 self-center"
+                {{ t('multiplayer.difficultyLevelHint') }}
+                <div
+                  v-for="(type, key, index) of tNatType"
+                  :key="key"
+                >
+                  {{ index + 1 }}. {{ type }} {{ natIcons[key] }}
+                </div>
+              </v-tooltip>
+            </v-list-item-action>
+            <v-list-item-action>
+              <v-btn
+                icon
+                :loading="refreshingNatType"
+                @click="refreshNatType"
+              >
+                <v-icon>refresh</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-subheader class>
+            {{ t("multiplayer.connections") }}
+          </v-subheader>
+          <Hint
+            v-if="connections.length === 0"
+            icon="sports_kabaddi"
+            class="multiplayer-content h-full px-4"
+            :size="120"
+            :text="t('multiplayer.placeholder')"
+          />
+          <v-list-item
+            v-for="c of connections"
+            :key="c.id"
+            class="multiplayer-content flex-1 flex-grow-0"
           >
-            <template
+            <v-progress-linear
               v-if="c.sharing"
+              buffer-value="0"
+              class="absolute bottom-0"
+              stream
+            />
+            <v-progress-linear
+              v-if="c.sharing"
+              buffer-value="0"
+              class="absolute top-0"
+              stream
+            />
+            <v-list-item-avatar class="mr-4">
+              <PlayerAvatar
+                :dimension="40"
+                :src="c.userInfo.avatar"
+              />
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ c.userInfo.name || c.id }}
+              </v-list-item-title>
+              <v-list-item-subtitle class="flex items-center gap-2">
+                <v-chip
+                  label
+                  small
+                  :color="stateToColor[c.connectionState]"
+                >
+                  <v-icon left>
+                    signal_cellular_alt
+                  </v-icon>
+                  <span class="hidden lg:inline">
+                    {{ t(`peerConnectionState.name`) }}:
+                  </span>
+                  {{ tConnectionStates[c.connectionState] }}
+                  <template v-if="c.connectionState === 'connected'">
+                    ({{ c.ping }}ms)
+                  </template>
+                </v-chip>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action
+              v-if="c.selectedCandidate"
+              class="mr-5 self-center"
             >
-              <v-btn
-                v-shared-tooltip="_ => t('multiplayer.sharing') "
-                icon
-                @click="showShareInstance(c.sharing)"
-              >
-                <v-icon>
-                  download
-                </v-icon>
-              </v-btn>
-              <v-btn
-                v-if="c.sharing"
-                v-shared-tooltip="_ => t('multiplayer.sharing') "
-                color="primary"
-                icon
-                @click="c.sharing ? showAddInstasnce({
-                  type: 'manifest',
-                  manifest: c.sharing,
-                }) : undefined"
-              >
-                <v-icon>
-                  add
-                </v-icon>
-              </v-btn>
-            </template>
+              <v-list-item-subtitle class="flex flex-col">
+                <span>
+                  <v-icon>
+                    place
+                  </v-icon>
+                  <span class="hidden lg:inline">
+                    {{ tTransportType[c.selectedCandidate.local.type] }}
+                  </span>
+                  {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
+                </span>
+                <span>
+                  <v-icon>
+                    person_pin_circle
+                  </v-icon>
+                  <span class="hidden lg:inline">
+                    {{ tTransportType[c.selectedCandidate.remote.type] }}
+                  </span>
+                  {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
+                </span>
+              </v-list-item-subtitle>
+            </v-list-item-action>
+            <v-list-item-action
+              v-if="c.signalingState === 'have-local-offer'"
+              class="mr-5 self-center"
+            >
+              <v-list-item-subtitle>
+                {{ t('peerSignalingState.have-local-offer') }}
+              </v-list-item-subtitle>
+            </v-list-item-action>
+            <v-list-item-action
+              v-if="c.iceGatheringState !== 'complete'"
+              class="mr-5 self-center"
+            >
+              <v-list-item-subtitle>
+                <div class="flex flex-grow-0 items-center gap-2">
+                  <v-progress-circular
+                    indeterminate
+                    :size="18"
+                    :width="1"
+                  />
+                  {{ t('peerIceGatheringState.gathering') }}
+                </div>
+              </v-list-item-subtitle>
+            </v-list-item-action>
 
+            <v-list-item-action class="flex flex-grow-0 flex-row gap-2 self-center">
+              <template v-if="c.sharing">
+                <v-btn
+                  v-shared-tooltip="_ => t('multiplayer.sharing')"
+                  icon
+                  @click="showShareInstance(c.sharing)"
+                >
+                  <v-icon>
+                    download
+                  </v-icon>
+                </v-btn>
+                <v-btn
+                  v-if="c.sharing"
+                  v-shared-tooltip="_ => t('multiplayer.sharing')"
+                  color="primary"
+                  icon
+                  @click="c.sharing ? showAddInstasnce({
+                    type: 'manifest',
+                    manifest: c.sharing,
+                  }) : undefined"
+                >
+                  <v-icon>
+                    add
+                  </v-icon>
+                </v-btn>
+              </template>
+
+              <v-btn
+                v-if="c.connectionState !== 'connected'"
+                icon
+                @click="edit(c.id, c.initiator)"
+              >
+                <v-icon>edit</v-icon>
+              </v-btn>
+            </v-list-item-action>
             <v-btn
-              v-if="c.connectionState !== 'connected'"
+              v-shared-tooltip.left="_ => t('multiplayer.disconnect')"
+              color="error"
               icon
-              @click="edit(c.id, c.initiator)"
+              @click="showDelete(c.id)"
             >
-              <v-icon>edit</v-icon>
+              <v-icon>link_off</v-icon>
             </v-btn>
-          </v-list-item-action>
-          <v-btn
-            v-shared-tooltip.left="_ => t('multiplayer.disconnect') "
-            color="error"
-            icon
-            @click="showDelete(c.id)"
+          </v-list-item>
+        </template>
+        <template v-else>
+          <v-list-item class="flex-1 flex-grow-0">
+            <v-list-item-avatar>
+              <v-icon>
+                favorite
+              </v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ t("multiplayer.kernel") }}
+              </v-list-item-title>
+              <v-list-item-subtitle v-shared-tooltip="_ => t('multiplayer.kernelDescription')">
+                {{ t("multiplayer.kernelDescription") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-select
+                v-model="kernel"
+                filled
+                style="max-width: 105px"
+                hide-details
+                :items="kernels"
+              />
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item
+            v-if="hasMicrosoft"
+            class="flex-1 flex-grow-0"
           >
-            <v-icon>link_off</v-icon>
-          </v-btn>
-        </v-list-item>
+            <v-list-item-avatar>
+              <v-icon>
+                swap_vert
+              </v-icon>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ t("multiplayer.allowTurn") }}
+              </v-list-item-title>
+              <v-list-item-subtitle
+                v-shared-tooltip="_ => t('multiplayer.allowTurnHint')"
+                class="flex items-center gap-2"
+              >
+                {{ t("multiplayer.allowTurnHint") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-checkbox v-model="allowTurn" />
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-list-item
+            v-if="allowTurn && turnserversItems.length > 0"
+            class="flex-1 flex-grow-0"
+          >
+            <v-list-item-avatar>
+              <!-- <v-icon>
+              swap_vert
+            </v-icon> -->
+            </v-list-item-avatar>
+            <v-list-item-content />
+            <v-list-item-action>
+              <v-select
+                v-model="preferredTurnserver"
+                filled
+                clearable
+                hide-details
+                :items="turnserversItems"
+                :placeholder="turnserversItems[0].text"
+              />
+            </v-list-item-action>
+          </v-list-item>
+
+          <v-subheader class="mt-2">
+            {{ t("multiplayer.exposedPorts") }}
+            <v-spacer />
+            <v-text-field
+              v-model="forwardedPort"
+              hide-details
+              class="max-w-24"
+              filled
+              dense
+              type="number"
+            />
+            <v-btn
+              icon
+              text
+              @click="exposePort(forwardedPort, 0)"
+            >
+              <v-icon>add</v-icon>
+            </v-btn>
+          </v-subheader>
+
+          <v-list-item
+            v-for="port of exposedPorts"
+            :key="port"
+            class="flex-1 flex-grow-0"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ port }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ t("multiplayer.exposedPortDescription") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn
+                icon
+                text
+                color="red"
+                @click="unexposePort(port)"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item
+            v-for="port of otherExposedPorts"
+            :key="port"
+            class="flex-1 flex-grow-0"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ port.port }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ t("multiplayer.otherExposedPortDescription", { user: port.user }) }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </template>
       </v-list>
+      <v-bottom-navigation
+        v-model="navigation"
+        color="primary"
+      >
+        <v-btn value="connections">
+          <span> {{ t('multiplayer.connections') }} </span>
+          <v-icon>wifi</v-icon>
+        </v-btn>
+        <v-btn value="settings">
+          <span> {{ t('setting.name') }} </span>
+          <v-icon> settings </v-icon>
+        </v-btn>
+      </v-bottom-navigation>
 
       <MultiplayerDialogInitiate />
       <MultiplayerDialogReceive />
@@ -516,6 +575,7 @@ const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showAddInstasnce } = useDialog(AddInstanceDialogKey)
 const { show: showReceive } = useDialog('peer-receive')
+const navigation = ref('connections' as 'connections' | 'settings')
 
 const hideIp = ref(true)
 
@@ -526,12 +586,12 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { connections, turnservers, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
-const { state } = injection(kSettingsState)
 const { users } = injection(kUserContext)
 const hasMicrosoft = computed(() => !!users.value.find(u => u.authority === AUTHORITY_MICROSOFT))
+const forwardedPort = ref(0)
 
 const allowTurn = useLocalStorageCacheBool('peerAllowTurn', false)
 const kernel = useLocalStorageCacheStringValue('peerKernel', 'node-datachannel' as 'node-datachannel' | 'webrtc')
