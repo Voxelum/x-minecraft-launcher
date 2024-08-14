@@ -108,6 +108,7 @@ export function createPeerGroup(
   function leaveGroup() {
     _group?.quit()
     _group = undefined
+    localStorage.setItem('peerGroup', '')
     onleave()
   }
 

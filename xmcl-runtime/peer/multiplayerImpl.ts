@@ -86,7 +86,7 @@ export function createMultiplayer() {
   const state = createPromiseSignal<MutableState<PeerState>>()
   const emitter = new EventEmitter()
 
-  const discover = createLanDiscover(peers)
+  const discover = createLanDiscover(peers, emitter)
   const sharing = createPeerSharing(peers)
   const userInfo = createPeerUserInfo()
   const host = createHosting(peers)

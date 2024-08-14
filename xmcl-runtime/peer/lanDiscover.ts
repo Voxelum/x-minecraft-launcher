@@ -2,6 +2,7 @@ import { LanServerInfo, MinecraftLanDiscover } from '@xmcl/client'
 import { createSocket } from 'dgram'
 import { MessageLan } from './messages/lan'
 import type { Peers } from './multiplayerImpl'
+import { EventEmitter } from 'stream'
 
 function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: Peers) {
   discover.bind().then(() => {
@@ -37,7 +38,7 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
 export const LAN_MULTICAST_PORT = 4446
 export const LAN_MULTICAST_ADDR = '224.0.2.60'
 
-export function createLanDiscover(peers: Peers) {
+export function createLanDiscover(peers: Peers, emitter: EventEmitter) {
   const discover = new MinecraftLanDiscover()
   const discoverV6 = new MinecraftLanDiscover('udp6')
 
@@ -92,6 +93,7 @@ export function createLanDiscover(peers: Peers) {
       discoverV6.destroy()
     },
     onLanMessage: (session: string, msg: LanServerInfo) => {
+      emitter.emit('lan', { session, ...msg })
       if (!discover.isReady) {
         // discover.bind()
       } else {
