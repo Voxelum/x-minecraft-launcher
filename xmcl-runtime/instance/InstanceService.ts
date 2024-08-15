@@ -16,6 +16,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
+import { readlink } from 'fs/promises'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -280,6 +281,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     let hasShaderpacks = false
     await copy(path, newPath, {
       filter: async (src, dest) => {
+        const linked = await readlink(src).catch(() => '')
+
+        if (linked) {
+          return false
+        }
+
         const relativePath = relative(path, src).replaceAll('\\', '/')
         if (relativePath.startsWith('mods')) {
           hasMods = true
