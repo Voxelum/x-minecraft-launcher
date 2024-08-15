@@ -465,6 +465,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
     }))
   }
 
+  isParked(instancePath: string): boolean {
+    for (const p of Object.values(this.processes)) {
+      if (p.options.gameDirectory === instancePath) {
+        return true
+      }
+    }
+    return false
+  }
+
   async reportOperation(payload: ReportOperationPayload): Promise<void> {
     if ('duration' in payload) {
       this.emit('launch-performance', {

@@ -3,14 +3,19 @@
     class="flex h-full flex-col"
     :color="error ? 'red' : cardColor"
   >
+    <v-progress-linear
+      v-if="refreshing"
+      class="absolute left-0 bottom-0 z-20 m-0 p-0"
+      indeterminate
+    />
     <v-card-title>
       <v-icon left>
         {{ icon }}
       </v-icon>
       {{ title }}
     </v-card-title>
-    <v-card-text class="flex-grow">
-      <template v-if="refreshing">
+    <v-card-text class="flex-grow relative">
+      <template v-if="refreshing && icons.length === 0">
         <v-skeleton-loader type="paragraph" />
       </template>
       <template v-else>

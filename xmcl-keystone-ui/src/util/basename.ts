@@ -4,10 +4,10 @@ export function join(...paths: string[]) {
   return paths.join(sep)
 }
 
-export function basename(path: string) {
-  return path.substring(path.lastIndexOf(sep) + 1)
+export function basename(path: string, s = sep) {
+  return path.substring(path.lastIndexOf(s) + 1)
 }
 
-export function dirname(path: string) {
+export function dirname(path: string, s = sep) {
   return path.substring(0, path.lastIndexOf(sep))
 }
