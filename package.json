@@ -7,11 +7,10 @@
         "node": ">=16"
     },
     "scripts": {
+        "compile": "pnpm -r compile",
         "build": "pnpm run --prefix=xmcl-electron-app build",
         "build:all": "pnpm run --prefix=xmcl-electron-app build:all",
-        "build:dir": "pnpm run --prefix=xmcl-electron-app build:dir",
-        "build:main": "pnpm run --prefix=xmcl-electron-app build",
-        "build:renderer": "pnpm run --prefix=xmcl-keystone-ui build",
+        "build:renderer": "pnpm --prefix=xmcl-keystone-ui build",
         "check": "pnpm run --prefix=xmcl-runtime-api check && pnpm run --prefix=xmcl-runtime check && pnpm run --prefix=xmcl-electron-app check && pnpm run --prefix=xmcl-keystone-ui check",
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",

@@ -135,15 +135,12 @@ function renderUpdate() {
   const transformed = body.replace(/## \[(.+)\]\(#.+\)/g, (str, v) => `## ${v}`)
   return render(transformed)
 }
-const body = computed(() => state.value?.updateInfo?.useAutoUpdater ? state.value?.updateInfo.body : renderUpdate())
+const body = computed(() => state.value?.updateInfo?.operation === 'autoupdater' ? state.value?.updateInfo.body : renderUpdate())
 const env = useEnvironment()
 const isAppX = computed(() => env.value?.env === 'appx')
 const isAppImage = computed(() => env.value?.env === 'appimage')
 const hintRedownload = computed(() =>
-  !isAppX.value &&
-  !isAppImage.value &&
-  !updateInfo.value?.useAutoUpdater &&
-  !updateInfo.value?.incremental,
+  state.value?.updateInfo?.operation === 'manual',
 )
 
 const openOfficialWebsite = () => {
