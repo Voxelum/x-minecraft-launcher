@@ -712,12 +712,15 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  exposedPortDescription: El puerto que expuso a otros pares
+  exposedPorts: Puertos reenviados
   kernel: Núcleo P2P
   kernelDescription: >-
     Utilice WebRTC nativo o canal de datos de nodo. 
 
     Cambie esto solo cuando su conexión p2p en algún momento bloquee la ventana
     del iniciador.
+  otherExposedPortDescription: El prólogo del puerto de {usuario}
   sharingNotificationBody: >-
     Puede descargar o crear una instancia desde la configuración compartida de
     {nombre}.

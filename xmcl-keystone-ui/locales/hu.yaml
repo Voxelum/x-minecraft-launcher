@@ -951,6 +951,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát az
     alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
+  exposedPortDescription: A port, amelyet a többi társnak tettél közzé
+  exposedPorts: Továbbított portok
   gatheringIce: >
     "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön a
     hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az aktuális
@@ -987,6 +989,7 @@ multiplayer:
   name: Többjátékos LAN-on
   networkInfo: Hálózati információk
   next: Következő
+  otherExposedPortDescription: 'A port előszava: {user}'
   placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
   previous: Előző
   receiveHint: >-

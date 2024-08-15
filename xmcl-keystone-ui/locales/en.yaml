@@ -929,6 +929,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Once your peer enter your token, you need to enter his token to the text
     area below. Click confirm to connect.
+  exposedPortDescription: The port you exposed to other peers
+  exposedPorts: Forwarded Ports
   gatheringIce: >
     "Please wait for the ICE server to collect enough information about your
     network. If you are impatient and there are enough information, you can give
@@ -961,6 +963,7 @@ multiplayer:
   name: Multiplayer on LAN
   networkInfo: Network Info
   next: Next
+  otherExposedPortDescription: The port forword by {user}
   placeholder: Connect with other user to play Minecraft on LAN!
   previous: Previous
   receiveHint: >-

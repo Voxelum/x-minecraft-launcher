@@ -3,7 +3,7 @@ import { ElyByServiceKey, ElyByService as IElyByService } from '@xmcl/runtime-ap
 import { open, openEntryReadStream, walkEntriesGenerator } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import { ensureDir, readFile, stat, writeFile } from 'fs-extra'
-import { dirname } from 'path'
+import { dirname, isAbsolute, relative } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { ResourceWorker, kResourceWorker } from '~/resource'
@@ -24,10 +24,17 @@ export class ElyByService extends AbstractService implements IElyByService {
   async installAuthlib(minecraftVersion: string) {
     interface RecordVersion { path: string; sha1: string; version: string }
 
-    const jsonPath = this.getPath('ely-authlib.json')
+    const jsonPath = this.getAppDataPath('ely-authlib.json')
 
     const content: Record<string, RecordVersion> = await readFile(jsonPath, 'utf-8').then(JSON.parse).catch(() => ({}))
     const record = content[minecraftVersion]
+    for (const key in content) {
+      const val = content[key]
+      if (isAbsolute(val.path)) {
+        continue
+      }
+      val.path = this.getPath(val.path)
+    }
 
     if (record) {
       const path = record.path
@@ -86,7 +93,7 @@ export class ElyByService extends AbstractService implements IElyByService {
         await writeFile(path, Buffer.concat(buffers))
         const sha1 = hasher.digest('hex')
         content[minecraftVersion] = {
-          path,
+          path: relative(this.getPath(), path),
           sha1,
           version: actualVersion,
         }

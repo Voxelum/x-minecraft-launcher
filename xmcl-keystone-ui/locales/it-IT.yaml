@@ -5,17 +5,18 @@ AppAddInstanceDialog:
   downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
-  alterDownloadDescription: |-
-    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto per creare un'istanza."
+  alterDownloadDescription: >-
+    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova
+    istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto
+    per creare un'istanza."
   baseInfo: Impostazioni di base
   cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file
     tramite il tuo PC.
   downloadDescription: >-
-    Verifica i file che ti sono stati forniti dal tuo peer. 
-    Seleziona il file che desideri scaricare. 
-    Verrà inserito nell'istanza corrente {nome}.
+    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file
+    che desideri scaricare.  Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   downloadToLocal: Scarica nell'istanza corrente
@@ -675,9 +676,9 @@ mod:
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
-    Perderai questa mod e i relativi metadati per sempre. Sei sicuro di
-    volerla eliminare? | Perderai queste mod e questi metadati per sempre.
-    Sei sicuro di volerlo fare?
+    Perderai questa mod e i relativi metadati per sempre. Sei sicuro di volerla
+    eliminare? | Perderai queste mod e questi metadati per sempre. Sei sicuro di
+    volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
@@ -952,6 +953,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo
     token nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
+  exposedPortDescription: La porta che hai esposto ad altri peer
+  exposedPorts: Porte inoltrate
   gatheringIce: >
     "Attendere che il server ICE raccolga informazioni sufficienti sulla rete.
     Se si è impazienti e ci sono informazioni sufficienti, è possibile fornire
@@ -986,6 +989,7 @@ multiplayer:
   name: Multiplayer in LAN
   networkInfo: Informazioni sulla rete
   next: Avanti
+  otherExposedPortDescription: Il port forwarding di {user}
   placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
   previous: Precedente
   receiveHint: >-
@@ -1238,7 +1242,7 @@ setting:
   developerMode: Modalità sviluppatore
   developerModeDescription: La modalità sviluppatore è destinata a testare i mod scritti personalmente
   disableTelemetry: Disabilita telemetria
-  disableTelemetryDescription: "XMCL racoglie gli eventi di avvio del gioco e di accesso dell'utente."
+  disableTelemetryDescription: XMCL racoglie gli eventi di avvio del gioco e di accesso dell'utente.
   enableDedicatedGPUOptimization: Assegna GPU dedicata
   enableDedicatedGPUOptimizationDescription: Questa opzione assegnerà una GPU dedicata al processo di Minecraft.
   enableDiscord: Abilita la presenza di Discord
@@ -1246,7 +1250,7 @@ setting:
   general: Generale
   githubRelease: Rilascio Github
   globalSetting: Impostazioni globali
-  globalSettingHint: "L'istanza utilizzerà queste impostazioni per impostazione predefinita."
+  globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
   hideNewsHeader: Nascondi showcase delle notizie
   language: Lingua
   languageDescription: La lingua visualizzata
@@ -1278,7 +1282,7 @@ setting:
     repulse: Ripulsa
   particleModeDescription: Seleziona il comportamento del clic della particella
   replaceNative: Sostituisci librerie native
-  replaceNativeDescription: "Sostituisci le librerie native in base all'architettura del tuo computer."
+  replaceNativeDescription: Sostituisci le librerie native in base all'architettura del tuo computer.
   replaceNatives:
     all: Tutti
     legacy: Solo versione legacy
@@ -1287,7 +1291,8 @@ setting:
   showRoot: Mostra
   streamerMode: Modalità streaming
   streamerModeDescription: >-
-    "Questa opzione nasconde le tue informazioni private, come l'email, nel launcher."
+    "Questa opzione nasconde le tue informazioni private, come l'email, nel
+    launcher."
   theme:
     dark: Tema scuro
     light: Tema chiaro
