@@ -1,6 +1,6 @@
-import { get, MaybeRef, useLocalStorage } from '@vueuse/core'
-import { kInstances } from './instances'
 import { injection } from '@/util/inject'
+import { get, MaybeRef, useEventBus, useLocalStorage } from '@vueuse/core'
+import { kInstances } from './instances'
 import { kTheme } from './theme'
 
 export interface InstanceGroupData {
@@ -117,7 +117,17 @@ export function useInstanceGroupDefaultColor() {
 
 export function useInstanceGroup() {
   const { instances, ready } = injection(kInstances)
-  const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupData[], {
+  const groupsData = useLocalStorage('instanceGroup', () => [] as InstanceOrGroupData[])
+
+  const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
+
+  migrationBus.once((e) => {
+    groupsData.value = groupsData.value.map((v) => {
+      if (typeof v === 'string') {
+        return v.replace(e.oldRoot, e.newRoot)
+      }
+      return { ...v, instances: v.instances.map(v => v.replace(e.oldRoot, e.newRoot)) }
+    })
   })
 
   watch(instances, (instances) => {

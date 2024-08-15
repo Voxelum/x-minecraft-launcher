@@ -1,7 +1,7 @@
+import { useEventBus, useLocalStorage } from '@vueuse/core'
 import { EditInstanceOptions, Instance, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
 import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
 import { InjectionKey, set } from 'vue'
-import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
 
@@ -53,8 +53,14 @@ export function useInstances() {
     }
   })
   const instances = computed(() => state.value?.instances ?? [])
-  const _path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
+  const _path = useLocalStorage('selectedInstancePath', '' as string)
   const path = ref('')
+
+  const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
+
+  migrationBus.once((e) => {
+    _path.value = _path.value.replace(e.oldRoot, e.newRoot)
+  })
 
   async function edit(options: EditInstanceOptions & { instancePath: string }) {
     await editInstance(options)

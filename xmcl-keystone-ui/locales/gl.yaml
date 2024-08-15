@@ -320,12 +320,15 @@ modrinth:
     mod: Mod
     shader: Shader
 multiplayer:
+  exposedPortDescription: O porto que expuxo a outros compañeiros
+  exposedPorts: Portos remitidos
   kernel: Núcleo P2P
   kernelDescription: >-
     Use WebRTC nativo ou canle de datos de nodos. 
 
     Cambia isto só cando a túa conexión p2p nalgún momento falla a xanela do
     lanzador.
+  otherExposedPortDescription: O prefacio do porto de {usuario}
   sharingNotificationBody: >-
     Podes descargar ou crear unha instancia desde a configuración compartida de
     {name}.

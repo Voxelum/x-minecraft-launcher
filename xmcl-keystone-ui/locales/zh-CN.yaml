@@ -239,7 +239,7 @@ diagnosis:
   missingAuthlibInjector: {}
   missingJava:
     message: 点击来解决这个问题
-    name: 当前电脑上没有找到任何 Java
+    name: 没有找到合适的 Java 来启动
   missingLibraries:
     message: 启动器将自动下载并安装 Libraries 文件
     name: >-
@@ -911,6 +911,8 @@ multiplayer:
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
   enterRemoteTokenHint: 当您的联机伙伴输入您的令牌后，您需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
+  exposedPortDescription: 您向其他伙伴公开的端口
+  exposedPorts: 转发端口
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font:
     bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label
@@ -936,6 +938,7 @@ multiplayer:
   name: 跨局域网联机
   networkInfo: 当前网络状况
   next: 下一步
+  otherExposedPortDescription: '{user} 暴露给你的端口'
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
   receiveHint: 在对方输入您的令牌后，您们之间的连接会自动创建。现在您已经可以点击完成了。

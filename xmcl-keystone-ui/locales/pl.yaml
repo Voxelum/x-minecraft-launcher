@@ -964,6 +964,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Gdy użytkownik wprowadzi swój token, należy wprowadzić jego token w polu
     tekstowym poniżej. poniżej. Kliknij przycisk Potwierdź, aby się połączyć.
+  exposedPortDescription: Port, który udostępniłeś innym peerom
+  exposedPorts: Przekierowane porty
   gatheringIce: >
     Proszę poczekać, aż serwer ICE zbierze wystarczającą ilość informacji o
     Twoim sieć. Jeśli jesteś niecierpliwy i jest wystarczająco dużo informacji,
@@ -997,6 +999,7 @@ multiplayer:
   name: Multiplayer w sieci LAN
   networkInfo: Informacje o sieci
   next: Następny
+  otherExposedPortDescription: Słowo portu autorstwa {user}
   placeholder: Połącz się z innymi użytkownikami, aby grać w Minecraft w sieci LAN!
   previous: Poprzedni
   receiveHint: >-

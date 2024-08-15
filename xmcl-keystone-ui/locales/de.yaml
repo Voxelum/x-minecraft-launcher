@@ -1007,6 +1007,8 @@ multiplayer:
 
     Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die
     Verbindung herzustellen.
+  exposedPortDescription: Der Port, den Sie anderen Peers zugänglich gemacht haben
+  exposedPorts: Weitergeleitete Ports
   gatheringIce: >
     "Warten Sie, bis der ICE-Server genügend Informationen über Sie gesammelt
     hat
@@ -1046,6 +1048,7 @@ multiplayer:
   name: Multiplayer über ein lokales Netzwerk
   networkInfo: Informationen über das Netzwerk
   next: Nächste.
+  otherExposedPortDescription: Das Portvorwort von {user}
   placeholder: >-
     Schließe dich anderen Leuten an, um Minecraft in deinem lokalen Netzwerk zu
     spielen Netzwerk!
