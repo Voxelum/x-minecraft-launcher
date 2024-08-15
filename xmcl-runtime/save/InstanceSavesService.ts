@@ -9,6 +9,7 @@ import {
   isSaveResource,
   LaunchOptions,
   LinkSaveAsServerWorldOptions,
+  LockKey,
   ResourceDomain, Saves,
   ShareSaveOptions,
 } from '@xmcl/runtime-api'
@@ -134,6 +135,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
    */
   async watch(path: string) {
     requireString(path)
+    const lock = this.semaphoreManager.getLock(LockKey.instance(path))
 
     const stateManager = await this.app.registry.get(ServiceStateManager)
     const launchService = await this.app.registry.get(LaunchService)
@@ -144,50 +146,29 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       const savesDir = join(path, 'saves')
       const state = new Saves()
 
-      let parking = false
-      let count = 0
+      const onExit = (op: LaunchOptions) => {
+        if (op.gameDirectory !== path) return
+        for (const p of pending) {
+          updateSave(p)
+        }
+        pending.clear()
+      }
+      launchService.on('minecraft-exit', onExit)
 
-      const updateSave = debounce(defineAsyncOperation((filePath: string) =>
-        readInstanceSaveMetadata(filePath, baseName).then((save) => {
+      const updateSave = debounce(defineAsyncOperation((filePath: string) => {
+        return lock.read(() => readInstanceSaveMetadata(filePath, baseName).then((save) => {
           state.instanceSaveUpdate(save)
         }).catch((e) => {
           this.warn(`Parse save in ${filePath} failed. Skip it.`)
           this.warn(e)
-        }),
-      ), 500)
-
-      const updateCount = (delta: number) => {
-        count += delta
-        parking = count > 0
-        if (!parking) {
-          for (const p of pending) {
-            updateSave(p)
-          }
-          pending.clear()
-        }
-      }
-
-      const onLaunch = (op: LaunchOptions) => {
-        if (op.gameDirectory !== path) return
-        updateCount(1)
-      }
-      const onExit = (op: LaunchOptions) => {
-        if (op.gameDirectory !== path) return
-        updateCount(-1)
-      }
-
-      launchService.on('minecraft-start', onLaunch)
-      launchService.on('minecraft-exit', onExit)
-
-      await ensureDir(savesDir)
-      const link = await readlink(savesDir).catch(() => '')
-      let isLinked = !!link
+        }))
+      }), 500)
 
       const onFileUpdate = (event: 'update' | 'remove', filename: string) => {
         if (filename.startsWith('.')) return
         const filePath = filename
         if (event === 'update') {
-          if (parking) {
+          if (launchService.isParked(path)) {
             pending.add(filePath)
           } else {
             updateSave(filePath)
@@ -196,6 +177,8 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           state.instanceSaveRemove(filePath)
         }
       }
+
+      let isLinkedMemo = await this.isSaveLinked(path)
       let watcher = watch(savesDir, onFileUpdate)
 
       this.log(`Watch saves directory: ${savesDir}`)
@@ -212,18 +195,17 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         return saves.filter(isNonnull)
       }
 
-      const saves = await readAll(await readdir(savesDir))
-      this.log(`Found ${saves.length} saves in instance ${path}`)
-      state.saves = saves
+      if (!isLinkedMemo) {
+        await ensureDir(savesDir)
+        const saves = await lock.read(async () => await readAll(await readdir(savesDir)))
+        this.log(`Found ${saves.length} saves in instance ${path}`)
+        state.saves = saves
+      }
 
-      return [state, () => {
-        watcher.close()
-        launchService.off('minecraft-start', onLaunch)
-        launchService.off('minecraft-exit', onExit)
-      }, async () => {
+      const revalidate = () => lock.read(async () => {
         const newIsLink = !!await readlink(savesDir).catch(() => '')
-        if (newIsLink !== isLinked) {
-          isLinked = !!newIsLink
+        if (newIsLink !== isLinkedMemo) {
+          isLinkedMemo = !!newIsLink
           watcher = watch(savesDir, onFileUpdate)
           const savePaths = await readdir(savesDir)
           const saves = await readAll(savePaths)
@@ -237,7 +219,12 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
             await readAll(toAdd)
           }
         }
-      }]
+      })
+
+      return [state, () => {
+        launchService.off('minecraft-exit', onExit)
+        watcher.close()
+      }, revalidate]
     })
   }
 

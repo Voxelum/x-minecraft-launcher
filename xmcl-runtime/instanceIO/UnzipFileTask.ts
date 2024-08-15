@@ -4,6 +4,7 @@ import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
 import { ensureDir, stat } from 'fs-extra'
 import { dirname } from 'path'
+import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
@@ -13,6 +14,7 @@ export class UnzipFileTask extends AbortableTask<void> {
 
   constructor(private queue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }>,
     readonly finished: Set<InstanceFile>,
+    readonly interpreter: (input: Readable, file: string) => void = () => { },
   ) {
     super()
     this.name = 'unzip'
@@ -27,6 +29,7 @@ export class UnzipFileTask extends AbortableTask<void> {
     }
     const stream = await openEntryReadStream(zip, entry)
     this._total += entry.uncompressedSize
+    this.interpreter(stream, destination)
     this.update(0)
     stream.on('data', (chunk) => {
       this._progress += chunk.length
@@ -48,33 +51,39 @@ export class UnzipFileTask extends AbortableTask<void> {
       this.#zipInstances[zip] = [zipInstance, reocrd]
     }
 
-    const promises = [] as Promise<unknown>[]
-    for (const { zipPath, entryName, destination, file } of queue) {
-      const [zip, entries] = this.#zipInstances[zipPath]
-      const entry = entries[entryName]
-      if (entry) {
-        promises.push(this.#processEntry(zip, entry, destination).then(() => {
-          this.finished.add(file)
-        }, (e) => {
-          return Object.assign(e, {
-            zipEntry: entry,
-            zipPath,
-          })
-        }))
+    const allErrors: any[] = []
+    // process by 128 entry per chunk
+    for (let i = 0; i < queue.length; i += 128) {
+      const promises = [] as Promise<unknown>[]
+      for (const { zipPath, entryName, destination, file } of queue.slice(i, i + 128)) {
+        const [zip, entries] = this.#zipInstances[zipPath]
+        const entry = entries[entryName]
+        if (entry) {
+          promises.push(this.#processEntry(zip, entry, destination).then(() => {
+            this.finished.add(file)
+          }, (e) => {
+            return Object.assign(e, {
+              zipEntry: entry,
+              zipPath,
+            })
+          }))
+        }
       }
+      await Promise.all(promises)
+      const errors = (await Promise.all(promises)).filter(e => !!e)
+      allErrors.push(...errors)
     }
-    const errors = (await Promise.all(promises)).filter(e => !!e)
 
     for (const [zipPath, [zip]] of Object.entries(this.#zipInstances)) {
       zip.close()
     }
 
-    if (errors.length > 0) {
-      if (errors.length > 1) {
-        throw new AggregateError(errors)
+    if (allErrors.length > 0) {
+      if (allErrors.length > 1) {
+        throw new AggregateError(allErrors)
       }
 
-      throw errors[0]
+      throw allErrors[0]
     }
   }
 

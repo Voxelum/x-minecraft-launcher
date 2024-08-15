@@ -31,7 +31,6 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     }
   })
   const shaderMod = computed(() => {
-    console.log('get shader mod')
     if (runtime.value.optifine) {
       return {
         id: 'optifine',

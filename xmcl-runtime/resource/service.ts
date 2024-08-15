@@ -324,10 +324,10 @@ export class ResourceService extends AbstractService implements IResourceService
         }
 
         const storedPathOrErr = await tryPersistResource(resolved, this.getPath(), this.context).catch(e => e)
-        if (typeof storedPathOrErr === 'string') {
-          const resource = { ...resolved, storedPath: storedPathOrErr }
+        if (storedPathOrErr instanceof Array) {
+          const resource = { ...resolved, storedPath: storedPathOrErr[0] }
 
-          this.log(`Persist new resource ${resource.path} -> ${storedPathOrErr}`)
+          this.log(`Persist new resource ${resource.path} -> ${storedPathOrErr[0]} linked=${storedPathOrErr[1]}`)
 
           return resource
         }

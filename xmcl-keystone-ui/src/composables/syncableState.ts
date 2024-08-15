@@ -10,6 +10,15 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
   const state = ref<MutableState<T> | undefined>()
   const error = ref(undefined as any)
   let controller: AbortController | undefined
+  const onMutation = (state: any) => (mutation: string, payload: any) => {
+    ((Type.prototype as any)?.[mutation] as Function)?.call(state, payload)
+  }
+  const onStateValidating = (data: any) => (v: number) => {
+    if (data === state.value) {
+      isValidating.value = v > 0
+    }
+  }
+
   const mutate = async (onCleanup?: (abort: () => void) => void) => {
     controller?.abort()
     const abortController = new AbortController()
@@ -24,15 +33,23 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     try {
       isValidating.value = true
       error.value = undefined
+      state.value = undefined
       data = await fetcher(signal)
       if (!data || signal.aborted) { return }
-      data.subscribeAll((mutation, payload) => {
-        ((Type.prototype as any)?.[mutation] as Function)?.call(state.value, payload)
-      })
+
+      const func = onMutation(data)
+      data.subscribeAll(func)
+
+      const validFunc = onStateValidating(data)
       // @ts-ignore
-      data.subscribe('state-validating', (v) => {
-        isValidating.value = v as any
+      data.subscribe('state-validating', validFunc)
+
+      abortController.signal.addEventListener('abort', () => {
+        data?.unsubscribeAll(func)
+        // @ts-ignore
+        data?.unsubscribe('state-validating', validFunc)
       })
+
       state.value = data
     } catch (e) {
       if (signal.aborted) { return }
