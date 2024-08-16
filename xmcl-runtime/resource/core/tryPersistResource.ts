@@ -33,7 +33,7 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     if (sha1 === resource.hash) {
       // The file is already imported...
       // We just don't copy/link the file again
-      return [filePath, true] as const
+      return [filePath, true]
     }
 
     // Two different file, but different content
@@ -83,7 +83,7 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
         ctime: localEntry.ctime,
         ino: localEntry.ino,
       }).execute().catch(() => undefined)
-      return [filePath, true] as const
+      return [filePath, true]
     } else {
       // Remove the file
       await unlink(filePath)
@@ -93,11 +93,11 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
   if (dirname(resource.path) === dirname(filePath)) {
     // Just rename if they are in same dir
     await rename(resource.path, filePath)
-    return [filePath, true] as const
+    return [filePath, true]
   }
 
   // Use hard link or copy
   const linked = await linkOrCopy(resource.path, filePath)
 
-  return [filePath, linked] as const
+  return [filePath, linked]
 }
