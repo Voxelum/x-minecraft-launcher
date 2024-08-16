@@ -2,7 +2,7 @@ import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { InstanceFile, InstanceFileWithOperation, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { join, relative } from 'path'
+import { extname, join, relative } from 'path'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
@@ -260,7 +260,8 @@ export class InstanceFileOperationHandler {
   }
 
   async #getUnzipTask() {
-    return new UnzipFileTask(this.#unzipQueue, this.finished)
+    return new UnzipFileTask(this.#unzipQueue, this.finished, (input, file) => {
+    })
   }
 
   async #getDownloadTask() {
