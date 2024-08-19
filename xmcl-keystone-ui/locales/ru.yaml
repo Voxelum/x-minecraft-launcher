@@ -3,7 +3,7 @@ AppAddInstanceDialog:
     Обнаружено несколько профилей запуска. Пожалуйста, выберите один для
     импорта.
   configTitle: Конфигурация
-  createTitle: Создать экземпляр
+  createTitle: Создать игру
   downloadedNotification: Загружен модпак {name}. Хотите ли вы создать экземпляр для него?
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
@@ -185,7 +185,7 @@ curseforgeCategory:
   Technology: Технология
   Traditional: Традиционный
   Twitch Integration: Интеграция с Twitch
-  Utility & QoL: Утилита и Qol
+  Utility & QoL: Утиліта і Qol
   Vanilla+: Ванила+
   World Gen: Генератор мира
 dataMigration:
@@ -290,6 +290,7 @@ duration:
   name: Удалить {name}
   'no': Нет
   second: '{duration} секунда | {duration} секунд'
+  'yes': Удалить
 edit: Изменить
 enable: Включить
 env:
@@ -1508,6 +1509,7 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Хост-кандидат
