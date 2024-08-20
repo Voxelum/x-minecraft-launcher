@@ -977,7 +977,7 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
   projectHint: >-
-    Этот экземпляр создан с помощью модпакета Modrinth с помощью модпакета Modrinth из <code
+    Этот экземпляр создан с помощью модпакета Modrinth из <code
     class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{title}</code>
     (project id:
           <code class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{id}</code>)
