@@ -57,6 +57,16 @@ reviews:
             suggestion: ''
             type: request_change
             time: '2024-08-19T10:21:47.584Z'
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: QEISmg3Z9kFnLFJS5qZP4
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:45:16.573Z'
   AppAddInstanceDialog.createTitle:
     locales:
       ru:
@@ -87,6 +97,25 @@ reviews:
             suggestion: ''
             type: request_change
             time: '2024-08-19T10:23:00.593Z'
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: WI4Iu2Ii5NzpxwGK7P4Ls
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:45:23.121Z'
+            resolved: true
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: CwnfyDpkgMdjsavabLj65
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:45:42.881Z'
   browseApps:
     locales:
       uk:
@@ -711,6 +740,16 @@ reviews:
             suggestion: ''
             type: approve
             time: '2024-08-19T10:41:21.063Z'
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: _rG625KNCsiQ7YuVQVAF2
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:20:47.426Z'
   upstream.onlyShowCurrentVersion:
     locales:
       uk:
@@ -723,6 +762,16 @@ reviews:
             suggestion: ''
             type: approve
             time: '2024-08-19T10:41:27.699Z'
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: HWxIsQBaRcJW-ffzqLQsl
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:20:56.888Z'
   tutorial.instance.javaTitle:
     locales:
       uk:
@@ -1357,3 +1406,1273 @@ reviews:
             suggestion: ''
             type: approve
             time: '2024-08-19T11:00:18.304Z'
+  AppAddInstanceDialog.choiceTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: x_51vR469xNj60rtGtJuy
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:44:27.693Z'
+  AppAddInstanceDialog.downloadedNotification:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: mF5bz4wt8HqKzLjlr1gGG
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:46:11.586Z'
+  AppShareInstanceDialog.alterDownloadDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: y4e1T-hZ09C1cpnYFRuUC
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:46:39.398Z'
+  AppAddInstanceDialog.serverTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: woh68wOcqof5LO-deJYu-
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:46:48.800Z'
+  AppShareInstanceDialog.baseInfo:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: Ny5S-8Mj1me0EyL8y0IT8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:47:06.731Z'
+  AppShareInstanceDialog.cancelShare:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: QFpLe5B3yifVuhYUMMPJq
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:47:34.270Z'
+  AppShareInstanceDialog.downloadDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: WI4Jro9EV3Eq2_Z6xtJLV
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:47:53.595Z'
+  AppShareInstanceDialog.description:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: iQDNW0HdZJV5gjJ_4a1_G
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:48:07.660Z'
+  AppShareInstanceDialog.downloadTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: vBD5YZxiMp2TJekFkm481
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:48:54.289Z'
+  AppShareInstanceDialog.filesToDownload:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 1RFBQ1N7LPHzBWh75-163
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:49:14.444Z'
+  AppShareInstanceDialog.filesToShare:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: CmnT_KJijLCKDJGkahhuF
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:49:23.407Z'
+  AppShareInstanceDialog.share:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: zI_EmGuh4fQIMn8yndkIC
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:49:34.313Z'
+  FeedTheBeast.search:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 55saNzFiSd1kbCST8Bj-0
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:50:01.803Z'
+  BaseSettingGeneral.title:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: wZKkyRqCKyTJmLSKHjZcF
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:50:24.276Z'
+  AppShareInstanceDialog.shareTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: byUkp9I4dzHoVQfM4ba1v
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:50:35.219Z'
+  'yes':
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: _FTVOu9hXKS27rtfwJWzQ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:53:01.490Z'
+  versionType.release:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: uJRCA09qxPcRYztwIKjNZ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:54:29.208Z'
+  versionType.name:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: DfCHYYrGnY2W4JXYOgt-0
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:54:42.208Z'
+  versionType.beta:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: d20ROK9dW6Lf5lWHU7XCq
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:54:51.647Z'
+  versionType.alpha:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: R7zqFOIWOxwGErwYpnpst
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:55:00.489Z'
+  version.notInstalled:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: yknvAd7ZOZLDt8jzvMVXp
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:55:12.392Z'
+  version.name:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: m7JXnFJjBIMKaBW4PeOgM
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:55:37.749Z'
+  userSkin.useSlim:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: bDkjZJhSfW5wqfXjHm9Lu
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:55:47.633Z'
+  userSkin.urlNotValid:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: e5fU6VCEM295X2gu6zT9r
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:55:56.501Z'
+  userSkin.urlNotEmpty:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: XPxKCHyXZfeouNXjF3462
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:56:10.392Z'
+  userSkin.upload:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: vnq5MkvJBpV3AynmgW_V3
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:56:39.843Z'
+  userSkin.skinType:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: RFvQvaMSaJn65BDyG8LBh
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:56:49.972Z'
+  userSkin.saveTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: dWQUdsO3MxRWHLWiKwTqD
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:57:06.405Z'
+  userSkin.save:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: viFaSAolTL4TwIYtQooCZ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:57:19.562Z'
+  userSkin.reset:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: wT4BVnl25i6-tyuTQbUNE
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:58:01.136Z'
+  userSkin.placeUrlHere:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: c9VMYUmaAzK-0BAPfOUrE
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:58:12.668Z'
+  userSkin.importLink:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 8MMuhzlckhAVD7fM4Q4_q
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:58:27.885Z'
+  userSkin.importFile:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 37ZZhSFMW-pGJBzmC3e_c
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T15:58:37.507Z'
+  userSkin.import:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: t6qH80LAfJQ1z-NS1k4ya
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:03:22.617Z'
+  userServices.offline.uuid:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: fokduCFI4FzzhkbwYKcP2
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:03:31.806Z'
+  userServices.offline.password:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: hwi4DD_BZdPUkTn3mZggf
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:03:40.842Z'
+  userServices.offline.name:
+    locales:
+      en:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: nbnFx8XW46Ym4aC5I1UnF
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:03:47.801Z'
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ae2_b-sAGnhWlKi3VLKQJ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:06:41.519Z'
+  userServices.offline.account:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 1U-GCsYfvIcnzBV10-uw-
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:06:54.290Z'
+  userServices.mojang.password:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: NwzKaOsb_yvbvew6GW6z8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:10:17.207Z'
+  userServices.mojang.name:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: KZTO1JzxPXgti7AvRTsd6
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:10:34.138Z'
+  userServices.mojang.account:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: YvELKmip-0_nf1xsCvP6y
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:10:42.213Z'
+  userServices.microsoft.useDeviceCode:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: UCLHjWbk9hG6EIopmzkFJ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:10:49.377Z'
+  userServices.microsoft.password:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: jOlj5CQJv8hxvHINCsup8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:10:56.274Z'
+  userServices.microsoft.name:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 0cz-brk7ZBSx_666tZGj2
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:11:20.749Z'
+  userServices.microsoft.fastLogin:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: lQxlplH2kJ7C7C9XCjlz-
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:11:38.268Z'
+  userServices.microsoft.deviceCodeHint:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: X-FIPj2Lu3y91Bj1cM8Ss
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:11:46.727Z'
+  userServices.microsoft.deviceCode:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: xwS-bQ1V4jinEgmrpFlag
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:11:55.168Z'
+  userServices.microsoft.account:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 1OWEvUt0xgAKg9SYwJqcO
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:12:54.117Z'
+  userService.validateHint:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: e2Gn0_uXfL15nvBglVHIQ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:13:03.879Z'
+  userService.title:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: zPz8IGnO978p9eec6Fba6
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:13:10.531Z'
+  userService.baseUrlHint:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 77peHBul5SePY35KbRMB1
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:13:20.492Z'
+  userService.authLibInjector:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: yZrKRrrDGd--bL0E6okXu
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:13:37.932Z'
+  userService.add:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ujmY3jIIbxG8eW1fMc4Xc
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:14:12.553Z'
+  userCape.noCape:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ExHBWPl3Hauj2Ws7PqxM6
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:14:18.342Z'
+  userCape.description:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 9RsX9TdxlDRhZlmFNxLsv
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:14:28.407Z'
+  userCape.changeTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: _3i3TE-9wr2l7h98iayFZ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:14:49.077Z'
+  userAccount.removeTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 20XDiCuqejf8cZVrybI_E
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:15:27.287Z'
+  userAccount.removeDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: MLQCjRowosSwkZzyHsZjd
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:15:45.056Z'
+  userAccount.add:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: myvaBj0sZGLP4ntSjPf0o
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:15:52.260Z'
+  user.tokenValidUntil:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: D--CxzQcPvKTLkELP1Gqj
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:16:09.323Z'
+  user.tokenExpired:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: CFzJS7V-_iapTnAA-W9Vv
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:16:14.670Z'
+  user.submitChallenges:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: jsRqN958HOExXEwyFPWg9
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:16:21.583Z'
+  user.refreshSkin:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: aUMb9alqCFxcIodXAxX4x
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:16:29.172Z'
+  user.refreshAccount:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: odm1QLOUzTss3kuypyvX8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:16:39.936Z'
+  user.profile:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ztzM7L_6U_FR0QXBcaU-z
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:17:41.593Z'
+  user.nameHint:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: '-BwufTCh-VXhspY9g-tlS'
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:17:52.681Z'
+  user.name:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 0cnaT1nDgRB4qyiV8I13I
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:18:00.160Z'
+  user.insecureClient:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: bXg77ngGIrOrf9aid_Cz3
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:18:09.959Z'
+  user.info:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: VSev5WHgYljYJOXLxD8yc
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:18:46.798Z'
+  user.id:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: DW-2zaG3mZWBuPChObpYS
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:18:53.185Z'
+  user.forgetChallenges:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: YzGfk42jVefxC5AspN9Pn
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:19:01.317Z'
+  user.email:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: QZi4ExL7KTg0PluH9odBB
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:19:09.490Z'
+  user.challenges:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: lIY63GvoSlI7adot6XW-D
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:19:31.292Z'
+  user.birth:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: sfvkAUhZ9_Lhv8-eDD3z5
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:19:40.567Z'
+  user.authService:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: dqarlzw8ebT8kTeNR_sUh
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:20:10.594Z'
+  user.authMode:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: vyURn1_vxPGejc01AARln
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:20:18.892Z'
+  user.accessToken:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 5PB3vLgckug1njqrtxzM_
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:20:28.154Z'
+  upstream.missingModpackMetadata:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: '-vBT2yo0o-bLD8pIzIcvO'
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:21:12.633Z'
+  upstream.downgrade:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: d_NZW88WoMK0vztQ2XuSL
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:21:27.364Z'
+  update.goOfficialWebDownload:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: kbaCZP8JLFr7sLTdCHm9k
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:21:35.137Z'
+  universalDrop.unknownResource:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: HWSm1pI3G4D8o0CzaKxNd
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:21:42.830Z'
+  universalDrop.title:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: aBv4mtY8qGVERI2BW-1cx
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:21:50.689Z'
+  universalDrop.start:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: uWzxzv7OFMD4nWzdeaosz
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:22:06.163Z'
+  universalDrop.enableModsAfterImport:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 0BuExYWULpCNoqlm-_PPq
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:22:16.028Z'
+  tutorial.userAccountDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 3p_SwnHLVYrXgA5ZK8MgI
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:25:01.294Z'
+  tutorial.storeSearchResultDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 8y5gCxyLTIrUcY5HNHTp8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:25:10.061Z'
+  tutorial.storeSearchDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: 5PBvGcH9D6qdY6bef8Nhk
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:25:25.441Z'
+  tutorial.storeSearchCategoryDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: E1ShcYw3ukFZXlvXyay1i
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:25:38.742Z'
+  tutorial.recentPlayDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: AOIykpdXF1A2yXBydwE6N
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:26:10.756Z'
+  tutorial.multiplayer.manualDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: P0u7-4PKmiBgxRvSn19Nl
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:26:27.418Z'
+  tutorial.multiplayer.joinDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: hxnJSnXDfbJ-Hzjaxzc-6
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:26:36.034Z'
+  tutorial.multiplayer.groupTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: PQ7K6yAUqG2kFwEE0zSHo
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:08.947Z'
+  tutorial.multiplayer.groupDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ZY4J8Uw2xJZBC5PNXWqKj
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:17.902Z'
+  tutorial.multiplayer.contentTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: k08N2EpvGmYy5EMRC7GZ8
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:23.676Z'
+  tutorial.multiplayer.contentDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: itKs8glhSOXb6_JXejGuW
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:31.067Z'
+  tutorial.mod.searchTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: ap3DfFGL_n9ze8AaZEHEQ
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:41.158Z'
+  tutorial.mod.searchDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: tjXYWLVd_fA6k7SiCxBEz
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:27:54.728Z'
+  tutorial.mod.listTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: EY0KBp7nMjdwvrRNxmJwG
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:28:14.819Z'
+  tutorial.mod.listDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: C7UMTQ7N7sw58KwYMTw8a
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:28:52.883Z'
+  tutorial.mod.detailTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: vd9FDeYvXDCwJoYz0snZp
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:28:59.638Z'
+  tutorial.mod.detailDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: Dxu0QPyIWoVUdIs-bX1VY
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:29:10.360Z'
+  tutorial.mod.defaultSourceTitle:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: QkfuTUH1fc7-lk0qHGwpW
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:30:40.074Z'
+  tutorial.mod.defaultSourceDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: buA7sRmhnniF8MZjaOo67
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:30:50.038Z'
+  tutorial.instanceSelectDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: y0zZgMJa7uYBTCUAY1JxK
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:33:54.185Z'
+  tutorial.launchDescription:
+    locales:
+      ja:
+        comments:
+          - user:
+              name: Artem SH
+              email: bebrochka13@bk.ru
+            id: dVwLcN-WWs3HhyHUBy4m2
+            comment: ''
+            suggestion: ''
+            type: request_change
+            time: '2024-08-21T16:37:03.255Z'
