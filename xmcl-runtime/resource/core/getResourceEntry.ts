@@ -10,6 +10,7 @@ export async function getResourceEntry(path: string, context: ResourceContext, s
       return {
         path,
         fileType: cache.fileType,
+        domainedPath: cache.domainedPath,
         sha1: cache.sha1,
         size: Number(status.size),
         mtime: Number(status.mtimeMs),
