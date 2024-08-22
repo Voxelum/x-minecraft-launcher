@@ -1152,6 +1152,7 @@ save:
   shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu
   unselected: wspólne archiwum
+  useCurrent: Użyj obecnego świata
 saves: {}
 screenshots:
   empty: Nie masz zrzutów ekranu

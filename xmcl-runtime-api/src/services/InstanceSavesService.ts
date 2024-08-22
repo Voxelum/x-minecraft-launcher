@@ -167,7 +167,7 @@ export interface InstanceSavesService {
   /**
    * Get the linked save world path.
    * @param instancePath
-   * @return The linked save world path. Should if it's a origial world folder them it's unlinked folder existed. `undefined` if no folder existed.
+   * @return The linked save world path. Empty string if it's a raw world folder, else it's linked folder existed. `undefined` if no folder existed.
    */
   getLinkedSaveWorld(instancePath: string): Promise<string | undefined>
 }
