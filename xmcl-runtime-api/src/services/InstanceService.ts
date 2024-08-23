@@ -11,6 +11,14 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
   resolution?: InstanceSchema['resolution']
   runtime?: InstanceSchema['runtime']
   server?: InstanceSchema['server']
+  /**
+   * Create resourcepacks folder
+   */
+  resourcepacks?: boolean
+  /**
+   * Create shaderpacks folder
+   */
+  shaderpacks?: boolean
 }
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runtime' | 'server'>> {
   resolution?: InstanceSchema['resolution']

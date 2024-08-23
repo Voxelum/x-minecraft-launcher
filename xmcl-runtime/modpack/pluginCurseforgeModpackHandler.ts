@@ -12,6 +12,19 @@ import { kResourceWorker } from '~/resource'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
+  function getDomain(type: number) {
+    if (type === 12 || (type >= 6945 && type <= 6953) || (type >= 393 && type <= 405) || [4465, 5193, 5244].includes(type)) {
+      return ResourceDomain.ResourcePacks
+    }
+    if (type === 6 || (type >= 406 && type <= 436) ||
+      [4485, 4545, 4558, 4671, 4672, 4773, 4843, 4906, 5191, 5232,
+        5299, 5314, 6145, 6484, 6814, 6821, 6954].includes(type)) {
+      return ResourceDomain.Mods
+    }
+    if (type >= 6552 && type <= 6555) {
+      return ResourceDomain.ShaderPacks
+    }
+  }
   modpackService.registerHandler<CurseforgeModpackManifest>('curseforge', {
     async resolveModpackMetadata(path, sha1) {
       const client = await app.registry.getOrCreate(CurseforgeV1Client)
@@ -75,11 +88,7 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
           }
           let domain: ResourceDomain | undefined
           if (mod) {
-            domain = mod.primaryCategoryId === 12
-              ? ResourceDomain.ResourcePacks
-              : mod.primaryCategoryId === 6
-                ? ResourceDomain.Mods
-                : undefined
+            domain = getDomain(mod.primaryCategoryId)
           }
           if (!domain) {
             domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks

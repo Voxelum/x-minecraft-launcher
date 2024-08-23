@@ -430,9 +430,15 @@ const totalSize = computed(() => {
 
 // export
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
+  let defaultPath = `${data.name}-${data.version}`
+  if (data.emitModrinth) {
+    defaultPath = `${data.name}-${data.version}.mrpack`
+  } else {
+    defaultPath = `${data.name}-${data.version}.zip`
+  }
   const { filePath, canceled } = await showSaveDialog({
     title: t('modpack.export'),
-    defaultPath: `${data.name}-${data.version}`,
+    defaultPath,
     filters: data.emitModrinth ? [modrinthFilter] : [zipFilter],
   })
 

@@ -79,9 +79,9 @@
                 @click="toggle"
               >
                 <v-icon size="80">
-                  add
+                  {{ rawWorldExists ? 'save' : 'add' }}
                 </v-icon>
-                {{ t('save.createNew') }}
+                {{ rawWorldExists ? t('save.useCurrent') : t('save.createNew') }}
               </v-card>
             </v-item>
             <v-item
@@ -259,6 +259,7 @@ const onlineMode = ref(false)
 const isAcceptEula = ref(false)
 const nogui = ref(false)
 const linkedWorld = ref('')
+const rawWorldExists = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
 
@@ -302,6 +303,7 @@ const { isShown } = useDialog('launch-server', () => {
     _eula = v
   })
   getLinkedSaveWorld(path.value).then((v) => {
+    rawWorldExists.value = v !== undefined && v !== ''
     linkedWorld.value = v ?? ''
   })
   getServerInstanceMods(path.value).then((mods) => {

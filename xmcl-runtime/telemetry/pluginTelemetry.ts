@@ -49,6 +49,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     .setAutoCollectExceptions(true)
     .setAutoCollectPerformance(false)
     .setAutoCollectConsole(false)
+    .setAutoCollectHeartbeat(false)
     .setAutoCollectDependencies(false)
     .setAutoCollectRequests(false)
     .start()

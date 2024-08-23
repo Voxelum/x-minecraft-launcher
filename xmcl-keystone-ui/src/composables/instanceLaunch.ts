@@ -206,7 +206,7 @@ export function useInstanceLaunch(
         try {
           await track(Promise.race([
             new Promise((resolve, reject) => { setTimeout(() => reject(new Error('Timeout')), 5_000) }),
-            refreshUser(userProfile.value.id),
+            refreshUser(userProfile.value.id, { validate: true }),
           ]), 'refresh-user', operationId)
         } catch (e) {
         }

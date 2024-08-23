@@ -351,6 +351,7 @@ save:
   shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
   unselected: arquivo compartido
+  useCurrent: Usa o mundo actual
 saves: {}
 server:
   maxPlayers: Máximo xogadores

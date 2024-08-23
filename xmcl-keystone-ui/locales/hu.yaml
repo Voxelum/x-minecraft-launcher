@@ -1144,6 +1144,7 @@ save:
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
   unselected: megosztott archívum
+  useCurrent: Használja a jelenlegi világot
 saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid

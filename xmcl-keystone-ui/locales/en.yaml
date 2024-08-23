@@ -1115,6 +1115,7 @@ save:
   shared: Instance use shared saves folder
   showDirectory: Show saves directory
   unselected: Shared Saves
+  useCurrent: Use current world
 saves: {}
 screenshots:
   empty: You don't have screenshots

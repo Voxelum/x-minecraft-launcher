@@ -842,6 +842,7 @@ save:
   shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado
   unselected: archivo compartido
+  useCurrent: Usar el mundo actual
 saves: {}
 screenshots:
   empty: No tienes capturas de pantalla

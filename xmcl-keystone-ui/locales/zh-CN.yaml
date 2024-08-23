@@ -1068,6 +1068,7 @@ save:
   shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录
   unselected: 共享的存档
+  useCurrent: 使用当前世界
 saves: {}
 screenshots:
   empty: 您还没有截图

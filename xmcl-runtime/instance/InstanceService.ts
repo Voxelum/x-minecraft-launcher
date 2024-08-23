@@ -250,6 +250,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!isPathDiskRootPath(instance.path)) {
       await ensureDir(instance.path)
     }
+    if (payload.resourcepacks) {
+      await ensureDir(join(instance.path, 'resourcepacks'))
+    }
+    if (payload.shaderpacks) {
+      await ensureDir(join(instance.path, 'shaderpacks'))
+    }
     this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
@@ -341,12 +347,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     await this.initialize()
     requireString(path)
 
-    this.state.instanceRemove(path)
-
     const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
       await rm(path, { recursive: true, force: true })
     }
+
+    this.state.instanceRemove(path)
   }
 
   /**
