@@ -1,4 +1,4 @@
-import { readdir } from 'fs-extra'
+import { lstat, readdir } from 'fs-extra'
 import { join } from 'path'
 
 export async function getMojangJavaPaths() {
