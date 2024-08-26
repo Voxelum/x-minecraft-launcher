@@ -1065,6 +1065,7 @@ save:
   shared: 實例使用共享存档資料夾
   showDirectory: 顯示儲存目錄
   unselected: 共享的存檔
+  useCurrent: 使用當前世界
 saves: {}
 screenshots:
   empty: 您還沒有截圖

@@ -24,6 +24,12 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('OfficialUserSystem')
 
   const userService = await app.registry.get(UserService)
+  const headers = {}
+  const legacyClient = new YggdrasilClient('https://authserver.mojang.com', {
+    headers,
+    fetch: (...args) => app.fetch(...args),
+  })
+
   const system = new MicrosoftAccountSystem(logger,
     new MicrosoftAuthenticator({
       fetch: (...args) => app.fetch(...args),
@@ -62,7 +68,7 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
         app.shell.openInBrowser(response.verificationUri)
       },
       app.secretStorage,
-    ))
+    ), app)
 
   userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)
 
@@ -92,10 +98,6 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
     }
   })
 
-  const headers = {}
-  const legacyClient = new YggdrasilClient('https://authserver.mojang.com', {
-    headers,
-  })
   userService.registerAccountSystem(AUTHORITY_MOJANG, {
     login: async (options) => {
       const clientToken = await app.registry.get(kClientToken)

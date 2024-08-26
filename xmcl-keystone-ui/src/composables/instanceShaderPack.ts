@@ -1,12 +1,12 @@
-import { GameOptionsState, Instance, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
-import { useService } from './service'
+import { BuiltinImages } from '@/constant'
+import { ModFile } from '@/util/mod'
+import { ProjectFile } from '@/util/search'
+import { FabricModMetadata } from '@xmcl/mod-parser'
+import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
-import { FabricModMetadata } from '@xmcl/mod-parser'
-import { ModFile } from '@/util/mod'
-import useSWRV from 'swrv'
-import { ProjectFile } from '@/util/search'
-import { BuiltinImages } from '@/constant'
+import { useService } from './service'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
 
@@ -90,25 +90,34 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     return gameOptions.value?.shaderPack
   })
 
-  const { data: shaderPackStatus, mutate } = useSWRV('/shader', async () => {
-    console.log('update shader pack status')
+  const shaderPackStatus = ref(undefined as [string, string | undefined] | undefined)
+  const { refresh: mutate } = useRefreshable(async () => {
     const mod = shaderMod.value
+    const inst = instancePath.value
     if (mod?.id === 'optifine' || mod?.id === 'optifabric') {
-      return ['optifine', gameOptions.value?.shaderPack] as const
+      shaderPackStatus.value = ['optifine', gameOptions.value?.shaderPack] as const
+    } else if (mod?.id === 'iris') {
+      const options = await getIrisShaderOptions(inst)
+      if (inst === instancePath.value) {
+        shaderPackStatus.value = ['iris', options.shaderPack] as const
+      } else {
+        shaderPackStatus.value = undefined
+      }
+    } else if (mod?.id === 'oculus') {
+      const options = await getOculusShaderOptions(inst)
+      if (inst === instancePath.value) {
+        shaderPackStatus.value = ['oculus', options.shaderPack] as const
+      } else {
+        shaderPackStatus.value = undefined
+      }
+    } else {
+      shaderPackStatus.value = undefined
     }
-    if (mod?.id === 'iris') {
-      const options = await getIrisShaderOptions(instancePath.value)
-      return ['iris', options.shaderPack] as const
-    }
-    if (mod?.id === 'oculus') {
-      const options = await getOculusShaderOptions(instancePath.value)
-      return ['oculus', options.shaderPack] as const
-    }
-  }, { revalidateOnFocus: false })
-
-  watch([shaderMod, shaderPackPath], () => {
-    mutate()
   })
+
+  const debounced = debounce(mutate, 300)
+
+  watch([shaderMod, shaderPackPath], () => debounced())
 
   const shaderPack = computed({
     get() {

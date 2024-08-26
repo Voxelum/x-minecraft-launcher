@@ -1,14 +1,13 @@
-import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, RefreshUserOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
 import { YggdrasilError, YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
-import { Dispatcher } from 'undici'
-import { isSystemError } from '~/util/error'
+import { LauncherApp } from '~/app'
 import { Logger } from '~/logger'
+import { isSystemError } from '~/util/error'
 import { toRecord } from '~/util/object'
 import { isValidUrl } from '~/util/url'
 import { normalizeGameProfile, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
-import { LauncherApp } from '~/app'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(
@@ -114,7 +113,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
   }
 
-  async refresh(userProfile: UserProfile, signal?: AbortSignal, _ = false, force = false): Promise<UserProfile> {
+  async refresh(userProfile: UserProfile, signal: AbortSignal, { force }: RefreshUserOptions): Promise<UserProfile> {
     const client = this.getClient(userProfile.authority)
 
     const token = await this.storage.get(userProfile)

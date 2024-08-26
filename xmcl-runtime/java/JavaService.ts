@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
-import { chmod, ensureFile, readFile } from 'fs-extra'
+import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { GFW } from '~/gfw'
@@ -304,7 +304,13 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     } else {
       this.log(`Re-validate cached ${this.state.all.length} java locations.`)
       const javas: JavaRecord[] = []
+      const visited = new Set<number>()
       for (let i = 0; i < this.state.all.length; ++i) {
+        const ino = await stat(this.state.all[i].path).then(s => s.ino)
+        if (visited.has(ino)) {
+          continue
+        }
+        visited.add(ino)
         const result = await resolveJava(this.state.all[i].path)
         if (result) {
           javas.push({ ...result, valid: true, arch: this.state.all[i].arch ?? await getJavaArch(this, result.path) })

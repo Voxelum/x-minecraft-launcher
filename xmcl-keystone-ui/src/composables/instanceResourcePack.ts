@@ -1,11 +1,10 @@
+import { BuiltinImages } from '@/constant'
+import { ProjectFile } from '@/util/search'
 import { PackMeta } from '@xmcl/resourcepack'
 import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref } from 'vue'
-
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { ProjectFile } from '@/util/search'
-import { BuiltinImages } from '@/constant'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
   /**

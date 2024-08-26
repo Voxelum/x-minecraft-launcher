@@ -25,10 +25,10 @@ export class UnzipFileTask extends AbortableTask<void> {
     await ensureDir(dirname(destination))
     const fstat = await stat(destination).catch(() => undefined)
     if (fstat && entry.uncompressedSize === fstat.size) {
+      this._progress += entry.uncompressedSize
       return
     }
     const stream = await openEntryReadStream(zip, entry)
-    this._total += entry.uncompressedSize
     this.interpreter(stream, destination)
     this.update(0)
     stream.on('data', (chunk) => {
@@ -49,6 +49,14 @@ export class UnzipFileTask extends AbortableTask<void> {
         return acc
       }, {} as Record<string, Entry>)
       this.#zipInstances[zip] = [zipInstance, reocrd]
+    }
+
+    for (const { zipPath, entryName, destination, file } of queue) {
+      const [zip, entries] = this.#zipInstances[zipPath]
+      const entry = entries[entryName]
+      if (entry) {
+        this._total += entry.uncompressedSize
+      }
     }
 
     const allErrors: any[] = []

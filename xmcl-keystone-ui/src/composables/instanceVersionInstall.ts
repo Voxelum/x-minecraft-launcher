@@ -261,6 +261,13 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     return validJava ? undefined : resolved.javaVersion
   }
 
+  /**
+   * @param instance The instance path
+   * @param runtime The runtime version
+   * @param version The version id selected in instance json
+   * @param resolved The resolved version
+   * @param javas The java versions
+   */
   async function getInstallInstruction(instance: string, runtime: RuntimeVersions, version: string, resolved: ResolvedVersion | undefined, javas: JavaRecord[], abortSignal?: AbortSignal): Promise<InstanceInstallInstruction> {
     const result: InstanceInstallInstruction = {
       instance,

@@ -298,12 +298,14 @@ provide(kInstanceCreation, creation)
 const router = useRouter()
 const { fix } = injection(kInstanceVersionInstall)
 const onCreate = async () => {
-  await create((newPath) => {
+  const newPath = await create((newPath) => {
     path.value = newPath
     if (router.currentRoute.path !== '/') router.push('/')
     hide()
   })
-  await fix().catch(() => { })
+  if (newPath === path.value) {
+    await fix().catch(() => { })
+  }
 }
 
 // Stepper model
