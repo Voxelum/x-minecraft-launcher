@@ -407,9 +407,9 @@ instance:
   launchArguments: Launch Arguments Preview
   launchServer: Launch localhost server
   mcOptions: Minecraft Options
-  mcOptionsHint: Additional Minecraft launch arugments
+  mcOptionsHint: Additional Minecraft launch arguments
   name: Profile Name
-  nameHint: The name used to identify the game
+  nameHint: The name of the modpack
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
@@ -420,7 +420,7 @@ instance:
   showInstance: Show game folder
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
-  vmOptionsHint: Extra arguments passing to JVM
+  vmOptionsHint: Extra arguments to pass to the JVM
 instanceAge:
   older: Older
   threeDay: In Three Days
@@ -441,7 +441,7 @@ instanceSetting:
     Ely.by has a unique authlib replacement to display skin universally in any
     server.
   fastLaunch: Turbo Launch
-  fastLaunchHint: Ignore the user status and existed unfixed problems
+  fastLaunchHint: Ignore the user status and existing unfixed problems
   hideLauncher: Hide the launcher after launch
   icon: Pick an image
   showLog: Show Minecraft Log
@@ -726,16 +726,16 @@ modpack:
     General description for you modpack. Might be used for exporting as
     curseforge modpack.
   dropHint: Drop modpack zip to here to import
-  emitCurseforge: Emit Curseforge Modpack
-  emitMcbbs: Emit MCBBS Modpack
-  emitModrinth: Emit Modrinth Modpack
+  emitCurseforge: Export Curseforge Modpack
+  emitMcbbs: Export MCBBS Modpack
+  emitModrinth: Export Modrinth Modpack
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
   export: Export as Modpack
   general: General Information
   includeAssets: Include Assets
   includeLibraries: Include Libraries
-  includes: Files to includes
+  includes: Files to include
   modpackVersion: Modpack Version
   name: Modpack | Modpacks
   overrides: Overrides
@@ -1055,7 +1055,7 @@ resourcepack:
       Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: '{count} Resource Pack is enabled'
+  enable: '{count} resource packs enabled'
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
@@ -1337,11 +1337,11 @@ setup:
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
-  disabled: Disabled Shader Pack
+  disabled: Disabled Shader Packs
   dropHint: Import Shader Pack
   empty: No shader pack allocated
-  enable: Using {name} shader pack
-  enabled: Enabled Shader Pack
+  enable: Using {name}
+  enabled: Enabled Shader Packs
   manage: Manage Shader Packs
   name: Shader Pack
   searchHint: Search Shader Pack
