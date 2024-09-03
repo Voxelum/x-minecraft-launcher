@@ -43,7 +43,7 @@ HomeJavaIssueDialog:
   missingJava: Missing Java
   missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
   needDownloadHint: >-
-    Cannot find proper Java version in your computed. Recommend to download a
+    Cannot find proper Java version in your computer. Recommend to download a
     new one.
   optionAutoDownload:
     message: Launcher will download and install Java from Mojang's source for you.
@@ -51,12 +51,12 @@ HomeJavaIssueDialog:
   optionManualDownload: {}
   optionSelectJava:
     message: >-
-      Maybe the launcher doesn't found your Java. You can tell the launcher
+      Maybe the launcher doesn't find your Java. You can tell the launcher
       where it is.
     name: Select Java in your computer
   optionSwitch:
     disabled: There is no Java {version} found in database now!
-    message: Use existed Java {version} in you PC
+    message: Use existed Java {version} in your PC
     name: Switch to {version}
   recommendedVersionHint: The {version} recommend to use Java with range {range}。
   selectMatchedHint: Found proper local Java versions. You can choose these local Javas.
@@ -145,7 +145,7 @@ dataMigration:
     the launcher has access to both places!
   placeholder: Please click here to select directory
   setRootCause: >-
-    You will loose your data (Maps, Resource Packs, Mods) if you close the
+    You will lose your data (Maps, Resource Packs, Mods) if you close the
     Launcher at this process!
   setRootDescription: This will change the root data folder of this launcher and minecraft.
   setRootTitle: Set to a new storage location
@@ -188,9 +188,9 @@ diagnosis:
     name: Corrupted version %{version} json.
   incompatibleJava:
     message: You can ask Launcher to download it for you.
-    name: The java version {javaVersion} does not suitable to {version}!
+    name: The java version {javaVersion} is not suitable for {version}!
   instanceFiles:
-    description: The instance installation include {counts} files.
+    description: The instance installation includes {counts} files.
     title: Incompleted instance installation
   invalidJava:
     message: Click to use another java to launch.
@@ -240,17 +240,17 @@ error:
 errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
-    file format? Contact developers if this issue persisted.
+    file format? Contact developers if this issue persists.
   BadInstanceType: 'Not a valid instance: {type}'
   BodyTimeoutError: HTTP Body timeout
-  ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
+  ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
   DNSNotFoundError: DNS lookup error
   DatabaseNotOpened: >-
     Database is not opened! The launcher won't work properly! Please select a
     data directory the launcher can access. You can try to reset the data root
     in setting page.
-  DownloadAggregateError: Fail to download file.
+  DownloadAggregateError: Failed to download file.
   DownloadFileSystemError: >-
     Error during accessing the download file path. Please ensure the launcher
     has permission to write on it.
@@ -259,12 +259,12 @@ errors:
   SocketError: Server socket error
 eula:
   body: >-
-    By check the checkbox button, you are indicating your agreement to
+    By checking the checkbox button, you are indicating your agreement to
     Minecraft's {eula}.
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
-    or check your network. If this error persist, please send report to
+    or check your network. If this error persists, please send a report to
     developer team.
 existed: Existed
 exportModpackTarget:
@@ -294,10 +294,10 @@ feedback:
   githubOpenIssue: Github
   hint: >-
     Click the button to create the report and contact the developer team. The
-    report will contains your device info including operating system type,
+    report will contain your device info including operating system type,
     version, user name (in your os), etc.
   kook: Kook
-  kookDescription: Kook is an alter app for discord for Chinese Mainland users
+  kookDescription: Kook is an alternate app for discord for Chinese Mainland users
   name: Feedback
   qq: QQ Group
   qqDescription: >-
@@ -383,7 +383,7 @@ installOptifine:
   name: Install Optifine
 installResource:
   fail: Fail to install {file}
-  success: Install resource {file} successed
+  success: Install resource {file} succeeded
 installVersion:
   jar: Install Version Jar
   json: Install Version Json
@@ -393,7 +393,7 @@ instance:
   changeIcon: Change Icon
   current: Current Instance
   delete: Delete Game
-  deleteHint: The instance data will be moved from the disk forever. You sure to do this?
+  deleteHint: The instance data will be removed from the disk forever. Are you sure?
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
@@ -467,11 +467,11 @@ instances:
   add: Create Game
   addDescription: Create a new instance from scratch
   addMMCDescription: >-
-    Import existed MultiMC instance. You need to select the instance folder from
+    Import existing MultiMC instance. You need to select the instance folder from
     MultiMC.
   addManually: Manually Create
   addModrinthDescription: >-
-    Import existed Modrinth instance. You need to select the Modrinth instance
+    Import existing Modrinth instance. You need to select the Modrinth instance
     folder.
   addServer: Create from server
   addServerDescription: This will create a game directly launch to the server.
@@ -530,7 +530,7 @@ launchBlocked:
     title: Invalid Java Path
   launchJavaNoPermission:
     description: >-
-      The launcher don't have permission to execute the java <span
+      The launcher doesn't have permission to execute the java <span
       class="highlight"> {javaPath} </span>. Either change the permission of the
       java file or raise the permission of launcher.
     title: No permission to launch
@@ -544,7 +544,7 @@ launchBlocked:
     title: No version selected
   launchSpawnProcessFailed:
     description: >-
-      Please check your java, or give more permissions tothe launcher and retry.
+      Please check your java, or give more permissions to the launcher and retry.
       If this still doesn't work, please contact the developers.
     title: Fail to start game process
   launchUserStatusRefreshFailed:
@@ -572,9 +572,9 @@ launchFailed:
 launchStatus:
   assigningMemory: Assigning memory
   exit: Exit Game?
-  injectingAuthLib: Seting-up Thirdparty AuthLib
+  injectingAuthLib: Setting up Third-party AuthLib
   launching: Launching...
-  launchingSlow: Still launching... Starting graphic engine can be slow...
+  launchingSlow: Still launching... Starting graphics engine can be slow...
   refreshingUser: Refreshing User Token
   spawningProcess: Spawning Process
 launcherUpdate:
@@ -625,11 +625,11 @@ loginError:
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
-    Fail to exchange Minecraft token by XBox token. Please make sure you have
+    Fail to exchange Minecraft token by Xbox token. Please make sure you have
     Minecraft in Xbox, or retry.
   loginXboxFailed: >-
-    Fail to login Xbox by Microsoft token. Please make sure you have a
-    independent xbox account to your Microsoft account. Please try again.
+    Fail to login Xbox by Microsoft token. Please make sure you have an
+    independent Xbox account to your Microsoft account. Please try again.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   requireEmail: E-mail is required
   requirePassword: Password is required
@@ -659,7 +659,7 @@ mod:
   deletion: Delete Mod
   deletionHint: >-
     You will lose this mod & its metadata forever. Are you sure you want to
-    delete it? | You will lose these mod & these metadata forever. Are you sure
+    delete it? | You will lose these mods & their metadata forever. Are you sure
     you want to do that?
   deletionRestHint: And {rest} more Mods...
   denseView: Dense View
@@ -684,7 +684,7 @@ mod:
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   switchDefaultSource: Default Mod Source
-  toUpdate: '{count} to update'
+  toUpdate: '{count} updates'
 modInstall:
   archived: >-
     {name} has been archived. {name} will not receive any further updates unless
@@ -699,7 +699,7 @@ modInstall:
   installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
-  noVersionSupported: Mod only support Minecraft {supported}.
+  noVersionSupported: Mod only supports Minecraft {supported}.
   recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
   search: Search Result
   searchHint: Search and select project
@@ -717,7 +717,7 @@ modified:
   unsaved: Your modification is unsaved!
 modpack:
   author: Author Name
-  authorHint: This might be used to sign on exported modpack (Curseforge)
+  authorHint: This might be used to sign an exported modpack (Curseforge)
   delete:
     hint: This will delete the modpack {name} with its metadata. Are you sure?
     title: Delete the Modpack
@@ -769,7 +769,7 @@ modrinth:
     challenging: Challenging
     colored-lighting: Colored Lighting
     combat: Combat
-    core-shaders: Core-shaders
+    core-shaders: Core Shaders
     cursed: Cursed
     datapack: Data Pack
     decoration: Decoration
@@ -793,7 +793,7 @@ modrinth:
     kitchen-sink: Kitchen Sink
     library: Library
     lightweight: Lightweight
-    liteloader: Liteloader
+    liteloader: LiteLoader
     locale: Locale
     low: Low
     magic: Magic
@@ -909,31 +909,31 @@ multiplayer:
   connections: Connections
   copied: Copied!
   copy: Copy
-  copyGroupToFriendHint: Let your friends join group by this id
+  copyGroupToFriendHint: Let your friends join the group with this id
   copyLocalHint: >
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
     for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
-    send the same token to multiple peer!</span> <br> <span class="hint-text"
+    send the same token to multiple peers!</span> <br> <span class="hint-text"
     style="font-style: italic;">If you need to connect multiple peers, you need
     to create <span style="font-weight: bold; color: rgba(245, 158,
     11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
-  currentIpTitle: Detectd Public IP
+  currentIpTitle: Detected Public IP
   currentNatTitle: 'Current network (NAT):'
-  difficultyLevelHint: The level of difficulty to create a peer connection with other
+  difficultyLevelHint: The level of difficulty creating a connection
   disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
   disconnected: disconnected
   enterRemoteToken: Enter Remote Token
   enterRemoteTokenHint: >-
-    Once your peer enter your token, you need to enter his token to the text
+    Once your peer enters your token, you need to enter his token to the text
     area below. Click confirm to connect.
   exposedPortDescription: The port you exposed to other peers
   exposedPorts: Forwarded Ports
   gatheringIce: >
     "Please wait for the ICE server to collect enough information about your
-    network. If you are impatient and there are enough information, you can give
+    network. If you are impatient and there is enough information, you can give
     the current SDP to the other party in advance and click Next Please send the
     <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
     >Local Token</span> to your peer, you peer enter your token in <span
@@ -941,8 +941,8 @@ multiplayer:
     Connection </span> section. <br> The ICE server might need some time to
     collect your info to create <span class="v-chip v-chip--label v-size--small"
     style="text-font: bold">Local token</span>.<br> You do not need to wait
-    until the ICE status complete. If the token below remain unchanged, you can
-    copy it and send to you peer."
+    until the ICE status is complete. If the token below remains unchanged, you can
+    copy it and send it to your peer."
   groupId: Group Id
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
@@ -956,18 +956,18 @@ multiplayer:
   kernel: P2P Kernel
   kernelDescription: >-
     Use either native WebRTC or node-datachannel. Only switch this when your p2p
-    connection sometime crash the launcher window.
+    connection sometime crashes the launcher window.
   leaveGroup: Leave group
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
   networkInfo: Network Info
   next: Next
-  otherExposedPortDescription: The port forword by {user}
-  placeholder: Connect with other user to play Minecraft on LAN!
+  otherExposedPortDescription: The port forwarded by {user}
+  placeholder: Connect with other users to play Minecraft on LAN!
   previous: Previous
   receiveHint: >-
-    After the other party enters your token, your connection will create
+    After the other party enters your token, your connection will be created
     automatically. Now you can close the dialog.
   receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
@@ -975,8 +975,8 @@ multiplayer:
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
-  sharingNotificationBody: You can download or create instance from {name} shared config.
-  sharingNotificationTitle: A peer is sharing game config
+  sharingNotificationBody: You can download or create an instance from {name} shared config.
+  sharingNotificationTitle: A peer is sharing their game config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
@@ -1002,7 +1002,7 @@ next: Next
 ok: OK
 optifineVersion:
   disable: Disable Optifine
-  empty: Optifine not support Minecraft {version}
+  empty: Optifine does not support Minecraft {version}
 optional: Optional
 peerConnectionState:
   closed: Closed
@@ -1051,8 +1051,8 @@ resourcepack:
   defaultDescription: The default look and feel of Minecraft
   delete:
     content: >-
-      This will remove the resource pack file from disk, and we cannot redo it.
-      Are you sure to do this?
+      This will remove the resource pack file from disk, and we cannot undo it.
+      Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
   enable: '{count} Resource Pack is enabled'
@@ -1063,13 +1063,13 @@ resourcepack:
   independent: Instance use independent resource pack folder
   manage: Manage Resource Packs
   name: Resource Pack | Resource Packs
-  searchHint: Search reosurce pack
+  searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
-  shared: Instance use shared resource pack folder
-  showDirectory: Show resource packs directory
+  shared: Instance uses shared resource pack folder
+  showDirectory: Show resource pack directory
   showFile: Show resource pack in folder {file}
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
@@ -1094,8 +1094,8 @@ save:
   createNew: Create New World
   createdWorlds: You have {count} worlds
   deleteHint: >-
-    This operation cannot be revert. You will lose this save data forever. Are
-    you sure to delete this save?
+    This operation cannot be reverted. You will lose the save data forever. Are
+    you sure you want to delete this save?
   deleteTitle: Delete the Save
   detail: More Info
   dropHint: Drag save zip here to Import
@@ -1118,10 +1118,10 @@ save:
   useCurrent: Use current world
 saves: {}
 screenshots:
-  empty: You don't have screenshots
+  empty: You don't have any screenshots
   goto: Open Folder
   name: Screenshots
-  playRandom: Play randomly
+  playRandom: Shuffle
   playSequence: Play in order
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
@@ -1155,7 +1155,7 @@ serverStatus:
   timeout: §4Connect server timeout!
 setting:
   allowPrerelease: Download Prerelease
-  allowPrereleaseDescription: Prerelease might be instable
+  allowPrereleaseDescription: Prerelease might be unstable
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)
@@ -1164,7 +1164,7 @@ setting:
     The launcher will download and execute installer. If popup installer failed,
     please run it manually.
   autoDownload: Auto Download
-  autoDownloadDescription: Auto Download Update if it's Avaiable
+  autoDownloadDescription: Auto Download Update if it's Available
   autoInstallOnAppQuit: Autoinstall
   autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
   backgroundColorAbove: Show background color as overlay
@@ -1211,15 +1211,15 @@ setting:
     sideBarColor: Side Bar
     warningColor: Warning Color
   darkTheme: Theme
-  darkThemeDescription: Choose the dark or light theme
+  darkThemeDescription: Choose between dark or light theme
   developerMode: Developer Mode
-  developerModeDescription: Developer Mode is targeting to test your own written mod
+  developerModeDescription: Developer Mode is for testing your own mods
   disableTelemetry: Disable Telemetry
   disableTelemetryDescription: XMCL will collect the game launch and user login events.
   enableDedicatedGPUOptimization: Assign Dedicated GPU
   enableDedicatedGPUOptimizationDescription: This option will assign dedicated GPU to Minecraft process.
   enableDiscord: Enable Discord Presence
-  enableDiscordDescription: This will keep update your launcher status to discord
+  enableDiscordDescription: This will update Discord status to the launcher
   general: General
   githubRelease: Github Release
   globalSetting: Global Instance Setting
@@ -1231,7 +1231,7 @@ setting:
   layout:
     default: Default Layout
     focus: Focus Layout
-  layoutDescription: The launcher layout reprensenting different UI logic
+  layoutDescription: The layout of the launcher UI
   layoutTitle: Layout
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
@@ -1280,7 +1280,7 @@ setting:
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
     Use BMCLAPI to download Minecraft when you are in Chinese Mainland. (This
-    won't affect if you're not in Chinese Mainland)
+    won't affect you if you're not in Chinese Mainland)
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
@@ -1305,11 +1305,11 @@ setup:
     name: Set Data Directory
   defaultLayoutDescription: >-
     The default layout is trying to enhance the game "instance" concept. It
-    looks like apps like Discord. It's also inspired by other game launcher app
+    looks like apps like Discord. It's also inspired by other game launcher apps
     like Steam, etc.
   defaultPath: Default Path
   error:
-    badDataRoot: Invalid directory for launcher data! Please try other directory!
+    badDataRoot: Invalid directory for launcher data! Please try another directory!
     exists: >-
       Selected directory is not empty. It's okay but please make sure you backup
       your data.
@@ -1318,13 +1318,13 @@ setup:
       another one.
     nonDictionary: Selected path is a file! Please select a directory!
   focusLayoutDescription: >-
-    The focus layout is the legacy layout of Minecraft Launcher. It is designed
+    The focus layout is the legacy layout of the Minecraft Launcher. It is designed
     to be used with a single instance or few instances.
   game:
     description: >-
       Choose existing game directory (.minecraft) to import existing resources.
       So you can quickly identify the mods, resource packs, etc.
-    name: Import Existed Game
+    name: Import Existing Game
   locale:
     description: >-
       Select your preferred language if we have it! If you don't see your native
@@ -1336,7 +1336,7 @@ setup:
   title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
 shaderPack:
   deletion: Delete Shader Pack
-  deletionHint: This will delete the shader pack file {path} and cannot reverted.
+  deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Pack
   dropHint: Import Shader Pack
   empty: No shader pack allocated
@@ -1375,7 +1375,7 @@ task:
   empty: No Running Tasks
   failed: Failed
   manager: Task Manager
-  nTaskRunning: '{count} tasks is running'
+  nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
 theme:
@@ -1395,38 +1395,38 @@ turnRegion:
   liaoning: Liaoning, China
   po: Poland
 tutorial:
-  feedbackDescription: If you encounter any problem, please click this button to send feedback!
+  feedbackDescription: If you encounter any problems, please click this button to send feedback!
   hideNewsHeaderDescription: >-
-    You can see the News showacse on the left. Clicking this button can hide
-    this show case.
+    You can see the News showcase on the left. Clicking this button can hide
+    this showcase.
   instance:
-    iconDescription: Click to change icon.`
+    iconDescription: Click to change icon.
     iconTitle: Instance icon
-    javaDescription: Choose or switch a java version.
+    javaDescription: Choose or switch java version.
     javaImportDescription: Import java from local storage.
     javaImportTitle: Import java
     javaTitle: Java list
   instanceAddDescription: >-
-    Click this button to import existed Minecraft or create a new one from
+    Click this button to import existing Minecraft instance or create a new one from
     scratch or modpack.
   instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
     defaultSourceDescription: >-
-      You can choose the source of mods detail here. There are the mods
+      You can choose the source of mods details here. There are the mods
       published to both Modrinth and Curseforge. If you want to switch between
-      these two content provider. You can change the value here.
+      these two content providers, you can change the value here.
     defaultSourceTitle: Select Mod Content Source
     detailDescription: >-
-      When you select an item on the left. You will see the detail of the mod.
+      When you select an item on the left. You will see the details of the mod.
       The content can come from Modrinth, Curseforge or parsed mod's content.
     detailTitle: Mod Detail
     listDescription: >-
       We will display installed mods when you don't have any input. You will see
-      the searched mods once you input have keyword or category selected.
-    listTitle: Installed or Searched Mod
+      the searched mods once your input has a keyword or category selected.
+    listTitle: Installed or Search Mod
     searchDescription: >-
-      You could search mods from Modrinth, Curseforge or your local cache by
+      You could search mods from Modrinth, Curseforge or your local cache with
       this search box.
     searchTitle: Search Mods
   multiplayer:
@@ -1436,24 +1436,24 @@ tutorial:
       You can create or join a group with other players. The launcher will try
       to create P2P connections between you and your friends according to the
       group. You can input the group name given by your friends. Or you can
-      create an unique name from your own.
+      create an unique name.
     groupTitle: Join a group
     joinDescription: >-
-      Once you input a group name. You can click this button to join or create
+      Once you input a group name, you can click this button to join or create
       the group. If the group name is empty, the launcher will generate a name
       for you.
     manualDescription: >-
-      If you or your friend cannot connect to group. You can try to manually
+      If you or your friend cannot connect to the group, you can try to manually
       exchange the token by clicking manually connect. If that also failed, it
-      might be the internet issue.
+      might be an internet issue.
   recentPlayDescription: >-
-    The created games will listed here. You can switch the views here to also
+    The created games will be listed here. You can switch the views here to also
     see the installed versions and downloaded modpacks.
   storePoupularModpackDescription: >-
     You will see the most popular modpacks in Curseforge and Modrinth in this
     section.
   storeSearchCategoryDescription: You can also toggle the categories or filters here.
-  storeSearchDescription: You can search Modpack by inputing in this text box. Press Enter to search.
+  storeSearchDescription: You can search Modpacks by inputting in this text box. Press Enter to search.
   storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:
@@ -1493,7 +1493,7 @@ user:
   tokenValidUntil: Token Valid Until
 userAccount:
   add: Add Account
-  removeDescription: This will wipe out all the info of this account. Are you sure?
+  removeDescription: This will remove all info for this account. Are you sure?
   removeTitle: Remove Account
 userCape:
   changeTitle: Change your cape
@@ -1503,11 +1503,11 @@ userCape:
     you currently own:
   noCape: No Cape
 userService:
-  add: Add More Service
+  add: Add More Services
   authLibInjector: Follow the auth-lib injector suggestion
   baseUrlHint: The base URL of your custom service
   title: Third-party User Services
-  validateHint: Used to check if user's token still valid
+  validateHint: Used to check if user's token is still valid
 userServices:
   microsoft:
     account: Microsoft Account
