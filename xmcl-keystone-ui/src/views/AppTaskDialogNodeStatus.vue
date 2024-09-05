@@ -49,7 +49,7 @@
 </template>
 
 <script lang=ts setup>
-import { kTheme, useTheme } from '@/composables/theme'
+import { kTheme } from '@/composables/theme'
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
