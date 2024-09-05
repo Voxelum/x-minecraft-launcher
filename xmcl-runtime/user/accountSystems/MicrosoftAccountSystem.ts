@@ -43,6 +43,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
   async refresh(user: UserProfile, signal: AbortSignal, { silent, force, validate }: RefreshUserOptions): Promise<UserProfile> {
     const diff = Date.now() - user.expiredAt
+    this.logger.log(`Try to refresh Microsoft account ${user.username}(${user.id}) token. Expired at ${user.expiredAt}, validate: ${validate}, force: ${force}, diff: ${diff}, silent: ${silent}`)
     const isExpired = async () => {
       if (!validate) return false
       const userTokenStorage = await this.getUserTokenStorage()
@@ -59,6 +60,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
           'Content-Type': 'application/json',
         },
       })
+      this.logger.log(`Validate Microsoft account ${user.username}(${user.id}) token. Response: ${response.status}`)
       return !response.ok
     }
     if (force || !user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated || await isExpired()) {
