@@ -306,7 +306,7 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
     }
   }
 
-  if (!isMicrosoft.value) {
+  if (!isMicrosoft.value && !isPasswordDisabled.value) {
     for (const rule of passwordRules) {
       const err = rule(data.password)
       if (err !== true) {
