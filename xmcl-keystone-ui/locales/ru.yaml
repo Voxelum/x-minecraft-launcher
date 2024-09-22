@@ -3,7 +3,7 @@ AppAddInstanceDialog:
     Обнаружено несколько профилей запуска. Пожалуйста, выберите один для
     импорта.
   configTitle: Конфигурация
-  createTitle: Создать экземпляр
+  createTitle: Создать игру
   downloadedNotification: Загружен модпак {name}. Хотите ли вы создать экземпляр для него?
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
@@ -290,6 +290,7 @@ duration:
   name: Удалить {name}
   'no': Нет
   second: '{duration} секунда | {duration} секунд'
+  'yes': Удалить
 edit: Изменить
 enable: Включить
 env:
@@ -976,7 +977,7 @@ modrinth:
 modrinthCard:
   currentVersion: Текущая версия
   projectHint: >-
-    Цей екземпляр створено за допомогою модпакету Modrinth з <code
+    Этот экземпляр создан с помощью модпакета Modrinth из <code
     class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{title}</code>
     (project id:
           <code class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{id}</code>)
@@ -1509,6 +1510,7 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Хост-кандидат

@@ -1,0 +1,140 @@
+AppAddInstanceDialog:
+  choiceTitle: 複数の起動プロファイルが検出されました。インポートするものを選択してください。
+  configTitle: 構成
+  createTitle: ゲームを作る
+  downloadedNotification: modpack{name}をダウンロードしました。インスタンスを作成しますか？
+  serverTitle: サーバーアドレスを入力
+AppShareInstanceDialog:
+  alterDownloadDescription: 現在のインスタンスを混乱させたくない場合。ピアのコンフィグから新しいインスタンスを作成することもできます。
+  baseInfo: 基本設定
+  cancelShare: シェアを取り消す
+  description: プロフィールを共有した後、他の場所はあなたのPCを介してこれらのファイルをダウンロードすることができます。
+  downloadDescription: 同業者が提供したファイルを確認してください。ダウンロードしたいファイルを選択してください。現在のインスタンス{name}に配置されます。
+  downloadTitle: 他のピアからファイルをダウンロードする
+  filesToDownload: ダウンロードするファイルを選択する
+  filesToShare: 共有するファイルを選択する
+  share: シェア
+  shareTitle: 対局ファイルを他のプレーヤーと共有する
+BaseSettingGeneral:
+  title: 一般
+FeedTheBeast:
+  search: FTBで検索
+tutorial:
+  instanceSelectDescription: このボタンをクリックすると、試合を選択したりニュースを読んだりするページに移動します。
+  launchDescription: ゲームをインストールまたは起動するには、このボタンをクリックします。
+  mod:
+    defaultSourceDescription: >-
+      ここでは、MODの詳細なソースを選択することができます。ModrinthとCurseforgeの両方に公開されているMODがあります。この2つのコンテンツプロバイダを切り替えたい場合。ここで値を変更できます。
+    defaultSourceTitle: MODコンテンツソースの選択
+    detailDescription: >-
+      左の項目を選択すると
+      MODの詳細が表示されます。コンテンツはModrinth、Curseforge、または解析されたMODのコンテンツから来ることができます。
+    detailTitle: MOD詳細
+    listDescription: 何も入力されていない場合は、インストールされているMODが表示されます。キーワードやカテゴリを入力すると、検索されたMODが表示されます。
+    listTitle: インストールまたは検索されたMOD
+    searchDescription: Modrinth、Curseforge、またはローカルキャッシュからMODを検索できます。
+    searchTitle: 検索モッズ
+  multiplayer:
+    contentDescription: あなたと仲間のつながりは、ここにリストアップされる。
+    contentTitle: '@:multiplayer.connections'
+    groupDescription: >-
+      他のプレイヤーとグループを作ったり、参加したりすることができます。ランチャーはグループに従って、あなたとフレンドの間にP2P接続を作成しようとします。フレンドがつけたグループ名を入力することができます。または、自分でユニークな名前を作ることもできます。
+    groupTitle: グループに参加する
+    joinDescription: グループ名を入力します。このボタンをクリックすると、グループに参加または作成することができます。グループ名が空の場合、ランチャーが名前を生成します。
+    manualDescription: >-
+      あなたやあなたの友人がグループに接続できない場合。手動接続をクリックして、手動でトークンを交換してみてください。それも失敗した場合は、インターネットの問題かもしれません。
+  recentPlayDescription: 作成されたゲームはここにリストアップされます。インストールされたバージョンやダウンロードされたMODパックもここで表示を切り替えることができます。
+  storePoupularModpackDescription: >-
+    カテゴリーやフィルタを切り替えることもできます。aこのセクションでは、CurseforgeとModrinthで最も人気のあるModpackを見ることができます。
+  storeSearchCategoryDescription: ここでカテゴリーやフィルターを切り替えることもできる。
+  storeSearchDescription: このテキストボックスに入力すると、Modpackを検索できます。検索するにはEnterキーを押してください。
+  storeSearchResultDescription: すべての検索結果がここにリストされます。
+  userAccountDescription: Minecraftアカウントを追加または管理するには、このアイコンをクリックします。
+universalDrop:
+  enableModsAfterImport: インポート後にMODを有効にする
+  start: インポート開始
+  title: ここにファイルをドロップしてインポートする
+  unknownResource: 不明
+update:
+  goOfficialWebDownload: 公式サイトで再ダウンロード
+upstream:
+  downgrade: 格下げ
+  missingModpackMetadata: |-
+    古いmodpackのメタデータが見つかりません。
+    アップグレードは可能ですが、結果が間違っている可能性があります。インスタンスファイルをバックアップしてください。
+  onlyShowCurrentVersion: 現在のMinecraftバージョンのみを表示する
+  update: 更新
+user:
+  accessToken: アクセス・トークン
+  authMode: Auth Service
+  authService: 認可サービス
+  birth: 登録誕生日
+  challenges: 本人確認のため、以下の質問にお答えください。
+  email: メールアドレス
+  forgetChallenges: 私はこれらの質問を忘れてしまった。
+  id: ユーザーID
+  info: ユーザー情報
+  insecureClient: クライアントが安全ではありません！スキンをアップロードするには、身元を確認してください！
+  name: ユーザー名
+  nameHint: 試合中の名前表示
+  profile: プロフィール
+  refreshAccount: アカウントの更新
+  refreshSkin: リフレッシュ・スキン
+  submitChallenges: 回答を投稿する
+  tokenExpired: 期限切れ
+  tokenValidUntil: トークン有効期限
+userAccount:
+  add: アカウントの追加
+  removeDescription: これでこのアカウントの情報はすべて消去されます。本当ですか？
+  removeTitle: アカウント削除
+userCape:
+  changeTitle: マントを変える
+  description: >-
+    ケープとは、さまざまなイベントやキャンペーン、その他ハッピーな出来事を通してプレイヤーがアンロックできる特別な報酬のこと。ここでは、現在所持しているケープから選ぶことができます：
+  noCape: ケープなし
+userService:
+  add: サービスの追加
+  authLibInjector: auth-libインジェクタの提案に従う。
+  baseUrlHint: カスタムサービスのベースURL
+  title: サードパーティ・ユーザー・サービス
+  validateHint: ユーザーのトークンがまだ有効かどうかをチェックするために使用される。
+userServices:
+  microsoft:
+    account: Microsoftアカウント
+    deviceCode: デバイスコード
+    deviceCodeHint: ログインをクリックすると、デバイスコードが生成されます。
+    fastLogin: 高速ログイン
+    name: Microsoft
+    password: ブラウザでパスワードを入力
+    useDeviceCode: デバイスコードによるログイン
+  mojang:
+    account: メールアドレス
+    name: Mojang
+    password: パスワード
+  offline:
+    account: ユーザー名
+    name: オフライン
+    password: パスワードなし
+    uuid: ユーザーUUID（オプション）
+userSkin:
+  import: インポートスキン
+  importFile: ファイルから開く
+  importLink: リンクから開く
+  placeUrlHere: インポートするスキンのURLをここに置く
+  reset: リセット
+  save: セーブ
+  saveTitle: スキンをディスクに保存
+  skinType: 肌のタイプ
+  upload: スキンのアップロード
+  urlNotEmpty: スキンURLを空にすることはできない
+  urlNotValid: スキンURLが無効です
+  useSlim: スリムモデルを使用
+version:
+  name: バージョン｜バージョン
+  notInstalled: バージョンがインストールされていない
+versionType:
+  alpha: アルファ
+  beta: Beta
+  name: ステータス
+  release: リリース
+'yes': はい

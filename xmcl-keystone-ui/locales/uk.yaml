@@ -2,6 +2,8 @@ AppAddInstanceDialog:
   choiceTitle: |-
     Виявлено кілька профілів запуску. 
     Виберіть один для імпорту.
+  configTitle: Конфігурація
+  createTitle: Створіть гру
   downloadedNotification: Модпак {name} встановлен. Зробити для нього екземпляр?
   serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
@@ -102,6 +104,7 @@ browseApp:
   default: ЗА ЗАМОВЧУВАННЯМ
   delete: Видалити
   launch: Запустити та встановити за замовчуванням
+browseApps: Перегляд користувацького інтерфейсу пускової установки
 cancel: Відміна
 checkUpdate:
   name: Перевірити оновлення
@@ -134,21 +137,56 @@ curseforgeCard: {}
 curseforgeCategory:
   API and Library: API и бібліотеки
   Addons: Addons
+  Adventure: Авентура
   Adventure and RPG: Пригоди та RPG
   Animated: Анімація
+  Armor, Tools, and Weapons: Обладунки, інструменти та зброя
+  Armor， Tools， and Weapons: Обладунки, інструменти та зброя
+  Combat / PvP: Змагання/PVP
   Cosmetic: Зовнішній вид/декор
+  Creation: Творчий режим
+  Data Packs: Пакет даних
+  Education: Освіта
+  Exploration: Розвідка
+  Extra Large: Великий розмір
+  FTB Official Pack: Офіційний пакет FTB
   Fabric: Fabric
   FancyMenu: FancyMenu
+  Font Packs: Шрифти
+  Food: Їжа
+  Game Map: Ігрові карти
+  Hardcore: Хардкор
   MCreator: MCreator
+  Magic: Магія
+  Map Based: На основі карти
+  Map and Information: Карти та інформація
+  Medieval: Середньовіччя
+  Mini Game: Міні-ігри
+  Miscellaneous: Різне
+  Mod Support: Підтримка модів
   Modded World: Мод для мирів
   Modern: Сучасний
+  Multiplayer: Мультиплеєр
+  Parkour: Паркур
+  Photo Realistic: Реалістична фотографія
+  Puzzle: Пазли
   QoL: QoL
   Quests: Квести
   Redstone: Redstone
+  Sci-Fi: Наукова фантастика
+  Server Utility: Серверний інструмент
   Skyblock: SkyBlock
   Small / Light: Трішки
   Steampunk: Steampunk
+  Storage: Зберігання
+  Survival: Виживання
+  Tech: Технологія
+  Technology: Технологія
+  Traditional: Традиційний
+  Twitch Integration: Інтеграція з Twitch
+  Utility & QoL: Утиліта і Qol
   Vanilla+: Ванила+
+  World Gen: Генератор світу
 dataMigration:
   apply: Застосувати налаштування
   directoryCriteriaHint: Переконайтеся, що новий каталог є ПУСТИМ каталогом!
@@ -244,8 +282,10 @@ duration:
   day: '{duration} день | {duration} дні'
   hour: '{duration} година | {duration} години'
   minute: '{duration} хвилина | {duration} хвилини'
+  name: Видалити {name}
   'no': Ні
   second: '{duration} секунда | {duration} секунди'
+  'yes': Видалити
 edit: Редагувати
 enable: Увімкнути
 env:
@@ -260,6 +300,7 @@ errors:
     Не вдається розібрати jar-файл інсталятора forge. Можливо, у forge новий
     формат файлу інсталятора формат файлу інсталятора? Зверніться до
     розробників, якщо ця проблема не зникла.
+  BadInstanceType: 'Неприпустимий екземпляр: {type}'
   BodyTimeoutError: Сплив час очікування HTTP Body
   ChecksumNotMatchError: Контрольна сума не збігається! Має бути {expect}. Зараз {actual}.
   ConnectTimeoutError: Вийшов час очікування на підключення до сервера.
@@ -303,9 +344,16 @@ feedback:
   discord: Discord
   discordDescription: Приєднатися до каналу Discord
   discordJoin: Приєднатися
+  generateReport: Створити звіт
+  generateSaveAs: Зберегти звіт
   github: Github Issue
   githubDescription: Відкрийте GitHub Issue, щоб розповісти про свою думку
   githubOpenIssue: Github
+  hint: >-
+    Натисніть на кнопку, щоб створити звіт і зв'язатися з командою розробників.
+    Звіт міститиме інформацію про ваш пристрій, включно з типом операційної
+    системи, версією, ім'ям користувача (в операційній системі) та іншими
+    даними.
   kook: Kook
   kookDescription: >-
     Kook - це альтернативний додаток для користувачів discord на материковій
@@ -427,6 +475,7 @@ instance:
   neverPlayed: Ніколи не грав
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
+  playtime: Час гри
   prependCommand: Команда «Початок».
   prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Ім'я обов'язкове
@@ -530,6 +579,11 @@ launch:
   launch: Почати
 launchBlocked:
   ignore: Примусовий запуск
+  launchBadVersion:
+    description: >-
+      Файл версії {version} пошкоджений або відсутній. Можливо, вам потрібно
+      перевстановити цю версію?
+    title: Погана версія JSON
   launchGeneralException:
     description: Деякі помилки призводять до невдалого запуску.
     title: Запуск не вдався
@@ -581,6 +635,7 @@ launchBlocked:
 launchFailed:
   crash: Гра вилетіла!
   description: Звіту про збій немає. Це логи помилок та останній журнал.
+  failedToLaunch: Запуск не відбувся
   latestLog: Останні логі
   title: Гра завершилася з аномальним кодом
 launchStatus:
@@ -590,7 +645,7 @@ launchStatus:
   launching: Запуск...
   launchingSlow: Все ще запускається... Запуск графічного двигуна може бути повільним.
   refreshingUser: Оновлення маркера користувача
-  spawningProcess: ''
+  spawningProcess: Запуск процесу
 launcherUpdate:
   alreadyLatest: Остання версія
   installAndQuit: Перезапустіть, щоб встановити
@@ -681,6 +736,7 @@ mod:
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
   groupInstalled: Групові встановлені моди
+  hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
   manage: Управління модами
@@ -691,6 +747,7 @@ mod:
   openLink: Відкрити посилання на мод {url}
   search: Пошук модифікацій
   searchOnCurseforge: Исать на curseforge {name}
+  searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Пошук {name} на Modrinth
   showDirectory: Показати каталог модифікацій
   showFile: Показувати шлях до моду {file}
@@ -723,6 +780,7 @@ modInstall:
   upgrade: Оновлення модифікацій
 modSearchType:
   all: Всі
+  explore: Дослідити ринок
   installed: Встановленно
   local: Кеш на диску
 modified:
@@ -934,6 +992,7 @@ multiplayer:
      відправляти той самий токен кільком вузлам!</span> <br> <span class="hint-text" style="font-style: italic;">Якщо вам потрібно підключити декілька
      товаришів, вам потрібно створити<span style="font-weight: bold; color: rgba(245,
     158, 11)">кілька</span> з'єднань.</span>"
+  creaLocalToken: Створити локальний токен
   createLocalToken: Створити локальний токен
   currentIpTitle: Виявлено загальнодоступну IP-адресу
   currentNatTitle: 'Поточна мережа (NAT):'
@@ -1069,8 +1128,32 @@ refreshResource: Оновити ресурси
 remove: Видалити
 resourcepack:
   available: Доступно
+  compatible: Формат {format} сумісний з {version}
+  defaultDescription: Вигляд та інтерфейс Minecraft за замовчуванням
+  delete:
+    content: >-
+      Це призведе до видалення файлу пакунка ресурсів з диска, і ми не зможемо
+      його відновити. Ви впевнені, що хочете це зробити?
+    title: Видалити пакет ресурсів
+  dropHint: Перетягніть сюди папку/zip-архів із набором ресурсів для імпорту.
+  enable: 'Всего наборов ресурсов выбрано: {count}'
+  import: Пакет ресурсів для імпорту
+  incompatible: >-
+    Несумісний пакет ресурсів format({format}). Fitin {accept}. Поточний
+    {actual}.
+  independent: Екземпляр використовує незалежну папку пакету ресурсів
+  manage: Керування пакетами ресурсів
+  name: Набір ресурсів | Набори ресурсів
+  searchHint: Пошук набору ресурсів
+  searchOnCurseforge: Шукайте {name} в CurseForge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: Пошук та вибір пакету ресурсів
+  selected: Вибрані пакети ресурсів
   shared: Екземпляр використовує спільну папку пакета ресурсів
+  showDirectory: Показати каталог пакунків ресурсів
+  showFile: Show resource pack in folder {file}
+  showInCurseforge: Показати {name} у curseforge
+  unselected: Невибрані пакети ресурсів
 save:
   cheat: Обман
   copy:
@@ -1233,6 +1316,8 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
   layoutTitle: Макет
+  linuxEnableDedicatedGPUOptimization: Призначення виділеного графічного процесора
+  linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Рідний рядок заголовка
   linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
   location: Розташування сховища
@@ -1271,8 +1356,10 @@ setting:
     dark: Темна тема
     light: Світла тема
     system: Використати тему системи
+  themeExport: Тема експорту
   themeFont: Шрифт
   themeFontDescription: Змініть шрифт панелі запуску.
+  themeImport: Тема імпорту
   themeResetFont: Скинути шрифт
   themeSelectFont: Виберіть Шрифт
   themeShare: Поділитися темою
@@ -1292,6 +1379,12 @@ settingLabel:
   local: Локальна
   localHint: Ця установка змінюється поточним екземпляром
 setup:
+  account:
+    description: >-
+      Увійдіть у свій ігровий акаунт. Якщо у вас його немає, ви можете
+      пропустити цей крок.
+    name: Додати ігровий акаунт
+    skip: Поки що пропустити
   appearance:
     name: '@:setting.appearance'
   dataRoot:
@@ -1348,13 +1441,23 @@ shaderPack:
   deletion: Видалити шейдер
   deletionHint: Це видалити файл шейдера {path} і неможливо буде відновити його.
   disabled: Вимкнений пакет шейдерів
+  dropHint: Імпорт пакета шейдерів
   empty: Шейдер не виділено
   enable: Використання шейдера {name}
   enabled: Увімкнений пакет шейдерів
   manage: Управління шейдерами
   name: Шейдер
+  searchHint: Пошук пакета шейдерів
+  selectSearchHint: Знайдіть і виберіть Shader Pack
+  showDirectory: Відкрити папку з наборами шейдерів
   showFile: Відкрити цей шейдер у папці
 shared: Екземпляр використовує спільну папку пакета ресурсів
+store:
+  explore: Дослідити
+  latestMinecraft: Остання версія Minecraft
+  name: Ринок модпаків
+  popular: Популярні збірки модів
+  recentUpdated: Нещодавно оновлено
 summery: Літній
 tag:
   create: Створити тег
@@ -1362,6 +1465,8 @@ tag:
   newTag: Новий тег
 task:
   available: Доступно
+  cancelled: Скасовано
+  clear: Очистити виконані завдання
   compatible: Формат {format} сумісний з {version}
   connection:
     connected: Підключено
@@ -1379,23 +1484,30 @@ task:
        Ви впевнені, що можете його відновити?
     title: Видалити текстурпак
   dropHint: Перетягніть сюди папку/zip текстури для імпорту.
+  empty: Немає запущених завдань
   enable: 'Включено текстурпаків: {count}'
+  failed: Не вдалося виконати
   import: Імпорт текстурпак
   incompatible: >-
     Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
     {actual}.
   manage: Управління текстурпаками
+  manager: Диспетчер завдань
+  nTaskRunning: виконується {count} завдань
   name: Текстурпак | Текстурпаки
+  pause: Пауза
   searchOnCurseforge: Шукати {name} на curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} в папці
   showInCurseforge: Показати {name} на curseforge
   unselected: Невибрані текстурпаки
+  viewBackgroundMusic: Дивіться музику
 theme:
   selectImage: Виберіть Зображення
   selectMusic: Виберіть Музика
   selectVideo: Виберіть Відео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Кандидат Host
@@ -1404,12 +1516,22 @@ transportType:
   srflx: Кандидат Server Reflexive
 turnRegion:
   fr: Франція
+  guangzhou: Гуанчжоу, Китай
+  hk: Гонконг
+  liaoning: Ляонін, Китай
   po: Польща
 tutorial:
   feedbackDescription: Якщо у вас виникли проблеми, натисніть цю кнопку, щоб надіслати відгук!
   hideNewsHeaderDescription: |-
     Ви можете побачити новини ліворуч. 
     Натиснувши цю кнопку, можна приховати цю вітрину.
+  instance:
+    iconDescription: Натисніть, щоб змінити іконку.
+    iconTitle: Іконка екземпляра
+    javaDescription: Виберіть або змініть версію Java.
+    javaImportDescription: Імпортувати Java з локального сховища.
+    javaImportTitle: Імпорт Java
+    javaTitle: Список Java
   instanceAddDescription: >-
     Натисніть цю кнопку, щоб імпортувати існуючий Minecraft або створити новий з
     нуля або модпак.
@@ -1493,6 +1615,8 @@ upstream:
     Метадані старого модпакету не знайдено. Ви все ще можете оновити систему,
     але результат може бути неправильним. Будь ласка, створіть резервну копію
     файли екземплярів.         
+  onlyShowCurrentVersion: Показувати тільки поточну версію Minecraft
+  update: Оновити
 user:
   accessToken: Токен доступу
   authMode: Служба авторизації

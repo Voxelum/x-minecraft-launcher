@@ -57,5 +57,9 @@
         "curseforgeCategory.Vanilla+",
         "installForge.downloadInstaller",
         "dependencies.embedded"
+    ],
+    "i18n-ally.sourceLanguage": "ru",
+    "githubPullRequests.ignoredPullRequestBranches": [
+        "master"
     ]
 }
