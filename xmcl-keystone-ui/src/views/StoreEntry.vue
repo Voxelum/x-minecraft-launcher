@@ -18,7 +18,6 @@
         id="search-text-field"
         ref="searchTextField"
         v-model="keyword"
-        background-color="secondary"
         color="green"
         class="rounded-xl search-field pr-4"
         append-icon="search"
