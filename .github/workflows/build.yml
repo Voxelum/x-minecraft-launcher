@@ -57,7 +57,7 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        PUBLISHER: CN=Test certificate for 'X Minecraft Launcher [OSS]'
+        PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
     - name: Upload Source Maps
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4

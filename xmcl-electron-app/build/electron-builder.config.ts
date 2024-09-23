@@ -38,7 +38,7 @@ export const config = {
     applicationId: 'xmcl',
     identityName: 'xmcl',
     backgroundColor: 'transparent',
-    publisher: process.env.PUBLISHER ?? "CN=Test certificate for 'X Minecraft Launcher [OSS]'",
+    publisher: process.env.PUBLISHER,
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
   },
