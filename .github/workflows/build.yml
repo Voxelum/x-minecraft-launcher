@@ -71,7 +71,7 @@ jobs:
         path: |
           xmcl-electron-app/build/output/
     - name: Sign Build
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       uses: signpath/github-action-submit-signing-request@v0.4
       with:
         api-token: ${{ secrets.CODE_SIGN_TOKEN }}
@@ -82,11 +82,12 @@ jobs:
         artifact-configuration-slug: build
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
-    - name: Update Sha256
-      if: ${{ runner.os == 'Windows' }}
+    - name: Update Signed Sha256
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       run: |
         pnpm postsign
     - name: Upload Signed Build
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ runner.os }}
