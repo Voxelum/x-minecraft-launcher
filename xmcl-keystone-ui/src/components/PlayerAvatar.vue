@@ -34,7 +34,9 @@ watch(() => props.src, (s) => {
     dataUrlSrc.value = v
   }, () => {
     steveSrc?.then((v) => {
-      dataUrlSrc.value = v
+      if (!dataUrlSrc.value) {
+        dataUrlSrc.value = v
+      }
     })
   })
 }, { immediate: true })

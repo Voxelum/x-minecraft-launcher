@@ -8,7 +8,7 @@ export const pluginGFW: LauncherAppPlugin = (app) => {
     const taobao = new Client('https://npm.taobao.org')
     const google = new Client('https://www.google.com')
     const yandex = new Client('https://www.yandex.com')
-    const networkEnv = await Promise.race([
+    const networkEnv = await Promise.any([
       taobao.request({
         method: 'HEAD',
         path: '/',

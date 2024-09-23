@@ -32,7 +32,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     }
     app.registry.register(kPeerFacade, {
       queryGameProfile,
-      createDownloadTask(url: string, destination: string, sha1: string, size?: number) {
+      getHttpDownloadUrl(url) {
         const peerUrl = new URL(url)
         if (peerUrl.protocol !== 'peer:') {
           throw new Error(`Bad url: ${url}`)
@@ -40,15 +40,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
         const realUrl = `http://localhost:${port}/files/${peerUrl.host}?path=${peerUrl.pathname}`
 
-        return new DownloadTask({
-          url: realUrl,
-          destination,
-          skipHead: true,
-          validator: {
-            algorithm: 'sha1',
-            hash: sha1,
-          },
-        })
+        return realUrl
       },
     })
   }
@@ -59,5 +51,16 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   async shareInstance(options: ShareInstanceOptions): Promise<void> {
     this.app.controller.broadcast('peer-instance-shared', options)
+  }
+
+  async exposePort(port: number, protocol: number): Promise<void> {
+    if (this.state.exposedPorts.some(([p]) => p === port)) {
+      return
+    }
+    this.state.exposedPortsSet([...this.state.exposedPorts, [port, protocol]])
+  }
+
+  async unexposePort(port: number): Promise<void> {
+    this.state.exposedPortsSet(this.state.exposedPorts.filter(([p]) => p !== port))
   }
 }

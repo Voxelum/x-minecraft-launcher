@@ -2,6 +2,7 @@
   <div
     ref="container"
     class="w-full overflow-auto"
+    :class="{ 'pinned': pinned }"
   >
     <v-progress-linear
       class="absolute left-0 top-0 z-10 m-0 p-0"
@@ -9,13 +10,16 @@
       height="3"
       :indeterminate="true"
     />
-    <div class="z-8 sticky top-1 mt-4 flex w-full px-4 lg:justify-center">
+    <div
+      class="z-8 sticky top-1 mt-4 w-full px-4 grid"
+      style="grid-template-columns: 35% 25% 10% 30%;"
+    >
       <v-text-field
         id="search-text-field"
         ref="searchTextField"
         v-model="keyword"
         color="green"
-        class="max-w-100 rounded-xl"
+        class="rounded-xl search-field pr-4"
         append-icon="search"
         solo
         hide-details
@@ -94,9 +98,7 @@
         {{ t('store.explore') }}
       </v-subheader>
 
-      <div
-        class="content"
-      >
+      <div class="content">
         <div
           v-if="!searchError && items.length > 0"
           id="search-result"
@@ -167,21 +169,33 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useTutorial } from '@/composables/tutorial'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
-import { FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
+import { Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import { DriveStep } from 'driver.js'
 import useSWRV from 'swrv'
 
 const { push } = useRouter()
-const query = useQuery('query')
-const gameVersion = useQuery('gameVersion')
-const modLoaders = useQueryStringArray('modLoaders')
+
+function ensureQuery(query: Record<string, string | (string | null)[] | null | undefined>) {
+  query.page = '1'
+  scrollToView()
+  if (!query.query) {
+    if (query.sort === '0') {
+      query.sort = '1'
+    }
+  }
+}
+
+const query = useQuery('query', ensureQuery)
+const gameVersion = useQuery('gameVersion', ensureQuery)
+const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
+const sort = useQuery('sort', (q) => { q.page = '1' })
 const page = useQueryNumber('page', 1)
-const sort = useQuery('sort')
 
 const keyword = ref(query)
 const { t } = useI18n()
@@ -386,7 +400,7 @@ const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: m
 
 const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-const _modrinthCategories = useQueryStringArray('modrinthCategories')
+const _modrinthCategories = useQueryStringArray('modrinthCategories', ensureQuery)
 // Modrinth
 const {
   error: searchError,
@@ -405,13 +419,12 @@ const {
 )
 
 // Curseforge
-const modLoaderMapping: Record<string, FileModLoaderType> = { forge: FileModLoaderType.Forge, fabric: FileModLoaderType.Fabric, quilt: FileModLoaderType.Quilt, neoforge: FileModLoaderType.NeoForge }
-const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number)
+const curseforgeCategory = useQueryNumber('curseforgeCategory', undefined as undefined | number, ensureQuery)
 const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = useCurseforge(
   CurseforgeBuiltinClassId.modpack,
   query,
   page,
-  computed(() => modLoaders.value.map(v => modLoaderMapping[v])),
+  computed(() => getCursforgeModLoadersFromString(modLoaders.value)),
   curseforgeCategory,
   curseforgeSort,
   gameVersion,
@@ -476,6 +489,13 @@ const items = computed(() => {
 // Scroll to the search result
 const container = ref<any>(null)
 const exploreHeader = ref<any | null>(null)
+function scrollToView() {
+  const component = exploreHeader.value
+  const el = component?.$el as HTMLElement | undefined
+  if (el) {
+    el.scrollIntoView({ behavior: 'smooth' })
+  }
+}
 watch(items, () => {
   if (query.value || gameVersion.value || modLoaders.value.length > 0 || _modrinthCategories.value.length > 0 || curseforgeCategory.value) {
     // Scroll to the element
@@ -489,6 +509,10 @@ watch(items, () => {
       }
     }
   }
+})
+
+watch(page, () => {
+  scrollToView()
 })
 
 // Hovered project
@@ -622,6 +646,21 @@ const searchTextEl = computed(() => searchTextField.value?.$el as HTMLElement | 
 const { focused } = useFocus(searchTextEl)
 useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, focused), { capture: true })
 
+// Category sticky
+const pinned = ref(false)
+onMounted(() => {
+  const el = document.querySelector('#search-category')
+  if (el) {
+    const observer = new IntersectionObserver(
+      ([e]) => {
+        pinned.value = e.isIntersecting
+      },
+      { threshold: [1] },
+    )
+    observer.observe(el)
+  }
+})
+
 // Tutorial
 useTutorial(computed(() => {
   const steps: DriveStep[] = [
@@ -680,6 +719,18 @@ useTutorial(computed(() => {
   grid-row: auto;
 }
 
+.search-field {
+  grid-column-start: 2;
+  grid-column-end: 4;
+  transition: all;
+  transition-duration: 200ms;
+}
+
+.pinned .search-field {
+  grid-column-start: 1;
+  grid-column-end: 4;
+}
+
 @media screen and (max-width: 1024px) {
   .content {
     grid-column: 1 / 3;
@@ -687,6 +738,11 @@ useTutorial(computed(() => {
 
   .category {
     grid-column: 3 / 5;
+  }
+
+  .pinned .search-field {
+    grid-column-start: 1;
+    grid-column-end: 3;
   }
 }
 

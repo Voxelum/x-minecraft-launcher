@@ -153,7 +153,7 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
   const modItem: ModFile = ({
     path: resource.path,
     modId: '',
-    name: resource.path,
+    name: resource.fileName,
     version: '',
     modLoaders: markRaw([]),
     description: '',

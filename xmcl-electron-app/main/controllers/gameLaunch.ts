@@ -9,7 +9,7 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
   this.app.once('engine-ready', () => {
     this.app.registry.get(LaunchService).then((service) => {
       service.on('minecraft-window-ready', ({ hideLauncher }) => {
-        if (this.mainWin && this.mainWin.isVisible()) {
+        if (this.mainWin && (this.mainWin.isVisible() || this.mainWin.isMinimized())) {
           this.mainWin.webContents.send('minecraft-window-ready')
 
           if (hideLauncher) {
@@ -17,19 +17,19 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
           }
         }
       }).on('minecraft-start', ({ showLog }) => {
+        this.parking = true
         if (!this.getLoggerWindow() && showLog) {
           this.createMonitorWindow()
         }
       }).on('minecraft-exit', (status) => {
-        if (status.hideLauncher) {
-          if (this.mainWin) {
-            this.mainWin.show()
-          }
+        this.parking = false
+        if (this.mainWin && !this.mainWin.isVisible()) {
+          this.mainWin.show()
         }
         this.app.controller.broadcast('minecraft-exit', status)
         const loggerWin = this.getLoggerWindow()
         if (loggerWin) {
-          if (service.getProcesses().length === 0) {
+          if (service.getProcesses().length === 0 && !status.crashReport && status.code === 0) {
             loggerWin.close()
             this.loggerWin = undefined
           }

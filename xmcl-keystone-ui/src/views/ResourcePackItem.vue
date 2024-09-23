@@ -6,7 +6,8 @@
     :has-update="hasUpdate"
     :checked="checked"
     :draggable="draggable"
-    :height="76"
+    :dense="dense"
+    :height="itemHeight"
     :get-context-menu-items="isBuiltIn ? undefined : getContextMenuItems"
     :install="install"
     @drop="emit('drop', $event)"
@@ -25,7 +26,7 @@
       >
         <v-avatar left>
           <v-img
-            src="http://launcher/icons/minecraft"
+            :src="BuiltinImages.minecraft"
             left
           />
         </v-avatar>
@@ -54,6 +55,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { BaseServiceKey, ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   pack: ResourcePackProject
@@ -62,6 +64,8 @@ const props = defineProps<{
   draggable?: boolean
   selected: boolean
   hasUpdate?: boolean
+  dense?: boolean
+  itemHeight?: number
   install: (p: ProjectEntry) => Promise<void>
 }>()
 

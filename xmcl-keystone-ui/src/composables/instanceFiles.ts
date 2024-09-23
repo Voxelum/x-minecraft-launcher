@@ -1,26 +1,33 @@
 import { InstanceFile, InstanceInstallServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
-import { InjectionKey, Ref } from 'vue'
-import { useService } from './service'
 import debounce from 'lodash.debounce'
+import { InjectionKey, Ref, ShallowRef } from 'vue'
+import { useRefreshable } from './refreshable'
+import { useService } from './service'
 
 export const kInstanceFiles: InjectionKey<ReturnType<typeof useInstanceFiles>> = Symbol('InstanceFiles')
 
+export interface InstanceFilesStatus {
+  files: InstanceFile[]
+  instance: string
+}
+
 export function useInstanceFiles(instancePath: Ref<string>) {
-  const files: Ref<InstanceFile[]> = ref([])
+  const instanceFiles: ShallowRef<InstanceFilesStatus | undefined> = shallowRef(undefined)
   const { checkInstanceInstall, installInstanceFiles } = useService(InstanceInstallServiceKey)
 
-  let abortController = new AbortController()
-  const { mutate, error, isValidating } = useSWRV(computed(() => instancePath.value), async () => {
-    if (!instancePath.value) { return }
-    abortController.abort()
-    abortController = new AbortController()
-    const abortSignal = abortController.signal
+  const { error, refreshing: isValidating, refresh: mutate } = useRefreshable(async () => {
+    const path = instancePath.value
+    instanceFiles.value = undefined
     const result = await checkInstanceInstall(instancePath.value)
-    // If abort, just ignore this result
-    if (abortSignal.aborted) { return }
-    files.value = result
+    if (path === instancePath.value) {
+      instanceFiles.value = {
+        files: result,
+        instance: path,
+      }
+    }
   })
+
+  watch(instancePath, () => mutate(), { immediate: true })
 
   const _validating = ref(false)
   const update = debounce(() => {
@@ -28,22 +35,23 @@ export function useInstanceFiles(instancePath: Ref<string>) {
   }, 400)
   watch(isValidating, update)
 
-  async function install() {
-    if (files.value.length > 0) {
-      // has unfinished files
-      try {
-        await installInstanceFiles({ files: files.value, path: instancePath.value })
-      } finally {
+  async function installFiles(path: string, files: InstanceFile[]) {
+    if (files.length > 0) {
+      await installInstanceFiles({
+        path,
+        files,
+      }).finally(() => {
         mutate()
-      }
+      })
     }
   }
 
   return {
-    files,
+    files: computed(() => instanceFiles.value?.files || []),
+    instanceFiles,
     isValidating: _validating,
+    installFiles,
     mutate,
     error,
-    install,
   }
 }

@@ -27,18 +27,21 @@ export type DialogModelData<T> = {
   parameter: T
 }
 
+export interface DialogControl {
+  isShown: Ref<boolean>
+  parameter: Ref<any>
+  show: (param?: any) => void
+  hide: () => void
+}
+
 export type DialogModel = {
   current: ShallowRef<DialogModelData<any>>
-  registered: Record<string, {
-    isShown: Ref<boolean>
-    parameter: Ref<any>
-    show: (param?: any) => void
-    hide: () => void
-  }>
+  registered: Record<string, DialogControl>
 }
 
 export function useDialogModel(): DialogModel {
   const model = shallowRef({ dialog: '', parameter: undefined })
+
   const channel = new BroadcastChannel('dialog')
   channel.addEventListener('message', (e) => {
     console.log(e)
@@ -53,45 +56,54 @@ export function useDialogModel(): DialogModel {
   })
   return {
     current: model,
-    registered: {},
+    registered: markRaw({}),
   }
 }
 
 export interface DialogKey<T> extends String { }
 
 function getOrCreate(model: DialogModel, dialogName: DialogKey<any>) {
+  const key = `dialog-${dialogName}`
+
+  const cached = inject(key, undefined)
+  if (cached) return cached as DialogControl
+
   const current = model.current
-  if (!model.registered[dialogName as string]) {
-    const isShown = computed({
-      get: () => current.value.dialog === dialogName,
-      set: (v: boolean) => {
-        if (v) {
-          show()
-        } else {
-          hide()
-        }
-      },
-    })
-    function hide() {
-      if (current.value.dialog === dialogName) {
-        console.log(`hide ${dialogName}`)
-        current.value = { dialog: '', parameter: undefined }
+  const isShown = computed({
+    get: () => {
+      return current.value.dialog === dialogName
+    },
+    set: (v: boolean) => {
+      if (v) {
+        show()
+      } else {
+        hide()
       }
-    }
-    function show(param?: any) {
-      if (current.value.dialog !== dialogName) {
-        console.log(`show ${dialogName}`)
-        current.value = { dialog: dialogName as string, parameter: param }
-      }
-    }
-    model.registered[dialogName as string] = {
-      isShown,
-      parameter: computed(() => isShown.value ? current.value.parameter : undefined),
-      show,
-      hide,
+    },
+  })
+  function hide() {
+    if (current.value.dialog === dialogName) {
+      current.value = { dialog: '', parameter: undefined }
     }
   }
-  return model.registered[dialogName as string]
+  function show(param?: any) {
+    if (current.value.dialog === dialogName) return
+    current.value = { dialog: dialogName as string, parameter: param }
+  }
+
+  provide(key, {
+    isShown,
+    parameter: computed(() => isShown.value ? current.value.parameter : undefined),
+    show,
+    hide,
+  })
+
+  return {
+    isShown,
+    parameter: computed(() => isShown.value ? current.value.parameter : undefined),
+    show,
+    hide,
+  }
 }
 
 /**

@@ -86,6 +86,7 @@ import { injection } from '@/util/inject'
 import { basename } from '@/util/basename'
 import { useMediaControls } from '@vueuse/core'
 import { kTheme } from '@/composables/theme'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 
 defineProps<{ }>()
 
@@ -97,6 +98,16 @@ const currentMineType = computed(() => currentBackgroundMusics.value[index.value
 
 const audio = ref<HTMLAudioElement | null>(null)
 const { playing, volume, ended } = useMediaControls(audio)
+
+const { gameProcesses } = injection(kInstanceLaunch)
+
+watch(gameProcesses, (p) => {
+  if (p.length > 0) {
+    audio.value?.pause()
+  } else {
+    audio.value?.play()
+  }
+})
 
 onMounted(() => {
   const v = localStorage.getItem('audioVolume')

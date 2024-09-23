@@ -19,6 +19,8 @@ export interface InstallQuiltOptions {
   version: string
 
   minecraftVersion: string
+
+  side?: 'client' | 'server'
 }
 
 export interface RefreshForgeOptions {
@@ -53,6 +55,10 @@ export interface InstallForgeOptions {
    * The forge version (without minecraft version)
    */
   version: string
+
+  side?: 'client' | 'server'
+
+  root?: string
 }
 
 export interface InstallNeoForgedOptions {
@@ -64,6 +70,8 @@ export interface InstallNeoForgedOptions {
    * The forge version (without minecraft version)
    */
   version: string
+
+  side?: 'client' | 'server'
 }
 
 export interface InstallFabricOptions {
@@ -79,6 +87,8 @@ export interface InstallFabricOptions {
    * The minecraft version to install
    */
   minecraft: string
+
+  side?: 'client' | 'server'
 }
 
 export type InstallableLibrary = Version.Library | ResolvedLibrary
@@ -104,7 +114,12 @@ export interface InstallService {
    * @param fallbackVersionMetadata The fallback version metadata to fix the assets if the version is outdated
    */
   installAssetsForVersion(version: string, fallbackVersionMetadata?: MinecraftVersion[]): Promise<void>
-  installDependencies(version: string): Promise<void>
+  /**
+   * Install libraries and assets for the version
+   * @param version The local version id
+   * @param noAsset If true, will not install assets
+   */
+  installDependencies(version: string, side?: 'client' | 'server'): Promise<void>
   /**
    * Install labymod to a minecraft version
    * @param options The install option
@@ -123,7 +138,11 @@ export interface InstallService {
   /**
    * Download and install a minecraft version
    */
-  installMinecraft(meta: MinecraftVersion): Promise<void>
+  installMinecraft(meta: MinecraftVersion, side?: 'client' | 'server'): Promise<void>
+  /**
+   * Install minecraft jar to the game
+   */
+  installMinecraftJar(version: string, side?: 'client' | 'server'): Promise<void>
   /**
    * Install provided libraries to game.
    */
@@ -131,16 +150,16 @@ export interface InstallService {
   /**
    * Install neoForged to the minecraft
    */
-  installNeoForged(options: InstallNeoForgedOptions): Promise<string | undefined>
+  installNeoForged(options: InstallNeoForgedOptions): Promise<string>
   /**
    * Install forge by forge version metadata and minecraft
    */
-  installForge(options: InstallForgeOptions): Promise<string | undefined>
+  installForge(options: InstallForgeOptions): Promise<string>
   /**
    * Install fabric to the minecraft
    * @param options Install options for fabric
    */
-  installFabric(options: InstallFabricOptions): Promise<string | undefined>
+  installFabric(options: InstallFabricOptions): Promise<string>
   /**
    * Install the optifine to the minecraft
    */

@@ -1,10 +1,9 @@
-import { EditInstanceOptions, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
-import { InjectionKey, Ref, set } from 'vue'
+import { useEventBus, useLocalStorage } from '@vueuse/core'
+import { EditInstanceOptions, Instance, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
+import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
+import { InjectionKey, set } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
-import { useSortedInstance } from './instanceSort'
-import { useLocalStorageCacheStringValue } from './cache'
 
 export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol('Instances')
 
@@ -14,6 +13,16 @@ export const kInstances: InjectionKey<ReturnType<typeof useInstances>> = Symbol(
 export function useInstances() {
   const { createInstance, getSharedInstancesState, editInstance, deleteInstance, validateInstancePath } = useService(InstanceServiceKey)
   const { state, isValidating, error } = useState(getSharedInstancesState, class extends InstanceState {
+    override instanceAdd(instance: Instance) {
+      if (!this.all[instance.path]) {
+        const object = {
+          ...instance,
+        }
+        this.all[instance.path] = object
+        this.instances = [...this.instances, this.all[instance.path]]
+      }
+    }
+
     override instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
       const inst = this.instances.find(i => i.path === (settings.path))!
       if ('showLog' in settings) {
@@ -43,10 +52,15 @@ export function useInstances() {
       super.instanceEdit(settings)
     }
   })
-  const _instances = computed(() => state.value?.instances ?? [])
-  const { instances, setToPrevious } = useSortedInstance(_instances)
-  const _path = useLocalStorageCacheStringValue('selectedInstancePath', '' as string)
+  const instances = computed(() => state.value?.instances ?? [])
+  const _path = useLocalStorage('selectedInstancePath', '' as string)
   const path = ref('')
+
+  const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
+
+  migrationBus.once((e) => {
+    _path.value = _path.value.replace(e.oldRoot, e.newRoot)
+  })
 
   async function edit(options: EditInstanceOptions & { instancePath: string }) {
     await editInstance(options)
@@ -111,10 +125,12 @@ export function useInstances() {
       lastAccessDate: Date.now(),
     })
   })
+
+  const ready = computed(() => state.value !== undefined)
   return {
     selectedInstance: path,
+    ready,
     instances,
-    setToPrevious,
     isValidating,
     error,
     edit,

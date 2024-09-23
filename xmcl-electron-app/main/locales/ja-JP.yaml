@@ -1,0 +1,24 @@
+browseApps: Browse Customized Launcher UI
+checkUpdate: Check Update
+openUrl:
+  cancel: キャンセル
+  message: >-
+    ランチャーがデフォルトのブラウザで {url} を開きます。
+    許可しますか?
+  title: ブラウザで開く
+  trust: このサイトを信用し、次から表示しない
+  'yes': 'はい'
+quit: 終了
+relaunch: 再起動
+showDiagnosis: 診断を表示
+showLauncher: ランチャーを表示
+showLogsFolder: ログフォルダーを見る
+task:
+  continue: ランチャーで見る
+  fail: 一つのタスクが失敗
+  success: 一つのタスクが成功
+title: X Minecraft Launcher
+urlFailed: "{url}: 未知のURLです。 URLを確認するか、開発者に連絡してください!"
+urlSuccess: 成功! このウィンドウを閉じてランチャーに戻ることができます!
+autoCloseHint: このウィンドウは {time} 秒で閉じます
+multiplayer: P2P マルチプレイヤー

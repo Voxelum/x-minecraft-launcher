@@ -79,6 +79,7 @@ import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kTheme } from '@/composables/theme'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   modid?: string
@@ -100,9 +101,9 @@ const { getTooltip } = useModCompatibleTooltip()
 
 const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon
-  if (name === 'forge') return 'http://launcher/icons/forge'
-  if (name === 'minecraft') return 'http://launcher/icons/minecraft'
-  if (name === 'fabricloader' || name.startsWith('fabric-') || name === 'fabric') return 'http://launcher/icons/fabric'
+  if (name === 'forge') return BuiltinImages.forge
+  if (name === 'minecraft') return BuiltinImages.minecraft
+  if (name === 'fabricloader' || name.startsWith('fabric-') || name === 'fabric') return BuiltinImages.fabric
   return ''
 }
 const { isDark } = injection(kTheme)

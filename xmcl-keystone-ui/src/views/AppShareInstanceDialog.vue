@@ -45,7 +45,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/minecraft'"
+                  :src="BuiltinImages.minecraft"
                   width="32"
                 >
               </template>
@@ -60,7 +60,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/forge'"
+                  :src="BuiltinImages.forge"
                   width="32"
                 >
               </template>
@@ -75,7 +75,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/fabric'"
+                  :src="BuiltinImages.fabric"
                   width="32"
                 >
               </template>
@@ -90,7 +90,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/fabric'"
+                  :src="BuiltinImages.fabric"
                   width="32"
                 >
               </template>
@@ -105,7 +105,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/quilt'"
+                  :src="BuiltinImages.quilt"
                   width="32"
                 >
               </template>
@@ -120,7 +120,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'http://launcher/icons/neoForged'"
+                  :src="BuiltinImages.neoForged"
                   width="32"
                 >
               </template>
@@ -230,6 +230,7 @@ import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/i
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { BuiltinImages } from '../constant'
 
 const { isShown, parameter } = useDialog('share-instance')
 

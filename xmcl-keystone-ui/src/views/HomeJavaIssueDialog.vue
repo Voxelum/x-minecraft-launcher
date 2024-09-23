@@ -14,7 +14,7 @@
       </v-toolbar>
       <v-card-text class="flex flex-col gap-2 p-4">
         <div>
-          {{ t('HomeJavaIssueDialog.recommendedVersionHint', { version: recommendation?.version, range: recommendation?.requirement }) }}
+          {{ t('HomeJavaIssueDialog.recommendedVersionHint', { version: status?.java?.version, range: status?.preference?.requirement }) }}
           {{ hint }}
         </div>
 
@@ -25,13 +25,13 @@
           {{ t('HomeJavaIssueDialog.needDownloadHint') }}
         </div>
         <div
-          v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 0"
+          v-else-if="status?.compatible !== JavaCompatibleState.Matched && status?.preferredJava"
           class="border-l-3 pl-2 text-sm italic text-orange-400"
         >
           {{ t('HomeJavaIssueDialog.selectMatchedHint') }}
         </div>
         <div
-          v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 1"
+          v-else-if="status?.compatible === 1"
           class=" border-l-3 pl-2 text-sm italic text-orange-400"
         >
           {{ t('HomeJavaIssueDialog.selectSecondaryHint') }}
@@ -43,15 +43,15 @@
         class="w-full px-4 pb-4"
       >
         <v-list-item
-          :color="recommendation?.recommendedLevel === 1 ? 'red' : recommendation?.recommendedLevel === 0 ? 'primary' : undefined"
-          :input-value="typeof recommendation?.recommendedLevel === 'number'"
-          :ripple="recommendation?.recommendedVersion"
-          :disabled="!recommendation?.recommendedVersion"
+          :color="status?.compatible === 1 ? 'red' : status?.compatible === 0 ? 'primary' : undefined"
+          :input-value="typeof status?.compatible === 'number'"
+          :ripple="status?.javaVersion"
+          :disabled="!status?.javaVersion"
           @click="selectLocalJava"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSwitch.name', { version: recommendation?.recommendedVersion ? recommendation?.recommendedVersion.majorVersion : recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) }}</v-list-item-title>
-            <v-list-item-subtitle>{{ !recommendation?.recommendedVersion ? t('HomeJavaIssueDialog.optionSwitch.disabled', { version: recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) : t('HomeJavaIssueDialog.optionSwitch.message', { version: recommendation?.recommendedVersion.path }) }}</v-list-item-subtitle>
+            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSwitch.name', { version: status?.javaVersion ? status?.javaVersion.majorVersion : status?.javaVersion ? status?.javaVersion.majorVersion : '' }) }}</v-list-item-title>
+            <v-list-item-subtitle>{{ !status?.preferredJava ? t('HomeJavaIssueDialog.optionSwitch.disabled', { version: status?.javaVersion ? status?.javaVersion.majorVersion : '' }) : t('HomeJavaIssueDialog.optionSwitch.message', { version: status?.preferredJava.path }) }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-icon v-if="!refreshing">
@@ -66,16 +66,16 @@
         </v-list-item>
 
         <v-list-item
-          v-if="recommendation?.recommendedDownload"
-          :color="recommendation?.recommendedLevel !== 0 ? 'success' : undefined"
-          :input-value="recommendation?.recommendedLevel !== 0"
-          :disabled="!recommendation?.recommendedDownload"
+          v-if="status?.javaVersion"
+          :color="status?.compatible !== 0 ? 'success' : undefined"
+          :input-value="status?.compatible !== 0"
+          :disabled="!status?.javaVersion"
           ripple
           @click="downloadAndInstallJava"
         >
           <v-list-item-content>
             <v-list-item-title>{{ t('HomeJavaIssueDialog.optionAutoDownload.name') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionAutoDownload.message', { version: recommendation?.recommendedDownload.majorVersion }) }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionAutoDownload.message', { version: status?.javaVersion.majorVersion }) }}</v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-icon v-if="!downloadingJava">
@@ -111,7 +111,7 @@
 <script lang=ts setup>
 import { useRefreshable, useService, useServiceBusy } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { kInstanceJava } from '@/composables/instanceJava'
+import { JavaCompatibleState, kInstanceJava } from '@/composables/instanceJava'
 import { injection } from '@/util/inject'
 import { InstanceServiceKey, JavaServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
@@ -127,31 +127,29 @@ const { subscribeTask } = useNotifier()
 const downloadingJava = useServiceBusy(JavaServiceKey, 'installDefaultJava')
 
 const { path } = injection(kInstance)
-const java = injection(kInstanceJava)
+const { status } = injection(kInstanceJava)
 
-const recommendation = java.recommendation
-
-const isMissingJava = computed(() => recommendation.value?.reason === 'missing')
+const isMissingJava = computed(() => status.value?.noJava)
 const title = computed(() => (!isMissingJava.value
-  ? t('HomeJavaIssueDialog.incompatibleJava', { javaVersion: recommendation.value?.selectedJava?.version ?? recommendation.value?.selectedJavaPath ?? '' })
+  ? t('HomeJavaIssueDialog.incompatibleJava', { javaVersion: status.value?.java?.version ?? status.value?.javaPath ?? '' })
   : t('HomeJavaIssueDialog.missingJava')))
 const hint = computed(() => (!isMissingJava.value
-  ? t('HomeJavaIssueDialog.incompatibleJavaHint', { javaVersion: recommendation.value?.selectedJava?.version })
+  ? t('HomeJavaIssueDialog.incompatibleJavaHint', { javaVersion: status.value?.java?.version })
   : t('HomeJavaIssueDialog.missingJavaHint')))
-const needDownloadHint = computed(() => !recommendation.value?.recommendedVersion)
+const needDownloadHint = computed(() => !status.value?.javaVersion)
 
 const { refresh, refreshing } = useRefreshable(async () => {
   await refreshLocalJava(true)
 })
 async function selectLocalJava() {
-  if (recommendation.value?.recommendedVersion?.path) {
-    subscribeTask(editInstance({ instancePath: path.value, java: recommendation.value.recommendedVersion.path }), t('java.modifyInstance'))
+  if (status.value?.preferredJava) {
+    subscribeTask(editInstance({ instancePath: path.value, java: status.value.preferredJava.path }), t('java.modifyInstance'))
     isShown.value = false
   }
 }
 function downloadAndInstallJava() {
-  if (recommendation.value?.recommendedDownload) {
-    subscribeTask(installDefaultJava(recommendation.value.recommendedDownload), t('java.modifyInstance'))
+  if (status.value?.javaVersion) {
+    subscribeTask(installDefaultJava(status.value.javaVersion), t('java.modifyInstance'))
     isShown.value = false
   }
 }

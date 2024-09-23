@@ -1,13 +1,15 @@
+import { basename } from '@/util/basename'
 import { clientModrinthV2 } from '@/util/clients'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceData, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { InstanceShaderFile } from './instanceShaderPack'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -19,15 +21,15 @@ export enum ShaderLoaderFilter {
 /**
  * Represent a mod project
  */
-export type ShaderPackProject = ProjectEntry
+export type ShaderPackProject = ProjectEntry<InstanceShaderFile>
 
-function useLocalSearch(shaderPack: Ref<string | undefined>) {
+function useLocalSearch(shaderPack: Ref<string | undefined>, keyword: Ref<string>) {
   const { resources: shaderFiles } = useDomainResources(ResourceDomain.ShaderPacks)
 
   const shaderProjectFiles = computed(() => {
     return shaderFiles.value.map(s => {
       const enabled = shaderPack.value === s.fileName
-      const file: ProjectFile = markRaw({
+      const file: InstanceShaderFile = markRaw({
         path: s.path,
         version: '',
         resource: s,
@@ -43,12 +45,13 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
 
   const result = computed(() => {
     const indices: Record<string, ShaderPackProject> = {}
-    const _all: ShaderPackProject[] = []
+    const _enabled: ShaderPackProject[] = markRaw([])
+    const _disabled: ShaderPackProject[] = markRaw([])
 
-    const getFromResource = (m: ProjectFile) => {
+    const getFromResource = (m: InstanceShaderFile) => {
       const curseforgeId = m.curseforge?.projectId
       const modrinthId = m.modrinth?.projectId
-      const name = m.resource.name
+      const name = basename(m.path)
       const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.installed?.push(m)
@@ -81,13 +84,23 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
     }
 
     for (const m of shaderProjectFiles.value) {
+      if (!m.resource.fileName.toLowerCase().includes(keyword.value.toLowerCase())) {
+        continue
+      }
       const mod = getFromResource(m)
       if (mod) {
-        _all.push(mod)
+        if (m.enabled) {
+          _enabled.push(mod)
+        } else {
+          _disabled.push(mod)
+        }
       }
     }
 
-    return markRaw(_all)
+    return [
+      _enabled,
+      _disabled,
+    ]
   })
 
   const loadingCached = ref(false)
@@ -110,7 +123,8 @@ function useLocalSearch(shaderPack: Ref<string | undefined>) {
 
   return {
     shaderProjectFiles,
-    cached: result,
+    enabled: computed(() => result.value[0]),
+    disabled: computed(() => result.value[1]),
     loadingCached,
     shaderFiles,
     effect,
@@ -128,7 +142,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const { modrinthSort } = useMarketSort(sort)
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
-  const { cached, loadingCached, shaderProjectFiles, effect: localEffect } = useLocalSearch(shaderPack)
+  const { enabled, disabled, loadingCached, shaderProjectFiles, effect: localEffect } = useLocalSearch(shaderPack, keyword)
   const loading = computed(() => loadingModrinth.value || loadingCached.value)
 
   function effect() {
@@ -144,36 +158,56 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     useQueryOverride('sort', sort, 0, searlizers.number)
   }
 
-  const all = useAggregateProjects(
+  const {
+    installed,
+    notInstalledButCached,
+    others,
+  } = useAggregateProjectsSplitted(
     modrinth,
     ref([]),
-    ref([]),
-    cached,
+    disabled,
+    enabled,
   )
 
   const networkOnly = computed(() => modrinthCategories.value.length > 0)
 
-  const items = useProjectsFilterSearch(
+  const _installed = useProjectsFilterSort(
     keyword,
-    all,
+    installed,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
+  )
+  const _notInstalledButCached = useProjectsFilterSort(
+    keyword,
+    notInstalledButCached,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
+  )
+  const _others = useProjectsFilterSort(
+    keyword,
+    others,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
 
   return {
-    networkOnly,
     gameVersion,
     shaderProjectFiles,
     modrinthCategories,
     shaderLoaderFilters,
-    items,
+
+    enabled: _installed,
+    disabled: _notInstalledButCached,
+    others: _others,
+
     loadMoreModrinth,
     sort,
     isModrinthActive,
     modrinthError,
     loadingModrinth,
-    cached,
     loadingCached,
     modrinth,
     keyword,

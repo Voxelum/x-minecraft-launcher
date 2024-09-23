@@ -8,7 +8,7 @@ import { kInstances } from './instances'
 
 export const kServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
 
-export function useInstanceServerStatus(instance: Ref<Instance>) {
+export function useInstanceServerStatus(instance: Ref<Instance | undefined>) {
   return useServerStatus(computed(() => instance.value?.server ?? { host: '' }), ref(25565))
 }
 

@@ -80,7 +80,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         },
       },
     ]
-    if (app.platform.os === 'osx') {
+    if (app.platform.os === 'osx' || app.platform.os === 'linux') {
       const show = () => {
         const window = this.mainWin
         if ((!window || window.isDestroyed()) && this.activatedManifest) {

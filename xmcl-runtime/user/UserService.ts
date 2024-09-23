@@ -5,6 +5,7 @@ import {
   UserService as IUserService,
   LoginOptions,
   MutableState,
+  RefreshUserOptions,
   SaveSkinOptions, UploadSkinOptions,
   UserException,
   UserProfile,
@@ -66,7 +67,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       // Refresh all users
       Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
         if (user.username) {
-          return this.refreshUser(user.id, true).catch((e) => {
+          return this.refreshUser(user.id, {
+            silent: true,
+          }).catch((e) => {
             this.log(`Failed to refresh user ${user.id}`, e)
           })
         } else {
@@ -157,7 +160,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
    * Refresh the current user login status
    */
   @Lock('refreshUser')
-  async refreshUser(userId: string, slientOnly = false, force = false) {
+  async refreshUser(userId: string, options: RefreshUserOptions = {}) {
     const user = this.state.users[userId]
 
     if (!user) {
@@ -168,7 +171,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
     this.refreshController = new AbortController()
 
-    const newUser = await system.refresh(user, this.refreshController.signal, slientOnly, force).finally(() => {
+    const newUser = await system.refresh(user, this.refreshController.signal, options).finally(() => {
       this.refreshController = undefined
     })
 
@@ -198,7 +201,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const official = Object.values(this.state.users).find(u => u.authority === AUTHORITY_MICROSOFT)
     if (official) {
       const controller = new AbortController()
-      await this.accountSystems.microsoft?.refresh(official, controller.signal)
+      await this.accountSystems.microsoft?.refresh(official, controller.signal, {})
       const accessToken = await this.tokenStorage.get(official)
       return { ...official, accessToken }
     }

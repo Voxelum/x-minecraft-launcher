@@ -1,31 +1,29 @@
 import { InstanceData, ServerStatus } from '@xmcl/runtime-api'
-
-import unknownServer from '@/assets/unknown_server.png'
-import { Ref } from 'vue'
+import { BuiltinImages } from '@/constant'
 
 export function getInstanceIcon(instance: InstanceData, status: ServerStatus | undefined) {
-  if (status?.favicon && status?.favicon !== unknownServer) {
+  if (status?.favicon && status?.favicon !== BuiltinImages.unknownServer) {
     return status?.favicon
   } else if (instance.server) {
-    return unknownServer
+    return BuiltinImages.unknownServer
   }
   if (!instance.icon) {
     if (instance.runtime.forge) {
-      return 'http://launcher/icons/forge'
+      return BuiltinImages.forge
     } else if (instance.runtime.neoForged) {
-      return 'http://launcher/icons/neoForged'
+      return BuiltinImages.neoForged
     } else if (instance.runtime.labyMod) {
-      return 'http://launcher/icons/labyMod'
+      return BuiltinImages.labyMod
     } else if (instance.runtime.fabricLoader) {
-      return 'http://launcher/icons/fabric'
+      return BuiltinImages.fabric
     } else if (instance.runtime.quiltLoader) {
-      return 'http://launcher/icons/quilt'
+      return BuiltinImages.quilt
     } else if (instance.runtime.optifine) {
-      return 'http://launcher/icons/optifine'
+      return BuiltinImages.optifine
     } else if (instance.runtime.minecraft) {
-      return 'http://launcher/icons/minecraft'
+      return BuiltinImages.minecraft
     } else {
-      return 'http://launcher/icons/craftingTable'
+      return BuiltinImages.craftingTable
     }
   }
   return instance.icon

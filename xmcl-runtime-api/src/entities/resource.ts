@@ -1,7 +1,7 @@
 import type { FabricModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import type { PackMeta } from '@xmcl/resourcepack'
 import { ForgeModCommonMetadata } from './mod'
-import { CurseforgeModpackManifest, McbbsModpackManifest, Modpack, ModrinthModpackManifest } from './modpack'
+import { CurseforgeModpackManifest, McbbsModpackManifest, MMCModpackManifest, Modpack, ModrinthModpackManifest } from './modpack'
 import { ResourceSaveMetadata } from './save'
 import { ModpackInstallProfile } from '../services/ModpackService'
 
@@ -51,6 +51,7 @@ export enum ResourceType {
   Modpack = 'modpack',
   CurseforgeModpack = 'curseforge-modpack',
   McbbsModpack = 'mcbbs-modpack',
+  MMCModpack = 'mmc-modpack',
   ModrinthModpack = 'modrinth-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
@@ -74,6 +75,7 @@ export interface ResourceMetadata {
   [ResourceType.ResourcePack]?: PackMeta.Pack
   [ResourceType.CurseforgeModpack]?: CurseforgeModpackManifest
   [ResourceType.McbbsModpack]?: McbbsModpackManifest
+  [ResourceType.MMCModpack]?: MMCModpackManifest
   [ResourceType.ModrinthModpack]?: ModrinthModpackManifest
   [ResourceType.Modpack]?: Modpack
   [ResourceType.Save]?: ResourceSaveMetadata

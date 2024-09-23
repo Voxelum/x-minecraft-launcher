@@ -1,7 +1,7 @@
 <template>
   <MarketBase
     :items="all"
-    :item-height="80"
+    :item-height="itemHeight"
     :plans="{}"
     :error="modrinthError"
     :class="{
@@ -10,18 +10,31 @@
     :loading="loading"
     @load="loadMoreModrinth"
   >
-    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
         v-if="typeof item === 'string'"
-        class="h-[76px]"
+        :style="{ height: itemHeight + 'px' }"
+        class="flex"
       >
-        {{ item === 'enabled' ? t("shaderPack.enabled") : t("shaderPack.disabled") }}
+        {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") : t('modInstall.search') }}
+
+        <div class="flex-grow" />
+        <v-btn
+          v-if="index === 0"
+          v-shared-tooltip="_ => t('mod.denseView')"
+          icon
+          @click="denseView = !denseView"
+        >
+          <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
+        </v-btn>
       </v-subheader>
       <ShaderPackItem
         v-else
         :pack="item"
         :selection-mode="selectionMode"
         :selected="selected"
+        :dense="denseView"
+        :item-height="itemHeight"
         :has-update="hasUpdate"
         :checked="checked"
         :install="onInstallProject"
@@ -84,10 +97,12 @@
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
-import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -95,18 +110,21 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
-import MarketRecommendation from '@/components/MarketRecommendation.vue'
 
 const {
   modrinthError,
   loading,
-  networkOnly,
-  items,
+
+  enabled,
+  disabled,
+  others,
+
   keyword,
   shaderProjectFiles,
   shaderLoaderFilters,
@@ -120,28 +138,29 @@ const { runtime, path } = injection(kInstance)
 effect()
 
 const all = computed(() => {
-  if (networkOnly.value) return items.value
-  const rest = [] as ProjectEntry<ProjectFile>[]
-  const enabled = [] as ProjectEntry<ProjectFile>[]
-  for (const i of items.value) {
-    if (!i.disabled) {
-      enabled.push(i)
-    } else {
-      rest.push(i)
-    }
-  }
-  if (enabled.length > 0) {
-    return [
+  const result: (string | ProjectEntry)[] = []
+
+  if (enabled.value.length > 0) {
+    result.push(
       'enabled' as string,
-      ...enabled,
-      'disabled' as string,
-      ...rest,
-    ] as (string | ProjectEntry<ProjectFile>)[]
+      ...enabled.value,
+    )
   }
-  return [
-    'disabled' as string,
-    ...rest,
-  ]
+  if (disabled.value.length > 0) {
+    result.push(
+      'disabled' as string,
+      ...disabled.value,
+    )
+  }
+
+  if (others.value.length > 0) {
+    result.push(
+      'search' as string,
+      ...others.value,
+    )
+  }
+
+  return result
 })
 
 const toggleCategory = useToggleCategories(modrinthCategories)
@@ -158,10 +177,10 @@ const onInstall = (r: Resource[]) => {
 }
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
-  removeResources(files.map(f => f.resource.hash))
+  removeResources(files.map(f => (f as InstanceShaderFile).resource.hash))
 }
 const onEnable = (f: ProjectFile) => {
-  shaderPack.value = f.resource.fileName
+  shaderPack.value = (f as InstanceShaderFile).resource.fileName
 }
 
 // Reset all filter
@@ -218,5 +237,9 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
 )
+
+// dense
+const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
+const itemHeight = computed(() => denseView.value ? 48 : 80)
 
 </script>

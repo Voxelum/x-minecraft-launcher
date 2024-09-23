@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import VersionInput, { VersionItem } from './VersionInput.vue'
 import { useOptifineVersions } from '@/composables/version'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -39,7 +40,7 @@ const emit = defineEmits<{
 
 <template>
   <VersionInput
-    icon="http://launcher/icons/optifine"
+    :icon="BuiltinImages.optifine"
     title="Optifine"
     url="https://www.optifine.net/home"
     :is-clearable="true"

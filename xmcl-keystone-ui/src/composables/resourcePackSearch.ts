@@ -9,7 +9,7 @@ import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
-import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
@@ -28,7 +28,7 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
     const getFromResource = (m: InstanceResourcePack, enabled: boolean) => {
       const curseforgeId = m.resource?.metadata.curseforge?.projectId
       const modrinthId = m.resource?.metadata.modrinth?.projectId
-      const name = m.name
+      const name = m.name.startsWith('file/') ? m.name.slice(5) : m.name
       const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.files?.push(m)
@@ -113,7 +113,7 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
   }
 }
 
-export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>) {
+export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>, enabledSet: Ref<Set<string>>) {
   const keyword = ref('')
   const gameVersion = ref('')
   const modrinthCategories = ref([] as string[])
@@ -131,18 +131,36 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   const { enabled, disabled, all: filtered, loadingCached, effect: localEffect } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
-  const all = useAggregateProjects(
+  const {
+    installed,
+    notInstalledButCached,
+    others,
+  } = useAggregateProjectsSplitted(
     modrinth,
     curseforge,
     filtered,
-    computed(() => enabled.value.filter(v => v.title.toLowerCase().includes(keyword.value.toLowerCase()))),
+    enabled,
   )
 
   const networkOnly = computed(() => modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
 
-  const items = useProjectsFilterSearch(
+  const _installed = useProjectsFilterSort(
     keyword,
-    all,
+    installed,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
+  )
+  const _notInstalledButCached = useProjectsFilterSort(
+    keyword,
+    notInstalledButCached,
+    networkOnly,
+    isCurseforgeActive,
+    isModrinthActive,
+  )
+  const _others = useProjectsFilterSort(
+    keyword,
+    others,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
@@ -163,7 +181,6 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   }
 
   return {
-    items,
     networkOnly,
     sort,
     gameVersion,
@@ -181,8 +198,9 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     curseforge,
     curseforgeError,
 
-    enabled,
-    disabled,
+    enabled: _installed,
+    disabled: _notInstalledButCached,
+    others: _others,
     local: filtered,
     loadingCached,
     keyword,

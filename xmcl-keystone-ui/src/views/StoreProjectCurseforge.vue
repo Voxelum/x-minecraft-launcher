@@ -3,7 +3,7 @@ import StoreProject, { StoreProject as IStoreProject } from '@/components/StoreP
 import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectFilesModel, getCurseforgeProjectModel, useCurseforgeCategoryI18n } from '@/composables/curseforge'
-import { useCurseforgeInstallModpack } from '@/composables/curseforgeInstall'
+import { useCurseforgeInstallModpack } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { kInstances } from '@/composables/instances'
 import { useSWRVModel } from '@/composables/swrv'

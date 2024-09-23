@@ -45,10 +45,15 @@
         </v-list-item-title>
       </v-list-item-content>
 
+      {{ t('modrinth.environments.server') }}
+      <v-divider
+        vertical
+        class="my-4 mx-2"
+      />
       <v-list-item-action>
         <v-btn
           icon
-          @click="copyToClipboard"
+          @click="copyToClipboard('server')"
         >
           <v-icon>content_copy</v-icon>
         </v-btn>
@@ -56,7 +61,29 @@
       <v-list-item-action>
         <v-btn
           icon
-          @click="showPreview"
+          @click="showPreview('server')"
+        >
+          <v-icon>print</v-icon>
+        </v-btn>
+      </v-list-item-action>
+      <span class="mx-4" />
+      {{ t('modrinth.environments.client') }}
+      <v-divider
+        vertical
+        class="my-4 mx-2"
+      />
+      <v-list-item-action>
+        <v-btn
+          icon
+          @click="copyToClipboard('client')"
+        >
+          <v-icon>content_copy</v-icon>
+        </v-btn>
+      </v-list-item-action>
+      <v-list-item-action class="mx-0">
+        <v-btn
+          icon
+          @click="showPreview('client')"
         >
           <v-icon>print</v-icon>
         </v-btn>
@@ -95,23 +122,27 @@ import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 
 const { t } = useI18n()
-const { preview, refresh, command } = useLaunchPreview()
+const { preview, refresh, command, error } = useLaunchPreview()
 const { notify } = useNotifier()
 const { save, isGlobalMcOptions, resetMcOptions, mcOptions } = injection(InstanceEditInjectionKey)
 const isPreviewShown = ref(false)
 const previewText = computed(() => preview.value.join('\n'))
 const { push } = useRouter()
 
-async function showPreview() {
+async function showPreview(side = 'client' as 'client' | 'server') {
   await save()
-  await refresh()
-  isPreviewShown.value = true
+  await refresh(side)
+  if (!error.value) {
+    isPreviewShown.value = true
+  }
 }
-async function copyToClipboard() {
+async function copyToClipboard(side = 'client' as 'client' | 'server') {
   await save()
-  await refresh()
-  notify({ level: 'success', title: t('copyClipboard.success') })
-  navigator.clipboard.writeText(command.value)
+  await refresh(side)
+  if (!error.value) {
+    notify({ level: 'success', title: t('copyClipboard.success') })
+    navigator.clipboard.writeText(command.value)
+  }
 }
 const gotoSetting = () => {
   push('/setting')
@@ -123,6 +154,7 @@ const gotoSetting = () => {
 .flex {
   padding: 6px 8px !important;
 }
+
 .theme--.v-list .v-list__group--active:after,
 .theme--.v-list .v-list__group--active:before {
   background: unset;

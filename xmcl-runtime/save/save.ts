@@ -1,9 +1,9 @@
 import { WorldReader } from '@xmcl/game-data'
-import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
+import { InstanceSave, InstanceSaveHeader, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
-import { readdir } from 'fs-extra'
+import { readdir, readFile, readlink } from 'fs-extra'
 import { basename, join } from 'path'
-import { exists, isDirectory } from '../util/fs'
+import { exists } from '../util/fs'
 
 /**
  * Find the relative path of the save relative to the file system.
@@ -23,33 +23,6 @@ export async function findLevelRootDirectory(fs: FileSystem, searchPath: string)
 }
 
 /**
- * Find the directory contains the level.dat
- */
-export async function findLevelRootOnPath(path: string): Promise<string | undefined> {
-  if (!(await isDirectory(path))) return undefined
-  if (await exists(join(path, 'level.dat'))) return path
-  for (const subdir of await readdir(path)) {
-    const result = await findLevelRootOnPath(join(path, subdir))
-    if (result) return result
-  }
-  return undefined
-}
-
-/**
- * Get the instance save preview information
- * @param path The path of the save directory
- * @param instanceName The instance name
- */
-export function getInstanceSave(path: string, instanceName: string): InstanceSave {
-  return {
-    path,
-    instanceName,
-    name: basename(path),
-    icon: 'http://launcher/media?path=' + join(path, 'icon.png'),
-  }
-}
-
-/**
  * Read the basic save metadata
  * @param save The save object or path
  */
@@ -65,7 +38,7 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
   }
   const reader = await resolveReader()
   const level = await reader.getLevelData()
-  const adv = await reader.getAdvancementsData()
+  const adv = await reader.getAdvancementsData().catch(() => [])
   let advancements = 0
   if (adv.length !== 0) {
     advancements = adv.length
@@ -92,15 +65,37 @@ export async function readResourceSaveMetadata(resourcePath: string | Uint8Array
   }
 }
 
+export async function readLinkedCurseforge(path: string) {
+  const cfMetadata = join(path, '.curseforge')
+  if (!await exists(cfMetadata)) return undefined
+  return JSON.parse(await readFile(cfMetadata, 'utf-8')) as { projectId: number; fileId: number }
+}
+
+/**
+ * Get the instance save preview information
+ * @param path The path of the save directory
+ * @param instanceName The instance name
+ */
+export async function getInstanceSaveHeader(path: string, instanceName: string): Promise<InstanceSaveHeader> {
+  return {
+    path,
+    instanceName,
+    name: basename(path),
+    linkTo: await readlink(path).catch(() => undefined),
+    icon: 'http://launcher/media?path=' + join(path, 'icon.png'),
+  }
+}
+
 /**
  * Load the instance save metadata
  *
  * @param path The path of the save directory
  * @param instanceName The instance name
  */
-export async function readInstanceSaveMetadata(path: string, instanceName: string): Promise<InstanceSaveMetadata> {
+export async function readInstanceSaveMetadata(path: string, instanceName: string): Promise<InstanceSave> {
   return {
-    ...getInstanceSave(path, instanceName),
+    ...await getInstanceSaveHeader(path, instanceName),
     ...(await readSaveMetadata(path)),
+    curseforge: await readLinkedCurseforge(path),
   }
 }

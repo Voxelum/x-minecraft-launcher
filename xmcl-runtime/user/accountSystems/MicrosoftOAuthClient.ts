@@ -1,25 +1,23 @@
 import { Constants, DeviceCodeResponse } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
-import { Dispatcher, request } from 'undici'
-import { createPlugin } from '../credentialPlugin'
-import { Logger } from '~/logger'
 import { SecretStorage } from '~/app/SecretStorage'
+import { Logger } from '~/logger'
 import { AnyError } from '~/util/error'
+import { createPlugin } from '../credentialPlugin'
 
 export class MicrosoftOAuthClient {
   constructor(
+    private fetch: typeof global.fetch,
     private logger: Logger,
     readonly clientId: string,
     private getCode: (url: string, signal?: AbortSignal) => Promise<string>,
     private getRedirectUrl: (preferLocalHost: boolean) => Promise<string>,
     private deviceCodeCallback: (deviceCodeResponse: DeviceCodeResponse) => void,
     private storage: SecretStorage,
-    private dispatcher?: Dispatcher,
   ) {
   }
 
   protected async getOAuthApp(account: string, signal?: AbortSignal) {
-    const dispatcher = this.dispatcher
     return new PublicClientApplication({
       auth: {
         authority: 'https://login.microsoftonline.com/consumers/',
@@ -36,50 +34,48 @@ export class MicrosoftOAuthClient {
           },
         },
         networkClient: {
-          async sendGetRequestAsync(url, options, token) {
-            const response = await request(url, {
+          sendGetRequestAsync: async (url, options, token) => {
+            const response = await this.fetch(url, {
               method: 'GET',
               headers: options?.headers,
               body: options?.body,
-              bodyTimeout: token,
-              headersTimeout: token,
               signal,
-              dispatcher,
             })
 
-            const body = await response.body.json() as any
+            const body = await response.json()
 
-            if ((response.statusCode < 200 || response.statusCode > 299) && // do not destroy the request for the device code flow
+            if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
               body.error !== Constants.AUTHORIZATION_PENDING) {
-              throw new Error(`HTTP status code ${response.statusCode}`)
+              throw new Error(`HTTP status code ${response.status}`)
             }
 
             return {
               body,
-              headers: response.headers as any,
-              status: response.statusCode,
+              // @ts-ignore
+              headers: Object.fromEntries(response.headers),
+              status: response.status,
             }
           },
-          async sendPostRequestAsync(url, options) {
-            const response = await request(url, {
+          sendPostRequestAsync: async (url, options) => {
+            const response = await this.fetch(url, {
               method: 'POST',
               headers: options?.headers,
               body: options?.body,
-              dispatcher,
               signal,
             })
 
-            const body = await response.body.json() as any
+            const body = await response.json()
 
-            if ((response.statusCode < 200 || response.statusCode > 299) && // do not destroy the request for the device code flow
+            if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
               body.error !== Constants.AUTHORIZATION_PENDING) {
-              throw new Error(`HTTP status code ${response.statusCode}`)
+              throw new Error(`HTTP status code ${response.status}`)
             }
 
             return {
               body,
-              headers: response.headers as any,
-              status: response.statusCode,
+              // @ts-ignore
+              headers: Object.fromEntries(response.headers),
+              status: response.status,
             }
           },
         },

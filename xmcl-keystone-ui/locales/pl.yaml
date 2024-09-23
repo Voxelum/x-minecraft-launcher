@@ -111,6 +111,7 @@ browseApp:
 cancel: Anuluj
 checkUpdate:
   name: Sprawdź aktualizację
+color: Kolor
 confirm: Start
 copyClipboard:
   success: Kopiuj do schowka
@@ -136,6 +137,13 @@ curseforge:
   search: Wyszukiwanie
   totalDownloads: Łączna liczba pobrań
 curseforgeCard: {}
+curseforgeCategory:
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Skyblock: SkyBlock
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Zastosuj ustawienia
   directoryCriteriaHint: Upewnij się, że nowa lokalizacja katalogu to pusty katalog!
@@ -239,6 +247,11 @@ duration:
   second: '{duration} drugi | {duration} sekundy'
 edit: Edytuj
 enable: Włącz
+env:
+  select:
+    all: Zaznacz wszystko
+    fit: Wybierz Dopasuj
+    none: Wybierz opcję Brak
 error:
   name: Błąd | Błędy
 errors:
@@ -262,6 +275,8 @@ errors:
   HeadersTimeoutError: Limit czasu nagłówka HTTP
   NotFoundError: 404 Nie znaleziono
   SocketError: Błąd gniazda serwera
+eula:
+  body: Zaznaczając przycisk pola wyboru, wyrażasz zgodę na {eula} gry Minecraft.
 exception:
   http: >-
     Żądanie HTTP do {url} nie powiodło się. Kod statusu {statusCode}. {code}.
@@ -335,7 +350,7 @@ importModpack:
 importResource: Import zasobów
 install: Instalacja
 installAssets:
-  asset: Zainstaluj zasób {hash}
+  asset: 'Zainstaluj zasoby: {count}'
   assetIndex: Sprawdź plik indeksu aktywów
   name: Instalowanie plików zasobów
 installAuthlibInjector: Zainstaluj authlib-injector
@@ -387,6 +402,7 @@ installVersion:
   name: Instalacja klienta Minecraft {version}
 instance:
   addServer: Dodaj serwer
+  changeIcon: Zmień ikonę
   current: Bieżąca instancja
   delete: Usuń grę
   deleteHint: >-
@@ -400,10 +416,12 @@ instance:
     konfiguracji.
   gameVersion: Wersja gry
   icon: Ikona profilu
+  iconHint: Ikoną może być plik lub łącze internetowe.
   iconUrl: Ikona Adres URL
   includeVersion: Dołącz wersję | Dołącz wersje
   lastPlayed: Ostatnio grane
   launchArguments: Podgląd uruchamiania argumentów
+  launchServer: Uruchom serwer localhost
   mcOptions: Opcje Minecraft
   mcOptionsHint: Dodatkowe poprawki dotyczące uruchomienia gry Minecraft
   name: Nazwa profilu
@@ -412,6 +430,10 @@ instance:
   openCrashReportFolder: Otwórz folder raportów o wypadkach
   openLogFolder: Otwórz folder dziennika
   playtime: Czas zabawy
+  prependCommand: Dołącz polecenie
+  prependCommandHint: >-
+    Spowoduje to dodanie tego polecenia przed wszystkimi poleceniami
+    uruchamiania
   requireName: Nazwa jest wymagana
   showInstance: Pokaż folder gry
   versionHint: Minecraftowa wersja tej gry
@@ -482,6 +504,7 @@ instances:
     Import ze wspólnego folderu .minecraft. Spowoduje to zduplikowanie
     oryginalnego profilu gry do XMCL.
   choose: Wybierz grę
+  folderSetting: Ustawienia folderów
   importFolder: Importuj z folderu
   importFolderDescription: Importowanie Minecrafta do programu uruchamiającego
   loadingFiles: Ładowanie plików Modpack
@@ -512,6 +535,7 @@ labyMod:
 launch:
   cancel: Anuluj
   kill: Stop
+  killServer: Zabij serwer Localhost
   launch: Uruchomienie
 launchBlocked:
   ignore: Force Launch
@@ -656,7 +680,7 @@ minecraftVersion:
   empty: Nie można załadować wersji Minecraft
   name: Wersja Minecraft
   release: Zwolnienie
-  showAlpha: Pokaż migawkę
+  showAlpha: Pokaż snapshot
   snapshot: Migawka
 mod:
   acceptVersion: Akceptuj {version}
@@ -691,11 +715,19 @@ mod:
   switchDefaultSource: Domyślne źródło modów
   toUpdate: '{count} aktualizować'
 modInstall:
+  archived: >-
+    {name} zostało zarchiwizowane. 
+
+    {name} nie otrzyma żadnych dalszych aktualizacji, chyba że autor zdecyduje
+    się na rozpakowanie projektu.
+  checkDependencies: Sprawdź zależności
   checkUpgrade: Sprawdź aktualizację modów
+  checkedDependencies: Sprawdzone zależności
   checkedUpgrade: Aktualizacja sprawdzona
   currentVersion: Wybrana wersja
   dependencyHint: Zainstalowana inna wersja {version}
   install: Instalacja
+  installDependencies: Zainstaluj brakujące zależności
   installHint: Zainstaluje się {file} plik z {dependencies} zależności
   installed: Zainstalowany
   noVersionSupported: Mod obsługuje tylko Minecrafta {supported}.
@@ -808,6 +840,7 @@ modrinth:
     models: Modele
     modloader: Mod Loader
     multiplayer: Multiplayer
+    name: Kategorie
     neoforge: NeoForge
     optifine: Optifine
     optimization: Optymalizacje
@@ -822,7 +855,7 @@ modrinth:
     realistic: Realistyczny
     reflections: Refleksje
     resolutions: Uchwały
-    rift: Szczelina
+    rift: Rift
     screenshot: Zrzut ekranu
     semi-realistic: Półrealistyczny
     shadows: Cienie
@@ -931,6 +964,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Gdy użytkownik wprowadzi swój token, należy wprowadzić jego token w polu
     tekstowym poniżej. poniżej. Kliknij przycisk Potwierdź, aby się połączyć.
+  exposedPortDescription: Port, który udostępniłeś innym peerom
+  exposedPorts: Przekierowane porty
   gatheringIce: >
     Proszę poczekać, aż serwer ICE zbierze wystarczającą ilość informacji o
     Twoim sieć. Jeśli jesteś niecierpliwy i jest wystarczająco dużo informacji,
@@ -964,6 +999,7 @@ multiplayer:
   name: Multiplayer w sieci LAN
   networkInfo: Informacje o sieci
   next: Następny
+  otherExposedPortDescription: Słowo portu autorstwa {user}
   placeholder: Połącz się z innymi użytkownikami, aby grać w Minecraft w sieci LAN!
   previous: Poprzedni
   receiveHint: >-
@@ -1075,6 +1111,7 @@ resourcepack:
   showInCurseforge: Pokaż {name} w curseforge
   unselected: Niewybrane pakiety zasobów
 save:
+  cheat: Oszukiwanie
   copy:
     cancel: Anuluj kopiowanie
     confirm: Rozpocznij kopiowanie
@@ -1091,6 +1128,7 @@ save:
     fromProfile: Z innych instancji
     fromResource: Z zarządzanych zasobów
     title: Importuj zapis z zarządzanego źródła
+  createNew: Stworzyć nowy świat
   createdWorlds: Masz {count} światów
   deleteHint: >-
     Tej operacji nie można przywrócić. Zapisane dane zostaną utracone na zawsze.
@@ -1101,14 +1139,21 @@ save:
   export: Eksport Zapisz
   exportMessage: Eksportuj plik Zapisz jako zip
   exportTitle: Eksportuj zapis
+  gameMode: tryb gry
   import: Importuj i zapisz
   importMessage: Importuj plik Save z pliku zip
   importTitle: Importuj zapis
   independent: Instancja korzysta z niezależnego folderu zapisu
+  levelName: Nazwa poziomu
   manage: Zarządzanie oszczędnościami
   name: Save | Saves
+  search: Wyszukaj zapisane
+  selected: archiwum lokalne
   shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu
+  unselected: wspólne archiwum
+  useCurrent: Użyj obecnego świata
+saves: {}
 screenshots:
   empty: Nie masz zrzutów ekranu
   goto: Otwórz folder
@@ -1125,8 +1170,11 @@ server:
   host: Host
   hostHint: Host (z portem) serwera
   ipAddress: Adres IP
+  maxPlayers: Maksimum graczy
   motd: MOTD serwera
   name: Serwer | Serwery
+  nogui: Brak interfejsu graficznego serwera
+  onlineMode: Tryb online
   ping: Ping
   pings: Pings
   players: Gracze
@@ -1377,6 +1425,7 @@ task:
   nTaskRunning: '{count} zadania są uruchomione'
   name: Zadanie | Zadania
   pause: Pauza
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Wybierz obraz
   selectMusic: Wybierz muzykę

@@ -33,6 +33,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const {
       path: instancePath,
       files,
+      id,
     } = options
 
     await writeInstallProfile(instancePath, files)
@@ -63,7 +64,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         await this.all(tasks, { throwErrorImmediately: false })
         await handler.postprocess(modrinthClient)
       })
-    }, { instance: instancePath })
+    }, { instance: instancePath, id })
 
     try {
       await this.submit(updateInstanceTask)

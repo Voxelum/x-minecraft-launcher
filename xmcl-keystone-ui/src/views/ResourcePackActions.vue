@@ -35,14 +35,15 @@ const linking = ref(false)
 const loading = computed(() => linking.value || isValidating.value)
 const onLinkClicked = async () => {
   linking.value = true
+  const instPath = path.value
   if (isInstanceLinked.value) {
-    unlink(path.value).finally(() => {
+    unlink(instPath).finally(() => {
       linking.value = false
       mutate()
     })
   } else {
-    await scan(path.value)
-    await link(path.value, true).finally(() => {
+    await scan(instPath)
+    await link(instPath, true).finally(() => {
       linking.value = false
       mutate()
     })

@@ -256,7 +256,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -266,11 +266,12 @@ import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue
 import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { kInstanceVersion } from '@/composables/instanceVersion'
-import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { kLocalVersions } from '@/composables/versionLocal'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
 const { exportInstance } = useService(InstanceIOServiceKey)
+const { editInstance } = useService(InstanceServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { exportModpack } = useService(ModpackServiceKey)
 const { showSaveDialog } = windowController
@@ -278,7 +279,7 @@ const { t } = useI18n()
 
 // base data
 const { instance } = injection(kInstance)
-const { folder } = injection(kInstanceVersion)
+const { versionId } = injection(kInstanceVersion)
 const { versions: _locals } = injection(kLocalVersions)
 
 const name = computed(() => instance.value.name)
@@ -307,7 +308,7 @@ const data = reactive({
   name: name.value,
   author: author.value,
   version: inc(baseVersion, 'patch') ?? '0.0.1',
-  gameVersion: folder.value,
+  gameVersion: versionId.value,
   selected: [] as string[],
   fileApi: '',
   files: [] as InstanceFile[],
@@ -336,6 +337,30 @@ watch(enableCurseforge, (v) => {
 })
 
 const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files)))
+const translatedMods = computed(() => ({
+  curseforge: t('exportModpackTarget.curseforge'),
+  modrinth: t('exportModpackTarget.modrinth'),
+  override: t('exportModpackTarget.override'),
+}))
+
+function getDescription(item: InstanceFileNode<any>) {
+    if (item.path.startsWith('mods/')) {
+    let text = t('intro.struct.modJar')
+    if (item.data) {
+      if (item.data.curseforge) {
+        text += (' 🧬 ' + translatedMods.value.curseforge)
+      }
+      if (item.data.modrinth) {
+        text += (' 🧬 ' + translatedMods.value.modrinth)
+      }
+      if (!item.data.modrinth && !item.data.curseforge) {
+        text += (' 🧬 ' + translatedMods.value.override)
+      }
+    }
+    return text
+  }
+  return ''
+}
 
 function canExport(fileData: InstanceFileExportData) {
   if (!fileData.curseforge && !fileData.downloads) return false
@@ -356,7 +381,7 @@ function reset() {
   data.author = author.value
   data.files = []
   data.selected = []
-  data.gameVersion = folder.value ?? ''
+  data.gameVersion = versionId.value ?? ''
   data.version = inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1'
 }
 
@@ -405,16 +430,22 @@ const totalSize = computed(() => {
 
 // export
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
+  let defaultPath = `${data.name}-${data.version}`
+  if (data.emitModrinth) {
+    defaultPath = `${data.name}-${data.version}.mrpack`
+  } else {
+    defaultPath = `${data.name}-${data.version}.zip`
+  }
   const { filePath, canceled } = await showSaveDialog({
     title: t('modpack.export'),
-    defaultPath: `${data.name}-${data.version}`,
+    defaultPath,
     filters: data.emitModrinth ? [modrinthFilter] : [zipFilter],
   })
 
   if (canceled) {
     return
   }
-  if (filePath) {
+  if (filePath && data.gameVersion) {
     if (data.emitCurseforge || data.emitMcbbs || data.emitModrinth) {
       try {
         await exportModpack({
@@ -430,19 +461,22 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
           emitModrinth: data.emitModrinth,
           strictModeInModrinth: data.emitModrinthStrict,
         })
+        await editInstance({ instancePath: instance.value.path, modpackVersion: data.version })
       } catch (e) {
         console.error(e)
       }
     } else {
       const files = data.selected.filter(p => !!data.files.find(f => f.path === p))
-      await exportInstance({
-        src: instance.value.path,
-        version: folder.value,
-        destinationPath: filePath,
-        includeLibraries: data.includeLibraries,
-        includeAssets: data.includeAssets,
-        files,
-      })
+      if (versionId.value) {
+        await exportInstance({
+          src: instance.value.path,
+          version: versionId.value,
+          destinationPath: filePath,
+          includeLibraries: data.includeLibraries,
+          includeAssets: data.includeAssets,
+          files,
+        })
+      }
     }
     cancel()
   }

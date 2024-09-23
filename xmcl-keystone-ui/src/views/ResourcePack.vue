@@ -1,7 +1,7 @@
 <template>
   <MarketBase
     :items="displayItems"
-    :item-height="76"
+    :item-height="itemHeight"
     :plans="{}"
     :class="{
       dragover,
@@ -10,18 +10,34 @@
     :loading="loading"
     @load="onLoad"
   >
-    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
         v-if="typeof item === 'string'"
-        class="h-[76px]"
+        class="flex"
+        :style="{ height: itemHeight + 'px' }"
       >
-        {{ item === 'enabled' ? t("resourcepack.selected") : t("resourcepack.unselected") }}
+        {{
+          item === 'enabled' ? t("resourcepack.selected") :
+          item === 'disabled' ? t("resourcepack.unselected") :
+          t("modInstall.search")
+        }}
+        <div class="flex-grow" />
+        <v-btn
+          v-if="index === 0"
+          v-shared-tooltip="_ => t('mod.denseView')"
+          icon
+          @click="denseView = !denseView"
+        >
+          <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
+        </v-btn>
       </v-subheader>
       <ResourcePackItem
         v-else-if="(typeof item === 'object')"
         :pack="item"
+        :dense="denseView"
         :draggable="!networkOnly && !item.disabled"
         :selection-mode="selectionMode"
+        :item-height="itemHeight"
         :selected="selected"
         :has-update="hasUpdate"
         :checked="checked"
@@ -34,8 +50,7 @@
       <Hint
         v-if="dragover"
         icon="save_alt"
-        :text="
-          t('resourcepack.dropHint')"
+        :text="t('resourcepack.dropHint')"
         class="h-full"
       />
       <MarketProjectDetailModrinth
@@ -84,9 +99,7 @@
         @curseforge="curseforgeCategory = $event.id"
       />
     </template>
-    <SimpleDialog
-      :title="t('resourcepack.delete.title')"
-    >
+    <SimpleDialog :title="t('resourcepack.delete.title')">
       {{ t('resourcepack.delete.content') }}
     </SimpleDialog>
   </MarketBase>
@@ -115,17 +128,21 @@ import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import { useLocalStorageCacheBool } from '@/composables/cache'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
 const {
-  items,
   modrinthError,
   loading,
   modrinthCategories,
   curseforgeCategory,
+
   enabled,
   disabled,
+  others,
+
   loadMoreCurseforge,
   loadMoreModrinth,
   keyword,
@@ -140,21 +157,29 @@ effect()
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
 
 const displayItems = computed(() => {
-  if (!networkOnly.value) {
-    if (enabled.value.length > 0) {
-      return [
-        'enabled' as string,
-        ...enabled.value,
-        'disabled' as string,
-        ...disabled.value,
-      ] as (string | ResourcePackProject)[]
-    }
-    return [
+  const result: (string | ProjectEntry)[] = []
+
+  if (enabled.value.length > 0) {
+    result.push(
+      'enabled' as string,
+      ...enabled.value,
+    )
+  }
+  if (disabled.value.length > 0) {
+    result.push(
       'disabled' as string,
       ...disabled.value,
-    ] as (string | ResourcePackProject)[]
+    )
   }
-  return items.value
+
+  if (others.value.length > 0) {
+    result.push(
+      'search' as string,
+      ...others.value,
+    )
+  }
+
+  return result
 })
 
 const modrinthLoaders = computed(() => {
@@ -181,7 +206,7 @@ const onInstall = (r: Resource[]) => {
 }
 const onUninstall = (v: ProjectFile[]) => {
   const packs = v as InstanceResourcePack[]
-  removeResources(v.map(f => f.resource.hash))
+  removeResources(v.map(f => (f as InstanceResourcePack).resource.hash))
   disable(packs)
 }
 const onEnable = (f: ProjectFile) => {
@@ -225,14 +250,14 @@ onMounted(() => {
 
 // Drop
 const { importResources } = useService(ResourceServiceKey)
-const { dragover } = useDrop(() => {}, async (t) => {
+const { dragover } = useDrop(() => { }, async (t) => {
   const paths = [] as string[]
   for (const f of t.files) {
     paths.push(f.path)
   }
   const resources = await importResources(paths.map(p => ({ path: p, domain: ResourceDomain.ResourcePacks })))
   enable(resources.map(r => `file/${r.fileName}`))
-}, () => {})
+}, () => { })
 
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
@@ -268,6 +293,10 @@ const getInstalledModrinth = (projectId: string) => {
 const getInstalledCurseforge = (modId: number | undefined) => {
   return files.value.filter((m) => m.curseforge?.projectId === modId)
 }
+
+// dense
+const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
+const itemHeight = computed(() => denseView.value ? 48 : 76)
 
 </script>
 

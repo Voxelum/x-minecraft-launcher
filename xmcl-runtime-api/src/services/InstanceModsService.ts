@@ -78,6 +78,10 @@ export interface InstanceModsService {
    */
   watch(instancePath: string): Promise<MutableState<InstanceModsState>>
   /**
+   * Refresh the metadata of the instance mods
+   */
+  refreshMetadata(instancePath: string): Promise<void>
+  /**
    * Show instance /mods dictionary
    * @param instancePath The instance path
    */
@@ -100,6 +104,12 @@ export interface InstanceModsService {
    * @param options The uninstall options
    */
   uninstall(options: InstallModsOptions): Promise<void>
+  /**
+   * Install mods to the server instance.
+   */
+  installToServerInstance(options: InstallModsOptions): Promise<void>
+
+  getServerInstanceMods(path: string): Promise<Array<{ fileName: string; ino: number }>>
 }
 
 export const InstanceModsServiceKey: ServiceKey<InstanceModsService> = 'InstanceModsService'

@@ -1,6 +1,6 @@
 import { clientModrinthV2 } from '@/util/clients'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceFile, RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
 export async function resolveModrinthDependencies(version: ProjectVersion) {
   const visited = new Set<string>()
@@ -65,4 +65,17 @@ export function getModrinthVersionKey(projectId: string, featured?: boolean, loa
 
 export function getModrinthProjectKey(projectId: string) {
   return `/modrinth/${projectId}`
+}
+
+export function getInstanceFileFromModrinthVersion(version: ProjectVersion): InstanceFile {
+  const primary = version.files.find(f => f.primary) || version.files[0]
+  return {
+    path: `mods/${(primary.filename)}`,
+    hashes: primary.hashes,
+    size: 0,
+    modrinth: {
+      projectId: version.project_id,
+      versionId: version.id,
+    },
+  }
 }

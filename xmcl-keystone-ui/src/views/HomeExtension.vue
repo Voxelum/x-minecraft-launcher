@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
+    class="flex flex-1 flex-grow-0 flex-row items-center justify-start"
     :class="{
       'mb-3': !compact,
       'mb-2': compact,
@@ -41,20 +41,26 @@
       />
     </div>
     <div class="flex-grow" />
-    <div
+    <template
       v-if="!isInFocusMode"
-      class="align-end flex flex-1 flex-grow-0 gap-7"
     >
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"
+        class="mr-2"
         :name="taskName"
         :total="total"
         :progress="progress"
       />
+      <HomeLaunchButtonStatus
+        v-else
+        :active="active"
+      />
       <HomeLaunchButton
         :compact="compact"
+        @mouseenter="active = true"
+        @mouseleave="active = false"
       />
-    </div>
+    </template>
   </div>
 </template>
 
@@ -70,66 +76,26 @@ import { injection } from '@/util/inject'
 import useSWRV from 'swrv'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
+import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 
 const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
 const { total, progress, status, name: taskName } = injection(kLaunchTask)
+
+const active = ref(false)
+
 const { t } = useI18n()
 
 const compact = injection(kCompact)
 const versions = computed(() => {
   const ver = version.value
-  const result: Array<{icon: string; title: string; version: string}> = []
-  if (ver.minecraft) {
-    result.push({
-      icon: 'http://launcher/icons/minecraft',
-      title: 'Minecraft',
-      version: ver.minecraft,
-    })
-  }
-  if (ver.forge) {
-    result.push({
-      icon: 'http://launcher/icons/forge',
-      title: 'Forge',
-      version: ver.forge,
-    })
-  }
-  if (ver.neoForged) {
-    result.push({
-      icon: 'http://launcher/icons/neoForged',
-      title: 'NeoForged',
-      version: ver.neoForged,
-    })
-  }
-  if (ver.fabricLoader) {
-    result.push({
-      icon: 'http://launcher/icons/fabric',
-      title: 'Fabric',
-      version: ver.fabricLoader,
-    })
-  }
-  if (ver.quiltLoader) {
-    result.push({
-      icon: 'http://launcher/icons/quilt',
-      title: 'Quilt',
-      version: ver.quiltLoader,
-    })
-  }
-  if (ver.optifine) {
-    result.push({
-      icon: 'http://launcher/icons/optifine',
-      title: 'Optifine',
-      version: ver.optifine,
-    })
-  }
-  if (ver.labyMod) {
-    result.push({
-      icon: 'http://launcher/icons/labyMod',
-      title: 'LabyMod',
-      version: ver.labyMod,
-    })
-  }
-  return result
+  const items = getExtensionItemsFromRuntime(ver)
+  return items.map(i => ({
+    icon: i.avatar,
+    title: i.title,
+    version: i.text,
+  }))
 })
 const { getDateString } = useDateString()
 const { data: lastPlayedText } = useSWRV(computed(() => `${instance.value.path}/lastPlay`), () => {

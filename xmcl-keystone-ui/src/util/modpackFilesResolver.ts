@@ -1,4 +1,4 @@
-import { Resource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack } from '@xmcl/runtime-api'
+import { Resource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromMmcModpack, getInstanceConfigFromModrinthModpack } from '@xmcl/runtime-api'
 
 export function resolveModpackInstanceConfig(r: Resource) {
   if (r.metadata['modrinth-modpack']) {
@@ -31,5 +31,8 @@ export function resolveModpackInstanceConfig(r: Resource) {
   }
   if (r.metadata['mcbbs-modpack']) {
     return { ...getInstanceConfigFromMcbbsModpack(r.metadata['mcbbs-modpack']), icon: r.icons?.[0] }
+  }
+  if (r.metadata['mmc-modpack']) {
+    return { ...getInstanceConfigFromMmcModpack(r.metadata['mmc-modpack']), icon: r.icons?.[0] }
   }
 }

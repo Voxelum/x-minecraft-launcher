@@ -1,7 +1,8 @@
 <template>
   <div class="">
     <v-list
-      class="non-moveable w-full bg-transparent"
+      class="non-moveable w-full"
+      color="transparent"
       three-line
       subheader
     >

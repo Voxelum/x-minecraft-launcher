@@ -118,6 +118,7 @@ browseApp:
 cancel: Stornierung.
 checkUpdate:
   name: Nach Aktualisierungen suchen
+color: Farbe
 compatibleDetail: {}
 confirm: Start
 copyClipboard:
@@ -148,6 +149,15 @@ curseforge:
   totalDownloads: Downloads insgesamt
   worlds: {}
 curseforgeCard: {}
+curseforgeCategory:
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Redstone: Redstone
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Einstellungen anwenden
   directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
@@ -258,6 +268,11 @@ duration:
   second: '{duration} zweite | {duration} zweiten'
 edit: bearbeiten
 enable: Aktivieren Sie
+env:
+  select:
+    all: Wählen Sie Alle
+    fit: Wählen Sie „Anpassen“.
+    none: Nichts ausgewählt
 error:
   name: Fehler | Fehler
 errors:
@@ -288,6 +303,10 @@ errors:
   HeadersTimeoutError: HTTP-Header-Zeitüberschreitung ist aufgetreten
   NotFoundError: 404 Nicht gefunden
   SocketError: Server-Socket-Fehler
+eula:
+  body: >-
+    Indem Sie das Kontrollkästchen aktivieren, erklären Sie sich mit der {eula}
+    von Minecraft einverstanden.
 exception:
   http: >-
     HTTP-Anfrage von {url} fehlgeschlagen. Statuscode {statusCode}. {code}.
@@ -362,7 +381,7 @@ importModpack:
 importResource: Importieren einer Ressource
 install: Installieren Sie
 installAssets:
-  asset: Asset setzen {hash}
+  asset: Installieren Sie {count} Assets
   assetIndex: Prüfen Sie die Asset-Indexdatei
   name: Asset-Dateien installieren
 installAuthlibInjector: Installieren Sie  authlib-injector
@@ -414,6 +433,7 @@ installVersion:
   name: Installieren Sie den Minecraft-Client {version}
 instance:
   addServer: Server hinzufügen
+  changeIcon: Icon ändern
   current: Aktuelle Instanz
   delete: Deinstallieren Sie das Spiel
   deleteHint: >-
@@ -427,10 +447,12 @@ instance:
     Konfiguration.
   gameVersion: Version des Spiels
   icon: Profil-Symbol
+  iconHint: Das Symbol könnte eine Datei oder ein Internet-URL-Link sein.
   iconUrl: Url-Symbol
   includeVersion: Version freigeben | Versionen freigeben
   lastPlayed: Das letzte Mal spielten sie
   launchArguments: Vorschau der Startargumente
+  launchServer: Starten Sie den Localhost-Server
   mcOptions: Minecraft Einstellungen
   mcOptionsHint: Zusätzliche Anweisungen zum Starten von Minecraft
   name: Profilname
@@ -438,6 +460,8 @@ instance:
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs
+  prependCommand: Befehl voranstellen
+  prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Name ist erforderlich
   showInstance: Spieleordner anzeigen
   versionHint: Minecraft Version für dieses Spiel
@@ -508,6 +532,7 @@ instances:
     Importieren Sie aus dem gemeinsamen .minecraft-Ordner. 
     Dadurch wird das ursprüngliche Spielprofil in die XMCL kopiert.
   choose: Spiel auswählen
+  folderSetting: Ordnereinstellungen
   importFolder: Importieren aus einem Ordner
   importFolderDescription: Minecraft in den Launcher importieren
   loadingFiles: Laden von Modpack-Dateien
@@ -539,6 +564,7 @@ labyMod:
 launch:
   cancel: Ablehnen
   kill: Stopp
+  killServer: Töte den Localhost-Server
   launch: Los geht's
 launchBlocked:
   ignore: Erzwungener Start
@@ -697,7 +723,7 @@ minecraftVersion:
   empty: Kann keine Version von Minecraft herunterladen
   name: Minecraft-Version
   release: Freigabe
-  showAlpha: Schnappschuss anzeigen
+  showAlpha: Schnappschuss snapshot
   snapshot: Snapshot
 mod:
   acceptVersion: Akzeptieren {version}
@@ -732,11 +758,19 @@ mod:
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
 modInstall:
+  archived: >-
+    {name} wurde archiviert. 
+
+    {name} erhält keine weiteren Updates, es sei denn, der Autor beschließt, das
+    Projekt aus der Archivierung zu entfernen.
+  checkDependencies: Abhängigkeiten prüfen
   checkUpgrade: Prüfen Sie auf Aktualisierungen von Änderungen
+  checkedDependencies: Überprüfte Abhängigkeiten
   checkedUpgrade: Aktualisierung geprüft
   currentVersion: Ausgewählte Version
   dependencyHint: Eine andere Version ist installiert {version}
   install: Installieren Sie
+  installDependencies: Fehlende Abhängigkeiten installieren
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.
@@ -794,6 +828,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x+
     64x: 64x
     8x-: 8x-
@@ -849,6 +884,7 @@ modrinth:
     modloader: ModLoader
     multiplayer: Multiplayer-Spiel
     name: Kategorien.
+    neoforge: NeoForge
     optifine: Optifine
     optimization: Optimierung
     paper: Paper
@@ -971,6 +1007,8 @@ multiplayer:
 
     Feld unten eingeben. Klicken Sie auf die Schaltfläche Bestätigen, um die
     Verbindung herzustellen.
+  exposedPortDescription: Der Port, den Sie anderen Peers zugänglich gemacht haben
+  exposedPorts: Weitergeleitete Ports
   gatheringIce: >
     "Warten Sie, bis der ICE-Server genügend Informationen über Sie gesammelt
     hat
@@ -1010,6 +1048,7 @@ multiplayer:
   name: Multiplayer über ein lokales Netzwerk
   networkInfo: Informationen über das Netzwerk
   next: Nächste.
+  otherExposedPortDescription: Das Portvorwort von {user}
   placeholder: >-
     Schließe dich anderen Leuten an, um Minecraft in deinem lokalen Netzwerk zu
     spielen Netzwerk!
@@ -1124,6 +1163,7 @@ resourcepack:
   showInCurseforge: anzeigen {name} in curseforge
   unselected: Unausgewählte Texturpakete
 save:
+  cheat: Schummeln
   copy:
     cancel: Kopie abbrechen
     confirm: Kopieren beginnen
@@ -1140,6 +1180,7 @@ save:
     fromProfile: Aus anderen Beispielen
     fromResource: Aus verwalteten Ressourcen
     title: Importieren einer Sicherung aus einer verwalteten Quelle
+  createNew: Erschaffe eine neue Welt
   createdWorlds: 'Ihre Welten: {count}'
   deleteHint: >-
     Dieser Vorgang kann nicht abgebrochen werden. Die gespeicherten Daten gehen
@@ -1151,14 +1192,21 @@ save:
   export: Ausfuhr von Konservierungsmitteln
   exportMessage: Exportieren und Speichern als Zip
   exportTitle: Ausfuhr von Konservierungsmitteln
+  gameMode: Spielmodus
   import: Importieren einer Speicherung
   importMessage: Importieren eines Spielstands aus einer Zip-Datei
   importTitle: Importieren einer Speicherung
   independent: Instanz verwendet unabhängigen Speicherordner
+  levelName: Ebenenname
   manage: Verwaltung der Reservate
   name: Speichern | Speichern
+  search: Suche nach Speichern
+  selected: lokales Archiv
   shared: Instanz verwendet freigegebenen Speicherordner
   showDirectory: Speicherverzeichnis anzeigen
+  unselected: gemeinsames Archiv
+  useCurrent: Aktuelle Welt verwenden
+saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos
   goto: Öffnen Sie den Ordner
@@ -1175,8 +1223,11 @@ server:
   host: Gastgeber
   hostHint: Server-Host (mit Port)
   ipAddress: IP-Adressen
+  maxPlayers: Maximale Spieleranzahl
   motd: Beschreibung des Servers
   name: Server | Server
+  nogui: Keine Server-GUI
+  onlineMode: Onlinemodus
   ping: Ping
   pings: Pings
   players: Spieler.
@@ -1431,6 +1482,7 @@ task:
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik

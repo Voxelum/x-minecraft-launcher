@@ -113,6 +113,10 @@ export interface SettingSchema {
    */
   globalDisableElyByAuthlib: boolean
   /**
+   * @default ""
+   */
+  globalPrependCommand: string
+  /**
    * @default true
    */
   discordPresence: boolean
@@ -132,4 +136,5 @@ export interface SettingSchema {
    * @default true
    */
   enableDedicatedGPUOptimization: boolean
+
 }

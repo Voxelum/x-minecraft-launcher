@@ -15,7 +15,10 @@ export async function upsertMetadata(metadata: ResourceMetadata, uris: string[],
     const _resource = await trx
       .insertInto('resources')
       .values(table)
-      .onConflict(oc => oc.column('sha1').doUpdateSet(table))
+      .onConflict(oc => oc.column('sha1').doUpdateSet({
+        name: table.name,
+        ...metadata,
+      }))
       .returningAll()
       .executeTakeFirst()
     const _uris = uris.length > 0 ? await trx.insertInto('uris').values(uris.map(u => ({ uri: u, sha1 }))).onConflict((b) => b.doNothing()).returningAll().execute() : []

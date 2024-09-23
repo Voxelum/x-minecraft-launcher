@@ -11,6 +11,7 @@ import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'
 import ru from 'vuetify/src/locale/ru'
 import zhHans from 'vuetify/src/locale/zh-Hans'
+import { BuiltinImages } from './constant'
 
 Vue.use(Vuetify)
 
@@ -34,7 +35,7 @@ export const vuetify = new Vuetify({
       minecraft: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/minecraft',
+          src: BuiltinImages.minecraft,
         },
       },
       zip: {
@@ -52,43 +53,43 @@ export const vuetify = new Vuetify({
       forge: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/forge',
+          src: BuiltinImages.forge,
         },
       },
       fabric: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/fabric',
+          src: BuiltinImages.fabric,
         },
       },
       quilt: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/quilt',
+          src: BuiltinImages.quilt,
         },
       },
       neoForged: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/neoForged',
+          src: BuiltinImages.neoForged,
         },
       },
       optifine: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/optifine',
+          src: BuiltinImages.optifine,
         },
       },
       iris: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/iris',
+          src: BuiltinImages.iris,
         },
       },
       mmc: {
         component: ImageIcon,
         props: {
-          src: 'http://launcher/icons/mmc',
+          src: BuiltinImages.mmc,
         },
       },
     },

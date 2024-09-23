@@ -72,12 +72,14 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { BaseServiceException, BaseServiceKey, isException } from '@xmcl/runtime-api'
+import { useRefreshable } from '@/composables'
+import { useGameDirectory } from '@/composables/setting'
+import { useEventBus } from '@vueuse/core'
+import { BaseServiceException, isException } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useRefreshable, useService } from '@/composables'
 
 const { showOpenDialog } = windowController
-const { migrate } = useService(BaseServiceKey)
+const { setGameDirectory, root: oldRoot } = useGameDirectory()
 const { t } = useI18n()
 
 const { isShown, hide } = useDialog('migration')
@@ -106,9 +108,12 @@ function cancelApply() {
   hide()
 }
 
+const migrationBus = useEventBus<{ oldRoot: string; newRoot: string }>('migration')
+
 const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
   try {
-    await migrate({ destination: root.value })
+    migrationBus.emit({ oldRoot: oldRoot.value, newRoot: root.value })
+    await setGameDirectory(root.value)
   } catch (e) {
     if (isException(BaseServiceException, e)) {
       if (e.exception.type === 'migrationDestinationIsFile') {

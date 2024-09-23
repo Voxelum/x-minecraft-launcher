@@ -7,6 +7,7 @@ import { Ref } from 'vue'
 import { getCurseforgeProjectFilesModel, getCurseforgeProjectModel } from './curseforge'
 import { kSWRVConfig } from './swrvConfig'
 import { kTaskManager } from './taskManager'
+import { getModLoaderTypesForFile } from '@/util/curseforge'
 
 type ProjectDependency = {
   /**
@@ -29,7 +30,7 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
     dep.relativeType === FileRelationType.Include ||
     dep.relativeType === FileRelationType.Incompatible
   ) {
-    return [dep]
+    return []
   }
   if (visited.has(file.modId)) {
     return []
@@ -38,7 +39,7 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
 
   const dependencies = await Promise.all(file.dependencies.map(async (d) => {
     try {
-      const modLoaderTypes = getModLoaderTypes(file)
+      const modLoaderTypes = getModLoaderTypesForFile(file)
       const loaderType = modLoaderTypes.has(modLoaderType.value) ? modLoaderType.value : FileModLoaderType.Any
       const project = await getSWRV(getCurseforgeProjectModel(ref(d.modId)), config)
       const files = await getSWRV(getCurseforgeProjectFilesModel(ref(d.modId), gameVersion, ref(loaderType)), config)
@@ -58,24 +59,6 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
   }))
 
   return [dep, ...dependencies.reduce((a, b) => a.concat(b), [])]
-}
-
-export function getModLoaderTypes(file: File) {
-  const modLoaderTypes = new Set<FileModLoaderType>()
-  if (file.sortableGameVersions) {
-    for (const ver of file.sortableGameVersions) {
-      if (ver.gameVersionName === 'Forge') {
-        modLoaderTypes.add(FileModLoaderType.Forge)
-      } else if (ver.gameVersionName === 'Fabric') {
-        modLoaderTypes.add(FileModLoaderType.Fabric)
-      } else if (ver.gameVersionName === 'Quilt') {
-        modLoaderTypes.add(FileModLoaderType.Quilt)
-      } else if (ver.gameVersionName === 'LiteLoader') {
-        modLoaderTypes.add(FileModLoaderType.LiteLoader)
-      }
-    }
-  }
-  return modLoaderTypes
 }
 
 export function getCurseforgeDependenciesModel(fileRef: Ref<File | undefined>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType>, config = injection(kSWRVConfig)) {

@@ -110,7 +110,6 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
-import { useBootstrap } from '@/composables/bootstrap'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Drive } from '@xmcl/runtime-api'
 import SetupAppearance from './SetupAppearance.vue'
@@ -132,7 +131,6 @@ const prev = () => {
 }
 
 const { locale, t } = useI18n()
-const bootstrap = useBootstrap()
 const currentTitle = computed(() => {
   if (data.step === 1) return t('setup.locale.name')
   if (data.step === 2) return t('setup.dataRoot.name')

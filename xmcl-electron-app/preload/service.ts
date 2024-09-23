@@ -124,10 +124,10 @@ function createServiceChannels(): ServiceChannels {
   const states: Record<string, WeakRef<MutableState<object>>> = {}
   const pendingCommits: Record<string, { type: string; payload: any }[]> = {}
 
-  ipcRenderer.on('state-validating', (_, { id, validating }) => {
+  ipcRenderer.on('state-validating', (_, { id, semaphore }) => {
     const state = states[id]?.deref()
     if (state) {
-      (state as any)[kEmitter].emit('state-validating', validating)
+      (state as any)[kEmitter].emit('state-validating', semaphore)
     }
   })
 

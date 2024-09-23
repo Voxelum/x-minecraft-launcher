@@ -1,10 +1,10 @@
+import { BuiltinImages } from '@/constant'
+import { ProjectFile } from '@/util/search'
 import { PackMeta } from '@xmcl/resourcepack'
 import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref } from 'vue'
-
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { ProjectFile } from '@/util/search'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
   /**
@@ -91,11 +91,14 @@ const EMPTY_RESOURCE: Resource = ({
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
   const { link, scan } = useService(InstanceResourcePacksServiceKey)
+  const local = ref([] as Resource[])
   async function mount(path: string) {
+    local.value = []
     if (!path) return
     const linked = await link(path)
     if (!linked) {
-      await scan(path)
+      const scanned = await scan(path)
+      local.value = scanned
     }
   }
   watch(path, mount, { immediate: true })
@@ -125,7 +128,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
       pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
       pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
     } else {
-      pack.icon = 'http://launcher/icons/minecraft'
+      pack.icon = BuiltinImages.minecraft
       pack.description = t('resourcepack.defaultDescription')
     }
     return pack
@@ -137,7 +140,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
     const mapped = [] as InstanceResourcePack[]
     const index: Record<string, InstanceResourcePack> = {}
     const disabled = [] as InstanceResourcePack[]
-    for (const r of resources.value) {
+    for (const r of resources.value.concat(local.value)) {
       const val = getResourcePackItem(r, enabledSet)
       if (val.enabled) {
         index[val.id] = val
@@ -167,8 +170,10 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   const enabled = computed(() => result.value[2])
   const disabled = computed(() => result.value[1])
   const files = computed(() => result.value[0])
+  const enabledSet = computed(() => new Set(result.value[2].map(e => e.id)))
 
   const { editGameSetting } = useService(InstanceOptionsServiceKey)
+
   function enable(pack: (InstanceResourcePack | string)[]) {
     const newEnabled = [...pack.map(e => typeof e === 'string' ? e : e.id), ...enabled.value.map(e => e.id)]
     return editGameSetting({
@@ -195,6 +200,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   }
 
   return {
+    enabledSet,
     enabled,
     disabled,
     files,

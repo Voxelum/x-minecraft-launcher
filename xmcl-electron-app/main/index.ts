@@ -1,7 +1,7 @@
-import fs from 'fs'
-import { gracefulify } from 'graceful-fs'
-import ElectronLauncherApp from './ElectronLauncherApp'
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('graceful-fs').gracefulify(require('fs'))
 
-gracefulify(fs)
+// eslint-disable-next-line import/first
+import ElectronLauncherApp from './ElectronLauncherApp'
 
 new ElectronLauncherApp().start()

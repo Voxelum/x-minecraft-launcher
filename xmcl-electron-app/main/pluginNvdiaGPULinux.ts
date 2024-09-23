@@ -7,8 +7,9 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
   app.registry.get(LaunchService).then((servi) => {
     servi.registerMiddleware({
       name: 'nvidia-gpu-linux',
-      async onBeforeLaunch(input, output) {
+      async onBeforeLaunch(input, payload, output) {
         if (app.platform.os !== 'linux') return
+        if (payload.side === 'server') return
         const settings = await app.registry.get(kSettings)
         if (settings.enableDedicatedGPUOptimization) {
           const env = output.extraExecOption?.env || {

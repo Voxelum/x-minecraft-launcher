@@ -133,6 +133,7 @@ browseApps: Parcourir l'interface utilisateur personnalisée du launcher
 cancel: Annuler
 checkUpdate:
   name: Vérifier la mise à jour
+color: Couleur
 confirm: Début
 copyClipboard:
   success: Copier dans le presse-papier
@@ -274,6 +275,11 @@ duration:
     {duration} minutes
   second: '{duration} seconde | {duration} secondes'
 edit: Éditer
+env:
+  select:
+    all: Tout sélectionner
+    fit: Sélectionnez Ajuster
+    none: Ne rien sélectionner
 error:
   name: |-
     Erreur | 
@@ -298,6 +304,8 @@ errors:
   HeadersTimeoutError: Délai d'expiration du Header HTTP
   NotFoundError: 404 introuvable
   SocketError: Erreur de socket du serveur
+eula:
+  body: En cochant la case, vous indiquez votre accord avec {eula} de Minecraft.
 exception:
   http: >-
     La requête HTTP à {url} a échoué. Code d'état {statusCode}. {code}. Veuillez
@@ -366,7 +374,7 @@ importModpack:
 importResource: Importer une ressource
 install: Installer
 installAssets:
-  asset: Installer l'asset {hash}
+  asset: "Installer {count}\_éléments"
   assetIndex: Vérifier le fichier d'index des assets
   name: Installer les fichiers d'assets
 installAuthlibInjector: Installer authlib-injecteur
@@ -414,6 +422,7 @@ installVersion:
   name: Installer le client Minecraft {version}
 instance:
   addServer: Ajouter un Serveur
+  changeIcon: Changer d'icône
   current: Instance actuelle
   delete: Supprimer le jeu
   deleteHint: |-
@@ -426,12 +435,14 @@ instance:
     de configuration distant.
   gameVersion: Version du jeu
   icon: Icône de profil
+  iconHint: L'icône peut être un fichier ou un lien URL Internet.
   iconUrl: URL de l'icône
   includeVersion: |-
     Inclure la version | 
     Inclure les versions
   lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
+  launchServer: Lancer le serveur localhost
   mcOptions: Options Minecraft
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil
@@ -440,6 +451,8 @@ instance:
   openCrashReportFolder: Ouvrir le dossier de rapport de crash
   openLogFolder: Ouvrir le dossier de logs
   playtime: Temps de jeu
+  prependCommand: Ajouter une commande
+  prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   requireName: Le nom est requis
   showInstance: Afficher le dossier du jeu
   versionHint: La version Minecraft de ce jeu
@@ -510,6 +523,7 @@ instances:
     Importer à partir du dossier commun .minecraft. 
     Cela dupliquera le profil de jeu original vers XMLL.
   choose: Sélectionnez un jeu
+  folderSetting: Paramètres du dossier
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
   loadingFiles: Chargement des fichiers Modpack
@@ -535,6 +549,7 @@ java:
   refresh: Actualiser l'exécutable Java Local
   systemMemory: Mémoire Système Actuelle
 launch:
+  killServer: Tuer le serveur Localhost
   launch: Jouer
 launchBlocked:
   ignore: Forcer le Lancement
@@ -724,7 +739,15 @@ mod:
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
 modInstall:
+  archived: >-
+    {name} a été archivé. 
+
+    {name} ne recevra plus de mises à jour à moins que l'auteur ne décide de
+    désarchiver le projet.
+  checkDependencies: Vérifier les dépendances
+  checkedDependencies: Dépendances vérifiées
   install: Installer
+  installDependencies: Installer les dépendances manquantes
   installed: Installé
   noVersionSupported: Le mod prend uniquement en charge Minecraft {supported}.
   recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
@@ -777,6 +800,7 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x
     64x: 64x
     8x-: 8x-
@@ -946,6 +970,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Une fois que votre pair a entré votre token, vous devez entrer son token
     dans la zone de texte ci-dessous. Cliquez sur confirmer pour vous connecter.
+  exposedPortDescription: Le port que vous avez exposé à d'autres pairs
+  exposedPorts: Ports transférés
   gatheringIce: >
     "Veuillez attendre que le serveur ICE collecte suffisamment d'informations
     sur votre réseau. Si vous êtes impatient et qu'il y a suffisamment
@@ -981,6 +1007,7 @@ multiplayer:
   name: Multijoueur sur LAN
   networkInfo: Infos réseau
   next: Suivant
+  otherExposedPortDescription: La préface du port par {user}
   placeholder: Connectez-vous avec un autre utilisateur pour jouer à Minecraft sur LAN !
   previous: Précédent
   receiveHint: >-
@@ -1009,6 +1036,8 @@ natType:
   symmetricNat: NAT symétrique
   symmetricUDPFirewall: Pare-feu UDP symétrique
   unknown: Inconnu
+neoForgedVersion:
+  name: NeoForged
 next: Suivant
 'no': Non
 ok: OK
@@ -1078,12 +1107,14 @@ resourcepack:
   manage: Gérer les packs de ressources
   name: Pack de Ressources | Packs de Ressources
   searchOnCurseforge: Rechercher {name} dans curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Packs de ressources sélectionnés
   shared: L'instance utilise le dossier du pack de ressources partagé
   showFile: Afficher le pack de ressources dans le dossier {file}
   showInCurseforge: Afficher {name} dans curseforge
   unselected: Packs de ressources désélectionnés
 save:
+  cheat: Tricherie
   copy:
     cancel: Annuler la copie
     confirm: Démarrer la copie
@@ -1102,6 +1133,7 @@ save:
     fromProfile: À partir d'autres instances
     fromResource: À partir des ressources gérées
     title: Importer la sauvegarde à partir de la source gérée
+  createNew: Créer un nouveau monde
   createdWorlds: Vous avez {count} mondes
   deleteHint: |-
     Cette opération ne peut pas être annulée. 
@@ -1113,14 +1145,21 @@ save:
   export: Exporter la sauvegarde
   exportMessage: Exporter la sauvegarde en zip
   exportTitle: Exporter la sauvegarde
+  gameMode: mode de jeu
   import: Importer la sauvegarde
   importMessage: Importer une sauvegarde à partir d'un zip
   importTitle: Importer une sauvegarde
   independent: L'instance utilise un dossier de sauvegarde indépendant
+  levelName: Nom du niveau
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
+  search: Rechercher des enregistrements
+  selected: archives locales
   shared: L'instance utilise le dossier de sauvegarde partagé
   showDirectory: Afficher le répertoire de sauvegarde
+  unselected: archives partagées
+  useCurrent: Utiliser le monde actuel
+saves: {}
 screenshots:
   empty: Vous n'avez pas de capture d'écran
   goto: Ouvrir Dossier
@@ -1137,8 +1176,11 @@ server:
   host: Héberger
   hostHint: L'hôte (avec le port) du serveur
   ipAddress: Adresse IP
+  maxPlayers: Le maximum de joueurs
   motd: Serveur MOTD
   name: Serveur | Serveurs
+  nogui: Pas d'interface graphique du serveur
+  onlineMode: Mode en ligne
   ping: Ping
   pings: Pings
   players: Joueurs

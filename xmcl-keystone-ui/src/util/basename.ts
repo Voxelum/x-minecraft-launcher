@@ -1,7 +1,13 @@
-export function basename(path: string) {
-  return path.substring(path.lastIndexOf('/') + 1).substring(path.lastIndexOf('\\') + 1)
+export const sep = window.navigator.platform.startsWith('Win') ? '\\' : '/'
+
+export function join(...paths: string[]) {
+  return paths.join(sep)
 }
 
-export function dirname(path: string) {
-  return path.substring(0, Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')))
+export function basename(path: string, s = sep) {
+  return path.substring(path.lastIndexOf(s) + 1)
+}
+
+export function dirname(path: string, s = sep) {
+  return path.substring(0, path.lastIndexOf(sep))
 }

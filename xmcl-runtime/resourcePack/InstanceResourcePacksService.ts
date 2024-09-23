@@ -21,13 +21,13 @@ export class InstanceResourcePackService extends AbstractInstanceDoaminService i
 
   domain = ResourceDomain.ResourcePacks
 
-  @Lock(p => LockKey.resourcepacks(p))
   override scan(instancePath: string): Promise<Resource[]> {
-    return super.scan(instancePath)
+    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
+    return lock.read(() => super.scan(instancePath))
   }
 
-  @Lock(p => LockKey.resourcepacks(p))
   override link(instancePath: string, force?: boolean): Promise<boolean> {
-   return super.link(instancePath, force)
+    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
+    return lock.read(() => super.link(instancePath, force))
   }
 }

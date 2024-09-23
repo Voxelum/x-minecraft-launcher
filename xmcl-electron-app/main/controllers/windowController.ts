@@ -96,7 +96,11 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
           }
           return false
         case Operation.Close:
-          window.close()
+          if (this.parking) {
+            window.hide()
+          } else {
+            window.close()
+          }
           return true
       }
     }

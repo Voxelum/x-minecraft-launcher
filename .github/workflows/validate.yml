@@ -1,7 +1,15 @@
 name: Validate
 
 on:
-  pull_request
+  push:
+    branches:
+      - master
+    paths:
+      - 'xmcl-runtime/**'
+      - 'xmcl-runtime-api/**'
+      - 'xmcl-keystone-ui/**'
+      - 'xmcl-electron-app/**'
+  pull_request:
 
 jobs:
   validate:

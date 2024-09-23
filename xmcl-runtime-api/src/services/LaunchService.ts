@@ -36,6 +36,10 @@ export interface LaunchOptions {
    */
   gameDirectory: string
   /**
+   * Launch client or server
+   */
+  side?: 'client' | 'server'
+  /**
    * The user to launch
    */
   user: UserProfile
@@ -105,13 +109,20 @@ export interface LaunchOptions {
    * The extra arguments for minecraft
    */
   mcOptions?: string[]
+  /**
+   * Prepend command before launch
+   */
+  prependCommand?: string
 
   disableElyByAuthlib?: boolean
+
+  nogui?: boolean
 }
 
 export interface GameProcess {
   pid: number
   ready: boolean
+  side: 'client' | 'server'
   options: LaunchOptions
 }
 

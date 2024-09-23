@@ -2,6 +2,7 @@
 import { useForgeVersions } from '@/composables/version'
 import { ForgeVersion } from '@xmcl/runtime-api'
 import VersionInput, { VersionItem } from './VersionInput.vue'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -44,7 +45,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    icon="http://launcher/icons/forge"
+    :icon="BuiltinImages.forge"
     title="Forge"
     url="https://github.com/MinecraftForge/MinecraftForge"
     :is-clearable="true"

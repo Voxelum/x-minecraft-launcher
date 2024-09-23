@@ -3,7 +3,6 @@ import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
 import { ensureDir, readFile, readdir, rm, stat, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { request } from 'undici'
 import { Logger } from '~/logger'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
@@ -177,9 +176,9 @@ export class LauncherAppManager implements AppsHost {
     if (url === this.app.builtinAppManifest.url) {
       return this.app.builtinAppManifest
     }
-    const msg = await request(url)
+    const msg = await this.app.fetch(url)
 
-    if (typeof msg.headers['content-type'] === 'string' && msg.headers['content-type']?.startsWith('text/html')) {
+    if (typeof msg.headers.get('content-type') === 'string' && msg.headers.get('content-type')?.startsWith('text/html')) {
       const parser = new XMLParser({
         ignoreAttributes: false,
         // preserveOrder: true,
@@ -188,7 +187,7 @@ export class LauncherAppManager implements AppsHost {
         processEntities: true,
         htmlEntities: true,
       })
-      const dom = parser.parse(await msg.body.text())
+      const dom = parser.parse(await msg.text())
       const link = dom.html.head.link
       if (link) {
         const links = link instanceof Array ? link : [link]
@@ -196,7 +195,7 @@ export class LauncherAppManager implements AppsHost {
         if (manifestNode) {
           const manifestUrl = manifestNode['@_href']
           if (manifestUrl) {
-            const man: AppManifest = await (await request(new URL(manifestUrl, url))).body.json() as any
+            const man: AppManifest = await (await this.app.fetch(new URL(manifestUrl, url))).json() as any
             return man
           }
         }
