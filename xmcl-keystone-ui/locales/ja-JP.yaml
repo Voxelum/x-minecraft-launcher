@@ -916,7 +916,7 @@ multiplayer:
   joinOrCreateGroup: グループに参加/グループを作成
   joinOrCreateGroupHint: あなたのグループIDを取得するかグループを作成してください
   kernel: P2P カーネル
-  kernelDescription: ネイティブ WebRTCまたはNode-Detachannelを使用します。P2P接続によりランチャーがクラッシュする時のみ切り替えてください。
+  kernelDescription: ネイティブ WebRTCまたはNode-Datachannelを使用します。P2P接続によりランチャーがクラッシュする時のみ切り替えてください。
   leaveGroup: グループを抜ける
   localToken: ローカルトークン
   manualConnect: 手動接続
@@ -1311,7 +1311,7 @@ task:
   pause: 一時停止
   searchOnCurseforge: Curseforgeで {name} を見る
   searchOnModrinth: '@:mod.searchOnModrinth'
-  showInCurseforge: '{name} をCurseforgeで見る'
+  showInCurseforge: Curseforgeで {name} を見る
   viewBackgroundMusic: BGM
 theme:
   selectImage: 画像を選択
