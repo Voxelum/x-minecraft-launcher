@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - signpath
     paths:
       - 'xmcl-runtime/**'
       - 'xmcl-runtime-api/**'
@@ -19,8 +18,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v4
       with:
@@ -84,6 +82,10 @@ jobs:
         artifact-configuration-slug: build
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
+    - name: Update Sha256
+      if: ${{ runner.os == 'Windows' }}
+      run: |
+        pnpm postsign
     - name: Upload Signed Build
       uses: actions/upload-artifact@v4
       with:

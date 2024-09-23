@@ -19,6 +19,7 @@
         "build:all": "cross-env NODE_ENV=production cross-env BUILD_TARGET=production tsx build.ts",
         "build:dir": "cross-env NODE_ENV=development cross-env BUILD_TARGET=dir tsx build.ts",
         "postinstall": "tsx postinstall.ts",
+        "postsign": "tsx postsign.ts",
         "check": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project preload/tsconfig.json",
         "dev": "cross-env NODE_ENV=development tsx dev.ts",
         "lint": "eslint --ext .ts .",
