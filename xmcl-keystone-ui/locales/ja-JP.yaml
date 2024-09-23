@@ -425,7 +425,7 @@ instance:
   openLogFolder: ログフォルダを開く
   playtime: プレイ時間
   prependCommand: 先頭にコマンドを追加
-  prependCommandHint: このコマンドは全てに起動コマンドの先頭に追加されます
+  prependCommandHint: 全ての起動コマンドの先頭に追加されます
   requireName: 名前が必要です
   showInstance: ゲームフォルダを開く
   versionHint: この起動構成におけるMinecraftのバージョン
@@ -711,9 +711,9 @@ modpack:
   name: Modpack | Modpacks
   overrides: オーバーライド
   showFile: ファイルを見る {file}
-  showInCurseforge: '{name} をCurseforgeで見る'
-  showInFtb: '{name} をFTBで見る'
-  showInModrinth: '{name} をModrinthで見る'
+  showInCurseforge: Curseforgeで {name} を見る
+  showInFtb: FTBで {name} を見る
+  showInModrinth: Modrinthで {name} を見る
   url: URL
   urlHint: あなたのModpackのホームページのURL
 modrinth:
@@ -892,7 +892,7 @@ multiplayer:
   currentNatTitle: '現在のネットワーク (NAT):'
   difficultyLevelHint: 接続を作成する難易度
   disconnect: 切断
-  disconnectDescription: ユーザー {user}{{id}} との接続を切断しますか?
+  disconnectDescription: ユーザー {user}({id}) との接続を切断しますか?
   disconnected: 切断済み
   enterRemoteToken: リモートトークンを入力
   enterRemoteTokenHint: あなたのピアがトークンを入力したら、あなたが相手側のトークンを下に入力する必要があります。続行を押して接続します。
@@ -1038,25 +1038,45 @@ save:
   copyFrom:
     cancel: キャンセル
     confirm: コピーを開始
+    description: この起動構成にセーブデータを他の起動構成や管理されたリソース(curseforge)からインポートできます
+    from: '{src} から'
+    fromProfile: 他の起動構成から
+    fromResource: 管理されたリソースから
+    title: 管理されたリソースからセーブデータをインポート
+  createNew: 新しいワールドを作る
+  createdWorlds: '{count} 個のワールドがあります'
+  deleteHint: セーブデータを削除します。この操作は取り消せません。続行しますか?
+  deleteTitle: このセーブデータを削除
+  detail: 他の情報
+  dropHint: zipをここにドラッグしてインポート
   export: セーブデータをエクスポート
   exportMessage: セーブデータをZipとしてエクスポート
+  exportTitle: セーブデータをエクスポート
+  gameMode: ゲームモード
   import: セーブデータをインポート
   importMessage: セーブデータをZipからインポート
+  importTitle: セーブデータをインポート
+  independent: 起動構成は独立したセーブデータを使用します
   levelName: レベル名
   manage: セーブデータを管理
   name: セーブデータ | セーブデータ
   search: セーブデータを検索
   selected: ローカルのセーブデータ
   shared: 起動構成は共有されたセーブデータのフォルダを使用します
+  showDirectory: セーブデータのディレクトリを開く
   unselected: 共有されたセーブデータ
   useCurrent: 現在のワールドを使用
 screenshots:
+  empty: スクリーンショットがありません
   goto: フォルダーを開く
   name: スクリーンショット
   playRandom: シャッフル
   playSequence: 順番に再生
 server:
+  acceptingMinecraftVersion: Minecraftバージョンを使用中
+  creationHint: サーバーアドレスを入力し、pingしてください
   expectedVersions: サポートされたバージョン
+  filterVersion: 対応したMinecraftバージョンのサーバーをフィルターします
   host: ホスト
   hostHint: サーバーのホスト(とポート)
   ipAddress: IP アドレス
@@ -1082,6 +1102,7 @@ serverStatus:
   timeout: §4サーバーへの接続がタイムアウト!
 setting:
   allowPrerelease: プレリリース版をダウンロード
+  allowPrereleaseDescription: プレリリース版は不安定かもしれません
   apiSets:
     auto: 自動 (ネットワークにより判断)
     official: 公式 (Mojang)
@@ -1090,22 +1111,41 @@ setting:
   autoDownload: 自動ダウンロード
   autoDownloadDescription: アップデートがあれば自動でダウンロードします
   autoInstallOnAppQuit: 自動インストール
+  autoInstallOnAppQuitDescription: アップデートを自動でインストールし、アプリを閉じる
   backgroundColorAbove: 背景画像をオーバーレイとして表示
+  backgroundColorAboveDescription: 背景の画像、映像の上に背景色を適用できるようにします
   backgroundImage: 背景画像
   backgroundImageBlur: ブラー
   backgroundImageBlurDescription: ドラッグして効果の度合いを調整
   backgroundImageClear: クリア
   backgroundImageDescription: 背景に使う画像を選択、またはクリア
+  backgroundImageFit:
+    contain: 含む
+    cover: 覆う
+    name: 合わせる
   backgroundImageSelect: 選択
   backgroundMusic: BGM
   backgroundType: 背景の種類
+  backgroundTypeDescription: 背景に特殊効果を表示します (動作が重くなるかもしれあせん)
   backgroundTypes:
+    halo: ヘイロー
+    image: 画像
+    none: なし
     particle: パーティクル
     video: ビデオ
   backgroundVideo: 背景のビデオ
+  backgroundVideoDescription: 映像を選ぶかクリアする
+  backgroundVideoSelect: 選択
+  backgroundVideoVolume: 音量
   backgroundVideoVolumeDescription: ドラッグして音量を調整
+  blurAppBar: アプリバーをぼかす
+  blurMainBody: メインをぼかす
+  blurMainBodyDescription: ランチャーの右ペインをぼかすか
+  blurSidebar: サイドバーをぼかす
+  browseRoot: 見る
   checkUpdate: アップデートを確認
   colorTheme:
+    appBarColor: アプリバー
     backgroundColor: 背景色
     cardColor: カードの色
     description: このテーマで色を変える
@@ -1118,34 +1158,55 @@ setting:
   darkTheme: テーマ
   darkThemeDescription: ダークテーマかライトテーマを選択してください
   developerMode: 開発者モード
+  developerModeDescription: あなたの作成したModを簡単に試せます
   disableTelemetry: テレメトリを無効化
+  disableTelemetryDescription: XMCLはゲームの立ち上げとユーザーイベントを収集します
   enableDedicatedGPUOptimization: 外部GPUを使用
-  enableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当てます。
+  enableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当てます
   enableDiscord: Discord RPCを有効化
+  enableDiscordDescription: XMCLでのリッチプレゼンス
   general: 一般
   githubRelease: Github リリース
   globalSetting: グローバル設定
+  globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
+  hideNewsHeader: ニュースを隠す
   language: 言語
   languageDescription: 表示する言語
   latestVersion: 最新版
   layout:
     default: デフォルトのレイアウト
+    focus: レイアウトをフォーカス
   layoutDescription: ランチャーUIのレイアウト
   layoutTitle: レイアウト
   linuxEnableDedicatedGPUOptimization: 外部GPUを使用
   linuxEnableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当て、外部GPUをDRI PRIME, Optimusなどで優先的に使用します
+  linuxTitlebar: システムのタイトルバー
+  linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
   location: 保管場所
+  maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
   maxSockets: ホスト毎
+  maxSocketsDescription: ホスト毎の最大のソケット、または全ての最大のソケットを制限します。0で無制限。
+  maxSocketsTitle: 最大HTTPソケット数
   name: グローバル設定 | グローバル設定
   network: ネットワーク設定
   officialWebsite: 公式サイト
   particleMode:
     bubble: バブル
     name: パーティクルモード
+    push: プッシュ
+    remove: 削除
+    repulse: リパルス
+  particleModeDescription: パーティクルの挙動を選ぶ
   replaceNative: ネイティブライブラリを置き換えます
   replaceNativeDescription: ネイティブライブラリをあなたのコンピューターアーキテクチャに合わせて置き換えます
+  replaceNatives:
+    all: すべて
+    legacy: 古いバーキョンのみ
   resetToDefault: デフォルトにリセット
+  showNewsHeader: ニュースを隠さない
   showRoot: 見る
+  streamerMode: ストリーミングモード
+  streamerModeDescription: ランチャーでメールアドレスのような機密性の高い情報を隠します。
   theme:
     dark: ダークテーマ
     light: ライトテーマ
@@ -1157,6 +1218,18 @@ setting:
   themeResetFont: フォントをリセット
   themeSelectFont: フォントを選択
   themeShare: テーマを共有
+  themeShareDescription: レーマをあなたのフレンドと共有できます。
+  update: アップデート
+  useBmclAPI: BMCL APIを使う
+  useBmclAPIDescription: 中国本土にいる場合 BMCLAPI を用いてMinecraftをダウンロードします (中国本土に居ない場合機能しません)
+  useProxy: HTTPプロキシ
+  useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
+  viewBackgroundMusic: BGMフォルダを見る
+settingLabel:
+  global: グローバル
+  globalHint: グローバル設定に従います
+  local: ローカル
+  localHint: 現在の起動構成にのみ適用されます
 setup:
   account:
     description: ゲームアカウントでログインしてください。もしお持ちでないのなら、スキップできます。
@@ -1169,11 +1242,18 @@ setup:
       データのルートは一般的な.minecraftディレクトリではありません。XMCLのディレキトリ構造はバニラとは互換性がないので、.minecraftをデータのルートに設定することは推奨されません。
     drives: 推奨の言語
     name: データディレクトリを設定
+  defaultLayoutDescription: >-
+    デフォルトのレイアウトは"インスタンス"コンセプトを強化しようとしています。Discordのような感じです。Steamなど他のランチャーからもインスパイアされています。
   defaultPath: デフォルトのパス
   error:
+    badDataRoot: ランチャーデータのためのディレクトリが無効です! 他のディレクトリを選択してください!
     exists: 選択されたディレクトリは空ではありません。続行できますが、データのバックアップを忘れないでください。
     noPermission: ランチャーは選択されたディレクトリにアクセスする権限がありません! 他を選択してください。
     nonDictionary: 選択されたパスはファイルです! ディレクトリを選択してください!
+  focusLayoutDescription: フォーカスレイアウトはMinecraftランチャーの昔のレイアウトです。これは単一インスタンスやいくつかのインスタンスのためにデザインされています
+  game:
+    description: すでに存在するゲームディレクトリ (.minecraft) から既存のリソースをインポートします。すぐにMod, リソースパックを識別できます
+    name: すでに存在するゲームをインポート
   locale:
     description: >-
       もしある場合はあなたの最も好ましい言語を選択してください!
@@ -1189,9 +1269,11 @@ shaderPack:
   dropHint: シェーダーパックをインポート
   empty: シェーダーパックがありません
   enable: '{name} を使用中'
+  enabled: シェーダーパックが有効
   manage: シェーダーパックを管理
   name: シェーダーパック
   searchHint: シェーダーパックを検索
+  selectSearchHint: シェーダーパックを検索して選ぶ
   showDirectory: シェーダーパックのディレクトリを見る
   showFile: このシェーダーパックをフォルダーで見る
 shared:
@@ -1202,38 +1284,69 @@ store:
   name: Modpack マーケット
   popular: 有名なModpack
   recentUpdated: 最近アップデート
+summery: まとめ
 tag:
   create: タグを作成
+  createSelected: 選択されたもので新しいタグを作る
   newTag: 新しいタグ
 task:
+  available: 利用可能
   cancelled: キャンセルされました
   clear: 終了したタスクをクリア
+  compatible: '{format} 形式は {version} と互換性があります'
   connection:
+    connected: 接続済み
+    free: 接続なし
+    pending: 保留中
+    queued: キュー済み
+    running: 接続を実行中
     size: 合計
   connections: ネットワーク接続
+  defaultDescription: Minecraftのデフォルトの外観
   empty: 実行中のタスクなし
   failed: 失敗
   manager: タスクマネージャー
   nTaskRunning: '{count} 個のタスクが実行中'
   name: タスク | タスク
+  pause: 一時停止
+  searchOnCurseforge: Curseforgeで {name} を見る
   searchOnModrinth: '@:mod.searchOnModrinth'
+  showInCurseforge: '{name} をCurseforgeで見る'
+  viewBackgroundMusic: BGM
 theme:
   selectImage: 画像を選択
   selectMusic: 音楽を選択
   selectVideo: 映像を選択
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
+transportType:
+  host: ホスト候補
+  prflx: ピアの反射の候補
+  relay: リレー候補
 turnRegion:
   fr: フランス
   hk: 香港
   po: ポーランド
 tutorial:
   feedbackDescription: 問題に遭遇した場合は、このボタンを押してフィードバックを送ってください!
+  hideNewsHeaderDescription: ニュースを左で見れます。このボタンを押すことで隠せます
   instance:
+    iconDescription: クリックしてアイコンを変える
     iconTitle: 起動構成のアイコン
+    javaDescription: Javaを選ぶか切り替える
     javaImportDescription: Javaをローカルストレージからインポート
     javaImportTitle: Javaをインポート
     javaTitle: Javaのリスト
+  instanceAddDescription: このボタンを押して既存の起動構成やModpackからインポートするか、新しく作れます。
+  instanceSelectDescription: このボタンをクリックしてニュースを見たりゲームを選んだりできます。
+  launchDescription: このボタンを押してゲームをインストールするか起動します
   mod:
+    defaultSourceDescription: >-
+      ここでModの詳細のソースを選択できます。もしModrinthとCurseforgeの両方に公開されているModがあり、これら2つのコンテンツプロバイダーを切り替える場合は、ここで値を変更できます。
+    defaultSourceTitle: Modのソースを選ぶ
+    detailDescription: 左でアイテムを選ぶと、Modの詳細を見ることができます。Modrinth、Curseforgeまたは他のModを見ることができます
+    detailTitle: Modの詳細
+    listDescription: 何も入力していない場合は、インストール済みのModが表示されます。キーワードを入力したりカテゴリを選ぶとModを検索できます。
     listTitle: インストール、またはModを検索
     searchDescription: Modrinth, CurseforgeからModを検索するか、ローカルのキャッシュで検索ボックスから探せます。
     searchTitle: Modを検索
