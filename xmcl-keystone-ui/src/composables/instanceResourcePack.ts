@@ -1,12 +1,17 @@
 import { BuiltinImages } from '@/constant'
+import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { ProjectFile } from '@/util/search'
 import { PackMeta } from '@xmcl/resourcepack'
-import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref } from 'vue'
-import { useDomainResources } from './resources'
 import { useService } from './service'
+import { useState } from './syncableState'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
+  /**
+   * The id in resourcepack array in gamesetting file
+   */
+  id: string
   /**
    * The resource pack file path
    */
@@ -16,14 +21,6 @@ export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
    */
   name: string
   /**
-   * The id in resourcepack array in gamesetting file
-   */
-  id: string
-  /**
-   * The url of the resourcepack
-   */
-  url: string[]
-  /**
    * The version range of the resource pack
    */
   acceptingRange: string
@@ -32,14 +29,13 @@ export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
    */
   icon: string
   /**
-   * The tags of the resource pack
+   * The size of the resource pack
    */
-  tags: string[]
+  size?: number
   /**
-   * The resource associate with the resourcepack item.
-   * If it's undefined. Then this resource cannot be found.
+   * The hash of the resource pack
    */
-  resource: Resource
+  hash?: string
 }
 
 export const kInstanceResourcePacks: InjectionKey<ReturnType<typeof useInstanceResourcePacks>> = Symbol('InstanceResourcePacks')
@@ -54,15 +50,14 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
     enabled: enabled.has(resource.fileName) || enabled.has(`file/${resource.fileName}`),
     name: resource.name,
     id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
-    url: resource.uris,
     pack_format: 0,
     description: '',
+    size: resource.size,
+    hash: resource.hash,
     acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata.resourcepack)] ?? '[*]',
     icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
-    tags: resource.tags,
     modrinth: resource.metadata.modrinth,
     curseforge: resource.metadata.curseforge,
-    resource,
   }
   if (resource.metadata.resourcepack) {
     p.description = resource.metadata.resourcepack.description
@@ -70,40 +65,15 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
   }
   return p
 }
-const EMPTY_RESOURCE: Resource = ({
-  ino: 0,
-  path: '',
-  metadata: {},
-  tags: [],
-  domain: ResourceDomain.ResourcePacks,
-  fileName: '',
-  fileType: '',
-  size: 0,
-  version: 0,
-  hash: '',
-  name: '',
-  uris: [],
-  mtime: 0,
-})
 
 /**
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
-  const { link, scan } = useService(InstanceResourcePacksServiceKey)
+  const { watch } = useService(InstanceResourcePacksServiceKey)
   const local = ref([] as Resource[])
-  async function mount(path: string) {
-    local.value = []
-    if (!path) return
-    const linked = await link(path)
-    if (!linked) {
-      const scanned = await scan(path)
-      local.value = scanned
-    }
-  }
-  watch(path, mount, { immediate: true })
+  const { state, isValidating, revalidate, error } = useState(() => path.value ? watch(path.value) : undefined, ReactiveResourceState)
 
-  const { resources, refresh, refreshing } = useDomainResources(ResourceDomain.ResourcePacks)
   const { t } = useI18n()
 
   function getResourcePackItemFromGameSettingName(resourcePackName: string): InstanceResourcePack {
@@ -113,20 +83,18 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
       icon: '',
       name: 'Minecraft',
       version: '',
+      size: 0,
+      hash: '',
       enabled: true,
       description: '',
       pack_format: 0,
       id: 'vanilla',
-      url: [],
-      tags: [],
-      resource: markRaw({ ...EMPTY_RESOURCE, name: 'Vanilla', path: 'vanilla' }),
     }
     if (resourcePackName !== 'vanilla') {
       pack.path = ''
       pack.name = resourcePackName
       pack.acceptingRange = 'unknown'
       pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
-      pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
     } else {
       pack.icon = BuiltinImages.minecraft
       pack.description = t('resourcepack.defaultDescription')
@@ -140,7 +108,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
     const mapped = [] as InstanceResourcePack[]
     const index: Record<string, InstanceResourcePack> = {}
     const disabled = [] as InstanceResourcePack[]
-    for (const r of resources.value.concat(local.value)) {
+    for (const r of (state.value?.files || []).concat(local.value)) {
       const val = getResourcePackItem(r, enabledSet)
       if (val.enabled) {
         index[val.id] = val
@@ -207,6 +175,6 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
     insert,
     enable,
     disable,
-    refreshing,
+    refreshing: isValidating,
   }
 }

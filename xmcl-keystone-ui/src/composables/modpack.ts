@@ -1,6 +1,7 @@
-import { CachedFTBModpackVersionManifest, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, ModpackServiceKey, Resource, ResourceDomain, ResourceState } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
-import { useDomainResources } from './resources'
+import { useState } from './syncableState'
+import { useService } from './service'
 
 export interface ModpackItem {
   resource?: Resource
@@ -15,8 +16,7 @@ export interface ModpackItem {
   id: string
 }
 
-export const kModpacks: InjectionKey<ReturnType<typeof useModpacks>> = Symbol('Modpacks')
-
 export function useModpacks() {
-  return useDomainResources(ResourceDomain.Modpacks)
+  const { watchModpackFolder } = useService(ModpackServiceKey)
+  return useState(watchModpackFolder, ResourceState)
 }

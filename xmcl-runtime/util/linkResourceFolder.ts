@@ -1,7 +1,7 @@
 import { ensureDir, lstat, readlink, rename, unlink } from 'fs-extra'
 import { Logger } from '~/logger'
 import { isSystemError } from './error'
-import { ENOENT_ERROR, createSymbolicLink } from './fs'
+import { ENOENT_ERROR, linkDirectory } from './fs'
 import { sep } from 'path'
 
 export async function isLinked(srcPath: string, destPath: string) {
@@ -53,6 +53,6 @@ export async function tryLink(srcPath: string, destPath: string, logger: Logger,
     return false
   }
 
-  await createSymbolicLink(srcPath, destPath, logger)
+  await linkDirectory(srcPath, destPath, logger)
   return true
 }

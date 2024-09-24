@@ -10,7 +10,7 @@ import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
-import { isDirectory, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 
 export interface VersionResolver {
@@ -99,10 +99,10 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     if (mcPath === root) return
     this.log(`Try to migrate the version from ${mcPath}`)
     const copyTask = task('cloneMinecraft', async () => {
-      await this.worker.copyPassively([
-        { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
-        { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
-        { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
+      await Promise.all([
+        copyPassively(join(mcPath, 'libraries'), join(root, 'libraries')),
+        copyPassively(join(mcPath, 'assets'), join(root, 'assets')),
+        copyPassively(join(mcPath, 'versions'), join(root, 'versions')),
       ])
     })
     Reflect.set(copyTask, '_from', mcPath)

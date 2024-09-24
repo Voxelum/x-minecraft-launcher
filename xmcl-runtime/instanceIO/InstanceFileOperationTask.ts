@@ -3,19 +3,17 @@ import { AbortableTask } from '@xmcl/task'
 import { Stats } from 'fs'
 import { copyFile, ensureDir, rename, stat, unlink } from 'fs-extra'
 import { dirname } from 'path'
-import { fileURLToPath } from 'url'
 import { isInSameDisk, linkWithTimeoutOrCopy } from '../util/fs'
 
 export class InstanceFileOperationTask extends AbortableTask<void> {
   constructor(
-    readonly copyOrLinkQueue: Array<{ file: InstanceFile; destination: string }>,
-    readonly resourceLinkQueue: Array<{ file: InstanceFile; destination: string; resource: Resource }>,
+    readonly copyOrLinkQueue: Array<{ file: InstanceFile; src: string; destination: string }>,
     readonly filesQueue: Array<{ file: InstanceFileWithOperation; destination: string }>,
     readonly platform: Platform,
     readonly finished: Set<InstanceFile>,
   ) {
     super()
-    this._total = copyOrLinkQueue.length + resourceLinkQueue.length
+    this._total = copyOrLinkQueue.length
     this.name = 'link'
     this.param = { count: this._total }
   }
@@ -35,9 +33,9 @@ export class InstanceFileOperationTask extends AbortableTask<void> {
     this.update(size ?? 0)
   }
 
-  handleFile = async (job: { file: InstanceFile; destination: string }) => {
+  handleFile = async (job: { file: InstanceFile; src: string; destination: string }) => {
     if (this.finished.has(job.file)) return
-    const filePath = fileURLToPath(job.file.downloads![0])
+    const filePath = job.src
     const fstat = await stat(job.destination).catch(() => undefined)
     if (fstat && fstat.ino === (await stat(filePath)).ino) {
       // existed file, but same
@@ -66,7 +64,7 @@ export class InstanceFileOperationTask extends AbortableTask<void> {
       await unlink(destination)
       this.finished.add(file)
     } else if (file.operation === 'backup-remove') {
-      await rename(destination, destination + '.backup').catch(() => {})
+      await rename(destination, destination + '.backup').catch(() => { })
       this.finished.add(file)
     } else if (file.operation === 'backup-add') {
       await rename(destination, destination + '.backup').catch(() => undefined)
@@ -77,7 +75,6 @@ export class InstanceFileOperationTask extends AbortableTask<void> {
   protected async process(): Promise<void> {
     const result = await Promise.allSettled([
       ...this.copyOrLinkQueue.map(async (job) => this.handleFile(job)),
-      ...this.resourceLinkQueue.map(async (job) => this.handleResource(job)),
       ...this.filesQueue.map(async (job) => this.handleCommon(job)),
     ])
     const errors = result.filter((r) => r.status === 'rejected').map((r) => (r as any).reason)

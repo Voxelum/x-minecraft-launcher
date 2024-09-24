@@ -12,6 +12,10 @@ export interface InstallOptifineOptions extends OptifineVersion {
   inheritFrom?: string
 }
 
+export interface InstallOptifineAsModOptions extends OptifineVersion {
+  instancePath: string
+}
+
 export interface InstallQuiltOptions {
   /**
    * Quilt version
@@ -163,11 +167,11 @@ export interface InstallService {
   /**
    * Install the optifine to the minecraft
    */
-  installOptifine(options: InstallOptifineOptions): Promise<[string, Resource]>
+  installOptifine(options: InstallOptifineOptions): Promise<string>
   /**
-   * Install the optifine uniersal jar as a resource
+   * Install the optifine uniersal jar as a mod
    */
-  installOptifineAsResource(options: InstallOptifineOptions): Promise<Resource>
+  installOptifineAsMod(options: InstallOptifineAsModOptions): Promise<void>
   /**
    * Install a specific liteloader version
    */

@@ -3,9 +3,9 @@ import StoreProject, { StoreProject as IStoreProject } from '@/components/StoreP
 import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { getCurseforgeProjectDescriptionModel, getCurseforgeProjectFilesModel, getCurseforgeProjectModel, useCurseforgeCategoryI18n } from '@/composables/curseforge'
-import { useCurseforgeInstallModpack } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { kInstances } from '@/composables/instances'
+import { useModpackInstaller } from '@/composables/modpackInstaller'
 import { useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
@@ -139,7 +139,7 @@ const onInstall = (v: StoreProjectVersion) => {
   const file = files.find(f => f.id.toString() === v.id)
   if (!file) return
   _installing.value = true
-  installModpack(file).finally(() => {
+  installModpack({ file, market: 1 }).finally(() => {
     _installing.value = false
   })
 }
@@ -162,7 +162,7 @@ const tasks = useTasks((t) => {
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)
-const installModpack = useCurseforgeInstallModpack(computed(() => project.value?.iconUrl))
+const installModpack = useModpackInstaller(computed(() => project.value?.iconUrl))
 
 </script>
 <template>

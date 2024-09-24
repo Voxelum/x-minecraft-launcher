@@ -12,7 +12,6 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
-import { Resource } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -28,7 +27,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'category', cat: string): void
-  (event: 'install', file: Resource[]): void
   (event: 'uninstall', files: ProjectFile[]): void
   (event: 'enable', file: ProjectFile): void
   (event: 'disable', file: ProjectFile): void

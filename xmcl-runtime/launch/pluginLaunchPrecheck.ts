@@ -8,7 +8,7 @@ import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
-import { createSymbolicLink, missing } from '~/util/fs'
+import { linkDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -23,17 +23,17 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // relink
       if (linkTarget !== fromPath) {
         await unlink(toPath)
-        await createSymbolicLink(fromPath, toPath, launchService)
+        await linkDirectory(fromPath, toPath, launchService)
       }
       return
     }
     const fstat = await stat(toPath).catch((e) => undefined)
     if (!fstat) {
-      await createSymbolicLink(fromPath, toPath, launchService)
+      await linkDirectory(fromPath, toPath, launchService)
       return
     }
     await move(toPath, join(toPath + '.bk'))
-    await createSymbolicLink(fromPath, toPath, launchService)
+    await linkDirectory(fromPath, toPath, launchService)
   }
   const ensureLinkFolderFromRoot = async (gameDirectory: string, folder: string) => {
     const fromPath = getPath(folder)

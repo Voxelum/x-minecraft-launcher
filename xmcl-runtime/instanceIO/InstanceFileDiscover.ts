@@ -3,7 +3,7 @@ import { Stats } from 'fs'
 import { stat } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
-import { ResourceService, ResourceWorker } from '~/resource'
+import { ResourceManager, ResourceWorker } from '~/resource'
 import { readdirIfPresent } from '../util/fs'
 
 /**
@@ -86,41 +86,36 @@ export async function decoareteInstanceFileFromResourceCache(
   stat: Stats,
   instancePath: string,
   worker: ResourceWorker,
-  resourceService: ResourceService,
-  undecorated: Array<InstanceFile>,
-  undecoratedResources: Map<InstanceFile, Resource>,
+  resourceManager: ResourceManager,
+  undecoratedResources: Set<InstanceFile>,
   hashes?: string[],
 ) {
   const relativePath = localFile.path
   const filePath = join(instancePath, relativePath)
   const ino = stat.ino
   if (isSpecialFile(relativePath)) {
-    let resource = await resourceService.getReosurceByIno(ino)
-    const sha1 = resource?.hash ?? await worker.checksum(filePath, 'sha1')
-    if (!resource) {
-      resource = await resourceService.getResourceByHash(sha1)
-    }
-    if (resource?.metadata.modrinth) {
+    const sha1 = await resourceManager.getSnapshotByIno(ino).then(v => v?.sha1) ?? await worker.checksum(filePath, 'sha1')
+    const metadata = await resourceManager.getMetadataByHash(sha1)
+    if (metadata?.modrinth) {
       localFile.modrinth = {
-        projectId: resource.metadata.modrinth.projectId,
-        versionId: resource.metadata.modrinth.versionId,
+        projectId: metadata.modrinth.projectId,
+        versionId: metadata.modrinth.versionId,
       }
     }
-    if (resource?.metadata.curseforge) {
+    if (metadata?.curseforge) {
       localFile.curseforge = {
-        projectId: resource.metadata.curseforge.projectId,
-        fileId: resource.metadata.curseforge.fileId,
+        projectId: metadata.curseforge.projectId,
+        fileId: metadata.curseforge.fileId,
       }
     }
-    localFile.downloads = resource?.uris && resource.uris.some(u => u.startsWith('http')) ? resource.uris.filter(u => u.startsWith('http')) : undefined
+
+    const uris = await resourceManager.getUriByHash(sha1)
+    localFile.downloads = uris && uris.some(u => u.startsWith('http')) ? uris.filter(u => u.startsWith('http')) : undefined
     localFile.hashes = await resolveHashes(filePath, worker, hashes, sha1)
 
     // No download url...
-    if ((!localFile.downloads || localFile.downloads.length === 0)) {
-      undecorated.push(localFile)
-      if (resource) {
-        undecoratedResources.set(localFile, resource)
-      }
+    if ((!localFile.downloads || localFile.downloads.length === 0) && metadata) {
+      undecoratedResources.add(localFile)
     }
   } else {
     localFile.hashes = await resolveHashes(filePath, worker)

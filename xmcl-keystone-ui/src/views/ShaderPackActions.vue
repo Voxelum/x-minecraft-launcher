@@ -27,7 +27,7 @@ import { injection } from '@/util/inject'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
-const { showDirectory, link, unlink, isLinked, scan } = useService(InstanceShaderPacksServiceKey)
+const { showDirectory, link, unlink, isLinked } = useService(InstanceShaderPacksServiceKey)
 const { path } = injection(kInstance)
 
 const { data: isInstanceLinked, isValidating, mutate } = useSWRV(computed(() => path.value), isLinked)
@@ -41,7 +41,6 @@ const onLinkClicked = async () => {
       mutate()
     })
   } else {
-    await scan(path.value)
     await link(path.value, true).finally(() => {
       linking.value = false
       mutate()

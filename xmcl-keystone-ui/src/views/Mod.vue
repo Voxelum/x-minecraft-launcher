@@ -294,7 +294,6 @@
         :updating="updating"
         :game-version="gameVersion"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
-        @install="onInstall"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -347,14 +346,15 @@ import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrint
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
+import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
+import { useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
-import { useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -364,11 +364,10 @@ import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceModsServiceKey, Resource, ResourceDomain, ResourceServiceKey, TaskState } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
-import { ContextMenuItem } from '@/composables/contextMenu'
 
 const { runtime, path } = injection(kInstance)
 
@@ -406,8 +405,8 @@ const groupedItems = computed(() => {
         const aInstalled = a.installed[0]
         const bInstalled = b.installed[0]
         if (!aInstalled || !bInstalled) return 0
-        if (sort.endsWith('asc')) return aInstalled.resource.mtime - bInstalled.resource.mtime
-        return bInstalled.resource.mtime - aInstalled.resource.mtime
+        if (sort.endsWith('asc')) return aInstalled.mtime - bInstalled.mtime
+        return bInstalled.mtime - aInstalled.mtime
       })
     } else if (sort.startsWith('alpha')) {
       result.sort((a, b) => {
@@ -498,24 +497,19 @@ const onLoad = () => {
 }
 
 // install / uninstall / enable / disable
-const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
-const onInstall = (f: Resource[], _path?: string) => {
-  install({ path: _path ?? path.value, mods: f }).then(() => {
-    setTimeout(revalidate, 1500)
-  })
-}
+const { install, uninstall, enable, disable, installFromMarket } = useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
-  uninstall({ path: _path ?? path.value, mods: f.map(f => (f as ModFile).resource) }).then(() => {
+  uninstall({ path: _path ?? path.value, mods: f.map(f => f.path) }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
 const onEnable = (f: ProjectFile, _path?: string) => {
-  enable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
+  enable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
 const onDisable = (f: ProjectFile, _path?: string) => {
-  disable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
+  disable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
@@ -544,7 +538,7 @@ const getContextMenuItems = () => {
   const selected = new Set(Object.keys(selections.value).filter((k) => selections.value[k]))
   const files = items.value.filter(i => selected.has(i.id)).map(v => v.installed).flat()
   const allEnabled = files.every(v => v.enabled)
-  const mods = files.map(v => v.resource)
+  const mods = files.map(v => v.path)
   const text = t('mod.mods', { count: selected.size })
   // delete and disable items
   result.push({
@@ -585,14 +579,12 @@ onUnmounted(() => {
 })
 
 // Drop
-const { resolveResources } = useService(ResourceServiceKey)
 const { dragover } = useDrop(() => { }, async (t) => {
   const paths = [] as string[]
   for (const f of t.files) {
     paths.push(f.path)
   }
-  const resources = await resolveResources(paths.map(p => ({ path: p, domain: ResourceDomain.Mods })))
-  await install({ path: path.value, mods: resources })
+  await install({ path: path.value, mods: paths })
 }, () => { })
 
 // modrinth installer
@@ -600,7 +592,7 @@ const modrinthInstaller = useModrinthInstaller(
   path,
   runtime,
   mods,
-  onInstall,
+  installFromMarket,
   onUninstall,
 )
 provide(kModrinthInstaller, modrinthInstaller)
@@ -610,7 +602,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   path,
   runtime,
   mods,
-  onInstall,
+  installFromMarket,
   onUninstall,
   'mc-mods',
 )

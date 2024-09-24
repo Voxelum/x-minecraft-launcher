@@ -2,12 +2,14 @@
 import MarketProjectDetail, { Info, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { useProjectDetailUpdate } from '@/composables/projectDetail'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
-import { ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceResourcePacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   resourcePack: ProjectEntry<InstanceResourcePack>
@@ -16,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const isUnmapped = computed(() => {
-  return props.installed[0].resource.path === ''
+  return props.installed[0].path === ''
 })
 
 const isVanilla = computed(() => {
@@ -28,7 +30,7 @@ const versions = computed(() => {
   const all: ProjectVersion[] = files.map((f) => {
     const version: ProjectVersion = {
       id: f.path,
-      name: f.resource.fileName,
+      name: basename(f.path),
       version: f.version,
       downloadCount: 0,
       installed: true,
@@ -58,15 +60,15 @@ const model = computed(() => {
 
   const info = computed(() => {
     const result: Info[] = []
-    if (!file) return []
+    if (!file || !file.size || !file.hash) return []
     result.push({
       icon: '123',
       name: t('fileDetail.fileSize'),
-      value: getExpectedSize(file.resource.size),
+      value: getExpectedSize(file.size),
     }, {
       icon: 'tag',
       name: t('fileDetail.hash'),
-      value: file.resource.hash,
+      value: file.hash,
     })
     return result
   })
@@ -94,11 +96,12 @@ const model = computed(() => {
 
 const updating = useProjectDetailUpdate()
 
-const { removeResources } = useService(ResourceServiceKey)
+const { uninstall } = useService(InstanceResourcePacksServiceKey)
+const { path } = injection(kInstance)
 const onDelete = async () => {
   updating.value = true
   disable(props.installed)
-  await removeResources(props.installed.map(i => i.resource.hash))
+  await uninstall(path.value, props.installed.map(i => i.path))
 }
 
 const { enable, disable } = injection(kInstanceResourcePacks)

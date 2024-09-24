@@ -11,8 +11,7 @@ export interface UpdateInstanceOptions {
 
 export type UpgradeModpackOptions = {
   instancePath: string
-  oldModpack?: string
-  newModpack: string
+  modpack: string
 }
 
 export type UpgradeModpackRawOptions = {
@@ -30,8 +29,13 @@ export type InstanceFileUpdate = {
   operation: 'backup-add' | 'backup-remove'
 }
 
+export interface InstanceUpdateProfile {
+  config: EditInstanceOptions
+  files: InstanceFileUpdate[]
+}
+
 export interface InstanceUpdateService {
-  getInstanceUpdateProfile(options: UpgradeModpackOptions): Promise<InstanceFileUpdate[]>
+  getInstanceUpdateProfile(options: UpgradeModpackOptions): Promise<InstanceUpdateProfile>
   getInstanceUpdateProfileRaw(options: UpgradeModpackRawOptions): Promise<InstanceFileUpdate[]>
 }
 

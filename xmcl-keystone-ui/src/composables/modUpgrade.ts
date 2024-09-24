@@ -141,11 +141,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       updates.push(...plan.mod.installed.map(r => ({
         operation: 'remove',
         file: {
-          path: `mods/${basename(r.path)}`,
+          path: `mods/${r.fileName}`,
           hashes: {
             sha1: r.hash,
           },
-          size: r.resource.size,
+          size: r.size || 0,
         },
       } as InstanceFileUpdate)))
       if ('file' in plan) {

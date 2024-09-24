@@ -1,5 +1,5 @@
 import { ProjectEntry } from '@/util/search'
-import { InstanceSavesServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/runtime-api'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceSaveFile } from './instanceSave'

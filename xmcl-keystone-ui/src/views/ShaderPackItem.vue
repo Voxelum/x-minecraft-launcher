@@ -17,9 +17,11 @@
 import MarketItem from '@/components/MarketItem.vue'
 import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
+import { kInstance } from '@/composables/instance'
 import { ShaderPackProject } from '@/composables/shaderPackSearch'
+import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { BaseServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   pack: ShaderPackProject
@@ -39,8 +41,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { removeResources } = useService(ResourceServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
+const { uninstall } = useService(InstanceShaderPacksServiceKey)
+const { path } = injection(kInstance)
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
   // const id = props.pack.modrinth?.project_id || props.pack.modrinthProjectId
@@ -48,14 +51,14 @@ const getContextMenuItems = () => {
     all.push({
       text: t('delete.name', { name: props.pack.title }),
       onClick: () => {
-        removeResources(props.pack.installed.map(f => f.resource.hash))
+        uninstall(path.value, props.pack.installed.map(f => f.path))
       },
       icon: 'delete',
       color: 'error',
     }, {
-      text: t('shaderPack.showFile', { file: props.pack.installed[0].resource.path }),
+      text: t('shaderPack.showFile', { file: props.pack.installed[0].path }),
       onClick: () => {
-        showItemInDirectory(props.pack.installed[0].resource.path)
+        showItemInDirectory(props.pack.installed[0].path)
       },
       icon: 'folder',
     })

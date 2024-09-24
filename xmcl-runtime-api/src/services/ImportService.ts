@@ -1,5 +1,4 @@
 import { Resource, ResourceDomain } from '../entities/resource'
-import { ImportResourceOptions as _ImportFileOptions, PartialResourcePath } from './ResourceService'
 import { ServiceKey } from './Service'
 export interface ImportModpackPolicy {
   /**
@@ -28,7 +27,6 @@ export interface ImportSavePolicy {
   installToInstance?: string
 }
 export interface ImportFileOptions {
-  resource: PartialResourcePath
   /**
    * Override the setting for importing modpack
    */
@@ -65,17 +63,6 @@ export interface ImportUrlOptions extends ImportOptionsBase {
  * The universal import file service. Can import a modpack
  */
 export interface ImportService {
-  /**
-   * Import any file to the launcher.
-   * If the target file is directory, and the `import` option is true, it will pack it into zip and import.
-   *
-   * - For resource packs, it method will import and save them whatever by default.
-   * - For mods, you cannot import directory as we won't pack the jar correctly...
-   * - For save, you can override the setting in `savePolicy`
-   * - For modpack, you can override the setting in `modpackPolicy`
-   */
-  importFile(options: ImportFileOptions): Promise<void>
-
   previewUrl(options: ImportUrlOptions): Promise<Resource | undefined>
 }
 

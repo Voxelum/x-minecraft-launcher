@@ -2,14 +2,13 @@ import { TaskItem } from '@/entities/task'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { getModrinthVersionKey } from '@/util/modrinth'
+import { get, MaybeRef } from '@vueuse/core'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useResourceUriStartsWithDiscovery, useResourceUrisDiscovery } from './resources'
 import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
 import { kTaskManager } from './taskManager'
-import { get, MaybeRef } from '@vueuse/core'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
@@ -51,8 +50,6 @@ export function getModrinthVersionModel(project: MaybeRef<string>, featured?: bo
   }
 }
 
-export const kModrinthVersionsStatus: InjectionKey<ReturnType<typeof useModrinthVersionsResources> & { tasks: ReturnType<typeof useModrintTasks> }> = Symbol('ModrinthVersionsStatus')
-
 export function useModrinthTask(versionId: Ref<string>) {
   const { tasks } = injection(kTaskManager)
   return computed(() => {
@@ -70,26 +67,4 @@ export function useModrintTasks(project: Ref<string>) {
     }
     return dict
   })
-}
-
-export function useModrinthVersionsResources(v: Ref<ProjectVersion[]>) {
-  const { resources } = useResourceUrisDiscovery(computed(() => v.value.map(v => v.files[0].url)))
-  const isDownloaded = (v: ProjectVersion) => !!resources.value[v.files[0].url]
-  const getResource = (v: ProjectVersion) => resources.value[v.files[0].url]
-  return {
-    resources,
-    getResource,
-    isDownloaded,
-  }
-}
-
-export function useModrinthVersionsResourcesByProjectId(projectId: Ref<string>) {
-  const { resources } = useResourceUriStartsWithDiscovery(computed(() => `modrinth:${projectId.value}`))
-  const isDownloaded = (v: ProjectVersion) => !!resources.value[v.files[0].url]
-  const getResource = (v: ProjectVersion) => resources.value[v.files[0].url]
-  return {
-    resources,
-    getResource,
-    isDownloaded,
-  }
 }

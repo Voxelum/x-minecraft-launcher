@@ -8,7 +8,7 @@ import { parseCFG } from '~/util/cfg'
 export const pluginMmcModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
   modpackService.registerHandler<MMCModpackManifest>('mmc', {
-    async resolveModpackMetadata(path, sha1) {
+    async resolveModpackMarketMetadata(path, sha1) {
       return undefined
     },
     resolveUnpackPath: function (manifest, e) {

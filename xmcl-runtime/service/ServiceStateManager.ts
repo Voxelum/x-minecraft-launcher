@@ -6,6 +6,7 @@ import { ServiceStateContainer, ServiceStateFactory } from './ServiceStateContai
 
 export interface ServiceStateContext {
   defineAsyncOperation<T extends (...args: any[]) => Promise<any>>(action: T): T
+  doAsyncOperation<T>(action: Promise<T>): Promise<T>
 }
 
 export class ServiceStateManager {
@@ -72,7 +73,7 @@ export class ServiceStateManager {
     return JSON.parse(JSON.stringify(state))
   }
 
-  get<T extends State<T>>(id: string): T | undefined {
+  get<T extends MutableState<any> = MutableState<State<any>>>(id: string): T | undefined {
     return this.containers[id]?.state as any
   }
 

@@ -4,8 +4,8 @@ import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDial
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
+import { useModpackInstaller } from '@/composables/modpackInstaller'
 import { kModrinthTags } from '@/composables/modrinth'
-import { useModrinthInstallModpack } from '@/composables/modrinthInstaller'
 import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthVersions } from '@/composables/modrinthVersions'
 import { useNotifier } from '@/composables/notifier'
@@ -110,7 +110,7 @@ const { notify } = useNotifier()
 const onInstall = (v: StoreProjectVersion) => {
   const ver = v as ProjectVersion
   _installing.value = true
-  installModpack(ver).catch((e) => {
+  installModpack({ version: ver, market: 0 }).catch((e) => {
     notify({ level: 'error', title: e.message })
   }).finally(() => {
     _installing.value = false
@@ -135,7 +135,7 @@ const tasks = useTasks((t) => {
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)
-const { installModpack } = useModrinthInstallModpack(computed(() => project.value?.iconUrl))
+const installModpack = useModpackInstaller(computed(() => project.value?.iconUrl))
 
 const { isValidating: loadingMembers, error: teamError, data } = useSWRV(computed(() => `/modrinth/team/${props.id}`),
   () => clientModrinthV2.getProjectTeamMembers(props.id),
