@@ -504,7 +504,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           return await readInstanceSaveMetadata(p, '')
         }
       }))
-    return results.filter(r => r.status === 'fulfilled').map(r => r.value).filter(isNonnull)
+    return results.map(r => r.status === 'fulfilled' ? r.value : undefined).filter(isNonnull)
   }
 
   async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string> {
