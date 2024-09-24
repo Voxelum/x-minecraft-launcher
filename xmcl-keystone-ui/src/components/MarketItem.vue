@@ -168,6 +168,7 @@ const props = defineProps<{
   selectionMode: boolean
   checked: boolean
   selected: boolean
+  noDuplicate?: boolean
   dense?: boolean
   hasUpdate?: boolean
   height?: number
@@ -187,7 +188,7 @@ const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
 const { open } = useContextMenu()
 
-const hasDuplicate = computed(() => props.item.installed.length > 1)
+const hasDuplicate = computed(() => props.noDuplicate && props.item.installed.length > 1)
 
 const dragover = ref(0)
 const onDragEnter = (e: DragEvent) => {

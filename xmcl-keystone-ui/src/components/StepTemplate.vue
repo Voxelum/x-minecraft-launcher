@@ -121,12 +121,12 @@
 import { useGetFeedTheBeastVersionsCache } from '@/composables/ftb'
 import { kInstanceCreation } from '@/composables/instanceCreation'
 import { kJavaContext } from '@/composables/java'
-import { useModpacks } from '@/composables/modpack'
 import { kPeerShared } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
 import { BuiltinImages } from '../constant'
+import { useModpacks } from '@/composables/modpack'
 
 const emit = defineEmits(['select'])
 
@@ -135,10 +135,10 @@ const { all } = injection(kJavaContext)
 const { connections } = injection(kPeerShared)
 const { getFeaturedModpacks } = useGetFeedTheBeastVersionsCache()
 const { getTemplates } = useInstanceTemplates(all)
-const { resources } = useModpacks()
+const { state } = useModpacks()
 const templates = computed(() => {
   const ftb = getFeaturedModpacks()
-  return getTemplates(resources.value, connections.value, ftb)
+  return getTemplates(state.value?.files || [], connections.value, ftb)
 })
 
 const selectedTemplatePath = inject('template', ref(''))

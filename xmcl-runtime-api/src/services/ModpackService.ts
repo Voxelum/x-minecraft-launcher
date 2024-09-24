@@ -1,8 +1,10 @@
-import { RuntimeVersions } from '../entities/instance.schema'
 import { Exception } from '../entities/exception'
+import { RuntimeVersions } from '../entities/instance.schema'
 import { InstanceFile } from '../entities/instanceManifest.schema'
-import { ResourceMetadata } from '../entities/resource'
-import { CreateInstanceOption, EditInstanceOptions } from './InstanceService'
+import { InstallMarketOptions } from '../entities/market'
+import { ResourceMetadata, ResourceState } from '../entities/resource'
+import { MutableState } from '../util/MutableState'
+import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 
 export interface ExportFileDirective {
@@ -105,13 +107,22 @@ export interface ImportModpackCreateInstanceOptions {
 }
 
 export interface ModpackInstallProfile {
-  /**
-   * @deprecated This can be derived from the modpack metadata
-   */
   instance: CreateInstanceOption & {
     runtime: RuntimeVersions
   }
   files: InstanceFile[]
+}
+
+export class ModpackState {
+  modpackPath: string = ''
+  config!: ModpackInstallProfile['instance']
+
+  files: InstanceFile[] = []
+  ready = false
+
+  modpackFiles(files: InstanceFile[]) {
+    this.files = files
+  }
 }
 
 /**
@@ -120,18 +131,41 @@ export interface ModpackInstallProfile {
  */
 export interface ModpackService {
   /**
+   * Install the modpack from market to local cache.
+   * @returns The installed modpack path
+   */
+  installModapckFromMarket(options: InstallMarketOptions): Promise<string>
+  /**
    * Export the instance as an curseforge/modrinth/mcbbs modpack
    * @param options The curseforge/modrinth/mcbbs modpack export options
    */
   exportModpack(options: ExportModpackOptions): Promise<void>
   /**
-   * Get modpack installable files from the modpack. Use the `installInstanceFiles` to create an instance.
+   * Open an modpack to install. Use the `installInstanceFiles` to create an instance.
    */
-  getModpackInstallFiles(modpackPath: string): Promise<InstanceFile[]>
+  openModpack(modpackPath: string): Promise<MutableState<ModpackState>>
   /**
    * Show the modpack folder
    */
   showModpacksFolder(): Promise<void>
+
+  watchModpackFolder(): Promise<MutableState<ResourceState>>
+
+  removeModpack(path: string): Promise<void>
+}
+
+export function waitModpackFiles(modpack: MutableState<ModpackState>) {
+  return new Promise<InstanceFile[]>(resolve => {
+    if (modpack.ready) {
+      resolve(modpack.files)
+    } else {
+      const onFiles = (files: InstanceFile[]) => {
+        resolve(files)
+        modpack.unsubscribe('modpackFiles', onFiles)
+      }
+      modpack.subscribe('modpackFiles', onFiles)
+    }
+  })
 }
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'

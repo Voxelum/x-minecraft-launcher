@@ -1,89 +1,41 @@
 import { DownloadTask } from '@xmcl/installer'
-import { ImportService as IImportService, ImportFileOptions, ImportServiceKey, ImportUrlOptions, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { ImportService as IImportService, ImportServiceKey, ImportUrlOptions, Resource } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
-import { ensureFile, unlink } from 'fs-extra'
+import { ensureFile } from 'fs-extra'
 import { basename } from 'path'
 import { request } from 'undici'
 import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
-import { ResourceService } from '~/resource'
+import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
-import { ZipTask } from '../util/zip'
 import { parseSourceControlUrl } from './sourceControlUrlParser'
 
 @ExposeServiceKey(ImportServiceKey)
 export class ImportService extends AbstractService implements IImportService {
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(ResourceManager) private resourceManager: ResourceManager,
   ) {
     super(app)
   }
 
-  async importFile(options: ImportFileOptions): Promise<void> {
-    const [parsed] = await this.resourceService.importResources([options.resource])
-    const getInstancePath = (inst: string | undefined) => inst
-    const resolveOptions = () => {
-      if (parsed.domain === ResourceDomain.Saves) {
-        return {
-          shouldImport: options.savePolicy?.import ?? false,
-          installToInstance: options.savePolicy?.installToInstance,
-        }
-      }
-      if (parsed.domain === ResourceDomain.Modpacks) {
-        return {
-          shouldImport: options.modpackPolicy?.import ?? false,
-          installToInstance: options.modpackPolicy?.installToInstance,
-        }
-      }
-      return {
-        shouldImport: true,
-      }
-    }
-    const getTemp = await this.app.registry.get(kTempDataPath)
-    const { shouldImport, installToInstance } = resolveOptions()
-    const packAndImport = async () => {
-      // zip and import
-      const tempZipPath = `${getTemp(parsed.name)}.zip`
-      const zipTask = new ZipTask(tempZipPath)
-      await zipTask.includeAs(parsed.path, '')
-      await zipTask.startAndWait()
-      await this.resourceService.importResources([{ path: tempZipPath }])
-      await unlink(tempZipPath)
-    }
-    if (parsed.fileType === 'directory') {
-      // the importing object is a folder
-      if (shouldImport) {
-        if (parsed.domain === ResourceDomain.ResourcePacks ||
-          parsed.domain === ResourceDomain.Saves ||
-          parsed.domain === ResourceDomain.Modpacks) {
-          await packAndImport()
-        }
-      }
-    } else {
-      // the import object is a file
-      if (shouldImport) {
-        await this.resourceService.importResources([{ path: parsed.path, domain: parsed.domain }])
-      }
-    }
-  }
-
   async previewUrl(options: ImportUrlOptions): Promise<Resource | undefined> {
-    const result = await this.processUrl(options.url)
+    // const result = await this.processUrl(options.url)
 
-    if (result) {
-      const resources = await this.resourceService.getResourcesByUris([result.url, options.url])
-      let resource = resources[0] || resources[1]
-      if (!resource) {
-        const resolved = await this.resourceService.resolveResources([{
-          path: result.destination,
-        }])
-        resource = resolved[0]
-      }
-      return resource
-    }
+    // if (result) {
+    //   const resources = await this.resourceManager.getResourcesByUris([result.url, options.url])
+    //   let resource = resources[0] || resources[1]
+    //   if (!resource) {
+    //     const resolved = await this.resourceManager.resolveResources([{
+    //       path: result.destination,
+    //     }])
+    //     resource = resolved[0]
+    //   }
+    //   return resource
+    // }
 
     return undefined
   }

@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, UnknownRow, ValueNode } from 'kysely'
 import { ImageStorage } from '~/imageStore'
 import { Logger } from '~/logger'
-import { DatabaseWorker, SqliteWASMDialect, SqliteWASMDialectConfig } from '~/sql'
+import { SqliteWASMDialect, SqliteWASMDialectConfig } from '~/sql'
 import { ResourceContext } from './ResourceContext'
 import { Database } from './schema'
 
@@ -39,7 +39,7 @@ class JSONTransformer extends OperationNodeTransformer {
   }
 }
 
-export function createResourceContext(imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>, dbOptions: SqliteWASMDialectConfig) {
+export function createResourceContext(root: string, imageStore: ImageStorage, eventBus: EventEmitter, logger: Logger, delegates: Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'>, dbOptions: SqliteWASMDialectConfig) {
   const dialect = new SqliteWASMDialect(dbOptions)
 
   // Database interface is passed to Kysely's constructor, and from now on, Kysely
@@ -51,7 +51,7 @@ export function createResourceContext(imageStore: ImageStorage, eventBus: EventE
     plugins: [new ParseJSONResultsPlugin(), new JSONPlugin()],
     log: (e) => {
       if (e.level === 'error') {
-        logger.warn(e.query.sql + '\n[' + e.query.parameters.join(', ') + ']')
+        logger.warn(e.query.sql + '\n[' + e.query.parameters.join(', ') + ']', (e.error as Error).message)
       }
     },
   })
@@ -63,8 +63,9 @@ export function createResourceContext(imageStore: ImageStorage, eventBus: EventE
     hash: delegates.hash,
     hashAndFileType: delegates.hashAndFileType,
     parse: delegates.parse,
-    eventBus,
     logger,
+    root,
+    eventBus,
   }
 
   return context

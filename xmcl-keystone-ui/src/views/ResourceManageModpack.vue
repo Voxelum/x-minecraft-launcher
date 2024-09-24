@@ -2,7 +2,7 @@
   <div class="h-full select-text flex-col gap-4 overflow-auto overflow-x-hidden py-0">
     <v-data-table
       :items="items"
-      :loading="refreshing"
+      :loading="isValidating"
       :headers="headers"
       :items-per-page="10"
     >
@@ -47,7 +47,7 @@
         <div class="ml-2 flex items-center gap-2">
           <v-btn
             icon
-            :loading="refreshing"
+            :loading="isValidating"
           >
             <v-icon>
               folder
@@ -75,9 +75,8 @@
 import { useService } from '@/composables'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { useModpacks } from '@/composables/modpack'
-import { isStringArrayEquals } from '@/util/equal'
 import { getExpectedSize } from '@/util/size'
-import { BaseServiceKey, CachedFTBModpackVersionManifest, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, CachedFTBModpackVersionManifest, ModpackServiceKey, Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import SimpleDialog from '../components/SimpleDialog.vue'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
@@ -85,12 +84,11 @@ import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 import { ModpackItem } from '../composables/modpack'
 
 const { t } = useI18n()
-const { removeResources, updateResources } = useService(ResourceServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { show, model, confirm, target: deleting } = useSimpleDialog<undefined | Resource | CachedFTBModpackVersionManifest>((v) => {
   if (!v) return
   if ('path' in v) {
-    removeResources([v.hash])
+    removeModpack(v.path)
   } else {
     ftb.value = ftb.value.filter(f => f.id !== v.id)
   }
@@ -128,7 +126,8 @@ const headers = computed(() => [
     sortable: false,
   },
 ])
-const { refreshing, resources } = useModpacks()
+const { isValidating, state } = useModpacks()
+const { removeModpack } = useService(ModpackServiceKey)
 const { cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 
 function getModpackItem(resource: Resource): ModpackItem {
@@ -141,7 +140,7 @@ function getModpackItem(resource: Resource): ModpackItem {
     name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? '',
     version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
     author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
-    tags: [...resource.tags],
+    tags: [],
     type: metadata.modpack ? 'raw' : (metadata['curseforge-modpack'] ? 'curseforge' : 'modrinth'),
   })
 }
@@ -158,23 +157,26 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
     type: 'ftb',
   })
 }
-const items: Ref<ModpackItem[]> = computed(() => [...resources.value.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name)))
+const items: Ref<ModpackItem[]> = computed(() => [
+  ...(state.value?.files || []).map(getModpackItem),
+  ...ftb.value.map(getModpackItemByFtb),
+].sort((a, b) => a.name.localeCompare(b.name)))
 onUnmounted(() => {
-  const editedResources = items.value
-    .filter(i => !!i.resource)
-    .filter(i => !isStringArrayEquals(i.tags, i.resource!.tags))
-  updateResources(editedResources.map(i => ({
-    hash: i.resource!.hash,
-    name: i.name,
-    tags: i.tags,
-  })))
+  // const editedResources = items.value
+  //   .filter(i => !!i.resource)
+  //   .filter(i => !isStringArrayEquals(i.tags, []))
+  // updateResources(editedResources.map(i => ({
+  //   hash: i.resource!.hash,
+  //   name: i.name,
+  //   tags: i.tags,
+  // })))
   dispose()
 })
 
 const { show: showCreateDialog } = useDialog(AddInstanceDialogKey)
 const onCreate = (item: ModpackItem) => {
   if (item.resource) {
-    showCreateDialog({ type: 'resource', resource: item.resource })
+    showCreateDialog({ type: 'modpack', path: item.resource.path })
   } else if (item.ftb) {
     showCreateDialog({ type: 'ftb', manifest: item.ftb })
   }

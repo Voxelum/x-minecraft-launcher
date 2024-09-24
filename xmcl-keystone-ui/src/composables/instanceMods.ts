@@ -1,15 +1,16 @@
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { useEventListener } from '@vueuse/core'
-import { InstanceModUpdatePayloadAction, InstanceModsServiceKey, InstanceModsState, JavaRecord, MutableState, PartialResourceHash, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, ResourceState, JavaRecord, FileUpdateOperation, FileUpdateAction, MutableState, UpdateResourcePayload, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, set } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
+import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
-function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<MutableState<InstanceModsState> | undefined>) {
+function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<MutableState<ResourceState> | undefined>) {
   const lastUpdateMetadata = useLocalStorageCache<Record<string, number>>('instanceModsLastRefreshMetadata', () => ({}), JSON.stringify, JSON.parse)
   const { refreshMetadata } = useService(InstanceModsServiceKey)
   const expireTime = 1000 * 30 * 60 // 0.5 hour
@@ -30,10 +31,10 @@ function useInstanceModsMetadataRefresh(instancePath: Ref<string>, state: Ref<Mu
 
   watch(state, (s) => {
     if (!s) return
-    s.subscribe('instanceModUpdates', () => {
+    s.subscribe('filesUpdates', () => {
       debounced()
     })
-    if (s.mods.length > 0) {
+    if (s.files.length > 0) {
       checkAndUpdate()
     }
   }, { immediate: true })
@@ -54,44 +55,9 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     console.time('[watchMods] ' + inst)
     const mods = await watchMods(inst)
     console.timeEnd('[watchMods] ' + inst)
-    mods.mods = mods.mods.map(m => markRaw(m))
+    mods.files = mods.files.map(m => markRaw(m))
     return mods as any
-  }, class extends InstanceModsState {
-    override instanceModUpdates(ops: [Resource, number][]) {
-      for (const o of ops) {
-        markRaw(o[0])
-      }
-      const mods = [...this.mods]
-      for (const [r, a] of ops) {
-        if (a === InstanceModUpdatePayloadAction.Upsert) {
-          const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)
-          if (index === -1) {
-            mods.push(r)
-          } else {
-            const existed = mods[index]
-            if (existed.path !== r.path) {
-              mods[index] = r
-            } else if (process.env.NODE_ENV === 'development') {
-              // eslint-disable-next-line no-debugger
-              console.debug(`The mod ${r.path} is already in the list!`)
-            }
-          }
-        } else if (a === InstanceModUpdatePayloadAction.Remove) {
-          const index = mods.findIndex(m => m?.path === r?.path || m.hash === r.hash)
-          if (index !== -1) mods.splice(index, 1)
-        } else {
-          for (const update of r as any as PartialResourceHash[]) {
-            for (const m of mods) {
-              if (m.hash === update.hash) {
-                applyUpdateToResource(m, update)
-              }
-            }
-          }
-        }
-      }
-      set(this, 'mods', mods)
-    }
-  })
+  }, ReactiveResourceState)
 
   const mods: Ref<ModFile[]> = shallowRef([])
   const modsIconsMap: Ref<Record<string, string>> = shallowRef({})
@@ -109,21 +75,21 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       reset()
     }
   })
-  watch([computed(() => state.value?.mods), java], () => {
-    if (!state.value?.mods) {
+  watch([computed(() => state.value?.files), java], () => {
+    if (!state.value?.files) {
       reset()
       return
     }
     console.log('[instanceMods] update by state')
-    updateItems(state.value?.mods, instanceRuntime.value)
+    updateItems(state.value?.files, instanceRuntime.value)
   })
   watch(instanceRuntime, () => {
-    if (!state.value?.mods) {
+    if (!state.value?.files) {
       reset()
       return
     }
     console.log('[instanceMods] update by runtime')
-    updateItems(state.value?.mods, instanceRuntime.value)
+    updateItems(state.value?.files, instanceRuntime.value)
   }, { deep: true })
 
   function updateItems(resources: Resource[], runtimeVersions: RuntimeVersions) {

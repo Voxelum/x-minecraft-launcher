@@ -177,9 +177,7 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { getUpstreamFromResource } from '@/util/upstream'
-import { EditInstanceOptions, InstanceData, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
+import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
 
@@ -290,18 +288,14 @@ const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(as
         newVersionFiles,
       })),
     }
-  } else if (param.type === 'modrinth' || param.type === 'curseforge') {
-    const oldResource = param.currentResource
-    const res = param.resource
+  } else if (param.type === 'upstream') {
+    const instancePath = param.instancePath
+    const modpack = param.modpack
 
-    const config = resolveModpackInstanceConfig(res) as EditInstanceOptions
-
-    const files = await getInstanceUpdateProfile({
-      instancePath: instancePath.value,
-      oldModpack: oldResource && 'path' in oldResource ? oldResource.path : undefined,
-      newModpack: res.path,
+    const { config, files } = await getInstanceUpdateProfile({
+      instancePath,
+      modpack,
     })
-    config.upstream = getUpstreamFromResource(res)
 
     upgrade.value = {
       instance: config,

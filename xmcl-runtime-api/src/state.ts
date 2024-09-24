@@ -1,10 +1,11 @@
+import { ResourceState } from './entities/resource'
 import { Saves } from './entities/save'
 import { Settings } from './entities/setting'
 import { LocalVersions } from './entities/version'
-import { InstanceModsState } from './services/InstanceModsService'
 import { GameOptionsState } from './services/InstanceOptionsService'
 import { InstanceState } from './services/InstanceService'
 import { JavaState } from './services/JavaService'
+import { ModpackState } from './services/ModpackService'
 import { PeerState } from './services/PeerService'
 import { UserState } from './services/UserService'
 
@@ -15,7 +16,8 @@ export type Mutations<T> = {
 export const AllStates = [
   Settings,
   InstanceState,
-  InstanceModsState,
+  ResourceState,
+  ModpackState,
   GameOptionsState,
   Saves,
   JavaState,

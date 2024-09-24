@@ -23,7 +23,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   #signal = createPromiseSignal<MutableState<T>>()
   #disposer: () => void = () => { }
   #revalidator?: () => Promise<void>
-  readonly emitter = new EventEmitter()
+  #emitter = new EventEmitter()
   #static = false
 
   constructor(
@@ -32,7 +32,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     factoryOrInstance: { factory: ServiceStateFactory<T> } | { instance: T },
   ) {
     const decorate = (state: any) => {
-      const emitter = this.emitter
+      const emitter = this.#emitter
 
       Object.assign(state, {
         id,
@@ -51,8 +51,8 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
       }
 
       Object.defineProperties(state, {
-        [kStateKey]: { value: Object.getPrototypeOf(state).constructor.name, enumerable: true, configurable: false },
-        [kStateContainer]: { value: this, enumerable: false, configurable: false },
+        [kStateKey]: { value: Object.getPrototypeOf(state).constructor.name, enumerable: true, configurable: true },
+        [kStateContainer]: { value: this, enumerable: false, configurable: true },
       })
       const parent = new MutableStateImpl(emitter, this.revalidate.bind(this))
       Object.setPrototypeOf(Object.getPrototypeOf(state), parent)
@@ -84,22 +84,26 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     return this.#signal.promise
   }
 
-  defineAsyncOperation = <T extends (...args: any[]) => Promise<any>>(action: T): T => {
-    return (async (...args: any[]) => {
+  doAsyncOperation = async <T>(action: Promise<T>): Promise<T> => {
+    try {
       this.semaphore += 1
       for (const [c] of this.#clients) {
         c.send('state-validating', { id: this.id, semaphore: this.semaphore })
       }
-      try {
-        return await action(...args)
-      } finally {
-        this.semaphore -= 1
-        if (this.semaphore === 0) {
-          for (const [c] of this.#clients) {
-            c.send('state-validating', { id: this.id, semaphore: this.semaphore })
-          }
+      return await action
+    } finally {
+      this.semaphore -= 1
+      if (this.semaphore === 0) {
+        for (const [c] of this.#clients) {
+          c.send('state-validating', { id: this.id, semaphore: this.semaphore })
         }
       }
+    }
+  }
+
+  defineAsyncOperation = <T extends (...args: any[]) => Promise<any>>(action: T): T => {
+    return (async (...args: any[]) => {
+      return await this.doAsyncOperation(action(...args))
     }) as any
   }
 
@@ -120,7 +124,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
       client.send('commit', this.id, type, payload)
     }
     this.#clients.push([client, handler])
-    this.emitter.on('*', handler)
+    this.#emitter.on('*', handler)
     client.on('destroyed', () => {
       this.untrack(client)
     })
@@ -132,7 +136,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     const deleted = this.#clients.splice(index, 1)
     if (deleted[0]) {
       const [_, handler] = deleted[0]
-      this.emitter.off('*', handler as any)
+      this.#emitter.off('*', handler as any)
       if (this.#clients.length === 0 && !this.#static) {
         this.destroy()
         return true
@@ -142,7 +146,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   }
 
   destroy() {
-    this.emitter.removeAllListeners()
+    this.#emitter.removeAllListeners()
     this.#disposer()
     this.unregister(this.id)
   }

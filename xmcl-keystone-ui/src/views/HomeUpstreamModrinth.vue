@@ -8,13 +8,12 @@ import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useMarkdown } from '@/composables/markdown'
 import { kModrinthTags } from '@/composables/modrinth'
-import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { ModrinthServiceKey, ModrinthUpstream } from '@xmcl/runtime-api'
+import { ModpackServiceKey, ModrinthUpstream } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
@@ -129,29 +128,24 @@ watch(computed(() => state.bottom), (reached) => {
 })
 
 const { show } = useDialog(InstanceInstallDialog)
-const { installVersion } = useService(ModrinthServiceKey)
-const { getResourceByUpstream, getResourceByVersion } = useModrinthInstanceResource()
+const { installModapckFromMarket } = useService(ModpackServiceKey)
 const updating = ref(false)
 async function onUpdate(v: ProjectVersionProps) {
   updating.value = true
 
   try {
-    const resource = await getResourceByUpstream(upstream.value)
     const nextVersion = data.value?.find(d => d.id === v.id)
+    const instancePath = instance.value.path
     if (!nextVersion) return
-    let newResource = await getResourceByVersion(nextVersion)
-    if (!newResource) {
-      // download
-      const result = await installVersion({
-        version: nextVersion,
-        icon: project.value?.icon_url || '',
-      })
-      newResource = result.resources[0]
-    }
+    const result = await installModapckFromMarket({
+      market: 0,
+      version: nextVersion,
+      icon: project.value?.icon_url || '',
+    })
     show({
-      type: 'modrinth',
-      currentResource: resource,
-      resource: newResource,
+      type: 'upstream',
+      modpack: result,
+      instancePath,
     })
   } finally {
     updating.value = false
@@ -166,16 +160,12 @@ async function onDuplicate(v: ProjectVersionProps) {
   try {
     const nextVersion = data.value?.find(d => d.id === v.id)
     if (!nextVersion) return
-    let newResource = await getResourceByVersion(nextVersion)
-    if (!newResource) {
-      // download
-      const result = await installVersion({
-        version: nextVersion,
-        icon: project.value?.icon_url || '',
-      })
-      newResource = result.resources[0]
-    }
-    showAddInstanceDialog({ type: 'resource', resource: newResource })
+    const result = await installModapckFromMarket({
+      market: 0,
+      version: nextVersion,
+      icon: project.value?.icon_url || '',
+    })
+    showAddInstanceDialog({ type: 'modpack', path: result })
   } finally {
     duplicating.value = false
   }

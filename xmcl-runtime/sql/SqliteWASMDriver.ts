@@ -93,9 +93,8 @@ class SqliteConnection implements DatabaseConnection {
 
     try {
       if (stmt.isReader()) {
-        return Promise.resolve({
-          rows: stmt.all(parameters as any) as O[],
-        })
+        const rows = stmt.all(parameters as any) as O[]
+        return Promise.resolve({ rows })
       }
       const { changes, lastInsertRowid } = stmt.run(parameters as any)
 

@@ -1,11 +1,11 @@
-import { Instance, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpdateService as IInstanceUpdateService, InstanceUpdateServiceKey, UpdateInstanceOptions, UpgradeModpackOptions, UpgradeModpackRawOptions } from '@xmcl/runtime-api'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
-import { InstanceManifestService } from './InstanceManifestService'
+import { InstanceUpdateService as IInstanceUpdateService, Instance, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpdateServiceKey, ResourceMetadata, UpgradeModpackOptions, UpgradeModpackRawOptions, waitModpackFiles } from '@xmcl/runtime-api'
+import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { ModpackService } from '~/modpack'
-import { ResourceService } from '~/resource'
+import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
+import { LauncherApp } from '../app/LauncherApp'
+import { InstanceManifestService } from './InstanceManifestService'
 
 type Upstream = Required<Instance>['upstream']
 
@@ -15,9 +15,11 @@ type UpstreamResolver = (upstream: Upstream) => Promise<InstanceFile[] | undefin
 export class InstanceUpdateService extends AbstractService implements IInstanceUpdateService {
   protected resolvers: UpstreamResolver[] = []
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+  constructor(
+    @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kGameDataPath) getPath: PathResolver,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(ResourceService) resourceService: ResourceService,
+    @Inject(ResourceManager) resourceManager: ResourceManager,
     @Inject(InstanceManifestService) private instanceManifestService: InstanceManifestService,
     @Inject(ModpackService) private modpackService: ModpackService,
   ) {
@@ -25,16 +27,20 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
     this.registerUpstreamResolver(async (upstream) => {
       if (upstream.type === 'modrinth-modpack') {
-        const res = upstream.sha1 ? await resourceService.getResourceByHash(upstream.sha1) : (await resourceService.getResourcesByUris([`modrinth:${upstream.projectId}:${upstream.versionId}`]))[0]
-        if (res) {
-          if (res.metadata.instance) {
-            return res.metadata.instance.files
+        let metadata: ResourceMetadata | undefined
+        if (upstream.sha1) {
+          metadata = await resourceManager.getMetadataByHash(upstream.sha1)
+        } else {
+          const hash = await resourceManager.getHashByUri(`modrinth:${upstream.projectId}:${upstream.versionId}`)
+          // TODO: handle multi files modpack
+          if (hash) {
+            metadata = await resourceManager.getMetadataByHash(hash)
           }
-          return await this.modpackService.getModpackInstallFiles(res.path).catch(() => undefined)
         }
-        const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`modrinth:${upstream.projectId}:${upstream.versionId}`))[0]
-        if (resMetadata?.instance) {
-          return resMetadata.instance.files
+        if (metadata) {
+          if (metadata.instance) {
+            return metadata.instance.files
+          }
         }
       }
       return undefined
@@ -42,16 +48,19 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
     this.registerUpstreamResolver(async (upstream) => {
       if (upstream.type === 'curseforge-modpack') {
-        const res = upstream.sha1 ? await resourceService.getResourceByHash(upstream.sha1) : (await resourceService.getResourcesByUris([`curseforge:${upstream.modId}:${upstream.fileId}`]))[0]
-        if (res) {
-          if (res.metadata.instance) {
-            return res.metadata.instance.files
+        let metadata: ResourceMetadata | undefined
+        if (upstream.sha1) {
+          metadata = await resourceManager.getMetadataByHash(upstream.sha1)
+        } else {
+          const hash = await resourceManager.getHashByUri(`curseforge:${upstream.modId}:${upstream.fileId}`)
+          if (hash) {
+            metadata = await resourceManager.getMetadataByHash(hash)
           }
-          return await this.modpackService.getModpackInstallFiles(res.path).catch(() => undefined)
         }
-        const resMetadata = upstream.sha1 ? await resourceService.getResourceMetadataByHash(upstream.sha1) : (await resourceService.getResourceMetadataByUri(`curseforge:${upstream.modId}:${upstream.fileId}`))[0]
-        if (resMetadata?.instance) {
-          return resMetadata.instance.files
+        if (metadata) {
+          if (metadata.instance) {
+            return metadata.instance.files
+          }
         }
       }
       return undefined
@@ -62,13 +71,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
     this.resolvers.push(resolver)
   }
 
-  private async resolveOldFiles(instancePath: string, instance: InstanceData, oldModpack?: string): Promise<InstanceFile[]> {
-    if (oldModpack) {
-      // If old modpack path present, try to get modpack content
-      const files = await this.modpackService.getModpackInstallFiles(oldModpack)
-      return files
-    }
-
+  private async resolveOldFiles(instancePath: string, instance: InstanceData): Promise<InstanceFile[]> {
     if (instance.upstream) {
       const upstream = instance.upstream
 
@@ -156,14 +159,19 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
       throw new Error()
     }
 
-    const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
+    const oldFiles = await this.resolveOldFiles(instancePath, instance)
 
-    const newFiles = await this.modpackService.getModpackInstallFiles(options.newModpack)
+    const openedModpack = await this.modpackService.openModpack(options.modpack)
+
+    const newFiles = await waitModpackFiles(openedModpack)
 
     const manifest = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
 
     const result = this.#getInstanceFilesUpdate(oldFiles, manifest.files, newFiles)
 
-    return result.filter(r => !r.file.path.endsWith('/'))
+    return {
+      config: openedModpack.config,
+      files: result.filter(r => !r.file.path.endsWith('/')),
+    }
   }
 }

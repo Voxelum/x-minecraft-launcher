@@ -15,6 +15,7 @@ import { HAS_DEV_SERVER } from '../constant'
 import { AnyError, isSystemError } from '../util/error'
 import { copyPassively } from '../util/fs'
 import { ZipTask } from '../util/zip'
+import { ResourceManager } from '~/resource'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -230,5 +231,9 @@ export class BaseService extends AbstractService implements IBaseService {
       total: totalmem(),
       free: freemem(),
     })
+  }
+
+  async isResourceDatabaseOpened(): Promise<boolean> {
+    return this.app.registry.get(ResourceManager).then(r => r.isReady())
   }
 }

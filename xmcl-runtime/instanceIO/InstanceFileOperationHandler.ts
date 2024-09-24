@@ -1,23 +1,26 @@
 import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile, InstanceFileWithOperation, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceFileWithOperation, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
+import { existsSync } from 'fs'
 import { join, relative } from 'path'
+import { fileURLToPath } from 'url'
+import { kGameDataPath } from '~/app'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
-import { ResourceService, ResourceWorker } from '~/resource'
+import { ResourceManager, ResourceWorker } from '~/resource'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
 import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
 import { InstanceFileOperationTask } from './InstanceFileOperationTask'
 import { UnzipFileTask } from './UnzipFileTask'
+import { ZipManager } from '~/zipManager/ZipManager'
 
 export class InstanceFileOperationHandler {
   #resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
-  #copyOrLinkQueue: Array<{ file: InstanceFile; destination: string }> = []
+  #copyOrLinkQueue: Array<{ file: InstanceFile; src: string; destination: string }> = []
   #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
-  #resourceLinkQueue: Array<{ file: InstanceFile; destination: string; resource: Resource }> = []
   #filesQueue: Array<{ file: InstanceFile; destination: string }> = []
   #httpsQueue: Array<{ file: InstanceFile; options: DownloadOptions }> = []
 
@@ -26,7 +29,10 @@ export class InstanceFileOperationHandler {
    */
   readonly finished: Set<InstanceFileWithOperation> = new Set()
 
-  constructor(private app: LauncherApp, private resourceService: ResourceService, private worker: ResourceWorker,
+  constructor(
+    private app: LauncherApp,
+    private resourceManager: ResourceManager,
+    private worker: ResourceWorker,
     private logger: Logger,
     private instancePath: string) { }
 
@@ -99,7 +105,7 @@ export class InstanceFileOperationHandler {
     if (this.#httpsQueue.length > 0) {
       tasks.unshift(await this.#getDownloadTask())
     }
-    if (this.#copyOrLinkQueue.length > 0 || this.#resourceLinkQueue.length > 0) {
+    if (this.#copyOrLinkQueue.length > 0) {
       tasks.unshift(await this.#getFileOperationTask())
     }
     if (this.#unzipQueue.length > 0) {
@@ -135,7 +141,7 @@ export class InstanceFileOperationHandler {
           }
         }
 
-        await this.resourceService.updateResources(options.filter(o => !!o.hash))
+        await this.resourceManager.updateMetadata(options.filter(o => !!o.hash))
       }
     } catch (e) {
       this.logger.error(e as any)
@@ -160,9 +166,10 @@ export class InstanceFileOperationHandler {
     }
 
     // Zip file using the sha1 resource relative apth
-    const resource = await this.resourceService.getResourceByHash(url.host)
+    const resource = await this.resourceManager.getSnapshotByHash(url.host)
     if (resource) {
-      this.#unzipQueue.push({ file, zipPath: resource.path, entryName: file.path, destination })
+      const getPath = await this.app.registry.get(kGameDataPath)
+      this.#unzipQueue.push({ file, zipPath: getPath(resource.domainedPath), entryName: file.path, destination })
       return true
     }
   }
@@ -205,21 +212,30 @@ export class InstanceFileOperationHandler {
     if (!sha1) return
 
     const urls = file.downloads?.filter(u => u.startsWith('http')) || []
-    const resource = await this.resourceService.getResourceByHash(sha1)
 
-    if (resource && await this.resourceService.touchResource(resource)) {
-      if (
-        (metadata.modrinth && !resource.metadata.modrinth) ||
-        (metadata.curseforge && resource.metadata.curseforge) ||
-        (urls.length > 0 && urls.some(u => resource.uris.indexOf(u) === -1))
-      ) {
-        if (!resource.hash) {
-          this.logger.error(new TypeError('Invalid resource ' + JSON.stringify(resource)))
-        } else {
-          this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls })
-        }
+    let snapshot = await this.resourceManager.getSnapshotByHash(sha1)
+    let snapshotPath: string | undefined
+
+    // TODO: Validate the snapshot
+    if (snapshot) {
+      snapshotPath = this.resourceManager.getSnapshotPath(snapshot)
+      if (!existsSync(snapshotPath)) {
+        snapshot = undefined
       }
-      this.#resourceLinkQueue.push({ file, destination, resource })
+    }
+
+    if (snapshot) {
+      const cachedMetadata = await this.resourceManager.getMetadataByHash(sha1)
+      const uris = await this.resourceManager.getUriByHash(sha1)
+      if (
+        !cachedMetadata ||
+        (metadata.modrinth && !cachedMetadata.modrinth) ||
+        (metadata.curseforge && cachedMetadata.curseforge) ||
+        (urls.length > 0 && urls.some(u => uris.indexOf(u) === -1))
+      ) {
+        this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls })
+      }
+      this.#copyOrLinkQueue.push({ file, destination, src: this.resourceManager.getSnapshotPath(snapshot) })
       return true
     }
   }
@@ -227,7 +243,7 @@ export class InstanceFileOperationHandler {
   async #handleCopyOrLink(file: InstanceFile, destination: string) {
     if (file.downloads) {
       if (file.downloads[0].startsWith('file://')) {
-        this.#copyOrLinkQueue.push({ file, destination })
+        this.#copyOrLinkQueue.push({ file, src: fileURLToPath(file.downloads[0]), destination })
         return true
       }
     }
@@ -252,7 +268,6 @@ export class InstanceFileOperationHandler {
   async #getFileOperationTask() {
     return new InstanceFileOperationTask(
       this.#copyOrLinkQueue,
-      this.#resourceLinkQueue,
       this.#filesQueue,
       this.app.platform,
       this.finished,
@@ -260,8 +275,7 @@ export class InstanceFileOperationHandler {
   }
 
   async #getUnzipTask() {
-    return new UnzipFileTask(this.#unzipQueue, this.finished, (input, file) => {
-    })
+    return new UnzipFileTask(await this.app.registry.getOrCreate(ZipManager), this.#unzipQueue, this.finished)
   }
 
   async #getDownloadTask() {

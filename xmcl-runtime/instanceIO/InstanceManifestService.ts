@@ -5,7 +5,7 @@ import { task } from '@xmcl/task'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance'
-import { ResourceService, ResourceWorker, kResourceWorker } from '~/resource'
+import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
@@ -16,7 +16,7 @@ import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(ResourceManager) private resourceManager: ResourceManager,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
     @Inject(ModrinthV2Client) private modrinthClient: ModrinthV2Client,
@@ -26,8 +26,6 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
   @Singleton(p => JSON.stringify(p))
   async getInstanceManifest(options: GetManifestOptions): Promise<InstanceManifest> {
-    // Ensure the resource service is initialized...
-    await this.resourceService.initialize()
     const instancePath = options?.path
 
     const instanceService = await this.app.registry.get(InstanceService)
@@ -40,18 +38,22 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     let files = [] as Array<InstanceFile>
     const undecorated = [] as Array<InstanceFile>
-    const undecoratedResources = new Map<InstanceFile, Resource>()
     const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeClient, this.modrinthClient)
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this
     const worker = this.worker
-    const resourceService = this.resourceService
+    const resourceManager = this.resourceManager
+
+    /**
+     * These files can update its resource metadata
+     */
+    const pendingResourceUpdates = new Set<InstanceFile>()
     await task('getInstanceManifest', async function () {
-      const _files = await discover(instancePath, logger)
+      const fileWithStats = await discover(instancePath, logger)
 
       await Promise.all(
-        _files.map(([file, status]) => decoareteInstanceFileFromResourceCache(file, status, instancePath, worker, resourceService, undecorated, undecoratedResources, options?.hashes)
+        fileWithStats.map(([file, status]) => decoareteInstanceFileFromResourceCache(file, status, instancePath, worker, resourceManager, pendingResourceUpdates, options?.hashes)
           .catch((e) => {
             logger.error(new AnyError('InstanceManifestResolveResourceError', 'Fail to get manifest data for instance file', { cause: e }, file))
           })),
@@ -59,7 +61,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
       if (options.hashes) {
         const hashes = options.hashes
-        await Promise.all(_files.filter(([f]) => {
+        await Promise.all(fileWithStats.filter(([f]) => {
           for (const h of hashes) {
             if (!f.hashes[h]) {
               return true
@@ -73,26 +75,23 @@ export class InstanceManifestService extends AbstractService implements IInstanc
         }))))
       }
 
-      files = _files.map(([file]) => file)
+      files = fileWithStats.map(([file]) => file)
 
       await this.yield(resolveTask).catch(() => undefined)
     }).startAndWait()
 
-    const updates = undecorated.map((file) => {
-      const resource = undecoratedResources.get(file)
-      if (resource) {
-        return {
-          hash: file.hashes.sha1,
-          metadata: {
-            modrinth: file.modrinth,
-            curseforge: file.curseforge,
-          },
-          uri: file.downloads,
-        }
+    const updates = [...pendingResourceUpdates].map((file) => {
+      return {
+        hash: file.hashes.sha1,
+        metadata: {
+          modrinth: file.modrinth,
+          curseforge: file.curseforge,
+        },
+        uri: file.downloads,
       }
-      return undefined
     }).filter(isNonnull)
-    await this.resourceService.updateResources(updates).catch((e) => {
+
+    this.resourceManager.updateMetadata(updates).catch((e) => {
       this.warn('Fail to update the resources')
       this.warn(e)
     })

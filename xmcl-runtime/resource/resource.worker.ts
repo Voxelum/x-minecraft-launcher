@@ -1,12 +1,11 @@
 import { checksum } from '@xmcl/core'
 import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
-import { copyPassively } from '~/util/fs'
-import { hashAndFiletypeResource, hashResource } from './core/hashResource'
-import { ResourceParser } from './parsers'
 import { setHandler } from '../worker/helper'
-import type { ResourceWorker } from './worker'
+import { hashAndFiletypeResource, hashResource } from './core/hashResource'
 import { fingerprint } from './fingerprint'
+import { ResourceParser } from './parsers'
+import type { ResourceWorker } from './worker'
 
 gracefulify(fs)
 
@@ -17,9 +16,6 @@ const handlers: ResourceWorker = {
   fingerprint,
   hash: (file, size) => hashResource(file, size),
   parse: (args) => parser.parse(args),
-  async copyPassively(files): Promise<void> {
-    await Promise.all(files.map(({ src, dest }) => copyPassively(src, dest)))
-  },
-  hashAndFileType: (file, size) => hashAndFiletypeResource(file, size),
+  hashAndFileType: (file, size, dir) => hashAndFiletypeResource(file, size, dir),
 }
 setHandler(handlers)

@@ -2,7 +2,7 @@ import { computed, Ref, ref, watch } from 'vue'
 import { BlockStateJson, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
-export function useBlockModelPreview () {
+export function useBlockModelPreview() {
   const { getBlockStates: listBlockStates, loadModel } = useService(ResourcePackPreviewServiceKey)
   return {
     listBlockStates,
@@ -10,7 +10,7 @@ export function useBlockModelPreview () {
   }
 }
 
-export function useBlockStateModels (blockState: Ref<BlockStateJson | undefined>) {
+export function useBlockStateModels(blockState: Ref<BlockStateJson | undefined>) {
   watch(blockState, () => {
     const variants: { name: string; value: string; items: string[] }[] = []
     if (!blockState.value || !blockState.value.variants) return

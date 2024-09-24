@@ -1,18 +1,17 @@
+import { BuiltinImages } from '@/constant'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
-import { InstanceData, Resource, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { getDiceCoefficient } from '@/util/sort'
+import { InstanceData, InstanceModsServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
-import { useResourceEffect } from './resources'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
-import { getDiceCoefficient } from '@/util/sort'
-import { BuiltinImages } from '@/constant'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -26,7 +25,7 @@ export enum ModLoaderFilter {
 const kCached = Symbol('cached')
 
 export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
-  const { getResourcesByKeyword } = useService(ResourceServiceKey)
+  const { searchInstalled } = useService(InstanceModsServiceKey)
   const modFiles = ref([] as ModFile[])
 
   const result = computed(() => {
@@ -54,8 +53,8 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
           return mod
         }
       }
-      const curseforgeId = m.resource.metadata.curseforge?.projectId
-      const modrinthId = m.resource.metadata.modrinth?.projectId
+      const curseforgeId = m.curseforge?.projectId
+      const modrinthId = m.modrinth?.projectId
       const name = m.name
       const id = modrinthId || curseforgeId?.toString() || name
       const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
@@ -153,7 +152,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       if (useQuilt) return !!r.metadata.quilt
       return false
     }
-    const searched = await getResourcesByKeyword(kw, ResourceDomain.Mods)
+    const searched = await searchInstalled(kw)
     const resources = searched.filter(isValidResource).map(r => getModFileFromResource(r, runtime.value))
     modFiles.value = resources
   }
@@ -168,7 +167,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   }
 
   function effect() {
-    useResourceEffect(onSearch, ResourceDomain.Mods)
+    // useResourceEffect(onSearch, ResourceDomain.Mods)
     watch([keyword, instanceModFiles], onSearch)
     watch(modLoaderFilters, onSearch, { deep: true })
   }

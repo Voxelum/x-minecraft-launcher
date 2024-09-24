@@ -1,4 +1,6 @@
-import { Resource } from '../entities/resource'
+import { InstallMarketOptionWithInstance } from '../entities/market'
+import { Resource, ResourceState } from '../entities/resource'
+import { MutableState } from '../util/MutableState'
 import { ServiceKey } from './Service'
 
 export interface InstanceShaderPacksService {
@@ -21,7 +23,7 @@ export interface InstanceShaderPacksService {
    * This will scan the `shaderpacks` directory and import all shaderpacks into the resource service.
    * @param instancePath The instance absolute path
    */
-  scan(instancePath: string): Promise<Resource[]>
+  watch(instancePath: string): Promise<MutableState<ResourceState>>
   /**
    * Manually install the shaderpack to the instance.
    *
@@ -30,7 +32,15 @@ export interface InstanceShaderPacksService {
    * @param instancePath The instance absolute path
    * @param shaderPackFilePath The shaderpack file path. This file must existed in the central `shaderpacks` directory.
    */
-  install(instancePath: string, shaderPackFilePath: string): Promise<void>
+  install(instancePath: string, shaderPackFilePath: string | string[]): Promise<string[]>
+  /**
+   * Uninstall the shaderpack file from the instance.
+   */
+  uninstall(instancePath: string, file: string | string[]): Promise<void>
+  /**
+   * Install shader packs from the market to the instance.
+   */
+  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
   /**
    * Show shaderPacks folder under the instance path
    * @param instancePath The instance absolute path

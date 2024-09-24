@@ -6,7 +6,7 @@ import { existsSync } from 'fs'
 import { readFile, unlink } from 'fs-extra'
 import { join } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { ResourceService, ResourceWorker, kResourceWorker } from '~/resource'
+import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { AnyError } from '../util/error'
@@ -20,7 +20,7 @@ import { removeInstallProfile, writeInstallProfile } from './instanceInstall'
 @ExposeServiceKey(InstanceInstallServiceKey)
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(ResourceManager) private resourceManager: ResourceManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
@@ -40,7 +40,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
-    const resourceService = this.resourceService
+    const resourceService = this.resourceManager
 
     const handler = new InstanceFileOperationHandler(
       this.app,

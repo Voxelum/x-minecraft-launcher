@@ -2,17 +2,19 @@
 import MarketProjectDetail, { Info, ProjectDetail } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
-import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { kInstance } from '@/composables/instance'
+import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { useProjectDetailUpdate } from '@/composables/projectDetail'
 import { ShaderPackProject } from '@/composables/shaderPackSearch'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { Resource, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceShaderPacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   shaderPack: ShaderPackProject
   runtime: RuntimeVersions
-  installed: Resource[]
+  installed: InstanceShaderFile[]
 }>()
 
 const versions = computed(() => {
@@ -20,8 +22,8 @@ const versions = computed(() => {
   const all: ProjectVersion[] = files.map((f) => {
     const version: ProjectVersion = {
       id: f.path,
-      name: f.resource.fileName,
-      version: f.resource.fileName,
+      name: f.fileName,
+      version: f.fileName,
       downloadCount: 0,
       installed: true,
       loaders: [],
@@ -50,16 +52,15 @@ const model = computed(() => {
 
   const info = computed(() => {
     const result: Info[] = []
-    if (!file) return []
-    const resource = file
+    if (!file || !file.size || !file.hash) return []
     result.push({
       icon: '123',
       name: t('fileDetail.fileSize'),
-      value: getExpectedSize(resource.size),
+      value: getExpectedSize(file.size),
     }, {
       icon: 'tag',
       name: t('fileDetail.hash'),
-      value: resource.hash,
+      value: file.hash,
     })
     return result
   })
@@ -87,11 +88,12 @@ const model = computed(() => {
 
 const updating = useProjectDetailUpdate()
 
+const { path } = injection(kInstance)
 const { shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
-const { removeResources } = useService(ResourceServiceKey)
+const { uninstall } = useService(InstanceShaderPacksServiceKey)
 const onDelete = async () => {
   updating.value = true
-  await removeResources(props.installed.map(i => i.hash))
+  await uninstall(path.value, props.installed.map(i => basename(i.path)))
 }
 
 const onEnable = (v: boolean) => {

@@ -26,7 +26,7 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
     }
   }
   modpackService.registerHandler<CurseforgeModpackManifest>('curseforge', {
-    async resolveModpackMetadata(path, sha1) {
+    async resolveModpackMarketMetadata(path, sha1) {
       const client = await app.registry.getOrCreate(CurseforgeV1Client)
       const worker = await app.registry.getOrCreate(kResourceWorker)
 

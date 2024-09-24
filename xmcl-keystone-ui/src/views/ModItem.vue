@@ -6,6 +6,7 @@
     :has-update="hasUpdate"
     :checked="checked"
     :height="itemHeight"
+    no-duplicate
     :get-context-menu-items="getContextMenuItems"
     :install="install"
     :dense="dense"
@@ -59,14 +60,14 @@ const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
 const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.item), () => {
   if (props.item.installed) {
-    uninstall({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+    uninstall({ path: path.value, mods: props.item.installed.map(i => i.path) })
   }
 }, () => {}, () => {
   if (props.item.installed.length > 0) {
     if (props.item.installed[0].enabled) {
-      disable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+      disable({ path: path.value, mods: props.item.installed.map(i => i.path) })
     } else {
-      enable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+      enable({ path: path.value, mods: props.item.installed.map(i => i.path) })
     }
   }
 })

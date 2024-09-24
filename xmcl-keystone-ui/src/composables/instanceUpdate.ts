@@ -1,11 +1,11 @@
-import { CachedFTBModpackVersionManifest, InstanceData, InstanceFileUpdate, Resource, ResourceMetadata } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, InstanceData, InstanceFileUpdate } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { DialogKey } from './dialog'
 
 export type InstanceInstallOptions = {
-  type: 'modrinth' | 'curseforge'
-  currentResource?: { metadata: Pick<ResourceMetadata, 'instance'> } | Resource
-  resource: Resource
+  type: 'upstream'
+  instancePath: string
+  modpack: string
 } | {
   type: 'ftb'
   newManifest: CachedFTBModpackVersionManifest

@@ -73,7 +73,7 @@ export default defineComponent({
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
 
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled, resourcePacks.enabledSet)
-    const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
+    const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPacks)
 
     const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, localVersions.versions, localVersions.servers, java.all)
 

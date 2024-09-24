@@ -1,8 +1,8 @@
-import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
-import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, ResourceDomain } from '@xmcl/runtime-api'
+import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
-import { ResourceService } from '~/resource'
-import { ExposeServiceKey, Lock } from '~/service'
+import { ResourceManager } from '~/resource'
+import { ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AbstractInstanceDoaminService } from './AbstractInstanceDoaminService'
 
@@ -12,19 +12,15 @@ import { AbstractInstanceDoaminService } from './AbstractInstanceDoaminService'
 @ExposeServiceKey(InstanceResourcePacksServiceKey)
 export class InstanceResourcePackService extends AbstractInstanceDoaminService implements IInstanceResourcePacksService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) protected resourceService: ResourceService,
+    @Inject(ResourceManager) protected resourceManager: ResourceManager,
     @Inject(kGameDataPath) protected getPath: PathResolver,
     @Inject(InstanceService) protected instanceService: InstanceService,
+    @Inject(ServiceStateManager) protected store: ServiceStateManager,
   ) {
     super(app)
   }
 
   domain = ResourceDomain.ResourcePacks
-
-  override scan(instancePath: string): Promise<Resource[]> {
-    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-    return lock.read(() => super.scan(instancePath))
-  }
 
   override link(instancePath: string, force?: boolean): Promise<boolean> {
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))

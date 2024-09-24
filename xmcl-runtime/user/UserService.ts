@@ -106,6 +106,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     this.loginController = new AbortController()
 
+    this.emit('user-login', options.authority)
     const profile = await system.login(options, this.loginController.signal)
       .finally(() => { this.loginController = undefined })
 

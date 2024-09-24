@@ -129,8 +129,7 @@ import { kPeerShared } from '@/composables/peers'
 import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
 import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
@@ -185,14 +184,13 @@ const onSelectType = async (t: string) => {
 }
 
 // Dialog model
-const { getModpackInstallFiles } = useService(ModpackServiceKey)
+const { openModpack } = useService(ModpackServiceKey)
 const { all: javas } = injection(kJavaContext)
-const onSelectResource = async (res: Resource) => {
+const onSelectModpack = async (modpack: string) => {
   try {
     loading.value = true
-    const config = resolveModpackInstanceConfig(res)
-    if (!config) return
-    await update(config, getModpackInstallFiles(res.path))
+    const openedModpack = await openModpack(modpack)
+    await update(openedModpack.config, waitModpackFiles(openedModpack))
   } catch (e) {
     error.value = e
   } finally {
@@ -250,8 +248,8 @@ const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
         step.value = 3
       })
     }
-    if (param.type === 'resource') {
-      onSelectResource(param.resource).then(after)
+    if (param.type === 'modpack') {
+      onSelectModpack(param.path).then(after)
     } else if (param.type === 'ftb') {
       onSelectFTB(param.manifest).then(after)
     } else if (param.type === 'manifest') {
@@ -344,7 +342,6 @@ function back() {
 }
 
 // Manuall import
-const { importResources } = useService(ResourceServiceKey)
 const onImportModpack = () => {
   windowController.showOpenDialog({
     properties: ['openFile'],
@@ -354,14 +351,11 @@ const onImportModpack = () => {
     const file = res.filePaths[0]
     try {
       loading.value = true
-      const [result] = await importResources([{ path: file, domain: ResourceDomain.Modpacks }])
-      if (result) {
-        await onSelectResource(result)
-        type.value = 'template'
-        nextTick(() => {
-          step.value = 3
-        })
-      }
+      await onSelectModpack(file)
+      type.value = 'template'
+      nextTick(() => {
+        step.value = 3
+      })
     } catch (e) {
       error.value = e
     } finally {

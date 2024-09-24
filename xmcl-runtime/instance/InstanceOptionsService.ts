@@ -1,10 +1,9 @@
 import { Frame, parse } from '@xmcl/gamesetting'
-import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, ResourceDomain, getInstanceGameOptionKey, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
+import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, getInstanceGameOptionKey, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
 import { ensureFile, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { basename, join, relative } from 'path'
+import { basename, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
-import { ResourceService } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
@@ -17,18 +16,8 @@ import { requireString } from '../util/object'
 @ExposeServiceKey(InstanceOptionsServiceKey)
 export class InstanceOptionsService extends AbstractService implements IInstanceOptionsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) resourceService: ResourceService,
   ) {
     super(app)
-    resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
-    })
-
-    resourceService.registerInstaller(ResourceDomain.ShaderPacks, async (resource, instancePath) => {
-      await this.editShaderOptions({
-        shaderPack: relative(resource.path, instancePath),
-        instancePath,
-      })
-    })
   }
 
   getServerProperties(instancePath: string): Promise<Record<string, string>> {

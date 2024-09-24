@@ -2,7 +2,7 @@ import { createHash } from 'crypto'
 import { existsSync } from 'fs'
 import { ensureFile, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { checksum, linkOrCopy } from '~/util/fs'
+import { checksum, linkOrCopyFile } from '~/util/fs'
 
 export class ImageStorage {
   constructor(readonly root: string) {
@@ -17,7 +17,7 @@ export class ImageStorage {
     if (!existsSync(imagePath)) {
       await ensureFile(imagePath)
       if (typeof pathOrData === 'string') {
-        await linkOrCopy(pathOrData, imagePath)
+        await linkOrCopyFile(pathOrData, imagePath)
       } else {
         await writeFile(imagePath, pathOrData)
       }

@@ -6,7 +6,7 @@ import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { request } from 'undici'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { ResourceService } from '~/resource'
+import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { SqliteWASMDialect } from '~/sql'
 import { TaskFn, kTaskExecutor } from '~/task'
@@ -181,7 +181,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
   async decorateResources(resources: Resource[]) {
     const sha1s = resources.map((r) => r.hash)
     const metadatas = await this.getMetadataFromSha1s(sha1s)
-    const resourceService = await this.app.registry.get(ResourceService)
+    const resource = await this.app.registry.get(ResourceManager)
     const resourceDict = resources.reduce((acc, cur) => {
       acc[cur.hash] = cur
       return acc
@@ -209,7 +209,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
         toUpdates.push(res)
       }
     }
-    await resourceService.updateResources(toUpdates)
+    await resource.updateMetadata(toUpdates)
     return resources
   }
 

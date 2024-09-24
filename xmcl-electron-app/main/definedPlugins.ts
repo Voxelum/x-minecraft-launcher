@@ -6,7 +6,6 @@ import { pluginPowerMonitor } from './pluginPowerMonitor'
 import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/base/pluginMediaProtocol'
 import { pluginClientToken } from '@xmcl/runtime/clientToken/pluginClientToken'
-import { pluginCurseforgeClient } from '@xmcl/runtime/curseforge/pluginCurseforgeClient'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
 import { pluginFlights } from '@xmcl/runtime/flights'
@@ -18,7 +17,6 @@ import { pluginCurseforgeModpackHandler } from '@xmcl/runtime/modpack/pluginCurs
 import { pluginMcbbsModpackHandler } from '@xmcl/runtime/modpack/pluginMcbbsModpackHandler'
 import { pluginModrinthModpackHandler } from '@xmcl/runtime/modpack/pluginModrinthModpackHandler'
 import { pluginMmcModpackHandler } from '@xmcl/runtime/modpack/pluginMmcModpackHandler'
-import { pluinModrinthClient } from '@xmcl/runtime/modrinth/pluginModrinthClient'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
 import { pluginUndiciLogger } from '@xmcl/runtime/network/pluginUndiciLogger'
@@ -35,6 +33,7 @@ import { pluginOfficialUserApi } from '@xmcl/runtime/user/pluginOfficialUserApi'
 import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
+import { pluginMarketProvider } from '@xmcl/runtime/market/pluginMarketProvider'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
@@ -52,6 +51,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginUncaughtError,
   pluginNativeReplacer,
   elyByPlugin,
+  pluginMarketProvider,
 
   pluginMediaProtocol,
   pluginResourcePackLink,
@@ -62,8 +62,6 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginModrinthModpackHandler,
   pluginMmcModpackHandler,
   pluginClientToken,
-  pluginCurseforgeClient,
-  pluinModrinthClient,
   pluginServicesHandler(definedServices),
   pluginTelemetry,
   pluginLogConsumer,

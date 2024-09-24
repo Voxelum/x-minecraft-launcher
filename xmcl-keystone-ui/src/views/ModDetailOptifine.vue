@@ -92,36 +92,37 @@ const model = computed(() => {
 })
 
 const { editInstance } = useService(InstanceServiceKey)
-const { installOptifineAsResource } = useService(InstallServiceKey)
+const { installOptifineAsMod } = useService(InstallServiceKey)
 const { path } = injection(kInstance)
 const updating = ref(false)
 const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
 const onInstall = async (m: ProjectVersion) => {
   try {
     updating.value = true
+    const instancePath = path.value
     const [mc, ...rest] = m.id.split('_')
     const restStr = rest.join('_')
     const index = restStr.lastIndexOf('_')
     const type = restStr.substring(0, index)
     const patch = restStr.substring(index + 1)
+    const runtimes = { ...props.runtime }
+    const deleteOld = hasInstalledVersion.value
+    const oldFiles = props.mod.installed.map(i => i.path)
 
-    if (!props.runtime.forge) {
+    if (!runtimes.forge) {
       await editInstance({
-        instancePath: path.value,
+        instancePath,
         runtime: {
-          ...props.runtime,
+          ...runtimes,
           optifine: m.version,
         },
       })
     } else {
-      if (hasInstalledVersion.value) {
-        const oldFiles = props.mod.installed.map(i => i.resource)
-        const resource = await installOptifineAsResource({ mcversion: mc, type, patch })
-        await installMod({ path: path.value, mods: [resource] })
-        await uninstallMod({ path: path.value, mods: oldFiles })
+      if (deleteOld) {
+        await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
+        await uninstallMod({ path: instancePath, mods: oldFiles })
       } else {
-        const resource = await installOptifineAsResource({ mcversion: mc, type, patch })
-        await installMod({ path: path.value, mods: [resource] })
+        await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
       }
     }
   } finally {
@@ -139,7 +140,7 @@ const onDelete = () => {
   }
 
   if (props.mod.installed.length > 0) {
-    uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.resource) })
+    uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.path) })
   }
 }
 const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(

@@ -54,7 +54,7 @@ import { ResourcePackProject } from '@/composables/resourcePackSearch'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { BaseServiceKey, ResourceServiceKey, isCompatible } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceResourcePacksServiceKey, isCompatible } from '@xmcl/runtime-api'
 import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
@@ -96,25 +96,25 @@ const tooltip = computed(() => compatible.value
   }))
 
 const { t } = useI18n()
-const { removeResources } = useService(ResourceServiceKey)
+const { uninstall } = useService(InstanceResourcePacksServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
+const { path } = injection(kInstance)
 
 const isBuiltIn = computed(() => props.pack.id === 'vanilla' || props.pack.id === 'fabric' || props.pack.id === 'file/mod_resources')
 const getContextMenuItems = () => {
   const all = [] as ContextMenuItem[]
   if (props.pack.installed.length > 0) {
     all.push({
-      text: t('resourcepack.showFile', { file: props.pack.installed[0].resource.path }),
+      text: t('resourcepack.showFile', { file: props.pack.installed[0].path }),
       onClick: () => {
-        showItemInDirectory(props.pack.installed[0].resource.path)
+        showItemInDirectory(props.pack.installed[0].path)
       },
       icon: 'folder',
     })
     all.push({
       text: t('delete.name', { name: props.pack.title }),
       onClick: () => {
-        const filter = props.pack.installed.map(f => f.resource?.hash).filter((v): v is string => !!v)
-        removeResources(filter)
+        uninstall(path.value, props.pack.installed.map(f => f.path).filter(p => !!p))
       },
       icon: 'delete',
       color: 'error',

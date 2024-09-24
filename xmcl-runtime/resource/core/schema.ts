@@ -1,9 +1,9 @@
-import { ResourceMetadata } from '@xmcl/runtime-api'
+import { File, ResourceMetadata } from '@xmcl/runtime-api'
 
 export interface ResourceTable extends ResourceMetadata {
   sha1: string
   sha256?: string
-  name: string
+  name?: string
 }
 
 export interface ResourceTagTable {
@@ -21,12 +21,28 @@ export interface ResourceIconTable {
   icon: string
 }
 
-export interface ResourceSnapshotTable extends ResourceEntry {
+export interface ResourceSnapshotTable {
   /**
    * The ${domain}/${fileName} path
    * @primary
    */
   domainedPath: string
+  /**
+   * The inode number
+   */
+  ino: number
+  /**
+   * The file type
+   */
+  fileType: string
+  /**
+   * The sha1 string
+   */
+  sha1: string
+  /**
+   * The mtime of the file
+   */
+  mtime: number
 }
 
 export interface Database {
@@ -44,11 +60,7 @@ export interface ResourceDecoratedMetadata extends ResourceMetadata {
   tags?: string[]
 }
 
-export interface ResourceEntry {
-  ino: number
-  ctime: number
-  mtime: number
-  size: number
+export interface ResourceEntry extends File {
   fileType: string
   /**
    * The sha1 string

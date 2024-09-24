@@ -1,4 +1,6 @@
-import { Resource } from '../entities/resource'
+import { InstallMarketOptionWithInstance } from '../entities/market'
+import { Resource, ResourceState } from '../entities/resource'
+import { MutableState } from '../util/MutableState'
 import { ServiceKey } from './Service'
 
 /**
@@ -22,10 +24,10 @@ export interface InstanceResourcePacksService {
    */
   isLinked(instancePath: string): Promise<boolean>
   /**
-   * Scan the `resourcepacks` directory under the instance path and import the resource packs.
+   * Watch the `resourcepacks` directory under the instance path and import the resource packs.
    * @param instancePath The instance path
    */
-  scan(instancePath: string): Promise<Resource[]>
+  watch(instancePath: string): Promise<MutableState<ResourceState>>
   /**
    * Manually install the resource packs to the instance.
    *
@@ -34,7 +36,15 @@ export interface InstanceResourcePacksService {
    * @param instancePath The instance path
    * @param resourcePackFile The absolute path of the resource pack file
    */
-  install(instancePath: string, resourcePackFile: string): Promise<void>
+  install(instancePath: string, resourcePackFile: string | string[]): Promise<string[]>
+  /**
+   * Uninstall the resourcepack file from the instance.
+   */
+  uninstall(instancePath: string, resourcePackFile: string | string[]): Promise<void>
+  /**
+   * Install resource packs from the market to the instance.
+   */
+  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
   /**
    * Show the `resourcepacks` directory under the instance path
    * @param instancePath The instance path

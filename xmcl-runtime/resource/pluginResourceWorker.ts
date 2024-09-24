@@ -1,20 +1,29 @@
+import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
 import { Database } from 'node-sqlite3-wasm'
 import { join } from 'path'
-import { LauncherAppPlugin } from '~/app'
+import { kGameDataPath, LauncherAppPlugin } from '~/app'
 import { kFlights } from '~/flights'
+import { ImageStorage } from '~/imageStore'
 import { SqliteWASMDialectConfig } from '~/sql'
 import { DatabaseWorker } from '~/sql/type'
+import { ZipManager } from '~/zipManager/ZipManager'
 import createDbWorker from '../sql/sqlite.worker?worker'
 import { createLazyWorker } from '../worker'
+import { createResourceContext } from './core/createResourceContext'
+import { migrate } from './core/migrateResources'
 import createResourceWorker from './resource.worker?worker'
-import { kResourceDatabaseOptions, kResourceWorker, ResourceWorker } from './worker'
+import { kResourceContext } from './ResourceManager'
+import { kResourceWorker, ResourceWorker } from './worker'
+import { ServiceStateManager } from '~/service'
+import { InstanceServiceKey, InstanceState, MutableState } from '@xmcl/runtime-api'
+import { getDomainedPath } from './core/snapshot'
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
-  const logger = app.getLogger('ResourceWorker')
+  const workerLogger = app.getLogger('ResourceWorker')
   const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker, {
-    methods: ['checksum', 'copyPassively', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
-  }, logger, { name: 'CPUWorker' })
+    methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
+  }, workerLogger, { name: 'CPUWorker' })
   app.registry.register(kResourceWorker, resourceWorker)
 
   const flights = await app.registry.get(kFlights)
@@ -42,5 +51,29 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       database: new Database(dbPath),
     }
   }
-  app.registry.register(kResourceDatabaseOptions, config)
+
+  const logger = app.getLogger('ResourceContext')
+  const imageStorage = await app.registry.get(ImageStorage)
+  const getPath = await app.registry.get(kGameDataPath)
+  const eventBus = new EventEmitter()
+  const context = createResourceContext(getPath(), imageStorage, eventBus, logger, resourceWorker, config)
+  await migrate(context.db)
+  app.registry.register(kResourceContext, context)
+
+  app.registryDisposer(async () => {
+    await context.db.destroy()
+  })
+
+  app.registryDisposer(async () => {
+    app.registry.getIfPresent(ZipManager).then((man) => man?.close())
+  })
+
+  app.registry.get(ServiceStateManager).then((manager) => manager.get(InstanceServiceKey.toString()))
+    .then((state) => {
+      (state as unknown as MutableState<InstanceState>)?.subscribe('instanceRemove', (path) => {
+        context.db.deleteFrom('snapshots')
+          .where('domainedPath', 'like', `${getDomainedPath(path, context.root)}%`)
+          .execute()
+      })
+    })
 }

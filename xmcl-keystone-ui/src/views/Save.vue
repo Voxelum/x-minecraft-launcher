@@ -25,7 +25,7 @@
         <div class="flex-grow" />
         <v-btn
           v-if="index === 0"
-          v-shared-tooltip="_ => t('mod.denseView')"
+          v-shared-tooltip="() => t('mod.denseView')"
           icon
           @click="denseView = !denseView"
         >
@@ -106,7 +106,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { File } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, InstanceSavesServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import SimpleDialog from '../components/SimpleDialog.vue'
 import { useSimpleDialog } from '../composables/dialog'
 import { kInstance } from '../composables/instance'
@@ -146,37 +146,23 @@ const groupedItems = computed(() => {
   return result
 })
 
-const { installFile } = useService(CurseForgeServiceKey)
-const { removeResources } = useService(ResourceServiceKey)
-const { importSave } = useService(InstanceSavesServiceKey)
+const { importSave, installFromMarket } = useService(InstanceSavesServiceKey)
 provide(kCurseforgeInstaller, {
-  installWithDependencies: async (m, v) => {
-    const instPath = path.value
-    const result = await installFile({
-      file: v,
+  installWithDependencies: async (m, file) => {
+    await installFromMarket({
+      market: 1,
+      instancePath: path.value,
+      file,
       icon: m.logo.url,
-      type: 'worlds',
     })
-    await importSave({
-      path: result.resource.path,
-      instancePath: instPath,
-      saveRoot: result.resource.metadata.save?.root,
-    })
-    await removeResources([result.resource.hash])
   },
-  install: async (v: File, icon?: string) => {
-    const instPath = path.value
-    const result = await installFile({
-      file: v,
+  install: async (file: File, icon?: string) => {
+    await installFromMarket({
+      market: 1,
+      instancePath: path.value,
+      file,
       icon,
-      type: 'worlds',
     })
-    await importSave({
-      path: result.resource.path,
-      instancePath: instPath,
-      saveRoot: result.resource.metadata.save?.root,
-    })
-    await removeResources([result.resource.hash])
   },
 })
 
@@ -190,26 +176,9 @@ const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.save', { instance: name.value })))
 
 // Drop
-const { resolveResources } = useService(ResourceServiceKey)
 const { dragover } = useDrop(() => { }, async (t) => {
-  const paths = [] as string[]
   for (const f of t.files) {
-    paths.push(f.path)
-  }
-  const resources = await resolveResources(paths.map(p => ({ path: p, domain: ResourceDomain.Saves })))
-  for (const file of resources) {
-    importSave({ path: file.path, instancePath: path.value, saveRoot: file.metadata.save?.root })
+    importSave({ path: f.path, instancePath: path.value })
   }
 }, () => { })
-
-// async function doImport() {
-//   const { filePaths } = await showOpenDialog({
-//     title: t('save.importTitle'),
-//     message: t('save.importMessage'),
-//     filters: [{ extensions: ['zip'], name: 'zip' }],
-//   })
-//   for (const file of filePaths) {
-//     importSave({ path: file, instancePath: path.value })
-//   }
-// }
 </script>

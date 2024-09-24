@@ -5,32 +5,38 @@ import { ResourceTable } from './schema'
 /**
  * Safely update or insert the resource data. This will update both of the `metadata` and `uri` database.
  */
-export async function upsertMetadata(metadata: ResourceMetadata, uris: string[], icons: string[], name: string, sha1: string, context: ResourceContext) {
-  const data = await context.db.transaction().execute(async (trx) => {
-    const table: ResourceTable = {
-      sha1,
-      name,
-      ...metadata,
-    }
-    const _resource = await trx
-      .insertInto('resources')
-      .values(table)
-      .onConflict(oc => oc.column('sha1').doUpdateSet({
-        name: table.name,
+export async function upsertMetadata(sha1: string, context: ResourceContext, metadata?: ResourceMetadata, uris?: string[], icons?: string[], name?: string) {
+  await context.db.transaction().execute(async (trx) => {
+    if (metadata) {
+      const data = {
         ...metadata,
-      }))
-      .returningAll()
-      .executeTakeFirst()
-    const _uris = uris.length > 0 ? await trx.insertInto('uris').values(uris.map(u => ({ uri: u, sha1 }))).onConflict((b) => b.doNothing()).returningAll().execute() : []
-    const _icons = icons.length > 0 ? await trx.insertInto('icons').values(icons.map(i => ({ icon: i, sha1 }))).onConflict((b) => b.doNothing()).returningAll().execute() : []
-    return {
-      name,
-      ..._resource,
-      uris: _uris.map(u => u.uri),
-      icons: _icons.map(i => i.icon),
-      tags: [] as string[],
+      } as any
+      delete data.icons
+      for (const key of Object.keys(data)) {
+        if (data[key] === undefined || data[key] === null) {
+          delete data[key]
+        }
+      }
+      if (name) {
+        data.name = name
+      }
+      const table: ResourceTable = {
+        sha1,
+        ...data,
+        name: data.name || '',
+      }
+      await trx
+        .insertInto('resources')
+        .values(table)
+        .onConflict(oc => Object.keys(data).length > 0 ? oc.column('sha1').doUpdateSet(data) : oc.doNothing())
+        .returning('sha1')
+        .execute()
+    }
+    if (uris && uris.length > 0) {
+      await trx.insertInto('uris').values(uris.map(u => ({ uri: u, sha1 }))).onConflict((b) => b.doNothing()).execute()
+    }
+    if (icons && icons.length > 0) {
+      await trx.insertInto('icons').values(icons.map(i => ({ icon: i, sha1 }))).onConflict((b) => b.doNothing()).execute()
     }
   })
-
-  return data
 }

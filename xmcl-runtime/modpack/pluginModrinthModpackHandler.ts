@@ -8,7 +8,7 @@ import { ModrinthV2Client } from '@xmcl/modrinth'
 export const pluginModrinthModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)
   modpackService.registerHandler<ModrinthModpackManifest>('modrinth', {
-    async resolveModpackMetadata(path, sha1) {
+    async resolveModpackMarketMetadata(path, sha1) {
       const client = await app.registry.getOrCreate(ModrinthV2Client)
       const hashes = await client.getProjectVersionsByHash([sha1], 'sha1')
       const content = hashes[sha1]

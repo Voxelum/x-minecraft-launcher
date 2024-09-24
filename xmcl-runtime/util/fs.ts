@@ -5,11 +5,11 @@ import { createHash } from 'crypto'
 import { constants } from 'fs'
 import { access, copyFile, ensureDir, link, readdir, stat, symlink, unlink } from 'fs-extra'
 import { platform } from 'os'
-import { extname, join, resolve } from 'path'
+import { basename, extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
 import { Logger } from '~/logger'
-import { AnyError } from './error'
+import { AnyError, isSystemError } from './error'
 
 const pip = promisify(pipeline)
 
@@ -158,7 +158,10 @@ export async function clearDirectoryNarrow(dir: string) {
   }))
 }
 
-export async function createSymbolicLink(srcPath: string, destPath: string, logger: Logger) {
+/**
+ * Perform symbolic link from `srcPath` to `destPath`.
+ */
+export async function linkDirectory(srcPath: string, destPath: string, logger: Logger) {
   try {
     await symlink(srcPath, destPath, 'dir')
     return true
@@ -177,8 +180,26 @@ export function swapExt(path: string, ext: string) {
   return path.substring(0, path.length - existedExt.length) + ext
 }
 
-export function linkOrCopy(from: string, to: string) {
-  return link(from, to).then(() => true, () => copyFile(from, to).then(() => false))
+/**
+ * Perform hard link or copy file from `from` to `to`.
+ */
+export function linkOrCopyFile(from: string, to: string) {
+  const onLinkFileError = async (e: unknown, copied: boolean) => {
+    if (isSystemError(e) && e.code === 'EEXIST') {
+      const extName = extname(to)
+      const fileName = basename(to, extName)
+      to = join(to, fileName + `-${Date.now()}` + extName)
+      await link(from, to).catch(e => onLinkFileError(e, false))
+    }
+    if (copied) {
+      throw e
+    } else {
+      await copyFile(from, to).catch(e => onLinkFileError(e, true))
+    }
+    return to
+  }
+
+  return link(from, to).then(() => to).catch((e) => onLinkFileError(e, false))
 }
 
 export function linkWithTimeout(from: string, to: string, timeout = 1500) {
