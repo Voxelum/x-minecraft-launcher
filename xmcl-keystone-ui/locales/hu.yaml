@@ -516,6 +516,7 @@ launch:
   kill: Leállítás
   killServer: Öld meg a Localhost szervert
   launch: Indítás
+  launchAnyway: Indítsa el egyébként
 launchBlocked:
   ignore: Indítás erőltetve
   launchBadVersion:

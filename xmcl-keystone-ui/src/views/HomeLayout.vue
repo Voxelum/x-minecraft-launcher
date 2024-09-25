@@ -23,7 +23,6 @@
     <HomeLogDialog />
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
-    <HomeJavaIssueDialog />
     <HomeInstanceInstallDialog />
   </div>
 </template>
@@ -38,7 +37,6 @@ import { useScroll } from '@vueuse/core'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceInstallDialog from './HomeInstanceInstallDialog.vue'
-import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'

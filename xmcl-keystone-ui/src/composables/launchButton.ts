@@ -89,7 +89,7 @@ export function useLaunchButton() {
         right: true,
         menu: [],
         onClick: () => {
-          showLaunchStatusDialog(true)
+          showLaunchStatusDialog({ isKill: true })
         },
       }
     } else if (userIssue.value) {
@@ -121,12 +121,14 @@ export function useLaunchButton() {
         text: t('launch.launch'),
         color: !javaIssue.value ? 'primary' : 'primary darken-1',
         leftIcon: 'play_arrow',
-        menu: javaIssue.value ? [javaIssue.value] : [],
         onClick: async () => {
           await mutate().catch(() => { })
           await fixInstanceFileIssue()
-          await launch()
-          showLaunchStatusDialog(false)
+          if (javaIssue.value) {
+            showLaunchStatusDialog({ javaIssue: javaIssue.value })
+          } else {
+            await launch()
+          }
         },
       }
     }

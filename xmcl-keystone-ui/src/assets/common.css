@@ -505,7 +505,7 @@ a {
 
 
 .dragover {
-    @apply border-4 border-dashed border-yellow-400!;
+    @apply border-2 border-dashed border-yellow-400!;
 }
 
 

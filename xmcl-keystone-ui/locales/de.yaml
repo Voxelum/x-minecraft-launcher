@@ -566,6 +566,7 @@ launch:
   kill: Stopp
   killServer: Töte den Localhost-Server
   launch: Los geht's
+  launchAnyway: Trotzdem starten
 launchBlocked:
   ignore: Erzwungener Start
   launchGeneralException:

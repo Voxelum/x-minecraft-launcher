@@ -551,6 +551,7 @@ java:
 launch:
   killServer: Tuer le serveur Localhost
   launch: Jouer
+  launchAnyway: Lancer quand même
 launchBlocked:
   ignore: Forcer le Lancement
   launchGeneralException:

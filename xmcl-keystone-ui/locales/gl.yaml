@@ -265,6 +265,7 @@ instances:
   folderSetting: Configuración do cartafol
 launch:
   killServer: Eliminar o servidor Localhost
+  launchAnyway: Lanzamento de todos os xeitos
 launchBlocked:
   launchSpawnProcessFailed:
     description: |-

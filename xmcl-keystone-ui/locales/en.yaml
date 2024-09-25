@@ -515,6 +515,7 @@ launch:
   kill: Stop
   killServer: Kill Localhost Server
   launch: Launch
+  launchAnyway: Launch Anyway
 launchBlocked:
   ignore: Force Launch
   launchBadVersion:

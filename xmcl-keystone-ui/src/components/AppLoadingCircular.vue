@@ -24,23 +24,10 @@
         indeterminate
       />
     </div>
-    <div class="mx-10 my-3 flex flex-col items-center justify-center gap-1">
-      <VTypical
-        class="blink"
-        :steps="texts"
-      />
-      <div
-        v-if="hint"
-        class="text-transparent transition-all"
-        :class="{ 'text-gray-500': secondaryHint }"
-      >
-        {{ hint + '...' }}
-      </div>
-    </div>
+    <slot />
   </div>
 </template>
 <script setup lang="ts">
-import VTypical from '@/components/VTyping.vue'
 defineProps<{
   texts: (string| number)[]
   hint?: string

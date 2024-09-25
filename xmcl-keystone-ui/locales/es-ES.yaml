@@ -439,6 +439,7 @@ java:
   allocatedShort: Asignación Automática
 launch:
   killServer: Matar el servidor localhost
+  launchAnyway: Lanzar de todos modos
 launchBlocked:
   launchSpawnProcessFailed:
     description: >-

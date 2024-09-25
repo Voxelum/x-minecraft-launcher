@@ -1,3 +1,8 @@
 import { DialogKey } from './dialog'
 
-export const LaunchStatusDialogKey: DialogKey<boolean> = 'launch-status'
+export type LaunchStatusParam = {
+  isKill?: boolean
+  javaIssue?: 'invalid' | 'incompatible' | undefined
+}
+
+export const LaunchStatusDialogKey: DialogKey<LaunchStatusParam> = 'launch-status'
