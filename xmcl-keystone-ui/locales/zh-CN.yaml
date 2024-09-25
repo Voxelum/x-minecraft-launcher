@@ -36,7 +36,7 @@ FeedTheBeastProject:
   overview: 总览
   versions: 版本
 HomeJavaIssueDialog:
-  incompatibleJava: 当前的 Java 版本可能不兼容
+  incompatibleJava: 当前 Java 版本可能无法正常启动 Minecraft
   incompatibleJavaHint: Java {javaVersion} 可能无法运行已选择的 Minecraft 版本
   missingJava: 没有找到 Java
   missingJavaHint: 启动器在您的电脑上没有找到任何Java。您可以尝试：
@@ -528,6 +528,7 @@ launch:
   kill: 停止
   killServer: 停止本地服务器
   launch: 启动
+  launchAnyway: 直接启动
 launchBlocked:
   ignore: 强制启动
   launchBadVersion:

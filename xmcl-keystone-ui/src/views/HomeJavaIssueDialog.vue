@@ -14,7 +14,9 @@
       </v-toolbar>
       <v-card-text class="flex flex-col gap-2 p-4">
         <div>
-          {{ t('HomeJavaIssueDialog.recommendedVersionHint', { version: status?.java?.version, range: status?.preference?.requirement }) }}
+          {{ t('HomeJavaIssueDialog.recommendedVersionHint', {
+            version: status?.java?.version, range:
+              status?.preference?.requirement }) }}
           {{ hint }}
         </div>
 
@@ -50,8 +52,20 @@
           @click="selectLocalJava"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSwitch.name', { version: status?.javaVersion ? status?.javaVersion.majorVersion : status?.javaVersion ? status?.javaVersion.majorVersion : '' }) }}</v-list-item-title>
-            <v-list-item-subtitle>{{ !status?.preferredJava ? t('HomeJavaIssueDialog.optionSwitch.disabled', { version: status?.javaVersion ? status?.javaVersion.majorVersion : '' }) : t('HomeJavaIssueDialog.optionSwitch.message', { version: status?.preferredJava.path }) }}</v-list-item-subtitle>
+            <v-list-item-title>
+              {{ t('HomeJavaIssueDialog.optionSwitch.name', {
+                version: status?.javaVersion ?
+                  status?.javaVersion.majorVersion : status?.javaVersion ? status?.javaVersion.majorVersion : '' })
+              }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ !status?.preferredJava ? t('HomeJavaIssueDialog.optionSwitch.disabled', {
+                version:
+                  status?.javaVersion ? status?.javaVersion.majorVersion : ''
+              }) :
+                t('HomeJavaIssueDialog.optionSwitch.message', { version: status?.preferredJava.path })
+              }}
+            </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-icon v-if="!refreshing">
@@ -75,7 +89,11 @@
         >
           <v-list-item-content>
             <v-list-item-title>{{ t('HomeJavaIssueDialog.optionAutoDownload.name') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionAutoDownload.message', { version: status?.javaVersion.majorVersion }) }}</v-list-item-subtitle>
+            <v-list-item-subtitle>
+              {{ t('HomeJavaIssueDialog.optionAutoDownload.message', {
+                version:
+                  status?.javaVersion.majorVersion }) }}
+            </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
             <v-icon v-if="!downloadingJava">
@@ -117,6 +135,7 @@ import { InstanceServiceKey, JavaServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaIssueDialogKey } from '../composables/java'
 import { useNotifier } from '../composables/notifier'
+import { useJavaHint } from '@/composables/javaHint'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
@@ -128,15 +147,12 @@ const downloadingJava = useServiceBusy(JavaServiceKey, 'installDefaultJava')
 
 const { path } = injection(kInstance)
 const { status } = injection(kInstanceJava)
-
-const isMissingJava = computed(() => status.value?.noJava)
-const title = computed(() => (!isMissingJava.value
-  ? t('HomeJavaIssueDialog.incompatibleJava', { javaVersion: status.value?.java?.version ?? status.value?.javaPath ?? '' })
-  : t('HomeJavaIssueDialog.missingJava')))
-const hint = computed(() => (!isMissingJava.value
-  ? t('HomeJavaIssueDialog.incompatibleJavaHint', { javaVersion: status.value?.java?.version })
-  : t('HomeJavaIssueDialog.missingJavaHint')))
-const needDownloadHint = computed(() => !status.value?.javaVersion)
+const {
+  isMissingJava,
+  title,
+  hint,
+  needDownloadHint,
+} = useJavaHint()
 
 const { refresh, refreshing } = useRefreshable(async () => {
   await refreshLocalJava(true)

@@ -105,8 +105,8 @@ export function useInstanceLaunch(
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
 
-    const javaRec = java.value
-    if (!javaRec) {
+    const javaPath = overrides?.java ?? java.value?.path
+    if (!javaPath) {
       throw new LaunchException({ type: 'launchNoProperJava', javaPath: '' })
     }
 
@@ -173,7 +173,7 @@ export function useInstanceLaunch(
       version: ver,
       gameDirectory: instance.value.path,
       user: userProfile.value,
-      java: javaRec.path,
+      java: javaPath,
       hideLauncher,
       showLog,
       minMemory,

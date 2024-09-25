@@ -528,6 +528,7 @@ launch:
   kill: Зупинити
   killServer: Закрийте локальний сервер
   launch: Почати
+  launchAnyway: Все одно запустити
 launchBlocked:
   ignore: Примусовий запуск
   launchGeneralException:

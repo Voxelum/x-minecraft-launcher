@@ -537,6 +537,7 @@ launch:
   kill: Stop
   killServer: Zabij serwer Localhost
   launch: Uruchomienie
+  launchAnyway: Uruchom mimo to
 launchBlocked:
   ignore: Force Launch
   launchBadVersion:

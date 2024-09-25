@@ -523,6 +523,7 @@ launch:
   kill: Arresta
   killServer: Uccidi il server Localhost
   launch: Avvia
+  launchAnyway: Avvia comunque
 launchBlocked:
   ignore: Forza avvio
   launchBadVersion:

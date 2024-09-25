@@ -579,6 +579,7 @@ launch:
   kill: Остановить
   killServer: Остановить локальный сервер
   launch: Запустить
+  launchAnyway: Запустить в любом случае
 launchBlocked:
   ignore: Насильный запуск
   launchBadVersion:

@@ -46,7 +46,9 @@ export interface InstanceJavaStatus extends AutoDetectedJava {
    * Only present when user has manually selected java
    */
   compatible?: JavaCompatibleState
-
+  /**
+   * The java preferred and auto detected by the system
+   */
   preferredJava?: JavaRecord
 }
 
