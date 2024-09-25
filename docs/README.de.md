@@ -9,7 +9,7 @@
     <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
   </a>
   <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
-    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
+    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="Lizenz">
   </a>
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
@@ -31,32 +31,34 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Besuchen Sie die [offizielle Seite] (https://xmcl.app), um die App herunterzuladen!
+Besuchen Sie die [offizielle Website](https://xmcl.app), um die App herunterzuladen!
 
-Wenn Sie winget haben, können Sie es verwenden, um zu installieren
+Wenn Sie winget haben, können Sie winget zur Installation verwenden:
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-## Merkmale- 📥 **Herunterladen und automatische Vervollständigung**. Unterstützt das Herunterladen von `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` von offiziellen oder Drittanbieter-Spiegeln.
-- ⚡️ **schnell herunterladen**. Wiederverwendung des Sockets über HTTP/HTTPS-Agenten und gleichzeitiges Herunterladen von Dateien in Teilen.
-- 💻 **Plattformübergreifend**. Der Launcher basiert auf Electron und unterstützt 🗔 Windows 10/11, 🍎 MacOS, und 🐧 Linux.
-- 📚 **Mehrfach-Installation**. Benutzer können mehrere Instanzen erstellen, um verschiedene Versionen, Änderungen und Starteinstellungen zu isolieren.
-- 🗂 Verwalten Sie alle Ressourcen. Verwenden Sie (harte/symbolische) Links, um Ressourcen in einzelnen Fällen zu installieren, um die Disc optimal zu nutzen. Keine Kopien von Mods überall!
-- 🔥 **Eingebaute Unterstützung für CurseForge, Modrinth**. Sie können Ressourcen innerhalb des Launcher herunterladen.
-- 📦 **Import/Export Unterstützung** CurseForge & Modrinth Modpacks mit Compliance!
-- 🔒 **Unterstützung für mehrere Konten**. Eingebaute Microsoft-Anmeldung und Mojang Yggdrasil API.Es hat auch integrierte Unterstützung für [ely.by](https://ely.by/) und [littleskin.cn](https://littleskin.cn). Sie können auch Authentifizierungsserver von Drittanbietern hinzufügen!
-- 🔗 **Peer-to-Peer-Verbindung zwischen Benutzern**. Sie können ein Multiplayer-Spiel über ein lokales Netzwerk spielen, auch wenn Sie sich nicht im selben physischen LAN befinden!
-- 🔑 **Code und moderne Verpackung**. Unter Windows können Sie `appx` und `appinstaller` verwenden, um die Anwendung zu installieren. Sie werden keine blockierenden Meldungen mehr von Ihrem Browser erhalten oder SmartScreen-Fehler sehen!!!!
+## Funktionen
 
-## Beigetragen
+- 📥 **Download & automatische Vervollständigung**. Unterstützt den Download von `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` von offiziellen oder Drittanbieter-Spiegeln.
+- ⚡️ **Schneller Download**. Wiederverwendung von Sockets über HTTP/HTTPS-Agents und gleichzeitiger Download von Dateien in Teilen.
+- 💻 **Plattformübergreifend**. Der Launcher basiert auf Electron und unterstützt 🗔 Windows 10/11, 🍎 MacOS und 🐧 Linux.
+- 📚 **Mehrere Instanzen**. Benutzer können mehrere Instanzen erstellen, um verschiedene Versionen, Mods und Starteinstellungen zu isolieren.
+- 🗂 **Verwaltung aller Ressourcen**. Verwendung von (harten/symbolischen) Links zur Installation von Ressourcen in Instanzen, optimale Nutzung des Festplattenspeichers. Keine Kopien von Mods überall! 😆
+- 🔥 **Integrierte Unterstützung für CurseForge, Modrinth**. Sie können Ressourcen direkt im Launcher herunterladen.
+- 📦 **Unterstützung für Import/Export** von CurseForge & Modrinth Modpacks mit Kompatibilität!
+- 🔒 **Unterstützung mehrerer Kontosysteme**. Integrierter Microsoft-Login und Mojang Yggdrasil API. Es gibt auch integrierte Unterstützung für [ely.by](https://ely.by/) und [littleskin.cn](https://littleskin.cn). Sie können auch Authentifizierungsserver von Drittanbietern hinzufügen!
+- 🔗 **Peer-to-Peer-Verbindung zwischen Benutzern**. Sie können Multiplayer über LAN spielen, auch wenn Sie sich nicht im selben physischen LAN befinden!
+- 🔑 **Code-Signierung & modernes Packaging**. Unter Windows können Sie `appx` und `appinstaller` zur Installation der App verwenden. Sie erhalten keine Blockierungsmeldungen mehr von Ihrem Browser oder SmartScreen-Fehler! 😎
 
-Für den allgemeinen Entwickler, siehe [Contributing](./CONTRIBUTING.md)
+## Beitragen
 
-Für einen i18n-Lokalisierungsentwickler folgen Sie bitte dem Link [Erste Schritte mit der Lokalisierung](https://docs.xmcl.app/en/guide/i18n)
+Für allgemeine Entwickler, siehe [Contributing](./CONTRIBUTING.md)
 
-## LICENSE
+Für i18n-Lokalisierungsentwickler, bitte folgen Sie [Erste Schritte mit der Lokalisierung](https://docs.xmcl.app/en/guide/i18n)
+
+## LIZENZ
 
 [MIT](LICENSE)
 
@@ -80,20 +82,20 @@ Für einen i18n-Lokalisierungsentwickler folgen Sie bitte dem Link [Erste Schrit
 </div>
 <!-- afdian-end -->
 
-## Kredit
+## Danksagung
 
 [GodLeaveMe](https://github.com/GodLeaveMe), Pflege des AUR-Paketregisters.
 
-[0xc0000142](https://github.com/0xc0000142), winget maintenance.
+[0xc0000142](https://github.com/0xc0000142), Pflege des winget.
 
-[Marmur2020](https://github.com/Marmur2020) und [BANSAFAn](https://github.com/BANSAFAn), vollständig ins Ukrainische übersetzt!
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), vollständige Übersetzung ins Ukrainische!
 
-[vanja-san](https://github.com/vanja-san), sofern russische Sprache!
+[vanja-san](https://github.com/vanja-san), Bereitstellung der russischen Sprache!
 
-[lukechu10](https://github.com/lukechu10) und [HoldYourWaffle](https://github.com/HoldYourWaffle), die mir mit dem Kern des Launcher geholfen haben.
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helfen mir beim Launcher-Kern.
 
-[laolarou726](https://github.com/laolarou726), der mir bei der Entwicklung des Launchers sehr geholfen hat.
+[laolarou726](https://github.com/laolarou726), der viel beim Launcher-Design hilft.
 
-Außerdem geht ein besonderer Dank an
+Außerdem besonderen Dank an
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)

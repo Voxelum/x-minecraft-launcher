@@ -54,7 +54,7 @@ winget install CI010.XMinecraftLauncher
 
 ## Сделали вклад
 
-Для общего разработчика, смотрите [Вклад](./CONTRIBUTING.md)
+Для общего разработчика, смотрите [Вклад](contributing/CONTRIBUTING.ru.md)
 
 Для разработчика локализации i18n, пожалуйста, перейдите по ссылке [Начало работы с локализацией](https://docs.xmcl.app/en/guide/i18n)
 ## ЛИЦЕНЗИЯ
