@@ -98,7 +98,7 @@ import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useDrop } from '@/composables/dropHandler'
+import { useGlobalDrop } from '@/composables/dropHandler'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { usePresence } from '@/composables/presence'
 import { kSaveSearch } from '@/composables/savesSearch'
@@ -176,9 +176,11 @@ const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.save', { instance: name.value })))
 
 // Drop
-const { dragover } = useDrop(() => { }, async (t) => {
-  for (const f of t.files) {
-    importSave({ path: f.path, instancePath: path.value })
-  }
-}, () => { })
+const { dragover } = useGlobalDrop({
+  onDrop: async (t) => {
+    for (const f of t.files) {
+      importSave({ path: f.path, instancePath: path.value })
+    }
+  },
+})
 </script>
