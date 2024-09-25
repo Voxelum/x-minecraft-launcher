@@ -113,7 +113,7 @@ import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useDrop } from '@/composables/dropHandler'
+import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
@@ -245,14 +245,16 @@ onMounted(() => {
 const { installFromMarket, uninstall, install } = useService(InstanceResourcePacksServiceKey)
 
 // Drop
-const { dragover } = useDrop(() => { }, async (t) => {
-  const paths = [] as string[]
-  for (const f of t.files) {
-    paths.push(f.path)
-  }
-  const installed = await install(path.value, paths)
-  await enable(installed)
-}, () => { })
+const { dragover } = useGlobalDrop({
+  onDrop: async (t) => {
+    const paths = [] as string[]
+    for (const f of t.files) {
+      paths.push(f.path)
+    }
+    const installed = await install(path.value, paths)
+    await enable(installed)
+  },
+})
 
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(

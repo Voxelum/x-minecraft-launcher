@@ -21,7 +21,7 @@
         </transition>
       </main>
     </div>
-    <AppDropDialog />
+    <!-- <AppDropDialog /> -->
     <AppContextMenu />
     <AppNotifier />
     <AppFeedbackDialog />

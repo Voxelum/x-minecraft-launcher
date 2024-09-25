@@ -16,6 +16,9 @@
     <div
       class="flex flex-col header-content"
       style="margin: auto"
+      :style="{
+        opacity: dragover ? 0 : '',
+      }"
     >
       <div
         class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline px-6"
@@ -66,6 +69,28 @@
         />
       </transition>
     </div>
+    <div
+      v-if="dragover"
+      class="w-full h-full flex top-0 p-5"
+      style="position: absolute;"
+      @dragenter="overcount++"
+      @dragleave="overcount--"
+      @drop="overcount = 0; onDropModpack($event)"
+    >
+      <Hint
+        :text="t('modpack.dropHint')"
+        icon="save_alt"
+        class="rounded transition-all"
+        :class="{
+          dragover,
+          yellow: overcount > 0,
+          'darken-2': overcount > 0,
+        }"
+        :style="{
+          transform: overcount > 0 ? 'scale(1.0125)' : ''
+        }"
+      />
+    </div>
     <v-divider
       class="transition-all divider"
       :class="{
@@ -77,8 +102,12 @@
 
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
+import Hint from '@/components/Hint.vue'
 import { useService } from '@/composables'
+import { useDialog } from '@/composables/dialog'
+import { kDropHandler } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
@@ -121,6 +150,20 @@ const onShowLocalVersion = () => {
   }
 }
 
+const { dragover } = injection(kDropHandler)
+const { show } = useDialog(AddInstanceDialogKey)
+const onDropModpack = (e: DragEvent) => {
+  e.preventDefault()
+  const file = e.dataTransfer?.files.item(0)
+  if (file) {
+    show({
+      type: 'modpack',
+      path: file.path,
+    })
+  }
+}
+
+const overcount = ref(0)
 </script>
 <style scoped>
 

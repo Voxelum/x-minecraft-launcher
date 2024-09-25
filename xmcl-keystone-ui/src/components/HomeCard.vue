@@ -1,7 +1,13 @@
 <template>
   <v-card
-    class="flex h-full flex-col"
-    :color="error ? 'red' : cardColor"
+    class="flex h-full flex-col transition-colors transition-transform"
+    :class="{ highlighted: dragover > 0 }"
+    style="box-sizing: border-box"
+    :color="error ? 'red' : dragover > 0 ? 'yellow darken-2' : cardColor"
+    @dragover="emit('dragover', $event)"
+    @drop="emit('drop', $event); dragover = 0;"
+    @dragenter="dragover += 1"
+    @dragleave="dragover -= 1"
   >
     <v-progress-linear
       v-if="refreshing"
@@ -17,6 +23,9 @@
     <v-card-text class="flex-grow relative">
       <template v-if="refreshing && icons.length === 0">
         <v-skeleton-loader type="paragraph" />
+      </template>
+      <template v-else-if="slots.default">
+        <slot />
       </template>
       <template v-else>
         {{ error ? (error.message || error) : text }}
@@ -68,6 +77,16 @@ defineProps<{
   error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
-const emit = defineEmits(['navigate'])
-const { cardColor } = injection(kTheme)
+const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave'])
+const { cardColor, accentColor } = injection(kTheme)
+
+const slots = useSlots()
+
+const dragover = ref(0)
 </script>
+
+<style scoped>
+.highlighted {
+  transform: scale(1.05);
+}
+</style>

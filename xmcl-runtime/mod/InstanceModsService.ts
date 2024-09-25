@@ -138,9 +138,6 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     const promises: Promise<void>[] = []
     this.log(`Install ${resources.length} to ${path}/mods`)
     for (const res of resources) {
-      // if (res.domain !== ResourceDomain.Mods) {
-      //   this.warn(`Install non mod resource ${res.name} as it's not a mod`)
-      // }
       const src = res
       const dest = join(path, ResourceDomain.Mods, basename(res))
       const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])

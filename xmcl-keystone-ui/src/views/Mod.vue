@@ -348,7 +348,7 @@ import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useDrop } from '@/composables/dropHandler'
+import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
@@ -579,13 +579,15 @@ onUnmounted(() => {
 })
 
 // Drop
-const { dragover } = useDrop(() => { }, async (t) => {
-  const paths = [] as string[]
-  for (const f of t.files) {
-    paths.push(f.path)
-  }
-  await install({ path: path.value, mods: paths })
-}, () => { })
+const { dragover } = useGlobalDrop({
+  onDrop: async (t) => {
+    const paths = [] as string[]
+    for (const f of t.files) {
+      paths.push(f.path)
+    }
+    await install({ path: path.value, mods: paths })
+  },
+})
 
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(

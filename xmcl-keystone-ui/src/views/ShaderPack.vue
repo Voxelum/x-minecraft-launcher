@@ -99,7 +99,7 @@ import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrint
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useDrop } from '@/composables/dropHandler'
+import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
@@ -190,14 +190,16 @@ const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 
 // Drop
-const { dragover } = useDrop(() => {}, async (t) => {
-  const paths = [] as string[]
-  for (const f of t.files) {
-    paths.push(f.path)
-  }
-  const resources = await install(path.value, paths)
-  shaderPack.value = basename(resources[0])
-}, () => {})
+const { dragover } = useGlobalDrop({
+  onEnter: () => { }, onDrop: async (t) => {
+    const paths = [] as string[]
+    for (const f of t.files) {
+      paths.push(f.path)
+    }
+    const resources = await install(path.value, paths)
+    shaderPack.value = basename(resources[0])
+  }, onLeave: () => { }
+})
 
 // Page compact
 const compact = injection(kCompact)

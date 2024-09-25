@@ -8,7 +8,6 @@ import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { clientModrinthV2 } from '@/util/clients'
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
@@ -25,7 +24,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   const { link, watch: watchShaderPacks } = useService(InstanceShaderPacksServiceKey)
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
-  const { state } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
+  const { state, error, isValidating } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
 
   const shaderPacks = computed(() => state.value?.files.map(f => ({
     path: f.path,
@@ -167,7 +166,8 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     shaderPack,
     shaderPacks,
     refresh,
-    refreshing,
+    refreshing: computed(() => refreshing.value || isValidating.value),
+    error,
     effect,
   }
 }
