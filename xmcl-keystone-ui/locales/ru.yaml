@@ -1464,6 +1464,7 @@ shaderPack:
   showFile: Показать путь к набору шейдеров {file}
 shared:
   accept: Принять
+  skipForNow: Пропустить сейчас
 store:
   explore: Исследовать
   latestMinecraft: Последняя версия Minecraft

@@ -390,6 +390,7 @@ setup:
     name: '@:setting.appearance'
 shared:
   accept: Aceptar
+  skipForNow: Saltar por agora
 task:
   connection:
     connected: Conectado

@@ -1293,6 +1293,7 @@ shaderPack:
   showFile: 在文件夹中显示此光影包
 shared:
   accept: 接受
+  skipForNow: 先跳过
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

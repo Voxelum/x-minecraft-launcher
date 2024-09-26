@@ -1058,6 +1058,7 @@ shaderPack:
   showFile: Mostrar este pack de shaders en la carpeta
 shared:
   accept: Aceptar
+  skipForNow: Saltar por ahora
 summery: Resumen
 tag:
   create: Crear Etiqueta

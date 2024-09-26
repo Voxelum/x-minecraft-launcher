@@ -1351,6 +1351,7 @@ shaderPack:
   showFile: Show this shader pack in folder
 shared:
   accept: Accept
+  skipForNow: Skip for now
 store:
   explore: Explore
   latestMinecraft: Latest Minecraft Version

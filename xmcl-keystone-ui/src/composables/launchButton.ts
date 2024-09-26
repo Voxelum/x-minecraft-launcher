@@ -40,7 +40,7 @@ export function useLaunchButton() {
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
   const { status, pause, resume } = injection(kLaunchTask)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
-  const { launch, launching, count, kill } = injection(kInstanceLaunch)
+  const { launch, launching, count, abort } = injection(kInstanceLaunch)
 
   const { t } = useI18n()
   const dirty = ref(false)
@@ -78,7 +78,7 @@ export function useLaunchButton() {
         right: true,
         menu: [],
         onClick: () => {
-          kill()
+          abort()
         },
       }
     } else if (count.value > 0) {
@@ -127,7 +127,8 @@ export function useLaunchButton() {
           if (javaIssue.value) {
             showLaunchStatusDialog({ javaIssue: javaIssue.value })
           } else {
-            await launch()
+            launch()
+            showLaunchStatusDialog()
           }
         },
       }

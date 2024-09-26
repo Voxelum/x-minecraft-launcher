@@ -160,7 +160,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   /**
    * Refresh the current user login status
    */
-  @Lock('refreshUser')
+  @Singleton((v) => v)
   async refreshUser(userId: string, options: RefreshUserOptions = {}) {
     const user = this.state.users[userId]
 

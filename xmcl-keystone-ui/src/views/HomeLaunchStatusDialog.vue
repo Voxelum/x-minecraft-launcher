@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    :width="javaIssue ? 480 : 380"
+    :width="javaIssue ? 580 : 380"
   >
     <v-card class="h-full flex select-none flex-col">
       <v-card-title v-if="exiting">
@@ -22,8 +22,8 @@
             />
             <div
               v-if="hint"
-              class="text-transparent transition-all"
-              :class="{ 'text-gray-500': launchingStatus !== '' }"
+              class="transition-all"
+              :class="{ 'text-gray-500': launchingStatus !== '', 'text-transparent': !launchingStatus }"
             >
               {{ hint + '...' }}
             </div>
@@ -55,10 +55,10 @@
       </AppLoadingCircular>
 
       <div
-        v-if="exiting || javaIssue"
         class="flex p-3 gap-3"
       >
         <v-btn
+          v-if="exiting || javaIssue"
           text
           @click="onCancel"
         >
@@ -101,6 +101,25 @@
                 status?.javaVersion.majorVersion : status?.javaVersion ? status?.javaVersion.majorVersion : '' }) }}
           </v-btn>
         </template>
+        <v-btn
+          v-if="refreshUserTimeout"
+          text
+          color="primary"
+          @click="skipRefresh()"
+        >
+          <v-icon>
+            skip_next
+          </v-icon>
+          {{ t('shared.skipForNow') }}
+        </v-btn>
+        <v-btn
+          v-if="authLibTimeout"
+          text
+          color="primary"
+          @click="skipAuthLib()"
+        >
+          {{ t('shared.skipForNow') }}
+        </v-btn>
       </div>
     </v-card>
   </v-dialog>
@@ -108,19 +127,19 @@
 
 <script lang=ts setup>
 import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
+import VTypical from '@/components/VTyping.vue'
+import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
 import { kInstanceJava } from '@/composables/instanceJava'
+import { useInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { injection } from '@/util/inject'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
-import { useService } from '@/composables'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { kInstance } from '@/composables/instance'
-import { useInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
-import VTypical from '@/components/VTyping.vue'
 
 const { t } = useI18n()
-const { launching, windowReady, kill, launchingStatus, launch } = injection(kInstanceLaunch)
+const { launching, windowReady, kill, launchingStatus, launch, skipRefresh, skipAuthLib } = injection(kInstanceLaunch)
 const exiting = ref(false)
 const selected = ref(false)
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (param) => {
@@ -128,6 +147,8 @@ const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (param) => {
 }, () => {
   exiting.value = false
   selected.value = false
+  refreshUserTimeout.value = false
+  authLibTimeout.value = false
 })
 
 const { issue: javaIssue } = useInstanceJavaDiagnose()
@@ -144,6 +165,29 @@ async function selectLocalJava() {
     })
   }
 }
+
+const refreshUserTimeout = ref(false)
+const authLibTimeout = ref(false)
+watch(launchingStatus, (newStat) => {
+  if (newStat === 'refreshing-user') {
+    setTimeout(() => {
+      if (launchingStatus.value === 'refreshing-user') {
+        refreshUserTimeout.value = true
+      }
+    }, 5000)
+  } else {
+    refreshUserTimeout.value = false
+  }
+  if (newStat === 'preparing-authlib') {
+    setTimeout(() => {
+      if (launchingStatus.value === 'preparing-authlib') {
+        authLibTimeout.value = true
+      }
+    }, 5000)
+  } else {
+    authLibTimeout.value = false
+  }
+})
 
 const hint = computed(() => launchingStatus.value === 'preparing-authlib'
   ? t('launchStatus.injectingAuthLib')
@@ -184,12 +228,6 @@ const launchingSteps = computed(() => [
   4000,
   t('launchStatus.launchingSlow'),
 ])
-
-watch(launching, (val) => {
-  if (val) {
-    show()
-  }
-})
 
 const onKill = () => {
   kill()

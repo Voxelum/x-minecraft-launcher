@@ -1,5 +1,5 @@
 import { useService } from '@/composables'
-import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AuthlibInjectorServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
@@ -18,14 +18,33 @@ export function useInstanceLaunch(
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
-  const { getMemoryStatus } = useService(BaseServiceKey)
-  const { abortRefresh } = useService(UserServiceKey)
-  const { getOrInstallAuthlibInjector, abortAuthlibInjectorInstall } = useService(AuthlibInjectorServiceKey)
+  const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
-  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory'
-  const allLaunchingStatus = shallowRef({} as Record<string, LaunchStatus>)
-  const launchingStatus = computed(() => allLaunchingStatus.value[instance.value.path] ?? '')
-  const launching = computed(() => Object.values(allLaunchingStatus.value).some(v => v.length > 0))
+  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'launching'
+  type LaunchStatusState = {
+    status: LaunchStatus
+    controllers: Record<string, AbortController>
+    aborted: boolean
+  }
+  const allLaunchingStatus = shallowRef({} as Record<string, LaunchStatusState>)
+  const launchingStatus = computed(() => allLaunchingStatus.value[instance.value.path]?.status ?? '')
+  const launching = computed(() => Object.values(allLaunchingStatus.value).some(v => v.status.length > 0))
+
+  function assignStatus(path: string, status: LaunchStatus, controller?: AbortController) {
+    const oldVal = allLaunchingStatus.value
+    const controllers = oldVal[path]?.controllers || {}
+    if (controller) {
+      controllers[status] = controller
+    }
+    allLaunchingStatus.value = {
+      ...oldVal,
+      [path]: markRaw({
+        aborted: false,
+        status,
+        controllers,
+      }),
+    }
+  }
 
   const error = ref<any | undefined>(undefined)
 
@@ -66,7 +85,7 @@ export function useInstanceLaunch(
     data.value = data.value?.filter(p => p.pid !== pid)
   })
 
-  async function track<T>(p: Promise<T>, name: string, id: string) {
+  async function track<T>(token: string, p: Promise<T>, name: LaunchStatus, id: string) {
     const start = performance.now()
     if (id) {
       reportOperation({
@@ -75,7 +94,13 @@ export function useInstanceLaunch(
       })
     }
     try {
-      const v = await p
+      const controller = new AbortController()
+      assignStatus(token, name, controller)
+      const v = await Promise.race([p, new Promise<T>((resolve, reject) => {
+        controller.signal.onabort = () => {
+          reject(new Error('Aborted'))
+        }
+      })])
       if (id) {
         reportOperation({
           duration: performance.now() - start,
@@ -118,16 +143,13 @@ export function useInstanceLaunch(
 
     const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
     if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
-      if (!dry) {
-        allLaunchingStatus.value = {
-          ...allLaunchingStatus.value,
-          [instancePath]: 'preparing-authlib',
+      try {
+        yggdrasilAgent = {
+          jar: await track(instancePath, getOrInstallAuthlibInjector(), 'preparing-authlib', operationId),
+          server: userProfile.value.authority,
         }
-        console.log('preparing authlib')
-      }
-      yggdrasilAgent = {
-        jar: await track(getOrInstallAuthlibInjector(), 'prepare-authlib', operationId),
-        server: userProfile.value.authority,
+      } catch {
+        // TODO: notify user
       }
     }
 
@@ -143,10 +165,7 @@ export function useInstanceLaunch(
       // noop
     } else if (assignMemory === 'auto') {
       if (!dry) {
-        allLaunchingStatus.value = {
-          ...allLaunchingStatus.value,
-          [instancePath]: 'assigning-memory',
-        }
+        assignStatus(instancePath, 'assigning-memory')
       }
 
       console.log('assigning memory')
@@ -197,58 +216,49 @@ export function useInstanceLaunch(
       const options = await generateLaunchOptions(instancePath, operationId, side, overrides)
 
       if (!options.skipAssetsCheck) {
-        allLaunchingStatus.value = {
-          ...allLaunchingStatus.value,
-          [instancePath]: 'refreshing-user',
-        }
-
         console.log('refreshing user')
         try {
-          await track(Promise.race([
-            new Promise((resolve, reject) => { setTimeout(() => reject(new Error('Timeout')), 5_000) }),
-            refreshUser(userProfile.value.id, { validate: true }),
-          ]), 'refresh-user', operationId)
+          await track(instancePath, refreshUser(userProfile.value.id, { validate: true }), 'refreshing-user', operationId)
         } catch (e) {
         }
       }
 
-      allLaunchingStatus.value = {
-        ...allLaunchingStatus.value,
-        [instancePath]: 'spawning-process',
-      }
-
+      assignStatus(instancePath, 'spawning-process')
       console.log('spawning process')
+
+      const state = allLaunchingStatus.value[instancePath]
+      if (state?.aborted) {
+        return
+      }
       const pid = await launch(options)
       if (pid) {
-        data.value?.push({
-          pid,
-          ready: false,
-          options,
-          side,
-        })
+        if (state.aborted) {
+          await kill(pid)
+        } else {
+          data.value?.push({
+            pid,
+            ready: false,
+            options,
+            side,
+          })
+        }
       }
     } catch (e) {
       console.error(e)
       error.value = e as any
       throw e
     } finally {
-      allLaunchingStatus.value = { ...allLaunchingStatus.value, [instancePath]: '' }
+      assignStatus(instancePath, '')
     }
   }
 
   async function launchWithTracking(side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     const operationId = crypto.getRandomValues(new Uint32Array(1))[0].toString(16)
     const instancePath = instance.value.path
-    await track(_launch(instancePath, operationId, side, overrides), 'launch', operationId)
+    await track(instancePath, _launch(instancePath, operationId, side, overrides), 'launching', operationId)
   }
 
   async function killGame(side: 'client' | 'server' = 'client') {
-    if (launchingStatus.value === 'refreshing-user') {
-      abortRefresh()
-    }
-    if (launchingStatus.value === 'preparing-authlib') {
-      abortAuthlibInjectorInstall()
-    }
     if (data.value) {
       for (const p of data.value) {
         if (p.side === side) {
@@ -256,6 +266,15 @@ export function useInstanceLaunch(
         }
       }
     }
+  }
+
+  function abort() {
+    const path = instance.value.path
+    const state = allLaunchingStatus.value[path]
+    state.aborted = true
+    const controllers = state.controllers
+    controllers['preparing-authlib']?.abort()
+    controllers['refresh-user']?.abort()
   }
 
   return {
@@ -269,5 +288,16 @@ export function useInstanceLaunch(
     launching,
     launchingStatus,
     generateLaunchOptions,
+    abort,
+    skipAuthLib: () => {
+      const path = instance.value.path
+      const controllers = allLaunchingStatus.value[path].controllers
+      controllers['preparing-authlib']?.abort()
+    },
+    skipRefresh: () => {
+      const path = instance.value.path
+      const controllers = allLaunchingStatus.value[path].controllers
+      controllers['refreshing-user']?.abort()
+    },
   }
 }

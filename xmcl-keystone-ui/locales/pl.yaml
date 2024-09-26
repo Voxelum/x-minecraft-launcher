@@ -1398,6 +1398,7 @@ shaderPack:
   showFile: Pokaż ten pakiet shaderów w folderze
 shared:
   accept: Akceptuj
+  skipForNow: Pomiń na razie
 store:
   explore: Eksploruj
   latestMinecraft: Najnowsza wersja Minecrafta

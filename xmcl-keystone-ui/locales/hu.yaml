@@ -1383,6 +1383,7 @@ shaderPack:
   showFile: Shader pack megjelenítése a mappában
 shared:
   accept: Elfogad
+  skipForNow: Most hagyd ki
 store:
   explore: Felfedezés
   latestMinecraft: Legfrissebb Minecraft verzió
