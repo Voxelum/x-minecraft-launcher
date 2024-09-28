@@ -105,7 +105,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
+import { InstallServiceKey, VersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useFilterCombobox, useRefreshable, useService } from '@/composables'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
@@ -147,7 +147,7 @@ const headers = computed(() => [{
   sortable: false,
 }])
 
-const getIcon = (item: LocalVersionHeader) => {
+const getIcon = (item: VersionHeader) => {
   if (item.forge) return '$vuetify.icons.forge'
   if (item.fabric) return '$vuetify.icons.fabric'
   if (item.quilt) return '$vuetify.icons.quilt'
@@ -169,7 +169,7 @@ const { versions: localVersions } = injection(kLocalVersions)
 const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
 const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
 const { t } = useI18n()
-function getFilterOptions(item: LocalVersionHeader) {
+function getFilterOptions(item: VersionHeader) {
   return [
     { label: '$vuetify.icons.minecraft', value: item.minecraft, color: 'lime' },
   ]
@@ -179,12 +179,10 @@ const filterOptions = computed(() => localVersions.value.map(getFilterOptions).r
 function browseVersionsFolder() {
   showVersionsDirectory()
 }
-function openVersionDir(v: LocalVersionHeader) {
+function openVersionDir(v: VersionHeader) {
   showVersionDirectory(v.id)
 }
-const { refresh, refreshing } = useRefreshable(async () => {
-  await refreshVersions()
-})
+const { refresh, refreshing } = useRefreshable(refreshVersions)
 
 usePresence(computed(() => t('presence.version')))
 </script>

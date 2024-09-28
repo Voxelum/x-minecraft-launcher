@@ -15,7 +15,7 @@
         <v-list-item-title>
           {{ t("java.allocatedLong") }}
         </v-list-item-title>
-        <v-list-item-subtitle>{{ t("java.allocatedLong") }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ java?.path }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-list-item
@@ -81,14 +81,17 @@
 <script lang=ts setup>
 import { JavaRecord, BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { kInstanceJava } from '@/composables/instanceJava'
 
 defineProps<{
-  items:JavaRecord[]
-  value:JavaRecord
+  items: JavaRecord[]
+  value: JavaRecord
   remove(java: JavaRecord): void
 }>()
 
 const emit = defineEmits(['input'])
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
+const { java } = injection(kInstanceJava)
 </script>

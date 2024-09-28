@@ -6,59 +6,6 @@
       </div>
       <div class="flex-grow" />
       <div class="invisible-scroll flex justify-end gap-4 overflow-x-auto">
-        <v-btn-toggle
-          v-model="modLoaderFilters"
-          multiple
-          dense
-        >
-          <v-btn
-            icon
-            text
-            class="h-10"
-            value="forge"
-          >
-            <v-img
-              width="28"
-              :src="'http://launcher/icons/forge'"
-            />
-          </v-btn>
-
-          <v-btn
-            icon
-            text
-            class="h-10"
-            value="neoforge"
-          >
-            <v-img
-              width="28"
-              :src="'http://launcher/icons/neoForged'"
-            />
-          </v-btn>
-
-          <v-btn
-            icon
-            class="h-10"
-            text
-            value="fabric"
-          >
-            <v-img
-              width="28"
-              :src="'http://launcher/icons/fabric'"
-            />
-          </v-btn>
-
-          <v-btn
-            icon
-            class="h-10"
-            text
-            value="quilt"
-          >
-            <v-img
-              width="28"
-              :src="'http://launcher/icons/quilt'"
-            />
-          </v-btn>
-        </v-btn-toggle>
         <MarketTextFieldWithMenu
           :placeholder="t('mod.search')"
           :keyword.sync="_keyword"
@@ -71,6 +18,7 @@
           :sort.sync="sort"
           :game-version.sync="gameVersion"
           :modloader.sync="modLoader"
+          :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
         />
       </div>
     </div>
@@ -88,7 +36,7 @@ import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
-import { kModsSearch } from '@/composables/modSearch'
+import { kModsSearch, ModLoaderFilter } from '@/composables/modSearch'
 import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'

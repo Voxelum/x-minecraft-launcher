@@ -178,7 +178,7 @@ export function swapExt(path: string, ext: string) {
 }
 
 export function linkOrCopy(from: string, to: string) {
-  return link(from, to).catch(() => copyFile(from, to))
+  return link(from, to).then(() => true, () => copyFile(from, to).then(() => false))
 }
 
 export function linkWithTimeout(from: string, to: string, timeout = 1500) {

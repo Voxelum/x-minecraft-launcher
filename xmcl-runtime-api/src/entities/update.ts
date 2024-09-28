@@ -11,6 +11,28 @@ export interface ReleaseFile {
   url: string
 }
 
+/**
+ * The operations for the update electron app
+ */
+export const enum ElectronUpdateOperation {
+  /**
+   * Use electron auto updater to update
+   */
+  AutoUpdater = 'autoupdater',
+  /**
+   * Use asar incremental update
+   */
+  Asar = 'asar',
+  /**
+   * Ask user to manually update
+   */
+  Manual = 'manual',
+  /**
+   * Use appx update
+   */
+  Appx = 'appx',
+}
+
 export interface ReleaseInfo {
   /**
    * The version name.
@@ -28,11 +50,12 @@ export interface ReleaseInfo {
    * The files of the releases
    */
   files: Array<ReleaseFile>
-
-  useAutoUpdater: boolean
+  /**
+   * Is this a new update compare to the current version.
+   */
   newUpdate: boolean
   /**
-   * Is incremental asar release.
+   * The suggested operation for the update
    */
-  incremental: boolean
+  operation: string
 }

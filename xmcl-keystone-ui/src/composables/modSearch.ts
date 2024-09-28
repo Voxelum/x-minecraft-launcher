@@ -2,7 +2,6 @@ import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { InstanceData, Resource, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
@@ -11,7 +10,9 @@ import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useResourceEffect } from './resources'
 import { useService } from './service'
-import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
+import { getDiceCoefficient } from '@/util/sort'
+import { BuiltinImages } from '@/constant'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -22,110 +23,21 @@ export enum ModLoaderFilter {
   neoforge = 'neoforge',
 }
 
-export function useSearchPattern<T>(search: (offset: number) => Promise<{
-  data: T[]
-  total: number
-  offset: number
-  limit: number
-}>, shouldSearch: () => boolean) {
-  const result = ref(undefined as undefined | {
-    data: T[]
-    total: number
-    offset: number
-    limit: number
-  })
-  const page = ref(0)
-  const loading = ref(false)
-  const error = ref(undefined as any)
-
-  const doSearch = debounce(async (offset: number, append: boolean) => {
-    if (!shouldSearch()) {
-      error.value = undefined
-      loading.value = false
-      result.value = undefined
-      return
-    }
-    try {
-      error.value = undefined
-      const searchResult = await search(offset)
-      if (!append || !result.value) {
-        result.value = searchResult as any
-      } else {
-        result.value.data.push(...searchResult.data as any)
-        result.value.total = searchResult.total
-        result.value.offset = searchResult.offset
-        result.value.limit = searchResult.limit
-      }
-    } catch (e) {
-      error.value = e
-    } finally {
-      loading.value = false
-    }
-  }, 500)
-
-  const loadMore = async () => {
-    if (!result.value) return
-    if (!hasMore.value) return
-    page.value += 1
-    loading.value = true
-    await doSearch(page.value * 20, true)
-  }
-
-  const onSearch = async () => {
-    loading.value = true
-    page.value = 0
-    error.value = undefined
-    return doSearch(page.value * 20, false)
-  }
-
-  const hasMore = computed(() => {
-    return result.value && result.value.total > (result.value.offset + result.value.limit)
-  })
-
-  return {
-    result,
-    page,
-    loadMore,
-    loading,
-    onSearch,
-    hasMore,
-    error,
-  }
-}
-
 const kCached = Symbol('cached')
 
 export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
-  const useForge = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1)
-  const useFabric = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1)
-  const useQuilt = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1)
-  const useNeoforge = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.neoforge) !== -1)
-
-  const isValidResource = (r: Resource) => {
-    if (useForge.value || useNeoforge.value) return !!r.metadata.forge
-    if (useFabric.value) return !!r.metadata.fabric
-    if (useQuilt.value) return !!r.metadata.quilt
-    return false
-  }
   const { getResourcesByKeyword } = useService(ResourceServiceKey)
   const modFiles = ref([] as ModFile[])
-
-  const instanceMods = computed(() => {
-    return keyword.value.length === 0
-      ? instanceModFiles.value
-      : instanceModFiles.value.filter(m => m.name.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1)
-  })
 
   const result = computed(() => {
     const indices: Record<string, ProjectEntry<ModFile>> = {}
     const _all: ProjectEntry<ModFile>[] = []
     const _installed: ProjectEntry<ModFile>[] = []
+    const _installedAll: ProjectEntry<ModFile>[] = []
+    const key = keyword.value
 
-    let hasOptifine = false
-
-    const processModFile = (m: ModFile, instanceFile: boolean) => {
+    const getOrDecorateProjectEntry = (m: ModFile, instanceFile: boolean) => {
       if (m.modId === 'OptiFine') {
-        hasOptifine = true
         if (indices.OptiFine) {
           indices.OptiFine.files?.push(m)
           if (instanceFile) {
@@ -188,49 +100,69 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       }
     }
 
-    for (const m of instanceMods.value) {
-      const mod = processModFile(m, true)
-      if (mod) {
+    for (const m of instanceModFiles.value) {
+      const mod = getOrDecorateProjectEntry(m, true)
+      if (!mod) { continue }
+      const matched = m.name.toLocaleLowerCase().indexOf(key.toLocaleLowerCase()) !== -1
+      if (matched) {
         _installed.push(mod)
       }
+      _installedAll.push(mod)
     }
+
     for (const m of modFiles.value) {
-      const mod = processModFile(m, false)
+      const mod = getOrDecorateProjectEntry(m, false)
       if (mod) {
         _all.push(mod)
       }
     }
 
-    if (!hasOptifine) {
-      const hasOptifine = keyword.value.toLowerCase().includes('optifine')
-      if (hasOptifine && runtime.value.optifine) {
-        _installed.push(getOptifineAsMod())
-      } else if (hasOptifine) {
-        _all.push(getOptifineAsMod())
+    if (!indices.OptiFine) {
+      // If no OptiFine in cache or instance, and the keyword contains 'optifine', add it to the list
+      const ef = getDiceCoefficient(keyword.value, 'optifine')
+      const hasKeyword = ef > 0.5
+      if (hasKeyword) {
+        if (runtime.value.optifine) {
+          _installed.push(getOptifineAsMod())
+        } else if (hasKeyword) {
+          _all.push(getOptifineAsMod())
+        }
       }
     }
 
-    return markRaw([_all, _installed] as const)
+    return markRaw([_all, _installed, _installedAll] as const)
   })
 
   const all = computed(() => result.value[0])
   const instances = computed(() => result.value[1])
+  const instancesAll = computed(() => result.value[2])
 
-  async function processCachedMod() {
-    if (keyword.value) {
-      const searched = await getResourcesByKeyword(keyword.value, ResourceDomain.Mods)
-      const resources = searched.filter(isValidResource).map(r => getModFileFromResource(r, runtime.value))
-      modFiles.value = resources
-    } else {
+  async function searchLocalMods() {
+    const kw = keyword.value
+    if (!kw) {
       modFiles.value = []
+      return
     }
+    const useForge = modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1
+    const useFabric = modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1
+    const useQuilt = modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1
+    const useNeoforge = modLoaderFilters.value.indexOf(ModLoaderFilter.neoforge) !== -1
+    const isValidResource = (r: Resource) => {
+      if (useForge || useNeoforge) return !!r.metadata.forge
+      if (useFabric) return !!r.metadata.fabric
+      if (useQuilt) return !!r.metadata.quilt
+      return false
+    }
+    const searched = await getResourcesByKeyword(kw, ResourceDomain.Mods)
+    const resources = searched.filter(isValidResource).map(r => getModFileFromResource(r, runtime.value))
+    modFiles.value = resources
   }
 
   const loadingCached = ref(false)
 
   const onSearch = async () => {
     loadingCached.value = true
-    processCachedMod().finally(() => {
+    searchLocalMods().finally(() => {
       loadingCached.value = false
     })
   }
@@ -245,6 +177,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     cached: all,
     effect,
     instances,
+    instancesAll,
     loadingCached,
   }
 }
@@ -252,7 +185,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
 const getOptifineAsMod = () => {
   const result: ProjectEntry<ModFile> = {
     id: 'OptiFine',
-    icon: 'http://launcher/icons/optifine',
+    icon: BuiltinImages.optifine,
     title: 'Optifine',
     author: 'sp614x',
     description: 'Optifine is a Minecraft optimization mod. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
@@ -278,7 +211,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
-  const { cached: cachedMods, instances, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
+  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
   const all = useAggregateProjects<ProjectEntry<ModFile>>(
@@ -286,6 +219,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     curseforge,
     cachedMods,
     instances,
+    instancesAll,
   )
 
   const networkOnly = computed(() => {
@@ -297,7 +231,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     }
     return false
   })
-  const items = useProjectsFilterSearch(
+  const items = useProjectsFilterSort(
     keyword,
     all,
     networkOnly,
@@ -332,7 +266,10 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     onLocalEffect()
 
     useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
-    useQueryOverride('modLoaders', modLoaderFilters, computed(() => getModloaders(runtime.value)), searlizers.stringArray)
+    useQueryOverride('modLoader', modLoaderFilters, computed(() => getModloaders(runtime.value)), {
+      fromString: (v) => [v],
+      toString: (v) => v[0],
+    })
     useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
     useQueryOverride('modrinthCategories', modrinthCategories, [], searlizers.stringArray)
     useQueryOverride('keyword', keyword, '', searlizers.string)

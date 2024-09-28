@@ -131,7 +131,7 @@ export function useDomainResources(domain: ResourceDomain | Ref<ResourceDomain>)
 
   onMounted(refresh)
   if (typeof domain === 'object') {
-    watch(domain, refresh)
+    watch(domain, () => refresh())
   }
 
   const onAdd = (r: Resource) => {

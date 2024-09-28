@@ -144,6 +144,8 @@ export interface InstanceData {
    *
    */
   mcOptions?: string[]
+
+  prependCommand?: string
   /**
    * @default ""
    */

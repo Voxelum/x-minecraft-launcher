@@ -1,4 +1,4 @@
-import { EditInstanceOptions, Instance, InstanceData, LocalVersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
+import { EditInstanceOptions, Instance, InstanceData, VersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
 import { useGlobalSettings } from './setting'
 
@@ -15,6 +15,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     globalAssignMemory, globalFastLaunch, globalHideLauncher, globalMaxMemory,
     globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
     globalDisableAuthlibInjector, globalDisableElyByAuthlib,
+    globalPrependCommand,
   } = useGlobalSettings()
 
   const data = reactive({
@@ -31,6 +32,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
     vmOptions: instance.value?.vmOptions?.join(' '),
     mcOptions: instance.value?.mcOptions?.join(' '),
+    prependCommand: instance.value?.prependCommand,
     maxMemory: instance.value?.maxMemory,
     minMemory: instance.value?.minMemory,
 
@@ -71,6 +73,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const isGlobalShowLog = computed(() => data.showLog === undefined)
   const isGlobalDisableElyByAuthlib = computed(() => data.disableElyByAuthlib === undefined)
   const isGlobalDisableAuthlibInjector = computed(() => data.disableAuthlibInjector === undefined)
+  const isGlobalPrependCommand = computed(() => data.prependCommand === undefined)
   const resetAssignMemory = () => {
     set(data, 'assignMemory', undefined)
     set(data, 'minMemory', undefined)
@@ -78,6 +81,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
   const resetVmOptions = () => {
     set(data, 'vmOptions', undefined)
+  }
+  const resetPrependCommand = () => {
+    set(data, 'prependCommand', undefined)
+    console.log(data.prependCommand)
   }
   const resetMcOptions = () => {
     set(data, 'mcOptions', undefined)
@@ -117,6 +124,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const mcOptions = computed({
     get: () => data.mcOptions ?? globalMcOptions.value.join(' '),
     set: (v) => { data.mcOptions = v },
+  })
+  const prependCommand = computed({
+    get: () => data.prependCommand ?? globalPrependCommand.value,
+    set: (v) => { data.prependCommand = v },
   })
   const fastLaunch = computed({
     get: () => data.fastLaunch ?? globalFastLaunch.value,
@@ -172,6 +183,11 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       return true
     }
     if (current.mcOptions?.join(' ') !== data.mcOptions) {
+      return true
+    }
+    // eslint-disable-next-line eqeqeq
+    if (current.prependCommand != data.prependCommand) {
+      console.log(current.prependCommand, data.prependCommand)
       return true
     }
     if (current.author !== data.author) {
@@ -230,6 +246,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
   watch(computed(() => instance.value), () => load(), {
     immediate: true,
+    deep: true,
   })
 
   async function save() {
@@ -251,6 +268,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       icon: data.icon,
       disableAuthlibInjector: data.disableAuthlibInjector,
       disableElybyAuthlib: data.disableElyByAuthlib,
+      prependCommand: data.prependCommand,
     }
     if (!instance.value?.server) {
       await edit({
@@ -270,7 +288,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       })
     }
     data.icon = instance.value?.icon
-    // load()
+    load()
   }
   function load() {
     data.loading = false
@@ -295,6 +313,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.icon = current.icon
       data.disableAuthlibInjector = current.disableAuthlibInjector
       data.disableElyByAuthlib = current.disableElybyAuthlib
+      data.prependCommand = current.prependCommand
 
       if (current.server) {
         data.host = current.server.host
@@ -323,7 +342,9 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     isGlobalShowLog,
     isGlobalDisableElyByAuthlib,
     isGlobalDisableAuthlibInjector,
+    isGlobalPrependCommand,
     assignMemory,
+    prependCommand,
     fastLaunch,
     hideLauncher,
     showLog,
@@ -337,6 +358,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     resetShowLog,
     resetDisableAuthlibInjector,
     resetDisableElyByAuthlib,
+    resetPrependCommand,
     minMemory,
     maxMemory,
     mcOptions,
@@ -347,7 +369,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
 }
 
-export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 'version'>, versions: Ref<LocalVersionHeader[]>) {
+export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 'version'>, versions: Ref<VersionHeader[]>) {
   function onSelectMinecraft(version: string) {
     if (data?.runtime) {
       const runtime = data.runtime

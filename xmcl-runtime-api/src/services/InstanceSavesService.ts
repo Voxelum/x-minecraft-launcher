@@ -1,5 +1,5 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { InstanceSave, InstanceSaveMetadata, Saves } from '../entities/save'
+import { InstanceSave, InstanceSaveHeader, Saves } from '../entities/save'
 import { MutableState } from '../util/MutableState'
 import { ServiceKey } from './Service'
 
@@ -24,13 +24,28 @@ export interface ExportSaveOptions {
    */
   zip?: boolean
 }
-export interface ImportSaveOptionsBase {
+export interface ImportSaveOptions {
   /**
-   * The destination instance directory path, e.g. the path of .minecraft folder.
-   *
-   * This will be the active instance by default.
+   * the save zip file or directory path
    */
+  path: string
+  /**
+  * The destination instance directory path, e.g. the path of .minecraft folder.
+  *
+  * This will be the active instance by default.
+  */
   instancePath: string
+  /**
+   * The root of the save in zip
+   */
+  saveRoot?: string
+  /**
+   * Linked curseforge
+   */
+  curseforge?: {
+    projectId: number
+    fileId: number
+  }
   /**
    * The destination save folder name will be imported into.
    *
@@ -38,32 +53,20 @@ export interface ImportSaveOptionsBase {
    */
   saveName?: string
 }
-export interface ImportSaveFromFileOptions extends ImportSaveOptionsBase {
-  /**
-   * the save zip file path
-   */
-  path: string
-  /**
-   * The root of the save in zip
-   */
-  saveRoot?: string
-}
 
-export interface ImportSaveFromDirectoryOptions extends ImportSaveOptionsBase {
-  /**
-   * the directory of the save
-   */
-  directory: string
-}
-export type ImportSaveOptions = ImportSaveFromDirectoryOptions | ImportSaveFromFileOptions
 export interface DeleteSaveOptions {
   /**
    * The save name will be deleted
    */
   saveName: string
   /**
-   * The instance path of this save. If this is not presented, it will use selected instance.
+   * The instance path of this save. If this is not presented, it will delete shared save.
    */
+  instancePath?: string
+}
+
+export interface ShareSaveOptions {
+  saveName: string
   instancePath: string
 }
 export interface CloneSaveOptions {
@@ -90,6 +93,17 @@ export function getInstanceSaveKey(path: string) {
   return `instance-saves://${path}`
 }
 
+export interface LinkSaveAsServerWorldOptions {
+  /**
+   * The instance path
+   */
+  instancePath: string
+  /**
+   * The save name
+   */
+  saveName: string
+}
+
 /**
  * Provide the ability to preview saves data of an instance
  */
@@ -99,7 +113,7 @@ export interface InstanceSavesService {
    * Read all saves under the instance folder
    * @param path The instance folder path
    */
-  getInstanceSaves(path: string): Promise<InstanceSave[]>
+  getInstanceSaves(path: string): Promise<InstanceSaveHeader[]>
   /**
    * Watch instances saves
    * @param path
@@ -111,6 +125,8 @@ export interface InstanceSavesService {
    * @param options
    */
   cloneSave(options: CloneSaveOptions): Promise<void>
+
+  shareSave(options: ShareSaveOptions): Promise<void>
   /**
    * Delete a save in a specific instance.
    */
@@ -145,6 +161,15 @@ export interface InstanceSavesService {
    * Get the shared saves. The saves `instanceName` will be an empty string.
    */
   getSharedSaves(): Promise<InstanceSave[]>
+
+  linkSaveAsServerWorld(options: LinkSaveAsServerWorldOptions): Promise<void>
+
+  /**
+   * Get the linked save world path.
+   * @param instancePath
+   * @return The linked save world path. Empty string if it's a raw world folder, else it's linked folder existed. `undefined` if no folder existed.
+   */
+  getLinkedSaveWorld(instancePath: string): Promise<string | undefined>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

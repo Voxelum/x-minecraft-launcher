@@ -1,7 +1,7 @@
 import { DefaultRangePolicy } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { setTimeout as timeout } from 'timers/promises'
-import { Agent, Dispatcher, Pool, buildConnector, setGlobalDispatcher } from 'undici'
+import { Agent, Dispatcher, Pool, buildConnector } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { kSettings } from '~/settings'
@@ -14,7 +14,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
   const userAgent = app.userAgent
 
-  const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
   const dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
 
   let maxConnection = 64
@@ -59,28 +58,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     }
     return dispatcher
   }
-  const apiDispatcher = new NetworkAgent({
-    userAgent,
-    retryOptions: {},
-    dispatchInterceptors,
-    factory: (connect) => new Agent({
-      pipelining: 1,
-      bodyTimeout: 20_000,
-      headersTimeout: 40_000,
-      maxRedirections: 5,
-      connect,
-      factory(origin, opts: Agent.Options) {
-        let dispatcher: Dispatcher | undefined
-        for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin as any, opts) }
-        if (!dispatcher) { dispatcher = new Pool(origin, opts) }
-        return patchIfPool(dispatcher)
-      },
-    }),
-    proxyTls: connectorOptions,
-    requestTls: connectorOptions,
-  })
-  proxy.add(apiDispatcher)
-  setGlobalDispatcher(apiDispatcher)
 
   function calculateRetryAfterHeader(retryAfter: number) {
     const current = Date.now()
@@ -240,10 +217,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   })
 
   app.registry.register(kNetworkInterface, {
-    registerClientFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
-      apiClientFactories.unshift(interceptor)
-      return apiDispatcher
-    },
     registerOptionsInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>): void {
       dispatchInterceptors.unshift(interceptor)
     },

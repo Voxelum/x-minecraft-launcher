@@ -9,9 +9,7 @@
     >
       <template #default>
         <div class="flex items-center justify-center">
-          <v-icon
-            left
-          >
+          <v-icon left>
             memory
           </v-icon>
           <strong class="flex flex-grow-0 items-center justify-center">
@@ -68,6 +66,8 @@ import { getExpectedSize } from '@/util/size'
 import { Ref } from 'vue'
 import { BaseServiceKey, JavaRecord } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 
 const props = defineProps<{
   assignMemory: boolean | 'auto'
@@ -83,7 +83,26 @@ const step = 1024 * 1024 * 512
 const sysmem: Ref<{ total: number; free: number }> = ref({ total: 0, free: 0 })
 
 const memoryProgress = computed(() => (sysmem.value.total - sysmem.value.free) / sysmem.value.total * 100)
-const minMemory = computed(() => props.assignMemory === 'auto' ? (sysmem.value.free - 512 * 1024 * 1024) : props.min * 1024 * 1024)
+const { enabledModCounts } = injection(kInstanceModsContext)
+const minMemory = computed(() => {
+  if (props.assignMemory === 'auto') {
+    const modCount = enabledModCounts.value
+    let minMemory = 0
+
+    if (modCount === 0) {
+      minMemory = 1024
+    } else {
+      const level = modCount / 25
+      const rounded = Math.floor(level)
+      const percentage = level - rounded
+      minMemory = rounded * 1024 + (percentage > 0.5 ? 512 : 0) + 1024
+    }
+
+    return minMemory * 1024 * 1024
+  }
+
+  return props.min * 1024 * 1024
+})
 const maxMemory = computed(() => props.assignMemory === 'auto' ? sysmem.value.total : props.max * 1024 * 1024)
 
 const mem = computed({

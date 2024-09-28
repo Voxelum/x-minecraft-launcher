@@ -53,6 +53,13 @@
         </v-btn>
 
         <div class="flex-grow" />
+        <v-progress-circular
+          v-if="checkingUpgrade || checkingDependencies"
+          size="20"
+          width="2"
+          class="mr-2"
+          indeterminate
+        />
         <v-menu :close-on-content-click="false">
           <template #activator="{ on, attrs }">
             <v-btn
@@ -65,7 +72,10 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-list dense>
+          <v-list
+            dense
+            nav
+          >
             <v-list-item
               class="mx-1"
               @click="denseView = !denseView"
@@ -99,6 +109,33 @@
               </v-list-item-title>
             </v-list-item>
             <v-divider class="my-2" />
+            <v-list-item-group v-model="defaultSourceModel">
+              <v-subheader>
+                {{ t('mod.switchDefaultSource') }}
+              </v-subheader>
+              <v-list-item key="curseforge">
+                <v-list-item-icon>
+                  <v-icon>
+                    $vuetify.icons.curseforge
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>
+                  Curseforge
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item key="modrinth">
+                <v-list-item-icon>
+                  <v-icon>
+                    $vuetify.icons.modrinth
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>
+                  Modrinth
+                </v-list-item-title>
+              </v-list-item>
+            </v-list-item-group>
+            <v-divider class="my-2" />
+
             <v-list-item
               dense
               class="mx-1"
@@ -147,9 +184,67 @@
                 {{ t('modInstall.upgrade') }}
               </v-list-item-title>
             </v-list-item>
+
+            <v-list-item
+              dense
+              class="mx-1"
+              :disabled="mods.length === 0 || checkingDependencies"
+              @click="checkDependencies"
+            >
+              <template v-if="!checkedDependencies">
+                <v-list-item-icon>
+                  <v-icon v-if="!checkingDependencies">
+                    restart_alt
+                  </v-icon>
+                  <v-progress-circular
+                    v-else
+                    small
+                    size="22"
+                    width="2"
+                    indeterminate
+                  />
+                </v-list-item-icon>
+                <v-list-item-title class="flex items-center">
+                  {{ t('modInstall.checkDependencies') }}
+                </v-list-item-title>
+              </template>
+              <template v-else>
+                <v-list-item-icon>
+                  <v-icon color="primary">
+                    check
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title class="flex items-center">
+                  {{ t('modInstall.checkedDependencies') }}
+                </v-list-item-title>
+              </template>
+            </v-list-item>
+            <v-list-item
+              dense
+              class="mx-1"
+              :loading="installingDependencies"
+              :disabled="dependenciesToUpdate.length === 0"
+              @click="installDependencies"
+            >
+              <v-list-item-icon>
+                <v-icon class="material-icons-outlined">
+                  file_download
+                </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title class="flex items-center">
+                {{ t('modInstall.installDependencies') }}
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-subheader>
+      <v-alert
+        v-if="upgradeError"
+        dense
+        type="error"
+      >
+        {{ updateErrorMessage }}
+      </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
@@ -185,6 +280,7 @@
         v-if="dragover"
         icon="save_alt"
         :text="t('mod.dropHint')"
+        :size="100"
         class="h-full"
       />
       <MarketProjectDetailModrinth
@@ -214,8 +310,7 @@
         :category="curseforgeCategory"
         :all-files="mods"
         :updating="updating"
-        :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
-        @install="onInstall"
+        :modrinth="selectedModrinthId"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onDisable"
@@ -259,6 +354,7 @@ import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
+import { useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -314,7 +410,6 @@ const groupedItems = computed(() => {
         return bInstalled.resource.mtime - aInstalled.resource.mtime
       })
     } else if (sort.startsWith('alpha')) {
-      console.log(sort)
       result.sort((a, b) => {
         if (sort.endsWith('asc')) return a.title.localeCompare(b.title)
         return b.title.localeCompare(a.title)
@@ -346,9 +441,25 @@ const isModProject = (v: ProjectEntry<ProjectFile> | undefined): v is (ProjectEn
 const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is ProjectEntry<ModFile> =>
   v?.id === 'OptiFine'
 
-const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
+// Upgrade
+const { plans, error: upgradeError, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
+
+// Dependencies check
+const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: checkingDependencies, checked: checkedDependencies, apply: installDependencies, installing: installingDependencies } = useModDependenciesCheck(path, runtime)
+
+const updateErrorMessage = computed(() => {
+  if (upgradeError) return (upgradeError.value as any).message
+  // if (modrinthError.value) return modrinthError.value.message
+  // if (curseforgeError.value) return curseforgeError.value.message
+  return ''
+})
 
 const defaultSource = injection(kInstanceDefaultSource)
+// Default source
+const defaultSourceModel = computed({
+  get() { return defaultSource.value === 'curseforge' ? 0 : 1 },
+  set(i: number) { defaultSource.value = i === 0 ? 'curseforge' : 'modrinth' },
+})
 const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModrinthId: string, selectedCurseforgeId: number | undefined) => {
   const hasModrinth = selectedItem?.modrinth || selectedModrinthId
   if (!hasModrinth) return false
@@ -388,23 +499,23 @@ const onLoad = () => {
 
 // install / uninstall / enable / disable
 const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
-const onInstall = (f: Resource[]) => {
-  install({ path: path.value, mods: f }).then(() => {
+const onInstall = (f: Resource[], _path?: string) => {
+  install({ path: _path ?? path.value, mods: f }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
-const onUninstall = (f: ProjectFile[]) => {
-  uninstall({ path: path.value, mods: f.map(f => f.resource) }).then(() => {
+const onUninstall = (f: ProjectFile[], _path?: string) => {
+  uninstall({ path: _path ?? path.value, mods: f.map(f => (f as ModFile).resource) }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
-const onEnable = (f: ProjectFile) => {
-  enable({ path: path.value, mods: [f.resource] }).then(() => {
+const onEnable = (f: ProjectFile, _path?: string) => {
+  enable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
-const onDisable = (f: ProjectFile) => {
-  disable({ path: path.value, mods: [f.resource] }).then(() => {
+const onDisable = (f: ProjectFile, _path?: string) => {
+  disable({ path: _path ?? path.value, mods: [(f as ModFile).resource] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }

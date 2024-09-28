@@ -32,6 +32,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       globalFastLaunch: state.globalFastLaunch,
       globalHideLauncher: state.globalHideLauncher,
       globalShowLog: state.globalShowLog,
+      globalPrependCommand: state.globalPrependCommand,
       discordPresence: state.discordPresence,
       developerMode: state.developerMode,
       disableTelemetry: state.disableTelemetry,

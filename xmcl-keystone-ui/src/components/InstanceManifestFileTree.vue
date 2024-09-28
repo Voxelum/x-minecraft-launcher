@@ -2,6 +2,7 @@
   <v-treeview
     class="export-dialog-files"
     :value="value"
+    :input-value="value"
     style="width: 100%"
     :search="search"
     :items="files"
@@ -51,12 +52,26 @@
         >
           {{ getDescription(item) }}
         </div>
-        <div
-          v-if="item.size > 0"
-          style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-        >
-          {{ item.size > 0 ? getExpectedSize(item.size) : '' }}
-        </div>
+        <span class="inline-flex gap-2 items-center">
+          <div
+            v-if="item.size > 0"
+            style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
+          >
+            {{ item.size > 0 ? getExpectedSize(item.size) : '' }}
+          </div>
+          <v-icon
+            v-if="item.modrinth"
+            size="20"
+          >
+            $vuetify.icons.modrinth
+          </v-icon>
+          <v-icon
+            v-if="item.curseforge"
+            size="20"
+          >
+            $vuetify.icons.curseforge
+          </v-icon>
+        </span>
       </div>
     </template>
   </v-treeview>
@@ -99,36 +114,16 @@ const translatedFiles = computed(() => ({
   logs: t('intro.struct.logs'),
   'optionsshaders.txt': t('intro.struct.optionShadersTxt'),
 } as Record<string, string>))
-const translatedMods = computed(() => ({
-  curseforge: t('exportModpackTarget.curseforge'),
-  modrinth: t('exportModpackTarget.modrinth'),
-  override: t('exportModpackTarget.override'),
-}))
 
 function getDescription(item: InstanceFileNode<any>) {
+  if (item.descrription) return item.descrription
   if (item.path in translatedFiles.value) {
     return translatedFiles.value[item.path]
-  }
-  if (item.path.startsWith('mods/')) {
-    let text = t('intro.struct.modJar')
-    if (item.data) {
-      if (item.data.curseforge) {
-        text += (' 🧬 ' + translatedMods.value.curseforge)
-      }
-      if (item.data.modrinth) {
-        text += (' 🧬 ' + translatedMods.value.modrinth)
-      }
-      if (!item.data.modrinth && !item.data.curseforge) {
-        text += (' 🧬 ' + translatedMods.value.override)
-      }
-    }
-    return text
   }
   return ''
 }
 watch(files, () => {
   opened.value = []
-  console.log(files.value)
 })
 </script>
 

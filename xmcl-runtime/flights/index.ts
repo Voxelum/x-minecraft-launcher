@@ -1,7 +1,6 @@
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
-import { request } from 'undici'
 import { InjectionKey, LauncherAppPlugin } from '~/app'
 import { kClientToken } from '~/clientToken'
 
@@ -12,12 +11,12 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
   const fetchFlights = async (output: Record<string, string>, cachedPath: string) => {
     try {
       const clientSession = await app.registry.get(kClientToken)
-      const resp = await request(`https://api.xmcl.app/flights?version=${app.version}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
+      const resp = await app.fetch(`https://api.xmcl.app/flights?version=${app.version}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
       })
-      if (resp.statusCode !== 200) {
-        throw new Error(`Failed to fetch flights: ${resp.statusCode}`)
+      if (resp.status !== 200) {
+        throw new Error(`Failed to fetch flights: ${resp.status}`)
       }
-      const result = await resp.body.json() as any
+      const result = await resp.json()
       for (const [k, v] of Object.entries(result)) {
         if (typeof v === 'string') {
           output[k] = v

@@ -1,10 +1,10 @@
+import { BuiltinImages } from '@/constant'
+import { ProjectFile } from '@/util/search'
 import { PackMeta } from '@xmcl/resourcepack'
 import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref } from 'vue'
-
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { ProjectFile } from '@/util/search'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
   /**
@@ -128,7 +128,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
       pack.id = resourcePackName.startsWith('file') ? resourcePackName : `file/${resourcePackName}`
       pack.resource = markRaw({ ...EMPTY_RESOURCE, name: resourcePackName, path: `file/${resourcePackName}` })
     } else {
-      pack.icon = 'http://launcher/icons/minecraft'
+      pack.icon = BuiltinImages.minecraft
       pack.description = t('resourcepack.defaultDescription')
     }
     return pack
@@ -173,6 +173,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
   const enabledSet = computed(() => new Set(result.value[2].map(e => e.id)))
 
   const { editGameSetting } = useService(InstanceOptionsServiceKey)
+
   function enable(pack: (InstanceResourcePack | string)[]) {
     const newEnabled = [...pack.map(e => typeof e === 'string' ? e : e.id), ...enabled.value.map(e => e.id)]
     return editGameSetting({

@@ -6,6 +6,9 @@ import { CSSProperties } from 'vue/types/jsx'
 export interface InstanceFileNode<T = never> {
   name: string
   path: string
+  modrinth?: boolean
+  curseforge?: boolean
+  descrription?: string
   icon?: string
   avatar?: string
   style?: CSSProperties
@@ -52,7 +55,7 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
   return result
 }
 
-export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
+export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>, sort = true) {
   function buildEdges(cwd: InstanceFileNode<T>[], filePaths: string[], parent: string, file: InstanceFileNode<T>) {
     const remained = filePaths.slice(1)
     if (remained.length > 0) { // edge
@@ -60,23 +63,25 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
       let edgeNode = cwd.find(n => n.name === name)
       const current = parent ? (parent + '/' + name) : name
       if (!edgeNode) {
-        edgeNode = {
+        edgeNode = markRaw({
           name,
           path: current,
           size: 0,
           children: [],
-        }
+        })
         cwd.push(edgeNode)
       }
       buildEdges(edgeNode.children!, remained, current, file)
-      edgeNode.children?.sort((a, b) => a.path.localeCompare(b.path))
+      if (sort) {
+        edgeNode.children?.sort((a, b) => a.path.localeCompare(b.path))
+      }
     } else { // leaf
-      cwd.push(file)
+      cwd.push(markRaw(file))
     }
   }
 
-  const leaves: Ref<InstanceFileNode<T>[]> = ref([])
-  const nodes: Ref<InstanceFileNode<T>[]> = ref([])
+  const leaves: Ref<InstanceFileNode<T>[]> = shallowRef([])
+  const nodes: Ref<InstanceFileNode<T>[]> = shallowRef([])
 
   function update(files: InstanceFileNode<T>[]) {
     const leavesNodes = files

@@ -29,8 +29,8 @@ export class ServiceStateManager {
       if (!stateProxy) return 'NOT_STATE_SERVICE'
       stateProxy.untrack(sender)
     })
-    app.controller.handle('revalidate', (_, id) => {
-      this.revalidate(id)
+    app.controller.handle('revalidate', async (_, id, ...args) => {
+      await this.revalidate(id, ...args)
     })
     app.registryDisposer(async () => {
       for (const container of Object.values(this.containers)) {
@@ -82,7 +82,7 @@ export class ServiceStateManager {
     })
   }
 
-  async revalidate(id: string) {
+  async revalidate(id: string, ...args: any[]) {
     const container = this.containers[id]
     if (!container) return
     await this.#revalidate(container)

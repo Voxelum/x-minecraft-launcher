@@ -2,7 +2,7 @@ import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, Instance, InstanceException, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, MutableState, RuntimeVersions, createTemplate, filterForgeVersion, filterOptifineVersion, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { copy, copyFile, ensureDir, readdir, rename, rm, stat } from 'fs-extra'
+import { copy, copyFile, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
@@ -250,6 +250,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!isPathDiskRootPath(instance.path)) {
       await ensureDir(instance.path)
     }
+    if (payload.resourcepacks) {
+      await ensureDir(join(instance.path, 'resourcepacks'))
+    }
+    if (payload.shaderpacks) {
+      await ensureDir(join(instance.path, 'shaderpacks'))
+    }
     this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
@@ -280,6 +286,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     let hasShaderpacks = false
     await copy(path, newPath, {
       filter: async (src, dest) => {
+        const linked = await readlink(src).catch(() => '')
+
+        if (linked) {
+          return false
+        }
+
         const relativePath = relative(path, src).replaceAll('\\', '/')
         if (relativePath.startsWith('mods')) {
           hasMods = true
@@ -335,12 +347,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     await this.initialize()
     requireString(path)
 
-    this.state.instanceRemove(path)
-
     const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
       await rm(path, { recursive: true, force: true })
     }
+
+    this.state.instanceRemove(path)
   }
 
   /**
@@ -425,6 +437,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       } else {
         throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
       }
+    }
+    if ('prependCommand' in options && options.prependCommand !== state.prependCommand) {
+      result.prependCommand = options.prependCommand
     }
     if ('assignMemory' in options && options.assignMemory !== state.assignMemory) {
       result.assignMemory = options.assignMemory

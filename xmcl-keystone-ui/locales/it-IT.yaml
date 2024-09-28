@@ -1,23 +1,22 @@
 AppAddInstanceDialog:
-  choiceTitle: Rilevati più profili di lancio. Selezionarne uno da importare.
+  choiceTitle: Rilevati più profili di lancio. Selezionane uno da importare.
   configTitle: Configurazione
   createTitle: Crea gioco
   downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
-  alterDownloadDescription: |-
-    Se non vuoi rovinare l'istanza corrente. 
-    Puoi anche creare una nuova istanza dalla configurazione del tuo peer. 
-    Fai clic sul pulsante qui sotto per creare un'istanza.
+  alterDownloadDescription: >-
+    "Se non vuoi rovinare l'istanza corrente. Puoi anche creare una nuova
+    istanza dalla configurazione del tuo peer. Fai clic sul pulsante qui sotto
+    per creare un'istanza."
   baseInfo: Impostazioni di base
   cancelShare: Annulla condivisione
   description: >-
     Dopo aver condiviso il profilo, altri luoghi possono scaricare questi file
     tramite il tuo PC.
-  downloadDescription: |-
-    Verifica i file che ti sono stati forniti dal tuo collega. 
-    Seleziona il file che desideri scaricare. 
-    Verrà inserito nell'istanza corrente {nome}.
+  downloadDescription: >-
+    Verifica i file che ti sono stati forniti dal tuo peer.  Seleziona il file
+    che desideri scaricare.  Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
   downloadToLocal: Scarica nell'istanza corrente
@@ -108,6 +107,7 @@ browseApp:
 cancel: Annulla
 checkUpdate:
   name: Controlla aggiornamenti
+color: Colore
 confirm: Inizia
 copyClipboard:
   success: Copia negli appunti
@@ -234,6 +234,11 @@ duration:
   'yes': Elimina
 edit: Modifica
 enable: Abilita
+env:
+  select:
+    all: Seleziona tutto
+    fit: Seleziona Adatta
+    none: Non selezionare niente
 error:
   name: Errore | Errori
 errors:
@@ -258,6 +263,10 @@ errors:
   HeadersTimeoutError: Timeout intestazione HTTP
   NotFoundError: 404 Non trovato
   SocketError: Errore del socket del server
+eula:
+  body: >-
+    Selezionando il pulsante della casella di controllo, indichi il tuo accordo
+    con {eula} di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -305,8 +314,7 @@ finish: Finito
 forgeConfig:
   hint: >-
     Avvia almeno una volta il gioco con questa mod, in modo che possiamo
-    rilevare
-      il suo file di configurazione!
+    rilevare il suo file di configurazione!
 forgeVersion:
   common: Comune
   disable: Disabilita Forge
@@ -332,7 +340,7 @@ importModpack:
 importResource: Importa risorsa
 install: Installa
 installAssets:
-  asset: Installa Asset {hash}
+  asset: Installa {count} risorse
   assetIndex: Controlla il file di indice degli asset
   name: Installa file di asset
 installAuthlibInjector: Installa authlib-injector
@@ -384,6 +392,7 @@ installVersion:
   name: Installa client Minecraft {version}
 instance:
   addServer: Aggiungi server
+  changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
   deleteHint: >-
@@ -397,10 +406,12 @@ instance:
     remoto.
   gameVersion: Versione del gioco
   icon: Icona profilo
+  iconHint: L'icona potrebbe essere un file o un collegamento URL Internet.
   iconUrl: Icona Url
   includeVersion: Includi versione | Includi versioni
   lastPlayed: Giocato l'ultima volta
   launchArguments: Anteprima argomenti di avvio
+  launchServer: Avvia il server localhost
   mcOptions: Opzioni Minecraft
   mcOptionsHint: Argomenti di avvio aggiuntivi di Minecraft
   name: Nome profilo
@@ -409,6 +420,8 @@ instance:
   openCrashReportFolder: Apri la cartella del report di arresto anomalo
   openLogFolder: Apri la cartella dei log
   playtime: Tempo di gioco
+  prependCommand: Anteponi comando
+  prependCommandHint: Questo anteporrà questo comando prima di tutti i comandi di avvio
   requireName: Il nome è obbligatorio
   showInstance: Mostra la cartella del gioco
   versionHint: La versione di Minecraft di questo gioco
@@ -431,7 +444,7 @@ instanceSetting:
       aiutarti a visualizzare la pelle nel gioco.
   disableElyByAuthlib: Disabilita la sostituzione di authlib di ely.by
   disableElyByAuthlibDescription: |-
-    Ely.by ha una sostituzione di authlib unica per visualizzare la pelle
+    Ely.by ha una sostituzione di authlib unica per visualizzare la skin
       universalmente in qualsiasi server.
   fastLaunch: Lancio Turbo
   fastLaunchHint: Ignora lo stato dell'utente e i problemi non risolti esistenti
@@ -477,6 +490,7 @@ instances:
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
     gioco originale in XMCL.
   choose: Seleziona gioco
+  folderSetting: Impostazioni della cartella
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
   loadingFiles: Caricamento file Modpack
@@ -507,6 +521,7 @@ labyMod:
 launch:
   cancel: Annulla
   kill: Arresta
+  killServer: Uccidi il server Localhost
   launch: Avvia
 launchBlocked:
   ignore: Forza avvio
@@ -661,48 +676,56 @@ mod:
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
-    Si perderà questa mod e i relativi metadati per sempre. Sei sicuro di
-    volerla eliminare? | Si perderanno queste mod e questi metadati per sempre.
-    Sei sicuro di volerlo fare?
+    Perderai questa mod e i relativi metadati per sempre. Sei sicuro di volerla
+    eliminare? | Perderai queste mod e questi metadati per sempre. Sei sicuro di
+    volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
-  dropHint: Lasciare cadere il file .jar/.litemod della mod qui per importarlo.
-  enabled: '{count} Mod abilitati'
+  dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
+  enabled: '{count} Mod abilitate'
   filter: Filtra Mod
-  groupInstalled: Gruppo Mod Installati
-  hasUpdate: Il Mod ha una nuova versione!
+  groupInstalled: Raggruppa le mod installate
+  hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
   manage: Gestisci Mod
   maybeCompatible: Forse Compatibile.
   mods: '{count} Mods'
   name: Mod | Mods
-  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare i mod!
-  openLink: Apri il mod url {url}
+  noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare le mod!
+  openLink: Apri l'url della mod {url}
   search: Cerca Mod
   searchOnCurseforge: Cerca {name} in curseforge
   searchOnModrinth: Cerca {name} in Modrinth
-  showDirectory: Mostra la directory dei mod
-  showFile: Mostra il percorso del mod {file}
-  showInCurseforge: Mostra il mod in curseforge
+  showDirectory: Mostra la directory delle mod
+  showFile: Mostra il percorso della mod {file}
+  showInCurseforge: Mostra la mod in curseforge
   showInModrinth: Mostra {name} in Modrinth
-  switchDefaultSource: Sorgente Mod Predefinita
+  switchDefaultSource: Sorgente della Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
-  checkUpgrade: Controlla Aggiornamento Mod
+  archived: >-
+    {nome} è stato archiviato. 
+
+    {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida
+    di annullare l'archiviazione del progetto.
+  checkDependencies: Controlla le dipendenze
+  checkUpgrade: Controlla Aggiornamento delle Mod
+  checkedDependencies: Dipendenze controllate
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
   install: Installa
+  installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
-  noVersionSupported: Il mod supporta solo Minecraft {supported}.
+  noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
   source: Sorgente Mod
-  switch: Versione di commutazione
-  upgrade: Aggiorna Mod
+  switch: Cambia versione
+  upgrade: Aggiorna le Mod
 modSearchType:
   all: Tutti
   explore: Esplora il mercato
@@ -930,6 +953,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Una volta che il tuo peer ha inserito il tuo token, devi inserire il suo
     token nell'area di testo qui sotto. Fai clic su Conferma per connetterti.
+  exposedPortDescription: La porta che hai esposto ad altri peer
+  exposedPorts: Porte inoltrate
   gatheringIce: >
     "Attendere che il server ICE raccolga informazioni sufficienti sulla rete.
     Se si è impazienti e ci sono informazioni sufficienti, è possibile fornire
@@ -960,10 +985,11 @@ multiplayer:
     del launcher.
   leaveGroup: Abbandona il gruppo
   localToken: Token locale
-  manualConnect: Connettersi manualmente
-  name: Multiplayer su LAN
+  manualConnect: Connetti manualmente
+  name: Multiplayer in LAN
   networkInfo: Informazioni sulla rete
   next: Avanti
+  otherExposedPortDescription: Il port forwarding di {user}
   placeholder: Connettiti con altri utenti per giocare a Minecraft su LAN!
   previous: Precedente
   receiveHint: >-
@@ -984,7 +1010,7 @@ name: Nome
 natType:
   blocked: Bloccato
   fullCone: Full Cone
-  openInternet: Open Internet
+  openInternet: Intert Aperto
   restrictNat: Restrizione NAT
   restrictPortNat: Restrizione porta NAT
   symmetricNat: NAT simmetrico
@@ -992,7 +1018,7 @@ natType:
   unknown: Sconosciuto
 neoForgedVersion:
   disable: Disabilita NeoForged
-  empty: NeoForged non supporta {version}
+  empty: NeoForged non supporto {version}
   name: NeoForged
 news:
   name: Notizie
@@ -1002,7 +1028,7 @@ next: Prossimo
 ok: OK
 optifineVersion:
   disable: Disabilita Optifine
-  empty: Optifine non supporta Minecraft {version}
+  empty: Optifine non supporto Minecraft {version}
 optional: Opzionale
 peerConnectionState:
   closed: Chiuso
@@ -1055,7 +1081,7 @@ resourcepack:
       potrà essere annullata. Sei sicuro di volerlo fare?
     title: Elimina il pacchetto risorse
   dropHint: Trascina la cartella/zip del pacchetto risorse qui per importare.
-  enable: '{count} Resource Pack è abilitato'
+  enable: '{count} Resource Pack sono/è abilitati/o'
   import: Importa pacchetto risorse
   incompatible: >-
     Pacchetto risorse incompatibile ({format}). Fitin {accept}. Corrente
@@ -1073,6 +1099,7 @@ resourcepack:
   showInCurseforge: Mostra {name} in curseforge
   unselected: Pacchetti risorse non selezionati
 save:
+  cheat: Imbrogliare
   copy:
     cancel: Annulla copia
     confirm: Avvia copia
@@ -1089,6 +1116,7 @@ save:
     fromProfile: Da altre istanze
     fromResource: Da risorse gestite
     title: Importa salvataggio da fonte gestita
+  createNew: Crea un nuovo mondo
   createdWorlds: Hai {count} mondi
   deleteHint: >-
     Questa operazione non può essere annullata. Si perderanno definitivamente
@@ -1100,14 +1128,21 @@ save:
   export: Esporta salvataggio
   exportMessage: Esporta il salvataggio come zip
   exportTitle: Esporta il salvataggio
+  gameMode: modalità di gioco
   import: Importa salvataggio
   importMessage: Importa un salvataggio da zip
   importTitle: Importa un salvataggio
   independent: L'istanza utilizza una cartella di salvataggio indipendente
+  levelName: Nome del livello
   manage: Gestisci salvataggi
   name: Salva | Salva
+  search: Cerca salvataggi
+  selected: archivio locale
   shared: L'istanza utilizza la cartella di salvataggio condivisa
   showDirectory: Mostra la directory di salvataggio
+  unselected: archivio condiviso
+  useCurrent: Usa il mondo attuale
+saves: {}
 screenshots:
   empty: Non hai screenshot
   goto: Apri cartella
@@ -1124,8 +1159,11 @@ server:
   host: Host
   hostHint: L'host (con porta) del server
   ipAddress: Indirizzo IP
+  maxPlayers: Giocatori massimi
   motd: MOTD server
   name: Server | Server
+  nogui: Nessuna GUI del server
+  onlineMode: Modalità online
   ping: Ping
   pings: Ping
   players: Giocatori
@@ -1205,7 +1243,7 @@ setting:
   developerMode: Modalità sviluppatore
   developerModeDescription: La modalità sviluppatore è destinata a testare i mod scritti personalmente
   disableTelemetry: Disabilita telemetria
-  disableTelemetryDescription: XMCL raccoglierà gli eventi di avvio del gioco e di accesso dell'utente.
+  disableTelemetryDescription: XMCL racoglie gli eventi di avvio del gioco e di accesso dell'utente.
   enableDedicatedGPUOptimization: Assegna GPU dedicata
   enableDedicatedGPUOptimizationDescription: Questa opzione assegnerà una GPU dedicata al processo di Minecraft.
   enableDiscord: Abilita la presenza di Discord
@@ -1254,8 +1292,8 @@ setting:
   showRoot: Mostra
   streamerMode: Modalità streaming
   streamerModeDescription: >-
-    Questa opzione nasconderà le tue informazioni private, come l'email, nel
-    launcher.
+    "Questa opzione nasconde le tue informazioni private, come l'email, nel
+    launcher."
   theme:
     dark: Tema scuro
     light: Tema chiaro
@@ -1292,9 +1330,9 @@ setup:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      La directory dei dati non è una directory .minecraft standard. Poiché la
+      La directory dei dati non è una directory ".minecraft" standard. perché la
       struttura dei dati di XMCL è diversa da quella standard, non consigliamo
-      di utilizzare la directory .minecraft standard come directory dei dati.
+      di utilizzare la directory ".minecraft" standard come directory dei dati.
     drives: Posizioni consigliate
     name: Imposta directory dati
   defaultLayoutDescription: >-
@@ -1347,14 +1385,14 @@ shaderPack:
   name: Shader Pack
   searchHint: Cerca Shader Pack
   selectSearchHint: Cerca e seleziona Shader Pack
-  showDirectory: Mostra la directory shader pack
+  showDirectory: Mostra la directory degli shader pack
   showFile: Mostra questo shader pack nella cartella
 shared:
   accept: Accetta
 store:
   explore: Esplora
   latestMinecraft: Ultima versione di Minecraft
-  name: Mercato dei modpack
+  name: Store dei modpack
   popular: Modpack popolari
   recentUpdated: Aggiornamenti recenti
 summery: Riepilogo

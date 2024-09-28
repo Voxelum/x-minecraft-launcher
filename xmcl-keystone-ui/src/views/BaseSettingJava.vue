@@ -41,7 +41,7 @@
             </v-list-item-title>
             <v-list-item-subtitle>
               {{
-                java && java.path ? java.path : t("java.allocatedLong")
+                java && java.path ? java.path : (selectedJava?.path || t("java.allocatedLong"))
               }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -77,6 +77,30 @@
     <v-list-item
       style="margin-top: 5px"
     >
+      <v-list-item-content class="max-w-70 mr-4">
+        <v-list-item-title>
+          {{ t("instance.prependCommand") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalPrependCommand"
+            @clear="resetPrependCommand"
+            @click="gotoSetting"
+          />
+        </v-list-item-title>
+        <v-list-item-subtitle
+          v-shared-tooltip="_ => t('instance.prependCommandHint')"
+        >
+          <v-text-field
+            v-model="prependCommand"
+            class="m-1 mt-2"
+            hide-details
+            required
+            outlined
+            filled
+            dense
+            :placeholder="t('instance.prependCommandHint')"
+          />
+        </v-list-item-subtitle>
+      </v-list-item-content>
       <v-list-item-content>
         <v-list-item-title>
           {{ t("instance.vmOptions") }}
@@ -114,16 +138,22 @@ import JavaList from './BaseSettingJavaList.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { kInstanceJava } from '@/composables/instanceJava'
 
 const { t } = useI18n()
 const { showOpenDialog } = windowController
 const { all: javas, remove: removeJava } = injection(kJavaContext)
+const { java: selectedJava } = injection(kInstanceJava)
 const { resolveJava: add, refreshLocalJava } = useService(JavaServiceKey)
 const refreshingLocalJava = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
 
 const {
   isGlobalAssignMemory,
-  isGlobalVmOptions, assignMemory,
+  isGlobalVmOptions,
+  assignMemory,
+  isGlobalPrependCommand,
+  prependCommand,
+  resetPrependCommand,
   resetAssignMemory,
   resetVmOptions,
   maxMemory: maxMem,

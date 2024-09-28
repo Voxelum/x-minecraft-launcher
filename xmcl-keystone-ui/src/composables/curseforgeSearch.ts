@@ -3,7 +3,8 @@ import { ProjectEntry } from '@/util/search'
 import { Mod as CurseforgeMod, ModsSearchSortField } from '@xmcl/curseforge'
 import { Ref } from 'vue'
 import { useCurseforgeSearchFunc } from './curseforge'
-import { ModLoaderFilter, useSearchPattern } from './modSearch'
+import { ModLoaderFilter } from './modSearch'
+import { useSearchPattern } from './useSearchPattern'
 
 function getProjectFileFromCurseforge<T extends ProjectEntry>(i: CurseforgeMod) {
   return {

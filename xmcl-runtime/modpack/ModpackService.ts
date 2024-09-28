@@ -138,7 +138,7 @@ export class ModpackService extends AbstractService implements IModpackService {
               path: file.path,
               hashes: {
                 sha1: resource.hash,
-                sha256: await this.worker.checksum(filePath, 'sha256'),
+                sha512: await this.worker.checksum(filePath, 'sha512'),
               },
               downloads: availableDownloads,
               fileSize: (await stat(filePath)).size,

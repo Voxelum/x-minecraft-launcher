@@ -96,6 +96,7 @@ browseApp:
 cancel: 取消
 checkUpdate:
   name: 检查更新
+color: 颜色
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
@@ -238,7 +239,7 @@ diagnosis:
   missingAuthlibInjector: {}
   missingJava:
     message: 点击来解决这个问题
-    name: 当前电脑上没有找到任何 Java
+    name: 没有找到合适的 Java 来启动
   missingLibraries:
     message: 启动器将自动下载并安装 Libraries 文件
     name: >-
@@ -264,6 +265,11 @@ duration:
   second: '{duration} 秒'
 edit: 编辑
 enable: 启用
+env:
+  select:
+    all: 全选
+    fit: 选择匹配的
+    none: 全不选
 error:
   name: 错误 | 错误
 errors:
@@ -281,6 +287,8 @@ errors:
   HeadersTimeoutError: 等待 HTTP 头信息超时
   NotFoundError: 404 未找到资源
   SocketError: 服务器连接断开
+eula:
+  body: 选中复选框按钮即表示您同意 Minecraft 的 {eula}。
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
 existed: 已导入过的
@@ -348,7 +356,7 @@ importModpack:
 importResource: 导入资源
 install: 安装
 installAssets:
-  asset: 下载资源文件 {hash}
+  asset: 下载 {count} 个资源文件
   assetIndex: 下载资源文件目录
   name: 下载游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
@@ -400,6 +408,7 @@ installVersion:
   name: 安装{id}的游戏本体
 instance:
   addServer: 添加服务器
+  changeIcon: 更改图标
   current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏数据将完全被移除。您确定继续此操作吗？
@@ -409,10 +418,12 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
   icon: 实例图标
+  iconHint: 该图标可以是文件或互联网 URL 链接。
   iconUrl: 图片 URL
   includeVersion: 包含游戏版本
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
+  launchServer: 启动本地服务端
   mcOptions: Minecraft 启动选项
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称
@@ -420,6 +431,8 @@ instance:
   neverPlayed: 从未游玩
   openLogFolder: 打开日志文件夹
   playtime: 游玩时长
+  prependCommand: 前置命令
+  prependCommandHint: 这将在所有启动命令之前添加此命令
   requireName: 必须填写名称
   showInstance: 打开文件夹
   versionHint: 此游戏使用的 Minecraft 版本
@@ -482,6 +495,7 @@ instances:
     从通用 .minecraft 文件夹导入。
     这会将原始游戏配置文件复制到 XMCL。
   choose: 选择游戏
+  folderSetting: 文件夹设置
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
   loadingFiles: 加载整合包文件
@@ -512,6 +526,7 @@ labyMod:
 launch:
   cancel: 中止
   kill: 停止
+  killServer: 停止本地服务器
   launch: 启动
 launchBlocked:
   ignore: 强制启动
@@ -661,14 +676,20 @@ mod:
   showFile: 打开模组所在位置 {file}
   showInCurseforge: 在 Curseforge 上显示该模组
   showInModrinth: 在 Modrinth 中显示 {name}
-  switchDefaultSource: 实例默认模组下载源
+  switchDefaultSource: 本地模组默认显示为
   toUpdate: '{count} 个有新版本'
 modInstall:
+  archived: |-
+    {name} 已存档。
+    除非作者决定取消存档该项目，否则 {name} 将不会收到任何进一步的更新。
+  checkDependencies: 检查依赖关系
   checkUpgrade: 检查模组更新
+  checkedDependencies: 已检查依赖关系
   checkedUpgrade: 已刷新更新列表
   currentVersion: 已选版本
   dependencyHint: 安装了其他版本 {version}
   install: 安装
+  installDependencies: 安装缺少的依赖项
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   noVersionSupported: Mod 仅支持 Minecraft {supported}。
@@ -890,6 +911,8 @@ multiplayer:
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
   enterRemoteTokenHint: 当您的联机伙伴输入您的令牌后，您需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
+  exposedPortDescription: 您向其他伙伴公开的端口
+  exposedPorts: 转发端口
   gatheringIce: >
     请将<span class="v-chip v-chip--label v-size--small" style="text-font:
     bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label
@@ -915,6 +938,7 @@ multiplayer:
   name: 跨局域网联机
   networkInfo: 当前网络状况
   next: 下一步
+  otherExposedPortDescription: '{user} 暴露给你的端口'
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
   receiveHint: 在对方输入您的令牌后，您们之间的连接会自动创建。现在您已经可以点击完成了。
@@ -1007,6 +1031,7 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  cheat: 作弊
   copy:
     cancel: 取消复制
     confirm: 开始复制
@@ -1021,6 +1046,7 @@ save:
     fromProfile: 来自其他启动配置
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
+  createNew: 新存档
   createdWorlds: 创建了 {count} 个世界
   deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
   deleteTitle: 删除该存档
@@ -1029,14 +1055,21 @@ save:
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档
+  gameMode: 游戏模式
   import: 从文件导入
   importMessage: 将 Zip 存档导入
   importTitle: 导入存档
   independent: 实例使用独立的存档文件夹
+  levelName: 关卡名称
   manage: 管理存档
   name: 地图存档 | 地图存档
+  search: 搜索地图
+  selected: 本地存档
   shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录
+  unselected: 共享的存档
+  useCurrent: 使用当前世界
+saves: {}
 screenshots:
   empty: 您还没有截图
   goto: 显示文件夹
@@ -1053,8 +1086,11 @@ server:
   host: 服务器地址
   hostHint: 服务器的 IP 地址（和端口号）
   ipAddress: IP 地址
+  maxPlayers: 最大玩家数
   motd: 服务器 MOTD
   name: 服务器名
+  nogui: 隐藏服务器 GUI
+  onlineMode: 在线模式 (只允许正版)
   ping: Ping 服务器
   pings: 延迟
   players: 玩家
@@ -1254,6 +1290,8 @@ shaderPack:
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此光影包
+shared:
+  accept: 接受
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

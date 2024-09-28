@@ -2,7 +2,6 @@ import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { AuthlibInjectorServiceKey, AuthlibInjectorService as IAuthlibInjectorService, Settings } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs-extra'
-import { request } from 'undici'
 import { NetworkInterface, kDownloadOptions, kNetworkInterface } from '~/network'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
@@ -89,11 +88,10 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     let path: string
 
     try {
-      const response = await request('https://authlib-injector.yushi.moe/artifact/latest.json', {
-        throwOnError: true,
+      const response = await this.app.fetch('https://authlib-injector.yushi.moe/artifact/latest.json', {
         signal: this.#abortController.signal,
       })
-      const body = await response.body.json() as any
+      const body = await response.json()
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
     } catch (e) {

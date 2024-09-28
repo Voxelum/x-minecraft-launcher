@@ -7,15 +7,16 @@ import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
-import { isDirectory } from './utils/fs'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 import { ElectronSession } from './ElectronSession'
+import { stat } from 'fs-extra'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
   async openDirectory(path: string) {
-    if (await isDirectory(path)) {
+    const fstat = await stat(path).catch(() => undefined)
+    if (fstat?.isDirectory()) {
       return shell.openPath(path).then(r => r !== '')
     }
     return false

@@ -10,7 +10,7 @@
     :loading="loading"
     @load="onLoad"
   >
-    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
         v-if="typeof item === 'string'"
         class="flex"
@@ -23,6 +23,7 @@
         }}
         <div class="flex-grow" />
         <v-btn
+          v-if="index === 0"
           v-shared-tooltip="_ => t('mod.denseView')"
           icon
           @click="denseView = !denseView"
@@ -205,7 +206,7 @@ const onInstall = (r: Resource[]) => {
 }
 const onUninstall = (v: ProjectFile[]) => {
   const packs = v as InstanceResourcePack[]
-  removeResources(v.map(f => f.resource.hash))
+  removeResources(v.map(f => (f as InstanceResourcePack).resource.hash))
   disable(packs)
 }
 const onEnable = (f: ProjectFile) => {

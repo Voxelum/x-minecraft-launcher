@@ -23,11 +23,11 @@
 </template>
 
 <script lang=ts setup>
-import { ModItem } from '../composables/instanceModItems'
+import { ModFile } from '@/util/mod'
 
-const props = defineProps<{ items: ModItem[] }>()
+const props = defineProps<{ items: ModFile[] }>()
 
-const mods = computed(() => props.items.map((i) => `${i.mod.name} v${i.mod.version}`).filter((_, i) => i <= 4))
+const mods = computed(() => props.items.map((i) => `${i.name} v${i.version}`).filter((_, i) => i <= 4))
 const rest = computed(() => (props.items.length > 4 ? props.items.length - 4 : 0))
 const { t } = useI18n()
 </script>

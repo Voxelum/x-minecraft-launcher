@@ -1,6 +1,6 @@
 import { AssetIndexIssue, AssetIssue, diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService, RuntimeVersions, Version } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
@@ -12,8 +12,8 @@ import { exists } from '../util/fs'
 @ExposeServiceKey(DiagnoseServiceKey)
 export class DiagnoseService extends AbstractService implements IDiagnoseService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-  @Inject(kGameDataPath) private getPath: PathResolver,
-  @Inject(kResourceWorker) private worker: ResourceWorker,
+    @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app)
   }
@@ -43,21 +43,21 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
     return assetsIssues
   }
 
-  async diagnoseJar(currentVersion: ResolvedVersion): Promise<MinecraftJarIssue | undefined> {
+  async diagnoseJar(currentVersion: ResolvedVersion, side: 'client' | 'server' = 'client'): Promise<MinecraftJarIssue | undefined> {
     this.log(`Diagnose for version ${currentVersion.id} jar`)
     const minecraft = new MinecraftFolder(this.getPath())
-    const jarIssue = await diagnoseJar(currentVersion, minecraft)
+    const jarIssue = await diagnoseJar(currentVersion, minecraft, { side })
 
     return jarIssue
   }
 
-  async diagnoseProfile(version: string): Promise<InstallProfileIssueReport | undefined> {
-    const minecraft = new MinecraftFolder(this.getPath())
+  async diagnoseProfile(version: string, side: 'client' | 'server' = 'client', path?: string): Promise<InstallProfileIssueReport | undefined> {
+    const minecraft = new MinecraftFolder(path ?? this.getPath())
     const root = minecraft.getVersionRoot(version)
     const installProfilePath = join(root, 'install_profile.json')
     if (await exists(installProfilePath)) {
       const installProfile: InstallProfile = JSON.parse(await readFile(installProfilePath, 'utf8'))
-      const report = await diagnoseInstall(installProfile, minecraft.root)
+      const report = await diagnoseInstall(installProfile, minecraft.root, side)
       let badInstall = false
       const librariesIssues: LibraryIssue[] = []
       for (const issue of report.issues) {

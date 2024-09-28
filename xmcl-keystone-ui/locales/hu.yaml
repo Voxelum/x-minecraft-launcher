@@ -109,6 +109,7 @@ browseApp:
 cancel: Mégsem
 checkUpdate:
   name: Frissítés keresése
+color: Szín
 confirm: Indítás
 copyClipboard:
   success: Másolás vágólapra
@@ -230,6 +231,11 @@ duration:
   second: '{duration} másodperc | {duration} másodperc'
 edit: Szerkesztés
 enable: Engedélyezés
+env:
+  select:
+    all: Mindet kiválaszt
+    fit: Válassza az Illesztés lehetőséget
+    none: Válassza a Nincs lehetőséget
 error:
   name: Hiba | Hiba
 errors:
@@ -252,6 +258,8 @@ errors:
     róla, hogy az Launchernej van írási jogosultsága.
   HeadersTimeoutError: HTTP Fejléc időtúllépés
   SocketError: Kiszolgálói foglalathiba
+eula:
+  body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik a Minecraft {eula}-be.
 exception:
   http: >-
     A {url} HTTP-kérés sikertelen. Állapotkód {statusCode}. {code}. Kérlek,
@@ -323,7 +331,7 @@ importModpack:
 importResource: Forrás importálása
 install: Telepítés
 installAssets:
-  asset: Elem telepítése {hash}
+  asset: Telepítsen {count} eszközt
   assetIndex: Elem indexfájl ellenőrzése
   name: Elemek telepítése
 installAuthlibInjector: Authlib-injector telepítése
@@ -375,6 +383,7 @@ installVersion:
   name: Minecraft kliens telepítése {version}
 instance:
   addServer: Szerver hozzáadása
+  changeIcon: Ikon módosítása
   current: Jelenlegi példány
   delete: Játék törlése
   deleteHint: >-
@@ -388,10 +397,12 @@ instance:
     kiszolgálóról.
   gameVersion: Játék verzió
   icon: Profil ikon
+  iconHint: Az ikon lehet fájl vagy internetes URL-hivatkozás.
   iconUrl: Ikon Url
   includeVersion: Verzió beépítése | Verzió beépítése
   lastPlayed: Utoljára játszott
   launchArguments: Indítási argumentumok Előnézet
+  launchServer: Indítsa el a localhost szervert
   mcOptions: Minecraft beállítások
   mcOptionsHint: Kiegészítő Minecraft indítási beállítások
   name: Profil név
@@ -400,6 +411,8 @@ instance:
   openCrashReportFolder: Összeomlási jelentések mapppa megnyitása
   openLogFolder: Napló mappa megnyitása
   playtime: Játékidő
+  prependCommand: Parancs elé fűzni
+  prependCommandHint: Ez a parancs az összes indítási parancs elé kerül
   requireName: A név megadása kötelező
   showInstance: Játék mappa megjelenítése
   versionHint: A játék Minecraft verziója
@@ -470,6 +483,7 @@ instances:
     Importálás a közös .minecraft mappából. Ez duplikálja az eredeti
     játékprofilt az XMCL-be.
   choose: Játék kiválasztása
+  folderSetting: Mappa beállításai
   importFolder: Importálás mappából
   importFolderDescription: Minecraft importálása a Launcherbe
   loadingFiles: Modcsomag fájlok betöltése
@@ -500,6 +514,7 @@ labyMod:
 launch:
   cancel: Mégsem
   kill: Leállítás
+  killServer: Öld meg a Localhost szervert
   launch: Indítás
 launchBlocked:
   ignore: Indítás erőltetve
@@ -683,11 +698,19 @@ mod:
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
 modInstall:
+  archived: >-
+    {name} archiválva. 
+
+    {name} nem kap további frissítéseket, kivéve, ha a szerző úgy dönt, hogy
+    visszavonja a projekt archiválását.
+  checkDependencies: Ellenőrizze a függőségeket
   checkUpgrade: Modok frissítésének ellenőrzése
+  checkedDependencies: Ellenőrzött függőségek
   checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
   install: Telepítés
+  installDependencies: Hiányzó függőségek telepítése
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   installed: Telepítve
   noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.
@@ -928,6 +951,8 @@ multiplayer:
   enterRemoteTokenHint: >-
     Miután a társad beírta a jelszavadat, neked is be kell írnod a jelszavát az
     alábbi szöveges területre. Kattints a megerősítésre a csatlakozáshoz.
+  exposedPortDescription: A port, amelyet a többi társnak tettél közzé
+  exposedPorts: Továbbított portok
   gatheringIce: >
     "Kérjük, várjon, amíg az ICE-kiszolgáló elegendő információt gyűjt az Ön a
     hálózatáról. Ha türelmetlen, és van elég információ, akkor adjon az aktuális
@@ -964,6 +989,7 @@ multiplayer:
   name: Többjátékos LAN-on
   networkInfo: Hálózati információk
   next: Következő
+  otherExposedPortDescription: 'A port előszava: {user}'
   placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
   previous: Előző
   receiveHint: >-
@@ -1075,6 +1101,7 @@ resourcepack:
   showInCurseforge: '{name} megjelenítése curseforge-on'
   unselected: Nem kiválasztott forráscsomagok
 save:
+  cheat: Csalás
   copy:
     cancel: Másolás törlése
     confirm: Másolás indítása
@@ -1093,6 +1120,7 @@ save:
     fromProfile: Más példányokból
     fromResource: Kezelt forrásokból
     title: Mentés importálása kezelt forrásból
+  createNew: Új világ létrehozása
   createdWorlds: '{count} db világod van'
   deleteHint: >-
     Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre
@@ -1103,14 +1131,21 @@ save:
   export: Mentés exportálása
   exportMessage: Mentés exportálása zip-ként
   exportTitle: Mentés exportálása
+  gameMode: játék mód
   import: Mentés importálása
   importMessage: Mentés importálása zip-ből
   importTitle: Mentés importálása
   independent: Példány használjon független mentési mappát
+  levelName: Szint neve
   manage: Mentések kezelése
   name: Mentés | Mentések
+  search: Keresés Mentés
+  selected: helyi archívum
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
+  unselected: megosztott archívum
+  useCurrent: Használja a jelenlegi világot
+saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid
   goto: Mappa megnyitása
@@ -1127,8 +1162,11 @@ server:
   host: Kiszolgáló
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
   ipAddress: IP cím
+  maxPlayers: ''
   motd: Szerver MOTD
   name: Szerver | Szerverek
+  nogui: Nincs Server Gui
+  onlineMode: Online mód
   ping: Ping
   pings: Pingek
   players: Játékosok

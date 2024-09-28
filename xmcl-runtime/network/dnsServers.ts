@@ -4,7 +4,7 @@ import { request } from 'undici'
 const currentDNS = getServers()
 
 export async function decideNetworkCondition() {
-  await Promise.race([
+  await Promise.any([
     request('https://google.com', { method: 'HEAD' }).then(() => 'global', () => false),
     request('https://yandex.com', { method: 'HEAD' }).then(() => 'yandex', () => false),
   ])

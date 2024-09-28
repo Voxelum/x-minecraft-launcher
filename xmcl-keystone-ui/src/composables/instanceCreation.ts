@@ -122,17 +122,23 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         if (!data.name) {
           data.name = generateDistinctName(generateBaseName(runtime), instances.value.map(i => i.name))
         }
-        const newPath = await create(data)
+        const pendingFiles = [...files.value]
+        const newPath = await create({
+          ...data,
+          resourcepacks: pendingFiles.some(f => f.path.startsWith('resourcepacks')),
+          shaderpacks: pendingFiles.some(f => f.path.startsWith('shaderpacks')),
+        })
         onCreated?.(newPath)
-        if (files.value.length > 0) {
+        reset()
+        if (pendingFiles.length > 0) {
           await installInstanceFiles({
             path: newPath,
-            files: files.value,
+            files: pendingFiles,
           }).catch((e) => {
             console.error(e)
           })
         }
-        reset()
+        return newPath
       } catch (e) {
         error.value = e
       } finally {

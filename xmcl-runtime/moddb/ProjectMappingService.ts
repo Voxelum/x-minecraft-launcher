@@ -3,7 +3,6 @@ import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceK
 import { readFile, writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
-import { request } from 'undici'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { SqliteWASMDialect } from '~/sql'
@@ -36,13 +35,13 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
         await writeFile(getPath('project-mapping.last-modified'), new Date().toUTCString())
       } else {
         const lastModified = await readFile(getPath('project-mapping.last-modified'), 'utf-8')
-        const response = await request(url, {
+        const response = await this.app.fetch(url, {
           method: 'HEAD',
           headers: {
             'If-Modified-Since': lastModified,
           },
         })
-        if (response.statusCode === 200) {
+        if (response.status === 200) {
           await download({
             url,
             destination: filePath,

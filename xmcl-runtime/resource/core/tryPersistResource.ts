@@ -8,7 +8,7 @@ import { getResourceEntry } from './getResourceEntry'
 import { ResourceContext } from './ResourceContext'
 import { isSystemError } from '~/util/error'
 
-export async function tryPersistResource(resource: { fileName: string; domain: ResourceDomain; hash: string; path: string }, root: string, context: ResourceContext) {
+export async function tryPersistResource(resource: { fileName: string; domain: ResourceDomain; hash: string; path: string }, root: string, context: ResourceContext): Promise<[string, boolean]> {
   const backup = [
     filenamify(`${resource.fileName}.${resource.hash.slice(0, 6)}${extname(resource.fileName)}`, { replacement: '-' }),
     filenamify(`${resource.fileName}.${resource.hash}${extname(resource.fileName)}`, { replacement: '-' }),
@@ -33,7 +33,7 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     if (sha1 === resource.hash) {
       // The file is already imported...
       // We just don't copy/link the file again
-      return filePath
+      return [filePath, true]
     }
 
     // Two different file, but different content
@@ -83,7 +83,7 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
         ctime: localEntry.ctime,
         ino: localEntry.ino,
       }).execute().catch(() => undefined)
-      return filePath
+      return [filePath, true]
     } else {
       // Remove the file
       await unlink(filePath)
@@ -93,10 +93,11 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
   if (dirname(resource.path) === dirname(filePath)) {
     // Just rename if they are in same dir
     await rename(resource.path, filePath)
-  } else {
-    // Use hard link or copy
-    await linkOrCopy(resource.path, filePath)
+    return [filePath, true]
   }
 
-  return filePath
+  // Use hard link or copy
+  const linked = await linkOrCopy(resource.path, filePath)
+
+  return [filePath, linked]
 }

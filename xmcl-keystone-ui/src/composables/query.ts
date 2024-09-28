@@ -1,30 +1,50 @@
 import { MaybeRef, get } from '@vueuse/core'
 import { Ref } from 'vue'
+import type { Dictionary } from 'vue-router/types/router'
 
-export function useQuery(key: string) {
+export function useQuery(key: string, onQuery?: (query: Dictionary<string | (string | null)[] | null | undefined>) => void) {
   const route = useRoute()
   const router = useRouter()
   return computed({
     get() { return route.query[key] as string ?? '' },
-    set(v) { if (route.query[key] !== v) router.replace({ path: route.path, query: { ...route.query, [key]: v } }) },
+    set(v) {
+      if (route.query[key] !== v) {
+        const newQuery = { ...route.query, [key]: v }
+        onQuery?.(newQuery)
+        router.replace({ path: route.path, query: newQuery })
+      }
+    },
   })
 }
 
-export function useQueryStringArray<T extends string>(key: string) {
+export function useQueryStringArray<T extends string>(key: string, onQuery?: (query: Dictionary<string | (string | null)[] | null | undefined>) => void) {
   const route = useRoute()
   const router = useRouter()
   return computed({
     get() { return route.query[key] ? (route.query[key] as string).split(',') as T[] : [] },
-    set(v) { if (v && route.query[key] !== v.join(',')) router.replace({ path: route.path, query: { ...route.query, [key]: v.join(',') } }) },
+    set(v) {
+      const newVal = v.join(',')
+      if (v && route.query[key] !== newVal) {
+        const newQuery = { ...route.query, [key]: newVal }
+        onQuery?.(newQuery)
+        router.replace({ path: route.path, query: newQuery })
+      }
+    },
   })
 }
 
-export function useQueryNumber<T extends number | undefined>(key: string, defaultValue: T) {
+export function useQueryNumber<T extends number | undefined>(key: string, defaultValue: T, onQuery?: (query: Dictionary<string | (string | null)[] | null | undefined>) => void) {
   const route = useRoute()
   const router = useRouter()
   return computed({
     get() { return route.query[key] ? Number(route.query[key] as string) : defaultValue },
-    set(v) { if (route.query[key] !== (v?.toString() ?? '')) router.replace({ path: route.path, query: { ...route.query, [key]: v?.toString() ?? '' } }) },
+    set(v) {
+      if (route.query[key] !== (v?.toString() ?? '')) {
+        const newQuery = { ...route.query, [key]: v?.toString() ?? '' }
+        onQuery?.(newQuery)
+        router.replace({ path: route.path, query: newQuery })
+      }
+    },
   })
 }
 

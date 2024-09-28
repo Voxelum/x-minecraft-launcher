@@ -6,7 +6,8 @@
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "lib": [
-      "ESNext", "DOM"
+      "ESNext", "DOM",
+      "DOM.Iterable"
     ],
     "strict": true,
     "moduleResolution": "Bundler",

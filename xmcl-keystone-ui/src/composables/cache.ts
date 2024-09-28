@@ -1,3 +1,4 @@
+import { MaybeRef } from '@vueuse/core'
 import { Ref, ref, watch } from 'vue'
 
 export interface LocalStorageOptions {
@@ -45,7 +46,7 @@ export function useLocalStorageCacheFloat(key: string, defaultValue: number): Re
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseFloat(s))
 }
 
-export function useLocalStorageCacheInt(key: string, defaultValue: number): Ref<number> {
+export function useLocalStorageCacheInt(key: MaybeRef<string>, defaultValue: number): Ref<number> {
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseInt(s, 10))
 }
 

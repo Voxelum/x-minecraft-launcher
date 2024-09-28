@@ -20,6 +20,9 @@ export function useMarketSort<V extends number | string = number>(sort: Ref<V>) 
     } else if (i === 4 || i === 'newest') {
       modrinthSort.value = 'newest'
       curseforgeSort.value = ModsSearchSortField.LastUpdated
+    } else {
+      modrinthSort.value = 'downloads'
+      curseforgeSort.value = ModsSearchSortField.TotalDownloads
     }
   }
   watch(sort, (nv) => set(nv as V))

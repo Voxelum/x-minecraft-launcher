@@ -7,7 +7,7 @@
     </v-card-title>
     <v-card-text class="flex flex-grow items-center gap-4">
       <img
-        :src="status.favicon || unknownServer"
+        :src="status.favicon || BuiltinImages.unknownServer"
         style="max-height: 64px;"
       >
       <div class="py-4">
@@ -70,10 +70,10 @@
 </template>
 
 <script lang=ts setup>
-import unknownServer from '@/assets/unknown_server.png'
 import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
 import { useInstanceServerStatus } from '../composables/serverStatus'
+import { BuiltinImages } from '@/constant'
 
 const { instance } = injection(kInstance)
 const { refresh, status, pinging } = useInstanceServerStatus(instance)

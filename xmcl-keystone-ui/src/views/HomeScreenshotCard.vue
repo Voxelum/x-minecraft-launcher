@@ -95,7 +95,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
   }
 })
 
-on('minecraft-exit', refresh)
+on('minecraft-exit', () => refresh())
 
 const imageDialog = injection(kImageDialog)
 

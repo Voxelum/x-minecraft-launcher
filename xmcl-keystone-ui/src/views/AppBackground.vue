@@ -55,6 +55,7 @@ import Halo from '@/components/Halo.vue'
 import Particles from '@/components/Particles.vue'
 import { injection } from '@/util/inject'
 import { kTheme, BackgroundType } from '@/composables/theme'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 
 const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume, backgroundImageOverride } = injection(kTheme)
 const videoRef = ref(null as null | HTMLVideoElement)
@@ -62,6 +63,16 @@ const videoRef = ref(null as null | HTMLVideoElement)
 watch(volume, (newVolume) => {
   if (videoRef.value) {
     videoRef.value.volume = newVolume
+  }
+})
+
+const { gameProcesses } = injection(kInstanceLaunch)
+
+watch(gameProcesses, (p) => {
+  if (p.length > 0) {
+    videoRef.value?.pause()
+  } else {
+    videoRef.value?.play()
   }
 })
 

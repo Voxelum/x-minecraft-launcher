@@ -11,6 +11,14 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
   resolution?: InstanceSchema['resolution']
   runtime?: InstanceSchema['runtime']
   server?: InstanceSchema['server']
+  /**
+   * Create resourcepacks folder
+   */
+  resourcepacks?: boolean
+  /**
+   * Create shaderpacks folder
+   */
+  shaderpacks?: boolean
 }
 export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runtime' | 'server'>> {
   resolution?: InstanceSchema['resolution']
@@ -114,6 +122,9 @@ export class InstanceState {
     }
     if ('maxMemory' in settings) {
       inst.maxMemory = (typeof settings.maxMemory === 'number') && settings.maxMemory > 0 ? settings.maxMemory : undefined
+    }
+    if ('prependCommand' in settings) {
+      inst.prependCommand = settings.prependCommand
     }
 
     if ('vmOptions' in settings) {

@@ -27,11 +27,12 @@
     <v-list-item-avatar :size="dense ? 30 : 40">
       <img
         ref="iconImage"
+        v-fallback-img="BuiltinImages.unknownServer"
         :class="{ 'opacity-20': item.installed.length === 0 && hover }"
-        :src="icon || item.icon || unknownServer"
+        :src="icon || item.icon || BuiltinImages.unknownServer"
       >
       <v-btn
-        v-if="item.installed.length === 0"
+        v-if="install && item.installed.length === 0"
         class="absolute"
         large
         icon
@@ -65,7 +66,7 @@
             <div class="flex-grow" />
             <v-icon
               v-if="hasDuplicate"
-              v-shared-tooltip="props.item.installed.map(v => v.resource.fileName).join(', ')"
+              v-shared-tooltip="props.item.installed.map(v => basename(v.path)).join(', ')"
               size="15"
               color="red"
             >
@@ -145,7 +146,6 @@
 </template>
 
 <script lang="ts" setup>
-import unknownServer from '@/assets/unknown_server.png'
 import { ContextMenuItem, useContextMenu } from '@/composables/contextMenu'
 import { getCurseforgeProjectModel } from '@/composables/curseforge'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
@@ -158,6 +158,10 @@ import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
+import { Resource } from '@xmcl/runtime-api'
+import { basename } from '@/util/basename'
+import { vFallbackImg } from '@/directives/fallbackImage'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>
@@ -168,11 +172,11 @@ const props = defineProps<{
   hasUpdate?: boolean
   height?: number
   draggable?: boolean
-  install: (p: ProjectEntry) => Promise<void>
+  install?: (p: ProjectEntry) => Promise<void>
   getContextMenuItems?: () => ContextMenuItem[]
 }>()
 const slots = useSlots()
-const emit = defineEmits(['click', 'checked', 'drop', 'install'])
+const emit = defineEmits(['click', 'checked', 'drop'])
 
 const hover = ref(false)
 const config = injection(kSWRVConfig)
@@ -294,11 +298,14 @@ const tags = computed(() => {
       icon: '$vuetify.icons.curseforge',
     })
   }
-  if (props.item.files && props.item.files.length > 0 && props.item.files[0].resource.size) {
-    tags.push({
-      icon: 'storage',
-      text: getExpectedSize(props.item.files[0].resource.size),
-    })
+  if (props.item.files && props.item.files.length > 0 && props.item.files[0]) {
+    if ('resource' in props.item.files[0]) {
+      const res = props.item.files[0].resource as Resource
+      tags.push({
+        icon: 'storage',
+        text: getExpectedSize(res.size),
+      })
+    }
   }
 
   return tags
@@ -308,7 +315,7 @@ const installing = ref(false)
 const onInstall = async () => {
   try {
     installing.value = true
-    await props.install(props.item)
+    await props.install?.(props.item)
   } finally {
     // Delay for the local file to be updated
     setTimeout(() => {
