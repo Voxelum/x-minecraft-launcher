@@ -28,11 +28,15 @@
       </v-toolbar>
       <v-card-text class="flex flex-col overflow-auto">
         <div
+          v-if="data.errorLog"
           style="padding: 10px"
         >
           {{ data.launcherError ? t('launchFailed.failedToLaunch') : data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
         </div>
-        <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.errorLog }}</pre>
+        <pre
+          v-if="data.errorLog"
+          class="overflow-auto min-h-[200px] rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]"
+        >{{ data.errorLog }}</pre>
         <div
           style="padding: 10px"
         >
@@ -81,12 +85,6 @@ watch(error, (e) => {
   data.errorLog = JSON.stringify(e, null, 2)
 })
 function decorate(log: string) {
-  // let lines = log.split('\n');
-  // let result: string[] = [];
-  // for (let i = 0; i < lines.length; i++) {
-  //   result.push(lines[i].trim(), ' ');
-  // }
-  // return result.join('\n');
   return log
 }
 async function displayLog() {
@@ -105,7 +103,7 @@ on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog
   }
   if (code !== 0) {
     console.log(errorLog)
-    data.errorLog = errorLog
+    data.errorLog = errorLog || crashReport || ''
     if (crashReportLocation) {
       data.crashReportLocation = crashReportLocation
       data.isCrash = true

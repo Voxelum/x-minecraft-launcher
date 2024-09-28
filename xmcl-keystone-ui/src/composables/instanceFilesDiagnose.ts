@@ -1,19 +1,21 @@
-import { InstanceFile } from '@xmcl/runtime-api'
-import { Ref, InjectionKey } from 'vue'
+import { injection } from '@/util/inject'
+import { kInstanceFiles } from './instanceFiles'
 
-export const kInstanceFilesDiagnose: InjectionKey<ReturnType<typeof useInstanceFilesDiagnose>> = Symbol('InstanceFilesDiagnose')
-
-export function useInstanceFilesDiagnose(instanceFiles: Ref<InstanceFile[]>, install: () => Promise<void>) {
+export function useInstanceFilesDiagnose() {
   const { t } = useI18n()
+  const { instanceFiles, installFiles } = injection(kInstanceFiles)
 
-  const issue = computed(() => instanceFiles.value.length > 0
+  const issue = computed(() => (instanceFiles.value?.files.length || 0) > 0
     ? {
       title: t('diagnosis.instanceFiles.title'),
-      description: t('diagnosis.instanceFiles.description', { counts: instanceFiles.value.length }),
+      description: t('diagnosis.instanceFiles.description', { counts: instanceFiles.value?.files.length }),
     }
     : undefined)
-
-  const fix = install
+  const fix = () => {
+    if (instanceFiles.value) {
+      return installFiles(instanceFiles.value.instance, instanceFiles.value.files)
+    }
+  }
 
   return {
     issue,

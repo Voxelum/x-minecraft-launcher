@@ -10,6 +10,7 @@
             "request": "launch",
             "preLaunchTask": "dev",
             "program": "${workspaceFolder}/xmcl-electron-app/dist/index.js",
+            "showAsyncStacks": true,
             "args": [
                 "--remote-debugging-port=9300",
                 "--trace-uncaught",
@@ -36,8 +37,49 @@
                 "NODE_ENV": "development",
             },
             "windows": {
-                "env": {
-                }
+                "env": {}
+            }
+        },
+        {
+            "name": "Electron: Main Production (launch)",
+            "type": "node",
+            "request": "launch",
+            "showAsyncStacks": true,
+            "args": [
+                "--remote-debugging-port=9300",
+                "--trace-uncaught",
+                "--trace-deprecation"
+            ],
+            "sourceMaps": true,
+            "resolveSourceMapLocations": [
+                "${workspaceFolder}/xmcl-electron-app/dist/**",
+                "!**/node_modules/**"
+            ],
+            "outFiles": [
+                "${workspaceFolder}/xmcl-electron-app/dist/*.js"
+            ],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/diagnostic-channel-publishers/**",
+                "${workspaceFolder}/xmcl-runtime/app/DummyLogger.ts",
+                "${workspaceFolder}/xmcl-runtime/uncaughtError/pluginUncaughtError.ts",
+                "${workspaceFolder}/xmcl-runtime/logger/pluginLogConsumer.ts"
+            ],
+            "cwd": "${workspaceFolder}/xmcl-electron-app/build/output/win-unpacked",
+            "env": {
+                "NODE_ENV": "production",
+            },
+            "windows": {
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/win-unpacked/X Minecraft Launcher.exe",
+                "env": {}
+            },
+            "linux": {
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/linux-unpacked/xmcl",
+                "env": {}
+            },
+            "osx": {
+                "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher",
+                "env": {}
             }
         },
         {

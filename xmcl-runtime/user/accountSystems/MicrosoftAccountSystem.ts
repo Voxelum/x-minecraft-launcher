@@ -1,11 +1,13 @@
-import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError } from '@xmcl/user'
+import { GameProfileAndTexture, LoginOptions, RefreshUserOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
+import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError, YggdrasilClient } from '@xmcl/user'
 import { Logger } from '~/logger'
 import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
+import { LauncherApp } from '~/app'
+import { randomUUID } from 'crypto'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -14,6 +16,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     private mojangClient: MojangClient,
     private getUserTokenStorage: () => Promise<UserTokenStorage>,
     private oauthClient: MicrosoftOAuthClient,
+    private app: LauncherApp,
   ) { }
 
   async login(options: LoginOptions, signal: AbortSignal): Promise<UserProfile> {
@@ -25,7 +28,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
     const profile: UserProfile = {
       id: normalizeUserId(authentication.userId, options.authority),
-      username: options.username,
+      username: authentication.username || options.username,
       invalidated: false,
       authority: options.authority,
       expiredAt: authentication.expiredAt,
@@ -38,14 +41,35 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return profile
   }
 
-  async refresh(user: UserProfile, signal: AbortSignal, slientOnly = false, force = false): Promise<UserProfile> {
+  async refresh(user: UserProfile, signal: AbortSignal, { silent, force, validate }: RefreshUserOptions): Promise<UserProfile> {
     const diff = Date.now() - user.expiredAt
-    if (force || !user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated) {
+    this.logger.log(`Try to refresh Microsoft account ${user.username}(${user.id}) token. Expired at ${user.expiredAt}, validate: ${validate}, force: ${force}, diff: ${diff}, silent: ${silent}`)
+    const isExpired = async () => {
+      if (!validate) return false
+      const userTokenStorage = await this.getUserTokenStorage()
+      const accessToken = await userTokenStorage.get(user)
+      const response = await this.app.fetch('https://sessionserver.mojang.com/session/minecraft/join', {
+        signal,
+        method: 'POST',
+        body: JSON.stringify({
+          accessToken,
+          selectedProfile: user.selectedProfile,
+          serverId: randomUUID(),
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      this.logger.log(`Validate Microsoft account ${user.username}(${user.id}) token. Response: ${response.status}`)
+      return !response.ok
+    }
+    if (force || !user.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || user.invalidated || await isExpired()) {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
       try {
-        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal, slientOnly)
+        const { accessToken, expiredAt, gameProfiles, selectedProfile, username } = await this.loginMicrosoft(user.username, undefined, false, true, signal, silent)
 
+        user.username = username || user.username
         user.expiredAt = expiredAt
         user.selectedProfile = selectedProfile?.id ?? ''
         user.profiles = toRecord(gameProfiles, v => v.id)
@@ -198,6 +222,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         },
       }]
       return {
+        username: result.account?.username,
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
         gameProfiles,

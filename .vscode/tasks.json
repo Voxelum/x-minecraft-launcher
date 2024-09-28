@@ -5,15 +5,36 @@
     "tasks": [
         {
             "type": "npm",
-            "script": "build:full",
+            "label": "build",
+            "script": "build",
+            "group": {
+                "kind": "build"
+            },
+            "options": {
+                "env": {
+                    "NODE_ENV": "production"
+                }
+            }
+        },
+        {
+            "type": "npm",
+            "label": "build:renderer",
+            "script": "build:renderer",
             "group": {
                 "kind": "build",
-                "isDefault": true
+            },
+            "options": {
+                "env": {
+                    "NODE_ENV": "production"
+                }
             }
         },
         {
             "label": "dev",
-            "dependsOn": ["dev:main", "dev:renderer"]
+            "dependsOn": [
+                "dev:main",
+                "dev:renderer"
+            ]
         },
         {
             "label": "dev:main",

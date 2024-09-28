@@ -116,7 +116,7 @@ const { path } = injection(kInstance)
 const { refresh: updateSaves, refreshing: loadingSaves } = useRefreshable(async () => {
   const [store, profile] = await Promise.all([getResources(ResourceDomain.Saves), getInstanceSaves(path.value)])
   resourcesSave.value = store
-  loadedProfileSaves.value = profile
+  // loadedProfileSaves.value = profile
 })
 const clearSaves = () => {
   resourcesSave.value = []

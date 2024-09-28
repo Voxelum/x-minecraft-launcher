@@ -18,6 +18,10 @@ export interface InstallInstanceOptions {
    * Generate the lock of the instance
    */
   lock?: boolean
+  /**
+   * Passed into task to identify the task
+   */
+  id?: string
 }
 
 /**

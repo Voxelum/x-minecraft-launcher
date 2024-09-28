@@ -145,6 +145,10 @@
             "default": false,
             "type": "boolean"
         },
+        "globalPrependCommand": {
+            "default": "",
+            "type": "string"
+        },
         "discordPresence": {
             "default": true,
             "type": "boolean"
@@ -185,6 +189,7 @@
         "globalMaxMemory",
         "globalMcOptions",
         "globalMinMemory",
+        "globalPrependCommand",
         "globalShowLog",
         "globalVmOptions",
         "httpProxy",

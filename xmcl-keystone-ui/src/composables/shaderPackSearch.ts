@@ -1,13 +1,15 @@
+import { basename } from '@/util/basename'
 import { clientModrinthV2 } from '@/util/clients'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceData, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { InstanceShaderFile } from './instanceShaderPack'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useDomainResources } from './resources'
 import { useService } from './service'
-import { useAggregateProjectsSplitted, useProjectsFilterSearch } from './useAggregateProjects'
+import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -19,7 +21,7 @@ export enum ShaderLoaderFilter {
 /**
  * Represent a mod project
  */
-export type ShaderPackProject = ProjectEntry
+export type ShaderPackProject = ProjectEntry<InstanceShaderFile>
 
 function useLocalSearch(shaderPack: Ref<string | undefined>, keyword: Ref<string>) {
   const { resources: shaderFiles } = useDomainResources(ResourceDomain.ShaderPacks)
@@ -27,7 +29,7 @@ function useLocalSearch(shaderPack: Ref<string | undefined>, keyword: Ref<string
   const shaderProjectFiles = computed(() => {
     return shaderFiles.value.map(s => {
       const enabled = shaderPack.value === s.fileName
-      const file: ProjectFile = markRaw({
+      const file: InstanceShaderFile = markRaw({
         path: s.path,
         version: '',
         resource: s,
@@ -46,10 +48,10 @@ function useLocalSearch(shaderPack: Ref<string | undefined>, keyword: Ref<string
     const _enabled: ShaderPackProject[] = markRaw([])
     const _disabled: ShaderPackProject[] = markRaw([])
 
-    const getFromResource = (m: ProjectFile) => {
+    const getFromResource = (m: InstanceShaderFile) => {
       const curseforgeId = m.curseforge?.projectId
       const modrinthId = m.modrinth?.projectId
-      const name = m.resource.name
+      const name = basename(m.path)
       const obj = indices[name] || (modrinthId && indices[modrinthId]) || (curseforgeId && indices[curseforgeId])
       if (obj) {
         obj.installed?.push(m)
@@ -169,21 +171,21 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
 
   const networkOnly = computed(() => modrinthCategories.value.length > 0)
 
-  const _installed = useProjectsFilterSearch(
+  const _installed = useProjectsFilterSort(
     keyword,
     installed,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _notInstalledButCached = useProjectsFilterSearch(
+  const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
     networkOnly,
     isCurseforgeActive,
     isModrinthActive,
   )
-  const _others = useProjectsFilterSearch(
+  const _others = useProjectsFilterSort(
     keyword,
     others,
     networkOnly,

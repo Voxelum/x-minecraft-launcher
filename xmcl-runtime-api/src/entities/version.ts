@@ -1,4 +1,4 @@
-import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import type { LibraryInfo, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 
@@ -261,7 +261,7 @@ export function isQuiltLibrary(lib: LibraryInfo) {
   return lib.groupId === 'org.quiltmc' && lib.artifactId === 'quilt-loader'
 }
 
-export function findNeoForgedVersion(minecraft: string, resolvedVersion: ResolvedVersion) {
+export function findNeoForgedVersion(minecraft: string, resolvedVersion: { libraries: LibraryInfo[]; arguments: ResolvedVersion['arguments'] }) {
   const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
   if (!hasNeoForged) return ''
   const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
@@ -292,7 +292,7 @@ export function filterOptifineVersion(optifineVersion: string) {
   return optifineVersion.substring(idx + 1)
 }
 
-export const EMPTY_VERSION: LocalVersionHeader = Object.freeze({
+export const EMPTY_VERSION: VersionHeader = Object.freeze({
   id: '',
   inheritances: [],
   path: '',
@@ -382,7 +382,7 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
   return optifineVersion === version.substring(i + 1)
 }
 
-function isVersionMatched(version: LocalVersionHeader,
+function isVersionMatched(version: VersionHeader,
   minecraft: string | undefined,
   forge: string | undefined,
   neoForged: string | undefined,
@@ -455,7 +455,7 @@ function isVersionMatched(version: LocalVersionHeader,
   return true
 }
 
-export function getResolvedVersion(versions: LocalVersionHeader[], id: string,
+export function findMatchedVersion(versions: VersionHeader[], id: string,
   minecraft: string | undefined,
   forge: string | undefined,
   neoForged: string | undefined,
@@ -463,7 +463,7 @@ export function getResolvedVersion(versions: LocalVersionHeader[], id: string,
   optifine: string | undefined,
   quiltLoader: string | undefined,
   labyMod: string | undefined,
-): LocalVersionHeader | undefined {
+): VersionHeader | undefined {
   return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, neoForged, fabricLoader, optifine, quiltLoader, labyMod))
 }
 
@@ -477,6 +477,22 @@ export function getMinecraftVersionFormat(version: string): 'release' | 'snapsho
         : isAlphaVersion(version)
           ? 'alpha'
           : 'unknown'
+}
+
+export function getResolvedVersionHeader(ver: ResolvedVersion): VersionHeader {
+  return {
+    id: ver.id,
+    path: ver.pathChain[0],
+    inheritances: ver.inheritances,
+    minecraft: ver.minecraftVersion,
+    neoForged: findNeoForgedVersion(ver.minecraftVersion, ver),
+    forge: filterForgeVersion(ver.libraries.find(isForgeLibrary)?.version ?? ''),
+    fabric: ver.libraries.find(isFabricLoaderLibrary)?.version ?? '',
+    optifine: filterOptifineVersion(ver.libraries.find(isOptifineLibrary)?.version ?? ''),
+    quilt: ver.libraries.find(isQuiltLibrary)?.version ?? '',
+    labyMod: findLabyModVersion(ver),
+    liteloader: '',
+  }
 }
 
 export function compareRelease(versionA: string, versionB: string): number {
@@ -513,7 +529,7 @@ export function compareSnapshot(versionA: string, versionB: string) {
 
 export const LATEST_RELEASE = { id: '1.18.1', type: 'release', url: 'https://launchermeta.mojang.com/v1/packages/6ad09383ac77f75147c38be806961099c02c1ef9/1.18.1.json', time: '2022-01-19T15:56:14+00:00', releaseTime: '2021-12-10T08:23:00+00:00' }
 
-export interface LocalVersionHeader {
+export interface VersionHeader {
   path: string
   id: string
   inheritances: string[]
@@ -547,18 +563,38 @@ export interface LocalVersionHeader {
   labyMod: string
 }
 
+export type ServerVersionHeader = {
+  id: string
+  minecraft: string
+  type: 'vanilla' | 'forge' | 'fabric' | 'quilt' | 'neoforge'
+  version?: string
+}
+export interface ResolvedServerVersion {
+  id: string
+  libraries: ResolvedLibrary[]
+  mainClass: string
+  jar?: string
+  minecraftVersion: string
+  arguments: {
+    game: string[]
+    jvm: string[]
+  }
+}
+
 export class LocalVersions {
   /**
    * All the local versions installed in the disk
    */
-  local = [] as LocalVersionHeader[]
+  local = [] as VersionHeader[]
 
-  localVersions(local: LocalVersionHeader[]) {
+  servers = [] as ServerVersionHeader[]
+
+  localVersions(local: VersionHeader[]) {
     local.forEach(Object.freeze)
     this.local = local
   }
 
-  localVersionAdd(local: LocalVersionHeader) {
+  localVersionAdd(local: VersionHeader) {
     Object.freeze(local)
     const found = this.local.findIndex(l => l.id === local.id)
     if (found !== -1) {
@@ -571,5 +607,13 @@ export class LocalVersions {
 
   localVersionRemove(folder: string) {
     this.local = this.local.filter(v => v.id !== folder)
+  }
+
+  serverProfileAdd(profile: ServerVersionHeader) {
+    this.servers.push(profile)
+  }
+
+  serverProfileRemove(id: string) {
+    this.servers = this.servers.filter(p => p.id !== id)
   }
 }

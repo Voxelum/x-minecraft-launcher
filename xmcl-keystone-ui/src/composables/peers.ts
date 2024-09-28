@@ -6,6 +6,7 @@ import { useRefreshable } from './refreshable'
 import { LocalNotification, useNotifier } from './notifier'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
+import { useIntervalFn } from '@vueuse/core'
 
 export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
 
@@ -65,7 +66,7 @@ export function usePeerConnections(notification: Ref<LocalNotification[]>) {
 export const kPeerState: InjectionKey<ReturnType<typeof usePeerState>> = Symbol('PeerState')
 
 export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
-  const { getPeerState } = useService(PeerServiceKey)
+  const { getPeerState, exposePort, unexposePort } = useService(PeerServiceKey)
   const { initiate, setRemoteDescription, drop, refreshNat, isReady, setUserInfo, leaveGroup, joinGroup } = multiplayer
 
   const { state } = useState(getPeerState, PeerState)
@@ -87,6 +88,7 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const connections = computed(() => state.value?.connections ?? [])
   const validIceServers = computed(() => state.value?.validIceServers ?? [])
   const ips = computed(() => state.value?.ips ?? [])
+  const exposedPorts = computed(() => state.value?.exposedPorts.map(v => v[0]) ?? [])
 
   watch(gameProfile, (p) => {
     setUserInfo({
@@ -101,6 +103,27 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   const error = computed(() => state.value?.groupError)
   const turnservers = computed(() => state.value?.turnservers || {})
 
+  let buffer = [] as Array<{ port: number; session: string }>
+  const otherExposedPorts = ref([] as Array<{ port: number; user: string }>)
+  multiplayer.on('lan', (msg) => {
+    buffer.push(msg)
+  })
+
+  useIntervalFn(() => {
+    if (buffer.length > 0) {
+      const b = buffer
+      otherExposedPorts.value = b.map(({ port, session }) => {
+        return {
+          port,
+          user: connections.value.find(c => c.id === session)?.userInfo.name || session.substring(0, 6),
+        }
+      })
+      buffer = []
+    } else if (otherExposedPorts.value.length > 0) {
+      otherExposedPorts.value = []
+    }
+  }, 1000)
+
   function _setRemoteDescription(type: 'offer' | 'answer', description: string) {
     return setRemoteDescription({
       description,
@@ -109,6 +132,10 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
   }
 
   return {
+    exposedPorts,
+    exposePort,
+    unexposePort,
+    otherExposedPorts,
     device,
     turnservers,
     validIceServers,

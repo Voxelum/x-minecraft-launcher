@@ -24,8 +24,8 @@
             >
               <div class="flex w-full items-center gap-5">
                 <img
-                  v-fallback-img="unknownServer"
-                  :src="status.favicon || unknownServer"
+                  v-fallback-img="BuiltinImages.unknownServer"
+                  :src="status.favicon || BuiltinImages.unknownServer"
                   class="rounded-lg p-1"
                   style="max-width: 80px; max-height: 80px; min-height: 80px;"
                 >
@@ -118,12 +118,12 @@
 </template>
 
 <script lang=ts setup>
-import unknownServer from '@/assets/unknown_server.png'
 import { useServerStatus } from '@/composables/serverStatus'
 import { injection } from '@/util/inject'
 import { protocolToMinecraft } from '@xmcl/runtime-api'
 import { kInstanceCreation } from '../composables/instanceCreation'
 import { vFallbackImg } from '../directives/fallbackImage'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{
   valid: boolean

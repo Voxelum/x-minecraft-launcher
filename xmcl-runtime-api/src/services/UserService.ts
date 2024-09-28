@@ -131,6 +131,21 @@ export class UserState {
   }
 }
 
+export interface RefreshUserOptions {
+  /**
+   * Use cached token to refresh user and won't trigger popup window.
+   */
+  silent?: boolean
+  /**
+   * Igore cache and force to refresh user.
+   */
+  force?: boolean
+  /**
+   * Force to validate the user token with joinServer.
+   */
+  validate?: boolean
+}
+
 export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
   getUserState(): Promise<MutableState<UserState>>
   /**
@@ -142,7 +157,7 @@ export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
    *
    * @throw 'userAccessTokenExpired'
    */
-  refreshUser(userId: string, silent?: boolean, force?: boolean): Promise<void>
+  refreshUser(userId: string, options?: RefreshUserOptions): Promise<void>
   /**
    * Upload the skin to server. If the userId and profileId is not assigned,
    * it will use the selected user and selected profile.

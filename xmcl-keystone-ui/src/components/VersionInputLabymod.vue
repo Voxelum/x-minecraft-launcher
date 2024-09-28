@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import VersionInput, { VersionItem } from './VersionInput.vue'
 import { useLabyModManifest } from '@/composables/version'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -28,7 +29,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    icon="http://launcher/icons/labyMod"
+    :icon="BuiltinImages.labyMod"
     title="LabyMod"
     url="https://www.labymod.net"
     :is-clearable="true"

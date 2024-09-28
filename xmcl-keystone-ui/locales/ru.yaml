@@ -291,6 +291,12 @@ duration:
   second: '{duration} секунда | {duration} секунд'
 edit: Изменить
 enable: Включить
+env:
+  select:
+    all: Выбрать все
+    fit: Выбрать подходящие
+    none: Отменить выбор
+
 error:
   name: Ошибка | Ошибки
 errors:
@@ -315,6 +321,8 @@ errors:
   HeadersTimeoutError: Истекло время ожидания заголовков HTTP
   NotFoundError: 404 Не найдено
   SocketError: Ошибка сокета сервера
+eula:
+  body: Устанавливая флажок, вы подтверждаете свое согласие с {eula} Minecraft.
 exception:
   http: >-
     HTTP-запрос с {url} не выполнен. Код состояния {statusCode}. {code}.
@@ -392,7 +400,7 @@ importModpack:
 importResource: Импортный ресурс
 install: Установить
 installAssets:
-  asset: Установить ресурс {hash}
+  asset: Установить {count} ресурсов
   assetIndex: Проверить файл индекса ресурсов
   name: Установить файлы ресурсов
 installAuthlibInjector: Установить authlib-injector
@@ -444,6 +452,7 @@ installVersion:
   name: Установить клиент Minecraft {version}
 instance:
   addServer: Добавить сервер
+  changeIcon: Изменить значок
   current: Текущий экземпляр
   delete: Удалить экземпляр
   deleteHint: >-
@@ -455,10 +464,12 @@ instance:
   fileApiHint: URL для синхронизации файлов экземпляра с удалённым сервером конфигурации.
   gameVersion: Версия игры экземпляра
   icon: Иконка профиля
+  iconHint: Значок может представлять собой файл или ссылку на URL-адрес в Интернете.
   iconUrl: URL-адрес иконки
   includeVersion: Включить версию | Включить версии
   lastPlayed: Последняя игра
   launchArguments: Предпросмотр аргументов запуска
+  launchServer: Запустить локальный сервер
   mcOptions: Опции Minecraft
   mcOptionsHint: Дополнительные аргументы запуска Minecraft
   name: Имя экземпляра
@@ -467,6 +478,8 @@ instance:
   openCrashReportFolder: Открыть папку с отчётами об ошибках
   openLogFolder: Открыть папку с журналами
   playtime: Время игры
+  prependCommand: Добавить команду в начало
+  prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
   showInstance: Открыть папку экземпляра
   versionHint: Minecraft-версия этой игры
@@ -533,6 +546,7 @@ instances:
     Импортировать из обычной папки (.minecraft). Это дублирует оригинальный
     профиль экземпляра в XMCL.
   choose: Выбрать экземпляр
+  folderSetting: Настройки папки
   importFolder: Импортировать из папки
   importFolderDescription: Импортировать Minecraft в лаунчер
   loadingFiles: Загрузка файлов сборки модов
@@ -563,6 +577,7 @@ labyMod:
 launch:
   cancel: Отменить
   kill: Остановить
+  killServer: Остановить локальный сервер
   launch: Запустить
 launchBlocked:
   ignore: Насильный запуск
@@ -748,11 +763,19 @@ mod:
   switchDefaultSource: Источник контента модов по умолчанию
   toUpdate: '{count} для обновления'
 modInstall:
-  checkUpgrade: Проверить обновления модов
-  checkedUpgrade: Обновления проверены
+  archived: >-
+    {name} заархивировано. 
+
+    {name} не будет получать никаких дальнейших обновлений, если автор не решит
+    разархивировать проект.
+  checkDependencies: Проверить недостающие зависимости
+  checkUpgrade: Проверить обновления для модов
+  checkedDependencies: Недостающие зависимости проверены
+  checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
   install: Установить
+  installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
@@ -962,6 +985,8 @@ multiplayer:
   allowTurnHint: >-
     Включите ретранслятор, если связь напрямую не работает. 
     Он может замедлить соединение, используйте осторожно.
+    Включите ретранслятор, если связь напрямую не работает.  Он может замедлить
+    соединение, используйте осторожно.
   complete: Завершено
   confirm: Подтвердить
   connections: Соединения
@@ -990,6 +1015,8 @@ multiplayer:
     После того, как пользователь введёт ваш токен, необходимо ввести его токен в
     приведённое ниже текстовое поле. Нажмите "Подтвердить", чтобы установить
     соединение.
+  exposedPortDescription: Порт, который вы предоставили другим узлам
+  exposedPorts: Перенаправленные порты
   gatheringIce: >-
     Пожалуйста, подождите, пока сервер ICE соберёт необходимую информацию о
     вашей сети. Если вы нетерпеливы и информации достаточно, вы можете отправить
@@ -1018,12 +1045,15 @@ multiplayer:
     Используйте WebRTC или node-datachannel. 
     Переключайтесь между ними только если
     p2p-соединение иногда вызывает ошибку окна запуска.
+    Используйте WebRTC или node-datachannel.  Переключайтесь между ними только
+    если p2p-соединение иногда вызывает ошибку окна запуска.
   leaveGroup: Покинуть группу
   localToken: Локальный токен
   manualConnect: Ручное соединение
   name: Игра по локальной сети
   networkInfo: Информация о сети
   next: Далее
+  otherExposedPortDescription: Предисловие к порту от {user}
   placeholder: >-
     Соединитесь с другим пользователем, чтобы играть в Minecraft в локальной
     сети!
@@ -1136,6 +1166,7 @@ resourcepack:
   showInCurseforge: Показать {name} на CurseForge
   unselected: Невыбранные наборы ресурсов
 save:
+  cheat: Мошенничество
   copy:
     cancel: Отменить копирование
     confirm: Начать копирование
@@ -1152,6 +1183,7 @@ save:
     fromProfile: Из других экземпляров
     fromResource: Из управляемых ресурсов
     title: Импорт мира из управляемого источника
+  createNew: Создать новый мир
   createdWorlds: 'Всего миров: {count}'
   deleteHint: >-
     Эта операция не может быть отменена. Вы навсегда потеряете данные этого
@@ -1162,14 +1194,20 @@ save:
   export: Экспорт сохранения
   exportMessage: Экспортировать мир в zip-архив
   exportTitle: Экспортировать мир
+  gameMode: игровой режим
   import: Импортировать мир
   importMessage: Импортировать мир из zip-архива
   importTitle: Импортировать мир
   independent: Экземпляр использует независимую папку сохранений
+  levelName: Название уровня
   manage: Управление мирами
   name: Мир | Миры
+  search: Поиск сохранений
+  selected: местный архив
   shared: Экземпляр использует общую папку сохранений
   showDirectory: Открыть папку с мирами
+  unselected: общий архив
+  useCurrent: Использовать текущий мир
 screenshots:
   empty: У вас нет снимков экрана
   goto: Открыть папку со снимками экрана
@@ -1184,8 +1222,11 @@ server:
   host: Хост
   hostHint: Хост (с портом) сервера
   ipAddress: IP-адрес
+  maxPlayers: Максимум игроковr
   motd: Сервер MOTD
   name: Сервер | Серверы
+  nogui: Нет графического интерфейса сервера
+  onlineMode: Онлайн режим
   ping: Пинг
   pings: Пинг
   players: Игроки
@@ -1300,6 +1341,7 @@ setting:
   maxSockets: Максимум сокетов
   maxSocketsDescription: >-
     Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
+  maxSocketsDescription: Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
   maxSocketsTitle: Максимальное количество HTTP-сокетов
   name: Глобальные настройки | Глобальные настройки
   network: Настройки сети
@@ -1341,6 +1383,7 @@ setting:
   useBmclAPI: Использовать BMCL API
   useBmclAPIDescription: >-
     Скачайте Minecraft в Китае с помощью BMCL-API
+  useBmclAPIDescription: Скачайте Minecraft в Китае с помощью BMCL-API
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки

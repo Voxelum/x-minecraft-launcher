@@ -103,6 +103,7 @@ browseApp:
   delete: Borrar
   launch: Iniciar e configurar como predeterminado
 cancel: Cancelar
+color: Cor
 confirm: Comezar
 copyClipboard:
   success: Copiar o portapapeis
@@ -236,16 +237,34 @@ diagnosis:
     name: Falta o arquivo de índice de activos de {version}.
 disable: Desactivar
 downloadUpdate: Descargar actualización
+env:
+  select:
+    all: Seleccionar todo
+    fit: Seleccione Axustar
+    none: Seleccione Ningún
 errors:
   NotFoundError: 404 non atopado
+eula:
+  body: >-
+    Marcando o botón da caixa de verificación, estás a indicar o teu acordo co
+    {eula} de Minecraft.
 importModpack:
   name: Importar Modpack
+instance:
+  changeIcon: Cambiar icona
+  iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
+  launchServer: Inicia o servidor localhost
+  prependCommand: Comando anteposto
+  prependCommandHint: Isto antepoñerá este comando antes de todos os comandos de inicio
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 
     O modloader antigo é {modloader} e o novo modloader é {newModloader}.
 instances:
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
+  folderSetting: Configuración do cartafol
+launch:
+  killServer: Eliminar o servidor Localhost
 launchBlocked:
   launchSpawnProcessFailed:
     description: |-
@@ -261,6 +280,14 @@ mod:
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
+  archived: >-
+    {name} foi arquivado. 
+
+    {name} non recibirá máis actualizacións a non ser que o autor decida
+    desarquivar o proxecto.
+  checkDependencies: Comproba as dependencias
+  checkedDependencies: Dependencias verificadas
+  installDependencies: Instalar dependencias que faltan
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
 modrinth:
@@ -293,12 +320,15 @@ modrinth:
     mod: Mod
     shader: Shader
 multiplayer:
+  exposedPortDescription: O porto que expuxo a outros compañeiros
+  exposedPorts: Portos remitidos
   kernel: Núcleo P2P
   kernelDescription: >-
     Use WebRTC nativo ou canle de datos de nodos. 
 
     Cambia isto só cando a túa conexión p2p nalgún momento falla a xanela do
     lanzador.
+  otherExposedPortDescription: O prefacio do porto de {usuario}
   sharingNotificationBody: >-
     Podes descargar ou crear unha instancia desde a configuración compartida de
     {name}.
@@ -311,9 +341,22 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   shared: A instancia utiliza o cartafol do paquete de recursos compartidos
 save:
+  cheat: Trampa
+  createNew: Crea un mundo novo
+  gameMode: modo de xogo
   independent: A instancia utiliza un cartafol de gardados independentes
+  levelName: Nome do nivel
+  search: Busca Gardas
+  selected: arquivo local
   shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
+  unselected: arquivo compartido
+  useCurrent: Usa o mundo actual
+saves: {}
+server:
+  maxPlayers: Máximo xogadores
+  nogui: Sen servidor Gui
+  onlineMode: Modo en liña
 setting:
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.

@@ -105,6 +105,7 @@ browseApp:
 cancel: Відміна
 checkUpdate:
   name: Перевірити оновлення
+color: колір
 confirm: Запуск
 copyClipboard:
   success: Копіювати в буфер обміну
@@ -247,6 +248,11 @@ duration:
   second: '{duration} секунда | {duration} секунди'
 edit: Редагувати
 enable: Увімкнути
+env:
+  select:
+    all: Вибрати все
+    fit: Виберіть Fit
+    none: Виберіть Немає
 error:
   name: Помилка | Помилки
 errors:
@@ -269,6 +275,8 @@ errors:
   HeadersTimeoutError: Вийшов час очікування HTTP Header
   NotFoundError: 404 Не знайдено
   SocketError: Помилка сокету сервера
+eula:
+  body: Установивши прапорець, ви підтверджуєте свою згоду з {eula} Minecraft.
 exception:
   http: >-
     HTTP-запит з {url} не виконано. Код стану {statusCode}. {code}. Повторіть
@@ -342,7 +350,7 @@ importModpack:
 importResource: Імпорт ресурсу
 install: Встановити
 installAssets:
-  asset: Встановити Asset {hash}
+  asset: Установіть {count} ресурсів
   assetIndex: Перевірити індексний файл assets
   name: Встановити файли Asset
 installAuthlibInjector: Встановити authlib-injector
@@ -394,6 +402,7 @@ installVersion:
   name: Встановити клієнт Minecraft {version}
 instance:
   addServer: Добавить сервер
+  changeIcon: Змінити значок
   current: Поточний екземпляр
   delete: Видалити гру
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
@@ -405,10 +414,12 @@ instance:
     конфігурації.
   gameVersion: Версія гри
   icon: Значок профілю
+  iconHint: Піктограмою може бути файл або URL-адреса-посилання в Інтернеті.
   iconUrl: Значок Url
   includeVersion: Увімкнути версію | Вмикати версії
   lastPlayed: Востаннє грали
   launchArguments: Попередній перегляд аргументів запуску
+  launchServer: Запустіть локальний сервер
   mcOptions: Параметри Minecraft
   mcOptionsHint: Додаткові інструкції із запуску Minecraft
   name: Ім'я профілю
@@ -416,6 +427,8 @@ instance:
   neverPlayed: Ніколи не грав
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
+  prependCommand: Команда «Початок».
+  prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Ім'я обов'язкове
   showInstance: Показати папку гри
   versionHint: Версія Minecraft для цієї гри
@@ -482,6 +495,7 @@ instances:
     Імпорт із загальної папки .minecraft. 
     Це призведе до копіювання оригінального профілю гри в XMCL.
   choose: Виберіть Гра
+  folderSetting: Параметри папки
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера
   loadingFiles: Завантаження файлів Modpack
@@ -512,6 +526,7 @@ labyMod:
 launch:
   cancel: Відхильнути
   kill: Зупинити
+  killServer: Закрийте локальний сервер
   launch: Почати
 launchBlocked:
   ignore: Примусовий запуск
@@ -684,11 +699,19 @@ mod:
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
 modInstall:
+  archived: >-
+    {name} заархівовано. 
+
+    {name} не отримуватиме подальших оновлень, якщо автор не вирішить
+    розархівувати проект.
+  checkDependencies: Перевірити залежності
   checkUpgrade: Перевірте оновлення модифікацій
+  checkedDependencies: Перевірені залежності
   checkedUpgrade: Оновлення перевірено
   currentVersion: Обрана версія
   dependencyHint: Встановлено іншу версію {version}
   install: Встановити
+  installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
   installed: Встановлено
   noVersionSupported: Мод підтримує тільки Minecraft {supported}.
@@ -922,6 +945,8 @@ multiplayer:
   enterRemoteTokenHint: |-
     Як тільки товариш введе ваш токен, вам потрібно ввести його токен у текстове
      поле нижче. Натисніть кнопку «Підтвердити», щоб підключитися.
+  exposedPortDescription: Порт, який ви надали іншим аналогам
+  exposedPorts: Переадресовані порти
   gatheringIce: >
     "Зачекайте, поки сервер ICE збере достатньо інформації про вашу
      мережі. Якщо ви нетерплячі і ви маєте достатньо інформації, ви можете заздалегідь
@@ -956,6 +981,7 @@ multiplayer:
   name: Мультиплеєр по локальній мережі
   networkInfo: Інформація про мережу
   next: Далі
+  otherExposedPortDescription: Порт передмова від {user}
   placeholder: >-
     Приєднуйтесь до інших користувачів, щоб грати в Minecraft по локальній
     мережі!
@@ -1046,6 +1072,7 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   shared: Екземпляр використовує спільну папку пакета ресурсів
 save:
+  cheat: Обман
   copy:
     cancel: Скасувати копіювання
     confirm: Почати копіювання
@@ -1062,6 +1089,7 @@ save:
     fromProfile: З інших екземплярів
     fromResource: З керованих ресурсів
     title: Імпорт збереження з керованого джерела
+  createNew: Створити Новий Світ
   createdWorlds: 'Ваших світів: {count}'
   deleteHint: |-
     Ця операція не може бути скасована. Ви назавжди втратите дані збереження.
@@ -1072,14 +1100,21 @@ save:
   export: Експорт збереження
   exportMessage: Експорт збереження у zip
   exportTitle: Експорт збереження
+  gameMode: режим гри
   import: Імпорт збереження
   importMessage: Імпорт збереження з zip
   importTitle: Імпорт збереження
   independent: Примірник використовує незалежну папку збереження
+  levelName: Назва рівня
   manage: Управління збереженнями
   name: Збереження | Збереження
+  search: Пошук Зберігає
+  selected: місцевий архів
   shared: Екземпляр використовує спільну папку збереження
   showDirectory: Показати каталог збереження
+  unselected: спільний архів
+  useCurrent: Використовуйте поточний світ
+saves: {}
 screenshots:
   empty: У вас немає скріншотів
   goto: Відкрити папку
@@ -1094,8 +1129,11 @@ server:
   host: Хост
   hostHint: Хост (з портом) сервера
   ipAddress: IP-адрес
+  maxPlayers: Максимальна кількість гравців
   motd: Опис сервера
   name: Сервер | Сервера
+  nogui: Немає графічного інтерфейсу сервера
+  onlineMode: Онлайн режим
   ping: Пінг
   pings: Пінги
   players: Гравці

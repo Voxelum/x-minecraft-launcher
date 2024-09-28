@@ -98,6 +98,7 @@ browseApp:
   delete: Borrar
   launch: Iniciar y configurar como predeterminado
 cancel: Cancelar
+color: Color
 confirm: Comenzar
 copyClipboard:
   success: Copiar al portapapeles
@@ -232,6 +233,11 @@ diagnosis:
     name: Falta el archivo de índice de activos de {version}.
 disable: Desactivar
 downloadUpdate: Descarga de la actualización
+env:
+  select:
+    all: Seleccionar todo
+    fit: Seleccionar Ajustar
+    none: Seleccionar Ninguno
 errors:
   DatabaseNotOpened: |-
     ¡La base de datos no está abierta! 
@@ -239,6 +245,10 @@ errors:
     Seleccione un directorio de datos al que pueda acceder el iniciador. 
     Puede intentar restablecer la raíz de datos en la página de configuración.
   NotFoundError: 404 No encontrado
+eula:
+  body: >-
+    Al marcar el botón de la casilla de verificación, estás indicando que estás
+    de acuerdo con la {eula} de Minecraft.
 fabricVersion:
   disable: Desactivar Fabric
   empty: No hay versión de Fabric para Minecraft {version}
@@ -289,7 +299,7 @@ importModpack:
 importResource: Importar Recurso
 install: Instalar
 installAssets:
-  asset: Instalar Recurso {hash}
+  asset: Instalar {count} recursos
   assetIndex: Verificar Archivos de Índice de Recursos
   name: Instalar Archivos de Recursos
 installAuthlibInjector: Instalar authlib-injector
@@ -339,6 +349,7 @@ installVersion:
   name: Instalar Cliente de Minecraft {version}
 instance:
   addServer: Agregar Servidor
+  changeIcon: Cambiar el ícono
   current: Instancia Actual
   delete: Eliminar juego
   deleteHint: >-
@@ -352,10 +363,12 @@ instance:
     configuración remoto.
   gameVersion: Versión del Juego
   icon: Icono de Perfil
+  iconHint: El icono podría ser un archivo o un enlace URL de Internet.
   iconUrl: URL del Icono
   includeVersion: Incluir Versión | Incluir Versiones
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
+  launchServer: Iniciar el servidor localhost
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
@@ -364,6 +377,8 @@ instance:
   openCrashReportFolder: Abrir Carpeta de Informes de Errores
   openLogFolder: Abrir Carpeta de Registro
   playtime: Tiempo de Juego
+  prependCommand: Anteponer comando
+  prependCommandHint: Esto antepondrá este comando antes de todos los comandos de inicio.
   requireName: El nombre es obligatorio
   showInstance: Mostrar carpeta del juego
   versionHint: La versión de Minecraft de este juego
@@ -411,6 +426,7 @@ instances:
   addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
   addTemplate: Crear desde plantilla
   choose: Selecciona un juego
+  folderSetting: Configuración de carpeta
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador
   loadingFiles: Cargando archivos Modpack
@@ -421,6 +437,8 @@ items:
 java:
   allocatedLong: Usar Java predeterminada del sistema
   allocatedShort: Asignación Automática
+launch:
+  killServer: Matar el servidor localhost
 launchBlocked:
   launchSpawnProcessFailed:
     description: >-
@@ -484,11 +502,19 @@ mod:
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
 modInstall:
+  archived: >-
+    {name} ha sido archivado. 
+
+    {name} no recibirá más actualizaciones a menos que el autor decida
+    desarchivar el proyecto.
+  checkDependencies: Verificar dependencias
   checkUpgrade: Verificar Actualizaciones de Mods
+  checkedDependencies: Dependencias comprobadas
   checkedUpgrade: Actualizaciones verificadas
   currentVersion: Versión Seleccionada
   dependencyHint: 'Otra versión instalada: {version}'
   install: Instalar
+  installDependencies: Instalar dependencias faltantes
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
@@ -686,12 +712,15 @@ modrinth:
   versions: Versiones
   wikiUrl: Wiki
 multiplayer:
+  exposedPortDescription: El puerto que expuso a otros pares
+  exposedPorts: Puertos reenviados
   kernel: Núcleo P2P
   kernelDescription: >-
     Utilice WebRTC nativo o canal de datos de nodo. 
 
     Cambie esto solo cuando su conexión p2p en algún momento bloquee la ventana
     del iniciador.
+  otherExposedPortDescription: El prólogo del puerto de {usuario}
   sharingNotificationBody: >-
     Puede descargar o crear una instancia desde la configuración compartida de
     {nombre}.
@@ -772,6 +801,7 @@ resourcepack:
   showInCurseforge: Mostrar {name} en CurseForge
   unselected: Paquetes de Recursos No Seleccionados
 save:
+  cheat: Infiel
   copy:
     cancel: Cancelar Copia
     confirm: Iniciar Copia
@@ -788,6 +818,7 @@ save:
     fromProfile: Desde Otras Instancias
     fromResource: Desde Recursos Administrados
     title: Importar Partida desde Fuente Administrada
+  createNew: Crear nuevo mundo
   createdWorlds: Tienes {count} mundos
   deleteHint: >-
     Esta operación no se puede revertir. Perderás estos datos de partida
@@ -798,14 +829,21 @@ save:
   export: Exportar Partida
   exportMessage: Exportar la Partida como zip
   exportTitle: Exportar la Partida
+  gameMode: modo de juego
   import: Importar Partida
   importMessage: Importar una Partida desde un archivo zip
   importTitle: Importar una Partida
   independent: La instancia utiliza una carpeta de guardado independiente
+  levelName: Nombre del nivel
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
+  search: Buscar guardados
+  selected: archivo local
   shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado
+  unselected: archivo compartido
+  useCurrent: Usar el mundo actual
+saves: {}
 screenshots:
   empty: No tienes capturas de pantalla
   goto: Abrir Carpeta
@@ -822,8 +860,11 @@ server:
   host: Anfitrión
   hostHint: El anfitrión (con puerto) del servidor
   ipAddress: Dirección IP
+  maxPlayers: Jugadores máximos
   motd: MOTD del Servidor
   name: Servidor | Servidores
+  nogui: Sin interfaz gráfica de usuario
+  onlineMode: Modo en línea
   ping: Ping
   pings: Pings
   players: Jugadores

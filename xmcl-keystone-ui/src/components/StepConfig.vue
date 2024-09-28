@@ -96,7 +96,7 @@ const onUpdate = ($event: any) => {
 
 provideFileNodes(computed(() => files.value.map(f => ({
   path: f.path,
-  name: basename(f.path),
+  name: basename(f.path, '/'),
   size: f.size ?? 0,
 })) ?? []))
 

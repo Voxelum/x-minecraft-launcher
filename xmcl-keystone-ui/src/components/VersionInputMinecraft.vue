@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import VersionInput, { VersionItem } from './VersionInput.vue'
 import { useMinecraftVersions } from '@/composables/version'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   value: string
@@ -25,7 +26,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    icon="http://launcher/icons/minecraft"
+    :icon="BuiltinImages.minecraft"
     title="Minecraft"
     url="https://minecraft.net"
     :is-clearable="false"

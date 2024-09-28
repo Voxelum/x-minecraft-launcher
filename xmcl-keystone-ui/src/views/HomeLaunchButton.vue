@@ -1,89 +1,99 @@
 <template>
-  <v-badge
-    left
-    color="primary"
-    bordered
-    overlap
-    :value="count !== 0"
-  >
-    <template #badge>
-      <span v-ripple>{{ count }}</span>
-    </template>
-    <v-menu
-      v-model="showMenu"
-      offset-y
-      transition="scroll-y-transition"
-      :top="inFoucsMode"
-      :bottom="!inFoucsMode"
+  <div class="flex flex-grow-0 gap-[3px]">
+    <v-badge
+      left
+      color="primary"
+      bordered
+      overlap
+      :value="count !== 0"
     >
-      <template #activator="{ attrs }">
+      <template #badge>
+        <span v-ripple>{{ count }}</span>
+      </template>
+      <v-btn
+        id="launch-button"
+        :disabled="isValidating"
+        :color="color"
+        :x-large="!compact"
+        :large="compact"
+        class="px-12 text-lg transition-all btn-left"
+        @click="onClick()"
+        @mouseenter="emit('mouseenter')"
+        @mouseleave="emit('mouseleave')"
+      >
+        <v-icon
+          v-if="leftIcon"
+          class="-ml-1 pr-2 text-2xl"
+        >
+          {{ leftIcon }}
+        </v-icon>
+        {{ text }}
+        <v-icon
+          v-if="!loading && icon"
+          right
+          class="pl-3 text-2xl"
+        >
+          {{ icon }}
+        </v-icon>
+        <v-progress-circular
+          v-else-if="loading"
+          class="v-icon--right"
+          indeterminate
+          :size="20"
+          :width="2"
+        />
+      </v-btn>
+    </v-badge>
+    <v-menu
+      v-model="isShown"
+      offset-y
+      left
+      :top="isFocus"
+      transition="scroll-y-transition"
+    >
+      <template #activator="{ on }">
         <v-btn
-          id="launch-button"
+          :disabled="isValidating"
+          class="min-w-unset! max-w-5! px-0! btn-right"
           :color="color"
           :x-large="!compact"
           :large="compact"
-          v-bind="attrs"
-          class="px-12 text-lg transition-all"
-          @mouseenter="onMouseEnter"
-          @mouseleave="onMouseLeave"
-          @click="onClick()"
+          v-on="on"
         >
-          <v-icon
-            v-if="leftIcon"
-            class="-ml-1 pr-2 text-2xl"
-          >
-            {{ leftIcon }}
+          <v-icon>
+            arrow_drop_down
           </v-icon>
-          {{ text }}
-          <v-icon
-            v-if="!loading && icon"
-            right
-            class="pl-3 text-2xl"
-          >
-            {{ icon }}
-          </v-icon>
-          <v-progress-circular
-            v-else-if="loading"
-            class="v-icon--right"
-            indeterminate
-            :size="20"
-            :width="2"
-          />
         </v-btn>
       </template>
-      <HomeLaunchButtonMenu
-        :items="menuItems"
-        @mouseenter="onMouseEnter"
-        @mouseleave="onMouseLeave"
-      />
+      <HomeLaunchButtonMenuList />
     </v-menu>
-  </v-badge>
+  </div>
 </template>
 <script lang="ts" setup>
-import { useLaunchButton } from '@/composables/launchButton'
+import { kLaunchButton } from '@/composables/launchButton'
+import { injection } from '@/util/inject'
+import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
+import { kInstances } from '@/composables/instances'
 import { useInFocusMode } from '@/composables/uiLayout'
-import HomeLaunchButtonMenu from './HomeLaunchButtonMenu.vue'
 
 defineProps<{ compact?: boolean }>()
 
-const inFoucsMode = useInFocusMode()
+const isFocus = useInFocusMode()
+const emit = defineEmits(['mouseenter', 'mouseleave'])
+const { isValidating } = injection(kInstances)
 
-const { onClick, color, icon, text, loading, leftIcon, count, menuItems } = useLaunchButton()
+const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
 
-let handle: any
-const showMenu = ref(false)
-
-function onMouseEnter() {
-  if (handle) clearTimeout(handle)
-  if (loading.value) return
-  showMenu.value = true
-}
-
-function onMouseLeave() {
-  if (handle) clearTimeout(handle)
-  handle = setTimeout(() => {
-    showMenu.value = false
-  }, 100)
-}
-
+const isShown = ref(false)
 </script>
+
+<style scoped>
+.btn-right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-left {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+</style>

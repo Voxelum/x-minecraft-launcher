@@ -55,6 +55,7 @@ jobs:
         NODE_OPTIONS: --max-old-space-size=32768
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+        PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
     - name: Upload Source Maps
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
@@ -63,11 +64,36 @@ jobs:
         path: |
           xmcl-electron-app/dist/*.js.map
     - name: Upload Build
+      id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ runner.os }}
         path: |
           xmcl-electron-app/build/output/
+    - name: Sign Build
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+      uses: signpath/github-action-submit-signing-request@v0.4
+      with:
+        api-token: ${{ secrets.CODE_SIGN_TOKEN }}
+        organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
+        project-slug: x-minecraft-launcher
+        signing-policy-slug: release-signing
+        github-artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
+        artifact-configuration-slug: build
+        wait-for-completion: true
+        output-artifact-directory: xmcl-electron-app/build/output/
+    - name: Update Signed Sha256
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+      run: |
+        pnpm postsign
+    - name: Upload Signed Build
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-${{ runner.os }}
+        path: |
+          xmcl-electron-app/build/output/
+        overwrite: true
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4

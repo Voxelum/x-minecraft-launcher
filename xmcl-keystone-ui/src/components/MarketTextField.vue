@@ -26,17 +26,18 @@
       >
         {{ gameVersion }}
       </v-chip>
-      <v-btn
-        v-if="clearable || _keyword"
-        text
-        icon
-        class="max-h-[24px] max-w-[24px]"
-        @click="clear"
+      <v-chip
+        v-if="category"
+        label
+        outlined
+        small
+        close
+        @click:close="emit('clear-category')"
       >
-        <v-icon>
-          clear
+        <v-icon small>
+          filter_alt
         </v-icon>
-      </v-btn>
+      </v-chip>
     </template>
   </v-text-field>
 </template>
@@ -44,12 +45,14 @@
 <script lang=ts setup>
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useEventListener } from '@vueuse/core'
+import { nextTick } from 'vue'
 
 const props = defineProps<{
   value?: string
   clearable?: boolean
   placeholder?: string
   gameVersion?: string
+  category?: boolean
 }>()
 
 const _keyword = computed({
@@ -62,6 +65,7 @@ const emit = defineEmits<{
   (event: 'click', e: MouseEvent): void
   (event: 'clear'): void
   (event: 'clear-version'): void
+  (event: 'clear-category'): void
 }>()
 
 const search = (v: string | undefined) => {
@@ -77,12 +81,31 @@ const clear = () => {
 
 const searchTextField = ref(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))
+const transitioning = inject('transitioning', ref(false))
+let pendingFocus = false
+watch(transitioning, (v) => {
+  if (!v && pendingFocus) {
+    if (!searchTextFieldFocused.value) {
+      searchTextField.value?.focus()
+      pendingFocus = false
+    }
+  }
+}, { immediate: true })
 useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
 defineExpose({
   focus() {
     if (!searchTextFieldFocused.value) {
-      searchTextField.value?.focus()
+      if (!transitioning.value) {
+        searchTextField.value?.focus()
+      } else {
+        pendingFocus = true
+      }
     }
   },
+})
+onMounted(() => {
+  if (!searchTextFieldFocused.value) {
+    pendingFocus = true
+  }
 })
 </script>

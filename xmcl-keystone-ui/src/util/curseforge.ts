@@ -1,5 +1,5 @@
-import { File, FileModLoaderType, FileRelationType } from '@xmcl/curseforge'
-import { RuntimeVersions } from '@xmcl/runtime-api'
+import { File, FileModLoaderType, FileRelationType, HashAlgo } from '@xmcl/curseforge'
+import { InstanceFile, RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
 import { ModLoaderFilter } from '@/composables/modSearch'
 
@@ -21,13 +21,31 @@ export function getCurseforgeFileGameVersions(file: File): string[] {
   return file.gameVersions.filter(v => Number.isInteger(Number(v[0])))
 }
 
-export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[]) {
+export function getModLoaderTypesForFile(file: File) {
+  const modLoaderTypes = new Set<FileModLoaderType>()
+  if (file.sortableGameVersions) {
+    for (const ver of file.sortableGameVersions) {
+      if (ver.gameVersionName === 'Forge') {
+        modLoaderTypes.add(FileModLoaderType.Forge)
+      } else if (ver.gameVersionName === 'Fabric') {
+        modLoaderTypes.add(FileModLoaderType.Fabric)
+      } else if (ver.gameVersionName === 'Quilt') {
+        modLoaderTypes.add(FileModLoaderType.Quilt)
+      } else if (ver.gameVersionName === 'LiteLoader') {
+        modLoaderTypes.add(FileModLoaderType.LiteLoader)
+      }
+    }
+  }
+  return modLoaderTypes
+}
+
+export function getCursforgeModLoadersFromString(loaderTypes: string[]) {
   const mapping = {
     [ModLoaderFilter.fabric]: FileModLoaderType.Fabric,
     [ModLoaderFilter.forge]: FileModLoaderType.Forge,
     [ModLoaderFilter.quilt]: FileModLoaderType.Quilt,
     [ModLoaderFilter.neoforge]: FileModLoaderType.NeoForge,
-  }
+  } as Record<string, FileModLoaderType>
   return loaderTypes.map(loaderType => mapping[loaderType])
 }
 
@@ -46,4 +64,18 @@ export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, 
             ? FileModLoaderType.NeoForge
             : FileModLoaderType.Any
   return modLoaderType
+}
+
+export function getInstanceFileFromCurseforgeFile(file: File): InstanceFile {
+  return {
+    path: `mods/${(file.fileName)}`,
+    hashes: {
+      sha1: file.hashes.find(f => f.algo === HashAlgo.Sha1)?.value as string,
+    },
+    size: file.fileLength,
+    curseforge: {
+      projectId: file.modId,
+      fileId: file.id,
+    },
+  }
 }

@@ -51,6 +51,23 @@
     <v-list-item
       style="margin-top: 5px"
     >
+      <v-list-item-content class="max-w-70 mr-4">
+        <v-list-item-title>
+          {{ t("instance.prependCommand") }}
+        </v-list-item-title>
+        <v-list-item-subtitle
+          v-shared-tooltip="_ => t('instance.prependCommandHint')"
+        >
+          <v-text-field
+            v-model="prependCommand"
+            class="m-1 mt-2"
+            hide-details
+            required
+            solo
+            :placeholder="t('instance.prependCommandHint')"
+          />
+        </v-list-item-subtitle>
+      </v-list-item-content>
       <v-list-item-content>
         <v-list-item-title>
           {{ t("instance.vmOptions") }}
@@ -94,6 +111,7 @@ import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
 import { useEventListener } from '@vueuse/core'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { t } = useI18n()
 const {
@@ -107,6 +125,7 @@ const {
   globalShowLog,
   globalDisableAuthlibInjector,
   globalDisableElyByAuthlib,
+  globalPrependCommand,
   setGlobalSettings,
 } = useGlobalSettings()
 
@@ -114,6 +133,7 @@ const assignMemory = ref(globalAssignMemory.value)
 const minMem = ref(globalMinMemory.value)
 const maxMem = ref(globalMaxMemory.value)
 const vmOptions = ref(globalVmOptions.value.join(' '))
+const prependCommand = ref(globalPrependCommand.value)
 const mcOptions = ref(globalMcOptions.value.join(' '))
 const fastLaunch = ref(globalFastLaunch.value)
 const hideLauncher = ref(globalHideLauncher.value)
@@ -132,6 +152,7 @@ onMounted(() => {
   showLog.value = globalShowLog.value
   disableAuthlibInjector.value = globalDisableAuthlibInjector.value
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
+  prependCommand.value = globalPrependCommand.value
 })
 
 const save = () => {
@@ -146,6 +167,7 @@ const save = () => {
     globalShowLog: showLog.value,
     globalDisableAuthlibInjector: disableAuthlibInjector.value,
     globalDisableElyByAuthlib: disableElyByAuthlib.value,
+    globalPrependCommand: prependCommand.value,
   })
 }
 

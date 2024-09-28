@@ -7,28 +7,20 @@
   >
     <template #activator="{ on: tooltip }">
       <div class="relative">
-        <div
-          class="absolute left-0 max-h-1 min-h-1 min-w-full px-2"
-        >
-          <div
-            class="transition-300 max-h-1 min-h-1 min-w-full rounded transition-colors"
-            :class="{ 'bg-yellow-400': dragover > 0, 'bg-transparent': dragover > 0 }"
-          >
-            {{ ' ' }}
-          </div>
-        </div>
+        <AppSideBarGroupItemIndicator :state="overState" />
         <v-list-item
           v-context-menu="getItems"
           push
           link
           draggable
           class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-          :class="{'v-list-item--active': path === instance.path}"
+          :class="{ 'v-list-item--active': path === selectedInstance }"
           v-on="tooltip"
           @click="navigate"
           @dragover.prevent
           @dragstart="onDragStart"
           @dragend="onDragEnd"
+          @dragover="onDragOver"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
           @drop="onDrop"
@@ -47,84 +39,25 @@
               @dragleave="onDragLeave"
             />
             <v-skeleton-loader
+              v-else
               type="avatar"
             />
           </v-list-item-avatar>
-          <v-list-item-title>{{ instance.name }}</v-list-item-title>
+          <v-list-item-title>{{ name }}</v-list-item-title>
         </v-list-item>
       </div>
     </template>
-    {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
+    {{ name }}
     <div>
-      <v-avatar
-        size="28"
-      >
-        <img
-          :src="'http://launcher/icons/minecraft'"
-        >
-      </v-avatar>
-      {{ instance.runtime.minecraft }}
-
-      <span v-if="instance.runtime.forge">
+      <template v-for="r of runtimes">
         <v-avatar
+          :key="r.icon + 'icon'"
           size="28"
         >
-          <img
-            :src="'http://launcher/icons/forge'"
-          >
+          <img :src="r.icon">
         </v-avatar>
-        {{ instance.runtime.forge }}
-      </span>
-      <span v-if="instance.runtime.labyMod">
-        <v-avatar
-          size="28"
-        >
-          <img
-            :src="'http://launcher/icons/labyMod'"
-          >
-        </v-avatar>
-        {{ instance.runtime.labyMod }}
-      </span>
-      <span v-if="instance.runtime.neoForged">
-        <v-avatar
-          size="28"
-        >
-          <img
-            :src="'http://launcher/icons/neoForged'"
-          >
-        </v-avatar>
-        {{ instance.runtime.neoForged }}
-      </span>
-      <span v-if="instance.runtime.fabricLoader">
-        <v-avatar
-          size="28"
-        >
-          <img
-            :src="'http://launcher/icons/fabric'"
-          >
-        </v-avatar>
-        {{ instance.runtime.fabricLoader }}
-      </span>
-      <span v-if="instance.runtime.quiltLoader">
-        <v-avatar
-          size="28"
-        >
-          <img
-            :src="'http://launcher/icons/quilt'"
-          >
-        </v-avatar>
-        {{ instance.runtime.quiltLoader }}
-      </span>
-      <span v-if="instance.runtime.optifine">
-        <v-avatar
-          size="28"
-        >
-          <img
-            :src="'http://launcher/icons/optifine'"
-          >
-        </v-avatar>
-        {{ instance.runtime.optifine }}
-      </span>
+        {{ r.version }}
+      </template>
     </div>
   </v-tooltip>
 </template>
@@ -133,38 +66,66 @@ import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
-import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
+import { BuiltinImages } from '../constant'
+import { kInstances } from '@/composables/instances'
+import AppSideBarGroupItemIndicator from './AppSideBarGroupItemIndicator.vue'
+import { useGroupDragDropState } from '@/composables/instanceGroup'
 
-const props = defineProps<{ instance: Instance }>()
-const emit = defineEmits(['drop', 'drop-save'])
+const props = defineProps<{
+  path: string
+  inside?: boolean
+}>()
+const emit = defineEmits(['arrange', 'drop-save', 'group'])
+
+const { instances, selectedInstance } = injection(kInstances)
+const instance = computed(() => instances.value.find((i) => i.path === props.path))
+const name = computed(() => {
+  if (!instance.value) return ''
+  if (instance.value.name) return instance.value.name
+  if (instance.value.runtime.minecraft) return `Minecraft ${instance.value.runtime.minecraft}`
+  return ''
+})
+const runtimes = computed(() => {
+  const inst = instance.value
+  if (!inst) return []
+  const iconAndVersion = [] as { icon: string; version: string }[]
+  if (inst.runtime.minecraft) iconAndVersion.push({ icon: BuiltinImages.minecraft, version: inst.runtime.minecraft })
+  if (inst.runtime.forge) iconAndVersion.push({ icon: BuiltinImages.forge, version: inst.runtime.forge })
+  if (inst.runtime.labyMod) iconAndVersion.push({ icon: BuiltinImages.labyMod, version: inst.runtime.labyMod })
+  if (inst.runtime.neoForged) iconAndVersion.push({ icon: BuiltinImages.neoForged, version: inst.runtime.neoForged })
+  if (inst.runtime.fabricLoader) iconAndVersion.push({ icon: BuiltinImages.fabric, version: inst.runtime.fabricLoader })
+  if (inst.runtime.quiltLoader) iconAndVersion.push({ icon: BuiltinImages.quilt, version: inst.runtime.quiltLoader })
+  if (inst.runtime.optifine) iconAndVersion.push({ icon: BuiltinImages.optifine, version: inst.runtime.optifine })
+  return iconAndVersion
+})
 
 const router = useRouter()
-const { t } = useI18n()
 
-const { select, path } = injection(kInstance)
-const { status } = useInstanceServerStatus(computed(() => props.instance))
+const { select } = injection(kInstance)
 
-const dragging = ref(false)
-const dragover = ref(0)
+const { status } = useInstanceServerStatus(instance)
+const favicon = computed(() => {
+  const inst = instance.value
+  if (!inst) return ''
+  return getInstanceIcon(inst, inst.server ? status.value : undefined)
+})
 
-const favicon = computed(() => getInstanceIcon(props.instance, props.instance.server ? status.value : undefined))
-
-const getItems = useInstanceContextMenuItems(computed(() => props.instance))
+const getItems = useInstanceContextMenuItems(instance)
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
     router.push('/').then(() => {
-      select(props.instance.path)
+      select(props.path)
     })
   } else {
-    select(props.instance.path)
+    select(props.path)
   }
 }
 
 const onDragStart = (e: DragEvent) => {
-  const img = new Image(64, 64)
+  const img = new Image(54, 54)
   img.style.maxHeight = '54px'
   img.style.maxWidth = '54px'
   img.src = favicon.value
@@ -174,38 +135,13 @@ const onDragStart = (e: DragEvent) => {
   img.onload = () => {
     img.height = 54
     img.width = 54
+    img.style.maxHeight = '54px'
+    img.style.maxWidth = '54px'
   }
-  e.dataTransfer!.setData('instance', props.instance.path)
+  e.dataTransfer!.setData('instance', props.path)
   dragging.value = true
 }
 
-const onDragEnd = (e: DragEvent) => {
-  dragging.value = false
-}
-
-const onDragEnter = (e: DragEvent) => {
-  if (e.dataTransfer?.items[0].type === 'instance') {
-    dragover.value += 1
-  }
-}
-
-const onDragLeave = () => {
-  dragover.value += -1
-  if (dragover.value < 0) {
-    dragover.value = 0
-  }
-}
-
-const onDrop = (e: DragEvent) => {
-  const targetPath = e.dataTransfer!.getData('instance')
-  const savePath = e.dataTransfer?.getData('save')
-  if (targetPath) {
-    emit('drop', targetPath)
-  } else if (savePath) {
-    emit('drop-save', props.instance.path, savePath)
-  }
-  dragging.value = false
-  dragover.value = 0
-}
+const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit, computed(() => props.inside))
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-6">
+  <div class="base-setting xl:px-20 2xl:px-40">
     <BaseSettingGeneral />
     <v-divider />
     <BaseSettingSync />
@@ -106,13 +106,19 @@ useTutorial(computed(() => [{
 </script>
 
 <style scoped=true>
-/* .flex {
-  padding: 6px 8px !important
+/* .base-setting {
+  max-width: 1300px;
+  width: 1220px;
+  margin: auto
+}
+
+@media screen and (max-width: 1300px) {
+  .base-setting {
+    width: unset;
+    margin: 0 24px;
+  }
 } */
 
-/* .v-btn {
-  margin: 0
-} */
 </style>
 <style>
 .local-version .v-select__selection--comma {

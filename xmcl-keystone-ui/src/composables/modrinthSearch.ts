@@ -1,6 +1,6 @@
 import { ProjectEntry } from '@/util/search'
 import { Ref } from 'vue'
-import { useSearchPattern } from './modSearch'
+import { useSearchPattern } from './useSearchPattern'
 import { useModrinthSearchFunc } from './modrinth'
 
 export function useModrinthSearch<T extends ProjectEntry<any>>(

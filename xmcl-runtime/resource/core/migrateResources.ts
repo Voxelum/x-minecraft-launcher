@@ -6,6 +6,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
   getMigrations(): Promise<Record<string, Migration>> {
     return Promise.resolve({
       1: { up, down },
+      2: { up: up2, down: down2 },
     })
   }
 }
@@ -20,6 +21,20 @@ export function migrate(db: Kysely<Database>) {
     provider: new ResourceMigrateProvider(),
   })
   return migrator.migrateToLatest()
+}
+
+async function up2(db: Kysely<Database>): Promise<void> {
+  await db.schema
+    .alterTable('resources')
+    .addColumn(ResourceType.MMCModpack, 'json')
+    .execute()
+}
+
+async function down2(db: Kysely<Database>): Promise<void> {
+  await db.schema
+    .alterTable('resources')
+    .dropColumn(ResourceType.MMCModpack)
+    .execute()
 }
 
 async function up(db: Kysely<Database>): Promise<void> {

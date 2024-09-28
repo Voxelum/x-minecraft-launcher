@@ -4,14 +4,16 @@
       {{ t('modrinth.externalResources') }}
     </v-subheader>
     <div class="my-2 flex w-full flex-1 flex-grow-0 flex-wrap gap-4 px-4">
-      <a
+      <span
         v-for="link of project.links"
         :key="link.url"
-        :href="link.url"
-        class="flex flex-grow-0 items-center gap-1"
+        class="flex flex-grow-0 items-center"
       >
-        <v-icon>open_in_new</v-icon> {{ link.name }}
-      </a>
+        <v-icon left>open_in_new</v-icon>
+        <a :href="link.url">
+          {{ link.name }}
+        </a>
+      </span>
     </div>
   </div>
 </template>

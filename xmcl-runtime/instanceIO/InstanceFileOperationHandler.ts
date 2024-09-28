@@ -1,8 +1,7 @@
-import { DownloadTask } from '@xmcl/installer'
+import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { InstanceFile, InstanceFileWithOperation, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { rename, unlink } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
@@ -10,15 +9,17 @@ import { kPeerFacade } from '~/peer'
 import { ResourceService, ResourceWorker } from '~/resource'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
-import { LinkFilesTask } from './LinkFilesTask'
+import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
+import { InstanceFileOperationTask } from './InstanceFileOperationTask'
 import { UnzipFileTask } from './UnzipFileTask'
 
 export class InstanceFileOperationHandler {
-  #tasks: Array<Task<any>> = []
   #resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
   #copyOrLinkQueue: Array<{ file: InstanceFile; destination: string }> = []
   #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
   #resourceLinkQueue: Array<{ file: InstanceFile; destination: string; resource: Resource }> = []
+  #filesQueue: Array<{ file: InstanceFile; destination: string }> = []
+  #httpsQueue: Array<{ file: InstanceFile; options: DownloadOptions }> = []
 
   /**
    * Finished file operations
@@ -42,16 +43,18 @@ export class InstanceFileOperationHandler {
     }
 
     if (file.operation === 'remove') {
-      const actualSha1 = await this.worker.checksum(destination, 'sha1').catch(() => undefined)
-      if (!!sha1 && actualSha1 === sha1) {
-        await unlink(destination).catch(() => undefined)
-      }
-      // skip same file
+      this.#filesQueue.push({
+        file,
+        destination,
+      })
       return
     }
 
     if (file.operation === 'backup-remove') {
-      await rename(destination, destination + '.backup').catch(() => {})
+      this.#filesQueue.push({
+        file,
+        destination,
+      })
       return
     }
 
@@ -77,18 +80,11 @@ export class InstanceFileOperationHandler {
       this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls.filter(u => u.startsWith('http')) })
     }
 
-    const task = await this.#getFileTask(file, destination, metadata, pending, sha1)
-    if (task) {
-      task.setName('file', { file: file.path })
-      this.#tasks.push(task.map((v) => {
-        this.finished.add(file)
-        return v
-      }))
-    }
+    await this.#dispatchFileTask(file, destination, metadata, pending, sha1)
 
     if (file.operation === 'backup-add') {
       // backup legacy file
-      await rename(destination, destination + '.backup').catch(() => undefined)
+      this.#filesQueue.push({ file, destination })
     }
   }
 
@@ -99,13 +95,17 @@ export class InstanceFileOperationHandler {
     for (const f of file) {
       await this.#handleFile(f)
     }
+    const tasks = [] as Task[]
+    if (this.#httpsQueue.length > 0) {
+      tasks.unshift(await this.#getDownloadTask())
+    }
     if (this.#copyOrLinkQueue.length > 0 || this.#resourceLinkQueue.length > 0) {
-      this.#tasks.unshift(await this.#getCopyOrLinkTask())
+      tasks.unshift(await this.#getFileOperationTask())
     }
     if (this.#unzipQueue.length > 0) {
-      this.#tasks.unshift(await this.#getUnzipTask())
+      tasks.unshift(await this.#getUnzipTask())
     }
-    return this.#tasks
+    return tasks
   }
 
   async postprocess(client: ModrinthV2Client) {
@@ -167,39 +167,38 @@ export class InstanceFileOperationHandler {
     }
   }
 
-  async #getHttpTask(file: InstanceFile, destination: string, pending?: string, sha1?: string) {
+  async #handleHttp(file: InstanceFile, destination: string, pending?: string, sha1?: string) {
     const urls = file.downloads!.filter(u => u.startsWith('http'))
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    if (urls.length > 0) {
-      // Prefer HTTP download than peer download
-      return new DownloadTask({
-        ...downloadOptions,
-        url: urls,
-        destination,
-        pendingFile: pending,
-        validator: sha1
-          ? {
-            hash: sha1,
-            algorithm: 'sha1',
-          }
-          : undefined,
-      })
-    }
-  }
-
-  async #getPeerTask(file: InstanceFile, destination: string, sha1?: string) {
     const peerUrl = file.downloads!.find(u => u.startsWith('peer://'))
+
     if (peerUrl) {
       if (this.app.registry.has(kPeerFacade)) {
         const peerService = await this.app.registry.get(kPeerFacade)
-        // Use peer download if none of above existed
-        return peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
+        const url = peerService.getHttpDownloadUrl(peerUrl)
+        urls.push(url)
       }
     }
-  }
 
-  async #getUnzipTask() {
-    return new UnzipFileTask(this.#unzipQueue)
+    if (urls.length > 0) {
+      // Prefer HTTP download than peer download
+      this.#httpsQueue.push({
+        options: {
+          ...downloadOptions,
+          url: urls,
+          destination,
+          pendingFile: pending,
+          validator: sha1
+            ? {
+              hash: sha1,
+              algorithm: 'sha1',
+            }
+            : undefined,
+        },
+        file,
+      })
+      return true
+    }
   }
 
   async #handleLinkResource(file: InstanceFile, destination: string, metadata: ResourceMetadata, sha1: string) {
@@ -225,10 +224,6 @@ export class InstanceFileOperationHandler {
     }
   }
 
-  async #getCopyOrLinkTask() {
-    return new LinkFilesTask(this.#copyOrLinkQueue, this.#resourceLinkQueue, this.app.platform)
-  }
-
   async #handleCopyOrLink(file: InstanceFile, destination: string) {
     if (file.downloads) {
       if (file.downloads[0].startsWith('file://')) {
@@ -238,7 +233,7 @@ export class InstanceFileOperationHandler {
     }
   }
 
-  async #getFileTask(file: InstanceFile, destination: string, metadata: ResourceMetadata, pending: string | undefined, sha1: string) {
+  async #dispatchFileTask(file: InstanceFile, destination: string, metadata: ResourceMetadata, pending: string | undefined, sha1: string) {
     if (await this.#handleCopyOrLink(file, destination)) return
 
     if (await this.#handleLinkResource(file, destination, metadata, sha1)) return
@@ -249,12 +244,27 @@ export class InstanceFileOperationHandler {
 
     if (await this.#handleUnzip(file, destination)) return
 
-    const httpTask = await this.#getHttpTask(file, destination, pending, sha1)
-    if (httpTask) return httpTask
-
-    const peerTask = await this.#getPeerTask(file, destination, sha1)
-    if (peerTask) return peerTask
+    if (await this.#handleHttp(file, destination, pending, sha1)) return
 
     throw new AnyError('DownloadFileError', `Cannot resolve file! ${file.path}`)
+  }
+
+  async #getFileOperationTask() {
+    return new InstanceFileOperationTask(
+      this.#copyOrLinkQueue,
+      this.#resourceLinkQueue,
+      this.#filesQueue,
+      this.app.platform,
+      this.finished,
+    )
+  }
+
+  async #getUnzipTask() {
+    return new UnzipFileTask(this.#unzipQueue, this.finished, (input, file) => {
+    })
+  }
+
+  async #getDownloadTask() {
+    return new InstanceFileDownloadTask(this.#httpsQueue, this.finished)
   }
 }

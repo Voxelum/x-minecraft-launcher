@@ -10,7 +10,7 @@ import { SqliteWASMDialectConfig } from '~/sql'
 import { copyPassively, missing, readdirEnsured } from '~/util/fs'
 import { ResourceContext } from './core/ResourceContext'
 import { createResourceContext } from './core/createResourceContext'
-import { generateResource, getResourceAndMetadata } from './core/generateResource'
+import { generateResource, getResourceAndMetadata, pickMetadata } from './core/generateResource'
 import { getResourceEntry } from './core/getResourceEntry'
 import { loadResources } from './core/loadResources'
 import { migrateImageProtocolChange } from './core/migrateLegacy'
@@ -119,21 +119,21 @@ export class ResourceService extends AbstractService implements IResourceService
 
   async getResourceMetadataByUri(uri: string): Promise<ResourceMetadata[]> {
     const result = await getResourceAndMetadata(this.context, { uris: [uri] })
-    return result
+    return result.map(pickMetadata)
   }
 
   async getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined> {
     const metadata = await this.context.db.selectFrom('resources')
       .selectAll()
       .where('sha1', '=', sha1).executeTakeFirst()
-    return metadata
+    return metadata ? pickMetadata(metadata) : undefined
   }
 
   async getResourcesMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>> {
     const metadata = await this.context.db.selectFrom('resources')
       .selectAll()
       .where('sha1', 'in', sha1).execute()
-    return metadata
+    return metadata ? metadata.map(pickMetadata) : []
   }
 
   async getResourcesUnder({ fileNames, domain }: { fileNames: string[]; domain: ResourceDomain }): Promise<(Resource | undefined)[]> {
@@ -274,7 +274,7 @@ export class ResourceService extends AbstractService implements IResourceService
       const resolved = await getResourceEntry(path, this.context)
       if ('domainedPath' in resolved) {
         const metadata = await getResourceAndMetadata(this.context, { domainedPath: resolved.domainedPath })
-        return generateResource(this.getPath(), metadata[0], metadata[0], { path, domain, mtime: resolved.mtime })
+        return generateResource(this.getPath(), resolved, metadata[0], { path, domain, mtime: resolved.mtime })
       }
 
       try {
@@ -324,10 +324,10 @@ export class ResourceService extends AbstractService implements IResourceService
         }
 
         const storedPathOrErr = await tryPersistResource(resolved, this.getPath(), this.context).catch(e => e)
-        if (typeof storedPathOrErr === 'string') {
-          const resource = { ...resolved, storedPath: storedPathOrErr }
+        if (storedPathOrErr instanceof Array) {
+          const resource = { ...resolved, storedPath: storedPathOrErr[0] }
 
-          this.log(`Persist new resource ${resource.path} -> ${storedPathOrErr}`)
+          this.log(`Persist new resource ${resource.path} -> ${storedPathOrErr[0]} linked=${storedPathOrErr[1]}`)
 
           return resource
         }

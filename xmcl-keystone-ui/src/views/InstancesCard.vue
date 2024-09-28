@@ -148,7 +148,6 @@
   </v-card>
 </template>
 <script lang=ts setup>
-import unknownServer from '@/assets/unknown_server.png'
 import TextComponent from '@/components/TextComponent'
 import { useBusy } from '@/composables'
 import { kInstance } from '@/composables/instance'
@@ -162,6 +161,7 @@ import { vContextMenu } from '../directives/contextMenu'
 import { useDateString } from '@/composables/date'
 import { useContextMenu } from '@/composables/contextMenu'
 import { useVersionsWithIcon } from '@/composables/versionLocal'
+import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{ instance: Instance }>()
 const isBusy = useBusy(LockKey.instance(props.instance.path))
@@ -174,7 +174,7 @@ const versions = useVersionsWithIcon(computed(() => props.instance.runtime))
 const emit = defineEmits(['delete', 'click'])
 
 const image = computed(() => {
-  if (status.value.favicon && status.value.favicon !== unknownServer) {
+  if (status.value.favicon && status.value.favicon !== BuiltinImages.unknownServer) {
     return status.value.favicon
   }
   if (props.instance.icon) {
@@ -184,7 +184,7 @@ const image = computed(() => {
   if (banner) {
     return banner
   }
-  return unknownServer
+  return BuiltinImages.unknownServer
 })
 const description = computed(() => props.instance.description)
 const { open } = useContextMenu()

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import VersionInput, { VersionItem } from './VersionInput.vue'
 import { useFabricVersions } from '@/composables/version'
+import { BuiltinImages } from '../constant'
 
 const props = defineProps<{
   minecraft: string
@@ -28,7 +29,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
-    icon="http://launcher/icons/fabric"
+    :icon="BuiltinImages.fabric"
     title="Fabric"
     url="https://fabricmc.net/"
     :is-clearable="true"

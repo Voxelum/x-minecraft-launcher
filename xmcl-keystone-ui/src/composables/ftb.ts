@@ -2,12 +2,13 @@ import { clientFTB } from '@/util/clients'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
-import { CachedFTBModpackVersionManifest, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CreateInstanceOption, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { kInstanceFiles } from './instanceFiles'
-import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
+import { kInstanceVersion } from './instanceVersion'
+import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
@@ -101,10 +102,10 @@ export function useFeedTheBeastModpackInstall() {
   const { createInstance } = useService(InstanceServiceKey)
   const { all } = injection(kJavaContext)
   const { instances, selectedInstance } = injection(kInstances)
-  const { fix } = injection(kInstanceVersionDiagnose)
+  const { getVersionHeader, getResolvedVersion } = injection(kInstanceVersion)
   const { currentRoute, push } = useRouter()
-  const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-  const { install, mutate } = injection(kInstanceFiles)
+  const { getInstallInstruction, handleInstallInstruction, getInstanceLock } = injection(kInstanceVersionInstall)
+  const { installFiles } = injection(kInstanceFiles)
 
   async function installModpack(versionManifest: FTBModpackVersionManifest, man: FTBModpackManifest) {
     const cached = {
@@ -118,25 +119,30 @@ export function useFeedTheBeastModpackInstall() {
     const [config, files] = getFTBTemplateAndFile(cached, all.value)
 
     const name = generateDistinctName(config.name, instances.value.map(i => i.name))
-    const path = await createInstance({
+
+    const existed = getVersionHeader(config.runtime, '')
+    const options: CreateInstanceOption = {
       ...config,
       name,
-    })
+    }
+    if (existed) {
+      options.version = existed.id
+    }
+
+    const path = await createInstance(options)
     selectedInstance.value = path
     if (currentRoute.path !== '/') {
       push('/')
     }
-    await installInstanceFiles({
-      path,
-      files,
-    }).catch(() => {
-      if (selectedInstance.value === path) {
-        return install()
-      }
-    }).finally(() => {
-      mutate()
+
+    installFiles(path, files)
+
+    const lock = getInstanceLock(path)
+    lock.write(async () => {
+      const resolved = existed ? await getResolvedVersion(existed) : undefined
+      const instruction = await getInstallInstruction(path, config.runtime, options.version || '', resolved, all.value)
+      await handleInstallInstruction(instruction)
     })
-    await fix()
   }
   return {
     installModpack,

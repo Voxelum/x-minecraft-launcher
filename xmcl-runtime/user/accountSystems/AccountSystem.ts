@@ -1,4 +1,4 @@
-import { LoginOptions, UserProfile, GameProfileAndTexture, SkinPayload } from '@xmcl/runtime-api'
+import { LoginOptions, UserProfile, GameProfileAndTexture, SkinPayload, RefreshUserOptions } from '@xmcl/runtime-api'
 
 export interface UserAccountSystem {
   /**
@@ -8,7 +8,7 @@ export interface UserAccountSystem {
   /**
    * Refresh the user profile
    */
-  refresh(userProfile: UserProfile, signal: AbortSignal, slientOnly?: boolean, force?: boolean): Promise<UserProfile>
+  refresh(userProfile: UserProfile, signal: AbortSignal, options: RefreshUserOptions): Promise<UserProfile>
   /**
    * Set skin to the game profile. This should also update the game profile skin data and return the new user profile.
    */

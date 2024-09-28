@@ -33,6 +33,7 @@
     <AppGameExitDialog />
     <AppLaunchBlockedDialog />
     <AppImageDialog />
+    <AppLaunchServerDialog />
     <AppSharedTooltip />
   </v-app>
   <v-app
@@ -75,16 +76,20 @@ import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
+import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
+import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
+
+provide(kLaunchButton, useLaunchButton())
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial

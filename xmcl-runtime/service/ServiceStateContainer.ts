@@ -87,10 +87,8 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   defineAsyncOperation = <T extends (...args: any[]) => Promise<any>>(action: T): T => {
     return (async (...args: any[]) => {
       this.semaphore += 1
-      if (this.semaphore === 1) {
-        for (const [c] of this.#clients) {
-          c.send('state-validating', { id: this.id, validating: true })
-        }
+      for (const [c] of this.#clients) {
+        c.send('state-validating', { id: this.id, semaphore: this.semaphore })
       }
       try {
         return await action(...args)
@@ -98,7 +96,7 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
         this.semaphore -= 1
         if (this.semaphore === 0) {
           for (const [c] of this.#clients) {
-            c.send('state-validating', { id: this.id, validating: false })
+            c.send('state-validating', { id: this.id, semaphore: this.semaphore })
           }
         }
       }
@@ -109,8 +107,11 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     if (this.#revalidating) return this.#revalidating
     if (this.#revalidator) {
       this.#revalidating = this.#revalidator()
-      await this.#revalidating
-      this.#revalidating = undefined
+      try {
+        await this.#revalidating
+      } finally {
+        this.#revalidating = undefined
+      }
     }
   }
 

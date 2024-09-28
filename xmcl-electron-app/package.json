@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./index.js",
-    "version": "0.44.17",
+    "version": "0.46.1",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
@@ -15,10 +15,11 @@
     },
     "msstoreCliAppId": "9MXJWHXTP4B9",
     "scripts": {
-        "build": "cross-env NODE_ENV=development tsx build.ts",
-        "build:all": "cross-env NODE_ENV=production cross-env BUILD_TARGET=production tsx build.ts",
-        "build:dir": "cross-env NODE_ENV=development cross-env BUILD_TARGET=dir tsx build.ts",
+        "compile": "cross-env BUILD_TARGET=none tsx build.ts",
+        "build": "cross-env NODE_ENV=production tsx build.ts",
+        "build:all": "cross-env NODE_ENV=production cross-env BUILD_TARGET=all tsx build.ts",
         "postinstall": "tsx postinstall.ts",
+        "postsign": "tsx postsign.ts",
         "check": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project preload/tsconfig.json",
         "dev": "cross-env NODE_ENV=development tsx dev.ts",
         "lint": "eslint --ext .ts .",
@@ -71,6 +72,6 @@
         "tslib": "^2.5.0",
         "tsx": "^3.13.0",
         "typescript": "^5.2.2",
-        "undici": "6.14.0"
+        "undici": "6.19.4"
     }
 }

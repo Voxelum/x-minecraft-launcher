@@ -110,6 +110,14 @@ export interface InstanceOptionsService {
   getIrisShaderOptions(instancePath: string): Promise<Record<string, string>>
 
   getOculusShaderOptions(instancePath: string): Promise<Record<string, string>>
+
+  getEULA(instancePath: string): Promise<boolean>
+
+  setEULA(instancePath: string, value: boolean): Promise<void>
+
+  getServerProperties(instancePath: string): Promise<Record<string, string>>
+
+  setServerProperties(instancePath: string, properties: Record<string, string>): Promise<void>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

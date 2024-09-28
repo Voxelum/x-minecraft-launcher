@@ -49,7 +49,7 @@
 </template>
 
 <script lang=ts setup>
-import { kTheme, useTheme } from '@/composables/theme'
+import { kTheme } from '@/composables/theme'
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
@@ -70,11 +70,11 @@ const color = computed(() => {
     case TaskState.Cancelled:
     case TaskState.Running:
     case TaskState.Paused:
-      return 'white'
+      return darkTheme.value ? 'white' : ''
     case TaskState.Failed:
       return 'error'
     default:
-      return 'white'
+      return darkTheme.value ? 'white' : ''
   }
 })
 const indeterminate = computed(() => !props.item.total || props.item.total === -1)
