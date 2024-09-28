@@ -31,50 +31,41 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+公式サイト](https://xmcl.app)にアクセスしてアプリをダウンロードしてください！
 
-If you have winget, you can use winget to install
+wingetをお持ちの方は、wingetを使ってインストールできます
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.de.md)</kbd>
-<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
-<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](docs/README.jp.md)</kbd>
-<kbd>[<img title="China" alt="China" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAARwAAACxCAMAAAAh3/JWAAAADFBMVEX////cFDzup6/bAC47xqeuAAAA0UlEQVR4nO3QMQHAMAzAsLTjz3kI4qO3BEEzAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPLms5mM1h5WcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICfICXKCnCAnyAlygpwgJ8gJcoKcICf8zMtmEUHJBe8AAAAASUVORK5CYII=" width="22">](docs/README.pl.md)</kbd>
+## 特徴
 
 
+- 📥 **ダウンロードと自動完了**。Minecraft`、`Forge`、`Fabric`、`Quilt`、`OptiFine`、`JVM`を公式またはサードパーティのミラーからダウンロードできます。
+- ⚡️ **ダウンロードが速い**。HTTP/HTTPS エージェント経由でソケットを再利用し、ファイルを部分的に同時ダウンロードします。
+- 💻 **クロスプラットフォーム**。ランチャーはElectronをベースにしており、🗔 Windows 10/11、🗔 MacOS、🗔 Linuxをサポートしています。
+- 📚 **マルチインスタンス**。ユーザーは複数のインスタンスを作成し、異なるバージョン、MOD、起動設定を分離することができます。
+- すべてのリソースを管理**。ハード/シンボリック）リンクを使用してリソースをインスタンスにインストールし、ディスク使用量を最適に保ちます。あちこちにMODをコピーしない！ 😆 🔥 **すべてのリソースを管理する
+- 🔥 **CurseForge、Modrinth**のビルトインサポート。ランチャー内でリソースをダウンロードできます。
+- 📦 **CurseForgeとModrinthのMODパックのインポート/エクスポートに対応しています！
+- 複数のアカウントシステムをサポートします。Microsoft ログインと Mojang Yggdrasil API を内蔵しています。また、[ely.by](https://ely.by/) と [littleskin.cn](https://littleskin.cn)のサポートも組み込まれています。サードパーティの認証サーバを追加することもできます！
+- 🔗 **ユーザー間のピアツーピア接続**。物理的なLANが異なっていても、LAN経由でマルチプレイが可能です！
+- 🔑 **コードサインとモダンなパッケージング**。Windows では `appx` と `appinstaller` を使ってアプリをインストールできます。ブラウザからブロックメッセージを受け取ったり、SmartScreenのエラーを見たりすることはもうありません！😎
 
-## Features
+## 貢献する
 
+一般的な開発者は、[貢献](./CONTRIBUTING.md) を参照してください。
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
+国際化ローカライゼーション開発者は、[ローカライゼーション入門](https://docs.xmcl.app/en/guide/i18n) を参照してください。
 
-## Contribute
-
-For general developer, see [Contributing](./CONTRIBUTING.md)
-
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
-
-## LICENSE
+## ライセンス
 
 [MIT](LICENSE)
 
-## Sponsor (AFDIAN)
+## スポンサー (AFDIAN)
 
-<!-- afdian-start -->
+<!-- アフディアン スタート  -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
 <a title="爱发电用户_9d663: ￥390.00" href="https://afdian.net/u/9d663ec6fb6711ec9ace52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
 <a title="爱发电用户_19e29: ￥300.00" href="https://afdian.net/u/19e292c21a1d11ee929a52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/"> </a>
@@ -90,22 +81,22 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 <a title="DIO: ￥5.00" href="https://afdian.net/u/7ac297b4722211eab4a752540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
 <a title="爱发电用户_DJpu: ￥5.00" href="https://afdian.net/u/8c23a236cf7311ec9c3452540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
 </div>
-<!-- afdian-end -->
+<!-- アフディアンエンド -->
 
-## Credit
+## クレジット
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe)、AUR パッケージレジストリのメンテナンス。
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142)、winget のメンテナンス。
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), ウクライナ語の完全翻訳！
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanjaさん](https://github.com/vanja-san)、ロシア語提供！
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10)と[HoldYourWaffle](https://github.com/HoldYourWaffle)がランチャーのコアで助けてくれた。
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726)は、ランチャーのデザインに多大な貢献をしてくれました。
 
-Also, special thanks to
+また、以下の方々にも感謝します。
 
-[Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
+[Yricky](https://github.com/Yricky)、[Jin](https://github.com/Indexyz)、[LG](https://github.com/LasmGratel)、[Phoebe](https://github.com/PhoebezZ)、[Sumeng Wang](https://github.com/darkkingwsm)、[Luca](https://github.com/LucaIsGenius)、[Charles Tang](https://github.com/CharlesQT)
