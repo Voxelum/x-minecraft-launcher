@@ -72,7 +72,12 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 [MIT](LICENSE)
 
-## Sponsor (AFDIAN)
+## Sponsorship
+
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://www.netlify.com/) | Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/) |
+| :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+
+### Sponsor (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -93,6 +98,8 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 <!-- afdian-end -->
 
 ## Credit
+
+[BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
 
 [GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
 
