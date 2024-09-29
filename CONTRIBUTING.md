@@ -1,8 +1,8 @@
 
 ### Tech Stack & Some Background
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](contributing/CONTRIBUTING.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](contributing/CONTRIBUTING.ru.md)</kbd>
+<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](https://github.com/Voxelum/x-minecraft-launcher/blob/master/contributing/CONTRIBUTING.ua.md)</kbd>
+<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](https://github.com/Voxelum/x-minecraft-launcher/blob/master/contributing/CONTRIBUTING.ru.md)</kbd>
 
 Here we have a overview of the toolchain & runtime of this project
 
