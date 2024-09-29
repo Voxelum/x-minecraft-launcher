@@ -61,6 +61,13 @@ winget install CI010.XMinecraftLauncher
 
 [MIT](LICENSE)
 
+
+## 赞助
+
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://www.netlify.com/) | [SignPath.io](https://signpath.io/)提供的免费的 Windows 代码签名, 来自 [SignPath Foundation](https://signpath.org/) 颁发的凭证 |
+| :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
+
+
 ## 赞助（爱发电）
 
 <!-- afdian-start -->
