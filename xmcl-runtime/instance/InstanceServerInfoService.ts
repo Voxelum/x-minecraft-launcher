@@ -1,17 +1,39 @@
-import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState, getServerInfoKey } from '@xmcl/runtime-api'
+import { getServerInfoKey, InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
-import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
-import { exists } from '../util/fs'
+import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
+import { LauncherApp } from '../app/LauncherApp'
+import { exists, hardLinkFiles, isHardLinked, unHardLinkFiles } from '../util/fs'
 
 @ExposeServiceKey(InstanceServerInfoServiceKey)
 export class InstanceServerInfoService extends AbstractService implements IInstanceServerInfoService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
+  }
+
+  async isLinked(instancePath: string): Promise<boolean> {
+    const root = this.getPath('servers.dat')
+    const instanceDat = join(instancePath, 'servers.dat')
+
+    return isHardLinked(root, instanceDat)
+  }
+
+  link(instancePath: string): Promise<void> {
+    const root = this.getPath('servers.dat')
+    const instanceDat = join(instancePath, 'servers.dat')
+
+    return hardLinkFiles(root, instanceDat)
+  }
+
+  unlink(instancePath: string): Promise<void> {
+    const root = this.getPath('servers.dat')
+    const instanceDat = join(instancePath, 'servers.dat')
+
+    return unHardLinkFiles(root, instanceDat)
   }
 
   async watch(path: string) {

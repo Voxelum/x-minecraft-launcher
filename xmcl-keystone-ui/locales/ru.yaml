@@ -470,6 +470,10 @@ instance:
   lastPlayed: Последняя игра
   launchArguments: Предпросмотр аргументов запуска
   launchServer: Запустить локальный сервер
+  linkFileDesc: |-
+    Это перезапишет локальный {file} экземпляра глобальным {file}. 
+    Вы уверены, что соедините это?
+  linkFileTitle: Вы уверены, что хотите связать {file}?
   mcOptions: Опции Minecraft
   mcOptionsHint: Дополнительные аргументы запуска Minecraft
   name: Имя экземпляра
@@ -482,6 +486,10 @@ instance:
   prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
   showInstance: Открыть папку экземпляра
+  useSharedOptions: Использовать общие настройки игры
+  useSharedOptionsDesc: Это свяжет файл options.txt с общим файлом в экземпляре.
+  useSharedServersList: Использовать список общих серверов
+  useSharedServersListDesc: Это свяжет файл server.dat с общим файлом в экземпляре.
   versionHint: Minecraft-версия этой игры
   vmOptions: Опции JVM
   vmOptionsHint: Дополнительные аргументы, передаваемые JVM

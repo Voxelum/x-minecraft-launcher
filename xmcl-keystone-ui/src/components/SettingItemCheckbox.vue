@@ -1,12 +1,16 @@
 <template>
-  <v-list-item @click="emit('input', !value)">
+  <v-list-item
+    :disabled="disabled"
+    @click="!disabled ? emit('input', !value) : undefined"
+  >
     <v-list-item-action class="self-center">
       <v-checkbox
         hide-details
+        :disabled="disabled"
         :readonly="true"
         :input-value="value"
         :value="value"
-        @click.stop.prevent.capture="emit('input', !value)"
+        @click.stop.prevent.capture="!disabled ? emit('input', !value) : undefined"
         @change="emit('input', !value)"
       />
     </v-list-item-action>
@@ -27,6 +31,7 @@ import { useVModel } from '@vueuse/core'
 const props = defineProps<{
   value: boolean
   title: string
+  disabled?: boolean
   description?: string
 }>()
 const emit = defineEmits<{

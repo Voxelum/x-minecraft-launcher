@@ -3,7 +3,7 @@ import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
 import { constants } from 'fs'
-import { access, copyFile, ensureDir, link, readdir, stat, symlink, unlink } from 'fs-extra'
+import { access, copyFile, ensureDir, ensureFile, link, readdir, stat, symlink, unlink } from 'fs-extra'
 import { platform } from 'os'
 import { basename, extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
@@ -245,3 +245,51 @@ export const ENOENT_ERROR = 'ENOENT'
  * elevated privileges.
  */
 export const EPERM_ERROR = 'EPERM'
+
+function handleOnlyNotFound(e: unknown) {
+  if (isSystemError(e) && e.code === 'ENOENT') {
+    return undefined
+  }
+  throw e
+}
+
+export async function isHardLinked(from: string, to: string) {
+  const rootStat = await stat(from).catch(handleOnlyNotFound)
+  const instanceStat = await stat(to).catch(handleOnlyNotFound)
+
+  return !!rootStat && !!instanceStat && rootStat.ino === instanceStat.ino
+}
+
+export async function hardLinkFiles(root: string, inst: string) {
+  const rootStat = await stat(root).catch(handleOnlyNotFound)
+  const instanceStat = await stat(inst).catch(handleOnlyNotFound)
+
+  if (!rootStat && instanceStat) {
+    // no root, copy current to root
+    await linkOrCopyFile(inst, root)
+    return
+  }
+
+  if (!instanceStat) {
+    await ensureFile(root)
+    // no instance, copy root to instance
+    await linkOrCopyFile(root, inst)
+    return
+  }
+
+  if (rootStat?.ino !== instanceStat.ino) {
+    // different, copy root to instance
+    await unlink(inst).catch(handleOnlyNotFound)
+    await linkOrCopyFile(root, inst)
+  }
+}
+
+export async function unHardLinkFiles(root: string, inst: string) {
+  const rootStat = await stat(root).catch(handleOnlyNotFound)
+  const instanceStat = await stat(inst).catch(handleOnlyNotFound)
+
+  if (rootStat?.ino === instanceStat?.ino) {
+    await unlink(inst).catch(handleOnlyNotFound)
+    await copyFile(root, inst)
+  }
+}

@@ -254,8 +254,16 @@ instance:
   changeIcon: Cambiar icona
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   launchServer: Inicia o servidor localhost
+  linkFileDesc: |-
+    Isto sobrescribirá a instancia local {file} co global {file}. 
+    Seguro que o vinculas?
+  linkFileTitle: Estás seguro de ligar {file}?
   prependCommand: Comando anteposto
   prependCommandHint: Isto antepoñerá este comando antes de todos os comandos de inicio
+  useSharedOptions: Usa a configuración compartida do xogo
+  useSharedOptionsDesc: Isto enlazará o options.txt a un ficheiro compartido na instancia
+  useSharedServersList: Usa a lista de servidores compartidos
+  useSharedServersListDesc: Isto enlazará o servers.dat a un ficheiro compartido na instancia
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 

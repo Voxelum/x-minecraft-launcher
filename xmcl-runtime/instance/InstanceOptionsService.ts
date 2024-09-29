@@ -1,13 +1,13 @@
 import { Frame, parse } from '@xmcl/gamesetting'
 import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, getInstanceGameOptionKey, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
-import { ensureFile, readFile, writeFile } from 'fs-extra'
+import { copyFile, ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, join } from 'path'
-import { Inject, LauncherAppKey } from '~/app'
+import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
-import { missing } from '../util/fs'
+import { hardLinkFiles, isHardLinked, linkOrCopyFile, missing, unHardLinkFiles } from '../util/fs'
 import { requireString } from '../util/object'
 
 /**
@@ -16,6 +16,7 @@ import { requireString } from '../util/object'
 @ExposeServiceKey(InstanceOptionsServiceKey)
 export class InstanceOptionsService extends AbstractService implements IInstanceOptionsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
   }
@@ -112,6 +113,29 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     const options = parseShaderOptions(content)
 
     return options
+  }
+
+  async isGameOptionsLinked(instancePath: string) {
+    const rootGameOptions = this.getPath('options.txt')
+    const instanceGameOptions = join(instancePath, 'options.txt')
+
+    const isLinked = await isHardLinked(rootGameOptions, instanceGameOptions)
+
+    return isLinked
+  }
+
+  async linkGameOptions(instancePath: string) {
+    const rootGameOptions = this.getPath('options.txt')
+    const instanceGameOptions = join(instancePath, 'options.txt')
+
+    await hardLinkFiles(rootGameOptions, instanceGameOptions)
+  }
+
+  async unlinkGameOptions(instancePath: string) {
+    const rootGameOptions = this.getPath('options.txt')
+    const instanceGameOptions = join(instancePath, 'options.txt')
+
+    await unHardLinkFiles(rootGameOptions, instanceGameOptions)
   }
 
   async getGameOptions(instancePath: string) {

@@ -6,6 +6,21 @@
   >
     <v-subheader>Minecraft</v-subheader>
 
+    <SettingItemCheckbox
+      :value="isGameOptionsLinkedCache || false"
+      :disabled="isGameOptionsLinkedCache === undefined"
+      :title="t('instance.useSharedOptions')"
+      :description="t('instance.useSharedOptionsDesc')"
+      @input="!isGameOptionsLinkedCache ? show('options.txt') : unlinkGameOptions(path).then(() => mutateOptions())"
+    />
+    <SettingItemCheckbox
+      :value="isServersListLinkedCache || false"
+      :disabled="isServersListLinkedCache === undefined"
+      :title="t('instance.useSharedServersList')"
+      :description="t('instance.useSharedServersListDesc')"
+      @input="!isServersListLinkedCache ? show('servers.dat') : unlinkServersList(path).then(() => mutateServers())"
+    />
+
     <v-list-item>
       <v-list-item-content style="flex: 1">
         <v-list-item-title>
@@ -110,16 +125,55 @@
         />
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="model"
+      width="400"
+    >
+      <v-card>
+        <v-card-title>
+          {{ t('instance.linkFileTitle', { file: target }) }}
+        </v-card-title>
+
+        <v-card-text>
+          {{ t('instance.linkFileDesc', { file: target }) }}
+        </v-card-text>
+
+        <v-card-actions>
+          <v-btn
+            text
+            @click="cancel"
+          >
+            {{ t('cancel') }}
+          </v-btn>
+          <div class="flex-grow" />
+          <v-btn
+            text
+            color="primary"
+            @click="confirm"
+          >
+            <v-icon left>
+              link
+            </v-icon>
+            {{ t('yes') }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-list>
 </template>
 
 <script lang=ts setup>
-
 import { useNotifier } from '../composables/notifier'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import { useService } from '@/composables'
+import { InstanceOptionsServiceKey, InstanceServerInfoServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
+import { kInstance } from '@/composables/instance'
+import { useSimpleDialog } from '@/composables/dialog'
 
 const { t } = useI18n()
 const { preview, refresh, command, error } = useLaunchPreview()
@@ -128,6 +182,21 @@ const { save, isGlobalMcOptions, resetMcOptions, mcOptions } = injection(Instanc
 const isPreviewShown = ref(false)
 const previewText = computed(() => preview.value.join('\n'))
 const { push } = useRouter()
+
+const { path } = injection(kInstance)
+const { isGameOptionsLinked, linkGameOptions, unlinkGameOptions } = useService(InstanceOptionsServiceKey)
+const { isLinked: isServersListLinked, unlink: unlinkServersList, link: linkServersList } = useService(InstanceServerInfoServiceKey)
+
+const { data: isGameOptionsLinkedCache, mutate: mutateOptions } = useSWRV(computed(() => `${path.value}/options.txt`), (key) => isGameOptionsLinked(key.substring(0, key.lastIndexOf('/'))))
+const { data: isServersListLinkedCache, mutate: mutateServers } = useSWRV(computed(() => `${path.value}/servers.dat`), (key) => isServersListLinked(key.substring(0, key.lastIndexOf('/'))))
+
+const { model, show, target, confirm, cancel } = useSimpleDialog<'options.txt' | 'servers.dat'>((type) => {
+  if (type === 'options.txt') {
+    linkGameOptions(path.value).then(() => mutateOptions())
+  } else if (type === 'servers.dat') {
+    linkServersList(path.value).then(() => mutateServers())
+  }
+})
 
 async function showPreview(side = 'client' as 'client' | 'server') {
   await save()

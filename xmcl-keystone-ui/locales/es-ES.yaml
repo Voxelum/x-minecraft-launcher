@@ -369,6 +369,10 @@ instance:
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
   launchServer: Iniciar el servidor localhost
+  linkFileDesc: |-
+    Esto sobrescribirá el {file} local de la instancia con el {file} global. 
+    ¿Estás seguro de vincularlo?
+  linkFileTitle: ¿Estás seguro de vincular {file}?
   mcOptions: Opciones de Minecraft
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
@@ -381,6 +385,12 @@ instance:
   prependCommandHint: Esto antepondrá este comando antes de todos los comandos de inicio.
   requireName: El nombre es obligatorio
   showInstance: Mostrar carpeta del juego
+  useSharedOptions: Usar configuración de juego compartida
+  useSharedOptionsDesc: >-
+    Esto vinculará el archivo options.txt a un archivo compartido entre
+    instancias.
+  useSharedServersList: Usar lista de servidores compartidos
+  useSharedServersListDesc: Esto vinculará servers.dat a un archivo compartido entre instancias.
   versionHint: La versión de Minecraft de este juego
   vmOptions: Opciones de JVM
   vmOptionsHint: Argumentos adicionales para pasar a la JVM

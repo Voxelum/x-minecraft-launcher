@@ -422,6 +422,10 @@ instance:
   lastPlayed: Ostatnio grane
   launchArguments: Podgląd uruchamiania argumentów
   launchServer: Uruchom serwer localhost
+  linkFileDesc: |-
+    Spowoduje to zastąpienie instancji lokalnego {file} globalnym {file}. 
+    Czy na pewno to powiązać?
+  linkFileTitle: Czy na pewno chcesz połączyć {file}?
   mcOptions: Opcje Minecraft
   mcOptionsHint: Dodatkowe poprawki dotyczące uruchomienia gry Minecraft
   name: Nazwa profilu
@@ -436,6 +440,14 @@ instance:
     uruchamiania
   requireName: Nazwa jest wymagana
   showInstance: Pokaż folder gry
+  useSharedOptions: Użyj udostępnionych ustawień gry
+  useSharedOptionsDesc: >-
+    Spowoduje to połączenie pliku Options.txt z plikiem udostępnionym w całej
+    instancji
+  useSharedServersList: Użyj listy serwerów współdzielonych
+  useSharedServersListDesc: >-
+    Spowoduje to połączenie pliku files.dat z plikiem udostępnionym w całej
+    instancji
   versionHint: Minecraftowa wersja tej gry
   vmOptions: Opcje JVM
   vmOptionsHint: Dodatkowe argumenty przekazywane do JVM
