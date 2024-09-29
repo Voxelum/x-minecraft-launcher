@@ -424,6 +424,10 @@ instance:
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
   launchServer: 启动本地服务端
+  linkFileDesc: |-
+    这将使用全局 {file} 覆盖实例本地 {file}。
+    您确定要链接吗？
+  linkFileTitle: 您确定要链接{file}吗？
   mcOptions: Minecraft 启动选项
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称
@@ -435,6 +439,10 @@ instance:
   prependCommandHint: 这将在所有启动命令之前添加此命令
   requireName: 必须填写名称
   showInstance: 打开文件夹
+  useSharedOptions: 共享 Minecraft 设置
+  useSharedOptionsDesc: 这会将 options.txt 链接到跨实例的共享文件
+  useSharedServersList: 共享服务器列表
+  useSharedServersListDesc: 这会将servers.dat链接到跨实例的共享文件
   versionHint: 此游戏使用的 Minecraft 版本
   vmOptions: JVM 启动选项
   vmOptionsHint: 额外的 JVM 的启动参数

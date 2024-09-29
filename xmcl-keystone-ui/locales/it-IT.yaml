@@ -412,6 +412,10 @@ instance:
   lastPlayed: Giocato l'ultima volta
   launchArguments: Anteprima argomenti di avvio
   launchServer: Avvia il server localhost
+  linkFileDesc: |-
+    Ciò sovrascriverà l'istanza locale del {file} con il globale {file}. 
+    Sei sicuro di collegarlo?
+  linkFileTitle: Sei sicuro di collegare {file}?
   mcOptions: Opzioni Minecraft
   mcOptionsHint: Argomenti di avvio aggiuntivi di Minecraft
   name: Nome profilo
@@ -424,6 +428,10 @@ instance:
   prependCommandHint: Questo anteporrà questo comando prima di tutti i comandi di avvio
   requireName: Il nome è obbligatorio
   showInstance: Mostra la cartella del gioco
+  useSharedOptions: Utilizza le impostazioni di gioco condivise
+  useSharedOptionsDesc: Ciò collegherà options.txt a un file condiviso tra le istanze
+  useSharedServersList: Utilizza l'elenco dei server condivisi
+  useSharedServersListDesc: Ciò collegherà server.dat a un file condiviso tra le istanze
   versionHint: La versione di Minecraft di questo gioco
   vmOptions: Opzioni JVM
   vmOptionsHint: Argomenti aggiuntivi passati a JVM

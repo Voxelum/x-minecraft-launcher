@@ -453,6 +453,12 @@ instance:
   lastPlayed: Das letzte Mal spielten sie
   launchArguments: Vorschau der Startargumente
   launchServer: Starten Sie den Localhost-Server
+  linkFileDesc: >-
+    Dadurch wird die lokale {file} der Instanz mit der globalen {file}
+    überschrieben. 
+
+    Sind Sie sicher, dass Sie es verlinken?
+  linkFileTitle: Sind Sie sicher, dass Sie {file} verlinken?
   mcOptions: Minecraft Einstellungen
   mcOptionsHint: Zusätzliche Anweisungen zum Starten von Minecraft
   name: Profilname
@@ -464,6 +470,14 @@ instance:
   prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Name ist erforderlich
   showInstance: Spieleordner anzeigen
+  useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
+  useSharedOptionsDesc: >-
+    Dadurch wird die Datei „options.txt“ mit einer instanzübergreifenden Datei
+    verknüpft
+  useSharedServersList: Verwenden Sie die Liste der gemeinsam genutzten Server
+  useSharedServersListDesc: >-
+    Dadurch wird die Datei „servers.dat“ mit einer instanzübergreifenden Datei
+    verknüpft
   versionHint: Minecraft Version für dieses Spiel
   vmOptions: JVM-Parameter
   vmOptionsHint: Zusätzliche Argumente, die an die JVM übergeben werden

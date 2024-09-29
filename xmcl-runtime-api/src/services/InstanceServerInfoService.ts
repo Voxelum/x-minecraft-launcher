@@ -2,6 +2,7 @@ import type { Status } from '@xmcl/client'
 import type { ServerInfo } from '@xmcl/game-data'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
 import { ServiceKey } from './Service'
+import { MutableState } from 'src/util/MutableState'
 
 export class ServerInfoWithStatus implements ServerInfo {
   status: Status = UNKNOWN_STATUS
@@ -45,7 +46,13 @@ export interface InstanceServerInfoService {
    * Watch the server info in the instance folder.
    * @param instancePath The instance folder path
    */
-  watch(instancePath: string): Promise<ServerInfoState>
+  watch(instancePath: string): Promise<MutableState<ServerInfoState>>
+
+  isLinked(instancePath: string): Promise<boolean>
+
+  link(instancePath: string): Promise<void>
+
+  unlink(instancePath: string): Promise<void>
 }
 
 export const InstanceServerInfoServiceKey: ServiceKey<InstanceServerInfoService> = 'InstanceServerInfoService'

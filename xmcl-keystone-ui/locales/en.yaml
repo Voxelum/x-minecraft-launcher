@@ -406,6 +406,10 @@ instance:
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
   launchServer: Launch localhost server
+  linkFileDesc: >-
+    This will overwrite instance local {file} with the global {file}. Are you
+    sure to link it?
+  linkFileTitle: Are you sure to link {file}?
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arguments
   name: Profile Name
@@ -418,6 +422,10 @@ instance:
   prependCommandHint: This will prepend this command before all the launch commands
   requireName: The name is required
   showInstance: Show game folder
+  useSharedOptions: Use shared game settings
+  useSharedOptionsDesc: This will link the options.txt to a shared file across instance
+  useSharedServersList: Use shared servers list
+  useSharedServersListDesc: This will link the servers.dat to a shared file across instance
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM

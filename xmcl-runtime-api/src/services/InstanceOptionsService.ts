@@ -92,6 +92,13 @@ export interface InstanceOptionsService {
    */
   editGameSetting(options: EditGameSettingOptions): Promise<void>
   /**
+   * Check if the game options is using shared game options
+   * @param instancePath The instance path
+   */
+  isGameOptionsLinked(instancePath: string): Promise<boolean>
+  linkGameOptions(instancePath: string): Promise<void>
+  unlinkGameOptions(instancePath: string): Promise<void>
+  /**
    * Edit the shader options of current instance
    * @param options Edit shader options
    */

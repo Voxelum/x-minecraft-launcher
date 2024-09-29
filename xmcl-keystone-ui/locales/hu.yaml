@@ -403,6 +403,10 @@ instance:
   lastPlayed: Utoljára játszott
   launchArguments: Indítási argumentumok Előnézet
   launchServer: Indítsa el a localhost szervert
+  linkFileDesc: |-
+    Ez felülírja a helyi {file} példányt a globális {file} értékkel. 
+    Biztosan linkeled?
+  linkFileTitle: Biztosan linkeli a(z) {file} fájlt?
   mcOptions: Minecraft beállítások
   mcOptionsHint: Kiegészítő Minecraft indítási beállítások
   name: Profil név
@@ -415,6 +419,14 @@ instance:
   prependCommandHint: Ez a parancs az összes indítási parancs elé kerül
   requireName: A név megadása kötelező
   showInstance: Játék mappa megjelenítése
+  useSharedOptions: Használja a megosztott játékbeállításokat
+  useSharedOptionsDesc: >-
+    Ezzel összekapcsolja az options.txt fájlt egy több példányban megosztott
+    fájllal
+  useSharedServersList: Használja a megosztott szerverek listáját
+  useSharedServersListDesc: >-
+    Ez összekapcsolja a servers.da fájlt egy megosztott fájllal a példányok
+    között
   versionHint: A játék Minecraft verziója
   vmOptions: JVM Beállítások
   vmOptionsHint: Extra argumentumok átadása a JVM-nek

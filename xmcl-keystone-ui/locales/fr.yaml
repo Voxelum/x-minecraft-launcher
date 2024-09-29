@@ -443,6 +443,8 @@ instance:
   lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
   launchServer: Lancer le serveur localhost
+  linkFileDesc: "Cela écrasera le {file} local de l'instance par le {file} global. \nEtes-vous sûr de le lier\_?"
+  linkFileTitle: "Êtes-vous sûr de créer un lien vers {file}\_?"
   mcOptions: Options Minecraft
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil
@@ -455,6 +457,12 @@ instance:
   prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   requireName: Le nom est requis
   showInstance: Afficher le dossier du jeu
+  useSharedOptions: Utiliser les paramètres de jeu partagés
+  useSharedOptionsDesc: >-
+    Cela reliera le fichier options.txt à un fichier partagé entre les
+    instances.
+  useSharedServersList: Utiliser la liste des serveurs partagés
+  useSharedServersListDesc: Cela reliera le fichierservers.dat à un fichier partagé entre les instances.
   versionHint: La version Minecraft de ce jeu
   vmOptions: Options JVM
   vmOptionsHint: Arguments supplémentaires transmis à JVM

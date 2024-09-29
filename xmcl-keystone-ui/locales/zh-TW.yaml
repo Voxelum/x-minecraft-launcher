@@ -421,6 +421,10 @@ instance:
   lastPlayed: 上次遊玩
   launchArguments: 啟動命令預覽
   launchServer: 啟動本機主機伺服器
+  linkFileDesc: |-
+    這將使用全域 {file} 覆寫實例本機 {file}。
+    您確定要連結嗎？
+  linkFileTitle: 您確定要連結{file}嗎？
   mcOptions: Minecraft 啟動選項
   mcOptionsHint: 額外的 Minecraft 啟動引數
   name: 名稱
@@ -432,6 +436,10 @@ instance:
   prependCommandHint: 這將在所有啟動命令之前添加此命令
   requireName: 必須填寫名稱
   showInstance: 開啟資料夾
+  useSharedOptions: 共享 Minecraft 設定
+  useSharedOptionsDesc: 這會將 options.txt 連結到跨實例的共用文件
+  useSharedServersList: 共享伺服器列表
+  useSharedServersListDesc: 這會將servers.dat連結到跨實例的共用文件
   versionHint: 此遊戲使用的 Minecraft 版本
   vmOptions: JVM 啟動選項
   vmOptionsHint: 額外的 JVM 的啟動引數
