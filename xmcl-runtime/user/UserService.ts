@@ -69,6 +69,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         if (user.username) {
           return this.refreshUser(user.id, {
             silent: true,
+            validate: true,
           }).catch((e) => {
             this.log(`Failed to refresh user ${user.id}`, e)
           })
