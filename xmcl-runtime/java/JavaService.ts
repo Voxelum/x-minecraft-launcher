@@ -306,7 +306,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const javas: JavaRecord[] = []
       const visited = new Set<number>()
       for (let i = 0; i < this.state.all.length; ++i) {
-        const ino = await stat(this.state.all[i].path).then(s => s.ino)
+        const ino = await stat(this.state.all[i].path).then(s => s.ino, (e) => undefined)
+        if (!ino) {
+          javas.push({ ...this.state.all[i], valid: false })
+          continue
+        }
         if (visited.has(ino)) {
           continue
         }
