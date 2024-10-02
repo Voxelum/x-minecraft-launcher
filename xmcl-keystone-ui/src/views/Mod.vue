@@ -345,7 +345,7 @@ import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurse
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
@@ -519,7 +519,7 @@ const toggleCategory = useToggleCategories(modrinthCategories)
 
 // View
 const denseView = useLocalStorageCacheBool('mod-dense-view', false)
-const sortBy = ref('' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
+const sortBy = useLocalStorageCacheStringValue('modSort', '' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
 function onSortClick(type: 'alpha' | 'time') {
   if (sortBy.value === type + '_asc') {
     sortBy.value = type + '_desc' as any
