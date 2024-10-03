@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options } from '@xmcl/installer'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
 import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, MutableState, Settings } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
@@ -442,6 +442,26 @@ export class InstallService extends AbstractService implements IInstallService {
         if (err instanceof Error) {
           if (err.message.indexOf('sun.security.validator.ValidatorException') !== -1) {
             continue
+          }
+          if (err.message.indexOf('java.util.zip.ZipException: invalid entry size') !== -1) {
+            // Some file are not downloaded completely
+            if (err instanceof PostProcessFailedError) {
+              if (err.jarPath.indexOf('jarsplitter') !== -1) {
+                // remove slim, extra and srg if present to force it to rework
+                const slim = err.commands[err.commands.indexOf('--slim') + 1]
+                const extra = err.commands[err.commands.indexOf('--extra') + 1]
+                const srg = err.commands[err.commands.indexOf('--srg') + 1]
+                if (existsSync(slim)) {
+                  await unlink(slim)
+                }
+                if (existsSync(extra)) {
+                  await unlink(extra)
+                }
+                if (existsSync(srg)) {
+                  await unlink(srg)
+                }
+              }
+            }
           }
         }
         this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
