@@ -3,6 +3,7 @@ import { AUTHORITY_DEV, AuthlibInjectorServiceKey, Instance, JavaRecord, LaunchE
 import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
+import { ModFile } from '@/util/mod'
 
 export const kInstanceLaunch: InjectionKey<ReturnType<typeof useInstanceLaunch>> = Symbol('InstanceLaunch')
 
@@ -13,14 +14,14 @@ export function useInstanceLaunch(
   java: Ref<JavaRecord | undefined>,
   userProfile: Ref<UserProfile>,
   globalState: ReturnType<typeof useSettingsState>,
-  enabledModCounts: Ref<number>,
+  mods: Ref<ModFile[]>,
 ) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
   const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
-  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'launching'
+  type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'checking-permission' | 'launching'
   type LaunchStatusState = {
     status: LaunchStatus
     controllers: Record<string, AbortController>
@@ -168,8 +169,7 @@ export function useInstanceLaunch(
         assignStatus(instancePath, 'assigning-memory')
       }
 
-      console.log('assigning memory')
-      const modCount = enabledModCounts.value
+      const modCount = mods.value.length
       if (modCount === 0) {
         minMemory = 1024
       } else {
@@ -210,6 +210,14 @@ export function useInstanceLaunch(
     return options
   }
 
+  function shouldEnableVoiceChat() {
+    if (instance.value.runtime.labyMod) {
+      return true
+    }
+    const allMods = mods.value
+    return allMods.some(m => m.modId === 'voicechat')
+  }
+
   async function _launch(instancePath: string, operationId: string, side: 'client' | 'server', overrides?: Partial<LaunchOptions>) {
     try {
       error.value = undefined
@@ -220,6 +228,15 @@ export function useInstanceLaunch(
         try {
           await track(instancePath, refreshUser(userProfile.value.id, { validate: true }), 'refreshing-user', operationId)
         } catch (e) {
+          console.error(e)
+        }
+      }
+
+      if (shouldEnableVoiceChat()) {
+        try {
+          await track(instancePath, windowController.queryAudioPermission(), 'checking-permission', operationId)
+        } catch (e) {
+          console.error(e)
         }
       }
 
@@ -275,6 +292,7 @@ export function useInstanceLaunch(
     const controllers = state.controllers
     controllers['preparing-authlib']?.abort()
     controllers['refresh-user']?.abort()
+    controllers['checking-permission']?.abort()
   }
 
   return {
@@ -298,6 +316,11 @@ export function useInstanceLaunch(
       const path = instance.value.path
       const controllers = allLaunchingStatus.value[path].controllers
       controllers['refreshing-user']?.abort()
+    },
+    skipPermission: () => {
+      const path = instance.value.path
+      const controllers = allLaunchingStatus.value[path].controllers
+      controllers['checking-permission']?.abort()
     },
   }
 }

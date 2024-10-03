@@ -67,7 +67,7 @@ export default defineComponent({
     const shaderPacks = useInstanceShaderPacks(instance.path, instance.runtime, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
-    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings, instanceMods.enabledModCounts)
+    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings, instanceMods.mods)
 
     const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)

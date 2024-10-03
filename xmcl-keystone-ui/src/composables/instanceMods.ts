@@ -63,7 +63,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   const modsIconsMap: Ref<Record<string, string>> = shallowRef({})
   const provideRuntime: Ref<Record<string, string>> = shallowRef({})
 
-  const enabledModCounts = computed(() => mods.value.filter(v => v.enabled).length)
+  const enabledMods = computed(() => mods.value.filter(v => v.enabled))
 
   function reset() {
     mods.value = []
@@ -122,7 +122,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     mods,
     modsIconsMap,
     provideRuntime,
-    enabledModCounts,
+    enabledMods,
     isValidating,
     updateMetadata,
     error,

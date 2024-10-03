@@ -71,6 +71,12 @@ export const config = {
         arch: ['x64'],
       },
     ],
+    extendInfo: {
+      NSMicrophoneUsageDescription: 'A Minecraft mod wants to access your microphone.',
+      NSCameraUsageDescription: 'Please give us access to your camera',
+      'com.apple.security.device.audio-input': true,
+      'com.apple.security.device.camera': true,
+    },
   },
   win: {
     certificateFile: undefined as string | undefined,

@@ -1,5 +1,5 @@
 import { ElectronController } from '@/ElectronController'
-import { app, BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, FindInPageOptions, ipcMain, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 
@@ -58,6 +58,13 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
         window.flashFrame(false)
       })
     }
+  })
+  ipcMain.handle('query-audio-permission', async () => {
+    if (currentPlatform === 'darwin') {
+      await app.whenReady()
+      return systemPreferences.askForMediaAccess('microphone')
+    }
+    return true
   })
   ipcMain.handle('control', (event, operation: Operation) => {
     const window = BrowserWindow.fromWebContents(event.sender)

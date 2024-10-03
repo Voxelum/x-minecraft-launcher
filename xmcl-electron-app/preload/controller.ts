@@ -45,6 +45,7 @@ function createController(): WindowController {
       emitter.on(channel, listener)
       return this
     },
+    queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     once(channel, listener) {
       emitter.once(channel, listener)
