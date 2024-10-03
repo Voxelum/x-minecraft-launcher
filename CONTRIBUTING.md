@@ -1,8 +1,11 @@
 
 ### Tech Stack & Some Background
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](contributing/CONTRIBUTING.uk.md)</kbd>
+<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](contributing/CONTRIBUTING.ua.md)</kbd>
 <kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](contributing/CONTRIBUTING.ru.md)</kbd>
+<kbd>[<img title="Polish" alt="Polish" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/250px-Flag_of_Poland.svg.png" width="22">](contributing/CONTRIBUTING.pl)</kbd>
+<kbd>[<img title="Deutsch" alt="Deutsch" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2uEryZuDlXosocJnvXBB0kYWkrtTNNINFaaJQySlzoRRolztbc2Pgrw7u3WLxVqcpC4k&usqp=CAU" width="22">](contributing/CONTRIBUTING.de.md)</kbd>
+
 
 Here we have a overview of the toolchain & runtime of this project
 
