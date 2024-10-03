@@ -16,7 +16,8 @@
         :style="{ height: itemHeight + 'px' }"
         class="flex"
       >
-        {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") : t('modInstall.search') }}
+        {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") :
+          t('modInstall.search') }}
 
         <div class="flex-grow" />
         <v-btn
@@ -45,8 +46,7 @@
       <Hint
         v-if="dragover"
         icon="save_alt"
-        :text="
-          t('shaderPack.dropHint')"
+        :text="t('shaderPack.dropHint')"
         class="h-full"
       />
       <MarketProjectDetailModrinth
@@ -191,14 +191,16 @@ usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 
 // Drop
 const { dragover } = useGlobalDrop({
-  onEnter: () => { }, onDrop: async (t) => {
+  onEnter: () => { },
+  onDrop: async (t) => {
     const paths = [] as string[]
     for (const f of t.files) {
       paths.push(f.path)
     }
     const resources = await install(path.value, paths)
     shaderPack.value = basename(resources[0])
-  }, onLeave: () => { }
+  },
+  onLeave: () => { },
 })
 
 // Page compact

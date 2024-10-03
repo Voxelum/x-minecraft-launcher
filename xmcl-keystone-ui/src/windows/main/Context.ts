@@ -44,8 +44,6 @@ export default defineComponent({
   setup(props, ctx) {
     provide(kSemaphores, useSemaphores())
     provide(kServerStatusCache, useServerStatusCache())
-    const queue = useNotificationQueue()
-    provide(kNotificationQueue, queue)
 
     provide(kDropHandler, useDropHandler())
 
@@ -54,7 +52,7 @@ export default defineComponent({
     const localVersions = useLocalVersions()
     const instances = useInstances()
     const instance = useInstance(instances.selectedInstance, instances.instances)
-    provide(kPeerShared, usePeerConnections(queue))
+    provide(kPeerShared, usePeerConnections())
 
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions, localVersions.servers)

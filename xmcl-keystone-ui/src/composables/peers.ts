@@ -1,19 +1,19 @@
-import { GameProfileAndTexture, NatDeviceInfo, NatType, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
+import { useIntervalFn } from '@vueuse/core'
+import { GameProfileAndTexture, PeerServiceKey, PeerState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
-import { useService } from './service'
-import { useState } from './syncableState'
-import { useRefreshable } from './refreshable'
-import { LocalNotification, useNotifier } from './notifier'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
-import { useIntervalFn } from '@vueuse/core'
+import { useNotifier } from './notifier'
+import { useRefreshable } from './refreshable'
+import { useService } from './service'
+import { useState } from './syncableState'
 
 export const kPeerShared: InjectionKey<ReturnType<typeof usePeerConnections>> = Symbol('PeerState')
 
-export function usePeerConnections(notification: Ref<LocalNotification[]>) {
+export function usePeerConnections() {
   const { getPeerState } = useService(PeerServiceKey)
   const { state } = useState(getPeerState, PeerState)
-  const { notify } = useNotifier(notification)
+  const { notify } = useNotifier()
   const { t } = useI18n()
   const { show: showShareInstance } = useDialog('share-instance')
   const { show: showAddInstance } = useDialog(AddInstanceDialogKey)

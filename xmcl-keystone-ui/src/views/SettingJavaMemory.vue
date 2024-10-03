@@ -83,10 +83,10 @@ const step = 1024 * 1024 * 512
 const sysmem: Ref<{ total: number; free: number }> = ref({ total: 0, free: 0 })
 
 const memoryProgress = computed(() => (sysmem.value.total - sysmem.value.free) / sysmem.value.total * 100)
-const { enabledModCounts } = injection(kInstanceModsContext)
+const { enabledMods } = injection(kInstanceModsContext)
 const minMemory = computed(() => {
   if (props.assignMemory === 'auto') {
-    const modCount = enabledModCounts.value
+    const modCount = enabledMods.value.length
     let minMemory = 0
 
     if (modCount === 0) {

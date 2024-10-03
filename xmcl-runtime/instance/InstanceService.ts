@@ -83,11 +83,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       // }
 
       this.state
-        .subscribe('instanceAdd', async (payload: Instance) => {
-          await this.instanceFile.write(join(payload.path, 'instance.json'), payload)
-          // await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(this.state.path) })
-          this.log(`Saved new instance ${payload.path}`)
-        })
         .subscribe('instanceEdit', async ({ path }) => {
           const inst = this.state.all[path]
           await this.instanceFile.write(join(path, 'instance.json'), inst)
@@ -255,6 +250,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       await ensureDir(join(instance.path, 'shaderpacks'))
     }
     this.state.instanceAdd(instance)
+
+    await this.instanceFile.write(join(instance.path, 'instance.json'), instance)
 
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))

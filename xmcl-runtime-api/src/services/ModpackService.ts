@@ -121,6 +121,7 @@ export class ModpackState {
   ready = false
 
   modpackFiles(files: InstanceFile[]) {
+    this.ready = true
     this.files = files
   }
 }

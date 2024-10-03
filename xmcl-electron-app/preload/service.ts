@@ -22,10 +22,12 @@ const typeToStatePrototype: Record<string, StateMetadata> = AllStates.reduce((ob
 }, {} as Record<string, StateMetadata>)
 
 const kEmitter = Symbol('Emitter')
+const kMethods = Symbol('Methods')
 
-function createMutableState<T extends object>(val: T, id: string): MutableState<T> {
+function createMutableState<T extends object>(val: T, id: string, methods: StateMetadata['methods']): MutableState<T> {
   const emitter = new EventEmitter()
   Object.defineProperty(val, kEmitter, { value: emitter })
+  Object.defineProperty(val, kMethods, { value: methods })
   return Object.assign(val, {
     subscribe(key: string, listener: (payload: any) => void) {
       emitter.addListener(key, listener)
@@ -84,7 +86,7 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     }
 
     delete result.__state__
-    const state = createMutableState(result, id)
+    const state = createMutableState(result, id, prototype.methods)
 
     for (const [method, handler] of prototype.methods) {
       // explictly bind to the state object under electron context isolation
@@ -100,9 +102,13 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     queueMicrotask(() => {
       if (pendingCommits[id]) {
         for (const mutation of pendingCommits[id]) {
-          // state[mutation.type]?.(mutation.payload);
           (state as any)[kEmitter].emit(mutation.type, mutation.payload);
           (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
+          const methods = (state as any)[kMethods]
+          const method = methods.find(([name]: [string]) => name === mutation.type)
+          if (typeof method?.[1] === 'function') {
+            method[1].call(state, mutation.payload)
+          }
         }
         delete pendingCommits[id]
       }
@@ -141,9 +147,13 @@ function createServiceChannels(): ServiceChannels {
   ipcRenderer.on('commit', (_, id, type, payload) => {
     const state = states[id]?.deref()
     if (state) {
-      // (state as any)[type]?.(payload);
       (state as any)[kEmitter].emit(type, payload);
       (state as any)[kEmitter].emit('*', type, payload)
+      const methods = (state as any)[kMethods]
+      const method = methods.find(([name]: [string]) => name === type)
+      if (typeof method?.[1] === 'function') {
+        method[1].call(state, payload)
+      }
     } else {
       // pending commit
       if (!pendingCommits[id]) {

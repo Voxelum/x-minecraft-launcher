@@ -18,13 +18,28 @@
         </v-list-item-title>
         <v-list-item-subtitle>{{ root }}</v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-action class="self-center">
+      <v-list-item-action class="self-center mr-1">
         <v-btn
           outlined
           text
           style="margin-right: 10px"
+          @click="onMigrateFromOther"
+        >
+          <v-icon left>
+            local_shipping
+          </v-icon>
+          {{ t("setting.migrateFromOther") }}
+        </v-btn>
+      </v-list-item-action>
+      <v-list-item-action class="self-center">
+        <v-btn
+          outlined
+          text
           @click="browseRootDir"
         >
+          <v-icon left>
+            edit
+          </v-icon>
           {{ t("setting.browseRoot") }}
         </v-btn>
       </v-list-item-action>
@@ -34,6 +49,9 @@
           text
           @click="showGameDirectory()"
         >
+          <v-icon left>
+            folder
+          </v-icon>
           {{ t("setting.showRoot") }}
         </v-btn>
       </v-list-item-action>
@@ -219,5 +237,7 @@ const { root, showGameDirectory } = useGameDirectory()
 async function browseRootDir() {
   show()
 }
+
+const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 
 </script>

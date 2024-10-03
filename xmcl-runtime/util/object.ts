@@ -54,3 +54,7 @@ export function isArrayEqual<T>(a: T[], b: T[]): boolean {
   if (a.some((v, i) => v !== b[i])) return false
   return true
 }
+
+export function isFulfilled<T>(v: PromiseSettledResult<T>): v is PromiseFulfilledResult<T> {
+  return v.status === 'fulfilled'
+}

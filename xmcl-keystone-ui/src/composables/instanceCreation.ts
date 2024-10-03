@@ -103,6 +103,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.modpackVersion = ''
     data.description = ''
     error.value = null
+    files.value = []
     loading.value = false
   }
   return {

@@ -42,75 +42,15 @@
         :item-height="72"
       >
         <template #default="{ item: p }">
-          <v-list-item
+          <InstanceItem
             :key="p.filePath"
-            ripple
-            @click="onSelect(p)"
-          >
-            <v-list-item-avatar>
-              <v-img
-                :src="p.instance.icon ? p.instance.icon : ''"
-              />
-            </v-list-item-avatar>
-
-            <v-list-item-content>
-              <v-list-item-title>{{ p.name }}</v-list-item-title>
-              <v-list-item-subtitle class="flex gap-1">
-                <v-chip
-                  v-if="p.instance.runtime.minecraft"
-                  outlined
-                  small
-                  label
-                >
-                  <v-avatar left>
-                    <img
-                      :src="BuiltinImages.minecraft"
-                      alt="minecraft"
-                    >
-                  </v-avatar>
-                  {{ p.instance.runtime.minecraft }}
-                </v-chip>
-                <v-chip
-                  v-if="p.instance.runtime.forge"
-                  outlined
-                  small
-                  label
-                >
-                  <v-avatar left>
-                    <img
-                      :src="BuiltinImages.forge"
-                      alt="forge"
-                    >
-                  </v-avatar>
-                  {{ p.instance.runtime.forge }}
-                </v-chip>
-                <v-chip
-                  v-if="p.instance.runtime.fabricLoader"
-                  outlined
-                  small
-                  label
-                >
-                  <v-avatar left>
-                    <img
-                      :src="BuiltinImages.fabric"
-                      alt="fabric"
-                    >
-                  </v-avatar>
-                  {{ p.instance.runtime.fabricLoader }}
-                </v-chip>
-              </v-list-item-subtitle>
-            </v-list-item-content>
-
-            <v-list-item-action>
-              <v-list-item-action-text>{{ p.description }}</v-list-item-action-text>
-            </v-list-item-action>
-            <v-list-item-action>
-              <v-checkbox
-                :value="selectedTemplate === p"
-                readonly
-              />
-            </v-list-item-action>
-          </v-list-item>
+            :icon="p.instance.icon"
+            :name="p.name"
+            :runtime="p.instance.runtime"
+            :description="p.description"
+            :value="selectedTemplate === p"
+            @select="onSelect(p)"
+          />
         </template>
       </v-virtual-scroll>
     </v-list>
@@ -125,8 +65,8 @@ import { kPeerShared } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
-import { BuiltinImages } from '../constant'
 import { useModpacks } from '@/composables/modpack'
+import InstanceItem from './InstanceItem.vue'
 
 const emit = defineEmits(['select'])
 

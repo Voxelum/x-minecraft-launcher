@@ -218,7 +218,11 @@ export function watchResourcesDirectory(
 
   const workerQueue = createWorkerQueue(context, domain, processUpdate, onResourceEmit, true)
   const revalidate = createRevalidateFunction(directory, context, onRemove,
-    workerQueue.push.bind(workerQueue), onResourceEmit)
+    workerQueue.push.bind(workerQueue), (file, record, metadata) => {
+      if (state.files.findIndex((r) => r.path === file.path) === -1) {
+        onResourceEmit(file, record, metadata)
+      }
+    })
 
   const watcher = createWatcher(directory, context.logger, async (file) => {
     const record = await context.db.selectFrom('snapshots')

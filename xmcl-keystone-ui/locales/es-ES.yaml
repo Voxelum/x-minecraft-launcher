@@ -398,6 +398,9 @@ instanceAge:
   older: Más Antiguo
   threeDay: En Tres Días
   today: Hoy
+instanceDiscover:
+  gameFolder: Descubre {count} carpetas de juegos
+  instanceFolder: Se encontraron {count} instancias
 instanceFileOperation:
   add: Agregar
   backup-add: Reemplazar (Copia de Seguridad)
@@ -432,9 +435,15 @@ instanceUpdate:
   update: Iniciar Actualización
 instances:
   add: Crear juego
+  addCurseForgeDescription: |-
+    Importar desde la carpeta de datos de curseforge. 
+    Debes seleccionar la carpeta de datos raíz de curseforge.
+  addMMCDescription: |-
+    Importe la instancia MultiMC existente. 
+    Debe seleccionar la carpeta de datos de MultiMC.
   addServer: Crear desde el servidor
   addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
-  addTemplate: Crear desde plantilla
+  addTemplate: Crear desde modpack descargado
   choose: Selecciona un juego
   folderSetting: Configuración de carpeta
   importFolder: Importar desde Carpeta
@@ -987,6 +996,7 @@ setting:
     Limita el número máximo de conexiones por anfitrión o en total para todos
     los anfitriones. 0 significa sin límite.
   maxSocketsTitle: Máximo de Conexiones HTTP
+  migrateFromOther: Importar desde otro lanzador
   name: Configuración Global | Configuraciones Globales
   network: Configuración de la red
   officialWebsite: Sitio Web Oficial

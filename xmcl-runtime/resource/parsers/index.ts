@@ -41,18 +41,18 @@ export type ParseResourceResult = {
 
 export class ResourceParser {
   constructor(private parsers = [
-    modpackParser,
+    // modpackParser,
     fabricModParser,
     quiltModParser,
     liteloaderModParser,
     forgeModParser,
     shaderPackParser,
-    modrinthModpackParser,
+    // modrinthModpackParser,
     resourcePackParser,
     saveParser,
-    mcbbsModpackParser,
-    curseforgeModpackParser,
-    mmcModpackParser,
+    // mcbbsModpackParser,
+    // curseforgeModpackParser,
+    // mmcModpackParser,
   ]) { }
 
   async parse(args: ParseResourceArgs): Promise<ParseResourceResult> {

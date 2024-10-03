@@ -435,6 +435,9 @@ instanceAge:
   older: 古い
   threeDay: 三日以内
   today: 今日
+instanceDiscover:
+  gameFolder: '{count} 個のゲーム フォルダーを発見する'
+  instanceFolder: '{count} 個のインスタンスが見つかりました'
 instanceFileOperation:
   add: 追加
   backup-add: 置き換える (バックアップ)
@@ -471,13 +474,20 @@ instanceUpdate:
   update: 更新を開始
 instances:
   add: ゲームを作成
+  addCurseForgeDescription: |-
+    Cursforge データ フォルダーからインポートします。 
+    Cursforgeのルートデータフォルダーを選択する必要があります
   addDescription: 新しい起動構成を1から作る
-  addMMCDescription: すでに存在するMultiMC起動構成をインポートします。MultiMCの起動構成フォルダーを選ぶ必要があります。
+  addMMCDescription: |-
+    既存の MultiMC インスタンスをインポートします。 
+    MultiMC からデータ フォルダーを選択する必要があります。
   addManually: 手動で作成
-  addModrinthDescription: すでに存在するModrinthの起動構成をインポートします。Modrinthの起動構成フォルダを選ぶ必要があります。
+  addModrinthDescription: |-
+    既存の Modrinth インスタンスをインポートします。 
+    Modrinth ルート データ フォルダーを選択する必要があります。
   addServer: サーバーから作成
   addServerDescription: ゲームから直接立ち上げられるサーバーを作成します。
-  addTemplate: テンプレートから作成
+  addTemplate: ダウンロードしたmodpackから作成
   addTemplateDescription: ダウンロードされたModpackからインポート
   addVanilla: Vanilla-LikeなMinecraftから作成
   addVanillaDescription: 一般的な.minecraftフォルダからインポートします。これは元のプロファイルをXMCLに複製します。
@@ -1187,6 +1197,7 @@ setting:
   maxSockets: ホスト毎
   maxSocketsDescription: ホスト毎の最大のソケット、または全ての最大のソケットを制限します。0で無制限。
   maxSocketsTitle: 最大HTTPソケット数
+  migrateFromOther: 他のランチャーからインポートする
   name: グローバル設定 | グローバル設定
   network: ネットワーク設定
   officialWebsite: 公式サイト

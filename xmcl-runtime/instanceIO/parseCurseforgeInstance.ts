@@ -1,4 +1,4 @@
-import { CreateInstanceOption } from '@xmcl/runtime-api'
+import { CreateInstanceOption, getInstanceConfigFromCurseforgeModpack } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { join, sep } from 'path'
 import { pathToFileURL } from 'url'
@@ -6,39 +6,33 @@ import { Logger } from '~/logger'
 import { ResourceWorker } from '~/resource'
 import { discover } from './InstanceFileDiscover'
 import { ModrinthProfile } from './entities/ModrinthProfile'
+import { CurseforgeInstance } from './entities/CurseforgeInstance'
 
-export async function parseModrinthInstance(instancePath: string) {
-  const data = await readFile(join(instancePath, 'profile.json'), 'utf-8')
-  const modrinth = JSON.parse(data) as ModrinthProfile
+export async function parseCurseforgeInstance(instancePath: string) {
+  const data = await readFile(join(instancePath, 'minecraftinstance.json'), 'utf-8')
+  const cf = JSON.parse(data) as CurseforgeInstance
 
-  let icon = ''
-  if (modrinth.metadata.icon) {
-    const url = new URL('http://launcher/media')
-    url.searchParams.append('path', modrinth.metadata.icon)
-    icon = url.toString()
-  }
+  const config = getInstanceConfigFromCurseforgeModpack(cf.manifest)
+
   const options: CreateInstanceOption = {
-    name: modrinth.metadata.name,
-    icon,
-    runtime: {
-      minecraft: modrinth.metadata.game_version,
-      forge: modrinth.metadata.loader === 'forge' ? modrinth.metadata.loader_version.id : undefined,
-      fabricLoader: modrinth.metadata.loader === 'fabric' ? modrinth.metadata.loader_version.id : undefined,
-      quiltLoader: modrinth.metadata.loader === 'quilt' ? modrinth.metadata.loader_version.id : undefined,
-      neoForged: modrinth.metadata.loader === 'neoforge' ? modrinth.metadata.loader_version.id : undefined,
-    },
+    ...config,
+    name: cf.name,
+    author: cf.customAuthor || config.author,
+    lastPlayedDate: new Date(cf.lastPlayed).getTime(),
+    assignMemory: !cf.isMemoryOverride ? 'auto' : true,
+    minMemory: cf.allocatedMemory ? Number(cf.allocatedMemory) : undefined,
+  }
+
+  if (cf.fileID && cf.projectID) {
+    options.upstream = {
+      type: 'curseforge-modpack',
+      modId: cf.projectID,
+      fileId: cf.fileID,
+    }
   }
 
   options.resourcepacks = true
   options.shaderpacks = true
-
-  if (modrinth.metadata.linked_data) {
-    options.upstream = {
-      type: 'modrinth-modpack',
-      projectId: modrinth.metadata.linked_data.project_id,
-      versionId: modrinth.metadata.linked_data.version_id,
-    }
-  }
 
   return options
 }

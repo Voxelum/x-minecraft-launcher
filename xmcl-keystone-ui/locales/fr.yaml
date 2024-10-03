@@ -470,6 +470,9 @@ instanceAge:
   older: Plus âgée
   threeDay: Dans trois jours
   today: Aujourd'hui
+instanceDiscover:
+  gameFolder: Découvrez {count} dossiers de jeu
+  instanceFolder: "{count}\_instances trouvées"
 instanceFileOperation:
   add: Ajouter
   backup-add: Remplacer (Sauvegarde)
@@ -514,17 +517,20 @@ instanceUpdate:
   update: Démarrer la Mise à Jour
 instances:
   add: Créer un jeu
+  addCurseForgeDescription: |-
+    Importer depuis le dossier de données Curseforge. 
+    Vous devez sélectionner le dossier de données racine de Curseforge
   addDescription: Créer une nouvelle instance à partir de zéro
   addMMCDescription: |-
-    Importer une instance MultiMC existante. 
-    Vous devez sélectionner le dossier d'instance dans MultiMC.
+    Importez une instance MultiMC existante. 
+    Vous devez sélectionner le dossier de données de MultiMC.
   addManually: Créer manuellement
   addModrinthDescription: |-
-    L'importation existait par l'instance de Modrinth. 
-    Vous devez sélectionner le dossier de l'instance Modrinth.
+    Importez l’instance Modrinth existante. 
+    Vous devez sélectionner le dossier de données racine Modrinth.
   addServer: Créer à partir du serveur
   addServerDescription: Cela créera un jeu directement lancé sur le serveur.
-  addTemplate: Créer à partir d'un modèle
+  addTemplate: Créer à partir du modpack téléchargé
   addTemplateDescription: Importer à partir du Modpack téléchargé
   addVanilla: Créez à partir de Minecraft de type vanille
   addVanillaDescription: |-
@@ -1303,6 +1309,7 @@ setting:
     Limitez le nombre maximal de sockets à autoriser par hôte ou pour tous les
     hôtes au total. 0 signifie aucune limite.
   maxSocketsTitle: Sockets HTTP Max
+  migrateFromOther: Importer depuis un autre lanceur
   name: |-
     Paramètre global | 
     Paramètres globaux

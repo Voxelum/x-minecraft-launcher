@@ -434,6 +434,9 @@ instanceAge:
   older: Régebbi
   threeDay: Három napon belül
   today: Ma
+instanceDiscover:
+  gameFolder: Fedezzen fel {count} játékmappát
+  instanceFolder: '{count} példányt találtunk'
 instanceFileOperation:
   add: Új
   backup-add: Felülírás (Mentés)
@@ -478,17 +481,20 @@ instanceUpdate:
   update: Frissítés indítása
 instances:
   add: Játék létrehozása
+  addCurseForgeDescription: |-
+    Importálás a cursefor adatmappából. 
+    Ki kell választania a curseforge gyökéradat-mappáját
   addDescription: Új példány létrehozása az alapoktól
-  addMMCDescription: >-
-    Létező MultiMC-példány importálása. Ki kell választanod a példány mappáját a
-    MultiMC-ből.
+  addMMCDescription: |-
+    Importálja a meglévő MultiMC példányt. 
+    Ki kell választania az adatmappát a MultiMC-ből.
   addManually: Manuális létrehozás
-  addModrinthDescription: >-
-    Létező Modrinth példány importálása. Ki kell választanod a Modrinth példány
-    mappáját.
+  addModrinthDescription: |-
+    Importálja a meglévő Modrinth példányt. 
+    Ki kell választania a Modrinth gyökér adatmappát.
   addServer: Létrehozás szerverről
   addServerDescription: Ez létrehoz egy játékot közvetlenül a szerverre.
-  addTemplate: Létrehozás sablonról
+  addTemplate: Hozzon létre a letöltött modpackből
   addTemplateDescription: Importálás letöltött Modcsomagból
   addVanilla: Létrehozás vanilla-szerű Minecraftból
   addVanillaDescription: >-
@@ -1290,6 +1296,7 @@ setting:
     Korlátozza a maximálisan engedélyezhető foglalatok számát állomásonként vagy
     az összes állomáson összesen. A 0 azt jelenti, hogy nincs korlátozás.
   maxSocketsTitle: Max HTTP foglalatok
+  migrateFromOther: Importálás másik indítóból
   name: Globális beállítás | Globális beállítások
   network: Hálózati beállítások
   officialWebsite: Hivatalos weboldal

@@ -275,10 +275,11 @@ export class ModpackService extends AbstractService implements IModpackService {
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
 
-    this.log(`Parse modpack profile ${modpackFile}`)
+    this.log(`Open modpack profile ${modpackFile}`)
     return store.registerOrGet(`modpack-file://${modpackFile}`, async () => {
       const cached = await this.getCachedInstallProfile(modpackFile)
       const zip = await zipManager.open(modpackFile)
+      this.log(`Opened modpack profile ${modpackFile}`)
       const state = new ModpackState()
       state.modpackPath = modpackFile
 
@@ -324,7 +325,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       const processFiles = async () => {
         const instanceFiles = await handler.resolveInstanceFiles(manifest)
-        this.log(`Parse modpack profile ${modpackFile} with ${instanceFiles.length} files`)
+        this.log(`Discovered modpack profile ${modpackFile} with ${instanceFiles.length} files`)
 
         const files = entries
           .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))

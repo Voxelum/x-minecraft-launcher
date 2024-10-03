@@ -264,12 +264,22 @@ instance:
   useSharedOptionsDesc: Isto enlazará o options.txt a un ficheiro compartido na instancia
   useSharedServersList: Usa a lista de servidores compartidos
   useSharedServersListDesc: Isto enlazará o servers.dat a un ficheiro compartido na instancia
+instanceDiscover:
+  gameFolder: Descubre {count} cartafoles de xogos
+  instanceFolder: Atopáronse {count} instancias
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 
     O modloader antigo é {modloader} e o novo modloader é {newModloader}.
 instances:
+  addCurseForgeDescription: |-
+    Importar desde o cartafol de datos de curseforge. 
+    Debe seleccionar o cartafol de datos raíz de curseforge
+  addMMCDescription: |-
+    Importar a instancia de MultiMC existente. 
+    Debe seleccionar o cartafol de datos de MultiMC.
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
+  addTemplate: Crear desde o modpack descargado
   folderSetting: Configuración do cartafol
 launch:
   killServer: Eliminar o servidor Localhost
@@ -376,6 +386,7 @@ setting:
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
     Volve descargar o iniciador do sitio web!
+  migrateFromOther: Importar desde outro lanzador
   replaceNative: Substituír as bibliotecas nativas
   replaceNativeDescription: Substitúe as bibliotecas nativas segundo o arco do teu ordenador.
   replaceNatives:
