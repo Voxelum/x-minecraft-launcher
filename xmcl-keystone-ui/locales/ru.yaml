@@ -296,7 +296,6 @@ env:
     all: Выбрать все
     fit: Выбрать подходящие
     none: Отменить выбор
-
 error:
   name: Ошибка | Ошибки
 errors:
@@ -497,6 +496,9 @@ instanceAge:
   older: Старые
   threeDay: В течение трёх дней
   today: Сегодня
+instanceDiscover:
+  gameFolder: Откройте {count} папок с играми
+  instanceFolder: 'Найдено экземпляров: {count}'
 instanceFileOperation:
   add: Добавить
   backup-add: Заменить (создать резервную копию)
@@ -537,17 +539,20 @@ instanceUpdate:
   update: Начать обновление
 instances:
   add: Создать экземпляр
+  addCurseForgeDescription: |-
+    Импортируйте из папки данных Curseforge. 
+    Вам нужно выбрать корневую папку данных Curseforge.
   addDescription: Создать новый экземпляр с нуля
-  addMMCDescription: >-
-    Импортировать существующий экземпляр MultiMC. Вам нужно выбрать папку
-    экземпляра из MultiMC.
+  addMMCDescription: |-
+    Импортируйте существующий экземпляр MultiMC. 
+    Вам нужно выбрать папку с данными из MultiMC.
   addManually: Создать вручную
-  addModrinthDescription: >-
-    Импортировать существующий экземпляр Modrinth. Вам нужно выбрать папку
-    экземпляра Modrinth.
+  addModrinthDescription: |-
+    Импортируйте существующий экземпляр Modrinth. 
+    Вам необходимо выбрать корневую папку данных Modrinth.
   addServer: Создать из сервера
   addServerDescription: Это создаст экземпляр, который запустится непосредственно на сервере.
-  addTemplate: Создать из шаблона
+  addTemplate: Создать из скачанного модпака
   addTemplateDescription: Импортировать из загруженной сборки модов
   addVanilla: Создать из стандартного Minecraft
   addVanillaDescription: >-
@@ -992,10 +997,9 @@ modrinthCard:
 multiplayer:
   allowTurn: Разрешить сервер-ретранслятор
   allowTurnHint: >-
-    Включите ретранслятор, если связь напрямую не работает. 
-    Он может замедлить соединение, используйте осторожно.
     Включите ретранслятор, если связь напрямую не работает.  Он может замедлить
-    соединение, используйте осторожно.
+    соединение, используйте осторожно. Включите ретранслятор, если связь
+    напрямую не работает.  Он может замедлить соединение, используйте осторожно.
   complete: Завершено
   confirm: Подтвердить
   connections: Соединения
@@ -1051,11 +1055,10 @@ multiplayer:
   joinOrCreateGroupHint: Получите ID группы от пользователя или создайте группу
   kernel: Ядро P2P
   kernelDescription: >-
-    Используйте WebRTC или node-datachannel. 
-    Переключайтесь между ними только если
-    p2p-соединение иногда вызывает ошибку окна запуска.
     Используйте WebRTC или node-datachannel.  Переключайтесь между ними только
-    если p2p-соединение иногда вызывает ошибку окна запуска.
+    если p2p-соединение иногда вызывает ошибку окна запуска. Используйте WebRTC
+    или node-datachannel.  Переключайтесь между ними только если p2p-соединение
+    иногда вызывает ошибку окна запуска.
   leaveGroup: Покинуть группу
   localToken: Локальный токен
   manualConnect: Ручное соединение
@@ -1348,10 +1351,9 @@ setting:
     Данная версия не может быть обновлена автоматически. Пожалуйста, скачайте
     лаунчер с сайта ещё раз!
   maxSockets: Максимум сокетов
-  maxSocketsDescription: >-
-    Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
   maxSocketsDescription: Ограничьте количество сокетов на хост или для всех. 0 - без ограничений.
   maxSocketsTitle: Максимальное количество HTTP-сокетов
+  migrateFromOther: Импорт из другого лаунчера
   name: Глобальные настройки | Глобальные настройки
   network: Настройки сети
   officialWebsite: Официальный сайт
@@ -1390,8 +1392,6 @@ setting:
   themeShareDescription: Вы можете поделиться темой с вашим другом.
   update: Обновить
   useBmclAPI: Использовать BMCL API
-  useBmclAPIDescription: >-
-    Скачайте Minecraft в Китае с помощью BMCL-API
   useBmclAPIDescription: Скачайте Minecraft в Китае с помощью BMCL-API
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса

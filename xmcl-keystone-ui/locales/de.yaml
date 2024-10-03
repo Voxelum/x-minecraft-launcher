@@ -485,6 +485,9 @@ instanceAge:
   older: Alte
   threeDay: Innerhalb von drei Tagen
   today: Heute.
+instanceDiscover:
+  gameFolder: Entdecken Sie {count} Spielordner
+  instanceFolder: '{count} Instanzen gefunden'
 instanceFileOperation:
   add: hinzufügen
   backup-add: Ersetzen (Reserve)
@@ -529,17 +532,20 @@ instanceUpdate:
   update: Aktualisierung beginnen
 instances:
   add: Ein Spiel erstellen
+  addCurseForgeDescription: |-
+    Aus dem Curseforge-Datenordner importieren. 
+    Sie müssen den Stammdatenordner von Curseforge auswählen
   addDescription: Erstellen Sie eine neue Instanz von Grund auf
   addMMCDescription: |-
-    Importieren Sie eine bestehende MultiMC-Instanz. 
-    Sie müssen den Ordner der MultiMC-Instanz auswählen.
+    Vorhandene MultiMC-Instanz importieren. 
+    Sie müssen den Datenordner von MultiMC auswählen.
   addManually: Manuell erstellen
   addModrinthDescription: |-
-    Importieren Sie eine bestehende Modrinth-Instanz. 
-    Sie müssen den Ordner der Modrinth-Instanz auswählen.
+    Vorhandene Modrinth-Instanz importieren. 
+    Sie müssen den Modrinth-Stammdatenordner auswählen.
   addServer: Vom Server aus erstellen
   addServerDescription: Dadurch wird das Spiel direkt auf dem Server gestartet.
-  addTemplate: Aus einer Vorlage erstellen
+  addTemplate: Aus heruntergeladenem Modpack erstellen
   addTemplateDescription: Import aus einem heruntergeladenen Modpack
   addVanilla: Erstellen Sie mit Vanilla Minecraft
   addVanillaDescription: |-
@@ -1359,6 +1365,7 @@ setting:
     alle Rechner
      insgesamt. 0 bedeutet keine Einschränkungen.
   maxSocketsTitle: Maximale Anzahl von HTTP-Sockets
+  migrateFromOther: Von einem anderen Launcher importieren
   name: Globale Einstellungen | Globale Einstellungen
   network: Netzwerkeinstellungen
   officialWebsite: Офіційний сайт

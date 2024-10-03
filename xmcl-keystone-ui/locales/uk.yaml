@@ -446,6 +446,9 @@ instanceAge:
   older: Старі
   threeDay: В протягом трьох днів
   today: Сьогодні
+instanceDiscover:
+  gameFolder: Відкрийте {count} папок ігор
+  instanceFolder: Знайдено {count} екземплярів
 instanceFileOperation:
   add: Додати
   backup-add: Замінити (Резерв)
@@ -486,17 +489,20 @@ instanceUpdate:
   update: Почати оновлення
 instances:
   add: Створити гру
+  addCurseForgeDescription: |-
+    Імпортувати з папки даних curseforge. 
+    Вам потрібно вибрати кореневу папку даних curseforge
   addDescription: Створіть новий екземпляр з нуля
   addMMCDescription: |-
-    Імпорт існуючого екземпляра MultiMC. 
-    Вам потрібно вибрати папку екземпляра з MultiMC.
+    Імпорт наявного екземпляра MultiMC. 
+    Вам потрібно вибрати папку даних із MultiMC.
   addManually: Створити вручну
   addModrinthDescription: |-
-    Імпорт існуючого екземпляра Modrinth. 
-    Вам потрібно вибрати папку екземпляра Modrinth.
+    Імпорт наявного екземпляра Modrinth. 
+    Вам потрібно вибрати кореневу папку даних Modrinth.
   addServer: Створити з сервера
   addServerDescription: Це призведе до запуску гри безпосередньо на сервері.
-  addTemplate: Створити з шаблону
+  addTemplate: Створіть із завантаженого пакета модів
   addTemplateDescription: Імпорт із завантаженого Modpack
   addVanilla: Створюйте з ванільного Minecraft
   addVanillaDescription: |-
@@ -1254,6 +1260,7 @@ setting:
     всіх хостів
      загалом. 0 означає відсутність обмежень.
   maxSocketsTitle: Максимальна кількість HTTP-сокетів
+  migrateFromOther: Імпорт з іншого запуску
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
   officialWebsite: Офіційний сайт

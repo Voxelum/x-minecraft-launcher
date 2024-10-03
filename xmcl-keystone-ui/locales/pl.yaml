@@ -455,6 +455,9 @@ instanceAge:
   older: Starszy
   threeDay: W trzy dni
   today: Dzisiaj
+instanceDiscover:
+  gameFolder: Odkryj {count} folderów z grami
+  instanceFolder: 'Znaleziono wystąpienia: {count}'
 instanceFileOperation:
   add: Dodaj
   backup-add: Wymiana (Backup)
@@ -499,17 +502,20 @@ instanceUpdate:
   update: Rozpoczęcie aktualizacji
 instances:
   add: Utwórz grę
+  addCurseForgeDescription: |-
+    Importuj z folderu danych curveforge. 
+    Musisz wybrać główny folder danych Curveforge
   addDescription: Utwórz nową instancję od podstaw
-  addMMCDescription: >-
-    Zaimportuj istniejącą instancję MultiMC. Musisz wybrać folder instancji z
-    MultiMC.
+  addMMCDescription: |-
+    Zaimportuj istniejącą instancję MultiMC. 
+    Musisz wybrać folder danych z MultiMC.
   addManually: Ręczne tworzenie
-  addModrinthDescription: >-
-    Zaimportuj istniejącą instancję Modrinth. Musisz wybrać folder instancji
-    Modrinth folder.
+  addModrinthDescription: |-
+    Zaimportuj istniejącą instancję Modrinth. 
+    Musisz wybrać główny folder danych Modrinth.
   addServer: Utwórz z serwera
   addServerDescription: Spowoduje to bezpośrednie uruchomienie gry na serwerze.
-  addTemplate: Utwórz z szablonu
+  addTemplate: Utwórz z pobranego pakietu modów
   addTemplateDescription: Import z pobranego pakietu Modpack
   addVanilla: Tworzenie z Minecrafta w stylu vanilla
   addVanillaDescription: >-
@@ -1296,6 +1302,7 @@ setting:
     Ograniczenie maksymalnej liczby gniazd na host lub dla wszystkich hostów
     łącznie. łącznie. 0 oznacza brak limitu.
   maxSocketsTitle: Max HTTP sockets
+  migrateFromOther: Importuj z innego launchera
   name: Ustawienia globalne | Ustawienia globalne
   network: Ustawienia sieciowe
   officialWebsite: Oficjalna strona internetowa

@@ -75,6 +75,9 @@ export async function parseMultiMCInstance(path: string): Promise<CreateInstance
     instanceOptions.runtime = runtime
   }
 
+  instanceOptions.resourcepacks = true
+  instanceOptions.shaderpacks = true
+
   return instanceOptions
 }
 

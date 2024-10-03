@@ -38,7 +38,7 @@ const { t } = useI18n()
 const emit = defineEmits(['select'])
 
 const items = computed(() => {
-  return [{
+  return [/* {
     title: t('instances.addTemplate'),
     subtitle: t('instances.addTemplateDescription'),
     icon: 'apps',
@@ -50,7 +50,7 @@ const items = computed(() => {
     icon: 'public',
     color: 'blue',
     value: 'server',
-  }, {
+  },  */{
     title: 'MultiMC',
     subtitle: t('instances.addMMCDescription'),
     icon: '$vuetify.icons.mmc',
@@ -62,16 +62,22 @@ const items = computed(() => {
     value: 'modrinth',
     color: 'green',
   }, {
+    title: 'CurseForge',
+    subtitle: t('instances.addCurseForgeDescription'),
+    icon: '$vuetify.icons.curseforge',
+    value: 'curseforge',
+    color: 'red',
+  }, {
     title: t('instances.addVanilla'),
     subtitle: t('instances.addVanillaDescription'),
     icon: '$vuetify.icons.minecraft',
     value: 'vanilla',
-  }, {
+  }, /* , {
     title: t('instances.addManually'),
     subtitle: t('instances.addDescription'),
     icon: 'add',
     value: 'manual',
-  }]
+  } */]
 })
 
 </script>

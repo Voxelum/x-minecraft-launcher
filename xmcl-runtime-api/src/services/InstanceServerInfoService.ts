@@ -2,7 +2,7 @@ import type { Status } from '@xmcl/client'
 import type { ServerInfo } from '@xmcl/game-data'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
 import { ServiceKey } from './Service'
-import { MutableState } from 'src/util/MutableState'
+import { MutableState } from '../util/MutableState'
 
 export class ServerInfoWithStatus implements ServerInfo {
   status: Status = UNKNOWN_STATUS

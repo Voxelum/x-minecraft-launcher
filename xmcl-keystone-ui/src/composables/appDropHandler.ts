@@ -37,40 +37,44 @@ export function useAppDropHandler() {
   const { path } = injection(kInstance)
   const { show } = useDialog(AddInstanceDialogKey)
 
-  registerHandler(() => {
-    active.value = true
-  }, async (dataTransfer) => {
-    const promises = [] as Promise<any>[]
-    if (dataTransfer.items.length > 0) {
-      for (let i = 0; i < dataTransfer.items.length; ++i) {
-        const item = dataTransfer.items[i]
-        if (item.kind === 'string') {
-          const content = await new Promise<string>((resolve) => item.getAsString(resolve))
-          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-            promises.push(onAuthServiceDropped(content))
-          } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
-            promises.push(onGitURLDropped(content))
+  registerHandler({
+    onEnter: () => {
+      active.value = true
+    },
+    onDrop: async (dataTransfer) => {
+      const promises = [] as Promise<any>[]
+      if (dataTransfer.items.length > 0) {
+        for (let i = 0; i < dataTransfer.items.length; ++i) {
+          const item = dataTransfer.items[i]
+          if (item.kind === 'string') {
+            const content = await new Promise<string>((resolve) => item.getAsString(resolve))
+            if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+              promises.push(onAuthServiceDropped(content))
+            } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
+              promises.push(onGitURLDropped(content))
+            }
           }
         }
       }
-    }
 
-    if (dataTransfer.files.length > 0) {
-      for (let i = 0; i < dataTransfer.files.length; i++) {
-        const file = dataTransfer.files.item(i)!
-        if (items.value.every(p => p.id !== file.path)) {
-          promises.push(onFileDropped(file))
+      if (dataTransfer.files.length > 0) {
+        for (let i = 0; i < dataTransfer.files.length; i++) {
+          const file = dataTransfer.files.item(i)!
+          if (items.value.every(p => p.id !== file.path)) {
+            promises.push(onFileDropped(file))
+          }
         }
       }
-    }
-    dragover.value = false
+      dragover.value = false
 
-    await Promise.all(promises).catch(() => {})
-    if (items.value.length === 0) {
-      cancel()
-    }
-  }, () => {
-    if (items.value.length === 0) cancel()
+      await Promise.all(promises).catch(() => { })
+      if (items.value.length === 0) {
+        cancel()
+      }
+    },
+    onLeave: () => {
+      if (items.value.length === 0) cancel()
+    },
   })
   const { addYggdrasilService } = useService(YggdrasilServiceKey)
   const { previewUrl } = useService(ImportServiceKey)

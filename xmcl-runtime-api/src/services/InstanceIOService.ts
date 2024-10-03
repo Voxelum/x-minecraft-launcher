@@ -39,13 +39,27 @@ export interface ExportInstanceOptions {
   files?: string[]
 }
 
+export interface ThirdPartyLauncherManifest {
+  instances: {
+    path: string
+    options: CreateInstanceOption
+  }[]
+
+  folder: {
+    versions: string
+    libraries: string
+    assets: string
+    jre?: string
+  }
+}
+
 export interface CreateInstanceManifest {
   options: CreateInstanceOption
   isIsolated: boolean
   path: string
 }
 
-export type InstanceType = 'mmc' | 'vanilla' | 'modrinth'
+export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -57,13 +71,17 @@ export interface InstanceIOService {
    */
   exportInstance(options: ExportInstanceOptions): Promise<void>
 
-  getGameDefaultPath(type?: 'modrinth-root' | 'modrinth-instances' | 'vanilla'): Promise<string>
+  getGameDefaultPath(type?: 'modrinth' | 'modrinth-instances' | 'curseforge' | 'vanilla'): Promise<string>
   /**
-   * Parse instances folders
-   * @param path The instance or .minecraft folder path
-   * @param type Determine if this is a vanilla, mmc or modrinth folder
+   * Parse other launcher data folder to get the instances
    */
-  parseInstances(path: string, type?: InstanceType): Promise<CreateInstanceManifest[]>
+  parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest>
+  /**
+   * Import the launcher data to the instance
+   * @param path The path of the launcher data
+   * @param data The data from the launcher
+   */
+  importLauncherData(data: ThirdPartyLauncherManifest): Promise<void>
   /**
    * Parse the files from the path of instance or .minecraft folder
    * @param path The instance or .minecraft folder path

@@ -51,8 +51,8 @@ HomeJavaIssueDialog:
   optionManualDownload: {}
   optionSelectJava:
     message: >-
-      Maybe the launcher doesn't find your Java. You can tell the launcher
-      where it is.
+      Maybe the launcher doesn't find your Java. You can tell the launcher where
+      it is.
     name: Select Java in your computer
   optionSwitch:
     disabled: There is no Java {version} found in database now!
@@ -433,6 +433,9 @@ instanceAge:
   older: Older
   threeDay: In Three Days
   today: Today
+instanceDiscover:
+  gameFolder: Discover {count} game folders
+  instanceFolder: Found {count} instances
 instanceFileOperation:
   add: Add
   backup-add: Replace (Backup)
@@ -473,17 +476,20 @@ instanceUpdate:
   update: Start Update
 instances:
   add: Create Game
+  addCurseForgeDescription: >-
+    Import from curseforge data folder. You need to select curseforge's root
+    data folder
   addDescription: Create a new instance from scratch
   addMMCDescription: >-
-    Import existing MultiMC instance. You need to select the instance folder from
+    Import existing MultiMC instance. You need to select the data folder from
     MultiMC.
   addManually: Manually Create
   addModrinthDescription: >-
-    Import existing Modrinth instance. You need to select the Modrinth instance
+    Import existing Modrinth instance. You need to select the Modrinth root data
     folder.
   addServer: Create from server
   addServerDescription: This will create a game directly launch to the server.
-  addTemplate: Create from template
+  addTemplate: Create from downloaded modpack
   addTemplateDescription: Import from downloaded Modpack
   addVanilla: Create from vanilla-like Minecraft
   addVanillaDescription: >-
@@ -553,8 +559,8 @@ launchBlocked:
     title: No version selected
   launchSpawnProcessFailed:
     description: >-
-      Please check your java, or give more permissions to the launcher and retry.
-      If this still doesn't work, please contact the developers.
+      Please check your java, or give more permissions to the launcher and
+      retry. If this still doesn't work, please contact the developers.
     title: Fail to start game process
   launchUserStatusRefreshFailed:
     description: Cannot refresh current selected user status.
@@ -950,8 +956,8 @@ multiplayer:
     Connection </span> section. <br> The ICE server might need some time to
     collect your info to create <span class="v-chip v-chip--label v-size--small"
     style="text-font: bold">Local token</span>.<br> You do not need to wait
-    until the ICE status is complete. If the token below remains unchanged, you can
-    copy it and send it to your peer."
+    until the ICE status is complete. If the token below remains unchanged, you
+    can copy it and send it to your peer."
   groupId: Group Id
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
@@ -1253,6 +1259,7 @@ setting:
     Limit the maximum number of sockets to allow per host or for all hosts in
     total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
+  migrateFromOther: Import from other launcher
   name: Global Setting | Global Settings
   network: Network Settings
   officialWebsite: Official Website
@@ -1327,8 +1334,8 @@ setup:
       another one.
     nonDictionary: Selected path is a file! Please select a directory!
   focusLayoutDescription: >-
-    The focus layout is the legacy layout of the Minecraft Launcher. It is designed
-    to be used with a single instance or few instances.
+    The focus layout is the legacy layout of the Minecraft Launcher. It is
+    designed to be used with a single instance or few instances.
   game:
     description: >-
       Choose existing game directory (.minecraft) to import existing resources.
@@ -1417,8 +1424,8 @@ tutorial:
     javaImportTitle: Import java
     javaTitle: Java list
   instanceAddDescription: >-
-    Click this button to import existing Minecraft instance or create a new one from
-    scratch or modpack.
+    Click this button to import existing Minecraft instance or create a new one
+    from scratch or modpack.
   instanceSelectDescription: Clicking this button will navigate to the page to select game and read news.
   launchDescription: Click this button to install or launch the game.
   mod:
@@ -1463,7 +1470,9 @@ tutorial:
     You will see the most popular modpacks in Curseforge and Modrinth in this
     section.
   storeSearchCategoryDescription: You can also toggle the categories or filters here.
-  storeSearchDescription: You can search Modpacks by inputting in this text box. Press Enter to search.
+  storeSearchDescription: >-
+    You can search Modpacks by inputting in this text box. Press Enter to
+    search.
   storeSearchResultDescription: You will see all search results listed here.
   userAccountDescription: Click this icon to add or manage your Minecraft account.
 universalDrop:

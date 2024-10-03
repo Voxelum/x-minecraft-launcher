@@ -15,12 +15,12 @@
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
-      <v-toolbar-title>
+      <v-toolbar-title class="flex items-center">
         <div v-if="steps[step - 1] === 'template'">
           {{ t('instanceTemplate.title') }}
         </div>
         <template v-if="steps[step - 1] === 'config'">
-          {{ t('AppAddInstanceDialog.configTitle') }}
+          {{ t('instances.add') }}
         </template>
         <template v-if="steps[step - 1] === 'choice'">
           {{ t('AppAddInstanceDialog.choiceTitle') }}
@@ -31,6 +31,18 @@
         <template v-if="steps[step - 1] === 'server'">
           {{ t('AppAddInstanceDialog.serverTitle') }}
         </template>
+
+        <div class="flex-grow" />
+        <v-btn
+          outlined
+          color="primary"
+          @click="onMigrateFromOther"
+        >
+          <v-icon left>
+            local_shipping
+          </v-icon>
+          {{ t("setting.migrateFromOther") }}
+        </v-btn>
       </v-toolbar-title>
     </v-toolbar>
 
@@ -42,10 +54,6 @@
           class="max-h-[70vh]"
           :step="i + 1"
         >
-          <StepSelect
-            v-if="tStep === 'create' && !loading"
-            @select="onSelectType"
-          />
           <AppLoadingCircular
             v-if="tStep === 'create' && loading"
             :texts="[t('instances.loadingFiles') + '...']"
@@ -70,6 +78,7 @@
           />
         </v-stepper-content>
       </v-stepper-items>
+      <v-divider />
       <StepperFooter
         class="px-6 pb-6 pt-4"
         :disabled="!valid || loading"
@@ -80,9 +89,26 @@
         @next="next"
         @quit="quit"
       >
-        <div v-if="type === 'template' || type === 'manual' || !type">
+        <div
+          v-if="type === 'template' || type === 'manual' || !type"
+          class="flex justify-end"
+        >
           <v-btn
             text
+            style="margin-right: 10px"
+            outlined
+            :loading="loading"
+            @click="onSelectTemplate"
+          >
+            <v-icon left>
+              list
+            </v-icon>
+            {{ t('instances.addTemplate') }}
+          </v-btn>
+
+          <v-btn
+            text
+            outlined
             :loading="loading"
             @click="onImportModpack"
           >
@@ -116,7 +142,6 @@
 import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
 import StepChoice from '@/components/StepChoice.vue'
 import StepConfig from '@/components/StepConfig.vue'
-import StepSelect from '@/components/StepSelect.vue'
 import StepServer from '@/components/StepServer.vue'
 import StepperFooter from '@/components/StepperFooter.vue'
 import { useService } from '@/composables'
@@ -137,7 +162,7 @@ import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
-const { getGameDefaultPath, parseInstanceFiles, parseInstances } = useService(InstanceIOServiceKey)
+const { parseInstanceFiles } = useService(InstanceIOServiceKey)
 const updateData = async (man: CreateInstanceManifest) => {
   await update(
     man.options,
@@ -149,38 +174,6 @@ const onManifestSelect = async (man: CreateInstanceManifest) => {
   nextTick().then(() => {
     step.value += 1
   })
-}
-const onSelectType = async (t: string) => {
-  reset()
-  error.value = undefined
-  if (t === 'mmc' || t === 'vanilla' || t === 'modrinth') {
-    const defaultPath = t === 'modrinth'
-      ? await getGameDefaultPath('modrinth-instances')
-      : t === 'vanilla' ? await getGameDefaultPath('vanilla') : undefined
-    const dir = await windowController.showOpenDialog({
-      properties: ['openDirectory'],
-      defaultPath,
-    })
-    if (dir.canceled) {
-      return
-    }
-    const instancePath = dir.filePaths[0]
-    const _manifests = await parseInstances(instancePath, t).catch((e) => {
-      error.value = e
-      return []
-    })
-    manifests.value = _manifests
-
-    if (_manifests.length === 1) {
-      updateData(_manifests[0])
-    }
-  }
-  type.value = t as any
-  if (!error.value) {
-    nextTick().then(() => {
-      step.value += 1
-    })
-  }
 }
 
 // Dialog model
@@ -233,8 +226,8 @@ const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
     return
   }
 
-  step.value = 1
-  type.value = undefined
+  step.value = 2
+  type.value = 'template'
   valid.value = true
 
   windowController.focus()
@@ -245,7 +238,7 @@ const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
     const after = () => {
       type.value = 'template'
       nextTick(() => {
-        step.value = 3
+        step.value = 2
       })
     }
     if (param.type === 'modpack') {
@@ -261,9 +254,9 @@ const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
     return
   }
   setTimeout(() => {
-    step.value = 1
+    step.value = 2
     valid.value = true
-    type.value = undefined
+    type.value = 'template'
     reset()
   }, 500)
 })
@@ -312,20 +305,14 @@ const step = ref(1)
 const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : 'Minecraft' }))
 const steps = computed(() => {
   if (type.value === 'template') {
-    return ['create', 'template', 'config']
+    return ['template', 'config']
   }
 
   if (type.value === 'server') {
-    return ['create', 'server', 'config']
+    return ['server', 'config']
   }
 
-  if (type.value === 'mmc' || type.value === 'vanilla' || type.value === 'modrinth') {
-    if (manifests.value.length > 1) {
-      return ['create', 'choice', 'config']
-    }
-  }
-
-  return ['create', 'config']
+  return ['config']
 })
 function next() {
   if (step.value < steps.value.length) {
@@ -336,9 +323,15 @@ function back() {
   if (step.value > 1) {
     step.value -= 1
   }
-  if (step.value === 1) {
-    type.value = undefined
-  }
+}
+
+function onSelectTemplate() {
+  type.value = 'template'
+  step.value = 2
+
+  nextTick(() => {
+    step.value = 1
+  })
 }
 
 // Manuall import
@@ -354,7 +347,7 @@ const onImportModpack = () => {
       await onSelectModpack(file)
       type.value = 'template'
       nextTick(() => {
-        step.value = 3
+        step.value = 2
       })
     } catch (e) {
       error.value = e
@@ -386,6 +379,7 @@ onPeerService('share', (event) => {
   }
 })
 
+const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 </script>
 
 <style>

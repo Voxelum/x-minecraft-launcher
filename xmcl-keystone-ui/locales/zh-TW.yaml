@@ -447,6 +447,9 @@ instanceAge:
   older: 三天前
   threeDay: 三天內
   today: 今天
+instanceDiscover:
+  gameFolder: 發現 {count} 個遊戲資料夾
+  instanceFolder: 找到 {count} 個實例
 instanceFileOperation:
   add: 新增
   backup-add: 備份並替換
@@ -485,15 +488,20 @@ instanceUpdate:
   update: 開始更新例項
 instances:
   add: 建立遊戲
+  addCurseForgeDescription: |-
+    從curseforge 資料資料夾匯入。
+    您需要選擇curseforge的根資料資料夾
   addDescription: 從頭開始建立一個新例項
-  addMMCDescription: 匯入已有的 MultiMC 例項，您需要選擇 MultiMC 例項的資料夾
+  addMMCDescription: |-
+    匯入現有的 MultiMC 執行個體。
+    您需要從 MultiMC 中選擇資料資料夾。
   addManually: 手動建立
   addModrinthDescription: |-
-    匯入現有的 Modrinth 例項。
-    您需要選擇 Modrinth 例項資料夾。
+    導入現有的 Modrinth 實例。
+    您需要選擇 Modrinth 根資料夾。
   addServer: 從伺服器建立
   addServerDescription: 這將建立一個直接啟動到伺服器的遊戲。
-  addTemplate: 從模板建立
+  addTemplate: 從下載的模組包創建
   addTemplateDescription: 從下載的整合包匯入
   addVanilla: 從原版 Minecraft 建立
   addVanillaDescription: |-
@@ -1199,6 +1207,7 @@ setting:
   maxSockets: (每個網站)最大連線數
   maxSocketsDescription: 控制最大的併發 HTTP 連結數量。0 代表不限制數量。
   maxSocketsTitle: 最大 HTTP 連線數量
+  migrateFromOther: 從其他啟動器匯入
   name: 設定
   network: 網路設定
   officialWebsite: 官網地址

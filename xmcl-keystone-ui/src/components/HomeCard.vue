@@ -1,9 +1,9 @@
 <template>
   <v-card
     class="flex h-full flex-col transition-colors transition-transform"
-    :class="{ highlighted: dragover > 0 }"
+    :class="{ highlighted: highlighted }"
     style="box-sizing: border-box"
-    :color="error ? 'red' : dragover > 0 ? 'yellow darken-2' : cardColor"
+    :color="error ? 'red' : highlighted ? 'yellow darken-2' : cardColor"
     @dragover="emit('dragover', $event)"
     @drop="emit('drop', $event); dragover = 0;"
     @dragenter="dragover += 1"
@@ -30,7 +30,7 @@
       <template v-else>
         {{ error ? (error.message || error) : text }}
         <div
-          v-if="icons.length > 0"
+          v-if="!globalDragover && icons.length > 0"
           class="mt-4"
         >
           <v-avatar
@@ -62,6 +62,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { kDropHandler } from '@/composables/dropHandler'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
@@ -83,6 +84,8 @@ const { cardColor, accentColor } = injection(kTheme)
 const slots = useSlots()
 
 const dragover = ref(0)
+const { dragover: globalDragover } = injection(kDropHandler)
+const highlighted = computed(() => globalDragover.value && dragover.value > 0)
 </script>
 
 <style scoped>

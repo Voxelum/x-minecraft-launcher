@@ -13,6 +13,7 @@ import Context from './Context'
 import { router } from './router'
 import { kFlights } from '@/composables/flights'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
+import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -40,7 +41,7 @@ const app = new Vue(defineComponent({
     })
 
     provide(kFlights, (window as any).flights || {})
-
+    provide(kNotificationQueue, useNotificationQueue())
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kTaskManager, useTaskManager())
     provide(kServiceFactory, useServiceFactory())
