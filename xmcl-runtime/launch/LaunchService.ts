@@ -1,4 +1,4 @@
-import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, createMinecraftProcessWatcher, generateArguments, launch, launchServer } from '@xmcl/core'
+import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
 import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LauncherProfileState, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload, ResolvedServerVersion } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { ChildProcess } from 'child_process'
@@ -188,37 +188,44 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
   async generateArguments(options: LaunchOptions) {
     try {
-      const user = options.user
-      const javaPath = options.java
+      if (options.side === 'client') {
+        const user = options.user
+        const javaPath = options.java
 
-      let version: ResolvedVersion | undefined
+        let version: ResolvedVersion | undefined
 
-      if (options.version) {
-        this.log(`Override the version: ${options.version}`)
-        try {
-          version = await this.versionService.resolveLocalVersion(options.version)
-        } catch (e) {
-          this.warn(`Cannot use override version: ${options.version}`)
-          this.warn(e)
+        if (options.version) {
+          this.log(`Override the version: ${options.version}`)
+          try {
+            version = await this.versionService.resolveLocalVersion(options.version)
+          } catch (e) {
+            this.warn(`Cannot use override version: ${options.version}`)
+            this.warn(e)
+          }
         }
+
+        if (!version) {
+          throw new LaunchException({
+            type: 'launchNoVersionInstalled',
+            options,
+          })
+        }
+
+        if (!javaPath) {
+          throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
+        }
+
+        const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
+        const _options = this.#generateOptions(options, version, accessToken)
+        const args = await generateArguments(_options)
+
+        return args
+      } else {
+        const version = await this.versionService.resolveServerVersion(options.version)
+        const launchOptions = this.#generateServerOptions(options, version)
+        const args = await generateArgumentsServer(launchOptions)
+        return args
       }
-
-      if (!version) {
-        throw new LaunchException({
-          type: 'launchNoVersionInstalled',
-          options,
-        })
-      }
-
-      if (!javaPath) {
-        throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
-      }
-
-      const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
-      const _options = this.#generateOptions(options, version, accessToken)
-      const args = await generateArguments(_options)
-
-      return args
     } catch (e) {
       if (e instanceof LaunchException) {
         throw e
