@@ -115,6 +115,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
 
   openMultiplayerWindow(): void
 
+  queryAudioPermission(): Promise<boolean>
+
   findInPage(text: string, options?: {
     /**
      * Whether to search forward or backward, defaults to `true`.
