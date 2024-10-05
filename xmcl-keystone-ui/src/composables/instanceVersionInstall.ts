@@ -201,7 +201,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
 
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
-  const loading = ref(false)
+  const loading = ref(0)
   const config = inject(kSWRVConfig)
 
   const instanceLock: Record<string, ReadWriteLock> = {}
@@ -210,11 +210,8 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     if (!version) return
     abortController.abort()
     abortController = new AbortController()
-    abortController.signal.addEventListener('abort', () => {
-      loading.value = false
-    })
     try {
-      loading.value = true
+      loading.value += 1
       const lock = getInstanceLock(path.value)
       console.time('[getInstallInstruction]')
       await lock.write(async () => {
@@ -240,7 +237,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       })
     } finally {
       console.timeEnd('[getInstallInstruction]')
-      loading.value = false
+      loading.value -= 1
     }
   }
 
@@ -260,6 +257,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       return undefined
     }
     const validJava = javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid)
+    console.log('validJava', validJava)
     return validJava ? undefined : resolved.javaVersion
   }
 
@@ -482,7 +480,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   return {
     instruction,
     fix,
-    loading,
+    loading: computed(() => loading.value > 0),
     getInstanceLock,
 
     getInstallInstruction,

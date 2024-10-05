@@ -76,7 +76,7 @@
           </v-icon>
           {{ t('yes') }}
         </v-btn>
-        <template v-if="javaIssue">
+        <template v-if="javaIssue && !selected">
           <v-btn
             color="warning"
             :loading="selected"
@@ -142,16 +142,17 @@ const { t } = useI18n()
 const { launching, windowReady, kill, launchingStatus, launch, skipRefresh, skipAuthLib } = injection(kInstanceLaunch)
 const exiting = ref(false)
 const selected = ref(false)
+const javaIssue = ref<'invalid' | 'incompatible' | undefined>()
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (param) => {
   exiting.value = !!param?.isKill
+  javaIssue.value = param.javaIssue
 }, () => {
   exiting.value = false
   selected.value = false
   refreshUserTimeout.value = false
   authLibTimeout.value = false
+  javaIssue.value = undefined
 })
-
-const { issue: javaIssue } = useInstanceJavaDiagnose()
 
 const { path } = injection(kInstance)
 const { editInstance } = useService(InstanceServiceKey)
