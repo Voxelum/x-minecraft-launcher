@@ -3,16 +3,17 @@ import { BaseService } from '@xmcl/runtime/base'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { ImportService } from '@xmcl/runtime/import'
 import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
-import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, InstanceService, InstanceServerInfoService } from '@xmcl/runtime/instance'
+import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, InstanceServerInfoService, InstanceService } from '@xmcl/runtime/instance'
 import { InstanceIOService, InstanceInstallService, InstanceManifestService, InstanceUpdateService } from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
 import { InstanceModsService } from '@xmcl/runtime/mod'
+import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
 import { PeerService } from '@xmcl/runtime/peer'
 import { PresenceService } from '@xmcl/runtime/presence'
-import { InstanceResourcePackService, ResourcePackPreviewService, InstanceShaderPacksService } from '@xmcl/runtime/resourcePack'
+import { InstanceResourcePackService, InstanceShaderPacksService, ResourcePackPreviewService } from '@xmcl/runtime/resourcePack'
 import { InstanceSavesService } from '@xmcl/runtime/save'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
@@ -25,6 +26,7 @@ export const definedServices = [
   AuthlibInjectorService,
   ImportService,
   InstallService,
+  ProjectMappingService,
   InstanceIOService,
   InstanceLogService,
   ElyByService,

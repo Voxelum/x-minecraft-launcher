@@ -58,11 +58,9 @@
       >
         <v-list-item-title class="flex overflow-hidden">
           <span class="max-w-full overflow-hidden overflow-ellipsis">
-            {{ title || item.title }}
+            {{ item.localizedTitle || title || item.title }}
           </span>
-          <template
-            v-if="item.installed.length > 0 && getContextMenuItems"
-          >
+          <template v-if="item.installed.length > 0 && getContextMenuItems">
             <div class="flex-grow" />
             <v-icon
               v-if="hasDuplicate"
@@ -94,14 +92,11 @@
         </v-list-item-title>
       </v-badge>
       <v-list-item-subtitle v-if="!dense">
-        <template v-if="description">
-          {{ description }}
-        </template>
-        <template v-else-if="typeof item.description === 'string' && item.description?.includes('§')">
-          <TextComponent :source="item.description" />
+        <template v-if="typeof descriptionText === 'string' && descriptionText?.includes('§')">
+          <TextComponent :source="descriptionText" />
         </template>
         <template v-else>
-          {{ item.description }}
+          {{ descriptionText }}
         </template>
       </v-list-item-subtitle>
       <v-list-item-subtitle
@@ -113,9 +108,7 @@
           name="labels"
         />
         <template v-else>
-          <template
-            v-for="(tag, i) of tags"
-          >
+          <template v-for="(tag, i) of tags">
             <v-divider
               v-if="i > 0"
               :key="i + 'divider'"
@@ -158,10 +151,11 @@ import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
-import { Resource } from '@xmcl/runtime-api'
+import { ProjectMappingServiceKey, Resource } from '@xmcl/runtime-api'
 import { basename } from '@/util/basename'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
+import { useService } from '@/composables/service'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>
@@ -188,6 +182,7 @@ const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
 const { open } = useContextMenu()
 
+const descriptionText = computed(() => props.item.localizedDescription || description.value || props.item.description)
 const hasDuplicate = computed(() => props.noDuplicate && props.item.installed.length > 1)
 
 const dragover = ref(0)
@@ -331,5 +326,4 @@ const onInstall = async () => {
 .dragged-over {
   @apply border border-dashed border-transparent border-yellow-400;
 }
-
 </style>

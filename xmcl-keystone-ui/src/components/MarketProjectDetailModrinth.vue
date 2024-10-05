@@ -7,11 +7,14 @@ import { useModrinthProject } from '@/composables/modrinthProject'
 import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
 import { getModrinthVersionModel, useModrinthTask } from '@/composables/modrinthVersions'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
+import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
+import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -35,7 +38,11 @@ const emit = defineEmits<{
 // Project
 const projectId = computed(() => props.projectId)
 const { project, isValidating: isValidatingModrinth, refresh } = useModrinthProject(projectId)
-const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth))
+const { lookupByModrinth } = useService(ProjectMappingServiceKey)
+const { data: mapping } = useSWRV(computed(() => `/modrinth/${projectId.value}?mapping`), () => {
+  return lookupByModrinth(props.projectId)
+})
+const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth), mapping)
 const loading = useLoading(isValidatingModrinth, project, projectId)
 
 // Versions
@@ -158,7 +165,7 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
 
-const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId)
+const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId || mapping.value?.curseforgeId)
 
 const archived = computed(() => {
   return project.value?.status === 'archived'

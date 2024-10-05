@@ -12,7 +12,9 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
   id: string
   icon: string
   title: string
+  localizedTitle?: string
   description: string
+  localizedDescription?: string
   author: string
 
   disabled?: boolean

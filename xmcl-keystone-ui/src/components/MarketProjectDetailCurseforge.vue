@@ -7,14 +7,16 @@ import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
+import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { basename } from '@/util/basename'
-import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoaderTypesForFile } from '@/util/curseforge'
+import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders, getModLoaderTypesForFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FileModLoaderType, Mod, ModStatus } from '@xmcl/curseforge'
-import { Resource } from '@xmcl/runtime-api'
+import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
 
 const props = defineProps<{
   curseforge?: Mod
@@ -40,10 +42,16 @@ const { getDateString } = useDateString()
 const curseforgeModId = computed(() => props.curseforgeId)
 
 const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectModel(curseforgeModId))
+const { lookupByCurseforge } = useService(ProjectMappingServiceKey)
+const { data: curseforgeProjectMapping } = useSWRV(computed(() => `/curseforge/${curseforgeModId.value}?mapping`), () => {
+  return lookupByCurseforge(curseforgeModId.value)
+})
+
 const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
 const model = computed(() => {
   const externals: ExternalResource[] = []
   const mod = props.curseforge || curseforgeProject.value
+
   if (mod?.links.issuesUrl) {
     externals.push({
       icon: 'pest_control',
@@ -139,6 +147,12 @@ const model = computed(() => {
     galleries,
     info,
     archived: ModStatus.Inactive === mod?.status || ModStatus.Abandoned === mod?.status,
+  }
+
+  if (curseforgeProjectMapping.value) {
+    const mapped = curseforgeProjectMapping.value
+    detail.localizedTitle = mapped.name
+    detail.localizedDescription = mapped.description
   }
   return detail
 })
@@ -338,7 +352,7 @@ const onRefresh = () => {
   mutate()
 }
 
-const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.curseforge?.projectId === props.curseforgeId && v.modrinth)?.modrinth?.projectId)
+const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.curseforge?.projectId === props.curseforgeId && v.modrinth)?.modrinth?.projectId || curseforgeProjectMapping.value?.modrinthId)
 </script>
 <template>
   <MarketProjectDetail
