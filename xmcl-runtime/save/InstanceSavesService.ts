@@ -512,15 +512,15 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       throw new Error('Unsupported market type')
     }
     const provider = await this.app.registry.get(kMarketProvider)
-    const result = await provider.installFile({
+    const [result] = await provider.installFile({
       ...options,
       directory: this.getPath('saves'),
     })
     const savePath = await this.importSave({
       path: result.path,
       curseforge: {
-        projectId: options.file.modId,
-        fileId: options.file.id,
+        projectId: result.metadata.curseforge!.projectId,
+        fileId: result.metadata.curseforge!.fileId,
       },
       instancePath: options.instancePath,
     })

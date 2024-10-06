@@ -606,7 +606,6 @@ const curseforgeInstaller = useCurseforgeInstaller(
   mods,
   installFromMarket,
   onUninstall,
-  'mc-mods',
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

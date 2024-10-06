@@ -111,15 +111,11 @@ watch(() => props.installed, () => {
 
 // Install
 const installing = ref(false)
-const { installWithDependencies, install } = injection(kModrinthInstaller)
+const { install, installWithDependencies } = injection(kModrinthInstaller)
 const onInstall = async (v: ProjectDetailVersion) => {
-  const version = versions.value?.find(ver => ver.id === v.id)
-  if (!version) return
   try {
     installing.value = true
-    if (project.value) {
-      await installWithDependencies(project.value, version, props.installed, deps.value ?? [])
-    }
+    await installWithDependencies(v.id, v.loaders, project.value?.icon_url, props.installed, deps.value ?? [])
   } finally {
     installing.value = false
   }
@@ -138,7 +134,7 @@ const onInstallDependency = async (dep: ProjectDependency) => {
         }
       }
     }
-    await install(resolvedDep.project, version)
+    await install({ versionId: version.id, icon: resolvedDep.project.icon_url })
     if (files.length > 0) {
       emit('uninstall', files)
     }

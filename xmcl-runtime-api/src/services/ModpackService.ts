@@ -135,7 +135,7 @@ export interface ModpackService {
    * Install the modpack from market to local cache.
    * @returns The installed modpack path
    */
-  installModapckFromMarket(options: InstallMarketOptions): Promise<string>
+  installModapckFromMarket(options: InstallMarketOptions): Promise<string[]>
   /**
    * Export the instance as an curseforge/modrinth/mcbbs modpack
    * @param options The curseforge/modrinth/mcbbs modpack export options

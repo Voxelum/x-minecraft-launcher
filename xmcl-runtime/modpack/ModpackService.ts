@@ -68,13 +68,13 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.handlers[type] = handler
   }
 
-  async installModapckFromMarket(options: InstallMarketOptions): Promise<string> {
+  async installModapckFromMarket(options: InstallMarketOptions): Promise<string[]> {
     const provider = await this.app.registry.get(kMarketProvider)
     const result = await provider.installFile({
       ...options,
       directory: this.getPath('modpacks'),
     })
-    return result.path
+    return result.map(r => r.path)
   }
 
   /**

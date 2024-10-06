@@ -304,13 +304,9 @@ const installing = ref(false)
 const { install, installWithDependencies } = injection(kCurseforgeInstaller)
 
 const onInstall = async (mod: ProjectVersion) => {
-  const file = files.value.find(v => v.id.toString() === mod.id)
-  if (!file) return
   try {
     installing.value = true
-    if (curseforgeProject.value) {
-      await installWithDependencies(curseforgeProject.value, file, props.installed, deps.value ?? [])
-    }
+    await installWithDependencies(Number(mod.id), mod.loaders, curseforgeProject.value?.logo.url, props.installed, deps.value ?? [])
   } finally {
     installing.value = false
   }
@@ -329,7 +325,7 @@ const installDependency = async (dep: ProjectDependency) => {
         }
       }
     }
-    await install(ver, dep.icon)
+    await install({ fileId: ver.id, icon: dep.icon })
     if (resources.length > 0) {
       emit('uninstall', resources)
     }

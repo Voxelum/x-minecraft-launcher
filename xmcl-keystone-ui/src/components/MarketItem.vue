@@ -92,11 +92,11 @@
         </v-list-item-title>
       </v-badge>
       <v-list-item-subtitle v-if="!dense">
-        <template v-if="typeof descriptionText === 'string' && descriptionText?.includes('§')">
-          <TextComponent :source="descriptionText" />
+        <template v-if="typeof descriptionTextOrObject === 'object' || descriptionTextOrObject?.includes('§')">
+          <TextComponent :source="descriptionTextOrObject" />
         </template>
         <template v-else>
-          {{ descriptionText }}
+          {{ descriptionTextOrObject }}
         </template>
       </v-list-item-subtitle>
       <v-list-item-subtitle
@@ -182,7 +182,7 @@ const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
 const { open } = useContextMenu()
 
-const descriptionText = computed(() => props.item.localizedDescription || description.value || props.item.description)
+const descriptionTextOrObject = computed(() => props.item.localizedDescription || description.value || props.item.description || props.item.descriptionTextComponent || '')
 const hasDuplicate = computed(() => props.noDuplicate && props.item.installed.length > 1)
 
 const dragover = ref(0)
@@ -250,7 +250,8 @@ watch(() => props.item, (newMod) => {
   }
 }, { immediate: true })
 const { t } = useI18n()
-const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description.trim() || props.item.title.trim())
+
+const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : typeof descriptionTextOrObject.value === 'string' ? descriptionTextOrObject.value.trim() : descriptionTextOrObject.value.text || props.item.title.trim())
 const onSettingClick = (event: MouseEvent) => {
   const button = event.target as any // Get the button element
   const rect = button.getBoundingClientRect() // Get the position of the button

@@ -63,6 +63,7 @@
 
           <div class="flex-grow" />
           <AppCopyChip
+            v-if="(currentTarget === 'curseforge' ? curseforge : modrinth)"
             label
             :value="(currentTarget === 'curseforge' ? curseforge : modrinth)?.toString() || ''"
             outlined

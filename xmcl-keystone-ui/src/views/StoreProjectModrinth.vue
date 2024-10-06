@@ -14,7 +14,6 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { ProjectVersion } from '@xmcl/modrinth'
 import { TaskState } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
@@ -108,9 +107,8 @@ const { versions, error } = useModrinthVersions(computed(() => props.id))
 const _installing = ref(false)
 const { notify } = useNotifier()
 const onInstall = (v: StoreProjectVersion) => {
-  const ver = v as ProjectVersion
   _installing.value = true
-  installModpack({ version: ver, market: 0 }).catch((e) => {
+  installModpack({ version: { versionId: v.id, icon: project.value?.iconUrl }, market: 0 }).catch((e) => {
     notify({ level: 'error', title: e.message })
   }).finally(() => {
     _installing.value = false
@@ -135,7 +133,7 @@ const tasks = useTasks((t) => {
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)
-const installModpack = useModpackInstaller(computed(() => project.value?.iconUrl))
+const installModpack = useModpackInstaller()
 
 const { isValidating: loadingMembers, error: teamError, data } = useSWRV(computed(() => `/modrinth/team/${props.id}`),
   () => clientModrinthV2.getProjectTeamMembers(props.id),

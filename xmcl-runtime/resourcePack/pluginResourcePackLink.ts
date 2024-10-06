@@ -6,7 +6,7 @@ import { InstanceOptionsService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { linkWithTimeoutOrCopy, missing } from '../util/fs'
 import { InstanceResourcePackService } from './InstanceResourcePacksService'
-import { AbstractInstanceDoaminService } from './AbstractInstanceDoaminService'
+import { AbstractInstanceDomainService } from './AbstractInstanceDoaminService'
 import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 
 export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {

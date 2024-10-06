@@ -131,7 +131,6 @@ import VTypical from '@/components/VTyping.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceJava } from '@/composables/instanceJava'
-import { useInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { injection } from '@/util/inject'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
@@ -145,7 +144,7 @@ const selected = ref(false)
 const javaIssue = ref<'invalid' | 'incompatible' | undefined>()
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (param) => {
   exiting.value = !!param?.isKill
-  javaIssue.value = param.javaIssue
+  javaIssue.value = param?.javaIssue
 }, () => {
   exiting.value = false
   selected.value = false

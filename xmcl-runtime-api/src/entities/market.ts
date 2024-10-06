@@ -1,30 +1,27 @@
-import { File } from '@xmcl/curseforge'
-import { ModVersionFile, ProjectVersion } from '@xmcl/modrinth'
+type ModrinthVersionIdentifier = {
+  versionId: string
+  filename?: string
+  icon?: string
+}
 
 export type InstallMarketOptionsModrinth = {
   market: MarketType.Modrinth
-  /**
-   * The modrinth version
-   */
-  version: ProjectVersion
 
-  file?: ModVersionFile
+  version: ModrinthVersionIdentifier | ModrinthVersionIdentifier[]
+}
+
+type CurseforgeFileIdentifier = {
+  fileId: number
+  icon?: string
 }
 
 export type InstallMarketOptionsCurseforge = {
   market: MarketType.CurseForge
-  /**
-   * The curseforge file
-   */
-  file: File
+
+  file: CurseforgeFileIdentifier | CurseforgeFileIdentifier[]
 }
 
-export type InstallMarketOptions = (InstallMarketOptionsModrinth | InstallMarketOptionsCurseforge) & {
-  /**
-   * The icon of the file
-   */
-  icon?: string
-}
+export type InstallMarketOptions = InstallMarketOptionsModrinth | InstallMarketOptionsCurseforge
 
 export type InstallMarketOptionWithInstance = InstallMarketOptions & {
   instancePath: string

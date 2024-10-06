@@ -29,8 +29,8 @@ const versions = computed(() => {
   const files = props.resourcePack.files || []
   const all: ProjectVersion[] = files.map((f) => {
     const version: ProjectVersion = {
-      id: f.path,
-      name: basename(f.path),
+      id: f.path || f.id,
+      name: basename(f.path || f.id),
       version: f.version,
       downloadCount: 0,
       installed: true,
@@ -126,6 +126,7 @@ const onEnable = (v: boolean) => {
     :loading="false"
     :versions="versions"
     :updating="updating"
+    :no-version="versions.length === 0"
     :has-more="false"
     :loading-versions="false"
     @enable="onEnable"

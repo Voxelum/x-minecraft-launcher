@@ -1,6 +1,7 @@
 import { Mod } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
 import { ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/runtime-api'
+import { TextComponent } from '@xmcl/text-component'
 
 /**
  * Represent a project
@@ -15,6 +16,7 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
   localizedTitle?: string
   description: string
   localizedDescription?: string
+  descriptionTextComponent?: TextComponent
   author: string
 
   disabled?: boolean
