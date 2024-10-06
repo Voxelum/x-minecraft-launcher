@@ -86,7 +86,7 @@
           <template v-else-if="dense">
             <div class="flex-grow" />
             <v-icon small>
-              {{ item.modrinth || item.modrinthProjectId ? '$vuetify.icons.modrinth' : '$vuetify.icon.curseforge' }}
+              {{ getTrailingIcon() }}
             </v-icon>
           </template>
         </v-list-item-title>
@@ -260,6 +260,15 @@ const onSettingClick = (event: MouseEvent) => {
 
   if (props.getContextMenuItems) {
     open(bottomLeftX, bottomLeftY, props.getContextMenuItems())
+  }
+}
+
+function getTrailingIcon() {
+  if (props.item.modrinth) {
+    return '$vuetify.icons.modrinth'
+  }
+  if (props.item.curseforge) {
+    return '$vuetify.icons.curseforge'
   }
 }
 

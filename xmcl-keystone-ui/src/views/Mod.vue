@@ -460,6 +460,9 @@ const defaultSourceModel = computed({
   set(i: number) { defaultSource.value = i === 0 ? 'curseforge' : 'modrinth' },
 })
 const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModrinthId: string, selectedCurseforgeId: number | undefined) => {
+  if (selectedItem?.modrinth) {
+    return true
+  }
   const hasModrinth = selectedItem?.modrinth || selectedModrinthId
   if (!hasModrinth) return false
   const hasCurseforge = selectedItem?.curseforge || selectedCurseforgeId
@@ -469,6 +472,9 @@ const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModr
   return true
 }
 const shouldShowCurseforge = (selectedItem: undefined | ProjectEntry, selectedModrinthId: string, selectedCurseforgeId: number | undefined) => {
+  if (selectedItem?.curseforge) {
+    return true
+  }
   const hasCurseforge = selectedItem?.curseforge || selectedCurseforgeId
   if (!hasCurseforge) return false
   const hasModrinth = selectedItem?.modrinth || selectedModrinthId
