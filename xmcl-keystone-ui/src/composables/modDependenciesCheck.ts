@@ -30,6 +30,12 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
   async function checkModrinthDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: InstanceFileUpdate[]) {
     const modrinthTarget = mods.filter(m => m.modrinth)
     const hashes = modrinthTarget.map(m => m.hash)
+
+    if (hashes.length === 0) {
+      console.log('Skip modrinth dependencies check due to no modrinth mods')
+      return
+    }
+
     const versions = await clientModrinthV2.getProjectVersionsByHash(hashes, 'sha1')
     const deps: Record<string, string> = {}
     for (const [sha1, version] of Object.entries(versions)) {
@@ -79,6 +85,10 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
 
   async function checkCurseforgeDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: InstanceFileUpdate[]) {
     const fileIds = mods.map(m => !m.modrinth ? m.curseforge?.fileId : undefined).filter(notNullish)
+    if (fileIds.length === 0) {
+      console.log('Skip curseforge dependencies check due to no curseforge mods')
+      return
+    }
     const files = await clientCurseforgeV1.getFiles(fileIds)
     let deps = [] as number[]
     for (const file of files) {

@@ -105,7 +105,9 @@ function createWorkerQueue(context: ResourceContext, domain: ResourceDomain,
   const workerQueue = new WorkerQueue<ResourceWorkerQueuePayload>(async (job) => intercept(async () => {
     if (!job.file) {
       job.file = await getFile(job.filePath)
-      throw new AnyError('ResourceFileNotFoundError', `Resource file ${job.filePath} not found`)
+      if (!job.file) {
+        throw new AnyError('ResourceFileNotFoundError', `Resource file ${job.filePath} not found`)
+      }
     }
 
     if (job.record) {
