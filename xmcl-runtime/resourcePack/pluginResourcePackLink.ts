@@ -89,7 +89,7 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
     name: 'resources-link',
     async onBeforeLaunch(input, payload, output) {
       if (payload.side === 'server') return
-      const path = output.gamePath
+      const path = payload.options.gamePath
       await Promise.all([ensureResourcePacksLinked(path), ensureShaderPacksLinked(path)])
     },
   })
