@@ -69,19 +69,19 @@ export class InstallService extends AbstractService implements IInstallService {
             }
           }
         }
-        const task = parsedArgs.task
+        const task = parsedArgs['--task']
 
         if (task !== 'DOWNLOAD_MOJMAPS') return false
-        if (!parsedArgs.version || !parsedArgs.side || !parsedArgs.output) return false
+        if (!parsedArgs['--version'] || !parsedArgs['--side'] || !parsedArgs['--output']) return false
 
-        const versionContent = await readFile(this.getPath('versions', parsedArgs.version, `${parsedArgs.version}.json`), 'utf-8').catch(() => '')
+        const versionContent = await readFile(this.getPath('versions', parsedArgs['--version'], `${parsedArgs['--version']}.json`), 'utf-8').catch(() => '')
         if (!versionContent) return false
 
         const version: Version = JSON.parse(versionContent)
-        const mapping = version.downloads?.[`${parsedArgs.side}_mappings`]
+        const mapping = version.downloads?.[`${parsedArgs['--side']}_mappings`]
         if (!mapping) return false
 
-        const output = parsedArgs.output
+        const output = parsedArgs['--output']
         const url = new URL(mapping.url)
         const urls = allSets.map(api => {
           if (api.name === 'mojang') {
