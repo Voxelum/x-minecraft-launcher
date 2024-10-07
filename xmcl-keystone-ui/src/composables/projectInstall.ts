@@ -1,4 +1,4 @@
-import { getCurseforgeModLoaderTypeFromRuntime, getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoaderTypesForFile } from '@/util/curseforge'
+import { getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoaderTypesForFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { getSWRV } from '@/util/swrvGet'
