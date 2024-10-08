@@ -71,7 +71,6 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
   const { watch } = useService(InstanceResourcePacksServiceKey)
-  const local = ref([] as Resource[])
   const { state, isValidating, revalidate, error } = useState(() => path.value ? watch(path.value) : undefined, ReactiveResourceState)
 
   const { t } = useI18n()
@@ -108,7 +107,7 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
     const mapped = [] as InstanceResourcePack[]
     const index: Record<string, InstanceResourcePack> = {}
     const disabled = [] as InstanceResourcePack[]
-    for (const r of (state.value?.files || []).concat(local.value)) {
+    for (const r of (state.value?.files || [])) {
       const val = getResourcePackItem(r, enabledSet)
       if (val.enabled) {
         index[val.id] = val

@@ -73,7 +73,7 @@ export default defineComponent({
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled, resourcePacks.enabledSet)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPacks)
 
-    const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, localVersions.versions, localVersions.servers, java.all)
+    const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, instanceVersion.refreshResolvedVersion, localVersions.versions, localVersions.servers, java.all)
 
     useTelemetryTrack(settings.state)
 

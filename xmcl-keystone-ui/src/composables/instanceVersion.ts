@@ -193,5 +193,6 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     error,
     isValidating,
     resolvedVersion,
+    refreshResolvedVersion: () => mutate(instance.value),
   }
 }

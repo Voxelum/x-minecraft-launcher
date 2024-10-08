@@ -1,6 +1,6 @@
 import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile, InstanceFileWithOperation, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceFileOperation, InstanceFileWithOperation, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { existsSync } from 'fs'
 import { join, relative } from 'path'
@@ -21,7 +21,7 @@ export class InstanceFileOperationHandler {
   #resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
   #copyOrLinkQueue: Array<{ file: InstanceFile; src: string; destination: string }> = []
   #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
-  #filesQueue: Array<{ file: InstanceFile; destination: string }> = []
+  #filesQueue: Array<{ file: InstanceFileWithOperation; destination: string }> = []
   #httpsQueue: Array<{ file: InstanceFile; options: DownloadOptions }> = []
 
   /**
