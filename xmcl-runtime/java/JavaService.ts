@@ -4,7 +4,7 @@ import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceK
 import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
-import { GFW } from '~/gfw'
+import { GFW, kGFW } from '~/gfw'
 import { JavaValidation, validateJavaPath } from '~/java'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
@@ -25,7 +25,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     @Inject(Settings) private settings: Settings,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(GFW) private gfw: GFW,
+    @Inject(kGFW) private gfw: GFW,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, () => store.registerStatic(new JavaState(), JavaServiceKey), async () => {

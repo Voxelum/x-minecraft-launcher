@@ -125,6 +125,7 @@ export class ElectronSession {
     }
 
     sess.protocol.handle('http', handler)
+    sess.protocol.handle('https', handler)
 
     this.cached[url] = sess
 

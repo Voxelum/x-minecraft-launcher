@@ -1,6 +1,5 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { InstallProfile, LabyModManifest, LiteloaderVersion, MinecraftVersion } from '@xmcl/installer'
-import { Resource } from '../entities/resource'
 import { OptifineVersion } from '../entities/version'
 import { ServiceKey } from './Service'
 

@@ -1,14 +1,14 @@
 import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
-import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, MutableState, Settings } from '@xmcl/runtime-api'
+import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, MutableState, OptifineVersion, Settings } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
 import { ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from '~/app'
-import { GFW } from '~/gfw'
+import { GFW, kGFW } from '~/gfw'
 import { JavaService } from '~/java'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from '~/service'
@@ -18,6 +18,7 @@ import { linkOrCopyFile } from '~/util/fs'
 import { joinUrl, replaceHost } from '~/util/url'
 import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
+import { kOptifineInstaller } from './optifine'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -28,7 +29,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(VersionService) private versionService: VersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(kGameDataPath) private getPath: PathResolver,
-    @Inject(GFW) private gfw: GFW,
+    @Inject(kGFW) private gfw: GFW,
     @Inject(kSettings) private settings: MutableState<Settings>,
     @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
     @Inject(kTaskExecutor) private submit: TaskFn,
@@ -557,11 +558,19 @@ export class InstallService extends AbstractService implements IInstallService {
     return version
   }
 
+  async getOptifineDownloadUrl(version: OptifineVersion) {
+    const installer = await this.app.registry.getIfPresent(kOptifineInstaller)
+    if (installer) {
+      return installer(version)
+    }
+    return `https://bmclapi2.bangbang93.com/optifine/${version.mcversion}/${version.type}/${version.patch}`
+  }
+
   async installOptifineAsMod(options: InstallOptifineAsModOptions) {
     const optifineVersion = `${options.type}_${options.patch}`
     const version = `${options.mcversion}_${optifineVersion}`
     const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
-    const url = `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`
+    const url = await this.getOptifineDownloadUrl(options)
     try {
       const response = await this.app.fetch(url, { method: 'HEAD' })
       const contentLength = parseInt(response.headers.get('content-length') ?? '0', 10)
@@ -614,16 +623,10 @@ export class InstallService extends AbstractService implements IInstallService {
 
     const java = this.javaService.getPreferredJava()?.path
 
-    const urls = [] as string[]
-    if (getApiSets(this.settings)[0].name === 'mcbbs') {
-      urls.push(
-        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-      )
-    } else {
-      urls.push(
-        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
-      )
-    }
+    const urls = [
+      await this.getOptifineDownloadUrl(options),
+    ] as string[]
+
     const result = await this.submit(task('installOptifine', async function () {
       await this.yield(new DownloadTask({
         ...downloadOptions,
