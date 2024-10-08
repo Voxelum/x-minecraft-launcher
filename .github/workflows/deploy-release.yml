@@ -58,38 +58,38 @@ jobs:
         token: ${{ secrets.KOOK_BOT_TOKEN }}
         discord: ${{ secrets.DISCORD_WEBHOOK }}
 
-  # update-winget:
-  #   needs: 
-  #     - publish
-  #   name: Upload To winget
-  #   runs-on: windows-2019
-  #   defaults:
-  #     run:
-  #       shell: powershell
-  #   steps:
-  #     - name: Download Releases
-  #       uses: robinraju/release-downloader@v1.8
-  #       with:
-  #         repository: "voxelum/x-minecraft-launcher"
-  #         tag: ${{ github.event.release.tag_name }}
-  #         fileName: "version"
-  #     - uses: actions/github-script@v6
-  #       name: Get Release Version
-  #       id: version
-  #       with: 
-  #         result-encoding: string
-  #         script: |
-  #           return '${{ github.event.release.tag_name }}'.substring(1);
-  #     - name: Update version env
-  #       run: |
-  #         echo "VERSION=$(cat ./version)" >> $env:GITHUB_ENV
-  #     - name: Create winget PR
-  #       run: |
-  #         iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
-  #         .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
-  #       env:
-  #         TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
-  #         URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', steps.version.outputs.result) }}
+  update-winget:
+    needs: 
+      - publish
+    name: Upload To winget
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Download Releases
+        uses: robinraju/release-downloader@v1.8
+        with:
+          repository: "voxelum/x-minecraft-launcher"
+          tag: ${{ github.event.release.tag_name }}
+          fileName: "version"
+      - uses: actions/github-script@v6
+        name: Get Release Version
+        id: version
+        with: 
+          result-encoding: string
+          script: |
+            return '${{ github.event.release.tag_name }}'.substring(1);
+      - name: Update version env
+        run: |
+          echo "VERSION=$(cat ./version)" >> $env:GITHUB_ENV
+      - name: Create winget PR
+        run: |
+          iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
+        env:
+          TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
+          URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', steps.version.outputs.result) }}
 
   # publish-msstore:
   #   runs-on: windows-latest
