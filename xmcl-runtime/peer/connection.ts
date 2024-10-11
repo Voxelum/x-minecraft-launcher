@@ -68,6 +68,10 @@ export class PeerSession {
     }, 1000)
   }
 
+  isDataChannelEstablished() {
+    return this.#channel && this.#channel.readyState === 'open'
+  }
+
   setConnection(connection: RTCPeerConnection) {
     this.connection = connection
     this.connection.addEventListener('icecandidate', (ev) => {

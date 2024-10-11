@@ -255,12 +255,22 @@ export function createMultiplayer() {
           // Send to the group if the remoteId is set
           const [stuns] = iceServers.get(preferredIceServers)
           if (current) {
-            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns).then(v => {
+            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns, () => {
+              const sess = peers.get(session)
+              // not retry if the connection is established
+              if (sess && sess.isDataChannelEstablished()) return false
+              return true
+            }).then(v => {
               if (!v) return
               // remove this peer
-              peers.get(session)?.close()
-              peers.remove(session)
-              state.then(s => s.connectionDrop(session))
+              const sess = peers.get(session)
+              if (sess) {
+                if (!sess.isDataChannelEstablished()) {
+                  peers.get(session)?.close()
+                  peers.remove(session)
+                  state.then(s => s.connectionDrop(session))
+                }
+              }
             })
           }
         }
@@ -428,7 +438,7 @@ export function createMultiplayer() {
     console.log(`Set remote ${type} description: ${sdp}`)
     console.log(candidates)
     const sState = sess.connection.signalingState
-    if (sState !== 'stable' || newPeer) {
+    if ((sState === 'stable' || sState === 'have-local-offer') && !sess.isDataChannelEstablished()) {
       try {
         sess.setRemoteDescription({ sdp, type })
         for (const { candidate, mid } of candidates) {
