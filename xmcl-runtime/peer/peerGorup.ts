@@ -183,6 +183,10 @@ export class PeerGroup {
           .then(onHeartbeat)
         return
       }
+      if (data instanceof ArrayBuffer) {
+        onHeartbeat(new Uint8Array(data))
+        return
+      }
       if (data instanceof Uint8Array) {
         onHeartbeat(data)
         return
@@ -262,7 +266,7 @@ export class PeerGroup {
     return this.signals[messageId].promise
   }
 
-  async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[]) {
+  async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[], shouldRetry: () => boolean) {
     const messageId = this.messageId++
     const resolve = this.wait(messageId).then(() => true, () => false)
     for (let i = 0; i < 60; ++i) {
@@ -270,7 +274,7 @@ export class PeerGroup {
         if (this.#closed) {
           return
         }
-        if (this.#heartbeatLastSeen[receiverId] > (Date.now() - (5 * 60_000))) {
+        if ((Date.now() - this.#heartbeatLastSeen[receiverId]) < (5 * 60_000)) {
           // If the receiver is not seen in 5 minutes, we stop sending
           return 'NO_RESPONSE'
         }
@@ -290,6 +294,9 @@ export class PeerGroup {
           setTimeout(4_000).then(() => false), // wait 4 seconds for response
         ])
         if (responsed) {
+          return
+        }
+        if (!shouldRetry()) {
           return
         }
       } catch (e) {
