@@ -131,6 +131,7 @@ export class PeerGroup {
   #id = ''
   #heartbeat: ReturnType<typeof setInterval> | undefined
   #url = ''
+  #heartbeatLastSeen: Record<string, number> = {}
 
   onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { }
   onheartbeat = (sender: string) => { }
@@ -173,6 +174,7 @@ export class PeerGroup {
           .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
         if (id !== this.#id) {
           this.onheartbeat?.(id)
+          this.#heartbeatLastSeen[id] = Date.now()
         }
       }
       if (data instanceof Blob) {
@@ -262,8 +264,16 @@ export class PeerGroup {
 
   async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[]) {
     const messageId = this.messageId++
-    while (true) {
+    const resolve = this.wait(messageId).then(() => true, () => false)
+    for (let i = 0; i < 60; ++i) {
       try {
+        if (this.#closed) {
+          return
+        }
+        if (this.#heartbeatLastSeen[receiverId] > (Date.now() - (5 * 60_000))) {
+          // If the receiver is not seen in 5 minutes, we stop sending
+          return 'NO_RESPONSE'
+        }
         this.send({
           type: 'DESCRIPTOR',
           receiver: receiverId,
@@ -276,7 +286,7 @@ export class PeerGroup {
           iceServers,
         })
         const responsed = await Promise.race([
-          this.wait(messageId).then(() => true, () => false),
+          resolve,
           setTimeout(4_000).then(() => false), // wait 4 seconds for response
         ])
         if (responsed) {
@@ -286,6 +296,7 @@ export class PeerGroup {
         this.onerror?.(e)
       }
     }
+    return 'NO_RESPONSE_TIMEOUT'
   }
 
   async sendWho(receiverId: string) {

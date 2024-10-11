@@ -255,7 +255,13 @@ export function createMultiplayer() {
           // Send to the group if the remoteId is set
           const [stuns] = iceServers.get(preferredIceServers)
           if (current) {
-            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns)
+            group.getGroup()?.sendLocalDescription(remoteId, sdp, type, candidates, current, stuns).then(v => {
+              if (!v) return
+              // remove this peer
+              peers.get(session)?.close()
+              peers.remove(session)
+              state.then(s => s.connectionDrop(session))
+            })
           }
         }
 
