@@ -43,11 +43,11 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
           : resource.metadata['mcbbs-modpack'] ? 'mcbbs' : 'modpack'
       if (config) {
         let promise: Promise<InstanceFile[]> | undefined
-        const result: Template = reactive({
+        const result: Template = markRaw({
           filePath: resource.path,
           name: config.name,
           instance: markRaw(config),
-          description: computed(() => getActionText(type)),
+          description: getActionText(type),
           type,
           loadFiles: () => {
             if (!promise) {
