@@ -227,23 +227,31 @@ export class PeerGroup {
         }
       }
     }
-    socket.onerror = (e) => {
-      this.onerror?.(e)
-    }
-    socket.onclose = (e) => {
-      const { wasClean, reason, code } = e
+    const handleClosed = () => {
       if (!this.#closed) {
         // Try to reconnect as this is closed unexpected
         this.state = 'connecting'
         this.onstate?.(this.state)
+        const state = this.socket.readyState
+        const sock = this.socket
         setTimeout(1000).then(() => {
-          this.socket = new WebSocket(this.#url)
-          this.#initiate()
+          if (sock === this.socket && state === this.socket.readyState) {
+            this.socket = new WebSocket(this.#url)
+            this.#initiate()
+          }
         })
       } else {
         this.state = 'closed'
         this.onstate?.(this.state)
       }
+    }
+    socket.onerror = (e) => {
+      this.onerror?.(e)
+      handleClosed()
+    }
+    socket.onclose = (e) => {
+      const { wasClean, reason, code } = e
+      handleClosed()
     }
   }
 
