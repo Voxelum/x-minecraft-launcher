@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
 import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, MutableState, OptifineVersion, Settings } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
@@ -126,6 +126,7 @@ export class InstallService extends AbstractService implements IInstallService {
       assetsDownloadConcurrency: 16,
       ...this.downloadOptions,
       side: 'client',
+      useHashForAssetsIndex: true,
     }
 
     const allSets = getApiSets(this.settings)
@@ -195,45 +196,24 @@ export class InstallService extends AbstractService implements IInstallService {
     const option = this.getInstallOptions()
     const location = MinecraftFolder.from(this.getPath())
     try {
-      // This special logic is handling the asset index outdate issue.
-      // The asset index is not updated when the minecraft version is updated.
-      let resolvedVersion = await Version.parse(location, version)
-      let versionMeta = fallbackVersionMetadata.find(v => v.id === resolvedVersion.minecraftVersion)
-      let unofficial = false
-      if (!versionMeta) {
-        versionMeta = fallbackVersionMetadata.find(v => v.id === resolvedVersion.assets)
-        unofficial = true
-      }
-      if (versionMeta) {
-        let sourceMinecraftVersion = version === resolvedVersion.minecraftVersion ? resolvedVersion : await Version.parse(location, resolvedVersion.minecraftVersion)
-        if (!unofficial) {
-          if (new Date(versionMeta.releaseTime) > new Date(sourceMinecraftVersion.releaseTime)) {
-            // need update source version
-            await this.installMinecraft(versionMeta)
-            sourceMinecraftVersion = await Version.parse(location, versionMeta.id)
-          }
-          if (resolvedVersion.inheritances.length === 1 && resolvedVersion.inheritances[resolvedVersion.inheritances.length - 1] !== resolvedVersion.minecraftVersion) {
-            // special packed version like PCL
-            const jsonPath = location.getVersionJson(version)
-            const rawContent = JSON.parse(await readFile(jsonPath, 'utf8'))
-            rawContent.assetIndex = sourceMinecraftVersion.assetIndex
-            await writeFile(jsonPath, JSON.stringify(rawContent))
-            resolvedVersion = await Version.parse(location, version)
-          }
-        } else if (!resolvedVersion.assetIndex) {
-          // custom
+      // This special logic is handling if the asset index info is missing.
+      const resolvedVersion = await Version.parse(location, version)
+      if (!resolvedVersion.assetIndex) {
+        const versionMeta =
+          fallbackVersionMetadata.find(v => v.id === resolvedVersion.minecraftVersion) ||
+          fallbackVersionMetadata.find(v => v.id === resolvedVersion.assets)
+        if (versionMeta) {
           let localVersion = await this.versionService.resolveLocalVersion(versionMeta.id).catch(() => undefined)
           if (!localVersion) {
-            await this.installMinecraft(versionMeta)
+            await this.submit(new InstallJsonTask(versionMeta, location, option)
+              .setName('installVersion', { id: versionMeta.id }))
             localVersion = await this.versionService.resolveLocalVersion(versionMeta.id)
           }
           resolvedVersion.assetIndex = localVersion.assetIndex
         }
       }
       this.log(`Install assets for ${version}:`)
-      const jsonPath = location.getPath('assets', 'indexes', resolvedVersion.assets + '.json')
-      const prevalidSizeOnly = existsSync(jsonPath)
-      await this.submit(installAssetsTask(resolvedVersion, { ...option, prevalidSizeOnly }).setName('installAssets', { id: version }))
+      await this.submit(installAssetsTask(resolvedVersion, { ...option, prevalidSizeOnly: true }).setName('installAssets', { id: version }))
     } catch (e) {
       this.warn(`An error ocurred during assets for ${version}:`)
       this.warn(e)

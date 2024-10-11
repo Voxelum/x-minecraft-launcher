@@ -142,6 +142,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       launcherName: options?.launcherName ?? launcherName,
       prependCommand: options.prependCommand,
       yggdrasilAgent,
+      useHashAssetsIndex: true,
       platform: {
         arch: process.arch,
         name: this.app.platform.os,
