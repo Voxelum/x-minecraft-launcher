@@ -450,7 +450,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       }
       if (instruction.assetIndex) {
         const list = await getSWRV(getMinecraftVersionsModel(), config)
-        await installAssetsForVersion(instruction.version, list.versions.filter(v => v.id === instruction.runtime.minecraft || v.id === instruction.runtime.assets))
+        await installAssetsForVersion(instruction.assetIndex.version, list.versions.filter(v => v.id === instruction.runtime.minecraft || v.id === instruction.assetIndex?.version))
         refreshResolvedVersion()
       } else if (instruction.assets) {
         await installAssets(instruction.assets.map(v => v.asset), instruction.runtime.minecraft, instruction.assets.length > 15)
