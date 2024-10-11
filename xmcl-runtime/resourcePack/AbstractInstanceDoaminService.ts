@@ -135,8 +135,8 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
       const folder = join(instancePath, this.domain)
 
-      if (!await this.isLinked(instancePath)) {
-        if (existsSync(folder)) {
+      if (existsSync(folder)) {
+        if (!await this.isLinked(instancePath)) {
           watcher = manager.watchSecondary(
             instancePath,
             this.domain,
@@ -146,17 +146,17 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       return [this.state, () => {
         watcher?.dispose()
       }, async () => {
-        const isLinked = await this.isLinked(instancePath)
-        if (!isLinked && !watcher) {
-          if (existsSync(folder)) {
+        if (existsSync(folder)) {
+          const isLinked = await this.isLinked(instancePath)
+          if (!isLinked && !watcher) {
             watcher = manager.watchSecondary(
               instancePath,
               this.domain,
             )
+          } else if (isLinked && watcher) {
+            watcher.dispose()
+            watcher = undefined
           }
-        } else if (isLinked && watcher) {
-          watcher.dispose()
-          watcher = undefined
         }
 
         await watcher?.revalidate()
