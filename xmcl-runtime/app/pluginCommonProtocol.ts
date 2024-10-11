@@ -17,6 +17,8 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
         method: request.method,
         body: body instanceof Readable ? Readable.toWeb(body) as any : body,
         redirect: 'follow',
+        // @ts-ignore
+        duplex: body ? 'half' : undefined,
       })
       response.status = resp.status
       response.headers = resp.headers
@@ -27,6 +29,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
         method: request.method,
         body: body instanceof Readable ? Readable.toWeb(body) as any : body,
         redirect: 'follow',
+        duplex: body ? 'half' : undefined,
       })
       response.status = resp.status
       response.headers = resp.headers
