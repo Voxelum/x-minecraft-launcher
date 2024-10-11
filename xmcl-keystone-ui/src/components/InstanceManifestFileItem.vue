@@ -7,6 +7,7 @@
     @click.stop="$emit('toggle')"
   >
     <v-simple-checkbox
+      v-if="selectable"
       :value="value"
       class="select-checkbox"
       color="success"
@@ -85,9 +86,10 @@ import { TreeItem } from '@/util/tree'
 
 const props = defineProps<{
   item: TreeItem<InstanceFileNode<any>>
-  open?: boolean
+  open: boolean
   value: boolean
   description: string
+  selectable?: boolean
 }>()
 
 const item = computed(() => props.item.data)

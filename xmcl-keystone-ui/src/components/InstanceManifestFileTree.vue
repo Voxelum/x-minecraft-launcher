@@ -1,9 +1,11 @@
 <template>
   <div
+    ref="containerRef"
     :style="{
       height: `${totalHeight}px`,
       position: 'relative',
-      width: '100%'
+      width: '100%',
+      marginTop: `${-offsetTop}px`,
     }"
   >
     <div
@@ -20,17 +22,19 @@
       }"
     >
       <InstanceManifestFileItem
-        :value="
-          checkedFolders.includes(flattened[virtualRow.index].data.path) ||
-            value.includes(flattened[virtualRow.index].data.path)"
+        :value="isSelected(flattened[virtualRow.index])"
         :open="isOpen(flattened[virtualRow.index])"
         :item="flattened[virtualRow.index]"
         :description="getDescription(flattened[virtualRow.index].data)"
+        :selectable="selectable"
         @toggle="toggleOpen(flattened[virtualRow.index])"
         @toggleValue="toggleValue(flattened[virtualRow.index])"
       >
         <template #default="{ item }">
-          <slot :item="item" />
+          <slot
+            :item="item"
+            :selected="isSelected(item)"
+          />
         </template>
       </InstanceManifestFileItem>
     </div>
@@ -48,15 +52,22 @@ import { flatTree, treeItemKey, TreeItem } from '@/util/tree'
 
 const props = defineProps<{
   value: string[]
-  multiple?: boolean
   selectable?: boolean
   openAll?: boolean
   search?: string
-  filter?: (value: any, search: string, item: InstanceFileNode<any>) => boolean
-  scrollElement: HTMLElement | null
+  scrollElement?: HTMLElement | null
 }>()
 
 const { t } = useI18n()
+
+const containerRef = ref<HTMLElement | null>(null)
+const offsetTop = ref(0)
+
+watch(containerRef, container => {
+  if (container) {
+    nextTick().then(() => { offsetTop.value = container.offsetTop })
+  }
+})
 
 const opened = ref<string[]>([])
 const isOpen = (item: TreeItem<InstanceFileNode<any>>) => {
@@ -65,6 +76,12 @@ const isOpen = (item: TreeItem<InstanceFileNode<any>>) => {
 
   return result
 }
+
+const isSelected = (item: TreeItem<InstanceFileNode<any>>|undefined): boolean =>
+  !!item?.data &&
+  (checkedFolders.value.includes(item.data.path) ||
+    props.value.includes(item.data.path))
+
 const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
   if (!item.data.children) {
     toggleValue(item)
@@ -149,10 +166,15 @@ const checkedFolders = computed(() => {
 
 const virtualizerOptions = computed(() => ({
   count: flattened.value.length,
-  getScrollElement: () => props.scrollElement,
+  getScrollElement: () => props.scrollElement || null,
   estimateSize: () => 48,
   overscan: 10,
+  paddingStart: offsetTop.value,
 } satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
+
+watch(virtualizerOptions, opt => {
+  console.log(opt)
+})
 
 const virtualizer = useVirtualizer(virtualizerOptions)
 const totalHeight = computed(() => virtualizer.value.getTotalSize())
@@ -166,6 +188,7 @@ const measureElement = (el: any) => {
 
 watch([files, opened, () => props.openAll], async ([newFiles, newOpened, newOpenAll]) => {
   flattened.value = flatTree(newFiles, item => item.children, newOpened, newOpenAll)
+  console.log(newFiles)
 }, {
   immediate: true,
 })

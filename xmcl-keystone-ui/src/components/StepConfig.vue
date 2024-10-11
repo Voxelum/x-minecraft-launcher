@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="scrollElement"
     style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
   >
     <v-form
@@ -63,6 +64,7 @@
     <InstanceManifestFileTree
       v-else
       :value="[]"
+      :scroll-element="scrollElement"
     />
   </div>
 </template>
@@ -89,6 +91,8 @@ const nameRules = computed(() => [
   (v: any) => !!v || t('instance.requireName'),
   (v: any) => !instances.value.some(i => i.name === v) || t('instance.duplicatedName'),
 ])
+
+const scrollElement = ref<HTMLElement | null>(null)
 
 const onUpdate = ($event: any) => {
   emit('update:valid', $event)
