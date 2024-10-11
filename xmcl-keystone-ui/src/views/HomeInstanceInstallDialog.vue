@@ -21,6 +21,7 @@
       <ErrorView :error="error" />
       <div
         v-if="upgrade && !refreshing"
+        ref="scrollRef"
         class="visible-scroll mx-0 max-h-screen items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <template v-if="upgrade && upgrade.instance">
@@ -116,18 +117,25 @@
           </v-alert>
         </template>
 
-        <v-subheader>
-          {{ t('instanceUpdate.files') }}
-        </v-subheader>
+        <div>
+          <v-subheader>
+            {{ t('instanceUpdate.files') }}
+          </v-subheader>
+          <!--<v-text-field v-model="search" />-->
+        </div>
+
         <InstanceManifestFileTree
           v-model="selected"
+          :search="search"
           open-all
           selectable
           :multiple="false"
+          :scroll-element="scrollRef"
         >
           <template #default="{ item }">
             <v-chip
               v-if="item.data"
+              class="pointer-events-none"
               label
               outlined
               :color="cOperations[item.data.operation]"
@@ -182,6 +190,10 @@ import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
 
 const selected = ref([] as string[])
+const search = ref('')
+
+// ref for virtual scrolling
+const scrollRef = ref<HTMLElement | null>(null)
 
 const { isShown } = useDialog(InstanceInstallDialog, (parm) => {
   refresh(parm)

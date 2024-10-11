@@ -1,110 +1,175 @@
 <template>
-  <v-treeview
-    class="export-dialog-files"
-    :value="value"
-    :input-value="value"
-    style="width: 100%"
-    :search="search"
-    :items="files"
-    item-key="path"
-    :open="opened"
-    :open-all="openAll"
-    :selectable="selectable"
-    open-on-click
-    item-children="children"
-    @input="$emit('input', $event)"
+  <div
+    :style="{
+      height: `${totalHeight}px`,
+      position: 'relative',
+      width: '100%'
+    }"
   >
-    <template #prepend="{ item, open, selected }">
-      <v-icon
-        v-if="item.children"
-        :color="selected ? 'accent' : ''"
+    <div
+      v-for="virtualRow in virtualRows"
+      :key="flattened[virtualRow.index].data.path"
+      :ref="measureElement"
+      :data-index="virtualRow.index"
+      :style="{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        transform: `translateY(${virtualRow.start}px)`
+      }"
+    >
+      <InstanceManifestFileItem
+        :value="
+          checkedFolders.includes(flattened[virtualRow.index].data.path) ||
+            value.includes(flattened[virtualRow.index].data.path)"
+        :open="isOpen(flattened[virtualRow.index])"
+        :item="flattened[virtualRow.index]"
+        :description="getDescription(flattened[virtualRow.index].data)"
+        @toggle="toggleOpen(flattened[virtualRow.index])"
+        @toggleValue="toggleValue(flattened[virtualRow.index])"
       >
-        {{ open ? 'folder_open' : 'folder' }}
-      </v-icon>
-      <v-avatar v-else-if="item.avatar">
-        <v-img
-          :src="item.avatar"
-          style="width: 24px; height: 24px;"
-        />
-      </v-avatar>
-      <v-icon v-else>
-        {{ getIcon(item) }}
-      </v-icon>
-    </template>
-
-    <template #append="{ item, selected }">
-      <div class="flex gap-1">
-        <slot
-          :item="item"
-          :selected="selected"
-        />
-      </div>
-    </template>
-
-    <template #label="{ item }">
-      <div style="padding: 5px 0px;">
-        <span
-          style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-          :style="{ color: item.disabled ? 'grey' : isDark ? 'white' : 'black', ...(item.style || {}) }"
-        >{{ item.name }}</span>
-        <div
-          style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-        >
-          {{ getDescription(item) }}
-        </div>
-        <span class="inline-flex gap-2 items-center">
-          <div
-            v-if="item.size > 0"
-            style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-          >
-            {{ item.size > 0 ? getExpectedSize(item.size) : '' }}
-          </div>
-          <v-icon
-            v-if="item.modrinth"
-            size="20"
-          >
-            $vuetify.icons.modrinth
-          </v-icon>
-          <v-icon
-            v-if="item.curseforge"
-            size="20"
-          >
-            $vuetify.icons.curseforge
-          </v-icon>
-        </span>
-      </div>
-    </template>
-  </v-treeview>
+        <template #default="{ item }">
+          <slot :item="item" />
+        </template>
+      </InstanceManifestFileItem>
+    </div>
+  </div>
 </template>
 
 <script lang=ts setup>
 import { FileNodesSymbol, InstanceFileNode } from '@/composables/instanceFileNodeData'
-import { kTheme } from '@/composables/theme'
 
 import { injection } from '@/util/inject'
-import { getExpectedSize } from '@/util/size'
 
-defineProps<{
+import { useVirtualizer, VirtualItem, VirtualizerOptions } from '@tanstack/vue-virtual'
+import InstanceManifestFileItem from './InstanceManifestFileItem.vue'
+import { flatTree, treeItemKey, TreeItem } from '@/util/tree'
+
+const props = defineProps<{
   value: string[]
   multiple?: boolean
   selectable?: boolean
   openAll?: boolean
   search?: string
+  filter?: (value: any, search: string, item: InstanceFileNode<any>) => boolean
+  scrollElement: HTMLElement | null
 }>()
 
 const { t } = useI18n()
-const { isDark } = injection(kTheme)
 
-const opened = ref([])
+const opened = ref<string[]>([])
+const isOpen = (item: TreeItem<InstanceFileNode<any>>) => {
+  let result = opened.value.includes(treeItemKey(item))
+  if (props.openAll) result = !result
+
+  return result
+}
+const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
+  if (!item.data.children) {
+    toggleValue(item)
+    return
+  }
+
+  const index = opened.value.indexOf(treeItemKey(item))
+  if (index >= 0) {
+    opened.value.splice(index, 1)
+  } else {
+    opened.value.push(treeItemKey(item))
+  }
+}
+
+const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
+  if (item.data.children) {
+    if (checkedFolders.value.includes(item.data.path)) {
+      for (let i = props.value.length - 1; i > 0; i--) {
+        const v = props.value[i]
+        if (v.startsWith(item.data.path + '/')) props.value.splice(i, 1)
+      }
+    } else {
+      const targets: string[] = []
+
+      const prefix = item.data.path + '/'
+
+      const recurse = (files: InstanceFileNode<any>[]) => {
+        for (const file of files) {
+          if (file.children) {
+            recurse(file.children)
+            continue
+          }
+
+          if (!file.path.startsWith(prefix)) continue
+          if (props.value.includes(file.path)) continue
+
+          targets.push(file.path)
+        }
+      }
+
+      recurse(files.value)
+
+      props.value.push(...targets)
+    }
+  } else {
+    const idx = props.value.indexOf(item.data.path)
+    if (idx >= 0) props.value.splice(idx, 1)
+    else props.value.push(item.data.path)
+  }
+}
 
 const files = injection(FileNodesSymbol)
+const flattened = ref<TreeItem<InstanceFileNode<any>>[]>([])
 
-function getIcon(file: InstanceFileNode<any>) {
-  if (file.path.endsWith('.jar') || file.path.endsWith('.zip')) {
-    return '$vuetify.icons.package'
+const checkedFolders = computed(() => {
+  const result: string[] = []
+  const recurse = (items: InstanceFileNode<any>): boolean => {
+    let match = true
+
+    for (const item of items.children!) {
+      if (item.children) {
+        if (recurse(item)) result.push(item.path)
+        else match = false
+        continue
+      }
+
+      if (!props.value.includes(item.path)) {
+        match = false
+        continue
+      }
+    }
+    return match
   }
-  return 'insert_drive_file'
+
+  for (const file of files.value) {
+    if (!file.children) continue
+    if (recurse(file)) result.push(file.path)
+  }
+
+  return result
+})
+
+const virtualizerOptions = computed(() => ({
+  count: flattened.value.length,
+  getScrollElement: () => props.scrollElement,
+  estimateSize: () => 48,
+  overscan: 10,
+} satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
+
+const virtualizer = useVirtualizer(virtualizerOptions)
+const totalHeight = computed(() => virtualizer.value.getTotalSize())
+const virtualRows = computed(() => virtualizer.value.getVirtualItems() as (Omit<VirtualItem, 'key'> & { key: number })[])
+
+const measureElement = (el: any) => {
+  if (!el) return
+
+  virtualizer.value.measureElement(el)
 }
+
+watch([files, opened, () => props.openAll], async ([newFiles, newOpened, newOpenAll]) => {
+  flattened.value = flatTree(newFiles, item => item.children, newOpened, newOpenAll)
+}, {
+  immediate: true,
+})
+
 const translatedFiles = computed(() => ({
   mods: t('intro.struct.mods'),
   resourcepacks: t('intro.struct.resourcepacks'),
