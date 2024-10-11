@@ -39,7 +39,7 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
 export const LAN_MULTICAST_PORT = 4446
 export const LAN_MULTICAST_ADDR = '224.0.2.60'
 
-export function createLanDiscover(idSignal: PromiseSignal<string>,peers: Peers, emitter: EventEmitter) {
+export function createLanDiscover(idSignal: PromiseSignal<string>, peers: Peers, emitter: EventEmitter) {
   const discover = new MinecraftLanDiscover()
   const discoverV6 = new MinecraftLanDiscover('udp6')
 
