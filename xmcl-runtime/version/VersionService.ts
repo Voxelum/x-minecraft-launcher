@@ -10,7 +10,7 @@ import { ResourceWorker, kResourceWorker } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, isDirectory, linkOrCopyFile, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 
 export interface VersionResolver {
@@ -227,6 +227,17 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
         const realPath = join(dir, versionId)
         if (await isDirectory(realPath)) {
           const version = await this.resolveLocalVersion(versionId)
+
+          if (version.assetIndex) {
+            const assetIndexPath = this.getPath('assets', 'indexes', `${version.assetIndex.id}.json`)
+            const hashIndexPath = this.getPath('assets', 'indexes', `${version.assetIndex.sha1}.json`)
+            missing(hashIndexPath).then(isMissing => {
+              if (isMissing) {
+                return linkOrCopyFile(assetIndexPath, hashIndexPath)
+              }
+            })
+          }
+
           this.refreshServerVersion(versionId)
           return version
         }
