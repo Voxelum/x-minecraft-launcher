@@ -16,7 +16,12 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
   let latest = ''
-  getLatestMinecraftRelease().then(v => { latest = v })
+  getLatestMinecraftRelease().then(v => {
+    latest = v
+    if (data.runtime.minecraft === '') {
+      data.runtime.minecraft = latest
+    }
+  })
   const getNewRuntime = () => ({
     minecraft: latest || '',
     forge: '',
