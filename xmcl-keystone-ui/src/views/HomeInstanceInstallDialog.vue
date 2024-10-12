@@ -271,7 +271,7 @@ watch(upgrade, (newVal) => {
   }
 })
 
-provideFileNodes(result, false)
+provideFileNodes(result)
 
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 

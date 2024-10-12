@@ -172,9 +172,9 @@ const virtualizerOptions = computed(() => ({
   paddingStart: offsetTop.value,
 } satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
 
-watch(virtualizerOptions, opt => {
-  console.log(opt)
-})
+// watch(virtualizerOptions, opt => {
+//   console.log(opt)
+// })
 
 const virtualizer = useVirtualizer(virtualizerOptions)
 const totalHeight = computed(() => virtualizer.value.getTotalSize())
@@ -188,7 +188,6 @@ const measureElement = (el: any) => {
 
 watch([files, opened, () => props.openAll], async ([newFiles, newOpened, newOpenAll]) => {
   flattened.value = flatTree(newFiles, item => item.children, newOpened, newOpenAll)
-  console.log(newFiles)
 }, {
   immediate: true,
 })
