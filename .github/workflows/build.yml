@@ -63,13 +63,14 @@ jobs:
         name: sourcemap
         path: |
           xmcl-electron-app/dist/*.js.map
-    - name: Upload Build
+    - name: Upload Unsigned Appx
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build-${{ runner.os }}
+        name: appx
         path: |
-          xmcl-electron-app/build/output/
+          xmcl-electron-app/build/output/*.appx
     - name: Sign Build
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       uses: signpath/github-action-submit-signing-request@v0.4
@@ -79,21 +80,19 @@ jobs:
         project-slug: x-minecraft-launcher
         signing-policy-slug: release-signing
         github-artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
-        artifact-configuration-slug: build
+        artifact-configuration-slug: appx
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
     - name: Update Signed Sha256
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       run: |
         pnpm postsign
-    - name: Upload Signed Build
-      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+    - name: Upload Build
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ runner.os }}
         path: |
           xmcl-electron-app/build/output/
-        overwrite: true
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4
