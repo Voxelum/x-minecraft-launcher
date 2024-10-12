@@ -205,6 +205,7 @@ const onUninstall = (v: ProjectFile[]) => {
 }
 const onEnable = (f: ProjectFile) => {
   enable([f as InstanceResourcePack])
+  install(path.value, [f.path])
 }
 const onDisable = (f: ProjectFile) => {
   disable([f as InstanceResourcePack])
@@ -273,7 +274,6 @@ const curseforgeInstaller = useCurseforgeInstaller(
   files,
   installFromMarket,
   onUninstall,
-  'texture-packs',
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

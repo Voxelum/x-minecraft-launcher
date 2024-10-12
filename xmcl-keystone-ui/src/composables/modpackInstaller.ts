@@ -1,7 +1,6 @@
 import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
 import { CreateInstanceOption, InstallMarketOptions, InstanceServiceKey, ModpackServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
 import { kInstanceFiles } from './instanceFiles'
 import { kInstanceVersion } from './instanceVersion'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
@@ -9,7 +8,7 @@ import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
 
-export function useModpackInstaller(icon: Ref<string | undefined>) {
+export function useModpackInstaller() {
   const { instances, selectedInstance } = injection(kInstances)
   const { openModpack, installModapckFromMarket } = useService(ModpackServiceKey)
   const { createInstance } = useService(InstanceServiceKey)
@@ -19,7 +18,7 @@ export function useModpackInstaller(icon: Ref<string | undefined>) {
   const { all } = injection(kJavaContext)
   const { currentRoute, push } = useRouter()
   const installModpack = async (f: InstallMarketOptions) => {
-    const modpackFile = await installModapckFromMarket({ ...f, icon: icon.value })
+    const [modpackFile] = await installModapckFromMarket(f)
     const openedModpack = await openModpack(modpackFile)
     const config = openedModpack.config
 

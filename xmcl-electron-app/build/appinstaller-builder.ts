@@ -11,7 +11,7 @@ function getAppInstallerContent(version: string, publisher: string) {
           Publisher="${publisher}"
           Version="${version}.${process.env.BUILD_NUMBER || '0'}"
           ProcessorArchitecture="x64"
-          Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl-${version}.appx" />
+          Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl-${version}-win32-x64.appx" />
       <UpdateSettings>
           <OnLaunch HoursBetweenUpdateChecks="0"/>
       </UpdateSettings>

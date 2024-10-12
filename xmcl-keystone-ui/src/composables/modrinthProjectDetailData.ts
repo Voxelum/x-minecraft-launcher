@@ -7,9 +7,10 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
+import { ProjectMapping } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
-export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>) {
+export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>, mapping: Ref<ProjectMapping | undefined>) {
   const { render } = useMarkdown()
   const { categories } = injection(kModrinthTags)
   const { t } = useI18n()
@@ -109,6 +110,13 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       info,
       archived: project.value?.status === 'archived',
     }
+
+    if (mapping.value) {
+      const map = mapping.value
+      detail.localizedTitle = map.name
+      detail.localizedDescription = map.description
+    }
+
     return detail
   })
 

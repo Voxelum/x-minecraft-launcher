@@ -12,8 +12,8 @@ export function createTemplate(): Instance {
     name: '',
 
     resolution: { width: 800, height: 400, fullscreen: false },
-    minMemory: 0,
-    maxMemory: 0,
+    minMemory: undefined,
+    maxMemory: undefined,
     vmOptions: undefined,
     mcOptions: undefined,
 
@@ -44,7 +44,7 @@ export function createTemplate(): Instance {
     fileApi: '',
     tags: [],
 
-    assignMemory: false,
+    assignMemory: undefined,
     showLog: undefined,
     hideLauncher: undefined,
     disableAuthlibInjector: undefined,

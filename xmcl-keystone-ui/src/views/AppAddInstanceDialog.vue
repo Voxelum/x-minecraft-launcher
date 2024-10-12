@@ -93,30 +93,36 @@
           v-if="type === 'template' || type === 'manual' || !type"
           class="flex justify-end"
         >
-          <v-btn
-            text
-            style="margin-right: 10px"
-            outlined
-            :loading="loading"
-            @click="onSelectTemplate"
+          <v-menu
+            offset-y
+            open-on-hover
+            top
           >
-            <v-icon left>
-              list
-            </v-icon>
-            {{ t('instances.addTemplate') }}
-          </v-btn>
-
-          <v-btn
-            text
-            outlined
-            :loading="loading"
-            @click="onImportModpack"
-          >
-            <v-icon left>
-              note_add
-            </v-icon>
-            {{ t('importModpack.name') }}
-          </v-btn>
+            <template #activator="{ on }">
+              <v-btn
+                text
+                outlined
+                :loading="loading"
+                v-on="on"
+                @click="onImportModpack"
+              >
+                <v-icon left>
+                  note_add
+                </v-icon>
+                {{ t('importModpack.name') }}
+              </v-btn>
+            </template>
+            <v-btn
+              large
+              :loading="loading"
+              @click="onSelectTemplate"
+            >
+              <v-icon left>
+                list
+              </v-icon>
+              {{ t('instances.addTemplate') }}
+            </v-btn>
+          </v-menu>
         </div>
         <div
           v-if="error"

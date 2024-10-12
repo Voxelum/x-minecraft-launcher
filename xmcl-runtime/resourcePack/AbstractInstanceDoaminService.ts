@@ -11,7 +11,7 @@ import { AnyError } from '~/util/error'
 import { linkOrCopyFile } from '../util/fs'
 import { isLinked, tryLink } from '../util/linkResourceFolder'
 
-export abstract class AbstractInstanceDoaminService extends AbstractService {
+export abstract class AbstractInstanceDomainService extends AbstractService {
   protected abstract resourceManager: ResourceManager
   protected abstract getPath: PathResolver
   protected abstract instanceService: InstanceService
@@ -96,12 +96,20 @@ export abstract class AbstractInstanceDoaminService extends AbstractService {
   async install(instancePath: string, file: string | string[]) {
     const files = file instanceof Array ? file : [file]
     const result = [] as string[]
+    const isLinked = await this.isLinked(instancePath)
+    const sharedDir = this.getPath(this.domain)
     for (const file of files) {
       const fileName = basename(file)
       const src = this.getPath(this.domain, fileName)
       const dest = join(instancePath, this.domain, fileName)
-      if (!existsSync(dest)) {
+      if (!existsSync(src)) {
         throw Object.assign(new Error(), { name: 'FileNotFound' })
+      }
+      if (dest === src) {
+        continue
+      }
+      if (isLinked && join(sharedDir, fileName) === src) {
+        continue
       }
       const fstat = await stat(src)
       if (fstat.isDirectory()) continue
@@ -127,8 +135,8 @@ export abstract class AbstractInstanceDoaminService extends AbstractService {
 
       const folder = join(instancePath, this.domain)
 
-      if (!await this.isLinked(instancePath)) {
-        if (existsSync(folder)) {
+      if (existsSync(folder)) {
+        if (!await this.isLinked(instancePath)) {
           watcher = manager.watchSecondary(
             instancePath,
             this.domain,
@@ -138,17 +146,17 @@ export abstract class AbstractInstanceDoaminService extends AbstractService {
       return [this.state, () => {
         watcher?.dispose()
       }, async () => {
-        const isLinked = await this.isLinked(instancePath)
-        if (!isLinked && !watcher) {
-          if (existsSync(folder)) {
+        if (existsSync(folder)) {
+          const isLinked = await this.isLinked(instancePath)
+          if (!isLinked && !watcher) {
             watcher = manager.watchSecondary(
               instancePath,
               this.domain,
             )
+          } else if (isLinked && watcher) {
+            watcher.dispose()
+            watcher = undefined
           }
-        } else if (isLinked && watcher) {
-          watcher.dispose()
-          watcher = undefined
         }
 
         await watcher?.revalidate()
@@ -158,13 +166,13 @@ export abstract class AbstractInstanceDoaminService extends AbstractService {
     })
   }
 
-  async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string> {
+  async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]> {
     const provider = await this.app.registry.get(kMarketProvider)
     const result = await provider.installFile({
       ...options,
       directory: join(options.instancePath, this.domain),
     })
-    return result.path
+    return result.map((r) => r.path)
   }
 
   async showDirectory(path: string): Promise<void> {

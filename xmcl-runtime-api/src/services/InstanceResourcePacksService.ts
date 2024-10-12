@@ -44,7 +44,7 @@ export interface InstanceResourcePacksService {
   /**
    * Install resource packs from the market to the instance.
    */
-  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
+  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]>
   /**
    * Show the `resourcepacks` directory under the instance path
    * @param instancePath The instance path

@@ -134,13 +134,10 @@ async function onUpdate(v: ProjectVersionProps) {
   updating.value = true
 
   try {
-    const nextVersion = data.value?.find(d => d.id === v.id)
     const instancePath = instance.value.path
-    if (!nextVersion) return
-    const result = await installModapckFromMarket({
+    const [result] = await installModapckFromMarket({
       market: 0,
-      version: nextVersion,
-      icon: project.value?.icon_url || '',
+      version: { versionId: v.id, icon: project.value?.icon_url },
     })
     show({
       type: 'upstream',
@@ -158,12 +155,9 @@ async function onDuplicate(v: ProjectVersionProps) {
   duplicating.value = true
 
   try {
-    const nextVersion = data.value?.find(d => d.id === v.id)
-    if (!nextVersion) return
-    const result = await installModapckFromMarket({
+    const [result] = await installModapckFromMarket({
       market: 0,
-      version: nextVersion,
-      icon: project.value?.icon_url || '',
+      version: { versionId: v.id, icon: project.value?.icon_url },
     })
     showAddInstanceDialog({ type: 'modpack', path: result })
   } finally {

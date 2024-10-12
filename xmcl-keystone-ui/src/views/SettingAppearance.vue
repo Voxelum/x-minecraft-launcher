@@ -273,7 +273,7 @@
           >
             <v-list-item-content>
               <v-list-item-title>
-                {{ basename(m.url) }}
+                {{ basename(m.url, '/') }}
               </v-list-item-title>
               <v-list-item-subtitle>
                 {{ m.mimeType }}

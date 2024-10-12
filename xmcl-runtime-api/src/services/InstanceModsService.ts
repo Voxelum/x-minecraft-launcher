@@ -53,7 +53,7 @@ export interface InstanceModsService {
   /**
    * Install mods from the market to the instance.
    */
-  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
+  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]>
   /**
    * Install mods to the server instance.
    */

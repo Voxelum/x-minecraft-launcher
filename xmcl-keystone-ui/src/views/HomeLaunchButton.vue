@@ -17,7 +17,7 @@
         :x-large="!compact"
         :large="compact"
         class="px-12 text-lg transition-all btn-left"
-        @click="onClick()"
+        @click="loading ? undefined : onClick()"
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
       >
@@ -36,7 +36,7 @@
           {{ icon }}
         </v-icon>
         <v-progress-circular
-          v-else-if="loading"
+          v-if="loading"
           class="v-icon--right"
           indeterminate
           :size="20"

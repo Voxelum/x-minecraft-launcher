@@ -26,9 +26,9 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
 
   async diagnoseAssetIndex(currentVersion: ResolvedVersion): Promise<AssetIndexIssue | undefined> {
     this.log(`Diagnose for version ${currentVersion.id} assets index`)
-    const assetIndexIssue = await diagnoseAssetIndex(currentVersion, new MinecraftFolder(this.getPath()))
+    const assetIndexIssue = await diagnoseAssetIndex(currentVersion, new MinecraftFolder(this.getPath()), true)
     if (assetIndexIssue) {
-      assetIndexIssue.version = assetIndexIssue.version || currentVersion.id
+      assetIndexIssue.version = currentVersion.id
       return assetIndexIssue
     }
   }

@@ -24,11 +24,11 @@ type ProjectDependency = {
   parent: Mod
 }
 
-const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderType>, gameVersion: Ref<string | undefined>, visited: Set<number>, config = injection(kSWRVConfig)): Promise<ProjectDependency[]> => {
-  const { file } = dep
-  if (dep.relativeType === FileRelationType.EmbeddedLibrary ||
-    dep.relativeType === FileRelationType.Include ||
-    dep.relativeType === FileRelationType.Incompatible
+const visit = async (current: ProjectDependency, modLoaderType: Ref<FileModLoaderType>, gameVersion: Ref<string | undefined>, visited: Set<number>, config = injection(kSWRVConfig)): Promise<ProjectDependency[]> => {
+  const { file } = current
+  if (current.relativeType === FileRelationType.EmbeddedLibrary ||
+    current.relativeType === FileRelationType.Include ||
+    current.relativeType === FileRelationType.Incompatible
   ) {
     return []
   }
@@ -37,20 +37,24 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
   }
   visited.add(file.modId)
 
-  const dependencies = await Promise.all(file.dependencies.map(async (d) => {
+  const dependencies = await Promise.all(file.dependencies.map(async (child) => {
     try {
       const modLoaderTypes = getModLoaderTypesForFile(file)
       const loaderType = modLoaderTypes.has(modLoaderType.value) ? modLoaderType.value : FileModLoaderType.Any
-      const project = await getSWRV(getCurseforgeProjectModel(ref(d.modId)), config)
-      const files = await getSWRV(getCurseforgeProjectFilesModel(ref(d.modId), gameVersion, ref(loaderType)), config)
+      const project = await getSWRV(getCurseforgeProjectModel(ref(child.modId)), config)
+      const files = await getSWRV(getCurseforgeProjectFilesModel(ref(child.modId), gameVersion, ref(loaderType)), config)
       if (project && files) {
         return await visit({
-          type: dep.relativeType || d.relationType,
+          type: child.relationType === FileRelationType.RequiredDependency
+            ? current.relativeType === FileRelationType.RequiredDependency
+              ? FileRelationType.RequiredDependency
+              : current.relativeType || child.relationType
+            : child.relationType,
           files: files.data,
           file: files.data[0],
-          relativeType: d.relationType,
+          relativeType: child.relationType,
           project,
-          parent: dep.project,
+          parent: current.project,
         }, modLoaderType, gameVersion, visited, config)
       }
     } catch (e) {
@@ -58,7 +62,7 @@ const visit = async (dep: ProjectDependency, modLoaderType: Ref<FileModLoaderTyp
     return []
   }))
 
-  return [dep, ...dependencies.reduce((a, b) => a.concat(b), [])]
+  return [current, ...dependencies.reduce((a, b) => a.concat(b), [])]
 }
 
 export function getCurseforgeDependenciesModel(fileRef: Ref<File | undefined>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType>, config = injection(kSWRVConfig)) {

@@ -135,11 +135,8 @@ const members = computed(() => {
 const _installing = ref(false)
 const onInstall = (v: StoreProjectVersion) => {
   if (!proj.value) return
-  const files = (allVersions.data.value?.data || proj.value.latestFiles)
-  const file = files.find(f => f.id.toString() === v.id)
-  if (!file) return
   _installing.value = true
-  installModpack({ file, market: 1 }).finally(() => {
+  installModpack({ file: { fileId: Number(v.id), icon: project.value?.iconUrl }, market: 1 }).finally(() => {
     _installing.value = false
   })
 }
@@ -162,7 +159,7 @@ const tasks = useTasks((t) => {
   return false
 })
 const isDownloading = computed(() => tasks.value.length > 0)
-const installModpack = useModpackInstaller(computed(() => project.value?.iconUrl))
+const installModpack = useModpackInstaller()
 
 </script>
 <template>

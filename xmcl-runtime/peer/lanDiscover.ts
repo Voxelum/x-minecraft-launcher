@@ -3,6 +3,7 @@ import { createSocket } from 'dgram'
 import { MessageLan } from './messages/lan'
 import type { Peers } from './multiplayerImpl'
 import { EventEmitter } from 'stream'
+import { PromiseSignal } from '@xmcl/runtime-api'
 
 function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: Peers) {
   discover.bind().then(() => {
@@ -38,7 +39,7 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
 export const LAN_MULTICAST_PORT = 4446
 export const LAN_MULTICAST_ADDR = '224.0.2.60'
 
-export function createLanDiscover(peers: Peers, emitter: EventEmitter) {
+export function createLanDiscover(idSignal: PromiseSignal<string>, peers: Peers, emitter: EventEmitter) {
   const discover = new MinecraftLanDiscover()
   const discoverV6 = new MinecraftLanDiscover('udp6')
 
@@ -65,28 +66,29 @@ export function createLanDiscover(peers: Peers, emitter: EventEmitter) {
     ports = exposed || []
   }
 
-  return {
-    start: (id: string) => {
-      setInterval(() => {
-        sock.send(id, LAN_MULTICAST_PORT, LAN_MULTICAST_ADDR)
-        if (ports && ports.length > 0) {
-          for (const p of ports) {
-            if (discover.isReady) {
-              discover.broadcast({
-                port: p,
-                motd: 'Minecraft Server',
-              })
-            }
-            if (discoverV6.isReady) {
-              discoverV6.broadcast({
-                port: p,
-                motd: 'Minecraft Server',
-              })
-            }
+  idSignal.then((id) => {
+    setInterval(() => {
+      sock.send(id, LAN_MULTICAST_PORT, LAN_MULTICAST_ADDR)
+      if (ports && ports.length > 0) {
+        for (const p of ports) {
+          if (discover.isReady) {
+            discover.broadcast({
+              port: p,
+              motd: 'Minecraft Server',
+            })
+          }
+          if (discoverV6.isReady) {
+            discoverV6.broadcast({
+              port: p,
+              motd: 'Minecraft Server',
+            })
           }
         }
-      }, 1000)
-    },
+      }
+    }, 1000)
+  })
+
+  return {
     destroy: () => {
       sock.close()
       discover.destroy()

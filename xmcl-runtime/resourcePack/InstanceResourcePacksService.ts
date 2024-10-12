@@ -4,13 +4,13 @@ import { InstanceService } from '~/instance'
 import { ResourceManager } from '~/resource'
 import { ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { AbstractInstanceDoaminService } from './AbstractInstanceDoaminService'
+import { AbstractInstanceDomainService } from './AbstractInstanceDoaminService'
 
 /**
  * Provide the abilities to import resource pack and resource packs files to instance
  */
 @ExposeServiceKey(InstanceResourcePacksServiceKey)
-export class InstanceResourcePackService extends AbstractInstanceDoaminService implements IInstanceResourcePacksService {
+export class InstanceResourcePackService extends AbstractInstanceDomainService implements IInstanceResourcePacksService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceManager) protected resourceManager: ResourceManager,
     @Inject(kGameDataPath) protected getPath: PathResolver,

@@ -18,6 +18,7 @@
       </v-toolbar>
 
       <v-container
+        ref="scrollElement"
         grid-list-sm
         class="visible-scroll max-h-[70vh]"
         style="overflow: auto;"
@@ -163,6 +164,7 @@
           v-model="selected"
           selectable
           multiple
+          :scroll-element="scrollElement"
         />
       </v-container>
       <v-card-actions v-if="sharing">
@@ -260,6 +262,8 @@ const optifine = computed(() => manifest.value?.runtime.optifine)
 const mcOptions = computed(() => manifest.value?.mcOptions || [])
 const vmOptions = computed(() => manifest.value?.vmOptions || [])
 const loading = ref(false)
+
+const scrollElement = ref<HTMLElement | null>(null)
 
 const onCancelShare = () => {
   shareInstance({ manifest: undefined, instancePath: path.value })
