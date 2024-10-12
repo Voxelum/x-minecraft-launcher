@@ -1,10 +1,9 @@
 /* eslint-disable no-dupe-class-members */
 import { File, ResourceState, UpdateResourcePayload, ResourceDomain, ResourceMetadata, Resource } from '@xmcl/runtime-api'
-import EventEmitter from 'events'
 import { join } from 'path'
 import { ResourceContext } from './core/ResourceContext'
 import { generateResourceV3, pickMetadata } from './core/generateResource'
-import { ResourceSnapshotTable } from './core/schema'
+import { ResourceSnapshotTable, ResourceUriTable } from './core/schema'
 import { watchResourcesDirectory, watchResourceSecondaryDirectory } from './core/watchResourcesDirectory'
 import { isSnapshotValid, takeSnapshot } from './core/snapshot'
 import { getFile } from './core/files'
@@ -47,6 +46,14 @@ export class ResourceManager {
     const uris = await this.context.db.selectFrom('uris')
       .where('uris.uri', 'in', uri).select('uris.sha1').execute()
     return uris ? uris.map((v) => v.sha1) : []
+  }
+
+  async getUrisByHash(sha1: string[]): Promise<ResourceUriTable[]> {
+    const uris = await this.context.db.selectFrom('uris')
+      .where('uris.sha1', 'in', sha1)
+      .selectAll()
+      .execute()
+    return uris || []
   }
 
   async getUriByHash(sha1: string): Promise<string[]> {
@@ -150,11 +157,11 @@ export class ResourceManager {
     return resources.filter(isNonnull)
   }
 
-  async getMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>> {
+  async getMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata & { sha1: string } | undefined>> {
     const metadata = await this.context.db.selectFrom('resources')
       .selectAll()
       .where('sha1', 'in', sha1).execute()
-    return metadata ? metadata.map(pickMetadata) : []
+    return metadata ? metadata.map(m => ({ ...pickMetadata(m), sha1: m.sha1 })) : []
   }
 
   async getMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined> {

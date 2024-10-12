@@ -27,6 +27,7 @@
         </v-btn>
       </v-toolbar>
       <div
+        ref="scrollElement"
         class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>{{ t('modpack.general') }}</v-subheader>
@@ -171,6 +172,7 @@
           <InstanceManifestFileTree
             v-model="data.selected"
             selectable
+            :scroll-element="scrollElement"
             :search="filterText"
             :multiple="false"
           >
@@ -289,6 +291,8 @@ const zipFilter = useZipFilter()
 const modrinthFilter = useModrinthFilter()
 const baseVersion = modpackVersion.value || '0.0.0'
 const localVersions = computed(() => _locals.value.map((v) => v.id))
+
+const scrollElement = ref<HTMLElement | null>(null)
 
 function getEnvText(env: string) {
   if (env === 'required') return t('modrinth.environments.required')

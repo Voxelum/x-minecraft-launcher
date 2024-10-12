@@ -271,6 +271,9 @@ importers:
       '@intlify/unplugin-vue-i18n':
         specifier: ^0.13.0
         version: 0.13.0(rollup@2.79.1)(vue-i18n-bridge@9.13.1(vue@2.7.16))(vue-i18n@8.28.2(vue@2.7.16))
+      '@tanstack/vue-virtual':
+        specifier: ^3.10.8
+        version: 3.10.8(vue@2.7.16)
       '@types/lodash.debounce':
         specifier: ^4.0.7
         version: 4.0.7
@@ -2130,6 +2133,14 @@ packages:
   '@szmarczak/http-timer@4.0.6':
     resolution: {integrity: sha512-4BAffykYOgO+5nzBWYwE3W90sBgLJoUPRWWcL8wlyiM8IB8ipJz3UMJ9KXQd1RKQXpKp8Tutn80HZtWsu2u76w==}
     engines: {node: '>=10'}
+
+  '@tanstack/virtual-core@3.10.8':
+    resolution: {integrity: sha512-PBu00mtt95jbKFi6Llk9aik8bnR3tR/oQP1o3TSi+iG//+Q2RTIzCEgKkHG8BB86kxMNW6O8wku+Lmi+QFR6jA==}
+
+  '@tanstack/vue-virtual@3.10.8':
+    resolution: {integrity: sha512-DB5QA8c/LfqOqIUCpSs3RdOTVroRRdqeHMqBkYrcashSZtOzIv8xbiqHgg7RYxDfkH5F3Y+e0MkuuyGNDVB0BQ==}
+    peerDependencies:
+      vue: ^2.7.0 || ^3.0.0
 
   '@tokenizer/token@0.3.0':
     resolution: {integrity: sha512-OvjF+z51L3ov0OyAU0duzsYuvO01PH7x4t6DJx+guahgTnBHkhJdG7soQeTSFLWN3efnHyibZ4Z8l2EuWwJN3A==}
@@ -6489,6 +6500,13 @@ snapshots:
   '@szmarczak/http-timer@4.0.6':
     dependencies:
       defer-to-connect: 2.0.1
+
+  '@tanstack/virtual-core@3.10.8': {}
+
+  '@tanstack/vue-virtual@3.10.8(vue@2.7.16)':
+    dependencies:
+      '@tanstack/virtual-core': 3.10.8
+      vue: 2.7.16
 
   '@tokenizer/token@0.3.0': {}
 

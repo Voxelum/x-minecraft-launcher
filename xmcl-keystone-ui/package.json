@@ -58,6 +58,7 @@
     },
     "devDependencies": {
         "@intlify/unplugin-vue-i18n": "^0.13.0",
+        "@tanstack/vue-virtual": "^3.10.8",
         "@types/lodash.debounce": "^4.0.7",
         "@types/markdown-it": "^12.2.3",
         "@types/semver": "^7.5.8",

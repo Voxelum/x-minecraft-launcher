@@ -1,6 +1,6 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceIOException, InstanceManifest, InstanceManifestServiceKey, Resource } from '@xmcl/runtime-api'
+import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceIOException, InstanceManifest, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
@@ -10,7 +10,7 @@ import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { isNonnull } from '../util/object'
-import { decoareteInstanceFileFromResourceCache, discover } from './InstanceFileDiscover'
+import { decorateInstanceFiles, discover } from './InstanceFileDiscover'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
@@ -50,16 +50,21 @@ export class InstanceManifestService extends AbstractService implements IInstanc
      */
     const pendingResourceUpdates = new Set<InstanceFile>()
     await task('getInstanceManifest', async function () {
+      const start = performance.now()
       const fileWithStats = await discover(instancePath, logger)
+      const duration = performance.now() - start
+      logger.log(`Discover instance files in ${instancePath} in ${duration}ms`)
 
-      await Promise.all(
-        fileWithStats.map(([file, status]) => decoareteInstanceFileFromResourceCache(file, status, instancePath, worker, resourceManager, pendingResourceUpdates, options?.hashes)
-          .catch((e) => {
-            logger.error(new AnyError('InstanceManifestResolveResourceError', 'Fail to get manifest data for instance file', { cause: e }, file))
-          })),
-      )
+      const decorateStart = performance.now()
+      try {
+        await decorateInstanceFiles(fileWithStats, instancePath, worker, resourceManager, pendingResourceUpdates)
+      } catch (e) {
+        logger.error(new AnyError('InstanceManifestResolveResourceError', 'Fail to get manifest data for instance file', { cause: e }))
+      }
+      logger.log(`Decorate instance files in ${instancePath} in ${performance.now() - decorateStart}ms`)
 
       if (options.hashes) {
+        const hashStart = performance.now()
         const hashes = options.hashes
         await Promise.all(fileWithStats.filter(([f]) => {
           for (const h of hashes) {
@@ -73,11 +78,14 @@ export class InstanceManifestService extends AbstractService implements IInstanc
             f.hashes[a] = await worker.checksum(join(instancePath, f.path), a)
           }
         }))))
+        logger.log(`Resolve hashes in ${instancePath} in ${performance.now() - hashStart}ms`)
       }
 
       files = fileWithStats.map(([file]) => file)
 
+      const resolveStart = performance.now()
       await this.yield(resolveTask).catch(() => undefined)
+      logger.log(`Resolve instance files in ${instancePath} in ${performance.now() - resolveStart}ms`)
     }).startAndWait()
 
     const updates = [...pendingResourceUpdates].map((file) => {
