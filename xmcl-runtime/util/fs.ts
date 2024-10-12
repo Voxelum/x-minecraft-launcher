@@ -260,28 +260,28 @@ export async function isHardLinked(from: string, to: string) {
   return !!rootStat && !!instanceStat && rootStat.ino === instanceStat.ino
 }
 
-export async function hardLinkFiles(root: string, inst: string) {
+export async function hardLinkFiles(root: string, to: string) {
   const rootStat = await stat(root).catch(handleOnlyNotFound)
-  const instanceStat = await stat(inst).catch(handleOnlyNotFound)
+  const instanceStat = await stat(to).catch(handleOnlyNotFound)
 
   if (!rootStat && instanceStat) {
     // no root, copy current to root
-    await linkOrCopyFile(inst, root)
-    return
+    return await linkOrCopyFile(to, root)
   }
 
   if (!instanceStat) {
     await ensureFile(root)
     // no instance, copy root to instance
-    await linkOrCopyFile(root, inst)
-    return
+    return await linkOrCopyFile(root, to)
   }
 
   if (rootStat?.ino !== instanceStat.ino) {
     // different, copy root to instance
-    await unlink(inst).catch(handleOnlyNotFound)
-    await linkOrCopyFile(root, inst)
+    await unlink(to).catch(handleOnlyNotFound)
+    return await linkOrCopyFile(root, to)
   }
+
+  return to
 }
 
 export async function unHardLinkFiles(root: string, inst: string) {
