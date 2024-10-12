@@ -3,9 +3,9 @@ import { File as CurseforgeFile, CurseforgeV1Client } from '@xmcl/curseforge'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
-import { getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
+import { File, getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { join } from 'path'
+import { dirname, join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ResourceManager } from '~/resource'
@@ -13,6 +13,7 @@ import { getFile } from '~/resource/core/files'
 import { kTaskExecutor } from '~/task'
 import { guessCurseforgeFileUrl, resolveCurseforgeHash } from '~/util/curseforge'
 import { InstallResult, kMarketProvider } from './marketProvider'
+import { hardLinkFiles } from '~/util/fs'
 
 export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
   const modrinth = new ModrinthV2Client({ fetch: (...args) => app.fetch(...args) })
@@ -30,7 +31,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
     return join(directory, fileName)
   }
 
-  async function getSnapshotByUris(uris: string[]) {
+  async function getSnapshotByUris(uris: string[], preferDir: string) {
     const hashes = await resourceManager.getHashesByUris(uris)
 
     if (hashes.length > 0) {
@@ -44,18 +45,31 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         return [file, snapshot] as const
       }))
 
-      const existed = all.filter(isNotNull)[0]
+      const existed = all.filter(isNotNull)
 
-      if (!existed) {
+      const matched = existed.find(([file]) => dirname(file.path) === preferDir) || existed[0]
+
+      if (!matched) {
         return undefined
       }
 
-      const [file, snapshot] = existed
+      const [file, snapshot] = matched
 
       const metadata = await resourceManager.getMetadataByHash(snapshot.sha1)
       return [file, snapshot, metadata || {}] as const
     }
     return undefined
+  }
+
+  async function ensureTheFile(destination: string, file: File) {
+    if (file.path === destination) {
+      return
+    }
+    if (dirname(file.path) === destination) {
+      return
+    }
+    // try to link the file
+    file.path = await hardLinkFiles(file.path, destination)
   }
 
   async function downloadCurseforge(downloadOptions: DownloadBaseOptions, destination: string, curseforgeFile: CurseforgeFile) {
@@ -71,10 +85,12 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
     }
     uris.push(...downloadUrls)
 
-    const snapshoted = await getSnapshotByUris(uris)
+    const snapshoted = await getSnapshotByUris(uris, destination)
 
     if (snapshoted) {
       const [file, snapshot, metadata] = snapshoted
+      await ensureTheFile(filePath, file)
+
       return {
         file,
         snapshot,
@@ -123,10 +139,12 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
       uris.push(getModrinthVersionUri(version))
     }
 
-    const snapshoted = await getSnapshotByUris(uris)
+    const snapshoted = await getSnapshotByUris(uris, destination)
 
     if (snapshoted) {
       const [file, snapshot, metadata] = snapshoted
+      await ensureTheFile(filePath, file)
+
       return {
         file,
         snapshot,
