@@ -249,6 +249,7 @@ export function useInstanceLaunch(
       }
       const pid = await launch(options)
       if (pid) {
+        mutate()
         if (state.aborted) {
           await kill(pid)
         } else {

@@ -68,10 +68,10 @@ watch(volume, (newVolume) => {
 
 const { gameProcesses } = injection(kInstanceLaunch)
 
-watch(gameProcesses, (p) => {
-  if (p.length > 0) {
+watch(computed(() => gameProcesses.value.length), (cur, last) => {
+  if (cur > 0 && last === 0) {
     videoRef.value?.pause()
-  } else {
+  } else if (cur === 0 && last > 0) {
     videoRef.value?.play()
   }
 })
