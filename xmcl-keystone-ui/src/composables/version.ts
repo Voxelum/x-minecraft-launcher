@@ -179,14 +179,14 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
     return ''
   })
   const latest = computed(() => {
-    const vers = data.value
+    const vers = versions.value
     if (!vers) return undefined
     return vers[0] ?? ''
   })
   const versions = computed(() => {
     const vers = data.value
     if (!vers) return []
-    return vers
+    return vers.toReversed()
   })
 
   return {
