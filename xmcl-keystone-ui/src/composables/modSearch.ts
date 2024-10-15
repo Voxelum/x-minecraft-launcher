@@ -262,12 +262,21 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
 
   const { lookupBatch } = useService(ProjectMappingServiceKey)
 
-  const mapping = ref<ProjectMapping[]>([])
+  const mapping = shallowRef<Record<string, ProjectMapping>>({})
   watch([items, computed(() => settings.value?.locale)], ([newItems]) => {
     const modrinthsToLookup = newItems.map(i => i.modrinthProjectId || i.modrinth?.project_id).filter(notNullish)
     const curseforgesToLookup = newItems.map(i => i.curseforgeProjectId || i.curseforge?.id).filter(notNullish)
     lookupBatch(modrinthsToLookup, curseforgesToLookup).then((result) => {
-      mapping.value = result
+      const newDict: Record<string, ProjectMapping> = {}
+      for (const r of result) {
+        if (r.modrinthId) {
+          newDict[r.modrinthId] = r
+        }
+        if (r.curseforgeId) {
+          newDict[r.curseforgeId] = r
+        }
+      }
+      mapping.value = newDict
     })
   })
 
@@ -277,15 +286,18 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     const result = oldItems.map((item) => {
       const mrId = item.modrinthProjectId || item.modrinth?.project_id
       const cfId = item.curseforgeProjectId || item.curseforge?.id
-      const map = mapping.value.find(m => m.modrinthId === mrId || m.curseforgeId === cfId)
-      if (map) {
-        item.localizedTitle = map.name
-        item.localizedDescription = map.description
-        if (map.modrinthId && !item.modrinthProjectId) {
-          item.modrinthProjectId = map.modrinthId
-        }
-        if (map.curseforgeId && !item.curseforgeProjectId) {
-          item.curseforgeProjectId = map.curseforgeId
+      const id = mrId || cfId?.toString()
+      if (id) {
+        const map = mapping.value[id]
+        if (map) {
+          item.localizedTitle = map.name
+          item.localizedDescription = map.description
+          if (map.modrinthId && !item.modrinthProjectId) {
+            item.modrinthProjectId = map.modrinthId
+          }
+          if (map.curseforgeId && !item.curseforgeProjectId) {
+            item.curseforgeProjectId = map.curseforgeId
+          }
         }
       }
       return item

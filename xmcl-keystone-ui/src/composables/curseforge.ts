@@ -176,6 +176,12 @@ export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersi
       modId: projectId.value,
       gameVersion: gameVersion.value,
       modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
+    }).then(v => {
+      for (const d of v.data) {
+        markRaw(d)
+      }
+      markRaw(v)
+      return v
     }),
   }
 }

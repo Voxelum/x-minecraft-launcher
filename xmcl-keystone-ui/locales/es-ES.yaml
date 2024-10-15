@@ -508,6 +508,10 @@ mod:
   incompatible: Mod Incompatible.
   manage: Administrar Mods
   maybeCompatible: Posiblemente Compatible.
+  modloaderSelectHint: |-
+    El mod admite los siguientes cargadores de mod. 
+    Seleccione uno para instalar.
+  modloaderSelectNotSupported: No encontrado {modloader} para Minecraft {minecraft}
   mods: '{count} modificaciones'
   name: Mod | Mods
   noModLoaderHint: ¡No olvides habilitar un modloader para usar mods!
@@ -1074,6 +1078,11 @@ shaderPack:
   enable: Usando el pack de shaders {name}
   manage: Gestionar Packs de Shaders
   name: Pack de Shaders
+  noShaderMod: No hay ningún mod de sombreado instalado
+  noShaderModHint: No puedes usar sombreador sin un mod de sombreado
+  noShaderModInstallHint: >-
+    Debe instalar uno de los siguientes mods para cargar el paquete de
+    sombreadores.
   showDirectory: Mostrar directorio de packs de shaders
   showFile: Mostrar este pack de shaders en la carpeta
 shared:

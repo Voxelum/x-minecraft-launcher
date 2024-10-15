@@ -762,6 +762,10 @@ mod:
   incompatible: Несовместимый мод.
   manage: Моды
   maybeCompatible: Возможно, совместим.
+  modloaderSelectHint: |-
+    Мод поддерживает следующие загрузчики модов. 
+    Пожалуйста, выберите один для установки.
+  modloaderSelectNotSupported: Не найден {modloader} для Minecraft {minecraft}
   mods: '{count} модов'
   name: Мод | Моды
   noModLoaderHint: Не забудьте включить модлоадер для использования модов!
@@ -1466,6 +1470,11 @@ shaderPack:
   enabled: Выбранные наборы шейдеров
   manage: Шейдера
   name: Набор шейдеров | Наборы шейдеров
+  noShaderMod: Мод шейдеров не установлен
+  noShaderModHint: Вы не можете использовать шейдер без мода шейдера.
+  noShaderModInstallHint: >-
+    Для загрузки пакета шейдеров вам необходимо установить один из следующих
+    модов.
   searchHint: Поиск набора шейдеров
   selectSearchHint: Найдите и выберите Shader Pack
   showDirectory: Открыть папку с наборами шейдеров

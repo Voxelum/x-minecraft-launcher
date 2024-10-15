@@ -656,6 +656,10 @@ mod:
   incompatible: 適合しないModです。
   manage: Modを管理
   maybeCompatible: おそらく適合しません。
+  modloaderSelectHint: |-
+    MOD は以下の MOD ローダーをサポートしています。
+    インストールするものを選択してください。
+  modloaderSelectNotSupported: Minecraft {minecraft} の {modloader} が見つかりません
   mods: '{count} Mods'
   name: Mod | Mods
   noModLoaderHint: Modを使うためにModloaderを有効化するのを忘れないでください!
@@ -1283,6 +1287,9 @@ shaderPack:
   enabled: シェーダーパックが有効
   manage: シェーダーパックを管理
   name: シェーダーパック
+  noShaderMod: シェーダーモッドがインストールされていません
+  noShaderModHint: シェーダーMODがないとシェーダーは使えない
+  noShaderModInstallHint: シェーダー パックを読み込むには、次のいずれかの MOD をインストールする必要があります。
   searchHint: シェーダーパックを検索
   selectSearchHint: シェーダーパックを検索して選ぶ
   showDirectory: シェーダーパックのディレクトリを見る

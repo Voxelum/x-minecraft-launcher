@@ -296,6 +296,10 @@ me:
   versions: Versións instaladas
 mod:
   denseView: Vista Densa
+  modloaderSelectHint: |-
+    O mod admite os seguintes cargadores de mod. 
+    Selecciona un para instalar.
+  modloaderSelectNotSupported: Non se atopou {modloader} para Minecraft {minecraft}
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
@@ -407,6 +411,10 @@ setting:
 setup:
   appearance:
     name: '@:setting.appearance'
+shaderPack:
+  noShaderMod: Non hai ningún Shader Mod instalado
+  noShaderModHint: Non pode usar shader sen un mod shader
+  noShaderModInstallHint: Debes instalar un dos seguintes mods para cargar o paquete de sombreadores.
 shared:
   accept: Aceptar
   skipForNow: Saltar por agora

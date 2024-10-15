@@ -681,6 +681,10 @@ mod:
   incompatible: 可能不兼容当前版本。
   manage: 管理模组
   maybeCompatible: 也许兼容于当前版本。
+  modloaderSelectHint: |-
+    该模组支持以下模组加载器。
+    请选择一个进行安装。
+  modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
   mods: '{count} 个模组'
   name: 模组 | 模组
   noModLoaderHint: 请不要忘记选择模组加载器来加载模组
@@ -1304,6 +1308,9 @@ shaderPack:
   enabled: 已启用的光影
   manage: 管理光影包
   name: 光影包
+  noShaderMod: 没有安装光影模组
+  noShaderModHint: 不装光影模组光影包没法生效
+  noShaderModInstallHint: 您需要安装以下 mod 之一来加载着光影包。
   searchHint: 搜索光影包
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹

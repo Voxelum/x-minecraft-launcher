@@ -703,6 +703,10 @@ mod:
   incompatible: Inkompatibilis mod.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
+  modloaderSelectHint: |-
+    A mod támogatja a mod betöltőket. 
+    Kérjük, válasszon egyet a telepítéshez.
+  modloaderSelectNotSupported: Nem található {modloader} a Minecraft {minecraft} számára
   mods: '{count} Mod'
   name: Mod | Modok
   noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
@@ -1396,6 +1400,9 @@ shaderPack:
   enabled: Engedélyezett Shader Pack
   manage: Shader packek kezelése
   name: Shader Pack
+  noShaderMod: Nincs telepítve Shader Mod
+  noShaderModHint: A shader nem használható shader mod nélkül
+  noShaderModInstallHint: A shader csomag betöltéséhez telepítenie kell a következő modok egyikét.
   searchHint: Shader Pack keresése
   selectSearchHint: Keresés és Shader Pack kiválasztása
   showDirectory: Shader pack könyvtár megjelenítése
