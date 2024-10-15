@@ -117,6 +117,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
 
   queryAudioPermission(): Promise<boolean>
 
+  writeClipboard(text: string): void
+
   findInPage(text: string, options?: {
     /**
      * Whether to search forward or backward, defaults to `true`.
