@@ -1,5 +1,5 @@
 import { ElectronController } from '@/ElectronController'
-import { app, BrowserWindow, dialog, FindInPageOptions, ipcMain, systemPreferences } from 'electron'
+import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 
@@ -33,6 +33,9 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
     if (window) {
       window.show()
     }
+  })
+  ipcMain.handle('write-clipboard', (_, text: string) => {
+    clipboard.writeText(text)
   })
   ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
     return dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])

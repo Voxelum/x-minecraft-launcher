@@ -153,7 +153,7 @@ watch(isShown, (v) => {
 })
 
 function copyLocalDescription() {
-  navigator.clipboard.writeText(localDescription.value)
+  windowController.writeClipboard(localDescription.value)
   copied.value = true
 }
 

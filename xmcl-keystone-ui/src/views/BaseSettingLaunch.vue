@@ -210,7 +210,7 @@ async function copyToClipboard(side = 'client' as 'client' | 'server') {
   await refresh(side)
   if (!error.value) {
     notify({ level: 'success', title: t('copyClipboard.success') })
-    navigator.clipboard.writeText(command.value)
+    windowController.writeClipboard(command.value)
   }
 }
 const gotoSetting = () => {
