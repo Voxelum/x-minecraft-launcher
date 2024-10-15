@@ -678,6 +678,10 @@ mod:
   incompatible: 可能不相容目前版本。
   manage: 管理模組
   maybeCompatible: 也許相容於目前版本。
+  modloaderSelectHint: |-
+    此模組支援以下模組載入器。
+    請選擇一個進行安裝。
+  modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
   mods: '{count} 個模組'
   name: 模組 | 模組
   noModLoaderHint: 請不要忘記選擇模組載入器來載入模組
@@ -1301,6 +1305,9 @@ shaderPack:
   enabled: 已啟用的光影
   manage: 管理光影包
   name: 光影包
+  noShaderMod: 未安裝著色器模組
+  noShaderModHint: 沒有著色器模組就無法使用著色器
+  noShaderModInstallHint: 您需要安裝以下 mod 之一來載入著色器套件。
   searchHint: 搜尋光影包
   selectSearchHint: 檢視已選擇的光影包
   showDirectory: 顯示光影資料夾

@@ -947,6 +947,8 @@ const iconMapping = {
   quilt: '$vuetify.icons.quilt',
   optifine: '$vuetify.icons.optifine',
   neoforge: '$vuetify.icons.neoForged',
+  iris: '$vuetify.icons.iris',
+  oculus: '$vuetify.icons.oculus',
 } as Record<string, string>
 
 const validModLoaders = computed(() => {

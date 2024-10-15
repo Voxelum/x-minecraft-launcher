@@ -743,6 +743,10 @@ mod:
   incompatible: Mod incompatible.
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
+  modloaderSelectHint: |-
+    Le mod prend en charge les chargeurs de mod suivants. 
+    Veuillez en sélectionner un à installer.
+  modloaderSelectNotSupported: Introuvable {modloader} pour Minecraft {minecraft}
   mods: "{count}\_mods"
   name: Mod | Mods
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
@@ -1419,6 +1423,9 @@ shaderPack:
   enabled: Pack de shaders activé
   manage: Gérer les Shaderpacks
   name: Shaderpack
+  noShaderMod: Aucun module shader installé
+  noShaderModHint: Vous ne pouvez pas utiliser le shader sans un mod shader
+  noShaderModInstallHint: Vous devez installer l'un des mods suivants pour charger le pack de shaders.
   showDirectory: Afficher le répertoire du shaderpack
   showFile: Afficher ce pack de shaders dans le dossier
 shared:

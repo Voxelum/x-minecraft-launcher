@@ -111,7 +111,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       archived: project.value?.status === 'archived',
     }
 
-    if (mapping.value) {
+    if (mapping.value && mapping.value.modrinthId === projectId.value) {
       const map = mapping.value
       detail.localizedTitle = map.name
       detail.localizedDescription = map.description

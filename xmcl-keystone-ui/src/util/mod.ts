@@ -163,7 +163,7 @@ function getFabricLikeModLinks(contact?: FabricModMetadata['contact'] & { source
 }
 
 export function getModFileFromResource(resource: Resource, runtime: RuntimeVersions): ModFile {
-  const modItem: ModFile = ({
+  const modItem: ModFile = markRaw({
     path: resource.path,
     modId: '',
     name: resource.fileName,

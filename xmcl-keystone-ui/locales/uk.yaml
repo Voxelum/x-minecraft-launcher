@@ -700,6 +700,10 @@ mod:
   incompatible: Несумістні мод.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
+  modloaderSelectHint: |-
+    Мод підтримує такі завантажувачі модів. 
+    Будь ласка, виберіть один для встановлення.
+  modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
   mods: '{count} модів'
   name: Мод | Моди
   noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
@@ -1369,6 +1373,11 @@ shaderPack:
   enabled: Увімкнений пакет шейдерів
   manage: Управління шейдерами
   name: Шейдер
+  noShaderMod: Шейдерний мод не встановлено
+  noShaderModHint: Ви не можете використовувати шейдер без шейдерного мода
+  noShaderModInstallHint: >-
+    Вам потрібно встановити один із наведених нижче модів, щоб завантажити пакет
+    шейдерів.
   showFile: Відкрити цей шейдер у папці
 shared: Екземпляр використовує спільну папку пакета ресурсів
 summery: Літній
