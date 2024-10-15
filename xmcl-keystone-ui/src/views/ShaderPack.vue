@@ -8,7 +8,7 @@
       dragover,
     }"
     :loading="loading"
-    @load="loadMoreModrinth"
+    @load="loadMore"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
@@ -42,7 +42,7 @@
         @click="on.click"
       />
     </template>
-    <template #content="{ selectedModrinthId, selectedItem }">
+    <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
       <Hint
         v-if="dragover"
         icon="save_alt"
@@ -50,19 +50,34 @@
         class="h-full"
       />
       <MarketProjectDetailModrinth
-        v-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
-        :modrinth="selectedItem.modrinth"
+        v-if="(selectedItem?.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
-        :installed="selectedItem.installed"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :game-version="gameVersion"
         :loaders="shaderLoaderFilters"
         :categories="modrinthCategories"
         :all-files="shaderProjectFiles"
-        :curseforge="selectedItem?.curseforge?.id || selectedItem.curseforgeProjectId"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onUninstall([$event])"
         @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforge
+        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :game-version="gameVersion"
+        :loaders="[]"
+        :category="curseforgeCategory"
+        :all-files="shaderProjectFiles"
+        :modrinth="selectedModrinthId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="curseforgeCategory = $event"
       />
       <ShaderPackDetailResource
         v-else-if="isShaderPackProject(selectedItem)"
@@ -237,6 +252,7 @@ import { useSimpleDialog } from '@/composables/dialog'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { BuiltinImages } from '@/constant'
 import AvatarChip from '@/components/AvatarChip.vue'
+import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 
 const {
   modrinthError,
@@ -247,10 +263,11 @@ const {
   others,
 
   keyword,
+  curseforgeCategory,
   shaderProjectFiles,
   shaderLoaderFilters,
   modrinthCategories,
-  loadMoreModrinth,
+  loadMore,
   gameVersion,
   effect,
 } = injection(kShaderPackSearch)
@@ -263,6 +280,16 @@ const shouldDisableOculus = computed(() => !!runtime.value.fabricLoader || !!run
 const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!runtime.value.neoForged || !!runtime.value.quiltLoader)
 
 effect()
+
+const { shaderPacks } = injection(kInstanceShaderPacks)
+const getInstalledModrinth = (projectId: string) => {
+  const allPacks = shaderPacks.value
+  return allPacks.filter((m) => m.modrinth?.projectId === projectId)
+}
+const getInstalledCurseforge = (modId: number | undefined) => {
+  const allPacks = shaderPacks.value
+  return allPacks.filter((m) => m.curseforge?.projectId === modId)
+}
 
 const all = computed(() => {
   const result: (string | ProjectEntry)[] = []
