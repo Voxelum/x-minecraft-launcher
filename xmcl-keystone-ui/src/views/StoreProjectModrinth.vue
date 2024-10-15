@@ -1,6 +1,6 @@
-<script lang="ts"  setup>
+<script lang="ts" setup>
 import StoreProjectBase, { StoreProject } from '@/components/StoreProject.vue'
-import { StoreProjectVersion } from '@/components/StoreProjectInstallVersionDialog.vue'
+import { StoreProjectVersion, StoreProjectVersionDetail } from '@/components/StoreProjectInstallVersionDialog.vue'
 import { TeamMember } from '@/components/StoreProjectMembers.vue'
 import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
@@ -153,6 +153,26 @@ const members = computed(() => {
   return result
 })
 
+async function getVersionDetail(version: StoreProjectVersion) {
+  const target = versions.value.find(v => v.id === version.id)
+  if (!target) return { changelog: '', dependencies: [], version }
+  const projects = target.dependencies.map(v => v.project_id).filter(v => !!v)
+  const lookup = Object.fromEntries(target.dependencies.map(p => [p.project_id, p.dependency_type]))
+  const matched = await clientModrinthV2.getProjects(projects)
+  const dependencies = matched.map((p) => ({
+    title: p.title,
+    description: p.description,
+    icon: p.icon_url ?? '',
+    href: `https://modrinth.com/${p.project_type}/${p.slug}`,
+    dependencyType: lookup[p.id],
+  }))
+  return {
+    version,
+    changelog: target.changelog ?? '',
+    dependencies,
+  }
+}
+
 usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.title || '' })))
 </script>
 <template>
@@ -167,6 +187,7 @@ usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.
     :installed="!!existed"
     :loading-members="loadingMembers"
     :team-error="teamError"
+    :get-version-detail="getVersionDetail"
     @install="onInstall"
     @open="onOpen"
   />

@@ -29,9 +29,8 @@
           </span>
         </div>
 
-        <div class="flex flex-grow-0 flex-col items-center justify-center gap-2 xl:flex-row">
+        <div class="flex flex-grow-0 items-center justify-center gap-2 xl:flex-row">
           <v-btn
-            v-if="!installed"
             color="primary"
             :loading="installing"
             @click="$emit('install')"
@@ -45,7 +44,7 @@
             {{ t('install') }}
           </v-btn>
           <v-btn
-            v-else
+            v-if="installed"
             color="blue"
             @click="$emit('open')"
           >

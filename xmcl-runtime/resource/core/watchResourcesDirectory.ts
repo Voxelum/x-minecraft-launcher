@@ -1,15 +1,16 @@
-import { File, ResourceState, FileUpdateOperation, FileUpdateAction, UpdateResourcePayload, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
 import { FSWatcher, existsSync } from 'fs'
-import { copy, link, watch } from 'fs-extra'
+import { copy, watch } from 'fs-extra'
 import debounce from 'lodash.debounce'
-import { isAbsolute, join } from 'path'
+import { basename, dirname, isAbsolute, join } from 'path'
 import { Logger } from '~/logger'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
 import { AnyError, isSystemError } from '~/util/error'
 import { linkOrCopyFile } from '~/util/fs'
 import { toRecord } from '~/util/object'
 import { ResourceContext } from './ResourceContext'
+import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
 import { getFile, getFiles } from './files'
 import { generateResourceV3, pickMetadata } from './generateResource'
 import { jsonArrayFrom } from './helper'
@@ -17,7 +18,6 @@ import { getOrParseMetadata } from './parseMetadata'
 import { shouldIgnoreFile } from './pathUtils'
 import { ResourceSnapshotTable } from './schema'
 import { getDomainedPath, isSnapshotValid, takeSnapshot } from './snapshot'
-import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
 
 function createRevalidateFunction(
   dir: string,
@@ -292,11 +292,16 @@ export function watchResourceSecondaryDirectory(
 
     record = await context.db.selectFrom('snapshots')
       .selectAll()
-      .where('domainedPath', 'like', `${getDomainedPath(primaryDirectory, context.root)}%`)
       .where('sha1', '=', snapshot.sha1)
       .executeTakeFirst()
 
-    if (record) return true
+    if (record) {
+      const domain = basename(dirname(record.domainedPath))
+      const actualDomain = basename(primaryDirectory)
+      if (domain === actualDomain) {
+        return true
+      }
+    }
 
     return false
   }
