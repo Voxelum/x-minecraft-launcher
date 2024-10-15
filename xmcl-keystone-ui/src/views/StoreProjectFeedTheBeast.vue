@@ -7,6 +7,7 @@ import { kInstances } from '@/composables/instances'
 import { useMarkdown } from '@/composables/markdown'
 import { useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
+import { clientCurseforgeV1 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { getSWRV } from '@/util/swrvGet'
 import { FTBModpackVersionManifest } from '@xmcl/runtime-api'
@@ -109,6 +110,26 @@ const onOpen = () => {
   }
 }
 
+async function getVersionDetail(version: StoreProjectVersion) {
+  const target = allVersions.value?.find(v => v.id === Number(version.id))
+  if (!target) return { changelog: '', dependencies: [], version }
+  const curseforges = target.files.filter(f => f.curseforge).map(f => f.curseforge!.project)
+  const changelog = await fetch(target.changelog).then(r => r.json()).then(r => render(r.content))
+
+  const cf = await clientCurseforgeV1.getMods(curseforges)
+  return {
+    changelog,
+    dependencies: cf.filter(v => !!v).map(v => ({
+      title: v.name,
+      description: v.summary,
+      dependencyType: 'embedded',
+      href: v.links.websiteUrl || '',
+      icon: v.logo?.thumbnailUrl || '',
+    })),
+    version,
+  }
+}
+
 </script>
 <template>
   <StoreProject
@@ -121,6 +142,7 @@ const onOpen = () => {
     :installed="!!existed"
     :loading-members="false"
     :team-error="undefined"
+    :get-version-detail="getVersionDetail"
     @install="onInstall"
     @open="onOpen"
   />
