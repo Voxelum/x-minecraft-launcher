@@ -21,6 +21,7 @@ import { checksum } from '~/util/fs'
 import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
+import { kGFW } from '~/gfw'
 
 const kPatched = Symbol('Patched')
 // @ts-ignore
@@ -58,7 +59,7 @@ AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends AbortableTask<void> {
-  private url: string
+  private file: string
   private abortController = new AbortController()
 
   constructor(private app: ElectronLauncherApp, private destination: string, version: string) {
@@ -71,37 +72,59 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
     } else if (process.arch === 'ia32') {
       platformFlag += '-ia32'
     }
-    this.url = `${AZURE_MS_CDN}/app-${version}-${platformFlag}.asar`
+    this.file = `app-${version}-${platformFlag}.asar`
   }
 
   protected async process(): Promise<void> {
-    this.abortController = new AbortController()
-    const sha256Response = await this.app.fetch(this.url + '.sha256', { signal: this.abortController.signal })
-    const sha256 = sha256Response.ok ? await sha256Response.text() : ''
-    const actual = await checksum(this.destination, 'sha256').catch(() => '')
-    if (sha256 === actual) {
-      return
-    }
-    const gzUrl = this.url + '.gz'
-    const gzResponse = await fetch(gzUrl, { signal: this.abortController.signal })
-    const tracker = new PassThrough({
-      transform: (chunk, encoding, callback) => {
-        this._progress += chunk.length
-        this.update(chunk.length)
-        callback(undefined, chunk)
-      },
-    })
-    if (gzResponse.ok && gzResponse.body) {
-      this._total = parseInt(gzResponse.headers.get('Content-Length') || '0', 10)
-      await pipeline(Readable.fromWeb(gzResponse.body as any), createGunzip(), tracker, createWriteStream(this.destination))
-    } else {
-      const response = await this.app.fetch(this.url, { signal: this.abortController.signal })
-      if (!response.ok) {
-        throw new AnyError('DownloadError', `Fail to download asar update from ${this.url}`, {}, { status: response.status })
+    const errors: Error[] = []
+    const gfw = await this.app.registry.get(kGFW)
+    const urls = gfw.inside
+      ? [
+        `https://files.0x.halac.cn/Services/XMCL/releases/${this.file}`,
+        `https://files-0x.halac.cn/Services/XMCL/releases/${this.file}`,
+        `${AZURE_MS_CDN}/${this.file}`,
+      ]
+      : [
+        `${AZURE_MS_CDN}/${this.file}`,
+      ]
+    for (const url of urls) {
+      try {
+        this.abortController = new AbortController()
+        const sha256Response = await this.app.fetch(url + '.sha256', { signal: this.abortController.signal })
+        const sha256 = sha256Response.ok ? await sha256Response.text() : ''
+        const actual = await checksum(this.destination, 'sha256').catch(() => '')
+        if (sha256 === actual) {
+          return
+        }
+        const gzUrl = url + '.gz'
+        const gzResponse = await fetch(gzUrl, { signal: this.abortController.signal })
+        const tracker = new PassThrough({
+          transform: (chunk, encoding, callback) => {
+            this._progress += chunk.length
+            this.update(chunk.length)
+            callback(undefined, chunk)
+          },
+        })
+        if (gzResponse.ok && gzResponse.body) {
+          this._total = parseInt(gzResponse.headers.get('Content-Length') || '0', 10)
+          await pipeline(Readable.fromWeb(gzResponse.body as any), createGunzip(), tracker, createWriteStream(this.destination))
+        } else {
+          const response = await this.app.fetch(url, { signal: this.abortController.signal })
+          if (!response.ok) {
+            throw new AnyError('DownloadError', `Fail to download asar update from ${url}`, {}, { status: response.status })
+          }
+          this._total = parseInt(response.headers.get('Content-Length') || '0', 10)
+          await pipeline(Readable.fromWeb(response.body as any), tracker, createWriteStream(this.destination))
+        }
+        return
+      } catch (e) {
+        if (this.isAbortedError(e)) {
+          return
+        }
+        errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url }))
       }
-      this._total = parseInt(response.headers.get('Content-Length') || '0', 10)
-      await pipeline(Readable.fromWeb(response.body as any), tracker, createWriteStream(this.destination))
     }
+    throw new AggregateError(errors, 'Fail to download asar update')
   }
 
   protected abort(isCancelled: boolean): void {

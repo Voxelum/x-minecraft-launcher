@@ -1,18 +1,18 @@
-import { download } from '@xmcl/file-transfer'
-import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey, resolveQuiltVersion, Settings } from '@xmcl/runtime-api'
-import { createWriteStream, readFile, writeFile } from 'fs-extra'
+import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
+import { createHash } from 'crypto'
+import { writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
-import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
-import { AbstractService, ExposeServiceKey, Lock } from '~/service'
+import { join } from 'path'
+import { promisify } from 'util'
+import { gunzip } from 'zlib'
+import { Inject, LauncherAppKey } from '~/app'
+import { kGFW } from '~/gfw'
+import { AbstractService, ExposeServiceKey } from '~/service'
+import { kSettings } from '~/settings'
 import { SqliteWASMDialect } from '~/sql'
 import { LauncherApp } from '../app/LauncherApp'
-import { missing } from '../util/fs'
-import { join } from 'path'
-import { kSettings } from '~/settings'
-import { createGunzip } from 'zlib'
-import { Readable } from 'stream'
-import { pipeline } from 'stream/promises'
+import { checksum } from '../util/fs'
 
 interface Database {
   project: {
@@ -47,30 +47,52 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     if (this.#db?.locale === locale) return this.#db.db
 
     const filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
-    const lastModifiedPath = filePath + '.last-modified'
-    const url = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite.gz`
 
-    this.semaphoreManager.getLock('project-mapping').write(async () => {
-      if (await missing(filePath)) {
-        const resp = await this.app.fetch(url)
-        if (!resp.ok) {
-          return undefined
+    const gfw = await this.app.registry.get(kGFW)
+
+    const original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
+
+    await this.semaphoreManager.getLock('project-mapping').write(async () => {
+      const urls = gfw.inside
+        ? [
+          `https://files.0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
+          `https://files-0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
+          original + '.gz',
+        ]
+        : [
+          original + '.gz',
+        ]
+      const errors = [] as any[]
+      const sha256 = await this.app.fetch(original + '.sha256').then((r) => r.text())
+      if (!sha256) {
+        return
+      }
+      const currentSha256 = await checksum(filePath, 'sha256').catch(() => '')
+      if (currentSha256 !== sha256) {
+        for (const url of urls) {
+          try {
+            const resp = await this.app.fetch(url)
+            if (!resp.ok) {
+              return undefined
+            }
+            const buf = await resp.arrayBuffer()
+            const data = await promisify(gunzip)(buf)
+            const hash = createHash('sha256').update(data as any).digest('hex')
+            if (hash !== sha256) {
+              continue
+            }
+            await writeFile(filePath, data as any)
+            return
+          } catch (e) {
+            errors.push(e)
+          }
         }
-        await pipeline(Readable.fromWeb(resp.body as any), createGunzip(), createWriteStream(filePath))
-        await writeFile(lastModifiedPath, new Date().toUTCString())
-      } else {
-        const lastModified = await readFile(lastModifiedPath, 'utf-8')
-        const response = await this.app.fetch(url, {
-          method: 'HEAD',
-          headers: {
-            'If-Modified-Since': lastModified,
-          },
-        })
-        if (response.status === 200) {
-          const resp = await this.app.fetch(url)
-          await pipeline(Readable.fromWeb(resp.body as any), createGunzip(), createWriteStream(filePath))
-          await writeFile(lastModifiedPath, new Date().toUTCString())
-        }
+      }
+      if (errors.length === 1) {
+        throw errors[0]
+      }
+      if (errors.length) {
+        throw new AggregateError(errors)
       }
     })
 
