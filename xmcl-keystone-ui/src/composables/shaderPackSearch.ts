@@ -7,6 +7,9 @@ import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
+import { useCurseforgeSearch } from './curseforgeSearch'
+import { ModFile } from '@/util/mod'
+import { CurseforgeBuiltinClassId } from './curseforge'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -100,17 +103,20 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const gameVersion = ref('')
   const shaderLoaderFilters = ref(['iris', 'optifine'] as ShaderLoaderFilter[])
   const modrinthCategories = ref([] as string[])
+  const curseforgeCategory = ref(undefined as number | undefined)
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
   const sort = ref(0)
-  const { modrinthSort } = useMarketSort(sort)
+  const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.shaderPack, keyword, ref([]), curseforgeCategory, curseforgeSort, gameVersion)
   const { enabled, disabled, loadingCached, shaderProjectFiles, effect: localEffect } = useLocalSearch(shaderPacks, keyword)
-  const loading = computed(() => loadingModrinth.value || loadingCached.value)
+  const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
   function effect() {
     modrinthEffect()
+    onCurseforgeEffect()
     localEffect()
 
     useQueryOverride('keyword', keyword, '', searlizers.string)
@@ -128,7 +134,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     others,
   } = useAggregateProjectsSplitted(
     modrinth,
-    ref([]),
+    curseforge,
     disabled,
     enabled,
   )
@@ -157,17 +163,28 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     isModrinthActive,
   )
 
+  function loadMore() {
+    if (isModrinthActive.value) {
+      loadMoreModrinth()
+    }
+    if (isCurseforgeActive.value) {
+      loadMoreCurseforge()
+    }
+  }
+
   return {
     gameVersion,
     shaderProjectFiles,
     modrinthCategories,
     shaderLoaderFilters,
+    curseforgeError,
 
     enabled: _installed,
     disabled: _notInstalledButCached,
     others: _others,
 
-    loadMoreModrinth,
+    curseforgeCategory,
+    loadMore,
     sort,
     isModrinthActive,
     modrinthError,

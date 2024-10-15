@@ -76,6 +76,7 @@ export function useCurseforge(
 
 export enum CurseforgeBuiltinClassId {
   mod = 6,
+  shaderPack = 6552,
   modpack = 4471,
   resourcePack = 12,
   world = 17,
@@ -223,7 +224,8 @@ export function getCurseforgeProjectModel(projectId: Ref<number>) {
 
 export function useCurseforgeCategories() {
   const { error, isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
-    return markRaw(await clientCurseforgeV1.getCategories())
+    const result = markRaw(await clientCurseforgeV1.getCategories())
+    return result
   }, inject(kSWRVConfig))
   return { categories, refreshing, refresh, error }
 }
