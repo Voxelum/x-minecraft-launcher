@@ -71,17 +71,20 @@
           <v-checkbox
             v-model="data.emitCurseforge"
             :label="t('modpack.emitCurseforge')"
+            class="z-10"
             prepend-icon="$vuetify.icons.curseforge"
             hide-details
           />
           <v-checkbox
             v-model="data.emitMcbbs"
             :label="t('modpack.emitMcbbs')"
+            class="z-10"
             hide-details
           />
           <v-checkbox
             v-model="data.emitModrinth"
             :label="t('modpack.emitModrinth')"
+            class="z-10"
             hide-details
             prepend-icon="$vuetify.icons.modrinth"
           />
@@ -90,6 +93,7 @@
             v-if="data.emitModrinth"
             v-model="data.emitModrinthStrict"
             :label="t('modpack.emitModrinthStrict')"
+            class="z-10"
             hide-details
             prepend-icon="$vuetify.icons.modrinth"
           >
@@ -134,12 +138,14 @@
             <v-checkbox
               v-model="data.includeAssets"
               :label="t('modpack.includeAssets')"
+              class="z-10"
               prepend-icon="texture"
               hide-details
             />
             <v-checkbox
               v-model="data.includeLibraries"
               :label="t('modpack.includeLibraries')"
+              class="z-10"
               prepend-icon="camera_roll"
               hide-details
             />
