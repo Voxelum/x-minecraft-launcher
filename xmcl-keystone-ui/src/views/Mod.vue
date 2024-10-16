@@ -246,11 +246,20 @@
       <v-alert
         v-if="Object.keys(conflicted).length > 0"
         dense
-        class="cursor-pointer"
+        class="cursor-pointer mb-0"
         type="error"
         @click="showDuplicatedDialog"
       >
         {{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }}
+      </v-alert>
+      <v-alert
+        v-if="incompatible"
+        type="warning"
+        dense
+        class="cursor-pointer mb-0"
+        @click="showIncompatibleDialog"
+      >
+        {{ t('mod.incompatibleHint') }}
       </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
@@ -542,9 +551,10 @@ const shouldShowCurseforge = (selectedItem: undefined | ProjectEntry, selectedMo
   return true
 }
 
-const { mods, conflicted, revalidate } = injection(kInstanceModsContext)
+const { mods, conflicted, revalidate, incompatible } = injection(kInstanceModsContext)
 
 const { show: showDuplicatedDialog } = useDialog('mod-duplicated')
+const { show: showIncompatibleDialog } = useDialog('mod-incompatible')
 
 const getInstalledModrinth = (projectId: string) => {
   return mods.value.filter((m) => m.modrinth?.projectId === projectId)

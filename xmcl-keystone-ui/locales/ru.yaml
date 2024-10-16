@@ -765,6 +765,10 @@ mod:
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
   incompatible: Несовместимый мод.
+  incompatibleHint: У модов могут быть проблемы с совместимостью.
+  incompatibleHintDescription: |-
+    Некоторые зависимости модов могут отсутствовать. 
+    Или некоторые версии зависимостей не совпадают.
   manage: Моды
   maybeCompatible: Возможно, совместим.
   modloaderSelectHint: |-

@@ -7,6 +7,7 @@ import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
+import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
@@ -122,6 +123,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
 
     for (const mod of mods.value) {
       const id = mod.modId
+      if (!mod.enabled) continue
       if (!dict[id]) {
         dict[id] = []
       }
@@ -137,7 +139,30 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
 
     console.log('[conflicted]', dict)
 
-    return dict
+    return markRaw(dict)
+  })
+
+  const compatibility = computed(() => {
+    const runtime = provideRuntime.value
+
+    const result: Record<string, CompatibleDetail[]> = {}
+    for (const i of mods.value) {
+      if (!i.enabled) continue
+      const details = getModsCompatiblity(i.dependencies, runtime)
+      result[i.modId] = details
+    }
+
+    return markRaw(result)
+  })
+
+  const incompatible = computed(() => {
+    const com = compatibility.value
+    for (const key in com) {
+      if (!resolveDepsCompatible(com[key])) {
+        return true
+      }
+    }
+    return false
   })
 
   const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
@@ -148,6 +173,8 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     conflicted,
     modsIconsMap,
     provideRuntime,
+    compatibility,
+    incompatible,
     enabledMods,
     isValidating,
     updateMetadata,

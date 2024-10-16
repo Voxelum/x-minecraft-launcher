@@ -37,6 +37,7 @@
     <AppSharedTooltip />
     <AppMigrateWizardDialog />
     <AppModDuplicatedDialog />
+    <AppModIncompatibileDialog />
   </v-app>
   <v-app
     v-else
@@ -80,6 +81,7 @@ import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppModDuplicatedDialog from '@/views/AppModDuplicatedDialog.vue'
+import AppModIncompatibileDialog from '@/views/AppModIncompatibileDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBar from '@/views/AppSideBar.vue'

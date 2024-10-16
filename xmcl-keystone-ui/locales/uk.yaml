@@ -703,6 +703,10 @@ mod:
   groupInstalled: Групові встановлені моди
   hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
+  incompatibleHint: Моди можуть мати проблеми з сумісністю
+  incompatibleHintDescription: |-
+    Деякі залежності модів можуть бути відсутні. 
+    Або деякі версії залежностей не збігаються.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: |-

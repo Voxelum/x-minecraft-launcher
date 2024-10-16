@@ -27,6 +27,8 @@ export type Compatible = 'maybe' | boolean
 export type CompatibleDetail = {
   modId: string
 
+  optional?: boolean
+
   compatible: Compatible
   /**
    * Can be either semantic version or version range
@@ -126,12 +128,14 @@ export function getModsCompatiblity(dependencies: ModDependencies, runtime: Reco
       result.push({
         modId: id,
         compatible: false,
+        optional: v.optional,
         requirements: v.versionRange || v.semanticVersion || '[*]',
         version: '',
       })
     } else {
       result.push({
         modId: id,
+        optional: v.optional,
         compatible: getModCompatiblity(v, version),
         requirements: v.versionRange || v.semanticVersion || '[*]',
         version,

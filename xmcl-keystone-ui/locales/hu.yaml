@@ -706,6 +706,10 @@ mod:
   hasUpdate: A modnak új verziója van!
   hideIncompatible: Inkompatibilis modok elrejtése
   incompatible: Inkompatibilis mod.
+  incompatibleHint: Lehetséges, hogy a modoknak kompatibilitási problémái vannak
+  incompatibleHintDescription: |-
+    Előfordulhat, hogy néhány mod-függőség hiányzik. 
+    Vagy egyes függőségi verziók nem egyeznek.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
   modloaderSelectHint: |-
