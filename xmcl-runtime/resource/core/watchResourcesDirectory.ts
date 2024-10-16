@@ -90,6 +90,10 @@ function createRevalidateFunction(
         onResourceQueue({ filePath: file.path, file, record })
         continue
       }
+      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt) {
+        onResourceQueue({ filePath: file.path, file, record, metadata: resource })
+        continue
+      }
       onResourceEmit(file, record, { ...pickMetadata(resource), icons: resource.icons.map(i => i.icon) })
     }
   }
