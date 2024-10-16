@@ -697,6 +697,11 @@ mod:
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
+  duplicatedDetected: '{count} mod sono state duplicate'
+  duplicatedDetectedDescription: |-
+    Mod trovate con lo stesso ID mod ma file diversi. 
+    Ciò potrebbe causare l'arresto anomalo di Minecraft. 
+    Seleziona il file che desideri conservare.
   enabled: '{count} Mod abilitate'
   filter: Filtra Mod
   groupInstalled: Raggruppa le mod installate
@@ -1412,6 +1417,7 @@ shaderPack:
   showFile: Mostra questo shader pack nella cartella
 shared:
   accept: Accetta
+  keepSelected: Mantieni selezionato
   skipForNow: Salta per ora
 store:
   explore: Esplora

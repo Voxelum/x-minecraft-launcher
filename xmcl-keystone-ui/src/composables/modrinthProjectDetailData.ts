@@ -93,7 +93,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
     }
     const getCategories = (cats: string[]) => cats.map(id => categories.value.find(c => c.name === id))
       .filter((v): v is Category => !!v).map(v => ({ id: v.name, name: t(`modrinth.categories.${v.name}`) as string, iconHTML: v.icon }))
-    const detail: ProjectDetail = {
+    const detail: ProjectDetail = markRaw({
       icon: project.value?.icon_url ?? search.value?.icon_url ?? '',
       id: projectId.value,
       title: project.value?.title ?? search.value?.title ?? '',
@@ -109,7 +109,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       galleries,
       info,
       archived: project.value?.status === 'archived',
-    }
+    })
 
     if (mapping.value && mapping.value.modrinthId === projectId.value) {
       const map = mapping.value

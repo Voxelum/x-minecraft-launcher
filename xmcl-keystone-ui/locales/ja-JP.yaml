@@ -648,6 +648,11 @@ mod:
   deletionRestHint: '{rest} 個のmod...'
   denseView: コンパクトなビュー
   dropHint: ここにModファイル(.jar/.litemod)をドロップしてインポートします。
+  duplicatedDetected: '{count} 個の MOD が重複しました'
+  duplicatedDetectedDescription: |-
+    同じ MOD ID で異なるファイルを持つ MOD が見つかりました。
+    これにより、Minecraft がクラッシュする可能性があります。
+    保存したいファイルを選択してください。
   enabled: '{count} 個のModが有効'
   filter: Modをフィルタ
   groupInstalled: グループでインストールされたMod
@@ -1296,6 +1301,7 @@ shaderPack:
   showFile: このシェーダーパックをフォルダーで見る
 shared:
   accept: 続行
+  keepSelected: 選択したままにする
 store:
   explore: 探索する
   latestMinecraft: 最新のMinecraftバージョン

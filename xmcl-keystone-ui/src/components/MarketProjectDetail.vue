@@ -245,7 +245,7 @@
                 <v-list-item
                   v-for="(item, index) in versions"
                   :key="index"
-                  :class="{ 'v-list-item--active': item === selectedVersion }"
+                  :class="{ 'v-list-item--active': item.id === selectedVersion?.id }"
                   :value="item.installed"
                   @click="selectedVersion = item"
                 >
@@ -872,10 +872,11 @@ const onVersionClicked = (version: ProjectVersion) => {
   selectedVersion.value = version
 }
 watch(selectedVersion, (v, o) => {
+  console.log(v, o)
   if (v !== o && v) {
     emit('load-changelog', v)
   }
-})
+}, { immediate: true })
 const { t } = useI18n()
 watch(() => props.detail, (d, o) => {
   if (d?.id !== o?.id) {
