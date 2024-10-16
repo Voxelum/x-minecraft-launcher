@@ -241,17 +241,17 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.icon = payload.icon ?? ''
 
     if (!isPathDiskRootPath(instance.path)) {
-      await ensureDir(instance.path)
+      await ensureDir(instance.path).catch(() => undefined)
     }
     if (payload.resourcepacks) {
-      await ensureDir(join(instance.path, 'resourcepacks'))
+      await ensureDir(join(instance.path, 'resourcepacks')).catch(() => undefined)
     }
     if (payload.shaderpacks) {
-      await ensureDir(join(instance.path, 'shaderpacks'))
+      await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
     }
-    this.state.instanceAdd(instance)
 
     await this.instanceFile.write(join(instance.path, 'instance.json'), instance)
+    this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))

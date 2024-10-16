@@ -146,6 +146,16 @@ export interface ModpackService {
    */
   openModpack(modpackPath: string): Promise<MutableState<ModpackState>>
   /**
+   * Import the modpack as an instance
+   * @param modpackPath The modpack file path
+   * @returns The instance path
+   */
+  importModpack(modpackPath: string): Promise<{
+    instancePath: string
+    version?: string
+    runtime: RuntimeVersions
+  }>
+  /**
    * Show the modpack folder
    */
   showModpacksFolder(): Promise<void>
