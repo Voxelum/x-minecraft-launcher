@@ -90,7 +90,7 @@ function createRevalidateFunction(
         onResourceQueue({ filePath: file.path, file, record })
         continue
       }
-      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt) {
+      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt && !resource.neoforge) {
         onResourceQueue({ filePath: file.path, file, record, metadata: resource })
         continue
       }

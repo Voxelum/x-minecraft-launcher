@@ -8,6 +8,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
       1: v1,
       2: v2,
       2.1: v21,
+      2.2: v22,
     })
   }
 }
@@ -138,6 +139,21 @@ const v21: Migration = {
       .alterTable('snapshots')
       .addColumn('ctime', 'integer', (col) => col.notNull())
       .addColumn('size', 'integer', (col) => col.notNull())
+      .execute()
+  },
+}
+
+const v22: Migration = {
+  async up(db: Kysely<Database>): Promise<void> {
+    await db.schema
+      .alterTable('resources')
+      .addColumn(ResourceType.Neoforge, 'json')
+      .execute()
+  },
+  async down(db: Kysely<Database>): Promise<void> {
+    await db.schema
+      .alterTable('resources')
+      .dropColumn(ResourceType.Neoforge)
       .execute()
   },
 }

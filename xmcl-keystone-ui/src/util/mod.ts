@@ -175,8 +175,10 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     provideRuntime: markRaw(getModProvides(resource)),
     icon: resource.icons?.at(-1) ?? '',
     dependencies: runtime.fabricLoader
-      ? (getModDependencies(resource, true).map(markRaw))
-      : (getModDependencies(resource, false).map(markRaw)),
+      ? (getModDependencies(resource, 'fabric').map(markRaw))
+      : runtime.neoForged
+      ? (getModDependencies(resource, 'neoforge').map(markRaw))
+      : (getModDependencies(resource, 'forge').map(markRaw)),
     url: '',
     hash: resource.hash,
     tags: [],

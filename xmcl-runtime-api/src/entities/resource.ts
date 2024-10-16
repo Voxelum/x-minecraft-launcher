@@ -1,6 +1,6 @@
 import type { FabricModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import type { PackMeta } from '@xmcl/resourcepack'
-import { ForgeModCommonMetadata } from './mod'
+import { ForgeModCommonMetadata, NeoforgeMetadata } from './mod'
 import { CurseforgeModpackManifest, McbbsModpackManifest, MMCModpackManifest, Modpack, ModrinthModpackManifest } from './modpack'
 import { ResourceSaveMetadata } from './save'
 import { ModpackInstallProfile } from '../services/ModpackService'
@@ -45,6 +45,7 @@ export interface ResourceSourceModrinth {
 
 export enum ResourceType {
   Forge = 'forge',
+  Neoforge = 'neoforge',
   Liteloader = 'liteloader',
   Fabric = 'fabric',
   Quilt = 'quilt',
@@ -69,7 +70,8 @@ export enum ResourceDomain {
 
 export interface ResourceMetadata {
   name?: string
-  [ResourceType.Forge]?: ForgeModCommonMetadata
+  forge?: ForgeModCommonMetadata
+  neoforge?: NeoforgeMetadata
   [ResourceType.Fabric]?: FabricModMetadata | FabricModMetadata[]
   [ResourceType.Liteloader]?: LiteloaderModMetadata
   [ResourceType.Quilt]?: QuiltModMetadata
