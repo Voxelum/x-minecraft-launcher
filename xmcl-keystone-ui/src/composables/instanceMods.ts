@@ -99,6 +99,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     const runtime: Record<string, string> = {
       ...runtimeVersions,
       java: java.value?.version.toString() ?? '',
+      neoforge: runtimeVersions.neoForged ?? '',
       fabricloader: runtimeVersions.fabricLoader ?? '',
     }
 
@@ -136,8 +137,6 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
         delete dict[key]
       }
     }
-
-    console.log('[conflicted]', dict)
 
     return markRaw(dict)
   })
