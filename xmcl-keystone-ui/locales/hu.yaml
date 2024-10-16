@@ -695,6 +695,11 @@ mod:
   deletionRestHint: És további {rest} mod...
   denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
+  duplicatedDetected: '{count} mod duplikált'
+  duplicatedDetectedDescription: |-
+    Modokat találtam azonos mod azonosítóval, de különböző fájlokkal. 
+    Ez a Minecraft összeomlását okozhatja. 
+    Kérjük, válassza ki a megtartani kívánt fájlt.
   enabled: '{count} Modok engedélyezve'
   filter: Modok szűrése
   groupInstalled: Csoportosan telepített modok
@@ -1409,6 +1414,7 @@ shaderPack:
   showFile: Shader pack megjelenítése a mappában
 shared:
   accept: Elfogad
+  keepSelected: Tartsa kiválasztva
   skipForNow: Most hagyd ki
 store:
   explore: Felfedezés

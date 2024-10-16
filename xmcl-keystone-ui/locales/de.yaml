@@ -758,6 +758,11 @@ mod:
   deletionRestHint: Und der {rest} der Mods...
   denseView: Dichte Sicht
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
+  duplicatedDetected: '{count} Mods wurden dupliziert'
+  duplicatedDetectedDescription: |-
+    Mods mit derselben Mod-ID, aber unterschiedlichen Dateien gefunden. 
+    Dies könnte zum Absturz von Minecraft führen. 
+    Bitte wählen Sie die Datei aus, die Sie behalten möchten.
   enabled: 'Inklusive Mods: {count}'
   filter: Mod-Filter
   groupInstalled: Gruppensatz Mods
@@ -1491,6 +1496,7 @@ shaderPack:
   showFile: Відкрити цей шейдер у папці
 shared:
   accept: Akzeptieren
+  keepSelected: Ausgewählt behalten
   skipForNow: Überspringen Sie es vorerst
 summery: Sommer
 tag:

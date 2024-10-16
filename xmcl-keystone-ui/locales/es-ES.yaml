@@ -501,6 +501,14 @@ mod:
   deletionRestHint: Y otros {rest} mods...
   denseView: Vista densa
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
+  duplicatedDetected: '{count} mods se han duplicado'
+  duplicatedDetectedDescription: >-
+    Mods encontrados con la misma identificación de mod pero archivos
+    diferentes. 
+
+    Esto podría causar que Minecraft falle. 
+
+    Seleccione el archivo que desea conservar.
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
   hasUpdate: ¡El Mod tiene una nueva versión!
@@ -1087,6 +1095,7 @@ shaderPack:
   showFile: Mostrar este pack de shaders en la carpeta
 shared:
   accept: Aceptar
+  keepSelected: Mantener seleccionado
   skipForNow: Saltar por ahora
 summery: Resumen
 tag:

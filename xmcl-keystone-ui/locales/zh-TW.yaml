@@ -671,6 +671,11 @@ mod:
   deletionRestHint: 等 {rest} 個模組……
   denseView: 密集視圖
   dropHint: 將模組 Jar 檔案拖入此處來匯入
+  duplicatedDetected: 有 {count} 個模組重複了
+  duplicatedDetectedDescription: |-
+    找到具有相同 mod id 但檔案不同的 mod。
+    這可能會導致 Minecraft 崩潰。
+    請選擇您要保留的文件。
   enabled: 一共啟用了 {count} 個模組
   filter: 篩選模組
   groupInstalled: 分開顯示已安裝模組
@@ -1314,6 +1319,7 @@ shaderPack:
   showFile: 在資料夾中顯示此光影包
 shared:
   accept: 接受
+  keepSelected: 保持選擇
   skipForNow: 暫時跳過
 store:
   explore: 探索

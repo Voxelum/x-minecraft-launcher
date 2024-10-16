@@ -754,6 +754,11 @@ mod:
   deletionRestHint: И ещё {rest} модов...
   denseView: Компактное отображение модов
   dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
+  duplicatedDetected: '{count} модов продублировано'
+  duplicatedDetectedDescription: |-
+    Найдены моды с одинаковым идентификатором, но с разными файлами. 
+    Это может привести к сбою Minecraft. 
+    Пожалуйста, выберите файл, который вы хотите сохранить.
   enabled: 'Всего модов включено: {count}'
   filter: Фильтр модов
   groupInstalled: Группировать установленные моды
@@ -1481,6 +1486,7 @@ shaderPack:
   showFile: Показать путь к набору шейдеров {file}
 shared:
   accept: Принять
+  keepSelected: Сохранить выбранное
   skipForNow: Пропустить сейчас
 store:
   explore: Исследовать

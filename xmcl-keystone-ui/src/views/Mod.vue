@@ -243,6 +243,15 @@
       >
         {{ updateErrorMessage }}
       </v-alert>
+      <v-alert
+        v-if="Object.keys(conflicted).length > 0"
+        dense
+        class="cursor-pointer"
+        type="error"
+        @click="showDuplicatedDialog"
+      >
+        {{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }}
+      </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
@@ -413,7 +422,7 @@ import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
 import { BuiltinImages } from '@/constant'
-import { useSimpleDialog } from '@/composables/dialog'
+import { useDialog, useSimpleDialog } from '@/composables/dialog'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { notNullish } from '@vueuse/core'
 import { isNoModLoader } from '@/util/isNoModloader'
@@ -533,7 +542,10 @@ const shouldShowCurseforge = (selectedItem: undefined | ProjectEntry, selectedMo
   return true
 }
 
-const { mods, revalidate } = injection(kInstanceModsContext)
+const { mods, conflicted, revalidate } = injection(kInstanceModsContext)
+
+const { show: showDuplicatedDialog } = useDialog('mod-duplicated')
+
 const getInstalledModrinth = (projectId: string) => {
   return mods.value.filter((m) => m.modrinth?.projectId === projectId)
 }

@@ -116,16 +116,42 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     provideRuntime.value = runtime
   }
 
+  // mod duplication detect
+  const conflicted = computed(() => {
+    const dict: Record<string, ModFile[]> = {}
+
+    for (const mod of mods.value) {
+      const id = mod.modId
+      if (!dict[id]) {
+        dict[id] = []
+      }
+      dict[id].push(mod)
+    }
+
+    // remove all the key with only one value
+    for (const key in dict) {
+      if (dict[key].length === 1) {
+        delete dict[key]
+      }
+    }
+
+    console.log('[conflicted]', dict)
+
+    return dict
+  })
+
   const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
+  const { t } = useI18n()
 
   return {
     mods,
+    conflicted,
     modsIconsMap,
     provideRuntime,
     enabledMods,
     isValidating,
     updateMetadata,
-    error,
+    error: computed(() => Object.keys(conflicted.value).length ? t('mod.duplicatedDetected', { count: Object.keys(conflicted.value).length }) : error.value),
     revalidate,
   }
 }

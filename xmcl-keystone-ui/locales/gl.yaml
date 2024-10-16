@@ -296,6 +296,11 @@ me:
   versions: Versións instaladas
 mod:
   denseView: Vista Densa
+  duplicatedDetected: Duplicáronse {count} modificacións
+  duplicatedDetectedDescription: |-
+    Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
+    Isto pode causar un fallo de Minecraft. 
+    Selecciona o ficheiro que queres conservar.
   modloaderSelectHint: |-
     O mod admite os seguintes cargadores de mod. 
     Selecciona un para instalar.
@@ -417,6 +422,7 @@ shaderPack:
   noShaderModInstallHint: Debes instalar un dos seguintes mods para cargar o paquete de sombreadores.
 shared:
   accept: Aceptar
+  keepSelected: Manter seleccionado
   skipForNow: Saltar por agora
 task:
   connection:
