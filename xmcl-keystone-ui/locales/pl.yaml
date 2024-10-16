@@ -723,6 +723,10 @@ mod:
   hasUpdate: Mod ma nową wersję!
   hideIncompatible: Ukryj niekompatybilne mody
   incompatible: Niekompatybilny mod.
+  incompatibleHint: Mody mogą mieć problemy ze zgodnością
+  incompatibleHintDescription: |-
+    Może brakować niektórych zależności modów. 
+    Lub niektóre wersje zależności nie są dopasowane.
   manage: Zarządzanie modami
   maybeCompatible: Może być kompatybilny.
   modloaderSelectHint: |-

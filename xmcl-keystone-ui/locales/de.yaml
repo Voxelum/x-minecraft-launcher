@@ -768,6 +768,10 @@ mod:
   groupInstalled: Gruppensatz Mods
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.
+  incompatibleHint: Mods könnten Kompatibilitätsprobleme haben
+  incompatibleHintDescription: |-
+    Möglicherweise fehlen einige Mod-Abhängigkeiten. 
+    Oder einige Abhängigkeitsversionen stimmen nicht überein.
   manage: Mods verwalten
   maybeCompatible: Möglicherweise kompatibel.
   modloaderSelectHint: |-

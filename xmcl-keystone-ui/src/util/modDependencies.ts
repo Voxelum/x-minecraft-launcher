@@ -6,10 +6,12 @@ export type ModDependencies = ModDependency[]
 export type ModDependency = {
   modId: string
   versionRange: string
+  optional?: boolean
   semanticVersion?: string | string[]
 } | {
   modId: string
   versionRange?: string
+  optional?: boolean
   semanticVersion: string | string[]
 }
 
@@ -76,6 +78,7 @@ export function getForgeModDependencies(resource: ForgeResource): ModDependencie
         deps.push({
           modId: dep.modId,
           versionRange: dep.versionRange,
+          optional: !dep.mandatory,
         })
       }
       if (deps.every(d => d.modId !== 'forge')) {

@@ -746,6 +746,10 @@ mod:
   groupInstalled: Groupe de modules installés
   hideIncompatible: Masquer les mods incompatibles
   incompatible: Mod incompatible.
+  incompatibleHint: Les mods peuvent avoir un problème de compatibilité
+  incompatibleHintDescription: |-
+    Certaines dépendances de mods peuvent manquer. 
+    Ou certaines versions de dépendances ne correspondent pas.
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
   modloaderSelectHint: |-

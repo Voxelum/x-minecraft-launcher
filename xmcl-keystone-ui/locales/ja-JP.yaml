@@ -659,6 +659,10 @@ mod:
   hasUpdate: Modにアップデートがあります!
   hideIncompatible: 適合しないModを隠す
   incompatible: 適合しないModです。
+  incompatibleHint: MODには互換性の問題がある可能性があります
+  incompatibleHintDescription: |-
+    一部の MOD の依存関係が欠落している可能性があります。
+    または、一部の依存関係のバージョンが一致しません。
   manage: Modを管理
   maybeCompatible: おそらく適合しません。
   modloaderSelectHint: |-

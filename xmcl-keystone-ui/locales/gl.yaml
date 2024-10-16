@@ -301,6 +301,10 @@ mod:
     Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
     Isto pode causar un fallo de Minecraft. 
     Selecciona o ficheiro que queres conservar.
+  incompatibleHint: Os mods poden ter problemas de compatibilidade
+  incompatibleHintDescription: |-
+    É posible que falten algunhas dependencias de modificacións. 
+    Ou algunhas versións de dependencias non coinciden.
   modloaderSelectHint: |-
     O mod admite os seguintes cargadores de mod. 
     Selecciona un para instalar.
