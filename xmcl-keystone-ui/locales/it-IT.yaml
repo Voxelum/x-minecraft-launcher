@@ -265,8 +265,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    Selezionando il pulsante della casella di controllo, indichi il tuo accordo
-    con {eula} di Minecraft.
+    cliccando la casella di controllo, indichi la tua accettazione 
+    con l'{eula} di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -729,7 +729,7 @@ mod:
   showFile: Mostra il percorso della mod {file}
   showInCurseforge: Mostra la mod in curseforge
   showInModrinth: Mostra {name} in Modrinth
-  switchDefaultSource: Sorgente della Mod Predefinita
+  switchDefaultSource: Sorgente delle Mod Predefinita
   toUpdate: '{count} da aggiornare'
 modInstall:
   archived: >-
@@ -952,7 +952,7 @@ modrinthCard:
 multiplayer:
   allowTurn: Abilita il server di relay
   allowTurnHint: >-
-    Abilita il server di relay se non riesci a connetterti con il tuo amico.
+    Abilita il server relay se non riesci a connetterti con il tuo amico.
     Tuttavia, l'utilizzo di un server di relay potrebbe rallentare la tua
     connessione. Usalo con cautela.
   complete: Completo
@@ -1188,7 +1188,7 @@ server:
   hostHint: L'host (con porta) del server
   ipAddress: Indirizzo IP
   maxPlayers: Giocatori massimi
-  motd: MOTD server
+  motd: MOTD del server
   name: Server | Server
   nogui: Nessuna GUI del server
   onlineMode: Modalità online
@@ -1201,7 +1201,7 @@ server:
   unknown: Server sconosciuto
   unknownDescription: Server sconosciuto. Aggiorna
   version: Versione richiesta dal server
-  versionHint: La versione di Minecraft da pingare
+  versionHint: La versione di Minecraft di cui eseguire il ping
 serverStatus:
   nohost: §4Impossibile trovare l'host!
   ping: Ping...
@@ -1463,6 +1463,10 @@ transportType:
   srflx: Server Reflexive Scelto
 turnRegion:
   fr: Francia
+  po: Polonia
+  guangzhou: Guangzhou, Cina
+  hk: Hong Kong
+  liaoning: Liaoning, Cina
   po: Polonia
 tutorial:
   feedbackDescription: >-
