@@ -23,7 +23,7 @@ const items = computed(() => {
 })
 
 function selectDefault(files: ModFile[]) {
-  return files.toSorted((a) => !a.enabled ? 1 : -1)[0]
+  return files.toSorted((a, b) => !a.enabled ? 1 : a.fileName.length - b.fileName.length)[0]
 }
 
 watch(conflicted, (all) => {
@@ -64,14 +64,15 @@ function process() {
     v-model="isShown"
     width="800"
   >
-    <v-card>
+    <v-card class="flex flex-col overflow-auto visible-scroll max-h-[90vh]">
       <v-card-title>{{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }}</v-card-title>
-      <v-card-text>
+      <v-card-text class="overflow-auto max-h-full">
         {{ t('mod.duplicatedDetectedDescription') }}
 
         <v-list
           dense
           nav
+          class="overflow-auto"
         >
           <template v-for="item of items">
             <v-subheader
