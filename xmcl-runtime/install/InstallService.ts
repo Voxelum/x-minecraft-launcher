@@ -230,6 +230,12 @@ export class InstallService extends AbstractService implements IInstallService {
       await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
     } else {
       const resolvedVersion = await this.versionService.resolveServerVersion(version)
+
+      if (resolvedVersion.libraries.length === 0) {
+        const clientVersion = await this.versionService.resolveLocalVersion(version)
+        resolvedVersion.libraries = clientVersion.libraries
+      }
+
       await this.submit(installLibrariesTask({
         libraries: resolvedVersion.libraries,
         minecraftDirectory: location,

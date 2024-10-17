@@ -289,6 +289,7 @@ let lastPath = ''
 const { isShown } = useDialog('launch-server', () => {
   if (lastPath === path.value) return
   lastPath = path.value
+  revalidate()
   getServerProperties(path.value).then((p) => {
     const parsedPort = parseInt(p.port, 10)
     port.value = isNaN(parsedPort) ? 25565 : parsedPort
@@ -318,7 +319,7 @@ const { isShown } = useDialog('launch-server', () => {
 const { t } = useI18n()
 
 const { runtime, path } = injection(kInstance)
-const { saves } = injection(kInstanceSave)
+const { saves, revalidate } = injection(kInstanceSave)
 const { mods } = injection(kInstanceModsContext)
 const enabled = computed(() => mods.value.filter(m => m.enabled))
 const search = ref('')
@@ -438,6 +439,8 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   })
   console.log('launch')
   await launch('server', { nogui: _nogui, version })
+
+  isShown.value = false
 })
 
 </script>

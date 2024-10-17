@@ -65,8 +65,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
     const minecraftFolder = new MinecraftFolder(options.gameDirectory)
 
-    const minMemory: number | undefined = options.maxMemory
-    const maxMemory: number | undefined = options.minMemory
+    const minMemory: number | undefined = options.minMemory
+    const maxMemory: number | undefined = options.maxMemory
     const jvmArgs = [...version.arguments.jvm]
     if (options.vmOptions) {
       jvmArgs.push(...options.vmOptions)
