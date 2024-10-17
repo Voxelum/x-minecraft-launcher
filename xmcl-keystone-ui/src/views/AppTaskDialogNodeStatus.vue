@@ -34,7 +34,7 @@
       v-else-if="indeterminate || !showNumber"
       style="margin-left: 6px; padding: 3px;"
       class="mb-0"
-      :color="darkTheme ? 'white' : undefined"
+      :color="isDark ? 'white' : undefined"
       small
       :size="20"
       :value="percentage"
@@ -62,7 +62,7 @@ const emit = defineEmits(['cancel', 'resume', 'pause'])
 
 const hover = ref(false)
 const { t } = useI18n()
-const { darkTheme } = injection(kTheme)
+const { isDark } = injection(kTheme)
 const color = computed(() => {
   switch (props.item.state) {
     case TaskState.Succeed:
@@ -70,11 +70,11 @@ const color = computed(() => {
     case TaskState.Cancelled:
     case TaskState.Running:
     case TaskState.Paused:
-      return darkTheme.value ? 'white' : ''
+      return isDark.value ? 'white' : ''
     case TaskState.Failed:
       return 'error'
     default:
-      return darkTheme.value ? 'white' : ''
+      return isDark.value ? 'white' : ''
   }
 })
 const indeterminate = computed(() => !props.item.total || props.item.total === -1)
