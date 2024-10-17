@@ -36,7 +36,7 @@ defineProps<{
 const clicked = ref(false)
 
 const onInfoClicked = (value: string) => {
-  navigator.clipboard.writeText(value)
+  windowController.writeClipboard(value)
   clicked.value = true
 }
 </script>

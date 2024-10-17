@@ -1,7 +1,7 @@
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { stat, unlink } from 'fs-extra'
-import { join, dirname } from 'path'
+import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { mkdir, readdir, remove, stat, unlink } from 'fs-extra'
+import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { InstanceService } from '~/instance'
@@ -9,10 +9,12 @@ import { kMarketProvider } from '~/market'
 import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
+import { VersionService } from '~/version'
 import { ZipManager } from '~/zipManager/ZipManager'
-import { AnyError } from '../util/error'
+import { AnyError, isSystemError } from '../util/error'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
+import { InstanceInstallService } from '~/instanceIO'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -75,6 +77,76 @@ export class ModpackService extends AbstractService implements IModpackService {
       directory: this.getPath('modpacks'),
     })
     return result.map(r => r.path)
+  }
+
+  async importModpack(modpackFile: string): Promise<{
+    instancePath: string
+    version?: string
+    runtime: Instance['runtime']
+  }> {
+    const zipManager = await this.app.registry.getOrCreate(ZipManager)
+    const cached = await this.getCachedInstallProfile(modpackFile)
+    const zip = await zipManager.open(modpackFile)
+    const instanceInstallService = await this.app.registry.get(InstanceInstallService)
+
+    const entries = Object.values(zip.entries)
+    const [manifest, handler] = await this.getManifestAndHandler(zip.file, entries)
+
+    if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path: modpackFile })
+
+    const instance = handler.resolveInstanceOptions(manifest)
+
+    const versionService = await this.app.registry.get(VersionService)
+    const files = await this.#processFiles(handler, modpackFile, manifest, cached.sha1, entries)
+
+    let name = instance.name
+    let idx = 1
+
+    while (true) {
+      try {
+        await mkdir(this.getPath('instances', name))
+        break
+      } catch (e) {
+        if (isSystemError(e) && e.code === 'EEXIST') {
+          name = `${name}-${idx++}`
+          continue
+        }
+        throw e
+      }
+    }
+
+    const matchedVersion = findMatchedVersion(versionService.state.local,
+      '',
+      instance.runtime.minecraft,
+      instance.runtime.forge,
+      instance.runtime.neoForged,
+      instance.runtime.fabricLoader,
+      instance.runtime.optifine,
+      instance.runtime.quiltLoader,
+      instance.runtime.labyMod)
+
+    const hasShaderpacks = files.some(f => f.path.startsWith('shaderpacks/'))
+    const hasResourcepacks = files.some(f => f.path.startsWith('resourcepacks/'))
+    const options: CreateInstanceOption = {
+      ...instance,
+      name,
+      path: this.getPath('instances', name),
+      version: matchedVersion?.id || instance.version,
+      shaderpacks: hasShaderpacks,
+      resourcepacks: hasResourcepacks,
+    }
+
+    const path = await this.instanceService.createInstance(options)
+
+    instanceInstallService.installInstanceFiles({ path: this.getPath('instances', name), files }).catch((e) => {
+      this.error(e)
+    })
+
+    return {
+      instancePath: path,
+      version: options.version,
+      runtime: instance.runtime!,
+    }
   }
 
   /**
@@ -271,6 +343,37 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
   }
 
+  async #processFiles<T>(handler: ModpackHandler, modpackFile: string, manifest: T, hash: string, entries: Entry[]) {
+    const instanceFiles = await handler.resolveInstanceFiles(manifest)
+    this.log(`Discovered modpack profile ${modpackFile} with ${instanceFiles.length} files`)
+
+    const files = entries
+      .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
+      .map((e) => {
+        const relativePath = handler.resolveUnpackPath(manifest, e)!
+        const file: InstanceFile = {
+          path: relativePath,
+          size: e.uncompressedSize,
+          hashes: {
+            crc32: e.crc32.toString(),
+          },
+          downloads: [
+            `zip:///${modpackFile}?entry=${encodeURIComponent(e.fileName)}`,
+            `zip://${hash}/${e.fileName}`,
+          ],
+        }
+        return file
+      })
+      .concat(instanceFiles)
+      .filter(f => !f.path.endsWith('/'))
+
+    for (const file of files) {
+      transformFile(file)
+    }
+
+    return files
+  }
+
   async openModpack(modpackFile: string): Promise<MutableState<ModpackState>> {
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
@@ -323,39 +426,17 @@ export class ModpackService extends AbstractService implements IModpackService {
         })
       }
 
-      const processFiles = async () => {
-        const instanceFiles = await handler.resolveInstanceFiles(manifest)
-        this.log(`Discovered modpack profile ${modpackFile} with ${instanceFiles.length} files`)
-
-        const files = entries
-          .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
-          .map((e) => {
-            const relativePath = handler.resolveUnpackPath(manifest, e)!
-            const file: InstanceFile = {
-              path: relativePath,
-              size: e.uncompressedSize,
-              hashes: {
-                crc32: e.crc32.toString(),
-              },
-              downloads: [
-                `zip:///${modpackFile}?entry=${encodeURIComponent(e.fileName)}`,
-                `zip://${cached}/${e.fileName}`,
-              ],
-            }
-            return file
-          })
-          .concat(instanceFiles)
-          .filter(f => !f.path.endsWith('/'))
-
-        for (const file of files) {
-          transformFile(file)
-        }
-
+      this.#processFiles(
+        handler,
+        modpackFile,
+        manifest,
+        hash,
+        entries,
+      ).then((files) => {
         state.modpackFiles(files)
-
         this.log(`Update instance resource modpack profile ${modpackFile}`)
         // cache the manifest
-        await this.resourceManager.updateMetadata([{
+        return this.resourceManager.updateMetadata([{
           hash,
           metadata: {
             instance: {
@@ -364,9 +445,7 @@ export class ModpackService extends AbstractService implements IModpackService {
             },
           },
         }])
-      }
-
-      processFiles()
+      })
 
       return [state, zip.dispose]
     })

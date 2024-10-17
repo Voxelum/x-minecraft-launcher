@@ -704,7 +704,7 @@ const onDrop = (e: DragEvent) => {
 }
 const onCopy = (val: string) => {
   if (groupId.value) {
-    navigator.clipboard.writeText(val)
+    windowController.writeClipboard(val)
     copied.value = true
     setTimeout(() => { copied.value = false }, 3_000)
   }

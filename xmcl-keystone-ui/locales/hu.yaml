@@ -695,14 +695,27 @@ mod:
   deletionRestHint: És további {rest} mod...
   denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
+  duplicatedDetected: '{count} mod duplikált'
+  duplicatedDetectedDescription: |-
+    Modokat találtam azonos mod azonosítóval, de különböző fájlokkal. 
+    Ez a Minecraft összeomlását okozhatja. 
+    Kérjük, válassza ki a megtartani kívánt fájlt.
   enabled: '{count} Modok engedélyezve'
   filter: Modok szűrése
   groupInstalled: Csoportosan telepített modok
   hasUpdate: A modnak új verziója van!
   hideIncompatible: Inkompatibilis modok elrejtése
   incompatible: Inkompatibilis mod.
+  incompatibleHint: Lehetséges, hogy a modoknak kompatibilitási problémái vannak
+  incompatibleHintDescription: |-
+    Előfordulhat, hogy néhány mod-függőség hiányzik. 
+    Vagy egyes függőségi verziók nem egyeznek.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
+  modloaderSelectHint: |-
+    A mod támogatja a mod betöltőket. 
+    Kérjük, válasszon egyet a telepítéshez.
+  modloaderSelectNotSupported: Nem található {modloader} a Minecraft {minecraft} számára
   mods: '{count} Mod'
   name: Mod | Modok
   noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
@@ -1396,12 +1409,16 @@ shaderPack:
   enabled: Engedélyezett Shader Pack
   manage: Shader packek kezelése
   name: Shader Pack
+  noShaderMod: Nincs telepítve Shader Mod
+  noShaderModHint: A shader nem használható shader mod nélkül
+  noShaderModInstallHint: A shader csomag betöltéséhez telepítenie kell a következő modok egyikét.
   searchHint: Shader Pack keresése
   selectSearchHint: Keresés és Shader Pack kiválasztása
   showDirectory: Shader pack könyvtár megjelenítése
   showFile: Shader pack megjelenítése a mappában
 shared:
   accept: Elfogad
+  keepSelected: Tartsa kiválasztva
   skipForNow: Most hagyd ki
 store:
   explore: Felfedezés

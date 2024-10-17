@@ -712,14 +712,27 @@ mod:
   deletionRestHint: I {rest} więcej modów...
   denseView: Gęsty widok
   dropHint: Upuść .jar/.litemod moda tutaj, aby zaimportować.
+  duplicatedDetected: '{count} modów zostało zduplikowanych'
+  duplicatedDetectedDescription: |-
+    Znaleziono mody o tym samym identyfikatorze moda, ale różnych plikach. 
+    Może to spowodować awarię gry Minecraft. 
+    Wybierz plik, który chcesz zachować.
   enabled: '{count} Modyfikacje włączone'
   filter: Modyfikacje filtra
   groupInstalled: Modyfikacje instalowane grupowo
   hasUpdate: Mod ma nową wersję!
   hideIncompatible: Ukryj niekompatybilne mody
   incompatible: Niekompatybilny mod.
+  incompatibleHint: Mody mogą mieć problemy ze zgodnością
+  incompatibleHintDescription: |-
+    Może brakować niektórych zależności modów. 
+    Lub niektóre wersje zależności nie są dopasowane.
   manage: Zarządzanie modami
   maybeCompatible: Może być kompatybilny.
+  modloaderSelectHint: |-
+    Mod obsługuje następujące moduły ładujące mod. 
+    Wybierz jeden do zainstalowania.
+  modloaderSelectNotSupported: Nie znaleziono {modloadera} dla Minecrafta {minecraft}
   mods: '{count} Mody'
   name: Mod | Mody
   noModLoaderHint: Nie zapomnij włączyć modloadera, aby korzystać z modów!
@@ -1411,12 +1424,16 @@ shaderPack:
   enabled: Włączony pakiet shaderów
   manage: Zarządzanie pakietami shaderów
   name: Pakiet shaderów
+  noShaderMod: Brak zainstalowanego modułu cieniującego
+  noShaderModHint: Nie możesz używać modułu cieniującego bez modu cieniującego
+  noShaderModInstallHint: Aby załadować pakiet shaderów, musisz zainstalować jeden z poniższych modów.
   searchHint: Search Shader Pack
   selectSearchHint: Wyszukaj i wybierz Shader Pack
   showDirectory: Pokaż katalog pakietów shaderów
   showFile: Pokaż ten pakiet shaderów w folderze
 shared:
   accept: Akceptuj
+  keepSelected: Zachowaj wybrane
   skipForNow: Pomiń na razie
 store:
   explore: Eksploruj

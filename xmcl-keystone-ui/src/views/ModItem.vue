@@ -31,7 +31,6 @@ import MarketItem from '@/components/MarketItem.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
-import { useModCompatibility } from '@/composables/modCompatibility'
 import { useModItemContextMenuItems } from '@/composables/modContextMenu'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -54,15 +53,15 @@ const props = defineProps<{
 
 const emit = defineEmits(['click', 'checked', 'install'])
 
-const { provideRuntime } = injection(kInstanceModsContext)
-const { compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
+const { compatibility: compatibilities } = injection(kInstanceModsContext)
+const compatibility = computed(() => props.item.installed[0] ? compatibilities.value[props.item.installed[0].modId] : [])
 const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
 const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.item), () => {
   if (props.item.installed) {
     uninstall({ path: path.value, mods: props.item.installed.map(i => i.path) })
   }
-}, () => {}, () => {
+}, () => { }, () => {
   if (props.item.installed.length > 0) {
     if (props.item.installed[0].enabled) {
       disable({ path: path.value, mods: props.item.installed.map(i => i.path) })

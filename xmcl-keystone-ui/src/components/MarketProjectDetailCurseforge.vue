@@ -149,7 +149,7 @@ const model = computed(() => {
     archived: ModStatus.Inactive === mod?.status || ModStatus.Abandoned === mod?.status,
   }
 
-  if (curseforgeProjectMapping.value) {
+  if (curseforgeProjectMapping.value && curseforgeProjectMapping.value.curseforgeId === curseforgeModId.value) {
     const mapped = curseforgeProjectMapping.value
     detail.localizedTitle = mapped.name
     detail.localizedDescription = mapped.description

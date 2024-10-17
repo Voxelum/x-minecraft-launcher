@@ -501,13 +501,29 @@ mod:
   deletionRestHint: Y otros {rest} mods...
   denseView: Vista densa
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
+  duplicatedDetected: '{count} mods se han duplicado'
+  duplicatedDetectedDescription: >-
+    Mods encontrados con la misma identificación de mod pero archivos
+    diferentes. 
+
+    Esto podría causar que Minecraft falle. 
+
+    Seleccione el archivo que desea conservar.
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
   hasUpdate: ¡El Mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
   incompatible: Mod Incompatible.
+  incompatibleHint: Los mods pueden tener problemas de compatibilidad
+  incompatibleHintDescription: |-
+    Es posible que falten algunas dependencias de modificaciones. 
+    O algunas versiones de dependencias no coinciden.
   manage: Administrar Mods
   maybeCompatible: Posiblemente Compatible.
+  modloaderSelectHint: |-
+    El mod admite los siguientes cargadores de mod. 
+    Seleccione uno para instalar.
+  modloaderSelectNotSupported: No encontrado {modloader} para Minecraft {minecraft}
   mods: '{count} modificaciones'
   name: Mod | Mods
   noModLoaderHint: ¡No olvides habilitar un modloader para usar mods!
@@ -1074,10 +1090,16 @@ shaderPack:
   enable: Usando el pack de shaders {name}
   manage: Gestionar Packs de Shaders
   name: Pack de Shaders
+  noShaderMod: No hay ningún mod de sombreado instalado
+  noShaderModHint: No puedes usar sombreador sin un mod de sombreado
+  noShaderModInstallHint: >-
+    Debe instalar uno de los siguientes mods para cargar el paquete de
+    sombreadores.
   showDirectory: Mostrar directorio de packs de shaders
   showFile: Mostrar este pack de shaders en la carpeta
 shared:
   accept: Aceptar
+  keepSelected: Mantener seleccionado
   skipForNow: Saltar por ahora
 summery: Resumen
 tag:

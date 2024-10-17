@@ -693,13 +693,26 @@ mod:
   deletionRestHint: И ще {rest} модів...
   denseView: Щільний вид
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
+  duplicatedDetected: '{count} модів дублюються'
+  duplicatedDetectedDescription: |-
+    Знайдено моди з однаковим ідентифікатором мода, але різними файлами. 
+    Це може призвести до збою Minecraft. 
+    Виберіть файл, який хочете зберегти.
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
   groupInstalled: Групові встановлені моди
   hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
+  incompatibleHint: Моди можуть мати проблеми з сумісністю
+  incompatibleHintDescription: |-
+    Деякі залежності модів можуть бути відсутні. 
+    Або деякі версії залежностей не збігаються.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
+  modloaderSelectHint: |-
+    Мод підтримує такі завантажувачі модів. 
+    Будь ласка, виберіть один для встановлення.
+  modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
   mods: '{count} модів'
   name: Мод | Моди
   noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
@@ -1369,6 +1382,11 @@ shaderPack:
   enabled: Увімкнений пакет шейдерів
   manage: Управління шейдерами
   name: Шейдер
+  noShaderMod: Шейдерний мод не встановлено
+  noShaderModHint: Ви не можете використовувати шейдер без шейдерного мода
+  noShaderModInstallHint: >-
+    Вам потрібно встановити один із наведених нижче модів, щоб завантажити пакет
+    шейдерів.
   showFile: Відкрити цей шейдер у папці
 shared: Екземпляр використовує спільну папку пакета ресурсів
 summery: Літній

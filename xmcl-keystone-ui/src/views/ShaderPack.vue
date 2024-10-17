@@ -8,7 +8,7 @@
       dragover,
     }"
     :loading="loading"
-    @load="loadMoreModrinth"
+    @load="loadMore"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
@@ -42,7 +42,7 @@
         @click="on.click"
       />
     </template>
-    <template #content="{ selectedModrinthId, selectedItem }">
+    <template #content="{ selectedModrinthId, selectedCurseforgeId, selectedItem }">
       <Hint
         v-if="dragover"
         icon="save_alt"
@@ -50,25 +50,41 @@
         class="h-full"
       />
       <MarketProjectDetailModrinth
-        v-if="selectedItem && (selectedItem.modrinth || selectedModrinthId)"
-        :modrinth="selectedItem.modrinth"
+        v-if="(selectedItem?.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
-        :installed="selectedItem.installed"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
         :game-version="gameVersion"
         :loaders="shaderLoaderFilters"
         :categories="modrinthCategories"
         :all-files="shaderProjectFiles"
-        :curseforge="selectedItem?.curseforge?.id || selectedItem.curseforgeProjectId"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
         @uninstall="onUninstall"
         @enable="onEnable"
         @disable="onUninstall([$event])"
         @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforge
+        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :game-version="gameVersion"
+        :loaders="[]"
+        :category="curseforgeCategory"
+        :all-files="shaderProjectFiles"
+        :modrinth="selectedModrinthId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="curseforgeCategory = $event"
       />
       <ShaderPackDetailResource
         v-else-if="isShaderPackProject(selectedItem)"
         :shader-pack="selectedItem"
         :installed="selectedItem.files || []"
         :runtime="runtime"
+        @enable="onEnable"
       />
       <MarketRecommendation
         v-else
@@ -76,6 +92,122 @@
         @modrinth="modrinthCategories.push($event.name)"
       />
     </template>
+    <v-dialog
+      v-model="model"
+      width="600"
+    >
+      <v-card>
+        <v-card-title>
+          {{ t('shaderPack.noShaderMod') }}
+        </v-card-title>
+        <v-card-text>
+          {{ t('shaderPack.noShaderModHint') }}
+          <div>
+            {{ t('shaderPack.noShaderModInstallHint') }}
+          </div>
+          <v-list nav>
+            <v-list-item
+              :disabled="shouldDisableIris"
+              @click="navigateToMod('iris')"
+            >
+              <v-list-item-avatar>
+                <img :src="BuiltinImages.iris">
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Iris
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <a
+                    href="https://modrinth.com/mod/iris"
+                    @click.stop
+                  >https://modrinth.com/mod/iris</a>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action class="flex flex-row flex-grow-0 gap-1">
+                <AvatarChip
+                  :avatar="BuiltinImages.fabric"
+                  small
+                  text="Fabric"
+                />
+                <AvatarChip
+                  :avatar="BuiltinImages.neoForged"
+                  small
+                  text="Neoforge"
+                />
+                <AvatarChip
+                  :avatar="BuiltinImages.quilt"
+                  small
+                  text="Quilt"
+                />
+              </v-list-item-action>
+            </v-list-item>
+            <v-list-item
+              :disabled="shouldDisableOptifine"
+              @click="navigateToMod('optifine')"
+            >
+              <v-list-item-avatar>
+                <img :src="BuiltinImages.optifine">
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Optifine
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <a
+                    href="https://optifine.net/home"
+                    @click.stop
+                  >https://optifine.net/home</a>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action class="flex flex-row gap-1 flex-grow-0">
+                <AvatarChip
+                  :avatar="BuiltinImages.forge"
+                  small
+                  text="Forge"
+                />
+                <AvatarChip
+                  :avatar="BuiltinImages.minecraft"
+                  small
+                  text="Vanilla"
+                />
+              </v-list-item-action>
+            </v-list-item>
+            <v-list-item
+              :disabled="shouldDisableOculus"
+              @click="navigateToMod('oculus')"
+            >
+              <v-list-item-avatar>
+                <img :src="BuiltinImages.oculus">
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  Oculus
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <a
+                    href="https://www.curseforge.com/minecraft/mc-mods/oculus"
+                    @click.stop
+                  >https://www.curseforge.com/minecraft/mc-mods/oculus</a>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action class="flex flex-row gap-1 flex-grow-0">
+                <AvatarChip
+                  :avatar="BuiltinImages.forge"
+                  small
+                  text="Forge"
+                />
+                <AvatarChip
+                  :avatar="BuiltinImages.neoForged"
+                  small
+                  text="Neoforge"
+                />
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
     <!-- <DeleteDialog
       :title="t('shaderPack.deletion') "
       :width="400"
@@ -116,6 +248,11 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceShaderPacksServiceKey, Resource } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
+import { useSimpleDialog } from '@/composables/dialog'
+import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
+import { BuiltinImages } from '@/constant'
+import AvatarChip from '@/components/AvatarChip.vue'
+import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 
 const {
   modrinthError,
@@ -126,16 +263,33 @@ const {
   others,
 
   keyword,
+  curseforgeCategory,
   shaderProjectFiles,
   shaderLoaderFilters,
   modrinthCategories,
-  loadMoreModrinth,
+  loadMore,
   gameVersion,
   effect,
 } = injection(kShaderPackSearch)
 const { runtime, path } = injection(kInstance)
 
+const { model, show: showInstallShaderWizard } = useSimpleDialog<boolean>(() => {})
+
+const shouldDisableIris = computed(() => !!runtime.value.forge || !!runtime.value.optifine)
+const shouldDisableOculus = computed(() => !!runtime.value.fabricLoader || !!runtime.value.optifine || !!runtime.value.quiltLoader)
+const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!runtime.value.neoForged || !!runtime.value.quiltLoader)
+
 effect()
+
+const { shaderPacks } = injection(kInstanceShaderPacks)
+const getInstalledModrinth = (projectId: string) => {
+  const allPacks = shaderPacks.value
+  return allPacks.filter((m) => m.modrinth?.projectId === projectId)
+}
+const getInstalledCurseforge = (modId: number | undefined) => {
+  const allPacks = shaderPacks.value
+  return allPacks.filter((m) => m.curseforge?.projectId === modId)
+}
 
 const all = computed(() => {
   const result: (string | ProjectEntry)[] = []
@@ -175,8 +329,12 @@ const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
   uninstall(path.value, files.map(f => f.path))
 }
-const onEnable = (f: ProjectFile) => {
-  shaderPack.value = (f as InstanceShaderFile).fileName
+const onEnable = (f: ProjectFile | string) => {
+  if (!shaderMod.value && !runtime.value.optifine) {
+    showInstallShaderWizard(true)
+    return
+  }
+  shaderPack.value = typeof f === 'string' ? f : (f as InstanceShaderFile).fileName
 }
 
 // Reset all filter
@@ -209,6 +367,28 @@ onMounted(() => {
   compact.value = true
 })
 
+const installModloaders = useInstanceModLoaderDefault()
+const { shaderMod } = injection(kInstanceShaderPacks)
+
+function installMoadloadersWrapped(...args: Parameters<typeof installModloaders>) {
+  if (!shaderMod.value && !runtime.value.optifine) {
+    showInstallShaderWizard(true)
+    throw new Error('No shader mod installed')
+  }
+  return installModloaders(...args)
+}
+
+const { push } = useRouter()
+function navigateToMod(type: string) {
+  if (type === 'iris') {
+    push('/mods?id=modrinth:YL57xq9U')
+  } else if (type === 'oculus') {
+    push('/mods?id=curseforge:581495')
+  } else if (type === 'optifine') {
+    push('/mods?keyword=optifine')
+  }
+}
+
 const { installFromMarket, install, uninstall } = useService(InstanceShaderPacksServiceKey)
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
@@ -217,6 +397,7 @@ const modrinthInstaller = useModrinthInstaller(
   shaderProjectFiles,
   installFromMarket,
   onUninstall,
+  installMoadloadersWrapped,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -227,6 +408,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   shaderProjectFiles,
   installFromMarket,
   onUninstall,
+  installMoadloadersWrapped,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 

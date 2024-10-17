@@ -215,16 +215,16 @@ function onDragOver(e: DragEvent) {
   }
 }
 
-watch(() => props.item, (newMod) => {
-  if (newMod) {
+watch(() => props.item, (newVal, old) => {
+  if (newVal && newVal.id !== old?.id) {
     icon.value = undefined
     title.value = undefined
     description.value = undefined
     downloadCount.value = undefined
     followerCount.value = undefined
 
-    if (!newMod.curseforge && !newMod.modrinth) {
-      const { curseforgeProjectId, modrinthProjectId } = newMod
+    if (!newVal.curseforge && !newVal.modrinth) {
+      const { curseforgeProjectId, modrinthProjectId } = newVal
       if (modrinthProjectId) {
         getSWRV(getModrinthProjectModel(ref(modrinthProjectId)), config).then((project) => {
           if (project) {

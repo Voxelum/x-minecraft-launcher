@@ -1,4 +1,4 @@
-import type { ForgeModMetadata, ForgeModParseFailedError } from '@xmcl/mod-parser'
+import type { ForgeModMetadata, ForgeModParseFailedError, ForgeModTOMLData } from '@xmcl/mod-parser'
 
 export interface ForgeModCommonMetadata extends ForgeModMetadata {
   modid: string
@@ -27,6 +27,10 @@ export interface ForgeModCommonMetadata extends ForgeModMetadata {
    * Accept forge version range
    */
   acceptForge: string
+}
+
+export interface NeoforgeMetadata extends ForgeModTOMLData {
+  children: ForgeModTOMLData[]
 }
 
 export function forceForgeModMetadata(e: ForgeModParseFailedError, fileName: string) {

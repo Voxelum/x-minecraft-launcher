@@ -98,13 +98,12 @@ const onDelete = async () => {
 
 const onEnable = (v: boolean) => {
   const file = props.installed.find(f => f.path === selectedVersion.value?.id)
-  selectedShaderPack.value = v ? file?.fileName : ''
+  emit('enable', v ? file?.fileName : '')
 }
 
 const enabled = computed(() => props.installed[0].fileName === selectedShaderPack.value)
-watch(selectedShaderPack, (v) => {
-  console.log(v)
-})
+
+const emit = defineEmits(['enable'])
 
 </script>
 <template>

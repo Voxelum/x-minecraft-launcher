@@ -148,9 +148,6 @@ function changeTheme() {
     darkTheme.value = 'dark'
   }
 }
-function onClick(log: Log) {
-  navigator.clipboard.writeText(log.raw)
-}
 function close() {
   hide()
 }

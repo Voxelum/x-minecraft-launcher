@@ -758,13 +758,26 @@ mod:
   deletionRestHint: Und der {rest} der Mods...
   denseView: Dichte Sicht
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
+  duplicatedDetected: '{count} Mods wurden dupliziert'
+  duplicatedDetectedDescription: |-
+    Mods mit derselben Mod-ID, aber unterschiedlichen Dateien gefunden. 
+    Dies könnte zum Absturz von Minecraft führen. 
+    Bitte wählen Sie die Datei aus, die Sie behalten möchten.
   enabled: 'Inklusive Mods: {count}'
   filter: Mod-Filter
   groupInstalled: Gruppensatz Mods
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.
+  incompatibleHint: Mods könnten Kompatibilitätsprobleme haben
+  incompatibleHintDescription: |-
+    Möglicherweise fehlen einige Mod-Abhängigkeiten. 
+    Oder einige Abhängigkeitsversionen stimmen nicht überein.
   manage: Mods verwalten
   maybeCompatible: Möglicherweise kompatibel.
+  modloaderSelectHint: |-
+    Der Mod unterstützt folgende Mod-Loader. 
+    Bitte wählen Sie eines zur Installation aus.
+  modloaderSelectNotSupported: '{modloader} für Minecraft {minecraft} nicht gefunden'
   mods: '{count} Mods'
   name: Mods | Mods
   noModLoaderHint: Vergessen Sie nicht, den Modloader zu aktivieren, um Mods zu verwenden!
@@ -1479,9 +1492,15 @@ shaderPack:
   enabled: Shader-Pack aktiviert
   manage: Shader verwalten
   name: Shader
+  noShaderMod: Kein Shader-Mod installiert
+  noShaderModHint: Sie können Shader nicht ohne Shader-Mod verwenden
+  noShaderModInstallHint: >-
+    Sie müssen einen der folgenden Mods installieren, um das Shader-Paket zu
+    laden.
   showFile: Відкрити цей шейдер у папці
 shared:
   accept: Akzeptieren
+  keepSelected: Ausgewählt behalten
   skipForNow: Überspringen Sie es vorerst
 summery: Sommer
 tag:

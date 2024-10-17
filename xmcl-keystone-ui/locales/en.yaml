@@ -679,14 +679,24 @@ mod:
   deletionRestHint: And {rest} more Mods...
   denseView: Dense View
   dropHint: Drop mod's .jar/.litemod here to import.
+  duplicatedDetected: '{count} mods has duplicated'
+  duplicatedDetectedDescription: >-
+    Found mods with same mod id but different files. This might cause Minecraft
+    crash. Please select the file you want to keep.
   enabled: '{count} Mods enabled'
   filter: Filter Mods
   groupInstalled: Group Installed Mods
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.
+  incompatibleHint: Mods might have compatibility issue
+  incompatibleHintDescription: >-
+    Some mods dependencies might be missing. Or some dependencies versions do
+    not matched.
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
+  modloaderSelectHint: The mod support following mod loaders. Please select one to install.
+  modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
   mods: '{count} Mods'
   name: Mod | Mods
   noModLoaderHint: Don't forget to enable a modloader to use mods!
@@ -1360,12 +1370,16 @@ shaderPack:
   enabled: Enabled Shader Packs
   manage: Manage Shader Packs
   name: Shader Pack
+  noShaderMod: No Shader Mod Installed
+  noShaderModHint: You cannot use shader without a shader mod
+  noShaderModInstallHint: You need to install one of the following mod to load shader pack.
   searchHint: Search Shader Pack
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 shared:
   accept: Accept
+  keepSelected: Keep Selected
   skipForNow: Skip for now
 store:
   explore: Explore
