@@ -20,6 +20,11 @@ export async function getOpenJdkPaths() {
   return files.map(f => join('C:\\Program Files\\AdoptOpenJDK', f, 'bin', 'java.exe'))
 }
 
+export async function getZuluJdkPath() {
+  const files = await readdir('C:\\Program Files\\Zulu').catch(() => [])
+  return files.map(f => join('C:\\Program Files\\Zulu', f, 'bin', 'java.exe'))
+}
+
 export async function getJavaPathsLinux() {
   const files = await readdir('/usr/lib/jvm').catch(() => [])
   return files.map(f => join('/usr/lib/jvm', f, 'bin', 'java'))
