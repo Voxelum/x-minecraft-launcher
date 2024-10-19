@@ -251,7 +251,7 @@ watch(() => props.item, (newVal, old) => {
 }, { immediate: true })
 const { t } = useI18n()
 
-const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : typeof descriptionTextOrObject.value === 'string' ? descriptionTextOrObject.value.trim() : descriptionTextOrObject.value.text || props.item.title.trim())
+const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : (typeof descriptionTextOrObject.value === 'string' ? descriptionTextOrObject.value.trim() : descriptionTextOrObject.value.text) || props.item.title.trim())
 const onSettingClick = (event: MouseEvent) => {
   const button = event.target as any // Get the button element
   const rect = button.getBoundingClientRect() // Get the position of the button

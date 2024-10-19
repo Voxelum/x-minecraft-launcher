@@ -25,6 +25,7 @@ function createRevalidateFunction(
   onResourceRemove: (path: string) => void,
   onResourceQueue: (job: ResourceWorkerQueuePayload) => void,
   onResourceEmit: ResouceEmitFunc,
+  onResourcePostRevalidate: (files: File[]) => void,
 ) {
   async function getUpserts() {
     const entries = await getFiles(dir)
@@ -96,6 +97,8 @@ function createRevalidateFunction(
       }
       onResourceEmit(file, record, { ...pickMetadata(resource), icons: resource.icons.map(i => i.icon) })
     }
+
+    onResourcePostRevalidate(results.map(([f]) => f))
   }
 
   return revalidate
@@ -228,6 +231,13 @@ export function watchResourcesDirectory(
       if (state.files.findIndex((r) => r.path === file.path) === -1) {
         onResourceEmit(file, record, metadata)
       }
+    }, (files) => {
+      const all = Object.fromEntries(files.map(f => [f.path, f]))
+      for (const file of state.files) {
+        if (!all[file.path]) {
+          update.push([file.path, FileUpdateAction.Remove])
+        }
+      }
     })
 
   const watcher = createWatcher(directory, context.logger, async (file) => {
@@ -330,7 +340,7 @@ export function watchResourceSecondaryDirectory(
       if (await isFileCached(file)) return
       persist(file)
     }
-  }, () => { /* ignore */ })
+  }, () => { /* ignore */ }, () => { /* ignore */ })
 
   let watcher: FSWatcher | undefined
 

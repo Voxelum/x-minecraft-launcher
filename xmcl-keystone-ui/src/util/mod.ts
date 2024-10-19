@@ -1,5 +1,5 @@
 import { FabricModMetadata, ForgeModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
-import { ForgeModCommonMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
+import { ForgeModCommonMetadata, NeoforgeMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
 import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
 import { ProjectFile } from './search'
 
@@ -95,6 +95,7 @@ export interface ModFile extends ModMetadata, ProjectFile {
   forge?: ForgeModCommonMetadata
   fabric?: FabricModMetadata | FabricModMetadata[]
   quilt?: QuiltModMetadata
+  neoforge?: NeoforgeMetadata
 
   ino: number
   size: number
@@ -189,6 +190,7 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     fabric: resource.metadata.fabric,
     forge: resource.metadata.forge,
     quilt: resource.metadata.quilt,
+    neoforge: resource.metadata.neoforge,
 
     ino: resource.ino,
     size: resource.size,

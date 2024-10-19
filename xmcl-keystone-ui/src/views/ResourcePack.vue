@@ -282,6 +282,10 @@ const onInstallProject = useProjectInstall(
   modrinthLoaders,
   curseforgeInstaller,
   modrinthInstaller,
+  (f) => {
+    install(path.value, [f.path])
+    enable([f.path])
+  },
 )
 
 const getInstalledModrinth = (projectId: string) => {

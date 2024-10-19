@@ -244,7 +244,7 @@
               >
                 <v-list-item
                   v-for="(item, index) in versions"
-                  :key="index"
+                  :key="item.id + index"
                   :class="{ 'v-list-item--active': item.id === selectedVersion?.id }"
                   :value="item.installed"
                   @click="selectedVersion = item"
@@ -328,7 +328,7 @@
                   <template v-else>
                     <v-list-item
                       v-for="dep of dependencies"
-                      :key="dep.id"
+                      :key="dep.id + dep.parent"
                       @click="emit('open-dependency', dep)"
                     >
                       <v-list-item-avatar>
@@ -872,7 +872,6 @@ const onVersionClicked = (version: ProjectVersion) => {
   selectedVersion.value = version
 }
 watch(selectedVersion, (v, o) => {
-  console.log(v, o)
   if (v !== o && v) {
     emit('load-changelog', v)
   }

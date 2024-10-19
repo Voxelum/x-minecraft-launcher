@@ -417,6 +417,10 @@ const onInstallProject = useProjectInstall(
   shaderLoaderFilters,
   curseforgeInstaller,
   modrinthInstaller,
+  (f) => {
+    install(path.value, [f.path])
+    onEnable(f)
+  },
 )
 
 // dense
