@@ -436,6 +436,8 @@ instance:
   changeIcon: Icon ändern
   current: Aktuelle Instanz
   delete: Deinstallieren Sie das Spiel
+  deleteFailed: Instanz konnte nicht gelöscht werden
+  deleteFailedPermission: Ein anderes Programm hat die Datei belegt
   deleteHint: >-
     Die Instanzdaten werden dauerhaft von der Festplatte entfernt. Wie ist dies
     zu tun?

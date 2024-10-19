@@ -252,6 +252,8 @@ importModpack:
   name: Importar Modpack
 instance:
   changeIcon: Cambiar icona
+  deleteFailed: Produciuse un erro ao eliminar a instancia
+  deleteFailedPermission: Outro programa ocupou o ficheiro
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   launchServer: Inicia o servidor localhost
   linkFileDesc: |-

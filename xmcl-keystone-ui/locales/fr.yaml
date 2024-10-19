@@ -425,6 +425,8 @@ instance:
   changeIcon: Changer d'icône
   current: Instance actuelle
   delete: Supprimer le jeu
+  deleteFailed: Échec de la suppression de l'instance
+  deleteFailedPermission: Un autre programme a occupé le fichier
   deleteHint: |-
     Les données d'instance seront définitivement déplacées du disque. 
     Tu es sûr de faire ça ?

@@ -405,6 +405,8 @@ instance:
   changeIcon: Змінити значок
   current: Поточний екземпляр
   delete: Видалити гру
+  deleteFailed: Не вдалося видалити примірник
+  deleteFailedPermission: Інша програма зайняла файл
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
   duplicate: Дублювати екземпляр
   duplicatedName: Ім'я, що повторюється

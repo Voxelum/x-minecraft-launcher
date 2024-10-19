@@ -9,6 +9,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
 import { hardLinkFiles, isHardLinked, missing, unHardLinkFiles } from '../util/fs'
 import { requireString } from '../util/object'
+import { InstanceService } from './InstanceService'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
@@ -93,6 +94,11 @@ export class InstanceOptionsService extends AbstractService implements IInstance
         } else if (basename(file) === ('optionsshaders.txt')) {
           loadShaderOptions(path)
         }
+      })
+
+      const instanceService = await this.app.registry.get(InstanceService)
+      instanceService.registerRemoveHandler(path, () => {
+        watcher.close()
       })
 
       await Promise.all([loadOptions(path), loadShaderOptions(path)])

@@ -386,6 +386,8 @@ instance:
   changeIcon: Ikon módosítása
   current: Jelenlegi példány
   delete: Játék törlése
+  deleteFailed: Nem sikerült törölni a példányt
+  deleteFailedPermission: Más program foglalta el a fájlt
   deleteHint: >-
     A példányadatok örökre lekerülnek a lemezről. Biztos vagy benne, hogy ezt
     akarod csinálni?

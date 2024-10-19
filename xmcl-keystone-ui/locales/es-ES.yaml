@@ -352,6 +352,8 @@ instance:
   changeIcon: Cambiar el ícono
   current: Instancia Actual
   delete: Eliminar juego
+  deleteFailed: No se pudo eliminar la instancia
+  deleteFailedPermission: Otro programa ocupó el archivo.
   deleteHint: >-
     Los datos de la instancia se eliminarán permanentemente del disco. ¿Estás
     seguro de hacer esto?

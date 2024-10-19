@@ -7,9 +7,10 @@ import { Inject, LauncherAppKey } from '~/app'
 import { kMarketProvider } from '~/market'
 import { ResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { AnyError } from '~/util/error'
+import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { InstanceService } from '~/instance'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -119,6 +120,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       await ensureDir(basePath)
       const { dispose, revalidate, state } = this.resourceManager.watch(basePath, ResourceDomain.Mods, (func) => doAsyncOperation(lock.read(func)))
 
+      const instanceService = await this.app.registry.get(InstanceService)
+      instanceService.registerRemoveHandler(instancePath, dispose)
+
       this.log(`Mounted on instance mods: ${basePath}`)
 
       return [state, dispose, revalidate]
@@ -224,6 +228,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
   }
 
   async installToServerInstance(options: InstallModsOptions): Promise<void> {
+    this.log(`Install ${options.mods.length} mods to server instance at ${options.path}`)
     const modsDir = join(options.path, 'server', 'mods')
     await ensureDir(modsDir)
     await emptyDir(modsDir)

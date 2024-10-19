@@ -411,6 +411,8 @@ instance:
   changeIcon: 更改图标
   current: 当前实例
   delete: 删除游戏
+  deleteFailed: 删除实例失败
+  deleteFailedPermission: 其他程序占用了该文件
   deleteHint: 游戏数据将完全被移除。您确定继续此操作吗？
   duplicate: 创建备份
   duplicatedName: 名字冲突！

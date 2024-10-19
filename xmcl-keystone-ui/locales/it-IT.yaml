@@ -395,6 +395,8 @@ instance:
   changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
+  deleteFailed: Impossibile eliminare l'istanza
+  deleteFailedPermission: Un altro programma occupava il file
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
     di voler fare questo?

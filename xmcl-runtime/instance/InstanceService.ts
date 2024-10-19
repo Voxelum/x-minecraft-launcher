@@ -25,6 +25,7 @@ const INSTANCES_FOLDER = 'instances'
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile: SafeFile<InstancesSchema>
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
+  #removeHandlers: Record<string, (() => Promise<void> | void)[]> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
@@ -344,10 +345,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
+      for (const handler of this.#removeHandlers[path] || []) {
+        await handler()
+      }
       await rm(path, { recursive: true, force: true })
     }
 
     this.state.instanceRemove(path)
+  }
+
+  registerRemoveHandler(path: string, handler: () => Promise<void> | void) {
+    if (!this.#removeHandlers[path]) {
+      this.#removeHandlers[path] = []
+    }
+    this.#removeHandlers[path].push(handler)
   }
 
   /**
