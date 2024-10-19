@@ -265,8 +265,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    cliccando la casella di controllo, indichi la tua accettazione 
-    con l'{eula} di Minecraft.
+    cliccando la casella di controllo, indichi la tua accettazione  con l'{eula}
+    di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -708,7 +708,7 @@ mod:
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
-  incompatibleHint: Le mod potrebbero avere problemi di compatibilità
+  incompatibleHint: Controlla il rapporto sulla compatibilità della tua mod
   incompatibleHintDescription: |-
     Potrebbero mancare alcune dipendenze delle mod. 
     Oppure alcune versioni delle dipendenze non corrispondono.
@@ -1463,10 +1463,10 @@ transportType:
   srflx: Server Reflexive Scelto
 turnRegion:
   fr: Francia
-  po: Polonia
   guangzhou: Guangzhou, Cina
   hk: Hong Kong
   liaoning: Liaoning, Cina
+  po: Polonia
 tutorial:
   feedbackDescription: >-
     Se incontri qualche problema, Perfavore clicca questo bottone per inviare

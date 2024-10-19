@@ -254,7 +254,7 @@
       </v-alert>
       <v-alert
         v-if="incompatible"
-        type="warning"
+        type="info"
         dense
         class="cursor-pointer mb-0"
         @click="showIncompatibleDialog"
@@ -797,6 +797,9 @@ const onInstallProject = useProjectInstall(
   modLoaderFilters,
   curseforgeInstaller,
   modrinthInstaller,
+  (file) => {
+    install({ path: path.value, mods: [file.path] })
+  },
 )
 
 useTutorial(computed(() => [{

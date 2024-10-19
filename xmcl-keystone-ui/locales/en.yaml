@@ -689,7 +689,7 @@ mod:
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.
-  incompatibleHint: Mods might have compatibility issue
+  incompatibleHint: Check out your mod compatibility report
   incompatibleHintDescription: >-
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.

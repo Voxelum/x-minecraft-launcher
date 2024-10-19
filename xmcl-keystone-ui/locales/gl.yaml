@@ -301,7 +301,7 @@ mod:
     Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
     Isto pode causar un fallo de Minecraft. 
     Selecciona o ficheiro que queres conservar.
-  incompatibleHint: Os mods poden ter problemas de compatibilidade
+  incompatibleHint: Consulta o teu informe de compatibilidade de mod
   incompatibleHintDescription: |-
     É posible que falten algunhas dependencias de modificacións. 
     Ou algunhas versións de dependencias non coinciden.

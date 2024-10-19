@@ -768,7 +768,7 @@ mod:
   groupInstalled: Gruppensatz Mods
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.
-  incompatibleHint: Mods könnten Kompatibilitätsprobleme haben
+  incompatibleHint: Schauen Sie sich Ihren Mod-Kompatibilitätsbericht an
   incompatibleHintDescription: |-
     Möglicherweise fehlen einige Mod-Abhängigkeiten. 
     Oder einige Abhängigkeitsversionen stimmen nicht überein.

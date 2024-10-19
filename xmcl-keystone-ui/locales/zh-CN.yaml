@@ -684,7 +684,7 @@ mod:
   groupInstalled: 分开显示已安装模组
   hideIncompatible: 隐藏不兼容模组
   incompatible: 可能不兼容当前版本。
-  incompatibleHint: Mod 可能存在兼容性问题
+  incompatibleHint: 查看您的模组兼容性报告
   incompatibleHintDescription: |-
     某些模组依赖项可能会丢失。
     或者某些依赖项版本不匹配。
