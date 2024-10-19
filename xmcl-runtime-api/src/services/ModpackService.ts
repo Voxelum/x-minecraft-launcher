@@ -1,5 +1,5 @@
 import { Exception } from '../entities/exception'
-import { RuntimeVersions } from '../entities/instance.schema'
+import { InstanceData, RuntimeVersions } from '../entities/instance.schema'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { InstallMarketOptions } from '../entities/market'
 import { ResourceMetadata, ResourceState } from '../entities/resource'
@@ -148,9 +148,10 @@ export interface ModpackService {
   /**
    * Import the modpack as an instance
    * @param modpackPath The modpack file path
+   * @param iconUrl The icon url of the modpack
    * @returns The instance path
    */
-  importModpack(modpackPath: string): Promise<{
+  importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
     instancePath: string
     version?: string
     runtime: RuntimeVersions

@@ -4,7 +4,6 @@ import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
 import { File, getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
-import { existsSync } from 'fs'
 import { dirname, join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { kDownloadOptions } from '~/network'
@@ -23,13 +22,6 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
 
   const resourceManager = await app.registry.get(ResourceManager)
   const submit = await app.registry.get(kTaskExecutor)
-
-  function getFilePath(directory: string, fileName: string) {
-    while (existsSync(join(directory, fileName))) {
-      fileName = '_' + fileName
-    }
-    return join(directory, fileName)
-  }
 
   async function getSnapshotByUris(uris: string[], preferDir: string) {
     const hashes = await resourceManager.getHashesByUris(uris)
@@ -74,7 +66,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
 
   async function downloadCurseforge(downloadOptions: DownloadBaseOptions, destination: string, curseforgeFile: CurseforgeFile) {
     const uris = [getCurseforgeFileUri(curseforgeFile)]
-    const filePath = getFilePath(destination, curseforgeFile.fileName)
+    const filePath = join(destination, curseforgeFile.fileName)
 
     const downloadUrls = [] as string[]
     if (curseforgeFile.downloadUrl) {
@@ -130,7 +122,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
   async function downloadModrinth(downloadOptions: DownloadBaseOptions, destination: string, version: ProjectVersion, filename?: string) {
     const file = version.files.find((f) => f.filename === filename)
     const modrinthFile = file || getModrinthPrimaryFile(version)
-    const filePath = getFilePath(destination, modrinthFile.filename)
+    const filePath = join(destination, modrinthFile.filename)
 
     const uris = [modrinthFile.url] as string[]
     const isSingleFile = version.files.length === 1

@@ -108,7 +108,7 @@ const _installing = ref(false)
 const { notify } = useNotifier()
 const onInstall = (v: StoreProjectVersion) => {
   _installing.value = true
-  installModpack({ version: { versionId: v.id, icon: project.value?.iconUrl }, market: 0 }).catch((e) => {
+  installModpack({ projectId: proj.value!.id, versionId: v.id, icon: project.value?.iconUrl, market: 0 }).catch((e) => {
     notify({ level: 'error', title: e.message })
   }).finally(() => {
     _installing.value = false

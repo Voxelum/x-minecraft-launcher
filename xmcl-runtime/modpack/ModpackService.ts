@@ -1,5 +1,5 @@
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { mkdir, readdir, remove, stat, unlink } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
@@ -79,7 +79,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     return result.map(r => r.path)
   }
 
-  async importModpack(modpackFile: string): Promise<{
+  async importModpack(modpackFile: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
     instancePath: string
     version?: string
     runtime: Instance['runtime']
@@ -134,6 +134,12 @@ export class ModpackService extends AbstractService implements IModpackService {
       version: matchedVersion?.id || instance.version,
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
+      icon: iconUrl,
+    }
+
+    if (upstream) {
+      options.upstream = upstream;
+      (options.upstream as any).sha1 = cached.sha1
     }
 
     const path = await this.instanceService.createInstance(options)
