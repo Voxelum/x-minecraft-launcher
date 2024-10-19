@@ -159,13 +159,13 @@ const {
   maxMemory: maxMem,
   vmOptions,
   minMemory: minMem,
-  data,
+  javaPath,
 } = injection(InstanceEditInjectionKey)
 
 const java = computed({
-  get: () => javas.value.find(v => v.path === data.javaPath) || { path: '', valid: false, majorVersion: 0, version: '' },
+  get: () => javas.value.find(v => v.path === javaPath.value) || { path: '', valid: false, majorVersion: 0, version: '' },
   set: (v: JavaRecord | undefined) => {
-    data.javaPath = v?.path ?? ''
+    javaPath.value = v?.path ?? ''
   },
 })
 
