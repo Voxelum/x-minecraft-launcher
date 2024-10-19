@@ -227,7 +227,9 @@ export function watchResourcesDirectory(
 
   const workerQueue = createWorkerQueue(context, domain, processUpdate, onResourceEmit, true)
   const revalidate = createRevalidateFunction(directory, context, onRemove,
-    workerQueue.push.bind(workerQueue), (file, record, metadata) => {
+    (job) => {
+      workerQueue.push(job)
+    }, (file, record, metadata) => {
       if (state.files.findIndex((r) => r.path === file.path) === -1) {
         onResourceEmit(file, record, metadata)
       }
@@ -276,6 +278,10 @@ export function watchResourcesDirectory(
   revalidate()
 
   function enqueue(job: ResourceWorkerQueuePayload) {
+    if (!job.filePath.startsWith(directory)) {
+      context.logger.error(new AnyError('ResourceEnqueueError', `Resource ${job.filePath} is not in the directory ${directory}`))
+      return
+    }
     workerQueue.push(job)
   }
 

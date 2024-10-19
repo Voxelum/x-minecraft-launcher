@@ -183,18 +183,19 @@ export function useModrinth(
     return debouncedRefresh()
   }
 
-  watch([
-    query,
-    pageSize,
-    page,
-    sortBy,
-    gameVersion,
-    license,
-    category,
-    modLoader,
-    environment,
-    projectType,
-  ], () => {
+  const watchList = [] as Ref<any>[]
+  if (isRef(query)) watchList.push(query)
+  if (isRef(pageSize)) watchList.push(pageSize)
+  if (isRef(page)) watchList.push(page)
+  if (isRef(sortBy)) watchList.push(sortBy)
+  if (isRef(gameVersion)) watchList.push(gameVersion)
+  if (isRef(license)) watchList.push(license)
+  if (isRef(category)) watchList.push(category)
+  if (isRef(modLoader)) watchList.push(modLoader)
+  if (isRef(environment)) watchList.push(environment)
+  if (isRef(projectType)) watchList.push(projectType)
+
+  watch(watchList, () => {
     refresh()
   }, { deep: true })
 

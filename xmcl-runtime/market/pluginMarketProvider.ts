@@ -87,7 +87,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         file,
         snapshot,
         uris,
-        path: resourceManager.getSnapshotPath(snapshot),
+        path: file.path,
         metadata: {
           ...metadata,
           curseforge: {
@@ -141,7 +141,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         file,
         snapshot,
         uris,
-        path: resourceManager.getSnapshotPath(snapshot),
+        path: file.path,
         metadata: {
           ...metadata,
           modrinth: {
