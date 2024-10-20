@@ -53,6 +53,7 @@ function process() {
       paths.push(i.path)
     }
   }
+  console.log('Uninstall ' + paths.join(', '))
   uninstall({ mods: paths, path: path.value })
   isShown.value = false
 }
@@ -74,10 +75,10 @@ function process() {
           nav
           class="overflow-auto"
         >
-          <template v-for="item of items">
+          <template v-for="(item, i) of items">
             <v-subheader
               v-if="typeof item === 'string'"
-              :key="item"
+              :key="item + i"
             >
               {{ item }}
             </v-subheader>
@@ -89,12 +90,14 @@ function process() {
               }"
               @click="onSelect(item)"
             >
-              <v-list-item-avatar>
+              <v-list-item-action>
                 <v-simple-checkbox
                   :value="omitted[item.modId] === item"
+                  :input-value="omitted[item.modId] === item"
                   readonly
+                  @click="onSelect(item)"
                 />
-              </v-list-item-avatar>
+              </v-list-item-action>
               <v-list-item-content>
                 <v-list-item-title>{{ item.fileName }}</v-list-item-title>
                 <v-list-item-subtitle>{{ item.version }}</v-list-item-subtitle>

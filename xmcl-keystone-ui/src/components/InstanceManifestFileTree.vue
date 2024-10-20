@@ -187,7 +187,17 @@ const measureElement = (el: any) => {
 }
 
 watch([files, opened, () => props.openAll], async ([newFiles, newOpened, newOpenAll]) => {
-  flattened.value = flatTree(newFiles, item => item.children, newOpened, newOpenAll)
+  const result = flatTree(newFiles, item => item.children, newOpened, newOpenAll)
+  const visited = new Set<string>()
+  const filtered = result.filter(i => {
+    if (visited.has(i.data.path)) {
+      console.warn('Duplicated path', i.data.path)
+      return false
+    }
+    visited.add(i.data.path)
+    return true
+  })
+  flattened.value = filtered
 }, {
   immediate: true,
 })

@@ -14,6 +14,7 @@ import { router } from './router'
 import { kFlights } from '@/composables/flights'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
+import { appInsights } from '@/telemetry'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -55,3 +56,37 @@ const app = new Vue(defineComponent({
 Vue.component('TextComponent', TextComponent)
 
 app.$mount('#app')
+
+Vue.config.warnHandler = (msg, vm, trace) => {
+  const level = msg.indexOf('TypeError') !== -1 ? 4 : 3
+  appInsights.trackException({
+    exception: {
+      name: 'VueWarn',
+      message: msg,
+      stack: trace,
+    },
+    severityLevel: level,
+  })
+  console.warn(msg)
+
+  if (level === 4) {
+    appInsights.flush(false, () => {
+      window.location.reload()
+    })
+  }
+}
+
+Vue.config.errorHandler = (err, vm, info) => {
+  const level = err.message.indexOf('TypeError') !== -1 ? 4 : 3
+  appInsights.trackException({
+    exception: err,
+    severityLevel: level,
+  })
+  console.error(err)
+
+  if (level === 4) {
+    appInsights.flush(false, () => {
+      window.location.reload()
+    })
+  }
+}
