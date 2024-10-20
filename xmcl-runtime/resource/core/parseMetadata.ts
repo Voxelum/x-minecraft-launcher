@@ -53,6 +53,37 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
       const uris = [] as string[]
       const icons = cachedMetadata.icons || []
 
+      if (domain === ResourceDomain.Mods && !cachedMetadata.forge && !cachedMetadata.fabric && !cachedMetadata.quilt && !cachedMetadata.neoforge) {
+        const { metadata, uris, icons, name } = await context.parse({
+          path: file.path,
+          fileType: record.fileType,
+          domain,
+        })
+
+        metadata.name = name
+
+        if (!job.metadata) {
+          job.metadata = metadata
+        } else {
+          Object.assign(job.metadata, metadata)
+        }
+
+        if (job.uris) {
+          uris.push(...job.uris)
+        } else {
+          job.uris = uris
+        }
+
+        const iconPaths = await Promise.all(icons.map(icon => context.image.addImage(icon).catch(() => '')))
+        const allIcons = iconPaths.filter(icon => icon)
+
+        if (job.icons) {
+          job.icons.push(...allIcons)
+        } else {
+          job.icons = allIcons
+        }
+      }
+
       if (job.metadata) {
         Object.assign(cachedMetadata, job.metadata)
       }
@@ -69,6 +100,8 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
             context.logger.error(e)
           })
       }
+
+      cachedMetadata.icons = icons
     }
   }
   return cachedMetadata

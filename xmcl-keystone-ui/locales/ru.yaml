@@ -454,6 +454,8 @@ instance:
   changeIcon: Изменить значок
   current: Текущий экземпляр
   delete: Удалить экземпляр
+  deleteFailed: Не удалось удалить экземпляр
+  deleteFailedPermission: Другая программа заняла файл
   deleteHint: >-
     Данные экземпляра будут удалены с диска навсегда. Вы уверены, что хотите это
     сделать?
@@ -754,14 +756,27 @@ mod:
   deletionRestHint: И ещё {rest} модов...
   denseView: Компактное отображение модов
   dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
+  duplicatedDetected: '{count} дублированных модов'
+  duplicatedDetectedDescription: |-
+    Найдены моды с одинаковым идентификатором, но с разными файлами. 
+    Это может привести к сбою Minecraft. 
+    Пожалуйста, выберите файл, который вы хотите сохранить.
   enabled: 'Всего модов включено: {count}'
   filter: Фильтр модов
   groupInstalled: Группировать установленные моды
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
   incompatible: Несовместимый мод.
+  incompatibleHint: Посмотрите отчет о совместимости вашего мода
+  incompatibleHintDescription: |-
+    Некоторые зависимости модов могут отсутствовать. 
+    Или некоторые версии зависимостей не совпадают.
   manage: Моды
   maybeCompatible: Возможно, совместим.
+  modloaderSelectHint: |-
+    Мод поддерживает следующие загрузчики модов. 
+    Пожалуйста, выберите один для установки.
+  modloaderSelectNotSupported: Не найден {modloader} для Minecraft {minecraft}
   mods: '{count} модов'
   name: Мод | Моды
   noModLoaderHint: Не забудьте включить модлоадер для использования модов!
@@ -1466,12 +1481,18 @@ shaderPack:
   enabled: Выбранные наборы шейдеров
   manage: Шейдера
   name: Набор шейдеров | Наборы шейдеров
+  noShaderMod: Мод шейдеров не установлен
+  noShaderModHint: Вы не можете использовать шейдер без мода шейдера.
+  noShaderModInstallHint: >-
+    Для загрузки пакета шейдеров вам необходимо установить один из следующих
+    модов.
   searchHint: Поиск набора шейдеров
   selectSearchHint: Найдите и выберите Shader Pack
   showDirectory: Открыть папку с наборами шейдеров
   showFile: Показать путь к набору шейдеров {file}
 shared:
   accept: Принять
+  keepSelected: Сохранить выбранное
   skipForNow: Пропустить сейчас
 store:
   explore: Исследовать

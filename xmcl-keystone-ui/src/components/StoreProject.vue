@@ -61,6 +61,7 @@
     <StoreProjectInstallVersionDialog
       :value="installDialog"
       :versions="versions || []"
+      :get-version-detail="getVersionDetail"
       @load="emit('load')"
       @input="installDialog = false"
       @install="onInstallVersion"
@@ -72,7 +73,7 @@ import ErrorView from '@/components/ErrorView.vue'
 import StoreProjectExternal from './StoreProjectExternal.vue'
 import StoreProjectGallery from './StoreProjectGallery.vue'
 import StoreProjectHeader from './StoreProjectHeader.vue'
-import StoreProjectInstallVersionDialog, { StoreProjectVersion } from './StoreProjectInstallVersionDialog.vue'
+import StoreProjectInstallVersionDialog, { StoreProjectVersion, StoreProjectVersionDetail } from './StoreProjectInstallVersionDialog.vue'
 import StoreProjectMembers, { TeamMember } from './StoreProjectMembers.vue'
 import StoreProjectTags from './StoreProjectTags.vue'
 import { CategoryChipProps } from './CategoryChip.vue'
@@ -110,6 +111,8 @@ const props = defineProps<{
 
   installed?: boolean
   installing?: boolean
+
+  getVersionDetail: (version: StoreProjectVersion) => Promise<StoreProjectVersionDetail>
 }>()
 
 const emit = defineEmits<{

@@ -86,6 +86,12 @@ export const vuetify = new Vuetify({
           src: BuiltinImages.iris,
         },
       },
+      oculus: {
+        component: ImageIcon,
+        props: {
+          src: BuiltinImages.oculus,
+        },
+      },
       mmc: {
         component: ImageIcon,
         props: {

@@ -15,7 +15,7 @@ import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
-import { getJavaPathsLinux, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths } from './javaPaths'
+import { getJavaPathsLinux, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -290,6 +290,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
           ...await getMojangJavaPaths(),
           ...await getOrcaleJavaPaths(),
           ...await getOpenJdkPaths(),
+          ...await getZuluJdkPath(),
         )
       } else if (this.app.platform.os === 'linux') {
         commonLocations.push(...await getJavaPathsLinux())

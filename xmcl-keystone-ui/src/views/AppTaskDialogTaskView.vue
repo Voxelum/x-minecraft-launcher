@@ -319,7 +319,7 @@ const data = reactive({
 
 function onTaskClick(event: MouseEvent, item: TaskItem) {
   if (typeof item.message === 'string') {
-    navigator.clipboard.writeText(item.message ?? '')
+    windowController.writeClipboard(item.message ?? '')
   }
 }
 </script>

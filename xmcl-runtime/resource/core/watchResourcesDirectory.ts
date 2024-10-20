@@ -1,15 +1,16 @@
-import { File, ResourceState, FileUpdateOperation, FileUpdateAction, UpdateResourcePayload, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
 import { FSWatcher, existsSync } from 'fs'
-import { copy, link, watch } from 'fs-extra'
+import { copy, watch } from 'fs-extra'
 import debounce from 'lodash.debounce'
-import { isAbsolute, join } from 'path'
+import { basename, dirname, isAbsolute, join } from 'path'
 import { Logger } from '~/logger'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
 import { AnyError, isSystemError } from '~/util/error'
 import { linkOrCopyFile } from '~/util/fs'
 import { toRecord } from '~/util/object'
 import { ResourceContext } from './ResourceContext'
+import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
 import { getFile, getFiles } from './files'
 import { generateResourceV3, pickMetadata } from './generateResource'
 import { jsonArrayFrom } from './helper'
@@ -17,7 +18,6 @@ import { getOrParseMetadata } from './parseMetadata'
 import { shouldIgnoreFile } from './pathUtils'
 import { ResourceSnapshotTable } from './schema'
 import { getDomainedPath, isSnapshotValid, takeSnapshot } from './snapshot'
-import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
 
 function createRevalidateFunction(
   dir: string,
@@ -25,6 +25,7 @@ function createRevalidateFunction(
   onResourceRemove: (path: string) => void,
   onResourceQueue: (job: ResourceWorkerQueuePayload) => void,
   onResourceEmit: ResouceEmitFunc,
+  onResourcePostRevalidate: (files: File[]) => void,
 ) {
   async function getUpserts() {
     const entries = await getFiles(dir)
@@ -90,8 +91,14 @@ function createRevalidateFunction(
         onResourceQueue({ filePath: file.path, file, record })
         continue
       }
+      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt && !resource.neoforge) {
+        onResourceQueue({ filePath: file.path, file, record, metadata: resource })
+        continue
+      }
       onResourceEmit(file, record, { ...pickMetadata(resource), icons: resource.icons.map(i => i.icon) })
     }
+
+    onResourcePostRevalidate(results.map(([f]) => f))
   }
 
   return revalidate
@@ -122,7 +129,9 @@ function createWorkerQueue(context: ResourceContext, domain: ResourceDomain,
 
     const metadata = await getOrParseMetadata(job.file, job.record, domain, context, job, parse)
 
-    context.eventBus.emit('resourceParsed', job.record.sha1, domain, metadata)
+    if (parse) {
+      context.eventBus.emit('resourceParsed', job.record.sha1, domain, metadata)
+    }
 
     onResourceEmit(job.file, job.record, metadata ?? {})
   }), 16, {
@@ -220,9 +229,18 @@ export function watchResourcesDirectory(
 
   const workerQueue = createWorkerQueue(context, domain, processUpdate, onResourceEmit, true)
   const revalidate = createRevalidateFunction(directory, context, onRemove,
-    workerQueue.push.bind(workerQueue), (file, record, metadata) => {
+    (job) => {
+      workerQueue.push(job)
+    }, (file, record, metadata) => {
       if (state.files.findIndex((r) => r.path === file.path) === -1) {
         onResourceEmit(file, record, metadata)
+      }
+    }, (files) => {
+      const all = Object.fromEntries(files.map(f => [f.path, f]))
+      for (const file of state.files) {
+        if (!all[file.path]) {
+          update.push([file.path, FileUpdateAction.Remove])
+        }
       }
     })
 
@@ -262,6 +280,10 @@ export function watchResourcesDirectory(
   revalidate()
 
   function enqueue(job: ResourceWorkerQueuePayload) {
+    if (!job.filePath.startsWith(directory)) {
+      context.logger.error(new AnyError('ResourceEnqueueError', `Resource ${job.filePath} is not in the directory ${directory}`))
+      return
+    }
     workerQueue.push(job)
   }
 
@@ -292,11 +314,16 @@ export function watchResourceSecondaryDirectory(
 
     record = await context.db.selectFrom('snapshots')
       .selectAll()
-      .where('domainedPath', 'like', `${getDomainedPath(primaryDirectory, context.root)}%`)
       .where('sha1', '=', snapshot.sha1)
       .executeTakeFirst()
 
-    if (record) return true
+    if (record) {
+      const domain = basename(dirname(record.domainedPath))
+      const actualDomain = basename(primaryDirectory)
+      if (domain === actualDomain) {
+        return true
+      }
+    }
 
     return false
   }
@@ -321,7 +348,7 @@ export function watchResourceSecondaryDirectory(
       if (await isFileCached(file)) return
       persist(file)
     }
-  }, () => { /* ignore */ })
+  }, () => { /* ignore */ }, () => { /* ignore */ })
 
   let watcher: FSWatcher | undefined
 

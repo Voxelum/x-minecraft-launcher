@@ -9,6 +9,7 @@ import mmc from '@/assets/mmc.webp'
 import labyMod from '@/assets/labymod.webp'
 import neoForged from '@/assets/neoforged.webp'
 import craftingTable from '@/assets/craftingtable.webp'
+import oculus from '@/assets/oculus.webp'
 
 export const BuiltinImages = {
   minecraft,
@@ -22,4 +23,5 @@ export const BuiltinImages = {
   labyMod,
   craftingTable,
   unknownServer,
+  oculus,
 }

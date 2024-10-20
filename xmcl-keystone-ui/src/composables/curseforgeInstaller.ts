@@ -13,8 +13,8 @@ export function useCurseforgeInstaller(
   allFiles: Ref<ProjectFile[]>,
   installResource: (options: InstallMarketOptionWithInstance) => Promise<any>,
   uninstallResource: (files: ProjectFile[], path?: string) => void,
+  installDefaultModLoader = useInstanceModLoaderDefault(),
 ) {
-  const installDefaultModLoader = useInstanceModLoaderDefault()
   const install = async (file: { fileId: number; icon?: string } | { fileId: number; icon?: string }[]) => {
     return installResource({
       market: MarketType.CurseForge,
@@ -51,7 +51,7 @@ export function useCurseforgeInstaller(
     await install(files)
 
     if (toUninstalls.length > 0) {
-      uninstallResource(toUninstalls)
+      uninstallResource(toUninstalls, _path)
     }
   }
 

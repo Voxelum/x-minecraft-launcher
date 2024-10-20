@@ -25,7 +25,7 @@ export enum ModLoaderFilter {
 
 const kCached = Symbol('cached')
 
-export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
+export function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
   const { searchInstalled } = useService(InstanceModsServiceKey)
   const modFiles = ref([] as ModFile[])
 
@@ -62,7 +62,9 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       if (obj) {
         obj.files?.push(m)
         if (instanceFile) {
-          obj.installed?.push(m)
+          if (!obj.installed.some(i => i.path === m.path)) {
+            obj.installed?.push(m)
+          }
           obj.disabled = !obj.installed[0].enabled
         }
       } else {
@@ -93,7 +95,9 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
           indices[curseforgeId] = mod
         }
         if (instanceFile) {
-          mod.installed.push(m)
+          if (!mod.installed.some(i => i.path === m.path)) {
+            mod.installed.push(m)
+          }
           mod.disabled = !mod.installed[0].enabled
         }
         return mod
@@ -148,6 +152,11 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     const useQuilt = modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1
     const useNeoforge = modLoaderFilters.value.indexOf(ModLoaderFilter.neoforge) !== -1
     const isValidResource = (r: Resource) => {
+      // should not include this instance mods
+      if (r.path.startsWith(path.value)) {
+        return false
+      }
+
       if (useForge || useNeoforge) return !!r.metadata.forge
       if (useFabric) return !!r.metadata.fabric
       if (useQuilt) return !!r.metadata.quilt
@@ -197,7 +206,7 @@ const getOptifineAsMod = () => {
   return result
 }
 
-export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>, settings: Ref<Settings | undefined>) {
+export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>, settings: Ref<Settings | undefined>) {
   const modLoaderFilters = ref<ModLoaderFilter[]>([])
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
@@ -211,7 +220,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
-  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
+  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(path, keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
   const all = useAggregateProjects<ProjectEntry<ModFile>>(
@@ -262,12 +271,22 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
 
   const { lookupBatch } = useService(ProjectMappingServiceKey)
 
-  const mapping = ref<ProjectMapping[]>([])
+  const mapping = shallowRef<Record<string, ProjectMapping>>({})
   watch([items, computed(() => settings.value?.locale)], ([newItems]) => {
     const modrinthsToLookup = newItems.map(i => i.modrinthProjectId || i.modrinth?.project_id).filter(notNullish)
     const curseforgesToLookup = newItems.map(i => i.curseforgeProjectId || i.curseforge?.id).filter(notNullish)
+
     lookupBatch(modrinthsToLookup, curseforgesToLookup).then((result) => {
-      mapping.value = result
+      const newDict: Record<string, ProjectMapping> = {}
+      for (const r of result) {
+        if (r.modrinthId) {
+          newDict[r.modrinthId] = r
+        }
+        if (r.curseforgeId) {
+          newDict[r.curseforgeId] = r
+        }
+      }
+      mapping.value = newDict
     })
   })
 
@@ -277,15 +296,18 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     const result = oldItems.map((item) => {
       const mrId = item.modrinthProjectId || item.modrinth?.project_id
       const cfId = item.curseforgeProjectId || item.curseforge?.id
-      const map = mapping.value.find(m => m.modrinthId === mrId || m.curseforgeId === cfId)
-      if (map) {
-        item.localizedTitle = map.name
-        item.localizedDescription = map.description
-        if (map.modrinthId && !item.modrinthProjectId) {
-          item.modrinthProjectId = map.modrinthId
-        }
-        if (map.curseforgeId && !item.curseforgeProjectId) {
-          item.curseforgeProjectId = map.curseforgeId
+      const id = mrId || cfId?.toString()
+      if (id) {
+        const map = mapping.value[id]
+        if (map) {
+          item.localizedTitle = map.name
+          item.localizedDescription = map.description
+          if (map.modrinthId && !item.modrinthProjectId) {
+            item.modrinthProjectId = map.modrinthId
+          }
+          if (map.curseforgeId && !item.curseforgeProjectId) {
+            item.curseforgeProjectId = map.curseforgeId
+          }
         }
       }
       return item

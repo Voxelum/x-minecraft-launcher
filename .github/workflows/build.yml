@@ -63,37 +63,47 @@ jobs:
         name: sourcemap
         path: |
           xmcl-electron-app/dist/*.js.map
-    - name: Upload Build
+    - name: Upload Unsigned Appx
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       id: upload-artifact
       uses: actions/upload-artifact@v4
       with:
-        name: build-${{ runner.os }}
+        name: appx
         path: |
-          xmcl-electron-app/build/output/
+          xmcl-electron-app/build/output/*.appx
     - name: Sign Build
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+      id: sign
       uses: signpath/github-action-submit-signing-request@v0.4
+      continue-on-error: true
       with:
         api-token: ${{ secrets.CODE_SIGN_TOKEN }}
         organization-id: ab51b40d-a5bd-4d25-ae54-66ccabf86161
         project-slug: x-minecraft-launcher
         signing-policy-slug: release-signing
         github-artifact-id: ${{ steps.upload-artifact.outputs.artifact-id }}
-        artifact-configuration-slug: build
+        artifact-configuration-slug: appx
         wait-for-completion: true
         output-artifact-directory: xmcl-electron-app/build/output/
+    - name: Check Sign Status
+      id: sign-status
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+      run: |
+        if ("${{ steps.sign.outcome }}" -eq "success") {
+          echo "SIGN_SUCCESS=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        } else {
+          echo "SIGN_SUCCESS=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+        }
     - name: Update Signed Sha256
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
       run: |
         pnpm postsign
-    - name: Upload Signed Build
-      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
+    - name: Upload Build
       uses: actions/upload-artifact@v4
       with:
         name: build-${{ runner.os }}
         path: |
           xmcl-electron-app/build/output/
-        overwrite: true
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }}
       uses: actions/upload-artifact@v4

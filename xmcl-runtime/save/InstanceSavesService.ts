@@ -231,9 +231,16 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
             const toRemove = state.saves.filter((s) => !savePaths.includes(basename(s.path)))
             toRemove.forEach((s) => state.instanceSaveRemove(s.path))
             const toAdd = savePaths.filter((s) => !state.saves.some((ss) => ss.name === s))
-            await readAll(toAdd)
+            const saves = await readAll(toAdd)
+            state.instanceSaves(saves)
           }
         }
+      })
+
+      const instanceService = await this.app.registry.get(InstanceService)
+      instanceService.registerRemoveHandler(path, () => {
+        launchService.off('minecraft-exit', onExit)
+        watcher.close()
       })
 
       return [state, () => {

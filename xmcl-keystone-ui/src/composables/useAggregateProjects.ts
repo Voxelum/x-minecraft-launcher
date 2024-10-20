@@ -12,8 +12,17 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
   a.followerCount = b.followerCount || a.followerCount
   a.modrinth = b.modrinth || a.modrinth
   a.curseforge = b.curseforge || a.curseforge
-  a.files = Array.from(new Set(a.files ? a.files.concat(b.files || []) : b.files || a.files))
-  a.installed = Array.from(new Set(a.installed.concat(b.installed || [])))
+  const filesRecord = Object.fromEntries((a.files || []).map(f => [f.path, f]))
+  for (const file of b.files || []) {
+    filesRecord[file.path] = file
+  }
+  a.files = Object.values(filesRecord)
+
+  const installedRecord = Object.fromEntries((a.installed || []).map(f => [f.path, f]))
+  for (const file of b.installed || []) {
+    installedRecord[file.path] = file
+  }
+  a.installed = Object.values(installedRecord)
 }
 
 /**

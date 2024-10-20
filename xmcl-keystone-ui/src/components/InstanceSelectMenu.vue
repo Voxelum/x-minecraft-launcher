@@ -28,7 +28,7 @@
       </v-list-item>
       <v-list-item
         v-for="(item, index) in items"
-        :key="index"
+        :key="item.path + index"
         @click="onSelect(item)"
       >
         <v-list-item-avatar>

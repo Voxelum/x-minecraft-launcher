@@ -1,15 +1,17 @@
 import { ForgeModMetadata } from '@xmcl/mod-parser'
-import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, isQuiltResource, Resource } from '@xmcl/runtime-api'
+import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, isQuiltResource, NeoforgeMetadata, Resource } from '@xmcl/runtime-api'
 
 export type ModDependencies = ModDependency[]
 
 export type ModDependency = {
   modId: string
   versionRange: string
+  optional?: boolean
   semanticVersion?: string | string[]
 } | {
   modId: string
   versionRange?: string
+  optional?: boolean
   semanticVersion: string | string[]
 }
 
@@ -66,6 +68,32 @@ export function getFabricModDependencies(resource: FabricResource): ModDependenc
   return result
 }
 
+export function getNeoforgeModDependencies(metadata: NeoforgeMetadata): ModDependencies {
+  const mods: ModDependencies = []
+
+  const arr = [metadata, ...metadata.children]
+
+  for (const mod of arr) {
+    const deps: ModDependencies = []
+    for (const dep of mod.dependencies) {
+      deps.push({
+        modId: dep.modId,
+        versionRange: dep.versionRange,
+        optional: !dep.mandatory,
+      })
+    }
+    if (deps.every(d => d.modId !== 'neoforge')) {
+      deps.push({
+        modId: 'neoforge',
+        versionRange: mod.loaderVersion,
+      })
+    }
+    mods.push(...deps)
+  }
+
+  return mods
+}
+
 export function getForgeModDependencies(resource: ForgeResource): ModDependencies {
   const mods: ModDependencies = []
   if (resource.metadata.forge.modsToml.length > 0) {
@@ -76,6 +104,7 @@ export function getForgeModDependencies(resource: ForgeResource): ModDependencie
         deps.push({
           modId: dep.modId,
           versionRange: dep.versionRange,
+          optional: !dep.mandatory,
         })
       }
       if (deps.every(d => d.modId !== 'forge')) {
@@ -94,13 +123,21 @@ export function getForgeModDependencies(resource: ForgeResource): ModDependencie
   return mods
 }
 
-export function getModDependencies(resource: Resource, fabricFirst?: boolean): ModDependencies {
-  if (fabricFirst) {
+export function getModDependencies(resource: Resource, type?: 'forge' | 'fabric' | 'neoforge'): ModDependencies {
+  if (type === 'fabric') {
     if (isFabricResource(resource)) return getFabricModDependencies(resource)
     if (isForgeResource(resource)) return getForgeModDependencies(resource)
+    if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
+    return []
+  }
+  if (type === 'neoforge') {
+    if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
+    if (isForgeResource(resource)) return getForgeModDependencies(resource)
+    if (isFabricResource(resource)) return getFabricModDependencies(resource)
     return []
   }
   if (isForgeResource(resource)) return getForgeModDependencies(resource)
+  if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
   if (isFabricResource(resource)) return getFabricModDependencies(resource)
   return []
 }
@@ -110,6 +147,15 @@ export function getModProvides(resource: Resource) {
   if (isForgeResource(resource)) {
     const meta = resource.metadata.forge
     runtime[meta.modid] = meta.version
+  }
+
+  if (resource.metadata.neoforge) {
+    const meta = resource.metadata.neoforge
+    runtime[meta.modid] = meta.version
+
+    for (const child of meta.children) {
+      runtime[child.modid] = child.version
+    }
   }
 
   if (isFabricResource(resource)) {

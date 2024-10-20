@@ -6,6 +6,7 @@ import { Ref, computed } from 'vue'
 import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
 import { useService } from './service'
+import { gt } from 'semver'
 
 async function getJson<T>(url: string) {
   const res = await fetch(url)
@@ -179,14 +180,14 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
     return ''
   })
   const latest = computed(() => {
-    const vers = data.value
+    const vers = versions.value
     if (!vers) return undefined
     return vers[0] ?? ''
   })
   const versions = computed(() => {
     const vers = data.value
     if (!vers) return []
-    return vers
+    return vers.toSorted((a, b) => gt(a, b) ? -1 : 1)
   })
 
   return {
@@ -197,6 +198,10 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
     recommended,
     latest,
   }
+}
+
+export function getLatestNeoforge(versions: string[]) {
+  return versions.toSorted((a, b) => gt(a, b) ? -1 : 1)[0]
 }
 
 export function getNeoForgedVersionModel(minecraft: MaybeRef<string>) {

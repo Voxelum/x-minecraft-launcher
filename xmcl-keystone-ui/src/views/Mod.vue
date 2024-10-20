@@ -12,9 +12,7 @@
     @load="onLoad"
   >
     <template #actions>
-      <v-subheader
-        class="min-h-[46px] w-full py-4 pl-2 pr-6"
-      >
+      <v-subheader class="min-h-[46px] w-full py-4 pl-2 pr-6">
         <v-btn
           text
           small
@@ -245,6 +243,24 @@
       >
         {{ updateErrorMessage }}
       </v-alert>
+      <v-alert
+        v-if="Object.keys(conflicted).length > 0"
+        dense
+        class="cursor-pointer error"
+        type="error"
+        @click="showDuplicatedDialog"
+      >
+        {{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }}
+      </v-alert>
+      <v-alert
+        v-if="incompatible"
+        type="info"
+        dense
+        class="cursor-pointer info"
+        @click="showIncompatibleDialog"
+      >
+        {{ t('mod.incompatibleHint') }}
+      </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
@@ -335,6 +351,52 @@
         @curseforge="curseforgeCategory = $event.id"
       />
     </template>
+    <v-dialog
+      v-model="model"
+      width="600"
+    >
+      <v-card>
+        <v-card-title>
+          {{ t('mod.noModLoaderHint') }}
+        </v-card-title>
+        <v-card-text>
+          {{ t('mod.modloaderSelectHint') }}
+          <v-list nav>
+            <v-list-item
+              v-for="i of wizardModItems"
+              :key="i.title"
+              @click="i.onSelect"
+            >
+              <v-list-item-avatar>
+                <img :src="i.icon">
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>
+                  {{ i.title }}
+                </v-list-item-title>
+                <v-list-item-subtitle>
+                  <a
+                    :href="i.url"
+                    @click.stop
+                  >{{ i.url }}</a>
+                </v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+          <v-alert
+            v-if="wizardError"
+            type="error"
+          >
+            <span v-if="'loader' in wizardError">
+              {{ t('mod.modloaderSelectNotSupported', { loader: wizardError.loader, minecraft: wizardError.minecraft }) }}
+            </span>
+            <div v-else>
+              {{ wizardError.message }}
+            </div>
+          </v-alert>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </MarketBase>
 </template>
 
@@ -364,10 +426,15 @@ import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { createPromiseSignal, InstanceModsServiceKey, PromiseSignal, RuntimeVersions } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
+import { BuiltinImages } from '@/constant'
+import { useDialog, useSimpleDialog } from '@/composables/dialog'
+import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
+import { notNullish } from '@vueuse/core'
+import { isNoModLoader } from '@/util/isNoModloader'
 
 const { runtime, path } = injection(kInstance)
 
@@ -484,7 +551,11 @@ const shouldShowCurseforge = (selectedItem: undefined | ProjectEntry, selectedMo
   return true
 }
 
-const { mods, revalidate } = injection(kInstanceModsContext)
+const { mods, conflicted, revalidate, incompatible } = injection(kInstanceModsContext)
+
+const { show: showDuplicatedDialog } = useDialog('mod-duplicated')
+const { show: showIncompatibleDialog } = useDialog('mod-incompatible')
+
 const getInstalledModrinth = (projectId: string) => {
   return mods.value.filter((m) => m.modrinth?.projectId === projectId)
 }
@@ -509,7 +580,17 @@ const onUninstall = (f: ProjectFile[], _path?: string) => {
     setTimeout(revalidate, 1500)
   })
 }
-const onEnable = (f: ProjectFile, _path?: string) => {
+const onEnable = async (f: ProjectFile, _path?: string) => {
+  if (noModloaders.value) {
+    const success = await showInstallModloadersWizard({
+      loaders: (f as ModFile).modLoaders,
+      instance: _path || path.value,
+      runtime: runtime.value,
+    })
+    if (!success) {
+      return
+    }
+  }
   enable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
   })
@@ -595,6 +676,100 @@ const { dragover } = useGlobalDrop({
   },
 })
 
+// Install modloader wizard
+interface WizardOptions {
+  loaders: string[]
+  instance: string
+  runtime: RuntimeVersions
+}
+
+const { model, show: _showInstallModloadersWizard, target } = useSimpleDialog<WizardOptions>(() => { })
+
+let signal: PromiseSignal<boolean> | undefined
+function showInstallModloadersWizard(o: WizardOptions) {
+  signal = createPromiseSignal()
+  _showInstallModloadersWizard(o)
+  return signal.promise
+}
+
+watch(model, (v) => {
+  if (!v) {
+    signal?.resolve(false)
+  }
+})
+
+const wizardError = ref(undefined as Error | { loader: string; minecraft: string } | undefined)
+const wizardModItems = computed(() => {
+  if (!target.value) return []
+  const { loaders, instance, runtime } = target.value
+  const onSelect = async (loader: string) => {
+    const result = await installModRuntime(instance, runtime, [loader]).catch((v) => v)
+    if (typeof result === 'boolean') {
+      signal?.resolve(result)
+      if (result) {
+        model.value = false
+      } else {
+        wizardError.value = {
+          loader,
+          minecraft: runtime.minecraft,
+        }
+      }
+    } else {
+      signal?.resolve(false)
+      wizardError.value = result
+    }
+  }
+  return loaders.map((v) => {
+    if (v === 'forge') {
+      return {
+        title: 'Forge',
+        icon: BuiltinImages.forge,
+        url: 'https://files.minecraftforge.net/',
+        onSelect: () => { onSelect('forge') },
+      }
+    }
+    if (v === 'fabric') {
+      return {
+        title: 'Fabric',
+        icon: BuiltinImages.fabric,
+        url: 'https://fabricmc.net/use/',
+        onSelect: () => { onSelect('fabric') },
+      }
+    }
+    if (v === 'quilt') {
+      return {
+        title: 'Quilt',
+        icon: BuiltinImages.quilt,
+        url: 'https://quiltmc.org/',
+        onSelect: () => { onSelect('quilt') },
+      }
+    }
+    if (v === 'neoforge') {
+      return {
+        title: 'NeoForge',
+        icon: BuiltinImages.neoForged,
+        url: 'https://neoforge.org/',
+        onSelect: () => { onSelect('neoforge') },
+      }
+    }
+    return undefined
+  }).filter(notNullish)
+})
+
+const noModloaders = computed(() => isNoModLoader(runtime.value))
+
+const installModRuntime = useInstanceModLoaderDefault()
+
+async function onInstallModRuntime(...args: Parameters<typeof installModRuntime>) {
+  if (noModloaders.value) {
+    return await showInstallModloadersWizard({
+      loaders: args[2],
+      instance: args[0],
+      runtime: args[1],
+    })
+  }
+  return true
+}
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
   path,
@@ -602,6 +777,7 @@ const modrinthInstaller = useModrinthInstaller(
   mods,
   installFromMarket,
   onUninstall,
+  onInstallModRuntime,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -612,6 +788,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   mods,
   installFromMarket,
   onUninstall,
+  onInstallModRuntime,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
@@ -620,6 +797,9 @@ const onInstallProject = useProjectInstall(
   modLoaderFilters,
   curseforgeInstaller,
   modrinthInstaller,
+  (file) => {
+    install({ path: path.value, mods: [file.path] })
+  },
 )
 
 useTutorial(computed(() => [{
@@ -653,22 +833,51 @@ usePresence(computed(() => t('presence.mod')))
 </script>
 
 <style scoped>
-
 .large-button {
   display: none;
 }
+
 .icon-large {
   margin-left: 0px !important;
   margin-right: 0px !important;
 }
+
 @container (min-width: 300px) {
   .large-button {
     display: block;
   }
+
   .icon-large {
     margin-left: -4px !important;
     margin-right: 8px !important;
   }
 }
 
+.v-application .info {
+  background-color: rgba(33, 150, 243, 0.8) !important;
+  border-color: rgba(33, 150, 243, 0.8) !important;
+}
+
+.v-application .error {
+  background-color: rgba(255, 82, 82, 0.8) !important;
+  border-color: rgba(255, 82, 82, 0.8) !important;
+}
+
+.dark.v-application .info {
+  background-color: rgba(33, 150, 243, 0.5) !important;
+  border-color: rgba(33, 150, 243, 0.5) !important;
+}
+
+.dark.v-application .error {
+  background-color: rgba(255, 82, 82, 0.5) !important;
+  border-color: rgba(255, 82, 82, 0.5) !important;
+}
+
+.v-sheet.v-alert:last-child {
+    margin: 0px 4px 8px 4px !important;
+}
+
+.v-sheet.v-alert {
+    margin: 0px 4px 4px 4px !important;
+}
 </style>

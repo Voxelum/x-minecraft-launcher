@@ -81,7 +81,6 @@ export class InstallService extends AbstractService implements IInstallService {
         const version: Version = JSON.parse(versionContent)
         const mapping = version.downloads?.[`${parsedArgs['--side']}_mappings`]
         if (!mapping) return false
-
         const output = parsedArgs['--output']
         const url = new URL(mapping.url)
         const urls = allSets.map(api => {
@@ -90,7 +89,7 @@ export class InstallService extends AbstractService implements IInstallService {
           }
           return replaceHost(url, api.url)
         })
-        const sha1 = await checksum(output, 'sha1')
+        const sha1 = await checksum(output, 'sha1').catch(() => undefined)
         if (sha1 === mapping.sha1) {
           return true
         }
@@ -230,6 +229,12 @@ export class InstallService extends AbstractService implements IInstallService {
       await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
     } else {
       const resolvedVersion = await this.versionService.resolveServerVersion(version)
+
+      if (resolvedVersion.libraries.length === 0) {
+        const clientVersion = await this.versionService.resolveLocalVersion(version)
+        resolvedVersion.libraries = clientVersion.libraries
+      }
+
       await this.submit(installLibrariesTask({
         libraries: resolvedVersion.libraries,
         minecraftDirectory: location,
@@ -655,15 +660,22 @@ export class InstallService extends AbstractService implements IInstallService {
       if (err instanceof CancelledError) {
         return
       }
-      const forgeVersion = profile.version.indexOf('-forge-') !== -1
+      if (profile.profile === 'NeoForge') {
+        await this.installNeoForged({
+          minecraft: profile.minecraft,
+          version: profile.version.substring('neoforge-'.length),
+        })
+      } else {
+        const forgeVersion = profile.version.indexOf('-forge-') !== -1
         ? profile.version.replace(/-forge-/, '-')
         : profile.version.indexOf('-forge') !== -1
-          ? profile.version.replace(/-forge/, '-')
-          : profile.version
-      await this.installForge({
-        version: forgeVersion,
-        mcversion: profile.minecraft,
-      })
+        ? profile.version.replace(/-forge/, '-')
+        : profile.version
+        await this.installForge({
+          version: forgeVersion,
+          mcversion: profile.minecraft,
+        })
+      }
       this.warn(err)
     }
   }

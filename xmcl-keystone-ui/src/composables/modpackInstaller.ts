@@ -1,52 +1,65 @@
 import { injection } from '@/util/inject'
-import { generateDistinctName } from '@/util/instanceName'
-import { CreateInstanceOption, InstallMarketOptions, InstanceServiceKey, ModpackServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
-import { kInstanceFiles } from './instanceFiles'
-import { kInstanceVersion } from './instanceVersion'
+import { InstallMarketOptions, InstanceData, MarketType, ModpackServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
 
+export type InstallModpackOptions = {
+  market: MarketType.CurseForge
+  modId: number
+  fileId: number
+  icon?: string
+} | {
+  market: MarketType.Modrinth
+  projectId: string
+  versionId: string
+  icon?: string
+}
+
 export function useModpackInstaller() {
-  const { instances, selectedInstance } = injection(kInstances)
-  const { openModpack, installModapckFromMarket } = useService(ModpackServiceKey)
-  const { createInstance } = useService(InstanceServiceKey)
-  const { installFiles } = injection(kInstanceFiles)
-  const { getVersionHeader, getResolvedVersion } = injection(kInstanceVersion)
+  const { selectedInstance } = injection(kInstances)
+  const { importModpack, installModapckFromMarket } = useService(ModpackServiceKey)
+  const { resolveLocalVersion } = useService(VersionServiceKey)
   const { getInstanceLock, getInstallInstruction, handleInstallInstruction } = injection(kInstanceVersionInstall)
   const { all } = injection(kJavaContext)
   const { currentRoute, push } = useRouter()
-  const installModpack = async (f: InstallMarketOptions) => {
-    const [modpackFile] = await installModapckFromMarket(f)
-    const openedModpack = await openModpack(modpackFile)
-    const config = openedModpack.config
-
-    if (!config) return
-    const name = generateDistinctName(config.name, instances.value.map(i => i.name))
-    const existed = getVersionHeader(config.runtime, '')
-    const options: CreateInstanceOption = {
-      ...config,
-      name,
+  const installModpack = async (f: InstallModpackOptions) => {
+    const [modpackFile] = await installModapckFromMarket(f.market === MarketType.CurseForge
+      ? {
+        market: MarketType.CurseForge,
+        file: { fileId: f.fileId, icon: f.icon },
+      }
+      : {
+        market: MarketType.Modrinth,
+        version: { versionId: f.versionId, icon: f.icon },
+      })
+    const icon = f.icon
+    let upstream: InstanceData['upstream']
+    if (f.market === MarketType.CurseForge) {
+      upstream = {
+        type: 'curseforge-modpack',
+        modId: f.modId,
+        fileId: f.fileId,
+      }
+    } else {
+      upstream = {
+        type: 'modrinth-modpack',
+        projectId: f.projectId,
+        versionId: f.versionId,
+      }
     }
-    if (existed) {
-      options.version = existed.id
-    }
-    const path = await createInstance(options)
+    const { instancePath, version, runtime } = await importModpack(modpackFile, icon, upstream)
 
-    selectedInstance.value = path
+    selectedInstance.value = instancePath
     if (currentRoute.path !== '/') {
       push('/')
     }
 
-    waitModpackFiles(openedModpack).then((files) => {
-      installFiles(path, files)
-    })
-
-    const lock = getInstanceLock(path)
+    const lock = getInstanceLock(instancePath)
     lock.write(async () => {
-      const resolved = existed ? await getResolvedVersion(existed) : undefined
-      const instruction = await getInstallInstruction(path, config.runtime, '', resolved, all.value)
+      const resolved = version ? await resolveLocalVersion(version) : undefined
+      const instruction = await getInstallInstruction(instancePath, runtime, '', resolved, all.value)
       await handleInstallInstruction(instruction)
     })
   }

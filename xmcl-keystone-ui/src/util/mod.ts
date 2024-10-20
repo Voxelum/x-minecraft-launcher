@@ -1,5 +1,5 @@
 import { FabricModMetadata, ForgeModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
-import { ForgeModCommonMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
+import { ForgeModCommonMetadata, NeoforgeMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
 import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
 import { ProjectFile } from './search'
 
@@ -95,6 +95,7 @@ export interface ModFile extends ModMetadata, ProjectFile {
   forge?: ForgeModCommonMetadata
   fabric?: FabricModMetadata | FabricModMetadata[]
   quilt?: QuiltModMetadata
+  neoforge?: NeoforgeMetadata
 
   ino: number
   size: number
@@ -163,7 +164,7 @@ function getFabricLikeModLinks(contact?: FabricModMetadata['contact'] & { source
 }
 
 export function getModFileFromResource(resource: Resource, runtime: RuntimeVersions): ModFile {
-  const modItem: ModFile = ({
+  const modItem: ModFile = markRaw({
     path: resource.path,
     modId: '',
     name: resource.fileName,
@@ -175,8 +176,10 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     provideRuntime: markRaw(getModProvides(resource)),
     icon: resource.icons?.at(-1) ?? '',
     dependencies: runtime.fabricLoader
-      ? (getModDependencies(resource, true).map(markRaw))
-      : (getModDependencies(resource, false).map(markRaw)),
+      ? (getModDependencies(resource, 'fabric').map(markRaw))
+      : runtime.neoForged
+      ? (getModDependencies(resource, 'neoforge').map(markRaw))
+      : (getModDependencies(resource, 'forge').map(markRaw)),
     url: '',
     hash: resource.hash,
     tags: [],
@@ -187,6 +190,7 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     fabric: resource.metadata.fabric,
     forge: resource.metadata.forge,
     quilt: resource.metadata.quilt,
+    neoforge: resource.metadata.neoforge,
 
     ino: resource.ino,
     size: resource.size,

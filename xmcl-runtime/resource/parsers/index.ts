@@ -1,18 +1,14 @@
 import { ResourceDomain, ResourceMetadata, ResourceType } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import { basename, extname } from 'path'
-import { curseforgeModpackParser } from './curseforgeModpack'
 import { fabricModParser } from './fabricMod'
 import { forgeModParser } from './forgeMod'
 import { liteloaderModParser } from './liteloaderMod'
-import { mcbbsModpackParser } from './mcbbsModpack'
-import { modpackParser } from './modpack'
-import { modrinthModpackParser } from './modrinthModpack'
+import { neoforgeModParser } from './neoforgeMod'
 import { quiltModParser } from './quiltMod'
 import { resourcePackParser } from './resourcePack'
 import { saveParser } from './save'
 import { shaderPackParser } from './shaderPack'
-import { mmcModpackParser } from './mmcModpack'
 
 export interface IResourceParser<T> {
   type: ResourceType
@@ -46,6 +42,7 @@ export class ResourceParser {
     quiltModParser,
     liteloaderModParser,
     forgeModParser,
+    neoforgeModParser,
     shaderPackParser,
     // modrinthModpackParser,
     resourcePackParser,
@@ -84,17 +81,17 @@ export class ResourceParser {
     const uris = [] as string[]
     let name: string | undefined
 
-    if (args.domain === ResourceDomain.Unclassified) {
-      const files = await fs.listFiles('')
-      const isModpack = files.some(f => f.toLowerCase() === 'manifest.json' || f === 'mcbbs.packmeta' || f === 'modrinth.index.json')
-      if (isModpack) {
-        parsers = [
-          modrinthModpackParser,
-          mcbbsModpackParser,
-          curseforgeModpackParser,
-        ]
-      }
-    }
+    // if (args.domain === ResourceDomain.Unclassified) {
+    //   const files = await fs.listFiles('')
+    //   const isModpack = files.some(f => f.toLowerCase() === 'manifest.json' || f === 'mcbbs.packmeta' || f === 'modrinth.index.json')
+    //   if (isModpack) {
+    //     parsers = [
+    //       modrinthModpackParser,
+    //       mcbbsModpackParser,
+    //       curseforgeModpackParser,
+    //     ]
+    //   }
+    // }
 
     for (const parser of parsers) {
       if (args.domain !== ResourceDomain.Unclassified) {

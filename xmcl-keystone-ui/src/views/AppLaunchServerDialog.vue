@@ -158,7 +158,8 @@
             class="pt-2 px-2"
           >
             <v-data-table
-              v-model="selected"
+              v-model="selectedMods"
+              :disabled="loadingSelectedMods"
               item-key="path"
               show-select
               :search="search"
@@ -289,6 +290,7 @@ let lastPath = ''
 const { isShown } = useDialog('launch-server', () => {
   if (lastPath === path.value) return
   lastPath = path.value
+  revalidate()
   getServerProperties(path.value).then((p) => {
     const parsedPort = parseInt(p.port, 10)
     port.value = isNaN(parsedPort) ? 25565 : parsedPort
@@ -306,19 +308,23 @@ const { isShown } = useDialog('launch-server', () => {
     rawWorldExists.value = v !== undefined && v !== ''
     linkedWorld.value = v ?? ''
   })
+  loadingSelectedMods.value = true
+  selectNone()
   getServerInstanceMods(path.value).then((mods) => {
     const all = enabled.value
     if (mods.length > 0) {
-      selected.value = all.filter(m => mods.some(a => a.ino === m.ino))
+      selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
     } else {
-      selected.value = all
+      selectedMods.value = all
     }
+  }).finally(() => {
+    loadingSelectedMods.value = false
   })
 })
 const { t } = useI18n()
 
 const { runtime, path } = injection(kInstance)
-const { saves } = injection(kInstanceSave)
+const { saves, revalidate } = injection(kInstanceSave)
 const { mods } = injection(kInstanceModsContext)
 const enabled = computed(() => mods.value.filter(m => m.enabled))
 const search = ref('')
@@ -356,7 +362,8 @@ const headers = computed(() => [
   },
 ])
 
-const selected = ref<ModFile[]>([])
+const loadingSelectedMods = ref(false)
+const selectedMods = shallowRef<ModFile[]>([])
 
 const { installDependencies, installMinecraftJar } = useService(InstallServiceKey)
 const { installToServerInstance, getServerInstanceMods } = useService(InstanceModsServiceKey)
@@ -377,15 +384,15 @@ function selectFit() {
     }
     return true
   })
-  selected.value = filtered
+  selectedMods.value = filtered
 }
 
 function selectAll() {
-  selected.value = enabled.value
+  selectedMods.value = enabled.value
 }
 
 function selectNone() {
-  selected.value = []
+  selectedMods.value = []
 }
 
 const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () => {
@@ -397,7 +404,7 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   const _motd = motd.value
   const _onlineMode = onlineMode.value
   const _nogui = nogui.value
-  const _mods = selected.value
+  const _mods = selectedMods.value
 
   if (!_eula) {
     console.log('eula')
@@ -438,6 +445,8 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   })
   console.log('launch')
   await launch('server', { nogui: _nogui, version })
+
+  isShown.value = false
 })
 
 </script>

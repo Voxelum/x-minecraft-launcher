@@ -149,7 +149,7 @@ const model = computed(() => {
     archived: ModStatus.Inactive === mod?.status || ModStatus.Abandoned === mod?.status,
   }
 
-  if (curseforgeProjectMapping.value) {
+  if (curseforgeProjectMapping.value && curseforgeProjectMapping.value.curseforgeId === curseforgeModId.value) {
     const mapped = curseforgeProjectMapping.value
     detail.localizedTitle = mapped.name
     detail.localizedDescription = mapped.description
@@ -260,7 +260,7 @@ const { data: deps, error, isValidating: loadingDependencies } = useSWRVModel(
     curseforgeFile,
     computed(() => props.gameVersion),
     // TODO: limit the modloaders
-    computed(() => curseforgeFile.value ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value : FileModLoaderType.Any),
+    computed(() => curseforgeFile.value ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value! : FileModLoaderType.Any),
   ),
 )
 

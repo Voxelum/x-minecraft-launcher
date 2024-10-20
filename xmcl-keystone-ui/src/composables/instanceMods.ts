@@ -1,12 +1,13 @@
+import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { ModFile, getModFileFromResource } from '@/util/mod'
+import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 import { useEventListener } from '@vueuse/core'
-import { InstanceModsServiceKey, ResourceState, JavaRecord, FileUpdateOperation, FileUpdateAction, MutableState, UpdateResourcePayload, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, JavaRecord, MutableState, Resource, ResourceState, RuntimeVersions } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
-import { InjectionKey, Ref, set } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
@@ -98,6 +99,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     const runtime: Record<string, string> = {
       ...runtimeVersions,
       java: java.value?.version.toString() ?? '',
+      neoforge: runtimeVersions.neoForged ?? '',
       fabricloader: runtimeVersions.fabricLoader ?? '',
     }
 
@@ -116,16 +118,66 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     provideRuntime.value = runtime
   }
 
+  // mod duplication detect
+  const conflicted = computed(() => {
+    const dict: Record<string, ModFile[]> = {}
+
+    for (const mod of mods.value) {
+      const id = mod.modId
+      if (!mod.enabled) continue
+      if (!dict[id]) {
+        dict[id] = []
+      }
+      dict[id].push(mod)
+    }
+
+    // remove all the key with only one value
+    for (const key in dict) {
+      if (dict[key].length === 1) {
+        delete dict[key]
+      }
+    }
+
+    return markRaw(dict)
+  })
+
+  const compatibility = computed(() => {
+    const runtime = provideRuntime.value
+
+    const result: Record<string, CompatibleDetail[]> = {}
+    for (const i of mods.value) {
+      if (!i.enabled) continue
+      const details = getModsCompatiblity(i.dependencies, runtime)
+      result[i.modId] = details
+    }
+
+    return markRaw(result)
+  })
+
+  const incompatible = computed(() => {
+    const com = compatibility.value
+    for (const key in com) {
+      if (!resolveDepsCompatible(com[key])) {
+        return true
+      }
+    }
+    return false
+  })
+
   const { update: updateMetadata } = useInstanceModsMetadataRefresh(instancePath, state)
+  const { t } = useI18n()
 
   return {
     mods,
+    conflicted,
     modsIconsMap,
     provideRuntime,
+    compatibility,
+    incompatible,
     enabledMods,
     isValidating,
     updateMetadata,
-    error,
+    error: computed(() => Object.keys(conflicted.value).length ? t('mod.duplicatedDetected', { count: Object.keys(conflicted.value).length }) : error.value),
     revalidate,
   }
 }

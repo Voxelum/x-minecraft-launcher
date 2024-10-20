@@ -3,6 +3,8 @@ import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { missing } from '../util/fs'
 import { ImageStorage } from './imageStore'
+import { readFile } from 'fs-extra'
+import { fromBuffer } from 'file-type'
 
 export const pluginImageStorage: LauncherAppPlugin = (app) => {
   const root = join(app.appDataPath, 'resource-images')
@@ -17,7 +19,12 @@ export const pluginImageStorage: LauncherAppPlugin = (app) => {
           response.status = 404
         } else {
           response.status = 200
+          const buf = await readFile(image)
+          const fileType = await fromBuffer(buf)
           response.body = createReadStream(image)
+          if (fileType?.mime) {
+            response.headers['Content-Type'] = fileType.mime
+          }
         }
       }
     }

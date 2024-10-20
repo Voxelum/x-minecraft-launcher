@@ -15,7 +15,6 @@ export class ImageStorage {
     const sha1 = typeof pathOrData === 'string' ? await checksum(pathOrData, 'sha1') : createHash('sha1').update(pathOrData).digest('hex')
     const imagePath = join(this.root, sha1)
     if (!existsSync(imagePath)) {
-      await ensureFile(imagePath)
       if (typeof pathOrData === 'string') {
         await linkOrCopyFile(pathOrData, imagePath)
       } else {

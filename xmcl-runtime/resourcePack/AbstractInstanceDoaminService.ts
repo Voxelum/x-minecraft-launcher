@@ -143,6 +143,12 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
           )
         }
       }
+
+      const instanceService = await this.app.registry.get(InstanceService)
+      instanceService.registerRemoveHandler(instancePath, () => {
+        watcher?.dispose()
+      })
+
       return [this.state, () => {
         watcher?.dispose()
       }, async () => {

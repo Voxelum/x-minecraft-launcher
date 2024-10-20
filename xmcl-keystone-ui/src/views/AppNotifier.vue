@@ -14,7 +14,7 @@
       {{ icons[data.level] }}
     </v-icon>
 
-    <span v-if="data.level === 'error' || data.level === 'warning'">{{ levelText }}</span>
+    <!-- <span v-if="data.level === 'error' || data.level === 'warning'">{{ levelText }}</span> -->
 
     <span v-if="!data.body && !data.operations">
       {{ data.title }}
@@ -78,7 +78,6 @@
 <script lang=ts setup>
 import { Level, kNotificationQueue } from '../composables/notifier'
 import { injection } from '@/util/inject'
-import { useEventListener } from '@vueuse/core'
 
 const data = reactive({
   show: false,

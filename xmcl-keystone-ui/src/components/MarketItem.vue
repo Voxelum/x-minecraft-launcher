@@ -215,16 +215,16 @@ function onDragOver(e: DragEvent) {
   }
 }
 
-watch(() => props.item, (newMod) => {
-  if (newMod) {
+watch(() => props.item, (newVal, old) => {
+  if (newVal && newVal.id !== old?.id) {
     icon.value = undefined
     title.value = undefined
     description.value = undefined
     downloadCount.value = undefined
     followerCount.value = undefined
 
-    if (!newMod.curseforge && !newMod.modrinth) {
-      const { curseforgeProjectId, modrinthProjectId } = newMod
+    if (!newVal.curseforge && !newVal.modrinth) {
+      const { curseforgeProjectId, modrinthProjectId } = newVal
       if (modrinthProjectId) {
         getSWRV(getModrinthProjectModel(ref(modrinthProjectId)), config).then((project) => {
           if (project) {
@@ -251,7 +251,7 @@ watch(() => props.item, (newMod) => {
 }, { immediate: true })
 const { t } = useI18n()
 
-const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : typeof descriptionTextOrObject.value === 'string' ? descriptionTextOrObject.value.trim() : descriptionTextOrObject.value.text || props.item.title.trim())
+const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : (typeof descriptionTextOrObject.value === 'string' ? descriptionTextOrObject.value.trim() : descriptionTextOrObject.value.text) || props.item.title.trim())
 const onSettingClick = (event: MouseEvent) => {
   const button = event.target as any // Get the button element
   const rect = button.getBoundingClientRect() // Get the position of the button

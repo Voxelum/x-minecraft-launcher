@@ -4,7 +4,6 @@ import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
-import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
@@ -22,17 +21,18 @@ const props = defineProps<{
 
 const versions = computed(() => {
   const files = props.files
-  const all: ProjectVersion[] = files.map((f) => {
+  const all: ProjectVersion[] = files.filter(f => f.forge).map((f) => {
+    const installed = props.installed.some(i => i.path === f.path)
     const version: ProjectVersion = {
       id: f.path,
       name: f.fileName,
       version: f.version,
       downloadCount: 0,
-      installed: true,
+      installed: props.installed.some(i => i.path === f.path),
       loaders: f.modLoaders,
       minecraftVersion: f.dependencies.find((d) => d.modId === 'minecraft')?.semanticVersion as string,
       type: 'release',
-      disabled: false,
+      disabled: installed && f.path.endsWith('.disabled'),
     }
     return version
   })

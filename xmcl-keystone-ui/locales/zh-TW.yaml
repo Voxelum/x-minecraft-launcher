@@ -408,6 +408,8 @@ instance:
   changeIcon: 更改圖示
   current: 目前例項
   delete: 刪除遊戲
+  deleteFailed: 刪除實例失敗
+  deleteFailedPermission: 其他程式佔用了該文件
   deleteHint: 遊戲資料將完全被移除。您確定繼續此操作嗎？
   duplicate: 建立備份
   duplicatedName: 名字衝突！
@@ -671,13 +673,26 @@ mod:
   deletionRestHint: 等 {rest} 個模組……
   denseView: 密集視圖
   dropHint: 將模組 Jar 檔案拖入此處來匯入
+  duplicatedDetected: 有 {count} 個模組重複了
+  duplicatedDetectedDescription: |-
+    找到具有相同 mod id 但檔案不同的 mod。
+    這可能會導致 Minecraft 崩潰。
+    請選擇您要保留的文件。
   enabled: 一共啟用了 {count} 個模組
   filter: 篩選模組
   groupInstalled: 分開顯示已安裝模組
   hideIncompatible: 隱藏不相容模組
   incompatible: 可能不相容目前版本。
+  incompatibleHint: 查看您的模組相容性報告
+  incompatibleHintDescription: |-
+    某些模組相依性可能會遺失。
+    或某些依賴項版本不符。
   manage: 管理模組
   maybeCompatible: 也許相容於目前版本。
+  modloaderSelectHint: |-
+    此模組支援以下模組載入器。
+    請選擇一個進行安裝。
+  modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
   mods: '{count} 個模組'
   name: 模組 | 模組
   noModLoaderHint: 請不要忘記選擇模組載入器來載入模組
@@ -1301,12 +1316,16 @@ shaderPack:
   enabled: 已啟用的光影
   manage: 管理光影包
   name: 光影包
+  noShaderMod: 未安裝著色器模組
+  noShaderModHint: 沒有著色器模組就無法使用著色器
+  noShaderModInstallHint: 您需要安裝以下 mod 之一來載入著色器套件。
   searchHint: 搜尋光影包
   selectSearchHint: 檢視已選擇的光影包
   showDirectory: 顯示光影資料夾
   showFile: 在資料夾中顯示此光影包
 shared:
   accept: 接受
+  keepSelected: 保持選擇
   skipForNow: 暫時跳過
 store:
   explore: 探索

@@ -244,8 +244,8 @@
               >
                 <v-list-item
                   v-for="(item, index) in versions"
-                  :key="index"
-                  :class="{ 'v-list-item--active': item === selectedVersion }"
+                  :key="item.id + index"
+                  :class="{ 'v-list-item--active': item.id === selectedVersion?.id }"
                   :value="item.installed"
                   @click="selectedVersion = item"
                 >
@@ -328,7 +328,7 @@
                   <template v-else>
                     <v-list-item
                       v-for="dep of dependencies"
-                      :key="dep.id"
+                      :key="dep.id + dep.parent"
                       @click="emit('open-dependency', dep)"
                     >
                       <v-list-item-avatar>
@@ -875,7 +875,7 @@ watch(selectedVersion, (v, o) => {
   if (v !== o && v) {
     emit('load-changelog', v)
   }
-})
+}, { immediate: true })
 const { t } = useI18n()
 watch(() => props.detail, (d, o) => {
   if (d?.id !== o?.id) {
@@ -947,6 +947,8 @@ const iconMapping = {
   quilt: '$vuetify.icons.quilt',
   optifine: '$vuetify.icons.optifine',
   neoforge: '$vuetify.icons.neoForged',
+  iris: '$vuetify.icons.iris',
+  oculus: '$vuetify.icons.oculus',
 } as Record<string, string>
 
 const validModLoaders = computed(() => {

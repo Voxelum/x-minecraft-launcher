@@ -37,7 +37,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     curseforge: f.metadata.curseforge,
   } as InstanceShaderFile)) || [])
   const linked = ref(false)
-  const { refresh, refreshing } = useRefreshable<string>(async (path) => {
+  const { refresh: refreshLinkedStatus, refreshing } = useRefreshable<string>(async (path) => {
     if (!path) return
     linked.value = await link(path)
   })
@@ -51,6 +51,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
       }
     }
     const shader = mods.value.find(m => {
+      if (!m.enabled) return false
       const forge = m.forge
       const fabric = m.fabric
       if (forge) {
@@ -102,7 +103,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   })
 
   const shaderPackStatus = ref(undefined as [string, string | undefined] | undefined)
-  const { refresh: mutate } = useRefreshable(async () => {
+  const { refresh: mutateShaderPackOptions } = useRefreshable(async () => {
     const mod = shaderMod.value
     const inst = instancePath.value
     if (mod?.id === 'optifine' || mod?.id === 'optifabric') {
@@ -126,9 +127,8 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     }
   })
 
-  const debounced = debounce(mutate, 300)
-
-  watch([shaderMod, shaderPackPath], () => debounced())
+  const debouncedMutateShaderPackOptions = debounce(mutateShaderPackOptions, 300)
+  watch([shaderMod, shaderPackPath], () => debouncedMutateShaderPackOptions())
 
   const shaderPack = computed({
     get() {
@@ -145,12 +145,12 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
         editIrisShaderOptions({
           instancePath: instancePath.value,
           shaderPack: v ?? '',
-        }).then(() => mutate())
+        }).then(() => mutateShaderPackOptions())
       } else if (shaderPackStatus.value?.[0] === 'oculus') {
         editOculusShaderOptions({
           instancePath: instancePath.value,
           shaderPack: v ?? '',
-        }).then(() => mutate())
+        }).then(() => mutateShaderPackOptions())
       }
     },
   })
@@ -158,14 +158,14 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   function effect() {
   }
 
-  watch(instancePath, refresh, { immediate: true })
+  watch(instancePath, refreshLinkedStatus, { immediate: true })
 
   return {
     linked,
     shaderMod,
     shaderPack,
     shaderPacks,
-    refresh,
+    refresh: refreshLinkedStatus,
     refreshing: computed(() => refreshing.value || isValidating.value),
     error,
     effect,

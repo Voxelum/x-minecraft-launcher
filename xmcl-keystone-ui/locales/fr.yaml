@@ -425,6 +425,8 @@ instance:
   changeIcon: Changer d'icône
   current: Instance actuelle
   delete: Supprimer le jeu
+  deleteFailed: Échec de la suppression de l'instance
+  deleteFailedPermission: Un autre programme a occupé le fichier
   deleteHint: |-
     Les données d'instance seront définitivement déplacées du disque. 
     Tu es sûr de faire ça ?
@@ -736,13 +738,26 @@ mod:
   deletionRestHint: Et {rest} plus de Mods...
   denseView: Vue dense
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
+  duplicatedDetected: "{count}\_mods dupliqués"
+  duplicatedDetectedDescription: |-
+    Mods trouvés avec le même identifiant de mod mais des fichiers différents. 
+    Cela pourrait provoquer un crash de Minecraft. 
+    Veuillez sélectionner le fichier que vous souhaitez conserver.
   enabled: '{count} mods activés'
   filter: Mods de filtrage
   groupInstalled: Groupe de modules installés
   hideIncompatible: Masquer les mods incompatibles
   incompatible: Mod incompatible.
+  incompatibleHint: Consultez votre rapport de compatibilité de mod
+  incompatibleHintDescription: |-
+    Certaines dépendances de mods peuvent manquer. 
+    Ou certaines versions de dépendances ne correspondent pas.
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
+  modloaderSelectHint: |-
+    Le mod prend en charge les chargeurs de mod suivants. 
+    Veuillez en sélectionner un à installer.
+  modloaderSelectNotSupported: Introuvable {modloader} pour Minecraft {minecraft}
   mods: "{count}\_mods"
   name: Mod | Mods
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
@@ -1419,10 +1434,14 @@ shaderPack:
   enabled: Pack de shaders activé
   manage: Gérer les Shaderpacks
   name: Shaderpack
+  noShaderMod: Aucun module shader installé
+  noShaderModHint: Vous ne pouvez pas utiliser le shader sans un mod shader
+  noShaderModInstallHint: Vous devez installer l'un des mods suivants pour charger le pack de shaders.
   showDirectory: Afficher le répertoire du shaderpack
   showFile: Afficher ce pack de shaders dans le dossier
 shared:
   accept: Accepter
+  keepSelected: Garder la sélection
   skipForNow: Passer pour l'instant
 summery: Résumé
 tag:

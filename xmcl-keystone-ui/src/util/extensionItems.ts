@@ -51,5 +51,5 @@ export function getExtensionItemsFromRuntime(runtime: RuntimeVersions) {
       text: runtime.labyMod,
     })
   }
-  return items
+  return items as { avatar?: string; title: string; text: string; icon?: string; color?: string }[]
 }

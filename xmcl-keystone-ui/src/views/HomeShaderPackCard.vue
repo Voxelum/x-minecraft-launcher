@@ -7,7 +7,6 @@
     :button="t('shaderPack.manage')"
     :class="{ dragover }"
     :refreshing="refreshing"
-    :error="error"
     @navigate="push('/shaderpacks')"
     @drop="onDrop"
   />

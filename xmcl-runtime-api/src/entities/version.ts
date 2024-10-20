@@ -262,17 +262,17 @@ export function isQuiltLibrary(lib: LibraryInfo) {
 }
 
 export function findNeoForgedVersion(minecraft: string, resolvedVersion: { libraries: LibraryInfo[]; arguments: ResolvedVersion['arguments'] }) {
-  const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
-  if (!hasNeoForged) return ''
-  const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
   const neoForgeIndex = resolvedVersion.arguments.game.indexOf('--fml.neoForgeVersion')
-  if (forgeIndex !== -1) {
-    const version = resolvedVersion.arguments.game[forgeIndex + 1]
-    return `${minecraft}-${version}` as string
-  }
   if (neoForgeIndex !== -1) {
     const version = resolvedVersion.arguments.game[neoForgeIndex + 1]
     return version as string
+  }
+  const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
+  if (!hasNeoForged) return ''
+  const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
+  if (forgeIndex !== -1) {
+    const version = resolvedVersion.arguments.game[forgeIndex + 1]
+    return `${minecraft}-${version}` as string
   }
   return ''
 }

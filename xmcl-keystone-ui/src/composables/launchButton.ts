@@ -150,6 +150,20 @@ export function useLaunchButton() {
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
   const menuItems = computed<LaunchMenuItem[]>(() => dirty.value ? [] : launchButtonFacade.value.menu || [])
 
+  const listeners = new Set<() => void | Promise<void>>()
+  function addPreclickListener(listener: () => void) {
+    listeners.add(listener)
+  }
+  function removePreclickListener(listener: () => void) {
+    listeners.delete(listener)
+  }
+  function usePreclickListener(listener: () => void) {
+    addPreclickListener(listener)
+    onBeforeUnmount(() => {
+      removePreclickListener(listener)
+    })
+  }
+
   /**
    * The button click listener.
    *
@@ -157,11 +171,15 @@ export function useLaunchButton() {
    * 2. User need to install java
    * 3. User need to install version and files
    */
-  function onClick() {
+  async function onClick() {
+    for (const listener of listeners) {
+      await listener()
+    }
     launchButtonFacade.value.onClick()
   }
 
   return {
+    usePreclickListener,
     count,
     onClick,
     color,

@@ -48,6 +48,7 @@
 import { kInstances } from '@/composables/instances'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
+import { useNotifier } from '@/composables/notifier'
 
 const { t } = useI18n()
 const name = ref('')
@@ -61,9 +62,20 @@ watch(isShown, (shown) => {
 })
 const router = useRouter()
 const { remove, selectedInstance } = injection(kInstances)
+const { notify } = useNotifier()
 const doDelete = () => {
   const val = parameter.value
-  remove((val as any).path)
+  remove((val as any).path).catch(e => {
+    if ('code' in e) {
+      if (e.code === 'EBUSY') {
+        notify({
+          title: t('instance.deleteFailed'),
+          body: t('instance.deleteFailedPermission'),
+          level: 'error',
+        })
+      }
+    }
+  })
   const instancePath = (val as any).path
   if (router.currentRoute.fullPath !== '/' && selectedInstance.value === instancePath) {
     router.push('/')

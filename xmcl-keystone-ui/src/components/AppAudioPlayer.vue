@@ -120,11 +120,11 @@ watch(playing, (v) => {
 const { gameProcesses } = injection(kInstanceLaunch)
 
 let lastState = undefined as boolean | undefined
-watch(gameProcesses, (cur, last) => {
-  if (cur.length > 0 && last.length === 0) {
+watch(computed(() => gameProcesses.value.length), (cur, last) => {
+  if (cur > 0 && last === 0) {
     lastState = playing.value
     audio.value?.pause()
-  } else if (cur.length === 0 && last.length > 0) {
+  } else if (cur === 0 && last > 0) {
     if (lastState) {
       audio.value?.play()
     }

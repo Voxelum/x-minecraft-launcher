@@ -25,6 +25,7 @@ const INSTANCES_FOLDER = 'instances'
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile: SafeFile<InstancesSchema>
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
+  #removeHandlers: Record<string, (() => Promise<void> | void)[]> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
@@ -241,17 +242,17 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.icon = payload.icon ?? ''
 
     if (!isPathDiskRootPath(instance.path)) {
-      await ensureDir(instance.path)
+      await ensureDir(instance.path).catch(() => undefined)
     }
     if (payload.resourcepacks) {
-      await ensureDir(join(instance.path, 'resourcepacks'))
+      await ensureDir(join(instance.path, 'resourcepacks')).catch(() => undefined)
     }
     if (payload.shaderpacks) {
-      await ensureDir(join(instance.path, 'shaderpacks'))
+      await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
     }
-    this.state.instanceAdd(instance)
 
     await this.instanceFile.write(join(instance.path, 'instance.json'), instance)
+    this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))
@@ -344,10 +345,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
+      for (const handler of this.#removeHandlers[path] || []) {
+        await handler()
+      }
       await rm(path, { recursive: true, force: true })
     }
 
     this.state.instanceRemove(path)
+  }
+
+  registerRemoveHandler(path: string, handler: () => Promise<void> | void) {
+    if (!this.#removeHandlers[path]) {
+      this.#removeHandlers[path] = []
+    }
+    this.#removeHandlers[path].push(handler)
   }
 
   /**

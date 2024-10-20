@@ -1,5 +1,4 @@
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { InstallMarketOptionWithInstance, MarketType, RuntimeVersions } from '@xmcl/runtime-api'
@@ -13,9 +12,8 @@ export function useModrinthInstaller(
   allFiles: Ref<ProjectFile[]>,
   installFromMarket: (options: InstallMarketOptionWithInstance) => Promise<any>,
   uninstallFiles: (resources: ProjectFile[], path?: string) => void,
+  installDefaultModLoader = useInstanceModLoaderDefault(),
 ) {
-  const installDefaultModLoader = useInstanceModLoaderDefault()
-
   function install(version: { versionId: string; icon?: string } | { versionId: string; icon?: string }[], instancePath?: string) {
     return installFromMarket({
       market: MarketType.Modrinth,
@@ -28,9 +26,9 @@ export function useModrinthInstaller(
     const _path = path.value
     const _runtime = runtime.value
     const _allFiles = allFiles.value
-    if (isNoModLoader(runtime.value)) {
-      // forge, fabric, quilt or neoforge
-      await installDefaultModLoader(_path, _runtime, loaders)
+    const success = await installDefaultModLoader(_path, _runtime, loaders)
+    if (!success) {
+      return false
     }
     const files = [...installed]
     const versions = deps
@@ -41,8 +39,9 @@ export function useModrinthInstaller(
     versions.push({ versionId, icon })
     await install(versions, _path)
     if (files.length > 0) {
-      uninstallFiles(files)
+      uninstallFiles(files, _path)
     }
+    return true
   }
 
   return { installWithDependencies, install }

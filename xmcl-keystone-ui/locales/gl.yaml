@@ -252,6 +252,8 @@ importModpack:
   name: Importar Modpack
 instance:
   changeIcon: Cambiar icona
+  deleteFailed: Produciuse un erro ao eliminar a instancia
+  deleteFailedPermission: Outro programa ocupou o ficheiro
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   launchServer: Inicia o servidor localhost
   linkFileDesc: |-
@@ -296,6 +298,19 @@ me:
   versions: Versións instaladas
 mod:
   denseView: Vista Densa
+  duplicatedDetected: '{count} modificacións duplicadas'
+  duplicatedDetectedDescription: |-
+    Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
+    Isto pode causar un fallo de Minecraft. 
+    Selecciona o ficheiro que queres conservar.
+  incompatibleHint: Consulta o teu informe de compatibilidade de mod
+  incompatibleHintDescription: |-
+    É posible que falten algunhas dependencias de modificacións. 
+    Ou algunhas versións de dependencias non coinciden.
+  modloaderSelectHint: |-
+    O mod admite os seguintes cargadores de mod. 
+    Selecciona un para instalar.
+  modloaderSelectNotSupported: Non se atopou {modloader} para Minecraft {minecraft}
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
 modInstall:
@@ -407,8 +422,13 @@ setting:
 setup:
   appearance:
     name: '@:setting.appearance'
+shaderPack:
+  noShaderMod: Non hai ningún Shader Mod instalado
+  noShaderModHint: Non pode usar shader sen un mod shader
+  noShaderModInstallHint: Debes instalar un dos seguintes mods para cargar o paquete de sombreadores.
 shared:
   accept: Aceptar
+  keepSelected: Manter seleccionado
   skipForNow: Saltar por agora
 task:
   connection:

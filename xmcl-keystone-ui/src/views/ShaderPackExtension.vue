@@ -52,6 +52,14 @@ const extensionItems = computed(() => {
       text: shaderMod.value.version,
     })
   }
+  if (!shaderMod.value && optifineIndex === -1) {
+    items.push({
+      icon: 'error',
+      title: t('shaderPack.noShaderMod'),
+      text: t('shaderPack.noShaderModHint'),
+      color: 'warning',
+    })
+  }
   return items
 })
 

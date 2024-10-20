@@ -1,14 +1,15 @@
 import { Frame, parse } from '@xmcl/gamesetting'
-import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, getInstanceGameOptionKey, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
-import { copyFile, ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
+import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, getInstanceGameOptionKey, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
+import { ensureDir, ensureFile, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
-import { hardLinkFiles, isHardLinked, linkOrCopyFile, missing, unHardLinkFiles } from '../util/fs'
+import { hardLinkFiles, isHardLinked, missing, unHardLinkFiles } from '../util/fs'
 import { requireString } from '../util/object'
+import { InstanceService } from './InstanceService'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
@@ -93,6 +94,11 @@ export class InstanceOptionsService extends AbstractService implements IInstance
         } else if (basename(file) === ('optionsshaders.txt')) {
           loadShaderOptions(path)
         }
+      })
+
+      const instanceService = await this.app.registry.get(InstanceService)
+      instanceService.registerRemoveHandler(path, () => {
+        watcher.close()
       })
 
       await Promise.all([loadOptions(path), loadShaderOptions(path)])
@@ -182,6 +188,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     const current = await this.#getProperties(instancePath, name)
     current.shaderPack = pack
     const configFile = join(instancePath, 'config', name)
+    await ensureDir(join(instancePath, 'config'))
     await writeFile(configFile, Object.entries(current).filter(([k, v]) => !!k && !!v).map(([k, v]) => `${k}=${v}`).join('\n') + '\n')
   }
 

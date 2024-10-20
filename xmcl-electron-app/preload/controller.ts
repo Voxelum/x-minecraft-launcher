@@ -1,5 +1,5 @@
 import { WindowController } from '@xmcl/runtime-api'
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, clipboard } from 'electron'
 import EventEmitter from 'events'
 
 export enum Operation {
@@ -40,11 +40,17 @@ function createController(): WindowController {
   })
   const emitter = new EventEmitter()
 
+  const writeClipboard =
+    clipboard && clipboard.writeText && typeof clipboard.writeText === 'function'
+      ? (text: string) => clipboard.writeText(text)
+      : (text: string) => ipcRenderer.invoke('write-clipboard', text)
+
   return {
     on(channel, listener) {
       emitter.on(channel, listener)
       return this
     },
+    writeClipboard,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
     once(channel, listener) {

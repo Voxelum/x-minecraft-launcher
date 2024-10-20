@@ -1,6 +1,9 @@
-import { EditInstanceOptions, Instance, InstanceData, VersionHeader, RuntimeVersions } from '@xmcl/runtime-api'
+import { EditInstanceOptions, Instance, InstanceData, VersionHeader, RuntimeVersions, isFileNoFound } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
 import { useGlobalSettings } from './setting'
+import debounce from 'lodash.debounce'
+import { injection } from '@/util/inject'
+import { kLaunchButton } from './launchButton'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
@@ -78,76 +81,88 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     set(data, 'assignMemory', undefined)
     set(data, 'minMemory', undefined)
     set(data, 'maxMemory', undefined)
+    saveJIT()
   }
   const resetVmOptions = () => {
     set(data, 'vmOptions', undefined)
+    saveJIT()
   }
   const resetPrependCommand = () => {
     set(data, 'prependCommand', undefined)
-    console.log(data.prependCommand)
+    saveJIT()
   }
   const resetMcOptions = () => {
     set(data, 'mcOptions', undefined)
+    saveJIT()
   }
   const resetFastLaunch = () => {
     set(data, 'fastLaunch', undefined)
+    saveJIT()
   }
   const resetHideLauncher = () => {
     data.hideLauncher = undefined
+    saveJIT()
   }
   const resetShowLog = () => {
     data.showLog = undefined
+    saveJIT()
   }
   const resetDisableAuthlibInjector = () => {
     data.disableAuthlibInjector = undefined
+    saveJIT()
   }
   const resetDisableElyByAuthlib = () => {
     data.disableElyByAuthlib = undefined
+    saveJIT()
   }
 
   const assignMemory = computed({
     get: () => data.assignMemory ?? globalAssignMemory.value,
-    set: (v) => { data.assignMemory = v },
+    set: (v) => { set(data, 'assignMemory', v); saveJIT() },
   })
   const minMemory = computed({
     get: () => data.minMemory ?? globalMinMemory.value,
-    set: (v) => { data.minMemory = v },
+    set: (v) => { set(data, 'minMemory', v); saveJIT() },
   })
   const maxMemory = computed({
     get: () => data.maxMemory ?? globalMaxMemory.value,
-    set: (v) => { data.maxMemory = v },
+    set: (v) => { set(data, 'maxMemory', v); saveJIT() },
   })
   const vmOptions = computed({
     get: () => data.vmOptions ?? globalVmOptions.value.join(' '),
-    set: (v) => { data.vmOptions = v },
+    set: (v) => { set(data, 'vmOptions', v); saveJIT() },
   })
   const mcOptions = computed({
     get: () => data.mcOptions ?? globalMcOptions.value.join(' '),
-    set: (v) => { data.mcOptions = v },
+    set: (v) => { set(data, 'mcOptions', v); saveJIT() },
   })
   const prependCommand = computed({
     get: () => data.prependCommand ?? globalPrependCommand.value,
-    set: (v) => { data.prependCommand = v },
+    set: (v) => { set(data, 'prependCommand', v); saveJIT() },
   })
   const fastLaunch = computed({
     get: () => data.fastLaunch ?? globalFastLaunch.value,
-    set: (v) => { data.fastLaunch = v },
+    set: (v) => { set(data, 'fastLaunch', v); saveJIT() },
   })
   const hideLauncher = computed({
     get: () => data.hideLauncher ?? globalHideLauncher.value,
-    set: (v) => { data.hideLauncher = v },
+    set: (v) => { set(data, 'hideLauncher', v); saveJIT() },
   })
   const showLog = computed({
     get: () => data.showLog ?? globalShowLog.value,
-    set: (v) => { data.showLog = v },
+    set: (v) => { set(data, 'showLog', v); saveJIT() },
   })
   const disableAuthlibInjector = computed({
     get: () => data.disableAuthlibInjector ?? globalDisableAuthlibInjector.value,
-    set: (v) => { data.disableAuthlibInjector = v },
+    set: (v) => { set(data, 'disableAuthlibInjector', v); saveJIT() },
   })
   const disableElyByAuthlib = computed({
     get: () => data.disableElyByAuthlib ?? globalDisableElyByAuthlib.value,
-    set: (v) => { data.disableElyByAuthlib = v },
+    set: (v) => { set(data, 'disableElyByAuthlib', v); saveJIT() },
+  })
+  const javaPath = computed({
+    get: () => data.javaPath,
+    set: (v) => { data.javaPath = v; saveJIT() },
   })
 
   const isModified = computed(() => {
@@ -156,44 +171,6 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       return true
     }
     if (current.name !== data.name) {
-      return true
-    }
-    if (current.url !== data.url) {
-      return true
-    }
-    if (current.fileApi !== data.fileServerApi) {
-      return true
-    }
-    if (current.assignMemory !== data.assignMemory) {
-      return true
-    }
-    if (current.minMemory !== data.minMemory) {
-      return data.assignMemory === true
-    }
-    if (current.maxMemory !== data.maxMemory) {
-      return data.assignMemory === true
-    }
-    if (current.disableAuthlibInjector !== data.disableAuthlibInjector) {
-      return true
-    }
-    if (current.disableElybyAuthlib !== data.disableElyByAuthlib) {
-      return true
-    }
-    if (current.vmOptions?.join(' ') !== data.vmOptions) {
-      return true
-    }
-    if (current.mcOptions?.join(' ') !== data.mcOptions) {
-      return true
-    }
-    // eslint-disable-next-line eqeqeq
-    if (current.prependCommand != data.prependCommand) {
-      console.log(current.prependCommand, data.prependCommand)
-      return true
-    }
-    if (current.author !== data.author) {
-      return true
-    }
-    if (current.description !== data.description) {
       return true
     }
     if (current.version !== data.version) {
@@ -220,25 +197,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     if (current.runtime.optifine !== data.runtime.optifine) {
       return true
     }
-    if (current.fastLaunch !== data.fastLaunch) {
-      return true
-    }
-    if (current.showLog !== data.showLog) {
-      return true
-    }
-    if (current.hideLauncher !== data.hideLauncher) {
-      return true
-    }
-    if (current.java !== data.javaPath) {
-      return true
-    }
     if (current.icon !== data.icon) {
-      return true
-    }
-    if (current.server?.host && current.server?.host !== data.host) {
-      return true
-    }
-    if (current.server?.port && current.server?.port !== Number.parseInt(data.port, 10)) {
       return true
     }
     return false
@@ -249,9 +208,37 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     deep: true,
   })
 
-  async function save() {
+  let buffer: EditInstanceOptions & { instancePath: string } | undefined
+  const queue = debounce(flush, 2000)
+
+  async function flush() {
+    if (buffer) {
+      await edit(buffer)
+      buffer = undefined
+      load()
+    }
+  }
+
+  const { usePreclickListener } = injection(kLaunchButton)
+  usePreclickListener(flush)
+
+  function enqueue(options: EditInstanceOptions & { instancePath: string }) {
+    if (!buffer || buffer.instancePath !== options.instancePath) {
+      buffer = {
+        ...options,
+      }
+    } else {
+      buffer = {
+        ...buffer,
+        ...options,
+      }
+    }
+    queue()
+  }
+
+  async function saveJIT() {
+    const instancePath = instance.value.path
     const payload = {
-      name: data.name,
       url: data.url,
       fileApi: data.fileServerApi,
       minMemory: data.minMemory,
@@ -259,16 +246,36 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       vmOptions: data.vmOptions?.split(' ').filter(v => v.length !== 0),
       mcOptions: data.mcOptions?.split(' ').filter(v => v.length !== 0),
       assignMemory: data.assignMemory,
-      version: data.version,
-      runtime: data.runtime,
       fastLaunch: data.fastLaunch,
       showLog: data.showLog,
       hideLauncher: data.hideLauncher,
       java: data.javaPath,
-      icon: data.icon,
       disableAuthlibInjector: data.disableAuthlibInjector,
       disableElybyAuthlib: data.disableElyByAuthlib,
       prependCommand: data.prependCommand,
+      author: data.author,
+      description: data.description,
+    } as EditInstanceOptions
+    if (instance.value.server) {
+      payload.server = instance.value?.server
+        ? {
+          host: data.host,
+          port: Number.parseInt(data.port, 10),
+        }
+        : undefined
+    }
+    enqueue({
+      ...payload,
+      instancePath,
+    })
+  }
+
+  async function save() {
+    const payload = {
+      name: data.name,
+      version: data.version,
+      runtime: data.runtime,
+      icon: data.icon,
     }
     if (!instance.value?.server) {
       await edit({
@@ -348,6 +355,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     fastLaunch,
     hideLauncher,
     showLog,
+    javaPath,
     disableAuthlibInjector,
     disableElyByAuthlib,
     resetAssignMemory,
