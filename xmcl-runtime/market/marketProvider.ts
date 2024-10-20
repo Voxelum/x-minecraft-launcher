@@ -1,4 +1,4 @@
-import { File, InstallMarketOptions, Resource } from '@xmcl/runtime-api'
+import { File, InstallMarketOptions, Resource, ResourceMetadata } from '@xmcl/runtime-api'
 import { InjectionKey } from '~/app'
 import { ResourceSnapshotTable } from '~/resource/core/schema'
 
@@ -11,20 +11,17 @@ export type InstallMarketDirectoryOptions = InstallMarketOptions & {
   directory: string
 }
 
-interface BaseInstallResult {
+export type InstallResult = {
   path: string
   uris: string[]
-  metadata: Record<string, any>
+  metadata: ResourceMetadata
+  snapshot?: ResourceSnapshotTable
+  file?: File
 }
-
-export type InstallResult = BaseInstallResult | (BaseInstallResult & {
-  snapshot: ResourceSnapshotTable
-  file: File
-})
 
 export interface MarketProvider {
   /**
    * Install a modrinth or curseforge file to the folder.
    */
-  installFile(options: InstallMarketDirectoryOptions): Promise<InstallResult>
+  installFile(options: InstallMarketDirectoryOptions): Promise<InstallResult[]>
 }

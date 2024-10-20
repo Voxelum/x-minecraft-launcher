@@ -3,7 +3,7 @@ import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getDiceCoefficient } from '@/util/sort'
-import { InstanceData, InstanceModsServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceData, InstanceModsServiceKey, ProjectMapping, ProjectMappingServiceKey, Resource, RuntimeVersions, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
@@ -12,6 +12,7 @@ import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
+import { notNullish } from '@vueuse/core'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -196,7 +197,7 @@ const getOptifineAsMod = () => {
   return result
 }
 
-export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>) {
+export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>, settings: Ref<Settings | undefined>) {
   const modLoaderFilters = ref<ModLoaderFilter[]>([])
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
@@ -259,6 +260,40 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     return items
   }
 
+  const { lookupBatch } = useService(ProjectMappingServiceKey)
+
+  const mapping = ref<ProjectMapping[]>([])
+  watch([items, computed(() => settings.value?.locale)], ([newItems]) => {
+    const modrinthsToLookup = newItems.map(i => i.modrinthProjectId || i.modrinth?.project_id).filter(notNullish)
+    const curseforgesToLookup = newItems.map(i => i.curseforgeProjectId || i.curseforge?.id).filter(notNullish)
+    lookupBatch(modrinthsToLookup, curseforgesToLookup).then((result) => {
+      mapping.value = result
+    })
+  })
+
+  const localizedItems = computed(() => {
+    const oldItems = items.value
+
+    const result = oldItems.map((item) => {
+      const mrId = item.modrinthProjectId || item.modrinth?.project_id
+      const cfId = item.curseforgeProjectId || item.curseforge?.id
+      const map = mapping.value.find(m => m.modrinthId === mrId || m.curseforgeId === cfId)
+      if (map) {
+        item.localizedTitle = map.name
+        item.localizedDescription = map.description
+        if (map.modrinthId && !item.modrinthProjectId) {
+          item.modrinthProjectId = map.modrinthId
+        }
+        if (map.curseforgeId && !item.curseforgeProjectId) {
+          item.curseforgeProjectId = map.curseforgeId
+        }
+      }
+      return item
+    })
+
+    return result
+  })
+
   function effect() {
     onModrinthEffect()
     onCurseforgeEffect()
@@ -294,7 +329,7 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     curseforge,
     keyword,
     loading,
-    items,
+    items: localizedItems,
     all,
     isModrinthActive,
     isCurseforgeActive,

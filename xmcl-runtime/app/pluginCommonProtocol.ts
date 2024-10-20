@@ -9,6 +9,7 @@ import type { Handler } from './LauncherProtocolHandler'
 export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   const handler: Handler = async ({ request, response }) => {
     if (request.url.host === 'launcher') return
+    if (response.status) return
     const body = request.body
     try {
       const resp = await app.fetch(request.url.toString(), {
@@ -16,6 +17,8 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
         method: request.method,
         body: body instanceof Readable ? Readable.toWeb(body) as any : body,
         redirect: 'follow',
+        // @ts-ignore
+        duplex: body ? 'half' : undefined,
       })
       response.status = resp.status
       response.headers = resp.headers
@@ -26,6 +29,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
         method: request.method,
         body: body instanceof Readable ? Readable.toWeb(body) as any : body,
         redirect: 'follow',
+        duplex: body ? 'half' : undefined,
       })
       response.status = resp.status
       response.headers = resp.headers

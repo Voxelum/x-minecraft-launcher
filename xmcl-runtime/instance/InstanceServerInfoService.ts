@@ -22,14 +22,14 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
     return isHardLinked(root, instanceDat)
   }
 
-  link(instancePath: string): Promise<void> {
+  async link(instancePath: string): Promise<void> {
     const root = this.getPath('servers.dat')
     const instanceDat = join(instancePath, 'servers.dat')
 
-    return hardLinkFiles(root, instanceDat)
+    await hardLinkFiles(root, instanceDat)
   }
 
-  unlink(instancePath: string): Promise<void> {
+  async unlink(instancePath: string): Promise<void> {
     const root = this.getPath('servers.dat')
     const instanceDat = join(instancePath, 'servers.dat')
 

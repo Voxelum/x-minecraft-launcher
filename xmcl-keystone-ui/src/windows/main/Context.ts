@@ -67,13 +67,13 @@ export default defineComponent({
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
     const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings, instanceMods.mods)
 
-    const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating)
+    const modsSearch = useModsSearch(instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
 
     const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled, resourcePacks.enabledSet)
     const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPacks)
 
-    const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, localVersions.versions, localVersions.servers, java.all)
+    const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, instanceVersion.refreshResolvedVersion, localVersions.versions, localVersions.servers, java.all)
 
     useTelemetryTrack(settings.state)
 

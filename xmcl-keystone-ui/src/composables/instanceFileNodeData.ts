@@ -55,7 +55,7 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
   return result
 }
 
-export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>, sort = true) {
+export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
   function buildEdges(cwd: InstanceFileNode<T>[], filePaths: string[], parent: string, file: InstanceFileNode<T>) {
     const remained = filePaths.slice(1)
     if (remained.length > 0) { // edge
@@ -72,9 +72,6 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>, sort = tr
         cwd.push(edgeNode)
       }
       buildEdges(edgeNode.children!, remained, current, file)
-      if (sort) {
-        edgeNode.children?.sort((a, b) => a.path.localeCompare(b.path))
-      }
     } else { // leaf
       cwd.push(markRaw(file))
     }
@@ -86,6 +83,7 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>, sort = tr
   function update(files: InstanceFileNode<T>[]) {
     const leavesNodes = files
     const result: InstanceFileNode<T>[] = []
+    leavesNodes.sort((a, b) => a.path.localeCompare(b.path))
     for (const file of leavesNodes) {
       buildEdges(result, file.path.split('/'), '', file)
     }

@@ -43,10 +43,11 @@ function convertUUIDToUint8Array(id: string) {
 }
 
 export function createPeerGroup(
+  idSignal: PromiseSignal<string>,
   peers: Peers,
   getUserInfo: () => ConnectionUserInfo,
   initiate: (option: InitiateOptions) => void,
-  setRemoteDescription: (d: TransferDescription, type: 'offer' | 'answer', t?: RTCIceServer, all?: RTCIceServer[]) => Promise<string>,
+  setRemoteDescription: (d: TransferDescription, type: 'offer' | 'answer', t?: RTCIceServer, all?: RTCIceServer[]) => string,
   onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { },
   onerror = (e: unknown) => { },
   onjoin = (groupId: string) => { },
@@ -54,8 +55,6 @@ export function createPeerGroup(
   onuser = (sender: string, profile: ConnectionUserInfo) => { },
 ) {
   let _group: PeerGroup | undefined
-  let _id = ''
-  const init = createPromiseSignal<void>()
 
   const cached = localStorage.getItem('peerGroup')
   if (cached && typeof cached === 'string') {
@@ -65,13 +64,14 @@ export function createPeerGroup(
 
   async function joinGroup(groupId?: string) {
     console.log('Join group', groupId)
+    const _id = await idSignal.promise
     if (!groupId) {
       const buf = new Uint16Array(1)
       window.crypto.getRandomValues(buf)
       groupId = (getUserInfo()?.name ?? '') + '@' + buf[0]
     }
     localStorage.setItem('peerGroup', groupId)
-    _group = new PeerGroup(groupId, () => getUserInfo())
+    _group = new PeerGroup(groupId, _id, () => getUserInfo())
 
     _group.onheartbeat = (sender) => {
       console.log(`Get heartbeat from ${sender}`)
@@ -85,6 +85,8 @@ export function createPeerGroup(
 
           // Try to connect to the sender
           initiate({ remoteId: sender, initiate: true })
+        } else {
+          initiate({ remoteId: sender, initiate: false })
         }
       }
     }
@@ -99,8 +101,6 @@ export function createPeerGroup(
     _group.onuser = onuser
     _group.onstate = onstate
     _group.onerror = onerror
-    await init.promise
-    _group.initialize(_id)
 
     onstate(_group.state)
     onjoin(groupId)
@@ -113,11 +113,6 @@ export function createPeerGroup(
   }
 
   return {
-    setId: (id: string) => {
-      _id = id
-      init.resolve()
-      _group?.initialize(id)
-    },
     getGroup: () => _group,
     joinGroup,
     leaveGroup,
@@ -135,6 +130,8 @@ export class PeerGroup {
   #messageQueue: RelayPeerMessage[] = []
   #id = ''
   #heartbeat: ReturnType<typeof setInterval> | undefined
+  #url = ''
+  #heartbeatLastSeen: Record<string, number> = {}
 
   onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { }
   onheartbeat = (sender: string) => { }
@@ -142,16 +139,11 @@ export class PeerGroup {
   onerror: (error: unknown) => void = () => { }
   onuser = (sender: string, profile: ConnectionUserInfo) => { }
 
-  constructor(readonly groupId: string, readonly gameProfile: () => GameProfileAndTexture) {
-    this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
-    this.state = 'connecting'
-  }
-
-  initialize(id: string) {
-    if (this.#id) {
-      return
-    }
+  constructor(readonly groupId: string, id: string, readonly gameProfile: () => GameProfileAndTexture) {
     this.#id = id
+    this.#url = `wss://api.xmcl.app/group/${groupId}?client=${id}`
+    this.socket = new WebSocket(this.#url)
+    this.state = 'connecting'
     const idBinary = convertUUIDToUint8Array(id)
     this.#heartbeat = setInterval(() => {
       if (this.socket.readyState === this.socket.OPEN) {
@@ -182,12 +174,17 @@ export class PeerGroup {
           .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
         if (id !== this.#id) {
           this.onheartbeat?.(id)
+          this.#heartbeatLastSeen[id] = Date.now()
         }
       }
       if (data instanceof Blob) {
         // Blob to Uint8Array
         data.arrayBuffer().then(data => new Uint8Array(data))
           .then(onHeartbeat)
+        return
+      }
+      if (data instanceof ArrayBuffer) {
+        onHeartbeat(new Uint8Array(data))
         return
       }
       if (data instanceof Uint8Array) {
@@ -236,23 +233,31 @@ export class PeerGroup {
         }
       }
     }
-    socket.onerror = (e) => {
-      this.onerror?.(e)
-    }
-    socket.onclose = (e) => {
-      const { wasClean, reason, code } = e
+    const handleClosed = () => {
       if (!this.#closed) {
         // Try to reconnect as this is closed unexpected
         this.state = 'connecting'
         this.onstate?.(this.state)
+        const state = this.socket.readyState
+        const sock = this.socket
         setTimeout(1000).then(() => {
-          this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`)
-          this.#initiate()
+          if (sock === this.socket && state === this.socket.readyState) {
+            this.socket = new WebSocket(this.#url)
+            this.#initiate()
+          }
         })
       } else {
         this.state = 'closed'
         this.onstate?.(this.state)
       }
+    }
+    socket.onerror = (e) => {
+      this.onerror?.(e)
+      handleClosed()
+    }
+    socket.onclose = (e) => {
+      const { wasClean, reason, code } = e
+      handleClosed()
     }
   }
 
@@ -261,10 +266,18 @@ export class PeerGroup {
     return this.signals[messageId].promise
   }
 
-  async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[]) {
+  async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[], shouldRetry: () => boolean) {
     const messageId = this.messageId++
-    while (true) {
+    const resolve = this.wait(messageId).then(() => true, () => false)
+    for (let i = 0; i < 60; ++i) {
       try {
+        if (this.#closed) {
+          return
+        }
+        if ((Date.now() - this.#heartbeatLastSeen[receiverId]) > (5 * 60_000)) {
+          // If the receiver is not seen in 5 minutes, we stop sending
+          return 'NO_RESPONSE'
+        }
         this.send({
           type: 'DESCRIPTOR',
           receiver: receiverId,
@@ -277,16 +290,20 @@ export class PeerGroup {
           iceServers,
         })
         const responsed = await Promise.race([
-          this.wait(messageId).then(() => true, () => false),
+          resolve,
           setTimeout(4_000).then(() => false), // wait 4 seconds for response
         ])
         if (responsed) {
+          return
+        }
+        if (!shouldRetry()) {
           return
         }
       } catch (e) {
         this.onerror?.(e)
       }
     }
+    return 'NO_RESPONSE_TIMEOUT'
   }
 
   async sendWho(receiverId: string) {

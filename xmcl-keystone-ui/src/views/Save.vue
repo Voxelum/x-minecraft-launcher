@@ -105,7 +105,6 @@ import { kSaveSearch } from '@/composables/savesSearch'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { File } from '@xmcl/curseforge'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import SimpleDialog from '../components/SimpleDialog.vue'
 import { useSimpleDialog } from '../composables/dialog'
@@ -148,20 +147,18 @@ const groupedItems = computed(() => {
 
 const { importSave, installFromMarket } = useService(InstanceSavesServiceKey)
 provide(kCurseforgeInstaller, {
-  installWithDependencies: async (m, file) => {
+  installWithDependencies: async (id, loader, icon) => {
     await installFromMarket({
       market: 1,
       instancePath: path.value,
-      file,
-      icon: m.logo.url,
+      file: { fileId: id, icon },
     })
   },
-  install: async (file: File, icon?: string) => {
+  install: async (file) => {
     await installFromMarket({
       market: 1,
       instancePath: path.value,
       file,
-      icon,
     })
   },
 })

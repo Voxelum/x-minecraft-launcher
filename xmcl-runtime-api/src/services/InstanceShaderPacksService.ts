@@ -40,7 +40,7 @@ export interface InstanceShaderPacksService {
   /**
    * Install shader packs from the market to the instance.
    */
-  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
+  installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]>
   /**
    * Show shaderPacks folder under the instance path
    * @param instancePath The instance absolute path

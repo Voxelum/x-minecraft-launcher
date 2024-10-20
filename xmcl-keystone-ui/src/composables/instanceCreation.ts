@@ -16,7 +16,12 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
   const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
   let latest = ''
-  getLatestMinecraftRelease().then(v => { latest = v })
+  getLatestMinecraftRelease().then(v => {
+    latest = v
+    if (data.runtime.minecraft === '') {
+      data.runtime.minecraft = latest
+    }
+  })
   const getNewRuntime = () => ({
     minecraft: latest || '',
     forge: '',
@@ -32,12 +37,12 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     runtime: getNewRuntime(),
     version: '',
     java: '',
-    showLog: false,
-    hideLauncher: true,
+    showLog: undefined,
+    hideLauncher: undefined,
     vmOptions: [] as string[],
     mcOptions: [] as string[],
-    maxMemory: 0,
-    minMemory: 0,
+    maxMemory: undefined,
+    minMemory: undefined,
     author: gameProfile.value.name,
     fileApi: '',
     modpackVersion: '',
@@ -47,8 +52,8 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     icon: '',
     server: null,
     tags: [],
-    assignMemory: false,
-    fastLaunch: false,
+    assignMemory: undefined,
+    fastLaunch: undefined,
   })
   const files: Ref<InstanceFile[]> = ref([])
   const loading = ref(false)
@@ -60,8 +65,8 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
       data.runtime = { ...template.runtime }
     }
     data.java = template.java ?? ''
-    data.showLog = template.showLog ?? false
-    data.hideLauncher = template.hideLauncher ?? true
+    data.showLog = template.showLog
+    data.hideLauncher = template.hideLauncher
     data.vmOptions = [...template.vmOptions ?? []]
     data.mcOptions = [...template.mcOptions ?? []]
     data.maxMemory = template.maxMemory ?? 0

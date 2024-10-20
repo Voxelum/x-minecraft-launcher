@@ -8,8 +8,8 @@ import { InstanceResourcePack } from './instanceResourcePack'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
-import { useService } from './service'
 import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
+import { TextComponent } from '@xmcl/text-component'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
@@ -40,7 +40,8 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
           icon: m.icon,
           title: name,
           disabled: !enabled,
-          description: m.description as string,
+          description: typeof m.description === 'string' ? m.description : '',
+          descriptionTextComponent: typeof m.description === 'object' ? m.description as TextComponent : undefined,
           installed: [m],
           downloadCount: 0,
           followerCount: 0,

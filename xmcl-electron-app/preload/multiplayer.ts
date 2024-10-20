@@ -1,9 +1,9 @@
-import './controller'
-import { serviceChannels } from './service'
 import { AUTHORITY_MICROSOFT, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import { createMultiplayer } from '@xmcl/runtime/peer/multiplayerImpl'
 import { listen } from '@xmcl/runtime/util/server'
 import { contextBridge, ipcRenderer } from 'electron/renderer'
+import './controller'
+import { serviceChannels } from './service'
 
 let inited = false
 ipcRenderer.invoke('multiplayer-init').then((payload: { appDataPath: string; resourcePath: string; sessionId: string }) => {

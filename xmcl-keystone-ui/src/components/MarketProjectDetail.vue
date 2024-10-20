@@ -43,10 +43,10 @@
             target="browser"
             :href="detail.url"
           >
-            {{ detail.title }}
+            {{ titleToDisplay }}
           </a>
           <template v-else>
-            {{ detail.title }}
+            {{ titleToDisplay }}
           </template>
 
           <v-btn
@@ -60,6 +60,14 @@
               sync
             </v-icon>
           </v-btn>
+
+          <div class="flex-grow" />
+          <AppCopyChip
+            v-if="(currentTarget === 'curseforge' ? curseforge : modrinth)"
+            label
+            :value="(currentTarget === 'curseforge' ? curseforge : modrinth)?.toString() || ''"
+            outlined
+          />
         </span>
         <div class="ml-1 flex flex-grow-0 items-center gap-2 pt-1">
           <template v-if="loading">
@@ -108,11 +116,11 @@
             v-if="loading"
             type="text, text"
           />
-          <template v-else-if="detail.description.includes('§')">
-            <TextComponent :source="detail.description" />
+          <template v-else-if="descriptionToDisplay.includes('§')">
+            <TextComponent :source="descriptionToDisplay" />
           </template>
           <template v-else>
-            {{ detail.description }}
+            {{ descriptionToDisplay }}
           </template>
         </div>
         <div
@@ -788,7 +796,9 @@ export interface ProjectDetail {
   id: string
   icon: string
   title: string
+  localizedTitle?: string
   description: string
+  localizedDescription?: string
   author: string
   downloadCount: number
   follows: number
@@ -809,6 +819,9 @@ const _enabled = computed({
     emit('enable', v)
   },
 })
+
+const titleToDisplay = computed(() => props.detail.localizedTitle || props.detail.title)
+const descriptionToDisplay = computed(() => props.detail.localizedDescription || props.detail.description)
 
 const detailsHeaders = computed(() => {
   const result: Array<{

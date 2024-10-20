@@ -40,45 +40,6 @@ export class ElectronSession {
       }
     }
 
-    sess.webRequest.onHeadersReceived((detail, cb) => {
-      if (detail.responseHeaders &&
-        !detail.responseHeaders['access-control-allow-origin'] &&
-        !detail.responseHeaders['Access-Control-Allow-Origin']) {
-        detail.responseHeaders['access-control-allow-origin'] = ['*']
-      }
-
-      cb({ responseHeaders: detail.responseHeaders })
-    })
-
-    sess.webRequest.onBeforeSendHeaders((detail, cb) => {
-      if (detail.requestHeaders) {
-        detail.requestHeaders['User-Agent'] = ua
-      }
-      if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
-        detail.url.startsWith('https://api.xmcl.app/curseforge') ||
-        detail.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
-        detail.url.startsWith('https://api.xmcl.app/rtc/official')
-      ) {
-        this.app.registry.get(UserService).then(userService => {
-          userService.getOfficialUserProfile().then(profile => {
-            if (profile && profile.accessToken) {
-              detail.requestHeaders.Authorization = `Bearer ${profile.accessToken}`
-            }
-            cb({ requestHeaders: detail.requestHeaders })
-          }).catch(() => {
-            cb({ requestHeaders: detail.requestHeaders })
-          })
-        }).catch(e => {
-          cb({ requestHeaders: detail.requestHeaders })
-        })
-      } else if (detail.url.startsWith('https://api.curseforge.com')) {
-        detail.requestHeaders['x-api-key'] = process.env.CURSEFORGE_API_KEY || ''
-        cb({ requestHeaders: detail.requestHeaders })
-      } else {
-        cb({ requestHeaders: detail.requestHeaders })
-      }
-    })
-
     const handler = async (request: Request): Promise<Response> => {
       const url = new URL(request.url)
       if (url.host === HOST && !HAS_DEV_SERVER) {
@@ -112,12 +73,31 @@ export class ElectronSession {
           },
         })
       }
+      request.headers.append('User-Agent', ua)
+
+      if (request.url.startsWith('https://api.xmcl.app/modrinth') ||
+        request.url.startsWith('https://api.xmcl.app/curseforge') ||
+        request.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
+        request.url.startsWith('https://api.xmcl.app/rtc/official')
+      ) {
+        const userService = await this.app.registry.get(UserService)
+        const profile = await userService.getOfficialUserProfile().catch(() => undefined)
+        if (profile && profile.accessToken) {
+          request.headers.set('Authorization', `Bearer ${profile.accessToken}`)
+        }
+      } else if (request.url.startsWith('https://api.curseforge.com')) {
+        request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
+      }
+
       const response = await this.app.protocol.handle({
         url: new URL(url),
         method: request.method,
         headers: request.headers,
         body: request.body ? Readable.fromWeb(request.body as any) : request.body as any,
       })
+
+      response.headers['access-control-allow-origin'] = ['*']
+
       return new Response(response.body instanceof Readable ? Readable.toWeb(response.body) as any : response.body, {
         status: response.status,
         headers: response.headers,
@@ -125,6 +105,7 @@ export class ElectronSession {
     }
 
     sess.protocol.handle('http', handler)
+    sess.protocol.handle('https', handler)
 
     this.cached[url] = sess
 

@@ -4,10 +4,10 @@ import { InstanceService } from '~/instance'
 import { ResourceManager } from '~/resource'
 import { ExposeServiceKey, Lock, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { AbstractInstanceDoaminService } from './AbstractInstanceDoaminService'
+import { AbstractInstanceDomainService } from './AbstractInstanceDoaminService'
 
 @ExposeServiceKey(InstanceShaderPacksServiceKey)
-export class InstanceShaderPacksService extends AbstractInstanceDoaminService implements IInstanceShaderPacksServic {
+export class InstanceShaderPacksService extends AbstractInstanceDomainService implements IInstanceShaderPacksServic {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceManager) protected resourceManager: ResourceManager,
     @Inject(kGameDataPath) protected getPath: PathResolver,

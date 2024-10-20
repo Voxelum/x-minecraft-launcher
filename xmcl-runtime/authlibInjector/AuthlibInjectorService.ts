@@ -5,7 +5,7 @@ import { readFile, writeFile } from 'fs-extra'
 import { NetworkInterface, kDownloadOptions, kNetworkInterface } from '~/network'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
-import { GFW } from '~/gfw'
+import { GFW, kGFW } from '~/gfw'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { validateSha256 } from '../util/fs'
@@ -25,7 +25,7 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     @Inject(kSettings) private settings: Settings,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(GFW) gfw: GFW,
+    @Inject(kGFW) gfw: GFW,
     @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {
     super(app)
