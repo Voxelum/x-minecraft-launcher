@@ -129,7 +129,9 @@ function createWorkerQueue(context: ResourceContext, domain: ResourceDomain,
 
     const metadata = await getOrParseMetadata(job.file, job.record, domain, context, job, parse)
 
-    context.eventBus.emit('resourceParsed', job.record.sha1, domain, metadata)
+    if (parse) {
+      context.eventBus.emit('resourceParsed', job.record.sha1, domain, metadata)
+    }
 
     onResourceEmit(job.file, job.record, metadata ?? {})
   }), 16, {

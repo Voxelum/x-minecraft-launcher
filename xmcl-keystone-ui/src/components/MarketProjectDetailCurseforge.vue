@@ -260,7 +260,7 @@ const { data: deps, error, isValidating: loadingDependencies } = useSWRVModel(
     curseforgeFile,
     computed(() => props.gameVersion),
     // TODO: limit the modloaders
-    computed(() => curseforgeFile.value ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value : FileModLoaderType.Any),
+    computed(() => curseforgeFile.value ? getModLoaderTypesForFile(curseforgeFile.value).values().next().value! : FileModLoaderType.Any),
   ),
 )
 

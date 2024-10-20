@@ -267,6 +267,14 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           modId: string
           version: string
         }[]
+        neoforge?: {
+          modId: string
+          version: string
+        }
+        quilt?: {
+          modId: string
+          version: string
+        }
         curseforge?: {
           projectId: number
           fileId: number
@@ -297,6 +305,18 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         trace.forge = {
           modId: metadata.forge.modid,
           version: metadata.forge.version,
+        }
+      }
+      if (metadata.neoforge) {
+        trace.neoforge = {
+          modId: metadata.neoforge.modid,
+          version: metadata.neoforge.version,
+        }
+      }
+      if (metadata.quilt) {
+        trace.quilt = {
+          modId: metadata.quilt.quilt_loader.id,
+          version: metadata.quilt.quilt_loader.version,
         }
       }
       if (metadata.fabric) {

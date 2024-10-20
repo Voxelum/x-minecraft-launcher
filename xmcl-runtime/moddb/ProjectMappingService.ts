@@ -43,14 +43,29 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     const locale = this.settings.locale.toLowerCase()
 
     if (!locale) return undefined
-    if (locale === 'en') return undefined
     if (this.#db?.locale === locale) return this.#db.db
-
-    const filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
 
     const gfw = await this.app.registry.get(kGFW)
 
-    const original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
+    let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
+    let original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
+
+    async function exists() {
+      try {
+        const resp = await fetch(original, { method: 'HEAD' })
+        if (!resp.ok) {
+          return false
+        }
+        return true
+      } catch {
+        return false
+      }
+    }
+
+    if (!await exists()) {
+      original = 'https://xmcl.blob.core.windows.net/project-mapping/en.sqlite'
+      filePath = join(this.app.appDataPath, 'project-mapping-en.sqlite')
+    }
 
     await this.semaphoreManager.getLock('project-mapping').write(async () => {
       const urls = gfw.inside
