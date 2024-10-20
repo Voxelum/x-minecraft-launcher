@@ -39,7 +39,7 @@ export function useModrinthInstaller(
     versions.push({ versionId, icon })
     await install(versions, _path)
     if (files.length > 0) {
-      uninstallFiles(files)
+      uninstallFiles(files, _path)
     }
     return true
   }

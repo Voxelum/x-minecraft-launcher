@@ -27,8 +27,4 @@ export class ReactiveResourceState extends ResourceState {
     }
     set(this, 'files', mods)
   }
-
-  override filesSet(mods: Resource[]) {
-    set(this, 'files', mods)
-  }
 }

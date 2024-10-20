@@ -1,13 +1,13 @@
+import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { ModFile, getModFileFromResource } from '@/util/mod'
+import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 import { useEventListener } from '@vueuse/core'
-import { InstanceModsServiceKey, ResourceState, JavaRecord, FileUpdateOperation, FileUpdateAction, MutableState, UpdateResourcePayload, Resource, RuntimeVersions, applyUpdateToResource } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, JavaRecord, MutableState, Resource, ResourceState, RuntimeVersions } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
-import { InjectionKey, Ref, set } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { ReactiveResourceState } from '@/util/ReactiveResourceState'
-import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 

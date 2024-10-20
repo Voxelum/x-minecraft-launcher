@@ -289,22 +289,22 @@ export class ResourceState {
    */
   files = [] as Resource[]
 
-  filesSet(ops: Resource[]) {
-    this.files = ops
-  }
-
   filesUpdates(ops: FileUpdateOperation[]) {
     const files = [...this.files]
     for (const [r, a] of ops) {
+      if (!r) {
+        console.warn('Invalid resource', r)
+        continue
+      }
       if (a === FileUpdateAction.Upsert) {
-        const index = files.findIndex(m => m?.path === r?.path)
+        const index = files.findIndex(m => m.path === r.path)
         if (index === -1) {
           files.push(r)
         } else {
           files[index] = r
         }
       } else if (a === FileUpdateAction.Remove) {
-        const index = files.findIndex(m => m?.path === r)
+        const index = files.findIndex(m => m.path === r)
         if (index !== -1) files.splice(index, 1)
       } else {
         for (const update of r as UpdateResourcePayload[]) {

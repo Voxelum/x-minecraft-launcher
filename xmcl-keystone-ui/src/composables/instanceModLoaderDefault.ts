@@ -25,6 +25,7 @@ export function useInstanceModLoaderDefault() {
           })
           return true
         }
+        return false
       } else if (loader === 'quilt') {
         const fit = await getSWRV(getQuiltGameVersionsModel(), config)
         if (fit.includes(runtime.minecraft)) {
@@ -40,6 +41,7 @@ export function useInstanceModLoaderDefault() {
           })
           return true
         }
+        return false
       } else if (loader === 'forge') {
         const forges = await getSWRV(getForgeVersionsModel(runtime.minecraft), config)
         const version = forges.find(f => f.type === 'recommended') || forges[0]
@@ -54,6 +56,7 @@ export function useInstanceModLoaderDefault() {
           })
           return true
         }
+        return false
       } else if (loader === 'neoforge') {
         const versions = await getSWRV(getNeoForgedVersionModel(runtime.minecraft), config)
         const version = getLatestNeoforge(versions)
@@ -68,10 +71,13 @@ export function useInstanceModLoaderDefault() {
           })
           return true
         }
+        return false
+      } else if (loader === 'minecraft') {
+        return true
       }
     }
 
-    return false
+    return true
   }
 
   return apply

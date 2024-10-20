@@ -51,7 +51,7 @@ export function useCurseforgeInstaller(
     await install(files)
 
     if (toUninstalls.length > 0) {
-      uninstallResource(toUninstalls)
+      uninstallResource(toUninstalls, _path)
     }
   }
 
