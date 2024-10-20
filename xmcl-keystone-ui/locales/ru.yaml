@@ -756,7 +756,7 @@ mod:
   deletionRestHint: И ещё {rest} модов...
   denseView: Компактное отображение модов
   dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
-  duplicatedDetected: '{count} модов продублировано'
+  duplicatedDetected: '{count} дублированных модов'
   duplicatedDetectedDescription: |-
     Найдены моды с одинаковым идентификатором, но с разными файлами. 
     Это может привести к сбою Minecraft. 

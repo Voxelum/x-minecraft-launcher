@@ -760,7 +760,7 @@ mod:
   deletionRestHint: Und der {rest} der Mods...
   denseView: Dichte Sicht
   dropHint: Ziehen Sie die .jar/.litemod-Mod hierher und importieren Sie sie.
-  duplicatedDetected: '{count} Mods wurden dupliziert'
+  duplicatedDetected: '{count} duplizierte Mods'
   duplicatedDetectedDescription: |-
     Mods mit derselben Mod-ID, aber unterschiedlichen Dateien gefunden. 
     Dies könnte zum Absturz von Minecraft führen. 

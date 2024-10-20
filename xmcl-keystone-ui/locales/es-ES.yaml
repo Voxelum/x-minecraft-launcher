@@ -503,7 +503,7 @@ mod:
   deletionRestHint: Y otros {rest} mods...
   denseView: Vista densa
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
-  duplicatedDetected: '{count} mods se han duplicado'
+  duplicatedDetected: '{count} modificaciones duplicadas'
   duplicatedDetectedDescription: >-
     Mods encontrados con la misma identificación de mod pero archivos
     diferentes. 

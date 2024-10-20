@@ -298,7 +298,7 @@ me:
   versions: Versións instaladas
 mod:
   denseView: Vista Densa
-  duplicatedDetected: Duplicáronse {count} modificacións
+  duplicatedDetected: '{count} modificacións duplicadas'
   duplicatedDetectedDescription: |-
     Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
     Isto pode causar un fallo de Minecraft. 

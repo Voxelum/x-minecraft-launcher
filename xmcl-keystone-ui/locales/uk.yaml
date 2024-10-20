@@ -695,7 +695,7 @@ mod:
   deletionRestHint: И ще {rest} модів...
   denseView: Щільний вид
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
-  duplicatedDetected: '{count} модів дублюються'
+  duplicatedDetected: '{count} дубльованих модів'
   duplicatedDetectedDescription: |-
     Знайдено моди з однаковим ідентифікатором мода, але різними файлами. 
     Це може призвести до збою Minecraft. 

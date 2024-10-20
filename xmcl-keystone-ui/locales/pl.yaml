@@ -714,7 +714,7 @@ mod:
   deletionRestHint: I {rest} więcej modów...
   denseView: Gęsty widok
   dropHint: Upuść .jar/.litemod moda tutaj, aby zaimportować.
-  duplicatedDetected: '{count} modów zostało zduplikowanych'
+  duplicatedDetected: '{count} zduplikowanych modów'
   duplicatedDetectedDescription: |-
     Znaleziono mody o tym samym identyfikatorze moda, ale różnych plikach. 
     Może to spowodować awarię gry Minecraft. 

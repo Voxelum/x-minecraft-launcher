@@ -3,7 +3,7 @@
     class="flex h-full flex-col transition-colors transition-transform"
     :class="{ highlighted: highlighted }"
     style="box-sizing: border-box"
-    :color="error ? 'red' : highlighted ? 'yellow darken-2' : cardColor"
+    :color="highlighted ? 'yellow darken-2' : cardColor"
     @dragover="emit('dragover', $event)"
     @drop="emit('drop', $event); dragover = 0;"
     @dragenter="dragover += 1"
@@ -28,7 +28,19 @@
         <slot />
       </template>
       <template v-else>
-        {{ error ? (error.message || error) : text }}
+        <span v-if="!error">
+          {{ text }}
+        </span>
+        <span
+          v-else
+          class="color-red"
+        >
+          <v-icon
+            color="red"
+            small
+          > warning </v-icon>
+          {{ (error.message || error) }}
+        </span>
         <div
           v-if="!globalDragover && icons.length > 0"
           class="mt-4"

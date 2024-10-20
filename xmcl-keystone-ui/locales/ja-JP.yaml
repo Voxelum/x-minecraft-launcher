@@ -650,7 +650,7 @@ mod:
   deletionRestHint: '{rest} 個のmod...'
   denseView: コンパクトなビュー
   dropHint: ここにModファイル(.jar/.litemod)をドロップしてインポートします。
-  duplicatedDetected: '{count} 個の MOD が重複しました'
+  duplicatedDetected: '{count} 個の重複した MOD'
   duplicatedDetectedDescription: |-
     同じ MOD ID で異なるファイルを持つ MOD が見つかりました。
     これにより、Minecraft がクラッシュする可能性があります。

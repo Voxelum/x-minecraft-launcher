@@ -697,7 +697,7 @@ mod:
   deletionRestHint: És további {rest} mod...
   denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
-  duplicatedDetected: '{count} mod duplikált'
+  duplicatedDetected: '{count} duplikált mod'
   duplicatedDetectedDescription: |-
     Modokat találtam azonos mod azonosítóval, de különböző fájlokkal. 
     Ez a Minecraft összeomlását okozhatja. 
