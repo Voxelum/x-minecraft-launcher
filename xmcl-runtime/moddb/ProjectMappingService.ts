@@ -41,34 +41,35 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
   private async ensureDatabase() {
     const locale = this.settings.locale.toLowerCase()
+    const gfw = await this.app.registry.get(kGFW)
 
     if (!locale) return undefined
     if (this.#db?.locale === locale) return this.#db.db
 
-    const gfw = await this.app.registry.get(kGFW)
-
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
-    let original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
+    await this.semaphoreManager.getLock('project-mapping').write(async () => {
+      let original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
 
-    async function exists() {
-      try {
-        const resp = await fetch(original, { method: 'HEAD' })
-        if (!resp.ok) {
+      async function exists() {
+        try {
+          const resp = await fetch(original + '.sha256', { method: 'HEAD' })
+          if (!resp.ok) {
+            return false
+          }
+          return true
+        } catch {
           return false
         }
-        return true
-      } catch {
-        return false
       }
-    }
 
-    if (!await exists()) {
-      original = 'https://xmcl.blob.core.windows.net/project-mapping/en.sqlite'
-      filePath = join(this.app.appDataPath, 'project-mapping-en.sqlite')
-    }
+      const hasLocaleDb = await exists()
 
-    await this.semaphoreManager.getLock('project-mapping').write(async () => {
-      const urls = gfw.inside
+      if (!hasLocaleDb) {
+        original = 'https://xmcl.blob.core.windows.net/project-mapping/en.sqlite'
+        filePath = join(this.app.appDataPath, 'project-mapping-en.sqlite')
+      }
+
+      const urls = gfw.inside && hasLocaleDb
         ? [
           `https://files.0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
           `https://files-0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
