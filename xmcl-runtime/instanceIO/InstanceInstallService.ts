@@ -55,7 +55,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const updateInstanceTask = task('installInstance', async function () {
       await lock.write(async () => {
         try {
-          await this.yield(new ResolveInstanceFileTask(files, curseforgeClient, modrinthClient))
+          const newAddedFiles = files.filter(f => f.operation === 'add' || f.operation === 'backup-add')
+          await this.yield(new ResolveInstanceFileTask(newAddedFiles, curseforgeClient, modrinthClient))
           await writeInstallProfile(instancePath, files)
         } catch {
           // Ignore

@@ -105,7 +105,7 @@ export class InstanceFileOperationHandler {
     if (this.#httpsQueue.length > 0) {
       tasks.unshift(await this.#getDownloadTask())
     }
-    if (this.#copyOrLinkQueue.length > 0) {
+    if (this.#copyOrLinkQueue.length > 0 || this.#filesQueue.length > 0) {
       tasks.unshift(await this.#getFileOperationTask())
     }
     if (this.#unzipQueue.length > 0) {

@@ -11,12 +11,11 @@ import { ProjectVersion } from '@xmcl/modrinth'
 import { InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
+import { useErrorHandler } from './exception'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
-import { useErrorHandler } from './exception'
-import { basename } from '@/util/basename'
 
 export type UpgradePlan = {
   /**
@@ -42,7 +41,7 @@ export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbo
 
 export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ProjectEntry<ModFile>[]>) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
-  const plans = ref({} as Record<string, UpgradePlan>)
+  const plans = shallowRef({} as Record<string, UpgradePlan>)
   let operationId = ''
   let operationPath = ''
   const checked = ref(false)
@@ -133,6 +132,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     checked.value = true
     operationId = crypto.getRandomValues(new Uint8Array(8)).join('')
     operationPath = _path
+  })
+
+  watch(instanceMods, () => {
+    plans.value = {}
+    checked.value = false
   })
 
   const updates = computed(() => {
