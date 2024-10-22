@@ -17,11 +17,9 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kGameDataPath) getPath: PathResolver,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceManager) resourceManager: ResourceManager,
     @Inject(InstanceManifestService) private instanceManifestService: InstanceManifestService,
-    @Inject(ModpackService) private modpackService: ModpackService,
   ) {
     super(app)
 
@@ -159,9 +157,11 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
       throw new Error()
     }
 
+    const modpackService: ModpackService = await this.app.registry.getOrCreate(ModpackService)
+
     const oldFiles = await this.resolveOldFiles(instancePath, instance)
 
-    const openedModpack = await this.modpackService.openModpack(options.modpack)
+    const openedModpack = await modpackService.openModpack(options.modpack)
 
     const newFiles = await waitModpackFiles(openedModpack)
 
