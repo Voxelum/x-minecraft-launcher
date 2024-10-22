@@ -397,6 +397,8 @@
         </v-card-text>
       </v-card>
     </v-dialog>
+    <ModDuplicatedDialog />
+    <ModIncompatibileDialog />
   </MarketBase>
 </template>
 
@@ -435,6 +437,8 @@ import { useDialog, useSimpleDialog } from '@/composables/dialog'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { notNullish } from '@vueuse/core'
 import { isNoModLoader } from '@/util/isNoModloader'
+import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
+import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 
 const { runtime, path } = injection(kInstance)
 

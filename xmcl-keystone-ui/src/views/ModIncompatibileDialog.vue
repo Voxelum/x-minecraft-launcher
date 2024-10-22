@@ -52,7 +52,7 @@ const { t } = useI18n()
           <template v-for="(item, i) of items">
             <v-subheader
               v-if="typeof item === 'string'"
-              :key="item"
+              :key="item + i"
             >
               {{ item }}
             </v-subheader>

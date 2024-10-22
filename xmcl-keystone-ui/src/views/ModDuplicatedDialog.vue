@@ -84,7 +84,7 @@ function process() {
             </v-subheader>
             <v-list-item
               v-else
-              :key="item.fileName"
+              :key="item.fileName + i"
               :style="{
                 textDecoration: omitted[item.modId] === item ? '' : 'line-through'
               }"
