@@ -29,14 +29,12 @@ export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKeyu
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
-  on(channel: 'engine-ready', listener: () => void): this
   on(channel: 'root-migrated', listener: (newRoot: string) => void): this
   on(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
   on(channel: 'service-state-init', listener: (stateKey: string) => void): this
 
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
-  once(channel: 'engine-ready', listener: () => void): this
   once(channel: 'root-migrated', listener: (newRoot: string) => void): this
   once(channel: 'service-call-end', listener: (serviceName: string, serviceMethod: string, duration: number, success: boolean) => void): this
   once(channel: 'service-state-init', listener: (stateKey: string) => void): this
@@ -44,7 +42,6 @@ export interface LauncherApp {
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
   emit(channel: 'service-call-end', serviceName: string, serviceMethod: string, duration: number, success: boolean): this
   emit(channel: 'window-all-closed'): boolean
-  emit(channel: 'engine-ready'): boolean
   emit(channel: 'root-migrated', root: string): this
   emit(channel: 'service-state-init', stateKey: string): this
 }
@@ -252,10 +249,7 @@ export class LauncherApp extends EventEmitter {
   async start(): Promise<void> {
     await Promise.all([
       this.setup(),
-      this.host.whenReady().then(() => {
-        this.emit('engine-ready')
-        return this.onEngineReady()
-      }),
+      this.host.whenReady().then(() => this.onEngineReady()),
     ])
   }
 

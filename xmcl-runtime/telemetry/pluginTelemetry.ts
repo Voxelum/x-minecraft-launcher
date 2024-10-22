@@ -129,7 +129,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     // }
   })
 
-  app.on('engine-ready', async () => {
+  app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 
     let javaService: JavaService | undefined

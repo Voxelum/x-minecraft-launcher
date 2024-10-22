@@ -6,7 +6,7 @@ import { ControllerPlugin } from './plugin'
  * Control the behavior of window during game launch/exit, and also redirect the minecraft stdout/stderr during game
  */
 export const gameLaunch: ControllerPlugin = function (this: ElectronController) {
-  this.app.once('engine-ready', () => {
+  this.app.waitEngineReady().then(() => {
     this.app.registry.get(LaunchService).then((service) => {
       service.on('minecraft-window-ready', ({ hideLauncher }) => {
         if (this.mainWin && (this.mainWin.isVisible() || this.mainWin.isMinimized())) {
