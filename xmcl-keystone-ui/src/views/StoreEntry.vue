@@ -197,6 +197,8 @@ const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
 const sort = useQuery('sort', (q) => { q.page = '1' })
 const page = useQueryNumber('page', 1)
 
+const pageSize = 10
+
 const keyword = ref(query)
 const { t } = useI18n()
 const { getDateString } = useDateString()
@@ -359,7 +361,7 @@ const recentMinecraftItems = computed(() => {
 const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
 const ftbItems = ref([] as ExploreProject[])
 const config = inject(kSWRVConfig)
-watch(ftbData, async (packs) => {
+watch([ftbData, page], async ([packs, page]) => {
   if (!packs) {
     ftbItems.value = []
     return
@@ -368,7 +370,11 @@ watch(ftbData, async (packs) => {
     ftbItems.value = []
     return
   }
-  ftbItems.value = await Promise.all(packs.packs.map(async (p) => {
+
+  // each page show 5 items
+  const offset = (page - 1) * 5
+
+  const result = await Promise.all(packs.packs.slice(offset, offset + 5).map(async (p) => {
     const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
     const result: ExploreProject = {
       id: p.toString(),
@@ -388,6 +394,10 @@ watch(ftbData, async (packs) => {
     }
     return result
   }))
+
+  console.log(result)
+
+  ftbItems.value = result
 }, { immediate: true })
 
 // Routing
@@ -415,7 +425,7 @@ const {
   modrinthSort,
   'modpack',
   page,
-  10,
+  pageSize,
 )
 
 // Curseforge
@@ -428,6 +438,7 @@ const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = us
   curseforgeCategory,
   curseforgeSort,
   gameVersion,
+  pageSize,
 )
 
 const items = computed(() => {

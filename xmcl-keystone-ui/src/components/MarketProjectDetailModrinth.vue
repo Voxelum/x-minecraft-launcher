@@ -13,8 +13,7 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
-import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
+import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -39,9 +38,14 @@ const emit = defineEmits<{
 const projectId = computed(() => props.projectId)
 const { project, isValidating: isValidatingModrinth, refresh } = useModrinthProject(projectId)
 const { lookupByModrinth } = useService(ProjectMappingServiceKey)
-const { data: mapping } = useSWRV(computed(() => `/modrinth/${projectId.value}?mapping`), () => {
-  return lookupByModrinth(props.projectId)
-})
+
+const mapping = shallowRef(undefined as ProjectMapping | undefined)
+
+watch(projectId, async (id) => {
+  const result = await lookupByModrinth(id).catch(() => undefined)
+  mapping.value = result
+}, { immediate: true })
+
 const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth), mapping)
 const loading = useLoading(isValidatingModrinth, project, projectId)
 
@@ -161,7 +165,9 @@ const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
 
-const curseforgeId = computed(() => props.curseforge || props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId || mapping.value?.curseforgeId)
+const curseforgeId = computed(() => props.curseforge ||
+  props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId ||
+  mapping.value?.curseforgeId)
 
 const archived = computed(() => {
   return project.value?.status === 'archived'

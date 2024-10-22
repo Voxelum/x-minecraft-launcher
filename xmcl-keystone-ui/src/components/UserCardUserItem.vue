@@ -70,15 +70,12 @@
         <template v-if="hoverRefresh && refreshing">
           <v-icon
             color="red"
-            class="xl:(ml-[4px] mr-[8px]) m-0"
           >
             close
           </v-icon>
         </template>
         <template v-else>
-          <v-icon
-            class="xl:(ml-[4px] mr-[8px]) m-0"
-          >
+          <v-icon>
             refresh
           </v-icon>
         </template>
@@ -90,10 +87,7 @@
         color="red"
         @click="emit('remove')"
       >
-        <v-icon
-          left
-          class="lg:(ml-[4px] mr-[8px]) m-0"
-        >
+        <v-icon>
           delete
         </v-icon>
       </v-btn>

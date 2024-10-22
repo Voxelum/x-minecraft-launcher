@@ -15,8 +15,7 @@ import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FileModLoaderType, Mod, ModStatus } from '@xmcl/curseforge'
-import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
+import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   curseforge?: Mod
@@ -43,9 +42,13 @@ const curseforgeModId = computed(() => props.curseforgeId)
 
 const { data: curseforgeProject, mutate } = useSWRVModel(getCurseforgeProjectModel(curseforgeModId))
 const { lookupByCurseforge } = useService(ProjectMappingServiceKey)
-const { data: curseforgeProjectMapping } = useSWRV(computed(() => `/curseforge/${curseforgeModId.value}?mapping`), () => {
-  return lookupByCurseforge(curseforgeModId.value)
-})
+
+const curseforgeProjectMapping = shallowRef(undefined as ProjectMapping | undefined)
+
+watch(curseforgeModId, async (id) => {
+  const result = await lookupByCurseforge(id).catch(() => undefined)
+  curseforgeProjectMapping.value = result
+}, { immediate: true })
 
 const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
 const model = computed(() => {

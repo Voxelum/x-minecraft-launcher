@@ -1,4 +1,3 @@
-import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 import { clientCurseforgeV1 } from '@/util/clients'

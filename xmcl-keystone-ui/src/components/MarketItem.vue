@@ -143,23 +143,23 @@ import { ContextMenuItem, useContextMenu } from '@/composables/contextMenu'
 import { getCurseforgeProjectModel } from '@/composables/curseforge'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { kSWRVConfig } from '@/composables/swrvConfig'
+import { BuiltinImages } from '@/constant'
 import { vContextMenu } from '@/directives/contextMenu'
+import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
+import { Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
-import { ProjectMappingServiceKey, Resource } from '@xmcl/runtime-api'
-import { basename } from '@/util/basename'
-import { vFallbackImg } from '@/directives/fallbackImage'
-import { BuiltinImages } from '@/constant'
-import { useService } from '@/composables/service'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>
   selectionMode: boolean
+  alt?: boolean
   checked: boolean
   selected: boolean
   noDuplicate?: boolean
