@@ -510,6 +510,7 @@ instances:
     從通用 .minecraft 資料夾匯入。
     這會將原始遊戲配置檔案複製到 XMCL。
   choose: 選擇遊戲
+  fix: 修復
   folderSetting: 資料夾設定
   importFolder: 從資料夾匯入
   importFolderDescription: 匯入 Minecraft 到啟動器

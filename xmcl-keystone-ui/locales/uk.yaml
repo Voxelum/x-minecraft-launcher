@@ -511,6 +511,7 @@ instances:
     Імпорт із загальної папки .minecraft. 
     Це призведе до копіювання оригінального профілю гри в XMCL.
   choose: Виберіть Гра
+  fix: Виправити
   folderSetting: Параметри папки
   importFolder: Імпорт із папки
   importFolderDescription: Імпорт Minecraft до лаунчера

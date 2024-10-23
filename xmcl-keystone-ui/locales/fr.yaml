@@ -539,6 +539,7 @@ instances:
     Importer à partir du dossier commun .minecraft. 
     Cela dupliquera le profil de jeu original vers XMLL.
   choose: Sélectionnez un jeu
+  fix: Réparer
   folderSetting: Paramètres du dossier
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher

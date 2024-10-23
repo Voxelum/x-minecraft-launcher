@@ -494,6 +494,7 @@ instances:
   addVanilla: Vanilla-LikeなMinecraftから作成
   addVanillaDescription: 一般的な.minecraftフォルダからインポートします。これは元のプロファイルをXMCLに複製します。
   choose: ゲームを選択
+  fix: 直す
   folderSetting: フォルダーの設定
   importFolder: フォルダーからインポート
   importFolderDescription: Minecraftをランチャーにインポート

@@ -554,6 +554,7 @@ instances:
     Importieren Sie aus dem gemeinsamen .minecraft-Ordner. 
     Dadurch wird das ursprüngliche Spielprofil in die XMCL kopiert.
   choose: Spiel auswählen
+  fix: Repariere es
   folderSetting: Ordnereinstellungen
   importFolder: Importieren aus einem Ordner
   importFolderDescription: Minecraft in den Launcher importieren

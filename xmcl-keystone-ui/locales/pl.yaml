@@ -524,6 +524,7 @@ instances:
     Import ze wspólnego folderu .minecraft. Spowoduje to zduplikowanie
     oryginalnego profilu gry do XMCL.
   choose: Wybierz grę
+  fix: Napraw
   folderSetting: Ustawienia folderów
   importFolder: Importuj z folderu
   importFolderDescription: Importowanie Minecrafta do programu uruchamiającego
