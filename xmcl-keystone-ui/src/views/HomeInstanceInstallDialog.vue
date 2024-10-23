@@ -246,7 +246,7 @@ type FileOperationNode = InstanceFileNode<{ operation: InstanceFileUpdate['opera
 
 function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   return {
-    name: basename(f.file.path),
+    name: basename(f.file.path, '/'),
     path: f.file.path,
     size: f.file.size ?? 0,
     style: {
