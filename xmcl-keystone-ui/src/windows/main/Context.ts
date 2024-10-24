@@ -1,8 +1,7 @@
-import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores } from '@/composables'
+import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync } from '@/composables'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
-import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
 import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
@@ -12,6 +11,7 @@ import { kInstanceLaunch, useInstanceLaunch } from '@/composables/instanceLaunch
 import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMods'
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
 import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionInstall, useInstanceVersionInstallInstruction } from '@/composables/instanceVersionInstall'
@@ -21,10 +21,8 @@ import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
-import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
-import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
 import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
@@ -42,7 +40,6 @@ import { provide } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
-    provide(kSemaphores, useSemaphores())
     provide(kServerStatusCache, useServerStatusCache())
 
     provide(kDropHandler, useDropHandler())

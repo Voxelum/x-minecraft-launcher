@@ -48,7 +48,7 @@ import { Ref } from 'vue'
 import { InstanceInstallServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import Hint from '@/components/Hint.vue'
-import { useService, useServiceBusy } from '@/composables'
+import { useService } from '@/composables'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
@@ -59,8 +59,8 @@ const props = defineProps<{ shown: boolean }>()
 
 const { fetchInstanceUpdate } = useService(XUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')
-const applyingUpdate = useServiceBusy(InstanceInstallServiceKey, 'installInstanceFiles')
+const checkingUpdate = ref(false)
+const applyingUpdate = ref(false)
 const currentUpdate = ref(undefined as undefined | InstanceUpdate)
 const updateFiles = computed(() => currentUpdate.value ? currentUpdate.value.updates : [])
 const { errorColor } = injection(kTheme)

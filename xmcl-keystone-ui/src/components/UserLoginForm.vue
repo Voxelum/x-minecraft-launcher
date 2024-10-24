@@ -148,7 +148,7 @@
 
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
-import { useBusy, useRefreshable, useService } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kYggdrasilServices } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
@@ -181,7 +181,7 @@ const data = reactive({
 })
 const isMicrosoft = computed(() => authority.value === AUTHORITY_MICROSOFT)
 const isOffline = computed(() => authority.value === AUTHORITY_DEV)
-const isLogining = useBusy('login')
+const isLogining = ref(false)
 
 // Label
 const getUserServiceAccount = (serv: string) => {
@@ -319,6 +319,7 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   if (index === -1) {
     history.value.unshift(data.username)
   }
+  isLogining.value = true
   const profile = await login({
     username: data.username,
     password: data.password,
@@ -327,6 +328,8 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
       mode: data.useDeviceCode ? 'device' : data.useFast ? 'fast' : '',
       uuid: data.uuid,
     },
+  }).finally(() => {
+    isLogining.value = false
   })
   select(profile.id)
   emit('login', profile)

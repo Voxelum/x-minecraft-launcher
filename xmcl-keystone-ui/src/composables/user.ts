@@ -1,7 +1,7 @@
 import { computed, del, InjectionKey, reactive, Ref, set, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey, UserState } from '@xmcl/runtime-api'
 
-import { useService, useServiceBusy } from '@/composables'
+import { useService } from '@/composables'
 import { useLocalStorageCacheStringValue } from './cache'
 import { useState } from './syncableState'
 import { GameProfile } from '@xmcl/user'
@@ -126,7 +126,7 @@ export function useMojangSecurityStatus() {
 
   return {
     security,
-    refreshing: useServiceBusy(OfficialUserServiceKey, 'verifySecurityLocation'),
+    refreshing: ref(false),
   }
 }
 
