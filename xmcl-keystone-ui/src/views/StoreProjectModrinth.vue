@@ -96,6 +96,7 @@ const project = computed(() => {
     info,
     htmlDescription: render(p.body),
     gallery: p.gallery.map(g => ({
+      rawUrl: g.raw_url,
       url: g.url,
       description: g.description,
     })),

@@ -773,6 +773,7 @@ export interface ModGallery {
   description: string
   date?: string
   url: string
+  rawUrl?: string
 }
 export interface CategoryItem {
   id: string
@@ -919,7 +920,7 @@ const onScroll = (e: Event) => {
 // Image
 const imageDialog = injection(kImageDialog)
 const onShowImage = (img: ModGallery) => {
-  imageDialog.show(img.url, { description: img.description, date: img.date })
+  imageDialog.show(img.rawUrl || img.url, { description: img.description, date: img.date })
 }
 
 // Content clicked

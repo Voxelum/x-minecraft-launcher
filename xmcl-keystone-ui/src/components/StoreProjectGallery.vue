@@ -10,8 +10,8 @@
       v-for="(g, i) in galleries"
       :key="i"
       class="cursor-pointer"
-      :src="g.url"
-      @click="imageDialog.show(g.url, { description: g.description })"
+      :src="g.rawUrl || g.url"
+      @click="imageDialog.show(g.rawUrl || g.url, { description: g.description })"
     />
   </v-carousel>
 </template>

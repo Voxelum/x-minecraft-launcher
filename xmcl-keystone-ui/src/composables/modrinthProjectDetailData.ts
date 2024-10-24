@@ -88,6 +88,7 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
           description: g.description,
           date: g.created,
           url: g.url,
+          rawUrl: g.raw_url,
         })
       }
     }

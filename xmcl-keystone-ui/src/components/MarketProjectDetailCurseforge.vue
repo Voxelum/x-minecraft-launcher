@@ -123,7 +123,8 @@ const model = computed(() => {
       galleries.push({
         title: image.title,
         description: image.description,
-        url: image.url,
+        rawUrl: image.url,
+        url: image.thumbnailUrl,
       })
     }
   }

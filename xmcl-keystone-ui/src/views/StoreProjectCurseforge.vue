@@ -98,7 +98,8 @@ const project = computed(() => {
     info,
     htmlDescription: computed(() => description.data.value || ''),
     gallery: p.screenshots.map(g => ({
-      url: g.url,
+      rawUrl: g.url,
+      url: g.thumbnailUrl,
       description: g.description,
     })),
   })
