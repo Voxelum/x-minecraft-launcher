@@ -6,7 +6,7 @@ import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
-import { kFlights } from '@/composables/flights'
+import { kFlights, useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
@@ -54,11 +54,12 @@ watch(curseforgeModId, async (id) => {
 
 const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
 
-const flights = inject(kFlights, {})
+const i18nSearch = useI18nSearchFlights()
 
 const localizedBody = ref('')
-if (flights.i18nSearch && flights.i18nSearch instanceof Array) {
-  const { getContent } = useAutoI18nCommunityContent(flights.i18nSearch as string[])
+
+if (i18nSearch) {
+  const { getContent } = useAutoI18nCommunityContent(i18nSearch)
   watch(curseforgeModId, async (id) => {
     localizedBody.value = ''
     const result = await getContent('curseforge', id)

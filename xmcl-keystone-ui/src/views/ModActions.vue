@@ -1,6 +1,15 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
+      v-shared-tooltip="_ => 'Alt'"
+      icon
+      large
+      :class="{ 'v-btn--active': isEnabledState }"
+      @click="isEnabledState = !isEnabledState"
+    >
+      <v-icon>translate</v-icon>
+    </v-btn>
+    <v-btn
       v-shared-tooltip="_ => t('mod.showDirectory')"
       icon
       large
@@ -13,12 +22,14 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kLocalizedContent } from '@/composables/localizedContent'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 const { showDirectory } = useService(InstanceModsServiceKey)
-const { path, runtime: version } = injection(kInstance)
+const { path } = injection(kInstance)
+const { isEnabledState } = injection(kLocalizedContent)
 const { t } = useI18n()
 </script>
 

@@ -9,18 +9,17 @@ import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { kFlights } from './flights'
+import { kFlights, useI18nSearchFlights } from './flights'
 import { useAutoI18nCommunityContent } from './i18n'
 
 export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>, mapping: Ref<ProjectMapping | undefined>) {
   const { render } = useMarkdown()
   const { categories } = injection(kModrinthTags)
 
-  const flights = inject(kFlights, {})
-
+  const is18nSearch = useI18nSearchFlights()
   const localizedBody = ref('')
-  if (flights.i18nSearch && flights.i18nSearch instanceof Array) {
-    const { getContent } = useAutoI18nCommunityContent(flights.i18nSearch)
+  if (is18nSearch) {
+    const { getContent } = useAutoI18nCommunityContent(is18nSearch)
     watch(projectId, async (id) => {
       localizedBody.value = ''
       const result = await getContent('modrinth', id)

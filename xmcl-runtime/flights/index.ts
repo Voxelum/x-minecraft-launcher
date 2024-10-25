@@ -14,15 +14,18 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
   const fetchFlights = async (output: Record<string, any>, cachedPath: string) => {
     try {
       const clientSession = await app.registry.get(kClientToken)
-      const resp = await app.fetch(`https://api.xmcl.app/flights?version=${app.version}&build=${app.build}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
+      const build = app.build
+      const resp = await app.fetch(`https://api.xmcl.app/flights?version=${app.version}&build=${build}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
       })
       if (resp.status !== 200) {
-        throw new Error(`Failed to fetch flights: ${resp.status}`)
+        logger.error(new Error(`Failed to fetch flights: ${resp.status}`))
+        return
       }
       const result = await resp.json()
       for (const [k, v] of Object.entries(result)) {
         output[k] = v
       }
+      logger.log('Fetched flights', JSON.stringify(output))
       // Write to cache
       await writeFile(cachedPath, JSON.stringify(output))
     } catch (e) {
@@ -55,7 +58,9 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
   try {
     const filtered = { ...BUILTIN_FLIGHTS } as Record<string, string>
     const cachedPath = join(app.appDataPath, 'flights.json')
-    const promise = readFlights(filtered, cachedPath)
+    const promise = readFlights(filtered, cachedPath).then(() => {
+      logger.log('Flights loaded', JSON.stringify(filtered))
+    })
 
     app.protocol.registerHandler('http', async ({ request, response }) => {
       if (request.url.host === 'launcher' && request.url.pathname === '/flights') {

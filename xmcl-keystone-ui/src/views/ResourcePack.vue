@@ -125,10 +125,9 @@ import { useToggleCategories } from '@/composables/toggleCategories'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceResourcePacksServiceKey, Resource } from '@xmcl/runtime-api'
+import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
-import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
@@ -299,9 +298,6 @@ const getInstalledCurseforge = (modId: number | undefined) => {
 // dense
 const denseView = useLocalStorageCacheBool('resource-pack-dense-view', false)
 const itemHeight = computed(() => denseView.value ? 48 : 76)
-
-// localized content
-provide(kLocalizedContent, useLocalizedContentControl())
 </script>
 
 <style scoped>

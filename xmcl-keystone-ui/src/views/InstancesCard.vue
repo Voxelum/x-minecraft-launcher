@@ -13,7 +13,6 @@
     @click="emit('click', $event)"
   >
     <div
-      v-if="isBusy"
       class="absolute flex size-full items-center justify-center"
     >
       <v-progress-circular
