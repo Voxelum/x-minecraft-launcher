@@ -6,6 +6,8 @@ import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
+import { kFlights } from '@/composables/flights'
+import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
@@ -51,6 +53,19 @@ watch(curseforgeModId, async (id) => {
 }, { immediate: true })
 
 const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
+
+const flights = inject(kFlights, {})
+
+const localizedBody = ref('')
+if (flights.i18nSearch && flights.i18nSearch instanceof Array) {
+  const { getContent } = useAutoI18nCommunityContent(flights.i18nSearch as string[])
+  watch(curseforgeModId, async (id) => {
+    localizedBody.value = ''
+    const result = await getContent('curseforge', id)
+    localizedBody.value = result
+  }, { immediate: true })
+}
+
 const model = computed(() => {
   const externals: ExternalResource[] = []
   const mod = props.curseforge || curseforgeProject.value
@@ -158,6 +173,11 @@ const model = computed(() => {
     detail.localizedTitle = mapped.name
     detail.localizedDescription = mapped.description
   }
+
+  if (localizedBody.value) {
+    detail.localizedHtmlContent = localizedBody.value
+  }
+
   return detail
 })
 

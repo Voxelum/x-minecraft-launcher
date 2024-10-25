@@ -9,10 +9,25 @@ import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
+import { kFlights } from './flights'
+import { useAutoI18nCommunityContent } from './i18n'
 
 export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>, mapping: Ref<ProjectMapping | undefined>) {
   const { render } = useMarkdown()
   const { categories } = injection(kModrinthTags)
+
+  const flights = inject(kFlights, {})
+
+  const localizedBody = ref('')
+  if (flights.i18nSearch && flights.i18nSearch instanceof Array) {
+    const { getContent } = useAutoI18nCommunityContent(flights.i18nSearch)
+    watch(projectId, async (id) => {
+      localizedBody.value = ''
+      const result = await getContent('modrinth', id)
+      localizedBody.value = result
+    }, { immediate: true })
+  }
+
   const { t } = useI18n()
   const getEnv = (v: string) => {
     if (v === 'required') return t('modrinth.environments.required')
@@ -116,6 +131,10 @@ export function useModrinthProjectDetailData(projectId: Ref<string>, project: Re
       const map = mapping.value
       detail.localizedTitle = map.name
       detail.localizedDescription = map.description
+    }
+
+    if (localizedBody.value) {
+      detail.localizedHtmlContent = render(localizedBody.value)
     }
 
     return detail

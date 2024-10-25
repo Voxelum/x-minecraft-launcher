@@ -58,7 +58,7 @@
       >
         <v-list-item-title class="flex overflow-hidden">
           <span class="max-w-full overflow-hidden overflow-ellipsis">
-            {{ item.localizedTitle || title || item.title }}
+            {{ (isEnabled ? item.localizedTitle : '') || title || item.title }}
           </span>
           <template v-if="item.installed.length > 0 && getContextMenuItems">
             <div class="flex-grow" />
@@ -155,6 +155,7 @@ import { getSWRV } from '@/util/swrvGet'
 import { Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
+import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>
@@ -184,6 +185,8 @@ const { open } = useContextMenu()
 
 const descriptionTextOrObject = computed(() => props.item.localizedDescription || description.value || props.item.description || props.item.descriptionTextComponent || '')
 const hasDuplicate = computed(() => props.noDuplicate && props.item.installed.length > 1)
+
+const { isEnabled } = inject(kLocalizedContent, useLocalizedContentControl())
 
 const dragover = ref(0)
 const onDragEnter = (e: DragEvent) => {

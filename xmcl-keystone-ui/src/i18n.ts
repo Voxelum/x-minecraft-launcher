@@ -2,9 +2,8 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
-
+// @ts-ignore
 import en from '../locales/en.yaml'
-import zh from '../locales/zh-CN.yaml'
 
 Vue.use(VueI18n, { bridge: true })
 
@@ -18,7 +17,6 @@ export const i18n = castToVueI18n(
       fallbackWarn: false,
       messages: {
         en,
-        'zh-CN': zh,
       },
     },
     VueI18n,

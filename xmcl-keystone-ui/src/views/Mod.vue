@@ -435,10 +435,11 @@ import ModItem from './ModItem.vue'
 import { BuiltinImages } from '@/constant'
 import { useDialog, useSimpleDialog } from '@/composables/dialog'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { notNullish } from '@vueuse/core'
+import { notNullish, useKeyModifier } from '@vueuse/core'
 import { isNoModLoader } from '@/util/isNoModloader'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
+import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 
 const { runtime, path } = injection(kInstance)
 
@@ -805,6 +806,8 @@ const onInstallProject = useProjectInstall(
     install({ path: path.value, mods: [file.path] })
   },
 )
+
+provide(kLocalizedContent, useLocalizedContentControl())
 
 useTutorial(computed(() => [{
   element: '#search-text-field',

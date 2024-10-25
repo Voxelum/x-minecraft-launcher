@@ -253,6 +253,7 @@ import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefa
 import { BuiltinImages } from '@/constant'
 import AvatarChip from '@/components/AvatarChip.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
+import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 
 const {
   modrinthError,
@@ -427,4 +428,6 @@ const onInstallProject = useProjectInstall(
 const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
 const itemHeight = computed(() => denseView.value ? 48 : 80)
 
+// localized content
+provide(kLocalizedContent, useLocalizedContentControl())
 </script>
