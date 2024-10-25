@@ -1,0 +1,14 @@
+/.idea/
+/pkg
+/src
+/cache
+minecraft-launcher-core-node
+x-minecraft-launcher
+xmcl-*.deb
+*.asar
+*.tar.xz
+*.pkg.tar.zst
+*.tar.gz
+*.part
+*.part.st
+LICENSE

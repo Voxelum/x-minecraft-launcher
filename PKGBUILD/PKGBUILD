@@ -1,0 +1,31 @@
+# Maintainer: Chizuru-Kagurazaka <chizuru-mtf@outlook.com>
+# Maintainer: bilibili_xiaok <the_xiaok@qq.com>
+# Contributor: Twor <i@twor.me>
+# Contributor: Chizuru-Kagurazaka <chizuru-mtf@outlook.com>
+# Contributor: bilibili_xiaok <the_xiaok@qq.com>
+# Contributor: Vova-K <v1mkss.m@gmail.com>
+pkgname=xmcl-launcher
+pkgver=0.47.10
+pkgrel=1
+pkgdesc="X Minecraft Launcher - A modern Minecraft launcher"
+arch=('x86_64' 'aarch64')
+provide=("xmcl")
+url="https://xmcl.app/"
+license=('MIT')
+conflicts=('xmcl-launcher-bin')
+optdepends=('jre8-openjdk: Minimum requirement for launching older game versions'
+'jre11-openjdk: Recommended Java version for launching versions 1.12-1.17'
+'jre17-openjdk: Recommended Java version for launching version 1.17 and above'
+'jre22-openjdk: Recommended Java version for launching version 1.20.5+ and above')
+
+source_x86_64=( "https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${pkgver}/xmcl-${pkgver}-amd64.deb")
+
+source_aarch64=("https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${pkgver}/xmcl-${pkgver}-arm64.deb")
+
+sha256sums_x86_64=('9374217574cee1283baed43d440fb5d1a8835d5d9415686a08b69043d0ba4b84')
+sha256sums_aarch64=('7d24a005fee1503ccb02959a776d4a6cd84396fccc0ec43e3efb9243416c9676')
+
+package(){
+  tar -xvf 'data.tar.xz' -C "${pkgdir}"
+  install -dv "${pkgdir}/usr/bin"
+}

@@ -1,0 +1,73 @@
+#!/bin/bash
+
+set -euo pipefail
+
+readonly REPO_URL="https://api.github.com/repos/Voxelum/x-minecraft-launcher/releases/latest"
+readonly DOWNLOAD_URL="https://github.com/Voxelum/x-minecraft-launcher/releases/download"
+readonly CACHE_DIR="./cache"
+readonly ARCHITECTURES=("amd64" "arm64")
+
+log() {
+    printf "\e[%sm%s\e[0m\n" "$1" "$2"
+}
+
+fetch_latest_version() {
+    curl --silent "$REPO_URL" | jq -r '.tag_name'
+}
+
+fetch_sha256() {
+    local sha256_file="${CACHE_DIR}/xmcl-${latest_version#v}-$1.deb.sha256"
+    [[ -f "$sha256_file" ]] || {
+        log "36" "Fetching SHA256 for $1..."
+        curl -sSL -o "$sha256_file" "${DOWNLOAD_URL}/${latest_version}/xmcl-${latest_version#v}-$1.deb.sha256"
+    }
+    awk '{print $1}' "$sha256_file"
+}
+update_file_content() {
+    sed -i "s|$2|$3|g" "$1"
+}
+
+update_package_info() {
+    log "35" "Updating $1..."
+    update_file_content "$1" "^pkgver=.*" "pkgver=${2#v}"
+    update_file_content "$1" "^sha256sums_x86_64=('.*')" "sha256sums_x86_64=('$3')"
+    update_file_content "$1" "^sha256sums_aarch64=('.*')" "sha256sums_aarch64=('$4')"
+}
+
+update_srcinfo() {
+    log "35" "Updating .SRCINFO..."
+    update_file_content ".SRCINFO" "^\tpkgver = .*" "\tpkgver = ${latest_version#v}"
+    update_file_content ".SRCINFO" "^\tsource = .*" "\tsource = ${DOWNLOAD_URL}/${latest_version}"
+}
+
+build_package() {
+    log "34" "Building package..."
+    makepkg -sf --noconfirm
+}
+
+cleanup() {
+    log "33" "Cleaning up..."
+    rm -rf xmcl-*-amd64.deb xmcl-*-arm xmcl-launcher-*-x86_64.pkg.tar.zst ./src ./pkg "$CACHE_DIR"
+}
+
+main() {
+    latest_version=$(fetch_latest_version)
+    log "33" "Latest version: ${latest_version}"
+
+    mkdir -p "$CACHE_DIR"
+
+    declare -A sha256sums
+    for arch in "${ARCHITECTURES[@]}"; do
+        sha256sums["$arch"]=$(fetch_sha256 "$arch")
+    done
+
+    update_package_info "PKGBUILD" "$latest_version" "${sha256sums[amd64]}" "${sha256sums[arm64]}"
+    update_srcinfo
+
+    log "32" "Updated to version ${latest_version}"
+
+    build_package
+    cleanup
+}
+
+main

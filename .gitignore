@@ -10,6 +10,7 @@ thumbs.db
 *.lock
 *.log
 *.bin
+*.pacman
 /temp
 xmcl-electron-app/build/appx
 .env
