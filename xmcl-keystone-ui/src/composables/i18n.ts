@@ -3,11 +3,12 @@ import { Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { Framework } from 'vuetify'
 
+const locales = import.meta.glob('../../locales/*.yaml')
+
 export function useI18nSync(framework: Framework, state: Ref<Settings | undefined>) {
-  const { locale } = useI18n()
+  const { locale, setLocaleMessage } = useI18n()
   watch(computed(() => state.value?.locale || ''), (newValue: string, oldValue: string) => {
     console.log(`Locale changed ${oldValue} -> ${newValue}`)
-    locale.value = newValue
     const lang = framework.lang
     if (newValue === 'zh-CN') {
       lang.current = 'zhHans'
@@ -16,6 +17,11 @@ export function useI18nSync(framework: Framework, state: Ref<Settings | undefine
     } else {
       lang.current = 'en'
     }
+
+    locales[`../../locales/${newValue}.yaml`]().then((message: any) => {
+      setLocaleMessage(newValue, message.default)
+      locale.value = newValue
+    })
 
     clientModrinchV2Locale.headers = {
       'Accept-Language': newValue,
