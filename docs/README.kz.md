@@ -31,9 +31,9 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+Қолданбаны жүктеп алу үшін [ресми сайтқа](https://xmcl.app) кіріңіз!
 
-If you have winget, you can use winget to install
+Егер сізде winget болса, орнату үшін winget пайдалануға болады
 
 ```bash
 winget install CI010.XMinecraftLauncher
@@ -44,42 +44,42 @@ winget install CI010.XMinecraftLauncher
 <kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.de.md)</kbd>
 <kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
 <kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](docs/README.jp.md)</kbd>
-<kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](docs/README.pl.md)</kbd>
-<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](docs/README.kz.md)</kbd>
+<kbd>[<img title="Poland" alt="C" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](docs/README.pl.md)</kbd>
+<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="24">](docs/README.kz.md)</kbd>
 
 
 
-## Features
+## Ерекше өзгешеліктері
 
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
+- 📥 **Жүктеп алу және автоматты аяқтау**. Ресми немесе үшінші тарап айналарынан 'Minecraft', 'Forge', 'Fabric', 'Quilt', 'OptiFine', 'JVM' жүктеп алуға қолдау көрсетіңіз.
+- ⚡️ **Жылдам жүктеп алу**. HTTP/HTTPS агенттері арқылы розетканы қайта пайдаланыңыз және файлдарды бір уақытта бөліктерге жүктеп алыңыз.
+- 💻 **Кросс-платформа**. Іске қосу құралы Electron негізінде жасалған және 🗔 Windows 10/11, 🍎 MacOS және 🐧 Linux жүйелерін қолдайды.
+- 📚 **Көп үлгілік**. Пайдаланушылар әртүрлі нұсқаларды, режимдерді және іске қосу параметрлерін оқшаулау үшін бірнеше даналарды жасай алады.
+- 🗂 **Барлық ресурстарды басқарыңыз**. Даналардағы ресурстарды орнату үшін (қатты/символдық) сілтемелерді пайдаланыңыз, дискіні оңтайлы пайдалануды сақтаңыз. Модтардың көшірмелері барлық жерде жоқ! 😆
+- 🔥 **Кіріктірілген CurseForge, Modrinth қолдауы**. Іске қосу құралының ішіндегі ресурстарды жүктеп алуға болады.
+- 📦 **импорттау/экспорттауды қолдау** CurseForge және Modrinth модпакеттеріне сәйкес келеді!
+- 🔒 **Бірнеше тіркелгі жүйесін қолдау**. Кірістірілген Microsoft логині және Mojang Yggdrasil API. Сондай-ақ оның [ely.by](https://ely.by/) және [littleskin.cn](https://littleskin.cn) қолдауы бар. Сіз сондай-ақ үшінші тарап аутентификация серверлерін қоса аласыз!
+- 🔗 **Пайдаланушылар арасындағы тең дәрежелі байланыс**. Сіз LAN арқылы көп ойыншы ойнай аласыз, тіпті бір физикалық жергілікті желіде болмасаңыз да!
+- 🔑 **Код белгісі және заманауи қаптама**. Windows жүйесінде қолданбаны орнату үшін "appx" және "appinstaller" қолданбаларын пайдалануға болады. Браузерден блоктау хабарларын алмайсыз немесе SmartScreen қателерін енді көрмейсіз! 😎
 
-## Contribute
+## Үлес қосу
 
-For general developer, see [Contributing](./CONTRIBUTING.md)
+Жалпы әзірлеуші ​​үшін [Үлес қосу](./CONTRIBUTING.md) бөлімін қараңыз.
 
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
+i18n локализация әзірлеушісі үшін [Локализацияны бастау] (https://docs.xmcl.app/en/guide/i18n) бөлімін орындаңыз.
 
-## LICENSE
+## ЛИЦЕНЗИЯ
 
 [MIT](LICENSE)
 
-## Sponsorship
+## Демеушілік
 
-| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://www.netlify.com/) | Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/) |
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://www.netlify.com/) | Windows жүйесінде тегін кодқа қол қою [SignPath.io](https://signpath.io/), [SignPath Foundation] сертификаты(https://signpath.org/) қамтамасыз етеді. |
 | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
-| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL leverage its hassle-free platform for serverless JavaScript applications. Provided by [Deno](https://deno.com/)   |
+| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL серверсіз JavaScript қолданбалары үшін қиындықсыз платформасын пайдаланады. Берген [Deno](https://deno.com/)   |
 
-### Sponsor (AFDIAN)
+### ДЕМЕУШІ (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -101,20 +101,20 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 ## Credit
 
-[BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
+[BANSAFAn](https://github.com/BANSAFAn), кім маған RU/UK қауымдастығында көп көмектеседі.
 
-[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), AUR пакетінің тізілімін жүргізу.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), сақтау winget.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), толығымен украин тіліне аударылды!
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanja-san](https://github.com/vanja-san), орыс тілімен қамтамасыз етілді!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) маған Launcher ядросында көмектеседі.
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726), кім іске қосу құрылғысының дизайнына көп көмектеседі.
 
-Also, special thanks to
+Сондай-ақ, ерекше рахмет
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
