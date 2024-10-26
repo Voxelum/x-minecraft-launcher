@@ -103,7 +103,7 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 [BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), maintaining the AUR package registry.
 
 [0xc0000142](https://github.com/0xc0000142), maintaining the winget.
 

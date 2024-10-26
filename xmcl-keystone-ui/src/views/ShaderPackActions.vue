@@ -1,6 +1,15 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
+      v-shared-tooltip="_ => 'Alt'"
+      icon
+      large
+      :class="{ 'v-btn--active': isEnabledState }"
+      @click="isEnabledState = !isEnabledState"
+    >
+      <v-icon>translate</v-icon>
+    </v-btn>
+    <v-btn
       v-shared-tooltip="_ => isInstanceLinked ? t('resourcepack.shared') : t('resourcepack.independent')"
       icon
       :loading="loading"
@@ -22,6 +31,7 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kLocalizedContent } from '@/composables/localizedContent'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
@@ -29,6 +39,8 @@ import useSWRV from 'swrv'
 
 const { showDirectory, link, unlink, isLinked } = useService(InstanceShaderPacksServiceKey)
 const { path } = injection(kInstance)
+
+const { isEnabledState } = injection(kLocalizedContent)
 
 const { data: isInstanceLinked, isValidating, mutate } = useSWRV(computed(() => path.value), isLinked)
 const linking = ref(false)

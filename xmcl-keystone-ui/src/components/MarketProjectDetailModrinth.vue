@@ -172,6 +172,7 @@ const curseforgeId = computed(() => props.curseforge ||
 const archived = computed(() => {
   return project.value?.status === 'archived'
 })
+
 // watchEffect(() => {
 //   console.log(project.value.status)
 // })

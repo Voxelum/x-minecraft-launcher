@@ -412,9 +412,11 @@ import { useService } from '@/composables'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
+import { useDialog, useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
+import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModsSearch } from '@/composables/modSearch'
@@ -425,20 +427,18 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { useTutorial } from '@/composables/tutorial'
+import { BuiltinImages } from '@/constant'
 import { injection } from '@/util/inject'
+import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
+import { notNullish } from '@vueuse/core'
 import { createPromiseSignal, InstanceModsServiceKey, PromiseSignal, RuntimeVersions } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
-import ModItem from './ModItem.vue'
-import { BuiltinImages } from '@/constant'
-import { useDialog, useSimpleDialog } from '@/composables/dialog'
-import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { notNullish } from '@vueuse/core'
-import { isNoModLoader } from '@/util/isNoModloader'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
+import ModItem from './ModItem.vue'
 
 const { runtime, path } = injection(kInstance)
 
@@ -805,6 +805,7 @@ const onInstallProject = useProjectInstall(
     install({ path: path.value, mods: [file.path] })
   },
 )
+
 
 useTutorial(computed(() => [{
   element: '#search-text-field',

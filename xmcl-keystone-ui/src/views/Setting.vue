@@ -24,8 +24,11 @@ import SettingMigrationDialog from './SettingMigrationDialog.vue'
 import SettingGlobal from './SettingGlobal.vue'
 import SettingYggdrasilServices from './SettingYggdrasilServices.vue'
 import { usePresence } from '@/composables/presence'
+import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 
 const { t } = useI18n()
 usePresence(computed(() => t('presence.setting')))
+
+provide(kUpdateSettings, useUpdateSettings())
 
 </script>

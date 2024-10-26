@@ -1,4 +1,4 @@
-import { useService, useServiceBusy } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
 import { JavaRecord, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { computed, InjectionKey } from 'vue'
 import { DialogKey } from './dialog'
@@ -13,6 +13,9 @@ export function useJavaContext() {
   const all = computed(() => state.value?.all ?? [])
   const missing = computed(() => state.value?.all.length === 0)
 
+  const { refreshLocalJava } = useService(JavaServiceKey)
+  const { refreshing, refresh } = useRefreshable(refreshLocalJava)
+
   return {
     isValidating,
     missing,
@@ -21,5 +24,7 @@ export function useJavaContext() {
     remove: (java: JavaRecord) => {
       removeJava(java.path)
     },
+    refresh,
+    refreshing,
   }
 }

@@ -10,8 +10,8 @@
       <v-btn
         v-shared-tooltip.left="_ => t('java.refresh')"
         icon
-        :loading="refreshingLocalJava"
-        @click="refreshLocalJava"
+        :loading="refreshing"
+        @click="refresh"
       >
         <v-icon>refresh</v-icon>
       </v-btn>
@@ -128,7 +128,9 @@
 </template>
 
 <script lang=ts setup>
-import { useService, useServiceBusy } from '@/composables'
+import { useService } from '@/composables'
+import { kInstanceJava } from '@/composables/instanceJava'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
@@ -137,15 +139,12 @@ import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 import JavaList from './BaseSettingJavaList.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { kInstanceJava } from '@/composables/instanceJava'
 
 const { t } = useI18n()
 const { showOpenDialog } = windowController
-const { all: javas, remove: removeJava } = injection(kJavaContext)
+const { all: javas, remove: removeJava, refreshing, refresh } = injection(kJavaContext)
 const { java: selectedJava } = injection(kInstanceJava)
-const { resolveJava: add, refreshLocalJava } = useService(JavaServiceKey)
-const refreshingLocalJava = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
+const { resolveJava: add } = useService(JavaServiceKey)
 
 const {
   isGlobalAssignMemory,

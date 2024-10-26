@@ -447,6 +447,7 @@ instances:
   addServerDescription: Esto creará un juego que se iniciará directamente en el servidor.
   addTemplate: Crear desde modpack descargado
   choose: Selecciona un juego
+  fix: Reparar
   folderSetting: Configuración de carpeta
   importFolder: Importar desde Carpeta
   importFolderDescription: Importar Minecraft al Lanzador

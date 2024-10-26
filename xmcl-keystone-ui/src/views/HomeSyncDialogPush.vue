@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import { InstanceIOException, InstanceManifest, isException, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
-import { useService, useServiceBusy } from '@/composables'
+import { useService } from '@/composables'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
@@ -55,8 +55,8 @@ const props = defineProps<{ shown: boolean }>()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { uploadInstanceManifest } = useService(XUpdateServiceKey)
 const { path } = injection(kInstance)
-const gettingManifest = useServiceBusy(InstanceManifestServiceKey, 'getInstanceManifest')
-const uploadingInstanceManifest = useServiceBusy(XUpdateServiceKey, 'uploadInstanceManifest')
+const gettingManifest = ref(false)
+const uploadingInstanceManifest = ref(false)
 const current = ref(undefined as undefined | InstanceManifest)
 const files = computed(() => current.value ? current.value.files : [])
 const { t } = useI18n()
