@@ -1,7 +1,6 @@
 {
     "globals": {
         "taskMonitor": true,
-        "resourceMonitor": true,
         "serviceChannels": true,
         "windowController": true,
         "multiplayer": true,

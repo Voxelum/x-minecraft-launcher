@@ -93,6 +93,7 @@ export interface StoreProject {
   info: Array<{ name: string; value: string; url?: string; icon?: string }>
   htmlDescription?: string
   gallery: Array<{
+    rawUrl?: string
     url: string
     description: string
   }>

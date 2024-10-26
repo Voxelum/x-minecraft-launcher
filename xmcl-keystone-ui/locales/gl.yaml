@@ -282,6 +282,7 @@ instances:
     Debe seleccionar o cartafol de datos de MultiMC.
   addServerDescription: Isto creará un xogo que se lanzará directamente ao servidor.
   addTemplate: Crear desde o modpack descargado
+  fix: Reparación
   folderSetting: Configuración do cartafol
 launch:
   killServer: Eliminar o servidor Localhost

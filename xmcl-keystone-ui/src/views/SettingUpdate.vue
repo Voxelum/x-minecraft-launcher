@@ -78,18 +78,16 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useServiceBusy } from '@/composables'
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useDialog } from '../composables/dialog'
-import { useUpdateSettings } from '../composables/setting'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import SettingHeader from '@/components/SettingHeader.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
+import { useDialog } from '../composables/dialog'
+import { kUpdateSettings } from '../composables/setting'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
-const { updateInfo, updateStatus, checkUpdate, checkingUpdate, version } = useUpdateSettings()
+const { updateInfo, installing, updateStatus, checkUpdate, checkingUpdate, version } = injection(kUpdateSettings)
 const hasNewUpdate = computed(() => updateInfo.value?.name !== version.value)
-const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
 const { t } = useI18n()
 
 </script>

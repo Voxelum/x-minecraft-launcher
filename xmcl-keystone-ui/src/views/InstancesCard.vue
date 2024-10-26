@@ -2,7 +2,6 @@
   <v-card
     v-draggable-card
     v-context-menu.force="getContextMenuItems"
-    :ripple="!isBusy"
     class="draggable-card flex flex-grow-0 flex-col"
     :color="isSelected ? 'primary' : ''"
     :dark="isSelected"
@@ -11,11 +10,9 @@
     :class="{ selected: isSelected }"
     style="padding: 0;"
     hover
-    :draggable="!isBusy"
     @click="emit('click', $event)"
   >
     <div
-      v-if="isBusy"
       class="absolute flex size-full items-center justify-center"
     >
       <v-progress-circular
@@ -149,22 +146,20 @@
 </template>
 <script lang=ts setup>
 import TextComponent from '@/components/TextComponent'
-import { useBusy } from '@/composables'
+import { useContextMenu } from '@/composables/contextMenu'
+import { useDateString } from '@/composables/date'
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
+import { useVersionsWithIcon } from '@/composables/versionLocal'
+import { BuiltinImages } from '@/constant'
 import { vDraggableCard } from '@/directives/draggableCard'
 import { getBanner } from '@/util/banner'
 import { injection } from '@/util/inject'
-import { Instance, LockKey } from '@xmcl/runtime-api'
+import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
-import { useDateString } from '@/composables/date'
-import { useContextMenu } from '@/composables/contextMenu'
-import { useVersionsWithIcon } from '@/composables/versionLocal'
-import { BuiltinImages } from '@/constant'
 
 const props = defineProps<{ instance: Instance }>()
-const isBusy = useBusy(LockKey.instance(props.instance.path))
 const { path } = injection(kInstance)
 const isSelected = computed(() => path.value === props.instance.path)
 const { status } = useInstanceServerStatus(computed(() => props.instance))

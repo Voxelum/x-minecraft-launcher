@@ -4,24 +4,28 @@ import { setTimeout } from 'timers/promises'
 import { InjectionKey, LauncherAppPlugin } from '~/app'
 import { kClientToken } from '~/clientToken'
 
-export const kFlights: InjectionKey<Record<string, string>> = Symbol('Flights')
+export const kFlights: InjectionKey<Record<string, any>> = Symbol('Flights')
+
+const BUILTIN_FLIGHTS = {
+}
 
 export const pluginFlights: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Flights')
-  const fetchFlights = async (output: Record<string, string>, cachedPath: string) => {
+  const fetchFlights = async (output: Record<string, any>, cachedPath: string) => {
     try {
       const clientSession = await app.registry.get(kClientToken)
-      const resp = await app.fetch(`https://api.xmcl.app/flights?version=${app.version}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
+      const build = app.build
+      const resp = await app.fetch(`https://api.xmcl.app/flights?version=${app.version}&build=${build}&locale=${app.host.getLocale()}&clientToken=${clientSession}`, {
       })
       if (resp.status !== 200) {
-        throw new Error(`Failed to fetch flights: ${resp.status}`)
+        logger.error(new Error(`Failed to fetch flights: ${resp.status}`))
+        return
       }
       const result = await resp.json()
       for (const [k, v] of Object.entries(result)) {
-        if (typeof v === 'string') {
-          output[k] = v
-        }
+        output[k] = v
       }
+      logger.log('Fetched flights', JSON.stringify(output))
       // Write to cache
       await writeFile(cachedPath, JSON.stringify(output))
     } catch (e) {
@@ -33,20 +37,18 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
       }
     }
   }
-  const readCachedFlights = async (output: Record<string, string>, cachedPath: string) => {
+  const readCachedFlights = async (output: Record<string, any>, cachedPath: string) => {
     try {
       const cached = JSON.parse(await readFile(cachedPath, 'utf-8'))
       for (const [k, v] of Object.entries(cached)) {
-        if (typeof v === 'string') {
-          output[k] = v
-        }
+        output[k] = v
       }
       return false
     } catch {
       return true
     }
   }
-  const readFlights = async (output: Record<string, string>, cachedPath: string) => {
+  const readFlights = async (output: Record<string, any>, cachedPath: string) => {
     if (await readCachedFlights(output, cachedPath)) {
       await Promise.race([fetchFlights(output, cachedPath), setTimeout(2000)])
     } else {
@@ -54,9 +56,11 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
     }
   }
   try {
-    const filtered = {} as Record<string, string>
+    const filtered = { ...BUILTIN_FLIGHTS } as Record<string, string>
     const cachedPath = join(app.appDataPath, 'flights.json')
-    const promise = readFlights(filtered, cachedPath)
+    const promise = readFlights(filtered, cachedPath).then(() => {
+      logger.log('Flights loaded', JSON.stringify(filtered))
+    })
 
     app.protocol.registerHandler('http', async ({ request, response }) => {
       if (request.url.host === 'launcher' && request.url.pathname === '/flights') {
@@ -72,6 +76,6 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
 
     app.registry.register(kFlights, filtered)
   } catch {
-    app.registry.register(kFlights, {})
+    app.registry.register(kFlights, { ...BUILTIN_FLIGHTS })
   }
 }

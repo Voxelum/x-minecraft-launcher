@@ -409,7 +409,7 @@
             class="markdown-body select-text whitespace-normal"
             :class="{ 'project-description': curseforge }"
             @click="onDescriptionDivClicked"
-            v-html="detail.htmlContent"
+            v-html="(isEnabled && detail.localizedHtmlContent) || detail.htmlContent"
           />
           <template v-else-if="detail.description.includes('§')">
             <TextComponent :source="detail.description" />
@@ -697,6 +697,7 @@ import { clientCurseforgeV1 } from '@/util/clients'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
+import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -773,6 +774,7 @@ export interface ModGallery {
   description: string
   date?: string
   url: string
+  rawUrl?: string
 }
 export interface CategoryItem {
   id: string
@@ -806,6 +808,7 @@ export interface ProjectDetail {
   categories: CategoryItem[]
   modLoaders: string[]
   htmlContent: string
+  localizedHtmlContent?: string
   externals: ExternalResource[]
   galleries: ModGallery[]
   info: Info[]
@@ -820,8 +823,8 @@ const _enabled = computed({
   },
 })
 
-const titleToDisplay = computed(() => props.detail.localizedTitle || props.detail.title)
-const descriptionToDisplay = computed(() => props.detail.localizedDescription || props.detail.description)
+const titleToDisplay = computed(() => (isEnabled.value && props.detail.localizedTitle) || props.detail.title)
+const descriptionToDisplay = computed(() => (isEnabled.value && props.detail.localizedDescription) || props.detail.description)
 
 const detailsHeaders = computed(() => {
   const result: Array<{
@@ -919,7 +922,7 @@ const onScroll = (e: Event) => {
 // Image
 const imageDialog = injection(kImageDialog)
 const onShowImage = (img: ModGallery) => {
-  imageDialog.show(img.url, { description: img.description, date: img.date })
+  imageDialog.show(img.rawUrl || img.url, { description: img.description, date: img.date })
 }
 
 // Content clicked
@@ -954,6 +957,8 @@ const iconMapping = {
 const validModLoaders = computed(() => {
   return props.detail.modLoaders.filter(l => iconMapping[l])
 })
+
+const { isEnabled } = inject(kLocalizedContent, useLocalizedContentControl())
 
 function onDescriptionLinkClicked(e: MouseEvent, href: string) {
   const url = new URL(href)

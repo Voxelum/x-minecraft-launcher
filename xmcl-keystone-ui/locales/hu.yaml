@@ -503,6 +503,7 @@ instances:
     Importálás a közös .minecraft mappából. Ez duplikálja az eredeti
     játékprofilt az XMCL-be.
   choose: Játék kiválasztása
+  fix: Javítás
   folderSetting: Mappa beállításai
   importFolder: Importálás mappából
   importFolderDescription: Minecraft importálása a Launcherbe

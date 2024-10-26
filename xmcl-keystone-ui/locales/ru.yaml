@@ -561,6 +561,7 @@ instances:
     Импортировать из обычной папки (.minecraft). Это дублирует оригинальный
     профиль экземпляра в XMCL.
   choose: Выбрать экземпляр
+  fix: Исправить
   folderSetting: Настройки папки
   importFolder: Импортировать из папки
   importFolderDescription: Импортировать Minecraft в лаунчер

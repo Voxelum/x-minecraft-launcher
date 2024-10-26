@@ -225,14 +225,18 @@
 </template>
 
 <script lang="ts" setup>
+import AvatarChip from '@/components/AvatarChip.vue'
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
+import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
+import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
@@ -241,18 +245,14 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { BuiltinImages } from '@/constant'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { InstanceShaderPacksServiceKey, Resource } from '@xmcl/runtime-api'
+import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
-import { useSimpleDialog } from '@/composables/dialog'
-import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { BuiltinImages } from '@/constant'
-import AvatarChip from '@/components/AvatarChip.vue'
-import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 
 const {
   modrinthError,
@@ -426,5 +426,4 @@ const onInstallProject = useProjectInstall(
 // dense
 const denseView = useLocalStorageCacheBool('shader-pack-dense-view', false)
 const itemHeight = computed(() => denseView.value ? 48 : 80)
-
 </script>

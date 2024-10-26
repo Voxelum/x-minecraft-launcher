@@ -498,6 +498,7 @@ instances:
     Import from common .minecraft folder. This will duplciate the original game
     profile to XMCL.
   choose: Select Game
+  fix: Repair
   folderSetting: Folder Settings
   importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher

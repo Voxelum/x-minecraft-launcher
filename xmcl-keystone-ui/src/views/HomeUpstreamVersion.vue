@@ -41,6 +41,18 @@
           {{ downgrade ? 'keyboard_double_arrow_down' : 'upgrade' }}
         </v-icon>
       </v-btn>
+      <v-btn
+        v-else
+        small
+        color="primary"
+        :loading="updating"
+        @click="$emit('update', version)"
+      >
+        {{ t('instances.fix') }}
+        <v-icon right>
+          build
+        </v-icon>
+      </v-btn>
     </div>
     <div class="col-span-4">
       <span
@@ -62,7 +74,6 @@
       class="col-span-4 justify-self-end"
     >
       <v-btn
-        v-if="!noAction"
         small
         text
         :loading="duplicating"

@@ -18,6 +18,8 @@
         outlined
         no-action
         @changelog="$emit('changelog', currentVersion)"
+        @update="$emit('update', currentVersion)"
+        @duplicate="$emit('duplicate', currentVersion)"
       />
       <div
         v-for="[date, versions] of Object.entries(items)"

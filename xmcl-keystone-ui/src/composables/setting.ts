@@ -1,24 +1,56 @@
-import { useService, useServiceBusy } from '@/composables'
+import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Environment, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCacheBool } from './cache'
-import { useState } from './syncableState'
 import { useEnvironment } from './environment'
+import { useState } from './syncableState'
+
+export const kUpdateSettings: InjectionKey<ReturnType<typeof useUpdateSettings>> = Symbol('UpdateSettings')
 
 export function useUpdateSettings() {
-  const { checkUpdate } = useService(BaseServiceKey)
+  const { checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
   const env: Ref<Environment | undefined> = useEnvironment()
   const { state } = injection(kSettingsState)
   const updateStatus = computed(() => state.value?.updateStatus)
-  const checkingUpdate = useServiceBusy(BaseServiceKey, 'checkUpdate')
-  const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
   const updateInfo = computed(() => state.value?.updateInfo)
   const version = computed(() => env.value?.version ?? '0.0.0')
+  const installing = ref(false)
+  async function install() {
+    installing.value = true
+    try {
+      await quitAndInstall()
+    } finally {
+      installing.value = false
+    }
+  }
+
+  const downloadingUpdate = ref(false)
+  async function download() {
+    downloadingUpdate.value = true
+    try {
+      await downloadUpdate()
+    } finally {
+      downloadingUpdate.value = false
+    }
+  }
+
+  const checkingUpdate = ref(false)
+  async function check() {
+    checkingUpdate.value = true
+    try {
+      await checkUpdate()
+    } finally {
+      checkingUpdate.value = false
+    }
+  }
 
   return {
     version,
-    checkUpdate,
+    quitAndInstall: install,
+    downloadUpdate: download,
+    checkUpdate: check,
+    installing,
     updateStatus,
     checkingUpdate,
     downloadingUpdate,
