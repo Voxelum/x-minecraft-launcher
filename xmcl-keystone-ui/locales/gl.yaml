@@ -248,6 +248,8 @@ eula:
   body: >-
     Marcando o botón da caixa de verificación, estás a indicar o teu acordo co
     {eula} de Minecraft.
+fabricVersion:
+  showSnapshot: Mostrar instantáneas
 importModpack:
   name: Importar Modpack
 instance:
