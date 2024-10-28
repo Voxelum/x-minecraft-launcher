@@ -83,7 +83,9 @@ winget install CI010.XMinecraftLauncher
 
 ## Кредит
 
-[GodLeaveMe](https://github.com/GodLeaveMe), ведение реестра пакетов AUR.
+[BANSAFAn](https://github.com/BANSAFAn), который очень помог мне в работе с сообществом RU/UK.
+ 
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), ведение реестра пакетов AUR.
 
 [0xc0000142](https://github.com/0xc0000142), обслуживание winget.
 
