@@ -90,7 +90,9 @@ winget install CI010.XMinecraftLauncher
 
 ## 致谢
 
-[GodLeaveMe](https://github.com/GodLeaveMe), 维护 AUR package registry.
+[BANSAFAn](https://github.com/BANSAFAn), 他在 RU/UK 社区帮了我很多忙。
+
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), 维护 AUR package registry.
 
 [0xc0000142](https://github.com/0xc0000142), 维护 winget.
 
