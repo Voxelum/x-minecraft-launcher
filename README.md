@@ -101,7 +101,7 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 ## Credit
 
-[BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
+[BANSAFAn](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
 
 [GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), maintaining the AUR package registry.
 
