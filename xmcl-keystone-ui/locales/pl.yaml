@@ -769,6 +769,7 @@ modInstall:
   recommendation: Odkryj {first} lub {second} mod w {modrinth} i {curseforge}!
   search: Wynik wyszukiwania
   searchHint: SWyszukaj i wybierz projekt
+  skipVersion: Pomiń mody z inną wersją Minecrafta
   source: Mod Source
   switch: Wersja Swtich
   upgrade: Ulepszenia modów
@@ -777,6 +778,11 @@ modSearchType:
   explore: Poznaj rynek
   installed: Zainstalowany
   local: Pamięć podręczna dysku
+modUpgradePolicy:
+  curseforge: Najpierw Curseforge
+  curseforgeOnly: Tylko Curseforge
+  modrinth: Najpierw Modrinth
+  modrinthOnly: Tylko Modrinth
 modified:
   reset: Reset
   save: Zapisz

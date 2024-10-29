@@ -731,6 +731,7 @@ modInstall:
   recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
   search: Search Result
   searchHint: Search and select project
+  skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Swtich Version
   upgrade: Upgrade Mods
@@ -739,6 +740,11 @@ modSearchType:
   explore: Explore Market
   installed: Installed
   local: Disk Cache
+modUpgradePolicy:
+  curseforge: Curseforge First
+  curseforgeOnly: Curseforge Only
+  modrinth: Modrinth First
+  modrinthOnly: Modrinth Only
 modified:
   reset: Reset
   save: Save

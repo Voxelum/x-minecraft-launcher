@@ -814,12 +814,18 @@ modInstall:
   recommendation: Entdecken Sie die {first} oder {second} Mods in {modrinth} und {curseforge}!
   search: Suchergebnis
   searchHint: Projektsuche und -auswahl
+  skipVersion: Überspringen Sie die Mods mit einer anderen Minecraft-Version
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
 modSearchType:
   all: Alle
   local: Cache auf dem Datenträger
+modUpgradePolicy:
+  curseforge: Zuerst Curseforge
+  curseforgeOnly: Nur Curseforge
+  modrinth: Modrinth zuerst
+  modrinthOnly: Nur Modrinth
 modified:
   reset: Zurücksetzen
   save: Speichern Sie
