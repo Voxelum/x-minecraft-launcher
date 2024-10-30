@@ -232,7 +232,7 @@ jobs:
 
           if [ -f *.pkg.tar.zst ]; then
             for f in *.pkg.tar.zst; do
-              mv "$f" "../xmcl-launcher-${{ steps.version.outputs.version }}-${{ matrix.arch }}.pacman"
+              mv "$f" "../xmcl-${{ steps.version.outputs.version }}-${{ matrix.arch }}.pacman"
             done
           fi
 
