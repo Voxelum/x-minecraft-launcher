@@ -229,7 +229,6 @@ jobs:
           # Set permissions and build
           chown -R builder:builder .
           su builder -c "CARCH=${{ matrix.arch }} makepkg -sf --noconfirm"
-
           if [ -f *.pkg.tar.zst ]; then
             for f in *.pkg.tar.zst; do
               mv "$f" "../xmcl-${{ steps.version.outputs.version }}-${{ matrix.arch }}.pacman"
