@@ -702,6 +702,7 @@ modInstall:
   recommendation: '{first} または {second} 個のModを {modrinth} と {curseforge} で探索する!'
   search: 検索結果
   searchHint: プロジェクトを検索して選ぶ
+  skipVersion: 異なる Minecraft バージョンの Mod をスキップする
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
@@ -710,6 +711,11 @@ modSearchType:
   explore: マーケットを探索
   installed: インストール済み
   local: ディスクキャッシュ
+modUpgradePolicy:
+  curseforge: ''
+  curseforgeOnly: Curseforgeのみ
+  modrinth: モドリンスファースト
+  modrinthOnly: モドリンスのみ
 modified:
   reset: リセット
   save: 保存

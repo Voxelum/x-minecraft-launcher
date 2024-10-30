@@ -19,7 +19,7 @@ import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readdir, readlink, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import debounce from 'lodash.debounce'
-import watch from 'node-watch'
+import watch, { Watcher } from 'node-watch'
 import { basename, extname, isAbsolute, join, resolve } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
@@ -193,10 +193,28 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         }
       }
 
-      let isLinkedMemo = await this.isSaveLinked(path)
-      let watcher = watch(savesDir, onFileUpdate)
+      const tryWatch = () => {
+        try {
+          watcher = watch(savesDir, onFileUpdate)
+          watcher.once('error', (e) => {
+            if (isSystemError(e) && e.code === 'ENOENT') {
+              this.log(`Skip watch saves directory ${savesDir} because it does not exist.`)
+            }
+            watcher?.close()
+            watcher = undefined
+          })
+        } catch (e) {
+          if (isSystemError(e) && e.code === 'ENOENT') {
+            this.log(`Skip watch saves directory ${savesDir} because it does not exist.`)
+          }
+          watcher = undefined
+        }
+      }
 
-      this.log(`Watch saves directory: ${savesDir}`)
+      let isLinkedMemo = await this.isSaveLinked(path)
+      let watcher: Watcher | undefined
+
+      tryWatch()
 
       const readAll = async (savePaths: string[]) => {
         const saves = await Promise.all(savePaths
@@ -221,7 +239,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         const newIsLink = !!await readlink(savesDir).catch(() => '')
         if (newIsLink !== isLinkedMemo) {
           isLinkedMemo = !!newIsLink
-          watcher = watch(savesDir, onFileUpdate)
+          tryWatch()
           const savePaths = await readdir(savesDir)
           const saves = await readAll(savePaths)
           state.instanceSaves(saves)
@@ -240,12 +258,12 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       const instanceService = await this.app.registry.get(InstanceService)
       instanceService.registerRemoveHandler(path, () => {
         launchService.off('minecraft-exit', onExit)
-        watcher.close()
+        watcher?.close()
       })
 
       return [state, () => {
         launchService.off('minecraft-exit', onExit)
-        watcher.close()
+        watcher?.close()
       }, revalidate]
     })
   }

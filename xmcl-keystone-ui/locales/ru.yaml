@@ -812,6 +812,7 @@ modInstall:
   recommendation: Исследуйте {first} или {second} в {modrinth} и {curseforge}!
   search: Результаты поиска
   searchHint: Поиск и выбор проекта
+  skipVersion: Пропустите моды с другой версией Minecraft
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
@@ -820,6 +821,11 @@ modSearchType:
   explore: Исследуйте рынок
   installed: Установлено
   local: Дисковый кэш
+modUpgradePolicy:
+  curseforge: Curseforge First
+  curseforgeOnly: Только в Кёрсфордже
+  modrinth: Modrinth Первый
+  modrinthOnly: Только Модринт
 modified:
   reset: Сбросить
   save: Сохранить

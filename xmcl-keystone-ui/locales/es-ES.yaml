@@ -560,12 +560,18 @@ modInstall:
   recommendation: ¡Explora las modificaciones {first} o {second} en {modrinth} y {curseforge}!
   search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto
+  skipVersion: Salta los Mods con diferentes versiones de Minecraft
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
 modSearchType:
   all: Todos
   local: Caché en Disco
+modUpgradePolicy:
+  curseforge: Forja maldita primero
+  curseforgeOnly: Sólo forja maldita
+  modrinth: Modrinth primero
+  modrinthOnly: Sólo Modrinth
 modified:
   reset: Restablecer
   save: Guardar

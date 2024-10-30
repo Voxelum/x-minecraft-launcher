@@ -69,8 +69,9 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
       options.getIrisShaderOptions(path).catch(() => ({}) as any),
       options.getOculusShaderOptions(path).catch(() => ({}) as any),
     ])
-    const shaderPack = basename(opShader.shaderPack || irisShader.shaderPack || ocShader.shaderPack)
-    if (shaderPack) {
+    const shaderPackPath = opShader.shaderPack || irisShader.shaderPack || ocShader.shaderPack
+    if (shaderPackPath) {
+      const shaderPack = basename(shaderPackPath)
       // Ensure this file is linked
       const src = getPath(ResourceDomain.ShaderPacks, shaderPack)
       const dest = join(path, ResourceDomain.ShaderPacks, shaderPack)

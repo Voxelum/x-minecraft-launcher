@@ -784,9 +784,15 @@ modInstall:
   recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
   search: Résultats
   searchHint: Rechercher et sélectionner un projet
+  skipVersion: Ignorez les mods avec une version différente de Minecraft
 modSearchType:
   all: Tous
   local: Cache disque
+modUpgradePolicy:
+  curseforge: Forgemalédiction en premier
+  curseforgeOnly: Forgemalédiction uniquement
+  modrinth: Modrinth premier
+  modrinthOnly: Modrinth uniquement
 modified:
   reset: Réinitialiser
   save: Sauvegarder
