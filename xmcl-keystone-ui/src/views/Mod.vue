@@ -70,170 +70,197 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-list
-            dense
-            nav
-          >
-            <v-list-item
-              class="mx-1"
-              @click="denseView = !denseView"
-            >
-              <v-list-item-icon>
-                <v-checkbox
-                  v-model="denseView"
-                  class="mt-0 pt-0"
-                  readonly
-                  hide-details
-                />
-              </v-list-item-icon>
-              <v-list-item-title>
-                {{ t('mod.denseView') }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item
-              class="mx-1"
-              @click="groupInstalled = !groupInstalled"
-            >
-              <v-list-item-icon>
-                <v-checkbox
-                  v-model="groupInstalled"
-                  class="mt-0 pt-0"
-                  readonly
-                  hide-details
-                />
-              </v-list-item-icon>
-              <v-list-item-title>
-                {{ t('mod.groupInstalled') }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-divider class="my-2" />
-            <v-list-item-group v-model="defaultSourceModel">
-              <v-subheader>
-                {{ t('mod.switchDefaultSource') }}
-              </v-subheader>
-              <v-list-item key="curseforge">
-                <v-list-item-icon>
-                  <v-icon>
-                    $vuetify.icons.curseforge
-                  </v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>
-                  Curseforge
-                </v-list-item-title>
-              </v-list-item>
-              <v-list-item key="modrinth">
-                <v-list-item-icon>
-                  <v-icon>
-                    $vuetify.icons.modrinth
-                  </v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>
-                  Modrinth
-                </v-list-item-title>
-              </v-list-item>
-            </v-list-item-group>
-            <v-divider class="my-2" />
-
-            <v-list-item
+          <v-card>
+            <v-list
               dense
-              class="mx-1"
-              :disabled="mods.length === 0 || checkingUpgrade"
-              @click="checkUpgrade"
+              nav
             >
-              <template v-if="!checkedUpgrade">
+              <v-list-item
+                class="mx-1"
+                @click="denseView = !denseView"
+              >
                 <v-list-item-icon>
-                  <v-icon v-if="!checkingUpgrade">
-                    refresh
-                  </v-icon>
-                  <v-progress-circular
-                    v-else
-                    small
-                    size="22"
-                    width="2"
-                    indeterminate
+                  <v-checkbox
+                    v-model="denseView"
+                    class="mt-0 pt-0"
+                    readonly
+                    hide-details
                   />
                 </v-list-item-icon>
-                <v-list-item-title class="flex items-center">
-                  {{ t('modInstall.checkUpgrade') }}
+                <v-list-item-title>
+                  {{ t('mod.denseView') }}
                 </v-list-item-title>
-              </template>
-              <template v-else>
+              </v-list-item>
+              <v-list-item
+                class="mx-1"
+                @click="groupInstalled = !groupInstalled"
+              >
                 <v-list-item-icon>
-                  <v-icon color="primary">
-                    check
-                  </v-icon>
-                </v-list-item-icon>
-                <v-list-item-title class="flex items-center">
-                  {{ t('modInstall.checkedUpgrade') }}
-                </v-list-item-title>
-              </template>
-            </v-list-item>
-            <v-list-item
-              dense
-              class="mx-1"
-              :loading="upgrading"
-              :disabled="Object.keys(plans).length === 0"
-              @click="upgrade"
-            >
-              <v-list-item-icon>
-                <v-icon>upgrade</v-icon>
-              </v-list-item-icon>
-              <v-list-item-title class="flex items-center">
-                {{ t('modInstall.upgrade') }}
-              </v-list-item-title>
-            </v-list-item>
-
-            <v-list-item
-              dense
-              class="mx-1"
-              :disabled="mods.length === 0 || checkingDependencies"
-              @click="checkDependencies"
-            >
-              <template v-if="!checkedDependencies">
-                <v-list-item-icon>
-                  <v-icon v-if="!checkingDependencies">
-                    restart_alt
-                  </v-icon>
-                  <v-progress-circular
-                    v-else
-                    small
-                    size="22"
-                    width="2"
-                    indeterminate
+                  <v-checkbox
+                    v-model="groupInstalled"
+                    class="mt-0 pt-0"
+                    readonly
+                    hide-details
                   />
                 </v-list-item-icon>
-                <v-list-item-title class="flex items-center">
-                  {{ t('modInstall.checkDependencies') }}
+                <v-list-item-title>
+                  {{ t('mod.groupInstalled') }}
                 </v-list-item-title>
-              </template>
-              <template v-else>
+              </v-list-item>
+              <v-divider class="my-2" />
+              <v-list-item-group v-model="defaultSourceModel">
+                <v-subheader>
+                  {{ t('mod.switchDefaultSource') }}
+                </v-subheader>
+                <v-list-item key="curseforge">
+                  <v-list-item-icon>
+                    <v-icon>
+                      $vuetify.icons.curseforge
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>
+                    Curseforge
+                  </v-list-item-title>
+                </v-list-item>
+                <v-list-item key="modrinth">
+                  <v-list-item-icon>
+                    <v-icon>
+                      $vuetify.icons.modrinth
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title>
+                    Modrinth
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list-item-group>
+              <v-divider class="my-2" />
+
+              <v-list-item
+                dense
+                class="mx-1"
+                :disabled="mods.length === 0 || checkingDependencies"
+                @click="checkDependencies"
+              >
+                <template v-if="!checkedDependencies">
+                  <v-list-item-icon>
+                    <v-icon v-if="!checkingDependencies">
+                      restart_alt
+                    </v-icon>
+                    <v-progress-circular
+                      v-else
+                      small
+                      size="22"
+                      width="2"
+                      indeterminate
+                    />
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.checkDependencies') }}
+                  </v-list-item-title>
+                </template>
+                <template v-else>
+                  <v-list-item-icon>
+                    <v-icon color="primary">
+                      check
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.checkedDependencies') }}
+                  </v-list-item-title>
+                </template>
+              </v-list-item>
+              <v-list-item
+                dense
+                class="mx-1"
+                :loading="installingDependencies"
+                :disabled="dependenciesToUpdate.length === 0"
+                @click="installDependencies"
+              >
                 <v-list-item-icon>
-                  <v-icon color="primary">
-                    check
+                  <v-icon class="material-icons-outlined">
+                    file_download
                   </v-icon>
                 </v-list-item-icon>
                 <v-list-item-title class="flex items-center">
-                  {{ t('modInstall.checkedDependencies') }}
+                  {{ t('modInstall.installDependencies') }}
                 </v-list-item-title>
-              </template>
-            </v-list-item>
-            <v-list-item
-              dense
-              class="mx-1"
-              :loading="installingDependencies"
-              :disabled="dependenciesToUpdate.length === 0"
-              @click="installDependencies"
-            >
-              <v-list-item-icon>
-                <v-icon class="material-icons-outlined">
-                  file_download
+              </v-list-item>
+            </v-list>
+            <v-divider />
+            <v-subheader>
+              <template
+                v-if="checkedUpgrade"
+              >
+                <v-icon
+                  left
+                  color="primary"
+                >
+                  check
                 </v-icon>
-              </v-list-item-icon>
-              <v-list-item-title class="flex items-center">
-                {{ t('modInstall.installDependencies') }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
+                {{ t('modInstall.checkedUpgrade') }}
+              </template>
+              <template v-else>
+                {{ t('modInstall.checkUpgrade') }}
+              </template>
+            </v-subheader>
+            <v-card-text class="pt-2">
+              <div>
+                {{ t(`modUpgradePolicy.${upgradePolicy}`) }}
+              </div>
+              <v-btn-toggle
+                v-model="upgradePolicy"
+                mandatory
+                color="primary"
+                group
+              >
+                <v-btn value="modrinth">
+                  <v-icon>$vuetify.icons.modrinth</v-icon>
+                  <v-icon>$vuetify.icons.curseforge</v-icon>
+                </v-btn>
+                <v-btn value="curseforge">
+                  <v-icon>$vuetify.icons.curseforge</v-icon>
+                  <v-icon>$vuetify.icons.modrinth</v-icon>
+                </v-btn>
+
+                <v-btn value="modrinthOnly">
+                  <v-icon>$vuetify.icons.modrinth</v-icon>
+                </v-btn>
+
+                <v-btn value="curseforgeOnly">
+                  <v-icon>$vuetify.icons.curseforge</v-icon>
+                </v-btn>
+              </v-btn-toggle>
+              <v-checkbox
+                v-model="skipVersion"
+                hide-details
+                :label="t('modInstall.skipVersion')"
+              />
+            </v-card-text>
+            <v-card-actions>
+              <v-btn
+                text
+                :loading="checkingUpgrade"
+                @click="onCheckUpgrade"
+              >
+                <v-icon left>
+                  refresh
+                </v-icon>
+                {{ t('modInstall.checkUpgrade') }}
+              </v-btn>
+              <v-spacer />
+              <v-btn
+                text
+                :loading="upgrading"
+                :disabled="Object.keys(plans).length === 0"
+                @click="upgrade"
+              >
+                <v-icon left>
+                  upgrade
+                </v-icon>
+                {{ t('modInstall.upgrade') }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-menu>
       </v-subheader>
       <v-alert
@@ -513,6 +540,15 @@ const isOptifineProject = (v: ProjectEntry<ProjectFile> | undefined): v is Proje
 
 // Upgrade
 const { plans, error: upgradeError, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgrading } = injection(kModUpgrade)
+const skipVersion = useLocalStorageCacheBool(computed(() => `modsUpgradeSkipVersion:${path.value}`), false)
+const upgradePolicy = useLocalStorageCacheStringValue(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth')
+function onCheckUpgrade() {
+  const policy = upgradePolicy.value as any
+  checkUpgrade({
+    skipVersion: skipVersion.value,
+    policy,
+  })
+}
 
 // Dependencies check
 const { updates: dependenciesToUpdate, refresh: checkDependencies, refreshing: checkingDependencies, checked: checkedDependencies, apply: installDependencies, installing: installingDependencies } = useModDependenciesCheck(path, runtime)
@@ -805,7 +841,6 @@ const onInstallProject = useProjectInstall(
     install({ path: path.value, mods: [file.path] })
   },
 )
-
 
 useTutorial(computed(() => [{
   element: '#search-text-field',

@@ -729,6 +729,7 @@ modInstall:
   recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模组！
   search: 搜索结果
   searchHint: 搜索并选择模组
+  skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模组来源
   switch: 切换版本
   upgrade: 更新模组
@@ -737,6 +738,11 @@ modSearchType:
   explore: 浏览市场
   installed: 本地
   local: 磁盘缓存
+modUpgradePolicy:
+  curseforge: Curseforge 优先
+  curseforgeOnly: 仅限 Curseforge
+  modrinth: Modrinth 优先
+  modrinthOnly: 仅限 Modrinth
 modified:
   reset: 重置
   save: 保存

@@ -754,6 +754,7 @@ modInstall:
     oldalon!
   search: Keresési találat
   searchHint: Keresés és projekt kiválasztása
+  skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
@@ -762,6 +763,11 @@ modSearchType:
   explore: Piac felfedezése
   installed: Telepítve
   local: Lemez gyorsítótár
+modUpgradePolicy:
+  curseforge: Curseforge először
+  curseforgeOnly: Csak Curseforge
+  modrinth: Modrinth először
+  modrinthOnly: Csak Modrinth
 modified:
   reset: Visszaállítás
   save: Mentés
