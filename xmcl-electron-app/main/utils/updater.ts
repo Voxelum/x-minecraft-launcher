@@ -61,6 +61,7 @@ AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater
 export class DownloadAsarUpdateTask extends AbortableTask<void> {
   private file: string
   private abortController = new AbortController()
+  private version: string
 
   constructor(private app: ElectronLauncherApp, private destination: string, version: string) {
     super()
@@ -73,6 +74,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
       platformFlag += '-ia32'
     }
     this.file = `app-${version}-${platformFlag}.asar`
+    this.version = version
   }
 
   protected async process(): Promise<void> {
@@ -82,10 +84,12 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
       ? [
         `https://files.0x.halac.cn/Services/XMCL/releases/${this.file}`,
         `https://files-0x.halac.cn/Services/XMCL/releases/${this.file}`,
+        `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
         `${AZURE_MS_CDN}/${this.file}`,
       ]
       : [
         `${AZURE_MS_CDN}/${this.file}`,
+        `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
       ]
     for (const url of urls) {
       try {
@@ -107,6 +111,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
         })
         if (gzResponse.ok && gzResponse.body) {
           this._total = parseInt(gzResponse.headers.get('Content-Length') || '0', 10)
+          this._progress = 0
           await pipeline(Readable.fromWeb(gzResponse.body as any), createGunzip(), tracker, createWriteStream(this.destination))
         } else {
           const response = await this.app.fetch(url, { signal: this.abortController.signal })
@@ -114,6 +119,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
             throw new AnyError('DownloadError', `Fail to download asar update from ${url}`, {}, { status: response.status })
           }
           this._total = parseInt(response.headers.get('Content-Length') || '0', 10)
+          this._progress = 0
           await pipeline(Readable.fromWeb(response.body as any), tracker, createWriteStream(this.destination))
         }
         return
