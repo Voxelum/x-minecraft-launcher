@@ -104,6 +104,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       } else if (e.error === 'ForbiddenOperationException' &&
         e.errorMessage === 'Invalid credential information.') {
         throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
+      } else if (e.error === 'ForbiddenOperationException') {
+        throw new UserException({ type: 'loginGeneral' }, e.message || e.errorMessage, { cause: e })
       } else if (e.error === 'IllegalArgumentException') {
         throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       } else if (isSystemError(e)) {
