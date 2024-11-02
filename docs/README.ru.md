@@ -81,15 +81,17 @@ winget install CI010.XMinecraftLauncher
 </div>
 <!-- afdian-end -->
 
-## Кредит
+## Благодарности
 
-[GodLeaveMe](https://github.com/GodLeaveMe), ведение реестра пакетов AUR.
+[BANSAFAn](https://github.com/BANSAFAn), который очень помог мне в работе с сообществом RU/UK.
+ 
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), ведение реестра пакетов AUR.
 
 [0xc0000142](https://github.com/0xc0000142), обслуживание winget.
 
 [Marmur2020](https://github.com/Marmur2020) и [BANSAFAn](https://github.com/BANSAFAn), полностью перевели на украинский язык!
 
-[vanja-san](https://github.com/vanja-san), предоставил русский язык!
+[vanja-san](https://github.com/vanja-san), перевел на русский язык!
 
 [lukechu10](https://github.com/lukechu10) и [HoldYourWaffle](https://github.com/HoldYourWaffle) помогают мне в ядре программы запуска.
 

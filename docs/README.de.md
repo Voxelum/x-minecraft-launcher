@@ -84,7 +84,9 @@ Für i18n-Lokalisierungsentwickler, bitte folgen Sie [Erste Schritte mit der Lok
 
 ## Danksagung
 
-[GodLeaveMe](https://github.com/GodLeaveMe), Pflege des AUR-Paketregisters.
+[BANSAFAn](https://github.com/BANSAFAn), der mir in der RU/UK-Community sehr hilft.
+
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), Pflege des AUR-Paketregisters.
 
 [0xc0000142](https://github.com/0xc0000142), Pflege des winget.
 

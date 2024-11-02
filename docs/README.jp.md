@@ -85,7 +85,9 @@ winget install CI010.XMinecraftLauncher
 
 ## クレジット
 
-[GodLeaveMe](https://github.com/GodLeaveMe)、AUR パッケージレジストリのメンテナンス。
+[BANSAFAn](https://github.com/BANSAFAn)、彼はRU/UKのコミュニティで僕をたくさん助けてくれる。
+
+[GodLeaveMe](https://github.com/GodLeaveMe)、[v1mkss](https://github.com/v1mkss)、AUR パッケージレジストリのメンテナンス。
 
 [0xc0000142](https://github.com/0xc0000142)、winget のメンテナンス。
 
