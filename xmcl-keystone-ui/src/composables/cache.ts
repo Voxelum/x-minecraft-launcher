@@ -50,7 +50,7 @@ export function useLocalStorageCacheInt(key: MaybeRef<string>, defaultValue: num
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseInt(s, 10))
 }
 
-export function useLocalStorageCacheStringValue<T extends string = string>(key: string, defaultValue: T, options?: LocalStorageOptions): Ref<T> {
+export function useLocalStorageCacheStringValue<T extends string = string>(key: MaybeRef<string>, defaultValue: T, options?: LocalStorageOptions): Ref<T> {
   return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T, options)
 }
 

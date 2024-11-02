@@ -1,0 +1,384 @@
+AppAddInstanceDialog:
+  choiceTitle: Бірнеше іске қосу профильдері анықталды. Импорттау үшін біреуін таңдаңыз.
+  configTitle: Конфигурация
+  createTitle: Ойын құру
+  downloadedNotification: Модпакет {name} жүктеп алынды. Жасағыңыз келе ме
+  serverTitle: Сервер мекенжайыңызды енгізіңіз
+AppShareInstanceDialog:
+  alterDownloadDescription: >-
+    Ағымдағы дананы шатастырғыңыз келмесе. Сіз сондай-ақ құрдасыңыздан жаңа
+    дананы жасай аласыз
+  baseInfo: Негізгі параметр
+  cancelShare: Бөлісуден бас тарту
+  description: >-
+    Профильді бөліскеннен кейін басқа орын бұл файлдарды компьютеріңіз арқылы
+    жүктей алады.
+  downloadDescription: >-
+    Құрдасыңыз сізге берген файлдарды растаңыз. Жүктеп алғыңыз келетін файлды
+    таңдаңыз. Ол ағымдағы данаға орналастырылады {name}.
+  downloadNotifyTitle: '{user} данасын жүктеп алу'
+  downloadTitle: Басқа әріптестерден файлдарды жүктеп алыңыз
+  downloadToLocal: Ағымдағы данаға жүктеп алыңыз
+  filesToDownload: Жүктеп алу үшін файлдарды таңдаңыз
+  filesToShare: Бөлісетін файлдарды таңдаңыз
+  instanceShare: '{user} сізге ағымдағы дананы бөлісті'
+  share: Бөлісу
+  shareNotifyTitle: Дана бөлісу
+  shareTitle: Ойын файлдарын басқа ойыншымен бөлісіңіз
+BaseSettingGeneral:
+  title: Жалпы
+FeedTheBeast:
+  search: Поиск в FTB
+FeedTheBeastProject:
+  changelog: Список изменений
+  details: Детали
+  install: '{version} орнату'
+  overview: Шолу
+  versions: Нұсқалар
+HomeJavaIssueDialog:
+  incompatibleJava: Үйлесімсіз Java
+  incompatibleJavaHint: Ағымдағы Java таңдалған Minecraft бағдарламасымен үйлесімсіз болуы мүмкін!
+  missingJava: Java жоқ
+  missingJavaHint: >-
+    Іске қосу құралы компьютеріңіздегі ешбір Java файлын анықтай алмайды. Сен
+    істе аласың:
+  needDownloadHint: >-
+    Компьютеріңізде дұрыс Java нұсқасын табу мүмкін емес. Жаңасын жүктеп алуды
+    ұсыныңыз.
+  optionAutoDownload:
+    message: Launcher сізге Mojang көзінен Java жүктеп алып, орнатады.
+    name: Автоматты түрде жүктеп алу
+  optionSelectJava:
+    message: >-
+      Мүмкін іске қосқыш Java-ны таппайды. Іске қосу құралының қайда екенін айта
+      аласыз.
+    name: Компьютерде Java таңдаңыз
+  optionSwitch:
+    disabled: Қазір дерекқорда Java {version} жоқ!
+    message: Компьютеріңізде бұрыннан бар Java {version} пайдаланыңыз
+    name: '{version} нұсқасына ауысу'
+  recommendedVersionHint: '{version} {range} ауқымымен Java пайдалануды ұсынады'
+  selectMatchedHint: >-
+    Тиісті жергілікті Java нұсқалары табылды. Сіз бұл жергілікті Java файлдарын
+    таңдай аласыз.
+  selectSecondaryHint: >-
+    Кейбір жергілікті Java нұсқалары табылды, бірақ олар критерийлерге сәйкес
+    келмеуі мүмкін. Оларды іске қосу үшін әлі де пайдалана аласыз, бірақ бұл
+    мәселе әлі де пайда болады.
+HomeLaunchMultiInstanceDialog:
+  confirm: Иә, іске қосу
+  description: Сіз Minecraft-тың бірнеше данасын іске қосып жатырсыз. Сіз сенімдісіз бе?
+  title: Бірнеше даналар
+HomeSyncDialog:
+  pull: Тарт
+  push: Басыңыз
+HomeSyncDialogPull:
+  failText: Жаңартуды алу мүмкін болмады. {url}
+  refresh: Жаңарту
+  update: Жаңарту
+HomeSyncDialogPush:
+  authError: >-
+    Нашар пайдаланушы аутентификациясы. Сервер файлдарын жүктеп салу құқығыңыз
+    бар екеніне көз жеткізіңіз!
+  refresh: Жаңарту
+  unknownError: Белгісіз сервер қатесі. Қайталап көріңіз.
+  upload: Жүктеп салу данасы
+SettingMigrationDialog:
+  selectRootDirectory: Түбірлік каталогты таңдаңыз
+add: қосу
+ago:
+  day: '{duration} күн бұрын | {duration} күн бұрын'
+  hour: '{duration} сағат бұрын | {duration} сағат бұрын'
+  minute: '{duration} минут бұрын | {duration} минут бұрын'
+  second: '{duration} секунд бұрын | {duration} секунд бұрын'
+authProfileAddedNotification: Авторлық профиль {name} қосылды
+author: Автор
+back: Артқа
+baseSetting:
+  title: Негізгі параметрлер
+browse: Шолу
+browseApp:
+  createShortcut: Таңбаша жасау
+  default: Әдепкі
+  delete: Жою
+  launch: Іске қосыңыз және әдепкі етіп орнатыңыз
+browseApps: Іске қосу құралының пайдаланушы интерфейсін қараңыз
+cancel: Болдырмау
+checkUpdate:
+  name: Чекті жаңарту
+color: Түс
+confirm: Бастау
+copyClipboard:
+  success: Буферге көшіру
+create: Жасау
+curseforge:
+  authors: Авторлар
+  category: Санат
+  createdDate: Жасалған күні
+  downloadOnly: Жүктеп алу
+  file:
+    gameVersion: Ойын нұсқасы
+    modLoader: Мод жүктеуші
+  install: Орнату
+  installTo: '{path} жолына орнату'
+  installToStorage: Жадқа орнату
+  lastUpdate: Соңғы жаңарту күні
+  project:
+    description: Сипаттама
+    files: Файлдар
+    images: Суреттер
+  recentFiles: Соңғы файлдар
+  releasedDate: Шығарылған күні
+  search: Іздеу
+  totalDownloads: Барлығы жүктеп алынғандар
+curseforgeCategory:
+  API and Library: API және кітапханалар
+  Addons: Қосымшалар
+  Adventure: Шытырман оқиға
+  Adventure and RPG: Шытырман оқиға және RPG
+  Animated: Анимация
+  Armor, Tools, and Weapons: Құрыш, құрал-саймандар және қару-жарақ
+  Armor， Tools， and Weapons: Құрыш, құрал-саймандар және қару-жарақ
+  Combat / PvP: Жарыс/PVP
+  Cosmetic: Сыртқы түрі/декор
+  Creation: Шығармашылық режим
+  Data Packs: Деректер пакеті
+  Education: Білім
+  Exploration: Барлау
+  Extra Large: Өте үлкен
+  FTB Official Pack: Ресми FTB пакеті
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Қаріптер
+  Food: Тамақ
+  Game Map: Ойын карталары
+  Hardcore: Хардкор
+  MCreator: MCreator
+  Magic: Сиқыр
+  Map Based: Карта негізінде
+  Map and Information: Карталар және ақпарат
+  Medieval: Ортағасырлық
+  Mini Game: Шағын ойындар
+  Miscellaneous: Әртүрлі
+  Mod Support: Модельді қолдау
+  Modded World: Әлемдерге арналған мод
+  Modern: Қазіргі заманғы
+  Multiplayer: Көп ойыншы
+  Parkour: Паркур
+  Photo Realistic: Фото шынайы
+  Puzzle: Пазлдар
+  QoL: QoL
+  Quests: Квесттер
+  Redstone: Қызыл тас
+  Sci-Fi: Ғылыми фантастика
+  Server Utility: Сервер құралы
+  Skyblock: SkyBlock
+  Small / Light: Азғана
+  Steampunk: Steampunk
+  Storage: Сақтау
+  Survival: Аман қалу
+  Tech: Технология
+  Technology: Технология
+  Traditional: Дәстүрлі
+  Twitch Integration: Twitch интеграциясы
+  Utility & QoL: Utility және Qol
+  Vanilla+: Ванила+
+  World Gen: Әлемдік генератор
+dataMigration:
+  apply: Параметрлерді қолдану
+  directoryCriteriaHint: Жаңа каталог орнының бос каталог екеніне көз жеткізіңіз!
+  migrationDestinationIsFile: Тасымалдау орны - бұл файл! Бос каталогты таңдаңыз!
+  migrationDestinationIsNotEmptyDirectory: >-
+    Тасымалдау орны бос каталог емес! Бос каталогты таңдағаныңызға көз
+    жеткізіңіз!
+  migrationNoPermission: >-
+    Ескі каталогтың атын жаңа каталогқа өзгертуге рұқсат жоқ! Іске қосу
+    құралының екі жерге де қол жеткізе алатынына көз жеткізіңіз!
+  placeholder: Каталогты таңдау үшін осы жерді басыңыз
+  setRootCause: >-
+    Осы процесте Іске қосу құралын жапсаңыз, деректеріңізді (карталар, ресурстар
+    бумалары, модтар) жоғалтасыз!
+  setRootDescription: >-
+    Бұл осы іске қосу құралының және minecraft-тың түбірлік деректер қалтасын
+    өзгертеді.
+  setRootTitle: Жаңа сақтау орнына орнатыңыз
+  unknownError: Белгісіз қате! Қайталап көріңіз немесе әзірлеушіге хабарласыңыз!
+  waitReload: >-
+    Деректерді тасымалдау. Іске қосу құралын жаппаңыз, әйтпесе деректеріңізді
+    жоғалтасыз.
+delete:
+  name: '{name} жою'
+  'no': жоқ
+  'yes': иә
+dependencies:
+  embedded: ендірілген
+  incompatible: үйлеспейтін
+  name: Тәуелділіктер
+  optional: міндетті емес
+  required: қажет
+description: сипаттамасы
+detail: деталь
+diagnosis:
+  badInstall:
+    message: Осы нұсқаны қайта орнатуға тырысу үшін басыңыз.
+    name: '{version} қате орнату'
+  corruptedAssets:
+    message: Launcher сіз үшін активтерді орнатады
+    name: 'Бүлінген актив: {name} | Бүлінген актив {name} | {count} актив бүлінген'
+  corruptedAssetsIndex:
+    message: Launcher сіз үшін активтер индексін жүктеп алады
+    name: '{version} бүлінген активтер индексі файлы.'
+  corruptedLibraries:
+    message: Launcher сізге кітапханаларды орнатады
+    name: >-
+      Бүлінген кітапхана: {name} | Бүлінген кітапхана: {name} | {count}
+      кітапхана бүлінген
+  corruptedVersionJar:
+    message: Осы нұсқаны орнату үшін басыңыз
+    name: Minecraft %{version} нұсқасының бүлінген банкасы.
+  corruptedVersionJson:
+    message: Осы нұсқаны орнату үшін басыңыз
+    name: Бүлінген нұсқасы %{version} json.
+  incompatibleJava:
+    message: Сіз Launcher қолданбасынан оны жүктеп алуды сұрай аласыз.
+    name: '{javaVersion} java нұсқасы {version} үшін жарамсыз!'
+  instanceFiles:
+    description: Орнату данасы {counts} файлды қамтиды.
+    title: Аяқталмаған дананы орнату
+  invalidJava:
+    message: Іске қосу үшін басқа java пайдалану үшін басыңыз.
+    name: Жарамсыз java орны.
+  missingAssets:
+    message: Launcher сіз үшін активтерді орнатады
+    name: >-
+      Жетіспейтін актив: {name} | Жетіспейтін актив: {name} | %{count} актив
+      жоқ.
+  missingAssetsIndex:
+    message: Launcher сіз үшін активтер индексін жүктеп алады
+    name: '{version} активтерінің индекс файлы жоқ.'
+  missingJava:
+    message: Бұл мәселені шешу үшін басыңыз
+    name: Minecraft іске қосу үшін Java табылмады!
+  missingLibraries:
+    message: Launcher сізге кітапханаларды орнатады
+    name: >-
+      {name} кітапханасы жоқ {name} кітапханасы жоқ Жоқ {count} кітапханалар |
+      {count} кітапхана жоқ
+  missingVersion:
+    message: Осы нұсқаны орнату үшін басыңыз
+    name: '{version} нұсқасы орнатылмаған!'
+  missingVersionJar:
+    message: Осы нұсқаны орнату үшін басыңыз
+    name: Minecraft %{version} нұсқасының банкасы жоқ
+disable: Өшіру
+disk:
+  available: Қол жетімді
+  used: Қолданылған
+download: Жүктеп алу
+downloadCount: '{count} жүктеп алу'
+downloadUpdate: Жаңартуды жүктеп алыңыз
+duration:
+  day: '{duration} күн | {duration} күн'
+  hour: '{duration} сағат | {duration} сағат'
+  minute: '{duration} минут | {duration} минут'
+  name: '{name} жою'
+  'no': Жоқ
+  second: '{duration} секунд | {duration} секунд'
+  'yes': Жою
+edit: өңдеу
+enable: Қосу
+env:
+  select:
+    all: Барлығын таңдаңыз
+    fit: Сәйкес келетіндерін таңдаңыз
+    none: Таңдаудан бас тарту
+error:
+  name: Қате | Қателер
+errors:
+  BadForgeInstallerJarError: >-
+    Forge орнатушы jar файлын талдау мүмкін емес. Мүмкін forge жаңа орнатушы
+    файл пішімі бар шығар? Бұл мәселе шешілмесе, әзірлеушілерге хабарласыңыз.
+  BadInstanceType: 'Жарамсыз данасы: {type}'
+  BodyTimeoutError: HTTP негізгі күту уақыты
+  ChecksumNotMatchError: Бақылау сомасы сәйкес келмеді! Күтілетін {expect}. Нақты {actual}.
+  ConnectTimeoutError: Серверге қосылу күту уақыты.
+  DNSNotFoundError: DNS іздеу қатесі
+  DatabaseNotOpened: >-
+    Деректер базасы ашылмаған! Іске қосу құралы дұрыс жұмыс істемейді! Іске қосу
+    құралы қол жеткізе алатын деректер каталогын таңдаңыз. Параметр бетінде
+    деректер түбірін қалпына келтіруге болады.
+  DownloadAggregateError: Файлды жүктеп алу мүмкін болмады.
+  DownloadFileSystemError: >-
+    Жүктеп алу файлының жолына кіру кезінде қате. Іске қосу құралының оған
+    жазуға рұқсаты бар екеніне көз жеткізіңіз.
+  HeadersTimeoutError: HTTP тақырыбының күту уақыты
+  NotFoundError: 404 Табылмады
+  SocketError: Сервер розеткасының қатесі
+eula:
+  body: >-
+    Құсбелгіні қою арқылы сіз Minecraft {eula} ойынымен келіскеніңізді
+    көрсетесіз.
+exception:
+  http: >-
+    {url} мекенжайына HTTP сұрауы орындалмады. Күй коды {statusCode}. {код}.
+    Қайталап көріңіз немесе желіңізді тексеріңіз. Бұл қате жойылмаса,
+    әзірлеушілер тобына есеп жіберіңіз.
+existed: Болды
+exportModpackTarget:
+  curseforge: Curseforge файлы
+  github: Github файлы
+  modrinth: Modrinth файлы
+  override: Қайта анықтау (Raw) файл
+extensions:
+  mrpack: Modrinth Модпак
+  zip: Zip файлы
+fabricVersion:
+  disable: Fabric өшіру
+  empty: Minecraft үшін мата нұсқасы жоқ {version}
+  showSnapshot: Суреттерді көрсету
+  stable: Тұрақты
+  unstable: Тұрақсыз
+feedback:
+  channel: Арналар
+  description: Мен қате таптым немесе ұсыныс жасағым келеді
+  discord: Discord
+  discordDescription: Discord арнасына қосылыңыз
+  discordJoin: Қосылыңыз
+  generateReport: Есепті жасау
+  generateSaveAs: Есепті келесіге сақтаңыз
+  github: Github мәселесі
+  githubDescription: Өз ойыңызды айту үшін Github мәселесін ашыңыз
+  githubOpenIssue: Github
+  hint: >-
+    Есепті жасау және әзірлеушілер тобына хабарласу үшін түймені басыңыз. Есепте
+    операциялық жүйе түрі, нұсқасы, пайдаланушы аты (OS жүйесінде) және т.б.
+    қоса, құрылғыңыз туралы ақпарат болады.
+  kook: Kook
+  kookDescription: >-
+    Kook - Қытай материгінің пайдаланушылары үшін келіспеушіліктерге арналған
+    балама қолданба
+  name: Кері байланыс
+  qq: QQ тобы
+  qqDescription: >-
+    QQ тобына кері байланыс енгізіңіз және авторлармен тікелей сөйлесіңіз. Топ
+    нөмірі: {number}
+  qqEnterGroup: Қосылыңыз
+fileDetail:
+  fileSize: Файл өлшемі
+  hash: Hash
+filter: Сүзгі
+finish: Аяқтау
+forgeConfig:
+  hint: >-
+    Біз оның конфигурация файлын анықтай алуымыз үшін кем дегенде осы модпен
+    ойынды бір рет іске қосыңыз!
+forgeVersion:
+  common: Жалпы
+  disable: Forge қолданбасын өшіріңіз
+  empty: Forge-де Minecraft {version} үшін шығарылым жоқ.
+  latest: Соңғы
+  name: Forge
+  recommended: Ұсынылады
+  showBuggy: Баггиді көрсету
+  showRecommendedAndLatestOnly: Ұсынылған және тек соңғы нұсқа
+  version: Forge нұсқасы

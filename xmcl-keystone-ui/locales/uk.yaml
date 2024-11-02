@@ -133,7 +133,7 @@ curseforge:
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API и бібліотеки
-  Addons: Addons
+  Addons: Аддони
   Adventure and RPG: Пригоди та RPG
   Animated: Анімація
   Cosmetic: Зовнішній вид/декор
@@ -749,6 +749,7 @@ modInstall:
   recommendation: Дослідіть {first} або {second} моди в {modrinth} і {curseforge}!
   search: Результат пошуку
   searchHint: Пошук та вибір проекту
+  skipVersion: Пропустіть моди з іншою версією Minecraft
   source: Джерело мода
   switch: Змінити версію
   upgrade: Оновлення модифікацій
@@ -756,6 +757,11 @@ modSearchType:
   all: Всі
   installed: Встановленно
   local: Кеш на диску
+modUpgradePolicy:
+  curseforge: Curseforge First
+  curseforgeOnly: Тільки Curseforge
+  modrinth: Modrinth Перший
+  modrinthOnly: Тільки Модрінт
 modified:
   reset: Скидання
   save: Зберегти

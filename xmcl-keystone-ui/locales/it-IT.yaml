@@ -754,6 +754,7 @@ modInstall:
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
+  skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
@@ -762,6 +763,11 @@ modSearchType:
   explore: Esplora il mercato
   installed: Installato
   local: Cache del disco
+modUpgradePolicy:
+  curseforge: Curseforge  Maledizione
+  curseforgeOnly: Solo Forgiamaledizione
+  modrinth: Modrinth Primo
+  modrinthOnly: Solo Modrinth
 modified:
   reset: Reimposta
   save: Salva

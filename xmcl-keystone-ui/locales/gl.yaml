@@ -248,6 +248,8 @@ eula:
   body: >-
     Marcando o botón da caixa de verificación, estás a indicar o teu acordo co
     {eula} de Minecraft.
+fabricVersion:
+  showSnapshot: Mostrar instantáneas
 importModpack:
   name: Importar Modpack
 instance:
@@ -325,6 +327,12 @@ modInstall:
   installDependencies: Instalar dependencias que faltan
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
+  skipVersion: Salta os Mods con diferentes versións de Minecraft
+modUpgradePolicy:
+  curseforge: Curseforge Primeiro
+  curseforgeOnly: Só Curseforge
+  modrinth: Modrinth Primeiro
+  modrinthOnly: Só Modrinth
 modrinth:
   categories:
     128x: 128x

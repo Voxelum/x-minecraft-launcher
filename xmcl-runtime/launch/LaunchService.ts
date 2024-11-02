@@ -297,6 +297,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if ('inheritances' in version) {
         const accessToken = user ? await this.#track(this.userTokenStorage.get(user).catch(() => undefined), 'get-user-token', operationId) : undefined
         const op = await this.#generateOptions(options, version, accessToken)
+        launchOptions = op
         for (const plugin of this.middlewares) {
           try {
             await this.#track(plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context), plugin.name, operationId)

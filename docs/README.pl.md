@@ -84,7 +84,9 @@ Dla deweloperów lokalizacji i18n, postępuj zgodnie z [Getting Started with Loc
 
 ## Kredyt
 
-[GodLeaveMe](https://github.com/GodLeaveMe), prowadzenie rejestru pakietów AUR.
+[BANSAFAn](https://github.com/BANSAFAn), który bardzo pomaga mi w społeczności RU/UK.
+
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), prowadzenie rejestru pakietów AUR.
 
 [0xc0000142](https://github.com/0xc0000142), utrzymanie wingeta.
 

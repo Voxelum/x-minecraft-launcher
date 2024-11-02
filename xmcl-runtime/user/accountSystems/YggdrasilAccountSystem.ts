@@ -43,22 +43,28 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     for (const p of Object.values(userProfile.profiles)) {
       const profile = await client.lookup(p.id, true, signal)
       const texturesBase64 = profile.properties.textures
-      const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
-      const skin = textures?.textures.SKIN
-      const uploadable = profile.properties.uploadableTextures
+      if (!texturesBase64) continue
+      try {
+        const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
+        const skin = textures?.textures.SKIN
+        const uploadable = profile.properties.uploadableTextures
 
-      // mark skin already refreshed
-      if (skin) {
-        this.logger.log(`Update the skin for profile ${p.name}`)
+        // mark skin already refreshed
+        if (skin) {
+          this.logger.log(`Update the skin for profile ${p.name}`)
 
-        userProfile.profiles[p.id] = {
-          ...profile,
-          textures: {
-            ...textures.textures,
-            SKIN: skin,
-          },
-          uploadable: uploadable ? uploadable.split(',') as any : undefined,
+          userProfile.profiles[p.id] = {
+            ...profile,
+            textures: {
+              ...textures.textures,
+              SKIN: skin,
+            },
+            uploadable: uploadable ? uploadable.split(',') as any : undefined,
+          }
         }
+      } catch (e) {
+        this.logger.error(e as Error)
+        this.logger.warn('Fail to update skins', p, profile)
       }
     }
   }
@@ -98,6 +104,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       } else if (e.error === 'ForbiddenOperationException' &&
         e.errorMessage === 'Invalid credential information.') {
         throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
+      } else if (e.error === 'ForbiddenOperationException') {
+        throw new UserException({ type: 'loginGeneral' }, e.message || e.errorMessage, { cause: e })
       } else if (e.error === 'IllegalArgumentException') {
         throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       } else if (isSystemError(e)) {

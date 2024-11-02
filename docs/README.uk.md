@@ -39,8 +39,6 @@
 winget install CI010.XMinecraftLauncher
 ```
 
-[中文 README](README.zh.md) [English README](README.md)
-
 ## Можливості
 
 - 📥 **Завантаження та автоматичне завершення**. Підтримує завантаження `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` з офіційних або сторонніх дзеркал.
@@ -86,7 +84,9 @@ winget install CI010.XMinecraftLauncher
 
 ## Кредит
 
-[GodLeaveMe](https://github.com/GodLeaveMe), ведення реєстру пакетів AUR.
+[BANSAFAn](https://github.com/BANSAFAn), який дуже допомагає мені в роботі з RU/UK спільнотою.
+
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), ведення реєстру пакетів AUR.
 
 [0xc0000142](https://github.com/0xc0000142), обслуговування winget.
 
