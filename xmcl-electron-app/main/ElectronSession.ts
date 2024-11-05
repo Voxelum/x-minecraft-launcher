@@ -84,6 +84,9 @@ export class ElectronSession {
         if (profile && profile.accessToken) {
           request.headers.set('Authorization', `Bearer ${profile.accessToken}`)
         }
+        if (request.url.startsWith('https://api.xmcl.app/translation')) {
+          request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
+        }
       } else if (request.url.startsWith('https://api.curseforge.com')) {
         request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
       }
