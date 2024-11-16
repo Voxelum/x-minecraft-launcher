@@ -1,5 +1,5 @@
 import { InstalledAppManifest } from '@xmcl/runtime-api'
-import { BrowserWindow } from 'electron'
+import { BrowserWindow, screen } from 'electron'
 import { readFile, writeFile } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import { join } from 'path'
@@ -30,6 +30,15 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
       return Math.max(this.height || 0, min)
     },
   }
+  function isInsideScreen(x: number, y: number, width: number, height: number) {
+    const displays = screen.getAllDisplays()
+    for (const display of displays) {
+      if (x >= display.bounds.x && y >= display.bounds.y && x + width <= display.bounds.x + display.bounds.width && y + height <= display.bounds.y + display.bounds.height) {
+        return true
+      }
+    }
+    return false
+  }
   async function getConfig() {
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
@@ -44,6 +53,10 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
       x: typeof configData.x === 'number' ? configData.x as number : null,
       y: typeof configData.y === 'number' ? configData.y as number : null,
       maximized: !!configData.maximized,
+    }
+    if (newConfig.x !== null && newConfig.y !== null && !isInsideScreen(newConfig.x, newConfig.y, newConfig.width, newConfig.height)) {
+      newConfig.x = null
+      newConfig.y = null
     }
     Object.assign(config, newConfig)
     return config
