@@ -227,6 +227,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       instance.server = payload.server
     }
 
+    payload.name = payload.name.trim()
+
     if (!payload.path) {
       instance.path = this.getCandidatePath(payload.name)
     }

@@ -89,7 +89,7 @@ const { data: content, files, loading, error } = injection(kInstanceCreation)
 const { instances } = injection(kInstances)
 const nameRules = computed(() => [
   (v: any) => !!v || t('instance.requireName'),
-  (v: any) => !instances.value.some(i => i.name === v) || t('instance.duplicatedName'),
+  (v: any) => !instances.value.some(i => i.name === v.trim()) || t('instance.duplicatedName'),
 ])
 
 const scrollElement = ref<HTMLElement | null>(null)
