@@ -120,6 +120,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   async loadInstance(path: string) {
     requireString(path)
 
+    // Fix the wrong path if user set the name start/end with space
+    path = path.trim()
+
     if (!isAbsolute(path)) {
       path = this.getPathUnder(path)
     }
@@ -137,6 +140,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.warn(e)
       return false
     }
+
+    // Fix the wrong path if user set the name start/end with space
+    option.name = option.name.trim()
 
     const name = option.name
     const expectPath = this.getPathUnder(filenamify(name))
