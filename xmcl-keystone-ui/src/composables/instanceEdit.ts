@@ -122,11 +122,23 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   })
   const minMemory = computed({
     get: () => data.minMemory ?? globalMinMemory.value,
-    set: (v) => { set(data, 'minMemory', v); saveJIT() },
+    set: (v) => {
+      if (data.assignMemory !== true) {
+        set(data, 'assignMemory', true)
+      }
+      set(data, 'minMemory', v)
+      saveJIT()
+    },
   })
   const maxMemory = computed({
     get: () => data.maxMemory ?? globalMaxMemory.value,
-    set: (v) => { set(data, 'maxMemory', v); saveJIT() },
+    set: (v) => {
+      if (data.assignMemory !== true) {
+        set(data, 'assignMemory', true)
+      }
+      set(data, 'maxMemory', v)
+      saveJIT()
+    },
   })
   const vmOptions = computed({
     get: () => data.vmOptions ?? globalVmOptions.value.join(' '),
