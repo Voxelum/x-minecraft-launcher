@@ -4,6 +4,7 @@ import { useVModel } from '@vueuse/core'
 const { t } = useI18n()
 const props = defineProps<{
   icon: string
+  color?: string
 }>()
 
 const emit = defineEmits<{
@@ -33,8 +34,11 @@ function pickIconFile() {
 </script>
 
 <template>
-  <v-card>
-    <v-list>
+  <v-card
+    :color="color"
+    class="transition-colors"
+  >
+    <v-list color="transparent">
       <v-list-item>
         <v-list-item-content>
           <v-list-item-title>
@@ -58,7 +62,7 @@ function pickIconFile() {
 
     <v-divider />
 
-    <v-list>
+    <v-list color="transparent">
       <v-list-item>
         <v-text-field
           v-model="iconModel"

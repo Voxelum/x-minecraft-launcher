@@ -12,7 +12,7 @@
     hover
     @click="emit('click', $event)"
   >
-    <div
+    <!-- <div
       class="absolute flex size-full items-center justify-center"
     >
       <v-progress-circular
@@ -21,7 +21,7 @@
         :width="4"
         indeterminate
       />
-    </div>
+    </div> -->
     <v-img
       class="white--text favicon grey en-2 min-h-34 max-h-34 flex items-center"
       :src="image"

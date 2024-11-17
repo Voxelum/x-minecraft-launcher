@@ -33,8 +33,10 @@
               </v-icon>
             </v-avatar>
           </template>
-
-          <AppChangeInstanceIconCard :icon.sync="data.icon" />
+          <AppChangeInstanceIconCard
+            :color="highlighted ? 'info' : ''"
+            :icon.sync="data.icon"
+          />
         </v-menu>
       </v-list-item-action>
       <v-list-item-content>
@@ -181,6 +183,10 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { kUserContext } from '@/composables/user'
 import { AUTHORITY_MICROSOFT } from '@xmcl/runtime-api'
 import AppChangeInstanceIconCard from '@/components/AppChangeInstanceIconCard.vue'
+import { useQuery } from '@/composables/query'
+import { useTimeout } from '@vueuse/core'
+
+const changeIcon = useQuery('changeIcon')
 
 const {
   data,
@@ -220,6 +226,18 @@ const {
 const { t } = useI18n()
 
 const changeIconModel = ref(false)
+
+onMounted(() => {
+  if (changeIcon.value) {
+    nextTick().then(() => {
+      changeIconModel.value = true
+      start()
+    })
+  }
+})
+
+const { ready, start } = useTimeout(500, { controls: true })
+const highlighted = computed(() => !ready.value && changeIconModel.value)
 
 </script>
 
