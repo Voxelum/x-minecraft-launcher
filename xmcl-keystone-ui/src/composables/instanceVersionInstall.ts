@@ -89,6 +89,13 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         const neoForgedVersion = await getSWRV(getNeoForgedVersionModel(minecraft), cfg)
         const found = neoForgedVersion.find(v => v === neoForged)
         const id = found ?? neoForged
+
+        if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
+          // no valid java
+          const mcVersionResolved = await resolveLocalVersion(minecraft)
+          await installDefaultJava(mcVersionResolved.javaVersion)
+        }
+
         forgeVersion = await installNeoForged({ version: id, minecraft })
       } else {
         forgeVersion = localNeoForge.id
