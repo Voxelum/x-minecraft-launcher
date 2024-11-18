@@ -63,12 +63,8 @@ export const config = {
     darkModeSupport: true,
     target: [
       {
-        target: 'zip',
-        arch: ['x64', 'arm64'],
-      },
-      {
         target: 'dmg',
-        arch: ['x64'],
+        arch: ['arm64', 'x64'],
       },
     ],
     extendInfo: {
