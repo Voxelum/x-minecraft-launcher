@@ -178,8 +178,8 @@ function createWatcher(
     debounced.clear()
   }, 200)
   const watcher = watch(path, (event, file) => {
-    if (!isAbsolute(file)) file = join(path, file)
     if (!file) return
+    if (!isAbsolute(file)) file = join(path, file)
     if (shouldIgnoreFile(file)) return
     const existed = existsSync(file)
     if (!existed) {
@@ -207,7 +207,10 @@ export function watchResourcesDirectory(
     (all) => state.filesUpdates(all),
     500)
 
+  let disposed = false
+
   const onRemove = (file: string) => {
+    if (disposed) return
     const fileRelativeName = getDomainedPath(file, context.root)
     context.db.deleteFrom('snapshots')
       .where('domainedPath', '=', fileRelativeName)
@@ -230,6 +233,7 @@ export function watchResourcesDirectory(
   const workerQueue = createWorkerQueue(context, domain, processUpdate, onResourceEmit, true)
   const revalidate = createRevalidateFunction(directory, context, onRemove,
     (job) => {
+      if (disposed) return
       workerQueue.push(job)
     }, (file, record, metadata) => {
       if (state.files.findIndex((r) => r.path === file.path) === -1) {
@@ -245,6 +249,7 @@ export function watchResourcesDirectory(
     })
 
   const watcher = createWatcher(directory, context.logger, async (file) => {
+    if (disposed) return
     const record = await context.db.selectFrom('snapshots')
       .selectAll()
       .where((eb) => eb.or([
@@ -271,6 +276,7 @@ export function watchResourcesDirectory(
   context.eventBus.on('resourceUpdate', onResourceUpdate)
 
   function dispose() {
+    disposed = true
     onDispose()
     watcher.close()
     workerQueue.dispose()

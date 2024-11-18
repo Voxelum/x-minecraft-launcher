@@ -108,6 +108,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   app.registryDisposer(async () => {
+    client.trackEvent({
+      name: 'app-stop',
+    })
     client.flush()
   })
 

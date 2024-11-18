@@ -50,6 +50,7 @@ export class WorkerQueue<T> {
   private retryAwait = (retry: number) => 1000 * Math.pow(2, retry)
   private isEqual = (a: T, b: T) => a === b
   private merge = (a: T, b: T) => a
+  private disposed = false
 
   constructor(
     private worker: (value: T) => Promise<void>,
@@ -66,16 +67,19 @@ export class WorkerQueue<T> {
   onerror = (job: T, e: Error) => {}
 
   async workIfIdle() {
+    if (this.disposed) return
     if (this.busy < this.workers && this.queue.length > 0) {
       this.busy++
       const { job, retry } = this.queue[0]
       try {
         await this.worker(job)
+        if (this.disposed) return
         this.queue.shift()
       } catch (e) {
         this.queue.shift()
         if (retry < this.retryCount && this.shouldRetry(e as Error)) {
           await new Promise((resolve) => setTimeout(resolve, this.retryAwait(retry)))
+          if (this.disposed) return
           this.queue.push({ job, retry: retry + 1 })
         } else {
           this.onerror(job, e as Error)
@@ -88,6 +92,7 @@ export class WorkerQueue<T> {
   }
 
   push(value: T) {
+    if (this.disposed) return
     const existed = this.queue.find((j) => this.isEqual(j.job, value))
     if (existed) {
       existed.job = this.merge(existed.job, value)
@@ -99,6 +104,7 @@ export class WorkerQueue<T> {
   }
 
   dispose() {
+    this.disposed = true
     this.queue = []
   }
 }

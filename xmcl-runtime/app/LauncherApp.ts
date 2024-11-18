@@ -207,6 +207,10 @@ export class LauncherApp extends EventEmitter {
     return createDummyLogger(tag, destination, this.logEmitter)
   }
 
+  /**
+   * Reigster the disposer. The disposer will be called when the app is going to quit.
+   * @param disposer The function to dispose the resource
+   */
   registryDisposer(disposer: () => Promise<void>) {
     this.#disposers.push(disposer)
   }
