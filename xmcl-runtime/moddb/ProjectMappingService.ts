@@ -1,6 +1,6 @@
 import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
-import { writeFile } from 'fs-extra'
+import { existsSync, rmSync, writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { join } from 'path'
@@ -35,11 +35,11 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     @Inject(kSettings) private settings: Settings,
   ) {
     super(app, async () => {
-      this.ensureDatabase()
+      await this.ensureDatabase(true)
     })
   }
 
-  private async ensureDatabase() {
+  private async ensureDatabase(init = false) {
     const locale = this.settings.locale.toLowerCase()
     const gfw = await this.app.registry.get(kGFW)
 
@@ -117,6 +117,14 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     if (this.#db?.locale === locale) return this.#db.db
     if (newLocale !== locale) return undefined
 
+    if (init) {
+      try {
+        const lockPath = filePath + '.lock'
+        if (existsSync(lockPath)) {
+          rmSync(lockPath, { recursive: true })
+        }
+      } catch { }
+    }
     const sqlite = new SQLDatabase(filePath, {
       readOnly: true,
     })
@@ -136,6 +144,10 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
       db,
       locale,
     }
+
+    this.app.registryDisposer(async () => {
+      sqlite.close()
+    })
 
     return db
   }
