@@ -1,7 +1,6 @@
 <template>
   <v-list
     class="base-settings"
-    two-line
     subheader
   >
     <v-subheader style="">
@@ -66,63 +65,6 @@
       </div>
     </v-list-item>
 
-    <v-divider class="mb-4 mt-2" />
-    <VersionInputMinecraft
-      :value="data.runtime.minecraft"
-      @input="onSelectMinecraft"
-    />
-    <VersionInputNeoForged
-      v-if="!data.runtime.labyMod"
-      :value="data.runtime.neoForged"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectNeoForged"
-    />
-    <VersionInputForge
-      v-if="!data.runtime.labyMod"
-      :value="data.runtime.forge"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectForge"
-    />
-    <VersionInputFabric
-      v-if="!data.runtime.labyMod"
-      :value="data.runtime.fabricLoader"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectFabric"
-    />
-    <VersionInputQuilt
-      v-if="!data.runtime.labyMod"
-      :value="data.runtime.quiltLoader"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectQuilt"
-    />
-    <VersionInputOptifine
-      v-if="!data.runtime.labyMod"
-      :value="data.runtime.optifine"
-      :forge="data.runtime.forge || ''"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectOptifine"
-    />
-    <VersionInputLabymod
-      v-if="data.runtime.labyMod"
-      :value="data.runtime.labyMod"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectLabyMod"
-    />
-    <VersionInputLocal
-      :value="data.version"
-      :versions="versions"
-      @input="onSelectLocalVersion"
-    />
-    <SettingItemCheckbox
-      v-model="fastLaunch"
-      :title="t('instanceSetting.fastLaunch')"
-      :description="t('instanceSetting.fastLaunchHint')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalFastLaunch"
-        @clear="resetFastLaunch"
-      />
-    </SettingItemCheckbox>
     <SettingItemCheckbox
       v-model="hideLauncher"
       :title="t('instanceSetting.hideLauncher')"
@@ -163,6 +105,70 @@
         @clear="resetDisableElyByAuthlib"
       />
     </SettingItemCheckbox>
+
+    <v-divider class="mb-2 mt-2" />
+
+    <v-subheader>
+      {{ t('version.name', 2) }}
+      <div class="flex-grow" />
+      <v-btn
+        icon
+        @click="showAll = !showAll"
+      >
+        <v-icon v-if="!showAll">
+          unfold_more
+        </v-icon>
+        <v-icon v-else>
+          unfold_less
+        </v-icon>
+      </v-btn>
+    </v-subheader>
+    <VersionInputMinecraft
+      :value="data.runtime.minecraft"
+      @input="onSelectMinecraft"
+    />
+    <VersionInputNeoForged
+      v-if="showNeoForged"
+      :value="data.runtime.neoForged"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectNeoForged"
+    />
+    <VersionInputForge
+      v-if="showForge"
+      :value="data.runtime.forge"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectForge"
+    />
+    <VersionInputFabric
+      v-if="showFabric"
+      :value="data.runtime.fabricLoader"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectFabric"
+    />
+    <VersionInputQuilt
+      v-if="showQuilt"
+      :value="data.runtime.quiltLoader"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectQuilt"
+    />
+    <VersionInputOptifine
+      v-if="showOptifine"
+      :value="data.runtime.optifine"
+      :forge="data.runtime.forge || ''"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectOptifine"
+    />
+    <VersionInputLabymod
+      v-if="showLabyMod"
+      :value="data.runtime.labyMod"
+      :minecraft="data.runtime.minecraft"
+      @input="onSelectLabyMod"
+    />
+    <VersionInputLocal
+      :value="data.version"
+      :versions="versions"
+      @input="onSelectLocalVersion"
+    />
   </v-list>
 </template>
 
@@ -211,6 +217,14 @@ const { userProfile } = injection(kUserContext)
 
 const isThirdparty = computed(() => userProfile.value.authority !== AUTHORITY_MICROSOFT)
 const isElyBy = computed(() => userProfile.value.authority.startsWith('https://authserver.ely.by'))
+
+const showAll = ref(false)
+const showForge = computed(() => showAll.value || data.runtime.forge)
+const showNeoForged = computed(() => showAll.value || data.runtime.neoForged)
+const showFabric = computed(() => showAll.value || data.runtime.fabricLoader)
+const showQuilt = computed(() => showAll.value || data.runtime.quiltLoader)
+const showOptifine = computed(() => showAll.value || data.runtime.optifine)
+const showLabyMod = computed(() => showAll.value || data.runtime.labyMod)
 
 const {
   onSelectMinecraft,

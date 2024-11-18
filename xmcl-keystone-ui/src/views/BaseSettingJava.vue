@@ -1,7 +1,6 @@
 <template>
   <v-list
     two-line
-    subheader
     style="background: transparent; width: 100%"
   >
     <v-subheader style="padding-right: 2px">
@@ -27,7 +26,6 @@
     <v-list-group
       id="java-list"
       no-action
-      :value="true"
     >
       <template #activator>
         <v-list-item
@@ -54,7 +52,7 @@
       />
     </v-list-group>
     <v-list-item>
-      <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
+      <div class="mt-2 flex flex-col gap-2 py-[8px]">
         <div class="flex flex-row items-center">
           {{ t("java.memory") }}
           <BaseSettingGlobalLabel
@@ -191,5 +189,9 @@ async function browseFile() {
 <style>
 .v-textarea.v-text-field--enclosed .v-text-field__slot textarea {
   word-break: break-all;
+}
+
+#java-list .v-list-group__header:before {
+  opacity: 0.08;
 }
 </style>

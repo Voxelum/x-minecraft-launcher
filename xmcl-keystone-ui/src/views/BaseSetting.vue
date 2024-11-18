@@ -1,10 +1,10 @@
 <template>
-  <div class="base-setting xl:px-20 2xl:px-40">
+  <div class="base-setting px-10">
     <BaseSettingGeneral />
     <v-divider />
-    <BaseSettingSync />
-    <v-divider />
     <BaseSettingJava />
+    <v-divider />
+    <BaseSettingSync />
     <v-divider />
     <BaseSettingLaunch />
     <v-divider />
@@ -105,21 +105,6 @@ useTutorial(computed(() => [{
 
 </script>
 
-<style scoped=true>
-/* .base-setting {
-  max-width: 1300px;
-  width: 1220px;
-  margin: auto
-}
-
-@media screen and (max-width: 1300px) {
-  .base-setting {
-    width: unset;
-    margin: 0 24px;
-  }
-} */
-
-</style>
 <style>
 .local-version .v-select__selection--comma {
   max-width: 100px;
@@ -128,12 +113,24 @@ useTutorial(computed(() => [{
   text-overflow: ellipsis;
 }
 
-.base-settings {
+.base-setting {
   background: transparent !important;
   width: 100%;
 }
 
-.base-settings .v-text-field--box input,
+.base-setting .v-list-item {
+  @apply rounded-xl;
+}
+
+.base-setting .v-list-item:before {
+  @apply rounded-xl;
+}
+
+.base-setting .v-list-item:hover:before {
+  @apply rounded-xl;
+}
+
+.base-setting .v-text-field--box input,
 .v-text-field--full-width input,
 .v-text-field--outlined input {
   margin-top: 0
