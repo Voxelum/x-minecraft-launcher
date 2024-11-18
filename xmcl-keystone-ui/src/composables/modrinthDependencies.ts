@@ -38,7 +38,7 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
       () => clientModrinthV2.getProjectVersions(child.project_id, { loaders: version.loaders, gameVersions: version.game_versions }),
       config.cache!, config.dedupingInterval!)
     const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id)! : versions[0]
-    const result = await visit({
+    const result = await visit(markRaw({
       project,
       versions,
       recommendedVersion,
@@ -47,7 +47,7 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
         ? current.type === 'required' ? 'required' : current.type || child.dependency_type
         : child.dependency_type,
       relativeType: child.dependency_type,
-    }, visited, config)
+    }), visited, config)
     return result
   }))
 

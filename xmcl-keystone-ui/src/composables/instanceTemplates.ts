@@ -81,7 +81,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
   }
 
   function getPeerTemplate(id: string, name: string, icon: string, man: InstanceManifest) {
-    const result: Template = reactive({
+    const result: Template = markRaw({
       filePath: id,
       name: `${man.name ?? 'Instance'}@${name}`,
       description: '',
@@ -104,7 +104,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
         minMemory: man.minMemory,
         maxMemory: man.maxMemory,
       },
-      loadFiles: () => Promise.resolve(man.files),
+      loadFiles: () => Promise.resolve(markRaw(man.files.map(markRaw))),
       type: 'peer',
     })
 
@@ -117,13 +117,12 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
 
   function getFtbTemplate(man: CachedFTBModpackVersionManifest): Template {
     const [instanceConfig, files] = getFTBTemplateAndFile(man, javas.value)
-    return reactive({
+    return markRaw({
       filePath: `${man.parent}-${man.id.toString()}`,
       name: `${man.projectName}-${man.name}`,
-      description: computed(() => t('instanceTemplate.ftb')),
+      description: t('instanceTemplate.ftb'),
       instance: markRaw(instanceConfig),
-      loadingFiles: false,
-      loadFiles: () => Promise.resolve(files),
+      loadFiles: () => Promise.resolve(markRaw(files.map(markRaw))),
       type: 'ftb',
     })
   }

@@ -16,10 +16,10 @@ export function useModrinthProject(id: Ref<string>) {
     async (key) => {
       const cacheKey = getModrinthProjectKey(id.value)
       if (cacheKey === key) {
-        return clientModrinthV2.getProject(id.value)
+        return clientModrinthV2.getProject(id.value).then(markRaw)
       } else {
         const realId = key.split('/')[2]
-        return clientModrinthV2.getProject(realId)
+        return clientModrinthV2.getProject(realId).then(markRaw)
       }
     }, inject(kSWRVConfig))
 

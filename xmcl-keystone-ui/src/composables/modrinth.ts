@@ -129,7 +129,7 @@ export function useModrinthSearchFunc(
       offset: index,
       index: get(sortBy),
       facets,
-    })
+    }).then(markRaw)
   }
 
   return search

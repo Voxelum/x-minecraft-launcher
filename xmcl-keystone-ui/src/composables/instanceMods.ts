@@ -113,9 +113,9 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       }
     }
 
-    modsIconsMap.value = newIconMap
-    mods.value = newItems
-    provideRuntime.value = runtime
+    modsIconsMap.value = markRaw(newIconMap)
+    mods.value = markRaw(newItems.map(markRaw))
+    provideRuntime.value = markRaw(runtime)
   }
 
   // mod duplication detect
