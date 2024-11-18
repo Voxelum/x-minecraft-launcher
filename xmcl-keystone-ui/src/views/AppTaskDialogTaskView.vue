@@ -143,7 +143,7 @@
       <v-btn
         text
         small
-        @click="clear"
+        @click="onClear"
       >
         <v-icon left>
           delete_forever
@@ -156,16 +156,15 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
-import { useTaskName } from '../composables/task'
-import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
-import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
-
 import { useDialog } from '@/composables/dialog'
 import { kTaskManager } from '@/composables/taskManager'
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, PoolStats, TaskState } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
+import { useTaskName } from '../composables/task'
+import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
+import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
 
 interface TaskItemOrGroup extends TaskItem {
   isGrouped: boolean
@@ -201,68 +200,7 @@ const getReactiveItems = (items: TaskItem[]) => {
       nonActiveTasks.push(markRaw(i))
     }
   }
-  const subGroup = (groupItems: TaskItem[], maxSize: number) => {
-    if (maxSize === 0) return []
-    if (groupItems.length < maxSize) return groupItems
-    return groupItems.slice(0, maxSize - 1).concat({
-      ...groupItems[maxSize - 1],
-      isGrouped: true,
-      groupedCount: groupItems.length - 1,
-    } as TaskItemOrGroup)
-  }
-  const group = (groupItems: TaskItem[], maxSize: number) => {
-    if (groupItems.length < maxSize) {
-      return groupItems
-    }
-    const byType: TaskItem[][] = [[groupItems[0]]]
-    for (const cur of groupItems.slice(1)) {
-      const lastGroup = byType[byType.length - 1]
-      // Same path and same state go to one bag
-      if (lastGroup[0].path === cur.path && lastGroup[0].state === cur.state) {
-        lastGroup.push(cur)
-      } else {
-        byType.push([cur])
-      }
-    }
-
-    if (byType.length >= maxSize) {
-      // Map each on to group
-      return byType.slice(0, maxSize).map(g => g.length > 1 ? ({ ...g[0], isGrouped: true, groupedCount: g.length - 1 }) : g[0])
-    }
-
-    // 4 slots
-    // [ ] [ ] [3] [4]
-    // remaining 2
-    // expand(3, 2 + 1)
-    // remaining = 2 - (3 - 1) = 0
-    // [1] [1] [1] [4]
-
-    // [ ] [ ] [1] [4]
-    // remaining 2
-    // expand 1
-    // remaining = 2 - (1 - 1) = 2
-    // [1] [ ] [ ] [4]
-    // expand(4, 2 + 1)
-
-    // 4 - 2 = 2
-    // 2 < (2 + 1) ?
-    const result: TaskItem[] = []
-    let remaining = maxSize - byType.length
-    let index = 0
-    while (remaining > 0) {
-      const currentGroup = byType[index]
-      const expand = subGroup(currentGroup, remaining + 1)
-      result.push(...expand)
-      remaining -= (expand.length - 1)
-      index++
-      if (remaining <= 0) {
-        break
-      }
-    }
-
-    return result
-  }
-  return [...group(activeTasks, 4), ...group(failedTasks, 4).map(markRaw), ...group(nonActiveTasks, 4).map(markRaw)]
+  return [...activeTasks, ...failedTasks.map(markRaw), ...nonActiveTasks.map(markRaw)]
 }
 
 const onUpdate = () => {
@@ -310,6 +248,11 @@ watch(isShown, (value) => {
     visible.value = []
   }
 }, { immediate: true })
+
+function onClear() {
+  clear()
+  visible.value = [...all.value]
+}
 
 const data = reactive({
   tree: [],
