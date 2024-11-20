@@ -84,13 +84,15 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
   const client = appInsight.defaultClient
 
+  const sampled = ['UpdateMetadataError', 'NodeInternalError']
+
   client.addTelemetryProcessor((envelope, contextObjects) => {
     if (contextObjects?.error) {
       const exception = envelope.data.baseData as Contracts.ExceptionData
       const e = contextObjects?.error
       if (e instanceof Error) {
         handleException(exception, e)
-        if (e.name === 'NodeInternalError') {
+        if (sampled.includes(e.name)) {
           // Only log 1/3 of the internal error
           envelope.sampleRate = 33
         }
@@ -242,9 +244,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
-      if (e.name === 'NodeInternalError') {
-        // Only log 1/3 of the internal error
-      }
       client.trackException({
         exception: e,
         properties: e ? { ...e } : undefined,
@@ -341,6 +340,15 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
     // Collect resource metadata
     app.registry.get(ResourceManager).then((manager) => {
+      manager.context.eventBus.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
+        if (settings.disableTelemetry) return
+        client.trackException({
+          exception: err,
+          properties: {
+            ...payload,
+          },
+        })
+      })
       manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
         if (settings.disableTelemetry) return
         client.trackEvent({

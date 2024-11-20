@@ -11,6 +11,7 @@ import { ResourceWorkerQueuePayload } from './core/ResourceWorkerQueuePayload'
 import { isNonnull } from '~/util/object'
 import { upsertMetadata } from './core/upsertMetadata'
 import { Inject, InjectionKey } from '~/app'
+import { AnyError } from '~/util/error'
 
 export interface ResourceParsedEvent {
   file: File
@@ -198,6 +199,10 @@ export class ResourceManager {
   async updateMetadata(payloads: UpdateResourcePayload[]): Promise<string[]> {
     if (payloads.length === 0) return []
     for (const resource of payloads) {
+      if (!resource.hash) {
+        this.context.eventBus.emit('resourceUpdateMetadataError', resource, new AnyError('UpdateMetadataError', 'No hash provided'))
+        continue
+      }
       await upsertMetadata(resource.hash, this.context, resource.metadata, resource.uris, resource.icons, resource.metadata?.name)
     }
 

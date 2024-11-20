@@ -29,7 +29,6 @@ export async function upsertMetadata(sha1: string, context: ResourceContext, met
         .insertInto('resources')
         .values(table)
         .onConflict(oc => Object.keys(data).length > 0 ? oc.column('sha1').doUpdateSet(data) : oc.doNothing())
-        .returning('sha1')
         .execute()
     }
     if (uris && uris.length > 0) {
