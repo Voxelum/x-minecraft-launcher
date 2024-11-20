@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     v-context-menu="getContextMenuItems"
-    v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
+    v-shared-tooltip="{ text: tooltip, color: hasUpdate ? 'primary' : 'black' }"
     :style="{
       minHeight: height ? height + 'px' : undefined,
       maxHeight: height ? height + 'px' : undefined

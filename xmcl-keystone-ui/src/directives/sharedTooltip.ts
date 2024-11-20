@@ -1,7 +1,14 @@
 import { SharedTooltipData, useSharedTooltipData } from '@/composables/sharedTooltip'
 import { FunctionDirective } from 'vue'
 
-export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string) | string | [string, string]> = (el, bindings, node, prevNode) => {
+export type VSharedTooltipParam = {
+  text: string
+  items?: Array<{ icon: string; text: string }>
+  color?: string
+  list?: Array<string>
+} | string
+
+export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
   const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
@@ -15,6 +22,8 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string
       x: 0,
       y: 0,
       color: 'black',
+      items: undefined,
+      list: undefined,
     }
     if (bindings.modifiers.left) {
       newData.direction = 'left'
@@ -40,14 +49,24 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => string
       newData.y = rect.y + rect.width / 2
     }
 
+    function assign(val: VSharedTooltipParam) {
+      if (typeof val === 'string') {
+        newData.text = val
+      } else {
+        newData.text = val.text || ''
+        newData.items = val.items
+        newData.color = val.color || ''
+        newData.list = val.list
+      }
+    }
+
     const val = bindings.value
     if (typeof val === 'string') {
       newData.text = val
-    } else if (val instanceof Array) {
-      newData.text = val[0]
-      newData.color = val[1]
+    } else if (typeof val === 'object') {
+      assign(val)
     } else if (typeof val === 'function') {
-      newData.text = val()
+      assign(val())
     }
 
     stack.value = [...stack.value, markRaw(newData)]

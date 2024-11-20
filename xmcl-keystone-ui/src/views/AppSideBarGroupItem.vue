@@ -1,90 +1,68 @@
 <template>
-  <v-tooltip
-    :close-delay="0"
-    color="black"
-    transition="scroll-x-transition"
-    right
+  <v-sheet
+    class="relative rounded-xl hover:rounded-lg! transition-all"
+    :color="color"
   >
-    <template #activator="{ on: tooltip }">
-      <v-sheet
-        class="relative rounded-xl hover:rounded-lg! transition-all"
-        :color="color"
+    <AppSideBarGroupItemIndicator :state="overState" />
+    <v-list-item
+      v-context-menu="getItems"
+      v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
+      push
+      link
+      draggable
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
+      @click="onClick"
+      @dragover.prevent
+      @dragstart="onDragStart"
+      @dragend="onDragEnd"
+      @dragover="onDragOver"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+    >
+      <v-list-item-avatar
+        size="48"
+        class="transition-all duration-300 rounded"
+        large
       >
-        <AppSideBarGroupItemIndicator :state="overState" />
-        <v-list-item
-          v-context-menu="getItems"
-          push
-          link
-          draggable
-          class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-          v-on="tooltip"
-          @click="onClick"
-          @dragover.prevent
-          @dragstart="onDragStart"
-          @dragend="onDragEnd"
-          @dragover="onDragOver"
-          @dragenter="onDragEnter"
-          @dragleave="onDragLeave"
-          @drop="onDrop"
+        <Transition
+          name="scroll-y-reverse-transition"
+          mode="out-in"
         >
-          <v-list-item-avatar
-            size="48"
-            class="transition-all duration-300 rounded"
-            large
-          >
-            <Transition
-              name="scroll-y-reverse-transition"
-              mode="out-in"
-            >
-              <v-skeleton-loader
-                v-if="dragging"
-                type="avatar"
-              />
-              <div
-                v-else-if="!expanded"
-                class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
-              >
-                <v-img
-                  v-for="i in instances.slice(0, 4)"
-                  :key="i.path"
-                  :style="{ maxHeight: '20px', maxWidth: '20px' }"
-                  :src="getInstanceIcon(i, i.server ? undefined : undefined)"
-                  @dragenter="onDragEnter"
-                  @dragleave="onDragLeave"
-                />
-              </div>
-              <v-icon v-else>
-                folder
-              </v-icon>
-            </Transition>
-          </v-list-item-avatar>
-          <v-list-item-title>123</v-list-item-title>
-        </v-list-item>
-        <template v-if="expanded">
-          <AppSideBarInstanceItem
-            v-for="(instance, index) in group.instances"
-            :key="instance + index"
-            :path="instance"
-            inside
-            @arrange="emit('arrange', { ...$event, toPath: instance })"
+          <v-skeleton-loader
+            v-if="dragging"
+            type="avatar"
           />
-        </template>
-      </v-sheet>
+          <div
+            v-else-if="!expanded"
+            class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
+          >
+            <v-img
+              v-for="i in instances.slice(0, 4)"
+              :key="i.path"
+              :style="{ maxHeight: '20px', maxWidth: '20px' }"
+              :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+              @dragenter="onDragEnter"
+              @dragleave="onDragLeave"
+            />
+          </div>
+          <v-icon v-else>
+            folder
+          </v-icon>
+        </Transition>
+      </v-list-item-avatar>
+      <v-list-item-title>123</v-list-item-title>
+    </v-list-item>
+    <template v-if="expanded">
+      <AppSideBarInstanceItem
+        v-for="(instance, index) in group.instances"
+        :key="instance + index"
+        :path="instance"
+        inside
+        @arrange="emit('arrange', { ...$event, toPath: instance })"
+      />
     </template>
-    <template v-if="group.name">
-      {{ group.name }}
-    </template>
-    <template v-else>
-      <ul>
-        <li
-          v-for="instance in instances"
-          :key="instance.path"
-        >
-          {{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}
-        </li>
-      </ul>
-    </template>
-  </v-tooltip>
+  </v-sheet>
 </template>
 <script lang="ts" setup>
 import { InstanceGroupData, useGroupDragDropState } from '@/composables/instanceGroup'
@@ -97,6 +75,7 @@ import { notNullish } from '@vueuse/core'
 import { vContextMenu } from '@/directives/contextMenu'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{ group: InstanceGroupData; color: string }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])

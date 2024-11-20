@@ -1,65 +1,44 @@
 <template>
-  <v-tooltip
-    :close-delay="0"
-    color="black"
-    transition="scroll-x-transition"
-    right
-  >
-    <template #activator="{ on: tooltip }">
-      <div class="relative">
-        <AppSideBarGroupItemIndicator :state="overState" />
-        <v-list-item
-          v-context-menu="getItems"
-          push
-          link
-          draggable
-          class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-          :class="{ 'v-list-item--active': path === selectedInstance }"
-          v-on="tooltip"
-          @click="navigate"
-          @dragover.prevent
-          @dragstart="onDragStart"
-          @dragend="onDragEnd"
-          @dragover="onDragOver"
+  <div class="relative">
+    <AppSideBarGroupItemIndicator :state="overState" />
+    <v-list-item
+      v-context-menu="getItems"
+      v-shared-tooltip.right="() => ({ text: name, items: runtimes })"
+      push
+      link
+      draggable
+      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
+      :class="{ 'v-list-item--active': path === selectedInstance }"
+      @click="navigate"
+      @dragover.prevent
+      @dragstart="onDragStart"
+      @dragend="onDragEnd"
+      @dragover="onDragOver"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @drop="onDrop"
+    >
+      <v-list-item-avatar
+        size="48"
+        class="transition-all duration-300 hover:rounded"
+        large
+      >
+        <v-img
+          v-if="!dragging"
+          width="54"
+          height="54"
+          :src="favicon"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
-          @drop="onDrop"
-        >
-          <v-list-item-avatar
-            size="48"
-            class="transition-all duration-300 hover:rounded"
-            large
-          >
-            <v-img
-              v-if="!dragging"
-              width="54"
-              height="54"
-              :src="favicon"
-              @dragenter="onDragEnter"
-              @dragleave="onDragLeave"
-            />
-            <v-skeleton-loader
-              v-else
-              type="avatar"
-            />
-          </v-list-item-avatar>
-          <v-list-item-title>{{ name }}</v-list-item-title>
-        </v-list-item>
-      </div>
-    </template>
-    {{ name }}
-    <div>
-      <template v-for="r of runtimes">
-        <v-avatar
-          :key="r.icon + 'icon'"
-          size="28"
-        >
-          <img :src="r.icon">
-        </v-avatar>
-        {{ r.version }}
-      </template>
-    </div>
-  </v-tooltip>
+        />
+        <v-skeleton-loader
+          v-else
+          type="avatar"
+        />
+      </v-list-item-avatar>
+      <v-list-item-title>{{ name }}</v-list-item-title>
+    </v-list-item>
+  </div>
 </template>
 <script lang="ts" setup>
 import { kInstance } from '@/composables/instance'
@@ -72,6 +51,7 @@ import { BuiltinImages } from '../constant'
 import { kInstances } from '@/composables/instances'
 import AppSideBarGroupItemIndicator from './AppSideBarGroupItemIndicator.vue'
 import { useGroupDragDropState } from '@/composables/instanceGroup'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   path: string
@@ -90,14 +70,14 @@ const name = computed(() => {
 const runtimes = computed(() => {
   const inst = instance.value
   if (!inst) return []
-  const iconAndVersion = [] as { icon: string; version: string }[]
-  if (inst.runtime.minecraft) iconAndVersion.push({ icon: BuiltinImages.minecraft, version: inst.runtime.minecraft })
-  if (inst.runtime.forge) iconAndVersion.push({ icon: BuiltinImages.forge, version: inst.runtime.forge })
-  if (inst.runtime.labyMod) iconAndVersion.push({ icon: BuiltinImages.labyMod, version: inst.runtime.labyMod })
-  if (inst.runtime.neoForged) iconAndVersion.push({ icon: BuiltinImages.neoForged, version: inst.runtime.neoForged })
-  if (inst.runtime.fabricLoader) iconAndVersion.push({ icon: BuiltinImages.fabric, version: inst.runtime.fabricLoader })
-  if (inst.runtime.quiltLoader) iconAndVersion.push({ icon: BuiltinImages.quilt, version: inst.runtime.quiltLoader })
-  if (inst.runtime.optifine) iconAndVersion.push({ icon: BuiltinImages.optifine, version: inst.runtime.optifine })
+  const iconAndVersion = [] as { icon: string; text: string }[]
+  if (inst.runtime.minecraft) iconAndVersion.push({ icon: BuiltinImages.minecraft, text: inst.runtime.minecraft })
+  if (inst.runtime.forge) iconAndVersion.push({ icon: BuiltinImages.forge, text: inst.runtime.forge })
+  if (inst.runtime.labyMod) iconAndVersion.push({ icon: BuiltinImages.labyMod, text: inst.runtime.labyMod })
+  if (inst.runtime.neoForged) iconAndVersion.push({ icon: BuiltinImages.neoForged, text: inst.runtime.neoForged })
+  if (inst.runtime.fabricLoader) iconAndVersion.push({ icon: BuiltinImages.fabric, text: inst.runtime.fabricLoader })
+  if (inst.runtime.quiltLoader) iconAndVersion.push({ icon: BuiltinImages.quilt, text: inst.runtime.quiltLoader })
+  if (inst.runtime.optifine) iconAndVersion.push({ icon: BuiltinImages.optifine, text: inst.runtime.optifine })
   return iconAndVersion
 })
 

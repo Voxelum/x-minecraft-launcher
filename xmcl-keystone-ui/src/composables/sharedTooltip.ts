@@ -20,9 +20,9 @@ export interface SharedTooltipData {
   x: number
   y: number
   color: string
+  items: Array<{ text: string; icon: string }> | undefined
+  list: Array<string> | undefined
 }
-
-const data = shallowRef(undefined as SharedTooltipData | undefined)
 
 export function useSharedTooltipData() {
   return {

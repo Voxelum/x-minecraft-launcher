@@ -36,27 +36,17 @@
         class="non-moveable"
         @click="showAddInstance()"
       >
-        <v-tooltip
-          :close-delay="0"
-          color="black"
-          transition="scroll-x-transition"
-          right
+        <v-list-item-avatar
+          id="create-instance-button"
+          v-shared-tooltip.right="_ => t('instances.add')"
+          size="48"
+          class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
+          large
         >
-          <template #activator="{ on: tooltip }">
-            <v-list-item-avatar
-              id="create-instance-button"
-              size="48"
-              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
-              large
-              v-on="tooltip"
-            >
-              <v-icon class="text-3xl">
-                add
-              </v-icon>
-            </v-list-item-avatar>
-          </template>
-          {{ t('instances.add') }}
-        </v-tooltip>
+          <v-icon class="text-3xl">
+            add
+          </v-icon>
+        </v-list-item-avatar>
 
         <v-list-item-title>Instance</v-list-item-title>
       </v-list-item>
@@ -80,19 +70,20 @@
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
+import { useInstanceGroup, useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
-import { injection } from '@/util/inject'
-import { InstanceSavesServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
-import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 import { useNotifier } from '@/composables/notifier'
-import { useInstanceGroup, useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
+import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import AppSideBarGroupItem from './AppSideBarGroupItem.vue'
 import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
+import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 
 const { t } = useI18n()
 
-const { instances, isValidating } = injection(kInstances)
+const { isValidating } = injection(kInstances)
 
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 
