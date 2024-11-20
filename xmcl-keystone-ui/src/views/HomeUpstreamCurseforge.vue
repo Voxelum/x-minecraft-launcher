@@ -178,6 +178,7 @@ const loadChangelog = async (v: ProjectVersionProps) => {
     :header="headerData"
     :duplicating="duplicating"
     :only-current-version.sync="onlyCurrentVersion"
+    :updating="updating"
     @duplicate="onDuplicate"
     @update="onUpdate"
     @changelog="loadChangelog"
