@@ -67,6 +67,7 @@ export const config = {
         arch: ['arm64', 'x64'],
       },
     ],
+    artifactName: 'xmcl-${version}-${arch}.${ext}',
     extendInfo: {
       NSMicrophoneUsageDescription: 'A Minecraft mod wants to access your microphone.',
       NSCameraUsageDescription: 'Please give us access to your camera',
