@@ -1,56 +1,57 @@
 <template>
-  <div class="flex w-full items-end">
-    <v-btn
-      v-shared-tooltip="_ => t('baseSetting.title')"
-      text
-      icon
-      to="/base-setting"
-      :loading="refreshing"
-    >
-      <v-icon>
-        tune
-      </v-icon>
-    </v-btn>
-    <v-btn
-      v-shared-tooltip="_ => t('instance.showInstance')"
-      text
-      icon
-      @click="showInstanceFolder"
-    >
-      <v-icon>
-        folder
-      </v-icon>
-    </v-btn>
+  <div class="w-full">
+    <div class="relative mx-6 flex-grow flex gap-6 items-end">
+      <v-btn
+        v-shared-tooltip="_ => t('baseSetting.title')"
+        text
+        icon
+        to="/base-setting"
+        :loading="refreshing"
+      >
+        <v-icon>
+          tune
+        </v-icon>
+      </v-btn>
+      <v-btn
+        v-shared-tooltip="_ => t('instance.showInstance')"
+        text
+        icon
+        @click="showInstanceFolder"
+      >
+        <v-icon>
+          folder
+        </v-icon>
+      </v-btn>
 
-    <v-btn
-      v-shared-tooltip="_ => t('logsCrashes.title')"
-      text
-      icon
-      @click="showLogDialog"
-    >
-      <v-icon>
-        subtitles
-      </v-icon>
-    </v-btn>
-    <v-btn
-      v-shared-tooltip="_ => t('modpack.export')"
-      text
-      icon
-      :loading="refreshing"
-      @click="showExport"
-    >
-      <v-icon>
-        share
-      </v-icon>
-    </v-btn>
-
-    <v-spacer />
-    <HomeLaunchButton
-      class="ml-4"
-      :status="status"
-      @pause="pause"
-      @resume="resume"
-    />
+      <v-btn
+        v-shared-tooltip="_ => t('logsCrashes.title')"
+        text
+        icon
+        @click="showLogDialog"
+      >
+        <v-icon>
+          subtitles
+        </v-icon>
+      </v-btn>
+      <v-btn
+        v-shared-tooltip="_ => t('modpack.export')"
+        text
+        icon
+        :loading="refreshing"
+        @click="showExport"
+      >
+        <v-icon>
+          share
+        </v-icon>
+      </v-btn>
+      <v-spacer />
+      <HomeLaunchButton
+        class="ml-4"
+        :status="status"
+        @pause="pause"
+        @resume="resume"
+      />
+    </div>
   </div>
 </template>
 <script lang="ts" setup>

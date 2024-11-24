@@ -163,9 +163,9 @@
 
 <script lang="ts" setup>
 import { useMarkdown } from '@/composables/markdown'
-import { useVuetifyColor } from '@/composables/vuetify'
 import { useVirtualizer, VirtualItem, VirtualizerOptions } from '@tanstack/vue-virtual'
 import { VueInstance } from '@vueuse/core'
+import { getEl } from '@/util/el'
 import StoreProjectInstallVersionDialogVersion from './StoreProjectInstallVersionDialogVersion.vue'
 
 export interface StoreProjectVersion {
@@ -197,7 +197,6 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const emit = defineEmits(['install', 'input'])
-const { getColorCode } = useVuetifyColor()
 
 const gameVersions = computed(() => {
   const result = [] as string[]
@@ -230,12 +229,6 @@ const versionTypes = computed(() => {
 const gameVersion = ref('' as string)
 const loader = ref('' as string)
 const versionType = ref('' as string)
-
-function getKey(i: number) {
-  const v = all.value[i]
-  if (!v) return i
-  return typeof v === 'string' ? v : v.id
-}
 
 const all = computed(() => {
   const filtered = [] as StoreProjectVersion[]
@@ -280,8 +273,32 @@ const all = computed(() => {
   return [...result, 'divider', ...originals.filter(v => !result.includes(v))]
 })
 
-const offsetTop = ref(0)
+// Select versions
+const loading = ref(false)
+const selectedDetail = ref<StoreProjectVersionDetail | undefined>(undefined)
+async function onVersionClicked(version: StoreProjectVersion) {
+  try {
+    loading.value = true
+    const detail = await props.getVersionDetail(version)
+    selectedDetail.value = detail
+  } finally {
+    loading.value = false
+  }
+}
 
+function asAny(v: unknown): any {
+  return v as any
+}
+
+watch(() => props.value, (newVal) => {
+  if (!newVal) {
+    selectedDetail.value = undefined
+  }
+})
+const { render } = useMarkdown()
+
+// virtual scroll
+const offsetTop = ref(0)
 const containerRef = ref<HTMLElement | VueInstance | null>(null)
 const scrollElement = ref<VueInstance | HTMLElement | null>(null)
 
@@ -291,7 +308,11 @@ watch(containerRef, container => {
   }
 })
 
-const selectedDetail = ref<StoreProjectVersionDetail | undefined>(undefined)
+function getKey(i: number) {
+  const v = all.value[i]
+  if (!v) return i
+  return typeof v === 'string' ? v : v.id
+}
 
 const virtualizerOptions = computed(() => ({
   count: selectedDetail.value ? selectedDetail.value.dependencies.length : all.value.length,
@@ -313,44 +334,14 @@ const measureElement = (el: any) => {
   virtualizer.value.measureElement(el)
 }
 
-const loading = ref(false)
-
-async function onVersionClicked(version: StoreProjectVersion) {
-  try {
-    loading.value = true
-    const detail = await props.getVersionDetail(version)
-    selectedDetail.value = detail
-  } finally {
-    loading.value = false
-  }
-}
-
-function getEl(e: any) {
-  if (!e) return undefined
-  if ('$el' in e) return e.$el as HTMLElement
-  return e as HTMLElement
-}
-
-function asAny(v: unknown): any {
-  return v as any
-}
-
 watch(selectedDetail, () => {
   nextTick().then(() => {
     const el = getEl(containerRef.value)
     if (el) {
       virtualizer.value.scrollToIndex(0)
-      const top = el.offsetTop || 0
       offsetTop.value = 0
     }
   })
 })
-
-watch(() => props.value, (newVal) => {
-  if (!newVal) {
-    selectedDetail.value = undefined
-  }
-})
-const { render } = useMarkdown()
 
 </script>

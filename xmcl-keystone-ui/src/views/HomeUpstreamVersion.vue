@@ -136,7 +136,6 @@ const emit = defineEmits(['update', 'duplicate', 'changelog'])
 const version = computed(() => props.version)
 const { getColorCode } = useVuetifyColor()
 const { t } = useI18n()
-const { render } = useMarkdown()
 const getLoader = (loader: string) => {
   loader = loader.toLowerCase()
   if (loader === 'forge') return '$vuetify.icons.forge'

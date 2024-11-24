@@ -101,7 +101,7 @@ const items = computed(() => {
     if (!result[date]) {
       result[date] = []
     }
-    result[date].push({
+    result[date].push(markRaw({
       id: d.id,
       name: d.name,
       versionType: d.version_type as any,
@@ -111,7 +111,7 @@ const items = computed(() => {
       datePublished: (d.date_published),
       downloads: d.downloads,
       changelog: d.changelog ? render(d.changelog) : '',
-    })
+    }))
   }
 
   return result

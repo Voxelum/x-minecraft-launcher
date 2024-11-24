@@ -2,7 +2,7 @@ import { SharedTooltipData, useSharedTooltipData } from '@/composables/sharedToo
 import { FunctionDirective } from 'vue'
 
 export type VSharedTooltipParam = {
-  text: string
+  text?: string
   items?: Array<{ icon: string; text: string }>
   color?: string
   list?: Array<string>

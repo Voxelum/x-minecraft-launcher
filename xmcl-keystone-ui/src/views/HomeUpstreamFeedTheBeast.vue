@@ -106,7 +106,7 @@ const items = computed(() => {
     if (!result[date]) {
       result[date] = []
     }
-    result[date].push(shallowReactive({
+    result[date].push(markRaw({
       id: d.id.toString(),
       name: d.name,
       versionType: 'release',

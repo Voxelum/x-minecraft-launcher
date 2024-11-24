@@ -99,7 +99,7 @@ const items = computed(() => {
     if (!result[date]) {
       result[date] = []
     }
-    result[date].push(reactive({
+    result[date].push(markRaw({
       id: d.id.toString(),
       name: d.displayName,
       versionType: d?.releaseType === 1 ? 'release' : d?.releaseType === 2 ? 'beta' : 'alpha',

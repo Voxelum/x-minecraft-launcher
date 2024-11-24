@@ -20,6 +20,23 @@
 
         <v-list-item-title v-text="'Text'" />
       </v-list-item>
+
+      <v-list-item
+        v-if="upstreamBtn"
+        v-shared-tooltip.right="_ => (upstreamBtn || [])[1]"
+        link
+        push
+        to="/?upstream=true"
+        class="non-moveable"
+      >
+        <v-list-item-icon>
+          <v-icon>
+            {{ upstreamBtn[0] }}
+          </v-icon>
+        </v-list-item-icon>
+        <v-list-item-title v-text="'Text'" />
+      </v-list-item>
+
       <v-list-item
         v-shared-tooltip.right="_ => t('mod.name', 2)"
         link
@@ -78,8 +95,10 @@
 </template>
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
+import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 
 const router = useRouter()
 const expanding = ref(false)
@@ -100,6 +119,20 @@ router.afterEach((to) => {
   }
 })
 const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
+
+const { instance } = injection(kInstance)
+const upstreamBtn = computed(() => {
+  const up = instance.value.upstream
+  if (!up) return undefined
+  if (up.type === 'curseforge-modpack') {
+    return ['$vuetify.icons.curseforge', 'Curseforge']
+  } else if (up.type === 'modrinth-modpack') {
+    return ['$vuetify.icons.modrinth', 'Modrinth']
+  } else if (up.type === 'ftb-modpack') {
+    return ['$vuetify.icons.ftb', 'FTB']
+  }
+  return undefined
+})
 
 const { t } = useI18n()
 </script>

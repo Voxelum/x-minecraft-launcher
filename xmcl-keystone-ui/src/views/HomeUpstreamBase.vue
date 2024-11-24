@@ -1,48 +1,83 @@
 <template>
-  <div class="mx-2 grid grid-cols-9  gap-6 pb-4">
+  <div class="mx-2 grid grid-cols-9 gap-6 pb-4">
     <div
+      ref="containerRef"
       class="col-span-9 lg:col-span-6"
+      :style="{
+        height: `${virtualizer.getTotalSize()}px`,
+        position: 'relative',
+        width: '100%',
+        marginTop: `${-offsetTop}px`,
+      }"
     >
-      <v-subheader class="flex">
-        {{ t('modrinthCard.currentVersion') }}
-        <div class="flex-grow" />
-        <v-switch
-          v-model="_only"
-          dense
-          :label="t('upstream.onlyShowCurrentVersion')"
-        />
-      </v-subheader>
-      <HomeUpstreamVersion
-        v-if="currentVersion"
-        :version="currentVersion"
-        outlined
-        no-action
-        @changelog="$emit('changelog', currentVersion)"
-        @update="$emit('update', currentVersion)"
-        @duplicate="$emit('duplicate', currentVersion)"
-      />
-      <div
-        v-for="[date, versions] of Object.entries(items)"
-        :key="date"
+      <template
+        v-for="row of virtualizer.getVirtualItems()"
       >
-        <v-subheader class="text-md">
-          {{ date }}
+        <v-subheader
+          v-if="row.index === 0"
+          :key="'currentVersion' + row.index"
+          :ref="measureElement"
+          class="flex"
+          :data-index="row.index"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            transform: `translateY(${row.start}px)`
+          }"
+        >
+          {{ t('modrinthCard.currentVersion') }}
+          <div class="flex-grow" />
+          <v-switch
+            v-model="_only"
+            dense
+            :label="t('upstream.onlyShowCurrentVersion')"
+          />
         </v-subheader>
-        <div class="flex flex-col gap-2">
+        <v-subheader
+          v-else-if="isHeader(row.index)"
+          :ref="measureElement"
+          :key="getHeader(row.index)"
+          class="text-md"
+          :data-index="row.index"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            transform: `translateY(${row.start}px)`
+          }"
+        >
+          {{ getHeader(row.index) }}
+        </v-subheader>
+        <div
+          v-else
+          :ref="measureElement"
+          :key="getItemKey(row.index)"
+          :data-index="row.index"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            paddingTop: getItemPaddingTop(row.index),
+            left: 0,
+            width: '100%',
+            transform: `translateY(${row.start}px)`
+          }"
+        >
           <HomeUpstreamVersion
-            v-for="v of versions"
-            :key="v.id"
-            :version="v"
+            :version="getItemVersion(row.index)"
             :updating="updating"
             :duplicating="duplicating"
-            :no-action="currentVersion?.id === v.id"
-            :downgrade="currentVersion ? isDowngrade(currentVersion.datePublished, v.datePublished) : false"
-            @changelog="$emit('changelog', v)"
-            @update="$emit('update', v)"
-            @duplicate="$emit('duplicate', v)"
+            :outlined="row.index === 1"
+            :no-action="row.index === 1 || currentVersion?.id === getItemVersion(row.index).id"
+            :downgrade="isItemDowngrade(row.index)"
+            @changelog="$emit('changelog', getItemVersion(row.index))"
+            @update="$emit('update', getItemVersion(row.index))"
+            @duplicate="$emit('duplicate', getItemVersion(row.index))"
           />
         </div>
-      </div>
+      </template>
     </div>
 
     <div
@@ -62,6 +97,8 @@
 import { useVModel } from '@vueuse/core'
 import HomeUpstreamHeader, { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import HomeUpstreamVersion, { ProjectVersionProps } from './HomeUpstreamVersion.vue'
+import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
+import { getEl } from '@/util/el'
 
 const props = defineProps<{
   duplicating?: boolean
@@ -82,4 +119,93 @@ const isDowngrade = (current: string, target: string) => {
   return da > db
 }
 
+// virtual scroll
+const listItems = computed(() => {
+  if (!props.currentVersion) {
+    return []
+  }
+  const items = props.items
+  const results = [
+    '',
+    props.currentVersion,
+  ] as (ProjectVersionProps | string)[]
+  for (const [date, versions] of Object.entries(items)) {
+    results.push(date)
+    results.push(...versions)
+  }
+  return results
+})
+const scrollElement = inject('scrollElement', ref(null as HTMLElement | null))
+const offsetTop = ref(0)
+const containerRef = ref(null as HTMLElement | null)
+const virtualizerOptions = computed(() => ({
+  count: Object.keys(props.items).length,
+  getScrollElement: () => getEl(scrollElement.value) as any,
+  paddingStart: offsetTop.value,
+  overscan: 5,
+  estimateSize,
+} satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
+
+watch(containerRef, container => {
+  if (container) {
+    nextTick().then(() => { offsetTop.value = container.offsetTop })
+  }
+})
+const virtualizer = useVirtualizer(virtualizerOptions)
+
+function estimateSize(i: number) {
+  if (typeof listItems.value[i] === 'string') {
+    return 48
+  }
+  const item = listItems.value[i] as ProjectVersionProps
+  const changelogHtml = item.changelog
+  // estimate the height of the changelog by counting how many div and li inside
+  const divCount = (changelogHtml.match(/<div/g) || []).length
+  const liCount = (changelogHtml.match(/<li/g) || []).length
+  return Math.min(650, 48 + divCount * 24 + liCount * 24)
+}
+function isHeader(index: number) {
+  return typeof listItems.value[index] === 'string'
+}
+function getHeader(index: number) {
+  return listItems.value[index] as string
+}
+function getItemKey(index: number) {
+  const item = listItems.value[index]
+  if (typeof item === 'string') {
+    return item + _only.value
+  }
+  return item.id + _only.value
+}
+function getItemPaddingTop(index: number) {
+  if (typeof listItems.value[index - 1] !== 'string') {
+    return '0.5rem'
+  }
+  return ''
+}
+function getItemVersion(index: number) {
+  const item = listItems.value[index]
+  if (typeof item === 'string') {
+    throw new Error()
+  }
+  return item
+}
+function isItemDowngrade(index: number) {
+  const item = listItems.value[index]
+  if (typeof item === 'string') {
+    return false
+  }
+  return isDowngrade(props.currentVersion?.datePublished ?? '', item.datePublished)
+}
+const measureElement = (el: any) => {
+  if (!el) return
+  if ('$el' in el) {
+    el = el.$el
+  }
+  virtualizer.value.measureElement(el)
+}
+watch(_only, () => {
+  virtualizer.value.scrollToIndex(0)
+  offsetTop.value = 0
+})
 </script>

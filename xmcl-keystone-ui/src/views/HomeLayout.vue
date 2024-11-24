@@ -78,6 +78,8 @@ const { start, end } = useBlockSharedTooltip()
 const { arrivedState } = useScroll(containerRef)
 provide('scroll', arrivedState)
 
+// Scroll
+provide('scrollElement', containerRef)
 </script>
 
 <style>
