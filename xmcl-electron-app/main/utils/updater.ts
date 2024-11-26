@@ -1,4 +1,4 @@
-import { AZURE_MS_CDN, HAS_DEV_SERVER } from '@/constant'
+import { AZURE_CDN, HAS_DEV_SERVER } from '@/constant'
 import { ElectronUpdateOperation, ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/app'
 import { BaseService } from '@xmcl/runtime/base'
@@ -44,7 +44,7 @@ AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater
         const pathname = i.url.pathname
         return {
           ...i,
-          url: new URL(`${AZURE_MS_CDN}/${basename(pathname)}`),
+          url: new URL(`${AZURE_CDN}/releases/${basename(pathname)}`),
         }
       })
     },
@@ -84,12 +84,12 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
       ? [
         `https://files.0x.halac.cn/Services/XMCL/releases/${this.file}`,
         `https://files-0x.halac.cn/Services/XMCL/releases/${this.file}`,
+        `${AZURE_CDN}/releases/${this.file}`,
         `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
-        `${AZURE_MS_CDN}/${this.file}`,
       ]
       : [
-        `${AZURE_MS_CDN}/${this.file}`,
         `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
+        `${AZURE_CDN}/releases/${this.file}`,
       ]
     for (const url of urls) {
       try {

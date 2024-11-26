@@ -10,6 +10,7 @@ import pluginRenderer from './plugins/esbuild.renderer.plugin'
 import createSourcemapPlugin from './plugins/esbuild.sourcemap.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
 import pluginWorker from './plugins/esbuild.worker.plugin'
+import pluginElevate from './plugins/esbuild.elevate.plugin'
 
 const config = {
   bundle: true,
@@ -49,6 +50,7 @@ const config = {
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),
+    pluginElevate(),
     // pluginJsdetect(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),
     pluginNode(),
