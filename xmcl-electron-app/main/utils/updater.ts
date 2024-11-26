@@ -26,31 +26,6 @@ import { kGFW } from '~/gfw'
 const kPatched = Symbol('Patched')
 // @ts-ignore
 const getUpdateInfoAndProvider = AppUpdater.prototype.getUpdateInfoAndProvider
-// @ts-ignore
-AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater) {
-  const result = await getUpdateInfoAndProvider.call(this)
-  const provider = result.provider
-
-  if (kPatched in provider) {
-    return result
-  }
-
-  const resolveFiles = provider.resolveFiles
-  Object.assign(provider, {
-    [kPatched]: true,
-    resolveFiles: function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
-      const result = resolveFiles.call(provider, inf)
-      return result.map((i) => {
-        const pathname = i.url.pathname
-        return {
-          ...i,
-          url: new URL(`${AZURE_CDN}/releases/${basename(pathname)}`),
-        }
-      })
-    },
-  })
-  return result
-}
 
 /**
  * Only download asar file update.
@@ -266,6 +241,39 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   async #getUpdateFromAutoUpdater(): Promise<ReleaseInfo> {
+    const gfw = await this.app.registry.get(kGFW)
+
+    if (gfw.inside) {
+      // @ts-ignore
+      AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater) {
+        const result = await getUpdateInfoAndProvider.call(this)
+        const provider = result.provider
+
+        if (kPatched in provider) {
+          return result
+        }
+
+        const resolveFiles = provider.resolveFiles
+        Object.assign(provider, {
+          [kPatched]: true,
+          resolveFiles: function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
+            const result = resolveFiles.call(provider, inf)
+            return result.map((i) => {
+              const pathname = i.url.pathname
+              return {
+                ...i,
+                url: new URL(`${AZURE_CDN}/releases/${basename(pathname)}`),
+              }
+            })
+          },
+        })
+        return result
+      }
+    } else {
+      // @ts-ignore
+      AppUpdater.prototype.getUpdateInfoAndProvider = getUpdateInfoAndProvider
+    }
+
     this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
     const info = await autoUpdater.checkForUpdates()
     if (!info) throw new Error('No update info found')
