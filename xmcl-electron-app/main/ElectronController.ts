@@ -354,6 +354,7 @@ export class ElectronController implements LauncherAppController {
     browser.webContents.on('did-create-window', this.onWebContentCreateWindow)
     browser.webContents.setWindowOpenHandler(this.windowOpenHandler)
     browser.on('closed', () => {
+      this.mainWin = undefined
       this.multiplayerRef?.close()
     })
 

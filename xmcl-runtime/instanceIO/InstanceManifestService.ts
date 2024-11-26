@@ -89,6 +89,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     }).startAndWait()
 
     const updates = [...pendingResourceUpdates].map((file) => {
+      if (!file.hashes.sha1) return undefined
       return {
         hash: file.hashes.sha1,
         metadata: {

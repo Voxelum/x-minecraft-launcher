@@ -69,7 +69,7 @@ export class ObjectFactory {
           if (type) {
             params[i] = await this.getOrCreate(type)
           } else {
-            throw new AnyError('ObjectRegistryError', `Fail to get [${i}] param type for ${typeof Type === 'symbol' ? Type.toString() : (Type as Function).name} since it's not registered`)
+            throw new AnyError('ObjectRegistryError', `Fail to get [${i}](${type}) param type for ${typeof Type === 'symbol' ? Type.toString() : (Type as Function).name} since it's not registered`)
           }
         }
       }
@@ -85,12 +85,11 @@ export class ObjectFactory {
 }
 
 type Constructor<T = any> = (new (...args: any[]) => T) | (abstract new (...args: any[]) => T)
-type ConstructorParameter<T, X> = T extends (new (...args: infer P) => X) ? P : never
 const kParams = Symbol('params')
 
 export interface InjectionKey<T> extends Symbol { }
 
-export function Inject<T, V extends Constructor<T> | InjectionKey<T>>(con: V/* , ...args: V extends Constructor<T> ? ConstructorParameter<V, T> : never[] */) {
+export function Inject<T, V extends Constructor<T> | InjectionKey<T>>(con: V) {
   return (target: any, _key: any, index: number) => {
     if (Reflect.has(target, kParams)) {
       Reflect.get(target, kParams)[index] = con

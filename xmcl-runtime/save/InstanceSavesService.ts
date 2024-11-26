@@ -240,17 +240,21 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         if (newIsLink !== isLinkedMemo) {
           isLinkedMemo = !!newIsLink
           tryWatch()
-          const savePaths = await readdir(savesDir)
+          const savePaths = await readdir(savesDir).catch(() => [])
           const saves = await readAll(savePaths)
           state.instanceSaves(saves)
         } else if (!newIsLink) {
-          const savePaths = await readdir(savesDir)
-          if (savePaths.length !== state.saves.length) {
-            const toRemove = state.saves.filter((s) => !savePaths.includes(basename(s.path)))
-            toRemove.forEach((s) => state.instanceSaveRemove(s.path))
-            const toAdd = savePaths.filter((s) => !state.saves.some((ss) => ss.name === s))
-            const saves = await readAll(toAdd)
-            state.instanceSaves(saves)
+          const savePaths = await readdir(savesDir).catch(() => undefined)
+          if (!savePaths) {
+            state.instanceSaves([])
+          } else {
+            if (savePaths.length !== state.saves.length) {
+              const toRemove = state.saves.filter((s) => !savePaths.includes(basename(s.path)))
+              toRemove.forEach((s) => state.instanceSaveRemove(s.path))
+              const toAdd = savePaths.filter((s) => !state.saves.some((ss) => ss.name === s))
+              const saves = await readAll(toAdd)
+              state.instanceSaves(saves)
+            }
           }
         }
       })

@@ -24,7 +24,7 @@ import { Shell } from './Shell'
 import { kGameDataPath, kTempDataPath } from './gameDataPath'
 import { InjectionKey, ObjectFactory } from './objectRegistry'
 
-export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKeyunchAppKey')
+export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKey')
 
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
@@ -149,7 +149,7 @@ export class LauncherApp extends EventEmitter {
   /**
    * The disposers to dispose when the app is going to quit.
    */
-  #disposers: (() => Promise<void>)[] = []
+  #disposers: (() => (Promise<void> | void))[] = []
 
   protected logger: Logger = this.getLogger('App')
 
@@ -211,12 +211,12 @@ export class LauncherApp extends EventEmitter {
    * Reigster the disposer. The disposer will be called when the app is going to quit.
    * @param disposer The function to dispose the resource
    */
-  registryDisposer(disposer: () => Promise<void>) {
+  registryDisposer(disposer: () => Promise<void> | void) {
     this.#disposers.push(disposer)
   }
 
   async dispose() {
-    await Promise.all(this.#disposers.map(m => m().catch(() => { })))
+    await Promise.allSettled(this.#disposers.map(m => m()))
   }
 
   /**

@@ -98,15 +98,17 @@ export async function decorateInstanceFiles(files: [InstanceFile, Stats][],
     const filePath = join(instancePath, relativePath)
     const ino = stat.ino
     if (isSpecialFile(relativePath)) {
-      const sha1 = sha1Lookup[ino] ?? await worker.checksum(filePath, 'sha1')
-      sha1Lookup[ino] = sha1
+      const sha1 = sha1Lookup[ino] || await worker.checksum(filePath, 'sha1')
+      localFile.hashes.sha1 = sha1
     }
   }
 
-  const metadataLookup = await resourceManager.getMetadataByHashes(Object.values(sha1Lookup)).then(v => {
+  const exsitedSha1 = files.map(f => f[0].hashes.sha1).filter(isNonnull)
+
+  const metadataLookup = await resourceManager.getMetadataByHashes(exsitedSha1).then(v => {
     return Object.fromEntries(v.filter(isNonnull).map(m => [m.sha1, m]))
   })
-  const urisLookup = await resourceManager.getUrisByHash(Object.values(sha1Lookup)).then(v => {
+  const urisLookup = await resourceManager.getUrisByHash(exsitedSha1).then(v => {
     return v.reduce((acc, cur) => {
       if (!acc[cur.sha1]) {
         acc[cur.sha1] = []
@@ -119,9 +121,8 @@ export async function decorateInstanceFiles(files: [InstanceFile, Stats][],
   for (const [localFile, stat] of files) {
     const relativePath = localFile.path
     const filePath = join(instancePath, relativePath)
-    const ino = stat.ino
     if (isSpecialFile(relativePath)) {
-      const sha1 = sha1Lookup[ino]
+      const sha1 = localFile.hashes.sha1
       const metadata = metadataLookup[sha1]
       if (metadata?.modrinth) {
         localFile.modrinth = {
@@ -138,14 +139,20 @@ export async function decorateInstanceFiles(files: [InstanceFile, Stats][],
 
       const uris = urisLookup[sha1]
       localFile.downloads = uris && uris.some(u => u.startsWith('http')) ? uris.filter(u => u.startsWith('http')) : undefined
-      localFile.hashes = await resolveHashes(filePath, worker, hashes, sha1)
+      localFile.hashes = {
+        ...localFile.hashes,
+        ...await resolveHashes(filePath, worker, hashes, sha1),
+      }
 
       // No download url...
       if ((!localFile.downloads || localFile.downloads.length === 0) && metadata) {
         undecoratedResources.add(localFile)
       }
     } else {
-      localFile.hashes = await resolveHashes(filePath, worker)
+      localFile.hashes = {
+        ...localFile.hashes,
+        ...await resolveHashes(filePath, worker, hashes),
+      }
     }
   }
 }

@@ -28,7 +28,14 @@ function createRevalidateFunction(
   onResourcePostRevalidate: (files: File[]) => void,
 ) {
   async function getUpserts() {
-    const entries = await getFiles(dir)
+    const entries = await getFiles(dir).catch((e) => {
+      if (isSystemError(e)) {
+        if (e.code === 'ENOENT') {
+          return []
+        }
+      }
+      throw e
+    })
     const inos = entries.map(e => e.ino)
     const records: Record<string, ResourceSnapshotTable> = await context.db.selectFrom('snapshots')
       .selectAll()

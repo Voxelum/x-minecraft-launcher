@@ -245,7 +245,7 @@ export class InstallService extends AbstractService implements IInstallService {
   @Lock((v) => [LockKey.version(v.minecraftVersion)])
   async installLabyModVersion(options: InstallLabyModOptions) {
     const location = this.getPath()
-    const task = installLabyMod4Task(options.manifest, options.minecraftVersion, location, this.getInstallOptions()).setName('installLabyMod', { version: options.manifest.labyModVersion })
+    const task = installLabyMod4Task(options.manifest, options.minecraftVersion, location, { ...this.getInstallOptions(), fetch: this.app.fetch }).setName('installLabyMod', { version: options.manifest.labyModVersion })
     const version = await this.submit(task)
     return version
   }
@@ -400,6 +400,10 @@ export class InstallService extends AbstractService implements IInstallService {
     const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
     const side = options.side ?? 'client'
+
+    if (!validJavaPaths.length) {
+      throw new AnyError('ForgeInstallError', 'No valid java found!')
+    }
 
     validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
     const setting = await this.app.registry.get(kSettings)
