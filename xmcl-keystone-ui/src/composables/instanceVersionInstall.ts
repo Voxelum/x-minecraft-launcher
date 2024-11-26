@@ -8,6 +8,8 @@ import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
 import { useNotifier } from './notifier'
+import { appInsights } from '@/telemetry'
+import { AnyError } from '@/util/error'
 
 export interface InstanceInstallInstruction {
   instance: string
@@ -56,8 +58,17 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     const local = versions.value
     const localMinecraft = local.find(v => v.id === minecraft)
     if (!localMinecraft || jar) {
-      const metadata = mcVersions.versions.find(v => v.id === minecraft)!
-      await installMinecraft(metadata, 'client')
+      const metadata = mcVersions.versions.find(v => v.id === minecraft)
+      if (metadata) {
+        await installMinecraft(metadata, 'client')
+      } else {
+        const exception = new AnyError('InstallMinecraftClientError', `Cannot find the minecraft version ${minecraft}`, {}, {
+          minecraft,
+          jar,
+        })
+        appInsights.trackException({ exception })
+        throw exception
+      }
     } else {
       await refreshVersion(localMinecraft.id)
     }
@@ -160,8 +171,16 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       await installMinecraftJar(minecraft, 'server')
     } else {
       const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
-      const metadata = mcVersions.versions.find(v => v.id === minecraft)!
-      await installMinecraft(metadata, 'server')
+      const metadata = mcVersions.versions.find(v => v.id === minecraft)
+      if (metadata) {
+        await installMinecraft(metadata, 'server')
+      } else {
+        const exception = new AnyError('InstallServerError', `Cannot find the minecraft version ${minecraft}`, {}, {
+          minecraft,
+        })
+        appInsights.trackException({ exception })
+        throw exception
+      }
     }
 
     if (forge) {
@@ -170,6 +189,13 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
       const found = forgeVersions.find(v => v.version === forge)
       const forgeVersionId = found?.version ?? forge
+
+      if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
+        // no valid java
+        const mcVersionResolved = await resolveLocalVersion(minecraft)
+        await installDefaultJava(mcVersionResolved.javaVersion)
+      }
+
       const id = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side: 'server', root: path })
       return id
     }
@@ -411,7 +437,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         return
       }
       if (instruction.optifine) {
-        const [version] = await installOptifine({
+        const version = await installOptifine({
           mcversion: instruction.optifine.minecraft,
           type: instruction.optifine.type,
           patch: instruction.optifine.patch,
@@ -428,6 +454,12 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         return
       }
       if (instruction.forge) {
+        if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
+          // no valid java
+          const mcVersionResolved = await resolveLocalVersion(instruction.forge.minecraft)
+          await installDefaultJava(mcVersionResolved.javaVersion)
+        }
+
         const version = await installForge({
           mcversion: instruction.forge.minecraft,
           version: instruction.forge.version,
