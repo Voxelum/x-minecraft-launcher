@@ -4,12 +4,16 @@ import { Logger } from '~/logger'
 export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker, signatures: {
   methods: Array<keyof T>
   asyncGenerators?: Array<keyof T>
-}, logger: Logger, options?: WorkerOptions): T => {
+}, logger: Logger, options?: WorkerOptions): [T, () => void] => {
   let threadWorker: Worker | undefined
   let counter = 0
   let destroyTimer: undefined | ReturnType<typeof setTimeout>
   const queue: Record<number, { resolve: (r: any) => void; reject: (e: any) => void }> = {}
+  let disposed = false
   const createWorker = () => {
+    if (disposed) {
+      throw new Error('The worker is disposed')
+    }
     const worker = factory(options)
     logger.log(`Awake the worker ${factory}`)
     worker.on('message', (message: 'idle' | WorkerResponse) => {
@@ -20,7 +24,7 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
         destroyTimer = setTimeout(() => {
           if (threadWorker) {
             logger.log(`Dispose the worker ${factory}`)
-            threadWorker?.terminate()
+            threadWorker.terminate()
             threadWorker = undefined
             destroyTimer = undefined
           }
@@ -67,6 +71,9 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
           [Symbol.asyncIterator]: function (): AsyncGenerator<unknown, any, unknown> {
             throw new Error('Function not implemented.')
           },
+          [Symbol.asyncDispose]: function (): PromiseLike<void> {
+            throw new Error('Function not implemented.')
+          },
         }
         return generator
       }
@@ -86,7 +93,14 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
       }
     }
   }
-  return obj
+  return [obj, () => {
+    if (threadWorker) {
+      threadWorker.terminate()
+      threadWorker = undefined
+      destroyTimer = undefined
+      disposed = true
+    }
+  }]
 }
 
 export interface WorkPayload {

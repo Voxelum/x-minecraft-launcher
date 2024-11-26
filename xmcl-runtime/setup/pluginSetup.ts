@@ -8,7 +8,8 @@ import createSetupWorker from './setupWorkerEntry?worker'
 
 export const pluginSetup: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Setup')
-  const worker: SetupWorker = createLazyWorker(createSetupWorker, { methods: ['getDiskInfo'] }, logger)
+  const [worker, dispose] = createLazyWorker<SetupWorker>(createSetupWorker, { methods: ['getDiskInfo'] }, logger)
+  app.registryDisposer(dispose)
   logger.log('Setup worker created')
 
   const getDiskInfo = async () => {

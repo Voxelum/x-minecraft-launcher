@@ -21,9 +21,10 @@ import { getDomainedPath } from './core/snapshot'
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const workerLogger = app.getLogger('ResourceWorker')
-  const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker, {
+  const [resourceWorker, dispose] = createLazyWorker<ResourceWorker>(createResourceWorker, {
     methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
   }, workerLogger, { name: 'CPUWorker' })
+  app.registryDisposer(dispose)
   app.registry.register(kResourceWorker, resourceWorker)
 
   const flights = await app.registry.get(kFlights)
@@ -39,10 +40,11 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
 
   if (flights.enableResourceDatabaseWorker) {
     const dbLogger = app.getLogger('ResourceDbWorker')
-    const dbWorker: DatabaseWorker = createLazyWorker(createDbWorker, {
+    const [dbWorker, dispose]: [DatabaseWorker, () => void] = createLazyWorker(createDbWorker, {
       methods: ['executeQuery', 'streamQuery', 'init', 'destroy'],
       asyncGenerators: ['streamQuery'],
     }, dbLogger, { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' })
+    app.registryDisposer(dispose)
     config = {
       worker: dbWorker,
     }
