@@ -71,9 +71,6 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
           [Symbol.asyncIterator]: function (): AsyncGenerator<unknown, any, unknown> {
             throw new Error('Function not implemented.')
           },
-          [Symbol.asyncDispose]: function (): PromiseLike<void> {
-            throw new Error('Function not implemented.')
-          },
         }
         return generator
       }
