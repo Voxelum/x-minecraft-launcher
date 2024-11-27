@@ -1,7 +1,7 @@
 export const IS_DEV = process.env.NODE_ENV === 'development'
 export const HAS_DEV_SERVER = !!process.env.HAS_DEV_SERVER
 export const HOST = HAS_DEV_SERVER ? 'localhost' : 'xmcl.runtime'
-export const AZURE_CDN = 'https://cdn.xmcl.app/releases'
+export const AZURE_CDN = 'https://cdn.xmcl.app'
 export const BUILTIN_TRUSTED_SITES = Object.freeze(['https://www.java.com/download/'])
 
 export enum AccentState {
