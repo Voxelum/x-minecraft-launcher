@@ -56,10 +56,10 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
       const fabric = m.fabric
       if (forge) {
         // optifine in forge
-        if (forge.modid === 'optifine') {
+        if (forge.modid.toLowerCase() === 'optifine') {
           return true
         }
-        return forge.modid === 'oculus'
+        return forge.modid.toLowerCase() === 'oculus'
       } else if (fabric) {
         if (fabric instanceof Array) {
           // optifine fabric or iris
@@ -86,6 +86,14 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
           version: fabric.version,
           icon,
         }
+      }
+    }
+    if (shader?.modId.toLowerCase() === 'optifine' && shader.forge) {
+      return {
+        id: 'optifine',
+        name: 'Optifine',
+        version: shader.forge.version,
+        icon: BuiltinImages.optifine,
       }
     }
     return shader?.forge
