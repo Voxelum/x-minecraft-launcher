@@ -61,6 +61,9 @@ export class DiagnoseService extends AbstractService implements IDiagnoseService
       let badInstall = false
       const librariesIssues: LibraryIssue[] = []
       for (const issue of report.issues) {
+        if (issue.role === 'processor' && issue.file.endsWith('mappings.tsrg')) {
+          continue
+        }
         if (issue.role === 'processor') {
           badInstall = true
         } else if (issue.role === 'library') {
