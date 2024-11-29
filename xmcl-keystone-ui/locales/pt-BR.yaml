@@ -1543,11 +1543,11 @@ task:
   nTaskRunning: '{count} tarefas em execução'
   name: Tarefa | Tarefas
   pause: Pausar
-  searchOnCurseforge: Pesquisar {nome} no curseforge
+  searchOnCurseforge: Pesquisar {name} no curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Texturepacks favoritos
   showFile: Abrir texturepack {file} na pasta
-  showInCurseforge: Mostrar {nome} no curseforge
+  showInCurseforge: Mostrar {name} no curseforge
   unselected: Pacotes de textura não selecionados
   viewBackgroundMusic: Exibir música
 theme:
