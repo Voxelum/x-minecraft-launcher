@@ -1,0 +1,24 @@
+browseApps: Navegar na Interface do Iniciador Personalizada
+checkUpdate: Verificar atualização
+openUrl:
+  cancel: Cancelar
+  message: >-
+    O iniciador deseja abrir o {url} em seu navegador padrão. Você permite
+    essa operação?
+  title: Abrir no navegador
+  trust: Confiar neste site e não mostrar novamente na proxima vez
+  'yes': 'Sim'
+quit: Sair
+relaunch: Reiniciar
+showDiagnosis: Mostrar diagnóstico
+showLauncher: Mostrar iniciador
+showLogsFolder: Mostrar pasta de logs
+task:
+  continue: Visualizar no iniciador
+  fail: Uma tarefa falhou
+  success: Uma tarefa bem-sucedida
+title: X Minecraft Launcher
+urlFailed: URL desconhecida {url}. Por favor, verifique sua URL ou entre em contato com o desenvolvedor!
+urlSuccess: Sucesso! Agora você pode fechar esta janela e retornar ao iniciador!
+autoCloseHint: Essa janela irá fechar em {time} segundos
+multiplayer: Multiplayer P2P
