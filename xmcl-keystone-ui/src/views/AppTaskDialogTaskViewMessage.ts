@@ -3,6 +3,7 @@ import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { required } from '@/util/props'
 import { useLocaleError } from '@/composables/error'
+import { basename } from '@/util/basename'
 
 export default defineComponent({
   props: {
@@ -16,6 +17,13 @@ export default defineComponent({
       const resolve = (m: any) => {
         if (!m) return h('div')
         markRaw(m)
+        if (m.name === 'PostProcessFailedError') {
+          return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: `file:///${m.jarPath}` } }, basename(m.jarPath))]),
+            h('div', m.message),
+            h('div', ['🔨', m.commands.join(' ')]),
+          ])
+        }
         if (m.name === 'AggregateError') {
           return h('div', [
             h('div', [

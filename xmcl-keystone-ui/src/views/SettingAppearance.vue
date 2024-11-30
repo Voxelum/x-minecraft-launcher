@@ -370,6 +370,53 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
+      <div class="flex flex-grow-0 gap-1 mr-2">
+        <v-btn-toggle
+          v-model="fontDelta"
+          mandatory
+          solo
+          dense
+        >
+          <v-btn
+            solo
+            class="h-unset!"
+          >
+            1px
+          </v-btn>
+          <v-btn
+            solo
+            class="h-unset!"
+          >
+            0.1px
+          </v-btn>
+        </v-btn-toggle>
+        <v-btn
+          icon
+          @click="onFontSizeDecrease"
+        >
+          <v-icon>
+            text_decrease
+          </v-icon>
+        </v-btn>
+        <v-text-field
+          :value="`${Math.round(fontSize * 10) / 10}px`"
+          readonly
+          class="max-w-20"
+          solo
+          outlined
+          dense
+          hide-details
+        />
+        <v-btn
+          icon
+          @click="onFontSizeIncrease"
+        >
+          <v-icon>
+            text_increase
+          </v-icon>
+        </v-btn>
+      </div>
+
       <v-btn
         outlined
         text
@@ -435,7 +482,7 @@ import { ThemeServiceKey } from '@xmcl/runtime-api'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { blurSidebar, blurAppBar, fontSize, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = useEnvironment()
@@ -570,6 +617,16 @@ function onImportTheme() {
       importTheme(v.filePaths[0])
     }
   })
+}
+
+const fontDelta = ref(0)
+function onFontSizeIncrease() {
+  const delta = fontDelta.value ? 0.1 : 1
+  fontSize.value += delta
+}
+function onFontSizeDecrease() {
+  const delta = fontDelta.value ? 0.1 : 1
+  fontSize.value -= delta
 }
 
 function onSelectFont() {

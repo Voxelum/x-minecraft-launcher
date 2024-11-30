@@ -112,7 +112,9 @@ export class BaseService extends AbstractService implements IBaseService {
         settings.updateStatusSet('pending')
       }
     } catch (e) {
-      this.error(new Error('Check update failed', { cause: e }))
+      if (e instanceof Error && e.name === 'Error') {
+        e.name = 'CheckUpdateError'
+      }
       throw e
     }
   }

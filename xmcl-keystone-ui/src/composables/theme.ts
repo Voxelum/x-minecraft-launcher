@@ -56,6 +56,7 @@ export interface UIThemeData {
   backgroundVolume?: number
   backgroundImageFit: 'cover' | 'contain'
   font?: MediaData
+  fontSize?: number
   particleMode?: ParticleMode
   blur: number
   blurSidebar?: number
@@ -98,6 +99,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     backgroundImageFit: 'cover',
     backgroundType: BackgroundType.NONE,
     font: undefined,
+    fontSize: 16,
     blur: 4,
     blurSidebar: 0,
     blurAppBar: 0,
@@ -480,6 +482,13 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   }
 
   const font = computed(() => currentTheme.value.font)
+  const fontSize = computed({
+    get() { return currentTheme.value.fontSize ?? 16 },
+    set(v: number) {
+      currentTheme.value.fontSize = v
+      writeTheme(currentTheme.value.name, currentTheme.value)
+    },
+  })
 
   async function setFont(path: string) {
     const media = await addMedia(path)
@@ -497,6 +506,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     if (theme.font) {
       await removeMedia(theme.font.url).catch(() => { })
       theme.font = undefined
+      theme.fontSize = 16
       writeTheme(theme.name, theme)
     }
   }
@@ -540,6 +550,9 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     }
     if (theme.backgroundColorOverlay) {
       settings.backgroundColorOverlay = theme.backgroundColorOverlay
+    }
+    if (theme.fontSize) {
+      settings.fontSize = theme.fontSize
     }
     settings.dark = isDark.value
     const serialized: ThemeData = {
@@ -603,6 +616,9 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     if (data.assets.font) {
       theme.font = data.assets.font as MediaData
     }
+    if (data.settings?.fontSize) {
+      theme.fontSize = data.settings.fontSize as number ?? 16
+    }
     if (data.settings?.dark) {
       darkTheme.value = data.settings.dark ? 'dark' : 'light'
     } else {
@@ -624,6 +640,10 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   @font-face {
     font-family: 'custom';
     src: url('${font.value?.url}');
+  }
+
+  html {
+    font-size: ${fontSize.value}px;
   }
   
   .v-application {
@@ -688,6 +708,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
     font,
     setFont,
+    fontSize,
     resetFont,
 
     removeMusic,

@@ -8,8 +8,8 @@ import { kMarketProvider } from '~/market'
 import { ResourceManager } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { AnyError } from '~/util/error'
-import { linkOrCopyFile } from '../util/fs'
-import { isLinked, tryLink } from '../util/linkResourceFolder'
+import { isNotFoundError, linkOrCopyFile } from '../util/fs'
+import { isLinked, readdirSafe, tryLink } from '../util/linkResourceFolder'
 
 export abstract class AbstractInstanceDomainService extends AbstractService {
   protected abstract resourceManager: ResourceManager
@@ -69,7 +69,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
         const isLinked = await this.isLinked(instancePath)
         if (!isLinked) {
           // Backup the old folder
-          const files = await readdir(destPath)
+          const files = await readdirSafe(destPath)
           const backupDir = join(destPath, '.backup')
           await ensureDir(backupDir)
           for (const f of files) {
@@ -102,16 +102,18 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       const fileName = basename(file)
       const src = this.getPath(this.domain, fileName)
       const dest = join(instancePath, this.domain, fileName)
-      if (!existsSync(src)) {
-        throw Object.assign(new Error(), { name: 'FileNotFound' })
-      }
       if (dest === src) {
         continue
       }
       if (isLinked && join(sharedDir, fileName) === src) {
         continue
       }
-      const fstat = await stat(src)
+      const fstat = await stat(src).catch(e => {
+        if (isNotFoundError(e)) {
+          throw Object.assign(new Error(), { name: 'FileNotFound' })
+        }
+        throw e
+      })
       if (fstat.isDirectory()) continue
       result.push(await linkOrCopyFile(src, dest))
     }
