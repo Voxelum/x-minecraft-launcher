@@ -17,7 +17,7 @@ import {
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir, ensureFile, readdir, readlink, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
+import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import debounce from 'lodash.debounce'
 import watch, { Watcher } from 'node-watch'
 import { basename, extname, isAbsolute, join, resolve } from 'path'
@@ -28,6 +28,7 @@ import { kMarketProvider } from '~/market'
 import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { isSystemError } from '~/util/error'
+import { readlinkSafe } from '~/util/linkResourceFolder'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
@@ -72,7 +73,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       return undefined
     }
     // check if is a link, if so, then read the link and return the link path
-    const linked = await readlink(serverWorldPath).catch(() => '')
+    const linked = await readlinkSafe(serverWorldPath).catch(() => '')
     if (linked) {
       return linked
     }
@@ -236,7 +237,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       }
 
       const revalidate = () => lock.read(async () => {
-        const newIsLink = !!await readlink(savesDir).catch(() => '')
+        const newIsLink = !!await readlinkSafe(savesDir).catch(() => '')
         if (newIsLink !== isLinkedMemo) {
           isLinkedMemo = !!newIsLink
           tryWatch()
@@ -466,7 +467,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async isSaveLinked(instancePath: string) {
     const sharedSave = this.getPath('saves')
     const instanceSave = join(instancePath, 'saves')
-    const isLinked = await readlink(instanceSave).catch(() => '') === sharedSave
+    const isLinked = await readlinkSafe(instanceSave).catch(() => '') === sharedSave
     return isLinked
   }
 
@@ -475,7 +476,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const instanceSaves = join(instancePath, 'saves')
     await ensureDir(sharedSave)
 
-    if (await readlink(instanceSaves).catch(() => '') === sharedSave) {
+    if (await readlinkSafe(instanceSaves).catch(() => '') === sharedSave) {
       return
     }
 
@@ -491,7 +492,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       const savePath = join(instanceSaves, saveName)
       // check if shared folder has the same save
       const sharedSavePath = join(sharedSave, saveName)
-      const isLinked = await readlink(savePath).catch(() => '')
+      const isLinked = await readlinkSafe(savePath).catch(() => '')
 
       if (isLinked) {
         await unlink(savePath)
@@ -514,7 +515,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
   async unlinkSharedSave(instancePath: string) {
     const sharedSave = this.getPath('saves')
     const instanceSave = join(instancePath, 'saves')
-    if (await readlink(instanceSave).catch(() => '') !== sharedSave) {
+    if (await readlinkSafe(instanceSave).catch(() => '') !== sharedSave) {
       return
     }
 

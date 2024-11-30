@@ -23,6 +23,10 @@ export function isPathDiskRootPath(path: string): boolean {
   }
 }
 
+export function isNotFoundError(e: any) {
+  return isSystemError(e) && e.code === 'ENOENT'
+}
+
 export async function checksumFromStream(s: Readable, alg: string) {
   const hash = createHash(alg)
   await pip(s, hash)
