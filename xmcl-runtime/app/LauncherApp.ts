@@ -232,6 +232,9 @@ export class LauncherApp extends EventEmitter {
       ])
     } finally {
       this.host.quit()
+      setTimeout(10_000).then(() => {
+        this.host.exit(1)
+      })
     }
   }
 
