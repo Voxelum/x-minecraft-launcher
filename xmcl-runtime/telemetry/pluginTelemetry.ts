@@ -113,7 +113,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     client.trackEvent({
       name: 'app-stop',
     })
-    client.flush()
+    await new Promise((resolve) => {
+      client.flush({
+        callback: resolve,
+      })
+    })
+    appInsight.dispose()
   })
 
   app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
