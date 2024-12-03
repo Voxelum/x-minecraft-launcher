@@ -6,7 +6,8 @@ import { Logger } from '@xmcl/runtime/logger'
 import { AbortableTask, BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { shell } from 'electron'
-import updater, { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
+import { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
+import * as updater from 'electron-updater'
 import { createWriteStream } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
@@ -169,10 +170,10 @@ export class DownloadFullUpdateTask extends AbortableTask<void> {
     this.cancellationToken = new CancellationToken()
 
     const gfw = await this.app.registry.get(kGFW)
-    
+
     if (gfw.inside) {
       // @ts-ignore
-      const executor = autoUpdater.httpExecutor as any
+      const executor = this.appUpdater.httpExecutor as any
       if (!(kPatched in executor)) {
         const createRequest = executor.createRequest.bind(executor)
         Object.assign(executor, {
@@ -180,16 +181,17 @@ export class DownloadFullUpdateTask extends AbortableTask<void> {
           createRequest: (options: any, callback: any) => {
             if (gfw.inside) {
               const url = new URL(AZURE_CDN)
-              options.hostname = url.hostname;
-              options.path = `/releases/${basename(options.pathname)}`;
+              options.hostname = url.hostname
+              options.pathname = `/releases/${basename(options.pathname)}`
+              options.path = options.pathname
               this.app.emit('download-cdn', 'electron', basename(options.pathname))
             }
             return createRequest(options, callback)
-          }
+          },
         })
       }
     }
-    
+
     const signal = new UpdaterSignal(this.appUpdater)
     signal.progress((info) => {
       this._progress = info.transferred
