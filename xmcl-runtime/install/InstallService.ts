@@ -576,7 +576,7 @@ export class InstallService extends AbstractService implements IInstallService {
       if (isNaN(contentLength)) {
         throw new Error()
       }
-      const localLength = (await stat(path)).size
+      const localLength = (await stat(path).catch(() => ({ size: 0 }))).size
       if (contentLength !== localLength) {
         throw new Error()
       }

@@ -261,15 +261,13 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       })
 
       const instanceService = await this.app.registry.get(InstanceService)
-      instanceService.registerRemoveHandler(path, () => {
+      const dispose = () => {
         launchService.off('minecraft-exit', onExit)
         watcher?.close()
-      })
+      }
+      instanceService.registerRemoveHandler(path, dispose)
 
-      return [state, () => {
-        launchService.off('minecraft-exit', onExit)
-        watcher?.close()
-      }, revalidate]
+      return [state, dispose, revalidate]
     })
   }
 

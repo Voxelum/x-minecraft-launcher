@@ -7,7 +7,7 @@ import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
 import { ResourceManager } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
-import { AnyError } from '~/util/error'
+import { AnyError, isSystemError } from '~/util/error'
 import { isNotFoundError, linkOrCopyFile } from '../util/fs'
 import { isLinked, readdirSafe, tryLink } from '../util/linkResourceFolder'
 
@@ -135,36 +135,42 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     return this.store.registerOrGet(key, async () => {
       let watcher: ReturnType<ResourceManager['watchSecondary']> | undefined
 
-      const folder = join(instancePath, this.domain)
-
-      if (existsSync(folder)) {
-        if (!await this.isLinked(instancePath)) {
+      const tryWatch = () => {
+        try {
           watcher = manager.watchSecondary(
             instancePath,
             this.domain,
           )
+          this.log(`Watching instance ${instancePath} for ${this.domain}`)
+        } catch (e) {
+          if (isSystemError(e)) {
+            if (e.code === 'ENOENT') {
+              // ignore
+              this.log(`Instance ${instancePath} not exist. Skip watching.`)
+            } else {
+              throw e
+            }
+          }
         }
       }
 
-      const instanceService = await this.app.registry.get(InstanceService)
-      instanceService.registerRemoveHandler(instancePath, () => {
-        watcher?.dispose()
-      })
+      if (!await this.isLinked(instancePath)) {
+        tryWatch()
+      }
 
-      return [this.state, () => {
+      const instanceService = await this.app.registry.get(InstanceService)
+      const dispose = () => {
         watcher?.dispose()
-      }, async () => {
-        if (existsSync(folder)) {
-          const isLinked = await this.isLinked(instancePath)
-          if (!isLinked && !watcher) {
-            watcher = manager.watchSecondary(
-              instancePath,
-              this.domain,
-            )
-          } else if (isLinked && watcher) {
-            watcher.dispose()
-            watcher = undefined
-          }
+      }
+      instanceService.registerRemoveHandler(instancePath, dispose)
+
+      return [this.state, dispose, async () => {
+        const isLinked = await this.isLinked(instancePath)
+        if (!isLinked && !watcher) {
+          tryWatch()
+        } else if (isLinked && watcher) {
+          watcher.dispose()
+          watcher = undefined
         }
 
         await watcher?.revalidate()

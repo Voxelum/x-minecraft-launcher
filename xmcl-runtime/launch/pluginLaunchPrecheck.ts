@@ -8,6 +8,7 @@ import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
+import { isSystemError } from '~/util/error'
 import { linkDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
@@ -23,17 +24,26 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       // relink
       if (linkTarget !== fromPath) {
         await unlink(toPath)
-        await linkDirectory(fromPath, toPath, launchService)
+        await linkDirectory(fromPath, toPath, launchService).catch(e => {
+          e.name = 'LaunchLinkError'
+          launchService.error(e)
+        })
       }
       return
     }
     const fstat = await stat(toPath).catch((e) => undefined)
     if (!fstat) {
-      await linkDirectory(fromPath, toPath, launchService)
+      await linkDirectory(fromPath, toPath, launchService).catch(e => {
+        e.name = 'LaunchLinkError'
+        launchService.error(e)
+      })
       return
     }
     await move(toPath, join(toPath + '.bk'))
-    await linkDirectory(fromPath, toPath, launchService)
+    await linkDirectory(fromPath, toPath, launchService).catch(e => {
+      e.name = 'LaunchLinkError'
+      launchService.error(e)
+    })
   }
   const ensureLinkFolderFromRoot = async (gameDirectory: string, folder: string) => {
     const fromPath = getPath(folder)

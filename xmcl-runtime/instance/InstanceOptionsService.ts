@@ -97,15 +97,14 @@ export class InstanceOptionsService extends AbstractService implements IInstance
       })
 
       const instanceService = await this.app.registry.get(InstanceService)
-      instanceService.registerRemoveHandler(path, () => {
+      const dispose = () => {
         watcher.close()
-      })
+      }
+      instanceService.registerRemoveHandler(path, dispose)
 
       await Promise.all([loadOptions(path), loadShaderOptions(path)])
 
-      return [state, () => {
-        watcher.close()
-      }]
+      return [state, dispose]
     })
   }
 

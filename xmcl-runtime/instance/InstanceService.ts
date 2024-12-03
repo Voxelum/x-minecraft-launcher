@@ -12,7 +12,7 @@ import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } fro
 import { AnyError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
+import { copyPassively, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 
@@ -25,7 +25,7 @@ const INSTANCES_FOLDER = 'instances'
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile: SafeFile<InstancesSchema>
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
-  #removeHandlers: Record<string, (() => Promise<void> | void)[]> = {}
+  #removeHandlers: Record<string, (WeakRef<() => Promise<void> | void>)[]> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
@@ -352,11 +352,19 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireString(path)
 
     const isManaged = this.isUnderManaged(path)
+    const lock = this.semaphoreManager.getLock(`remove://${path}`)
     if (isManaged && await exists(path)) {
-      for (const handler of this.#removeHandlers[path] || []) {
-        await handler()
-      }
-      await rm(path, { recursive: true, force: true })
+      await lock.write(async () => {
+        if (await missing(path)) return
+
+        const oldHandlers = this.#removeHandlers[path]
+        for (const handlerRef of oldHandlers || []) {
+          handlerRef.deref()?.()
+        }
+        await rm(path, { recursive: true, force: true })
+
+        this.#removeHandlers[path] = []
+      })
     }
 
     this.state.instanceRemove(path)
@@ -366,7 +374,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!this.#removeHandlers[path]) {
       this.#removeHandlers[path] = []
     }
-    this.#removeHandlers[path].push(handler)
+    this.#removeHandlers[path].push(new WeakRef(handler))
   }
 
   /**

@@ -9,7 +9,7 @@ import { ResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { AnyError, isSystemError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
-import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { linkDirectory, linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { InstanceService } from '~/instance'
 
 /**
@@ -36,6 +36,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         try {
           const versions = await modrinthClient.getProjectVersionsByHash(all.map(v => v.hash))
           const options = Object.entries(versions).map(([hash, version]) => {
+            if (!hash) return undefined
             const f = all.find(f => f.hash === hash)
             if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
             return undefined
@@ -51,6 +52,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         try {
           const chunkSize = 8
           const allChunks = [] as Resource[][]
+          all = all.filter(a => !!a.hash && !a.isDirectory)
           for (let i = 0; i < all.length; i += chunkSize) {
             allChunks.push(all.slice(i, i + chunkSize))
           }
@@ -141,20 +143,31 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
   async install({ mods: resources, path }: InstallModsOptions) {
     const promises: Promise<void>[] = []
     this.log(`Install ${resources.length} to ${path}/mods`)
+    const modDir = join(path, ResourceDomain.Mods)
     for (const res of resources) {
+      if (res.startsWith(modDir)) {
+        // some stupid case
+        continue
+      }
       const src = res
-      const dest = join(path, ResourceDomain.Mods, basename(res))
+      const dest = join(modDir, basename(res))
       const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 
       let promise: Promise<any> | undefined
       if (!destStat) {
-        promise = linkWithTimeoutOrCopy(src, dest)
+        if (srcStat.isDirectory()) {
+          promise = linkDirectory(src, dest, this.logger)
+        } else {
+          promise = linkWithTimeoutOrCopy(src, dest)
+        }
       } else if (srcStat.ino !== destStat.ino) {
         promise = unlink(dest).then(() => linkWithTimeoutOrCopy(src, dest))
       }
       if (promise) {
         promises.push(promise.catch((e) => {
-          this.error(new Error(`Cannot deploy the resource from ${src} to ${dest}`, { cause: e }))
+          if (e.name === 'Error') {
+            e.name = 'ModInstallError'
+          }
           throw e
         }))
       }
