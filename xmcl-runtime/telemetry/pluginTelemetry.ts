@@ -121,6 +121,16 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     appInsight.dispose()
   })
 
+  app.on('download-cdn', (reason, file) => {
+    client.trackEvent({
+      name: 'download-cdn',
+      properties: {
+        reason,
+        file,
+      },
+    })
+  })
+
   app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
     // Disable request to reduce cost
     // const shouldTrack = () => {

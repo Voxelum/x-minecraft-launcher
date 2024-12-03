@@ -6,7 +6,7 @@ import { Logger } from '@xmcl/runtime/logger'
 import { AbortableTask, BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { shell } from 'electron'
-import { AppUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal, autoUpdater } from 'electron-updater'
+import updater, { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
 import { createWriteStream } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
@@ -16,16 +16,14 @@ import { PassThrough, Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { promisify } from 'util'
 import { createGunzip } from 'zlib'
+import { kGFW } from '~/gfw'
 import { AnyError, isSystemError } from '~/util/error'
 import { checksum } from '~/util/fs'
 import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { ensureElevateExe } from './elevate'
-import { kGFW } from '~/gfw'
 
 const kPatched = Symbol('Patched')
-// @ts-ignore
-const getUpdateInfoAndProvider = AppUpdater.prototype.getUpdateInfoAndProvider
 
 /**
  * Only download asar file update.
@@ -76,6 +74,9 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
           return
         }
         const gzUrl = url + '.gz'
+        if (url.startsWith(AZURE_CDN)) {
+          this.app.emit('download-cdn', 'asar', this.file)
+        }
         const gzResponse = await fetch(gzUrl, { signal: this.abortController.signal })
         const tracker = new PassThrough({
           transform: (chunk, encoding, callback) => {
@@ -158,18 +159,44 @@ async function getUpdateAsarViaBatArgs(appAsarPath: string, updateAsarPath: stri
  * Download the full update. This size can be larger as it carry the whole electron thing...
  */
 export class DownloadFullUpdateTask extends AbortableTask<void> {
-  private updateSignal = new UpdaterSignal(autoUpdater)
+  constructor(private app: ElectronLauncherApp, private appUpdater: AppUpdater) {
+    super()
+  }
 
   private cancellationToken = new CancellationToken()
 
   protected async process(): Promise<void> {
     this.cancellationToken = new CancellationToken()
-    this.updateSignal.progress((info) => {
+
+    const gfw = await this.app.registry.get(kGFW)
+    
+    if (gfw.inside) {
+      // @ts-ignore
+      const executor = autoUpdater.httpExecutor as any
+      if (!(kPatched in executor)) {
+        const createRequest = executor.createRequest.bind(executor)
+        Object.assign(executor, {
+          [kPatched]: true,
+          createRequest: (options: any, callback: any) => {
+            if (gfw.inside) {
+              const url = new URL(AZURE_CDN)
+              options.hostname = url.hostname;
+              options.path = `/releases/${basename(options.pathname)}`;
+              this.app.emit('download-cdn', 'electron', basename(options.pathname))
+            }
+            return createRequest(options, callback)
+          }
+        })
+      }
+    }
+    
+    const signal = new UpdaterSignal(this.appUpdater)
+    signal.progress((info) => {
       this._progress = info.transferred
       this._total = info.total
       this.update(info.delta)
     })
-    await autoUpdater.downloadUpdate(this.cancellationToken)
+    await this.appUpdater.downloadUpdate(this.cancellationToken)
   }
 
   protected abort(): void {
@@ -241,38 +268,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   async #getUpdateFromAutoUpdater(): Promise<ReleaseInfo> {
-    const gfw = await this.app.registry.get(kGFW)
-
-    if (gfw.inside) {
-      // @ts-ignore
-      AppUpdater.prototype.getUpdateInfoAndProvider = async function (this: AppUpdater) {
-        const result = await getUpdateInfoAndProvider.call(this)
-        const provider = result.provider
-
-        if (kPatched in provider) {
-          return result
-        }
-
-        const resolveFiles = provider.resolveFiles
-        Object.assign(provider, {
-          [kPatched]: true,
-          resolveFiles: function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
-            const result = resolveFiles.call(provider, inf)
-            return result.map((i) => {
-              const pathname = i.url.pathname
-              return {
-                ...i,
-                url: new URL(`${AZURE_CDN}/releases/${basename(pathname)}`),
-              }
-            })
-          },
-        })
-        return result
-      }
-    } else {
-      // @ts-ignore
-      AppUpdater.prototype.getUpdateInfoAndProvider = getUpdateInfoAndProvider
-    }
+    const autoUpdater = updater.autoUpdater
 
     this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
     const info = await autoUpdater.checkForUpdates()
@@ -370,7 +366,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
 
   downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
     if (updateInfo.operation === ElectronUpdateOperation.AutoUpdater) {
-      return new DownloadFullUpdateTask()
+      return new DownloadFullUpdateTask(this.app, updater.autoUpdater)
     } else if (updateInfo.operation === ElectronUpdateOperation.Asar) {
       const updatePath = join(this.app.appDataPath, 'pending_update')
       return new DownloadAsarUpdateTask(this.app, updatePath, updateInfo.name)
@@ -388,7 +384,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
     if (updateInfo.operation === ElectronUpdateOperation.Asar) {
       await this.quitAndInstallAsar()
     } else {
-      autoUpdater.quitAndInstall()
+      updater.autoUpdater.quitAndInstall()
     }
   }
 }
