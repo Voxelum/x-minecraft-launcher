@@ -9,10 +9,10 @@ import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
 import { readLaunchProfile } from '~/launchProfile'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { AnyError } from '~/util/error'
+import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 
@@ -355,13 +355,22 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const lock = this.semaphoreManager.getLock(`remove://${path}`)
     if (isManaged && await exists(path)) {
       await lock.write(async () => {
-        if (await missing(path)) return
-
         const oldHandlers = this.#removeHandlers[path]
         for (const handlerRef of oldHandlers || []) {
           handlerRef.deref()?.()
         }
-        await rm(path, { recursive: true, force: true })
+        try {
+          await rm(path, { recursive: true, force: true, maxRetries: 3 })
+        } catch (e) {
+          if (isSystemError(e) && e.code === ENOENT_ERROR) {
+            this.warn(`Fail to remove instance ${path}`)
+          } else {
+            if ((e as any).name === 'Error') {
+              (e as any).name = 'InstanceDeleteError'
+            }
+            throw e
+          }
+        }
 
         this.#removeHandlers[path] = []
       })

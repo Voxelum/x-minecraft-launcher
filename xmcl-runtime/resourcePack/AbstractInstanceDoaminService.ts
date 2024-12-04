@@ -43,11 +43,19 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
     const key = `instance-${this.domain}://${instancePath}`
 
-    if (typeof linkedStatus === 'boolean') {
-      await unlink(destPath)
-      await mkdir(destPath)
+    if (linkedStatus) {
+      try {
+        await unlink(destPath)
+        await mkdir(destPath)
 
-      this.store.get(key)?.revalidate()
+        this.store.get(key)?.revalidate()
+      } catch (e) {
+        if (isSystemError(e) && e.code === 'EPERM') {
+          return
+        }
+        (e as any).name = 'UnlinkResourceFolderError'
+        throw e
+      }
     }
   }
 
@@ -70,13 +78,15 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
         if (!isLinked) {
           // Backup the old folder
           const files = await readdirSafe(destPath)
-          const backupDir = join(destPath, '.backup')
-          await ensureDir(backupDir)
-          for (const f of files) {
-            const s = await stat(join(destPath, f))
-            if (s.isDirectory()) {
-              // move to backup dir
-              await rename(join(destPath, f), join(backupDir, f))
+          if (files.length > 0) {
+            const backupDir = join(destPath, '.backup')
+            await ensureDir(backupDir)
+            for (const f of files) {
+              const s = await stat(join(destPath, f))
+              if (s.isDirectory()) {
+                // move to backup dir
+                await rename(join(destPath, f), join(backupDir, f))
+              }
             }
           }
           await remove(destPath)

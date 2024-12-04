@@ -190,7 +190,14 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       return result
     }
 
-    const manifest = await fetchJava(target.component)
+    const manifest = await fetchJava(target.component).catch(e => {
+      if (e.name === 'Error') {
+        if (e.message === 'net::ERR_CONNECTION_RESET') {
+          e.name = 'ConnectionResetError'
+        }
+      }
+      throw e
+    })
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = this.getPath('jre', target.component)
 

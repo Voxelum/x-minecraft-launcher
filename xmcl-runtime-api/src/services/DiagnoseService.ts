@@ -5,8 +5,10 @@ import { ServiceKey } from './Service'
 
 export interface DiagnoseService {
   diagnoseLibraries(currentVersion: ResolvedVersion): Promise<LibraryIssue[]>
-  diagnoseAssetIndex(currentVersion: ResolvedVersion): Promise<AssetIndexIssue | undefined>
-  diagnoseAssets(currentVersion: ResolvedVersion, strict?: boolean): Promise<AssetIssue[]>
+  diagnoseAssets(currentVersion: ResolvedVersion, strict?: boolean): Promise<{
+    index?: AssetIndexIssue
+    assets: AssetIssue[]
+  }>
   diagnoseJar(currentVersion: ResolvedVersion, side?: 'client' | 'server'): Promise<MinecraftJarIssue | undefined>
   diagnoseProfile(version: string, side?: 'client' | 'server', path?: string): Promise<InstallProfileIssueReport | undefined>
 }

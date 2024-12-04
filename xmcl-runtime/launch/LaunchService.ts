@@ -313,7 +313,14 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
         this.log('Launching client with these option...')
         this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
+        try {
+          process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
+        } catch (e) {
+          if (isSystemError(e) && e.code === 'EPERM') {
+            throw new LaunchException({ type: 'launchJavaNoPermission', javaPath: op.javaPath }, 'Fail to spawn process')
+          }
+          throw e
+        }
       } else {
         launchOptions = await this.#generateServerOptions(options, version)
         for (const plugin of this.middlewares) {

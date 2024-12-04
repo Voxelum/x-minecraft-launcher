@@ -231,7 +231,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
 }
 
 export function useInstanceVersionInstallInstruction(path: Ref<string>, instances: Ref<Instance[]>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, refreshResolvedVersion: () => void, versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, javas: Ref<JavaRecord[]>) {
-  const { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
+  const { diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
   const { installAssetsForVersion, installForge, installAssets, installMinecraftJar, installLibraries, installNeoForged, installDependencies, installOptifine, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
@@ -371,14 +371,12 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       }
     }
 
-    const assetIndexIssue = await diagnoseAssetIndex(resolved)
+    const { index: assetIndexIssue, assets: assetsIssue } = await diagnoseAssets(resolved)
     if (abortSignal?.aborted) { throw kAbort }
 
     if (assetIndexIssue) {
       result.assetIndex = assetIndexIssue
     } else {
-      const assetsIssue = await diagnoseAssets(resolved)
-      if (abortSignal?.aborted) { throw kAbort }
       if (assetsIssue.length > 0) {
         result.assets = assetsIssue
       }

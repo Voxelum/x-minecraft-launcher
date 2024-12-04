@@ -39,7 +39,13 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       })
       return
     }
-    await move(toPath, join(toPath + '.bk'))
+    try {
+      await move(toPath, join(toPath + '.bk'))
+    } catch (e) {
+      if ((e as any).message === 'dest already exists.') {
+        await move(toPath, join(toPath + Date.now() + '.bk'))
+      }
+    }
     await linkDirectory(fromPath, toPath, launchService).catch(e => {
       e.name = 'LaunchLinkError'
       launchService.error(e)

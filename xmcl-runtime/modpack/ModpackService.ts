@@ -1,6 +1,6 @@
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { mkdir, readdir, remove, stat, unlink } from 'fs-extra'
+import { ensureDir, mkdir, readdir, remove, stat, unlink } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -474,7 +474,9 @@ export class ModpackService extends AbstractService implements IModpackService {
   async watchModpackFolder(): Promise<MutableState<ResourceState>> {
     const states = await this.app.registry.getOrCreate(ServiceStateManager)
     return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
-      const { dispose, revalidate, state } = this.resourceManager.watch(this.getPath('modpacks'),
+      const dir = this.getPath('modpacks')
+      await ensureDir(dir)
+      const { dispose, revalidate, state } = this.resourceManager.watch(dir,
         ResourceDomain.Modpacks,
         (func) => doAsyncOperation(func()),
       )
