@@ -1,7 +1,7 @@
 {
     "name": "@xmcl/runtime",
     "private": true,
-    "version": "0.44.15",
+    "version": "0.44.16",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "The runtime for x minecraft launcher in nodejs",
     "license": "MIT",
