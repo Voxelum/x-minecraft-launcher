@@ -1,19 +1,15 @@
-import { LaunchService as ILaunchService, ResourceState, UpdateResourcePayload, Resource, ResourceDomain, ResourceMetadata, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { LaunchService as ILaunchService } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { kClientToken, kIsNewClient } from '~/clientToken'
-import { kFlights } from '~/flights'
-import { InstanceService } from '~/instance'
-import { JavaService } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
-import { ResourceManager } from '~/resource'
-import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
 import { IS_DEV } from '../constant'
-import { APP_INSIGHT_KEY, parseStack } from './telemetry'
+import { setupResourceTelemetryClient } from './ResourceTelemetryClient'
+import { DEFAULT_APP_INSIGHT_KEY, parseStack } from './telemetry'
 
 const getSdkVersion = () => {
   let sdkVersion = ''
@@ -41,10 +37,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
   const clientSession = await app.registry.get(kClientToken)
   const isNewClient = await app.registry.get(kIsNewClient)
-  const flights = await app.registry.get(kFlights)
-  const stateManager = await app.registry.get(ServiceStateManager)
 
-  appInsight.setup(APP_INSIGHT_KEY)
+  appInsight.setup(DEFAULT_APP_INSIGHT_KEY)
     .setDistributedTracingMode(appInsight.DistributedTracingModes.AI_AND_W3C)
     .setAutoCollectExceptions(true)
     .setAutoCollectPerformance(false)
@@ -82,11 +76,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     }
   }
 
-  const client = appInsight.defaultClient
+  const defaultClient = appInsight.defaultClient
 
   const sampled = ['UpdateMetadataError', 'NodeInternalError']
 
-  client.addTelemetryProcessor((envelope, contextObjects) => {
+  defaultClient.addTelemetryProcessor((envelope, contextObjects) => {
     if (contextObjects?.error) {
       const exception = envelope.data.baseData as Contracts.ExceptionData
       const e = contextObjects?.error
@@ -102,7 +96,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   logger.log('Telemetry client started')
-  client.trackEvent({
+  defaultClient.trackEvent({
     name: 'app-start',
     properties: {
       isNewClient,
@@ -110,11 +104,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   app.registryDisposer(async () => {
-    client.trackEvent({
+    defaultClient.trackEvent({
       name: 'app-stop',
     })
     await new Promise((resolve) => {
-      client.flush({
+      defaultClient.flush({
         callback: resolve,
       })
     })
@@ -122,7 +116,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   })
 
   app.on('download-cdn', (reason, file) => {
-    client.trackEvent({
+    defaultClient.trackEvent({
       name: 'download-cdn',
       properties: {
         reason,
@@ -131,41 +125,17 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
   })
 
-  app.on('service-call-end', (serviceName, serviceMethod, duration, success) => {
-    // Disable request to reduce cost
-    // const shouldTrack = () => {
-    //   if (serviceName === 'LaunchService' && serviceMethod === 'launch') return true
-    //   if (serviceName === 'UserSerivce' && serviceMethod === 'refreshUser') return true
-    //   return false
-    // }
-    // if (shouldTrack()) {
-    //   client.trackRequest({
-    //     name: `${serviceName}.${serviceMethod}`,
-    //     url: `/${serviceName}/${serviceMethod}`,
-    //     resultCode: success ? 200 : 500,
-    //     duration,
-    //     success,
-    //   })
-    // }
-  })
-
   app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 
-    let javaService: JavaService | undefined
-    app.registry.get(JavaService).then(service => {
-      javaService = service
-    })
-    let instanceService: InstanceService | undefined
-    app.registry.get(InstanceService).then(service => {
-      instanceService = service
-    })
+    // resource data are enormous, so we need to handle them separately
+    setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
 
     // Track game start and end
     app.registry.get(LaunchService).then((service: LaunchService) => {
       (service as ILaunchService).on('minecraft-start', (options) => {
         if (settings.disableTelemetry) return
-        client.trackEvent({
+        defaultClient.trackEvent({
           name: 'minecraft-start',
           properties: options,
           tagOverrides: {
@@ -178,11 +148,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           const normalExit = code === 0
           const crashed = crashReport && crashReport.length > 0
           if (normalExit) {
-            client.trackEvent({
+            defaultClient.trackEvent({
               name: 'minecraft-exit',
             })
           } else {
-            client.trackEvent({
+            defaultClient.trackEvent({
               name: 'minecraft-exit',
               properties: {
                 code,
@@ -196,7 +166,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           }
         }).on('launch-performance', ({ name, id, duration }) => {
           if (settings.disableTelemetry) return
-          client.trackEvent({
+          defaultClient.trackEvent({
             name,
             measurements: {
               duration,
@@ -208,7 +178,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           })
         }).on('launch-performance-pre', ({ name, id }) => {
           if (settings.disableTelemetry) return
-          client.trackEvent({
+          defaultClient.trackEvent({
             name: name + '-pre',
             tagOverrides: {
               [contract.operationId]: id,
@@ -216,50 +186,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
             },
           })
         })
-
-      if (!flights.disableMinecraftRunLog) {
-        service.registerMiddleware({
-          name: 'minecraft-run-telemetry',
-          async onBeforeLaunch(_, payload, ctx) {
-            const path = payload.side === 'client' ? payload.options.gamePath : payload.options.extraExecOption!.cwd as string
-            const state = stateManager.get<ResourceState>(getInstanceModStateKey(path))
-            const mods = state?.files.map(m => m.hash)
-            const runtime = instanceService?.state.all[path]?.runtime
-            if (mods) {
-              ctx.mods = mods
-              ctx.runtime = runtime
-            }
-          },
-          async onAfterLaunch(result, opt, ctx) {
-            if (result.code !== 0) {
-              return
-            }
-            if (ctx.mods) {
-              client.trackEvent({
-                name: 'minecraft-run-record-v2',
-                properties: {
-                  mods: ctx.mods.join(','),
-                  runtime: ctx.runtime,
-                  java: await javaService?.getJavaState().then((javaState) => {
-                    const javaVersion = javaState.all.find(s => s.path === opt.options.javaPath)
-                    if (javaVersion) {
-                      return {
-                        majorVersion: javaVersion.majorVersion,
-                        version: javaVersion.version,
-                      }
-                    }
-                  }),
-                },
-              })
-            }
-          },
-        })
-      }
     })
 
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
-      client.trackException({
+      defaultClient.trackException({
         exception: e,
         properties: e ? { ...e } : undefined,
         contextObjects: {
@@ -271,132 +202,11 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
-    const getPayload = (sha1: string, metadata: ResourceMetadata, name?: string, domain?: ResourceDomain) => {
-      interface ResourceTracingPayload {
-        name?: string
-        sha1: string
-        domain?: ResourceDomain
-        forge?: {
-          modId: string
-          version: string
-        }
-        fabric?: {
-          modId: string
-          version: string
-        }[]
-        neoforge?: {
-          modId: string
-          version: string
-        }
-        quilt?: {
-          modId: string
-          version: string
-        }
-        curseforge?: {
-          projectId: number
-          fileId: number
-        }
-        modrinth?: {
-          projectId: string
-          versionId: string
-        }
-      }
-      const trace: ResourceTracingPayload = {
-        name,
-        sha1,
-        domain,
-      }
-      if (metadata.curseforge) {
-        trace.curseforge = {
-          projectId: metadata.curseforge.projectId,
-          fileId: metadata.curseforge.fileId,
-        }
-      }
-      if (metadata.modrinth) {
-        trace.modrinth = {
-          projectId: metadata.modrinth.projectId,
-          versionId: metadata.modrinth.versionId,
-        }
-      }
-      if (metadata.forge) {
-        trace.forge = {
-          modId: metadata.forge.modid,
-          version: metadata.forge.version,
-        }
-      }
-      if (metadata.neoforge) {
-        trace.neoforge = {
-          modId: metadata.neoforge.modid,
-          version: metadata.neoforge.version,
-        }
-      }
-      if (metadata.quilt) {
-        trace.quilt = {
-          modId: metadata.quilt.quilt_loader.id,
-          version: metadata.quilt.quilt_loader.version,
-        }
-      }
-      if (metadata.fabric) {
-        if (metadata.fabric instanceof Array) {
-          trace.fabric = metadata.fabric.map(f => ({
-            modId: f.id,
-            version: f.version,
-          }))
-        } else {
-          trace.fabric = [{
-            modId: metadata.fabric.id,
-            version: metadata.fabric.version,
-          }]
-        }
-      }
-
-      return trace
-    }
-
-    // Collect resource metadata
-    app.registry.get(ResourceManager).then((manager) => {
-      manager.context.eventBus.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
-        if (settings.disableTelemetry) return
-        client.trackException({
-          exception: err,
-          properties: {
-            ...payload,
-          },
-        })
-      })
-      manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
-        if (settings.disableTelemetry) return
-        client.trackEvent({
-          name: 'resource-metadata-v2',
-          properties: getPayload(sha1, metadata, metadata.name, domain),
-        })
-      })
-      manager.context.eventBus.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
-        if (settings.disableTelemetry) return
-        for (const payload of payloads) {
-          if (payload.metadata) {
-            const copy = { ...payload.metadata } as any
-            for (const key of Object.keys(copy)) {
-              if (copy[key] === undefined || copy[key] === null) {
-                delete copy[key]
-              }
-            }
-            if (Object.keys(copy).length > 0) {
-              client.trackEvent({
-                name: 'resource-metadata-v2',
-                properties: getPayload(payload.hash, copy, copy.name),
-              })
-            }
-          }
-        }
-      })
-    })
-
     // Track user authority
     app.registry.get(UserService).then(service => {
       service.on('user-login', (authority) => {
         if (settings.disableTelemetry) return
-        client.trackEvent({
+        defaultClient.trackEvent({
           name: 'user-login',
           properties: {
             authService: authority,
@@ -410,13 +220,13 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       service.getPeerState().then(state => {
         state.subscribe('connectionStateChange', (state) => {
           if (state.connectionState === 'connected') {
-            client.trackEvent({
+            defaultClient.trackEvent({
               name: 'peer-connection-connected',
             })
           }
         })
         state.subscribe('connectionAdd', (conn) => {
-          client.trackEvent({
+          defaultClient.trackEvent({
             name: 'peer-connection-add',
           })
         })
