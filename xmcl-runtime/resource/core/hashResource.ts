@@ -25,18 +25,23 @@ export async function hashAndFiletypeResource(path: string, size: number, dir?: 
       const files = await readdir(cur)
       for (const file of files) {
         if (file === '.DS_Store') continue
-        const fstat = await stat(join(cur, file))
-        mtimes.push(fstat.mtimeMs)
-        hash.update(file)
-        if (fstat.isDirectory()) {
-          await visit(join(cur, file))
+        const fstat = await stat(join(cur, file)).catch(() => undefined)
+        if (fstat) {
+          mtimes.push(fstat.mtimeMs)
+          hash.update(file)
+          if (fstat.isDirectory()) {
+            await visit(join(cur, file))
+          }
         }
       }
     }
 
-    mtimes.push((await stat(path)).mtimeMs)
-    await visit(path)
-    hash.update(new Uint32Array(mtimes))
+    const fStat = await stat(path).catch(() => undefined)
+    if (fStat) {
+      mtimes.push(fStat.mtimeMs)
+      await visit(path)
+      hash.update(new Uint32Array(mtimes))
+    }
 
     return [hash.digest('hex'), 'directory'] as [string, string]
   }
