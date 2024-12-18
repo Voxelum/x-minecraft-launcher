@@ -4,7 +4,6 @@ import { randomUUID } from 'crypto'
 import { createReadStream } from 'fs'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
-import { request } from 'undici'
 import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { AbstractService, Singleton } from '~/service'
@@ -110,7 +109,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
 
     let manifest: InstanceManifest
     try {
-      manifest = await (await request(instance.fileApi)).body.json() as any
+      manifest = await (await this.app.fetch(instance.fileApi)).json() as any
     } catch (e) {
       if (e instanceof Error) this.error(e)
       throw new InstanceIOException({

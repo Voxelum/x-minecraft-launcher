@@ -4,7 +4,6 @@ import { ModMetadataService as IModMetadataService, ModMetadata, ModMetadataServ
 import { createReadStream } from 'fs'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
-import { request } from 'undici'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
@@ -215,7 +214,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
 
   async #ensureDb() {
     if (this.db) return this.db
-    const sha1 = await (await request('https://xmcl.blob.core.windows.net/releases/db.sqlite.sha1')).body.text()
+    const sha1 = await (await this.app.fetch('https://xmcl.blob.core.windows.net/releases/db.sqlite.sha1')).text()
     const dbPath = this.getAppDataPath('db.sqlite')
     const actual = await checksumFromStream(createReadStream(dbPath), 'sha1').catch(() => '')
     if (actual !== sha1) {

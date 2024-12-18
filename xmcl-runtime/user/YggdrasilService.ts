@@ -11,8 +11,8 @@ import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 export class YggdrasilService extends AbstractService implements IYggdrasilService {
   private yggdrasilFile = createSafeFile(this.getAppDataPath('yggdrasil.json'), YggdrasilSchema, this, undefined, async () => {
     const apis = await Promise.all([
-      loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil'),
-      loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector'),
+      loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil', this.app.fetch),
+      loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector', this.app.fetch),
     ])
     return {
       yggdrasilServices: apis,
