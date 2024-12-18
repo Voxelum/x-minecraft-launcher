@@ -42,8 +42,8 @@ winget install CI010.XMinecraftLauncher
 HomeBrew installation also available via tap
 
 ```bash
-brew tap sylvanfranklin/xmcl
-brew install --cask --no-quarantine sylvanfranklin/xmcl
+brew tap voxelum/xmcl
+brew install --cask --no-quarantine voxelum/xmcl
 ```
 
 <kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
