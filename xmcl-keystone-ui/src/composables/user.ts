@@ -108,7 +108,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
   const nameRules = [(v: unknown) => !!v || t('loginError.requireUsername')]
   const emailRules = [
     (v: unknown) => !!v || t('loginError.requireEmail'),
-    (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
+    (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,6})+$/.test(v) ||
       t('loginError.illegalEmail'),
   ]
   const passwordRules = [(v: unknown) => !!v || t('loginError.requirePassword')]
