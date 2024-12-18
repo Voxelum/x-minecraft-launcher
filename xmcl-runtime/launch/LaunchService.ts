@@ -17,6 +17,7 @@ import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
+import { normalizeCommandLine } from '~/util/cmd'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -102,7 +103,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       extraJVMArgs: jvmArgs,
       extraMCArgs: mcArgs,
-      prependCommand: options.prependCommand,
+      prependCommand: normalizeCommandLine(options.prependCommand),
 
       nogui: options.nogui,
     }
@@ -151,7 +152,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraMCArgs: options.mcOptions?.filter(v => !!v),
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
-      prependCommand: options.prependCommand,
+      prependCommand: normalizeCommandLine(options.prependCommand),
       yggdrasilAgent,
       useHashAssetsIndex: true,
       platform: {
