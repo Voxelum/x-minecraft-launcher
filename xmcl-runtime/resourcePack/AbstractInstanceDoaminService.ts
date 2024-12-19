@@ -156,7 +156,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
           if (isSystemError(e)) {
             if (e.code === 'ENOENT') {
               // ignore
-              this.log(`Instance ${instancePath} not exist. Skip watching.`)
+              // this.log(`Instance ${instancePath} not exist. Skip watching.`) // verbose
             } else {
               throw e
             }
