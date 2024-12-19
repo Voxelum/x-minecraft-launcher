@@ -1,7 +1,7 @@
 import { Socket } from 'net'
 import { Agent, Client, Dispatcher, RetryHandler, buildConnector, errors, util } from 'undici'
 
-type DispatchHandlers = Dispatcher.DispatchHandlers
+type DispatchHandlers = Dispatcher.DispatchHandler
 const { InvalidArgumentError, RequestAbortedError } = errors
 
 function defaultProtocolPort(protocol: string) {
