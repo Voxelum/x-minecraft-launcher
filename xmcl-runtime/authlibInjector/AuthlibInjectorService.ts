@@ -26,20 +26,8 @@ export class AuthlibInjectorService extends AbstractService implements IAuthlibI
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kGFW) gfw: GFW,
-    @Inject(kNetworkInterface) networkInterface: NetworkInterface,
   ) {
     super(app)
-
-    networkInterface.registerOptionsInterceptor((options) => {
-      const origin = options.origin instanceof URL ? options.origin : new URL(options.origin! as any)
-      if (origin.hostname === 'authlib-injector.yushi.moe') {
-        if (shouldOverrideApiSet(settings, gfw.inside)) {
-          const api = settings.apiSets.find(a => a.name === settings.apiSetsPreference) || settings.apiSets[0]
-          options.origin = new URL(api.url).origin
-          options.path = `/mirrors/authlib-injector${options.path}`
-        }
-      }
-    })
   }
 
   async abortAuthlibInjectorInstall(): Promise<void> {

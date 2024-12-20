@@ -1,7 +1,7 @@
 import { DefaultRangePolicy } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { setTimeout as timeout } from 'timers/promises'
-import { Agent, Dispatcher, Pool, buildConnector } from 'undici'
+import { Agent, Dispatcher, Pool, buildConnector, interceptors } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { kSettings } from '~/settings'
@@ -13,8 +13,6 @@ type DispatchOptions = Dispatcher.DispatchOptions
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
   const userAgent = app.userAgent
-
-  const dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
 
   let maxConnection = 64
   const connectorOptions: buildConnector.BuildOptions = {
@@ -71,7 +69,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     retryOptions: {
       maxTimeout: 60_000,
       maxRetries: 30,
-      // @ts-ignore
       retry: (err, { state, opts }, cb) => {
         const { statusCode, code, headers } = err as any
         const { method, retryOptions } = opts
@@ -217,9 +214,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   })
 
   app.registry.register(kNetworkInterface, {
-    registerOptionsInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>): void {
-      dispatchInterceptors.unshift(interceptor)
-    },
     getDownloadAgentStatus: getAgentStatus,
     async destroyPool(origin) {
       // @ts-ignore
