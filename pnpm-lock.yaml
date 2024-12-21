@@ -163,8 +163,8 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
 
   xmcl-keystone-ui:
     dependencies:
@@ -476,8 +476,8 @@ importers:
         specifier: ^3.1.7
         version: 3.1.7
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
       xxhash-wasm:
         specifier: ^1.0.2
         version: 1.0.2
@@ -711,8 +711,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -727,8 +727,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
     devDependencies:
       '@types/node':
         specifier: ~18
@@ -785,8 +785,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
     devDependencies:
       '@types/node':
         specifier: ~18.15.11
@@ -893,8 +893,8 @@ importers:
         specifier: workspace:^*
         version: link:../unzip
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -983,8 +983,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -1002,8 +1002,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -1151,8 +1151,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1179,8 +1179,8 @@ importers:
         specifier: ~18.15.11
         version: 18.15.13
       undici:
-        specifier: 6.19.4
-        version: 6.19.4
+        specifier: 7.1.1
+        version: 7.1.1
 
 packages:
 
@@ -5149,9 +5149,9 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  undici@6.19.4:
-    resolution: {integrity: sha512-i3uaEUwNdkRq2qtTRRJb13moW5HWqviu7Vl7oYRYz++uPtGHJj+x7TGjcEuwS5Mt2P4nA0U9dhIX3DdB6JGY0g==}
-    engines: {node: '>=18.17'}
+  undici@7.1.1:
+    resolution: {integrity: sha512-WZkQ6eH9f5ZT93gaIffsbUaDpBwjbpvmMbfaEhOnbdUneurTESeRxwPGwjI28mRFESH3W3e8Togijh37ptOQqA==}
+    engines: {node: '>=20.18.1'}
 
   unimport@3.7.2:
     resolution: {integrity: sha512-91mxcZTadgXyj3lFWmrGT8GyoRHWuE5fqPOjg5RVtF6vj+OfM5G6WCzXjuYtSgELE5ggB34RY4oiCSEP8I3AHw==}
@@ -10046,7 +10046,7 @@ snapshots:
 
   undici-types@5.26.5: {}
 
-  undici@6.19.4: {}
+  undici@7.1.1: {}
 
   unimport@3.7.2(rollup@2.79.1):
     dependencies:

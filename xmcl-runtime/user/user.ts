@@ -3,7 +3,6 @@
 import { AuthlibInjectorApiProfile, GameProfileAndTexture, YggdrasilApi } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
 import { readFile } from 'fs-extra'
-import { request } from 'undici'
 
 export interface OAuthTokenResponse {
   token_type: string
@@ -128,20 +127,20 @@ export async function normalizeSkinData(url: string) {
   }
 }
 
-export async function loadYggdrasilApiProfile(url: string) {
+export async function loadYggdrasilApiProfile(url: string, fetch = globalThis.fetch) {
   const api: YggdrasilApi = { url }
 
   async function loadHostFavicon() {
     const parsedUrl = new URL(url)
     try {
-      const resp = await request(parsedUrl.protocol + parsedUrl.host + '/favicon.ico')
-      if (resp.statusCode === 200) {
+      const resp = await fetch(parsedUrl.protocol + parsedUrl.host + '/favicon.ico')
+      if (resp.status === 200) {
         api.favicon = parsedUrl.protocol + parsedUrl.host + '/favicon.ico'
       }
     } catch {
       try {
-        const resp = await request(parsedUrl.protocol + parsedUrl.host)
-        const body = await resp.body.text()
+        const resp = await fetch(parsedUrl.protocol + parsedUrl.host)
+        const body = await resp.text()
         const match = body.match(/<link rel="shortcut icon" href="([^"]+)" \/>/)
         if (match) {
           api.favicon = match[1]
@@ -151,8 +150,8 @@ export async function loadYggdrasilApiProfile(url: string) {
   }
   async function loadMetadata() {
     try {
-      const resp = await request(url)
-      const body = await resp.body.json() as AuthlibInjectorApiProfile
+      const resp = await fetch(url)
+      const body = await resp.json() as AuthlibInjectorApiProfile
 
       api.authlibInjector = {
         meta: {

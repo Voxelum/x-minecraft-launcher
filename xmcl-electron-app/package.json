@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./index.js",
-    "version": "0.47.15",
+    "version": "0.48.1",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
@@ -72,6 +72,6 @@
         "tslib": "^2.5.0",
         "tsx": "^3.13.0",
         "typescript": "5.4.5",
-        "undici": "6.19.4"
+        "undici": "7.1.1"
     }
 }

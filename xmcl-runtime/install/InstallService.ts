@@ -101,6 +101,7 @@ export class InstallService extends AbstractService implements IInstallService {
             return true
           } catch (e) {
             this.warn(`Failed to download mojmap from ${u}`)
+            this.warn(e)
           }
         }
         return false
