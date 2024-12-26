@@ -76,6 +76,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalDisableAuthlibInjector = computed(() => state.value?.globalDisableAuthlibInjector ?? true)
   const globalDisableElyByAuthlib = computed(() => state.value?.globalDisableElyByAuthlib ?? false)
   const globalPrependCommand = computed(() => state.value?.globalPrependCommand ?? '')
+  const globalEnv = computed(() => state.value?.globalEnv ?? {})
   const setGlobalSettings = (setting: {
     globalMinMemory: number
     globalMaxMemory: number
@@ -88,6 +89,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
     globalPrependCommand: string
+    globalEnv: Record<string, string>
   }) => {
     state.value?.globalInstanceSetting(setting)
   }
@@ -104,6 +106,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
     globalPrependCommand,
+    globalEnv,
     setGlobalSettings,
   }
 }

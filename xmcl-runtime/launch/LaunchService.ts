@@ -99,6 +99,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraExecOption: {
         detached: true,
         cwd: minecraftFolder.getPath('server'),
+        env: options.env,
       },
 
       extraJVMArgs: jvmArgs,
@@ -147,6 +148,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraExecOption: {
         detached: true,
         cwd: minecraftFolder.root,
+        env: options.env,
       },
       extraJVMArgs: options.vmOptions?.filter(v => !!v),
       extraMCArgs: options.mcOptions?.filter(v => !!v),

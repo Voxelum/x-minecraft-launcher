@@ -13,6 +13,7 @@ export class Settings implements SettingSchema {
   globalFastLaunch = false
   globalHideLauncher = false
   globalShowLog = false
+  globalEnv: Record<string, string> = {}
   discordPresence = false
   developerMode = false
   disableTelemetry = false
@@ -81,6 +82,7 @@ export class Settings implements SettingSchema {
     this.globalShowLog = config.globalShowLog
     this.globalDisableElyByAuthlib = config.globalDisableElyByAuthlib
     this.globalDisableAuthlibInjector = config.globalDisableAuthlibInjector
+    this.globalEnv = config.globalEnv
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
@@ -198,6 +200,7 @@ export class Settings implements SettingSchema {
     globalDisableAuthlibInjector: boolean
     globalDisableElyByAuthlib: boolean
     globalPrependCommand: string
+    globalEnv: Record<string, string>
   }) {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
@@ -210,5 +213,6 @@ export class Settings implements SettingSchema {
     this.globalDisableAuthlibInjector = settings.globalDisableAuthlibInjector
     this.globalDisableElyByAuthlib = settings.globalDisableElyByAuthlib
     this.globalPrependCommand = settings.globalPrependCommand
+    this.globalEnv = settings.globalEnv
   }
 }

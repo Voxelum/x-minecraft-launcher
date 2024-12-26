@@ -113,6 +113,10 @@ export interface LaunchOptions {
    * Prepend command before launch
    */
   prependCommand?: string
+  /**
+   * The environment variables
+   */
+  env?: Record<string, string>
 
   disableElyByAuthlib?: boolean
 

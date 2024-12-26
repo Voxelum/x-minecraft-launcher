@@ -538,6 +538,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
+    if ('env' in options) {
+      const hasDiff = typeof options.env !== typeof state.env || (options.env && state.env && Object.keys(options.env).some(k => options.env?.[k] !== state.env?.[k]))
+      if (hasDiff) {
+        result.env = options.env
+      }
+    }
+
     if ('icon' in result && result.icon) {
       try {
         const iconURL = new URL(result.icon)
