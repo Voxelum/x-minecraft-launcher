@@ -144,6 +144,10 @@ export interface InstanceData {
    *
    */
   mcOptions?: string[]
+  /**
+   * The launch environment variables
+   */
+  env?: Record<string, string>
 
   prependCommand?: string
   /**

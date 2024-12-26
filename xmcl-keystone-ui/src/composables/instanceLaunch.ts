@@ -18,7 +18,7 @@ export function useInstanceLaunch(
 ) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
   type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'checking-permission' | 'launching'
@@ -156,6 +156,10 @@ export function useInstanceLaunch(
 
     const assignMemory = inst.assignMemory ?? globalAssignMemory.value
     const hideLauncher = inst.hideLauncher ?? globalHideLauncher.value
+    const env = {
+      ...globalEnv.value,
+      ...(inst.env || {}),
+    }
     const showLog = inst.showLog ?? globalShowLog.value
     const fastLaunch = inst.fastLaunch ?? globalFastLaunch.value
     const disableElyByAuthlib = inst.disableElybyAuthlib ?? globalDisableElyByAuthlib.value
@@ -194,6 +198,7 @@ export function useInstanceLaunch(
       user: userProfile.value,
       java: javaPath,
       hideLauncher,
+      env,
       showLog,
       minMemory,
       maxMemory,

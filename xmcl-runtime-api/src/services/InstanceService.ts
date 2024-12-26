@@ -136,6 +136,9 @@ export class InstanceState {
     if ('java' in settings) {
       inst.java = settings.java
     }
+    if ('env' in settings) {
+      inst.env = settings.env
+    }
 
     inst.url = settings.url ?? inst.url
     inst.icon = settings.icon ?? inst.icon

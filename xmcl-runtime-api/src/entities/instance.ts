@@ -16,6 +16,7 @@ export function createTemplate(): Instance {
     maxMemory: undefined,
     vmOptions: undefined,
     mcOptions: undefined,
+    env: undefined,
 
     url: '',
     icon: '',
