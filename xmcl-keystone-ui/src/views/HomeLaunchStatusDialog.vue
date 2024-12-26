@@ -81,7 +81,7 @@
             color="warning"
             :loading="selected"
             text
-            @click="selected = true; launch()"
+            @click="onLaunchAnyway"
           >
             <v-icon left>
               play_arrow
@@ -136,9 +136,11 @@ import { injection } from '@/util/inject'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
+import { kInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
 
 const { t } = useI18n()
 const { launching, windowReady, kill, launchingStatus, launch, skipRefresh, skipAuthLib } = injection(kInstanceLaunch)
+const { bypass } = injection(kInstanceJavaDiagnose)
 const exiting = ref(false)
 const selected = ref(false)
 const javaIssue = ref<'invalid' | 'incompatible' | undefined>()
@@ -240,6 +242,12 @@ watch(windowReady, (ready) => {
     hide()
   }
 })
+
+function onLaunchAnyway() {
+  selected.value = true
+  launch()
+  bypass()
+}
 </script>
 
 <style scoped="true">
