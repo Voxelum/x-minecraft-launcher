@@ -5,15 +5,15 @@ import { useDialog } from './dialog'
 import { kInstance } from './instance'
 import { kInstanceFiles } from './instanceFiles'
 import { useInstanceFilesDiagnose } from './instanceFilesDiagnose'
-import { useInstanceJavaDiagnose } from './instanceJavaDiagnose'
+import { kInstanceJavaDiagnose } from './instanceJavaDiagnose'
 import { kInstanceLaunch } from './instanceLaunch'
 import { kInstanceVersion } from './instanceVersion'
+import { useInstanceVersionDiagnose } from './instanceVersionDiagnose'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kLaunchTask } from './launchTask'
 import { useUserDiagnose } from './userDiagnose'
-import { useInstanceVersionDiagnose } from './instanceVersionDiagnose'
 
 export interface LaunchMenuItem {
   title: string
@@ -35,7 +35,7 @@ export function useLaunchButton() {
 
   const { fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
   const versionIssues = useInstanceVersionDiagnose()
-  const { issue: javaIssue } = useInstanceJavaDiagnose()
+  const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
   const { issue: filesIssue, fix: fixInstanceFileIssue } = useInstanceFilesDiagnose()
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
   const { status, pause, resume } = injection(kLaunchTask)
