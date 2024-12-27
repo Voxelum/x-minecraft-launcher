@@ -139,26 +139,26 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     enabled,
   )
 
-  const networkOnly = computed(() => modrinthCategories.value.length > 0)
+  const mode = computed(() => modrinthCategories.value.length > 0 ? 'online' : keyword.value ? 'all' : 'local')
 
   const _installed = useProjectsFilterSort(
     keyword,
     installed,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
   const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
   const _others = useProjectsFilterSort(
     keyword,
     others,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )

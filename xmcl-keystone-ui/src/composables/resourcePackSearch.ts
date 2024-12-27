@@ -101,8 +101,8 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
   // }
 
   function effect() {
-  //   watch(enabled, update, { immediate: true })
-  //   watch(disabled, update, { immediate: true })
+    //   watch(enabled, update, { immediate: true })
+    //   watch(disabled, update, { immediate: true })
   }
 
   return {
@@ -143,26 +143,30 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
     enabled,
   )
 
-  const networkOnly = computed(() => modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
+  const mode = computed(() =>
+    modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined
+      ? 'online'
+      : keyword.value ? 'all' : 'local',
+  )
 
   const _installed = useProjectsFilterSort(
     keyword,
     installed,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
   const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
   const _others = useProjectsFilterSort(
     keyword,
     others,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
@@ -182,7 +186,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   }
 
   return {
-    networkOnly,
+    networkOnly: mode,
     sort,
     gameVersion,
 

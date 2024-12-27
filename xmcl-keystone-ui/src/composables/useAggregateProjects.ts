@@ -29,24 +29,27 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
  * Sort the projects by the keyword. It will also filter the project if the networkOnly is true
  * @param keyword The keyword to search
  * @param items The project items
- * @param networkOnly If only show the network project
+ * @param mode The mod of the filtering project. 'online' only show the connected (curseforge/modrinth) projects. 'local' only show the installed projects.
  * @returns The sorted and filtered project
  */
 export function useProjectsFilterSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
-  networkOnly: MaybeRef<boolean>,
+  mode: MaybeRef<'online' | 'local' | 'all'>,
   isCurseforgeActive: MaybeRef<boolean>,
   isModrinthActive: MaybeRef<boolean>,
 ) {
   const filterSorted = computed(() => {
-    const filtered = get(networkOnly)
+    const theMode = get(mode)
+    const filtered = theMode === 'online'
       ? items.value.filter(p => {
         if (!get(isCurseforgeActive) && p.curseforge) return false
         if (!get(isModrinthActive) && p.modrinth) return false
         return p.curseforge || p.modrinth || p.id === 'OptiFine'
       })
-      : items.value
+      : theMode === 'local'
+        ? items.value.filter(p => p.installed.length > 0)
+        : items.value
 
     if (!keyword.value) return filtered
 

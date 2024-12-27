@@ -83,26 +83,26 @@ export function useSavesSearch(runtime: Ref<RuntimeVersions>, saves: Ref<Instanc
     instanceSaves,
   )
 
-  const networkOnly = computed(() => curseforgeCategory.value !== undefined)
+  const mode = computed(() => curseforgeCategory.value !== undefined ? 'online' : keyword.value ? 'all' : 'local')
 
   const _installed = useProjectsFilterSort(
     keyword,
     installed,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     ref(false),
   )
   const _notInstalledButCached = useProjectsFilterSort(
     keyword,
     notInstalledButCached,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     ref(false),
   )
   const _others = useProjectsFilterSort(
     keyword,
     others,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     ref(false),
   )
