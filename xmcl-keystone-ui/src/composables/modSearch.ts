@@ -231,19 +231,19 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
     instancesAll,
   )
 
-  const networkOnly = computed(() => {
-    if (modrinthCategories.value.length > 0) {
-      return true
+  const mode = computed(() => {
+    if (curseforgeCategory.value !== undefined || modrinthCategories.value.length > 0) {
+      return 'online'
     }
-    if (curseforgeCategory.value !== undefined) {
-      return true
+    if (keyword.value) {
+      return 'all'
     }
-    return false
+    return 'local'
   })
   const items = useProjectsFilterSort(
     keyword,
     all,
-    networkOnly,
+    mode,
     isCurseforgeActive,
     isModrinthActive,
   )
