@@ -70,7 +70,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         throw exception
       }
     } else {
-      await refreshVersion(localMinecraft.id)
+      await installMinecraftJar(localMinecraft.id, 'client')
     }
 
     let forgeVersion = undefined as undefined | string
@@ -422,6 +422,9 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         await commit(version)
         return
       }
+      if (instruction.jar) {
+        await installMinecraftJar(instruction.runtime.minecraft, 'client')
+      }
       if (instruction.profile) {
         await installByProfile(instruction.profile.installProfile)
         if (instruction.version) {
@@ -478,9 +481,6 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       const java = getJavaInstall(javas.value, resolved, instruction.instance)
       if (java) {
         await installDefaultJava(java)
-      }
-      if (instruction.jar) {
-        await installMinecraftJar(instruction.runtime.minecraft, 'client')
       }
       if (instruction.libriares) {
         await installLibraries(instruction.libriares.map(v => v.library), instruction.runtime.minecraft, instruction.libriares.length > 15)
