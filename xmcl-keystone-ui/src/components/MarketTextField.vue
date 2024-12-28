@@ -15,6 +15,20 @@
     @blur="searchTextFieldFocused = false"
     @click="emit('click', $event)"
   >
+    <template #prepend>
+      <div class="flex items-center justify-center h-[40px] pr-1">
+        <v-btn
+          v-shared-tooltip="t('filterLocalOnly')"
+          :class="{ 'v-btn--active': localOnly }"
+          icon
+          @click="emit('update:localOnly', !localOnly)"
+        >
+          <v-icon>
+            filter_alt
+          </v-icon>
+        </v-btn>
+      </div>
+    </template>
     <template #append>
       <v-chip
         v-if="gameVersion"
@@ -44,8 +58,8 @@
 
 <script lang=ts setup>
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useEventListener } from '@vueuse/core'
-import { nextTick } from 'vue'
 
 const props = defineProps<{
   value?: string
@@ -53,6 +67,7 @@ const props = defineProps<{
   placeholder?: string
   gameVersion?: string
   category?: boolean
+  localOnly?: boolean
 }>()
 
 const _keyword = computed({
@@ -66,6 +81,7 @@ const emit = defineEmits<{
   (event: 'clear'): void
   (event: 'clear-version'): void
   (event: 'clear-category'): void
+  (event: 'update:localOnly', v: boolean): void
 }>()
 
 const search = (v: string | undefined) => {
@@ -78,6 +94,8 @@ const clear = () => {
   _keyword.value = ''
   emit('clear')
 }
+
+const { t } = useI18n()
 
 const searchTextField = ref(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))

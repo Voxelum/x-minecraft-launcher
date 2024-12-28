@@ -17,6 +17,7 @@
         :sort.sync="sort"
         :modloader="modloader"
         :mod-loaders="[ShaderLoaderFilter.optifine, ShaderLoaderFilter.iris]"
+        :local-only.sync="localOnly"
       />
     </div>
     <MarketExtensions
@@ -70,7 +71,7 @@ const modloader = computed({
   },
 })
 
-const { keyword, gameVersion, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
+const { keyword, localOnly, gameVersion, shaderLoaderFilters, modrinthCategories, sort, isModrinthActive } = injection(kShaderPackSearch)
 const { shaderMod } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 </script>

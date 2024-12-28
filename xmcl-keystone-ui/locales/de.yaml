@@ -351,6 +351,7 @@ fileDetail:
   fileSize: Größe der Datei
   hash: Hash
 filter: Filter.
+filterLocalOnly: Nur installiert anzeigen
 finish: Oberfläche
 forgeConfig:
   hint: >-
@@ -820,9 +821,6 @@ modInstall:
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
-modSearchType:
-  all: Alle
-  local: Cache auf dem Datenträger
 modUpgradePolicy:
   curseforge: Zuerst Curseforge
   curseforgeOnly: Nur Curseforge

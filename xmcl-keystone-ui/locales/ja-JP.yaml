@@ -321,6 +321,7 @@ fileDetail:
   fileSize: ファイルサイズ
   hash: ハッシュ値
 filter: フィルター
+filterLocalOnly: インストールされているものだけを表示
 finish: 終了
 forgeConfig:
   hint: 一回この構成でゲームを立ち上げると、構成ファイルを検出できます!
@@ -708,11 +709,6 @@ modInstall:
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
-modSearchType:
-  all: すべて
-  explore: マーケットを探索
-  installed: インストール済み
-  local: ディスクキャッシュ
 modUpgradePolicy:
   curseforge: ''
   curseforgeOnly: Curseforgeのみ

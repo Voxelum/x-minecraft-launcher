@@ -308,6 +308,7 @@ fileDetail:
   fileSize: File Size
   hash: Hash
 filter: Filter
+filterLocalOnly: Only show installed
 finish: Finish
 forgeConfig:
   hint: >-
@@ -737,11 +738,6 @@ modInstall:
   source: Mod Source
   switch: Swtich Version
   upgrade: Upgrade Mods
-modSearchType:
-  all: All
-  explore: Explore Market
-  installed: Installed
-  local: Disk Cache
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Curseforge Only

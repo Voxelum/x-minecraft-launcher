@@ -5,6 +5,7 @@
   >
     <HomeDatabaseError />
     <GridLayout
+      class="z-1"
       :layout.sync="layout"
       :responsive-layouts="layouts"
       :is-draggable="true"

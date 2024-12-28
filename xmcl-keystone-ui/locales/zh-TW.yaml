@@ -325,6 +325,7 @@ fileDetail:
   fileSize: 檔案大小
   hash: 雜湊值
 filter: 檢索
+filterLocalOnly: 只顯示已安裝
 finish: 完成
 forgeConfig:
   hint: 第一次請啟用該模組進入遊戲，以便自動檢測配置檔案
@@ -732,11 +733,6 @@ modInstall:
   source: 模組來源
   switch: 切換版本
   upgrade: 更新模組
-modSearchType:
-  all: 所有
-  explore: 瀏覽市場
-  installed: 本地
-  local: 磁碟快取
 modUpgradePolicy:
   curseforge: Curseforge 优先
   curseforgeOnly: 限詛 Curseforge

@@ -274,6 +274,7 @@ feedback:
     Únete al grupo de QQ de comentarios y habla directamente con los autores.
     Número del grupo: {number}
   qqEnterGroup: Unirse
+filterLocalOnly: Mostrar solo instalado
 forgeVersion:
   common: Común
   disable: Desactivar Forge
@@ -566,9 +567,6 @@ modInstall:
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
-modSearchType:
-  all: Todos
-  local: Caché en Disco
 modUpgradePolicy:
   curseforge: Forja maldita primero
   curseforgeOnly: Sólo forja maldita
