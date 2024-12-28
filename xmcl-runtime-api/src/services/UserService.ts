@@ -2,7 +2,7 @@ import { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
 import { GameProfileAndTexture, UserProfile } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export interface RefreshSkinOptions {
@@ -147,7 +147,7 @@ export interface RefreshUserOptions {
 }
 
 export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
-  getUserState(): Promise<MutableState<UserState>>
+  getUserState(): Promise<SharedState<UserState>>
   /**
    * Refresh the current user login status.
    *

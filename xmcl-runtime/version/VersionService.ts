@@ -1,5 +1,5 @@
 import { LibraryInfo, ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { VersionService as IVersionService, VersionHeader, LocalVersions, MutableState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, getResolvedVersionHeader } from '@xmcl/runtime-api'
+import { VersionService as IVersionService, VersionHeader, LocalVersions, SharedState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, getResolvedVersionHeader } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { ensureDir, readFile, readdir, rm } from 'fs-extra'
@@ -84,7 +84,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     this.resolvers.push(resolver)
   }
 
-  async getLocalVersions(): Promise<MutableState<LocalVersions>> {
+  async getLocalVersions(): Promise<SharedState<LocalVersions>> {
     return this.state
   }
 

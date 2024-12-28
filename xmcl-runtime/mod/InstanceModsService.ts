@@ -1,6 +1,6 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceModsService as IInstanceModsService, InstallMarketOptionWithInstance, InstallModsOptions, InstanceModsServiceKey, ResourceState, LockKey, MutableState, Resource, ResourceDomain, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, InstallMarketOptionWithInstance, InstallModsOptions, InstanceModsServiceKey, ResourceState, LockKey, SharedState, Resource, ResourceDomain, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { emptyDir, ensureDir, rename, stat, unlink } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
@@ -25,7 +25,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async refreshMetadata(instancePath: string): Promise<void> {
     const stateManager = await this.app.registry.get(ServiceStateManager)
-    const state = stateManager.get<MutableState<ResourceState>>(getInstanceModStateKey(instancePath))
+    const state = stateManager.get<SharedState<ResourceState>>(getInstanceModStateKey(instancePath))
     if (state) {
       await state.revalidate()
       const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
@@ -112,7 +112,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     await this.app.shell.openDirectory(join(path, 'mods'))
   }
 
-  async watch(instancePath: string): Promise<MutableState<ResourceState>> {
+  async watch(instancePath: string): Promise<SharedState<ResourceState>> {
     if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
     const stateManager = await this.app.registry.get(ServiceStateManager)

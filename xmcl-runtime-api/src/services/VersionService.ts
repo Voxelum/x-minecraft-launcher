@@ -1,13 +1,13 @@
 import type { ResolvedVersion } from '@xmcl/core'
 import { ServiceKey } from './Service'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { LocalVersions, ResolvedServerVersion } from '../entities/version'
 
 /**
  * The local version service maintains the installed versions on disk
  */
 export interface VersionService {
-  getLocalVersions(): Promise<MutableState<LocalVersions>>
+  getLocalVersions(): Promise<SharedState<LocalVersions>>
   /**
    * Scan .minecraft folder and copy libraries/assets/versions files from it to launcher managed place.
    *

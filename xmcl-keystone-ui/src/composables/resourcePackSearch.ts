@@ -101,8 +101,8 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
   // }
 
   function effect() {
-    //   watch(enabled, update, { immediate: true })
-    //   watch(disabled, update, { immediate: true })
+    // watch(enabled, update, { immediate: true })
+    // watch(disabled, update, { immediate: true })
   }
 
   return {

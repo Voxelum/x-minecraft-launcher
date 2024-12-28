@@ -1,4 +1,3 @@
-import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
@@ -48,11 +47,6 @@ export interface InstanceInstallService {
    * @return All pending instance installation
    */
   checkInstanceInstall(path: string): Promise<InstanceFileWithOperation[]>
-}
-
-export type InstanceInstallExceptions = InstanceNotFoundException
-
-export class InstanceInstallException extends Exception<InstanceInstallExceptions> {
 }
 
 export const InstanceInstallServiceKey: ServiceKey<InstanceInstallService> = 'InstanceInstallService'

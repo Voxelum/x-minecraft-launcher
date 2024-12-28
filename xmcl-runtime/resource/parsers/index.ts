@@ -75,7 +75,23 @@ export class ResourceParser {
     }
 
     const icons: Uint8Array[] = []
-    const fs = await openFileSystem(args.path)
+    const fs = await openFileSystem(args.path).catch((e) => {
+      if (e.message === 'Invalid zip file') {
+        Object.assign(e, { name: 'InvalidZipFileError' })
+        throw e
+      }
+      if (e.message.startsWith('multi-disk zip files are not supported: found disk number')) {
+        Object.assign(e, { name: 'MultiDiskZipFileError' })
+        throw e
+      }
+      if (e.message.startsWith('invalid central directory file header signature')) {
+        Object.assign(e, { name: 'InvalidCentralDirectoryFileHeaderError' })
+      }
+      if (e.message.startsWith('compressed/uncompressed size mismatch for stored file')) {
+        Object.assign(e, { name: 'CompressedUncompressedSizeMismatchError' })
+      }
+      throw e
+    })
     const container: ResourceMetadata = {}
     const fileName = basename(args.path)
     const uris = [] as string[]

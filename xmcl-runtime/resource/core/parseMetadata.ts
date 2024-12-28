@@ -1,10 +1,13 @@
-import { File, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { Exception, File, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { ResourceContext } from './ResourceContext'
 import { jsonArrayFrom } from './helper'
 import { upsertMetadata } from './upsertMetadata'
 import { ResourceSnapshotTable } from './schema'
 import { pickMetadata } from './generateResource'
 import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
+
+class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {
+}
 
 export async function getOrParseMetadata(file: File, record: ResourceSnapshotTable, domain: ResourceDomain, context: ResourceContext,
   job: ResourceWorkerQueuePayload,
@@ -20,13 +23,24 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
     .executeTakeFirst()
     .then(r => r ? ({ ...pickMetadata(r), icons: r?.icons.map(i => i.icon) }) : undefined)
 
+  function handleParseError(err: any): never {
+    // create a temp exception to bypass telemetry
+    if (err.name === 'InvalidZipFileError' ||
+      err.name === 'MultiDiskZipFileError' ||
+      err.name === 'InvalidCentralDirectoryFileHeaderError' ||
+      err.name === 'CompressedUncompressedSizeMismatchError') {
+      throw new ParseException({ type: 'parseResourceException', code: err.name })
+    }
+    throw err
+  }
+
   if (parse) {
     if (!cachedMetadata) {
       const { metadata, uris, icons, name } = await context.parse({
         path: file.path,
         fileType: record.fileType,
         domain,
-      })
+      }).catch(handleParseError)
 
       const iconPaths = await Promise.all(icons.map(icon => context.image.addImage(icon).catch(() => '')))
       const allIcons = iconPaths.filter(icon => icon)
@@ -58,7 +72,7 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
           path: file.path,
           fileType: record.fileType,
           domain,
-        })
+        }).catch(handleParseError)
 
         metadata.name = name
 

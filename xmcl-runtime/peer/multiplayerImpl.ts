@@ -1,4 +1,4 @@
-import { MutableState, PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
+import { SharedState, PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import EventEmitter from 'events'
 import { promisify } from 'util'
@@ -83,7 +83,7 @@ export class Peers {
 
 export function createMultiplayer() {
   const peers = new Peers()
-  const state = createPromiseSignal<MutableState<PeerState>>()
+  const state = createPromiseSignal<SharedState<PeerState>>()
   const emitter = new EventEmitter()
   let _PeerConnection: any
   let _RTCPeerConnection: typeof RTCPeerConnection
@@ -479,7 +479,7 @@ export function createMultiplayer() {
     emitter,
     host,
     updateIceServers: iceServers.update,
-    setState: (_state: MutableState<PeerState>) => {
+    setState: (_state: SharedState<PeerState>) => {
       state.resolve(_state)
       _state.connectionClear()
     },

@@ -245,7 +245,17 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } })
+      if (e instanceof Error) {
+        if (!e.stack) {
+          e.stack = new Error().stack
+        }
+        if (e.name === 'Error') {
+          Object.assign(e, {
+            name: 'LaunchGeneralError',
+          })
+        }
+      }
+      throw e
     }
   }
 
@@ -455,7 +465,17 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } }, (e as any).message, { cause: e })
+      if (e instanceof Error) {
+        if (!e.stack) {
+          e.stack = new Error().stack
+        }
+        if (e.name === 'Error') {
+          Object.assign(e, {
+            name: 'LaunchGeneralError',
+          })
+        }
+      }
+      throw e
     }
   }
 

@@ -396,6 +396,8 @@ instance:
   versionHint: La versión de Minecraft de este juego
   vmOptions: Opciones de JVM
   vmOptionsHint: Argumentos adicionales para pasar a la JVM
+  vmVar: Variables de entorno
+  vmVarHint: Haga clic en el botón para agregar variables ambientales
 instanceAge:
   older: Más Antiguo
   threeDay: En Tres Días

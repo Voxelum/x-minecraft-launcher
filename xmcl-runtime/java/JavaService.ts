@@ -1,6 +1,6 @@
 import { JavaVersion } from '@xmcl/core'
 import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
+import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, SharedState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -52,7 +52,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return Promise.resolve()
   }
 
-  async getJavaState(): Promise<MutableState<JavaState>> {
+  async getJavaState(): Promise<SharedState<JavaState>> {
     await this.initialize()
     return this.state
   }

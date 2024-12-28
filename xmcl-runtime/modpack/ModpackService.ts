@@ -1,5 +1,5 @@
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, MutableState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, SharedState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, readdir, remove, stat, unlink } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
@@ -380,7 +380,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     return files
   }
 
-  async openModpack(modpackFile: string): Promise<MutableState<ModpackState>> {
+  async openModpack(modpackFile: string): Promise<SharedState<ModpackState>> {
     const store = await this.app.registry.get(ServiceStateManager)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
 
@@ -471,7 +471,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     this.app.shell.openDirectory(this.getPath('modpacks'))
   }
 
-  async watchModpackFolder(): Promise<MutableState<ResourceState>> {
+  async watchModpackFolder(): Promise<SharedState<ResourceState>> {
     const states = await this.app.registry.getOrCreate(ServiceStateManager)
     return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
       const dir = this.getPath('modpacks')

@@ -3,9 +3,9 @@ import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
   getInstanceSaveKey,
   InstanceSavesService as IInstanceSavesService,
+  ImportSaveException,
   ImportSaveOptions,
   InstallMarketOptionWithInstance,
-  InstanceSaveException,
   InstanceSavesServiceKey,
   LaunchOptions,
   LinkSaveAsServerWorldOptions,
@@ -27,7 +27,7 @@ import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
 import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { isSystemError } from '~/util/error'
+import { AnyError, isSystemError } from '~/util/error'
 import { readlinkSafe } from '~/util/linkResourceFolder'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } from '../util/fs'
@@ -90,8 +90,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const savePath = isAbsolute(saveName) ? saveName : join(instancePath, 'saves', saveName)
 
     if (await missing(savePath)) {
-      // @ts-ignore
-      throw new InstanceSaveException({ type: 'instanceLinkSaveNotFound', name: saveName })
+      throw new AnyError('InstanceLinkSaveNotFoundError', 'The save is not found.', undefined, { saveName })
     }
 
     const serverWorldPath = join(instancePath, 'server', 'world')
@@ -288,21 +287,15 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const srcSavePath = join(srcInstancePath, saveName)
 
     if (await missing(srcSavePath)) {
-      throw new InstanceSaveException({ type: 'instanceCopySaveNotFound', src: srcSavePath, dest: destInstancePaths },
-        `Cancel save copying of ${saveName}`)
+      throw new AnyError('CloneSaveSaveNotFoundError', `Cannot find save ${saveName}`, undefined, {
+        saveName,
+      })
     }
-    // if (!this.instanceService.state.all[srcInstancePath]) {
-    //   throw new InstanceSaveException({
-    //     type: 'instanceNotFound',
-    //     instancePath: srcInstancePath,
-    //   }, `Cannot find managed instance ${srcInstancePath}`)
-    // }
     if (destInstancePaths.some(p => !this.instanceService.state.all[p])) {
       const notFound = destInstancePaths.find(p => !this.instanceService.state.all[p])!
-      throw new InstanceSaveException({
-        type: 'instanceNotFound',
+      throw new AnyError('CloneSaveInstanceNotFoundError', `Cannot find managed instance ${notFound}`, undefined, {
         instancePath: notFound,
-      }, `Cannot find managed instance ${notFound}`)
+      })
     }
 
     const destSavePaths = destInstancePaths.map(d => join(d, 'saves', destSaveName))
@@ -325,7 +318,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const savePath = instancePath ? join(instancePath, 'saves', saveName) : this.getPath('saves', saveName)
 
     if (await missing(savePath)) {
-      throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
+      return
     }
 
     await rm(savePath, { recursive: true, force: true })
@@ -339,7 +332,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     const savePath = join(instancePath, 'saves', saveName)
 
     if (await missing(savePath)) {
-      throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
+      throw new AnyError('InstanceDeleteNoSave', `Cannot find save ${saveName}`, undefined, {
+        saveName,
+      })
     }
 
     await ensureDir(this.getPath('saves'))
@@ -373,7 +368,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
     if (isDir) {
       if (!existsSync(join(path, 'level.dat'))) {
-        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path })
+        throw new ImportSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
       const sharedSavesDir = this.getPath('saves')
@@ -401,7 +396,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       }
 
       if (saveRoot === undefined) {
-        throw new InstanceSaveException({ type: 'instanceCopySaveUnexpected', src: path, dest: [dest] })
+        throw new ImportSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
       const root = saveRoot

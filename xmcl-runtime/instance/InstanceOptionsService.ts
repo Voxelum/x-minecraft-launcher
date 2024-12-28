@@ -7,7 +7,7 @@ import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
-import { hardLinkFiles, isHardLinked, missing, unHardLinkFiles } from '../util/fs'
+import { handleOnlyNotFound, hardLinkFiles, isHardLinked, missing, unHardLinkFiles } from '../util/fs'
 import { requireString } from '../util/object'
 import { InstanceService } from './InstanceService'
 
@@ -193,9 +193,11 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async #getProperties(instancePath: string, name: string) {
     const filePath = join(instancePath, 'config', name)
-    if (await missing(filePath)) return {}
 
-    const content = await readFile(filePath, 'utf-8')
+    const content = await readFile(filePath, 'utf-8').catch(handleOnlyNotFound)
+    if (!content) {
+      return {}
+    }
     const lines = content.split('\n').map(l => l.split('=').map(s => s.trim()))
     const options = lines.reduce((a, b) => Object.assign(a, { [b[0]]: b[1] }), {}) as Record<string, string>
     return options
@@ -203,10 +205,6 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async editShaderOptions(options: EditShaderOptions): Promise<void> {
     const instancePath = options.instancePath
-    // const instance = this.instanceService.state.all[instancePath]
-    // if (!instance) {
-    //   throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
-    // }
     const current = await this.getShaderOptions(instancePath)
 
     current.shaderPack = options.shaderPack

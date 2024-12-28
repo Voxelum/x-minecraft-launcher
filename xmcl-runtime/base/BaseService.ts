@@ -1,4 +1,4 @@
-import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, PoolStats, Settings } from '@xmcl/runtime-api'
+import { MigrationException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, SharedState, PoolStats, Settings } from '@xmcl/runtime-api'
 import { readdir, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
@@ -44,7 +44,7 @@ export class BaseService extends AbstractService implements IBaseService {
     return this.app.registry.get(kGameDataPath).then(f => f())
   }
 
-  async getSettings(): Promise<MutableState<Settings>> {
+  async getSettings(): Promise<SharedState<Settings>> {
     return this.app.registry.get(kSettings)
   }
 
@@ -171,7 +171,7 @@ export class BaseService extends AbstractService implements IBaseService {
     const destination = options.destination
     const destStat = await stat(destination).catch(() => undefined)
     if (destStat && destStat.isFile()) {
-      throw new BaseServiceException({
+      throw new MigrationException({
         type: 'migrationDestinationIsFile',
         destination,
       })
@@ -179,7 +179,7 @@ export class BaseService extends AbstractService implements IBaseService {
     if (destStat && destStat.isDirectory()) {
       const files = await readdir(destination)
       if (files.length !== 0) {
-        throw new BaseServiceException({
+        throw new MigrationException({
           type: 'migrationDestinationIsNotEmptyDirectory',
           destination,
         })
@@ -204,7 +204,7 @@ export class BaseService extends AbstractService implements IBaseService {
               return
             }
             if (e.code === 'EPERM') {
-              throw new BaseServiceException({
+              throw new MigrationException({
                 type: 'migrationNoPermission',
                 source,
                 destination,

@@ -453,6 +453,8 @@ instance:
   versionHint: Minecraftowa wersja tej gry
   vmOptions: Opcje JVM
   vmOptionsHint: Dodatkowe argumenty przekazywane do JVM
+  vmVar: Zmienne środowiskowe
+  vmVarHint: Kliknij przycisk, aby dodać zmienne środowiskowe
 instanceAge:
   older: Starszy
   threeDay: W trzy dni
@@ -549,7 +551,7 @@ java:
   modifyInstance: Modyfikacja ścieżki Java
   noMemory: Nie ograniczaj użycia pamięci
   refresh: Odśwież lokalną Javę
-  systemMemory: Bieżąca pamięć systemowa
+  systemMemory: 'Wolna pamięć systemowa: {free} / {total}'
 labyMod:
   disable: Wyłącz LabyMod
   empty: LabyMod nie obsługuje aktualnej wersji Minecrafta
