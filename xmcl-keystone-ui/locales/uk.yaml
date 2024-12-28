@@ -444,6 +444,8 @@ instance:
   versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
   vmOptionsHint: Додаткові аргументи, що передаються JVM
+  vmVar: Змінні середовища
+  vmVarHint: Натисніть кнопку, щоб додати змінні середовища
 instanceAge:
   older: Старі
   threeDay: В протягом трьох днів
@@ -536,7 +538,7 @@ java:
   modifyInstance: Змінити шлях до Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальну Java
-  systemMemory: Поточна системна пам'ять
+  systemMemory: 'Системна вільна пам''ять: {free} / {total}'
 labyMod:
   disable: Вимкнути LabyMod
   empty: LabyMod не підтримує поточний Minecraft

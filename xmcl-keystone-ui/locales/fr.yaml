@@ -468,6 +468,8 @@ instance:
   versionHint: La version Minecraft de ce jeu
   vmOptions: Options JVM
   vmOptionsHint: Arguments supplémentaires transmis à JVM
+  vmVar: Variables d'environnement
+  vmVarHint: Cliquez sur le bouton pour ajouter des variables d'environnement
 instanceAge:
   older: Plus âgée
   threeDay: Dans trois jours
@@ -564,7 +566,7 @@ java:
   modifyInstance: Modifier le chemin Java
   noMemory: Ne pas limiter l'utilisation de la mémoire
   refresh: Actualiser l'exécutable Java Local
-  systemMemory: Mémoire Système Actuelle
+  systemMemory: "Mémoire libre du système\_: {free} / {total}"
 launch:
   killServer: Tuer le serveur Localhost
   launch: Jouer

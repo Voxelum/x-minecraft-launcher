@@ -268,6 +268,8 @@ instance:
   useSharedOptionsDesc: Isto enlazará o options.txt a un ficheiro compartido na instancia
   useSharedServersList: Usa a lista de servidores compartidos
   useSharedServersListDesc: Isto enlazará o servers.dat a un ficheiro compartido na instancia
+  vmVar: Variables de ambiente
+  vmVarHint: Fai clic no botón para engadir variables de ambiente
 instanceDiscover:
   gameFolder: Descubre {count} cartafoles de xogos
   instanceFolder: Atopáronse {count} instancias

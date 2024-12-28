@@ -4,7 +4,7 @@ import {
   AUTHORITY_MICROSOFT,
   UserService as IUserService,
   LoginOptions,
-  MutableState,
+  SharedState,
   RefreshUserOptions,
   SaveSkinOptions, UploadSkinOptions,
   UserException,
@@ -92,7 +92,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     }
   }
 
-  async getUserState(): Promise<MutableState<UserState>> {
+  async getUserState(): Promise<SharedState<UserState>> {
     await this.initialize()
     return this.state
   }

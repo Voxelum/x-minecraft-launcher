@@ -448,6 +448,8 @@ instance:
   versionHint: 此游戏使用的 Minecraft 版本
   vmOptions: JVM 启动选项
   vmOptionsHint: 额外的 JVM 的启动参数
+  vmVar: 环境变量
+  vmVarHint: 点击按钮添加环境变量
 instanceAge:
   older: 三天前
   threeDay: 三天内
@@ -538,7 +540,7 @@ java:
   modifyInstance: 更改 Java 路径
   noMemory: 不设置内存限制
   refresh: 刷新本地 Java
-  systemMemory: 当前系统内存
+  systemMemory: '系统空闲内存: {free} / {total}'
 labyMod:
   disable: 不使用 LabyMod
   empty: 当前 Minecraft 不支持 LabyMod

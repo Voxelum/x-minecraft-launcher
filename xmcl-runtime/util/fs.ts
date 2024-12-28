@@ -252,8 +252,8 @@ export const ENOENT_ERROR = 'ENOENT'
  */
 export const EPERM_ERROR = 'EPERM'
 
-function handleOnlyNotFound(e: unknown) {
-  if (isSystemError(e) && e.code === 'ENOENT') {
+export function handleOnlyNotFound(e: unknown) {
+  if (isSystemError(e) && e.code === ENOENT_ERROR) {
     return undefined
   }
   throw e

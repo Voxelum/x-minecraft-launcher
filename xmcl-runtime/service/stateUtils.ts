@@ -1,9 +1,9 @@
-import { MutableState } from '@xmcl/runtime-api'
+import { SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 
 export const kStateKey = '__state__'
 
-export function isStateObject(v: object): v is MutableState<any> {
+export function isStateObject(v: object): v is SharedState<any> {
   return v && typeof v === 'object' && kStateKey in v
 }
 

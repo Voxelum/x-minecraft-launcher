@@ -1,7 +1,7 @@
-import { MutableState, Settings } from '@xmcl/runtime-api'
+import { SharedState, Settings } from '@xmcl/runtime-api'
 import { InjectionKey } from '~/app'
 
-export const kSettings: InjectionKey<MutableState<Settings>> = Symbol('settings')
+export const kSettings: InjectionKey<SharedState<Settings>> = Symbol('settings')
 
 export function shouldOverrideApiSet(s: Settings, gfw: boolean) {
   if (s.apiSetsPreference === 'mojang') {

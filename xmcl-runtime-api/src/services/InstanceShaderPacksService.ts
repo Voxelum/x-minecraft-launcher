@@ -1,6 +1,6 @@
 import { InstallMarketOptionWithInstance } from '../entities/market'
 import { Resource, ResourceState } from '../entities/resource'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export interface InstanceShaderPacksService {
@@ -23,7 +23,7 @@ export interface InstanceShaderPacksService {
    * This will scan the `shaderpacks` directory and import all shaderpacks into the resource service.
    * @param instancePath The instance absolute path
    */
-  watch(instancePath: string): Promise<MutableState<ResourceState>>
+  watch(instancePath: string): Promise<SharedState<ResourceState>>
   /**
    * Manually install the shaderpack to the instance.
    *

@@ -1,4 +1,4 @@
-import { LaunchService as ILaunchService } from '@xmcl/runtime-api'
+import { Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
@@ -190,6 +190,10 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
     app.logEmitter.on('failure', (destination, tag, e: Error) => {
       if (settings.disableTelemetry) return
+      if (e instanceof Exception) {
+        // Skip for exception
+        return
+      }
       defaultClient.trackException({
         exception: e,
         properties: e ? { ...e } : undefined,

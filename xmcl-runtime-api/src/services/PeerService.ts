@@ -1,7 +1,7 @@
 import { InstanceManifest } from '../entities/instanceManifest.schema'
 import { GenericEventEmitter } from '../events'
 import { ConnectionState, ConnectionUserInfo, IceGatheringState, Peer, SelectedCandidateInfo, SignalingState } from '../multiplayer'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export type NatType = 'Blocked'| 'Open Internet'| 'Full Cone'| 'Symmetric UDP Firewall'| 'Restrict NAT'| 'Restrict Port NAT'| 'Symmetric NAT' | 'Unknown'
@@ -189,7 +189,7 @@ interface PeerServiceEvents {
 }
 
 export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
-  getPeerState(): Promise<MutableState<PeerState>>
+  getPeerState(): Promise<SharedState<PeerState>>
   /**
     * Share the instance to other peers
     */

@@ -1,4 +1,4 @@
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { Exception } from '../entities/exception'
 import { Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
@@ -175,7 +175,7 @@ export class InstanceState {
  * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
 export interface InstanceService {
-  getSharedInstancesState(): Promise<MutableState<InstanceState>>
+  getSharedInstancesState(): Promise<SharedState<InstanceState>>
   /**
    * Create a managed instance (either a modpack or a server) under the managed folder.
    * @param option The creation option
@@ -197,12 +197,6 @@ export interface InstanceService {
    */
   editInstance(options: EditInstanceOptions & { instancePath: string }): Promise<void>
   /**
-   * Add a directory as managed instance folder. It will try to load the instance.json.
-   * If it's a common folder, it will try to create instance from the directory data.
-   * @param path The path of the instance
-   */
-  addExternalInstance(path: string): Promise<boolean>
-  /**
    * Get or create a MANAGED instance via your unique id
    * @param id The unique id, can be any string, but it will convert to a string can be file name
    * @returns The instance path
@@ -213,21 +207,3 @@ export interface InstanceService {
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'
-
-export type InstanceExceptions = {
-  type: 'instanceNameDuplicated'
-  path: string
-  name: string
-} | {
-  type: 'instanceNameRequired'
-} | {
-  type: 'instanceNotFound'
-  path: string
-} | {
-  type: 'instancePathInvalid'
-  path: string
-  reason: string
-}
-
-export class InstanceException extends Exception<InstanceExceptions> {
-}

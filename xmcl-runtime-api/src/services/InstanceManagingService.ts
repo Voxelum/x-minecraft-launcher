@@ -1,4 +1,4 @@
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export interface ImportHMCLModpackOptions {
@@ -48,7 +48,7 @@ export class InstanceManagingState {
  * Provide the abilities to import/export instance from/to modpack
  */
 export interface InstanceManagingService {
-  getState(): Promise<MutableState<InstanceManagingState>>
+  getState(): Promise<SharedState<InstanceManagingState>>
   /**
    * Create a managed instance
    * @param options

@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { JavaRecord } from '../entities/java'
 import { Java } from '../entities/java.schema'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export class JavaState {
@@ -39,7 +39,7 @@ export class JavaState {
 }
 
 export interface JavaService {
-  getJavaState(): Promise<MutableState<JavaState>>
+  getJavaState(): Promise<SharedState<JavaState>>
   /**
    * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` or `jre-next` folder
    */

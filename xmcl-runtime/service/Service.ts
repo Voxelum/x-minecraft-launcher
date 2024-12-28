@@ -1,4 +1,4 @@
-import { createPromiseSignal, getServiceSemaphoreKey, MutableState, PromiseSignal, ServiceKey, State } from '@xmcl/runtime-api'
+import { createPromiseSignal, getServiceSemaphoreKey, SharedState, PromiseSignal, ServiceKey, State } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import { Logger } from '~/logger'
@@ -235,9 +235,9 @@ export abstract class AbstractService extends EventEmitter {
 }
 
 export abstract class StatefulService<M extends State<M>> extends AbstractService {
-  state: MutableState<M>
+  state: SharedState<M>
 
-  constructor(app: LauncherApp, createState: () => MutableState<M>, initializer?: () => Promise<void>) {
+  constructor(app: LauncherApp, createState: () => SharedState<M>, initializer?: () => Promise<void>) {
     super(app, initializer)
     this.state = createState()
   }

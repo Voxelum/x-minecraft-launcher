@@ -1,4 +1,4 @@
-import { MutableState, ServiceKey, State } from '@xmcl/runtime-api'
+import { SharedState, ServiceKey, State } from '@xmcl/runtime-api'
 import { Client, LauncherApp } from '~/app'
 import { Logger } from '~/logger'
 import { AnyError } from '~/util/error'
@@ -46,7 +46,7 @@ export class ServiceStateManager {
    * @param key The key of the state object
    * @returns The mutable state object
    */
-  registerStatic<T>(state: T, key: string | ServiceKey<T>): MutableState<T> {
+  registerStatic<T>(state: T, key: string | ServiceKey<T>): SharedState<T> {
     const container = new ServiceStateContainer(
       key.toString(),
       this.#unregister,
@@ -66,14 +66,14 @@ export class ServiceStateManager {
    * @param client The client to track the state
    * @param state
    */
-  serializeAndTrack<T>(client: Client, state: MutableState<T>) {
+  serializeAndTrack<T>(client: Client, state: SharedState<T>) {
     const container = ServiceStateContainer.unwrap(state)
     if (!container) throw new TypeError('Unregistered state!')
     container.track(client)
     return JSON.parse(JSON.stringify(state))
   }
 
-  get<T extends MutableState<any> = MutableState<State<any>>>(id: string): T | undefined {
+  get<T extends SharedState<any> = SharedState<State<any>>>(id: string): T | undefined {
     return this.containers[id]?.state as any
   }
 
@@ -89,7 +89,7 @@ export class ServiceStateManager {
     await this.#revalidate(container)
   }
 
-  async registerOrGet<T extends State<T>>(id: string, factory: ServiceStateFactory<T>): Promise<MutableState<T>> {
+  async registerOrGet<T extends State<T>>(id: string, factory: ServiceStateFactory<T>): Promise<SharedState<T>> {
     if (this.containers[id]) {
       const container = this.containers[id]
       await this.#revalidate(container)

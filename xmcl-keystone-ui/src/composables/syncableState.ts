@@ -1,13 +1,13 @@
-import { MutableState } from '@xmcl/runtime-api'
+import { SharedState } from '@xmcl/runtime-api'
 import { useEventListener } from '@vueuse/core'
 
 export type Handler<T> = { [k in keyof T]?: T[k] /* extends (...args: infer A) => infer R ? (state: T, ...args: A) => R : never */ }
 
-export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) => Promise<MutableState<T>> | undefined,
+export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) => Promise<SharedState<T>> | undefined,
   Type: { prototype: Handler<T>; new(): T }) {
   const isValidating = ref(false)
 
-  const state = ref<MutableState<T> | undefined>()
+  const state = ref<SharedState<T> | undefined>()
   const error = ref(undefined as any)
   let controller: AbortController | undefined
   const onMutation = (state: any) => (mutation: string, payload: any) => {
@@ -24,7 +24,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     const abortController = new AbortController()
     controller = abortController
     const { signal } = abortController
-    let data: MutableState<T> | undefined
+    let data: SharedState<T> | undefined
     onCleanup?.(() => {
       abortController.abort()
     })

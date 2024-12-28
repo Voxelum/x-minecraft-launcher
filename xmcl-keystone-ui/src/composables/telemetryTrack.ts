@@ -1,9 +1,9 @@
 import { appInsights } from '@/telemetry'
 import { useService } from './service'
-import { BaseServiceKey, MutableState, Settings } from '@xmcl/runtime-api'
+import { BaseServiceKey, SharedState, Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
-export function useTelemetryTrack(settings: Ref<MutableState<Settings> | undefined>) {
+export function useTelemetryTrack(settings: Ref<SharedState<Settings> | undefined>) {
   // const router = useRouter()
   const { getEnvironment, getSessionId } = useService(BaseServiceKey)
   // router.afterEach((to, from) => {
