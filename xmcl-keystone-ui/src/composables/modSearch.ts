@@ -215,11 +215,12 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const isModrinthActive = ref(true)
   const isCurseforgeActive = ref(true)
   const sort = ref(0)
+  const localOnly = ref(false)
 
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion)
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion, localOnly)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion, localOnly)
   const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(path, keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
@@ -234,6 +235,9 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const mode = computed(() => {
     if (curseforgeCategory.value !== undefined || modrinthCategories.value.length > 0) {
       return 'online'
+    }
+    if (localOnly.value) {
+      return 'local'
     }
     if (keyword.value) {
       return 'all'
@@ -335,6 +339,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   }
 
   return {
+    localOnly,
     gameVersion,
     modLoaderFilters,
     curseforgeCategory,

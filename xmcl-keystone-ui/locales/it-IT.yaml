@@ -310,6 +310,7 @@ fileDetail:
   fileSize: Dimensione del file
   hash: Hash
 filter: Filtro
+filterLocalOnly: Mostra solo installato
 finish: Finito
 forgeConfig:
   hint: >-
@@ -760,11 +761,6 @@ modInstall:
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
-modSearchType:
-  all: Tutti
-  explore: Esplora il mercato
-  installed: Installato
-  local: Cache del disco
 modUpgradePolicy:
   curseforge: Curseforge  Maledizione
   curseforgeOnly: Solo Forgiamaledizione

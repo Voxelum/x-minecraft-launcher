@@ -15,6 +15,7 @@
           modrinth-category-filter="mod"
           :enable-curseforge.sync="isCurseforgeActive"
           :enable-modrinth.sync="isModrinthActive"
+          :local-only.sync="localOnly"
           :sort.sync="sort"
           :game-version.sync="gameVersion"
           :modloader.sync="modLoader"
@@ -43,7 +44,7 @@ import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, gameVersion, cachedMods, modLoaderFilters, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
+const { modrinth, curseforge, gameVersion, cachedMods, localOnly, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)

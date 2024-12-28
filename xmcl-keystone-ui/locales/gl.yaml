@@ -250,6 +250,7 @@ eula:
     {eula} de Minecraft.
 fabricVersion:
   showSnapshot: Mostrar instantáneas
+filterLocalOnly: Só mostrar instalado
 importModpack:
   name: Importar Modpack
 instance:

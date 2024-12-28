@@ -10,6 +10,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
   categories: Ref<string[]>,
   sort: Ref<'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | undefined>,
   gameVersion: Ref<string>,
+  disabled: Ref<boolean>,
 ) {
   const search = useModrinthSearchFunc(
     keyword,
@@ -41,6 +42,9 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
       }
     },
     () => {
+      if (disabled.value) {
+        return false
+      }
       if (keyword.value) {
         return true
       }
@@ -56,6 +60,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     watch(categories, onSearch, { deep: true })
     watch(sort, onSearch)
     watch(gameVersion, onSearch)
+    watch(disabled, onSearch)
   }
 
   const result = computed(() => {

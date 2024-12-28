@@ -64,11 +64,12 @@ export function useSavesSearch(runtime: Ref<RuntimeVersions>, saves: Ref<Instanc
   const keyword = ref('')
   const gameVersion = ref('')
   const sort = ref(0)
+  const localOnly = ref(false)
 
   const { curseforgeSort } = useMarketSort(sort)
   const isCurseforgeActive = ref(true)
 
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry>(CurseforgeBuiltinClassId.world, keyword, shallowRef(markRaw([])), curseforgeCategory, curseforgeSort, gameVersion)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry>(CurseforgeBuiltinClassId.world, keyword, shallowRef(markRaw([])), curseforgeCategory, curseforgeSort, gameVersion, localOnly)
 
   const { instanceSaves, sharedSaves: _sharedSaves } = useSaveLocalSearch(keyword, saves, sharedSaves)
 
@@ -118,6 +119,7 @@ export function useSavesSearch(runtime: Ref<RuntimeVersions>, saves: Ref<Instanc
   }
 
   return {
+    localOnly,
     curseforge,
     loadingCurseforge,
     curseforgeError,

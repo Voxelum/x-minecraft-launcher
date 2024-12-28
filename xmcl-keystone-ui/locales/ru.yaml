@@ -370,6 +370,7 @@ fileDetail:
   fileSize: Размер файла
   hash: Hash
 filter: Фильтр
+filterLocalOnly: Показывать только установленные
 finish: Завершить
 forgeConfig:
   hint: >-
@@ -818,11 +819,6 @@ modInstall:
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
-modSearchType:
-  all: Все
-  explore: Исследуйте рынок
-  installed: Установлено
-  local: Дисковый кэш
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Только в Кёрсфордже

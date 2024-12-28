@@ -320,6 +320,7 @@ fileDetail:
   fileSize: Розмір Файлу
   hash: Хеш
 filter: Фільтр
+filterLocalOnly: Показувати лише встановлені
 finish: Завершити
 forgeConfig:
   hint: >-
@@ -755,10 +756,6 @@ modInstall:
   source: Джерело мода
   switch: Змінити версію
   upgrade: Оновлення модифікацій
-modSearchType:
-  all: Всі
-  installed: Встановленно
-  local: Кеш на диску
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Тільки Curseforge

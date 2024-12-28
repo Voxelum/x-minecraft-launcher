@@ -122,13 +122,14 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   const sort = ref(0)
   const isCurseforgeActive = ref(true)
   const isModrinthActive = ref(true)
+  const localOnly = ref(false)
 
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
-    modrinthSort, gameVersion)
+    modrinthSort, gameVersion, localOnly)
   const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: curseforgeEffect } = useCurseforgeSearch(CurseforgeBuiltinClassId.resourcePack, keyword, ref([]), curseforgeCategory,
-    curseforgeSort, gameVersion)
+    curseforgeSort, gameVersion, localOnly)
   const { enabled, disabled, all: filtered, loadingCached, effect: localEffect } = useLocalSearch(keyword, _enabled, _disabled)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
@@ -186,6 +187,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   }
 
   return {
+    localOnly,
     networkOnly: mode,
     sort,
     gameVersion,

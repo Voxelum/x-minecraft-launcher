@@ -14,7 +14,9 @@
         :placeholder="placeholder"
         :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
         :category="!!curseforgeCategory || modrinthCategories.length > 0"
+        :local-only="localOnly"
         @clear="onClear"
+        @update:localOnly="emit('update:localOnly', $event)"
         @clear-version="emit('update:gameVersion', runtime.minecraft)"
         @input="emit('update:keyword', $event)"
         @clear-category="onClear"
@@ -178,6 +180,7 @@ const props = defineProps<{
   sort?: number
   modrinthSort?: 'relevance'| 'downloads' |'follows' |'newest' |'updated'
   curseforgeSort?: ModsSearchSortField
+  localOnly?: boolean
 
   modLoaders?: string[]
   modloader?: string
@@ -193,6 +196,7 @@ const emit = defineEmits<{
   (event: 'update:sort', value: number): void
   (event: 'update:modloader', value: string): void
   (event: 'update:gameVersion', value: string): void
+  (event: 'update:localOnly', value: boolean): void
 }>()
 
 const { versions } = useMinecraftVersions()

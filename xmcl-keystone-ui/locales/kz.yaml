@@ -367,6 +367,7 @@ fileDetail:
   fileSize: Файл өлшемі
   hash: Hash
 filter: Сүзгі
+filterLocalOnly: Only show installed
 finish: Аяқтау
 forgeConfig:
   hint: >-

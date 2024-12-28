@@ -344,6 +344,7 @@ feedback:
     auteurs. Numéro de groupe : {number}
   qqEnterGroup: Rejoindre
 filter: Filtre
+filterLocalOnly: Afficher uniquement installé
 finish: Valider
 forgeConfig:
   hint: >-
@@ -787,9 +788,6 @@ modInstall:
   search: Résultats
   searchHint: Rechercher et sélectionner un projet
   skipVersion: Ignorez les mods avec une version différente de Minecraft
-modSearchType:
-  all: Tous
-  local: Cache disque
 modUpgradePolicy:
   curseforge: Forgemalédiction en premier
   curseforgeOnly: Forgemalédiction uniquement

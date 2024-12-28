@@ -379,6 +379,7 @@ fileDetail:
   fileSize: Tamanho do arquivo
   hash: Hash
 filter: Filtro
+filterLocalOnly: Mostrar apenas instalado
 finish: Concluir
 forgeConfig:
   hint: >-
@@ -829,11 +830,6 @@ modInstall:
   source: Fonte do Mod
   switch: Trocar Versão
   upgrade: Atualizar Mods
-modSearchType:
-  all: Todos
-  explore: Explorar Mercado
-  installed: Instalados
-  local: Cache Local
 modUpgradePolicy:
   curseforge: Curseforge Primeiro
   curseforgeOnly: Somente Curseforge

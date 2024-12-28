@@ -301,6 +301,7 @@ fileDetail:
   fileSize: Fájl méret
   hash: Hash
 filter: Szűrő
+filterLocalOnly: Csak a telepített megjelenítés
 finish: Befejezés
 forgeConfig:
   hint: >-
@@ -760,11 +761,6 @@ modInstall:
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
-modSearchType:
-  all: Összes
-  explore: Piac felfedezése
-  installed: Telepítve
-  local: Lemez gyorsítótár
 modUpgradePolicy:
   curseforge: Curseforge először
   curseforgeOnly: Csak Curseforge
