@@ -418,7 +418,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       })
 
       watcher.on('error', (err) => {
-        this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
+        this.emit('error', err)
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         const endTime = Date.now()
         const playTime = endTime - startTime
