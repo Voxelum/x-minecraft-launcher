@@ -18,7 +18,7 @@ interface LaunchServiceEventMap {
   'minecraft-stderr': { pid: number; stdout: string }
   'launch-performance-pre': { id: string; name: string }
   'launch-performance': { id: string; name: string; duration: number }
-  'error': LaunchException
+  'error': LaunchException | Error
 }
 
 export interface LaunchOptions {

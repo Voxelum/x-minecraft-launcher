@@ -41,7 +41,7 @@
 
     <div class="flex-grow flex flex-col justify-center">
       <div :style="{ fontSize: '16px', lineHeight: '100%', ...item.style }">
-        {{ item.name }}
+        {{ basename(item.name, '/') }}
       </div>
       <div
         v-if="description"
@@ -81,6 +81,7 @@
 
 <script lang="ts" setup>
 import { InstanceFileNode } from '@/composables/instanceFileNodeData'
+import { basename } from '@/util/basename'
 import { getExpectedSize } from '@/util/size'
 import { TreeItem } from '@/util/tree'
 

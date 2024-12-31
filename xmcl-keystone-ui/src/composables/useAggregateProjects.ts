@@ -49,7 +49,12 @@ export function useProjectsFilterSort<T extends ProjectEntry>(
       })
       : theMode === 'local'
         ? items.value.filter(p => p.installed.length > 0)
-        : items.value
+        : items.value.filter(p => {
+          if (p.installed.length > 0) return true
+          if (!get(isCurseforgeActive) && p.curseforge && !p.modrinth) return false
+          if (!get(isModrinthActive) && p.modrinth && !p.curseforge) return false
+          return true
+        })
 
     if (!keyword.value) return filtered
 

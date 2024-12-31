@@ -295,7 +295,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       await ensureDir(join(newPath, 'mods'))
       // hard link all source to new path
       const files = await readdir(modDirSrc)
-      await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
+      await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
     }
     if (hasResourcepacks) {
       const resourcepacksDirSrc = join(path, 'resourcepacks')
@@ -304,7 +304,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         // hard link all files
         await ensureDir(join(newPath, 'resourcepacks'))
         const files = await readdir(resourcepacksDirSrc)
-        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
+        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
       }
     }
     if (hasShaderpacks) {
@@ -314,7 +314,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         // hard link all files
         await ensureDir(join(newPath, 'shaderpacks'))
         const files = await readdir(shaderpacksDirSrc)
-        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
+        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
       }
     }
 

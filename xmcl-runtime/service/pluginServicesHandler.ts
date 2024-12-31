@@ -66,8 +66,7 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
       return { result: r }
     } catch (e) {
       app.emit('service-call-end', serviceName, serviceMethod, Date.now() - start, false)
-      logger.warn(`Error during service call ${serviceName}.${serviceMethod}:`)
-      const exception = getNormalizeException(e)
+      const exception = await getNormalizeException(e)
 
       if (!exception) {
         // only log the error if it is not a known exception
@@ -77,6 +76,7 @@ export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherA
             : new AnyError('ServiceUnknownError', typeof e === 'string' ? e : JSON.stringify(e), undefined),
           { payload, serviceMethod },
         )
+        logger.warn(`Error during service call ${serviceName}.${serviceMethod}:`)
         logger.error(err, serviceName)
       }
 

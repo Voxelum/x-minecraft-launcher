@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 
-import { AllStates, ServiceChannels, ServiceKey, MutableState, StateMetadata } from '@xmcl/runtime-api'
+import { AllStates, ServiceChannels, ServiceKey, SharedState, StateMetadata } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 
@@ -24,7 +24,7 @@ const typeToStatePrototype: Record<string, StateMetadata> = AllStates.reduce((ob
 const kEmitter = Symbol('Emitter')
 const kMethods = Symbol('Methods')
 
-function createMutableState<T extends object>(val: T, id: string, methods: StateMetadata['methods']): MutableState<T> {
+function createSharedState<T extends object>(val: T, id: string, methods: StateMetadata['methods']): SharedState<T> {
   const emitter = new EventEmitter()
   Object.defineProperty(val, kEmitter, { value: emitter })
   Object.defineProperty(val, kMethods, { value: methods })
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'development') {
   console.log('serivce.ts preload')
 }
 
-async function receive(_result: any, states: Record<string, WeakRef<MutableState<any>>>, pendingCommits: Record<string, { type: string; payload: any }[]>, gc: FinalizationRegistry<string>) {
+async function receive(_result: any, states: Record<string, WeakRef<SharedState<any>>>, pendingCommits: Record<string, { type: string; payload: any }[]>, gc: FinalizationRegistry<string>) {
   if (typeof _result !== 'object') {
     return
   }
@@ -86,7 +86,7 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     }
 
     delete result.__state__
-    const state = createMutableState(result, id, prototype.methods)
+    const state = createSharedState(result, id, prototype.methods)
 
     for (const [method, handler] of prototype.methods) {
       // explictly bind to the state object under electron context isolation
@@ -127,7 +127,7 @@ function createServiceChannels(): ServiceChannels {
     console.log(`deref ${id}`)
   })
   const servicesEmitters = new Map<ServiceKey<any>, WeakRef<EventEmitter>>()
-  const states: Record<string, WeakRef<MutableState<object>>> = {}
+  const states: Record<string, WeakRef<SharedState<object>>> = {}
   const pendingCommits: Record<string, { type: string; payload: any }[]> = {}
 
   ipcRenderer.on('state-validating', (_, { id, semaphore }) => {

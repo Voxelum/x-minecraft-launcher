@@ -109,9 +109,9 @@ export default class ElectronLauncherApp extends LauncherApp {
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
   }
 
-  fetch: typeof fetch = (...args: any[]) => {
+  fetch: typeof fetch = async (...args: any[]) => {
     try {
-      return net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
+      return await net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
     } catch (e) {
       if (e instanceof Error) {
         let code: NetworkErrorCode | undefined

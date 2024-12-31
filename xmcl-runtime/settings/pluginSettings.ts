@@ -41,6 +41,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       globalDisableElyByAuthlib: state.globalDisableElyByAuthlib,
       enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
       replaceNatives: state.replaceNatives,
+      globalEnv: state.globalEnv,
     }), 1000)
 
   app.registryDisposer(async () => {
