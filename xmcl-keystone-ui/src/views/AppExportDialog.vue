@@ -395,6 +395,11 @@ function reset() {
   data.version = inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1'
 }
 
+const exclusions = [
+  'usernamecache.json',
+  'usercache.json',
+]
+
 // loading
 const { refresh, refreshing } = useRefreshable(async () => {
   const manifest = await getInstanceManifest({ path: instance.value.path })
@@ -406,6 +411,10 @@ const { refresh, refreshing } = useRefreshable(async () => {
     .filter(file => !file.path.startsWith('crash-reports'))
     .filter(file => !file.path.startsWith('saves'))
     .filter(file => !file.path.startsWith('resourcepacks'))
+    .filter(file => !file.path.startsWith('screenshots'))
+    .filter(file => !file.path.startsWith('data'))
+    .filter(file => !file.path.startsWith('server'))
+    .filter(file => !exclusions.includes(file.path))
     .map(file => file.path)
   nextTick().then(() => { data.selected = selected })
   data.files = files

@@ -315,7 +315,7 @@ const { isShown } = useDialog('launch-server', () => {
     if (mods.length > 0) {
       selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
     } else {
-      selectedMods.value = all
+      selectedMods.value = getFitsMods()
     }
   }).finally(() => {
     loadingSelectedMods.value = false
@@ -368,8 +368,8 @@ const selectedMods = shallowRef<ModFile[]>([])
 const { installDependencies, installMinecraftJar } = useService(InstallServiceKey)
 const { installToServerInstance, getServerInstanceMods } = useService(InstanceModsServiceKey)
 
-function selectFit() {
-  const filtered = enabled.value.filter(v => {
+function getFitsMods() {
+  return enabled.value.filter(v => {
     const fabric = v.fabric
     if (fabric) {
       let env: 'client' | 'server' | '*' | undefined
@@ -384,7 +384,10 @@ function selectFit() {
     }
     return true
   })
-  selectedMods.value = filtered
+}
+
+function selectFit() {
+  selectedMods.value = getFitsMods()
 }
 
 function selectAll() {

@@ -228,7 +228,7 @@ export function useInstanceLaunch(
       error.value = undefined
       const options = await generateLaunchOptions(instancePath, operationId, side, overrides)
 
-      if (!options.skipAssetsCheck) {
+      if (!options.skipAssetsCheck && side === 'client') {
         console.log('refreshing user')
         try {
           await track(instancePath, refreshUser(userProfile.value.id, { validate: true }), 'refreshing-user', operationId)
@@ -237,7 +237,7 @@ export function useInstanceLaunch(
         }
       }
 
-      if (shouldEnableVoiceChat()) {
+      if (shouldEnableVoiceChat() && side === 'client') {
         try {
           await track(instancePath, windowController.queryAudioPermission(), 'checking-permission', operationId)
         } catch (e) {
