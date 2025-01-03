@@ -189,4 +189,8 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     await super.setup()
   }
+
+  setProxy(url: string): void {
+    this.session.setProxy(url)
+  }
 }

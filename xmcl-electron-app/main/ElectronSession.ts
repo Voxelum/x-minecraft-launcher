@@ -1,14 +1,15 @@
-import { Session, session } from 'electron'
-import ElectronLauncherApp from './ElectronLauncherApp'
 import { UserService } from '@xmcl/runtime/user'
-import { HAS_DEV_SERVER, HOST } from './constant'
+import { Session, session } from 'electron'
+import { existsSync } from 'fs'
+import { createReadStream } from 'fs-extra'
 import { join } from 'path'
 import { Readable } from 'stream'
-import { createReadStream } from 'fs-extra'
-import { existsSync } from 'fs'
+import { HAS_DEV_SERVER, HOST } from './constant'
+import ElectronLauncherApp from './ElectronLauncherApp'
 
 export class ElectronSession {
   private cached: Record<string, Session> = {}
+  private proxy: string = ''
 
   constructor(private app: ElectronLauncherApp) { }
 
@@ -24,6 +25,14 @@ export class ElectronSession {
     return session.fromPartition(`persist:${parsed.hostname}`)
   }
 
+  setProxy(proxy: string) {
+    this.proxy = proxy
+
+    for (const [, sess] of Object.entries(this.cached)) {
+      sess.setProxy(proxy ? { proxyRules: proxy } : { mode: 'system' })
+    }
+  }
+
   getSession(url: string) {
     if (this.cached[url]) {
       return this.cached[url]
@@ -33,6 +42,7 @@ export class ElectronSession {
     const sess = this.#resolve(url)
 
     sess.setUserAgent(ua)
+    sess.setProxy(this.proxy ? { proxyRules: this.proxy } : { mode: 'system' })
 
     if (sess !== session.defaultSession) {
       for (const e of session.defaultSession.getAllExtensions()) {

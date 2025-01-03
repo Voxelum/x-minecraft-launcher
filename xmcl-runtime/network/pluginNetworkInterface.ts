@@ -1,7 +1,7 @@
 import { DefaultRangePolicy } from '@xmcl/file-transfer'
 import { PoolStats } from '@xmcl/runtime-api'
 import { setTimeout as timeout } from 'timers/promises'
-import { Agent, Dispatcher, Pool, buildConnector, interceptors } from 'undici'
+import { Agent, Dispatcher, Pool, buildConnector } from 'undici'
 import { kClients, kRunning } from 'undici/lib/core/symbols'
 import { LauncherAppPlugin } from '~/app'
 import { kSettings } from '~/settings'
@@ -29,6 +29,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     if (state.httpProxy) {
       try {
         proxy.setProxy(new URL(state.httpProxy))
+        app.setProxy(state.httpProxy)
       } catch (e) {
         logger.warn(`Fail to set url as it's not a valid url ${state.httpProxy}`, e)
       }
@@ -37,6 +38,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       maxConnection = val > 0 ? val : 64
     })
     state.subscribe('httpProxySet', (p) => {
+      app.setProxy(p)
       try {
         proxy.setProxy(new URL(p))
       } catch (e) {
@@ -45,6 +47,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     })
     state.subscribe('httpProxyEnabledSet', (e) => {
       proxy.setProxyEnabled(e)
+      app.setProxy(e ? state.httpProxy : '')
     })
   })
 
