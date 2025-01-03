@@ -1,10 +1,10 @@
 import { Exception, File, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
-import { ResourceContext } from './ResourceContext'
-import { jsonArrayFrom } from './helper'
-import { upsertMetadata } from './upsertMetadata'
-import { ResourceSnapshotTable } from './schema'
 import { pickMetadata } from './generateResource'
+import { jsonArrayFrom } from './helper'
+import { ResourceContext } from './ResourceContext'
 import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
+import { ResourceSnapshotTable } from './schema'
+import { upsertMetadata } from './upsertMetadata'
 
 class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {
 }
@@ -26,9 +26,13 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
   function handleParseError(err: any): never {
     // create a temp exception to bypass telemetry
     if (err.name === 'InvalidZipFileError' ||
+      err.name === 'InvalidZipFile' ||
       err.name === 'MultiDiskZipFileError' ||
       err.name === 'InvalidCentralDirectoryFileHeaderError' ||
-      err.name === 'CompressedUncompressedSizeMismatchError') {
+      err.name === 'CompressedUncompressedSizeMismatchError' ||
+      err.name === 'FileNotFoundError' ||
+      err.name === 'PermissionError'
+    ) {
       throw new ParseException({ type: 'parseResourceException', code: err.name })
     }
     throw err

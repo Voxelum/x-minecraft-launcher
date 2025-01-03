@@ -269,7 +269,6 @@ export function watchResourcesDirectory(
   }, onRemove, revalidate)
 
   workerQueue.onerror = ({ filePath }, e) => {
-    if (e.message === 'end of central directory record signature not found') return
     context.logger.error(e)
   }
 
