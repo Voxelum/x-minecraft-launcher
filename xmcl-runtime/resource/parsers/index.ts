@@ -1,6 +1,8 @@
 import { ResourceDomain, ResourceMetadata, ResourceType } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import { basename, extname } from 'path'
+import { isSystemError } from '~/util/error'
+import { ENOENT_ERROR, EPERM_ERROR } from '~/util/fs'
 import { fabricModParser } from './fabricMod'
 import { forgeModParser } from './forgeMod'
 import { liteloaderModParser } from './liteloaderMod'
@@ -89,6 +91,13 @@ export class ResourceParser {
       }
       if (e.message.startsWith('compressed/uncompressed size mismatch for stored file')) {
         Object.assign(e, { name: 'CompressedUncompressedSizeMismatchError' })
+      }
+      if (isSystemError(e)) {
+        if (e.code === ENOENT_ERROR) {
+          Object.assign(e, { name: 'FileNotFoundError' })
+        } else if (e.code === EPERM_ERROR) {
+          Object.assign(e, { name: 'PermissionError' })
+        }
       }
       throw e
     })
