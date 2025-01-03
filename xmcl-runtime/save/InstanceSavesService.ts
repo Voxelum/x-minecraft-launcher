@@ -15,12 +15,11 @@ import {
   ShareSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
+import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
-import debounce from 'lodash.debounce'
-import watch, { Watcher } from 'node-watch'
-import { basename, extname, isAbsolute, join, resolve } from 'path'
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
@@ -167,104 +166,70 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       }
       launchService.on('minecraft-exit', onExit)
 
-      const updateSave = debounce(defineAsyncOperation(async (filePath: string) => {
-        const fileName = basename(filePath)
-        if (fileName.startsWith('.')) return
-        if (fileName.endsWith('.zip')) return
+      const updateSave = defineAsyncOperation(async (filePath: string) => {
         await lock.read(() => readInstanceSaveMetadata(filePath, baseName).then((save) => {
           state.instanceSaveUpdate(save)
         }).catch((e) => {
           this.warn(`Parse save in ${filePath} failed. Skip it.`)
           this.warn(e)
         }))
-      }), 500)
-
-      const onFileUpdate = (event: 'update' | 'remove', filename: string) => {
-        if (filename.startsWith('.')) return
-        const filePath = filename
-        if (event === 'update') {
-          if (launchService.isParked(path)) {
-            pending.add(filePath)
-          } else {
-            updateSave(filePath)
-          }
-        } else if (state.saves.some((s) => s.path === filename)) {
-          state.instanceSaveRemove(filePath)
-        }
-      }
-
-      const tryWatch = () => {
-        try {
-          watcher = watch(savesDir, onFileUpdate)
-          watcher.once('error', (e) => {
-            if (isSystemError(e) && e.code === 'ENOENT') {
-              this.log(`Skip watch saves directory ${savesDir} because it does not exist.`)
-            }
-            watcher?.close()
-            watcher = undefined
-          })
-        } catch (e) {
-          if (isSystemError(e) && e.code === 'ENOENT') {
-            this.log(`Skip watch saves directory ${savesDir} because it does not exist.`)
-          }
-          watcher = undefined
-        }
-      }
-
-      let isLinkedMemo = await this.isSaveLinked(path)
-      let watcher: Watcher | undefined
-
-      tryWatch()
-
-      const readAll = async (savePaths: string[]) => {
-        const saves = await Promise.all(savePaths
-          .filter((d) => !d.startsWith('.') && !d.endsWith('.zip'))
-          .map((d) => join(savesDir, d))
-          .map((p) => readInstanceSaveMetadata(p, baseName).catch((e) => {
-            this.warn(`Parse save in ${p} failed. Skip it.`)
-            this.warn(e)
-            return undefined
-          })))
-        return saves.filter(isNonnull)
-      }
-
-      if (!isLinkedMemo) {
-        await ensureDir(savesDir)
-        const saves = await lock.read(async () => await readAll(await readdir(savesDir)))
-        this.log(`Found ${saves.length} saves in instance ${path}`)
-        state.saves = saves
-      }
-
-      const revalidate = () => lock.read(async () => {
-        const newIsLink = !!await readlinkSafe(savesDir).catch(() => '')
-        if (newIsLink !== isLinkedMemo) {
-          isLinkedMemo = !!newIsLink
-          tryWatch()
-          const savePaths = await readdir(savesDir).catch(() => [])
-          const saves = await readAll(savePaths)
-          state.instanceSaves(saves)
-        } else if (!newIsLink) {
-          const savePaths = await readdir(savesDir).catch(() => undefined)
-          if (!savePaths) {
-            state.instanceSaves([])
-          } else {
-            if (savePaths.length !== state.saves.length) {
-              const toRemove = state.saves.filter((s) => !savePaths.includes(basename(s.path)))
-              toRemove.forEach((s) => state.instanceSaveRemove(s.path))
-              const toAdd = savePaths.filter((s) => !state.saves.some((ss) => ss.name === s))
-              const saves = await readAll(toAdd)
-              state.instanceSaves(saves)
-            }
-          }
-        }
       })
 
-      const instanceService = await this.app.registry.get(InstanceService)
+      const watcher = new FSWatcher({
+        awaitWriteFinish: true,
+        followSymlinks: true,
+        cwd: path,
+        depth: 2,
+        ignored: (path, stat) => {
+          if (resolve(path) === savesDir) return false
+          const depth = relative(savesDir, path).split('/').length
+          if (depth === 2) {
+            const fileName = basename(path)
+            return fileName === 'level.dat'
+          }
+          if (depth > 2) {
+            return true
+          }
+          return false
+        },
+      })
+
+      watcher
+        .on('all', (event, file, stat) => {
+          const absPath = resolve(path, file)
+          if (file.endsWith('level.dat')) {
+            const savePath = dirname(absPath)
+            if (event === 'add' || event === 'change') {
+              if (launchService.isParked(path)) {
+                pending.add(savePath)
+              } else {
+                updateSave(savePath)
+              }
+            } else if (event === 'unlink') {
+              state.instanceSaveRemove(savePath)
+            }
+          } else if (file.endsWith('.zip')) {
+            if (dirname(absPath) === resolve(savesDir)) {
+              // deploy the zip
+              this.importSave({
+                instancePath: path,
+                path: absPath,
+              })
+            }
+          } else if (event === 'unlinkDir' && file === path) {
+            dispose()
+          }
+        })
+        .add(savesDir)
+
+      const revalidate = () => lock.read(async () => {
+        // TODO: getWatched and revalidate
+      })
+
       const dispose = () => {
         launchService.off('minecraft-exit', onExit)
         watcher?.close()
       }
-      instanceService.registerRemoveHandler(path, dispose)
 
       return [state, dispose, revalidate]
     })
