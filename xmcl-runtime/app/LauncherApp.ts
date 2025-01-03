@@ -420,4 +420,6 @@ export class LauncherApp extends EventEmitter {
   }
 
   fetch = fetch
+
+  setProxy(url: string) {}
 }
