@@ -16,7 +16,6 @@ export function useInstanceOptions(instancePath: Ref<string>) {
         editGameSetting({
           instancePath: instancePath.value,
           lang: locale.value.toLowerCase().replace('-', '_'),
-          resourcePacks: newOps.resourcePacks,
         })
       }
     }

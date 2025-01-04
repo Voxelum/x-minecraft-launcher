@@ -125,6 +125,9 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
         throw e
       })
       if (fstat.isDirectory()) continue
+      const dstat = await stat(dest).catch(_ => undefined)
+      if (dstat?.ino === fstat.ino) continue
+      if (dstat?.size === fstat.size) continue
       result.push(await linkOrCopyFile(src, dest))
     }
     return result

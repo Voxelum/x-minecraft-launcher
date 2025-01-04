@@ -100,7 +100,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
           loadOptions(path)
         } else if (basename(file) === ('optionsshaders.txt')) {
           loadShaderOptions(path)
-        } else if (event === 'unlinkDir' && file === path) {
+        } else if (event === 'unlinkDir' && !file) {
           dispose()
         }
       }).add('options.txt')

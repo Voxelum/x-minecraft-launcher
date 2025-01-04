@@ -216,7 +216,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
                 path: absPath,
               })
             }
-          } else if (event === 'unlinkDir' && file === path) {
+          } else if (event === 'unlinkDir' && (file === path || !file)) {
             dispose()
           }
         })
