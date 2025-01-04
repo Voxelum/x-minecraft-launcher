@@ -129,6 +129,8 @@ export default class ElectronLauncherApp extends LauncherApp {
           code = NetworkErrorCode.DNS_NOTFOUND
         } else if (e.message === 'net::NETWORK_CHANGED') {
           code = NetworkErrorCode.NETWORK_CHANGED
+        } else if (e.message === 'net::PROXY_CONNECTION_FAILED') {
+          code = NetworkErrorCode.PROXY_CONNECTION_FAILED
         }
         if (code) {
           // expected exceptions
