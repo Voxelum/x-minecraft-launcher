@@ -1,26 +1,7 @@
 import { parseVersion, VersionRange } from '@xmcl/runtime-api'
-import { coerce, satisfies, valid } from 'semver'
+import { FabricSemanticVersion } from './FabricSemanticVersion'
+import { parseVersionPredicate } from './FabricVersionPredicateParser'
 import { ModDependencies, ModDependency } from './modDependencies'
-
-const satisfiesMinecraft = (version: string, range: string) => {
-  if (version.split('.').length === 2) {
-    version += '.0'
-  }
-  range = range.split(' ').map((r) => {
-    const preReleaseIndex = r.indexOf('-')
-    if (preReleaseIndex !== -1) {
-      const preRange = r.substring(0, preReleaseIndex)
-      if (preRange.split('.').length === 2) {
-        r = preRange + '.0' + r.substring(preReleaseIndex)
-      }
-    }
-    if (r.indexOf('-') === r.length - 1) {
-      r = r.substring(0, r.length - 1)
-    }
-    return r
-  }).join(' ')
-  return satisfies(version, range, { includePrerelease: true })
-}
 
 export type Compatible = 'maybe' | boolean
 
@@ -72,7 +53,7 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
       if (!compatible) {
         const res = range.restrictions[0]
         if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
-            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
+          Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
           compatible = 'maybe'
         }
       }
@@ -80,33 +61,15 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
     return compatible
   }
   if (dep.semanticVersion) {
-    // Resolve semanticVersion compability
-    const requirements = dep.semanticVersion
-    let compatible: Compatible = 'maybe'
-    if (typeof requirements === 'string') {
-      if (id === 'minecraft') {
-        compatible = satisfiesMinecraft(version, requirements)
-      } else {
-        if (valid(version)) {
-          compatible = satisfies(version, requirements, { includePrerelease: true })
-        } else {
-          const v = coerce(version, { loose: true })
-          if (v) {
-            compatible = satisfies(v, requirements, { includePrerelease: true })
-          } else {
-            compatible = false
-          }
-        }
-      }
-    } else if (requirements) {
-      for (const v of requirements) {
-        if (satisfiesMinecraft(version, v)) {
-          compatible = true
-          break
-        }
-      }
-    }
-    return compatible
+    const verison = new FabricSemanticVersion(version, true)
+    const ranges =
+      dep.semanticVersion instanceof Array
+        ? dep.semanticVersion.map(v => parseVersionPredicate(v))
+        : parseVersionPredicate(dep.semanticVersion)
+    const compatible = ranges instanceof Array
+      ? ranges.some(r => r?.test(verison))
+      : ranges?.test(verison)
+    return compatible ?? false
   }
 
   return compatible
