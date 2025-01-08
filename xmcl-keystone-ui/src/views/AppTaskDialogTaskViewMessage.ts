@@ -49,28 +49,28 @@ export default defineComponent({
           ])
         }
         if (m.name === 'HeadersTimeoutError') {
-          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : '')
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.HeadersTimeoutError'),
           ])
         }
         if (m.name === 'ConnectTimeoutError') {
-          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : '')
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.ConnectTimeoutError'),
           ])
         }
         if (m.name === 'BodyTimeoutError') {
-          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : '')
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.BodyTimeoutError'),
           ])
         }
         if (m.name === 'SocketError' || m.code === 'ECONNRESET') {
-          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : ''
+          const url = m.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : '')
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.SocketError'),
@@ -84,7 +84,7 @@ export default defineComponent({
           ])
         }
         if (m.name === 'ResponseStatusCodeError') {
-          const url = m.url ?? m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? ''
+          const url = m.url ?? (m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? '')
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             `HTTP ${m.status}`,
