@@ -8,8 +8,6 @@ import { kSettings } from '~/settings'
 import { NetworkAgent, ProxySettingController } from './dispatchers/NetworkAgent'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 
-type DispatchOptions = Dispatcher.DispatchOptions
-
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
   const userAgent = app.userAgent
@@ -156,7 +154,12 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       bodyTimeout: 60_000,
       maxRedirections: 5,
       connect,
-      factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),
+      factory: (origin, opts) => {
+        if (origin === 'https://edge.forgecdn.net' || origin === 'https://mediafilez.forgecdn.net') {
+          return new Pool(origin, { ...opts, connections: 16 })
+        }
+        return patchIfPool(new Pool(origin, opts))
+      },
     }),
     proxyTls: connectorOptions,
     requestTls: connectorOptions,
