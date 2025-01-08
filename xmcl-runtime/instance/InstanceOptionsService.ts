@@ -147,7 +147,12 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async getGameOptions(instancePath: string) {
     const optionsPath = join(instancePath, 'options.txt')
-    const result = await readFile(optionsPath, 'utf-8').then(parse, () => ({} as Frame))
+    const result = await readFile(optionsPath, 'utf-8').then(parse, async (e) => {
+      if (isSystemError(e) && e.code === 'ENOENT') {
+        await writeFile(optionsPath, `lang:${this.app.host.getLocale().replace('-', '_')}\n`)
+      }
+      return ({} as Frame)
+    })
 
     if (typeof result.resourcePacks === 'string') {
       try {
