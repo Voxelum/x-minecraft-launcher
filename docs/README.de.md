@@ -31,9 +31,9 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Besuchen Sie die [offizielle Website](https://xmcl.app), um die App herunterzuladen!
+Besuche die [offizielle Website](https://xmcl.app), um die App herunterzuladen!
 
-Wenn Sie winget haben, können Sie winget zur Installation verwenden:
+Falls du winget verwenden möchtest, kannst du XMCL so installieren:
 
 ```bash
 winget install CI010.XMinecraftLauncher
@@ -41,18 +41,18 @@ winget install CI010.XMinecraftLauncher
 
 ## Funktionen
 
-- 📥 **Download & automatische Vervollständigung**. Unterstützt den Download von `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` von offiziellen oder Drittanbieter-Spiegeln.
-- ⚡️ **Schneller Download**. Wiederverwendung von Sockets über HTTP/HTTPS-Agents und gleichzeitiger Download von Dateien in Teilen.
-- 💻 **Plattformübergreifend**. Der Launcher basiert auf Electron und unterstützt 🗔 Windows 10/11, 🍎 MacOS und 🐧 Linux.
+- 📥 **Download & Auto-Vervollständigung**. Unterstützt den Download von `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` von offiziellen oder Drittanbieter-Mirrors.
+- ⚡️ **Schneller Download**. Nutzt Sockets über HTTP/HTTPS-Agents erneut und läd gleichzeitig Dateien in Teilen herunter.
+- 💻 **Plattformübergreifend**. Der Launcher verwendet Electron und unterstützt 🗔 Windows 10/11, 🍎 MacOS und 🐧 Linux.
 - 📚 **Mehrere Instanzen**. Benutzer können mehrere Instanzen erstellen, um verschiedene Versionen, Mods und Starteinstellungen zu isolieren.
-- 🗂 **Verwaltung aller Ressourcen**. Verwendung von (harten/symbolischen) Links zur Installation von Ressourcen in Instanzen, optimale Nutzung des Festplattenspeichers. Keine Kopien von Mods überall! 😆
-- 🔥 **Integrierte Unterstützung für CurseForge, Modrinth**. Sie können Ressourcen direkt im Launcher herunterladen.
-- 📦 **Unterstützung für Import/Export** von CurseForge & Modrinth Modpacks mit Kompatibilität!
-- 🔒 **Unterstützung mehrerer Kontosysteme**. Integrierter Microsoft-Login und Mojang Yggdrasil API. Es gibt auch integrierte Unterstützung für [ely.by](https://ely.by/) und [littleskin.cn](https://littleskin.cn). Sie können auch Authentifizierungsserver von Drittanbietern hinzufügen!
-- 🔗 **Peer-to-Peer-Verbindung zwischen Benutzern**. Sie können Multiplayer über LAN spielen, auch wenn Sie sich nicht im selben physischen LAN befinden!
-- 🔑 **Code-Signierung & modernes Packaging**. Unter Windows können Sie `appx` und `appinstaller` zur Installation der App verwenden. Sie erhalten keine Blockierungsmeldungen mehr von Ihrem Browser oder SmartScreen-Fehler! 😎
+- 🗂 **Ressourcenverwaltung**. Nutzt (hard/symbolic) Links zur Installation von Ressourcen in Instanzen für optimale Speichernutzung. Keine Kopien von Mods überall! 😆
+- 🔥 **CurseForge & Modrinth Integriert**. Du kannst Ressourcen von überall direkt im Launcher herunterladen.
+- 📦 **Import/Export-Unterstützung** von CurseForge & Modrinth Modpacks entsprechend Plattformrichtlinien!
+- 🔒 **Mehrere Kontosysteme**. Integrierter Microsoft- und Mojang (Yggdrasil) Login. Unterstützt ebenfalls [ely.by](https://ely.by/) und [littleskin.cn](https://littleskin.cn). Du kannst auch eigene Auth-Server von Drittanbietern hinzufügen!
+- 🔗 **P2P-Verbindung zwischen Spielern**. Du kannst mit anderen über LAN spielen, auch wenn ihr euch nicht im selben physischen LAN befindet!
+- 🔑 **Code-Sign & modernes Packaging**. Unter Windows kannst du `appx` und `appinstaller` zur Installation der App verwenden. Du bekommst keine Blockierungsmeldungen mehr von deinem Browser oder SmartScreen! 😎
 
-## Beitragen
+## Mitwirken
 
 Für allgemeine Entwickler, siehe [Contributing](./CONTRIBUTING.md)
 
@@ -86,9 +86,9 @@ Für i18n-Lokalisierungsentwickler, bitte folgen Sie [Erste Schritte mit der Lok
 
 [BANSAFAn](https://github.com/BANSAFAn), der mir in der RU/UK-Community sehr hilft.
 
-[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), Pflege des AUR-Paketregisters.
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), kümmern sich um das AUR-Paketregisters.
 
-[0xc0000142](https://github.com/0xc0000142), Pflege des winget.
+[0xc0000142](https://github.com/0xc0000142), kümmert sich um winget.
 
 [Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), vollständige Übersetzung ins Ukrainische!
 
