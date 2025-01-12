@@ -113,6 +113,9 @@ export class BaseService extends AbstractService implements IBaseService {
       }
     } catch (e) {
       if (e instanceof Error && e.name === 'Error') {
+        if (e.message === 'No update info found') {
+          return
+        }
         e.name = 'CheckUpdateError'
       }
       throw e

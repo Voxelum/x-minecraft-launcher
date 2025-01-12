@@ -177,6 +177,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
       const watcher = new FSWatcher({
         awaitWriteFinish: true,
+        ignorePermissionErrors: true,
         followSymlinks: true,
         cwd: path,
         depth: 2,
@@ -195,6 +196,17 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       })
 
       watcher
+        .on('error', (e) => {
+          if (isSystemError(e)) {
+            if (e.code === 'EBUSY') {
+              return
+            }
+          }
+          if ((e as any).name === 'Error') {
+            (e as any).name = 'FSWatcherError'
+          }
+          this.error(e as any)
+        })
         .on('all', (event, file, stat) => {
           const absPath = resolve(path, file)
           if (file.endsWith('level.dat')) {

@@ -68,53 +68,73 @@ export class ElyByService extends AbstractService implements IElyByService {
     }
 
     const url = `https://ely.by/minecraft/system/${resolvedVersion}.zip`
-    const resp = await this.app.fetch(url)
-    const buf = await resp.arrayBuffer()
-    const zip = await open(Buffer.from(buf))
-    for await (const e of walkEntriesGenerator(zip)) {
-      if (e.fileName.endsWith('.jar')) {
-        const name = e.fileName.split('/').pop()!
-        const actualVersion = name.split('-')[1].split('.jar')[0]
-
-        const stream = await openEntryReadStream(zip, e)
-        const hasher = createHash('sha1')
-        const info = LibraryInfo.resolve('com.mojang:authlib:' + actualVersion + ':elyby')
-
-        const buffers: Buffer[] = []
-        await pipeline(stream, new Writable({
-          write(chunk, _, callback) {
-            hasher.update(chunk)
-            buffers.push(chunk)
-            callback()
-          },
-        }))
-        const path = this.getPath('libraries', info.path)
-        await ensureDir(dirname(path))
-        await writeFile(path, Buffer.concat(buffers))
-        const sha1 = hasher.digest('hex')
-        content[minecraftVersion] = {
-          path: relative(this.getPath(), path),
-          sha1,
-          version: actualVersion,
+    const errors = [] as any[]
+    for (let i = 0; i < 3; i++) {
+      try {
+        const resp = await this.app.fetch(url)
+        if (!resp.ok) {
+          this.warn('Failed to download authlib', resp.statusText)
+          continue
         }
-        await writeFile(jsonPath, JSON.stringify(content, null, 4))
+        const buf = await resp.arrayBuffer()
+        const zip = await open(Buffer.from(buf))
+        for await (const e of walkEntriesGenerator(zip)) {
+          if (e.fileName.endsWith('.jar')) {
+            const name = e.fileName.split('/').pop()!
+            const actualVersion = name.split('-')[1].split('.jar')[0]
 
-        // ResolvedLibrary
-        const lib = Version.resolveLibrary({
-          name: info.name,
-          downloads: {
-            artifact: {
-              url: '',
-              path: info.path,
+            const stream = await openEntryReadStream(zip, e)
+            const hasher = createHash('sha1')
+            const info = LibraryInfo.resolve('com.mojang:authlib:' + actualVersion + ':elyby')
+
+            const buffers: Buffer[] = []
+            await pipeline(stream, new Writable({
+              write(chunk, _, callback) {
+                hasher.update(chunk)
+                buffers.push(chunk)
+                callback()
+              },
+            }))
+            const path = this.getPath('libraries', info.path)
+            await ensureDir(dirname(path))
+            await writeFile(path, Buffer.concat(buffers))
+            const sha1 = hasher.digest('hex')
+            content[minecraftVersion] = {
+              path: relative(this.getPath(), path),
               sha1,
-              size: e.uncompressedSize,
-            },
-          },
-        })
-        return lib
+              version: actualVersion,
+            }
+            await writeFile(jsonPath, JSON.stringify(content, null, 4))
+
+            // ResolvedLibrary
+            const lib = Version.resolveLibrary({
+              name: info.name,
+              downloads: {
+                artifact: {
+                  url: '',
+                  path: info.path,
+                  sha1,
+                  size: e.uncompressedSize,
+                },
+              },
+            })
+            return lib
+          }
+        }
+
+        break
+      } catch (e) {
+        errors.push(e)
+        this.warn('Failed to download authlib', e)
       }
     }
 
+    if (errors.length > 0) {
+      if (errors.length === 1) {
+        throw errors[0]
+      }
+      throw new AggregateError(errors)
+    }
     throw new AnyError('ElyAuthlibInstallError', 'Failed to install authlib', undefined, { url })
   }
 }

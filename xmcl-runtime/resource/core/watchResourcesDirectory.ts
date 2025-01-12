@@ -1,9 +1,10 @@
 import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload } from '@xmcl/runtime-api'
+import { FSWatcher } from 'chokidar'
 import { randomBytes } from 'crypto'
-import { FSWatcher, existsSync } from 'fs'
+import { existsSync } from 'fs'
 import { copy, watch } from 'fs-extra'
 import debounce from 'lodash.debounce'
-import { basename, dirname, isAbsolute, join } from 'path'
+import { basename, dirname, isAbsolute, join, resolve } from 'path'
 import { Logger } from '~/logger'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
 import { AnyError, isSystemError } from '~/util/error'
@@ -149,7 +150,7 @@ function createWorkerQueue(context: ResourceContext, domain: ResourceDomain,
     merge: (a, b) => {
       a.icons = [...new Set([...a.icons || [], ...b.icons || []])]
       a.uris = [...new Set([...a.uris || [], ...b.uris || []])]
-      a.metadata = { ...(a.metadata || {}), ...(b.metadata || {}) }
+      a.metadata = { ...a.metadata, ...b.metadata }
       a.record = b.record || a.record
       a.file = b.file || a.file
       return a
@@ -269,6 +270,12 @@ export function watchResourcesDirectory(
   }, onRemove, revalidate)
 
   workerQueue.onerror = ({ filePath }, e) => {
+    if (isSystemError(e)) {
+      if (e.code === 'EBUSY') {
+        // ignore the busy file
+        return
+      }
+    }
     context.logger.error(e)
   }
 
@@ -362,25 +369,31 @@ export function watchResourceSecondaryDirectory(
     }
   }, () => { /* ignore */ }, () => { /* ignore */ })
 
-  let watcher: FSWatcher | undefined
-
-  function initWatcher() {
-    watcher = createWatcher(directory, context.logger, async (file) => {
-      if (await isFileCached(file)) return
-      persist(file)
-    }, async (filePath: string) => {
+  const watcher = new FSWatcher({
+    cwd: directory,
+    awaitWriteFinish: true,
+    depth: 1,
+    followSymlinks: true,
+    ignorePermissionErrors: true,
+    ignored: (path) => {
+      if (resolve(path) === directory) return false
+      return shouldIgnoreFile(path)
+    },
+  }).on('all', async (event, file) => {
+    const filePath = resolve(directory, file)
+    if (event === 'unlink') {
       await context.db.deleteFrom('snapshots')
         .where('domainedPath', '=', getDomainedPath(filePath, context.root))
         .execute()
-    }, revalidateDir)
-
-    watcher.on('error', (e) => {
-      watcher = undefined
-      context.logger.warn(new AnyError('ResourceWatchError', 'Error in resource watch', { cause: e }))
-    })
-  }
-
-  initWatcher()
+    } else if (event === 'change' || event === 'add' || event === 'addDir') {
+      const file = await getFile(filePath)
+      if (!file) return
+      if (await isFileCached(file)) return
+      persist(file)
+    }
+  }).on('error', (e) => {
+    context.logger.warn(new AnyError('ResourceWatchError', 'Error in resource watch', { cause: e }))
+  })
 
   async function persist(file: File) {
     let target = join(primaryDirectory, file.fileName)
@@ -416,10 +429,6 @@ export function watchResourceSecondaryDirectory(
   }
 
   function revalidate() {
-    if (!watcher) {
-      initWatcher()
-    }
-
     return revalidateDir()
   }
 
