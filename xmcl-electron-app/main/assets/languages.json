@@ -345,6 +345,11 @@
             "name": "Pirate Speak",
             "bidirectional": false
         },
+        "lolcat": {
+            "region": "Lolcat",
+            "name": "Lolcat",
+            "bidirectional": false
+        },
         "pl_pl": {
             "region": "Polska",
             "name": "Polski",
