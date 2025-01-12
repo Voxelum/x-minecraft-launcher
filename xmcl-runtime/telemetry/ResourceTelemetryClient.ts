@@ -15,6 +15,45 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
 
+
+  const MAX_MESSAGE_LENGTH = 32768;
+
+  client.addTelemetryProcessor((envelope) => {
+    if (envelope.data.baseType === "MessageData") {
+      const messageData = envelope.data.baseData;
+
+      if (!messageData) {
+        return false;
+      }
+
+      if (messageData.message.length > MAX_MESSAGE_LENGTH) {
+        const originalMessage = messageData.message;
+        const chunkSize = MAX_MESSAGE_LENGTH;
+        const totalChunks = Math.ceil(originalMessage.length / chunkSize);
+
+        for (let i = 0; i < totalChunks; i++) {
+          const chunk = originalMessage.substring(i * chunkSize, (i + 1) * chunkSize);
+
+          client.trackTrace({
+            message: chunk,
+            severity: messageData.severityLevel,
+            properties: {
+              ...messageData.properties,
+              chunkId: i + 1,
+              totalChunks: totalChunks,
+              originalMessageLength: originalMessage.length,
+            },
+          });
+        }
+
+        return false;
+      }
+    }
+
+    return true;
+  })
+
+
   client.context.tags = {
     ...tags,
   }
@@ -123,9 +162,8 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
     })
     manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
-      client.trackEvent({
-        name: 'resource-metadata-v2',
-        properties: getPayload(sha1, metadata, metadata.name, domain),
+      client.trackTrace({
+        message: JSON.stringify(metadata),
       })
     })
     manager.context.eventBus.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
@@ -139,9 +177,11 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
             }
           }
           if (Object.keys(copy).length > 0) {
-            client.trackEvent({
-              name: 'resource-metadata-v2',
-              properties: getPayload(payload.hash, copy, copy.name),
+            client.trackTrace({
+              message: JSON.stringify(getPayload(payload.hash, copy, copy.name)),
+              properties: {
+                name: 'resource-metadata',
+              }
             })
           }
         }
@@ -169,9 +209,8 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
             return
           }
           if (ctx.mods) {
-            client.trackEvent({
-              name: 'minecraft-run-record-v2',
-              properties: {
+            client.trackTrace({
+              message: JSON.stringify({
                 mods: ctx.mods.join(','),
                 runtime: ctx.runtime,
                 java: await javaService?.getJavaState().then((javaState) => {
@@ -183,7 +222,10 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
                     }
                   }
                 }),
-              },
+              }),
+              properties: {
+                name: 'minecraft-run-record-v2',
+              }
             })
           }
         },
