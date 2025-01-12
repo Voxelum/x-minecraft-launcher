@@ -13,17 +13,7 @@ export class ResourceMigrateProvider implements MigrationProvider {
   }
 }
 
-/**
- * Migrate the database to latest version
- * @param db The sqldatabase
- */
-export async function migrate(db: Kysely<Database>) {
-  const migrator = new Migrator({
-    db,
-    provider: new ResourceMigrateProvider(),
-  })
-  await migrator.migrateToLatest()
-
+async function fixSnapshotTable(db: Kysely<Database>) {
   let columns = await sql`PRAGMA table_info(snapshots)`.execute(db)
   if (columns.rows.some((c: any) => c.name === 'ctime')) {
     await v21.up(db)
@@ -57,6 +47,29 @@ export async function migrate(db: Kysely<Database>) {
       .column('sha1')
       .execute()
   }
+}
+
+async function fixResourceTable(db: Kysely<Database>) {
+  let columns = await sql`PRAGMA table_info(resources)`.execute(db)
+  // check neoforge column
+  if (!columns.rows.some((c: any) => c.name === ResourceType.Neoforge)) {
+    await v22.up(db)
+  }
+}
+
+/**
+ * Migrate the database to latest version
+ * @param db The sqldatabase
+ */
+export async function migrate(db: Kysely<Database>) {
+  const migrator = new Migrator({
+    db,
+    provider: new ResourceMigrateProvider(),
+  })
+  await migrator.migrateToLatest()
+
+  await fixSnapshotTable(db)
+  await fixResourceTable(db)
 }
 
 const v1: Migration = {
