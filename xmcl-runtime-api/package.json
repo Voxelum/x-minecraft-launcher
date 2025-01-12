@@ -10,7 +10,7 @@
         "module": "dist/index.mjs"
     },
     "engines": {
-        "node": ">=15.0.0"
+        "node": ">=20"
     },
     "repository": {
         "type": "git",
@@ -22,8 +22,8 @@
         "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
         "build:type": "tsc --project ./tsconfig.json",
         "check": "tsc --noEmit --project ./tsconfig.json",
-        "lint": "eslint --ext .ts src",
-        "lint:fix": "eslint --ext .ts --fix src"
+        "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
+        "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
         "@xmcl/client": "workspace:*",
@@ -45,7 +45,8 @@
         "@xmcl/user": "workspace:*"
     },
     "devDependencies": {
-        "@xmcl/eslint-config": "workspace:*",
+        "@xmcl/oxlint-config": "workspace:*",
+        "oxlint": "^0.15.5",
         "esbuild": "^0.17.16",
         "tslib": "^2.5.0",
         "typescript": "5.4.5",

@@ -4,7 +4,6 @@
 	// List of extensions which should be recommended for users of this workspace.
 	"recommendations": [
 		"eamodio.gitlens",
-		"dbaeumer.vscode-eslint",
 		"yzhang.markdown-all-in-one",
 		"lokalise.i18n-ally",
 		"ms-edgedevtools.vscode-edge-devtools"

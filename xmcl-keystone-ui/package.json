@@ -8,7 +8,7 @@
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
     "engines": {
-        "node": ">=16"
+        "node": ">=20"
     },
     "repository": {
         "type": "git",
@@ -18,8 +18,8 @@
         "build": "vite build --emptyOutDir",
         "check": "vue-tsc --noEmit --project ./tsconfig.json",
         "dev": "vite",
-        "lint": "eslint --ext .ts,.vue src",
-        "lint:fix": "eslint --ext .ts,.vue --fix src"
+        "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
+        "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
         "@microsoft/applicationinsights-web": "^3.1.1",
@@ -63,12 +63,11 @@
         "@types/markdown-it": "^12.2.3",
         "@types/semver": "^7.5.8",
         "@types/three": "^0.150.1",
-        "@unocss/eslint-config": "^0.61.0",
         "@vitejs/plugin-vue2": "^2.3.1",
-        "@xmcl/eslint-config": "workspace:*",
+        "@xmcl/oxlint-config": "workspace:*",
+        "oxlint": "^0.15.5",
         "chalk": "^4.1.2",
         "cross-env": "^5.2.1",
-        "eslint-plugin-vue": "^9.27.0",
         "tslib": "^2.5.0",
         "tsx": "^3.12.1",
         "typescript": "5.4.5",

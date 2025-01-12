@@ -158,7 +158,7 @@ export function useInstanceLaunch(
     const hideLauncher = inst.hideLauncher ?? globalHideLauncher.value
     const env = {
       ...globalEnv.value,
-      ...(inst.env || {}),
+      ...inst.env,
     }
     const showLog = inst.showLog ?? globalShowLog.value
     const fastLaunch = inst.fastLaunch ?? globalFastLaunch.value
@@ -210,7 +210,7 @@ export function useInstanceLaunch(
       prependCommand,
       side,
       server: inst.server ?? undefined,
-      ...(overrides || {}),
+      ...overrides,
     }
     return options
   }

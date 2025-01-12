@@ -128,7 +128,7 @@ interface VersionPreference {
 }
 
 function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: VersionPreference) {
-  const records = [...allJava.filter(v => v.valid)]
+  const records = allJava.filter(v => v.valid)
   // const root = this.getPath('jre')
   // const isUnderPath = (p: string) => !relative(root, p).startsWith('..')
   const bestMatched: JavaRecord[] = []

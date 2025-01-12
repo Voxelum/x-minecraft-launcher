@@ -4,7 +4,7 @@
     "license": "MIT",
     "packageManager": "pnpm@9.3.0",
     "engines": {
-        "node": ">=16"
+        "node": ">=20"
     },
     "scripts": {
         "compile": "pnpm -r compile",

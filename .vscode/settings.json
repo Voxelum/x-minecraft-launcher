@@ -1,8 +1,4 @@
 {
-    "eslint.validate": [
-        "typescript",
-        "vue"
-    ],
     "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,
@@ -41,7 +37,6 @@
         "xmcl"
     ],
     "cSpell.enabled": true,
-    "cmake.configureOnOpen": false,
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "file:///.github/workflows/deploy.yml"
     },
@@ -57,5 +52,7 @@
         "curseforgeCategory.Vanilla+",
         "installForge.downloadInstaller",
         "dependencies.embedded"
-    ]
+    ],
+    "oxc.enable": true,
+    "oxc.configPath": "xmcl/packages/oxlint-config/oxlintrc.json"
 }

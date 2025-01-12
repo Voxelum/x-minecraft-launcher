@@ -7,7 +7,7 @@
     "license": "MIT",
     "main": "index.ts",
     "engines": {
-        "node": ">=15.0.0"
+        "node": ">=20"
     },
     "repository": {
         "type": "git",
@@ -15,8 +15,8 @@
     },
     "scripts": {
         "check": "tsc --project tsconfig.json --noEmit",
-        "lint": "eslint --ext .ts .",
-        "lint:fix": "eslint --ext .ts --fix ."
+        "lint": "oxlint -c ./node_modules/@xmcl/oxlint-config/oxlintrc.json .",
+        "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
         "@azure/msal-common": "^14.14.0",
@@ -81,7 +81,8 @@
         "@types/ws": "^8.5.3",
         "@types/yauzl": "^2.10.0",
         "@types/yazl": "^2.4.2",
-        "@xmcl/eslint-config": "workspace:*",
+        "@xmcl/oxlint-config": "workspace:*",
+        "oxlint": "^0.15.5",
         "cross-env": "^5.2.1",
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",

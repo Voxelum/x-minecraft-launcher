@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, readFileSync, write, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 
 if (!existsSync(join(__dirname, 'dist'))) {

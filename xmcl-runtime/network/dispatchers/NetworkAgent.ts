@@ -72,8 +72,8 @@ export class NetworkAgent extends Dispatcher {
   }
 
   setConnectTimeout(timeout: number) {
-    this.pConnect = buildConnector({ timeout, ...this.proxyTls || {} })
-    this.rConnect = buildConnector({ timeout, ...this.requestTls || {} })
+    this.pConnect = buildConnector({ timeout, ...this.proxyTls })
+    this.rConnect = buildConnector({ timeout, ...this.requestTls })
     const oldClient = this.proxyClient
     if (this.proxyUri) {
       this.proxyClient = new Client(this.proxyUri, { connect: this.pConnect })
@@ -114,7 +114,7 @@ export class NetworkAgent extends Dispatcher {
           path: requestedHost,
           signal: opts.signal,
           headers: {
-            ...(this.proxyHeader || {}),
+            ...this.proxyHeader,
             host: opts.host,
           },
         })

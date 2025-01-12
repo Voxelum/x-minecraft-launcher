@@ -17,7 +17,7 @@ export default function createNodePlugin(): Plugin {
           path: args.path,
           namespace: 'node-file',
           pluginData: {
-            ...(args.pluginData || {}),
+            ...args.pluginData,
             resolveDir: args.resolveDir,
           },
         }),
