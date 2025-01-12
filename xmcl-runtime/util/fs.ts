@@ -170,9 +170,11 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
     await symlink(srcPath, destPath, 'dir')
     return true
   } catch (e) {
-    logger.warn(`Cannot create symbolic link ${srcPath} -> ${destPath} by dir, try junction: ${e}`)
-    if ((e as any).code === EPERM_ERROR && platform() === 'win32') {
-      await symlink(srcPath, destPath, 'junction')
+    if ((e as any).code === EPERM_ERROR && process.platform === 'win32') {
+      await symlink(srcPath, destPath, 'junction').catch(e => {
+        e.junction = true
+        throw e
+      })
       return false
     }
     throw e
@@ -250,8 +252,8 @@ export const ENOENT_ERROR = 'ENOENT'
  */
 export const EPERM_ERROR = 'EPERM'
 
-function handleOnlyNotFound(e: unknown) {
-  if (isSystemError(e) && e.code === 'ENOENT') {
+export function handleOnlyNotFound(e: unknown) {
+  if (isSystemError(e) && e.code === ENOENT_ERROR) {
     return undefined
   }
   throw e

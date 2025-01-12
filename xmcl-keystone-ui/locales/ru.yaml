@@ -370,6 +370,7 @@ fileDetail:
   fileSize: Размер файла
   hash: Hash
 filter: Фильтр
+filterLocalOnly: Показывать только установленные
 finish: Завершить
 forgeConfig:
   hint: >-
@@ -494,6 +495,8 @@ instance:
   versionHint: Minecraft-версия этой игры
   vmOptions: Опции JVM
   vmOptionsHint: Дополнительные аргументы, передаваемые JVM
+  vmVar: Переменные среды
+  vmVarHint: Нажмите кнопку, чтобы добавить переменные среды.
 instanceAge:
   older: Старые
   threeDay: В течение трёх дней
@@ -586,7 +589,7 @@ java:
   modifyInstance: Изменить путь к Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальный Java
-  systemMemory: Текущая оперативная память
+  systemMemory: 'Свободная память системы: {free} / {total}'
 labyMod:
   disable: LabyMod не выбран
   empty: LabyMod не поддерживает текущую версию Minecraft
@@ -816,11 +819,6 @@ modInstall:
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
-modSearchType:
-  all: Все
-  explore: Исследуйте рынок
-  installed: Установлено
-  local: Дисковый кэш
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Только в Кёрсфордже

@@ -151,6 +151,9 @@ const data = reactive({
 provide('setup', data)
 bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
   data.fetching = false
+  if (locale_.startsWith('en')) {
+    locale_ = 'en'
+  }
   locale.value = locale_
   data.minecraftPath = minecraftPath
   data.instancePath = minecraftPath

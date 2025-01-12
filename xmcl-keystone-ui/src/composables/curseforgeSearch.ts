@@ -27,6 +27,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
   curseforgeCategory: Ref<number | undefined>,
   sort: Ref<ModsSearchSortField | undefined>,
   gameVersion: Ref<string>,
+  disabled: Ref<boolean>,
 ) {
   const search = useCurseforgeSearchFunc(
     classId,
@@ -47,6 +48,9 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
       limit: result.pagination.resultCount,
     }
   }, () => {
+    if (disabled.value) {
+      return false
+    }
     if (keyword.value) {
       return true
     }
@@ -62,6 +66,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     watch(curseforgeCategory, onSearch, { deep: true })
     watch(sort, onSearch)
     watch(gameVersion, onSearch)
+    watch(disabled, onSearch)
   }
 
   const mods = computed(() => {

@@ -1,6 +1,6 @@
 import { JavaVersion } from '@xmcl/core'
 import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
+import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, SharedState, Settings } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -15,7 +15,7 @@ import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
-import { getJavaPathsLinux, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
+import { getJavaPathsLinux, getJavaPathsLinuxSDK, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -52,7 +52,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return Promise.resolve()
   }
 
-  async getJavaState(): Promise<MutableState<JavaState>> {
+  async getJavaState(): Promise<SharedState<JavaState>> {
     await this.initialize()
     return this.state
   }
@@ -190,7 +190,14 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       return result
     }
 
-    const manifest = await fetchJava(target.component)
+    const manifest = await fetchJava(target.component).catch(e => {
+      if (e.name === 'Error') {
+        if (e.message === 'net::ERR_CONNECTION_RESET') {
+          e.name = 'ConnectionResetError'
+        }
+      }
+      throw e
+    })
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = this.getPath('jre', target.component)
 
@@ -294,6 +301,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         )
       } else if (this.app.platform.os === 'linux') {
         commonLocations.push(...await getJavaPathsLinux())
+        commonLocations.push(...await getJavaPathsLinuxSDK())
       } else if (this.app.platform.os === 'osx') {
         commonLocations.push(...await getJavaPathsOSX())
       }

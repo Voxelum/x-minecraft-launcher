@@ -1,16 +1,18 @@
+import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { Menu, app, net, shell } from 'electron'
+import { stat } from 'fs-extra'
 import { join } from 'path'
+import { AnyError } from '~/util/error'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
+import { ElectronSession } from './ElectronSession'
 import { IS_DEV } from './constant'
 import defaultApp from './defaultApp'
 import { definedPlugins } from './definedPlugins'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
-import { ElectronSession } from './ElectronSession'
-import { stat } from 'fs-extra'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -107,8 +109,43 @@ export default class ElectronLauncherApp extends LauncherApp {
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
   }
 
-  fetch: typeof fetch = (...args: any[]) => {
-    return net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
+  fetch: typeof fetch = async (...args: any[]) => {
+    try {
+      return await net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
+    } catch (e) {
+      if (e instanceof Error) {
+        let code: NetworkErrorCode | undefined
+        if (e.message === 'net::ERR_CONNECTION_CLOSED') {
+          code = NetworkErrorCode.CONNECTION_CLOSED
+        } else if (e.message === 'net::ERR_INTERNET_DISCONNECTED') {
+          code = NetworkErrorCode.INTERNET_DISCONNECTED
+        } else if (e.message === 'net::ERR_TIMED_OUT') {
+          code = NetworkErrorCode.TIMED_OUT
+        } else if (e.message === 'net::ERR_CONNECTION_RESET') {
+          code = NetworkErrorCode.CONNECTION_RESET
+        } else if (e.message === 'net::ERR_CONNECTION_TIMED_OUT') {
+          code = NetworkErrorCode.CONNECTION_TIMED_OUT
+        } else if (e.message === 'net::ERR_NAME_NOT_RESOLVED') {
+          code = NetworkErrorCode.DNS_NOTFOUND
+        } else if (e.message === 'net::NETWORK_CHANGED') {
+          code = NetworkErrorCode.NETWORK_CHANGED
+        } else if (e.message === 'net::PROXY_CONNECTION_FAILED') {
+          code = NetworkErrorCode.PROXY_CONNECTION_FAILED
+        }
+        if (code) {
+          // expected exceptions
+          throw new NetworkException({
+            type: 'networkException',
+            code,
+          })
+        }
+        // unexpected errors
+        if (e.message.startsWith('net::')) {
+          throw new AnyError('NetworkError', e.message)
+        }
+      }
+      throw e
+    }
   }
 
   windowsUtils = getWindowsUtils(this, this.logger)
@@ -153,5 +190,9 @@ export default class ElectronLauncherApp extends LauncherApp {
     })
 
     await super.setup()
+  }
+
+  setProxy(url: string): void {
+    this.session.setProxy(url)
   }
 }

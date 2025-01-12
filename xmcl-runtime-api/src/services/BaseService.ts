@@ -2,7 +2,7 @@ import { Exception } from '../entities/exception'
 import { LauncherProfile } from '../entities/launcherProfile'
 import { Platform } from '../entities/platform'
 import { Settings } from '../entities/setting'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export interface MigrateOptions {
@@ -50,7 +50,7 @@ export interface BaseService {
 
   getSessionId(): Promise<string>
 
-  getSettings(): Promise<MutableState<Settings>>
+  getSettings(): Promise<SharedState<Settings>>
   /**
    * Get the environment of the launcher
    */
@@ -109,7 +109,7 @@ export interface BaseService {
   isResourceDatabaseOpened(): Promise<boolean>
 }
 
-export type BaseServiceExceptions = {
+export type MigrationExceptions = {
   /**
    * Throw when dest is a file
    */
@@ -130,6 +130,6 @@ export type BaseServiceExceptions = {
   destination: string
 }
 
-export class BaseServiceException extends Exception<BaseServiceExceptions> { }
+export class MigrationException extends Exception<MigrationExceptions> { }
 
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'

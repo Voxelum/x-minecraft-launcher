@@ -325,6 +325,7 @@ fileDetail:
   fileSize: 檔案大小
   hash: 雜湊值
 filter: 檢索
+filterLocalOnly: 只顯示已安裝
 finish: 完成
 forgeConfig:
   hint: 第一次請啟用該模組進入遊戲，以便自動檢測配置檔案
@@ -445,6 +446,8 @@ instance:
   versionHint: 此遊戲使用的 Minecraft 版本
   vmOptions: JVM 啟動選項
   vmOptionsHint: 額外的 JVM 的啟動引數
+  vmVar: 環境變數
+  vmVarHint: 點擊按鈕新增環境變數
 instanceAge:
   older: 三天前
   threeDay: 三天內
@@ -535,7 +538,7 @@ java:
   modifyInstance: 更改 Java 路徑
   noMemory: 不設定記憶體限制
   refresh: 重新整理本地 Java
-  systemMemory: 目前系統記憶體
+  systemMemory: '系統可用記憶體: {free} / {total}'
 labyMod:
   disable: 不使用 LabyMod
   empty: 目前 Minecraft 不支援 LabyMod
@@ -730,11 +733,6 @@ modInstall:
   source: 模組來源
   switch: 切換版本
   upgrade: 更新模組
-modSearchType:
-  all: 所有
-  explore: 瀏覽市場
-  installed: 本地
-  local: 磁碟快取
 modUpgradePolicy:
   curseforge: Curseforge 优先
   curseforgeOnly: 限詛 Curseforge

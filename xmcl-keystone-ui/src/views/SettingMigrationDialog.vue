@@ -75,7 +75,7 @@
 import { useRefreshable } from '@/composables'
 import { useGameDirectory } from '@/composables/setting'
 import { useEventBus } from '@vueuse/core'
-import { BaseServiceException, isException } from '@xmcl/runtime-api'
+import { MigrationException, isException } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
 const { showOpenDialog } = windowController
@@ -115,7 +115,7 @@ const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
     migrationBus.emit({ oldRoot: oldRoot.value, newRoot: root.value })
     await setGameDirectory(root.value)
   } catch (e) {
-    if (isException(BaseServiceException, e)) {
+    if (isException(MigrationException, e)) {
       if (e.exception.type === 'migrationDestinationIsFile') {
         errorText.value = t('dataMigration.migrationDestinationIsFile')
       } else if (e.exception.type === 'migrationDestinationIsNotEmptyDirectory') {

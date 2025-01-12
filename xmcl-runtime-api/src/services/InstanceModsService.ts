@@ -1,6 +1,6 @@
 import { InstallMarketOptionWithInstance } from '../entities/market'
 import { ResourceState, Resource } from '../entities/resource'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
 export interface InstallModsOptions {
@@ -22,7 +22,7 @@ export interface InstanceModsService {
   /**
    * Read all mods under the current instance
    */
-  watch(instancePath: string): Promise<MutableState<ResourceState>>
+  watch(instancePath: string): Promise<SharedState<ResourceState>>
   /**
    * Refresh the metadata of the instance mods
    */

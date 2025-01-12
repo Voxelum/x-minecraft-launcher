@@ -1,11 +1,11 @@
 import { getServerInfoKey, InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
-import watch from 'node-watch'
 import { join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { exists, hardLinkFiles, isHardLinked, unHardLinkFiles } from '../util/fs'
+import { watch } from 'chokidar'
 
 @ExposeServiceKey(InstanceServerInfoServiceKey)
 export class InstanceServerInfoService extends AbstractService implements IInstanceServerInfoService {
@@ -53,15 +53,15 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
           this.log('No server data found in instance.')
         }
       })
-      const watcher = watch(path, (event, filePath) => {
-        if (event === 'update') {
-          update()
-        }
-      })
-      await update()
+      // const watcher = watch(path, (event, filePath) => {
+      //   if (event === 'update') {
+      //     update()
+      //   }
+      // })
+      // await update()
 
       return [state, () => {
-        watcher.close()
+        // watcher.close()
       }]
     })
   }

@@ -892,32 +892,4 @@ usePresence(computed(() => t('presence.mod')))
     margin-right: 8px !important;
   }
 }
-
-.v-application .info {
-  background-color: rgba(33, 150, 243, 0.8) !important;
-  border-color: rgba(33, 150, 243, 0.8) !important;
-}
-
-.v-application .error {
-  background-color: rgba(255, 82, 82, 0.8) !important;
-  border-color: rgba(255, 82, 82, 0.8) !important;
-}
-
-.dark.v-application .info {
-  background-color: rgba(33, 150, 243, 0.5) !important;
-  border-color: rgba(33, 150, 243, 0.5) !important;
-}
-
-.dark.v-application .error {
-  background-color: rgba(255, 82, 82, 0.5) !important;
-  border-color: rgba(255, 82, 82, 0.5) !important;
-}
-
-.v-sheet.v-alert:last-child {
-    margin: 0px 4px 8px 4px !important;
-}
-
-.v-sheet.v-alert {
-    margin: 0px 4px 4px 4px !important;
-}
 </style>

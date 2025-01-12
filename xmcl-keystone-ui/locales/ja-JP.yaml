@@ -321,6 +321,7 @@ fileDetail:
   fileSize: ファイルサイズ
   hash: ハッシュ値
 filter: フィルター
+filterLocalOnly: インストールされているものだけを表示
 finish: 終了
 forgeConfig:
   hint: 一回この構成でゲームを立ち上げると、構成ファイルを検出できます!
@@ -433,6 +434,8 @@ instance:
   versionHint: この起動構成におけるMinecraftのバージョン
   vmOptions: JVM実行引数
   vmOptionsHint: JVMに渡される追加の引数
+  vmVar: 環境変数
+  vmVarHint: ボタンをクリックして環境変数を追加します
 instanceAge:
   older: 古い
   threeDay: 三日以内
@@ -519,7 +522,7 @@ java:
   modifyInstance: Javaのパスを編集
   noMemory: メモリの使用を制限しない
   refresh: ローカルのJavaをリフレッシュする
-  systemMemory: 現在のシステムメモリ
+  systemMemory: 'システム空きメモリ: {free} / {total}'
 labyMod:
   disable: LabyMod を使用しない
   empty: LabyMod は現在のMinecraftをサポートしていません
@@ -706,11 +709,6 @@ modInstall:
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
-modSearchType:
-  all: すべて
-  explore: マーケットを探索
-  installed: インストール済み
-  local: ディスクキャッシュ
 modUpgradePolicy:
   curseforge: ''
   curseforgeOnly: Curseforgeのみ

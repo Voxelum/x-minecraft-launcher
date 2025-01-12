@@ -308,6 +308,7 @@ fileDetail:
   fileSize: File Size
   hash: Hash
 filter: Filter
+filterLocalOnly: Only show installed
 finish: Finish
 forgeConfig:
   hint: >-
@@ -431,6 +432,8 @@ instance:
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments to pass to the JVM
+  vmVar: Environment Variables
+  vmVarHint: Click + button to add environemnt variables
 instanceAge:
   older: Older
   threeDay: In Three Days
@@ -523,7 +526,7 @@ java:
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  systemMemory: Current System Memory
+  systemMemory: 'System Free Memory: {free} / {total}'
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -735,11 +738,6 @@ modInstall:
   source: Mod Source
   switch: Swtich Version
   upgrade: Upgrade Mods
-modSearchType:
-  all: All
-  explore: Explore Market
-  installed: Installed
-  local: Disk Cache
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Curseforge Only

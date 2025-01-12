@@ -42,6 +42,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
   private async ensureDatabase(init = false) {
     const locale = this.settings.locale.toLowerCase()
     const gfw = await this.app.registry.get(kGFW)
+    const app = this.app
 
     if (!locale) return undefined
     if (this.#db?.locale === locale) return this.#db.db
@@ -52,7 +53,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
       async function exists() {
         try {
-          const resp = await fetch(original + '.sha256', { method: 'HEAD' })
+          const resp = await app.fetch(original + '.sha256', { method: 'HEAD' })
           if (!resp.ok) {
             return false
           }

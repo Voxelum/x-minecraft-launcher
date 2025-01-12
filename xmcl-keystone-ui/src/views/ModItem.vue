@@ -54,7 +54,7 @@ const props = defineProps<{
 const emit = defineEmits(['click', 'checked', 'install'])
 
 const { compatibility: compatibilities } = injection(kInstanceModsContext)
-const compatibility = computed(() => props.item.installed[0] ? compatibilities.value[props.item.installed[0].modId] : [])
+const compatibility = computed(() => props.item.installed[0] ? compatibilities.value[props.item.installed[0].modId] ?? [] : [])
 const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
 const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.item), () => {
@@ -62,7 +62,7 @@ const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.ite
     uninstall({ path: path.value, mods: props.item.installed.map(i => i.path) })
   }
 }, () => { }, () => {
-  if (props.item.installed.length > 0) {
+  if (props.item.installed && props.item.installed.length > 0) {
     if (props.item.installed[0].enabled) {
       disable({ path: path.value, mods: props.item.installed.map(i => i.path) })
     } else {
@@ -75,4 +75,6 @@ const getContextMenuItems = () => {
   if (items && items.length > 0) return items
   return _getContextMenuItems()
 }
+
+const hasLabel = computed(() => !props.dense && props.item.installed && (props.item.installed?.[0]?.tags.length + compatibility.value.length) > 0)
 </script>

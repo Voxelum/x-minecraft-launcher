@@ -1,7 +1,7 @@
 import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
-import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, MutableState, OptifineVersion, Settings } from '@xmcl/runtime-api'
+import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, SharedState, OptifineVersion, Settings } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
@@ -30,7 +30,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(JavaService) private javaService: JavaService,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kGFW) private gfw: GFW,
-    @Inject(kSettings) private settings: MutableState<Settings>,
+    @Inject(kSettings) private settings: SharedState<Settings>,
     @Inject(kDownloadOptions) private downloadOptions: DownloadBaseOptions,
     @Inject(kTaskExecutor) private submit: TaskFn,
   ) {
@@ -101,6 +101,7 @@ export class InstallService extends AbstractService implements IInstallService {
             return true
           } catch (e) {
             this.warn(`Failed to download mojmap from ${u}`)
+            this.warn(e)
           }
         }
         return false
@@ -576,7 +577,7 @@ export class InstallService extends AbstractService implements IInstallService {
       if (isNaN(contentLength)) {
         throw new Error()
       }
-      const localLength = (await stat(path)).size
+      const localLength = (await stat(path).catch(() => ({ size: 0 }))).size
       if (contentLength !== localLength) {
         throw new Error()
       }

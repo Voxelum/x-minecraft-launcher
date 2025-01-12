@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex h-full select-none flex-col overflow-auto pb-0"
+    class="relative flex h-full select-none flex-col overflow-auto pb-0 market-base"
     style="box-sizing: border-box"
     @wheel.stop
   >
@@ -23,6 +23,15 @@
           <slot
             name="actions"
           />
+          <v-alert
+            v-if="error"
+            v-shared-tooltip="error.message"
+            type="error"
+            dense
+            class="overflow-hidden text-ellipsis whitespace-nowrap"
+          >
+            {{ error }}
+          </v-alert>
         </div>
         <v-virtual-scroll
           v-if="items.length > 0"
@@ -49,12 +58,8 @@
             />
           </template>
         </v-virtual-scroll>
-        <ErrorView
-          v-if="error"
-          :error="error"
-        />
         <slot
-          v-else-if="items.length === 0"
+          v-else
           class="responsive-container"
           name="placeholder"
         />
@@ -80,10 +85,10 @@
 </template>
 
 <script lang=ts setup>
-import ErrorView from '@/components/ErrorView.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import { UpgradePlan } from '@/composables/modUpgrade'
 import { useQuery } from '@/composables/query'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { ProjectEntry } from '@/util/search'
 
 const props = defineProps<{
@@ -214,5 +219,35 @@ onUnmounted(() => {
 .responsive-container {
   container-type: size;
   width: 100%;
+}
+</style>
+
+<style>
+.v-application .market-base .info {
+  background-color: rgba(33, 150, 243, 0.8) !important;
+  border-color: rgba(33, 150, 243, 0.8) !important;
+}
+
+.v-application .market-base .error {
+  background-color: rgba(255, 82, 82, 0.8) !important;
+  border-color: rgba(255, 82, 82, 0.8) !important;
+}
+
+.dark.v-application .market-base .info {
+  background-color: rgba(33, 150, 243, 0.5) !important;
+  border-color: rgba(33, 150, 243, 0.5) !important;
+}
+
+.dark.v-application .market-base .error {
+  background-color: rgba(255, 82, 82, 0.5) !important;
+  border-color: rgba(255, 82, 82, 0.5) !important;
+}
+
+.market-base .v-sheet.v-alert:last-child {
+    margin: 0px 4px 8px 4px !important;
+}
+
+.market-base .v-sheet.v-alert {
+    margin: 0px 4px 4px 4px !important;
 }
 </style>

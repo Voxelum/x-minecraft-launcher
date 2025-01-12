@@ -317,9 +317,9 @@ errors:
   ConnectTimeoutError: Tempo limite de conexão com o servidor.
   DNSNotFoundError: Erro na pesquisa DNS
   DatabaseNotOpened: >-
-    Banco de dados não aberto! O launcher não funcionará corretamente!
-    Selecione um diretório de dados que o launcher possa acessar. Você pode
-    tentar redefinir o diretório raiz de dados na página de configurações.
+    Banco de dados não aberto! O launcher não funcionará corretamente! Selecione
+    um diretório de dados que o launcher possa acessar. Você pode tentar
+    redefinir o diretório raiz de dados na página de configurações.
   DownloadAggregateError: Falha ao baixar o arquivo.
   DownloadFileSystemError: >-
     Erro ao acessar o caminho do arquivo de download. Verifique se o launcher
@@ -379,6 +379,7 @@ fileDetail:
   fileSize: Tamanho do arquivo
   hash: Hash
 filter: Filtro
+filterLocalOnly: Mostrar apenas instalado
 finish: Concluir
 forgeConfig:
   hint: >-
@@ -510,6 +511,8 @@ instance:
   versionHint: A versão do Minecraft deste jogo
   vmOptions: Opções da JVM
   vmOptionsHint: Argumentos extras a serem passados para a JVM
+  vmVar: Variáveis ​​de ambiente
+  vmVarHint: Clique no botão para adicionar variáveis ​​de ambiente
 instanceAge:
   older: Antigo
   threeDay: Em três dias
@@ -604,7 +607,7 @@ java:
   modifyInstance: Modificar o caminho do Java
   noMemory: Não limitar o uso de memória
   refresh: Atualizar Java local
-  systemMemory: Memória do sistema atual
+  systemMemory: 'Memória livre do sistema: {free} / {total}'
 labyMod:
   disable: Desabilitar LabyMod
   empty: LabyMod não é compatível com a versão atual do Minecraft.
@@ -827,11 +830,6 @@ modInstall:
   source: Fonte do Mod
   switch: Trocar Versão
   upgrade: Atualizar Mods
-modSearchType:
-  all: Todos
-  explore: Explorar Mercado
-  installed: Instalados
-  local: Cache Local
 modUpgradePolicy:
   curseforge: Curseforge Primeiro
   curseforgeOnly: Somente Curseforge
@@ -1483,7 +1481,9 @@ setup:
   title: 'Bem-vindo ao X Minecraft Launcher. Antes de começar, precisamos que você '
 shaderPack:
   deletion: Excluir Shaders Pack
-  deletionHint: Isso excluirá o arquivo do shaders pack em {path} e não poderá ser revertido.
+  deletionHint: >-
+    Isso excluirá o arquivo do shaders pack em {path} e não poderá ser
+    revertido.
   disabled: Shader Packs Desabilitados
   dropHint: Importar Shaders Pack
   empty: Nenhum shaders pack alocado
@@ -1554,7 +1554,7 @@ theme:
   selectImage: Selecionar Imagem
   selectMusic: Selecionar Música
   selectVideo: Selecionar Vídeo
-  title: 'X Minecraft Launcher'
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Candidato Host

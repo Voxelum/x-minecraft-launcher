@@ -1,18 +1,16 @@
-import { ResolvedVersion, Version } from '@xmcl/core'
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, Instance, InstanceException, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, MutableState, RuntimeVersions, createTemplate, filterForgeVersion, filterOptifineVersion, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '@xmcl/runtime-api'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { copy, copyFile, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
+import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
-import { readLaunchProfile } from '~/launchProfile'
-import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { AnyError } from '~/util/error'
+import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
-import { copyPassively, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
+import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 
@@ -25,7 +23,7 @@ const INSTANCES_FOLDER = 'instances'
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile: SafeFile<InstancesSchema>
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
-  #removeHandlers: Record<string, (() => Promise<void> | void)[]> = {}
+  #removeHandlers: Record<string, (WeakRef<() => Promise<void> | void>)[]> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
@@ -65,24 +63,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         })
       }
 
-      // if (Object.keys(state.all).length === 0) {
-      //   const initial = this.app.getInitialInstance()
-      //   if (initial) {
-      //     try {
-      //       await this.addExternalInstance(initial)
-      //       const instance = Object.values(state.all)[0]
-      //       // await this.mountInstance(instance.path)
-      //       await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(instance.path) })
-      //     } catch (e) {
-      //       this.error(new Error(`Fail to initialize to ${initial}`, { cause: e }))
-      //       await this.createAndMount({ name: 'Minecraft' })
-      //     }
-      //   } else {
-      //     this.log('Cannot find any instances, try to init one default modpack.')
-      //     await this.createAndMount({ name: 'Minecraft' })
-      //   }
-      // }
-
       this.state
         .subscribe('instanceEdit', async ({ path }) => {
           const inst = this.state.all[path]
@@ -94,7 +74,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.instancesFile = createSafeFile(this.getAppDataPath('instances.json'), InstancesSchema, this, [this.getPath('instances.json')])
   }
 
-  async getSharedInstancesState(): Promise<MutableState<InstanceState>> {
+  async getSharedInstancesState(): Promise<SharedState<InstanceState>> {
     await this.initialize()
     return this.state
   }
@@ -211,9 +191,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireObject(payload)
 
     if (!payload.name) {
-      throw new InstanceException({
-        type: 'instanceNameRequired',
-      })
+      throw new TypeError('payload.name should not be empty!')
     }
 
     const instance = createTemplate()
@@ -317,7 +295,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       await ensureDir(join(newPath, 'mods'))
       // hard link all source to new path
       const files = await readdir(modDirSrc)
-      await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
+      await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
     }
     if (hasResourcepacks) {
       const resourcepacksDirSrc = join(path, 'resourcepacks')
@@ -326,7 +304,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         // hard link all files
         await ensureDir(join(newPath, 'resourcepacks'))
         const files = await readdir(resourcepacksDirSrc)
-        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
+        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
       }
     }
     if (hasShaderpacks) {
@@ -336,7 +314,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         // hard link all files
         await ensureDir(join(newPath, 'shaderpacks'))
         const files = await readdir(shaderpacksDirSrc)
-        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
+        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
       }
     }
 
@@ -352,11 +330,28 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireString(path)
 
     const isManaged = this.isUnderManaged(path)
+    const lock = this.semaphoreManager.getLock(`remove://${path}`)
     if (isManaged && await exists(path)) {
-      for (const handler of this.#removeHandlers[path] || []) {
-        await handler()
-      }
-      await rm(path, { recursive: true, force: true })
+      await lock.write(async () => {
+        const oldHandlers = this.#removeHandlers[path]
+        for (const handlerRef of oldHandlers || []) {
+          handlerRef.deref()?.()
+        }
+        try {
+          await rm(path, { recursive: true, force: true, maxRetries: 3 })
+        } catch (e) {
+          if (isSystemError(e) && e.code === ENOENT_ERROR) {
+            this.warn(`Fail to remove instance ${path}`)
+          } else {
+            if ((e as any).name === 'Error') {
+              (e as any).name = 'InstanceDeleteError'
+            }
+            throw e
+          }
+        }
+
+        this.#removeHandlers[path] = []
+      })
     }
 
     this.state.instanceRemove(path)
@@ -366,7 +361,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!this.#removeHandlers[path]) {
       this.#removeHandlers[path] = []
     }
-    this.#removeHandlers[path].push(handler)
+    this.#removeHandlers[path].push(new WeakRef(handler))
   }
 
   /**
@@ -391,14 +386,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       state = this.state.all[instancePath] || this.state.instances.find(i => i.path === instancePath)
 
       if (!state) {
-        const error = new InstanceException({
-          type: 'instanceNotFound',
-          path: instancePath,
-        })
         this.error(new AnyError('InstanceNotFoundError',
           `Fail to find ${instancePath}. Existed: ${Object.keys(this.state.all).join(', ')}.`,
         ))
-        throw error
+        return
       }
     }
 
@@ -420,11 +411,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         const newPath = join(dirname(instancePath), options.name)
         if (newPath !== instancePath) {
           if (this.state.instances.some(i => i.path === newPath)) {
-            throw new InstanceException({
-              type: 'instanceNameDuplicated',
-              path: instancePath,
-              name: options.name,
-            })
+            options.name = undefined
+            this.error(new AnyError('InstanceNameDuplicatedError'))
           }
         }
       }
@@ -521,6 +509,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
+    if ('env' in options) {
+      const hasDiff = typeof options.env !== typeof state.env || (options.env && state.env && Object.keys(options.env).some(k => options.env?.[k] !== state.env?.[k]))
+      if (hasDiff) {
+        result.env = options.env
+      }
+    }
+
     if ('icon' in result && result.icon) {
       try {
         const iconURL = new URL(result.icon)
@@ -541,146 +536,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   isUnderManaged(path: string) {
     return resolve(path).startsWith(resolve(this.getPathUnder()))
-  }
-
-  @Singleton()
-  async addExternalInstance(path: string): Promise<boolean> {
-    const err = await validateDirectory(this.app.platform, path)
-    if (err && err !== 'exists') {
-      throw new InstanceException({
-        type: 'instancePathInvalid',
-        path,
-        reason: err,
-      })
-    }
-
-    if (this.state.all[path]) {
-      this.log(`Skip to link already managed instance ${path}`)
-      return false
-    }
-
-    if (resolve(path).startsWith(this.getPath()) || this.getPath().startsWith(resolve(path))) {
-      this.log(`Skip to add instance from root ${path}`)
-      return false
-    }
-
-    // copy assets, library and versions
-    await Promise.all([
-      copyPassively(resolve(path, 'libraries'), this.getPath('libraries')),
-      copyPassively(resolve(path, 'assets'), this.getPath('assets')),
-    ])
-
-    const versions = await readdir(resolve(path, 'versions')).catch(() => [])
-    const resolveVersions = [] as ResolvedVersion[]
-    const profile = await readLaunchProfile(path).catch(() => undefined)
-    let isVersionIsolated = false
-    await Promise.all(versions.map(async (v) => {
-      try {
-        // only resolve valid version
-        const version = await Version.parse(path, v)
-        resolveVersions.push(version)
-        const versionRoot = resolve(path, 'versions', v)
-
-        const versionJson = resolve(versionRoot, `${v}.json`)
-        const versionJar = resolve(versionRoot, `${v}.jar`)
-        await Promise.all([
-          copyFile(versionJar, this.getPath('versions', v, `${v}.jar`)).catch(() => undefined),
-          copyFile(versionJson, this.getPath('versions', v, `${v}.json`)).catch(() => undefined),
-        ])
-
-        const files = (await readdir(versionRoot)).filter(f => f !== '.DS_Store' && f !== `${v}.json` && f !== `${v}.jar`)
-        if (files.some(f => f === 'saves' || f === 'mods' || f === 'options.txt' || f === 'config' || f === 'PCL')) {
-          // this is an version isolation
-          const options: CreateInstanceOption = {
-            path: versionRoot,
-            name: version.id,
-          }
-          if (profile) {
-            for (const p of Object.values(profile.profiles)) {
-              if (p.lastVersionId === version.id) {
-                options.name = p.name
-                options.java = p.javaDir
-                options.vmOptions = p.javaArgs?.split(' ') || []
-                break
-              }
-            }
-          }
-          options.runtime = {
-            minecraft: version.minecraftVersion,
-            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
-            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
-            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
-          }
-          isVersionIsolated = true
-          await this.createInstance(options)
-        }
-      } catch (e) {
-        if (e instanceof Error) this.error(e)
-        // TODO: handle
-      }
-    }))
-
-    if (!isVersionIsolated) {
-      const options: CreateInstanceOption = {
-        path,
-        name: '',
-      }
-      if (profile) {
-        const sorted = Object.values(profile.profiles).sort((a, b) =>
-          // @ts-ignore
-          new Date(b.lastUsed) - new Date(a.lastUsed))
-        let version: ResolvedVersion | undefined
-        for (const p of sorted) {
-          const id = p.lastVersionId
-          version = resolveVersions.find(v => v.id === id)
-          options.name = p.name
-          options.java = p.javaDir
-          options.vmOptions = p.javaArgs?.split(' ') || []
-          if (version) {
-            break
-          }
-        }
-        if (version) {
-          options.runtime = {
-            minecraft: version.minecraftVersion,
-            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
-            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
-            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
-          }
-        } else {
-          options.runtime = {
-            minecraft: this.versionMetadataService.getLatestRelease(),
-          }
-        }
-      } else {
-        const version = resolveVersions[0]
-        if (version) {
-          options.runtime = {
-            minecraft: version.minecraftVersion,
-            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
-            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
-            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
-          }
-        } else {
-          options.runtime = {
-            minecraft: this.versionMetadataService.getLatestRelease(),
-          }
-        }
-      }
-
-      const dirPath = dirname(path)
-      const folderName = basename(dirPath)
-      if (folderName === 'minecraft' || folderName === '.minecraft') {
-        const name = getExpectVersion(options.runtime)
-        options.name = name
-      } else {
-        options.name = isPathDiskRootPath(dirPath) ? basename(path) : folderName
-      }
-
-      await this.createInstance(options)
-    }
-
-    return true
   }
 
   async acquireInstanceById(id: string): Promise<string> {

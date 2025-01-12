@@ -6,8 +6,8 @@ export interface DispatchInterceptor {
   (options: Dispatcher.DispatchOptions): void
 }
 
-export class DispatchHandler implements Dispatcher.DispatchHandlers {
-  constructor(protected handler: Dispatcher.DispatchHandlers) {
+export class DispatchHandler implements Dispatcher.DispatchHandler {
+  constructor(protected handler: Dispatcher.DispatchHandler) {
   }
 
   /** Invoked before request is dispatched on socket. May be invoked multiple times when a request is retried when the request at the head of the pipeline fails. */
@@ -61,7 +61,7 @@ export class InteroperableDispatcher extends Dispatcher {
     super()
   }
 
-  dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
+  dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandler): boolean {
     const process = async () => {
       for (const interceptor of this.interceptors) {
         await interceptor(options)

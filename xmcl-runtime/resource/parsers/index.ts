@@ -1,6 +1,8 @@
 import { ResourceDomain, ResourceMetadata, ResourceType } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import { basename, extname } from 'path'
+import { isSystemError } from '~/util/error'
+import { ENOENT_ERROR, EPERM_ERROR } from '~/util/fs'
 import { fabricModParser } from './fabricMod'
 import { forgeModParser } from './forgeMod'
 import { liteloaderModParser } from './liteloaderMod'
@@ -75,7 +77,30 @@ export class ResourceParser {
     }
 
     const icons: Uint8Array[] = []
-    const fs = await openFileSystem(args.path)
+    const fs = await openFileSystem(args.path).catch((e) => {
+      if (e.message === 'Invalid zip file') {
+        Object.assign(e, { name: 'InvalidZipFileError' })
+        throw e
+      }
+      if (e.message.startsWith('multi-disk zip files are not supported: found disk number')) {
+        Object.assign(e, { name: 'MultiDiskZipFileError' })
+        throw e
+      }
+      if (e.message.startsWith('invalid central directory file header signature')) {
+        Object.assign(e, { name: 'InvalidCentralDirectoryFileHeaderError' })
+      }
+      if (e.message.startsWith('compressed/uncompressed size mismatch for stored file')) {
+        Object.assign(e, { name: 'CompressedUncompressedSizeMismatchError' })
+      }
+      if (isSystemError(e)) {
+        if (e.code === ENOENT_ERROR) {
+          Object.assign(e, { name: 'FileNotFoundError' })
+        } else if (e.code === EPERM_ERROR) {
+          Object.assign(e, { name: 'PermissionError' })
+        }
+      }
+      throw e
+    })
     const container: ResourceMetadata = {}
     const fileName = basename(args.path)
     const uris = [] as string[]

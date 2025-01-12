@@ -301,6 +301,7 @@ fileDetail:
   fileSize: Fájl méret
   hash: Hash
 filter: Szűrő
+filterLocalOnly: Csak a telepített megjelenítés
 finish: Befejezés
 forgeConfig:
   hint: >-
@@ -432,6 +433,8 @@ instance:
   versionHint: A játék Minecraft verziója
   vmOptions: JVM Beállítások
   vmOptionsHint: Extra argumentumok átadása a JVM-nek
+  vmVar: Környezeti változók
+  vmVarHint: Kattintson a gombra környezeti változók hozzáadásához
 instanceAge:
   older: Régebbi
   threeDay: Három napon belül
@@ -528,7 +531,7 @@ java:
   modifyInstance: Java elérési útvonal módosítása
   noMemory: Ne korlátozza a memória használatát
   refresh: Helyi Java frissítése
-  systemMemory: Jelenlegi rendszermemória
+  systemMemory: 'Rendszermentes memória: {free} / {total}'
 labyMod:
   disable: LabyMod letiltása
   empty: A LabyMod nem támogatja a jelenlegi Minecraftot
@@ -758,11 +761,6 @@ modInstall:
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
-modSearchType:
-  all: Összes
-  explore: Piac felfedezése
-  installed: Telepítve
-  local: Lemez gyorsítótár
 modUpgradePolicy:
   curseforge: Curseforge először
   curseforgeOnly: Csak Curseforge

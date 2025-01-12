@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { AnyError } from '~/util/error'
 import { ServiceStateContext } from './ServiceStateManager'
 import { Client } from '~/app'
-import { MutableState, createPromiseSignal } from '@xmcl/runtime-api'
+import { SharedState, createPromiseSignal } from '@xmcl/runtime-api'
 import { MutableStateImpl, kStateKey } from './stateUtils'
 
 export type ServiceStateFactory<T> = (context: ServiceStateContext) => Promise<[T, () => void] | [T, () => void, () => Promise<void>]>
@@ -19,8 +19,8 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
   #revalidating: Promise<void> | undefined
   private semaphore = 0
   #clients: [Client, Function][] = []
-  #state: MutableState<T> | undefined
-  #signal = createPromiseSignal<MutableState<T>>()
+  #state: SharedState<T> | undefined
+  #signal = createPromiseSignal<SharedState<T>>()
   #disposer: () => void = () => { }
   #revalidator?: () => Promise<void>
   #emitter = new EventEmitter()

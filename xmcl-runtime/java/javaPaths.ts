@@ -1,5 +1,6 @@
 import { lstat, readdir } from 'fs-extra'
 import { join } from 'path'
+import { homedir } from 'os'
 
 export async function getMojangJavaPaths() {
   const runtimeDir = 'C:\\Program Files (x86)\\Minecraft Launcher\\runtime'
@@ -28,6 +29,11 @@ export async function getZuluJdkPath() {
 export async function getJavaPathsLinux() {
   const files = await readdir('/usr/lib/jvm').catch(() => [])
   return files.map(f => join('/usr/lib/jvm', f, 'bin', 'java'))
+}
+
+export async function getJavaPathsLinuxSDK() {
+  const files = await readdir(`${homedir}/.sdkman/candidates/java`).catch(() => [])
+  return files.map(f => join(`${homedir}/.sdkman/candidates/java`, f, 'bin', 'java'))
 }
 
 export async function getJavaPathsOSX() {

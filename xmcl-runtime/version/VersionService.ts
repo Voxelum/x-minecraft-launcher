@@ -1,9 +1,8 @@
 import { LibraryInfo, ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { VersionService as IVersionService, VersionHeader, LocalVersions, MutableState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, getResolvedVersionHeader } from '@xmcl/runtime-api'
+import { VersionService as IVersionService, VersionHeader, LocalVersions, SharedState, ResolvedServerVersion, VersionServiceKey, filterForgeVersion, filterOptifineVersion, findLabyModVersion, findNeoForgedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, getResolvedVersionHeader } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { FSWatcher } from 'fs'
 import { ensureDir, readFile, readdir, rm } from 'fs-extra'
-import watch from 'node-watch'
+import { watch, FSWatcher } from 'chokidar'
 import { basename, dirname, join, relative, sep } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ResourceWorker, kResourceWorker } from '~/resource'
@@ -29,51 +28,41 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app, () => store.registerStatic(new LocalVersions(), VersionServiceKey), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)
       this.watcher = watch(versions, {
-        encoding: 'utf-8',
-        recursive: true,
-        filter(file, skip) {
-          const relativePath = relative(versions, file)
-          const splitted = relativePath.split(sep)
-          if (splitted.length === 1) {
-            // watch but no update
+        ignoreInitial: true,
+        depth: 2,
+        awaitWriteFinish: true,
+        ignorePermissionErrors: true,
+        ignored: (file) => {
+          const depth = relative(versions, file).split(sep).length
+          if (depth <= 1) {
+            // version folders should not be ignored
             return false
           }
-          if (splitted.length > 2) {
-            // ignore depth
-            return skip
-          }
-          const versionFile = splitted[1]
-          if (versionFile.endsWith('.json')) {
+          if (depth > 2) {
+            // ignore all nested files
             return true
           }
-          // skip other
-          return skip
+          // Only watch json files
+          return !file.endsWith('.json')
         },
       })
-      this.watcher.on('change', (event, file) => {
-        const id = basename(dirname(file as string))
-        if (event === 'update') {
-          if ((file as string).endsWith('server.json')) {
-            this.refreshServerVersion(id)
-          } else {
-            this.refreshVersion(id)
+      this.watcher
+        .on('all', (event, file) => {
+          if (event === 'unlink' || event === 'add' || event === 'change') {
+            const id = basename(dirname(file))
+            if (file.endsWith('server.json')) {
+              this.refreshServerVersion(file)
+            } else {
+              this.refreshVersion(id)
+            }
           }
-        } else if (event === 'remove') {
-          if ((file as string).endsWith('server.json')) {
-            this.refreshServerVersion(file as string)
-          } else {
-            this.refreshVersion(id)
-          }
-          // this.state.localVersionRemove(basename(dirname(file as string)))
-        }
-      })
+        })
     })
     this.app.registryDisposer(async () => {
       this.watcher?.close()
@@ -84,7 +73,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     this.resolvers.push(resolver)
   }
 
-  async getLocalVersions(): Promise<MutableState<LocalVersions>> {
+  async getLocalVersions(): Promise<SharedState<LocalVersions>> {
     return this.state
   }
 

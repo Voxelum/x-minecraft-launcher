@@ -8,13 +8,9 @@ import { kSettings } from '~/settings'
 import { NetworkAgent, ProxySettingController } from './dispatchers/NetworkAgent'
 import { kDownloadOptions, kNetworkInterface } from './networkInterface'
 
-type DispatchOptions = Dispatcher.DispatchOptions
-
 export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('NetworkInterface')
   const userAgent = app.userAgent
-
-  const dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
 
   let maxConnection = 64
   const connectorOptions: buildConnector.BuildOptions = {
@@ -31,6 +27,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     if (state.httpProxy) {
       try {
         proxy.setProxy(new URL(state.httpProxy))
+        app.setProxy(state.httpProxy)
       } catch (e) {
         logger.warn(`Fail to set url as it's not a valid url ${state.httpProxy}`, e)
       }
@@ -39,6 +36,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       maxConnection = val > 0 ? val : 64
     })
     state.subscribe('httpProxySet', (p) => {
+      app.setProxy(p)
       try {
         proxy.setProxy(new URL(p))
       } catch (e) {
@@ -47,6 +45,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     })
     state.subscribe('httpProxyEnabledSet', (e) => {
       proxy.setProxyEnabled(e)
+      app.setProxy(e ? state.httpProxy : '')
     })
   })
 
@@ -71,7 +70,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     retryOptions: {
       maxTimeout: 60_000,
       maxRetries: 30,
-      // @ts-ignore
       retry: (err, { state, opts }, cb) => {
         const { statusCode, code, headers } = err as any
         const { method, retryOptions } = opts
@@ -156,7 +154,12 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       bodyTimeout: 60_000,
       maxRedirections: 5,
       connect,
-      factory: (origin, opts) => patchIfPool(new Pool(origin, opts)),
+      factory: (origin, opts) => {
+        if (origin === 'https://edge.forgecdn.net' || origin === 'https://mediafilez.forgecdn.net') {
+          return new Pool(origin, { ...opts, connections: 16 })
+        }
+        return patchIfPool(new Pool(origin, opts))
+      },
     }),
     proxyTls: connectorOptions,
     requestTls: connectorOptions,
@@ -217,9 +220,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   })
 
   app.registry.register(kNetworkInterface, {
-    registerOptionsInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>): void {
-      dispatchInterceptors.unshift(interceptor)
-    },
     getDownloadAgentStatus: getAgentStatus,
     async destroyPool(origin) {
       // @ts-ignore

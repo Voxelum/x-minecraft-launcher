@@ -19,6 +19,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
     globalDisableAuthlibInjector, globalDisableElyByAuthlib,
     globalPrependCommand,
+    globalEnv,
   } = useGlobalSettings()
 
   const data = reactive({
@@ -38,6 +39,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     prependCommand: instance.value?.prependCommand,
     maxMemory: instance.value?.maxMemory,
     minMemory: instance.value?.minMemory,
+    env: instance.value?.env ?? {},
 
     runtime: {
       minecraft: instance.value?.runtime.minecraft ?? '',
@@ -176,6 +178,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     get: () => data.javaPath,
     set: (v) => { data.javaPath = v; saveJIT() },
   })
+  const env = computed({
+    get: () => data.env,
+    set: (v) => { data.env = v; saveJIT() },
+  })
 
   const isModified = computed(() => {
     const current = instance.value
@@ -267,6 +273,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       prependCommand: data.prependCommand,
       author: data.author,
       description: data.description,
+      env: data.env,
     } as EditInstanceOptions
     if (instance.value.server) {
       payload.server = instance.value?.server
@@ -333,6 +340,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.disableAuthlibInjector = current.disableAuthlibInjector
       data.disableElyByAuthlib = current.disableElybyAuthlib
       data.prependCommand = current.prependCommand
+      data.env = current.env ?? {}
 
       if (current.server) {
         data.host = current.server.host
@@ -370,6 +378,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     javaPath,
     disableAuthlibInjector,
     disableElyByAuthlib,
+    env,
+    globalEnv,
     resetAssignMemory,
     resetVmOptions,
     resetMcOptions,

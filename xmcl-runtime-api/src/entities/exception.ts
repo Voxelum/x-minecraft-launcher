@@ -23,17 +23,34 @@ export interface InstanceNotFoundException extends ExceptionBase {
   instancePath: string
 }
 
-export interface HTTPExceptions extends ExceptionBase {
+export type NetworkExceptions = {
   type: 'httpException'
+  code: NetworkErrorCode.HTTP_STATUS
   method: string
-  code: string | number
   url: string
   statusCode: number
   body: any
+} | {
+  type: 'networkException'
+  code: string | number
 }
 
-export class HTTPException extends Exception<HTTPExceptions> {
-  name = 'HTTPException'
+export const enum NetworkErrorCode {
+  CONNECTION_CLOSED = 'CONNECTION_CLOSED',
+  INTERNET_DISCONNECTED = 'INTERNET_DISCONNECTED',
+  NETWORK_CHANGED = 'NETWORK_CHANGED',
+  PROXY_CONNECTION_FAILED = 'PROXY_CONNECTION_FAILED',
+  CONNECTION_RESET = 'CONNECTION_RESET',
+  CONNECTION_TIMED_OUT = 'CONNECTION_TIMED_OUT',
+  TIMED_OUT = 'TIMED_OUT',
+  DNS_NOTFOUND = 'NAME_NOT_RESOLVED',
+  SOCKET_NOT_CONNECTED = 'SOCKET_NOT_CONNECTED',
+  // all above user can retry
+  HTTP_STATUS = 'HTTP_STATUS',
+}
+
+export class NetworkException extends Exception<NetworkExceptions> {
+  name = 'NetworkException'
 }
 
 export function isFileNoFound(e: unknown) {

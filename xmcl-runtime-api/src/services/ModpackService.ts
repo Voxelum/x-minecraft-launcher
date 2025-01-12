@@ -3,7 +3,7 @@ import { InstanceData, RuntimeVersions } from '../entities/instance.schema'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { InstallMarketOptions } from '../entities/market'
 import { ResourceMetadata, ResourceState } from '../entities/resource'
-import { MutableState } from '../util/MutableState'
+import { SharedState } from '../util/SharedState'
 import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 
@@ -144,7 +144,7 @@ export interface ModpackService {
   /**
    * Open an modpack to install. Use the `installInstanceFiles` to create an instance.
    */
-  openModpack(modpackPath: string): Promise<MutableState<ModpackState>>
+  openModpack(modpackPath: string): Promise<SharedState<ModpackState>>
   /**
    * Import the modpack as an instance
    * @param modpackPath The modpack file path
@@ -161,12 +161,12 @@ export interface ModpackService {
    */
   showModpacksFolder(): Promise<void>
 
-  watchModpackFolder(): Promise<MutableState<ResourceState>>
+  watchModpackFolder(): Promise<SharedState<ResourceState>>
 
   removeModpack(path: string): Promise<void>
 }
 
-export function waitModpackFiles(modpack: MutableState<ModpackState>) {
+export function waitModpackFiles(modpack: SharedState<ModpackState>) {
   return new Promise<InstanceFile[]>(resolve => {
     if (modpack.ready) {
       resolve(modpack.files)

@@ -17,6 +17,7 @@ import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
+import { normalizeCommandLine } from '~/util/cmd'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -98,11 +99,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraExecOption: {
         detached: true,
         cwd: minecraftFolder.getPath('server'),
+        env: { ...process.env, ...options.env },
       },
 
       extraJVMArgs: jvmArgs,
       extraMCArgs: mcArgs,
-      prependCommand: options.prependCommand,
+      prependCommand: normalizeCommandLine(options.prependCommand),
 
       nogui: options.nogui,
     }
@@ -146,12 +148,13 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraExecOption: {
         detached: true,
         cwd: minecraftFolder.root,
+        env: { ...process.env, ...options.env },
       },
       extraJVMArgs: options.vmOptions?.filter(v => !!v),
       extraMCArgs: options.mcOptions?.filter(v => !!v),
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
-      prependCommand: options.prependCommand,
+      prependCommand: normalizeCommandLine(options.prependCommand),
       yggdrasilAgent,
       useHashAssetsIndex: true,
       platform: {
@@ -235,14 +238,24 @@ export class LaunchService extends AbstractService implements ILaunchService {
       } else {
         const version = await this.versionService.resolveServerVersion(options.version)
         const launchOptions = await this.#generateServerOptions(options, version)
-        const args = await generateArgumentsServer(launchOptions)
+        const args = generateArgumentsServer(launchOptions)
         return args
       }
     } catch (e) {
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } })
+      if (e instanceof Error) {
+        if (!e.stack) {
+          e.stack = new Error().stack
+        }
+        if (e.name === 'Error') {
+          Object.assign(e, {
+            name: 'LaunchGeneralError',
+          })
+        }
+      }
+      throw e
     }
   }
 
@@ -313,7 +326,14 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
         this.log('Launching client with these option...')
         this.log(JSON.stringify(op, (k, v) => (k === 'accessToken' ? '***' : v), 2))
-        process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
+        try {
+          process = await this.#track(launch(op), 'spawn-minecraft-process', operationId)
+        } catch (e) {
+          if (isSystemError(e) && e.code === 'EPERM') {
+            throw new LaunchException({ type: 'launchJavaNoPermission', javaPath: op.javaPath }, 'Fail to spawn process')
+          }
+          throw e
+        }
       } else {
         launchOptions = await this.#generateServerOptions(options, version)
         for (const plugin of this.middlewares) {
@@ -398,7 +418,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       })
 
       watcher.on('error', (err) => {
-        this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
+        this.emit('error', err)
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         const endTime = Date.now()
         const playTime = endTime - startTime
@@ -445,7 +465,17 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } }, (e as any).message, { cause: e })
+      if (e instanceof Error) {
+        if (!e.stack) {
+          e.stack = new Error().stack
+        }
+        if (e.name === 'Error') {
+          Object.assign(e, {
+            name: 'LaunchGeneralError',
+          })
+        }
+      }
+      throw e
     }
   }
 

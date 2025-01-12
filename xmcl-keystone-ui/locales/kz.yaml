@@ -367,6 +367,7 @@ fileDetail:
   fileSize: Файл өлшемі
   hash: Hash
 filter: Сүзгі
+filterLocalOnly: Only show installed
 finish: Аяқтау
 forgeConfig:
   hint: >-
@@ -382,3 +383,6 @@ forgeVersion:
   showBuggy: Баггиді көрсету
   showRecommendedAndLatestOnly: Ұсынылған және тек соңғы нұсқа
   version: Forge нұсқасы
+instance:
+  vmVar: Environment Variables
+  vmVarHint: Click   button to add environemnt variables

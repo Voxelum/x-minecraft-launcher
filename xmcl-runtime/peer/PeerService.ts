@@ -1,5 +1,5 @@
 import { DownloadTask } from '@xmcl/installer'
-import { PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { PeerService as IPeerService, SharedState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
@@ -45,7 +45,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
   }
 
-  async getPeerState(): Promise<MutableState<PeerState>> {
+  async getPeerState(): Promise<SharedState<PeerState>> {
     return this.state
   }
 

@@ -6,7 +6,7 @@ import { sep } from 'path'
 
 export function readlinkSafe(path: string) {
   return readlink(path).catch(e => {
-    if (isSystemError(e) && e.code === ENOENT_ERROR) {
+    if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EINVAL' || e.code === 'EISDIR')) {
       return undefined
     }
     if (!e.stack) {
