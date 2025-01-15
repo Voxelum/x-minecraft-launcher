@@ -1,7 +1,7 @@
 import { checksum, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
-import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, SharedState, OptifineVersion, Settings } from '@xmcl/runtime-api'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
+import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallProfileOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, Settings, SharedState } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
@@ -355,7 +355,13 @@ export class InstallService extends AbstractService implements IInstallService {
     const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
 
-    validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
+    if (options.java) {
+      const java = validJavaPaths.find(v => v.path === options.java)
+      if (java) {
+        validJavaPaths.splice(validJavaPaths.indexOf(java), 1)
+        validJavaPaths.unshift(java)
+      }
+    }
 
     let version: string | undefined
     for (const java of validJavaPaths) {
@@ -621,7 +627,7 @@ export class InstallService extends AbstractService implements IInstallService {
       }
     }
 
-    const java = this.javaService.getPreferredJava()?.path
+    const java = options.java ?? this.javaService.getPreferredJava()?.path
 
     const urls = [
       await this.getOptifineDownloadUrl(options),
@@ -652,7 +658,7 @@ export class InstallService extends AbstractService implements IInstallService {
       return id
     }, { id: optifineVersion }))
 
-    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${result[0]}`)
+    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${result}`)
 
     return result
   }
@@ -666,10 +672,12 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  async installByProfile(profile: InstallProfile, version?: string) {
+  async installByProfile({ profile, version, side, java }: InstallProfileOptions) {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {
         ...this.getForgeInstallOptions(),
+        side,
+        java,
       }).setName('installForge', { id: version ?? profile.version }))
     } catch (err) {
       if (err instanceof CancelledError) {
@@ -679,6 +687,8 @@ export class InstallService extends AbstractService implements IInstallService {
         await this.installNeoForged({
           minecraft: profile.minecraft,
           version: profile.version.substring('neoforge-'.length),
+          side,
+          java,
         })
       } else {
         const forgeVersion = profile.version.indexOf('-forge-') !== -1
@@ -689,6 +699,8 @@ export class InstallService extends AbstractService implements IInstallService {
         await this.installForge({
           version: forgeVersion,
           mcversion: profile.minecraft,
+          side,
+          java,
         })
       }
       this.warn(err)

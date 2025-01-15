@@ -43,7 +43,7 @@ export interface JavaService {
   /**
    * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` or `jre-next` folder
    */
-  installDefaultJava(version?: JavaVersion): Promise<undefined | Java>
+  installDefaultJava(version?: JavaVersion): Promise<Java>
   /**
    * Resolve java info. If the java is not known by launcher. It will cache it into the launcher java list.
    */

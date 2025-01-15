@@ -1,6 +1,6 @@
 import { JavaVersion } from '@xmcl/core'
 import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, SharedState, Settings } from '@xmcl/runtime-api'
+import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, Settings, SharedState } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -10,6 +10,7 @@ import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { getApiSets, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
+import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { readdirIfPresent } from '../util/fs'
 import { requireString } from '../util/object'
@@ -213,7 +214,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       await chmod(location, 0o765)
     }
     this.log(`Successfully install java internally ${location}`)
-    return await this.resolveJava(location)
+    const result = await this.resolveJava(location)
+    if (!result) {
+      throw new AnyError('InstallDefaultJavaError', 'Fail to install java')
+    }
+    return result
   }
 
   async validateJavaPath(javaPath: string): Promise<JavaValidation> {

@@ -1,16 +1,16 @@
+import { appInsights } from '@/telemetry'
+import { AnyError } from '@/util/error'
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { Mutex } from 'async-mutex'
 import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
+import { useNotifier } from './notifier'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
-import { useNotifier } from './notifier'
-import { appInsights } from '@/telemetry'
-import { AnyError } from '@/util/error'
 
 export interface InstanceInstallInstruction {
   instance: string
@@ -37,7 +37,18 @@ export interface InstanceInstallInstruction {
 export const kInstanceVersionInstall = Symbol('InstanceVersionInstall') as InjectionKey<ReturnType<typeof useInstanceVersionInstallInstruction>>
 const kAbort = Symbol('Aborted')
 
-function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, javas: Ref<JavaRecord[]>) {
+function getJavaPathOrInstall(instances: Instance[], javas: JavaRecord[], resolved: ResolvedVersion, instance: string) {
+  const inst = instances.find(i => i.path === instance)
+  if (inst?.java) {
+    return inst.java
+  }
+  const validJava = javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid)
+  console.log('validJava', validJava)
+  return validJava ? validJava.path : resolved.javaVersion
+}
+
+
+function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, instances: Ref<Instance[]>, javas: Ref<JavaRecord[]>) {
   const {
     installForge,
     installNeoForged,
@@ -74,6 +85,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       await installMinecraftJar(localMinecraft.id, 'client')
     }
 
+    const resolvedMcVersion = await resolveLocalVersion(minecraft)
     let forgeVersion = undefined as undefined | string
     if (forge) {
       const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
@@ -82,13 +94,10 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
 
-        if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
-          // no valid java
-          const mcVersionResolved = await resolveLocalVersion(minecraft)
-          await installDefaultJava(mcVersionResolved.javaVersion)
-        }
+        const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
+        const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installDefaultJava(javaOrInstall).then((r) => r.path)
 
-        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
+        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, java: javaPath })
       } else {
         forgeVersion = localForge.id
         await refreshVersion(localForge.id)
@@ -102,13 +111,10 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         const found = neoForgedVersion.find(v => v === neoForged)
         const id = found ?? neoForged
 
-        if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
-          // no valid java
-          const mcVersionResolved = await resolveLocalVersion(minecraft)
-          await installDefaultJava(mcVersionResolved.javaVersion)
-        }
+        const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
+        const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installDefaultJava(javaOrInstall).then((r) => r.path)
 
-        forgeVersion = await installNeoForged({ version: id, minecraft })
+        forgeVersion = await installNeoForged({ version: id, minecraft, java: javaPath })
       } else {
         forgeVersion = localNeoForge.id
         await refreshVersion(localNeoForge.id)
@@ -126,7 +132,11 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         return localOptifine.id
       }
       const { type, patch } = parseOptifineVersion(optifineVersion)
-      const [ver] = await installOptifine({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion })
+
+      const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
+      const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installDefaultJava(javaOrInstall).then((r) => r.path)
+
+      const ver = await installOptifine({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion, java: javaPath })
       return ver
     } else if (forgeVersion) {
       return forgeVersion
@@ -239,7 +249,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   const { installDefaultJava } = useService(JavaServiceKey)
   const { notify } = useNotifier()
 
-  const { install, installServer } = useInstanceVersionInstall(versions, servers, javas)
+  const { install, installServer } = useInstanceVersionInstall(versions, servers, instances, javas)
 
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
@@ -293,16 +303,6 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     return newLock
   }
 
-  function getJavaInstall(javas: JavaRecord[], resolved: ResolvedVersion, instance: string) {
-    const inst = instances.value.find(i => i.path === instance)
-    if (inst?.java) {
-      return undefined
-    }
-    const validJava = javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid)
-    console.log('validJava', validJava)
-    return validJava ? undefined : resolved.javaVersion
-  }
-
   /**
    * @param instance The instance path
    * @param runtime The runtime version
@@ -322,7 +322,10 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
 
     result.resolvedVersion = resolved.id
 
-    result.java = getJavaInstall(javas, resolved, instance)
+    const javaInstallOrPath = getJavaPathOrInstall(instances.value, javas, resolved, instance)
+    if (typeof javaInstallOrPath === 'object') {
+      result.java = javaInstallOrPath
+    }
 
     const profileIssue = await diagnoseProfile(resolved.id, 'client', path.value)
     if (abortSignal?.aborted) { throw kAbort }
@@ -414,8 +417,8 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         if (version) {
           await installDependencies(version, 'client')
           const resolved = await resolveLocalVersion(version)
-          const java = getJavaInstall(javas.value, resolved, instruction.instance)
-          if (java) {
+          const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
+          if (typeof java === 'object') {
             await installDefaultJava(java)
           }
         }
@@ -427,14 +430,14 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         await installMinecraftJar(instruction.runtime.minecraft, 'client')
       }
       if (instruction.profile) {
-        await installByProfile(instruction.profile.installProfile)
+        const resolved = await resolveLocalVersion(instruction.version)
+        const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
+        const javaPath = typeof java === 'string' ? java : await installDefaultJava(java).then((r) => r.path)
+
+        await installByProfile({ profile: instruction.profile.installProfile, side: 'client', java: javaPath })
+
         if (instruction.version) {
           await installDependencies(instruction.version, 'client')
-          const resolved = await resolveLocalVersion(instruction.version)
-          const java = getJavaInstall(javas.value, resolved, instruction.instance)
-          if (java) {
-            await installDefaultJava(java)
-          }
         }
         return
       }
@@ -444,43 +447,34 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
           type: instruction.optifine.type,
           patch: instruction.optifine.patch,
         })
-        if (version) {
-          await installDependencies(version, 'client')
-          const resolved = await resolveLocalVersion(version)
-          const java = getJavaInstall(javas.value, resolved, instruction.instance)
-          if (java) {
-            await installDefaultJava(java)
-          }
+        await installDependencies(version, 'client')
+        const resolved = await resolveLocalVersion(version)
+        const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
+        if (typeof java === 'object') {
+          await installDefaultJava(java)
         }
         await commit(version)
         return
       }
       if (instruction.forge) {
-        if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
-          // no valid java
-          const mcVersionResolved = await resolveLocalVersion(instruction.forge.minecraft)
-          await installDefaultJava(mcVersionResolved.javaVersion)
-        }
+        const resolved = await resolveLocalVersion(instruction.forge.minecraft)
+        const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
+        const javaPath = typeof java === 'string' ? java : await installDefaultJava(java).then((r) => r.path)
 
         const version = await installForge({
           mcversion: instruction.forge.minecraft,
           version: instruction.forge.version,
+          java: javaPath,
+          side: 'client',
         })
-        if (version) {
-          await installDependencies(version, 'client')
-          const resolved = await resolveLocalVersion(version)
-          const java = getJavaInstall(javas.value, resolved, instruction.instance)
-          if (java) {
-            await installDefaultJava(java)
-          }
-        }
+        await installDependencies(version, 'client')
         await commit(version)
         return
       }
 
       const resolved = await resolveLocalVersion(instruction.resolvedVersion)
-      const java = getJavaInstall(javas.value, resolved, instruction.instance)
-      if (java) {
+      const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
+      if (typeof java === 'object') {
         await installDefaultJava(java)
       }
       if (instruction.libriares) {

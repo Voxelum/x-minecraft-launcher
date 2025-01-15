@@ -9,6 +9,8 @@ export interface InstallOptifineOptions extends OptifineVersion {
    */
   forgeVersion?: string
   inheritFrom?: string
+
+  java?: string
 }
 
 export interface InstallOptifineAsModOptions extends OptifineVersion {
@@ -59,9 +61,24 @@ export interface InstallForgeOptions {
    */
   version: string
 
+  /**
+   * The java path
+   */
+  java?: string
+
   side?: 'client' | 'server'
 
   root?: string
+}
+
+export interface InstallProfileOptions {
+  profile: InstallProfile
+
+  version?: string
+
+  side?: 'client' | 'server'
+
+  java?: string
 }
 
 export interface InstallNeoForgedOptions {
@@ -73,6 +90,10 @@ export interface InstallNeoForgedOptions {
    * The forge version (without minecraft version)
    */
   version: string
+  /**
+   * The java path
+   */
+  java?: string
 
   side?: 'client' | 'server'
 }
@@ -178,7 +199,7 @@ export interface InstallService {
 
   installQuilt(meta: InstallQuiltOptions): Promise<string>
 
-  installByProfile(profile: InstallProfile): Promise<void>
+  installByProfile(profile: InstallProfileOptions): Promise<void>
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'
