@@ -210,6 +210,9 @@ importers:
       '@xmcl/runtime-api':
         specifier: workspace:*
         version: link:../xmcl-runtime-api
+      '@xmcl/semver':
+        specifier: workspace:*
+        version: link:../xmcl/packages/semver
       '@xmcl/text-component':
         specifier: workspace:*
         version: link:../xmcl/packages/text-component
@@ -1038,6 +1041,24 @@ importers:
       esbuild:
         specifier: ^0.17.16
         version: 0.17.18
+
+  xmcl/packages/semver:
+    devDependencies:
+      '@types/node':
+        specifier: ~18.15.11
+        version: 18.15.13
+      '@xmcl/oxlint-config':
+        specifier: workspace:^*
+        version: link:../oxlint-config
+      esbuild:
+        specifier: ^0.17.16
+        version: 0.17.18
+      oxlint:
+        specifier: ^0.15.5
+        version: 0.15.5
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
 
   xmcl/packages/system:
     dependencies:
@@ -5247,15 +5268,15 @@ snapshots:
   '@emnapi/core@1.2.0':
     dependencies:
       '@emnapi/wasi-threads': 1.0.1
-      tslib: 2.5.0
+      tslib: 2.6.3
 
   '@emnapi/runtime@1.2.0':
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.6.3
 
   '@emnapi/wasi-threads@1.0.1':
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.6.3
 
   '@esbuild-kit/cjs-loader@2.4.2':
     dependencies:
@@ -5874,7 +5895,7 @@ snapshots:
 
   '@tybys/wasm-util@0.9.0':
     dependencies:
-      tslib: 2.5.0
+      tslib: 2.6.3
 
   '@types/cacheable-request@6.0.3':
     dependencies:

@@ -1,6 +1,5 @@
 import { parseVersion, VersionRange } from '@xmcl/runtime-api'
-import { FabricSemanticVersion } from './FabricSemanticVersion'
-import { parseVersionPredicate } from './FabricVersionPredicateParser'
+import { parseSemanticVersion, parseVersionRange } from '@xmcl/semver'
 import { ModDependencies, ModDependency } from './modDependencies'
 
 export type Compatible = 'maybe' | boolean
@@ -61,11 +60,11 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
     return compatible
   }
   if (dep.semanticVersion) {
-    const verison = new FabricSemanticVersion(version, true)
+    const verison = parseSemanticVersion(version)
     const ranges =
       dep.semanticVersion instanceof Array
-        ? dep.semanticVersion.map(v => parseVersionPredicate(v))
-        : parseVersionPredicate(dep.semanticVersion)
+        ? dep.semanticVersion.map(v => parseVersionRange(v))
+        : parseVersionRange(dep.semanticVersion)
     const compatible = ranges instanceof Array
       ? ranges.some(r => r?.test(verison))
       : ranges?.test(verison)

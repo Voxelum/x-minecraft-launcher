@@ -32,6 +32,7 @@
         "@xmcl/mod-parser": "workspace:*",
         "@xmcl/model": "workspace:*",
         "@xmcl/modrinth": "workspace:*",
+        "@xmcl/semver": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/text-component": "workspace:*",
