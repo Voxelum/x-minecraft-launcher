@@ -40,9 +40,6 @@ export class InstanceState {
   instances: Instance[] = []
 
   instanceAdd(instance: Instance) {
-    /**
-     * Prevent the case that hot reload keep the vuex state
-     */
     if (!this.all[instance.path]) {
       // TODO: remove in vue3
       // set(this.all, instance.path, { ...instance, serverStatus: UNKNOWN_STATUS })

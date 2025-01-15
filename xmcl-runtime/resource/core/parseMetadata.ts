@@ -1,10 +1,10 @@
 import { Exception, File, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { pickMetadata } from './generateResource'
-import { jsonArrayFrom } from './helper'
 import { ResourceContext } from './ResourceContext'
 import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
 import { ResourceSnapshotTable } from './schema'
 import { upsertMetadata } from './upsertMetadata'
+import { jsonArrayFrom } from '~/sql/sqlHelper'
 
 class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {
 }

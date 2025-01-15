@@ -19,7 +19,7 @@ import { LauncherAppPlugin } from './LauncherAppPlugin'
 import { LauncherAppUpdater } from './LauncherAppUpdater'
 import { LauncherProtocolHandler } from './LauncherProtocolHandler'
 import { SecretStorage } from './SecretStorage'
-import SemaphoreManager from './SemaphoreManager'
+import MutexManager from './MutexManager'
 import { Shell } from './Shell'
 import { kGameDataPath, kTempDataPath } from './gameDataPath'
 import { InjectionKey, ObjectFactory } from './objectRegistry'
@@ -70,7 +70,7 @@ export class LauncherApp extends EventEmitter {
    */
   readonly minecraftDataPath: string
 
-  readonly semaphoreManager: SemaphoreManager
+  readonly mutex: MutexManager
   readonly launcherAppManager: LauncherAppManager
   /**
    * The log event emitter. This should only be used for log consumer like telemetry or log file writer.
@@ -184,7 +184,7 @@ export class LauncherApp extends EventEmitter {
     this.controller = getController(this)
     this.updater = getUpdater(this)
 
-    this.semaphoreManager = new SemaphoreManager(this)
+    this.mutex = new MutexManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
     for (const plugin of plugins) {

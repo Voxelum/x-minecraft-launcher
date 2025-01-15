@@ -50,10 +50,10 @@ export class InstanceInstallService extends AbstractService implements IInstance
       instancePath,
     )
 
-    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
+    const lock = this.mutex.of(LockKey.instance(instancePath))
 
     const updateInstanceTask = task('installInstance', async function () {
-      await lock.write(async () => {
+      await lock.runExclusive(async () => {
         try {
           const newAddedFiles = files.filter(f => f.operation === 'add' || f.operation === 'backup-add')
           await this.yield(new ResolveInstanceFileTask(newAddedFiles, curseforgeClient, modrinthClient))

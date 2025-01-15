@@ -1,7 +1,8 @@
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, ReadWriteLock, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { Mutex } from 'async-mutex'
+import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useService } from './service'
@@ -245,7 +246,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   const loading = ref(0)
   const config = inject(kSWRVConfig)
 
-  const instanceLock: Record<string, ReadWriteLock> = {}
+  const instanceLock: Record<string, Mutex> = {}
 
   async function update(version: InstanceResolveVersion | undefined) {
     if (!version) return
@@ -255,7 +256,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       loading.value += 1
       const lock = getInstanceLock(path.value)
       console.time('[getInstallInstruction]')
-      await lock.write(async () => {
+      await lock.runExclusive(async () => {
         try {
           const _path = version.instance
           const _selectedVersion = version.version
@@ -287,7 +288,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     if (lock) {
       return lock
     }
-    const newLock = new ReadWriteLock()
+    const newLock = new Mutex()
     instanceLock[path] = newLock
     return newLock
   }
@@ -512,7 +513,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     }
     const last = resolvedVersion.value
     const lock = getInstanceLock(path.value)
-    await lock.write(() => handleInstallInstruction(inst))
+    await lock.runExclusive(() => handleInstallInstruction(inst))
     if (last === resolvedVersion.value) {
       await update(last)
     }

@@ -11,7 +11,7 @@ import { SqliteWASMDialect } from '~/sql'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
-import { jsonObjectFrom } from '~/util/sqlHelper'
+import { jsonObjectFrom } from '~/sql/sqlHelper'
 
 interface Database {
   file: {

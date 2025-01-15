@@ -1,4 +1,4 @@
-import { createPromiseSignal, getServiceSemaphoreKey, SharedState, PromiseSignal, ServiceKey, State } from '@xmcl/runtime-api'
+import { createPromiseSignal, PromiseSignal, ServiceKey, SharedState, State } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import { Logger } from '~/logger'
@@ -11,50 +11,17 @@ export type ServiceConstructor<T extends AbstractService = AbstractService> = {
 
 export type MutexSerializer<T extends AbstractService> = (this: T, ...params: any[]) => string | string[]
 
-export type ParamSerializer<T extends AbstractService> = (...params: any[]) => string | undefined
+type ParamSerializer<T extends AbstractService> = (...params: any[]) => string | undefined
+
+function getServiceSingletonKey<T>(key: ServiceKey<T>, method: keyof T, params?: string) {
+  return params ? `${key}.${method as string}(${params})` : `${key}.${method as string}()`
+}
 
 export const IGNORE_PARAMS: ParamSerializer<any> = () => ''
 
 export const ALL_PARAMS: ParamSerializer<any> = (...pararms) => JSON.stringify(pararms)
 
 const InstanceSymbol = Symbol('InstanceSymbol')
-
-export function ReadLock<T extends AbstractService>(key: (string | string[] | MutexSerializer<T>)) {
-  return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
-    const method = descriptor.value as Function
-    descriptor.value = function readLockDecorator(this: T, ...args: any[]) {
-      const keyOrKeys = typeof key === 'function' ? key.call(target, ...args) : key
-      const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
-      const promises: Promise<() => void>[] = []
-      for (const k of keys) {
-        const key = k
-        const lock = this.semaphoreManager.getLock(key)
-        promises.push(lock.acquireRead())
-      }
-      this.log(`Acquire read locks: ${keys.join(', ')}`)
-      const exec = () => {
-        try {
-          const result = method.apply(this, args)
-          if (result instanceof Promise) {
-            return result
-          } else {
-            return Promise.resolve(result)
-          }
-        } catch (e) {
-          return Promise.reject(e)
-        }
-      }
-      Object.defineProperty(exec, 'name', { value: `${method.name}$ReadLock$exec` })
-      return Promise.all(promises).then((releases) => {
-        return exec().finally(() => {
-          this.log(`Release read locks: ${keys.join(', ')}`)
-          releases.forEach(f => f())
-        })
-      })
-    }
-    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$ReadLock` })
-  }
-}
 
 /**
  * A service method decorator to make sure this service will acquire mutex to run, ensuring the mutual exclusive.
@@ -67,8 +34,8 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
       const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
       const promises: Promise<() => void>[] = []
       for (const key of keys) {
-        const lock = this.semaphoreManager.getLock(key)
-        promises.push(lock.acquireWrite())
+        const lock = this.mutex.of(key)
+        promises.push(lock.acquire())
       }
       this.log(`Acquire locks: ${keys.join(', ')}`)
       const exec = () => {
@@ -121,19 +88,17 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       }
       const serviceKey = getServiceKey(Object.getPrototypeOf(this).constructor)
       Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
-      const targetKey = getServiceSemaphoreKey(serviceKey, propertyKey, param.call(this, ...args))
+      const targetKey = getServiceSingletonKey(serviceKey, propertyKey, param.call(this, ...args))
       const last = instances[targetKey]
       if (last) {
         return last
       } else {
         this.log(`Acquire singleton ${targetKey}`)
-        this.up(targetKey)
 
         const startTime = Date.now()
         instances[targetKey] = exec().finally(() => {
           const endTime = Date.now()
           this.log(`Release singleton ${targetKey}. Took ${endTime - startTime}ms.`)
-          this.down(targetKey)
           delete instances[targetKey]
         })
         return instances[targetKey]
@@ -170,7 +135,7 @@ export abstract class AbstractService extends EventEmitter {
     this.error = this.logger.error
   }
 
-  get semaphoreManager() { return this.app.semaphoreManager }
+  get mutex() { return this.app.mutex }
 
   emit(event: string, ...args: any[]): boolean {
     this.app.controller.broadcast('service-event', { service: getServiceKey(Object.getPrototypeOf(this).constructor), event, args })
@@ -223,14 +188,6 @@ export abstract class AbstractService extends EventEmitter {
   }
 
   warn = (m: any, ...a: any[]) => {
-  }
-
-  protected up(key: string) {
-    this.semaphoreManager.acquire(key)
-  }
-
-  protected down(key: string) {
-    this.semaphoreManager.release(key)
   }
 }
 

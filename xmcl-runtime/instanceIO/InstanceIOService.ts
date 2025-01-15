@@ -223,7 +223,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
     // add assets
     if (includeAssets) {
-      releases.push(await this.semaphoreManager.getLock(LockKey.assets).acquireRead())
+      releases.push(await this.mutex.of(LockKey.assets).acquire())
       const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
       zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
       const objects = await readFile(assetsJson, 'utf8').then(JSON.parse).then(manifest => manifest.objects)
@@ -236,7 +236,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     const versionsChain = version.pathChain
     for (const versionPath of versionsChain) {
       const versionId = basename(versionPath)
-      releases.push(await this.semaphoreManager.getLock(LockKey.version(versionId)).acquireRead())
+      releases.push(await this.mutex.of(LockKey.version(versionId)).acquire())
       if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
         zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
       }
@@ -245,7 +245,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
     // add libraries
     if (includeLibraries) {
-      releases.push(await this.semaphoreManager.getLock(LockKey.libraries).acquireRead())
+      releases.push(await this.mutex.of(LockKey.libraries).acquire())
       for (const lib of version.libraries) {
         zipTask.addFile(resolve(root, 'libraries', lib.download.path),
           `libraries/${lib.download.path}`)

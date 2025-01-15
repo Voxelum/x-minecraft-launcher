@@ -5,7 +5,6 @@ import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { exists, hardLinkFiles, isHardLinked, unHardLinkFiles } from '../util/fs'
-import { watch } from 'chokidar'
 
 @ExposeServiceKey(InstanceServerInfoServiceKey)
 export class InstanceServerInfoService extends AbstractService implements IInstanceServerInfoService {

@@ -146,7 +146,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
    */
   async watch(path: string) {
     requireString(path)
-    const lock = this.semaphoreManager.getLock(LockKey.instance(path))
+    const lock = this.mutex.of(LockKey.instance(path))
 
     const stateManager = await this.app.registry.get(ServiceStateManager)
     const launchService = await this.app.registry.get(LaunchService)
@@ -167,7 +167,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       launchService.on('minecraft-exit', onExit)
 
       const updateSave = defineAsyncOperation(async (filePath: string) => {
-        await lock.read(() => readInstanceSaveMetadata(filePath, baseName).then((save) => {
+        await lock.runExclusive(() => readInstanceSaveMetadata(filePath, baseName).then((save) => {
           state.instanceSaveUpdate(save)
         }).catch((e) => {
           this.warn(`Parse save in ${filePath} failed. Skip it.`)
@@ -234,9 +234,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         })
         .add(savesDir)
 
-      const revalidate = () => lock.read(async () => {
+      const revalidate = async () => {
         // TODO: getWatched and revalidate
-      })
+      }
 
       const dispose = () => {
         launchService.off('minecraft-exit', onExit)

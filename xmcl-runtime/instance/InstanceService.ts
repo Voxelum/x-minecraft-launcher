@@ -1,4 +1,4 @@
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate } from '@xmcl/runtime-api'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate, LockKey } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
@@ -330,15 +330,17 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireString(path)
 
     const isManaged = this.isUnderManaged(path)
-    const lock = this.semaphoreManager.getLock(`remove://${path}`)
+    const lock = this.mutex.of(LockKey.instanceRemove(path))
+    const instanceLock = this.mutex.of(LockKey.instance(path))
     if (isManaged && await exists(path)) {
-      await lock.write(async () => {
+      await lock.runExclusive(async () => {
+        instanceLock.cancel()
         const oldHandlers = this.#removeHandlers[path]
         for (const handlerRef of oldHandlers || []) {
           handlerRef.deref()?.()
         }
         try {
-          await rm(path, { recursive: true, force: true, maxRetries: 3 })
+          await rm(path, { recursive: true, force: true, maxRetries: 1 })
         } catch (e) {
           if (isSystemError(e) && e.code === ENOENT_ERROR) {
             this.warn(`Fail to remove instance ${path}`)

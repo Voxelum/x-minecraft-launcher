@@ -114,13 +114,13 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async watch(instancePath: string): Promise<SharedState<ResourceState>> {
     if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
-    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
+    const lock = this.mutex.of(LockKey.instance(instancePath))
     const stateManager = await this.app.registry.get(ServiceStateManager)
     return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async ({ doAsyncOperation }) => {
       const basePath = join(instancePath, 'mods')
 
       await ensureDir(basePath)
-      const { dispose, revalidate, state } = this.resourceManager.watch(basePath, ResourceDomain.Mods, (func) => doAsyncOperation(lock.read(func)))
+      const { dispose, revalidate, state } = this.resourceManager.watch(basePath, ResourceDomain.Mods, (func) => doAsyncOperation(lock.waitForUnlock().then(func)))
 
       const instanceService = await this.app.registry.get(InstanceService)
       instanceService.registerRemoveHandler(instancePath, dispose)

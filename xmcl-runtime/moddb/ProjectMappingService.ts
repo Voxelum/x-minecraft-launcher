@@ -48,7 +48,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     if (this.#db?.locale === locale) return this.#db.db
 
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
-    await this.semaphoreManager.getLock('project-mapping').write(async () => {
+    await this.mutex.of('project-mapping').runExclusive(async () => {
       let original = `https://xmcl.blob.core.windows.net/project-mapping/${locale}.sqlite`
 
       async function exists() {
