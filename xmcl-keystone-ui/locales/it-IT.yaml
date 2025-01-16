@@ -453,6 +453,20 @@ instanceFileOperation:
   backup-remove: Rimuovi (Backup)
   keep: Conserva
   remove: Rimuovi
+instanceInstallSkip:
+  ignore: Ignorare
+  skip: Saltare
+  title: Potenziale origine file danneggiata
+  warning: >-
+    Alcuni file vengono scaricati più volte con checksum non corrispondente. 
+
+    Ciò potrebbe essere dovuto al fatto che il checksum originale non è
+    corretto. 
+
+    Si prega di controllare. 
+
+    Se confermi che i file correnti sono validi, puoi saltare il controllo di
+    convalida.
 instanceSetting:
   disableAuthlibInjector: Disabilita l'iniezione di authlib
   disableAuthlibInjectorDescription: |-

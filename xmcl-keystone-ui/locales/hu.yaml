@@ -448,6 +448,19 @@ instanceFileOperation:
   backup-remove: Törlés (Mentés)
   keep: Megtartás
   remove: Eltávolítás
+instanceInstallSkip:
+  ignore: Figyelmen kívül hagyni
+  skip: Kihagyás
+  title: Lehetséges sérült fájlforrás
+  warning: >-
+    Egyes fájlok többször is letöltődnek, ellenőrzőösszeg-egyeztetés nélkül. 
+
+    Ennek oka lehet, hogy az eredeti ellenőrző összeg hibás. 
+
+    Kérjük, ellenőrizze. 
+
+    Ha megerősíti, hogy az aktuális fájlok érvényesek, kihagyhatja az
+    érvényesítési ellenőrzést.
 instanceSetting:
   disableAuthlibInjector: Az authlib injektor kikapcsolása
   disableAuthlibInjectorDescription: >-

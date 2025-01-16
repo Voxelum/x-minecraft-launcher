@@ -35,6 +35,7 @@
     <AppImageDialog />
     <AppLaunchServerDialog />
     <AppSharedTooltip />
+    <AppInstallSkipDialog />
     <AppMigrateWizardDialog />
   </v-app>
   <v-app
@@ -75,6 +76,7 @@ import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppExportDialog from '@/views/AppExportDialog.vue'
 import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
+import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'

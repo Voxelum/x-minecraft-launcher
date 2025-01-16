@@ -484,6 +484,21 @@ instanceFileOperation:
   backup-remove: Supprimer (Sauvegarde)
   keep: Laisser
   remove: Retirer
+instanceInstallSkip:
+  ignore: Ignorer
+  skip: Sauter
+  title: Source de fichier potentiellement corrompue
+  warning: >-
+    Certains fichiers sont téléchargés plusieurs fois sans que la somme de
+    contrôle ne corresponde. 
+
+    Cela peut être dû au fait que la somme de contrôle originale est
+    incorrecte. 
+
+    Vérifiez s'il vous plaît. 
+
+    Si vous confirmez que les fichiers actuels sont valides, vous pouvez ignorer
+    le contrôle de validation.
 instanceSetting:
   disableAuthlibInjector: Désactiver l'injecteur authlib
   disableAuthlibInjectorDescription: |-

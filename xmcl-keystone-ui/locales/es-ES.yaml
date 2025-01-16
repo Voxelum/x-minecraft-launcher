@@ -412,6 +412,21 @@ instanceFileOperation:
   backup-remove: Eliminar (Copia de Seguridad)
   keep: Conservar
   remove: Eliminar
+instanceInstallSkip:
+  ignore: Ignorar
+  skip: Saltar
+  title: Posible fuente de archivo corrupto
+  warning: >-
+    Algunos archivos se descargan varias veces y la suma de comprobación no
+    coincide. 
+
+    Esto puede deberse al hecho de que la suma de verificación original es
+    incorrecta. 
+
+    Por favor, compruebe. 
+
+    Si confirma que los archivos actuales son válidos, puede omitir la
+    verificación de validación.
 instanceSetting:
   fastLaunch: Inicio Rápido
   fastLaunchHint: Ignorar el estado del usuario y los problemas sin solucionar existentes

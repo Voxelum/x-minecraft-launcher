@@ -386,3 +386,11 @@ forgeVersion:
 instance:
   vmVar: Environment Variables
   vmVarHint: Click   button to add environemnt variables
+instanceInstallSkip:
+  ignore: Ignore
+  skip: Skip
+  title: Potential corrupted file source
+  warning: >-
+    Some files are downloaded multiple times with checksum unmatching. This may
+    be due to the fact that the original checksum is incorrect. Please check. If
+    you confirm the current files are valid, you can skip the validation check.

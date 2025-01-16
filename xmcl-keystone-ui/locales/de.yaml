@@ -499,6 +499,20 @@ instanceFileOperation:
   backup-remove: Löschen (Reserve)
   keep: Hier ist es
   remove: Löschen
+instanceInstallSkip:
+  ignore: Ignorieren
+  skip: Überspringen
+  title: Möglicherweise beschädigte Dateiquelle
+  warning: >-
+    Einige Dateien werden mehrmals heruntergeladen, wobei die Prüfsumme nicht
+    übereinstimmt. 
+
+    Dies kann daran liegen, dass die ursprüngliche Prüfsumme falsch ist. 
+
+    Überprüfen Sie bitte. 
+
+    Wenn Sie bestätigen, dass die aktuellen Dateien gültig sind, können Sie die
+    Validierungsprüfung überspringen.
 instanceSetting:
   disableAuthlibInjector: Deaktivieren Sie den Authlib-Injektor
   disableAuthlibInjectorDescription: |-

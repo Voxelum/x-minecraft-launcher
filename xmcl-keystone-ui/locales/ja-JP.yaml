@@ -449,6 +449,15 @@ instanceFileOperation:
   backup-remove: 削除する (バックアップ)
   keep: 保持する
   remove: 削除
+instanceInstallSkip:
+  ignore: 無視する
+  skip: スキップ
+  title: 破損したファイルソースの可能性があります
+  warning: |-
+    一部のファイルは、チェックサムが一致しない状態で複数回ダウンロードされます。
+    これは、元のチェックサムが正しくないことが原因である可能性があります。
+    チェックしてください。
+    現在のファイルが有効であることを確認した場合は、検証チェックをスキップできます。
 instanceSetting:
   disableAuthlibInjector: authlib injectorを無効化する
   disableAuthlibInjectorDescription: サードパーティのスキンシステムを使用しているのならば、authlib injectorはスキンの表示に役立ちます。

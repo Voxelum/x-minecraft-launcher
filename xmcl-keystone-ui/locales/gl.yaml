@@ -274,6 +274,21 @@ instance:
 instanceDiscover:
   gameFolder: Descubre {count} cartafoles de xogos
   instanceFolder: Atopáronse {count} instancias
+instanceInstallSkip:
+  ignore: Ignorar
+  skip: Saltar
+  title: Potencial fonte de ficheiro danada
+  warning: >-
+    Algúns ficheiros descárganse varias veces sen coincidir a suma de
+    verificación. 
+
+    Isto pode deberse ao feito de que a suma de verificación orixinal é
+    incorrecta. 
+
+    Comproba. 
+
+    Se confirmas que os ficheiros actuais son válidos, podes omitir a
+    comprobación de validación.
 instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 

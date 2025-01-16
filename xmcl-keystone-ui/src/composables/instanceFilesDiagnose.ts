@@ -14,7 +14,7 @@ export function useInstanceFilesDiagnose() {
   const fix = async () => {
     await mutate()
     if (instanceFiles.value) {
-      return installFiles(instanceFiles.value.instance, instanceFiles.value.files)
+      await installFiles(instanceFiles.value.instance, instanceFiles.value.files)
     }
   }
 

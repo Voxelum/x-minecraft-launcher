@@ -526,6 +526,21 @@ instanceFileOperation:
   backup-remove: Remover (Backup)
   keep: Manter
   remove: Remover
+instanceInstallSkip:
+  ignore: Ignorar
+  skip: Pular
+  title: Fonte de arquivo potencialmente corrompida
+  warning: >-
+    Alguns arquivos são baixados várias vezes com soma de verificação
+    incomparável. 
+
+    Isso pode ser devido ao fato de a soma de verificação original estar
+    incorreta. 
+
+    Por favor, verifique. 
+
+    Se você confirmar que os arquivos atuais são válidos, poderá ignorar a
+    verificação de validação.
 instanceSetting:
   disableAuthlibInjector: Desabilitar authlib injector
   disableAuthlibInjectorDescription: >-

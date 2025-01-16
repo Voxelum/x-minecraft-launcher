@@ -464,6 +464,15 @@ instanceFileOperation:
   backup-remove: 移除（备份）
   keep: 保留
   remove: 移除
+instanceInstallSkip:
+  ignore: 忽略
+  skip: 跳过
+  title: 潜在损坏的文件源
+  warning: |-
+    有些文件被多次下载，且校验和不匹配。
+    这可能是由于原始校验不正确造成的。
+    请检查。
+    如果确认当前文件有效，则可以跳过验证检查。
 instanceSetting:
   disableAuthlibInjector: 禁用 authlib 注入器
   disableAuthlibInjectorDescription: |-

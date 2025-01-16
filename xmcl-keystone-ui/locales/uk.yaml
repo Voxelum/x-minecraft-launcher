@@ -460,6 +460,19 @@ instanceFileOperation:
   backup-remove: Видалити (Резерв)
   keep: Тримай
   remove: Видалити
+instanceInstallSkip:
+  ignore: Ігнорувати
+  skip: Пропустити
+  title: Потенційно пошкоджене джерело файлу
+  warning: >-
+    Деякі файли завантажуються кілька разів із незбіговою контрольною сумою. 
+
+    Це може бути пов’язано з тим, що вихідна контрольна сума неправильна. 
+
+    Будь ласка, перевірте. 
+
+    Якщо ви підтвердите, що поточні файли дійсні, ви можете пропустити перевірку
+    підтвердження.
 instanceSetting:
   disableAuthlibInjector: Вимкнути інжектор authlib
   disableAuthlibInjectorDescription: |-

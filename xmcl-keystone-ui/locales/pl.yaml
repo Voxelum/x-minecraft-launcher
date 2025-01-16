@@ -469,6 +469,19 @@ instanceFileOperation:
   backup-remove: Usunąć (Backup)
   keep: Zachowaj
   remove: Usunąć
+instanceInstallSkip:
+  ignore: Ignorować
+  skip: Pominąć
+  title: Potencjalne uszkodzone źródło pliku
+  warning: >-
+    Niektóre pliki są pobierane wielokrotnie z niezgodną sumą kontrolną. 
+
+    Może to wynikać z tego, że pierwotna suma kontrolna jest niepoprawna. 
+
+    Proszę sprawdzić. 
+
+    Jeśli potwierdzisz, że bieżące pliki są prawidłowe, możesz pominąć
+    sprawdzanie poprawności.
 instanceSetting:
   disableAuthlibInjector: Wyłącz wtryskiwacz authlib
   disableAuthlibInjectorDescription: >-
