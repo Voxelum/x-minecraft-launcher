@@ -189,6 +189,7 @@ function createWatcher(
     if (!file) return
     if (!isAbsolute(file)) file = join(path, file)
     if (shouldIgnoreFile(file)) return
+    if (file.endsWith('.txt')) return
     const existed = existsSync(file)
     if (!existed) {
       onResourceRemove(file)

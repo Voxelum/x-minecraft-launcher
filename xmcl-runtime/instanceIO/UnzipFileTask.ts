@@ -85,7 +85,7 @@ export class UnzipFileTask extends AbortableTask<void> {
 
     if (allErrors.length > 0) {
       if (allErrors.length > 1) {
-        throw new AggregateError(allErrors)
+        throw new AggregateError(allErrors.flatMap(e => e instanceof AggregateError ? e.errors : e))
       }
 
       throw allErrors[0]

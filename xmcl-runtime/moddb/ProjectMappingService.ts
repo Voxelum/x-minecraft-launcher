@@ -109,7 +109,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
         throw errors[0]
       }
       if (errors.length) {
-        throw new AggregateError(errors)
+        throw new AggregateError(errors.flatMap(e => e instanceof AggregateError ? e.errors : e))
       }
     })
 

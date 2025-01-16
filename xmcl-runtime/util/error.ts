@@ -1,4 +1,5 @@
-import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
+import { CancelledException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
+import { CancelledError } from '@xmcl/task'
 import { Dispatcher, errors } from 'undici'
 
 export interface SystemError extends Error {
@@ -41,6 +42,11 @@ export function isSystemError(e: any): e is SystemError {
  * @returns The exception or `undefined` if the error is not recognized.
  */
 export async function getNormalizeException(e: unknown) {
+  if (e instanceof CancelledError) {
+    return new CancelledException({
+      type: 'cancelled',
+    })
+  }
   if (isSystemError(e)) {
     return getNomralizedSystemError(e)
   }

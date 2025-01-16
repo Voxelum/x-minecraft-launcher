@@ -133,7 +133,7 @@ export class ElyByService extends AbstractService implements IElyByService {
       if (errors.length === 1) {
         throw errors[0]
       }
-      throw new AggregateError(errors)
+      throw new AggregateError(errors.flatMap(e => e instanceof AggregateError ? e.errors : e))
     }
     throw new AnyError('ElyAuthlibInstallError', 'Failed to install authlib', undefined, { url })
   }

@@ -68,10 +68,14 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
   const downloadProxy = new NetworkAgent({
     userAgent,
     retryOptions: {
-      maxTimeout: 60_000,
-      maxRetries: 30,
       retry: (err, { state, opts }, cb) => {
         const { statusCode, code, headers } = err as any
+
+        if ((opts as any).noRetry) {
+          cb(err)
+          return
+        }
+
         const { method, retryOptions } = opts
         const {
           maxRetries,
@@ -88,7 +92,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         if (
           code &&
           code !== 'UND_ERR_REQ_RETRY' &&
-          code !== 'UND_ERR_SOCKET' &&
           !errorCodes!.includes(code)
         ) {
           if (code !== 'UND_ERR_CONNECT_TIMEOUT') {
@@ -106,6 +109,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
           const pool = clients.get(typeof opts.origin === 'string' ? opts.origin : opts.origin.origin)
           const stats = pool?.stats
           if (!stats?.connected && !stats?.pending && !stats?.running && !stats?.queued && !stats?.free) {
+            // throw error if there are no connection with the same origin
             cb(err)
             return
           }

@@ -1,3 +1,4 @@
+import { Exception } from '@xmcl/runtime-api'
 import { Worker, WorkerOptions } from 'worker_threads'
 import { Logger } from '~/logger'
 
@@ -12,7 +13,7 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
   let disposed = false
   const createWorker = () => {
     if (disposed) {
-      throw new Error('The worker is disposed')
+      throw new Exception({ type: 'workerDisposedError' }, 'The worker is disposed')
     }
     const worker = factory(options)
     logger.log(`Awake the worker ${factory}`)

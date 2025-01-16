@@ -79,7 +79,7 @@ export class InstanceFileOperationTask extends AbortableTask<void> {
     ])
     const errors = result.filter((r) => r.status === 'rejected').map((r) => (r as any).reason)
     if (errors.length > 0) {
-      throw new AggregateError(errors)
+      throw new AggregateError(errors.flatMap((e) => e instanceof AggregateError ? e.errors : e))
     }
   }
 

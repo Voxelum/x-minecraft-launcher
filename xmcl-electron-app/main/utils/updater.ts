@@ -107,7 +107,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
         errors.push(Object.assign(e as Error, { name: 'UpdateAsarError', url }))
       }
     }
-    throw new AggregateError(errors, 'Fail to download asar update')
+    throw new AggregateError(errors.flatMap(e => e instanceof AggregateError ? e.errors : e), 'Fail to download asar update')
   }
 
   protected abort(isCancelled: boolean): void {

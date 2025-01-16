@@ -412,7 +412,13 @@ export class InstallService extends AbstractService implements IInstallService {
       throw new AnyError('ForgeInstallError', 'No valid java found!')
     }
 
-    validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
+    if (options.java) {
+      const java = validJavaPaths.find(v => v.path === options.java)
+      if (java) {
+        validJavaPaths.splice(validJavaPaths.indexOf(java), 1)
+        validJavaPaths.unshift(java)
+      }
+    }
     const setting = await this.app.registry.get(kSettings)
 
     let version: string | undefined

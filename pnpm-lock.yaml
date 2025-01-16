@@ -169,8 +169,8 @@ importers:
         specifier: 5.4.5
         version: 5.4.5
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
 
   xmcl-keystone-ui:
     dependencies:
@@ -470,8 +470,8 @@ importers:
         specifier: ^3.1.7
         version: 3.1.7
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
       xxhash-wasm:
         specifier: ^1.0.2
         version: 1.0.2
@@ -711,8 +711,8 @@ importers:
   xmcl/packages/curseforge:
     dependencies:
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -727,8 +727,8 @@ importers:
         specifier: ^0.37.39
         version: 0.37.41
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
     devDependencies:
       '@types/node':
         specifier: ~18
@@ -758,8 +758,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
     devDependencies:
       '@types/node':
         specifier: ~18.15.11
@@ -866,8 +866,8 @@ importers:
         specifier: workspace:^*
         version: link:../unzip
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
       yauzl:
         specifier: ^2.10.0
         version: 2.10.0
@@ -956,8 +956,8 @@ importers:
   xmcl/packages/modrinth:
     dependencies:
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
     devDependencies:
       esbuild:
         specifier: ^0.17.16
@@ -975,8 +975,8 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
@@ -1151,8 +1151,8 @@ importers:
   xmcl/packages/user:
     dependencies:
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
       uuid:
         specifier: ^9.0.0
         version: 9.0.0
@@ -1179,8 +1179,8 @@ importers:
         specifier: ~18.15.11
         version: 18.15.13
       undici:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.3
+        version: 7.2.3
 
 packages:
 
@@ -4599,8 +4599,8 @@ packages:
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  undici@7.1.1:
-    resolution: {integrity: sha512-WZkQ6eH9f5ZT93gaIffsbUaDpBwjbpvmMbfaEhOnbdUneurTESeRxwPGwjI28mRFESH3W3e8Togijh37ptOQqA==}
+  undici@7.2.3:
+    resolution: {integrity: sha512-2oSLHaDalSt2/O/wHA9M+/ZPAOcU2yrSP/cdBYJ+YxZskiPYDSqHbysLSlD7gq3JMqOoJI5O31RVU3BxX/MnAA==}
     engines: {node: '>=20.18.1'}
 
   unimport@3.7.2:
@@ -8648,7 +8648,7 @@ snapshots:
 
   undici-types@5.26.5: {}
 
-  undici@7.1.1: {}
+  undici@7.2.3: {}
 
   unimport@3.7.2(rollup@2.79.1):
     dependencies:

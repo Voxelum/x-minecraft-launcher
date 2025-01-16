@@ -132,4 +132,8 @@ export type MigrationExceptions = {
 
 export class MigrationException extends Exception<MigrationExceptions> { }
 
+export class CancelledException extends Exception<{
+  type: 'cancelled'
+}> { }
+
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'

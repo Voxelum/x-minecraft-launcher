@@ -79,6 +79,7 @@ export class ServiceStateManager {
 
   async #revalidate(container: ServiceStateContainer) {
     await container.revalidate().catch((e) => {
+      if (this.app.disposed) return
       this.logger.error(new AnyError('RevalidateError', `Fail to revalidate ${container.id}`, { cause: e }, { id: container.id }))
     })
   }

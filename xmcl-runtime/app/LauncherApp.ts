@@ -94,6 +94,8 @@ export class LauncherApp extends EventEmitter {
     return `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
   }
 
+  #disposed = false
+
   /**
    * The launcher server/non-server protocol handler. Register the protocol handler to handle the request.
    */
@@ -218,7 +220,11 @@ export class LauncherApp extends EventEmitter {
     this.#disposers.push(disposer)
   }
 
+  get disposed() { return this.#disposed }
+
   async dispose() {
+    if (this.#disposed) return
+    this.#disposed = true
     await Promise.allSettled(this.#disposers.map(m => m()))
   }
 
@@ -231,7 +237,7 @@ export class LauncherApp extends EventEmitter {
     try {
       await Promise.race([
         setTimeout(10000).then(() => false),
-        Promise.all(this.#disposers.map(m => m())).then(() => true),
+        this.dispose().then(() => true),
       ])
     } finally {
       this.host.quit()
