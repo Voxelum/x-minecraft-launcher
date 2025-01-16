@@ -88,6 +88,10 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
     try {
       this.semaphore += 1
       for (const [c] of this.#clients) {
+        if (c.isDestroyed()) {
+          this.untrack(c)
+          continue
+        }
         c.send('state-validating', { id: this.id, semaphore: this.semaphore })
       }
       return await action
@@ -95,6 +99,10 @@ export class ServiceStateContainer<T = any> implements ServiceStateContext {
       this.semaphore -= 1
       if (this.semaphore === 0) {
         for (const [c] of this.#clients) {
+          if (c.isDestroyed()) {
+            this.untrack(c)
+            continue
+          }
           c.send('state-validating', { id: this.id, semaphore: this.semaphore })
         }
       }
