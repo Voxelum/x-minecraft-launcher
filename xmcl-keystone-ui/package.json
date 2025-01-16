@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "productName": "xmcl",
-    "version": "0.46.17",
+    "version": "0.46.18",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
