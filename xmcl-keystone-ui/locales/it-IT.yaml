@@ -265,8 +265,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    cliccando la casella di controllo, indichi la tua accettazione  con l'{eula}
-    di Minecraft.
+    cliccando la casella di controllo, indichi la tua accettazione 
+    con l'{eula} di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -310,7 +310,6 @@ fileDetail:
   fileSize: Dimensione del file
   hash: Hash
 filter: Filtro
-filterLocalOnly: Mostra solo installato
 finish: Finito
 forgeConfig:
   hint: >-
@@ -396,8 +395,6 @@ instance:
   changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
-  deleteFailed: Impossibile eliminare l'istanza
-  deleteFailedPermission: Un altro programma occupava il file
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
     di voler fare questo?
@@ -438,8 +435,6 @@ instance:
   versionHint: La versione di Minecraft di questo gioco
   vmOptions: Opzioni JVM
   vmOptionsHint: Argomenti aggiuntivi passati a JVM
-  vmVar: Variabili d'ambiente
-  vmVarHint: Fare clic sul pulsante per aggiungere variabili ambientali
 instanceAge:
   older: Più vecchio
   threeDay: In tre giorni
@@ -509,7 +504,6 @@ instances:
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
     gioco originale in XMCL.
   choose: Seleziona gioco
-  fix: Sistemati
   folderSetting: Impostazioni della cartella
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
@@ -534,7 +528,7 @@ java:
   modifyInstance: Modifica percorso Java
   noMemory: Non limitare l'utilizzo della memoria
   refresh: Aggiorna Java locale
-  systemMemory: 'Memoria libera del sistema: {free} / {total}'
+  systemMemory: Memoria di sistema attuale
 labyMod:
   disable: Disabilita LabyMod
   empty: LabyMod non supporta l'attuale versione di Minecraft
@@ -703,7 +697,7 @@ mod:
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
-  duplicatedDetected: '{count} mod duplicate'
+  duplicatedDetected: '{count} mod sono state duplicate'
   duplicatedDetectedDescription: |-
     Mod trovate con lo stesso ID mod ma file diversi. 
     Ciò potrebbe causare l'arresto anomalo di Minecraft. 
@@ -714,7 +708,7 @@ mod:
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
-  incompatibleHint: Controlla il rapporto sulla compatibilità della tua mod
+  incompatibleHint: Le mod potrebbero avere problemi di compatibilità
   incompatibleHintDescription: |-
     Potrebbero mancare alcune dipendenze delle mod. 
     Oppure alcune versioni delle dipendenze non corrispondono.
@@ -757,15 +751,14 @@ modInstall:
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
-  skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
-modUpgradePolicy:
-  curseforge: Curseforge  Maledizione
-  curseforgeOnly: Solo Forgiamaledizione
-  modrinth: Modrinth Primo
-  modrinthOnly: Solo Modrinth
+modSearchType:
+  all: Tutti
+  explore: Esplora il mercato
+  installed: Installato
+  local: Cache del disco
 modified:
   reset: Reimposta
   save: Salva
@@ -1470,6 +1463,7 @@ transportType:
   srflx: Server Reflexive Scelto
 turnRegion:
   fr: Francia
+  po: Polonia
   guangzhou: Guangzhou, Cina
   hk: Hong Kong
   liaoning: Liaoning, Cina
