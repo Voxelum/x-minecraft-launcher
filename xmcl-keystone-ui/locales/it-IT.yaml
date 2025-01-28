@@ -310,7 +310,8 @@ fileDetail:
   fileSize: Dimensione del file
   hash: Hash
 filter: Filtro
-finish: Finito
+filterLocalOnly: Mostra solo installate
+finish: Finitoo
 forgeConfig:
   hint: >-
     Avvia almeno una volta il gioco con questa mod, in modo che possiamo
