@@ -754,13 +754,7 @@ modInstall:
   searchHint: Cerca e seleziona il progetto
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: Aggiorna le Mod
-  modUpgradePolicy:
-  curseforge: Curseforge  Maledizione
-  curseforgeOnly: Solo Forgiamaledizione
-  modrinth: Modrinth Primo
-  modrinthOnly: Solo Modrinth
-modSearchType:
+  upgrade: Aggiorna le ModmodSearchType:
   all: Tutti
   explore: Esplora il mercato
   installed: Installato
