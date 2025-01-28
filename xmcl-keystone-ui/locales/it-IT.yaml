@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
+  instanceShare: '{user} ha appena condiviso l'istanza corrente con te'
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -345,7 +345,7 @@ installAssets:
   assetIndex: Controlla il file di indice degli asset
   name: Installa file di asset
 installAuthlibInjector: Installa authlib-injector
-installCurseforgeFile: Installa file Curseforge
+installCurseforgeFile: Installa file di Curseforge
 installFabric:
   name: Installa Fabric
 installForge:
@@ -354,15 +354,15 @@ installForge:
   name: Installa Forge
   postProcessing: Post elaborazione
 installInstance:
-  file: Aggiorna file istanza {file}
+  file: Aggiorna file dell' istanza {file}
   link: Copia o collega {count} file
   name: Aggiorna istanza
-  resolve: Risolvi configurazione istanza
+  resolve: Risolvi configurazione dell'istanza
   unzip: Decomprimi {count} file
 installJre:
   decompress: Decomprimi i file JRE nella cartella
   download: Scarica file JRE compresso
-  name: Installa libreria di runtime Java
+  name: Installa libreria di Java runtime
 installLabyMod:
   asset: Installa asset {name}
   json: Genera JSON {version}
@@ -398,7 +398,7 @@ instance:
   delete: Elimina gioco
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
-    di voler fare questo?
+    di volerlerlo fare?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
   fileApi: L'URL API del server di sincronizzazione dei file
