@@ -348,7 +348,7 @@ installCurseforgeFile: Installa file Curseforge
 installFabric:
   name: Installa Fabric
 installForge:
-  downloadInstaller: Scarica l'installatore
+  downloadInstaller: Scarica l'installer
   library: Installa libreria {lib}
   name: Installa Forge
   postProcessing: Post elaborazione
@@ -623,7 +623,7 @@ localVersion:
   delete: Elimina versione locale
   deleteDescription: >-
     Questa operazione eliminerà il file json e jar della versione locale. Sarà
-    necessario scaricarlo nuovamente se si desidera utilizzarlo di nuovo.
+    necessario scaricarlo nuovamente se si desidera riutilizzarlo nuovamente.
   empty: Nessuna versione installata
   hint: Avvia una versione locale specifica
   refresh: Aggiorna versioni
@@ -655,7 +655,7 @@ loginError:
   checkOwnershipFailed: Impossibile verificare la proprietà del gioco. Riprovare.
   connectionReset: Impossibile accedere poiché la connessione è stata reimpostata dal server
   fetchMinecraftProfileFailed: 'Impossibile recuperare il profilo Minecraft: {reason}'
-  illegalEmail: L'e-mail deve essere valida
+  illegalEmail: L'E-mail deve essere valida
   invalidCredentials: Credenziali non valide. Nome utente o password non validi.
   loginMinecraftByXboxFailed: >-
     Impossibile scambiare il token Minecraft con il token Xbox. Assicurarsi di
@@ -1543,18 +1543,18 @@ universalDrop:
   title: Trascina i file qui per importarli come
   unknownResource: Sconosciuto
 update:
-  goOfficialWebDownload: Scarica di nuovo dal sito web ufficiale
+  goOfficialWebDownload: Riscarica dal sito web ufficiale
 upstream:
   downgrade: Downgrade
   missingModpackMetadata: >-
     I vecchi metadati del modpack non sono stati trovati. Puoi comunque eseguire
     l'aggiornamento, ma il risultato potrebbe essere errato. Effettua il backup
-    dei file dell'istanza.
+    dei file della tua istanza.
   onlyShowCurrentVersion: Mostra solo la versione corrente di Minecraft
   update: Aggiornare
 user:
-  accessToken: Accesso Token
-  authMode: Servizio Auth
+  accessToken: Token d'accesso
+  authMode: Servizio Autenticazione
   authService: Servizio di autorizzazione
   birth: Data di nascita registrata
   challenges: Rispondere alle domande sottostanti per verificare la propria identità
