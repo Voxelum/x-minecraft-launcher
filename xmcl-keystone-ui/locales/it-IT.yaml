@@ -755,6 +755,11 @@ modInstall:
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
+  modUpgradePolicy:
+  curseforge: Curseforge  Maledizione
+  curseforgeOnly: Solo Forgiamaledizione
+  modrinth: Modrinth Primo
+  modrinthOnly: Solo Modrinth
 modSearchType:
   all: Tutti
   explore: Esplora il mercato
