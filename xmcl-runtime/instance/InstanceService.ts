@@ -233,10 +233,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!isPathDiskRootPath(instance.path)) {
       await ensureDir(instance.path).catch(() => undefined)
     }
-    if (payload.resourcepacks) {
+
+    const forceFolder = true
+    if (forceFolder || payload.resourcepacks) {
       await ensureDir(join(instance.path, 'resourcepacks')).catch(() => undefined)
     }
-    if (payload.shaderpacks) {
+    if (forceFolder || payload.shaderpacks) {
       await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
     }
 
