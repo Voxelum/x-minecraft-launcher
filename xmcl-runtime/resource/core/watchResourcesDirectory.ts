@@ -271,11 +271,9 @@ export function watchResourcesDirectory(
   }, onRemove, revalidate)
 
   workerQueue.onerror = ({ filePath }, e) => {
-    if (isSystemError(e)) {
-      if (e.code === 'EBUSY') {
-        // ignore the busy file
-        return
-      }
+    if ((e as any)?.code && ['EBUSY', 'ENOENT'].includes((e as any).code)) {
+      // ignore the busy file
+      return
     }
     context.logger.error(e)
   }
