@@ -516,6 +516,10 @@ instanceUpdate:
 
     Stary moduł ładujący to {modloader}, a nowy moduł ładujący to
     {newModloader}.
+  summary: |-
+    Dodaj pliki {add}. 
+    Usuń pliki {remove}. 
+    Zachowaj pliki {keep}.
   title: Aktualizacja instancji
   update: Rozpoczęcie aktualizacji
 instances:

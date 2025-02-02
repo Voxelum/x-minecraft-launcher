@@ -554,6 +554,10 @@ instanceUpdate:
   loaderChanged: |-
     Модлоадер этого экземпляра был изменен. 
     Старый модлоадер - это {modloader}, а новый - {newModloader}.
+  summary: |-
+    Добавить {add} файлы. 
+    Удалить {remove} файлы. 
+    Сохранить {keep} файлы.
   title: Обновление экземпляра
   update: Начать обновление
 instances:

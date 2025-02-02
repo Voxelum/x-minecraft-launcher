@@ -498,6 +498,10 @@ instanceUpdate:
   loaderChanged: |-
     該例項的模組載入器已更改。
     以前的模組載入器是 {modloader}，現在的模組載入器是 {newModloader}。
+  summary: |-
+    添加{add}文件。
+    刪除{remove}文件。
+    保留{keep}文件。
   title: 更新例項
   update: 開始更新例項
 instances:

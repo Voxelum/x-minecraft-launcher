@@ -503,6 +503,10 @@ instanceUpdate:
   loaderChanged: |-
     Завантажувач модів цього екземпляра змінено. 
     Старий завантажувач модів — {modloader}, а новий — {newModloader}.
+  summary: |-
+    Add {add} files. 
+    Remove {remove} files. 
+    Зберігайте {keep} файли.
   title: Оновити екземпляр
   update: Почати оновлення
 instances:

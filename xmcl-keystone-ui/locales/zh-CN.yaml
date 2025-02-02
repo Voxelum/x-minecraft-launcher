@@ -501,6 +501,10 @@ instanceUpdate:
   loaderChanged: |-
     该实例的模组加载器已更改。
     以前的模组加载器是 {modloader}，现在的模组加载器是 {newModloader}。
+  summary: |-
+    添加{add}文件。
+    删除{remove}文件。
+    保留{keep}文件。
   title: 更新实例
   update: 开始更新实例
 instances:

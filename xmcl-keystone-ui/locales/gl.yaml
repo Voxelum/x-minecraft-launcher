@@ -293,6 +293,10 @@ instanceUpdate:
   loaderChanged: |-
     Cambiouse o modloader desta instancia. 
     O modloader antigo é {modloader} e o novo modloader é {newModloader}.
+  summary: |-
+    Engadir {add} ficheiros. 
+    Eliminar {remove} ficheiros. 
+    Keep {keep} Files.
 instances:
   addCurseForgeDescription: |-
     Importar desde o cartafol de datos de curseforge. 

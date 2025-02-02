@@ -547,6 +547,10 @@ instanceUpdate:
 
     Der alte Modloader ist {modloader} und der neue Modloader ist
     {newModloader}.
+  summary: |-
+    Fügen Sie {add} Dateien hinzu. 
+    {remove} Dateien entfernen. 
+    Halten Sie {keep} Dateien.
   title: Aktualisieren Sie Ihre Instanz
   update: Aktualisierung beginnen
 instances:

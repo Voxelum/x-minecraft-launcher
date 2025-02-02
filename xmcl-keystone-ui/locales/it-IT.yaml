@@ -499,6 +499,10 @@ instanceUpdate:
   loaderChanged: >-
     Il modloader di questa istanza è stato modificato. Il vecchio modloader è
     {modloader}, e il nuovo modloader è {newModloader}.
+  summary: |-
+    Aggiungi {add} file. 
+    Rimuovi i file {remove}. 
+    Keep {keep} file.
   title: Aggiorna istanza
   update: Avvia aggiornamento
 instances:

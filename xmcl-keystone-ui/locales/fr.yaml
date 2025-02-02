@@ -533,6 +533,10 @@ instanceUpdate:
 
     L'ancien modloader est {modloader} et le nouveau modloader est
     {newModloader}.
+  summary: |-
+    Ajouter des fichiers {add}. 
+    Supprimez les fichiers {remove}. 
+    Continuez les fichiers {keep}.
   title: Mettre à jour l'Instance
   update: Démarrer la Mise à Jour
 instances:

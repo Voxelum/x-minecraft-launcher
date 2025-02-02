@@ -179,7 +179,6 @@
             v-model="data.selected"
             selectable
             :scroll-element="scrollElement"
-            :search="filterText"
             :multiple="false"
           >
             <template #default="{ item, selected }">
@@ -346,7 +345,7 @@ watch(enableCurseforge, (v) => {
   }
 })
 
-const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files)))
+const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files.filter(f => f.path.toLowerCase().includes(filterText.value.toLowerCase())))))
 const translatedMods = computed(() => ({
   curseforge: t('exportModpackTarget.curseforge'),
   modrinth: t('exportModpackTarget.modrinth'),

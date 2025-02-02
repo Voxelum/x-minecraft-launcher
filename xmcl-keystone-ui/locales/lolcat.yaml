@@ -471,6 +471,7 @@ instanceUpdate:
   loaderChanged: >-
     TEH MODLOADR OV DIS INSTANCE HAS BEEN CHANGD. TEH OLD MODLOADR IZ
     {modloader}, AN TEH NEW MODLOADR IZ {newModloader}.
+  summary: Add {add} files. Remove {remove} files. Keep {keep} files.
   title: UPDATE INSTANCE
   update: START UPDATE
 instances:

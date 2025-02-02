@@ -484,6 +484,10 @@ instanceUpdate:
   loaderChanged: >-
     この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは
     {newModLoader}です。
+  summary: |-
+    {add}ファイルを追加します。 
+    {remove}ファイルを削除します。 
+    {keep}ファイルを保持します。
   title: 起動構成の更新
   update: 更新を開始
 instances:

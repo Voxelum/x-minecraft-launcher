@@ -120,13 +120,16 @@
         <div>
           <v-subheader>
             {{ t('instanceUpdate.files') }}
+            <v-spacer />
+            <v-btn class="z-3" icon @click="filterKeep = !filterKeep">
+              <v-icon v-if="filterKeep">visibility_off</v-icon>
+              <v-icon v-else>visibility</v-icon>
+            </v-btn>
           </v-subheader>
-          <!--<v-text-field v-model="search" />-->
         </div>
 
         <InstanceManifestFileTree
           :value="selected"
-          :search="search"
           open-all
           :selectable="false"
           :multiple="false"
@@ -147,6 +150,17 @@
             </v-chip>
           </template>
         </InstanceManifestFileTree>
+        <Hint
+          v-if="fileNodes.length === 0 && counts.hidden > 0"
+          class="min-h-80 static"
+          icon="visibility_off"
+          :text="t('instanceUpdate.summary', { add: counts.add, remove: counts.remove, keep: counts.keep })"
+        />
+        <div v-else class="flex items-center gap-4 h-4 my-8">
+          <v-divider />
+          {{ t('instanceUpdate.summary', { add: counts.add, remove: counts.remove, keep: counts.keep }) }}
+          <v-divider />
+        </div>
       </div>
       <v-card-actions class="items-baseline gap-5">
         <v-btn
@@ -188,6 +202,7 @@ import { injection } from '@/util/inject'
 import { EditInstanceOptions, InstallInstanceOptions, InstanceFileUpdate, InstanceInstallServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
+import Hint from '@/components/Hint.vue'
 
 const selected = ref([] as string[])
 const search = ref('')
@@ -263,16 +278,28 @@ function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   }
 }
 
+const filterKeep = ref(false)
 
 const fileNodes = shallowRef([] as FileOperationNode[])
-watch(upgrade, (newVal) => {
+const counts = shallowRef({ add: 0, remove: 0, keep: 0, hidden: 0 })
+watch([upgrade, filterKeep], ([newVal, keep]) => {
   if (!newVal?.delta) {
     fileNodes.value = []
     return
   }
   const delta = newVal.delta
   const nodes = delta.map(getFileNode)
-  fileNodes.value = nodes
+  const filtered = nodes.filter(n => n.data?.operation === 'keep' ? !keep : true)
+
+  counts.value = nodes.reduce((acc, n) => {
+    const op = n.data?.operation === 'backup-add' ? 'add' : n.data?.operation === 'backup-remove' ? 'remove' : n.data?.operation
+    if (op) {
+      acc[op]++
+    }
+    return acc
+  }, { add: 0, remove: 0, keep: 0, hidden: nodes.length - filtered.length })
+
+  fileNodes.value = filtered
 }, { immediate: true })
 provideFileNodes(fileNodes)
 

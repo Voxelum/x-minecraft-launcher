@@ -54,7 +54,6 @@ const props = defineProps<{
   value: string[]
   selectable?: boolean
   openAll?: boolean
-  search?: string
   scrollElement?: HTMLElement | null
 }>()
 
@@ -191,7 +190,6 @@ watch([files, opened, () => props.openAll], async ([newFiles, newOpened, newOpen
   const visited = new Set<string>()
   const filtered = result.filter(i => {
     if (visited.has(i.data.path)) {
-      console.warn('Duplicated path', i.data.path)
       return false
     }
     visited.add(i.data.path)

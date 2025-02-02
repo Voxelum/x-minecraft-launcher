@@ -495,6 +495,10 @@ instanceUpdate:
   loaderChanged: |-
     Ennek a példánynak a modloadere megváltozott. 
     A régi modloader {modloader}, az új modloader pedig {newModloader}.
+  summary: |-
+    Hozzáadja a {add} fájlokat. 
+    Távolítsa el a {remove} fájlokat. 
+    Tartsa a {keep} fájlokat.
   title: Példány frissítése
   update: Frissítés indítása
 instances:

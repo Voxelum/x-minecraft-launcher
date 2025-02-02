@@ -451,6 +451,10 @@ instanceUpdate:
   loaderChanged: |-
     Se ha cambiado el cargador de mods de esta instancia. 
     El antiguo modloader es {modloader} y el nuevo modloader es {newModloader}.
+  summary: |-
+    Agregar archivos {add}. 
+    Eliminar los archivos {remove}. 
+    Keep {keep} archivos.
   title: Actualizar Instancia
   update: Iniciar Actualización
 instances:
