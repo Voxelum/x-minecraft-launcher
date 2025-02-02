@@ -15,7 +15,7 @@ export class UnzipFileTask extends AbortableTask<void> {
   constructor(
     private zipManager: ZipManager,
     private queue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }>,
-    readonly finished: Set<InstanceFile>,
+    readonly finished: Set<string>,
   ) {
     super()
     this.name = 'unzip'
@@ -65,7 +65,7 @@ export class UnzipFileTask extends AbortableTask<void> {
         const entry = entries[entryName]
         if (entry) {
           promises.push(this.#processEntry(zip, entry, destination).then(() => {
-            this.finished.add(file)
+            this.finished.add(file.path)
           }, (e) => {
             return Object.assign(e, {
               zipEntry: entry,

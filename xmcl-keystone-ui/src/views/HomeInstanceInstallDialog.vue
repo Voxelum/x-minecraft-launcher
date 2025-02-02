@@ -24,7 +24,7 @@
         ref="scrollRef"
         class="visible-scroll mx-0 max-h-screen items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
-        <template v-if="upgrade && upgrade.instance">
+        <template v-if="upgrade && upgrade.edit">
           <v-subheader>
             {{ t('instanceUpdate.basic') }}
           </v-subheader>
@@ -125,10 +125,10 @@
         </div>
 
         <InstanceManifestFileTree
-          v-model="selected"
+          :value="selected"
           :search="search"
           open-all
-          selectable
+          :selectable="false"
           :multiple="false"
           :scroll-element="scrollRef"
         >
@@ -185,7 +185,7 @@ import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
-import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
+import { EditInstanceOptions, InstallInstanceOptions, InstanceFileUpdate, InstanceInstallServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
 
@@ -201,17 +201,18 @@ const { isShown } = useDialog(InstanceInstallDialog, (parm) => {
   upgrade.value = undefined
 })
 
-const { getInstanceUpdateProfile, getInstanceUpdateProfileRaw } = useService(InstanceUpdateServiceKey)
-const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const { openModpack } = useService(ModpackServiceKey)
+const { installInstanceFiles, previewInstanceFiles } = useService(InstanceInstallServiceKey)
 
 const { edit } = injection(kInstances)
 const { t } = useI18n()
 
-const upgrade = ref(undefined as undefined | {
-  instance?: EditInstanceOptions
-  files: InstanceFileUpdate[]
-  id?: string
-})
+type UpgradeValueType = {
+  edit?: EditInstanceOptions
+  installation: InstallInstanceOptions
+  delta: InstanceFileUpdate[]
+}
+const upgrade = ref(undefined as undefined | UpgradeValueType)
 
 const tOperations = computed(() => ({
   add: t('instanceFileOperation.add'),
@@ -222,7 +223,7 @@ const tOperations = computed(() => ({
 } as Record<string, string>))
 
 const { getColorCode } = useVuetifyColor()
-const runtime = computed(() => upgrade.value?.instance?.runtime || {} as Record<string, string>)
+const runtime = computed(() => upgrade.value?.edit?.runtime || {} as Record<string, string>)
 
 const getVersionString = (oldVersion?: string, newVersion?: string) => oldVersion !== newVersion ? `${oldVersion} -> ${newVersion}` : newVersion
 
@@ -262,73 +263,81 @@ function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   }
 }
 
-const result = shallowRef(upgrade.value?.files.map(getFileNode) || [])
-watch(upgrade, (newVal) => {
-  if (newVal?.files.length && newVal.files.length > 0) {
-    result.value = newVal.files.map(getFileNode)
-  } else {
-    result.value = []
-  }
-})
 
-provideFileNodes(result)
+const fileNodes = shallowRef([] as FileOperationNode[])
+watch(upgrade, (newVal) => {
+  if (!newVal?.delta) {
+    fileNodes.value = []
+    return
+  }
+  const delta = newVal.delta
+  const nodes = delta.map(getFileNode)
+  fileNodes.value = nodes
+}, { immediate: true })
+provideFileNodes(fileNodes)
 
 const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
 
 const { all: javas } = injection(kJavaContext)
-const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
-  if (!param) {
-    return
-  }
 
+async function getUpgradeValueFromParam(param: InstanceInstallOptions): Promise<Omit<UpgradeValueType, 'delta'>> {
   if (param.type === 'ftb') {
     const oldManifest = param.oldManifest
     const newManifest = param.newManifest
     // FTB
     const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest, javas.value)
     const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest, javas.value)
-    config.upstream = {
-      type: 'ftb-modpack',
-      id: newManifest.parent,
-      versionId: newManifest.id,
+    return {
+      edit: config,
+      installation: {
+        path: instancePath.value,
+        oldFiles: oldVersionFiles,
+        files: newVersionFiles,
+        upstream: param.upstream,
+      }
     }
-    upgrade.value = {
-      instance: config,
-      files: markRaw(await getInstanceUpdateProfileRaw({
-        instancePath: instancePath.value,
-        oldVersionFiles,
-        newVersionFiles,
-      })),
-    }
-  } else if (param.type === 'upstream') {
+  }
+
+  if (param.type === 'upstream') {
     const instancePath = param.instancePath
     const modpack = param.modpack
 
-    const { config, files } = await getInstanceUpdateProfile({
-      instancePath,
-      modpack,
-    })
+    const state = await openModpack(modpack)
+    const files = state.files
+    const config = state.config
 
-    upgrade.value = {
-      instance: config,
-      files,
+    return {
+      edit: config,
+      installation: {
+        path: instancePath,
+        files: files,
+        upstream: param.upstream,
+      }
     }
-  } else if (param.type === 'updates') {
-    upgrade.value = {
-      files: param.updates,
+  } 
+  
+  return {
+    installation: {
+      path: instancePath.value,
+      oldFiles: param.oldFiles,
+      files: param.files,
       id: param.id,
     }
   }
+}
 
-  if (upgrade.value) {
-    if (param.type === 'updates' && param.selectOnlyAdd) {
-      selected.value = upgrade.value.files
-        .filter(f => f.operation === 'add')
-        .map(f => f.file.path)
-    } else {
-      selected.value = upgrade.value.files.map(f => f.file.path)
-    }
+const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
+  if (!param) {
+    return
   }
+
+  const upgradeValue = await getUpgradeValueFromParam(param)
+  const updateDelta = await previewInstanceFiles(upgradeValue.installation)
+  upgrade.value = {
+    ...upgradeValue,
+    delta: updateDelta,
+  }
+  // selected.value = upgradeValue.files.map(f => f.path)
 })
 
 const loaderDifferences = computed(() => {
@@ -353,37 +362,35 @@ const loaderDifferences = computed(() => {
 })
 
 const confirm = async () => {
-  if (upgrade.value) {
-    const { instance, files, id } = upgrade.value
-    isShown.value = false
-    const select = selected.value
-    const filtered = files.filter(f => f.operation !== 'keep' && select.includes(f.file.path))
-    try {
-      await installInstanceFiles({
-        path: instancePath.value,
-        files: filtered.map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
-        id,
-      })
-    } catch (e) {
-      Object.assign(e as any, {
-        instanceInstallErrorId: id,
-      })
-      throw e
-    }
-    if (instance) {
-      await edit({
-        instancePath: instancePath.value,
-        runtime: {
-          minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
-          forge: instance.runtime?.forge,
-          fabricLoader: instance.runtime?.fabricLoader,
-          quiltLoader: instance.runtime?.quiltLoader,
-          neoForged: instance.runtime?.neoForged,
-        },
-        modpackVersion: instance.modpackVersion,
-        upstream: instance.upstream,
-      })
-    }
+  const up = upgrade.value
+  if (!up) {
+    return
+  }
+  const { edit: instance, installation } = up
+  isShown.value = false
+  const select = selected.value
+  const path = instancePath.value
+  try {
+    await installInstanceFiles(installation)
+  } catch (e) {
+    Object.assign(e as any, {
+      instanceInstallErrorId: installation.id,
+    })
+    throw e
+  }
+  if (instance) {
+    await edit({
+      instancePath: path,
+      runtime: {
+        minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
+        forge: instance.runtime?.forge,
+        fabricLoader: instance.runtime?.fabricLoader,
+        quiltLoader: instance.runtime?.quiltLoader,
+        neoForged: instance.runtime?.neoForged,
+      },
+      modpackVersion: instance.modpackVersion,
+      upstream: instance.upstream,
+    })
   }
 }
 

@@ -143,6 +143,11 @@ async function onUpdate(v: ProjectVersionProps) {
       type: 'upstream',
       modpack: result,
       instancePath,
+      upstream: {
+        type: 'modrinth-modpack',
+        versionId: v.id,
+        projectId: props.id,
+      }
     })
   } finally {
     updating.value = false

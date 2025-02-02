@@ -110,7 +110,7 @@ async function check() {
 async function update() {
   const enabled = new Set(...selected.value)
   const result = updateFiles.value.filter(f => enabled.has(f.file.path)).map(f => f.file)
-  await installInstanceFiles({ files: result, path: path.value })
+  // await installInstanceFiles({ files: result, path: path.value })
 }
 
 onMounted(check)

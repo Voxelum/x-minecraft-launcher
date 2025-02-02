@@ -1,5 +1,4 @@
 export * from './InstanceInstallService'
 export * from './InstanceIOService'
 export * from './InstanceManifestService'
-export * from './InstanceUpdateService'
 export * from './XUpdateService'

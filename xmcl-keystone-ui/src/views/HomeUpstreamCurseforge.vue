@@ -141,6 +141,11 @@ async function onUpdate(v: ProjectVersionProps) {
       type: 'upstream',
       modpack,
       instancePath,
+      upstream: {
+        type: 'curseforge-modpack',
+        modId: Number(props.id),
+        fileId: Number(v.id),
+      }
     })
   } finally {
     updating.value = false

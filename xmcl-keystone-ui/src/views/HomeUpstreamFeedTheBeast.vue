@@ -156,6 +156,11 @@ async function onUpdate(v: ProjectVersionProps) {
         projectName: project.value?.name || '',
         authors: project.value?.authors || [],
       }),
+      upstream: {
+        type: 'ftb-modpack',
+        id: Number(props.id),
+        versionId: Number(v.id),
+      }
     })
   } finally {
     updating.value = false

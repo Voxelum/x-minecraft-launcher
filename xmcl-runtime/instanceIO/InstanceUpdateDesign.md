@@ -1,8 +1,20 @@
-# Instance Update/Undo Design
+# Instance Install/Update/Rollback Design
 
-This doc describe the instance update/undo design for modpack and instance locking.
+This doc describe the instance install/update/rollback design for instance.
 
-## Modpack Update
+## Scenario
+
+User can install/update a instance from modpack zip file, or from special xmcl raw manifest json file.
+
+User can also rollback the version to the previous installed version.
+
+## Instance Install
+
+If a new instance is created with modpack or manifest, the launcher should download the mod files and config files to the instance folder.
+
+It will also generate a `instance-lock.json` file to lock the expected files.
+
+## Instance Update
 
 User want to update the instance via new modpack version from modrinth and curseforge. At the same time, user might also have some tweak over the old version modpack.
 

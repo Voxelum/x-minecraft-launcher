@@ -5,7 +5,7 @@ import { kInstanceFiles } from '@/composables/instanceFiles';
 import { injection } from '@/util/inject';
 
 const { isShown } = useDialog('InstanceInstallSkipDialog')
-const { shouldHintUserSkipChecksum, blockingFiles, installFiles, resetChecksumError } = injection(kInstanceFiles)
+const { shouldHintUserSkipChecksum, blockingFiles, resetChecksumError, resumeInstall } = injection(kInstanceFiles)
 const { path } = injection(kInstance)
 
 const { t } = useI18n()
@@ -28,7 +28,7 @@ function onSkip() {
       }
     }))
     resetChecksumError()
-    installFiles(path.value, files)
+    resumeInstall(path.value, files)
   }
   isShown.value = false
 }

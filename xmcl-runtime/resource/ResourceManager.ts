@@ -93,7 +93,7 @@ export class ResourceManager {
 
   async validateSnapshotFile(snapshot: ResourceSnapshotTable): Promise<File | undefined> {
     const file = await getFile(join(this.context.root, snapshot.domainedPath))
-    if (!file) return file
+    if (!file) return undefined
     if (!isSnapshotValid(file, snapshot)) {
       this.context.db.deleteFrom('snapshots')
         .where('domainedPath', '=', snapshot.domainedPath)

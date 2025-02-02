@@ -200,6 +200,9 @@
                 },
                 {
                     "$ref": "#/definitions/FTBUpstream"
+                },
+                {
+                    "$ref": "#/definitions/PeerUpstream"
                 }
             ]
         }
@@ -349,6 +352,24 @@
                 "id",
                 "type",
                 "versionId"
+            ]
+        },
+        "PeerUpstream": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "peer"
+                    ]
+                },
+                "id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "type"
             ]
         }
     },

@@ -8,7 +8,7 @@ import { ProjectEntry } from '@/util/search'
 import { swrvGet } from '@/util/swrvGet'
 import { File } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceFileUpdate, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { useErrorHandler } from './exception'
@@ -197,38 +197,25 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     checked.value = false
   })
 
-  const updates = computed(() => {
-    const updates: InstanceFileUpdate[] = []
-    for (const plan of Object.values(plans.value)) {
-      updates.push(...plan.mod.installed.map(r => ({
-        operation: 'remove',
-        file: {
-          path: `mods/${r.fileName}`,
-          hashes: {
-            sha1: r.hash,
-          },
-          size: r.size || 0,
-        },
-      } as InstanceFileUpdate)))
-      if ('file' in plan) {
-        updates.push({
-          operation: 'add',
-          file: getInstanceFileFromCurseforgeFile(plan.file),
-        })
-      } else {
-        updates.push({
-          operation: 'add',
-          file: getInstanceFileFromModrinthVersion(plan.version),
-        })
-      }
-    }
-    return updates
-  })
 
   function upgrade() {
+    const oldFiles: InstanceFile[] = []
+    const files: InstanceFile[] = []
+    for (const plan of Object.values(plans.value)) {
+      oldFiles.push(...plan.mod.installed.map(r => ({
+        path: `mods/${r.fileName}`,
+        hashes: {
+          sha1: r.hash,
+        },
+        size: r.size || 0,
+      })))
+      files.push('file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version))
+    }
+
     show({
       type: 'updates',
-      updates: updates.value,
+      oldFiles,
+      files,
       id: operationId,
     })
   }

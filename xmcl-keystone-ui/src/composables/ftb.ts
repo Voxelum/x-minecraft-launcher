@@ -2,11 +2,10 @@ import { clientFTB } from '@/util/clients'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
 import { generateDistinctName } from '@/util/instanceName'
-import { CachedFTBModpackVersionManifest, CreateInstanceOption, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceServiceKey } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CreateInstanceOption, FTBModpackManifest, FTBModpackVersionManifest, FTBVersion, InstanceInstallServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
-import { kInstanceFiles } from './instanceFiles'
 import { kInstanceVersion } from './instanceVersion'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
@@ -105,7 +104,7 @@ export function useFeedTheBeastModpackInstall() {
   const { getVersionHeader, getResolvedVersion } = injection(kInstanceVersion)
   const { currentRoute, push } = useRouter()
   const { getInstallInstruction, handleInstallInstruction, getInstanceLock } = injection(kInstanceVersionInstall)
-  const { installFiles } = injection(kInstanceFiles)
+  const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 
   async function installModpack(versionManifest: FTBModpackVersionManifest, man: FTBModpackManifest) {
     const cached = {
@@ -135,7 +134,15 @@ export function useFeedTheBeastModpackInstall() {
       push('/')
     }
 
-    installFiles(path, files)
+    installInstanceFiles({
+      path: path,
+      upstream: {
+        type: 'ftb-modpack',
+        id: man.id,
+        versionId: versionManifest.id,
+      },
+      files: files,
+    })
 
     const lock = getInstanceLock(path)
     lock.runExclusive(async () => {

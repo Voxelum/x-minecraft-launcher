@@ -144,7 +144,15 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const path = await this.instanceService.createInstance(options)
 
-    instanceInstallService.installInstanceFiles({ path: this.getPath('instances', name), files }).catch((e) => {
+    instanceInstallService.installInstanceFiles(upstream ? {
+      path,
+      files,
+      upstream,
+    } : {
+      path,
+      files,
+      oldFiles: [],
+    }).catch((e) => {
       this.error(e)
     })
 

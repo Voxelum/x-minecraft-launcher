@@ -1,7 +1,22 @@
 {
-    "description": "The instance lock schema. Represent the intermediate state of the instance files.",
+    "description": "Represent a intermediate state of the instance files.",
     "type": "object",
     "properties": {
+        "finishedPath": {
+            "description": "The finished files path",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "backup": {
+            "description": "The backup files path",
+            "type": "string"
+        },
+        "workspace": {
+            "description": "The install workspace path",
+            "type": "string"
+        },
         "version": {
             "description": "The instance lock",
             "default": 1,
@@ -37,10 +52,13 @@
         }
     },
     "required": [
+        "backup",
         "files",
+        "finishedPath",
         "mtime",
         "upstream",
-        "version"
+        "version",
+        "workspace"
     ],
     "definitions": {
         "ModrinthUpstream": {

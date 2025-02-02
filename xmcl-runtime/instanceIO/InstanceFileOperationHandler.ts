@@ -1,66 +1,109 @@
 import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile, InstanceFileOperation, InstanceFileWithOperation, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceFileUpdate, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { existsSync } from 'fs'
-import { join, relative } from 'path'
+import { ensureDir, remove, rename } from 'fs-extra'
+import { basename, dirname, join, relative } from 'path'
 import { fileURLToPath } from 'url'
 import { kGameDataPath } from '~/app'
 import { Logger } from '~/logger'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
 import { ResourceManager, ResourceWorker } from '~/resource'
-import { LauncherApp } from '../app/LauncherApp'
-import { AnyError } from '../util/error'
-import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
-import { InstanceFileOperationTask } from './InstanceFileOperationTask'
-import { UnzipFileTask } from './UnzipFileTask'
 import { ZipManager } from '~/zipManager/ZipManager'
+import { LauncherApp } from '../app/LauncherApp'
+import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
+import { InstanceFileLinkTask } from './InstanceFileOperationTask'
+import { UnzipFileTask } from './UnzipFileTask'
 
+/**
+ * The handler to handle the instance file install.
+ * 
+ * In the process, there will be 3 folder location involved:
+ * 1. instance location: the location where the instance files are located
+ * 2. workspace location: the location where the files are downloaded and unzipped
+ * 3. backup location: the location where the files are backuped or removed
+ * 
+ * The whole process is divided into three phases:
+ * 1. Link or copy existed files to workspace folder. Download and unzip news files into workspace location. The linked failed files will be downloaded.
+ * 2. Move files which need to be removed or backup to backup location
+ * 3. Rename workspace location files into instance location
+ * 
+ * The step 2 and 3 will modify the original instance files.
+ * If the process is interrupted, the instance files need to be restored to the original state.
+ * The backup folder will only exist if the whole process is successfully finished.
+ * The workspace location will be kept if the process is interrupted, or it will be removed if it's successfully finished.
+ */
 export class InstanceFileOperationHandler {
-  #resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
-  #copyOrLinkQueue: Array<{ file: InstanceFile; src: string; destination: string }> = []
-  #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
-  #filesQueue: Array<{ file: InstanceFileWithOperation; destination: string }> = []
+  // Phase 1: Download and unzip files into a workspace location
+  /**
+   * All files need to be downloaded
+   */
   #httpsQueue: Array<{ file: InstanceFile; options: DownloadOptions }> = []
+  /**
+   * All files need to be unzipped
+   */
+  #unzipQueue: Array<{ file: InstanceFile; zipPath: string; entryName: string; destination: string }> = []
+  // Phase 2: Move files from workspace location to instance location
+  /**
+   * All files need to be removed or backup
+   */
+  #backupQueue: Array<InstanceFile> = []
+  // Phase 3: Link or copy existed files
+  /**
+   * Extra files need to be copied or linked
+   */
+  #linkQueue: Array<{ file: InstanceFile; src: string; destination: string }> = []
+  // Phase extra: Update resource metadata
+  /**
+   * All resources need to be updated
+   */
+  #resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
 
   /**
-   * Finished file operations
+   * Store the unresolvable files.
+   * 
+   * This will be recomputed each time the handler is processed.
    */
-  readonly finished: Set<InstanceFileWithOperation> = new Set()
+  readonly unresolvable: InstanceFile[] = []
 
   constructor(
     private app: LauncherApp,
     private resourceManager: ResourceManager,
     private worker: ResourceWorker,
     private logger: Logger,
-    private instancePath: string) { }
+    private instancePath: string,
+    /**
+     * Finished download/unzip/link file path
+     */
+    readonly finished: Set<string>,
+    private workspacePath: string,
+    private backupPath: string,
+  ) {
+  }
 
   /**
   * Get a task to handle the instance file operation
   */
-  async #handleFile(file: InstanceFileWithOperation) {
-    const sha1 = file.hashes.sha1
+  async #handleFile({ file, operation }: InstanceFileUpdate) {
     const instancePath = this.instancePath
     const destination = join(instancePath, file.path)
 
     if (relative(instancePath, destination).startsWith('..')) {
-      return undefined
-    }
-
-    if (file.operation === 'remove') {
-      this.#filesQueue.push({
-        file,
-        destination,
-      })
       return
     }
 
-    if (file.operation === 'backup-remove') {
-      this.#filesQueue.push({
-        file,
-        destination,
-      })
+    if (operation === 'keep') {
+      return
+    }
+
+    if (operation === 'remove') {
+      this.#backupQueue.push(file)
+      return
+    }
+
+    if (operation === 'backup-remove') {
+      this.#backupQueue.push(file)
       return
     }
 
@@ -80,41 +123,107 @@ export class InstanceFileOperationHandler {
     }
 
     const isSpecialResource = file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)
-    const pending = isSpecialResource ? `${destination}.pending` : undefined
+    const sha1 = file.hashes.sha1
     if (isSpecialResource) {
       const urls = file.downloads || []
       this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls.filter(u => u.startsWith('http')) })
     }
 
-    await this.#dispatchFileTask(file, destination, metadata, pending, sha1)
+    await this.#dispatchFileTask(file, metadata, sha1)
 
-    if (file.operation === 'backup-add') {
+    if (operation === 'backup-add') {
       // backup legacy file
-      this.#filesQueue.push({ file, destination })
+      this.#backupQueue.push(file)
     }
   }
 
   /**
-  * Start to process all the instance files. This is due to there are zip task which need to read all the zip entries.
+  * Emit the task to prepare download & unzip files into workspace location.
+  * 
+  * These tasks will do the phase 1 of the instance file operation.
   */
-  async process(file: InstanceFileWithOperation[]) {
+  async * prepareInstallFilesTasks(file: InstanceFileUpdate[]) {
     for (const f of file) {
       await this.#handleFile(f)
     }
-    const tasks = [] as Task[]
-    if (this.#httpsQueue.length > 0) {
-      tasks.unshift(await this.#getDownloadTask())
+
+    const unhandled = [] as InstanceFile[]
+    if (this.#linkQueue.length > 0) {
+      yield [this.#getFileOperationTask(unhandled)] as Task[]
     }
-    if (this.#copyOrLinkQueue.length > 0 || this.#filesQueue.length > 0) {
-      tasks.unshift(await this.#getFileOperationTask())
+
+    for (const file of unhandled) {
+      if (await this.#handleUnzip(file, join(this.workspacePath, file.path))) continue
+      if (await this.#handleHttp(file, join(this.workspacePath, file.path))) continue
+      this.unresolvable.push(file)
     }
+
+    const phase1 = [] as Task[]
     if (this.#unzipQueue.length > 0) {
-      tasks.unshift(await this.#getUnzipTask())
+      phase1.push(await this.#getUnzipTask())
     }
-    return tasks
+    if (this.#httpsQueue.length > 0) {
+      phase1.push(this.#getDownloadTask())
+    }
+    yield phase1
   }
 
-  async postprocess(client: ModrinthV2Client) {
+  /**
+   * Do the phase 2 and 3, move files from workspace location to instance location and link or copy existed files.
+   */
+  async backupAndRename() {
+    // phase 2, create the backup
+    const finished = [] as [string, string][]
+    try {
+      for (const file of this.#backupQueue) {
+        const src = join(this.instancePath, file.path)
+        const dest = join(this.backupPath, file.path)
+
+        await ensureDir(dirname(dest))
+        await rename(src, dest)
+        finished.push([src, dest])
+      }
+    } catch (e) {
+      // rollback with best effort
+      for (const [src, dest] of finished) {
+        await rename(dest, src).catch(() => undefined)
+      }
+
+      throw e
+    }
+
+    finished.splice(0, finished.length)
+
+    // phase 3, move the workspace files to instance location
+    await ensureDir(this.instancePath)
+    const files = [
+      ...this.#linkQueue.map(f => f.file),
+      ...this.#unzipQueue.map(f => f.file),
+      ...this.#httpsQueue.map(f => f.file),
+    ]
+
+    try {
+      for (const file of files) {
+        const src = join(this.workspacePath, file.path)
+        const dest = join(this.instancePath, file.path)
+        await ensureDir(dirname(dest))
+        await rename(src, dest)
+        finished.push([src, dest])
+      }
+    } catch (e) {
+      // rollback with best effort
+      for (const [src, dest] of finished) {
+        await rename(dest, src).catch(() => undefined)
+      }
+
+      throw e
+    }
+
+    // Remove the workspace folder
+    await remove(this.workspacePath)
+  }
+
+  async updateResourceMetadata(client: ModrinthV2Client) {
     try {
       if (this.#resourceToUpdate.length > 0) {
         const options = await Promise.all(this.#resourceToUpdate.map(async ({ hash, metadata, uris, destination }) => {
@@ -174,7 +283,10 @@ export class InstanceFileOperationHandler {
     }
   }
 
-  async #handleHttp(file: InstanceFile, destination: string, pending?: string, sha1?: string) {
+  /**
+   * Handle a file with http download. If the file can be handled by http, return `true`
+   */
+  async #handleHttp(file: InstanceFile, destination: string, sha1?: string) {
     const urls = file.downloads!.filter(u => u.startsWith('http'))
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
     const peerUrl = file.downloads!.find(u => u.startsWith('peer://'))
@@ -194,7 +306,6 @@ export class InstanceFileOperationHandler {
           ...downloadOptions,
           url: urls,
           destination,
-          pendingFile: pending,
           validator: sha1
             ? {
               hash: sha1,
@@ -208,18 +319,25 @@ export class InstanceFileOperationHandler {
     }
   }
 
-  async #handleLinkResource(file: InstanceFile, destination: string, metadata: ResourceMetadata, sha1: string) {
+  /**
+   * Handle a file with link. If the file is existed in database, then it can be handled by link, return `true`
+   */
+  async #handleLink(file: InstanceFile, destination: string, metadata: ResourceMetadata, sha1: string) {
+    if (file.downloads) {
+      if (file.downloads[0].startsWith('file://')) {
+        this.#linkQueue.push({ file, src: fileURLToPath(file.downloads[0]), destination })
+        return true
+      }
+    }
+
     if (!sha1) return
 
     const urls = file.downloads?.filter(u => u.startsWith('http')) || []
 
     let snapshot = await this.resourceManager.getSnapshotByHash(sha1)
-    let snapshotPath: string | undefined
 
-    // TODO: Validate the snapshot
     if (snapshot) {
-      snapshotPath = this.resourceManager.getSnapshotPath(snapshot)
-      if (!existsSync(snapshotPath)) {
+      if (!await this.resourceManager.validateSnapshot(snapshot)) {
         snapshot = undefined
       }
     }
@@ -235,42 +353,33 @@ export class InstanceFileOperationHandler {
       ) {
         this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls })
       }
-      this.#copyOrLinkQueue.push({ file, destination, src: this.resourceManager.getSnapshotPath(snapshot) })
+      this.#linkQueue.push({ file, destination, src: this.resourceManager.getSnapshotPath(snapshot) })
       return true
     }
   }
 
-  async #handleCopyOrLink(file: InstanceFile, destination: string) {
-    if (file.downloads) {
-      if (file.downloads[0].startsWith('file://')) {
-        this.#copyOrLinkQueue.push({ file, src: fileURLToPath(file.downloads[0]), destination })
-        return true
-      }
-    }
-  }
-
-  async #dispatchFileTask(file: InstanceFile, destination: string, metadata: ResourceMetadata, pending: string | undefined, sha1: string) {
-    if (await this.#handleCopyOrLink(file, destination)) return
-
-    if (await this.#handleLinkResource(file, destination, metadata, sha1)) return
+  async #dispatchFileTask(file: InstanceFile, metadata: ResourceMetadata, sha1: string) {
+    const destination = join(this.workspacePath, file.path)
+    if (await this.#handleLink(file, destination, metadata, sha1)) return
 
     if (!file.downloads) {
-      throw new AnyError('DownloadFileError', 'Cannot create download file task', undefined, { file })
+      this.unresolvable.push(file)
+      return
     }
 
     if (await this.#handleUnzip(file, destination)) return
 
-    if (await this.#handleHttp(file, destination, pending, sha1)) return
+    if (await this.#handleHttp(file, destination, sha1)) return
 
-    throw new AnyError('DownloadFileError', `Cannot resolve file! ${file.path}`)
+    this.unresolvable.push(file)
   }
 
-  async #getFileOperationTask() {
-    return new InstanceFileOperationTask(
-      this.#copyOrLinkQueue,
-      this.#filesQueue,
+  #getFileOperationTask(unhandled: InstanceFile[]) {
+    return new InstanceFileLinkTask(
+      this.#linkQueue,
       this.app.platform,
       this.finished,
+      unhandled,
     )
   }
 
@@ -278,7 +387,7 @@ export class InstanceFileOperationHandler {
     return new UnzipFileTask(await this.app.registry.getOrCreate(ZipManager), this.#unzipQueue, this.finished)
   }
 
-  async #getDownloadTask() {
+  #getDownloadTask() {
     return new InstanceFileDownloadTask(this.#httpsQueue, this.finished)
   }
 }

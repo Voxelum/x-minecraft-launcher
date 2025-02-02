@@ -4,7 +4,7 @@ import { ElyByService } from '@xmcl/runtime/elyby'
 import { ImportService } from '@xmcl/runtime/import'
 import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
 import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, InstanceServerInfoService, InstanceService } from '@xmcl/runtime/instance'
-import { InstanceIOService, InstanceInstallService, InstanceManifestService, InstanceUpdateService } from '@xmcl/runtime/instanceIO'
+import { InstanceIOService, InstanceInstallService, InstanceManifestService } from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
 import { InstanceModsService } from '@xmcl/runtime/mod'
@@ -37,7 +37,6 @@ export const definedServices = [
   InstanceService,
   InstanceScreenshotService,
   InstanceShaderPacksService,
-  InstanceUpdateService,
   PresenceService,
   DiagnoseService,
   JavaService,

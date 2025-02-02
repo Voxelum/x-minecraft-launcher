@@ -229,7 +229,9 @@ export async function linkWithTimeoutOrCopy(from: string, to: string, timeout = 
   try {
     await linkWithTimeout(from, to, timeout)
   } catch (e) {
-    await copyFile(from, to)
+    if (e instanceof Error && e.name === 'TimeoutError') {
+      await copyFile(from, to)
+    }
     return e
   }
 }

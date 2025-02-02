@@ -19,11 +19,9 @@
         "lint:fix": "pnpm lint fix"
     },
     "dependencies": {
+        "@aws-crypto/crc32": "^5.2.0",
         "@azure/msal-common": "^14.14.0",
         "@azure/msal-node": "^2.12.0",
-        "xxhash-wasm": "^1.0.2",
-        "async-mutex": "^0.5.0",
-        "@node-rs/crc32-wasm32-wasi": "^1.10.3",
         "@xmcl/client": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
@@ -48,6 +46,7 @@
         "@xmcl/user": "workspace:*",
         "ajv": "^8.11.2",
         "applicationinsights": "^2.9.1",
+        "async-mutex": "^0.5.0",
         "atomically": "^2.0.3",
         "chokidar": "^4.0.3",
         "fast-xml-parser": "^4.3.2",
@@ -67,6 +66,7 @@
         "node-sqlite3-wasm": "^0.8.16",
         "tar-stream": "^3.1.7",
         "undici": "7.2.3",
+        "xxhash-wasm": "^1.0.2",
         "yazl": "^2.5.1"
     },
     "devDependencies": {
@@ -83,8 +83,8 @@
         "@types/yauzl": "^2.10.0",
         "@types/yazl": "^2.4.2",
         "@xmcl/oxlint-config": "workspace:*",
-        "oxlint": "^0.15.5",
         "cross-env": "^5.2.1",
+        "oxlint": "^0.15.5",
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",
         "tsx": "^3.12.6",

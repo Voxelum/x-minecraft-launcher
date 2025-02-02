@@ -41,6 +41,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       const staleInstances = new Set<string>()
 
       await Promise.all(all.map(async (path) => {
+        if (basename(path).startsWith('.')) {
+          return
+        }
         if (!await this.loadInstance(path)) {
           staleInstances.add(path)
         }

@@ -280,6 +280,10 @@ const onShareInstance = () => {
   }
 }
 
+const isNoUpstreamOrSameUpstream = computed(() => {
+  
+})
+
 const onDownloadInstance = () => {
   if (manifest.value) {
     const man = manifest.value
@@ -290,6 +294,10 @@ const onDownloadInstance = () => {
     subscribeTask(installInstanceFiles({
       path: path.value,
       files,
+      upstream: {
+        type: 'peer',
+        id: '',
+      }
     }), t('AppShareInstanceDialog.downloadNotifyTitle', { user: currentUser.value }))
 
     isShown.value = false

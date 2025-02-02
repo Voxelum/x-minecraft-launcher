@@ -136,10 +136,11 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         })
         onCreated?.(newPath)
         reset()
-        if (pendingFiles.length > 0) {
+        if (pendingFiles.length > 0 && data.upstream) {
           await installInstanceFiles({
             path: newPath,
             files: pendingFiles,
+            upstream: data.upstream,
           }).catch((e) => {
             console.error(e)
           })
