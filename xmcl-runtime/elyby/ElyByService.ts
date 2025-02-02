@@ -67,7 +67,7 @@ export class ElyByService extends AbstractService implements IElyByService {
       return undefined
     }
 
-    const url = `https://ely.by/minecraft/system/${resolvedVersion}.zip`
+    const url = `https://ely.by/minecraft/system/${resolvedVersion.id}.zip`
     const errors = [] as any[]
     for (let i = 0; i < 3; i++) {
       try {
