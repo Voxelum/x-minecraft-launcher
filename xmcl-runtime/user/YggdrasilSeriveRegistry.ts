@@ -1,6 +1,7 @@
 import { YggdrasilApi, YggdrasilSchema } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { LauncherApp } from '~/app'
+import { kFlights } from '~/flights'
 import { Logger } from '~/logger'
 import { SafeFile, createSafeFile } from '~/util/persistance'
 import { loadYggdrasilApiProfile } from './user'
@@ -30,6 +31,17 @@ export class YggdrasilSeriveRegistry {
     app.protocol.registerHandler('authlib-injector', ({ request, response }) => {
       this.addYggdrasilService(request.url.pathname)
     })
+
+    app.registry.get(kFlights).then((flights) => {
+      const clients = flights['yggdrasilClients']
+      if (clients && typeof clients === 'object') {
+        for (const [host, clientId] of Object.entries(clients)) {
+          if (typeof clientId === 'string') {
+            BUILTIN_CLIENT[host] = clientId
+          }
+        }
+      }
+    })
   }
 
   async load() {
@@ -54,7 +66,7 @@ export class YggdrasilSeriveRegistry {
 
   getClientId(authServer: string) {
     const host = new URL(authServer).host
-    return BUILTIN_CLIENT[host] ?? '1'
+    return BUILTIN_CLIENT[host]
   }
 
   async addYggdrasilService(url: string): Promise<void> {

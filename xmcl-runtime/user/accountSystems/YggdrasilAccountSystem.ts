@@ -72,6 +72,11 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   async #loginOCID(ocidConfig: OICDLikeConfig, authority: string, username: string, slientOnly: boolean, homeAccountId?: string, signal?: AbortSignal): Promise<UserProfile> {
     const client = this.ocidClient
     const id = this.registry.getClientId(ocidConfig.issuer)
+
+    if (!id) {
+      throw new UserException({ type: 'loginServiceNotSupported', authority }, `Service ${authority} is not supported`)
+    }
+
     const { result } = await client.authenticate(ocidConfig.issuer, id, username, ['Yggdrasil.Server.Join', 'Yggdrasil.PlayerProfiles.Select', 'openid', 'offline_access'], {
       signal,
       slientOnly,
