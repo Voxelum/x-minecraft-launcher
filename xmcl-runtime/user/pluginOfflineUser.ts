@@ -1,4 +1,4 @@
-import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AuthorityMetadata, UserProfile } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
 import { ImageStorage } from '~/imageStore'
@@ -92,5 +92,15 @@ export const pluginOffineUser: LauncherAppPlugin = async (app) => {
       return p
     },
     async refresh(p) { return p },
+    getSupporetedAuthorityMetadata: function (allowThirdparty: boolean): AuthorityMetadata[] {
+      if (!allowThirdparty) return []
+      return [
+        {
+          authority: AUTHORITY_DEV,
+          flow: ['anonymous'],
+          kind: 'builtin',
+        }
+      ]
+    }
   })
 }

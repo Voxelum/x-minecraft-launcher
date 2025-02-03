@@ -37,6 +37,128 @@
                     "description": "The cache for authlib injector compatible api",
                     "$ref": "#/definitions/AuthlibInjectorApiProfile"
                 },
+                "ocidConfig": {
+                    "anyOf": [
+                        {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "issuer": {
+                                            "type": "string"
+                                        },
+                                        "jwks_uri": {
+                                            "type": "string"
+                                        },
+                                        "subject_types_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "id_token_signing_alg_values_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "scopes_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "token_endpoint": {
+                                            "type": "string"
+                                        },
+                                        "userinfo_endpoint": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id_token_signing_alg_values_supported",
+                                        "issuer",
+                                        "jwks_uri",
+                                        "scopes_supported",
+                                        "subject_types_supported",
+                                        "token_endpoint",
+                                        "userinfo_endpoint"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "device_authorization_endpoint": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "device_authorization_endpoint"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "issuer": {
+                                            "type": "string"
+                                        },
+                                        "jwks_uri": {
+                                            "type": "string"
+                                        },
+                                        "subject_types_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "id_token_signing_alg_values_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "scopes_supported": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "token_endpoint": {
+                                            "type": "string"
+                                        },
+                                        "userinfo_endpoint": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "id_token_signing_alg_values_supported",
+                                        "issuer",
+                                        "jwks_uri",
+                                        "scopes_supported",
+                                        "subject_types_supported",
+                                        "token_endpoint",
+                                        "userinfo_endpoint"
+                                    ]
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "authorization_endpoint": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "authorization_endpoint"
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                },
                 "favicon": {
                     "description": "The favicon of the service",
                     "type": "string"
@@ -86,6 +208,9 @@
                         "feature.non_email_login": {
                             "default": false,
                             "type": "boolean"
+                        },
+                        "feature.openid_configuration_url": {
+                            "type": "string"
                         }
                     },
                     "required": [

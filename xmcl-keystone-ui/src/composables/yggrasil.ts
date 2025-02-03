@@ -1,11 +1,11 @@
-import { YggdrasilServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InjectionKey } from 'vue'
 import { useService } from './service'
 
-export const kYggdrasilServices: InjectionKey<ReturnType<typeof useYggdrasilServices>> = Symbol('YggdrasilServices')
+export const kSupportedAuthorityMetadata: InjectionKey<ReturnType<typeof useSupportedAuthority>> = Symbol('kSupportedAuthorityMetadata')
 
-export function useYggdrasilServices() {
-  const { getYggdrasilServices } = useService(YggdrasilServiceKey)
-  return useSWRV('yggrassilServices', getYggdrasilServices)
+export function useSupportedAuthority() {
+  const { getSupportedAuthorityMetadata } = useService(UserServiceKey)
+  return useSWRV('supportedAuthority', getSupportedAuthorityMetadata)
 }

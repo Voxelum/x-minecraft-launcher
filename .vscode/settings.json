@@ -14,6 +14,7 @@
     "i18n-ally.editor.preferEditor": true,
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true,
+    "typescript.tsdk": "xmcl-runtime/node_modules/typescript/lib",
     // "i18n-ally.keepFulfilled": true,
     "cSpell.words": [
         "bmcl",

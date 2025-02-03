@@ -1,7 +1,6 @@
-import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { ImportServiceKey, isPersistedResource, Resource, ResourceDomain, YggdrasilServiceKey } from '@xmcl/runtime-api'
+import { ImportServiceKey, Resource, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { kDropHandler } from './dropHandler'
 import { kInstance } from './instance'
@@ -76,7 +75,7 @@ export function useAppDropHandler() {
       if (items.value.length === 0) cancel()
     },
   })
-  const { addYggdrasilService } = useService(YggdrasilServiceKey)
+  const { addYggdrasilService } = useService(UserServiceKey)
   const { previewUrl } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {

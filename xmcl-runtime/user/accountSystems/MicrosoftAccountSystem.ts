@@ -1,13 +1,13 @@
-import { GameProfileAndTexture, LoginOptions, RefreshUserOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError, ProfileNotFoundError, UnauthorizedError, YggdrasilClient } from '@xmcl/user'
+import { AUTHORITY_MICROSOFT, AuthorityMetadata, GameProfileAndTexture, LoginOptions, RefreshUserOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
+import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError } from '@xmcl/user'
+import { randomUUID } from 'crypto'
+import { LauncherApp } from '~/app'
 import { Logger } from '~/logger'
 import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
 import { MicrosoftOAuthClient } from './MicrosoftOAuthClient'
-import { LauncherApp } from '~/app'
-import { randomUUID } from 'crypto'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -18,6 +18,17 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     private oauthClient: MicrosoftOAuthClient,
     private app: LauncherApp,
   ) { }
+
+  getSupporetedAuthorityMetadata(): AuthorityMetadata[] {
+    return [
+      {
+        authority: AUTHORITY_MICROSOFT,
+        flow: ['device-code', 'grant-code'],
+        emailOnly: true,
+        kind: 'builtin',
+      },
+    ]
+  }
 
   async login(options: LoginOptions, signal: AbortSignal): Promise<UserProfile> {
     const properties = options.properties || {}

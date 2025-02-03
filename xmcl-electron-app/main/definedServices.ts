@@ -17,7 +17,7 @@ import { InstanceResourcePackService, InstanceShaderPacksService, ResourcePackPr
 import { InstanceSavesService } from '@xmcl/runtime/save'
 import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
-import { OfficialUserService, UserService, YggdrasilService } from '@xmcl/runtime/user'
+import { OfficialUserService, UserService } from '@xmcl/runtime/user'
 import { VersionService } from '@xmcl/runtime/version'
 
 export const definedServices = [
@@ -49,7 +49,6 @@ export const definedServices = [
   OfficialUserService,
   UserService,
   VersionService,
-  YggdrasilService,
   InstanceInstallService,
   ModMetadataService,
   PeerService,

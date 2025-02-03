@@ -59,19 +59,25 @@
 <script setup lang="ts">
 import SettingHeader from '@/components/SettingHeader.vue'
 import { useService } from '@/composables'
-import { kYggdrasilServices } from '@/composables/yggrasil'
+import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { YggdrasilApi, YggdrasilServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
-const { data: services, mutate } = injection(kYggdrasilServices)
-const items: Ref<(YggdrasilApi &{ new?: boolean })[]> = ref([])
+type AuthorityItem = {
+  new?: boolean
+  url: string
+}
+const { data: services, mutate } = injection(kSupportedAuthorityMetadata)
+
+const items: Ref<(AuthorityItem)[]> = ref([])
 watch(services, (s) => {
   if (!s) return
-  items.value = s.map(api => ({ ...api, new: false }))
+  items.value = s.filter(api => api.kind === 'yggdrasil').map(api => ({ url: api.authority, new: false, isConnect: false }))
 }, { immediate: true })
-const { addYggdrasilService, removeYggdrasilService } = useService(YggdrasilServiceKey)
+
+const { addYggdrasilService, removeYggdrasilService } = useService(UserServiceKey)
 const { t } = useI18n()
 
 const addNew = () => {
@@ -91,11 +97,11 @@ const urlsRules = [
   (v: string | undefined) => v && isValidUrl(v),
 ]
 
-const save = async (api: YggdrasilApi) => {
+const save = async (api: AuthorityItem) => {
   await addYggdrasilService(api.url)
   mutate()
 }
-const remove = async (api: YggdrasilApi) => {
+const remove = async (api: AuthorityItem) => {
   await removeYggdrasilService(api.url)
   mutate()
 }

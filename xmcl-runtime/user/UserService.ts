@@ -2,25 +2,28 @@
 import { DownloadTask } from '@xmcl/installer'
 import {
   AUTHORITY_MICROSOFT,
+  AuthorityMetadata,
   UserService as IUserService,
   LoginOptions,
-  SharedState,
   RefreshUserOptions,
-  SaveSkinOptions, UploadSkinOptions,
+  SaveSkinOptions,
+  SharedState,
+  UploadSkinOptions,
   UserException,
   UserProfile,
   UserSchema,
   UserServiceKey,
-  UserState,
+  UserState
 } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
-import { LauncherApp, LauncherAppKey, PathResolver, kGameDataPath, Inject } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
 import { SafeFile, createSafeFile } from '~/util/persistance'
-import { YggdrasilService } from './YggdrasilService'
+import { YggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 import { UserAccountSystem } from './accountSystems/AccountSystem'
+import { YggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
 import { ensureLauncherProfile, preprocessUserData } from './userData'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 
@@ -37,13 +40,15 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private loginController: AbortController | undefined
   private refreshController: AbortController | undefined
   private setSkinController: AbortController | undefined
-  private accountSystems: Record<string, UserAccountSystem | undefined> = {}
+  private accountSystems: Record<string, UserAccountSystem> = {}
   private mojangSelectedUserId = ''
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
-    @Inject(YggdrasilService) private yggdrasilAccountSystem: YggdrasilService) {
+    @Inject(YggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
+    @Inject(YggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
+  ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
       const data = await this.userFile.read()
       const userData = {
@@ -85,6 +90,20 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     })
   }
 
+  addYggdrasilService(url: string): Promise<void> {
+    return this.yggdrasilSeriveRegistry.addYggdrasilService(url)
+  }
+
+  removeYggdrasilService(url: string): Promise<void> {
+    return this.yggdrasilSeriveRegistry.removeYggdrasilService(url)
+  }
+
+  async getSupportedAuthorityMetadata(): Promise<AuthorityMetadata[]> {
+    const result = Object.values(this.accountSystems).concat(this.yggdrasilAccountSystem).map(s => s.getSupporetedAuthorityMetadata(true))
+      .flat()
+    return result
+  }
+
   async removeUserGameProfile(userProfile: UserProfile, gameProfileId: string): Promise<void> {
     if (this.state.users[userProfile.id]) {
       delete this.state.users[userProfile.id].profiles[gameProfileId]
@@ -97,13 +116,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     return this.state
   }
 
-  async getMojangSelectedUser(): Promise<string> {
-    return this.mojangSelectedUserId
-  }
-
   @Lock('login')
   async login(options: LoginOptions): Promise<UserProfile> {
-    const system = this.accountSystems[options.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
+    const system = this.accountSystems[options.authority] || this.yggdrasilAccountSystem
 
     this.loginController = new AbortController()
 
@@ -131,7 +146,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
 
-    const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
+    const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
 
     if (skin) {
       if (typeof skin.slim !== 'boolean') skin.slim = false
@@ -170,7 +185,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       return
     }
 
-    const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
+    const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
     this.refreshController = new AbortController()
 
     const newUser = await system.refresh(user, this.refreshController.signal, options).finally(() => {

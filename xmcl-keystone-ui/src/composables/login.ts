@@ -1,15 +1,24 @@
 import { useLocalStorageCache, useLocalStorageCacheStringValue } from '@/composables/cache'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, YggdrasilApi } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, AuthorityMetadata, YggdrasilApi } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { injection } from '@/util/inject'
 import { kUserContext } from './user'
 import { kSettingsState } from './setting'
+import { useLocalStorage } from '@vueuse/core'
 
 export function useAccountSystemHistory() {
   const authority = useLocalStorageCacheStringValue('loginLastAuthAuthority', AUTHORITY_MICROSOFT as string, { legacyKey: 'last-auth-service' })
-  const history = computed(() => useLocalStorageCache<string[]>(computed(() => `loginAuthorityHistory:${authority.value}`), () => [], JSON.stringify, JSON.parse).value)
-
+  const allHistoryRaw = useLocalStorage('loginAuthorityHistory', () => ([] as { name: string; authority: string }[]))
+  const history = computed({
+    get: () => allHistoryRaw.value.filter(v => v.authority === authority.value).map(v => v.name),
+    set: (v) => {
+      allHistoryRaw.value = [
+        ...allHistoryRaw.value.filter(v => v.authority !== authority.value),
+        ...v.map(x => ({ name: x, authority: authority.value })),
+      ]
+    },
+  })
   return {
     authority,
     history,
@@ -64,36 +73,35 @@ export function useAllowThirdparty() {
   return allowThirdParty
 }
 
-export function useAuthorityItems(allowThirdparty: Ref<boolean>, services: Ref<YggdrasilApi[]>) {
+export function useAuthorityItems(authorities: Ref<AuthorityMetadata[] | undefined>) {
   const { t } = useI18n()
+  const thirdParty = useAllowThirdparty()
   const items: Ref<AuthorityItem[]> = computed(() => {
-    const items = [
-      {
-        value: AUTHORITY_MICROSOFT,
-        text: t('userServices.microsoft.name'),
-        icon: 'gavel',
-      },
-    ] as AuthorityItem[]
-
-    if (allowThirdparty.value) {
-      items.push({
-        value: AUTHORITY_DEV,
-        text: t('userServices.offline.name'),
-        icon: 'wifi_off',
-      })
-      for (const api of services.value) {
-        try {
-          const host = new URL(api.url).host
-          items.push({
-            value: api.url,
-            text: api.authlibInjector?.meta.serverName ?? host,
-            icon: api.favicon ?? '',
-          })
-        } catch { }
+    if (!authorities.value) return []
+    const result = [] as AuthorityItem[]
+    for (const v of authorities.value) {
+      if (!thirdParty.value && v.authority !== AUTHORITY_MICROSOFT) continue
+      if (v.authority === AUTHORITY_MICROSOFT) {
+        result.push({
+          value: AUTHORITY_MICROSOFT,
+          text: t('userServices.microsoft.name'),
+          icon: 'gavel',
+        })
       }
+      if (v.authority === AUTHORITY_DEV) {
+        result.push({
+          value: AUTHORITY_DEV,
+          text: t('userServices.offline.name'),
+          icon: 'wifi_off',
+        })
+      }
+      result.push({
+        value: v.authority,
+        text: v.authlibInjector?.meta.serverName ?? new URL(v.authority).host,
+        icon: v.favicon ?? '',
+      })
     }
-
-    return items
+    return result
   })
 
   return items

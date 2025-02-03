@@ -34,7 +34,7 @@ import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
-import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
+import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
 import { provide } from 'vue'
@@ -114,7 +114,7 @@ export default defineComponent({
     provide(kUILayout, useUILayout())
     provide(kImageDialog, useImageDialog())
     provide(kFilterCombobox, useFilterComboboxData())
-    provide(kYggdrasilServices, useYggdrasilServices())
+    provide(kSupportedAuthorityMetadata, useSupportedAuthority())
     provide(kTutorial, useTutorialModel())
     provide(kModrinthTags, useModrinthTags())
     provide(kCurseforgeCategories, useCurseforgeCategories())

@@ -1,13 +1,15 @@
-import { GameProfileAndTexture, LoginOptions, RefreshUserOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
-import { YggdrasilError, YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
+import { AuthorityMetadata, GameProfileAndTexture, LoginOptions, OICDLikeConfig, RefreshUserOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
+import { GameProfile, YggdrasilError, YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
 import { LauncherApp } from '~/app'
 import { Logger } from '~/logger'
 import { isSystemError } from '~/util/error'
 import { toRecord } from '~/util/object'
 import { isValidUrl } from '~/util/url'
-import { normalizeGameProfile, normalizeSkinData } from '../user'
+import { normalizeGameProfile, normalizeSkinData, transformGameProfileTexture } from '../user'
 import { UserTokenStorage } from '../userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
+import { YggdrasilSeriveRegistry } from '../YggdrasilSeriveRegistry'
+import { YggdrasilOCIDAuthClient } from './YggdrasilOCIDAuthClient'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(
@@ -15,7 +17,20 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     private logger: Logger,
     private clientToken: string,
     private storage: UserTokenStorage,
+    private registry: YggdrasilSeriveRegistry,
+    private ocidClient: YggdrasilOCIDAuthClient,
   ) {
+  }
+
+  getSupporetedAuthorityMetadata(): AuthorityMetadata[] {
+    return this.registry.getYggdrasilServices().map(s => ({
+      authority: s.url,
+      flow: s.ocidConfig ? ['device-code', 'password'] : ['password'],
+      authlibInjector: s.authlibInjector,
+      emailOnly: false,
+      favicon: s.favicon,
+      kind: 'yggdrasil',
+    }))
   }
 
   protected getClient(authority: string) {
@@ -39,29 +54,14 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     return client
   }
 
+
   async #updateSkins(client: YggdrasilThirdPartyClient, userProfile: UserProfile, signal?: AbortSignal) {
     for (const p of Object.values(userProfile.profiles)) {
       const profile = await client.lookup(p.id, true, signal)
-      const texturesBase64 = profile.properties.textures
-      if (!texturesBase64) continue
       try {
-        const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
-        const skin = textures?.textures.SKIN
-        const uploadable = profile.properties.uploadableTextures
-
-        // mark skin already refreshed
-        if (skin) {
-          this.logger.log(`Update the skin for profile ${p.name}`)
-
-          userProfile.profiles[p.id] = {
-            ...profile,
-            textures: {
-              ...textures.textures,
-              SKIN: skin,
-            },
-            uploadable: uploadable ? uploadable.split(',') as any : undefined,
-          }
-        }
+        const transformed = transformGameProfileTexture(profile)
+        if (!transformed) continue
+        userProfile.profiles[p.id] = transformed
       } catch (e) {
         this.logger.error(e as Error)
         this.logger.warn('Fail to update skins', p, profile)
@@ -69,7 +69,49 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
   }
 
-  async login({ username, password, authority }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
+  async #loginOCID(ocidConfig: OICDLikeConfig, authority: string, username: string, slientOnly: boolean, homeAccountId?: string, signal?: AbortSignal): Promise<UserProfile> {
+    const client = this.ocidClient
+    const id = this.registry.getClientId(ocidConfig.issuer)
+    const { result } = await client.authenticate(ocidConfig.issuer, id, username, ['Yggdrasil.Server.Join', 'Yggdrasil.PlayerProfiles.Select', 'openid', 'offline_access'], {
+      signal,
+      slientOnly,
+      homeAccountId,
+    })
+
+    const selectedProfileRaw = 'selectedProfile' in result.idTokenClaims ? result.idTokenClaims.selectedProfile as any : undefined
+    if (!selectedProfileRaw) {
+      throw new UserException({ type: 'fetchMinecraftProfileFailed', errorType: 'NOT_FOUND', error: 'NOT_FOUND', errorMessage: `No user profile@${authority}`, developerMessage: `No user profile@${authority}` },)
+    }
+
+    const selectedProfile = { ...selectedProfileRaw, properties: Object.fromEntries(selectedProfileRaw.properties.map((p: any) => [p.name, p.value])) } as GameProfile
+    const transformed = transformGameProfileTexture(selectedProfile)
+    if (!transformed) {
+      throw new UserException({ type: 'fetchMinecraftProfileFailed', errorType: 'BadProfile', error: 'BadProfile', errorMessage: `BadProfile@${authority}`, developerMessage: `BadProfile@${authority}` },)
+    }
+    const profile = {
+      id: normalizeUserId(result.uniqueId, authority),
+      username: username,
+      invalidated: false,
+      profiles: {
+        [selectedProfile.id]: transformed,
+      },
+      selectedProfile: selectedProfile.id,
+      expiredAt: result.expiresOn?.getTime() || Date.now() + 86400_000,
+      authority: authority,
+      homeAccountId: result.uniqueId,
+    } as UserProfile
+    await this.storage.put(profile, result.accessToken)
+    return profile
+  }
+
+  async login({ username, password, authority, properties }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
+    const auth = this.registry.getYggdrasilServices().find(s => s.url === authority)
+
+    if (auth?.ocidConfig && properties?.mode === 'device') {
+      const result = await this.#loginOCID(auth.ocidConfig, authority, username, false, undefined, signal)
+      return result
+    }
+
     const client = this.getClient(authority)
     if (!client) throw new UserException({ type: 'loginServiceNotSupported', authority }, `Service ${authority} is not supported`)
 
@@ -121,7 +163,19 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
   }
 
-  async refresh(userProfile: UserProfile, signal: AbortSignal, { force }: RefreshUserOptions): Promise<UserProfile> {
+  async refresh(userProfile: UserProfile, signal: AbortSignal, { force, silent }: RefreshUserOptions): Promise<UserProfile> {
+    const auth = this.registry.getYggdrasilServices().find(s => s.url === userProfile.authority)
+
+    if (auth?.ocidConfig && userProfile.homeAccountId) {
+      const diff = Date.now() - userProfile.expiredAt
+      if (force || !userProfile.expiredAt || diff > 0 || (diff / 1000 / 3600 / 24) > 14 || userProfile.invalidated) {
+        const result = await this.#loginOCID(auth.ocidConfig, userProfile.authority, userProfile.username, silent ?? true, userProfile.homeAccountId, signal)
+        return result
+      }
+
+      return userProfile
+    }
+
     const client = this.getClient(userProfile.authority)
 
     const token = await this.storage.get(userProfile)
