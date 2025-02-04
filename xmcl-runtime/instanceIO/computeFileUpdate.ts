@@ -56,10 +56,10 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
           const toAddFile = toAdd[p]
 
           const isFileDiff = async () => {
-            if ('sha1' in toAddFile) {
+            if ('sha1' in toAddFile.hashes) {
               return (currentSha1 || await getSha1(instancePath, file)) !== toAdd[p].hashes.sha1
             }
-            const crcDiff = 'crc32' in toAddFile ? (currentCrc32 || await getCrc32(instancePath, file)) !== toAdd[p].hashes.crc32 : undefined
+            const crcDiff = 'crc32' in toAddFile.hashes ? (currentCrc32 || await getCrc32(instancePath, file)) !== toAdd[p].hashes.crc32 : undefined
             const sizeDiff = 'size' in toAddFile ? file.size !== toAdd[p].size : undefined
             if (crcDiff || sizeDiff) {
               return true
