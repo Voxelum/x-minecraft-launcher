@@ -2,8 +2,8 @@ import { Authority, ClientAuthErrorCodes, createClientAuthError } from '@azure/m
 import { LauncherAppPlugin } from '~/app';
 import { kClientToken } from '~/clientToken';
 import { UserService } from './UserService';
-import { YggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry';
-import { YggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem';
+import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry';
+import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem';
 import { YggdrasilOCIDAuthClient } from './accountSystems/YggdrasilOCIDAuthClient';
 import { kUserTokenStorage } from './userTokenStore';
 
@@ -40,7 +40,6 @@ export const pluginYggdrasilApi: LauncherAppPlugin = async (app) => {
 
   const yggReg = new YggdrasilSeriveRegistry(app)
   await yggReg.load()
-  app.registry.register(YggdrasilSeriveRegistry, yggReg)
 
   const yggdrasilAccountSystem = new YggdrasilAccountSystem(
     app,
@@ -58,7 +57,8 @@ export const pluginYggdrasilApi: LauncherAppPlugin = async (app) => {
       app.secretStorage,
     )
   )
-  app.registry.register(YggdrasilAccountSystem, yggdrasilAccountSystem)
+  app.registry.register(kYggdrasilAccountSystem, yggdrasilAccountSystem)
+  app.registry.register(kYggdrasilSeriveRegistry, yggReg)
 
   const userSerivce = await app.registry.get(UserService)
 }

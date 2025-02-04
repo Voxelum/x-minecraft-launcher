@@ -11,6 +11,7 @@ import { UserAccountSystem } from './AccountSystem'
 import { YggdrasilSeriveRegistry } from '../YggdrasilSeriveRegistry'
 import { YggdrasilOCIDAuthClient } from './YggdrasilOCIDAuthClient'
 
+export const kYggdrasilAccountSystem = Symbol('YggdrasilAccountSystem')
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(
     private app: LauncherApp,

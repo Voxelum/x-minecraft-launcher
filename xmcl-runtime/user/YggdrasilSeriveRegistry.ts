@@ -10,6 +10,8 @@ const BUILTIN_CLIENT = {
   'open.littleskin.cn': '393'
 } as Record<string, string>
 
+export const kYggdrasilSeriveRegistry = Symbol('YggdrasilSeriveRegistry')
+
 export class YggdrasilSeriveRegistry {
   private yggdrasilServices: YggdrasilApi[] = []
 

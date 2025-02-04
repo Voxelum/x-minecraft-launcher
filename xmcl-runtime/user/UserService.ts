@@ -21,9 +21,9 @@ import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
 import { SafeFile, createSafeFile } from '~/util/persistance'
-import { YggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
+import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
 import { UserAccountSystem } from './accountSystems/AccountSystem'
-import { YggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
+import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
 import { ensureLauncherProfile, preprocessUserData } from './userData'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 
@@ -46,8 +46,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
-    @Inject(YggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
-    @Inject(YggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
+    @Inject(kYggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem,
+    @Inject(kYggdrasilSeriveRegistry) private yggdrasilSeriveRegistry: YggdrasilSeriveRegistry
   ) {
     super(app, () => store.registerStatic(new UserState(), UserServiceKey), async () => {
       const data = await this.userFile.read()
