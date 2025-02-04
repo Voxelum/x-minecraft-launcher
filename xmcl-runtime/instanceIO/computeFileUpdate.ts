@@ -54,13 +54,24 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
         // The file isn't modified from last install
         if (toAdd[p]) {
           const toAddFile = toAdd[p]
-          const isFileDifferent = 'size' in toAddFile
-            ? file.size !== toAdd[p].size
-            : 'sha1' in toAddFile
-              ? (currentSha1 || await getSha1(instancePath, file)) !== toAdd[p].hashes.sha1
-              : 'crc32' in toAddFile
-                ? (currentCrc32 || await getCrc32(instancePath, file)) !== toAdd[p].hashes.crc32
-                : true
+
+          const isFileDiff = async () => {
+            if ('sha1' in toAddFile) {
+              return (currentSha1 || await getSha1(instancePath, file)) !== toAdd[p].hashes.sha1
+            }
+            const crcDiff = 'crc32' in toAddFile ? (currentCrc32 || await getCrc32(instancePath, file)) !== toAdd[p].hashes.crc32 : undefined
+            const sizeDiff = 'size' in toAddFile ? file.size !== toAdd[p].size : undefined
+            if (crcDiff || sizeDiff) {
+              return true
+            }
+            if (crcDiff === undefined && sizeDiff === undefined) {
+              // no clue
+              return true
+            }
+            return false
+          }
+
+          const isFileDifferent = await isFileDiff()
           result.push({
             file: toAdd[p],
             operation: isFileDifferent ? 'add' : 'keep'
