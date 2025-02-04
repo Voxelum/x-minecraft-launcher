@@ -28,6 +28,9 @@ export async function discover(instancePath: string, logger: Logger, filter?: (r
     if (relativePath === 'instance.json') {
       return
     }
+    if (relativePath === 'server' && status.isDirectory()) {
+      return
+    }
     // no lib or exe
     if (relativePath.endsWith('.dll') || relativePath.endsWith('.so') || relativePath.endsWith('.exe')) {
       return

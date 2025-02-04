@@ -8,6 +8,7 @@ import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
+import { basename } from '@/util/basename'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
@@ -106,6 +107,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     for (const item of newItems) {
       // Update icon map
       newIconMap[item.modId] = item.icon
+      newIconMap[basename(item.path)] = item.icon
       if (item.enabled) {
         for (const [key, val] of Object.entries(item.provideRuntime)) {
           runtime[key] = val

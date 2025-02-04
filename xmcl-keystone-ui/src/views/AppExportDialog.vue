@@ -405,15 +405,15 @@ const { refresh, refreshing } = useRefreshable(async () => {
   const files = manifest.files
   let selected = [] as string[]
   selected = files
-    .filter(file => !file.path.startsWith('.'))
-    .filter(file => !file.path.startsWith('logs'))
-    .filter(file => !file.path.startsWith('crash-reports'))
-    .filter(file => !file.path.startsWith('saves'))
-    .filter(file => !file.path.startsWith('resourcepacks'))
-    .filter(file => !file.path.startsWith('screenshots'))
-    .filter(file => !file.path.startsWith('data'))
-    .filter(file => !file.path.startsWith('server'))
-    .filter(file => !exclusions.includes(file.path))
+    .filter(file => file.path.startsWith('resourcepacks')
+        || file.path.startsWith('mods')
+        || file.path.startsWith('config')
+        || file.path.startsWith('scripts')
+        || file.path.startsWith('shaderpacks')
+        || file.path.startsWith('options.txt')
+        || file.path.startsWith('optionsof.txt')
+        || file.path.startsWith('servers.dat'))
+    .filter(file => !file.path.endsWith('.disabled'))
     .map(file => file.path)
   nextTick().then(() => { data.selected = selected })
   data.files = files

@@ -24,20 +24,19 @@
         chevron_right
       </v-icon>
     </div>
-    <dir
+    <div
       v-if="!item.children"
       class="mr-4"
     >
-      <v-avatar v-if="item.avatar">
+      <v-avatar size="24" v-if="item.avatar">
         <v-img
           :src="item.avatar"
-          style="width: 24px; height: 24px;"
         />
       </v-avatar>
       <v-icon v-else>
         {{ getIcon(item) }}
       </v-icon>
-    </dir>
+    </div>
 
     <div class="flex-grow flex flex-col justify-center">
       <div :style="{ fontSize: '16px', lineHeight: '100%', ...item.style }">
@@ -55,7 +54,7 @@
       </div>
       <div
         v-if="item.size > 0"
-        class="inline-flex gap-2"
+        class="inline-flex gap-2 items-center"
       >
         <span :style="{ opacity: 0.6, fontStyle: 'italic', fontSize: '12px' }">
           {{ getExpectedSize(item.size) }}
