@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l'istanza corrente con te'
+  instanceShare: "{user} ha appena condiviso l'istanza corrente con te"
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -401,6 +401,8 @@ instance:
     di volerlerlo fare?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
+  deleteFailed: Impossibile eliminare l'istanza
+  deleteFailedPermission: Un altro programma occupava il file
   fileApi: L'URL API del server di sincronizzazione dei file
   fileApiHint: >-
     L'URL per sincronizzare i file dell'istanza da un server di configurazione
@@ -436,6 +438,8 @@ instance:
   versionHint: La versione di Minecraft di questo gioco
   vmOptions: Opzioni JVM
   vmOptionsHint: Argomenti aggiuntivi passati a JVM
+  vmVar: Variabili d'ambiente
+  vmVarHint: Fare clic sul pulsante per aggiungere variabili ambientali
 instanceAge:
   older: Più vecchio
   threeDay: In tre giorni
@@ -523,6 +527,7 @@ instances:
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
     gioco originale in XMCL.
   choose: Seleziona gioco
+  fix: Sistemati
   folderSetting: Impostazioni della cartella
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
@@ -770,13 +775,18 @@ modInstall:
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
+  skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: Aggiorna le ModmodSearchType:
+  upgrade: 'Aggiorna le Mod'
   all: Tutti
   explore: Esplora il mercato
-  installed: Installato
   local: Cache del disco
+modUpgradePolicy:
+  curseforge: Curseforge  Maledizione
+  curseforgeOnly: Solo Forgiamaledizione
+  modrinth: Modrinth Primo
+  modrinthOnly: Solo Modrinth
 modified:
   reset: Reimposta
   save: Salva
@@ -1485,7 +1495,6 @@ turnRegion:
   guangzhou: Guangzhou, Cina
   hk: Hong Kong
   liaoning: Liaoning, Cina
-  po: Polonia
 tutorial:
   feedbackDescription: >-
     Se incontri qualche problema, Perfavore clicca questo bottone per inviare
