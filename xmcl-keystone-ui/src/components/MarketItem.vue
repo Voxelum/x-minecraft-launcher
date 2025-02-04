@@ -9,7 +9,7 @@
     style="pointer-events: initial;"
     :draggable="draggable"
     :class="{
-      'v-list-item--disabled': item.disabled,
+      'v-list-item--disabled': disabled || item.disabled,
       'dragged-over': dragover > 0,
     }"
     :input-value="selected"
@@ -166,6 +166,7 @@ const props = defineProps<{
   noDuplicate?: boolean
   dense?: boolean
   hasUpdate?: boolean
+  disabled?: boolean
   height?: number
   draggable?: boolean
   install?: (p: ProjectEntry) => Promise<void>

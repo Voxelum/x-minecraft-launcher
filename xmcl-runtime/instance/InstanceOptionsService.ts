@@ -89,7 +89,6 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
       const watcher = new FSWatcher({
         cwd: path,
-        awaitWriteFinish: true,
         ignorePermissionErrors: true,
       })
       const dispose = () => {

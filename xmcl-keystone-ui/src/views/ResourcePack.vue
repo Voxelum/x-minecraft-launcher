@@ -35,7 +35,7 @@
         v-else-if="(typeof item === 'object')"
         :pack="item"
         :dense="denseView"
-        :draggable="!networkOnly && !item.disabled"
+        :draggable="mode === 'local' && !item.disabled"
         :selection-mode="selectionMode"
         :item-height="itemHeight"
         :selected="selected"
@@ -144,7 +144,7 @@ const {
   loadMoreCurseforge,
   loadMoreModrinth,
   keyword,
-  networkOnly,
+  mode,
   gameVersion,
   effect,
 } = injection(kResourcePackSearch)
@@ -252,8 +252,10 @@ const { dragover } = useGlobalDrop({
     for (const f of t.files) {
       paths.push(f.path)
     }
-    const installed = await install(path.value, paths)
-    await enable(installed)
+    if (paths.length > 0) {
+      const installed = await install(path.value, paths)
+      await enable(installed)
+    }
   },
 })
 

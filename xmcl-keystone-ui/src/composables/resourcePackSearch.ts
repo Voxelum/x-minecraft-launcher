@@ -145,9 +145,9 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
   )
 
   const mode = computed(() =>
-    modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined
+    (modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
       ? 'online'
-      : keyword.value ? 'all' : 'local',
+      : (keyword.value ? 'all' : 'local'),
   )
 
   const _installed = useProjectsFilterSort(
@@ -188,7 +188,7 @@ export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _en
 
   return {
     localOnly,
-    networkOnly: mode,
+    mode,
     sort,
     gameVersion,
 
