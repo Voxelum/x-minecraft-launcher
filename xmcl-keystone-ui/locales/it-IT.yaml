@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
+  instanceShare: '{user} ha appena condiviso l'istanza corrente con te'
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -265,8 +265,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    cliccando la casella di controllo, indichi la tua accettazione  con l'{eula}
-    di Minecraft.
+    cliccando la casella di controllo, indichi la tua accettazione 
+    con l'{eula} di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -310,8 +310,8 @@ fileDetail:
   fileSize: Dimensione del file
   hash: Hash
 filter: Filtro
-filterLocalOnly: Mostra solo installato
-finish: Finito
+filterLocalOnly: Mostra solo installate
+finish: Finitoo
 forgeConfig:
   hint: >-
     Avvia almeno una volta il gioco con questa mod, in modo che possiamo
@@ -345,24 +345,24 @@ installAssets:
   assetIndex: Controlla il file di indice degli asset
   name: Installa file di asset
 installAuthlibInjector: Installa authlib-injector
-installCurseforgeFile: Installa file Curseforge
+installCurseforgeFile: Installa file di Curseforge
 installFabric:
   name: Installa Fabric
 installForge:
-  downloadInstaller: Scarica l'installatore
+  downloadInstaller: Scarica l'installer
   library: Installa libreria {lib}
   name: Installa Forge
   postProcessing: Post elaborazione
 installInstance:
-  file: Aggiorna file istanza {file}
+  file: Aggiorna file dell' istanza {file}
   link: Copia o collega {count} file
   name: Aggiorna istanza
-  resolve: Risolvi configurazione istanza
+  resolve: Risolvi configurazione dell'istanza
   unzip: Decomprimi {count} file
 installJre:
   decompress: Decomprimi i file JRE nella cartella
   download: Scarica file JRE compresso
-  name: Installa libreria di runtime Java
+  name: Installa libreria di Java runtime
 installLabyMod:
   asset: Installa asset {name}
   json: Genera JSON {version}
@@ -396,11 +396,9 @@ instance:
   changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
-  deleteFailed: Impossibile eliminare l'istanza
-  deleteFailedPermission: Un altro programma occupava il file
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
-    di voler fare questo?
+    di volerlerlo fare?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
   fileApi: L'URL API del server di sincronizzazione dei file
@@ -438,8 +436,6 @@ instance:
   versionHint: La versione di Minecraft di questo gioco
   vmOptions: Opzioni JVM
   vmOptionsHint: Argomenti aggiuntivi passati a JVM
-  vmVar: Variabili d'ambiente
-  vmVarHint: Fare clic sul pulsante per aggiungere variabili ambientali
 instanceAge:
   older: Più vecchio
   threeDay: In tre giorni
@@ -527,7 +523,6 @@ instances:
     Importa dalla cartella .minecraft comune. Questo duplicherà il profilo di
     gioco originale in XMCL.
   choose: Seleziona gioco
-  fix: Sistemati
   folderSetting: Impostazioni della cartella
   importFolder: Importa da cartella
   importFolderDescription: Importa Minecraft nel launcher
@@ -552,7 +547,7 @@ java:
   modifyInstance: Modifica percorso Java
   noMemory: Non limitare l'utilizzo della memoria
   refresh: Aggiorna Java locale
-  systemMemory: 'Memoria libera del sistema: {free} / {total}'
+  systemMemory: Memoria di sistema attuale
 labyMod:
   disable: Disabilita LabyMod
   empty: LabyMod non supporta l'attuale versione di Minecraft
@@ -647,7 +642,7 @@ localVersion:
   delete: Elimina versione locale
   deleteDescription: >-
     Questa operazione eliminerà il file json e jar della versione locale. Sarà
-    necessario scaricarlo nuovamente se si desidera utilizzarlo di nuovo.
+    necessario scaricarlo nuovamente se si desidera riutilizzarlo nuovamente.
   empty: Nessuna versione installata
   hint: Avvia una versione locale specifica
   refresh: Aggiorna versioni
@@ -679,7 +674,7 @@ loginError:
   checkOwnershipFailed: Impossibile verificare la proprietà del gioco. Riprovare.
   connectionReset: Impossibile accedere poiché la connessione è stata reimpostata dal server
   fetchMinecraftProfileFailed: 'Impossibile recuperare il profilo Minecraft: {reason}'
-  illegalEmail: L'e-mail deve essere valida
+  illegalEmail: L'E-mail deve essere valida
   invalidCredentials: Credenziali non valide. Nome utente o password non validi.
   loginMinecraftByXboxFailed: >-
     Impossibile scambiare il token Minecraft con il token Xbox. Assicurarsi di
@@ -721,7 +716,7 @@ mod:
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
   dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
-  duplicatedDetected: '{count} mod duplicate'
+  duplicatedDetected: '{count} mod sono state duplicate'
   duplicatedDetectedDescription: |-
     Mod trovate con lo stesso ID mod ma file diversi. 
     Ciò potrebbe causare l'arresto anomalo di Minecraft. 
@@ -732,7 +727,7 @@ mod:
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
-  incompatibleHint: Controlla il rapporto sulla compatibilità della tua mod
+  incompatibleHint: Le mod potrebbero avere problemi di compatibilità
   incompatibleHintDescription: |-
     Potrebbero mancare alcune dipendenze delle mod. 
     Oppure alcune versioni delle dipendenze non corrispondono.
@@ -775,15 +770,13 @@ modInstall:
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
-  skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: Aggiorna le Mod
-modUpgradePolicy:
-  curseforge: Curseforge  Maledizione
-  curseforgeOnly: Solo Forgiamaledizione
-  modrinth: Modrinth Primo
-  modrinthOnly: Solo Modrinth
+  upgrade: Aggiorna le ModmodSearchType:
+  all: Tutti
+  explore: Esplora il mercato
+  installed: Installato
+  local: Cache del disco
 modified:
   reset: Reimposta
   save: Salva
@@ -1488,6 +1481,7 @@ transportType:
   srflx: Server Reflexive Scelto
 turnRegion:
   fr: Francia
+  po: Polonia
   guangzhou: Guangzhou, Cina
   hk: Hong Kong
   liaoning: Liaoning, Cina
@@ -1567,18 +1561,18 @@ universalDrop:
   title: Trascina i file qui per importarli come
   unknownResource: Sconosciuto
 update:
-  goOfficialWebDownload: Scarica di nuovo dal sito web ufficiale
+  goOfficialWebDownload: Riscarica dal sito web ufficiale
 upstream:
   downgrade: Downgrade
   missingModpackMetadata: >-
     I vecchi metadati del modpack non sono stati trovati. Puoi comunque eseguire
     l'aggiornamento, ma il risultato potrebbe essere errato. Effettua il backup
-    dei file dell'istanza.
+    dei file della tua istanza.
   onlyShowCurrentVersion: Mostra solo la versione corrente di Minecraft
   update: Aggiornare
 user:
-  accessToken: Accesso Token
-  authMode: Servizio Auth
+  accessToken: Token d'accesso
+  authMode: Servizio Autenticazione
   authService: Servizio di autorizzazione
   birth: Data di nascita registrata
   challenges: Rispondere alle domande sottostanti per verificare la propria identità
