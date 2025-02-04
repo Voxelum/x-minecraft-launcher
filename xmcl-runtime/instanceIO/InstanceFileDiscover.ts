@@ -25,6 +25,9 @@ export async function discover(instancePath: string, logger: Logger, filter?: (r
         return
       }
     }
+    if (relativePath.startsWith('.backups')) {
+      return
+    }
     if (relativePath === 'instance.json') {
       return
     }

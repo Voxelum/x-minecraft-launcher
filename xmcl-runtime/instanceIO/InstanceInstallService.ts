@@ -1,11 +1,15 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
+import { ChecksumNotMatchError } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
+import filenamify from 'filenamify'
 import { readJSON, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
+import { InstanceService } from '~/instance/InstanceService'
 import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
+import { getDomainedPath } from '~/resource/core/snapshot'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { createSafeIO } from '~/util/persistance'
@@ -13,10 +17,6 @@ import { AnyError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { computeFileUpdates } from './computeFileUpdate'
-import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { InstanceService } from '~/instance/InstanceService'
-import { getDomainedPath } from '~/resource/core/snapshot'
-import { getFile } from '~/resource/core/files'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -314,7 +314,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         files,
         upstream,
         mtime: timestamp,
-        backup: join(instanceDir, `.${instanceName}-backup-${timestamp}`),
+        backup: join(instanceDir, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
         workspace: join(instanceDir, `.${instanceName}-install-${timestamp}`),
         finishedPath: [],
       }
@@ -347,7 +347,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
           id: '',
         },
         mtime: timestamp,
-        backup: join(instanceDir, `.${instanceName}-backup-${id ?? timestamp}`),
+        backup: join(instanceDir, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
         workspace: join(instanceDir, `.${instanceName}-install-${id ?? timestamp}`),
         finishedPath: [],
       }
