@@ -100,7 +100,7 @@ const { t } = useI18n()
 const { uninstall } = useService(InstanceResourcePacksServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { path } = injection(kInstance)
-const isVirtual = computed(() => !props.pack.installed[0].path)
+const isVirtual = computed(() => props.pack.installed[0] && !props.pack.installed[0].path)
 
 const isBuiltIn = computed(() => props.pack.id === 'vanilla' || props.pack.id === 'fabric' || props.pack.id === 'file/mod_resources')
 const getContextMenuItems = () => {
