@@ -43,7 +43,6 @@ function getJavaPathOrInstall(instances: Instance[], javas: JavaRecord[], resolv
     return inst.java
   }
   const validJava = javas.find(v => v.majorVersion === resolved.javaVersion.majorVersion && v.valid)
-  console.log('validJava', validJava)
   return validJava ? validJava.path : resolved.javaVersion
 }
 
@@ -257,10 +256,10 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     if (!version) return
     abortController.abort()
     abortController = new AbortController()
+    const timeStart = performance.now()
     try {
       loading.value += 1
       const lock = getInstanceLock(path.value)
-      console.time('[getInstallInstruction]')
       await lock.runExclusive(async () => {
         try {
           const _path = version.instance
@@ -282,8 +281,16 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
           throw e
         }
       })
+      const timeEnd = performance.now()
+      console.log('Full install profile update', timeEnd - timeStart, 'ms')
+    } catch (e) {
+      if (e === kAbort) {
+        const timeEnd = performance.now()
+        console.log('Aborted install profile update', timeEnd - timeStart, 'ms')
+        return
+      }
+      throw e
     } finally {
-      console.timeEnd('[getInstallInstruction]')
       loading.value -= 1
     }
   }

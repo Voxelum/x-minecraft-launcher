@@ -2,7 +2,7 @@ import { File, InstanceFile, InstanceFileUpdate } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { getFile } from '~/resource/core/files'
 
-export async function computeFileUpdates(instancePath: string, oldFiles: InstanceFile[], newFiles: InstanceFile[], oldInstallTime: number | undefined, getSha1: (instancePath: string, file: File) => Promise<string>, getCrc32: (instancePath: string, file: File) => Promise<string>) {
+export async function computeFileUpdates(instancePath: string, oldFiles: InstanceFile[], newFiles: InstanceFile[], oldInstallTime: number | undefined, getSha1: (instancePath: string, file: File) => Promise<string>, getCrc32: (instancePath: string, file: File) => Promise<number>) {
   const toAdd: Record<string, InstanceFile> = {}
   const oldFilesMap: Record<string, InstanceFile> = {}
 
@@ -26,13 +26,13 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
       }
     } else {
       let currentSha1 = ''
-      let currentCrc32 = ''
+      let currentCrc32 = 0
       const isFileChanged = typeof oldInstallTime === 'number'
         ? oldInstallTime < file.mtime
         : oldFilesMap[p]?.hashes.sha1
           ? oldFilesMap[p]?.hashes.sha1 !== (currentSha1 = await getSha1(instancePath, file))
           : oldFilesMap[p]?.hashes.crc32
-            ? oldFilesMap[p]?.hashes.crc32 !== (currentCrc32 = await getCrc32(instancePath, file))
+            ? Number.parseInt(oldFilesMap[p]?.hashes.crc32) !== (currentCrc32 = await getCrc32(instancePath, file))
             : oldFilesMap[p]?.size
               ? oldFilesMap[p]?.size !== file.size
               : false
@@ -59,7 +59,7 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
             if ('sha1' in toAddFile.hashes) {
               return (currentSha1 || await getSha1(instancePath, file)) !== toAdd[p].hashes.sha1
             }
-            const crcDiff = 'crc32' in toAddFile.hashes ? (currentCrc32 || await getCrc32(instancePath, file)) !== toAdd[p].hashes.crc32 : undefined
+            const crcDiff = 'crc32' in toAddFile.hashes ? (currentCrc32 || (currentCrc32 = await getCrc32(instancePath, file))) !== Number.parseInt(toAdd[p].hashes.crc32) : undefined
             const sizeDiff = 'size' in toAddFile ? file.size !== toAdd[p].size : undefined
             if (crcDiff || sizeDiff) {
               return true

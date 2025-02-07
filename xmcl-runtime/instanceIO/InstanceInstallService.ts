@@ -314,7 +314,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         files,
         upstream,
         mtime: timestamp,
-        backup: join(instanceDir, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
+        backup: join(instancePath, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
         workspace: join(instanceDir, `.${instanceName}-install-${timestamp}`),
         finishedPath: [],
       }
@@ -347,7 +347,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
           id: '',
         },
         mtime: timestamp,
-        backup: join(instanceDir, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
+        backup: join(instancePath, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
         workspace: join(instanceDir, `.${instanceName}-install-${id ?? timestamp}`),
         finishedPath: [],
       }

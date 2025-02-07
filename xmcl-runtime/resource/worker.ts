@@ -7,5 +7,6 @@ export const kResourceWorker: InjectionKey<ResourceWorker> = Symbol('ResourceWor
  */
 export interface ResourceWorker extends Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'> {
   checksum(path: string, algorithm: string): Promise<string>
+  checksum(path: string, algorithm: 'crc32'): Promise<number>
   fingerprint(filePath: string): Promise<number>
 }

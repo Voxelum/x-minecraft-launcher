@@ -2,8 +2,8 @@ import { DownloadOptions } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { InstanceFile, InstanceFileUpdate, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { ensureDir, remove, rename } from 'fs-extra'
-import { basename, dirname, join, relative } from 'path'
+import { ensureDir, remove, rename, rmdir, unlink } from 'fs-extra'
+import { dirname, join, relative } from 'path'
 import { fileURLToPath } from 'url'
 import { kGameDataPath } from '~/app'
 import { Logger } from '~/logger'
@@ -49,6 +49,7 @@ export class InstanceFileOperationHandler {
    * All files need to be removed or backup
    */
   #backupQueue: Array<InstanceFile> = []
+  #removeQueue: Array<InstanceFile> = []
   // Phase 3: Link or copy existed files
   /**
    * Extra files need to be copied or linked
@@ -99,6 +100,7 @@ export class InstanceFileOperationHandler {
 
     if (operation === 'remove') {
       this.#backupQueue.push(file)
+      this.#removeQueue.push(file)
       return
     }
 
@@ -217,6 +219,12 @@ export class InstanceFileOperationHandler {
       }
 
       throw e
+    }
+
+    for (const file of this.#removeQueue) {
+      const dest = join(this.backupPath, file.path)
+      await unlink(dest).catch(() => undefined)
+      await rmdir(dirname(dest)).catch(() => undefined)
     }
 
     // Remove the workspace folder

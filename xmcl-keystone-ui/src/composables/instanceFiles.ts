@@ -1,3 +1,4 @@
+import { useDocumentVisibility, useEventListener } from '@vueuse/core'
 import { InstanceFile, InstanceInstallServiceKey, InstanceInstallStatus } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
@@ -29,6 +30,15 @@ export function useInstanceFiles(instancePath: Ref<string>) {
 
   watch(instancePath, () => mutate(), { immediate: true })
 
+  const dmutate = debounce(() => mutate(), 400)
+  useEventListener('focus', dmutate)
+  const vis = useDocumentVisibility()
+  watch(vis, (v) => {
+    if (v === 'visible') {
+      dmutate()
+    }
+  })
+  
   const _validating = ref(false)
   const update = debounce(() => {
     _validating.value = isValidating.value

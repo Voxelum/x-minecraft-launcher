@@ -10,7 +10,7 @@
         flat
         tabs
       >
-        <v-toolbar-title class="text-white">
+        <v-toolbar-title>
           {{ t('instanceUpdate.title') }}
         </v-toolbar-title>
       </v-toolbar>
@@ -188,10 +188,12 @@
 
 <script lang="ts" setup>
 import ErrorView from '@/components/ErrorView.vue'
+import Hint from '@/components/Hint.vue'
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
+import { kInstanceFiles } from '@/composables/instanceFiles'
 import { InstanceInstallDialog, InstanceInstallOptions } from '@/composables/instanceUpdate'
 import { kInstances } from '@/composables/instances'
 import { kJavaContext } from '@/composables/java'
@@ -202,7 +204,6 @@ import { injection } from '@/util/inject'
 import { EditInstanceOptions, InstallInstanceOptions, InstanceFileUpdate, InstanceInstallServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
-import Hint from '@/components/Hint.vue'
 
 const selected = ref([] as string[])
 const search = ref('')
@@ -388,6 +389,7 @@ const loaderDifferences = computed(() => {
   }
 })
 
+const { mutate } = injection(kInstanceFiles)
 const confirm = async () => {
   const up = upgrade.value
   if (!up) {
@@ -399,6 +401,7 @@ const confirm = async () => {
   const path = instancePath.value
   try {
     await installInstanceFiles(installation)
+    mutate()
   } catch (e) {
     Object.assign(e as any, {
       instanceInstallErrorId: installation.id,
