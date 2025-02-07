@@ -4,7 +4,7 @@
     "main": "./index.js",
     "version": "0.48.9",
     "author": "ci010 <cijhn@hotmail.com>",
-    "description": "A great minecraft launcher in the future",
+    "description": "X Minecraft Launcher - A modern Minecraft launcher",
     "license": "MIT",
     "engines": {
         "node": ">=20"

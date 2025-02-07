@@ -36,6 +36,11 @@ jobs:
           cache: "pnpm"
       - name: Install
         run: pnpm install
+      - name: Setup Linux
+        if: ${{ runner.os == 'Linux' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libarchive-tools
       - name: Restore cached Electron
         id: cache-electron
         uses: actions/cache/restore@v4
@@ -49,11 +54,12 @@ jobs:
       - name: Build
         run: |
           pnpm run --prefix xmcl-keystone-ui build
-          pnpm run --prefix xmcl-electron-app build:all
+          pnpm run --prefix xmcl-electron-app build
         env:
           BUILD_NUMBER: ${{ github.run_number }}
           NODE_OPTIONS: --max-old-space-size=32768
           NODE_ENV: production
+          RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
           PUBLISHER: CN=SignPath Foundation, O=SignPath Foundation, L=Lewes, S=Delaware, C=US
       - name: Upload Source Maps
@@ -99,6 +105,7 @@ jobs:
         run: |
           pnpm postsign
       - name: Upload Build
+        if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ runner.os }}
@@ -151,7 +158,7 @@ jobs:
   build-arch:
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
+    if: ${{ false }}
     strategy:
       matrix:
         include:
@@ -318,7 +325,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
-      - build-arch
+      # - build-arch
     steps:
       - uses: actions/checkout@v4
         with:
