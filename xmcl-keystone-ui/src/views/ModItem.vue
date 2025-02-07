@@ -1,5 +1,6 @@
 <template>
   <MarketItem
+    :indent="indent"
     :item="item"
     :selection-mode="selectionMode"
     :selected="selected"
@@ -47,7 +48,8 @@ const props = defineProps<{
   itemHeight: number
   hasUpdate?: boolean
   dense?: boolean
-  getContextMenuItems?: () => ContextMenuItem[]
+  indent?: boolean
+  getContextMenuItems?: (item: ProjectEntry<ModFile>) => ContextMenuItem[]
   install: (p: ProjectEntry) => Promise<void>
 }>()
 
@@ -70,10 +72,12 @@ const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.ite
     }
   }
 })
+
+const selections = inject('selections', {} as Ref<Record<string, boolean>>)
 const getContextMenuItems = () => {
-  const items = props.getContextMenuItems?.()
-  if (items && items.length > 0) return items
-  return _getContextMenuItems()
+  const items = props.getContextMenuItems?.(props.item)
+  if (Object.keys(selections.value).length > 1) return items || []
+  return _getContextMenuItems().concat(items ?? [])
 }
 
 const hasLabel = computed(() => !props.dense && props.item.installed && (props.item.installed?.[0]?.tags.length + compatibility.value.length) > 0)

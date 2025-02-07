@@ -725,6 +725,7 @@ mod:
     Kérjük, válassza ki a megtartani kívánt fájlt.
   enabled: '{count} Modok engedélyezve'
   filter: Modok szűrése
+  group: Csoportosul
   groupInstalled: Csoportosan telepített modok
   hasUpdate: A modnak új verziója van!
   hideIncompatible: Inkompatibilis modok elrejtése
@@ -752,6 +753,7 @@ mod:
   showInModrinth: '{name} megjelenítése Modrinth-en'
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
+  ungroup: Csoportosítás
 modInstall:
   archived: >-
     {name} archiválva. 

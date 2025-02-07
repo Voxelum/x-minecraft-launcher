@@ -799,6 +799,7 @@ mod:
     falha no Minecraft. Por favor, selecione o arquivo que você deseja manter.
   enabled: '{count} Mods ativados'
   filter: Filtrar Mods
+  group: Agrupe -se
   groupInstalled: Grupo de Mods Instalados
   hasUpdate: O mod tem uma nova versão!
   hideIncompatible: Ocultar Mods Incompatíveis
@@ -827,6 +828,7 @@ mod:
   showInModrinth: Mostrar {name} no Modrinth
   switchDefaultSource: Fonte Padrão de Mod
   toUpdate: '{count} atualizações'
+  ungroup: Sem agrupar
 modInstall:
   archived: >-
     {name} foi arquivado. {name} não receberá mais atualizações, a menos que o

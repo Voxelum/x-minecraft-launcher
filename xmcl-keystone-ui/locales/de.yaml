@@ -789,6 +789,7 @@ mod:
     Bitte wählen Sie die Datei aus, die Sie behalten möchten.
   enabled: 'Inklusive Mods: {count}'
   filter: Mod-Filter
+  group: Gruppe
   groupInstalled: Gruppensatz Mods
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.
@@ -815,6 +816,7 @@ mod:
   showInModrinth: anzeigen {name} auf Modrinth
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
+  ungroup: Ungruppierung
 modInstall:
   archived: >-
     {name} wurde archiviert. 

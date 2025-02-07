@@ -328,6 +328,7 @@ mod:
     Atopáronse modificacións co mesmo ID de mod pero con ficheiros diferentes. 
     Isto pode causar un fallo de Minecraft. 
     Selecciona o ficheiro que queres conservar.
+  group: Grupo Up
   incompatibleHint: Consulta o teu informe de compatibilidade de mod
   incompatibleHintDescription: |-
     É posible que falten algunhas dependencias de modificacións. 
@@ -338,6 +339,7 @@ mod:
   modloaderSelectNotSupported: Non se atopou {modloader} para Minecraft {minecraft}
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
+  ungroup: Desgroupe
 modInstall:
   archived: >-
     {name} foi arquivado. 

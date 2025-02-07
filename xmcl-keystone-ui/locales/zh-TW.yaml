@@ -697,6 +697,7 @@ mod:
     請選擇您要保留的文件。
   enabled: 一共啟用了 {count} 個模組
   filter: 篩選模組
+  group: 分組
   groupInstalled: 分開顯示已安裝模組
   hideIncompatible: 隱藏不相容模組
   incompatible: 可能不相容目前版本。
@@ -724,6 +725,7 @@ mod:
   showInModrinth: 在 Modrinth 中顯示 {name}
   switchDefaultSource: 本地模組默认显示为
   toUpdate: '{count} 個有新版本'
+  ungroup: 解體
 modInstall:
   archived: |-
     {name} 已存檔。

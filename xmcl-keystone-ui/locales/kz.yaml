@@ -396,3 +396,6 @@ instanceInstallSkip:
     you confirm the current files are valid, you can skip the validation check.
 instanceUpdate:
   summary: Add {add} files. Remove {remove} files. Keep {keep} files.
+mod:
+  group: Group up
+  ungroup: Ungrouping

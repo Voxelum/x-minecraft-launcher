@@ -742,6 +742,7 @@ mod:
     Wybierz plik, który chcesz zachować.
   enabled: '{count} Modyfikacje włączone'
   filter: Modyfikacje filtra
+  group: Grupa
   groupInstalled: Modyfikacje instalowane grupowo
   hasUpdate: Mod ma nową wersję!
   hideIncompatible: Ukryj niekompatybilne mody
@@ -769,6 +770,7 @@ mod:
   showInModrinth: Pokaż  {name} w Modrinth
   switchDefaultSource: Domyślne źródło modów
   toUpdate: '{count} aktualizować'
+  ungroup: Ungrouping
 modInstall:
   archived: >-
     {name} zostało zarchiwizowane. 

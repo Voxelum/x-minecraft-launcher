@@ -1,14 +1,14 @@
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
+import { basename } from '@/util/basename'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
-import { useEventListener } from '@vueuse/core'
-import { InstanceModsServiceKey, JavaRecord, SharedState, Resource, ResourceState, RuntimeVersions } from '@xmcl/runtime-api'
+import { refThrottled, useEventListener } from '@vueuse/core'
+import { InstanceModsServiceKey, JavaRecord, Resource, ResourceState, RuntimeVersions, SharedState } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { basename } from '@/util/basename'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 
@@ -54,14 +54,15 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   const { isValidating, error, state, revalidate } = useState(async () => {
     const inst = instancePath.value
     if (!inst) { return undefined }
-    console.time('[watchMods] ' + inst)
+    const start = performance.now()
     const mods = await watchMods(inst)
-    console.timeEnd('[watchMods] ' + inst)
+    console.log('[instanceMods] fetch', performance.now() - start)
     mods.files = mods.files.map(m => markRaw(m))
     return mods as any
   }, ReactiveResourceState)
 
-  const mods: Ref<ModFile[]> = shallowRef([])
+  const modsRaw: Ref<ModFile[]> = shallowRef([])
+  const mods = refThrottled(modsRaw, 500)
   const modsIconsMap: Ref<Record<string, string>> = shallowRef({})
   const provideRuntime: Ref<Record<string, string>> = shallowRef({})
 
@@ -116,7 +117,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     }
 
     modsIconsMap.value = markRaw(newIconMap)
-    mods.value = markRaw(newItems.map(markRaw))
+    modsRaw.value = markRaw(newItems.map(markRaw))
     provideRuntime.value = markRaw(runtime)
   }
 

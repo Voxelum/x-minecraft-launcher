@@ -723,6 +723,7 @@ mod:
     Виберіть файл, який хочете зберегти.
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
+  group: Згрупувати
   groupInstalled: Групові встановлені моди
   hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
@@ -749,6 +750,7 @@ mod:
   showInModrinth: Показувати {name} на Modrinth
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
+  ungroup: Розгрупний
 modInstall:
   archived: >-
     {name} заархівовано. 

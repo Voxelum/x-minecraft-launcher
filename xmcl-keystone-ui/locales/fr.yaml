@@ -768,6 +768,7 @@ mod:
     Veuillez sélectionner le fichier que vous souhaitez conserver.
   enabled: '{count} mods activés'
   filter: Mods de filtrage
+  group: Se regrouper
   groupInstalled: Groupe de modules installés
   hideIncompatible: Masquer les mods incompatibles
   incompatible: Mod incompatible.
@@ -791,6 +792,7 @@ mod:
   showFile: Afficher le chemin du mod {file}
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
+  ungroup: Désordre
 modInstall:
   archived: >-
     {name} a été archivé. 

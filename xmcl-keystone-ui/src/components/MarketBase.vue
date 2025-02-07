@@ -37,7 +37,7 @@
           v-if="items.length > 0"
           id="left-pane"
           :bench="16"
-          class="visible-scroll h-full max-h-full w-full overflow-auto"
+          class="visible-scroll h-full max-h-full w-full overflow-auto pl-1"
           :items="items"
           :item-height="itemHeight"
           @scroll="onScroll"
@@ -86,14 +86,17 @@
 
 <script lang=ts setup>
 import SplitPane from '@/components/SplitPane.vue'
+import { kDialogModel } from '@/composables/dialog'
+import { ProjectGroup } from '@/composables/modGroup'
 import { UpgradePlan } from '@/composables/modUpgrade'
 import { useQuery } from '@/composables/query'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 
 const props = defineProps<{
   plans: Record<string, UpgradePlan>
-  items: (ProjectEntry | string)[]
+  items: (ProjectEntry | ProjectGroup | string)[]
   itemHeight: number
   selectionMode?: boolean
   loading?: boolean
@@ -108,14 +111,14 @@ const emit = defineEmits<{
 const selectedId = useQuery('id')
 const selectedItem = computed(() => {
   if (!selectedId.value) return undefined
-  return props.items.find((i) => typeof i === 'object' && i.id === selectedId.value) as ProjectEntry | undefined
+  return props.items.find((i) => typeof i === 'object' && 'id' in i && i.id === selectedId.value) as ProjectEntry | undefined
 })
 
 watch(() => props.items, (i, old) => {
   if (!old || old.length === 0) {
     if (i.length > 0) {
       const first = i[0]
-      if (typeof first === 'object') {
+      if (typeof first === 'object' && 'id' in first) {
         selectedId.value = first.id
       }
     }
@@ -151,14 +154,14 @@ const onSelect = (event: MouseEvent, i: ProjectEntry) => {
     } else if (event.shiftKey) {
       // Select all items between the last selected item and this item
       const list = props.items
-      const lastIndex = list.findIndex((item) => typeof item === 'object' && item.id === selectedId.value)
-      const currentIndex = list.findIndex((item) => typeof item === 'object' && item.id === i.id)
+      const lastIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === selectedId.value)
+      const currentIndex = list.findIndex((item) => typeof item === 'object' && 'id' in item && item.id === i.id)
       const start = Math.min(lastIndex, currentIndex)
       const end = Math.max(lastIndex, currentIndex)
       const _selections: Record<string, boolean> = {}
       for (let i = start; i <= end; i++) {
         const item = list[i]
-        if (typeof item === 'object') {
+        if (typeof item === 'object' && 'id' in item) {
           _selections[item.id] = true
         }
       }
@@ -184,7 +187,9 @@ const onScroll = (e: Event) => {
 }
 
 const selections = inject('selections', () => ref({} as Record<string, boolean>), true)
+const { current } = injection(kDialogModel)
 const onKeyPress = (e: KeyboardEvent) => {
+  if (current.value) return
   // ctrl+a
   if (e.ctrlKey && e.key === 'a') {
     e.preventDefault()
@@ -193,7 +198,7 @@ const onKeyPress = (e: KeyboardEvent) => {
 
     const _selections: Record<string, boolean> = {}
     for (const item of props.items) {
-      if (typeof item === 'string') continue
+      if (typeof item === 'string' || !('id' in item)) continue
       if (item.installed.length > 0) {
         _selections[item.id] = true
       }
@@ -249,5 +254,9 @@ onUnmounted(() => {
 
 .market-base .v-sheet.v-alert {
     margin: 0px 4px 4px 4px !important;
+}
+
+.market-base .v-virtual-scroll__item {
+  left: 6px;
 }
 </style>

@@ -700,6 +700,7 @@ mod:
     crash. Please select the file you want to keep.
   enabled: '{count} Mods enabled'
   filter: Filter Mods
+  group: Group up
   groupInstalled: Group Installed Mods
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
@@ -725,6 +726,7 @@ mod:
   showInModrinth: Show {name} in Modrinth
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} updates'
+  ungroup: Ungrouping
 modInstall:
   archived: >-
     {name} has been archived. {name} will not receive any further updates unless

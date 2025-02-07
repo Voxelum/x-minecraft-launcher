@@ -536,6 +536,7 @@ mod:
     Seleccione el archivo que desea conservar.
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
+  group: Agrupar
   hasUpdate: ¡El Mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
   incompatible: Mod Incompatible.
@@ -562,6 +563,7 @@ mod:
   showInModrinth: Mostrar {name} en Modrinth
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
+  ungroup: Desagrado
 modInstall:
   archived: >-
     {name} ha sido archivado. 

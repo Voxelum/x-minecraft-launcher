@@ -675,6 +675,7 @@ mod:
     CRASH. PLZ SELECT TEH FILE U WANTS 2 KEEP.
   enabled: '{count} MODZ ENABLD'
   filter: FILTR MODZ
+  group: Group up
   groupInstalled: GROUP INSTALLD MODZ
   hasUpdate: MOD HAS NEW VERSHUN!
   hideIncompatible: HIDE INCOMPATIBLE MODZ
@@ -700,6 +701,7 @@ mod:
   showInModrinth: Show {name} IN MODRINTH
   switchDefaultSource: DEFAULT MOD SOURCE
   toUpdate: '{count} UPDATEZ'
+  ungroup: Ungrouping
 modInstall:
   archived: >-
     {name} HAS BEEN ARCHIVD. {name} WILL NOT RECEIV ANY FURTHR UPDATEZ UNLES TEH

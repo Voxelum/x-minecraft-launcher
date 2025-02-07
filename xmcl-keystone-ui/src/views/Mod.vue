@@ -291,8 +291,9 @@
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
       <ModItem
-        v-if="(typeof item === 'object')"
+        v-if="(typeof item === 'object' && 'id' in item)"
         :item="item"
+        :indent="!!currentGroup[item.installed?.[0]?.fileName]"
         :item-height="itemHeight"
         :has-update="hasUpdate"
         :checked="checked"
@@ -303,8 +304,19 @@
         :get-context-menu-items="getContextMenuItems"
         @click="on.click"
       />
+      <ModGroupEntryItem
+        v-else-if="(typeof item === 'object')"
+        :items="item.projects"
+        :height="itemHeight"
+        :name="item.name"
+        :expanded="!groupCollapsedState[item.name]"
+        :dense="denseView"
+        @ungroup="ungroup(item.name)"
+        @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
+        @setting="renameGroup(item.name, $event.name)"
+      />
       <v-subheader
-        v-if="typeof item === 'string'"
+        v-else-if="item === 'search'"
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
@@ -379,7 +391,7 @@
       />
     </template>
     <v-dialog
-      v-model="model"
+      v-model="wizardModel"
       width="600"
     >
       <v-card>
@@ -439,31 +451,30 @@ import { useService } from '@/composables'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
-import { useDialog, useSimpleDialog } from '@/composables/dialog'
+import { useDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
-import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useModDependenciesCheck } from '@/composables/modDependenciesCheck'
+import { ProjectGroup, useModGroups } from '@/composables/modGroup'
 import { kModsSearch } from '@/composables/modSearch'
 import { kModUpgrade } from '@/composables/modUpgrade'
+import { useModWizard } from '@/composables/modWizard'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { useTutorial } from '@/composables/tutorial'
-import { BuiltinImages } from '@/constant'
 import { injection } from '@/util/inject'
-import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry, ProjectFile } from '@/util/search'
-import { notNullish } from '@vueuse/core'
-import { createPromiseSignal, InstanceModsServiceKey, PromiseSignal, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
+import ModGroupEntryItem from './ModGroupEntryItem.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
 
@@ -492,27 +503,32 @@ const error = computed(() => {
 })
 
 const groupInstalled = useLocalStorageCacheBool('mod-group-installed', true)
+const sortBy = useLocalStorageCacheStringValue('modSort', '' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
+
+const isLocalView = computed(() => {
+  return !keyword.value && modrinthCategories.value.length === 0 && curseforgeCategory.value === undefined
+})
+
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, currentGroup, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
 
 const groupedItems = computed(() => {
   const result = items.value
 
   if (isLocalView.value) {
-    const sort = sortBy.value
-    if (sort.startsWith('time')) {
-      result.sort((a, b) => {
-        const aInstalled = a.installed[0]
-        const bInstalled = b.installed[0]
-        if (!aInstalled || !bInstalled) return 0
-        if (sort.endsWith('asc')) return aInstalled.mtime - bInstalled.mtime
-        return bInstalled.mtime - aInstalled.mtime
-      })
-    } else if (sort.startsWith('alpha')) {
-      result.sort((a, b) => {
-        if (sort.endsWith('asc')) return a.title.localeCompare(b.title)
-        return b.title.localeCompare(a.title)
-      })
+    const sortableEntity = localGroupedItems.value
+    const localResult: Array<ProjectEntry<ModFile> | string | ProjectGroup> = []
+    for (const i of sortableEntity) {
+      if ('projects' in i) {
+        localResult.push(markRaw(i))
+        if (!groupCollapsedState.value[i.name]) {
+          localResult.push(...i.projects)
+        }
+      } else {
+        localResult.push(i)
+      }
     }
-    return result
+
+    return localResult
   }
 
   if (!groupInstalled.value) return result
@@ -529,9 +545,6 @@ const groupedItems = computed(() => {
   ]
 })
 
-const isLocalView = computed(() => {
-  return !keyword.value && modrinthCategories.value.length === 0 && curseforgeCategory.value === undefined
-})
 
 const isModProject = (v: ProjectEntry<ProjectFile> | undefined): v is (ProjectEntry<ModFile> & { files: ModFile[] }) =>
   !!v?.files
@@ -621,15 +634,8 @@ const onUninstall = (f: ProjectFile[], _path?: string) => {
   })
 }
 const onEnable = async (f: ProjectFile, _path?: string) => {
-  if (noModloaders.value) {
-    const success = await showInstallModloadersWizard({
-      loaders: (f as ModFile).modLoaders,
-      instance: _path || path.value,
-      runtime: runtime.value,
-    })
-    if (!success) {
-      return
-    }
+  if (await wizardHandleOnEnable(f as ModFile, _path || path.value)) {
+    return
   }
   enable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
@@ -646,7 +652,6 @@ const toggleCategory = useToggleCategories(modrinthCategories)
 
 // View
 const denseView = useLocalStorageCacheBool('mod-dense-view', false)
-const sortBy = useLocalStorageCacheStringValue('modSort', '' as '' | 'alpha_asc' | 'alpha_desc' | 'time_asc' | 'time_desc')
 function onSortClick(type: 'alpha' | 'time') {
   if (sortBy.value === type + '_asc') {
     sortBy.value = type + '_desc' as any
@@ -656,12 +661,22 @@ function onSortClick(type: 'alpha' | 'time') {
 }
 const itemHeight = computed(() => denseView.value ? 40 : 91)
 const selections = ref({} as Record<string, boolean>)
+
 provide('selections', selections)
-const getContextMenuItems = () => {
-  if (Object.values(selections.value).filter(v => v).length <= 1) {
-    return []
-  }
+// Clear selection when group changed
+watch(currentGroup, () => {
+  selections.value = {}
+})
+
+const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
   const result = [] as ContextMenuItem[]
+
+  const selectMultiple = Object.values(selections.value).filter(v => v).length > 1
+  
+  if (!selectMultiple) {
+    result.push(...getContextMenuItemsForGroup(proj))
+    return result
+  }
   const selected = new Set(Object.keys(selections.value).filter((k) => selections.value[k]))
   const files = items.value.filter(i => selected.has(i.id)).map(v => v.installed).flat()
   const allEnabled = files.every(v => v.enabled)
@@ -688,6 +703,15 @@ const getContextMenuItems = () => {
       }
     },
   })
+  if (isLocalView.value) {
+    result.push({
+      text: t('mod.group'),
+      icon: 'label',
+      onClick: () => {
+        group(files.map(v => v.fileName))
+      },
+    })
+  }
   return result
 }
 
@@ -717,99 +741,8 @@ const { dragover } = useGlobalDrop({
 })
 
 // Install modloader wizard
-interface WizardOptions {
-  loaders: string[]
-  instance: string
-  runtime: RuntimeVersions
-}
+const { onInstallModRuntime, wizardModel, wizardHandleOnEnable, wizardError, wizardModItems } = useModWizard()
 
-const { model, show: _showInstallModloadersWizard, target } = useSimpleDialog<WizardOptions>(() => { })
-
-let signal: PromiseSignal<boolean> | undefined
-function showInstallModloadersWizard(o: WizardOptions) {
-  signal = createPromiseSignal()
-  _showInstallModloadersWizard(o)
-  return signal.promise
-}
-
-watch(model, (v) => {
-  if (!v) {
-    signal?.resolve(false)
-  }
-})
-
-const wizardError = ref(undefined as Error | { loader: string; minecraft: string } | undefined)
-const wizardModItems = computed(() => {
-  if (!target.value) return []
-  const { loaders, instance, runtime } = target.value
-  const onSelect = async (loader: string) => {
-    const result = await installModRuntime(instance, runtime, [loader]).catch((v) => v)
-    if (typeof result === 'boolean') {
-      signal?.resolve(result)
-      if (result) {
-        model.value = false
-      } else {
-        wizardError.value = {
-          loader,
-          minecraft: runtime.minecraft,
-        }
-      }
-    } else {
-      signal?.resolve(false)
-      wizardError.value = result
-    }
-  }
-  return loaders.map((v) => {
-    if (v === 'forge') {
-      return {
-        title: 'Forge',
-        icon: BuiltinImages.forge,
-        url: 'https://files.minecraftforge.net/',
-        onSelect: () => { onSelect('forge') },
-      }
-    }
-    if (v === 'fabric') {
-      return {
-        title: 'Fabric',
-        icon: BuiltinImages.fabric,
-        url: 'https://fabricmc.net/use/',
-        onSelect: () => { onSelect('fabric') },
-      }
-    }
-    if (v === 'quilt') {
-      return {
-        title: 'Quilt',
-        icon: BuiltinImages.quilt,
-        url: 'https://quiltmc.org/',
-        onSelect: () => { onSelect('quilt') },
-      }
-    }
-    if (v === 'neoforge') {
-      return {
-        title: 'NeoForge',
-        icon: BuiltinImages.neoForged,
-        url: 'https://neoforge.org/',
-        onSelect: () => { onSelect('neoforge') },
-      }
-    }
-    return undefined
-  }).filter(notNullish)
-})
-
-const noModloaders = computed(() => isNoModLoader(runtime.value))
-
-const installModRuntime = useInstanceModLoaderDefault()
-
-async function onInstallModRuntime(...args: Parameters<typeof installModRuntime>) {
-  if (noModloaders.value) {
-    return await showInstallModloadersWizard({
-      loaders: args[2],
-      instance: args[0],
-      runtime: args[1],
-    })
-  }
-  return true
-}
 // modrinth installer
 const modrinthInstaller = useModrinthInstaller(
   path,

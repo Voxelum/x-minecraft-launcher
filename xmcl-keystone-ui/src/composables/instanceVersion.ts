@@ -1,5 +1,6 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
 import { findMatchedVersion, getResolvedVersionHeader, Instance, InstanceServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
@@ -83,9 +84,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
       instance.value.runtime.labyMod)
 
     const _version = i.version
-    console.time('[resolveVersion]')
+    const start = performance.now()
     const version = await getResolvedVersion(header, _version)
-    console.timeEnd('[resolveVersion]')
+    console.log('getResolvedVersion', performance.now() - start, 'ms')
     if (instance.value.version !== _version ||
       header !== versionHeader.value ||
       _path !== instance.value.path) {
@@ -127,9 +128,10 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
   })
 
   // update on instance/instance version/versions changed
-  watch([versionHeader, local, instance], () => {
+  const dmutate = debounce(() => {
     mutate(instance.value)
-  }, { deep: true })
+  }, 500)
+  watch([versionHeader, local, instance], dmutate, { deep: true })
 
   const serverVersionId = computed(() => serverVersionHeader.value?.id)
   const versionId = computed(() => versionHeader.value?.id)

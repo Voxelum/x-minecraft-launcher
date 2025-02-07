@@ -785,6 +785,7 @@ mod:
     Пожалуйста, выберите файл, который вы хотите сохранить.
   enabled: 'Всего модов включено: {count}'
   filter: Фильтр модов
+  group: Группа вверх
   groupInstalled: Группировать установленные моды
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
@@ -813,6 +814,7 @@ mod:
   showInModrinth: Показать {name} на Modrinth
   switchDefaultSource: Источник контента модов по умолчанию
   toUpdate: '{count} для обновления'
+  ungroup: Негруппинг
 modInstall:
   archived: >-
     {name} заархивировано. 

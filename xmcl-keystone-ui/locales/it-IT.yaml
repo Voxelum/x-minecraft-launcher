@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
-  instanceShare: "{user} ha appena condiviso l'istanza corrente con te"
+  instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
   share: Condividi
   shareNotifyTitle: Condividi l'istanza
   shareTitle: Condividi i file di gioco con altri giocatori
@@ -265,8 +265,8 @@ errors:
   SocketError: Errore del socket del server
 eula:
   body: >-
-    cliccando la casella di controllo, indichi la tua accettazione 
-    con l'{eula} di Minecraft.
+    cliccando la casella di controllo, indichi la tua accettazione  con l'{eula}
+    di Minecraft.
 exception:
   http: >-
     La richiesta HTTP a {url} non è riuscita. Codice di stato {statusCode}.
@@ -396,13 +396,13 @@ instance:
   changeIcon: Cambia icona
   current: Istanza corrente
   delete: Elimina gioco
+  deleteFailed: Impossibile eliminare l'istanza
+  deleteFailedPermission: Un altro programma occupava il file
   deleteHint: >-
     I dati dell'istanza verranno rimossi definitivamente dal disco. Sei sicuro
     di volerlerlo fare?
   duplicate: Duplica gioco
   duplicatedName: Nome duplicato
-  deleteFailed: Impossibile eliminare l'istanza
-  deleteFailedPermission: Un altro programma occupava il file
   fileApi: L'URL API del server di sincronizzazione dei file
   fileApiHint: >-
     L'URL per sincronizzare i file dell'istanza da un server di configurazione
@@ -728,6 +728,7 @@ mod:
     Seleziona il file che desideri conservare.
   enabled: '{count} Mod abilitate'
   filter: Filtra Mod
+  group: Raggruppare
   groupInstalled: Raggruppa le mod installate
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
@@ -755,7 +756,9 @@ mod:
   showInModrinth: Mostra {name} in Modrinth
   switchDefaultSource: Sorgente delle Mod Predefinita
   toUpdate: '{count} da aggiornare'
+  ungroup: Non gruppo
 modInstall:
+  all: Tutti
   archived: >-
     {nome} è stato archiviato. 
 
@@ -767,10 +770,12 @@ modInstall:
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
+  explore: Esplora il mercato
   install: Installa
   installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
+  local: Cache del disco
   noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   search: Risultato della ricerca
@@ -778,10 +783,7 @@ modInstall:
   skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
-  upgrade: 'Aggiorna le Mod'
-  all: Tutti
-  explore: Esplora il mercato
-  local: Cache del disco
+  upgrade: Aggiorna le Mod
 modUpgradePolicy:
   curseforge: Curseforge  Maledizione
   curseforgeOnly: Solo Forgiamaledizione
@@ -1491,10 +1493,10 @@ transportType:
   srflx: Server Reflexive Scelto
 turnRegion:
   fr: Francia
-  po: Polonia
   guangzhou: Guangzhou, Cina
   hk: Hong Kong
   liaoning: Liaoning, Cina
+  po: Polonia
 tutorial:
   feedbackDescription: >-
     Se incontri qualche problema, Perfavore clicca questo bottone per inviare

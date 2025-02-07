@@ -674,6 +674,7 @@ mod:
     保存したいファイルを選択してください。
   enabled: '{count} 個のModが有効'
   filter: Modをフィルタ
+  group: グループアップ
   groupInstalled: グループでインストールされたMod
   hasUpdate: Modにアップデートがあります!
   hideIncompatible: 適合しないModを隠す
@@ -702,6 +703,7 @@ mod:
   showInModrinth: Modrinthで {name} を見る
   switchDefaultSource: Modのデフォルトソースを切り替え
   toUpdate: '{count} 個のアップデート'
+  ungroup: グループ化
 modInstall:
   archived: '{name} はアーカイブされました。 作者がアーカイブを解除しない限り {name} はアップデートを受け取りません。'
   checkDependencies: 依存関係を確認

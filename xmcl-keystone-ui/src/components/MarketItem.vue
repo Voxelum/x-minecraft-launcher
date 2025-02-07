@@ -4,13 +4,14 @@
     v-shared-tooltip="{ text: tooltip, color: hasUpdate ? 'primary' : 'black' }"
     :style="{
       minHeight: height ? height + 'px' : undefined,
-      maxHeight: height ? height + 'px' : undefined
+      maxHeight: height ? height + 'px' : undefined,
     }"
     style="pointer-events: initial;"
     :draggable="draggable"
     :class="{
       'v-list-item--disabled': disabled || item.disabled,
       'dragged-over': dragover > 0,
+      dense,
     }"
     :input-value="selected"
     link
@@ -47,7 +48,17 @@
         </v-icon>
       </v-btn>
     </v-list-item-avatar>
-    <v-list-item-content>
+    <div
+      v-if="indent"
+      class="indicator"
+      :style="{ height: `${height}px` }"
+    />
+    <v-list-item-content
+      :class="{ 
+        indented: indent,
+        dense,
+      }"
+    >
       <v-badge
         class="w-full"
         color="red"
@@ -169,6 +180,7 @@ const props = defineProps<{
   disabled?: boolean
   height?: number
   draggable?: boolean
+  indent?: boolean
   install?: (p: ProjectEntry) => Promise<void>
   getContextMenuItems?: () => ContextMenuItem[]
 }>()
@@ -339,5 +351,11 @@ const onInstall = async () => {
 <style scoped>
 .dragged-over {
   @apply border border-dashed border-transparent border-yellow-400;
+}
+.indicator {
+  @apply bg-yellow-400;
+  content: '';
+  min-width: 2px;
+  margin-right: 1rem;
 }
 </style>
