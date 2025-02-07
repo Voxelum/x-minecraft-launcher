@@ -33,7 +33,7 @@ const { data: changelog, isValidating: loadingChangelog } = useSWRV(computed(() 
 
 const versions = computed(() => {
   const files = optVersions.value
-  const all: ProjectVersion[] = files.filter(f => f.mcversion === props.runtime.minecraft).map((f) => {
+  const all: ProjectVersion[] = files.filter(f => (f.mcversion.endsWith('.0') ? f.mcversion.slice(0, f.mcversion.length - 2) : f.mcversion) === props.runtime.minecraft).map((f) => {
     const version = `${f.type}_${f.patch}`
     const id = `${f.mcversion}_${version}`
     const modVersion: ProjectVersion = reactive({

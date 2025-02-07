@@ -12,7 +12,7 @@ const props = defineProps<{
 const { versions, error, isValidating, mutate } = useOptifineVersions()
 
 const items = computed(() => {
-  const filtered = versions.value.filter(v => v.mcversion === props.minecraft) ?? []
+  const filtered = versions.value.filter(v => (v.mcversion.endsWith('.0') ? v.mcversion.slice(0, v.mcversion.length - 2) : v.mcversion) === props.minecraft) ?? []
   return filtered.sort((a, b) => {
     const { patch, type } = a
     // compare type first and then the patch
