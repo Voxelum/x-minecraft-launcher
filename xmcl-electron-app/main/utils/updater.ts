@@ -78,7 +78,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
         if (url.startsWith(AZURE_CDN)) {
           this.app.emit('download-cdn', 'asar', this.file)
         }
-        const gzResponse = await fetch(gzUrl, { signal: this.abortController.signal })
+        const gzResponse = await this.app.fetch(gzUrl, { signal: this.abortController.signal })
         const tracker = new PassThrough({
           transform: (chunk, encoding, callback) => {
             this._progress += chunk.length

@@ -49,7 +49,7 @@
           step="1"
         >
           <SetLocale
-            v-model="locale"
+            v-model="localeRef"
           />
         </v-stepper-content>
         <v-stepper-content
@@ -131,6 +131,13 @@ const prev = () => {
 }
 
 const { locale, t } = useI18n()
+const localeRef = computed({
+  get: () => state.value?.locale ?? locale.value,
+  set: (v) => {
+    state.value?.localeSet(v ?? locale.value)
+  },
+})
+
 const currentTitle = computed(() => {
   if (data.step === 1) return t('setup.locale.name')
   if (data.step === 2) return t('setup.dataRoot.name')

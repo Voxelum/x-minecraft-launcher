@@ -313,7 +313,6 @@ const { refresh: onLogin, error } = useRefreshable(async () => {
   }
 
   const index = history.value.indexOf(data.username)
-  debugger
   if (index === -1) {
     history.value = [data.username, ...history.value]
   }
