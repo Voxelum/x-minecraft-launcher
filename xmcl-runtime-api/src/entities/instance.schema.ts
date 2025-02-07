@@ -190,11 +190,9 @@ export interface InstanceData {
    */
   tags: string[]
   /**
-   * @default false
    */
   disableElybyAuthlib?: boolean
   /**
-   * @default false
    */
   disableAuthlibInjector?: boolean
 
