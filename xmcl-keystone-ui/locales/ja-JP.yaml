@@ -1121,6 +1121,12 @@ server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください
   expectedVersions: サポートされたバージョン
+  export: エクスポートサーバー
+  exportOption: サーバーエクスポートオプション
+  exportSSHOptions: SSHオプション
+  exportSSHPrivateKeyPath: SSH秘密キーパス
+  exportSSHRemotePath: リモートサーバーパス
+  exportToFolder: フォルダーにエクスポートします
   filterVersion: 対応したMinecraftバージョンのサーバーをフィルターします
   host: ホスト
   hostHint: サーバーのホスト(とポート)
@@ -1138,6 +1144,7 @@ server:
   status: サーバーの状態
   unknown: 未知のサーバー
   unknownDescription: 未知のサーバーです。情報を更新してください。
+  upload: サーバーをアップロードします
   version: サーバーの要求するバージョン
   versionHint: PingするMinecraftのバージョン
 serverStatus:

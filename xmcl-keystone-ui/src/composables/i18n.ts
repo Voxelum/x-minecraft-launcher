@@ -43,6 +43,7 @@ export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
       headers: {
         'Accept-Language': locale.value,
       },
+      cache: 'force-cache',
     })
 
     if (!response.ok) {

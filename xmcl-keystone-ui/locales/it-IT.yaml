@@ -1213,6 +1213,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: Versioni supportate
+  export: Server di esportazione
+  exportOption: Opzioni di esportazione del server
+  exportSSHOptions: Opzioni SSH
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Percorso del server remoto
+  exportToFolder: Esportazione in cartella
   filterVersion: Filtra la versione di Minecraft rispondente del server
   host: Host
   hostHint: L'host (con porta) del server
@@ -1230,6 +1236,7 @@ server:
   status: Stato server
   unknown: Server sconosciuto
   unknownDescription: Server sconosciuto. Aggiorna
+  upload: Carica server
   version: Versione richiesta dal server
   versionHint: La versione di Minecraft di cui eseguire il ping
 serverStatus:

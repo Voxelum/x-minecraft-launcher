@@ -399,3 +399,11 @@ instanceUpdate:
 mod:
   group: Group up
   ungroup: Ungrouping
+server:
+  export: Export Server
+  exportOption: Server Export Options
+  exportSSHOptions: SSH Options
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Remote Server Path
+  exportToFolder: Export To Folder
+  upload: Upload Server

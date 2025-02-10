@@ -1131,6 +1131,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: 已支援的版本
+  export: 導出服務器
+  exportOption: 服務器導出選項
+  exportSSHOptions: SSH選項
+  exportSSHPrivateKeyPath: SSH私鑰路徑
+  exportSSHRemotePath: 遠程服務器路徑
+  exportToFolder: 導出到文件夾
   filterVersion: 篩選伺服器相應的 Minecraft 版本
   host: 伺服器地址
   hostHint: 伺服器的 IP 地址（和埠號）
@@ -1148,6 +1154,7 @@ server:
   status: 伺服器狀態
   unknown: 未知伺服器
   unknownDescription: 未知伺服器，請重新整理。
+  upload: 上傳服務器
   version: 伺服器推薦版本
   versionHint: Ping 使用的 Minecraft 版本
 serverStatus:

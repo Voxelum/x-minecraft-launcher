@@ -85,6 +85,18 @@ export class InstanceOptionsService extends AbstractService implements IInstance
         }
       })
 
+      const loadEula = defineAsyncOperation(async (path: string) => {
+        try {
+          const result = await this.getEULA(path)
+          state.eulaSet(result)
+        } catch (e) {
+          if (isSystemError(e)) {
+            this.warn(`An error ocurred during parse eula of ${path}.`)
+            this.warn(e)
+          }
+        }
+      })
+
       this.log(`Start to watch instance options.txt in ${path}`)
 
       const watcher = new FSWatcher({
@@ -100,11 +112,14 @@ export class InstanceOptionsService extends AbstractService implements IInstance
           loadOptions(path)
         } else if (basename(file) === ('optionsshaders.txt')) {
           loadShaderOptions(path)
+        } else if (basename(file) === 'eula.txt') {
+          loadEula(path)
         } else if (event === 'unlinkDir' && !file) {
           dispose()
         }
       }).add('options.txt')
         .add('optionsshaders.txt')
+        .add(join('server', 'eula.txt'))
 
       return [state, dispose]
     })

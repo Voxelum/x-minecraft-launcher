@@ -37,6 +37,7 @@
     <AppSharedTooltip />
     <AppInstallSkipDialog />
     <AppMigrateWizardDialog />
+    <AppExportServerDialog />
   </v-app>
   <v-app
     v-else
@@ -74,6 +75,7 @@ import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppExportDialog from '@/views/AppExportDialog.vue'
+import AppExportServerDialog from '@/views/AppExportServerDialog.vue'
 import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstallSkipDialog from '@/views/AppInstallSkipDialog.vue'

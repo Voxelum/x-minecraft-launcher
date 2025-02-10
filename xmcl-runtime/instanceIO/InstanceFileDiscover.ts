@@ -10,51 +10,29 @@ import { isNonnull } from '~/util/object'
 /**
  * @returns The instance file with file stats array. The InstanceFile does not have hashes and downloads.
  */
-export async function discover(instancePath: string, logger: Logger, filter?: (relativePath: string) => boolean) {
+export async function discover(instancePath: string, logger: Logger, filter?: (relativePath: string, stats: Stats) => boolean) {
   const files = [] as Array<[InstanceFile, Stats]>
 
   const scan = async (p: string) => {
-    const status = await stat(p)
-    const isDirectory = status.isDirectory()
+    const s = await stat(p)
+    const isDirectory = s.isDirectory()
     const relativePath = relative(instancePath, p).replace(/\\/g, '/')
-    if (filter && filter(relativePath)) {
-      return
-    }
-    if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
-      if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
-        return
-      }
-    }
-    if (relativePath.startsWith('.backups')) {
-      return
-    }
-    if (relativePath === 'instance.json') {
-      return
-    }
-    if (relativePath === 'server' && status.isDirectory()) {
-      return
-    }
-    // no lib or exe
-    if (relativePath.endsWith('.dll') || relativePath.endsWith('.so') || relativePath.endsWith('.exe')) {
-      return
-    }
-    // do not share versions/libs/assets
-    if (relativePath.startsWith('versions') || relativePath.startsWith('assets') || relativePath.startsWith('libraries')) {
+    if (filter && filter(relativePath, s)) {
       return
     }
 
     if (isDirectory) {
       const children = await readdirIfPresent(p)
       await Promise.all(children.map(child => scan(join(p, child)).catch((e) => {
-        logger.error(new Error('Fail to get manifest data for instance file', { cause: e }))
+        logger.warn(new Error('Fail to get manifest data for instance file', { cause: e }))
       })))
     } else {
       const localFile: InstanceFile = {
         path: relativePath,
-        size: status.size,
+        size: s.size,
         hashes: {},
       }
-      files.push([localFile, status])
+      files.push([localFile, s])
     }
   }
 

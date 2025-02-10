@@ -1149,6 +1149,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: SUPPORTD VERSHUNS
+  export: Export Server
+  exportOption: Server Export Options
+  exportSSHOptions: SSH Options
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Remote Server Path
+  exportToFolder: Export To Folder
   filterVersion: FILTR SERVR RESPONDD MINECRAFT VERSHUN
   host: HOST
   hostHint: TEH HOST (WIF PORT) OV TEH SERVR
@@ -1166,6 +1172,7 @@ server:
   status: SERVR STATUS
   unknown: UNKNOWN SERVR
   unknownDescription: UNKNOWN SERVR. PLZ REFRESH
+  upload: Upload Server
   version: SERVR REQUIREZ VERSHUN
   versionHint: TEH MINECRAFT VERSHUN 2 PING
 serverStatus:

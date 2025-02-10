@@ -922,6 +922,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: Versiones Soportadas
+  export: Exportar servidor
+  exportOption: Opciones de exportación de servidor
+  exportSSHOptions: Opciones SSH
+  exportSSHPrivateKeyPath: Ssh
+  exportSSHRemotePath: Ruta de servidor remoto
+  exportToFolder: Exportar a la carpeta
   filterVersion: Filtrar versión de Minecraft del servidor respondido
   host: Anfitrión
   hostHint: El anfitrión (con puerto) del servidor
@@ -939,6 +945,7 @@ server:
   status: Estado del Servidor
   unknown: Servidor Desconocido
   unknownDescription: Servidor Desconocido. Por favor, actualiza.
+  upload: Servidor de carga
   version: El Servidor Requiere Versión
   versionHint: La Versión de Minecraft para hacer ping
 serverStatus:

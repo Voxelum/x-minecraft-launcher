@@ -240,16 +240,16 @@ import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceModsContext } from '@/composables/instanceMods'
-import { kInstanceVersion } from '@/composables/instanceVersion'
-import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
 import { kInstanceSave } from '@/composables/instanceSave'
+import { kInstanceVersion } from '@/composables/instanceVersion'
+import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
-import { InstallServiceKey, InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ }>()
 
@@ -268,8 +268,7 @@ let _serverProperties: any
 let _eula: boolean
 
 const { launch, gameProcesses } = injection(kInstanceLaunch)
-const { installServer } = injection(kInstanceVersionInstall)
-const { versionId, serverVersionId, serverVersionHeader } = injection(kInstanceVersion)
+const { serverVersionId } = injection(kInstanceVersion)
 
 const selectedSave = computed({
   get() {
@@ -365,7 +364,6 @@ const headers = computed(() => [
 const loadingSelectedMods = ref(false)
 const selectedMods = shallowRef<ModFile[]>([])
 
-const { installDependencies, installMinecraftJar } = useService(InstallServiceKey)
 const { installToServerInstance, getServerInstanceMods } = useService(InstanceModsServiceKey)
 
 function getFitsMods() {
@@ -398,6 +396,8 @@ function selectNone() {
   selectedMods.value = []
 }
 
+const { install } = useInstanceVersionServerInstall()
+
 const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () => {
   const runtimeValue = runtime.value
   const instPath = path.value
@@ -423,17 +423,9 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
       'online-mode': _onlineMode ?? false,
     })
   }
-  if (!version) {
-    console.log('installServer')
-    const versionIdToInstall = await installServer(runtimeValue, instPath, version)
-    await installMinecraftJar(runtimeValue.minecraft, 'server')
-    await installDependencies(versionIdToInstall, 'server')
-    version = versionIdToInstall
-  } else {
-    console.log('installDependencies')
-    await installMinecraftJar(runtimeValue.minecraft, 'server')
-    await installDependencies(version, 'server')
-  }
+
+  await install()
+
   if (linkedWorld.value) {
     console.log('linkSaveAsServerWorld', linkedWorld.value)
     await linkSaveAsServerWorld({

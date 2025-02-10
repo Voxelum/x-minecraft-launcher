@@ -51,6 +51,19 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      // Intercept node_modules\cpu-features\lib\index.js
+      build.onLoad(
+        { filter: /^.+cpu-features[\\/]lib[\\/]index\.js$/g },
+        async ({ path }) => ({
+          contents: `
+            module.exports = {
+              arch: process.arch === 'ia32' ? 'x86' : process.arch,
+            };
+            `,
+          loader: 'js',
+        }),
+      )
+
       // Intercept node_modules\node-datachannel\polyfill\RTCPeerConnection.js
       build.onLoad(
         { filter: /^.+node-datachannel[\\/]polyfill[\\/]RTCPeerConnection\.js$/g },

@@ -1216,6 +1216,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: Támogatott verziók
+  export: Exportáló szerver
+  exportOption: Szerver exportálási beállítások
+  exportSSHOptions: SSH opciók
+  exportSSHPrivateKeyPath: SSH privát kulcsút
+  exportSSHRemotePath: Távoli kiszolgáló elérési útja
+  exportToFolder: Exportálás a mappába
   filterVersion: Szűrő szerver válaszolt Minecraft verzió
   host: Kiszolgáló
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
@@ -1233,6 +1239,7 @@ server:
   status: Szerver Státusz
   unknown: Ismeretlen szerver
   unknownDescription: Ismeretlen szerver. Frissítsd újra
+  upload: Feltöltő szerver
   version: A szerver verzióigénye
   versionHint: A Minecraft verzió a Pinghez
 serverStatus:

@@ -1230,6 +1230,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: Versions prises en charge
+  export: Serveur d'exportation
+  exportOption: Options d'exportation de serveur
+  exportSSHOptions: Options SSH
+  exportSSHPrivateKeyPath: Chemin de clé privée SSH
+  exportSSHRemotePath: Chemin de serveur distant
+  exportToFolder: Exporter vers le dossier
   filterVersion: Le serveur de filtrage a répondu à la version de Minecraft
   host: Héberger
   hostHint: L'hôte (avec le port) du serveur
@@ -1247,6 +1253,7 @@ server:
   status: État du serveur
   unknown: Serveur inconnu
   unknownDescription: Serveur inconnu. Veuillez rafraîchir
+  upload: Télécharger le serveur
   version: Le serveur nécessite une version
   versionHint: La version Minecraft à pinger
 serverStatus:

@@ -1,8 +1,25 @@
 <template>
   <div
     v-if="!isFocus"
-    class="grid grid-cols-4 gap-1"
+    class="grid gap-1"
+    :class="{
+      'grid-cols-4': !gameOptions?.eula,
+      'grid-cols-5': gameOptions?.eula
+    }"
   >
+    <v-btn
+      v-if="gameOptions?.eula"
+      v-shared-tooltip="_ => t('server.export')"
+      text
+      icon
+      :loading="isValidating"
+      @click="showExportServer()"
+    >
+      <v-icon>
+        ios_share
+      </v-icon>
+    </v-btn>
+
     <v-btn
       v-shared-tooltip="_ => t('modpack.export')"
       text
@@ -56,21 +73,24 @@
 <script lang=ts setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kInstanceOptions } from '@/composables/instanceOptions'
+import { kInstances } from '@/composables/instances'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { AppExportDialogKey } from '../composables/instanceExport'
-import { kInstances } from '@/composables/instances'
+import { AppExportDialogKey, AppExportServerDialogKey } from '../composables/instanceExport'
 
 const isFocus = useInFocusMode()
 
+const { gameOptions } = injection(kInstanceOptions)
 const { path } = injection(kInstance)
 const { isValidating } = injection(kInstances)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
+const { show: showExportServer } = useDialog(AppExportServerDialogKey)
 const { t } = useI18n()
 
 function showInstanceFolder() {

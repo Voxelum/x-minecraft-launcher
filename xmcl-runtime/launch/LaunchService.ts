@@ -46,7 +46,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     return await access(javaPath, constants.X_OK).then(() => true).catch(() => false)
   }
 
-  async #generateServerOptions(options: LaunchOptions, version: ResolvedServerVersion) {
+  async generateServerOptions(options: LaunchOptions, version: ResolvedServerVersion) {
     let javaPath = options.java
 
     if (javaPath.endsWith('java.exe')) {
@@ -237,7 +237,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         return args
       } else {
         const version = await this.versionService.resolveServerVersion(options.version)
-        const launchOptions = await this.#generateServerOptions(options, version)
+        const launchOptions = await this.generateServerOptions(options, version)
         const args = generateArgumentsServer(launchOptions)
         return args
       }
@@ -335,7 +335,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           throw e
         }
       } else {
-        launchOptions = await this.#generateServerOptions(options, version)
+        launchOptions = await this.generateServerOptions(options, version)
         for (const plugin of this.middlewares) {
           try {
             await this.#track(plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context), plugin.name, operationId)

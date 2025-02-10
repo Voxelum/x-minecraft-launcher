@@ -1270,6 +1270,12 @@ server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
   expectedVersions: Поддерживаемые версии
+  export: Экспортный сервер
+  exportOption: Параметры экспорта сервера
+  exportSSHOptions: SSH параметры
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Удаленный путь сервера
+  exportToFolder: Экспорт в папку
   filterVersion: Фильтр сервер ответил Minecraft версия
   host: Хост
   hostHint: Хост (с портом) сервера
@@ -1287,6 +1293,7 @@ server:
   status: Статус сервера
   unknown: Неизвестный сервер
   unknownDescription: Неизвестный сервер. Пожалуйста, обновите.
+  upload: Загрузить сервер
   version: Сервер требует версию
   versionHint: Версия Minecraft для пинга
 serverStatus:

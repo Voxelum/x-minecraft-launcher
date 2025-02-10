@@ -2,6 +2,7 @@ import { InstanceFile } from '../entities/instanceManifest.schema'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
+import { LaunchOptions } from './LaunchService'
 
 export interface ExportInstanceOptions {
   /**
@@ -61,6 +62,40 @@ export interface CreateInstanceManifest {
 
 export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge'
 
+
+export type SSHCredentials = {
+  password: string
+} | {
+  /**
+   * The private key path
+   */
+  privateKey: string
+  passphrase?: string
+}
+
+export interface ExportInstanceAsServerOptions {
+  output: {
+    type: 'folder'
+    path: string
+  } | {
+    type: 'ssh'
+    host: string
+    port: number
+    username: string
+    path: string
+    credentials: SSHCredentials
+  }
+  /**
+   * The launch options
+   */
+  options: LaunchOptions
+  /**
+   * The instance files
+   */
+  files: InstanceFile[]
+}
+
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -88,6 +123,10 @@ export interface InstanceIOService {
    * @param type Determine if this is a vanilla, mmc or modrinth folder
    */
   parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]>
+  /**
+   * Export instance as server
+   */
+  exportInstanceAsServer(options: ExportInstanceAsServerOptions): Promise<void>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

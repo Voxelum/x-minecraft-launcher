@@ -1172,6 +1172,12 @@ server:
   delete: {}
   error: {}
   expectedVersions: Supported Versions
+  export: Export Server
+  exportOption: Server Export Options
+  exportSSHOptions: SSH Options
+  exportSSHPrivateKeyPath: SSH Private Key Path
+  exportSSHRemotePath: Remote Server Path
+  exportToFolder: Export To Folder
   filterVersion: Filter server responded Minecraft version
   host: Host
   hostHint: The host (with port) of the server
@@ -1189,6 +1195,7 @@ server:
   status: Server Status
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
+  upload: Upload Server
   version: Server Requires Version
   versionHint: The Minecraft Version To Ping
 serverStatus:

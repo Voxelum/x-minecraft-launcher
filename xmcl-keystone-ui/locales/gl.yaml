@@ -421,9 +421,16 @@ save:
   useCurrent: Usa o mundo actual
 saves: {}
 server:
+  export: Servidor de exportación
+  exportOption: Opcións de exportación do servidor
+  exportSSHOptions: Opcións SSH
+  exportSSHPrivateKeyPath: Camiño de clave privada SSH
+  exportSSHRemotePath: Ruta do servidor remoto
+  exportToFolder: Exportar ao cartafol
   maxPlayers: Máximo xogadores
   nogui: Sen servidor Gui
   onlineMode: Modo en liña
+  upload: Servidor de carga
 setting:
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.

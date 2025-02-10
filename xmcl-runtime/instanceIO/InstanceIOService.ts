@@ -1,4 +1,4 @@
-import { CreateInstanceOption, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
+import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LaunchOptions, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
 import { readFile, readdir } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -17,16 +17,21 @@ import { parseCurseforgeInstance } from './parseCurseforgeInstance'
 import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
 import { parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
 import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
+import { exportInstanceAsServer } from './exportInstanceAsServer'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(kGameDataPath) private getPath: PathResolver,
-    @Inject(VersionService) private versionService: VersionService,
+    @Inject(kTaskExecutor) protected submit: TaskFn,
+    @Inject(kGameDataPath) protected getPath: PathResolver,
+    @Inject(VersionService) protected versionService: VersionService,
   ) {
     super(app)
+  }
+
+  async exportInstanceAsServer(options: ExportInstanceAsServerOptions): Promise<void> {
+    await exportInstanceAsServer.call(this, options)
   }
 
   async getGameDefaultPath(type?: 'modrinth' | 'modrinth-instances' | 'vanilla' | 'curseforge') {

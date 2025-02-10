@@ -52,6 +52,7 @@ export class GameOptionsState implements GameOptions {
   renderClouds = undefined
   lang = ''
   shaderPack = ''
+  eula = false
 
   gameOptionsSet(settings: GameSetting) {
     const container = this as Record<string, any>
@@ -67,6 +68,10 @@ export class GameOptionsState implements GameOptions {
 
   shaderPackSet(pack: string) {
     this.shaderPack = pack
+  }
+
+  eulaSet(value: boolean) {
+    this.eula = value
   }
 }
 

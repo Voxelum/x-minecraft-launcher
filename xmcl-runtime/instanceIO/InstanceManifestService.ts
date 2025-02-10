@@ -25,6 +25,33 @@ export class InstanceManifestService extends AbstractService implements IInstanc
   }
 
   @Singleton(p => JSON.stringify(p))
+  async getInstanceServerManifest(options: GetManifestOptions): Promise<Array<InstanceFile>> {
+    const instancePath = options?.path
+
+    const instanceService = await this.app.registry.get(InstanceService)
+
+    const instance = instanceService.state.all[instancePath]
+
+    if (!instance) {
+      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
+    }
+
+    let files = [] as Array<InstanceFile>
+
+    const logger = this
+    const fileWithStats = await discover(join(instancePath, 'server'), logger, (filePath) => {
+      if (filePath.startsWith('libraries') || filePath.startsWith('versions') || filePath.startsWith('assets')) {
+        return true
+      }
+      return false
+    })
+
+    files = fileWithStats.map(([file]) => file)
+
+    return files
+  }
+
+  @Singleton(p => JSON.stringify(p))
   async getInstanceManifest(options: GetManifestOptions): Promise<InstanceManifest> {
     const instancePath = options?.path
 
@@ -51,7 +78,31 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     const pendingResourceUpdates = new Set<InstanceFile>()
     await task('getInstanceManifest', async function () {
       const start = performance.now()
-      const fileWithStats = await discover(instancePath, logger)
+      const fileWithStats = await discover(instancePath, logger, (relativePath, stat) => {
+        if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
+          if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
+            return true
+          }
+        }
+        if (relativePath.startsWith('.backups')) {
+          return true
+        }
+        if (relativePath === 'instance.json') {
+          return true
+        }
+        if (relativePath === 'server' && stat.isDirectory()) {
+          return true
+        }
+        // no lib or exe
+        if (relativePath.endsWith('.dll') || relativePath.endsWith('.so') || relativePath.endsWith('.exe')) {
+          return true
+        }
+        // do not share versions/libs/assets
+        if (relativePath.startsWith('versions') || relativePath.startsWith('assets') || relativePath.startsWith('libraries')) {
+          return true
+        }
+        return false
+      })
       const duration = performance.now() - start
       logger.log(`Discover instance files in ${instancePath} in ${duration}ms`)
 

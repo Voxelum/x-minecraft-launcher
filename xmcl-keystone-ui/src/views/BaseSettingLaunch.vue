@@ -163,17 +163,17 @@
 </template>
 
 <script lang=ts setup>
-import { useNotifier } from '../composables/notifier'
-import { useLaunchPreview } from '../composables/launchPreview'
-import { injection } from '@/util/inject'
-import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import { useService } from '@/composables'
+import { useSimpleDialog } from '@/composables/dialog'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
 import { InstanceOptionsServiceKey, InstanceServerInfoServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import { kInstance } from '@/composables/instance'
-import { useSimpleDialog } from '@/composables/dialog'
+import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import { useLaunchPreview } from '../composables/launchPreview'
+import { useNotifier } from '../composables/notifier'
+import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 
 const { t } = useI18n()
 const { preview, refresh, command, error } = useLaunchPreview()
@@ -216,7 +216,6 @@ async function copyToClipboard(side = 'client' as 'client' | 'server') {
 const gotoSetting = () => {
   push('/setting')
 }
-
 </script>
 
 <style scoped=true>

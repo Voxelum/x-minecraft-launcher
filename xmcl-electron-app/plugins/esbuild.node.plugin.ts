@@ -23,6 +23,19 @@ export default function createNodePlugin(): Plugin {
         }),
       )
 
+      build.onLoad(
+        {
+          filter: /^.+crypto\.node$/g,
+          namespace: 'node-file',
+        },
+        async ({ path }) => {
+          return {
+            contents: 'module.exports = false;',
+            loader: 'file',
+          }
+        },
+      )
+
       // build.onResolve(
       //   { filter: /^.+\.post-node$$/ },
       //   (args) => {
