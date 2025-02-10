@@ -23,7 +23,7 @@ function getProjectFileFromCurseforge<T extends ProjectEntry>(i: CurseforgeMod) 
 export function useCurseforgeSearch<T extends ProjectEntry<any>>(
   classId: number,
   keyword: Ref<string>,
-  modLoaderFilters: Ref<ModLoaderFilter[]>,
+  modLoader: Ref<ModLoaderFilter | undefined>,
   curseforgeCategory: Ref<number | undefined>,
   sort: Ref<ModsSearchSortField | undefined>,
   gameVersion: Ref<string>,
@@ -32,7 +32,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
   const search = useCurseforgeSearchFunc(
     classId,
     keyword,
-    computed(() => getCursforgeModLoadersFromString(modLoaderFilters.value)),
+    computed(() => getCursforgeModLoadersFromString(modLoader.value)),
     curseforgeCategory,
     sort,
     gameVersion,
@@ -62,7 +62,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
 
   function effect() {
     watch(keyword, onSearch)
-    watch(modLoaderFilters, onSearch, { deep: true })
+    watch(modLoader, onSearch, { deep: true })
     watch(curseforgeCategory, onSearch, { deep: true })
     watch(sort, onSearch)
     watch(gameVersion, onSearch)

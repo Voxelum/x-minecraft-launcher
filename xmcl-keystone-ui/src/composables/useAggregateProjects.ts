@@ -70,15 +70,13 @@ export function useProjectsFilterSort<T extends ProjectEntry>(
 
 /**
  * Aggregate the modrinth/curseforge/local
- * @param modrinth Project provided by modrinth
- * @param curseforge Project provided by curseforge
+ * @param external Project provided by modrinth/curseforge/other
  * @param local Project provieded by local cache
  * @param installedProjects The installed project
  * @returns The aggregated project
  */
 export function useAggregateProjects<T extends ProjectEntry>(
-  modrinth: Ref<T[]>,
-  curseforge: Ref<T[]>,
+  external: Ref<T[]>,
   local: Ref<T[]>,
   installedProjects: Ref<T[]>,
   allLocal: Ref<T[]>,
@@ -132,8 +130,7 @@ export function useAggregateProjects<T extends ProjectEntry>(
       }
     }
 
-    for (const mod of modrinth.value) visit(mod)
-    for (const mod of curseforge.value) visit(mod)
+    for (const mod of external.value) visit(mod)
     for (const mod of local.value) {
       mod.curseforge = undefined
       mod.modrinth = undefined

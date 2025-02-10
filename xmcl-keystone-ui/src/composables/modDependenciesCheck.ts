@@ -70,7 +70,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     const loaders = getModrinthModLoaders(runtimes, false)
     const depProjects = Object.keys(deps)
     await Promise.allSettled(depProjects.map(async (p) => {
-      const v = await getSWRV(getModrinthVersionModel(p, false, loaders, [runtimes.minecraft]), config)
+      const v = await getSWRV(getModrinthVersionModel(p, false, loaders[0], [runtimes.minecraft]), config)
       if (v[0]) {
         result.push(getInstanceFileFromModrinthVersion(v[0]))
       }

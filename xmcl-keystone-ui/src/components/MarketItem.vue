@@ -9,7 +9,7 @@
     style="pointer-events: initial;"
     :draggable="draggable"
     :class="{
-      'v-list-item--disabled': disabled || item.disabled,
+      'v-list-item--disabled': disabled || item.disabled || item.unsupported,
       'dragged-over': dragover > 0,
       dense,
     }"
@@ -54,7 +54,7 @@
       :style="{ height: `${height}px` }"
     />
     <v-list-item-content
-      :class="{ 
+      :class="{
         indented: indent,
         dense,
       }"

@@ -17,7 +17,8 @@ import { useNotifier } from './notifier'
 /**
  * Provide default install for the project
  */
-export function useProjectInstall(runtime: Ref<RuntimeVersions>, loaders: Ref<string[]>,
+export function useProjectInstall(runtime: Ref<RuntimeVersions>,
+  loader: Ref<string | undefined>,
   curseforgeInstaller = injection(kCurseforgeInstaller),
   modrinthInstaller = injection(kModrinthInstaller),
   installLocal: (item: ProjectFile) => void,
@@ -37,7 +38,7 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>, loaders: Ref<st
         return
       }
       const gameVersions = [runtime.value.minecraft]
-      const versions = await getSWRV(getModrinthVersionModel(ref(modrinthProjectId), undefined, loaders, ref(gameVersions)), config)
+      const versions = await getSWRV(getModrinthVersionModel(ref(modrinthProjectId), undefined, loader, ref(gameVersions)), config)
       if (!versions) {
         notify({
           level: 'error',
@@ -46,7 +47,7 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>, loaders: Ref<st
         return
       }
       const version = versions?.[0]
-      const deps = await getSWRV(getModrinthDependenciesModel(ref(version), config), config)
+      const deps = await getSWRV(getModrinthDependenciesModel(ref(version), loader, config), config)
       await modrinthInstaller.installWithDependencies(version.id, version.loaders, proj.icon_url, item.installed, deps || [])
     } else if (curseforgeId) {
       const proj = await getSWRV(getCurseforgeProjectModel(ref(curseforgeId)), config)
@@ -57,7 +58,7 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>, loaders: Ref<st
         })
         return
       }
-      const _loaders = getCursforgeModLoadersFromString(loaders.value as any)
+      const _loaders = getCursforgeModLoadersFromString(loader.value)
       const files = await getSWRV(getCurseforgeProjectFilesModel(ref(curseforgeId), ref(runtime.value.minecraft), ref(_loaders[0])), config)
       if (!files) {
         notify({

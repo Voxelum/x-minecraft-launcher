@@ -59,7 +59,6 @@
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedItem?.modrinth?.project_id || selectedModrinthId)"
         :game-version="gameVersion"
-        :loaders="modrinthLoaders"
         :categories="modrinthCategories"
         :all-files="files"
         :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
@@ -73,7 +72,6 @@
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedItem?.curseforge?.id || selectedCurseforgeId)"
         :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedItem?.curseforge?.id || selectedCurseforgeId))"
-        :loaders="[]"
         :game-version="gameVersion"
         :category="curseforgeCategory"
         :all-files="files"
@@ -180,23 +178,6 @@ const displayItems = computed(() => {
   return result
 })
 
-const modrinthLoaders = computed(() => {
-  const result = [
-    'minecraft',
-    'datapack',
-  ] as string[]
-  if (runtime.value.forge || runtime.value.neoForged) {
-    result.push('forge', 'neoforged')
-  }
-  if (runtime.value.fabric) {
-    result.push('fabric')
-  }
-  if (runtime.value.quiltLoader) {
-    result.push('quilt')
-  }
-  return result
-})
-
 // Enable disable install uninstall
 const onUninstall = (v: ProjectFile[]) => {
   const packs = v as InstanceResourcePack[]
@@ -281,7 +262,7 @@ provide(kCurseforgeInstaller, curseforgeInstaller)
 
 const onInstallProject = useProjectInstall(
   runtime,
-  modrinthLoaders,
+  ref(undefined),
   curseforgeInstaller,
   modrinthInstaller,
   (f) => {

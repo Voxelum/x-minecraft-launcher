@@ -2,6 +2,7 @@ import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { getModrinthProjectKey, getModrinthVersionKey } from '@/util/modrinth'
 import { SWRVModel, swrvGet } from '@/util/swrvGet'
+import { MaybeRef, get } from '@vueuse/core'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { IConfig } from 'swrv'
 import { Ref } from 'vue'
@@ -23,7 +24,7 @@ type ResolvedDependency = {
   parent: Project
 }
 
-const visit = async (current: ResolvedDependency, visited: Set<string>, config: IConfig): Promise<ResolvedDependency[]> => {
+const visit = async (current: ResolvedDependency, visited: Set<string>, config: IConfig, modLoader?: MaybeRef<string | undefined>): Promise<ResolvedDependency[]> => {
   const { recommendedVersion: version } = current
   if (current.relativeType === 'incompatible' || current.type === 'embedded') {
     return []
@@ -33,9 +34,11 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
   }
   visited.add(version.project_id)
   const deps = await Promise.all(version.dependencies.map(async (child) => {
+    const modLoaderValue = get(modLoader)
+    const loaders = modLoaderValue ? [modLoaderValue] : undefined
     const project = await swrvGet(getModrinthProjectKey(child.project_id), () => clientModrinthV2.getProject(child.project_id), config.cache!, config.dedupingInterval!)
-    const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, version.loaders, version.game_versions),
-      () => clientModrinthV2.getProjectVersions(child.project_id, { loaders: version.loaders, gameVersions: version.game_versions }),
+    const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, loaders, version.game_versions),
+      () => clientModrinthV2.getProjectVersions(child.project_id, { loaders, gameVersions: version.game_versions }),
       config.cache!, config.dedupingInterval!)
     const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id)! : versions[0]
     const result = await visit(markRaw({
@@ -54,12 +57,12 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
   return [current, ...deps.reduce((a, b) => [...a, ...b], [])]
 }
 
-export function getModrinthDependenciesModel(version: Ref<ProjectVersion | undefined>, config = injection(kSWRVConfig)): SWRVModel<ResolvedDependency[]> {
+export function getModrinthDependenciesModel(version: Ref<ProjectVersion | undefined>, modLoader?: MaybeRef<string | undefined>, config = injection(kSWRVConfig)): SWRVModel<ResolvedDependency[]> {
   const model = {
-    key: computed(() => version.value && `/modrinth/version/${version.value.id}/dependencies`),
+    key: computed(() => version.value && `/modrinth/version/${version.value.id}/dependencies?${get(modLoader)}`),
     fetcher: async () => {
       const visited = new Set<string>()
-      const tuples = await visit({ recommendedVersion: version.value } as any, visited, config)
+      const tuples = await visit({ recommendedVersion: version.value } as any, visited, config, modLoader)
       tuples.shift()
       return tuples
     },

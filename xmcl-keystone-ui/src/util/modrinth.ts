@@ -37,7 +37,7 @@ export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoade
   const noModLoader = isNoModLoader(runtime)
   const modLoaders = [] as string[]
   if (noModLoader && allForNoModLoader) {
-    modLoaders.push('forge', 'fabric', 'quilt', 'liteloader', 'neoforge')
+    modLoaders.push()
   } else {
     if (runtime.forge) {
       modLoaders.push('forge')
@@ -59,8 +59,8 @@ export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoade
   return modLoaders
 }
 
-export function getModrinthVersionKey(projectId: string, featured?: boolean, loaders?: string[] | undefined, gameVersions?: string[]) {
-  return `/modrinth/versions/${projectId}?featured=${featured}&loaders=${loaders?.join(',') || ''}&gameVersions=${gameVersions?.join(',') || ''}`
+export function getModrinthVersionKey(projectId: string, featured?: boolean, loaders?: string | string[] | undefined, gameVersions?: string[]) {
+  return `/modrinth/versions/${projectId}?featured=${featured}&loaders=${typeof loaders === 'string' ? loaders : loaders?.join(',') || ''}&gameVersions=${gameVersions?.join(',') || ''}`
 }
 
 export function getModrinthProjectKey(projectId: string) {

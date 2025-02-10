@@ -1,4 +1,4 @@
-import { ProjectMappingService as IProjectMappingService, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
+import { ProjectMappingService as IProjectMappingService, ProjectMapping, ProjectMappingServiceKey, Settings } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { existsSync, rmSync, writeFile } from 'fs-extra'
 import { Kysely } from 'kysely'
@@ -151,6 +151,22 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     })
 
     return db
+  }
+
+  async lookupByKeyword(keyword: string): Promise<ProjectMapping[]> {
+    const db = await this.ensureDatabase()
+
+    if (!db) return []
+
+    const result = await db.selectFrom('project')
+      .where(eb => eb.or([
+        eb('name', 'like', `%${keyword}%`),
+        eb('description', 'like', `%${keyword}%`),
+      ]))
+      .selectAll()
+      .execute()
+
+    return result
   }
 
   async lookupByModrinth(modrinth: string) {

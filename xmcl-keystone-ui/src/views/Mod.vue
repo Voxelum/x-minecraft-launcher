@@ -323,6 +323,14 @@
         {{ t("modInstall.search") }}
         <v-divider class="ml-4" />
       </v-subheader>
+      <v-subheader
+        v-else-if="item === 'unsupported'"
+        :style="{ height: `${itemHeight}px` }"
+      >
+        <v-divider class="mr-4" />
+        {{ t("modrinth.environments.unsupported") }}
+        <v-divider class="ml-4" />
+      </v-subheader>
     </template>
     <template #placeholder>
       <Hint
@@ -343,7 +351,7 @@
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
-        :loaders="modLoaderFilters"
+        :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
         :updating="updating"
@@ -360,7 +368,7 @@
         :curseforge-id="Number(selectedCurseforgeId)"
         :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
         :game-version="gameVersion"
-        :loaders="modLoaderFilters"
+        :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
         :updating="updating"
@@ -489,7 +497,7 @@ const {
   loadMoreModrinth,
   modrinthCategories,
   curseforgeCategory,
-  modLoaderFilters,
+  modLoader,
   keyword,
   items,
   gameVersion,
@@ -531,17 +539,38 @@ const groupedItems = computed(() => {
     return localResult
   }
 
-  if (!groupInstalled.value) return result
+  const transformed: Array<ProjectEntry<ModFile> | string> = []
+  let rest = result
 
-  const installed = result.filter((i) => i.installed.length > 0)
+  if (groupInstalled.value) {
+    const [installed, uninstalled] = rest.reduce((acc, i) => {
+      if (i.installed.length > 0) {
+        acc[0].push(i)
+      } else {
+        acc[1].push(i)
+      }
+      return acc
+    }, [[], []] as [ProjectEntry<ModFile>[], ProjectEntry<ModFile>[]])
+    transformed.push(...installed)
+    if (uninstalled.length > 0) {
+      transformed.push('search')
+    }
+    rest = uninstalled
+  }
 
-  if (installed.length === 0) return result
+  const [supported, unsupported] = rest.reduce((acc, i) => {
+    if (!i.unsupported) {
+      acc[0].push(i)
+    } else {
+      acc[1].push(i)
+    }
+    return acc
+  }, [[], []] as [ProjectEntry<ModFile>[], ProjectEntry<ModFile>[]])
 
-  const notInstalled = result.filter((i) => i.installed.length === 0)
   return [
-    ...installed,
-    'search' as string,
-    ...notInstalled,
+    ...transformed,
+    ...supported,
+    ...(unsupported.length > 0 ? ['unsupported' as string, ...unsupported] : []),
   ]
 })
 
@@ -672,7 +701,7 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
   const result = [] as ContextMenuItem[]
 
   const selectMultiple = Object.values(selections.value).filter(v => v).length > 1
-  
+
   if (!selectMultiple) {
     result.push(...getContextMenuItemsForGroup(proj))
     return result
@@ -767,7 +796,7 @@ provide(kCurseforgeInstaller, curseforgeInstaller)
 
 const onInstallProject = useProjectInstall(
   runtime,
-  modLoaderFilters,
+  modLoader,
   curseforgeInstaller,
   modrinthInstaller,
   (file) => {

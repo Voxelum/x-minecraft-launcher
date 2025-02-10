@@ -6,13 +6,13 @@ import { useCurseforgeChangelog } from '@/composables/curseforgeChangelog'
 import { getCurseforgeDependenciesModel, useCurseforgeTask } from '@/composables/curseforgeDependencies'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
-import { kFlights, useI18nSearchFlights } from '@/composables/flights'
+import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { basename } from '@/util/basename'
-import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders, getModLoaderTypesForFile } from '@/util/curseforge'
+import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoaderTypesForFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
@@ -24,7 +24,7 @@ const props = defineProps<{
   curseforgeId: number
   installed: ProjectFile[]
   gameVersion: string
-  loaders: string[]
+  loader?: string
   allFiles: ProjectFile[]
   category?: number
   updating?: boolean
@@ -194,7 +194,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
 
 const { files, refreshing: loadingVersions, index, totalCount, pageSize } = useCurseforgeProjectFiles(curseforgeModId,
   computed(() => props.gameVersion),
-  computed(() => undefined))
+  computed(() => getCursforgeModLoadersFromString(props.loader)[0]))
 
 const modId = ref(0)
 const fileId = ref(undefined as number | undefined)
@@ -204,12 +204,6 @@ const modVersions = computed(() => {
   const versions: ProjectVersion[] = []
   const installed = [...props.installed]
   for (const file of files.value) {
-    const loaders = getCursforgeFileModLoaders(file)
-    if (props.loaders.length > 0 && loaders.length > 0) {
-      if (!loaders.some(l => props.loaders.indexOf(l as any) !== -1)) {
-        continue
-      }
-    }
     const installedFileIndex = installed.findIndex(f => f.curseforge?.fileId === file.id)
     const f = installedFileIndex === -1 ? undefined : installed.splice(installedFileIndex, 1)
 

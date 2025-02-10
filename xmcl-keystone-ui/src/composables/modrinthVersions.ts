@@ -13,11 +13,11 @@ import { kTaskManager } from './taskManager'
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
 
-export function useModrinthVersions(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
+export function useModrinthVersions(project: Ref<string>, featured?: boolean, loader?: Ref<string | undefined>, gameVersions?: Ref<string[] | undefined>) {
   const holder = inject(kModrinthVersionsHolder, undefined)
 
   const { mutate, error, isValidating: refreshing, data } = useSWRVModel(
-    getModrinthVersionModel(project, featured, loaders, gameVersions),
+    getModrinthVersionModel(project, featured, loader, gameVersions),
     inject(kSWRVConfig))
 
   if (holder) {
@@ -40,11 +40,12 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
   }
 }
 
-export function getModrinthVersionModel(project: MaybeRef<string>, featured?: boolean, loaders?: MaybeRef<string[] | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
+export function getModrinthVersionModel(project: MaybeRef<string>, featured?: boolean, loaders?: MaybeRef<string | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
   return {
     key: computed(() => getModrinthVersionKey(get(project), featured, get(loaders), get(gameVersions))),
     fetcher: async () => {
-      const result = (await clientModrinthV2.getProjectVersions(get(project), { loaders: get(loaders), gameVersions: get(gameVersions), featured })).map(markRaw)
+      const loader = get(loaders)
+      const result = (await clientModrinthV2.getProjectVersions(get(project), { loaders: loader ? [loader] : undefined, gameVersions: get(gameVersions), featured })).map(markRaw)
       return result
     },
   }

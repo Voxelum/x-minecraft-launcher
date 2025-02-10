@@ -13,6 +13,11 @@ import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
 import { notNullish } from '@vueuse/core'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { Project } from '@xmcl/modrinth'
+import { Mod } from '@xmcl/curseforge'
+import { getCursforgeModLoadersFromString } from '@/util/curseforge'
+import { useI18nSearch } from './i18nSearch'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -25,7 +30,7 @@ export enum ModLoaderFilter {
 
 const kCached = Symbol('cached')
 
-export function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
+function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modLoader: Ref<ModLoaderFilter | undefined>, runtime: Ref<InstanceData['runtime']>, instanceModFiles: Ref<ModFile[]>) {
   const { searchInstalled } = useService(InstanceModsServiceKey)
   const modFiles = ref([] as ModFile[])
 
@@ -147,10 +152,10 @@ export function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modL
       modFiles.value = []
       return
     }
-    const useForge = modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1
-    const useFabric = modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1
-    const useQuilt = modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1
-    const useNeoforge = modLoaderFilters.value.indexOf(ModLoaderFilter.neoforge) !== -1
+    const useForge = modLoader.value === ModLoaderFilter.forge
+    const useFabric = modLoader.value === ModLoaderFilter.fabric
+    const useQuilt = modLoader.value === ModLoaderFilter.quilt
+    const useNeoforge = modLoader.value === ModLoaderFilter.neoforge
     const isValidResource = (r: Resource) => {
       // should not include this instance mods
       if (r.path.startsWith(path.value)) {
@@ -179,7 +184,7 @@ export function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modL
   function effect() {
     // useResourceEffect(onSearch, ResourceDomain.Mods)
     watch([keyword, instanceModFiles], onSearch)
-    watch(modLoaderFilters, onSearch, { deep: true })
+    watch(modLoader, onSearch, { deep: true })
   }
 
   return {
@@ -207,7 +212,7 @@ const getOptifineAsMod = () => {
 }
 
 export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>, isValidating: Ref<boolean>, settings: Ref<Settings | undefined>) {
-  const modLoaderFilters = ref<ModLoaderFilter[]>([])
+  const modLoader = ref<ModLoaderFilter | undefined>(undefined)
   const curseforgeCategory = ref(undefined as number | undefined)
   const modrinthCategories = ref([] as string[])
   const keyword = ref('')
@@ -219,14 +224,14 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
 
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, modrinthSort, gameVersion, localOnly)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, curseforgeSort, gameVersion, localOnly)
-  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(path, keyword, modLoaderFilters, runtime, instanceMods)
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', keyword, computed(() => modLoader.value ? [modLoader.value] : []), modrinthCategories, modrinthSort, gameVersion, localOnly)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoader, curseforgeCategory, curseforgeSort, gameVersion, localOnly)
+  const { projects, effect: onI18nEffect } = useI18nSearch(keyword, modLoader, gameVersion)
+  const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(path, keyword, modLoader, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value || isValidating.value)
 
   const all = useAggregateProjects<ProjectEntry<ModFile>>(
-    modrinth,
-    curseforge,
+    computed(() => [...modrinth.value, ...curseforge.value, ...projects.value]),
     cachedMods,
     instances,
     instancesAll,
@@ -254,21 +259,17 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
 
   const getModloaders = (version: RuntimeVersions) => {
     const items = [] as ModLoaderFilter[]
-    if (isNoModLoader(version)) {
-      items.push(ModLoaderFilter.fabric, ModLoaderFilter.forge, ModLoaderFilter.quilt, ModLoaderFilter.neoforge)
-    } else {
-      if (version.fabricLoader) {
-        items.push(ModLoaderFilter.fabric)
-      }
-      if (version.forge) {
-        items.push(ModLoaderFilter.forge)
-      }
-      if (version.quiltLoader) {
-        items.push(ModLoaderFilter.quilt, ModLoaderFilter.fabric)
-      }
-      if (version.neoForged) {
-        items.push(ModLoaderFilter.neoforge)
-      }
+    if (version.fabricLoader) {
+      items.push(ModLoaderFilter.fabric)
+    }
+    if (version.forge) {
+      items.push(ModLoaderFilter.forge)
+    }
+    if (version.quiltLoader) {
+      items.push(ModLoaderFilter.quilt)
+    }
+    if (version.neoForged) {
+      items.push(ModLoaderFilter.neoforge)
     }
     return items
   }
@@ -324,11 +325,12 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
     onModrinthEffect()
     onCurseforgeEffect()
     onLocalEffect()
+    onI18nEffect()
 
     useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
-    useQueryOverride('modLoader', modLoaderFilters, computed(() => getModloaders(runtime.value)), {
-      fromString: (v) => [v],
-      toString: (v) => v[0],
+    useQueryOverride('modLoader', modLoader, computed(() => getModloaders(runtime.value)[0]), {
+      fromString: (v) => !v ? undefined : v,
+      toString: (v) => v || '',
     })
     useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
     useQueryOverride('modrinthCategories', modrinthCategories, [], searlizers.stringArray)
@@ -341,7 +343,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   return {
     localOnly,
     gameVersion,
-    modLoaderFilters,
+    modLoader,
     curseforgeCategory,
     modrinthCategories,
     loadMoreCurseforge,

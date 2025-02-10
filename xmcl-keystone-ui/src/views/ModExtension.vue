@@ -8,7 +8,7 @@
       <div class="invisible-scroll flex justify-end gap-4 overflow-x-auto">
         <MarketTextFieldWithMenu
           :placeholder="t('mod.search')"
-          :keyword.sync="_keyword"
+          :keyword.sync="keywordBuffer"
           :curseforge-category.sync="curseforgeCategory"
           :modrinth-categories.sync="modrinthCategories"
           curseforge-category-filter="mc-mods"
@@ -38,65 +38,55 @@ import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kModsSearch, ModLoaderFilter } from '@/composables/modSearch'
-import { useQuery } from '@/composables/query'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, gameVersion, cachedMods, localOnly, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort } = injection(kModsSearch)
+const { modrinth, curseforge, gameVersion, cachedMods, localOnly, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader } = injection(kModsSearch)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
 
-let buffer = undefined as undefined | string
+const route = useRoute()
 const updateSearch = debounce(() => {
-  if (typeof buffer === 'string') {
+  const buffer = keywordBuffer.value
+  if (buffer) {
     const isSuperQuery = buffer.startsWith('@')
     if (isSuperQuery) {
       const query = buffer.substring(1)
       const isCurseforgeProjectId = /^\d+$/.test(query) && query.length < 10
       const isModrinthProject = /^[0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz]+$/.test(query) && query.length === 8
       if (isCurseforgeProjectId) {
+        if (route.query.id === `curseforge:${query}`) return
         replace({ query: { ...route.query, id: `curseforge:${query}` } })
       } else if (isModrinthProject) {
+        if (route.query.id === `modrinth:${query}`) return
         replace({ query: { ...route.query, id: `modrinth:${query}` } })
       } else {
+        if (route.query.keyword === query) return
         replace({ query: { ...route.query, keyword: query } })
       }
     } else {
+      if (route.query.keyword === buffer) return
       replace({ query: { ...route.query, keyword: buffer } })
     }
-    buffer = undefined
+  } else {
+    if (route.query.keyword === '') return
+    replace({ query: { ...route.query, keyword: '' } })
   }
 }, 500)
 const { replace } = useRouter()
-const route = useRoute()
-const _keyword = computed({
-  get: () => route.query.keyword as string ?? '',
-  set: (v) => {
-    if (v !== buffer) {
-      if (v === '') {
-        replace({ query: { ...route.query, keyword: v } })
-        buffer = undefined
-      } else {
-        buffer = v ?? ''
-        updateSearch()
-      }
-    }
-  },
-})
-const modLoader = useQuery('modLoader')
+const keywordBuffer = ref(route.query.keyword as string)
 
-watch(version, (v) => {
-  // gameVersion.value = v.minecraft
-  if (v.forge) {
-    modLoader.value = 'forge'
-  } else if (v.fabric) {
-    modLoader.value = 'fabric'
-  } else if (v.quilt) {
-    modLoader.value = 'quilt'
+onMounted(() => {
+  keywordBuffer.value = route.query.keyword as string ?? ''
+})
+
+watch(keywordBuffer, (v, old) => {
+  if (v !== old) {
+    updateSearch()
   }
 }, { immediate: true })
 

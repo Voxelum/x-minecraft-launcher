@@ -111,7 +111,7 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
   const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ShaderPackProject>('shader', keyword, shaderLoaderFilters, modrinthCategories, modrinthSort, gameVersion, localOnly)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.shaderPack, keyword, ref([]), curseforgeCategory, curseforgeSort, gameVersion, localOnly)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.shaderPack, keyword, ref(undefined), curseforgeCategory, curseforgeSort, gameVersion, localOnly)
   const { enabled, disabled, loadingCached, shaderProjectFiles, effect: localEffect } = useLocalSearch(shaderPacks, keyword)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
 
@@ -123,7 +123,6 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     useQueryOverride('keyword', keyword, '', searlizers.string)
     useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
     useQueryOverride('modrinthCategories', modrinthCategories, [], searlizers.stringArray)
-    useQueryOverride('shaderLoaderFilters', shaderLoaderFilters, ['iris', 'optifine'], searlizers.stringArray)
     useQueryOverride('isCurseforgeActive', isCurseforgeActive, true, searlizers.boolean)
     useQueryOverride('isModrinthActive', isModrinthActive, true, searlizers.boolean)
     useQueryOverride('sort', sort, 0, searlizers.number)
@@ -178,7 +177,6 @@ export function useShaderPackSearch(runtime: Ref<InstanceData['runtime']>, shade
     gameVersion,
     shaderProjectFiles,
     modrinthCategories,
-    shaderLoaderFilters,
     curseforgeError,
 
     enabled: _installed,

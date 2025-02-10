@@ -46,7 +46,7 @@ import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ count?: number }>()
 
-const emit = defineEmits(['update:modLoaderFilters', 'install'])
+const emit = defineEmits(['install'])
 
 const { t } = useI18n()
 

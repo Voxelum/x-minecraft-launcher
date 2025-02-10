@@ -11,6 +11,8 @@ export interface ProjectMappingService {
   lookupByModrinth(modrinth: string): Promise<ProjectMapping | undefined>
   lookupByCurseforge(curseforge: number): Promise<ProjectMapping | undefined>
 
+  lookupByKeyword(keyword: string): Promise<ProjectMapping[]>
+
   lookupBatch(modrinth: string[], curseforge: number[]): Promise<ProjectMapping[]>
 }
 
