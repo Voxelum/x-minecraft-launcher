@@ -18,17 +18,17 @@ import { UnzipFileTask } from './UnzipFileTask'
 
 /**
  * The handler to handle the instance file install.
- * 
+ *
  * In the process, there will be 3 folder location involved:
  * 1. instance location: the location where the instance files are located
  * 2. workspace location: the location where the files are downloaded and unzipped
  * 3. backup location: the location where the files are backuped or removed
- * 
+ *
  * The whole process is divided into three phases:
  * 1. Link or copy existed files to workspace folder. Download and unzip news files into workspace location. The linked failed files will be downloaded.
  * 2. Move files which need to be removed or backup to backup location
  * 3. Rename workspace location files into instance location
- * 
+ *
  * The step 2 and 3 will modify the original instance files.
  * If the process is interrupted, the instance files need to be restored to the original state.
  * The backup folder will only exist if the whole process is successfully finished.
@@ -63,7 +63,7 @@ export class InstanceFileOperationHandler {
 
   /**
    * Store the unresolvable files.
-   * 
+   *
    * This will be recomputed each time the handler is processed.
    */
   readonly unresolvable: InstanceFile[] = []
@@ -141,7 +141,7 @@ export class InstanceFileOperationHandler {
 
   /**
   * Emit the task to prepare download & unzip files into workspace location.
-  * 
+  *
   * These tasks will do the phase 1 of the instance file operation.
   */
   async * prepareInstallFilesTasks(file: InstanceFileUpdate[]) {
@@ -187,12 +187,14 @@ export class InstanceFileOperationHandler {
       }
     } catch (e) {
       // rollback with best effort
+      this.logger.warn('Rollback due to backup files failed', e)
       for (const [src, dest] of finished) {
         await rename(dest, src).catch(() => undefined)
       }
 
       throw e
     }
+    this.logger.log('Backup stage finished', finished.length)
 
     finished.splice(0, finished.length)
 
@@ -205,27 +207,32 @@ export class InstanceFileOperationHandler {
     ]
 
     try {
-      for (const file of files) {
+      const dirToCreate = Array.from(new Set(files.map(file => dirname(join(this.instancePath, file.path)))))
+      await Promise.all(dirToCreate.map(dir => ensureDir(dir)))
+
+      await Promise.all(files.map(async (file) => {
         const src = join(this.workspacePath, file.path)
         const dest = join(this.instancePath, file.path)
-        await ensureDir(dirname(dest))
         await rename(src, dest)
         finished.push([src, dest])
-      }
+      }))
     } catch (e) {
       // rollback with best effort
+      this.logger.warn('Rollback due to rename files failed', e)
       for (const [src, dest] of finished) {
         await rename(dest, src).catch(() => undefined)
       }
 
       throw e
     }
+    this.logger.log('Rename stage finished', finished.length)
 
     for (const file of this.#removeQueue) {
       const dest = join(this.backupPath, file.path)
       await unlink(dest).catch(() => undefined)
       await rmdir(dirname(dest)).catch(() => undefined)
     }
+    this.logger.log('Remove stage finished', this.#removeQueue.length)
 
     // Remove the workspace folder
     await remove(this.workspacePath)

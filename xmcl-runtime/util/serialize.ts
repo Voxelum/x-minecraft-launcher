@@ -5,7 +5,7 @@ import { AnyError } from './error'
 
 export interface Serializer<D, T> {
   serialize(value: T): D | Promise<D>
-  deserialize(data: D): T | Promise<T>
+  deserialize(data: D, throwIfError?: boolean): T | Promise<T>
 }
 
 const AJV_INSTANCE = new Ajv({ useDefaults: true, removeAdditional: true })
@@ -32,7 +32,7 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
     return Buffer.from(JSON.stringify(deepCopy, undefined, 2), 'utf-8')
   }
 
-  async deserialize(b: Buffer) {
+  async deserialize(b: Buffer, throwIfError = false) {
     const originalString = b.toString('utf-8')
     let object
     try {
@@ -97,7 +97,11 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
         }
       } while (retry && totalRetryCount < MAX_RETRY)
       if (validation.errors) {
-        this.logger?.error(new AnyError('DeserializeJsonError', 'Cannot fix the type error. This might cause problems!' + validation.errors ? ` ${JSON.stringify(validation.errors)}` : ''))
+        const error = new AnyError('DeserializeJsonError', 'Cannot fix the type error. This might cause problems!' + validation.errors ? ` ${JSON.stringify(validation.errors)}` : '')
+        this.logger?.error(error)
+        if (throwIfError) {
+          throw error
+        }
       }
     }
     return object

@@ -54,7 +54,7 @@ export function useI18nSearch<T extends ProjectFile>(keyword: Ref<string>, modLo
       }
 
       return {
-        id: (m.modrinthId || m.curseforgeId || '').toString(),
+        id: m.name + (m.modrinthId || m.curseforgeId || '').toString(),
         icon: modrinth?.icon_url ?? curseforge?.logo?.thumbnailUrl ?? '',
         title: m.name,
         localizedTitle: m.name,
@@ -70,9 +70,9 @@ export function useI18nSearch<T extends ProjectFile>(keyword: Ref<string>, modLo
         installed: [],
 
         curseforge,
-        curseforgeProjectId: m.curseforgeId,
+        curseforgeProjectId: m.curseforgeId && curseforge ? m.curseforgeId : undefined,
 
-        modrinthProjectId: m.modrinthId,
+        modrinthProjectId: m.modrinthId && modrinth ? m.modrinthId : undefined,
 
         files: [],
       }

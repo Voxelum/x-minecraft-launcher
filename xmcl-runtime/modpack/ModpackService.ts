@@ -84,6 +84,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     version?: string
     runtime: Instance['runtime']
   }> {
+    this.log(`Import modpack ${modpackFile}`)
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
     const cached = await this.getCachedInstallProfile(modpackFile)
     const zip = await zipManager.open(modpackFile)
@@ -124,6 +125,9 @@ export class ModpackService extends AbstractService implements IModpackService {
       instance.runtime.optifine,
       instance.runtime.quiltLoader,
       instance.runtime.labyMod)
+    if (matchedVersion) {
+      this.log('Found matched version', matchedVersion, instance.runtime)
+    }
 
     const hasShaderpacks = files.some(f => f.path.startsWith('shaderpacks/'))
     const hasResourcepacks = files.some(f => f.path.startsWith('resourcepacks/'))

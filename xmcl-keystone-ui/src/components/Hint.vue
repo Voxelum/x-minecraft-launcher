@@ -8,9 +8,7 @@
       class="flex h-full items-center justify-center"
     >
       <div
-        v-if="!button"
         class="headline text-button select-none text-center"
-        :style="{ 'color': color, }"
       >
         <v-icon
           :style="{ 'font-size' : `${size}px`, 'color': color }"
@@ -19,20 +17,7 @@
           {{ icon }}
         </v-icon>
         {{ text }}
-      </div>
-      <div
-        v-else
-        class="headline select-none text-center"
-      >
-        <v-btn>
-          <v-icon
-            :style="{ 'font-size' : `${size}px` }"
-            style="display: block"
-          >
-            {{ icon }}
-          </v-icon>
-          {{ text }}
-        </v-btn>
+        <slot />
       </div>
     </div>
   </div>
@@ -60,10 +45,6 @@ defineProps({
   size: {
     type: Number,
     default: 50,
-  },
-  button: {
-    type: Boolean,
-    default: false,
   },
   secondary: {
     type: Boolean,

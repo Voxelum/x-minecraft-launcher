@@ -14,6 +14,7 @@ import { injection } from '@/util/inject'
 import { ProjectFile } from '@/util/search'
 import { SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import Hint from './Hint.vue'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -36,7 +37,7 @@ const emit = defineEmits<{
 
 // Project
 const projectId = computed(() => props.projectId)
-const { project, isValidating: isValidatingModrinth, refresh } = useModrinthProject(projectId)
+const { project, isValidating: isValidatingModrinth, refresh, error } = useModrinthProject(projectId)
 const { lookupByModrinth } = useService(ProjectMappingServiceKey)
 
 const mapping = shallowRef(undefined as ProjectMapping | undefined)
@@ -66,7 +67,7 @@ const supportedVersions = computed(() => {
 
 // Dependencies
 const version = computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))
-const { data: deps, isValidating, error } = useSWRVModel(getModrinthDependenciesModel(version, modLoader))
+const { data: deps, isValidating } = useSWRVModel(getModrinthDependenciesModel(version, modLoader))
 const dependencies = computed(() => {
   if (!version.value) return []
   if (!deps.value) return []
@@ -170,21 +171,37 @@ const curseforgeId = computed(() => props.curseforge ||
   props.allFiles.find(v => v.modrinth?.projectId === props.projectId && v.curseforge)?.curseforge?.projectId ||
   mapping.value?.curseforgeId)
 
-const archived = computed(() => {
-  return project.value?.status === 'archived'
-})
+const isNotFound = computed(() => error.value?.status === 404)
+const { replace } = useRouter()
+const goCurseforgeProject = (id: number) => {
+  replace({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
+}
 
-// watchEffect(() => {
-//   console.log(project.value.status)
-// })
-
+const { t } = useI18n()
 </script>
 
 <template>
+  <Hint
+    v-if="isNotFound"
+    icon="warning"
+    color="red"
+    class="px-10"
+    :size="100"
+    :text="t('errors.NotFoundError')"
+  >
+    <div>
+      <v-btn color="primary" text v-if="curseforgeId" @click="goCurseforgeProject(curseforgeId)">
+        <v-icon left>$vuetify.icons.curseforge</v-icon>
+        Curseforge
+      </v-btn>
+    </div>
+  </Hint>
   <MarketProjectDetail
+    v-else
     :detail="model"
     :has-more="false"
     :enabled="enabled"
+    :error="error"
     :supported-versions="supportedVersions"
     :selected-installed="installed"
     :has-installed-version="hasInstalledVersion"

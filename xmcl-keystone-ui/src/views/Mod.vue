@@ -612,6 +612,9 @@ const shouldShowModrinth = (selectedItem: undefined | ProjectEntry, selectedModr
   if (selectedItem?.modrinth) {
     return true
   }
+  if (selectedItem?.curseforge) {
+    return false
+  }
   const hasModrinth = selectedItem?.modrinth || selectedModrinthId
   if (!hasModrinth) return false
   const hasCurseforge = selectedItem?.curseforge || selectedCurseforgeId

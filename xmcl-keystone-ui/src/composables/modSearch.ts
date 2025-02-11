@@ -1,23 +1,18 @@
 import { BuiltinImages } from '@/constant'
-import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getDiceCoefficient } from '@/util/sort'
+import { notNullish } from '@vueuse/core'
 import { InstanceData, InstanceModsServiceKey, ProjectMapping, ProjectMappingServiceKey, Resource, RuntimeVersions, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
+import { useI18nSearch } from './i18nSearch'
 import { useMarketSort } from './marketSort'
 import { useModrinthSearch } from './modrinthSearch'
 import { searlizers, useQueryOverride } from './query'
 import { useService } from './service'
 import { useAggregateProjects, useProjectsFilterSort } from './useAggregateProjects'
-import { notNullish } from '@vueuse/core'
-import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { Project } from '@xmcl/modrinth'
-import { Mod } from '@xmcl/curseforge'
-import { getCursforgeModLoadersFromString } from '@/util/curseforge'
-import { useI18nSearch } from './i18nSearch'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -278,20 +273,21 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
 
   const mapping = shallowRef<Record<string, ProjectMapping>>({})
   watch([items, computed(() => settings.value?.locale)], ([newItems]) => {
-    const modrinthsToLookup = newItems.map(i => i.modrinthProjectId || i.modrinth?.project_id).filter(notNullish)
-    const curseforgesToLookup = newItems.map(i => i.curseforgeProjectId || i.curseforge?.id).filter(notNullish)
+    const filtered = newItems
+    const modrinthsToLookup = filtered.map(i => i.modrinthProjectId || i.modrinth?.project_id).filter(notNullish)
+    const curseforgesToLookup = filtered.map(i => i.curseforgeProjectId || i.curseforge?.id).filter(notNullish)
 
     lookupBatch(modrinthsToLookup, curseforgesToLookup).then((result) => {
       const newDict: Record<string, ProjectMapping> = {}
       for (const r of result) {
         if (r.modrinthId) {
-          newDict[r.modrinthId] = r
+          newDict[r.modrinthId] = markRaw(r)
         }
         if (r.curseforgeId) {
-          newDict[r.curseforgeId] = r
+          newDict[r.curseforgeId] = markRaw(r)
         }
       }
-      mapping.value = newDict
+      mapping.value = markRaw(newDict)
     })
   })
 

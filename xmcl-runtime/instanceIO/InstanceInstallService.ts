@@ -129,6 +129,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const installLockFileIO = this.#installLockFile
 
     const fileDelta: InstanceFileUpdate[] = await this.#getDelta(instancePath, lockState, targetState.upstream, targetState.files)
+    this.log('Instance install delta', fileDelta.length)
 
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
@@ -146,6 +147,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     )
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
+    const logger = this
 
     const updateInstanceTask = task('installInstance', async function () {
       await lock.runExclusive(async () => {
@@ -155,6 +157,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
           if (hasUpdate) {
             // save current state
+            logger.log('Save current state due to refresh', instancePath)
             await installLockFileIO.write(currentStatePath, {
               ...targetState,
               mtime: Date.now(),
@@ -167,8 +170,10 @@ export class InstanceInstallService extends AbstractService implements IInstance
         try {
           for await (const tasks of handler.prepareInstallFilesTasks(fileDelta)) {
             await this.all(tasks, { throwErrorImmediately: false })
+            logger.log(`Finished [${tasks.map(t => t.name).join(', ')}] tasks`)
           }
         } catch (e) {
+          logger.warn('Install instance files error', e)
           await installLockFileIO.write(currentStatePath, {
             ...targetState,
             finishedPath: Array.from(handler.finished),
@@ -296,6 +301,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     } = options
 
     const timestamp = Date.now()
+    this.log('Install instance files', instancePath, id)
 
     if ('upstream' in options) {
       const upstream = options.upstream
@@ -320,8 +326,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       // save current state
-      await this.#lockFile.write(pendingInstallPath, currentState)
+      await this.#installLockFile.write(pendingInstallPath, currentState)
 
+      this.log('Install instance files with lock', !!lockState)
       return this.#install(instancePath, lockState, currentState, id)
     } else {
       const oldFiles = options.oldFiles
@@ -352,6 +359,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         finishedPath: [],
       }
 
+      this.log('Install instance files with diff')
       return this.#install(instancePath, lockState, currentState, id, true)
     }
   }

@@ -703,6 +703,7 @@ const props = defineProps<{
   detail: ProjectDetail
   versions: ProjectVersion[]
   enabled: boolean
+  error?: any
   updating?: boolean
   dependencies: ProjectDependency[]
   loading: boolean
@@ -823,8 +824,8 @@ const _enabled = computed({
   },
 })
 
-const titleToDisplay = computed(() => (isEnabled.value && props.detail.localizedTitle) || props.detail.title)
-const descriptionToDisplay = computed(() => (isEnabled.value && props.detail.localizedDescription) || props.detail.description)
+const titleToDisplay = computed(() => (isEnabled.value && props.detail.localizedTitle) || props.detail.title || props.error.name)
+const descriptionToDisplay = computed(() => (isEnabled.value && props.detail.localizedDescription) || props.detail.description || props.error.message)
 
 const detailsHeaders = computed(() => {
   const result: Array<{
