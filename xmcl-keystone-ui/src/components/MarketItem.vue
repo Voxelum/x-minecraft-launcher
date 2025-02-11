@@ -29,11 +29,11 @@
       <img
         ref="iconImage"
         v-fallback-img="BuiltinImages.unknownServer"
-        :class="{ 'opacity-20': item.installed.length === 0 && hover }"
+        :class="{ 'opacity-20': item.installed.length === 0 && hover && !item.unsupported }"
         :src="icon || item.icon || BuiltinImages.unknownServer"
       >
       <v-btn
-        v-if="install && item.installed.length === 0"
+        v-if="install && item.installed.length === 0 && !item.unsupported"
         class="absolute"
         large
         icon

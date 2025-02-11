@@ -552,9 +552,6 @@ const groupedItems = computed(() => {
       return acc
     }, [[], []] as [ProjectEntry<ModFile>[], ProjectEntry<ModFile>[]])
     transformed.push(...installed)
-    if (uninstalled.length > 0) {
-      transformed.push('search')
-    }
     rest = uninstalled
   }
 
@@ -569,7 +566,7 @@ const groupedItems = computed(() => {
 
   return [
     ...transformed,
-    ...supported,
+    ...(supported.length > 0 ? ['search' as string, ...supported] : []),
     ...(unsupported.length > 0 ? ['unsupported' as string, ...unsupported] : []),
   ]
 })

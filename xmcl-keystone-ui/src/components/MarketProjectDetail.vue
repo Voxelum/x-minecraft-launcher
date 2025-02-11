@@ -126,7 +126,7 @@
         <div
           class="my-2 flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-end"
         >
-          <div class="flex items-end gap-2">
+          <div class="flex items-end gap-2 flex-wrap">
             <v-btn
               v-if="selectedInstalled && !noEnabled"
               :disabled="updating"
@@ -163,7 +163,7 @@
               class="v-card border-transparent bg-transparent!"
               :class="{ 'theme--dark': isDark, 'theme--light': !isDark }"
             >
-              <div class="v-card__subtitle overflow-hidden overflow-ellipsis whitespace-nowrap p-0">
+              <div class="v-card__subtitle overflow-hidden overflow-ellipsis p-0">
                 {{
                   versions.length > 0 ?
                     t('modInstall.installHint', { file: 1, dependencies: dependencies.filter(d => d.type === 'required').length })
