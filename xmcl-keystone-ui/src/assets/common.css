@@ -505,7 +505,7 @@ a {
 
 
 .dragover {
-    @apply border-2 border-dashed border-yellow-400!;
+    @apply border-2 border-dashed border-yellow-400 !;
 }
 
 
@@ -516,4 +516,10 @@ a {
 .hide-underline .v-text-field>.v-input__control>.v-input__slot:before {
     border: none;
     border-width: 0px;
+}
+
+.v-dialog {
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }

@@ -16,6 +16,7 @@
       </v-btn>
     </v-toolbar>
     <v-list
+      class="overflow-auto max-h-full visible-scroll"
       three-line
       subheader
     >
