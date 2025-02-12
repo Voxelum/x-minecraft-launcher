@@ -2,9 +2,8 @@ import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMe
 import { FSWatcher } from 'chokidar'
 import { randomBytes } from 'crypto'
 import { existsSync } from 'fs'
-import { copy, watch } from 'fs-extra'
-import debounce from 'lodash.debounce'
-import { basename, dirname, isAbsolute, join, resolve } from 'path'
+import { copy } from 'fs-extra'
+import { basename, dirname, join, resolve } from 'path'
 import { Logger } from '~/logger'
 import { jsonArrayFrom } from '~/sql/sqlHelper'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
@@ -166,36 +165,41 @@ function createWatcher(
   onResourceRemove: (file: string) => void,
   revalidate: () => void,
 ) {
-  const debounced = new Set<string>()
-  const flush = debounce(() => {
-    if (debounced.size > 16) {
-      revalidate()
-    } else {
-      for (const file of debounced) {
-        if (file === '.DS_Store') continue
-        if (file.endsWith('.pending')) continue
-        if (file === '.gitignore') continue
-        getFile(file).then((f) => {
-          if (!f) return
-          onResourceUpdate(f)
-        }, (e) => {
-          logger.error(e)
-        })
-      }
-    }
-    debounced.clear()
-  }, 200)
-  const watcher = watch(path, (event, file) => {
+  const watcher = new FSWatcher({
+    cwd: path,
+    awaitWriteFinish: true,
+    depth: 1,
+    followSymlinks: true,
+    alwaysStat: true,
+    ignorePermissionErrors: true,
+    ignoreInitial: true,
+    ignored: (filePath) => {
+      if (resolve(filePath) === path) return false
+      return shouldIgnoreFile(filePath)
+    },
+  }).on('all', async (event, file, stat) => {
     if (!file) return
-    if (!isAbsolute(file)) file = join(path, file)
     if (shouldIgnoreFile(file)) return
     if (file.endsWith('.txt')) return
-    const existed = existsSync(file)
-    if (!existed) {
+    if (event === 'unlink') {
       onResourceRemove(file)
-    } else {
-      debounced.add(file)
-      flush()
+    } else if (event === 'add' || event === 'change') {
+      if (!stat) {
+        return
+      }
+      const fileObj: File = {
+        path: join(path, file),
+        fileName: basename(file),
+        size: stat.size,
+        mtime: stat.mtimeMs,
+        atime: stat.atimeMs,
+        ctime: stat.ctimeMs,
+        ino: stat.ino,
+        isDirectory: stat.isDirectory(),
+      }
+      onResourceUpdate(fileObj)
+    } else if (event === 'unlinkDir' && file === path) {
+      revalidate()
     }
   })
 
