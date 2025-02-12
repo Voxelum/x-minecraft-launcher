@@ -114,14 +114,22 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   }
 
   function getContextMenuItemsForGroup(proj: ProjectEntry<ModFile>) {
-    if (Object.values(instanceModGroupping.value).length === 0) return []
     const fileName = proj.installed?.[0]?.fileName
     if (!fileName) return []
+    if (Object.values(instanceModGroupping.value).length === 0) return [{
+      icon: 'label',
+      text: t('mod.group'),
+      onClick: () => {
+        group([fileName])
+      },
+    }]
     
     const result = [{
       icon: 'label',
       text: t('mod.group'),
-      onClick: () => {},
+      onClick: () => {
+        group([fileName])
+      },
       children: groups.value.map((g) => ({
         text: g,
         onClick: () => {

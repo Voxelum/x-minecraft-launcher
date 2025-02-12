@@ -49,7 +49,9 @@ const curseforgeProjectMapping = shallowRef(undefined as ProjectMapping | undefi
 
 watch(curseforgeModId, async (id) => {
   const result = await lookupByCurseforge(id).catch(() => undefined)
-  curseforgeProjectMapping.value = result
+  if (id === curseforgeModId.value) {
+    curseforgeProjectMapping.value = result
+  }
 }, { immediate: true })
 
 const { data: description, isValidating: isValidatingDescription } = useSWRVModel(getCurseforgeProjectDescriptionModel(curseforgeModId))
@@ -63,7 +65,9 @@ if (i18nSearch) {
   watch(curseforgeModId, async (id) => {
     localizedBody.value = ''
     const result = await getContent('curseforge', id)
-    localizedBody.value = result
+    if (id === curseforgeModId.value) {
+      localizedBody.value = result
+    }
   }, { immediate: true })
 }
 

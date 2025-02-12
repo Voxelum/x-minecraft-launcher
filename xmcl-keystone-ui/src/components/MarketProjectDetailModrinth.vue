@@ -44,7 +44,9 @@ const mapping = shallowRef(undefined as ProjectMapping | undefined)
 
 watch(projectId, async (id) => {
   const result = await lookupByModrinth(id).catch(() => undefined)
-  mapping.value = result
+  if (id === projectId.value) {
+    mapping.value = result
+  }
 }, { immediate: true })
 
 const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth), mapping)

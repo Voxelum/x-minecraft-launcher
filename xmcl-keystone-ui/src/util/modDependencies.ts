@@ -75,7 +75,7 @@ export function getNeoforgeModDependencies(metadata: NeoforgeMetadata): ModDepen
 
   for (const mod of arr) {
     const deps: ModDependencies = []
-    for (const dep of mod.dependencies) {
+    for (const dep of mod.dependencies || []) {
       deps.push({
         modId: dep.modId,
         versionRange: dep.versionRange,
