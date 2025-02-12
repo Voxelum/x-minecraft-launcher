@@ -191,21 +191,43 @@ export class BaseService extends AbstractService implements IBaseService {
 
     try {
       await this.app.dispose()
+
+      const candidates = [
+        'assets',
+        'instances',
+        'jre',
+        'libraries',
+        'labymod-neo',
+        'modpacks',
+        'mods',
+        'resourcepacks',
+        'saves',
+        'shaderpacks',
+        'versions',
+        'authlib-injection.json',
+        'ely-authlib.json',
+        'launcher_profiles.json',
+        'options.txt',
+      ]
       this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
       const files = await readdir(source)
       for (const file of files) {
+        if (!candidates.includes(file)) {
+          continue
+        }
         const from = join(source, file)
         const to = join(destination, file)
         try {
-          await rename(from, to)
-        } catch (e) {
-          if (isSystemError(e)) {
-            if (e.code === 'EXDEV') {
+          await rename(from, to).catch((e) => {
+            if (isSystemError(e) && e.code === 'EXDEV') {
               // cannot move file across disk
               this.warn(`Cannot move file across disk ${from} -> ${to}. Use copy instead.`)
-              await copyPassively(from, to)
-              return
+              return copyPassively(from, to)
             }
+            throw e
+          })
+        } catch (e) {
+          if (isSystemError(e)) {
             if (e.code === 'EPERM') {
               throw new MigrationException({
                 type: 'migrationNoPermission',
@@ -218,6 +240,9 @@ export class BaseService extends AbstractService implements IBaseService {
         }
       }
     } catch (e) {
+      if (e instanceof MigrationException) {
+        throw e
+      }
       this.error(new AnyError('MigrateRootError', `Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
       throw e
     }
