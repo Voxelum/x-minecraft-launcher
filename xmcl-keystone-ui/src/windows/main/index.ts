@@ -23,11 +23,57 @@ document.addEventListener('dragstart', (e) => {
   }
 })
 
+function handleMigrate(from: string, to: string) {
+  const modsGrouping = localStorage.getItem('modsGrouping')
+  if (modsGrouping) {
+    const value = JSON.parse(modsGrouping)
+    const transformed = Object.fromEntries(Object.entries(value).map(([key, value]) => {
+      return [
+        key.replace(from, to),
+        value
+      ]
+    }))
+    localStorage.setItem('modsGrouping', JSON.stringify(transformed))
+  }
+
+  const instanceGroup = localStorage.getItem('instanceGroup')
+  if (instanceGroup) {
+    const value = JSON.parse(instanceGroup) as (string | { instances: string[] })[]
+    const transformed = value.map((value) => {
+      return typeof value === 'string' ? value.replace(from, to) : {
+        ...value,
+        instances: value.instances.map((instance) => instance.replace(from, to))
+      }
+    })
+    localStorage.setItem('instanceGroup', JSON.stringify(transformed))
+  }
+
+  const remoteSSHServers = localStorage.getItem('remoteSSHServers')
+  if (remoteSSHServers) {
+    const value = JSON.parse(remoteSSHServers)
+    const transformed = Object.fromEntries(Object.entries(value).map(([key, value]) => {
+      return [
+        key.replace(from, to),
+        value
+      ]
+    }))
+    localStorage.setItem('remoteSSHServers', JSON.stringify(transformed))
+  }
+}
+
 const app = new Vue(defineComponent({
   i18n,
   vuetify,
   router,
   setup() {
+    // get from to from the query
+    const query = new URLSearchParams(window.location.search)
+    const from = query.get('from')
+    const to = query.get('to')
+    if (from && to) {
+      handleMigrate(from, to)
+    }
+
     const root = getCurrentInstance()!.proxy.$root
     Object.defineProperty(root, '$router', {
       value: new Proxy(root.$router, {

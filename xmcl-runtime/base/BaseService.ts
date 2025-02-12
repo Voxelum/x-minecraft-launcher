@@ -1,5 +1,5 @@
 import { MigrationException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, SharedState, PoolStats, Settings } from '@xmcl/runtime-api'
-import { readdir, rename, stat } from 'fs-extra'
+import { copy, move, readdir, readlink, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -170,7 +170,6 @@ export class BaseService extends AbstractService implements IBaseService {
 
   async migrate(options: MigrateOptions) {
     const getPath = await this.app.registry.get(kGameDataPath)
-    const source = getPath()
     const destination = options.destination
     const destStat = await stat(destination).catch(() => undefined)
     if (destStat && destStat.isFile()) {
@@ -189,41 +188,7 @@ export class BaseService extends AbstractService implements IBaseService {
       }
     }
 
-    try {
-      await this.app.dispose()
-      this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
-      const files = await readdir(source)
-      for (const file of files) {
-        const from = join(source, file)
-        const to = join(destination, file)
-        try {
-          await rename(from, to)
-        } catch (e) {
-          if (isSystemError(e)) {
-            if (e.code === 'EXDEV') {
-              // cannot move file across disk
-              this.warn(`Cannot move file across disk ${from} -> ${to}. Use copy instead.`)
-              await copyPassively(from, to)
-              return
-            }
-            if (e.code === 'EPERM') {
-              throw new MigrationException({
-                type: 'migrationNoPermission',
-                source,
-                destination,
-              })
-            }
-          }
-          throw e
-        }
-      }
-    } catch (e) {
-      this.error(new AnyError('MigrateRootError', `Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
-      throw e
-    }
-    await this.app.migrateRoot(destination)
-
-    this.app.relaunch()
+    this.app.relaunch([...process.argv.slice(1), '--migrate', destination])
     this.app.quit()
   }
 

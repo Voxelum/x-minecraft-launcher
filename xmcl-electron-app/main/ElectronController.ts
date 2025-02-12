@@ -1,10 +1,12 @@
 import { AccentState, HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
+import migrationPreload from '@preload/migration'
 import monitorPreload from '@preload/monitor'
 import multiplayerPreload from '@preload/multiplayer'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
+import migrateWinUrl from '@renderer/migration.html'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
 import { Client, LauncherAppController } from '@xmcl/runtime/app'
 import { Logger } from '@xmcl/runtime/logger'
@@ -12,6 +14,7 @@ import { kSettings } from '@xmcl/runtime/settings'
 import { BrowserWindow, Event, HandlerDetails, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, shell } from 'electron'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
+import defaultApp from './defaultApp'
 import { definedLocales } from './definedLocales'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
@@ -29,6 +32,8 @@ export class ElectronController implements LauncherAppController {
 
   protected multiplayerRef: BrowserWindow | undefined = undefined
 
+  protected migrationRef: BrowserWindow | undefined = undefined
+
   protected i18n = createI18n(definedLocales, 'en')
 
   readonly logger: Logger
@@ -45,6 +50,8 @@ export class ElectronController implements LauncherAppController {
   protected sharedSession: Session | undefined
 
   private settings: Settings | undefined
+
+  private migrated: { from: string; to: string } | undefined
 
   private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
     const url = new URL(detail.url)
@@ -201,6 +208,31 @@ export class ElectronController implements LauncherAppController {
           }
         }
       }
+    }
+  }
+
+  async startMigrate() {
+    const restoredSession = this.app.session.getSession(defaultApp.url)
+    const browser = new BrowserWindow({
+      title: 'XMCL Launcher Migrate',
+      frame: false,
+      resizable: false,
+      width: 600,
+      height: 400,
+      webPreferences: {
+        preload: migrationPreload,
+        session: restoredSession,
+      },
+    })
+    browser.loadURL(migrateWinUrl)
+
+    this.migrationRef = browser
+  }
+
+  async endMigrate(result?: { from: string; to: string }) {
+    this.migrated = result
+    if (this.migrationRef) {
+      this.migrationRef.close()
     }
   }
 
@@ -361,14 +393,18 @@ export class ElectronController implements LauncherAppController {
     this.setupBrowserLogger(browser, 'app')
     tracker.track(browser)
 
-    let url = man.url
+    const url = new URL(man.url)
     if (isBootstrap) {
-      url += '?bootstrap'
+      url.searchParams.append('bootstrap', 'true')
     }
-    this.logger.log(url)
-    browser.loadURL(url)
+    if (this.migrated) {
+      url.searchParams.append('from', this.migrated.from)
+      url.searchParams.append('to', this.migrated.to)
+    }
+    this.logger.log(url.toString())
+    browser.loadURL(url.toString())
 
-    this.logger.log(`Load main window url ${url}`)
+    this.logger.log(`Load main window url ${url.toString()}`)
 
     this.mainWin = browser
 
