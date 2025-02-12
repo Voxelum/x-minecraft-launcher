@@ -82,6 +82,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       ...version.libraries.filter((lib) => !lib.isNative).map((lib) => mc.getLibraryByPath(lib.download.path)),
       mc.getVersionJar(version.minecraftVersion, 'server'),
     ]
+    const prepend = normalizeCommandLine(options.prependCommand)
 
     /**
      * Build launch condition
@@ -97,6 +98,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       classPath,
 
       extraExecOption: {
+        shell: prepend && prepend.length > 0,
         detached: true,
         cwd: minecraftFolder.getPath('server'),
         env: { ...process.env, ...options.env },
@@ -104,7 +106,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       extraJVMArgs: jvmArgs,
       extraMCArgs: mcArgs,
-      prependCommand: normalizeCommandLine(options.prependCommand),
+      prependCommand: prepend,
 
       nogui: options.nogui,
     }
@@ -126,6 +128,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const launcherName = `X Minecraft Launcher (${this.app.version})`
     const javawPath = join(dirname(javaPath), process.platform === 'win32' ? 'javaw.exe' : 'javaw')
     const validJavaPath = await this.#isValidAndExeucatable(javawPath) ? javawPath : javaPath
+    const prepend = normalizeCommandLine(options.prependCommand)
     /**
      * Build launch condition
      */
@@ -146,6 +149,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         }
         : undefined,
       extraExecOption: {
+        shell: prepend && prepend.length > 0,
         detached: true,
         cwd: minecraftFolder.root,
         env: { ...process.env, ...options.env },
@@ -154,7 +158,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       extraMCArgs: options.mcOptions?.filter(v => !!v),
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
-      prependCommand: normalizeCommandLine(options.prependCommand),
+      prependCommand: prepend,
       yggdrasilAgent,
       useHashAssetsIndex: true,
       platform: {
