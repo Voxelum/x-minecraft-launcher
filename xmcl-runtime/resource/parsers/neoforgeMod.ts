@@ -14,6 +14,9 @@ export const neoforgeModParser: IResourceParser<NeoforgeMetadata> = ({
   },
   parseMetadata: async (fs, fileName) => {
     const mods = await readForgeModToml(fs, undefined, 'neoforge.mods.toml')
+    if (mods.length === 0) {
+      throw new Error()
+    }
     return {
       ...mods[0],
       children: mods.slice(1),
