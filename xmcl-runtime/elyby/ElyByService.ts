@@ -2,15 +2,14 @@ import { LibraryInfo, Version } from '@xmcl/core'
 import { ElyByServiceKey, ElyByService as IElyByService } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, walkEntriesGenerator } from '@xmcl/unzip'
 import { createHash } from 'crypto'
-import { ensureDir, readFile, stat, writeFile } from 'fs-extra'
-import { dirname, isAbsolute, relative } from 'path'
+import { ensureDir, readFile, readJSON, stat, writeFile, writeJSON } from 'fs-extra'
+import { dirname, isAbsolute, join, relative } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { ResourceWorker, kResourceWorker } from '~/resource'
 import { AnyError } from '~/util/error'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '../app'
 import { AbstractService, ExposeServiceKey } from '../service'
-import caches from './cache.json'
 
 @ExposeServiceKey(ElyByServiceKey)
 export class ElyByService extends AbstractService implements IElyByService {
@@ -19,6 +18,37 @@ export class ElyByService extends AbstractService implements IElyByService {
     @Inject(kResourceWorker) private resourceWorker: ResourceWorker,
   ) {
     super(app)
+    this.#init().catch(e => this.warn('Failed to init elyby authlib', e))
+  }
+
+  async #init() {
+    const cachePath = join(this.app.appDataPath, 'ely-authlib.cache.json')
+    const content = await readJSON(cachePath, 'utf-8').catch(() => undefined)
+    const etag = content?.etag
+    const resp = await this.app.fetch('https://api.xmcl.app/elyby/authlib', {
+      headers: etag ? {
+        'If-None-Match': etag,
+      } : {},
+    })
+    if (!resp.ok) {
+      return
+    }
+    const data = await resp.json()
+    await writeJSON(cachePath, {
+      etag: resp.headers.get('etag'),
+      data,
+    })
+  }
+
+  async #getCache() {
+    const cachePath = join(this.app.appDataPath, 'ely-authlib.cache.json')
+    const cache = await readJSON(cachePath, 'utf-8').then((content) => {
+      return content.data
+    }).catch(() => import('./cache.json'))
+    return cache as Array<{
+      minecraft: string
+      id: string
+    }>
   }
 
   async installAuthlib(minecraftVersion: string) {
@@ -58,12 +88,12 @@ export class ElyByService extends AbstractService implements IElyByService {
       }
     }
 
-    const entries = caches
-    const valid = entries.filter(e => minecraftVersion.startsWith(e.name))
-    const resolvedVersion = valid.find(e => e.name === minecraftVersion) ||
+    const entries = await this.#getCache()
+    const valid = entries.filter(e => minecraftVersion.startsWith(e.minecraft))
+    const resolvedVersion = valid.find(e => e.minecraft === minecraftVersion) ||
       (valid.length > 0 ? valid[0] : undefined)
 
-    if (!resolvedVersion || !resolvedVersion.id.endsWith('authlib')) {
+    if (!resolvedVersion) {
       return undefined
     }
 
@@ -73,6 +103,9 @@ export class ElyByService extends AbstractService implements IElyByService {
       try {
         const resp = await this.app.fetch(url)
         if (!resp.ok) {
+          if (resp.status === 404) {
+            throw new AnyError('ElyAuthlibNotFoundError', 'Failed to download authlib', undefined, { url })
+          }
           this.warn('Failed to download authlib', resp.statusText)
           continue
         }
