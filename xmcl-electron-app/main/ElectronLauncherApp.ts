@@ -166,8 +166,8 @@ export default class ElectronLauncherApp extends LauncherApp {
     return ''
   }
 
-  relaunch() {
-    app.relaunch()
+  relaunch(args?: string[]) {
+    app.relaunch({ args })
     app.exit(0)
   }
 

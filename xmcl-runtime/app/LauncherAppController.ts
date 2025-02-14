@@ -33,4 +33,9 @@ export interface LauncherAppController {
     * @param payload The event payload to client
     */
   broadcast(channel: string, ...payload: any[]): void
+  /**
+   * Start migrate window
+   */
+  startMigrate(): void
+  endMigrate(result?: { from: string; to: string }): void
 }

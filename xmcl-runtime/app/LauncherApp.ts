@@ -10,6 +10,7 @@ import { setTimeout } from 'timers/promises'
 import { Logger } from '~/logger'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { isSystemError } from '../util/error'
+import { handleMigrateRoot } from './migrate'
 import { listen } from '../util/server'
 import { createDummyLogger } from './DummyLogger'
 import { Host } from './Host'
@@ -258,7 +259,7 @@ export class LauncherApp extends EventEmitter {
     return this.host.whenReady()
   }
 
-  relaunch(): void { this.host.relaunch() }
+  relaunch(args?: string[]): void { this.host.relaunch({ args }) }
 
   // setup code
 
@@ -300,6 +301,7 @@ export class LauncherApp extends EventEmitter {
     let gameDataPath: string
     try {
       gameDataPath = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
+      gameDataPath = await handleMigrateRoot(gameDataPath, this.logger, this)
       this.#isBootstrapSignal.resolve(false)
     } catch (e) {
       if (isSystemError(e) && e.code === 'ENOENT') {
@@ -340,12 +342,6 @@ export class LauncherApp extends EventEmitter {
     this.registry.register(kTempDataPath, (...args) => {
       return join(this.#gamePath, 'temp', ...args)
     })
-  }
-
-  async migrateRoot(newRoot: string) {
-    await writeFile(join(this.appDataPath, 'root'), newRoot)
-    this.#gamePath = newRoot
-    this.emit('root-migrated', newRoot)
   }
 
   protected async getStartupUrl(): Promise<string | undefined> {
