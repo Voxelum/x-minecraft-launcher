@@ -1,5 +1,5 @@
 import { MigrationException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, SharedState, PoolStats, Settings } from '@xmcl/runtime-api'
-import { readdir, rename, stat } from 'fs-extra'
+import { copy, move, readdir, readlink, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -218,14 +218,7 @@ export class BaseService extends AbstractService implements IBaseService {
         const from = join(source, file)
         const to = join(destination, file)
         try {
-          await rename(from, to).catch((e) => {
-            if (isSystemError(e) && e.code === 'EXDEV') {
-              // cannot move file across disk
-              this.warn(`Cannot move file across disk ${from} -> ${to}. Use copy instead.`)
-              return copyPassively(from, to)
-            }
-            throw e
-          })
+          await move(from, to)
         } catch (e) {
           if (isSystemError(e)) {
             if (e.code === 'EPERM') {
