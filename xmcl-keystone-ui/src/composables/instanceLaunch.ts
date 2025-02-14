@@ -96,7 +96,9 @@ export function useInstanceLaunch(
     }
     try {
       const controller = new AbortController()
-      assignStatus(token, name, controller)
+      if (id) {
+        assignStatus(token, name, controller)
+      }
       const v = await Promise.race([p, new Promise<T>((resolve, reject) => {
         controller.signal.onabort = () => {
           reject(new Error('Aborted'))

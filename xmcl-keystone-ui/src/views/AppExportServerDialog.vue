@@ -134,7 +134,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
     if (filePaths[0]) {
       exportInstanceAsServer({
         output: { type: 'folder', path: filePaths[0] }, 
-        options: await generateLaunchOptions(path.value, '', 'server'),
+        options: await generateLaunchOptions(path.value, '', 'server', {}, true),
         files: selectedFiles,
       })
       
