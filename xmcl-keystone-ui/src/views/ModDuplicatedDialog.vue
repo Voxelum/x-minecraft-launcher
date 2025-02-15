@@ -63,6 +63,21 @@ function process() {
   isShown.value = false
 }
 
+const { push, currentRoute } = useRouter()
+
+function view(modId: string) {
+  const all = conflicted.value[modId]
+  for (const file of all) {
+    const modrinthId = file.modrinth?.projectId
+    const curseforgeId = file.curseforge?.projectId
+    const name = file.name
+    const id = modrinthId || curseforgeId || name
+    push({ query: { ...currentRoute.query, id } })
+    isShown.value = false
+    return
+  }
+}
+
 </script>
 
 <template>
@@ -86,6 +101,16 @@ function process() {
               :key="item + i"
             >
               {{ item }}
+              <v-spacer />
+              <v-btn
+                text
+                small
+                @click="view(item)"
+              >
+                <v-icon small>
+                  arrow_forward
+                </v-icon>
+              </v-btn>
             </v-subheader>
             <v-list-item
               v-else
