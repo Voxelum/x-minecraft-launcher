@@ -216,7 +216,7 @@ export function getModSide(mod: ModFile, runtime: 'fabric' | 'forge' | 'neoforge
       return 'SERVER'
     }
   }
-  if (mod.neoforge && runtime === 'neoforge') {
+  if (mod.neoforge && runtime === 'neoforge' && mod.neoforge.dependencies instanceof Array) {
     const sides = new Set(mod.neoforge.dependencies.map(d => d.side).filter(notNullish))
     if (sides.has('BOTH') || (sides.has('CLIENT') && sides.has('SERVER'))) {
       return 'BOTH'

@@ -192,18 +192,24 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
         </v-btn>
       </v-toolbar>
 
-      <div class="px-6 py-2">
+      <div
+        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        ref="scrollElement"
+
+      >
         <v-subheader>{{ t('server.exportOption') }}</v-subheader>
         <div
-          class="grid grid-cols-2 gap-4 gap-y-2 z-12"
+          class="grid grid-cols-2 gap-4 gap-y-2 z-10"
         >
           <v-checkbox
             :value="!exportToServer"
             :input-value="!exportToServer"
+            class="z-10"
             :label="t('server.exportToFolder')"
             @change="exportToServer = !$event"
           ></v-checkbox>
           <v-checkbox
+            class="z-10"
             :value="exportToServer"
             :input-value="exportToServer"
             :label="t('server.upload')"
@@ -217,7 +223,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
         </v-subheader>
         <div
           v-if="exportToServer"
-          class="grid grid-cols-3 gap-4 gap-y-2 z-12"
+          class="grid grid-cols-3 gap-4 gap-y-2 z-10"
         >
           <v-text-field
             v-model="cachedUserServer.host"
@@ -259,48 +265,46 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
             @click="onSelectPrivateKey"
           />
         </div>
-      </div>
-      <div class="px-6">
-        <v-subheader>
-          {{ t('modpack.includes') }}
-          <v-spacer />
-          <v-btn
-            v-shared-tooltip="_ => t('env.select.all')"
-            text
-            icon
-            @click="selectAll"
-          >
-            <v-icon>
-              select_all
-            </v-icon>
-          </v-btn>
-          <v-btn
-            v-shared-tooltip="_ => t('env.select.fit')"
-            text
-            icon
-            @click="selectFit"
-          >
-            <v-icon>
-              tab_unselected
-            </v-icon>
-          </v-btn>
+        <div class="px-6">
+          <v-subheader>
+            {{ t('modpack.includes') }}
+            <v-spacer />
+            <v-btn
+              class="z-10"
+              v-shared-tooltip="_ => t('env.select.all')"
+              text
+              icon
+              @click="selectAll"
+            >
+              <v-icon>
+                select_all
+              </v-icon>
+            </v-btn>
+            <v-btn
+              class="z-10"
+              v-shared-tooltip="_ => t('env.select.fit')"
+              text
+              icon
+              @click="selectFit"
+            >
+              <v-icon>
+                tab_unselected
+              </v-icon>
+            </v-btn>
 
-          <v-btn
-            v-shared-tooltip="_ => t('env.select.none')"
-            text
-            icon
-            @click="selectNone"
-          >
-            <v-icon>
-              deselect
-            </v-icon>
-          </v-btn>
-        </v-subheader>
-      </div>
-      <div
-        ref="scrollElement"
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
-      >
+            <v-btn
+              class="z-10"
+              v-shared-tooltip="_ => t('env.select.none')"
+              text
+              icon
+              @click="selectNone"
+            >
+              <v-icon>
+                deselect
+              </v-icon>
+            </v-btn>
+          </v-subheader>
+        </div>
         <div
           style="padding: 5px; margin-bottom: 5px"
         >

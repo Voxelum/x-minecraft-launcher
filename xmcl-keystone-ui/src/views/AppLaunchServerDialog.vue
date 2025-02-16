@@ -90,7 +90,7 @@
 
                 {{ item.name }}
               </template>
-              <template #item.side="{ item }">
+              <template #item.hash="{ item }">
                 {{ getSide(item) }}
               </template>
               <!-- <template #top>
@@ -247,7 +247,7 @@ const { data: requestedSides } = useSWRV(enabled, async () => {
     }
     return acc
   }, [[], []] as [ModFile[], ModFile[]])
-  
+
   const hashes = others.map(v => v.hash)
   const dict = hashes.length > 0 ? await clientModrinthV2.getProjectVersionsByHash(hashes) : {}
   const hashToProjId = Object.fromEntries(Object.entries(dict).map(([hash, v]) => [hash, v.project_id]))
@@ -264,8 +264,8 @@ const { data: requestedSides } = useSWRV(enabled, async () => {
   }
 
   const hashToSide = Object.fromEntries(enabled.value.map(v => [
-    v.hash, 
-    v.modrinth 
+    v.hash,
+    v.modrinth
       ? getSideFromProject(allProjectsDict[v.modrinth.projectId])
       : hashToProjId[v.hash]
         ? getSideFromProject(allProjectsDict[hashToProjId[v.hash]])
@@ -280,7 +280,7 @@ const sides = computed(() => {
   // join computedSides and requestedSides
   const computed = computedSides.value
   const requested = requestedSides.value || {}
-  const result = Object.fromEntries(Object.keys(computed).map(k => [k, requested[k] || computed[k] ] as const))
+  const result = Object.fromEntries(Object.keys(computed).map(k => [k, requested[k] || computed[k]] as const))
   return result
 })
 
@@ -293,6 +293,13 @@ function getSide(mod: ModFile) {
   return t('modrinth.environments.client') + '/' + t('modrinth.environments.server')
 }
 
+const sortIndex = markRaw({
+  CLIENT: 0,
+  BOTH: 1,
+  SERVER: 2,
+  '': 3,
+}) as Record<string, number>
+
 const headers = computed(() => [
   {
     text: t('mod.name'),
@@ -300,7 +307,12 @@ const headers = computed(() => [
   },
   {
     text: t('modrinth.environments.name'),
-    value: 'side',
+    value: 'hash',
+    sort: (a: string, b: string) => {
+      const sideA = sortIndex[(sides.value[a])]
+      const sideB = sortIndex[(sides.value[b])]
+      return sideA - sideB
+    }
   },
 ])
 
