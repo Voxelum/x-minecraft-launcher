@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header sticky max-w-full select-none transition-all"
+    class="header sticky max-w-full select-none transition-all px-2"
     :class="{
       'backdrop-filter': !isInFocusMode,
       'backdrop-blur-sm': !isInFocusMode,
@@ -92,6 +92,7 @@
       />
     </div>
     <v-divider
+      v-if="!isFocus"
       class="transition-all divider"
       :class="{
         'mx-4': !compact,
@@ -132,6 +133,7 @@ const onTransitionEnd = (e: TransitionEvent) => {
   transitioning.value = false
 }
 
+const isFocus = useInFocusMode()
 const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {

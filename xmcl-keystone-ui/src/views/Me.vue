@@ -114,7 +114,7 @@
               :height="n.image.height / 2"
             >
               <div
-                class="flex h-full w-full cursor-pointer items-center justify-center bg-[rgba(123,123,123,0.5)] opacity-0 transition-all duration-300 hover:opacity-100"
+                class="px-4 flex h-full w-full cursor-pointer items-center justify-center bg-[rgba(123,123,123,0.5)] opacity-0 transition-all duration-300 hover:opacity-100"
               >
                 {{ n.description }}
               </div>

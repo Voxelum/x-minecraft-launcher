@@ -2,35 +2,38 @@
   <div
     class="relative h-full"
   >
-    <div
-      v-if="!upstreamQuery"
-      class="h-full"
-    >
-      <HomeDatabaseError />
-      <HomeFocusFooter
-        class="absolute bottom-0 left-0 pb-[26px]"
-      />
-    </div>
-    <template v-else>
-      <HomeUpstreamCurseforge
-        v-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
-        :id="instance.upstream.modId"
-        key="curseforge"
-        class="p-2"
-      />
-      <HomeUpstreamModrinth
-        v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-        :id="instance.upstream.projectId"
-        key="modrinth"
-        class="p-2"
-      />
-      <HomeUpstreamFeedTheBeast
-        v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
-        :id="instance.upstream.id"
-        key="ftb"
-        class="p-2"
-      />
-    </template>
+    <transition name="fade-transition" mode="out-in">
+      <div
+        v-if="!upstreamQuery"
+        class="h-full"
+      >
+        <HomeDatabaseError />
+        <HomeFocusFooter
+          class="absolute bottom-0 left-0 pb-[26px]"
+        />
+      </div>
+      <template v-else>
+        <HomeUpstreamCurseforge
+          v-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
+          :id="instance.upstream.modId"
+          key="curseforge"
+          class="p-2"
+        />
+        <HomeUpstreamModrinth
+          v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
+          :id="instance.upstream.projectId"
+          key="modrinth"
+          class="p-2"
+        />
+        <HomeUpstreamFeedTheBeast
+          v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
+          :id="instance.upstream.id"
+          key="ftb"
+          class="p-2"
+        />
+      </template>
+    </transition>
+
   </div>
 </template>
 <script setup lang="ts">
