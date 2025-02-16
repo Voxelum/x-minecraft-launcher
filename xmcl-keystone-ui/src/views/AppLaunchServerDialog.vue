@@ -13,7 +13,10 @@
       </v-toolbar>
       <div class="visible-scroll flex flex-col max-h-[60vh] mx-0 overflow-y-auto overflow-x-hidden px-6 py-2">
         <v-alert v-if="error" type="error" class="select-text">
-          {{ error }}
+          {{ errorTitle }}
+          <br />
+          <div v-html="errorDescription">
+          </div>
         </v-alert>
         <v-subheader>{{ t('baseSetting.title') }}</v-subheader>
         <div class="grid grid-cols-3 gap-3 pt-2 px-2">
@@ -135,6 +138,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
+import { useLaunchException } from '@/composables/launchException'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
@@ -327,6 +331,17 @@ function selectNone() {
 
 const { install } = useInstanceVersionServerInstall()
 
+const errorTitle = ref('')
+const errorDescription = ref('')
+const errorUnexpected = ref(false)
+const errorExtraText = ref('')
+const { onException } = useLaunchException(
+  errorTitle,
+  errorDescription,
+  errorUnexpected,
+  errorExtraText
+)
+
 const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () => {
   const runtimeValue = runtime.value
   const instPath = path.value
@@ -353,7 +368,7 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
     })
   }
 
-  await install()
+  version = await install()
 
   if (linkedWorld.value) {
     console.log('linkSaveAsServerWorld', linkedWorld.value)
@@ -368,9 +383,16 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
     mods: _mods.map(v => v.path),
   })
   console.log('launch')
+
   await launch('server', { nogui: _nogui, version })
 
   isShown.value = false
+})
+
+watch(error, (e) => {
+  if (e) {
+    onException(e)
+  }
 })
 
 </script>

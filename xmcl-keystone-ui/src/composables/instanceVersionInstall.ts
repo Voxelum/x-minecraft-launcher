@@ -58,7 +58,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     installQuilt,
     installLabyModVersion,
   } = useService(InstallServiceKey)
-  const { refreshVersion, resolveLocalVersion } = useService(VersionServiceKey)
+  const { refreshVersion, refreshServerVersion, resolveLocalVersion } = useService(VersionServiceKey)
   const { installDefaultJava } = useService(JavaServiceKey)
 
   const cfg = inject(kSWRVConfig)
@@ -202,6 +202,9 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       }
 
       const id = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side: 'server', root: path })
+
+      refreshServerVersion(id)
+
       return id
     }
 
@@ -209,21 +212,33 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       const neoForgeServer = servers.value.find(v => v.version === neoForged && v.minecraft === minecraft && v.type === 'neoforge')
       if (neoForgeServer) return neoForgeServer.id
 
-      return await installNeoForged({ version: neoForged, minecraft, side: 'server' })
+      const id = await installNeoForged({ version: neoForged, minecraft, side: 'server' })
+
+      refreshServerVersion(id)
+
+      return id
     }
 
     if (fabricLoader) {
       const fabricServer = servers.value.find(v => v.version === fabricLoader && v.minecraft === minecraft && v.type === 'fabric')
       if (fabricServer) return fabricServer.id
 
-      return await installFabric({ loader: fabricLoader, minecraft, side: 'server' })
+      const id = await installFabric({ loader: fabricLoader, minecraft, side: 'server' })
+
+      refreshServerVersion(id)
+
+      return id
     }
 
     if (quiltLoader) {
       const quiltServer = servers.value.find(v => v.version === quiltLoader && v.minecraft === minecraft && v.type === 'quilt')
       if (quiltServer) return quiltServer.id
 
-      return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft, side: 'server' })
+      const id = await installQuilt({ version: quiltLoader, minecraftVersion: minecraft, side: 'server' })
+
+      refreshServerVersion(id)
+
+      return id
     }
 
     return minecraft

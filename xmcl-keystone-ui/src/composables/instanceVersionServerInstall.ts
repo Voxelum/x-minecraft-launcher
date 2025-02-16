@@ -25,6 +25,7 @@ export function useInstanceVersionServerInstall() {
       await installMinecraftJar(runtimeValue.minecraft, 'server')
       await installDependencies(version, 'server')
     }
+    return version
   }
 
   return {

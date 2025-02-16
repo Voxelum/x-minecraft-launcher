@@ -25,6 +25,7 @@ export interface VersionService {
    * @param versionFolder The version folder name. It must existed under the `versions` folder.
    */
   refreshVersion(versionFolder: string): Promise<void>
+  refreshServerVersion(versionFolder: string): Promise<void>
   refreshVersions(force?: boolean): Promise<void>
 
   resolveServerVersion(id: string): Promise<ResolvedServerVersion>
