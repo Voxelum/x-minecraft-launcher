@@ -1,4 +1,4 @@
-import { Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
+import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
@@ -9,7 +9,7 @@ import { kSettings } from '~/settings'
 import { UserService } from '~/user'
 import { IS_DEV } from '../constant'
 import { setupResourceTelemetryClient } from './ResourceTelemetryClient'
-import { DEFAULT_APP_INSIGHT_KEY, parseStack } from './telemetry'
+import { parseStack } from './telemetry'
 
 const getSdkVersion = () => {
   let sdkVersion = ''
@@ -38,7 +38,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const clientSession = await app.registry.get(kClientToken)
   const isNewClient = await app.registry.get(kIsNewClient)
 
-  appInsight.setup(DEFAULT_APP_INSIGHT_KEY)
+  appInsight.setup(APP_INSIGHT_KEY)
     .setDistributedTracingMode(appInsight.DistributedTracingModes.AI_AND_W3C)
     .setAutoCollectExceptions(false)
     .setAutoCollectPerformance(false)

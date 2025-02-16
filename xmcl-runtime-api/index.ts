@@ -69,6 +69,7 @@ export * from './src/services/XUpdateService'
 
 export * from './src/apps'
 export * from './migration'
+export * from './src/telemetry'
 export * from './src/bootstrap'
 export * from './src/controller'
 export * from './src/events'
