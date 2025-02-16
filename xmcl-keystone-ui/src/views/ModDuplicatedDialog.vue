@@ -72,7 +72,7 @@ function view(modId: string) {
     const curseforgeId = file.curseforge?.projectId
     const name = file.name
     const id = modrinthId || curseforgeId || name
-    push({ query: { ...currentRoute.query, id } })
+    push({ query: { ...currentRoute.query, id: id.toString() } })
     isShown.value = false
     return
   }
