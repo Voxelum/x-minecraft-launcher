@@ -5,7 +5,7 @@
     scrollable
     width="800"
   >
-    <v-card>
+    <v-card class="select-none">
       <v-toolbar
         flat
         tabs
@@ -131,7 +131,7 @@
         <InstanceManifestFileTree
           :value="selected"
           open-all
-          :selectable="false"
+          :selectable="selectable"
           :multiple="false"
           :scroll-element="scrollRef"
         >
@@ -315,7 +315,7 @@ async function getUpgradeValueFromParam(param: InstanceInstallOptions): Promise<
     // FTB
     const [config, newVersionFiles] = getFTBTemplateAndFile(newManifest, javas.value)
     const [_, oldVersionFiles] = getFTBTemplateAndFile(oldManifest, javas.value)
-    return {
+    return markRaw({
       edit: config,
       installation: {
         path: instancePath.value,
@@ -323,7 +323,7 @@ async function getUpgradeValueFromParam(param: InstanceInstallOptions): Promise<
         files: newVersionFiles,
         upstream: param.upstream,
       }
-    }
+    })
   }
 
   if (param.type === 'upstream') {
@@ -334,24 +334,24 @@ async function getUpgradeValueFromParam(param: InstanceInstallOptions): Promise<
     const files = state.files
     const config = state.config
 
-    return {
+    return markRaw({
       edit: config,
       installation: {
         path: instancePath,
         files: files,
         upstream: param.upstream,
       }
-    }
+    })
   } 
   
-  return {
+  return markRaw({
     installation: {
       path: instancePath.value,
       oldFiles: param.oldFiles,
       files: param.files,
       id: param.id,
     }
-  }
+  })
 }
 
 const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
@@ -365,7 +365,22 @@ const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(as
     ...upgradeValue,
     delta: updateDelta,
   }
-  // selected.value = upgradeValue.files.map(f => f.path)
+  if (selectable.value) {
+    const selectedResult = upgradeValue.installation.files.map(f => f.path)
+    if ('oldFiles' in upgradeValue.installation) {
+      selectedResult.push(...upgradeValue.installation.oldFiles.map(f => f.path))
+    }
+    selected.value = selectedResult
+  }
+})
+
+const selectable = computed(() => {
+  const upgradeValue = upgrade.value
+  const install = upgradeValue?.installation
+  if (install && 'upstream' in upgradeValue.installation) {
+    return false
+  }
+  return true
 })
 
 const loaderDifferences = computed(() => {
@@ -397,9 +412,15 @@ const confirm = async () => {
   }
   const { edit: instance, installation } = up
   isShown.value = false
-  const select = selected.value
+  const selectedPath = selected.value
   const path = instancePath.value
   try {
+    if (selectable.value) {
+      if ('oldFiles' in installation) {
+        installation.oldFiles = installation.oldFiles.filter(f => selectedPath.includes(f.path))
+      }
+      installation.files = installation.files.filter(f => selectedPath.includes(f.path))
+    }
     await installInstanceFiles(installation)
     mutate()
   } catch (e) {
