@@ -5,7 +5,7 @@
     scrollable
     width="800"
   >
-    <v-card class="select-none">
+    <v-card class="select-none max-h-[90vh]!">
       <v-toolbar
         flat
         tabs
@@ -130,7 +130,6 @@
 
         <InstanceManifestFileTree
           :value="selected"
-          open-all
           :selectable="selectable"
           :multiple="false"
           :scroll-element="scrollRef"
