@@ -3,6 +3,7 @@ import { dirname, join } from 'path'
 import { Client, SFTPWrapper, Stats } from 'ssh2'
 import { LauncherApp } from '../app/LauncherApp'
 import { InstanceExporter } from './instanceExportServer'
+import { isNonnull } from '~/util/object'
 
 export class SSHInstanceExporter extends InstanceExporter {
   constructor(app: LauncherApp, dataRoot: string, private remoteFolder: string, private ssh: Client, private sftp: SFTPWrapper) {
@@ -10,6 +11,7 @@ export class SSHInstanceExporter extends InstanceExporter {
   }
 
   #filesProgress: Record<string, { total: number; progress: number }> = {}
+  #tasks: Array<{ from: string; to: string } | { to: string; content: string }> = []
 
   #update(chunk: number) {
     let _total = 0
@@ -37,18 +39,6 @@ export class SSHInstanceExporter extends InstanceExporter {
     })
   }
 
-  async ensureDir(path: string): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      this.ssh.exec(`mkdir -p "${path}"`, (e) => {
-        if (e) {
-          reject(e)
-        } else {
-          resolve()
-        }
-      })
-    })
-  }
-
   async fastPut(localPath: string, remotePath: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.sftp.fastPut(localPath, remotePath, {
@@ -69,30 +59,31 @@ export class SSHInstanceExporter extends InstanceExporter {
     })
   }
 
-  async copyFile(from: string, to: string): Promise<void> {
-    const targetPath = join(this.remoteFolder, to).replaceAll('\\', '/')
 
-    const currentStat = await this.stat(targetPath).catch(() => undefined)
-    const localStat = await stat(from)
-    if (currentStat && currentStat.size === localStat.size) {
-      return
-    }
-    await this.ensureDir(dirname(targetPath)).catch(() => undefined)
-    this.#filesProgress[from] = ({ total: localStat.size, progress: 0 })
-    this.#update(0)
-    return await this.fastPut(from, targetPath)
+  copyFile(from: string, to: string) {
+    const targetPath = join(this.remoteFolder, to).replaceAll('\\', '/')
+    this.#tasks.push({ from, to: targetPath })
   }
 
-  async emitFile(path: string, content: string): Promise<void> {
+  emitFile(path: string, content: string): void {
     path = join(this.remoteFolder, path).replaceAll('\\', '/')
+    this.#tasks.push({ to: path, content })
+  }
 
-    const currentStat = await this.stat(path).catch(() => undefined)
-    if (currentStat && currentStat.size === content.length) {
-      return
-    }
-    await this.ensureDir(dirname(path)).catch(() => undefined)
+  async end(): Promise<void> {
+    const remaining = await Promise.all(this.#tasks.map(async ({ to, ...rest }) => {
+      const currentStat = await this.stat(to).catch(() => undefined)
+      const localSize = 'from' in rest ? await stat(rest.from).then(s => s.size, () => 0) : rest.content.length
+      if (currentStat && currentStat.size === localSize) {
+        return
+      }
+      return { to, ...rest }
+    })).then(tasks => tasks.filter(isNonnull))
+
     await new Promise<void>((resolve, reject) => {
-      this.sftp.writeFile(path, content, (e) => {
+      const dirs = remaining.map(({ to }) => dirname(to))
+      const dirsString = dirs.map(d => '"' + d + '"').join(' ')
+      this.ssh.exec(`mkdir -p ${dirsString}`, (e) => {
         if (e) {
           reject(e)
         } else {
@@ -100,5 +91,23 @@ export class SSHInstanceExporter extends InstanceExporter {
         }
       })
     })
+
+    await Promise.all(remaining.map(async ({ to, ...rest }) => {
+      if ('from' in rest) {
+        this.#filesProgress[rest.from] = { total: await stat(rest.from).then(s => s.size, () => 0), progress: 0 }
+        this.#update(0)
+        return await this.fastPut(rest.from, to)
+      }
+
+      return await new Promise<void>((resolve, reject) => {
+        this.sftp.writeFile(to, rest.content, (e) => {
+          if (e) {
+            reject(e)
+          } else {
+            resolve()
+          }
+        })
+      })
+    }))
   }
 }
