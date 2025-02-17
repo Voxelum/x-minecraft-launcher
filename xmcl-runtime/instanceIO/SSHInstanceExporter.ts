@@ -39,7 +39,7 @@ export class SSHInstanceExporter extends InstanceExporter {
 
   async ensureDir(path: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      this.ssh.exec(`mkdir -p ${path}`, (e) => {
+      this.ssh.exec(`mkdir -p "${path}"`, (e) => {
         if (e) {
           reject(e)
         } else {
