@@ -1218,6 +1218,9 @@ server:
   expectedVersions: Támogatott verziók
   export: Exportáló szerver
   exportOption: Szerver exportálási beállítások
+  exportSSHAuthenticationFailed: |-
+    Az összes hitelesítési módszer sikertelen. 
+    Kérjük, ellenőrizze a felhasználónevet/jelszót vagy a privát kulcsot.
   exportSSHOptions: SSH opciók
   exportSSHPrivateKeyPath: SSH privát kulcsút
   exportSSHRemotePath: Távoli kiszolgáló elérési útja
@@ -1225,6 +1228,7 @@ server:
   filterVersion: Szűrő szerver válaszolt Minecraft verzió
   host: Kiszolgáló
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
+  hostRequired: Kérjük, írja be a szerver IP -címét
   ipAddress: IP cím
   maxPlayers: ''
   motd: Szerver MOTD

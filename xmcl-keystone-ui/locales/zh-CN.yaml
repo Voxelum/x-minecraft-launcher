@@ -1136,6 +1136,9 @@ server:
   expectedVersions: 已支持的版本
   export: 导出服务器
   exportOption: 服务器导出选项
+  exportSSHAuthenticationFailed: |-
+    所有身份验证方法都失败了。
+    请检查用户名/密码或私钥。
   exportSSHOptions: SSH选项
   exportSSHPrivateKeyPath: SSH私钥路径
   exportSSHRemotePath: 远程服务器路径
@@ -1143,6 +1146,7 @@ server:
   filterVersion: 筛选服务器相应的 Minecraft 版本
   host: 服务器地址
   hostHint: 服务器的 IP 地址（和端口号）
+  hostRequired: 请输入服务器IP地址
   ipAddress: IP 地址
   maxPlayers: 最大玩家数
   motd: 服务器 MOTD

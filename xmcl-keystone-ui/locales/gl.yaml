@@ -423,10 +423,14 @@ saves: {}
 server:
   export: Servidor de exportación
   exportOption: Opcións de exportación do servidor
+  exportSSHAuthenticationFailed: |-
+    Fallou todos os métodos de autenticación. 
+    Comprobe o nome de usuario/contrasinal ou a clave privada.
   exportSSHOptions: Opcións SSH
   exportSSHPrivateKeyPath: Camiño de clave privada SSH
   exportSSHRemotePath: Ruta do servidor remoto
   exportToFolder: Exportar ao cartafol
+  hostRequired: Insira o enderezo IP do servidor
   maxPlayers: Máximo xogadores
   nogui: Sen servidor Gui
   onlineMode: Modo en liña

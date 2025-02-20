@@ -402,8 +402,12 @@ mod:
 server:
   export: Export Server
   exportOption: Server Export Options
+  exportSSHAuthenticationFailed: >-
+    All authentication methods failed. Please check username/password or private
+    key.
   exportSSHOptions: SSH Options
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Remote Server Path
   exportToFolder: Export To Folder
+  hostRequired: Please enter the server ip address
   upload: Upload Server

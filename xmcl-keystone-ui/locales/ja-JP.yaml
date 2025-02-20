@@ -1123,6 +1123,9 @@ server:
   expectedVersions: サポートされたバージョン
   export: エクスポートサーバー
   exportOption: サーバーエクスポートオプション
+  exportSSHAuthenticationFailed: |-
+    すべての認証方法が失敗しました。
+    ユーザー名/パスワードまたは秘密鍵を確認してください。
   exportSSHOptions: SSHオプション
   exportSSHPrivateKeyPath: SSH秘密キーパス
   exportSSHRemotePath: リモートサーバーパス
@@ -1130,6 +1133,7 @@ server:
   filterVersion: 対応したMinecraftバージョンのサーバーをフィルターします
   host: ホスト
   hostHint: サーバーのホスト(とポート)
+  hostRequired: サーバーIPアドレスを入力してください
   ipAddress: IP アドレス
   maxPlayers: 最大プレイヤー数
   motd: サーバー MOTD

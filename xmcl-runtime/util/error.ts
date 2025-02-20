@@ -58,13 +58,13 @@ export async function getNormalizeException(e: unknown) {
 
 function getNomralizedSystemError(e: SystemError) {
   if ((e.errno === 'ENOTFOUND' || e.code === 'ENOTFOUND') && e.syscall === 'getaddrinfo') {
-    throw new NetworkException({
+    return new NetworkException({
       type: 'networkException',
       code: NetworkErrorCode.DNS_NOTFOUND,
     })
   }
   if (e.code === 'ECONNRESET') {
-    throw new NetworkException({
+    return new NetworkException({
       type: 'networkException',
       code: NetworkErrorCode.CONNECTION_RESET,
     })
