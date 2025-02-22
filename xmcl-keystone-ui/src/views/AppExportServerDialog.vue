@@ -2,6 +2,7 @@
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
 import { useRefreshable, useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
+import { useLocaleError } from '@/composables/error'
 import { kInstance } from '@/composables/instance'
 import { AppExportServerDialogKey } from '@/composables/instanceExport'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
@@ -23,6 +24,7 @@ const { isShown, hide: cancel } = useDialog(AppExportServerDialogKey, () => {
 }, () => {
   data.files = []
   data.selected = []
+  authenticateError.value = undefined
 
   cachedUserServers.value = {
     ...cachedUserServers.value,
@@ -117,6 +119,7 @@ async function onSelectPrivateKey() {
 
 // export
 const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async () => {
+  authenticateError.value = undefined
   const selectedFiles = data.files.filter(f => data.selected.includes(f.path))
   await install()
   if (!exportToServer.value) {
@@ -132,16 +135,19 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
     }
     
     if (filePaths[0]) {
-      exportInstanceAsServer({
+      await exportInstanceAsServer({
         output: { type: 'folder', path: filePaths[0] }, 
         options: await generateLaunchOptions(path.value, '', 'server', {}, true),
         files: selectedFiles,
       })
-      
-      showItemInDirectory(filePaths[0])
+        .then(() => {
+          showItemInDirectory(filePaths[0])
+          cancel()
+        })
+        .catch(handleTheExportServerError)
     }
   } else {
-    exportInstanceAsServer({
+    await exportInstanceAsServer({
       output: {
         type: 'ssh',
         host: cachedUserServer.value.host,
@@ -158,8 +164,48 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
       options: await generateLaunchOptions(path.value, '', 'server'),
       files: selectedFiles,
     })
+      .then(() => {
+        cancel()
+      })
+      .catch(handleTheExportServerError)
   }
-  cancel()
+})
+
+const tError = useLocaleError()
+
+function handleTheExportServerError(e: any) {
+  if (e.message === 'All configured authentication methods failed' && e.level === 'client-authentication') {
+    authenticateError.value = t('server.exportSSHAuthenticationFailed')
+  } else {
+    authenticateError.value = tError(e)
+  }
+}
+
+type Rule = (v: string) => boolean | string
+
+const hostNameRules = computed(() => [
+  v => !!v || t('server.hostRequired'),
+] as Rule[])
+
+const usernameRules = computed(() => [
+  v => !!v || t('loginError.requireUsername'),
+] as Rule[])
+
+const authenticateError = ref(undefined as string | undefined)
+
+const hasError = computed(() => {
+  if (!exportToServer.value) {
+    return false
+  }
+  const hasHostNameError = hostNameRules.value.some(rule => rule(cachedUserServer.value.host) !== true)
+  const hasUserNameError = usernameRules.value.some(rule => rule(cachedUserServer.value.username) !== true)
+  if (hasHostNameError) {
+    return true
+  }
+  if (hasUserNameError) {
+    return true
+  }
+  return false
 })
 
 </script>
@@ -193,7 +239,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
       </v-toolbar>
 
       <div
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
         ref="scrollElement"
 
       >
@@ -230,6 +276,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
             class="col-span-1"
             prepend-inner-icon="dns"
             persistent-hint
+            :rules="hostNameRules"
             :label="t('proxy.host')"
             required
           />
@@ -238,6 +285,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
             prepend-inner-icon="person"
             persistent-hint
             :label="t('user.name')"
+            :rules="usernameRules"
             required
           />
           <v-text-field
@@ -253,6 +301,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
             prepend-inner-icon="lock"
             type="password"
             persistent-hint
+            :error-messages="authenticateError"
             :label="!cachedUserServer.privateKeyPath ? t('userServices.mojang.password') : 'Passphrase'"
           />
           <v-text-field
@@ -261,6 +310,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
             prepend-inner-icon="fingerprint"
             persistent-hint
             readonly
+            :error-messages="authenticateError"
             :label="t('server.exportSSHPrivateKeyPath')"
             @click="onSelectPrivateKey"
           />
@@ -336,6 +386,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
         </div>
         <v-btn
           text
+          :disabled="hasError"
           color="primary"
           large
           :loading="exporting || refreshing"

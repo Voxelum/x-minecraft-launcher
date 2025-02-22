@@ -1182,6 +1182,9 @@ server:
   expectedVersions: Підтримувані версії
   export: Експортний сервер
   exportOption: Параметри експорту сервера
+  exportSSHAuthenticationFailed: |-
+    Усі методи аутентифікації не вдалося. 
+    Будь ласка, перевірте ім’я користувача/пароль або приватний ключ.
   exportSSHOptions: Параметри SSH
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Віддалений шлях сервера
@@ -1189,6 +1192,7 @@ server:
   filterVersion: Фільтр-сервер відповів на версію Minecraft
   host: Хост
   hostHint: Хост (з портом) сервера
+  hostRequired: Введіть IP -адресу сервера
   ipAddress: IP-адрес
   maxPlayers: Максимальна кількість гравців
   motd: Опис сервера

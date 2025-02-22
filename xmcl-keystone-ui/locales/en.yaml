@@ -1174,6 +1174,9 @@ server:
   expectedVersions: Supported Versions
   export: Export Server
   exportOption: Server Export Options
+  exportSSHAuthenticationFailed: >-
+    All authentication methods failed. Please check username/password or private
+    key.
   exportSSHOptions: SSH Options
   exportSSHPrivateKeyPath: SSH Private Key Path
   exportSSHRemotePath: Remote Server Path
@@ -1181,6 +1184,7 @@ server:
   filterVersion: Filter server responded Minecraft version
   host: Host
   hostHint: The host (with port) of the server
+  hostRequired: Please enter the server ip address
   ipAddress: IP Address
   maxPlayers: Max Players
   motd: Server MOTD

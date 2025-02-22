@@ -1,36 +1,36 @@
 <template>
   <div
     v-if="!isFocus"
-    class="grid gap-1"
-    :class="{
-      'grid-cols-4': !gameOptions?.eula,
-      'grid-cols-5': gameOptions?.eula
-    }"
+    class="grid gap-1 grid-cols-4 home-actions"
   >
-    <v-btn
-      v-if="gameOptions?.eula"
-      v-shared-tooltip="_ => t('server.export')"
-      text
-      icon
-      :loading="isValidating"
-      @click="showExportServer()"
+    <v-speed-dial
+      open-on-hover
     >
-      <v-icon>
-        ios_share
-      </v-icon>
-    </v-btn>
+      <template #activator>
+        <v-btn
+          v-shared-tooltip.left="_ => t('modpack.export')"
+          text
+          icon
+          :loading="isValidating"
+          @click="showExport()"
+        >
+          <v-icon>
+            share
+          </v-icon>
+        </v-btn>
+      </template>
 
-    <v-btn
-      v-shared-tooltip="_ => t('modpack.export')"
-      text
-      icon
-      :loading="isValidating"
-      @click="showExport()"
-    >
-      <v-icon>
-        share
-      </v-icon>
-    </v-btn>
+      <v-btn
+        v-shared-tooltip.left="_ => t('server.export')"
+        icon
+        :loading="isValidating"
+        @click="showExportServer()"
+      >
+        <v-icon>
+          ios_share
+        </v-icon>
+      </v-btn>
+    </v-speed-dial>
 
     <v-btn
       v-shared-tooltip="_ => t('logsCrashes.title')"
@@ -103,4 +103,9 @@ function showInstanceFolder() {
   background: rgba(0, 0, 0, 0.5);
 }
 
+</style>
+<style>
+.home-actions .v-speed-dial__list {
+  padding: 0;
+}
 </style>
