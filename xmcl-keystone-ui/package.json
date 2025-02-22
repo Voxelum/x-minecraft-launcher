@@ -49,7 +49,7 @@
         "three": "0.156.1",
         "undici-shim": "workspace:*",
         "vanta": "^0.5.24",
-        "vue": "^2.7.16",
+        "vue": "^3.0.0",
         "vue-grid-layout": "^2.4.0",
         "vue-i18n": "^8.28.2",
         "vue-i18n-bridge": "9.13.1",
