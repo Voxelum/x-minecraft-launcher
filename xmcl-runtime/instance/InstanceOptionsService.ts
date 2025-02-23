@@ -9,6 +9,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { AnyError, isSystemError } from '../util/error'
 import { handleOnlyNotFound, hardLinkFiles, isHardLinked, missing, unHardLinkFiles } from '../util/fs'
 import { requireString } from '../util/object'
+import { existsSync } from 'fs'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
@@ -164,7 +165,10 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     const optionsPath = join(instancePath, 'options.txt')
     const result = await readFile(optionsPath, 'utf-8').then(parse, async (e) => {
       if (isSystemError(e) && e.code === 'ENOENT') {
-        await writeFile(optionsPath, `lang:${this.app.host.getLocale().replace('-', '_')}\n`)
+        if (!existsSync(join(instancePath, 'config', 'yosby', 'options.txt'))
+          && !existsSync(join(instancePath, 'config', 'yosbr', 'options.txt'))) {
+          await writeFile(optionsPath, `lang:${this.app.host.getLocale().replace('-', '_')}\n`)
+        }
       }
       return ({} as Frame)
     })
