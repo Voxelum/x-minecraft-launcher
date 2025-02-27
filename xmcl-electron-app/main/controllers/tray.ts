@@ -80,23 +80,21 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         },
       },
     ]
-    if (app.platform.os === 'osx' || app.platform.os === 'linux') {
-      const show = () => {
-        const window = this.mainWin
-        if ((!window || window.isDestroyed()) && this.activatedManifest) {
-          this.activate(this.activatedManifest)
-        } else {
-          window?.show()
-        }
+    const show = () => {
+      const window = this.mainWin
+      if ((!window || window.isDestroyed()) && this.activatedManifest) {
+        this.activate(this.activatedManifest)
+      } else {
+        window?.show()
       }
-      options.unshift({
-        label: t('showLauncher'),
-        type: 'normal',
-        click: () => {
-          show()
-        },
-      })
     }
+    options.unshift({
+      label: t('showLauncher'),
+      type: 'normal',
+      click: () => {
+        show()
+      },
+    })
     return Menu.buildFromTemplate(options)
   }
 
