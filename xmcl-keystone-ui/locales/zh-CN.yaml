@@ -282,6 +282,9 @@ errors:
     数据库无法打开！
     启动器将无法正常工作！
     请选择启动器可以访问的数据目录。您可以在设置页面重新选择数据目录。
+  DiskIsFull: |-
+    您的磁盘已满！
+    启动器无法将任何内容写入磁盘。赶快换一个数据目录或者清一下你的磁盘吧。
   DownloadAggregateError: 下载文件失败。
   DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时

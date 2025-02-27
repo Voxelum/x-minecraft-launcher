@@ -244,6 +244,10 @@ errors:
     ¡El lanzador no funcionará correctamente! 
     Seleccione un directorio de datos al que pueda acceder el iniciador. 
     Puede intentar restablecer la raíz de datos en la página de configuración.
+  DiskIsFull: |-
+    ¡Tu disco está lleno! 
+    ¡No puedo escribir nada en el disco! 
+    ¡Todas las características pueden no ser funcionales!
   NotFoundError: 404 No encontrado
 eula:
   body: >-

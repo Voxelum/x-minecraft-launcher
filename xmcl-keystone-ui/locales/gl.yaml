@@ -243,6 +243,10 @@ env:
     fit: Seleccione Axustar
     none: Seleccione Ningún
 errors:
+  DiskIsFull: |-
+    O teu disco está cheo! 
+    Non se pode escribir nada no disco. 
+    Todas as funcións poden non ser funcionais.
   NotFoundError: 404 non atopado
 eula:
   body: >-

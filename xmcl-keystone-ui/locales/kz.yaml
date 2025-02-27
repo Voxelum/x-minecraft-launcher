@@ -307,6 +307,9 @@ errors:
     Деректер базасы ашылмаған! Іске қосу құралы дұрыс жұмыс істемейді! Іске қосу
     құралы қол жеткізе алатын деректер каталогын таңдаңыз. Параметр бетінде
     деректер түбірін қалпына келтіруге болады.
+  DiskIsFull: >-
+    Your disk is full! Cannot write anything to disk! All features might not be
+    functional!
   DownloadAggregateError: Файлды жүктеп алу мүмкін болмады.
   DownloadFileSystemError: >-
     Жүктеп алу файлының жолына кіру кезінде қате. Іске қосу құралының оған

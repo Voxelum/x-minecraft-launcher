@@ -252,6 +252,10 @@ errors:
     Az adatbázis nincs megnyitva! Az Launcher nem működik megfelelően! Kérlek,
     válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet.
     Megpróbálhatod visszaállítani az adatgyökeret a beállítások oldalon.
+  DiskIsFull: |-
+    A lemezed tele van! 
+    Nem írhat semmit a lemezre! 
+    Lehet, hogy minden funkció nem funkcionális!
   DownloadAggregateError: A fájl letöltése sikertelen.
   DownloadFileSystemError: >-
     Hiba a letöltési fájl elérési útvonalának megadásakor. Kérlek, győződj meg

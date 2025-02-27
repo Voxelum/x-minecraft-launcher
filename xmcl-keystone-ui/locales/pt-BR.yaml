@@ -320,6 +320,10 @@ errors:
     Banco de dados não aberto! O launcher não funcionará corretamente! Selecione
     um diretório de dados que o launcher possa acessar. Você pode tentar
     redefinir o diretório raiz de dados na página de configurações.
+  DiskIsFull: |-
+    Seu disco está cheio! 
+    Não é possível escrever nada no disco! 
+    Todos os recursos podem não ser funcionais!
   DownloadAggregateError: Falha ao baixar o arquivo.
   DownloadFileSystemError: >-
     Erro ao acessar o caminho do arquivo de download. Verifique se o launcher

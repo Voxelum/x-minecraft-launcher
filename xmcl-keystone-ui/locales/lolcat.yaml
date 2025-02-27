@@ -242,6 +242,9 @@ errors:
     DATABASE IZ NOT OPEND! TEH LAUNCHR WONT WERK PROPERLY! PLZ SELECT A DATA
     DIRECTORY TEH LAUNCHR CAN ACCES. U CAN TRY 2 RESET TEH DATA ROOT IN SETTIN
     PAEG.
+  DiskIsFull: >-
+    Your disk is full! Cannot write anything to disk! All features might not be
+    functional!
   DownloadAggregateError: FAILD 2 DOWNLOAD FILE.
   DownloadFileSystemError: >-
     Error during accessing the DOWNLOAD file path. Please ensure the launcher

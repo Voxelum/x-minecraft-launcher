@@ -256,6 +256,10 @@ errors:
     Selezionare una directory dati a cui il launcher può accedere. È possibile
     provare a reimpostare la directory radice dei dati nella pagina delle
     impostazioni.
+  DiskIsFull: |-
+    Il tuo disco è pieno! 
+    Non posso scrivere nulla al disco! 
+    Tutte le funzionalità potrebbero non essere funzionali!
   DownloadAggregateError: Impossibile scaricare il file.
   DownloadFileSystemError: >-
     Errore durante l'accesso al percorso del file di download. Assicurarsi che

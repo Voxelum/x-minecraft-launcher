@@ -76,7 +76,7 @@ export default defineComponent({
 
     useTelemetryTrack(settings.state)
 
-    provide(kDatabaseStatus, useDatabaseStatus())
+    provide(kDatabaseStatus, useDatabaseStatus(settings.state))
 
     provide(kUserContext, user)
     provide(kJavaContext, java)

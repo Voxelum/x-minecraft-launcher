@@ -297,6 +297,10 @@ errors:
   ConnectTimeoutError: Délai de connexion au serveur.
   DNSNotFoundError: Erreur de recherche DNS
   DatabaseNotOpened: "La base de données n'est pas ouverte\_! \nLe lanceur ne fonctionnera pas correctement\_! \nVeuillez sélectionner un répertoire de données auquel le lanceur peut accéder. \nVous pouvez essayer de réinitialiser la racine des données dans la page de configuration."
+  DiskIsFull: |-
+    Votre disque est plein! 
+    Ne peut rien écrire sur le disque! 
+    Toutes les fonctionnalités peuvent ne pas être fonctionnelles!
   DownloadAggregateError: Échec du téléchargement du fichier.
   DownloadFileSystemError: |-
     Erreur lors de l'accès au chemin du fichier de téléchargement. 

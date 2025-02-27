@@ -8,6 +8,7 @@ import { PeerService } from '~/peer'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
 import { IS_DEV } from '../constant'
+import { ErrorDiagnose } from './ErrorDiagnose'
 import { setupResourceTelemetryClient } from './ResourceTelemetryClient'
 import { parseStack } from './telemetry'
 
@@ -32,6 +33,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('Telemtry')
   const appInsight = await import('applicationinsights')
   const contract = new appInsight.Contracts.ContextTagKeys()
+  const diagnose = new ErrorDiagnose(app)
 
   const sessionId = randomUUID()
 
@@ -192,6 +194,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       if (settings.disableTelemetry) return
       if (e instanceof Exception) {
         // Skip for exception
+        return
+      }
+      if (diagnose.processError(e)) {
         return
       }
       defaultClient.trackException({

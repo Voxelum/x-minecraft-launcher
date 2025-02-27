@@ -296,6 +296,10 @@ errors:
 
     Sie können versuchen, den Datenstamm auf der Einstellungsseite
     zurückzusetzen.
+  DiskIsFull: |-
+    Ihre Festplatte ist voll! 
+    Kann nichts auf die Festplatte schreiben! 
+    Alle Funktionen sind möglicherweise nicht funktional!
   DownloadAggregateError: Datei kann nicht hochgeladen werden.
   DownloadFileSystemError: >-
     Fehler beim Zugriff auf den Pfad zur Download-Datei.  Stellen Sie sicher,

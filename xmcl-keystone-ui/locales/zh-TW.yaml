@@ -282,6 +282,10 @@ errors:
     資料庫無法開啟！
     啟動器將無法正常工作！
     請選擇啟動器可以訪問的資料目錄。您可以在設定頁面重新選擇資料目錄。
+  DiskIsFull: |-
+    您的磁盤已滿！
+    無法將任何內容寫入磁盤！
+    所有功能都可能不起作用！
   DownloadAggregateError: 下載檔案失敗。
   DownloadFileSystemError: 無法訪問下載目標路徑，請確認啟動器有權寫入目標路徑。
   HeadersTimeoutError: 等待 HTTP 頭資訊超時

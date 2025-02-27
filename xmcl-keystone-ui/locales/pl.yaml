@@ -268,6 +268,10 @@ errors:
     Baza danych nie jest otwarta! Program uruchamiający nie będzie działał
     prawidłowo! Wybierz katalog do którego program uruchamiający ma dostęp.
     Możesz spróbować zresetować katalog główny danych na stronie ustawień.
+  DiskIsFull: |-
+    Twój dysk jest pełny! 
+    Nie mogę nic napisać na dysku! 
+    Wszystkie funkcje mogą nie być funkcjonalne!
   DownloadAggregateError: Nie można pobrać pliku.
   DownloadFileSystemError: >-
     Błąd podczas uzyskiwania dostępu do ścieżki pobierania pliku. Upewnij się,

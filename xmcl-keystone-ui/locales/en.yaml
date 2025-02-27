@@ -250,6 +250,9 @@ errors:
     Database is not opened! The launcher won't work properly! Please select a
     data directory the launcher can access. You can try to reset the data root
     in setting page.
+  DiskIsFull: >-
+    Your disk is full! Cannot write anything to disk! All features might not be
+    functional!
   DownloadAggregateError: Failed to download file.
   DownloadFileSystemError: >-
     Error during accessing the download file path. Please ensure the launcher

@@ -1,6 +1,11 @@
 import { SettingSchema } from './setting.schema'
 import { ReleaseInfo } from './update'
 
+/**
+ * The basic setting of the launcher.
+ * 
+ * It also contains the some state properties of the launcher.
+ */
 export class Settings implements SettingSchema {
   globalDisableAuthlibInjector = false
   globalDisableElyByAuthlib = false
@@ -58,6 +63,8 @@ export class Settings implements SettingSchema {
   maxSockets = 0
 
   maxAPISockets = 0
+
+  diskFullError = false
 
   config(config: SettingSchema) {
     this.locale = config.locale
@@ -186,6 +193,10 @@ export class Settings implements SettingSchema {
 
   replaceNativesSet(replace: 'all' | 'legacy-only' | false) {
     this.replaceNatives = replace
+  }
+
+  diskFullErrorSet(diskFullError: boolean) {
+    this.diskFullError = diskFullError
   }
 
   globalInstanceSetting(settings: {
