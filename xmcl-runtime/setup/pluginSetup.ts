@@ -13,11 +13,15 @@ export const pluginSetup: LauncherAppPlugin = async (app) => {
   logger.log('Setup worker created')
 
   const getDiskInfo = async () => {
-    const infos = await worker.getDiskInfo()
-    for (const i of infos) {
-      Object.setPrototypeOf(i, Drive.prototype)
+    try {
+      const infos = await worker.getDiskInfo()
+      for (const i of infos) {
+        Object.setPrototypeOf(i, Drive.prototype)
+      }
+      return infos
+    } catch (e) {
+      throw Object.assign(new Error(), e)
     }
-    return infos
   }
 
   app.controller.handle('preset', async () => {
