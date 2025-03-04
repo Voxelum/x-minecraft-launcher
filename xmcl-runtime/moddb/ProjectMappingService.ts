@@ -40,11 +40,10 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
   }
 
   private async ensureDatabase(init = false) {
-    const locale = this.settings.locale.toLowerCase()
+    const locale = this.settings.locale.toLowerCase() || 'en'
     const gfw = await this.app.registry.get(kGFW)
     const app = this.app
 
-    if (!locale) return undefined
     if (this.#db?.locale === locale) return this.#db.db
 
     let filePath = join(this.app.appDataPath, `project-mapping-${locale}.sqlite`)
