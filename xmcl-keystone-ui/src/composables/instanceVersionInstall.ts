@@ -84,7 +84,13 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       await installMinecraftJar(localMinecraft.id, 'client')
     }
 
-    const resolvedMcVersion = await resolveLocalVersion(minecraft)
+    const resolvedMcVersion = await resolveLocalVersion(minecraft).catch((e) => {
+      if (e.name === 'Error') {
+        e.name = 'InstallMinecraftClientError'
+      }
+      appInsights.trackException({ exception: e })
+      throw e
+    })
 
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
     const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installDefaultJava(javaOrInstall).then((r) => r.path)
@@ -442,7 +448,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         await installMinecraftJar(instruction.runtime.minecraft, 'client')
       }
       if (instruction.profile) {
-        const resolved = await resolveLocalVersion(instruction.version)
+        const resolved = await resolveLocalVersion(instruction.resolvedVersion)
         const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
         const javaPath = typeof java === 'string' ? java : await installDefaultJava(java).then((r) => r.path)
 
@@ -500,6 +506,14 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         await installAssets(instruction.assets.map(v => v.asset), instruction.runtime.minecraft, instruction.assets.length > 15)
       }
     } catch (e) {
+      const err = e as Error
+      if (err.name) {
+        if (err.name === 'Error') {
+          err.name = 'InstallInstallInstructionError'
+        }
+        appInsights.trackException({ exception: err })
+      }
+
       if (typeof e === 'object' && e && 'code' in e && typeof e.code === 'string') {
         if (e.code === 'EPERM') {
           notify({
