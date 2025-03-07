@@ -24,6 +24,13 @@ export default defineComponent({
             h('div', ['🔨', m.commands.join(' ')]),
           ])
         }
+        if (m.name === 'PostProcessValidationFailedError') {
+          return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: `file:///${m.jarPath}` } }, basename(m.jarPath))]),
+            h('div', [m.file, m.expect, m.actual]),
+            h('div', ['🔨', m.commands.join(' ')]),
+          ])
+        }
         if (m.name === 'AggregateError') {
           return h('div', [
             h('div', [
