@@ -31,7 +31,7 @@ const error = computed(() => {
   if (!isOpened.value) {
     return t('errors.DatabaseNotOpened')
   }
-  if (!isNoEmptySpace.value) {
+  if (isNoEmptySpace.value) {
     return t('errors.DiskIsFull')
   }
   return ''

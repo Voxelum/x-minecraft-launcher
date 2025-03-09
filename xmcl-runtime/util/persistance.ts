@@ -65,7 +65,7 @@ export function createSafeIO<T>(schema: Schema<T>, logger?: Logger) {
       await writeFile(path, await serializer.serialize(data))
     },
     async read(path: string): Promise<T> {
-      return await serializer.deserialize(await readFile(path).catch(e => Buffer.from('')))
+      return await serializer.deserialize(await readFile(path))
     },
     async readIfExists(path: string): Promise<T | undefined> {
       try {

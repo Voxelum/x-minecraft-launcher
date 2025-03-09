@@ -13,7 +13,7 @@ import { getDomainedPath } from '~/resource/core/snapshot'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { createSafeIO } from '~/util/persistance'
-import { AnyError } from '../util/error'
+import { AnyError, isSystemError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { computeFileUpdates } from './computeFileUpdate'
@@ -275,7 +275,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
   async checkInstanceInstall(path: string): Promise<InstanceInstallStatus> {
     // get install lock
     const currentStatePath = join(path, '.install-profile')
-    const lock = await this.#installLockFile.readIfExists(currentStatePath)
+    const lock = await readJSON(currentStatePath).catch((e) => {
+      if (isSystemError(e) && e.code === 'ENOENT') {
+        return undefined
+      }
+    })
 
     const unresolvedFilesPath = join(path, 'unresolved-files.json')
     const unresolvedFiles = await readJSON(unresolvedFilesPath).catch(() => [])
@@ -287,9 +291,23 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
 
+    if (lock.files instanceof Array && lock.finishedPath instanceof Array) {
+      return {
+        pendingFileCount: lock.files.length - lock.finishedPath.length,
+        unresolvedFiles: unresolvedFiles,
+      }
+    }
+
+    if (lock.files instanceof Array) {
+      return {
+        pendingFileCount: lock.files.length,
+        unresolvedFiles: unresolvedFiles,
+      }
+    }
+
     return {
-      pendingFileCount: lock.files.length - lock.finishedPath.length,
-      unresolvedFiles: unresolvedFiles,
+      pendingFileCount: 0,
+      unresolvedFiles: unresolvedFiles
     }
   }
 

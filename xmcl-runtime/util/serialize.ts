@@ -1,5 +1,5 @@
 import { Schema } from '@xmcl/runtime-api'
-import Ajv from 'ajv'
+import Ajv, { ErrorObject } from 'ajv'
 import { Logger } from '~/logger'
 import { AnyError } from './error'
 
@@ -10,6 +10,12 @@ export interface Serializer<D, T> {
 
 const AJV_INSTANCE = new Ajv({ useDefaults: true, removeAdditional: true })
 
+export class DeserializeJsonError extends Error {
+  constructor(public original: string, public errors: ErrorObject[]) {
+    super('Deserialize json error')
+    this.name = 'DeserializeJsonError'
+  }
+}
 /**
  * The type safe serializer between object to json string
  */
@@ -26,7 +32,7 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
     const valid = validation(deepCopy)
     if (!valid) {
       if (validation.errors) {
-        this.logger?.error(new Error(`Error to serialize the datatype ${typeof data}:\n` + JSON.stringify(validation.errors) + '\n' + JSON.stringify(data)))
+        this.logger?.error(new AnyError('SerializeJsonError', `Error to serialize the datatype ${typeof data}:\n` + JSON.stringify(validation.errors) + '\n' + JSON.stringify(data)))
       }
     }
     return Buffer.from(JSON.stringify(deepCopy, undefined, 2), 'utf-8')
@@ -93,12 +99,11 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
             retry = true
           }
         } catch (e) {
-          this.logger?.error(new AnyError('DeserializeJsonError', originalString, { cause: e }))
+          this.logger?.warn(e)
         }
       } while (retry && totalRetryCount < MAX_RETRY)
       if (validation.errors) {
-        const error = new AnyError('DeserializeJsonError', 'Cannot fix the type error. This might cause problems!' + validation.errors ? ` ${JSON.stringify(validation.errors)}` : '')
-        this.logger?.error(error)
+        const error = new DeserializeJsonError(originalString, validation.errors)
         if (throwIfError) {
           throw error
         }
