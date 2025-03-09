@@ -22,7 +22,6 @@
     </v-progress-linear>
     <v-range-slider
       v-if="assignMemory !== false"
-      v-model="mem"
       :input-value="mem"
       :disabled="assignMemory !== true"
       :max="sysmem.total"
@@ -34,6 +33,7 @@
       track-color="transparent"
       color="red"
       hide-details
+      @input="mem = $event"
     >
       <template #thumb-label="{ value }">
         {{ getExpectedSize(value, '', 1) }}
