@@ -69,7 +69,7 @@ const supportedVersions = computed(() => {
 
 // Dependencies
 const version = computed(() => versions.value?.find(v => v.id === selectedVersion.value?.id))
-const { data: deps, isValidating } = useSWRVModel(getModrinthDependenciesModel(version, modLoader))
+const { data: deps, isValidating } = useSWRVModel(getModrinthDependenciesModel(version, modLoader), { revalidateOnFocus: false })
 const dependencies = computed(() => {
   if (!version.value) return []
   if (!deps.value) return []

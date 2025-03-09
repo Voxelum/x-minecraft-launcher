@@ -34,8 +34,7 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
   }
   visited.add(version.project_id)
   const deps = await Promise.all(version.dependencies.map(async (child) => {
-    const modLoaderValue = get(modLoader)
-    const loaders = modLoaderValue ? [modLoaderValue] : undefined
+    const loaders = version.loaders
     const project = await swrvGet(getModrinthProjectKey(child.project_id), () => clientModrinthV2.getProject(child.project_id), config.cache!, config.dedupingInterval!)
     const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, loaders, version.game_versions),
       () => clientModrinthV2.getProjectVersions(child.project_id, { loaders, gameVersions: version.game_versions }),
