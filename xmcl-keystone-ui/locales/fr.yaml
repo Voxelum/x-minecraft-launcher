@@ -1235,6 +1235,11 @@ server:
   error: {}
   expectedVersions: Versions prises en charge
   export: Serveur d'exportation
+  exportNoFilesHint: >-
+    Aucun fichier de serveur trouvé. 
+
+    Vous pouvez exécuter un serveur sur local une fois pour générer des
+    fichiers.
   exportOption: Options d'exportation de serveur
   exportSSHAuthenticationFailed: |-
     Toutes les méthodes d'authentification ont échoué. 

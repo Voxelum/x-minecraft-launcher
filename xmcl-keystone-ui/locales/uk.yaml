@@ -1185,6 +1185,9 @@ server:
   creationHint: Вкажіть адресу сервера та пінг сервера
   expectedVersions: Підтримувані версії
   export: Експортний сервер
+  exportNoFilesHint: |-
+    Файлів серверів не знайдено. 
+    Ви можете запустити сервер на Local один раз, щоб генерувати деякі файли.
   exportOption: Параметри експорту сервера
   exportSSHAuthenticationFailed: |-
     Усі методи аутентифікації не вдалося. 

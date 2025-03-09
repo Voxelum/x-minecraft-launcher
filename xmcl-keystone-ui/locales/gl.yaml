@@ -426,6 +426,9 @@ save:
 saves: {}
 server:
   export: Servidor de exportación
+  exportNoFilesHint: |-
+    Non se atoparon ficheiros de servidor. 
+    Podes executar servidor en local unha vez para xerar algúns ficheiros.
   exportOption: Opcións de exportación do servidor
   exportSSHAuthenticationFailed: |-
     Fallou todos os métodos de autenticación. 

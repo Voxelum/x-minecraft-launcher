@@ -1221,6 +1221,11 @@ server:
   error: {}
   expectedVersions: Támogatott verziók
   export: Exportáló szerver
+  exportNoFilesHint: >-
+    Nincs kiszolgálófájl. 
+
+    Egyszerre futtathatja a kiszolgálót a Local -on, hogy néhány fájlt
+    generáljon.
   exportOption: Szerver exportálási beállítások
   exportSSHAuthenticationFailed: |-
     Az összes hitelesítési módszer sikertelen. 

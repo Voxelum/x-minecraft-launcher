@@ -1287,6 +1287,11 @@ server:
   error: {}
   expectedVersions: Unterstützte Versionen
   export: Server exportieren
+  exportNoFilesHint: >-
+    Keine Serverdateien gefunden. 
+
+    Sie können den Server einmal auf lokalem Ausführen ausführen, um einige
+    Dateien zu generieren.
   exportOption: Serverexportoptionen
   exportSSHAuthenticationFailed: >-
     Alle Authentifizierungsmethoden sind fehlgeschlagen. 

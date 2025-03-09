@@ -1285,6 +1285,9 @@ server:
   error: {}
   expectedVersions: Versões Suportadas
   export: Servidor de exportação
+  exportNoFilesHint: |-
+    Nenhum arquivo de servidor encontrado. 
+    Você pode executar o servidor no local uma vez para gerar alguns arquivos.
   exportOption: Opções de exportação do servidor
   exportSSHAuthenticationFailed: |-
     Todos os métodos de autenticação falharam. 

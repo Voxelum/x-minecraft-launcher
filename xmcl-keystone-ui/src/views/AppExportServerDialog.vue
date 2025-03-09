@@ -7,6 +7,7 @@ import { kInstance } from '@/composables/instance'
 import { AppExportServerDialogKey } from '@/composables/instanceExport'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
@@ -19,7 +20,7 @@ const { isShown, hide: cancel } = useDialog(AppExportServerDialogKey, () => {
   refresh()
 
   const existedConfig = cachedUserServers.value[path.value]
-  exportToServer.value = !!existedConfig
+  exportToServer.value = !!existedConfig && !!(existedConfig.host || existedConfig.remotePath || existedConfig.username || existedConfig.privateKeyPath)
   cachedUserServer.value = existedConfig || { host: '', remotePath: '', username: '', privateKeyPath: '' }
 }, () => {
   data.files = []
@@ -40,6 +41,10 @@ const data = reactive({
   selected: [] as string[],
   files: [] as InstanceFile[]
 })
+
+const noFiles = computed(() => data.files.length === 0)
+const { serverVersionId } = injection(kInstanceVersion)
+const noVersion = computed(() => !serverVersionId.value)
 
 type CachedUserServer = {
   host: string
@@ -121,7 +126,7 @@ async function onSelectPrivateKey() {
 const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async () => {
   authenticateError.value = undefined
   const selectedFiles = data.files.filter(f => data.selected.includes(f.path))
-  await install()
+  const id = await install()
   if (!exportToServer.value) {
     const defaultPath = `${basename(path.value)}-server`
     const { filePaths, canceled } = await windowController.showOpenDialog({
@@ -137,7 +142,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
     if (filePaths[0]) {
       await exportInstanceAsServer({
         output: { type: 'folder', path: filePaths[0] }, 
-        options: await generateLaunchOptions(path.value, '', 'server', {}, true),
+        options: await generateLaunchOptions(path.value, '', 'server', { version: id }, true),
         files: selectedFiles,
       })
         .then(() => {
@@ -161,7 +166,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
           password: password.value
         },
       }, 
-      options: await generateLaunchOptions(path.value, '', 'server'),
+      options: await generateLaunchOptions(path.value, '', 'server', { version: id }, true),
       files: selectedFiles,
     })
       .then(() => {
@@ -371,6 +376,12 @@ const hasError = computed(() => {
         </div>
       </div>
 
+      <v-alert
+        v-if="noFiles"
+        type="info"
+      >
+        {{ t('server.exportNoFilesHint') }}
+      </v-alert>
       <v-card-actions class="items-baseline gap-5">
         <v-btn
           text

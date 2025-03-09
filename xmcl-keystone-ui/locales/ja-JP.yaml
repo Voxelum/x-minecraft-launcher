@@ -1126,6 +1126,9 @@ server:
   creationHint: サーバーアドレスを入力し、pingしてください
   expectedVersions: サポートされたバージョン
   export: エクスポートサーバー
+  exportNoFilesHint: |-
+    サーバーファイルは見つかりません。
+    ローカルでサーバーを1回実行して、いくつかのファイルを生成できます。
   exportOption: サーバーエクスポートオプション
   exportSSHAuthenticationFailed: |-
     すべての認証方法が失敗しました。

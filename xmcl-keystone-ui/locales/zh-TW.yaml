@@ -1136,6 +1136,9 @@ server:
   error: {}
   expectedVersions: 已支援的版本
   export: 導出服務器
+  exportNoFilesHint: |-
+    找不到服務器文件。
+    您可以一次在本地運行服務器來生成一些文件。
   exportOption: 服務器導出選項
   exportSSHAuthenticationFailed: |-
     所有身份驗證方法都失敗了。

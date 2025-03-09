@@ -1153,6 +1153,9 @@ server:
   error: {}
   expectedVersions: SUPPORTD VERSHUNS
   export: Export Server
+  exportNoFilesHint: >-
+    No server files found. You can run server on local once to generate some
+    files.
   exportOption: Server Export Options
   exportSSHAuthenticationFailed: >-
     All authentication methods failed. Please check username/password or private

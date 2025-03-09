@@ -4,8 +4,9 @@ import { stat } from 'fs-extra'
 import { join, relative } from 'path'
 import { Logger } from '~/logger'
 import { ResourceManager, ResourceWorker } from '~/resource'
-import { readdirIfPresent } from '../util/fs'
+import { ENOENT_ERROR, readdirIfPresent } from '../util/fs'
 import { isNonnull } from '~/util/object'
+import { isSystemError } from '~/util/error'
 
 /**
  * @returns The instance file with file stats array. The InstanceFile does not have hashes and downloads.
@@ -13,17 +14,23 @@ import { isNonnull } from '~/util/object'
 export async function discover(instancePath: string, logger: Logger, filter?: (relativePath: string, stats: Stats) => boolean) {
   const files = [] as Array<[InstanceFile, Stats]>
 
-  const scan = async (p: string) => {
-    const s = await stat(p)
+  const scan = async (dirOrFile: string) => {
+    const s = await stat(dirOrFile).catch(e => {
+      if (isSystemError(e) && e.code === ENOENT_ERROR) {
+        return
+      }
+      throw e
+    })
+    if (!s) return
     const isDirectory = s.isDirectory()
-    const relativePath = relative(instancePath, p).replace(/\\/g, '/')
+    const relativePath = relative(instancePath, dirOrFile).replace(/\\/g, '/')
     if (filter && filter(relativePath, s)) {
       return
     }
 
     if (isDirectory) {
-      const children = await readdirIfPresent(p)
-      await Promise.all(children.map(child => scan(join(p, child)).catch((e) => {
+      const children = await readdirIfPresent(dirOrFile)
+      await Promise.all(children.map(child => scan(join(dirOrFile, child)).catch((e) => {
         logger.warn(new Error('Fail to get manifest data for instance file', { cause: e }))
       })))
     } else {
