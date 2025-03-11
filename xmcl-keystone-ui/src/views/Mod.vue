@@ -341,6 +341,7 @@
     <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
       <Hint
         v-if="dragover"
+        key="dragover"
         icon="save_alt"
         :text="t('mod.dropHint')"
         :size="100"
@@ -348,6 +349,7 @@
       />
       <MarketProjectDetailModrinth
         v-else-if="shouldShowModrinth(selectedItem, selectedModrinthId, selectedCurseforgeId)"
+        :key="selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
@@ -364,6 +366,7 @@
       />
       <MarketProjectDetailCurseforge
         v-else-if="shouldShowCurseforge(selectedItem, selectedModrinthId, selectedCurseforgeId)"
+        :key="selectedCurseforgeId"
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedCurseforgeId)"
         :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
@@ -379,12 +382,14 @@
         @category="curseforgeCategory = $event"
       />
       <ModDetailOptifine
-        v-else-if="isOptifineProject(selectedItem)"
+      v-else-if="isOptifineProject(selectedItem)"
+        :key="selectedItem.id"
         :mod="selectedItem"
         :runtime="runtime"
       />
       <ModDetailResource
         v-else-if="isModProject(selectedItem)"
+        :key="selectedItem.id"
         :mod="selectedItem"
         :files="selectedItem.files"
         :runtime="runtime"
@@ -392,6 +397,7 @@
       />
       <MarketRecommendation
         v-else
+        key="recommendation"
         curseforge="mc-mods"
         modrinth="mod"
         @modrinth="modrinthCategories.push($event.name)"
