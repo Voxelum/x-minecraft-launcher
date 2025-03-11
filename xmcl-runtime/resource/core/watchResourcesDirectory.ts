@@ -167,7 +167,6 @@ function createWatcher(
 ) {
   const watcher = new FSWatcher({
     cwd: path,
-    awaitWriteFinish: true,
     depth: 1,
     followSymlinks: true,
     alwaysStat: true,
@@ -202,6 +201,8 @@ function createWatcher(
       revalidate()
     }
   })
+
+  watcher.add(path)
 
   return watcher
 }
@@ -336,15 +337,12 @@ export function watchResourceSecondaryDirectory(
 
     record = await context.db.selectFrom('snapshots')
       .selectAll()
+      .where('domainedPath', 'like', `${getDomainedPath(primaryDirectory, context.root)}%`)
       .where('sha1', '=', snapshot.sha1)
       .executeTakeFirst()
 
     if (record) {
-      const domain = basename(dirname(record.domainedPath))
-      const actualDomain = basename(primaryDirectory)
-      if (domain === actualDomain) {
-        return true
-      }
+      return true
     }
 
     return false
@@ -374,7 +372,6 @@ export function watchResourceSecondaryDirectory(
 
   const watcher = new FSWatcher({
     cwd: directory,
-    awaitWriteFinish: true,
     depth: 1,
     followSymlinks: true,
     ignorePermissionErrors: true,
@@ -383,6 +380,7 @@ export function watchResourceSecondaryDirectory(
       return shouldIgnoreFile(path)
     },
   }).on('all', async (event, file) => {
+    if (event === 'addDir' && file === '') return
     const filePath = resolve(directory, file)
     if (event === 'unlink') {
       await context.db.deleteFrom('snapshots')
@@ -391,12 +389,20 @@ export function watchResourceSecondaryDirectory(
     } else if (event === 'change' || event === 'add' || event === 'addDir') {
       const file = await getFile(filePath)
       if (!file) return
-      if (await isFileCached(file)) return
+      const isCached = await isFileCached(file).catch((e) => {
+        context.logger.error(e)
+        return false
+      })
+      if (isCached) return
       persist(file)
     }
   }).on('error', (e) => {
     context.logger.warn(new AnyError('ResourceWatchError', 'Error in resource watch', { cause: e }))
+  }).on('ready', () => {
+    context.logger.log('Resource watch ready')
   })
+
+  watcher.add(directory)
 
   async function persist(file: File) {
     let target = join(primaryDirectory, file.fileName)
