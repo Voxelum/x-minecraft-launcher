@@ -280,6 +280,9 @@ export function watchResourcesDirectory(
       // ignore the busy file
       return
     }
+    if (!(e instanceof Error)) {
+      e = Object.assign(new Error(), e)
+    }
     context.logger.error(e)
   }
 

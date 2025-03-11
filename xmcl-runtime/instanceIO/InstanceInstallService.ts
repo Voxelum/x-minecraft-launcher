@@ -202,7 +202,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       // remove the install lock
-      await unlink(currentStatePath)
+      await unlink(currentStatePath).catch(() => {/* ignored */})
 
       if (handler.unresolvable.length > 0) {
         await writeFile(join(instancePath, 'unresolved-files.json'), JSON.stringify(handler.unresolvable))

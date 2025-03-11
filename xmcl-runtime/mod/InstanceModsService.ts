@@ -1,16 +1,16 @@
-import { CurseforgeV1Client } from '@xmcl/curseforge'
+import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceModsService as IInstanceModsService, InstallMarketOptionWithInstance, InstallModsOptions, InstanceModsServiceKey, ResourceState, LockKey, SharedState, Resource, ResourceDomain, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, InstallMarketOptionWithInstance, InstallModsOptions, InstanceModsServiceKey, LockKey, Resource, ResourceDomain, ResourceState, SharedState, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { emptyDir, ensureDir, rename, stat, unlink } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
+import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
 import { ResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { AnyError, isSystemError } from '~/util/error'
+import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { linkDirectory, linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
-import { InstanceService } from '~/instance'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -62,13 +62,18 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             const prints = (await Promise.all(chunk.map(async (v) => ({ fingerprint: await worker.fingerprint(v.path), file: v }))))
             for (const { fingerprint, file } of prints) {
               if (fingerprint in allPrints) {
-                this.error(new Error(`Duplicated fingerprint ${fingerprint} for ${file.path} and ${allPrints[fingerprint].path}`))
+                this.warn(new Error(`Duplicated fingerprint ${fingerprint} for ${file.path} and ${allPrints[fingerprint].path}`))
                 continue
               }
               allPrints[fingerprint] = file
             }
           }
-          const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, Object.keys(allPrints).map(v => parseInt(v, 10)))
+          const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, Object.keys(allPrints).map(v => parseInt(v, 10))).catch((e) => {
+            if (e instanceof CurseforgeApiError && e.status >= 400 && e.status < 500 && e.status !== 404) {
+              this.error(e)
+            }
+            return { exactMatches: [] }
+          })
           const options = [] as { hash: string; metadata: { curseforge: { projectId: number; fileId: number } } }[]
           for (const f of result.exactMatches) {
             const r = allPrints[f.file.fileFingerprint] || Object.values(allPrints).find(v => v.hash === f.file.hashes.find(a => a.algo === 1)?.value)

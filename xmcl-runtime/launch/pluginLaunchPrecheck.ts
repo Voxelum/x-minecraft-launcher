@@ -8,7 +8,6 @@ import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
-import { isSystemError } from '~/util/error'
 import { linkDirectory, missing } from '~/util/fs'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
@@ -26,6 +25,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
         await unlink(toPath)
         await linkDirectory(fromPath, toPath, launchService).catch(e => {
           e.name = 'LaunchLinkError'
+          e.stage = 'relink'
           launchService.error(e)
         })
       }
@@ -35,6 +35,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
     if (!fstat) {
       await linkDirectory(fromPath, toPath, launchService).catch(e => {
         e.name = 'LaunchLinkError'
+        e.stage = 'link'
         launchService.error(e)
       })
       return
@@ -48,6 +49,7 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
     }
     await linkDirectory(fromPath, toPath, launchService).catch(e => {
       e.name = 'LaunchLinkError'
+      e.stage = 'after move'
       launchService.error(e)
     })
   }

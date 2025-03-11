@@ -18,21 +18,6 @@ export class PresenceService extends AbstractService implements IPresenceService
       if (settings.discordPresence) {
         try {
           await this.discord.connect()
-          this.discord.subscribe('ACTIVITY_JOIN')
-          this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
-          this.discord.subscribe('ACTIVITY_INVITE')
-          this.discord.on('ACTIVITY_JOIN', (arg) => {
-            console.log('ACTIVITY_JOIN')
-            console.log(arg)
-          })
-          this.discord.on('ACTIVITY_JOIN_REQUEST', (arg) => {
-            console.log('ACTIVITY_JOIN_REQUEST')
-            console.log(arg)
-          })
-          this.discord.on('ACTIVITY_JOIN', (arg) => {
-            console.log('ACTIVITY_JOIN')
-            console.log(arg)
-          })
         } catch (e) {
           // Ignore
         }

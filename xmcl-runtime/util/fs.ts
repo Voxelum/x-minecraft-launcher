@@ -2,7 +2,7 @@ import { checksum } from '@xmcl/core'
 import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
-import { constants } from 'fs'
+import { constants, existsSync } from 'fs'
 import { access, copyFile, ensureDir, ensureFile, link, readdir, stat, symlink, unlink } from 'fs-extra'
 import { platform } from 'os'
 import { basename, extname, join, resolve } from 'path'
@@ -173,6 +173,7 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
     if ((e as any).code === EPERM_ERROR && process.platform === 'win32') {
       await symlink(srcPath, destPath, 'junction').catch(e => {
         e.junction = true
+        e.srcExists = existsSync(srcPath)
         throw e
       })
       return false
