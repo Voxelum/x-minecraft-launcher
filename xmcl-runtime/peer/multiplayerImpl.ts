@@ -125,6 +125,8 @@ export function createMultiplayer() {
         s.connectionUserInfo({ id: target.id, info: profile })
       }
     })
+  }, (ping, timestamp) => {
+    state.then(s => s.pingSet({ ping, timestamp }))
   })
 
   state.then((s) => {

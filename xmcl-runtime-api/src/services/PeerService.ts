@@ -4,7 +4,7 @@ import { ConnectionState, ConnectionUserInfo, IceGatheringState, Peer, SelectedC
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 
-export type NatType = 'Blocked'| 'Open Internet'| 'Full Cone'| 'Symmetric UDP Firewall'| 'Restrict NAT'| 'Restrict Port NAT'| 'Symmetric NAT' | 'Unknown'
+export type NatType = 'Blocked' | 'Open Internet' | 'Full Cone' | 'Symmetric UDP Firewall' | 'Restrict NAT' | 'Restrict Port NAT' | 'Symmetric NAT' | 'Unknown'
 
 export interface NatDeviceInfo {
   deviceType: string
@@ -30,6 +30,14 @@ export class PeerState {
   natType: NatType = 'Unknown'
 
   exposedPorts: [number, number][] = []
+
+  ping = 0
+  timestamp = 0
+
+  pingSet({ ping, timestamp }: { ping: number, timestamp: number }) {
+    this.ping = ping
+    this.timestamp = timestamp
+  }
 
   natDeviceSet(device: NatDeviceInfo) {
     this.natDeviceInfo = device

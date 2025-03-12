@@ -22,6 +22,18 @@
           />
           {{ tGroupState[groupState] }}
 
+          <v-chip
+            v-if="groupState === 'connected'"
+            small label color="primary"
+          >
+            <v-icon left>
+              signal_cellular_alt
+            </v-icon>
+            {{ groupPing + 'ms' }}
+
+            {{ pingAgo }}
+          </v-chip>
+
           <div class="hidden text-sm text-gray-400 lg:block">
             <template v-if="group">
               {{ t('multiplayer.copyGroupToFriendHint') }}
@@ -570,6 +582,8 @@ import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from '@/composables/cache'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { useDateString } from '@/composables/date'
+import { useInterval, useIntervalFn } from '@vueuse/core'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -586,7 +600,7 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, groupPing, groupLastTimestamp, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { users } = injection(kUserContext)
@@ -684,6 +698,20 @@ const tConnectionStates = computed(() => ({
   failed: t('peerConnectionState.failed'),
   new: t('peerConnectionState.new'),
 }))
+
+const { getDateString } = useDateString()
+const pingAgo = ref('')
+const interval = useIntervalFn(() => {
+  pingAgo.value = `(${getDateString(groupLastTimestamp.value)})`
+}, 1_000, { immediate: false })
+
+watch(groupState, (newVal) => {
+  if (newVal === 'connected') {
+    interval.resume()
+  } else {
+    interval.pause()
+  }
+}, { immediate: true })
 
 const edit = (id: string, init: boolean) => {
   const conn = connections.value.find(c => c.id === id)
