@@ -189,7 +189,6 @@ export function getModSide(mod: ModFile, runtime: 'fabric' | 'forge' | 'neoforge
   }
   if (mod.quilt && runtime === 'quilt') {
     const quilt = mod.quilt
-    debugger
     if (quilt.quilt_loader.minecraft?.environment === '*') {
       return 'BOTH'
     }
