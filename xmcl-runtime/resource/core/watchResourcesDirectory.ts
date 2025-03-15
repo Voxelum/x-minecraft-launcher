@@ -3,12 +3,12 @@ import { FSWatcher } from 'chokidar'
 import { randomBytes } from 'crypto'
 import { existsSync } from 'fs'
 import { copy } from 'fs-extra'
-import { basename, dirname, join, resolve } from 'path'
+import { basename, dirname, join, resolve, sep } from 'path'
 import { Logger } from '~/logger'
 import { jsonArrayFrom } from '~/sql/sqlHelper'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
 import { AnyError, isSystemError } from '~/util/error'
-import { linkOrCopyFile } from '~/util/fs'
+import { isHardLinked, linkOrCopyFile } from '~/util/fs'
 import { toRecord } from '~/util/object'
 import { ResourceContext } from './ResourceContext'
 import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
@@ -384,6 +384,10 @@ export function watchResourceSecondaryDirectory(
     },
   }).on('all', async (event, file) => {
     if (event === 'addDir' && file === '') return
+
+    const depth = file.split(sep).length
+    if (depth > 1) return
+
     const filePath = resolve(directory, file)
     if (event === 'unlink') {
       await context.db.deleteFrom('snapshots')
@@ -409,9 +413,12 @@ export function watchResourceSecondaryDirectory(
 
   async function persist(file: File) {
     let target = join(primaryDirectory, file.fileName)
-    const onCopyDirectoryError = (e: unknown) => {
+    const onCopyDirectoryError = async (e: unknown) => {
       if (isSystemError(e)) {
         if (e.code === 'EEXIST') {
+          if (await isHardLinked(file.path, target)) {
+            return
+          }
           target = join(primaryDirectory, `${file.fileName}.${randomBytes(4).toString('hex')}`)
           copy(file.path, target).catch(onCopyDirectoryError)
           return
@@ -427,6 +434,10 @@ export function watchResourceSecondaryDirectory(
       return
     }
     if (!file.isDirectory) {
+      const isInoMatched = await isHardLinked(file.path, target)
+      if (isInoMatched) {
+        return
+      }
       linkOrCopyFile(file.path, target).catch((e) => {
         context.logger.error(new AnyError('ResourceCopyError', `Fail to copy resource ${file.path} to ${target}`, { cause: e }))
       })

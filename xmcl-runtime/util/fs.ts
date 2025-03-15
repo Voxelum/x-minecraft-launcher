@@ -193,6 +193,10 @@ export function swapExt(path: string, ext: string) {
 export function linkOrCopyFile(from: string, to: string) {
   const onLinkFileError = async (e: unknown, copied: boolean) => {
     if (isSystemError(e) && e.code === 'EEXIST') {
+      const isInoMatched = await isHardLinked(from, to)
+      if (isInoMatched) {
+        return to
+      }
       const extName = extname(to)
       const fileName = basename(to, extName)
       to = join(to, fileName + `-${Date.now()}` + extName)

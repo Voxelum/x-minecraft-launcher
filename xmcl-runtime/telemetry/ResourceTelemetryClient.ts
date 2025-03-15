@@ -163,7 +163,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
     manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
       client.trackTrace({
-        message: JSON.stringify(metadata),
+        message: JSON.stringify(getPayload(sha1, metadata, undefined, domain)),
       })
     })
     manager.context.eventBus.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
