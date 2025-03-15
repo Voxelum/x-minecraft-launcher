@@ -600,7 +600,7 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, groupPing, groupLastTimestamp, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, icePings, groupPing, groupLastTimestamp, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { users } = injection(kUserContext)
@@ -614,8 +614,13 @@ const kernels = computed(() => [
   { value: 'webrtc', text: 'WebRTC' },
 ])
 
+function getIceServerPingText(value: number | 'timeout' | undefined) {
+  if (value === undefined) return ''
+  return ` (${value}ms)`
+}
+
 const preferredTurnserver = useLocalStorageCacheStringValue('peerPreferredTurn', '')
-const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value}` })))
+const turnserversItems = computed(() => Object.entries(turnservers.value).map(([key, value]) => ({ value: key, text: `${tLocale.value[value as string] || value}${getIceServerPingText(icePings.value[key])}` })))
 const tLocale = computed(() => ({
   liaoning: t('turnRegion.liaoning'),
   guangzhou: t('turnRegion.guangzhou'),

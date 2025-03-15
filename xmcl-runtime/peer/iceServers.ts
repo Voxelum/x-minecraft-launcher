@@ -86,22 +86,34 @@ export async function loadIceServers(cachePath: string) {
 }
 
 async function test(factory: PeerConnectionFactory, iceServer: RTCIceServer, portBegin?: number) {
-  const co = await factory.createConnection(iceServer, portBegin)
-  return new Promise<string[]>((resolve) => {
+  let start = Date.now()
+  let ping = 0 as 'timeout' | number
+  const co = factory.createConnection(iceServer, portBegin)
+  return new Promise<[string[], number | 'timeout']>((resolve) => {
     const ips = new Set<string>()
     co.onicegatheringstatechange = (s) => {
       if (co.iceGatheringState === 'complete') {
-        resolve([...ips])
+        resolve([[...ips], ping || 'timeout'])
         chan.close()
         co.close()
       }
     }
-    co.onicecandidate = (ev) => {
-      const candidate = ev.candidate
+    co.onicecandidate = (ice) => {
+      const candidate = ice.candidate
+      if (iceServer.credential) {
+        if (!ping && ice.candidate?.type === 'relay') {
+          ping = Date.now() - start
+        }
+      }
+
       if (candidate && candidate.type === 'srflx') {
         // parse candidate for public ip
         const ip = candidate.candidate.split(' ')[4]
         ips.add(ip)
+
+        if (!iceServer.credential && !ping) {
+          ping = Date.now() - start
+        }
       }
     }
     const chan = co.createDataChannel('test', { protocol: 'test' })
@@ -120,25 +132,19 @@ async function testIceServers(
   servers: RTCIceServer[],
   passed: Record<string, RTCIceServer>,
   blocked: Record<string, RTCIceServer>,
-  onValidIceServer: (server: RTCIceServer) => void,
+  onValidIceServer: (server: RTCIceServer, timeout?: number | 'timeout') => void,
   onIp: (ip: string) => void,
-  portBegin?: number) {
+  portBegin?: number,
+) {
   const ipSet = new Set<string>()
   await Promise.all(servers.map(async (server) => {
-    if (server.credential) {
-      const key = getKey(server)
-      passed[getKey(server)] = server
-      delete blocked[key]
-      onValidIceServer(server)
-      return
-    }
-    const ips = await test(factory, server, portBegin).catch(() => [])
+    const [ips, ping] = await test(factory, server, portBegin).catch(() => [])
     console.log('Test ice server', server, ips)
     const key = getKey(server)
     if (ips.length > 0) {
       passed[key] = server
       delete blocked[key]
-      onValidIceServer(server)
+      onValidIceServer(server, ping)
       for (const ip of ips) {
         if (!ipSet.has(ip)) {
           ipSet.add(ip)
@@ -156,9 +162,11 @@ const isSameRTCServer = (a: RTCIceServer, b: RTCIceServer) => {
   return getKey(a) === getKey(b)
 }
 
+export type IceServersProvider = ReturnType<typeof createIceServersProvider>
+
 export function createIceServersProvider(
   factory: PeerConnectionFactory,
-  onValidIceServer: (server: RTCIceServer) => void,
+  onValidIceServer: (server: RTCIceServer, ping?: number | 'timeout') => void,
   onIp: (ip: string) => void,
   onMeta: (meta: Record<string, string>) => void,
 ) {

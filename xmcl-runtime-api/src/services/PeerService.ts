@@ -20,6 +20,7 @@ export interface NatDeviceInfo {
 export class PeerState {
   connections = [] as Peer[]
   validIceServers = [] as string[]
+  icsServersPings = {} as Record<string, number | 'timeout'>
   ips = [] as string[]
   turnservers = {} as Record<string, string>
   group = ''
@@ -172,6 +173,13 @@ export class PeerState {
 
   validIceServerSet(servers: string[]) {
     this.validIceServers = servers
+  }
+
+  iceServerPingSet({ server, ping }: { server: string; ping: number | 'timeout' }) {
+    this.icsServersPings = {
+      ...this.icsServersPings,
+      [server]: ping,
+    }
   }
 
   ipsSet(ips: string[]) {

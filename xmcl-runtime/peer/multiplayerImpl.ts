@@ -178,9 +178,14 @@ export function createMultiplayer() {
 
   const iceServers = createIceServersProvider(
     facotry,
-    (server) => {
+    (server, ping) => {
       console.log('Valid ice server', server)
       state.then(s => s.validIceServerSet(Array.from(new Set([...s.validIceServers, getKey(server)]))))
+      if (ping) {
+        const rawKey = getKey(server)
+        const key = rawKey.split(':')[1] || rawKey
+        state.then(s => s.iceServerPingSet({ server: key, ping }))
+      }
       debouncedRefreshNat()
     },
     (ip) => {
