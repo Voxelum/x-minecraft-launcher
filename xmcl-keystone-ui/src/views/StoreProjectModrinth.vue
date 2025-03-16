@@ -78,6 +78,7 @@ const project = computed(() => {
       categories.push({
         text: t(`modrinth.categories.${cat.name}`),
         icon: cat.icon,
+        id: cat.name
       })
     }
   }

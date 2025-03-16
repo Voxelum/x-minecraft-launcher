@@ -38,6 +38,7 @@ const headerData = computed(() => {
     categories: project.value.tags.map((c) => {
       return {
         text: c.name,
+        id: c.id.toString(),
       }
     }),
     type: 'ftb',

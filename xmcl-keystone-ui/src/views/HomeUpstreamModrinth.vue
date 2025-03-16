@@ -17,6 +17,7 @@ import { ModpackServiceKey, ModrinthUpstream } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
+import { notNullish } from '@vueuse/core'
 
 const props = defineProps<{
   id: string
@@ -38,11 +39,12 @@ const headerData = computed(() => {
     description: project.value?.description || '',
     categories: project.value.categories.map((c) => {
       const cat = categories.value.find(cat => cat.name === c)
-      return {
-        text: t(`modrinth.categories.${cat?.name}`) || '',
-        icon: cat?.icon || '',
+      return !cat ? undefined : {
+        text: t(`modrinth.categories.${cat.name}`) || '',
+        icon: cat.icon || '',
+        id: cat.name || '',
       }
-    }),
+    }).filter(notNullish),
     type: 'modrinth',
     store: '/store/modrinth/' + project.value.id,
     infos: [{

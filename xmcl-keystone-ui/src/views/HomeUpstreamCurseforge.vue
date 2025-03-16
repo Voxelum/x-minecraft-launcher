@@ -40,6 +40,7 @@ const headerData = computed(() => {
       return {
         text: te(`curseforgeCategory.${c?.name}`) ? t(`curseforgeCategory.${c?.name}`) : c.name || '',
         icon: c.iconUrl || '',
+        id: c.id.toString(),
       }
     }),
     type: 'curseforge',
