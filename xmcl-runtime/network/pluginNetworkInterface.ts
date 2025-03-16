@@ -71,7 +71,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       retry: (err, { state, opts }, cb) => {
         const { statusCode, code, headers } = err as any
 
-        if ((opts as any).noRetry) {
+        if ((opts as any).noRetry?.value) {
           cb(err)
           return
         }
@@ -168,9 +168,15 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     proxyTls: connectorOptions,
     requestTls: connectorOptions,
   })
+
+  class RangePolicy extends DefaultRangePolicy {
+    getConcurrency() {
+      return Math.max(maxConnection / 4, 4)
+    }
+  }
   proxy.add(downloadProxy)
   app.registry.register(kDownloadOptions, {
-    rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
+    rangePolicy: new RangePolicy(2 * 1024 * 1024, Math.max(maxConnection / 4, 4)),
     dispatcher: downloadProxy,
     checkpointHandler: {
       lookup: async (url) => { return undefined },
