@@ -138,9 +138,10 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]> {
     const provider = await this.app.registry.get(kMarketProvider)
-    const result = await provider.installFile({
+    const result = await provider.installInstanceFile({
       ...options,
-      directory: join(options.instancePath, 'mods'),
+      instancePath: options.instancePath,
+      domain: ResourceDomain.Mods,
     })
     return result.map(v => v.path)
   }

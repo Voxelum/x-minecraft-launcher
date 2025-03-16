@@ -195,9 +195,10 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
   async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]> {
     const provider = await this.app.registry.get(kMarketProvider)
-    const result = await provider.installFile({
+    const result = await provider.installInstanceFile({
       ...options,
-      directory: join(options.instancePath, this.domain),
+      domain: this.domain,
+      instancePath: options.instancePath,
     })
     return result.map((r) => r.path)
   }

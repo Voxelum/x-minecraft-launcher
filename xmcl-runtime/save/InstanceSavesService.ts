@@ -509,7 +509,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
   async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string> {
     if (options.market !== MarketType.CurseForge) {
-      throw new Error('Unsupported market type')
+      throw new TypeError('Unsupported market type')
     }
     const provider = await this.app.registry.get(kMarketProvider)
     const [result] = await provider.installFile({
