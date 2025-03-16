@@ -5,6 +5,7 @@ import { BuildContext, Plugin, context } from 'esbuild'
 import { join, resolve } from 'path'
 import esbuildOptions from './esbuild.config'
 import { existsSync, mkdirSync } from 'fs'
+import debounce from 'lodash.debounce'
 
 process.once('exit', terminate).once('SIGINT', terminate)
 
@@ -29,7 +30,7 @@ function startElectron() {
   const spawnProcess = spawn(electronPath, [
     '--inspect=5858',
     '--remote-debugging-port=9222',
-    join(__dirname, '../dist/index.js'),
+    join(__dirname, './dist/index.js'),
   ], { cwd })
 
   function electronLog(data: string | Buffer) {
@@ -96,6 +97,8 @@ function reloadElectron() {
   startElectron()
 }
 
+const debouncedReloadElectron = debounce(reloadElectron, 1000)
+
 /**
  * Start esbuild service for main process and preload script
  */
@@ -111,7 +114,7 @@ export async function dev() {
           }
         } else {
           console.log('electron main ready')
-          reloadElectron()
+          debouncedReloadElectron()
         }
       })
     },
