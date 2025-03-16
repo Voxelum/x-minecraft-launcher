@@ -23,7 +23,7 @@
           <span class="flex select-none flex-wrap gap-3 xl:justify-center">
             <CategoryChip
               v-for="item of project.categories"
-              :key="item.text"
+              :key="item.id"
               :item="item"
             />
           </span>

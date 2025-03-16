@@ -384,12 +384,12 @@ watch([ftbData, page], async ([packs, page]) => {
       description: data?.synopsis || '',
       author: data?.authors[0].name ?? '',
       labels: [
-        { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, '') },
-        { icon: 'event', text: getDateString((data?.released ?? 0) * 1000) },
-        { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000) },
-        { icon: 'local_offer', text: data?.plays.toString() ?? '0' },
+        { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, ''), id: `${data?.id}_download_icon` },
+        { icon: 'event', text: getDateString((data?.released ?? 0) * 1000), id: `${data?.id}_event_icon` },
+        { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000), id: `${data?.id}_edit_icon` },
+        { icon: 'local_offer', text: data?.plays.toString() ?? '0', id: `${data?.id}_local_offer` },
       ],
-      tags: data?.tags.map(t => ({ text: t.name })) ?? [],
+      tags: data?.tags.map(t => ({ text: t.name, id: t.id.toString() })) ?? [],
       gallery: data?.art.map(a => a.url) ?? [],
     }
     return result
@@ -451,12 +451,12 @@ const items = computed(() => {
       description: p.description,
       author: p.author,
       labels: [
-        { icon: 'file_download', text: getExpectedSize(p.downloads, '') },
-        { icon: 'event', text: getDateString(p.date_created) },
-        { icon: 'edit', text: getDateString(p.date_modified) },
-        { icon: 'local_offer', text: p.versions[p.versions.length - 1] },
+        { icon: 'file_download', text: getExpectedSize(p.downloads, ''), id: `${p.project_id}_download_icon` },
+        { icon: 'event', text: getDateString(p.date_created), id: `${p.project_id}_created_icon` },
+        { icon: 'edit', text: getDateString(p.date_modified), id: `${p.project_id}_modified_icon` },
+        { icon: 'local_offer', text: p.versions[p.versions.length - 1], id: `${p.project_id}_local_offer` },
       ],
-      tags: p.categories.map(c => ({ icon: modrinthCategories.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c) })),
+      tags: p.categories.map(c => ({ icon: modrinthCategories.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c), id: '' })),
       gallery: p.gallery,
     }
     return mapped
@@ -466,7 +466,7 @@ const items = computed(() => {
     const tags = p.categories.map(c => {
       if (existed.has(c.id)) return undefined
       existed.add(c.id)
-      return { icon: c.iconUrl, text: tCategory(c.name) } as CategoryChipProps
+      return { icon: c.iconUrl, text: tCategory(c.name), id: c.id.toString() } as CategoryChipProps
     }).filter((v): v is CategoryChipProps => v !== undefined)
     const mapped: ExploreProject = {
       id: p.id.toString(),
@@ -476,10 +476,10 @@ const items = computed(() => {
       description: p.summary,
       author: p.authors[0].name,
       labels: [
-        { icon: 'file_download', text: getExpectedSize(p.downloadCount, '') },
-        { icon: 'event', text: getDateString(p.dateModified) },
-        { icon: 'edit', text: getDateString(p.dateModified) },
-        { icon: 'local_offer', text: p.latestFilesIndexes[0].gameVersion },
+        { icon: 'file_download', text: getExpectedSize(p.downloadCount, ''), id: `${p.id}_download_icon` },
+        { icon: 'event', text: getDateString(p.dateModified), id: `${p.id}_event_icon` },
+        { icon: 'edit', text: getDateString(p.dateModified), id: `${p.id}_edit_icon` },
+        { icon: 'local_offer', text: p.latestFilesIndexes[0].gameVersion, id: `${p.id}_local_offer` },
       ],
       tags,
       gallery: p.screenshots.map(s => s.thumbnailUrl),
