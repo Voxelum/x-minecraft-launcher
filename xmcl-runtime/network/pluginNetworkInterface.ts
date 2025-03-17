@@ -159,9 +159,6 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       maxRedirections: 5,
       connect,
       factory: (origin, opts) => {
-        if (origin === 'https://edge.forgecdn.net' || origin === 'https://mediafilez.forgecdn.net') {
-          return new Pool(origin, { ...opts, connections: 16 })
-        }
         return patchIfPool(new Pool(origin, opts))
       },
     }),

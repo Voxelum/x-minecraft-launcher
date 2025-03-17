@@ -1,7 +1,7 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
+import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, SharedState, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import filenamify from 'filenamify'
 import { readJSON, unlink, writeFile } from 'fs-extra'
@@ -10,13 +10,14 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance/InstanceService'
 import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
 import { getDomainedPath } from '~/resource/core/snapshot'
-import { AbstractService, ExposeServiceKey } from '~/service'
+import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { createSafeIO } from '~/util/persistance'
 import { AnyError, isSystemError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { computeFileUpdates } from './computeFileUpdate'
+import { FSWatcher } from 'chokidar'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -202,7 +203,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       // remove the install lock
-      await unlink(currentStatePath).catch(() => {/* ignored */})
+      await unlink(currentStatePath).catch(() => {/* ignored */ })
 
       if (handler.unresolvable.length > 0) {
         await writeFile(join(instancePath, 'unresolved-files.json'), JSON.stringify(handler.unresolvable))
@@ -272,43 +273,55 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
   }
 
-  async checkInstanceInstall(path: string): Promise<InstanceInstallStatus> {
-    // get install lock
-    const currentStatePath = join(path, '.install-profile')
-    const lock = await readJSON(currentStatePath).catch((e) => {
-      if (isSystemError(e) && e.code === 'ENOENT') {
-        return undefined
-      }
+  async watchInstanceInstall(path: string): Promise<SharedState<InstanceInstallStatus>> {
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    return stateManager.registerOrGet(`instance-install://${path}`, async () => {
+      const status = new InstanceInstallStatus()
+      status.instance = path
+      const watcher = new FSWatcher({
+        cwd: path,
+        depth: 1,
+      })
+        .on('all', async (ev, filePath) => {
+          if (ev === 'add' || ev === 'change') {
+            if (filePath === '.install-profile') {
+              const currentStatePath = join(path, '.install-profile')
+              const lock = await readJSON(currentStatePath).catch((e) => {
+                if (isSystemError(e) && e.code === 'ENOENT') {
+                  return undefined
+                }
+                if (e.name === 'Error') {
+                  e.name = 'InstanceInstallProfileError'
+                }
+                this.error(e)
+              })
+              let count = 0
+              if (lock.files instanceof Array && lock.finishedPath instanceof Array) {
+                count = lock.files.length - lock.finishedPath.length
+              } else if (lock.files instanceof Array) {
+                count = lock.files.length
+              }
+              status.pendingFileCountSet(count || 0)
+            } else if (filePath === 'unresolved-files.json') {
+              const unresolvedFilesPath = join(path, 'unresolved-files.json')
+              const unresolvedFiles = await readJSON(unresolvedFilesPath).catch(() => [])
+              status.unresolvedFilesSet(unresolvedFiles)
+            }
+          } else if (ev === 'unlink') {
+            if (filePath === '.install-profile') {
+              status.pendingFileCountSet(0)
+            } else if (filePath === 'unresolved-files.json') {
+              status.unresolvedFilesSet([])
+            }
+          }
+        })
+        .add('.install-profile')
+        .add('unresolved-files.json')
+
+      return [status, () => {
+        watcher.close()
+      }]
     })
-
-    const unresolvedFilesPath = join(path, 'unresolved-files.json')
-    const unresolvedFiles = await readJSON(unresolvedFilesPath).catch(() => [])
-
-    if (!lock) {
-      return {
-        pendingFileCount: 0,
-        unresolvedFiles: unresolvedFiles,
-      }
-    }
-
-    if (lock.files instanceof Array && lock.finishedPath instanceof Array) {
-      return {
-        pendingFileCount: lock.files.length - lock.finishedPath.length,
-        unresolvedFiles: unresolvedFiles,
-      }
-    }
-
-    if (lock.files instanceof Array) {
-      return {
-        pendingFileCount: lock.files.length,
-        unresolvedFiles: unresolvedFiles,
-      }
-    }
-
-    return {
-      pendingFileCount: 0,
-      unresolvedFiles: unresolvedFiles
-    }
   }
 
   async installInstanceFiles(options: InstallInstanceOptions): Promise<void> {

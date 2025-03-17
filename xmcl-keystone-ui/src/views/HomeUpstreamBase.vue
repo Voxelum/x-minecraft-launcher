@@ -131,7 +131,7 @@ const listItems = computed(() => {
   ] as (ProjectVersionProps | string)[]
   for (const [date, versions] of Object.entries(items)) {
     results.push(date)
-    results.push(...versions)
+    results.push(...versions.filter(v => !!v))
   }
   return results
 })
@@ -158,6 +158,9 @@ function estimateSize(i: number) {
     return 48
   }
   const item = listItems.value[i] as ProjectVersionProps
+  if (!item) {
+    return 48
+  }
   const changelogHtml = item.changelog
   // estimate the height of the changelog by counting how many div and li inside
   const divCount = (changelogHtml.match(/<div/g) || []).length

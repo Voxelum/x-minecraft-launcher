@@ -3,7 +3,7 @@ import { kInstanceFiles } from './instanceFiles'
 
 export function useInstanceFilesDiagnose() {
   const { t } = useI18n()
-  const { instanceInstallStatus, resumeInstall, mutate } = injection(kInstanceFiles)
+  const { instanceInstallStatus, resumeInstall } = injection(kInstanceFiles)
 
   const issue = computed(() => (instanceInstallStatus.value?.pendingFileCount || 0) > 0
     ? {
@@ -12,7 +12,6 @@ export function useInstanceFilesDiagnose() {
     }
     : undefined)
   const fix = async () => {
-    await mutate()
     if (instanceInstallStatus.value && instanceInstallStatus.value.pendingFileCount > 0) {
       await resumeInstall(instanceInstallStatus.value.instance)
     }

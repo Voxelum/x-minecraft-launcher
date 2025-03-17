@@ -1,3 +1,4 @@
+import { SharedState } from '../util/SharedState'
 import { InstanceUpstream } from '../entities/instance.schema'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
@@ -47,12 +48,22 @@ export type InstallInstanceOptions = {
   id?: string
 }
 
-export interface InstanceInstallStatus {
-  pendingFileCount: number
+export class InstanceInstallStatus {
+  instance = ''
+
+  pendingFileCount: number = 0
   /**
    * Unresolved files in previous install
    */
-  unresolvedFiles: InstanceFile[]
+  unresolvedFiles: InstanceFile[] = []
+
+  pendingFileCountSet(count: number) {
+    this.pendingFileCount = count
+  }
+
+  unresolvedFilesSet(files: InstanceFile[]) {
+    this.unresolvedFiles = files
+  }
 }
 
 export type InstallFileError = {
@@ -102,7 +113,7 @@ export interface InstanceInstallService {
    *
    * @param path The instance path
    */
-  checkInstanceInstall(path: string): Promise<InstanceInstallStatus>
+  watchInstanceInstall(path: string): Promise<SharedState<InstanceInstallStatus>>
   /**
    * Dismiss the unresolved files in the instance.
    * 

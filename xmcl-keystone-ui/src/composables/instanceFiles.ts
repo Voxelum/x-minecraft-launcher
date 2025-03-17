@@ -1,9 +1,8 @@
-import { useDocumentVisibility, useEventListener } from '@vueuse/core'
 import { InstanceFile, InstanceInstallServiceKey, InstanceInstallStatus } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
-import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { useState } from './syncableState'
 
 export const kInstanceFiles: InjectionKey<ReturnType<typeof useInstanceFiles>> = Symbol('InstanceFiles')
 
@@ -13,32 +12,9 @@ export interface InstanceFilesStatus {
 }
 
 export function useInstanceFiles(instancePath: Ref<string>) {
-  const instanceFileStatus = shallowRef(undefined as InstanceInstallStatus & { instance: string } | undefined)
-  const { checkInstanceInstall, resumeInstanceInstall } = useService(InstanceInstallServiceKey)
+  const { watchInstanceInstall, resumeInstanceInstall } = useService(InstanceInstallServiceKey)
+  const { error, isValidating, state: instanceFileStatus } = useState(() => watchInstanceInstall(instancePath.value), InstanceInstallStatus)
 
-  const { error, refreshing: isValidating, refresh: mutate } = useRefreshable(async () => {
-    const path = instancePath.value
-    instanceFileStatus.value = undefined
-    const result = await checkInstanceInstall(instancePath.value)
-    if (path === instancePath.value) {
-      instanceFileStatus.value = {
-        ...result,
-        instance: path,
-      }
-    }
-  })
-
-  watch(instancePath, () => mutate(), { immediate: true })
-
-  const dmutate = debounce(() => mutate(), 400)
-  useEventListener('focus', dmutate)
-  const vis = useDocumentVisibility()
-  watch(vis, (v) => {
-    if (v === 'visible') {
-      dmutate()
-    }
-  })
-  
   const _validating = ref(false)
   const update = debounce(() => {
     _validating.value = isValidating.value
@@ -79,7 +55,6 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     resetChecksumError,
     blockingFiles,
     isValidating: _validating,
-    mutate,
     error,
   }
 }

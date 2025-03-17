@@ -824,8 +824,8 @@ const _enabled = computed({
   },
 })
 
-const titleToDisplay = computed(() => (isEnabled.value && props.detail.localizedTitle) || props.detail.title || props.error.name)
-const descriptionToDisplay = computed(() => (isEnabled.value && props.detail.localizedDescription) || props.detail.description || props.error.message)
+const titleToDisplay = computed(() => (isEnabled.value && props.detail.localizedTitle) || props.detail.title || props.error?.name || '')
+const descriptionToDisplay = computed(() => (isEnabled.value && props.detail.localizedDescription) || props.detail.description || props.error?.message || '')
 
 const detailsHeaders = computed(() => {
   const result: Array<{

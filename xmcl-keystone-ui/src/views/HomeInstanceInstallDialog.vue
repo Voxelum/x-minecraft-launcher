@@ -403,7 +403,6 @@ const loaderDifferences = computed(() => {
   }
 })
 
-const { mutate } = injection(kInstanceFiles)
 const confirm = async () => {
   const up = upgrade.value
   if (!up) {
@@ -421,7 +420,6 @@ const confirm = async () => {
       installation.files = installation.files.filter(f => selectedPath.includes(f.path))
     }
     await installInstanceFiles(installation)
-    mutate()
   } catch (e) {
     Object.assign(e as any, {
       instanceInstallErrorId: installation.id,
