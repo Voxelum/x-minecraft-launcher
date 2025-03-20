@@ -70,7 +70,7 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-card>
+          <v-card class="max-h-[80vh] overflow-y-auto">
             <v-list
               dense
               nav
@@ -183,6 +183,58 @@
                 </v-list-item-icon>
                 <v-list-item-title class="flex items-center">
                   {{ t('modInstall.installDependencies') }}
+                </v-list-item-title>
+              </v-list-item>
+
+              <v-divider class="my-2" />
+
+              <v-list-item
+                dense
+                class="mx-1"
+                :disabled="mods.length === 0 || scanningUnusedMods"
+                @click="scanUnusedMods"
+              >
+                <template v-if="!scanningUnusedMods">
+                  <v-list-item-icon>
+                    <v-icon v-if="!scanningUnusedMods">
+                      restart_alt
+                    </v-icon>
+                    <v-progress-circular
+                      v-else
+                      small
+                      size="22"
+                      width="2"
+                      indeterminate
+                    />
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.scanUnusedLibraries') }}
+                  </v-list-item-title>
+                </template>
+                <template v-else>
+                  <v-list-item-icon>
+                    <v-icon color="primary">
+                      check
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.removeUnusedLibraries') }}
+                  </v-list-item-title>
+                </template>
+              </v-list-item>
+              <v-list-item
+                dense
+                class="mx-1"
+                :loading="scanningUnusedMods"
+                :disabled="unusedMods.length === 0"
+              >
+                <v-list-item-icon>
+                  <v-icon class="material-icons-outlined">
+                    file_download
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title class="flex items-center">
+                  {{ t('modInstall.removeUnusedLibraries') }}
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -491,6 +543,7 @@ import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
+import { useModLibCleaner } from '@/composables/modLibCleaner'
 
 const { runtime, path } = injection(kInstance)
 
@@ -809,6 +862,9 @@ const onInstallProject = useProjectInstall(
     install({ path: path.value, mods: [file.path] })
   },
 )
+
+// Mod cleaner
+const { unusedMods, refresh: scanUnusedMods, refreshing: scanningUnusedMods } = useModLibCleaner()
 
 useTutorial(computed(() => [{
   element: '#search-text-field',

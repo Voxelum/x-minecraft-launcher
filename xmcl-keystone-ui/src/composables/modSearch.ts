@@ -1,4 +1,5 @@
 import { BuiltinImages } from '@/constant'
+import { basename } from '@/util/basename'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getDiceCoefficient } from '@/util/sort'
@@ -107,7 +108,9 @@ function useLocalModsSearch(path: Ref<string>, keyword: Ref<string>, modLoader: 
     for (const m of instanceModFiles.value) {
       const mod = getOrDecorateProjectEntry(m, true)
       if (!mod) { continue }
-      const matched = m.name.toLocaleLowerCase().indexOf(key.toLocaleLowerCase()) !== -1
+      const lower = key.toLocaleLowerCase()
+      const matched = m.name.toLocaleLowerCase().indexOf(lower) !== -1
+        || basename(m.path).toLocaleLowerCase().indexOf(lower) !== -1
       if (matched) {
         _installed.push(mod)
       }

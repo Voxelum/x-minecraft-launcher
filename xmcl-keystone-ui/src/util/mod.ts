@@ -30,7 +30,7 @@ export interface ModFile extends ModMetadata, ProjectFile {
    */
   path: string
   /**
-   * The mod id
+   * The mod id. This is computed from the metadata.
    */
   modId: string
   /**
