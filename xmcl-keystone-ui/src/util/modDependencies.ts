@@ -123,38 +123,61 @@ export function getForgeModDependencies(resource: ForgeResource): ModDependencie
   return mods
 }
 
-export function getModDependencies(resource: Resource, type?: 'forge' | 'fabric' | 'neoforge'): ModDependencies {
-  if (type === 'fabric') {
-    if (isFabricResource(resource)) return getFabricModDependencies(resource)
-    if (isForgeResource(resource)) return getForgeModDependencies(resource)
-    if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
-    return []
+export function getModDependencies(resource: Resource): Record<string, ModDependencies> {
+  const result = markRaw({}) as Record<string, ModDependencies>
+  if (isFabricResource(resource)) {
+    result.fabric = markRaw(getFabricModDependencies(resource))
   }
-  if (type === 'neoforge') {
-    if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
-    if (isForgeResource(resource)) return getForgeModDependencies(resource)
-    if (isFabricResource(resource)) return getFabricModDependencies(resource)
-    return []
+  if (isForgeResource(resource)) {
+    result.forge = markRaw(getForgeModDependencies(resource))
   }
-  if (isForgeResource(resource)) return getForgeModDependencies(resource)
-  if (resource.metadata.neoforge) return getNeoforgeModDependencies(resource.metadata.neoforge)
-  if (isFabricResource(resource)) return getFabricModDependencies(resource)
-  return []
+  if (resource.metadata.neoforge) {
+    result.neoforge = markRaw(getNeoforgeModDependencies(resource.metadata.neoforge))
+  }
+  return result
 }
 
 export function getModProvides(resource: Resource) {
   const runtime: Record<string, string> = {}
   if (isForgeResource(resource)) {
     const meta = resource.metadata.forge
+
+    if (meta.manifest?.['Automatic-Module-Name'] === "org.sinytra.connector" ||
+      meta.manifest?.['Implementation-Title'] === "Connector") {
+      if (meta.manifest['Fabric-Loader-Version']) {
+        runtime.fabricLoader = meta.manifest['Fabric-Loader-Version']
+        runtime.fabricloader = runtime.fabricLoader
+      }
+    }
+
     runtime[meta.modid] = meta.version
+    if (meta.modsToml.length > 0) {
+      for (const m of meta.modsToml) {
+        runtime[m.modid] = m.version
+        if (m.provides) {
+          for (const alias of m.provides) {
+            runtime[alias] = m.version
+          }
+        }
+      }
+    }
+
+    if (runtime.fabric_api && !runtime['fabric-api']) {
+      runtime['fabric-api'] = runtime.fabric_api
+    }
+    if (runtime.fabric_api && !runtime.fabric) {
+      runtime.fabric = runtime.fabric_api
+    }
   }
 
   if (resource.metadata.neoforge) {
     const meta = resource.metadata.neoforge
-    runtime[meta.modid] = meta.version
+    if (meta) {
+      runtime[meta.modid] = meta.version
 
-    for (const child of meta.children) {
-      runtime[child.modid] = child.version
+      for (const child of meta.children) {
+        runtime[child.modid] = child.version
+      }
     }
   }
 

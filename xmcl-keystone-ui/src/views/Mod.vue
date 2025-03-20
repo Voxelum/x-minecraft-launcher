@@ -70,7 +70,7 @@
               </v-icon>
             </v-btn>
           </template>
-          <v-card>
+          <v-card class="max-h-[80vh] overflow-y-auto">
             <v-list
               dense
               nav
@@ -88,7 +88,7 @@
                   />
                 </v-list-item-icon>
                 <v-list-item-title>
-                  {{ t('mod.denseView') }}
+                  {{ localizedTexts.mod.denseView }}
                 </v-list-item-title>
               </v-list-item>
               <v-list-item
@@ -104,13 +104,15 @@
                   />
                 </v-list-item-icon>
                 <v-list-item-title>
-                  {{ t('mod.groupInstalled') }}
+                  <!-- {{ t('mod.groupInstalled') }} -->
+                  {{ localizedTexts.mod.groupInstalled }}
                 </v-list-item-title>
               </v-list-item>
               <v-divider class="my-2" />
               <v-list-item-group v-model="defaultSourceModel">
                 <v-subheader>
-                  {{ t('mod.switchDefaultSource') }}
+                  <!-- {{ t('mod.switchDefaultSource') }} -->
+                  {{ localizedTexts.mod.switchDefaultSource }}
                 </v-subheader>
                 <v-list-item key="curseforge">
                   <v-list-item-icon>
@@ -155,7 +157,8 @@
                     />
                   </v-list-item-icon>
                   <v-list-item-title class="flex items-center">
-                    {{ t('modInstall.checkDependencies') }}
+                    <!-- {{ t('modInstall.checkDependencies') }} -->
+                    {{ localizedTexts.mod.checkDependencies }}
                   </v-list-item-title>
                 </template>
                 <template v-else>
@@ -165,7 +168,8 @@
                     </v-icon>
                   </v-list-item-icon>
                   <v-list-item-title class="flex items-center">
-                    {{ t('modInstall.checkedDependencies') }}
+                    <!-- {{ t('modInstall.checkedDependencies') }} -->
+                    {{ localizedTexts.mod.checkedDependencies }}
                   </v-list-item-title>
                 </template>
               </v-list-item>
@@ -182,7 +186,60 @@
                   </v-icon>
                 </v-list-item-icon>
                 <v-list-item-title class="flex items-center">
-                  {{ t('modInstall.installDependencies') }}
+                  <!-- {{ t('modInstall.installDependencies') }} -->
+                  {{ localizedTexts.mod.installDependencies }}
+                </v-list-item-title>
+              </v-list-item>
+
+              <v-divider class="my-2" />
+
+              <v-list-item
+                dense
+                class="mx-1"
+                :disabled="mods.length === 0 || scanningUnusedMods"
+                @click="scanUnusedMods"
+              >
+                <template v-if="!scanningUnusedMods">
+                  <v-list-item-icon>
+                    <v-icon v-if="!scanningUnusedMods">
+                      restart_alt
+                    </v-icon>
+                    <v-progress-circular
+                      v-else
+                      small
+                      size="22"
+                      width="2"
+                      indeterminate
+                    />
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.scanUnusedLibraries') }}
+                  </v-list-item-title>
+                </template>
+                <template v-else>
+                  <v-list-item-icon>
+                    <v-icon color="primary">
+                      check
+                    </v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-title class="flex items-center">
+                    {{ t('modInstall.removeUnusedLibraries') }}
+                  </v-list-item-title>
+                </template>
+              </v-list-item>
+              <v-list-item
+                dense
+                class="mx-1"
+                :loading="scanningUnusedMods"
+                :disabled="unusedMods.length === 0"
+              >
+                <v-list-item-icon>
+                  <v-icon class="material-icons-outlined">
+                    file_download
+                  </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title class="flex items-center">
+                  {{ t('modInstall.removeUnusedLibraries') }}
                 </v-list-item-title>
               </v-list-item>
             </v-list>
@@ -197,15 +254,18 @@
                 >
                   check
                 </v-icon>
-                {{ t('modInstall.checkedUpgrade') }}
+                <!-- {{ t('modInstall.checkedUpgrade') }} -->
+                {{ localizedTexts.mod.checkedUpgrade }}
               </template>
               <template v-else>
-                {{ t('modInstall.checkUpgrade') }}
+                <!-- {{ t('modInstall.checkUpgrade') }} -->
+                {{ localizedTexts.mod.checkUpgrade }}
               </template>
             </v-subheader>
             <v-card-text class="pt-2">
               <div>
-                {{ t(`modUpgradePolicy.${upgradePolicy}`) }}
+                <!-- {{ t(`modUpgradePolicy.${upgradePolicy}`) }} -->
+                {{ localizedTexts.modUpgradePolicy[upgradePolicy] }}
               </div>
               <v-btn-toggle
                 v-model="upgradePolicy"
@@ -245,7 +305,8 @@
                 <v-icon left>
                   refresh
                 </v-icon>
-                {{ t('modInstall.checkUpgrade') }}
+                <!-- {{ t('modInstall.checkUpgrade') }} -->
+                {{ localizedTexts.mod.checkUpgrade }}
               </v-btn>
               <v-spacer />
               <v-btn
@@ -257,7 +318,8 @@
                 <v-icon left>
                   upgrade
                 </v-icon>
-                {{ t('modInstall.upgrade') }}
+                <!-- {{ t('modInstall.upgrade') }} -->
+                {{ localizedTexts.mod.upgrade }}
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -277,7 +339,8 @@
         type="error"
         @click="showDuplicatedDialog"
       >
-        {{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }}
+        <!-- {{ t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }) }} -->
+        {{ localizedTexts.mod.duplicatedDetected }}
       </v-alert>
       <v-alert
         v-if="incompatible"
@@ -286,7 +349,8 @@
         class="cursor-pointer info"
         @click="showIncompatibleDialog"
       >
-        {{ t('mod.incompatibleHint') }}
+        <!-- {{ t('mod.incompatibleHint') }} -->
+        {{ localizedTexts.mod.incompatibleHint }}
       </v-alert>
     </template>
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on }">
@@ -320,7 +384,8 @@
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
-        {{ t("modInstall.search") }}
+        <!-- {{ t("modInstall.search") }} -->
+        {{ localizedTexts.mod.search }}
         <v-divider class="ml-4" />
       </v-subheader>
       <v-subheader
@@ -328,7 +393,8 @@
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
-        {{ t("modrinth.environments.unsupported") }}
+        <!-- {{ t("modrinth.environments.unsupported") }} -->
+        {{ localizedTexts.mod.unsupported }}
         <v-divider class="ml-4" />
       </v-subheader>
     </template>
@@ -410,10 +476,12 @@
     >
       <v-card>
         <v-card-title>
-          {{ t('mod.noModLoaderHint') }}
+          <!-- {{ t('mod.noModLoaderHint') }} -->
+          {{ localizedTexts.mod.noModLoaderHint }}
         </v-card-title>
         <v-card-text>
-          {{ t('mod.modloaderSelectHint') }}
+          <!-- {{ t('mod.modloaderSelectHint') }} -->
+          {{ localizedTexts.mod.modloaderSelectHint }}
           <v-list nav>
             <v-list-item
               v-for="i of wizardModItems"
@@ -441,7 +509,8 @@
             type="error"
           >
             <span v-if="'loader' in wizardError">
-              {{ t('mod.modloaderSelectNotSupported', { loader: wizardError.loader, minecraft: wizardError.minecraft }) }}
+              <!-- {{ t('mod.modloaderSelectNotSupported', { loader: wizardError.loader, minecraft: wizardError.minecraft }) }} -->
+              {{ localizedTexts.mod.modloaderSelectNotSupported }}
             </span>
             <div v-else>
               {{ wizardError.message }}
@@ -491,6 +560,45 @@ import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
+import { useModLibCleaner } from '@/composables/modLibCleaner'
+
+const localizedTexts = computed(() => markRaw({
+  mod: {
+    mods: t('mod.mods'),
+    group: t('mod.group'),
+    delete: {
+      name: t('delete.name'),
+    },
+    enable: t('enable'),
+    disable: t('disable'),
+    denseView: t('mod.denseView'),
+    groupInstalled: t('mod.groupInstalled'),
+    switchDefaultSource: t('mod.switchDefaultSource'),
+    checkDependencies: t('modInstall.checkDependencies'),
+    checkedDependencies: t('modInstall.checkedDependencies'),
+    installDependencies: t('modInstall.installDependencies'),
+    scanUnusedLibraries: t('modInstall.scanUnusedLibraries'),
+    removeUnusedLibraries: t('modInstall.removeUnusedLibraries'),
+    checkUpgrade: t('modInstall.checkUpgrade'),
+    checkedUpgrade: t('modInstall.checkedUpgrade'),
+    upgrade: t('modInstall.upgrade'),
+    skipVersion: t('modInstall.skipVersion'),
+    noModLoaderHint: t('mod.noModLoaderHint'),
+    modloaderSelectHint: t('mod.modloaderSelectHint'),
+    modloaderSelectNotSupported: t('mod.modloaderSelectNotSupported'),
+    duplicatedDetected: t('mod.duplicatedDetected'),
+    incompatibleHint: t('mod.incompatibleHint'),
+    search: t('modInstall.search'),
+    unsupported: t('modrinth.environments.unsupported'),
+    dropHint: t('mod.dropHint'),
+  },
+  modUpgradePolicy: {
+    modrinth: t('modUpgradePolicy.modrinth'),
+    curseforge: t('modUpgradePolicy.curseforge'),
+    modrinthOnly: t('modUpgradePolicy.modrinthOnly'),
+    curseforgeOnly: t('modUpgradePolicy.curseforgeOnly'),
+  },
+}))
 
 const { runtime, path } = injection(kInstance)
 
@@ -810,6 +918,9 @@ const onInstallProject = useProjectInstall(
   },
 )
 
+// Mod cleaner
+const { unusedMods, refresh: scanUnusedMods, refreshing: scanningUnusedMods } = useModLibCleaner()
+
 useTutorial(computed(() => [{
   element: '#search-text-field',
   popover: {
@@ -837,7 +948,6 @@ useTutorial(computed(() => [{
 }]))
 // Presense
 usePresence(computed(() => t('presence.mod')))
-
 </script>
 
 <style scoped>

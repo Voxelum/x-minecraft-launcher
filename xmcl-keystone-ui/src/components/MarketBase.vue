@@ -35,6 +35,7 @@
         </div>
         <v-virtual-scroll
           v-if="items.length > 0"
+          key="market-left"
           id="left-pane"
           :bench="16"
           class="visible-scroll h-full max-h-full w-full overflow-auto pl-1"
@@ -66,6 +67,7 @@
       </template>
       <template #right>
         <div
+          key="market-right"
           id="right-pane"
           class="flex h-full flex-grow-0 overflow-y-auto overflow-x-hidden"
         >

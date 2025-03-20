@@ -1,6 +1,6 @@
 import { FabricModMetadata, ForgeModMetadata, ForgeModTOMLData, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import { ForgeModCommonMetadata, NeoforgeMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
-import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
+import { ModDependencies, ModDependency, getModDependencies, getModProvides } from './modDependencies'
 import { ProjectFile } from './search'
 import { notNullish } from '@vueuse/core'
 
@@ -30,7 +30,7 @@ export interface ModFile extends ModMetadata, ProjectFile {
    */
   path: string
   /**
-   * The mod id
+   * The mod id. This is computed from the metadata.
    */
   modId: string
   /**
@@ -76,7 +76,9 @@ export interface ModFile extends ModMetadata, ProjectFile {
   /**
    * All mod dependencies
    */
-  dependencies: ModDependencies
+  dependencies: {
+    [runtime: string]: ModDependencies
+  }
   /**
    * The provided runtime
    */
@@ -231,6 +233,24 @@ export function getModSide(mod: ModFile, runtime: 'fabric' | 'forge' | 'neoforge
   return ''
 }
 
+export function isModFile(file: ProjectFile): file is ModFile {
+  return (file as ModFile).dependencies !== undefined
+}
+
+export function getModMinecraftVersion(mod: ModFile) {
+  for (const deps of Object.values(mod.dependencies)) {
+    for (const dep of deps) {
+      if (dep.modId === 'minecraft') {
+        const mcDep = dep
+        const mcVer = (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange
+        if (mcVer) {
+          return mcVer
+        }
+      }
+    }
+  }
+}
+
 export function getModFileFromResource(resource: Resource, runtime: RuntimeVersions): ModFile {
   const modItem: ModFile = markRaw({
     path: resource.path,
@@ -243,11 +263,7 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     links: {},
     provideRuntime: markRaw(getModProvides(resource)),
     icon: resource.icons?.at(-1) ?? '',
-    dependencies: runtime.fabricLoader
-      ? (getModDependencies(resource, 'fabric').map(markRaw))
-      : runtime.neoForged
-        ? (getModDependencies(resource, 'neoforge').map(markRaw))
-        : (getModDependencies(resource, 'forge').map(markRaw)),
+    dependencies: getModDependencies(resource),
     url: '',
     hash: resource.hash,
     tags: [],
@@ -264,7 +280,7 @@ export function getModFileFromResource(resource: Resource, runtime: RuntimeVersi
     size: resource.size,
     mtime: resource.mtime,
     fileName: resource.fileName,
-  })
+  } as ModFile)
   if (resource.metadata.forge) {
     modItem.modLoaders.push('forge')
   }
