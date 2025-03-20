@@ -80,7 +80,7 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
  * @param dependencies All dependencies
  * @param runtime All current mod versions
  */
-export function getModsCompatiblity(dependencies: ModDependencies, runtime: Record<string, string>): CompatibleDetail[] {
+export function getModsCompatiblity(dependencies: ModDependencies, runtime: Record<string, string>, ignoreFabricLoader?: boolean): CompatibleDetail[] {
   const result: CompatibleDetail[] = []
   for (const v of dependencies) {
     const id = v.modId

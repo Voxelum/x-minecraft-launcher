@@ -73,6 +73,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     modsIconsMap.value = {}
     provideRuntime.value = {}
   }
+
   watch(instancePath, (v, prev) => {
     if (v !== prev) {
       reset()
@@ -104,6 +105,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       neoforge: runtimeVersions.neoForged ?? '',
       fabricloader: runtimeVersions.fabricLoader ?? '',
     }
+    const allows = getAllowedLoaders(runtimeVersions, newItems)
 
     for (const item of newItems) {
       // Update icon map
@@ -116,6 +118,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
       }
     }
 
+    allowLoaders.value = allows
     modsIconsMap.value = markRaw(newIconMap)
     modsRaw.value = markRaw(newItems.map(markRaw))
     provideRuntime.value = markRaw(runtime)
@@ -144,14 +147,48 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
     return markRaw(dict)
   })
 
+  function getAllowedLoaders(instanceRuntime: RuntimeVersions, mods: ModFile[]) {
+    const loaders = [] as string[]
+    if (instanceRuntime.forge) {
+      loaders.push('forge')
+      if (mods.some(m => m.modId === 'fabric_api')) {
+        loaders.push('fabric')
+      }
+    } else if (instanceRuntime.fabricLoader) {
+      loaders.push('fabric')
+    } else if (instanceRuntime.neoforge) {
+      loaders.push('neoforge')
+    } else if (instanceRuntime.quiltLoader) {
+      loaders.push('quilt')
+    }
+    return loaders
+  }
+
+  const allowLoaders = shallowRef([] as string[])
+
   const compatibility = computed(() => {
     const runtime = provideRuntime.value
+    const loaders = allowLoaders.value
 
     const result: Record<string, CompatibleDetail[]> = {}
+
+    if (loaders.length === 0) return result
+
+    const isForgeAndFabric = loaders[0] === 'forge' && loaders[1] === 'fabric'
+
     for (const i of mods.value) {
       if (!i.enabled) continue
-      const details = getModsCompatiblity(i.dependencies, runtime)
-      result[i.modId] = details
+      for (const loader of loaders) {
+        const deps = i.dependencies[loader]
+        if (deps) {
+          const details = getModsCompatiblity(deps, runtime, isForgeAndFabric)
+          result[i.modId] = details
+          break
+        }
+      }
+      if (!result[i.modId]) {
+        result[i.modId] = []
+      }
     }
 
     return markRaw(result)
@@ -172,6 +209,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
 
   return {
     mods,
+    allowLoaders,
     conflicted,
     modsIconsMap,
     provideRuntime,

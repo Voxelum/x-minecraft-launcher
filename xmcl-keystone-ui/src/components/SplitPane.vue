@@ -45,10 +45,10 @@
       </div>
     </template>
 
-    <div
+    <!-- <div
       v-if="data.active"
       class="vue-splitter-container-mask"
-    />
+    /> -->
   </div>
 </template>
 

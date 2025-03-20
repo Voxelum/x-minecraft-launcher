@@ -7,7 +7,7 @@ import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/pr
 import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
-import { ModFile } from '@/util/mod'
+import { ModFile, getModMinecraftVersion, isModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
 import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
@@ -30,7 +30,7 @@ const versions = computed(() => {
       downloadCount: 0,
       installed: props.installed.some(i => i.path === f.path),
       loaders: f.modLoaders,
-      minecraftVersion: f.dependencies.find((d) => d.modId === 'minecraft')?.semanticVersion as string,
+      minecraftVersion: isModFile(f) ? getModMinecraftVersion(f) : undefined,
       type: 'release',
       disabled: installed && f.path.endsWith('.disabled'),
     }

@@ -4,7 +4,7 @@ import { useMarkdown } from '@/composables/markdown'
 import { kModrinthTags } from '@/composables/modrinth'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
-import { ModFile } from '@/util/mod'
+import { ModFile, getModMinecraftVersion, isModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping } from '@xmcl/runtime-api'
@@ -170,11 +170,8 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
       })
     }
 
-    const isModFile = (f: ProjectFile | ModFile): f is ModFile => (f as ModFile).dependencies !== undefined
-
     for (const i of files) {
-      const mcDep = isModFile(i) ? (i as ModFile).dependencies.find(d => d.modId === 'minecraft') : undefined
-      const minecraftVersion = (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange ?? ''
+      const minecraftVersion = isModFile(i) ? getModMinecraftVersion(i) : ''
       all.push({
         id: i.modrinth?.versionId.toString() ?? '',
         name: basename(i.path) ?? '',

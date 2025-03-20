@@ -14,7 +14,7 @@ import { useLoading, useSWRVModel } from '@/composables/swrv'
 import { basename } from '@/util/basename'
 import { getCurseforgeFileGameVersions, getCurseforgeRelationType, getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoaderTypesForFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
-import { ModFile } from '@/util/mod'
+import { ModFile, getModMinecraftVersion, isModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FileModLoaderType, Mod, ModStatus } from '@xmcl/curseforge'
 import { ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
@@ -228,7 +228,7 @@ const modVersions = computed(() => {
   }
 
   for (const i of installed) {
-    const mcDep = 'dependencies' in i ? (i as ModFile).dependencies.find(d => d.modId === 'minecraft') : undefined
+    const minecraftVersion = isModFile(i) ? getModMinecraftVersion(i) : undefined
     versions.push({
       id: i.curseforge?.fileId.toString() ?? '',
       name: basename(i.path) ?? '',
@@ -240,7 +240,7 @@ const modVersions = computed(() => {
       installed: true,
       downloadCount: 0,
       loaders: 'modLoaders' in i ? (i as ModFile).modLoaders : [],
-      minecraftVersion: (mcDep?.semanticVersion instanceof Array ? mcDep.semanticVersion.join(' ') : mcDep?.semanticVersion) ?? mcDep?.versionRange ?? '',
+      minecraftVersion,
       createdDate: '',
     })
   }
