@@ -9,8 +9,6 @@ export interface ResourceContext {
   readonly db: Kysely<Database>
   readonly root: string
 
-  isDatabaseOpened(): Promise<boolean>
-
   readonly image: ImageStorage
   readonly hash: (file: string, size: number) => Promise<string>
   readonly hashAndFileType: (file: string, size: number, isDir?: boolean) => Promise<[string, string]>

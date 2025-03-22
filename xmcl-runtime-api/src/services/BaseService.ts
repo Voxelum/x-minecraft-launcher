@@ -105,8 +105,6 @@ export interface BaseService {
   migrate(options: MigrateOptions): Promise<void>
 
   getMemoryStatus(): Promise<{ total: number; free: number }>
-
-  isResourceDatabaseOpened(): Promise<boolean>
 }
 
 export type MigrationExceptions = {

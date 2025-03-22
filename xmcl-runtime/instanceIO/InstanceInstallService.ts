@@ -296,9 +296,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
                 this.error(e)
               })
               let count = 0
-              if (lock.files instanceof Array && lock.finishedPath instanceof Array) {
+              if (lock?.files instanceof Array && lock.finishedPath instanceof Array) {
                 count = lock.files.length - lock.finishedPath.length
-              } else if (lock.files instanceof Array) {
+              } else if (lock?.files instanceof Array) {
                 count = lock.files.length
               }
               status.pendingFileCountSet(count || 0)

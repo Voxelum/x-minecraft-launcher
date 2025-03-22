@@ -202,8 +202,4 @@ export class BaseService extends AbstractService implements IBaseService {
       free: freemem(),
     })
   }
-
-  async isResourceDatabaseOpened(): Promise<boolean> {
-    return this.app.registry.get(ResourceManager).then(r => r.isReady())
-  }
 }

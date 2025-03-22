@@ -66,6 +66,8 @@ export class Settings implements SettingSchema {
 
   diskFullError = false
 
+  databaseReady = false
+
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
@@ -197,6 +199,10 @@ export class Settings implements SettingSchema {
 
   diskFullErrorSet(diskFullError: boolean) {
     this.diskFullError = diskFullError
+  }
+
+  databaseReadySet(ready: boolean) {
+    this.databaseReady = ready
   }
 
   globalInstanceSetting(settings: {

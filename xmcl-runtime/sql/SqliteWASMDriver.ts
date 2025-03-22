@@ -67,7 +67,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
 
   async init(): Promise<void> {
     this.#db = this.#config.database
-    this.#connection = new SqliteConnection(this.#db)
+    this.#connection = new SqliteConnection(this.#db, this.#config.onError)
   }
 
   async acquireConnection(): Promise<DatabaseConnection> {
@@ -87,7 +87,7 @@ class SqliteConnection implements DatabaseConnection {
   readonly #db: Database
   #disposed = false
 
-  constructor(db: Database) {
+  constructor(db: Database, private onError?: (error: Error) => void) {
     this.#db = db
   }
 
@@ -121,6 +121,9 @@ class SqliteConnection implements DatabaseConnection {
     } catch (e) {
       if (this.#disposed && e instanceof SQLite3Error) {
         return Promise.reject(new Exception({ type: 'sqlite3Exception' }, e.message, { cause: e }))
+      }
+      if (e instanceof SQLite3Error) {
+        this.onError?.(e)
       }
       return Promise.reject(e)
     } finally {

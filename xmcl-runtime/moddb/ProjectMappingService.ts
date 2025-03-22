@@ -35,7 +35,14 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     @Inject(kSettings) private settings: Settings,
   ) {
     super(app, async () => {
-      await this.ensureDatabase(true)
+      try {
+        await this.ensureDatabase(true)
+      } catch (e) {
+        if (typeof e === 'object' && e) {
+          Object.assign(e, { Cause: 'ProjectMappingInitialize' })
+        }
+        throw e
+      }
     })
   }
 

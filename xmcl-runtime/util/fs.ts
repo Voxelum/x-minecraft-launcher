@@ -3,9 +3,9 @@ import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
 import { constants, existsSync } from 'fs'
-import { access, copyFile, ensureDir, ensureFile, link, readdir, stat, symlink, unlink } from 'fs-extra'
+import { access, close, copyFile, ensureDir, ensureFile, link, open, read, readdir, stat, symlink, unlink } from 'fs-extra'
 import { platform } from 'os'
-import { basename, extname, join, resolve } from 'path'
+import { extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
 import { Logger } from '~/logger'
@@ -112,7 +112,7 @@ export class CopyDirectoryTask extends AbortableTask<void> {
       await ensureDir(dest)
       const children = await readdir(src)
       for (const child of children) {
-        yield * this.visit(resolve(src, child), resolve(dest, child))
+        yield* this.visit(resolve(src, child), resolve(dest, child))
       }
     } else if (await missing(dest)) {
       this._total += fileStat.size
@@ -187,20 +187,53 @@ export function swapExt(path: string, ext: string) {
   return path.substring(0, path.length - existedExt.length) + ext
 }
 
+export async function isSameFile(file1: string, file2: string) {
+  if (file1 === file2) return true
+  const stat1 = await stat(file1).catch(() => undefined)
+  const stat2 = await stat(file2).catch(() => undefined)
+  if (!stat1 || !stat2) return false
+  if (stat1.ino === stat2.ino) return true
+  if (stat1.size !== stat2.size) return false
+
+  const fd1 = await open(file1, 'r')
+  const fd2 = await open(file2, 'r')
+
+  const bufferSize = 262144
+  const buffer = Buffer.alloc(bufferSize)
+
+  let offset = 0
+  let currentRead = 0
+
+  try {
+    do {
+      const { bytesRead: read1 } = await read(fd1, buffer, 0, 131072, offset)
+      const { bytesRead: read2 } = await read(fd2, buffer, 131072, 131072, offset)
+      if (read1 !== read2) return false
+
+      const srcPart = buffer.subarray(0, read1)
+
+      if (!srcPart.equals(buffer.subarray(131072, read2))) return false
+      offset += read1
+      currentRead = read1
+    } while (currentRead === bufferSize)
+  } finally {
+    await close(fd1)
+    await close(fd2)
+  }
+}
+
+
 /**
  * Perform hard link or copy file from `from` to `to`.
  */
 export function linkOrCopyFile(from: string, to: string) {
   const onLinkFileError = async (e: unknown, copied: boolean) => {
     if (isSystemError(e) && e.code === 'EEXIST') {
-      const isInoMatched = await isHardLinked(from, to)
-      if (isInoMatched) {
+      const sameFile = await isSameFile(from, to)
+      if (sameFile) {
         return to
       }
-      const extName = extname(to)
-      const fileName = basename(to, extName)
-      to = join(to, fileName + `-${Date.now()}` + extName)
-      await link(from, to).catch(e => onLinkFileError(e, false))
+      throw e
     }
     if (copied) {
       throw e
