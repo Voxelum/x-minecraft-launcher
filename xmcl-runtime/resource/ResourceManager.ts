@@ -35,10 +35,6 @@ export class ResourceManager {
     @Inject(kResourceContext) readonly context: ResourceContext,
   ) { }
 
-  async isReady() {
-    return this.context.isDatabaseOpened()
-  }
-
   async getHashByUri(uri: string): Promise<string | undefined> {
     return this.getHashesByUris([uri]).then(v => v[0])
   }

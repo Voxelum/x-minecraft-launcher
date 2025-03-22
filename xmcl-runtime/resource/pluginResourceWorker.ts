@@ -1,23 +1,24 @@
+import { InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
 import { Database } from 'node-sqlite3-wasm'
 import { join } from 'path'
-import { kGameDataPath, LauncherAppPlugin } from '~/app'
+import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { kFlights } from '~/flights'
 import { ImageStorage } from '~/imageStore'
+import { ServiceStateManager } from '~/service'
+import { kSettings } from '~/settings'
 import { SqliteWASMDialectConfig } from '~/sql'
 import { DatabaseWorker } from '~/sql/type'
 import { ZipManager } from '~/zipManager/ZipManager'
 import createDbWorker from '../sql/sqlite.worker?worker'
 import { createLazyWorker } from '../worker'
+import { kResourceContext } from './ResourceManager'
 import { createResourceContext } from './core/createResourceContext'
 import { migrate } from './core/migrateResources'
-import createResourceWorker from './resource.worker?worker'
-import { kResourceContext } from './ResourceManager'
-import { kResourceWorker, ResourceWorker } from './worker'
-import { ServiceStateManager } from '~/service'
-import { InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
 import { getDomainedPath } from './core/snapshot'
+import createResourceWorker from './resource.worker?worker'
+import { ResourceWorker, kResourceWorker } from './worker'
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const workerLogger = app.getLogger('ResourceWorker')
@@ -51,6 +52,11 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   } else {
     config = {
       database: new Database(dbPath),
+      onError: (e) => {
+        if (e.name === 'SQLite3Error' && e.message === 'unable to open database file') {
+          app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
+        }
+      }
     }
   }
 
@@ -59,8 +65,18 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
   const eventBus = new EventEmitter()
   const context = createResourceContext(getPath(), imageStorage, eventBus, logger, resourceWorker, config)
-  await migrate(context.db)
+  try {
+    await migrate(context.db)
+  } catch (e) {
+    logger.error(Object.assign(e as any, {
+      cause: 'ResourceDatabaseMigration',
+    }))
+  }
   app.registry.register(kResourceContext, context)
+
+  if ('database' in config) {
+    app.registry.get(kSettings).then((settings) => settings.databaseReadySet(config.database.isOpen))
+  }
 
   app.registryDisposer(async () => {
     await context.db.destroy()

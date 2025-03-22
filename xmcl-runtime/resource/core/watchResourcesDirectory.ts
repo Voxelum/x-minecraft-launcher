@@ -2,13 +2,13 @@ import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMe
 import { FSWatcher } from 'chokidar'
 import { randomBytes } from 'crypto'
 import { existsSync } from 'fs'
-import { copy } from 'fs-extra'
-import { basename, dirname, join, resolve, sep } from 'path'
+import { copy, link } from 'fs-extra'
+import { basename, dirname, extname, join, resolve, sep } from 'path'
 import { Logger } from '~/logger'
 import { jsonArrayFrom } from '~/sql/sqlHelper'
 import { AggregateExecutor, WorkerQueue } from '~/util/aggregator'
 import { AnyError, isSystemError } from '~/util/error'
-import { isHardLinked, linkOrCopyFile } from '~/util/fs'
+import { EEXIST_ERROR, isHardLinked, linkOrCopyFile } from '~/util/fs'
 import { toRecord } from '~/util/object'
 import { ResourceContext } from './ResourceContext'
 import { ResourceWorkerQueuePayload } from './ResourceWorkerQueuePayload'
@@ -438,8 +438,16 @@ export function watchResourceSecondaryDirectory(
       if (isInoMatched) {
         return
       }
-      linkOrCopyFile(file.path, target).catch((e) => {
-        context.logger.error(new AnyError('ResourceCopyError', `Fail to copy resource ${file.path} to ${target}`, { cause: e }))
+      linkOrCopyFile(file.path, target).catch(async (e) => {
+        const extName = extname(target)
+        const fileName = basename(target, extName)
+        const to = join(dirname(target), fileName + `-${Date.now()}` + extName)
+        await link(file.path, to).catch((e) => {
+          if (isSystemError(e) && e.code === EEXIST_ERROR) {
+            return
+          }
+          context.logger.error(new AnyError('ResourceCopyError', `Fail to copy resource ${file.path} to ${target}`, { cause: e }))
+        })
       })
     } else {
       copy(file.path, target).catch(onCopyDirectoryError)

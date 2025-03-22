@@ -58,7 +58,6 @@ export function createResourceContext(root: string, imageStore: ImageStorage, ev
 
   const context: ResourceContext = {
     db,
-    isDatabaseOpened: async () => 'database' in dbOptions ? dbOptions.database.isOpen : dbOptions.worker.init().then(() => true, () => false),
     image: imageStore,
     hash: delegates.hash,
     hashAndFileType: delegates.hashAndFileType,
