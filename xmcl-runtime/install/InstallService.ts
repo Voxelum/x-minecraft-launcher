@@ -72,7 +72,7 @@ export class InstallService extends AbstractService implements IInstallService {
         }
         const task = parsedArgs['--task']
 
-        if (task !== 'DOWNLOAD_MOJMAPS') return false
+        if (task !== 'DOWNLOAD_MOJMAPS' || this.settings.apiSetsPreference === 'mojang' || this.settings.httpProxyEnabled) return false
         if (!parsedArgs['--version'] || !parsedArgs['--side'] || !parsedArgs['--output']) return false
 
         const versionContent = await readFile(this.getPath('versions', parsedArgs['--version'], `${parsedArgs['--version']}.json`), 'utf-8').catch(() => '')
