@@ -663,6 +663,9 @@ loginError:
   loginXboxFailed: >-
     Fail to login Xbox by Microsoft token. Please make sure you have an
     independent Xbox account to your Microsoft account. Please try again.
+  noProfileForNewUser: >-
+    No game profile found! If you are a new Minecraft user, please login at
+    least one time in Minecraft official launcher.
   requestFailed: Login failed, we do not know the exact reason. Please retry.
   requireEmail: E-mail is required
   requirePassword: Password is required

@@ -252,6 +252,9 @@ const errorMessage = computed(() => {
       return t('loginError.requestFailed')
     }
     if (e.exception.type === 'fetchMinecraftProfileFailed') {
+      if (e.exception.errorType === 'ProfileNotFoundError' && !e.exception.developerMessage) {
+        return t('loginError.noProfileForNewUser')
+      }
       return t('loginError.fetchMinecraftProfileFailed', { reason: `${e.exception.errorType}, ${e.exception.developerMessage}` })
     }
     if (e.exception.type === 'userCheckGameOwnershipFailed') {

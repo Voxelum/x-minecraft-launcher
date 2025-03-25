@@ -704,6 +704,11 @@ loginError:
   loginXboxFailed: >-
     Nie można zalogować się do Xbox za pomocą tokena Microsoft. Upewnij się, że
     masz niezależne konto Xbox od konta Microsoft. Spróbuj ponownie.
+  noProfileForNewUser: >-
+    Nie znaleziono profilu gry! 
+
+    Jeśli jesteś nowym użytkownikiem Minecraft, zaloguj się przynajmniej raz w
+    oficjalnym wyrzutni Minecraft.
   requestFailed: >-
     Logowanie nie powiodło się, nie znamy dokładnej przyczyny. Prosimy o
     ponowienie próby.
