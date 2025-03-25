@@ -501,6 +501,12 @@ launchStatus:
   spawningProcess: ''
 liteloader:
   name: LiteLoader
+loginError:
+  noProfileForNewUser: >-
+    ¡No se encontró perfil de juego! 
+
+    Si es un nuevo usuario de Minecraft, inicie sesión al menos una vez en el
+    lanzador oficial de Minecraft.
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros

@@ -748,6 +748,11 @@ loginError:
     Ich konnte mich nicht mit meinem Microsoft-Token bei der Xbox anmelden.
     Stellen Sie sicher, dass Ihr Sie ein Xbox-Konto haben, das mit Ihrem
     Microsoft-Konto verknüpft ist. Versuchen Sie es erneut.
+  noProfileForNewUser: >-
+    Kein Spielprofil gefunden! 
+
+    Wenn Sie ein neuer Minecraft -Benutzer sind, melden Sie sich bitte
+    mindestens einmal im offiziellen Launcher Minecraft an.
   requestFailed: >-
     Sie konnten sich nicht anmelden, wir sind nicht sicher warum. Versuchen Sie
     es erneut.

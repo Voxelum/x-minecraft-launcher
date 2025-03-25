@@ -727,6 +727,11 @@ loginError:
     Échec de la connexion Xbox par token Microsoft. 
     Assurez-vous d'avoir un compte xbox lié à votre compte Microsoft. 
     Veuillez réessayer.
+  noProfileForNewUser: >-
+    Aucun profil de jeu trouvé! 
+
+    Si vous êtes un nouvel utilisateur de Minecraft, veuillez vous connecter au
+    moins une fois dans le lanceur officiel de Minecraft.
   requestFailed: |-
     La connexion a échoué, nous ne connaissons pas la raison exacte. 
     Veuillez réessayer.

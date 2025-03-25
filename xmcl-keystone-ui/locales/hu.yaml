@@ -684,6 +684,11 @@ loginError:
     Nem sikerül bejelentkezni az Xboxra Microsoft tokennel. Kérlek, győződj meg
     róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek,
     próbáld meg újra.
+  noProfileForNewUser: >-
+    Nincs játékprofil! 
+
+    Ha Ön új Minecraft felhasználó, kérjük, jelentkezzen be legalább egyszer a
+    Minecraft hivatalos indítójába.
   requestFailed: >-
     A bejelentkezés sikertelen volt, a pontos okot nem tudjuk. Kérlek, próbáld
     meg újra.

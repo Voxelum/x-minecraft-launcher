@@ -640,6 +640,9 @@ loginError:
     XboxトークンのMinecraftトークンへの引き換えに失敗しました。XboxでMinecraftを所持しているか確認してください。再度試してください。
   loginXboxFailed: >-
     MicrosoftトークンでのXboxへのログインに失敗しました。Microsoftアカウントへ接続された孤立していないXboxアカウントか確認してください。再度試してください。
+  noProfileForNewUser: |-
+    ゲームプロファイルは見つかりません！
+    新しいMinecraftユーザーの場合は、Minecraftの公式ランチャーで少なくとも1回ログインしてください。
   requestFailed: ログインに失敗しました。理由は不明です。再度試してください。
   requireEmail: メールアドレスが必要です
   requirePassword: パスワードが必要です

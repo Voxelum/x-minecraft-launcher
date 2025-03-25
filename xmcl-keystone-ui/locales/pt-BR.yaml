@@ -763,6 +763,11 @@ loginError:
     Falha ao fazer login no Xbox com o token da Microsoft. Certifique-se de que
     você tenha uma conta independente do Xbox para sua conta da Microsoft. Tente
     novamente.
+  noProfileForNewUser: >-
+    Nenhum perfil de jogo encontrado! 
+
+    Se você é um novo usuário do Minecraft, faça o login pelo menos uma vez no
+    Minecraft Official Launcher.
   requestFailed: Falha no login, não sabemos o motivo exato. Tente novamente.
   requireEmail: E-mail é obrigatório
   requirePassword: Senha é obrigatória

@@ -321,6 +321,12 @@ launchBlocked:
       Comproba o teu java ou dálle máis permisos ao iniciador e téntao de novo. 
       Se isto aínda non funciona, póñase en contacto cos desenvolvedores.
     title: Non se puido iniciar o proceso de xogo
+loginError:
+  noProfileForNewUser: >-
+    Non se atopou ningún perfil de xogo. 
+
+    Se es un novo usuario de Minecraft, inicie sesión polo menos unha vez no
+    lanzador oficial de Minecraft.
 me:
   games: Os meus xogos
   modpacks: Os meus Modpacks

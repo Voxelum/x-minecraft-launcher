@@ -665,6 +665,9 @@ loginError:
   invalidCredentials: 无法验证。用户名或密码错误。
   loginMinecraftByXboxFailed: 在通过 Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认您的 Xbox 账号拥有 Minecraft。您可以尝试重试登录
   loginXboxFailed: 请求 Xbox 通证失败，请确保您的微软账号已经绑定了一个 Xbox 账号！
+  noProfileForNewUser: |-
+    找不到游戏资料！
+    如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
   requestFailed: 由于未知原因登录失败，请重试
   requireEmail: 必须使用邮箱登录
   requirePassword: 请输入密码
