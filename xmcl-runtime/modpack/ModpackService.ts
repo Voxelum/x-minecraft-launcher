@@ -224,7 +224,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           let handled = false
           if (metadata.curseforge && (curseforgeConfig || mcbbsManifest)) {
             // curseforge
-            curseforgeConfig?.files.push({ projectID: metadata.curseforge.projectId, fileID: metadata.curseforge.fileId, required: true })
+            curseforgeConfig?.files?.push({ projectID: metadata.curseforge.projectId, fileID: metadata.curseforge.fileId, required: true })
             mcbbsManifest?.files!.push({ projectID: metadata.curseforge.projectId, fileID: metadata.curseforge.fileId, type: 'curse', force: false })
             handled = true
           }
