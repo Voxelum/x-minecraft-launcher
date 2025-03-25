@@ -54,7 +54,7 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
     resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
       // curseforge or mcbbs
       const curseforgeFiles = manifest.files
-      if (curseforgeFiles.length > 0) {
+      if (curseforgeFiles && curseforgeFiles.length > 0) {
         const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')
         if (ids.length === 0) return []
 
@@ -78,8 +78,8 @@ export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => 
           modDict[mod.id] = mod
         }
 
-        for (let i = 0; i < manifest.files.length; i++) {
-          const manifestFile = manifest.files[i]
+        for (let i = 0; i < curseforgeFiles.length; i++) {
+          const manifestFile = curseforgeFiles[i]
           const file = dict[manifestFile.fileID]
           const mod = modDict[file.modId]
           if (!file) {

@@ -256,7 +256,7 @@ export interface CurseforgeModpackManifest extends ModpackManifest {
       primary: boolean
     }[]
   }
-  files: {
+  files?: {
     projectID: number
     fileID: number
     required: boolean
