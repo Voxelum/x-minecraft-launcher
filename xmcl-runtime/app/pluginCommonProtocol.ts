@@ -1,5 +1,4 @@
 import { Readable } from 'stream'
-import { fetch } from 'undici'
 import type { LauncherAppPlugin } from './LauncherAppPlugin'
 import type { Handler } from './LauncherProtocolHandler'
 

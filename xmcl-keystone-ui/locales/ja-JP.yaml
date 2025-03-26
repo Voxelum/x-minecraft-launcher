@@ -545,6 +545,7 @@ labyMod:
   empty: LabyMod は現在のMinecraftをサポートしていません
 launch:
   cancel: キャンセル
+  createShortcut: ショートカットを作成します
   kill: 停止
   killServer: Localhost Serverを終了
   launch: 起動

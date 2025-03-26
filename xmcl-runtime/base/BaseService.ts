@@ -28,6 +28,10 @@ export class BaseService extends AbstractService implements IBaseService {
     })
   }
 
+  async getDesktopDirectory(): Promise<string> {
+    return this.app.host.getPath('desktop')
+  }
+
   destroyPool(origin: string) {
     return this.app.registry.get(kNetworkInterface).then(s => s.destroyPool(origin))
   }

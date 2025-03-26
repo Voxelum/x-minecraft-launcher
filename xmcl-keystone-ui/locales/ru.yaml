@@ -617,6 +617,7 @@ labyMod:
   empty: LabyMod не поддерживает текущую версию Minecraft
 launch:
   cancel: Отменить
+  createShortcut: Создать ярлык
   kill: Остановить
   killServer: Остановить локальный сервер
   launch: Запустить

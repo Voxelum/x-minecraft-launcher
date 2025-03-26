@@ -64,6 +64,19 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         }),
       )
 
+      // node_modules\.pnpm\png2icons@2.0.1\node_modules\png2icons\lib\UPNG.js
+      build.onLoad(
+        { filter: /^.+png2icons[\\/]lib[\\/]UPNG\.js$/g },
+        async ({ path }) => {
+          let content = await readFile(path, 'utf-8')
+          content = content.replace(`if (typeof require == "function") {UZIP = require("./UZIP");}  else {UZIP = window.UZIP;}`, 'let UZIP = require("./UZIP");')
+          return {
+            contents: content,
+            loader: 'js',
+          }
+        }
+      )
+
       // Intercept node_modules\node-datachannel\polyfill\RTCPeerConnection.js
       build.onLoad(
         { filter: /^.+node-datachannel[\\/]polyfill[\\/]RTCPeerConnection\.js$/g },

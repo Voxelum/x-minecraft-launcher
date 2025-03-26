@@ -592,6 +592,7 @@ java:
   refresh: Actualiser l'exécutable Java Local
   systemMemory: "Mémoire libre du système\_: {free} / {total}"
 launch:
+  createShortcut: Créer un raccourci
   killServer: Tuer le serveur Localhost
   launch: Jouer
   launchAnyway: Lancer quand même

@@ -10,6 +10,27 @@ declare module '@node-rs/crc32-wasm32-wasi' {
   export function crc32c(input: Buffer, crc?: number): number
 }
 
+declare module 'create-desktop-shortcuts' {
+  interface ShortcutOptions {
+    windows?: {
+      VBScriptPath?: string
+      filePath: string
+      outputPath: string
+      name?: string
+      icon?: string
+      arguments?: string
+    }
+    linux?: {
+      filePath: string
+      outputPath: string
+      name?: string
+      icon?: string
+      arguments?: string
+    }
+  }
+  export default function createDesktopShortcuts(options: ShortcutOptions): void
+}
+
 declare module '*?worker' {
   import { Worker, WorkerOptions } from 'worker_threads'
 

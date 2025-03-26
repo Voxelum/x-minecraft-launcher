@@ -177,14 +177,15 @@
   </div>
 </template>
 <script lang="ts" setup>
+import SettingHeader from '@/components/SettingHeader.vue'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import { kEnvironment } from '@/composables/environment'
+import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
-import SettingItemSelect from '@/components/SettingItemSelect.vue'
-import SettingHeader from '@/components/SettingHeader.vue'
-import { useEnvironment } from '@/composables/environment'
 
-const env = useEnvironment()
+const env = injection(kEnvironment)
 const {
   proxy, httpProxyEnabled, apiSets,
   streamerMode,

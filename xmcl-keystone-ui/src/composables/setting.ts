@@ -3,14 +3,14 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey, Environment, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCacheBool } from './cache'
-import { useEnvironment } from './environment'
+import { kEnvironment } from './environment'
 import { useState } from './syncableState'
 
 export const kUpdateSettings: InjectionKey<ReturnType<typeof useUpdateSettings>> = Symbol('UpdateSettings')
 
 export function useUpdateSettings() {
   const { checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
-  const env: Ref<Environment | undefined> = useEnvironment()
+  const env: Ref<Environment | undefined> = injection(kEnvironment)
   const { state } = injection(kSettingsState)
   const updateStatus = computed(() => state.value?.updateStatus)
   const updateInfo = computed(() => state.value?.updateInfo)

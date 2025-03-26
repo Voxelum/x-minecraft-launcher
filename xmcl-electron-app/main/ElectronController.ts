@@ -379,8 +379,10 @@ export class ElectronController implements LauncherAppController {
         browser.maximize()
       }
 
-      browser.show()
-      browser.focus()
+      if (!this.app.deferredWindowOpen) {
+        browser.show()
+        browser.focus()
+      }
     })
     browser.webContents.on('will-navigate', this.onWebContentWillNavigate)
     browser.webContents.on('did-create-window', this.onWebContentCreateWindow)
@@ -454,7 +456,11 @@ export class ElectronController implements LauncherAppController {
 
   requireFocus(): void {
     if (this.mainWin) {
-      this.mainWin.focus()
+      if (!this.mainWin.isVisible()) {
+        this.mainWin.show()
+      } else {
+        this.mainWin.focus()
+      }
     } else if (this.loggerWin) {
       this.loggerWin.focus()
     }
