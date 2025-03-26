@@ -4,7 +4,7 @@ import { pluginNvdiaGPULinux } from './pluginNvdiaGPULinux'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
 
 import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
-import { pluginMediaProtocol } from '@xmcl/runtime/base/pluginMediaProtocol'
+import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { pluginClientToken } from '@xmcl/runtime/clientToken/pluginClientToken'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'

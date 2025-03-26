@@ -1,5 +1,5 @@
-import { MigrationException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, SharedState, PoolStats, Settings } from '@xmcl/runtime-api'
-import { copy, move, readdir, readlink, rename, stat } from 'fs-extra'
+import { BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MigrationException, PoolStats, Settings, SharedState } from '@xmcl/runtime-api'
+import { readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -12,10 +12,7 @@ import { TaskFn, kTaskExecutor } from '~/task'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
-import { AnyError, isSystemError } from '../util/error'
-import { copyPassively } from '../util/fs'
 import { ZipTask } from '../util/zip'
-import { ResourceManager } from '~/resource'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {

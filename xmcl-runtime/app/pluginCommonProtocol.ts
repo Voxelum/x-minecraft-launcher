@@ -3,7 +3,7 @@ import type { LauncherAppPlugin } from './LauncherAppPlugin'
 import type { Handler } from './LauncherProtocolHandler'
 
 /**
- * The plugin to handle builtin icons
+ * The plugin to handle all fallback http request
  */
 export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   const handler: Handler = async ({ request, response }) => {

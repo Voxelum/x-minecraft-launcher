@@ -1,6 +1,6 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
-import { BaseService } from '@xmcl/runtime/base'
+import { BaseService } from '@xmcl/runtime/app'
 import { app, Menu, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { kSettings } from '@xmcl/runtime/settings'

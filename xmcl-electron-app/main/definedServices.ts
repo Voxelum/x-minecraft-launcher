@@ -1,5 +1,5 @@
 import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
-import { BaseService } from '@xmcl/runtime/base'
+import { BaseService } from '@xmcl/runtime/app'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { ImportService } from '@xmcl/runtime/import'
 import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
