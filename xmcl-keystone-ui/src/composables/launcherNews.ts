@@ -1,8 +1,8 @@
-import useSWRV from 'swrv'
-import { useSWRVConfig } from './swrvConfig'
-import { useEnvironment } from './environment'
-import { kSettingsState } from './setting'
 import { injection } from '@/util/inject'
+import useSWRV from 'swrv'
+import { kEnvironment } from './environment'
+import { kSettingsState } from './setting'
+import { useSWRVConfig } from './swrvConfig'
 
 export interface LauncherNews {
   category: string
@@ -18,7 +18,7 @@ export interface LauncherNews {
 }
 
 export function useLauncherNews() {
-  const env = useEnvironment()
+  const env = injection(kEnvironment)
   const { state } = injection(kSettingsState)
   const { data, error, isValidating, mutate } = useSWRV('/launcher-news', async () => {
     const url = new URL('https://api.xmcl.app/news')

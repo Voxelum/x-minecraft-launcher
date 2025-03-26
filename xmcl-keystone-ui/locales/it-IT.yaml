@@ -562,6 +562,7 @@ labyMod:
   empty: LabyMod non supporta l'attuale versione di Minecraft
 launch:
   cancel: Annulla
+  createShortcut: Crea scorciatoia
   kill: Arresta
   killServer: Uccidi il server Localhost
   launch: Avvia

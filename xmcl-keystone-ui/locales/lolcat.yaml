@@ -528,6 +528,7 @@ labyMod:
   empty: LABYMOD DOEZ NOT SUPPORT CURRENT MINECRAFT
 launch:
   cancel: CANCEL
+  createShortcut: Create shortcut
   kill: STOP
   killServer: KILL LOCALHOST SERVR
   launch: LAUNCH

@@ -3,7 +3,7 @@ import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { Menu, app, net, shell } from 'electron'
 import { stat } from 'fs-extra'
-import { join } from 'path'
+import { isAbsolute, join } from 'path'
 import { AnyError } from '~/util/error'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
@@ -184,6 +184,8 @@ export default class ElectronLauncherApp extends LauncherApp {
       const last = argv[argv.length - 1]
       if (last.startsWith('xmcl://')) {
         this.protocol.handle({ url: last })
+      } else {
+        this.emit('second-instance', argv)
       }
     })
 

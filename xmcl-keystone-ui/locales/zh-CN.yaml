@@ -563,6 +563,7 @@ labyMod:
   empty: 当前 Minecraft 不支持 LabyMod
 launch:
   cancel: 中止
+  createShortcut: 创建快捷方式
   kill: 停止
   killServer: 停止本地服务器
   launch: 启动

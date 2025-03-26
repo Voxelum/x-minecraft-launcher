@@ -544,6 +544,7 @@ labyMod:
   empty: LabyMod does not support current Minecraft
 launch:
   cancel: Cancel
+  createShortcut: Create shortcut
   kill: Stop
   killServer: Kill Localhost Server
   launch: Launch

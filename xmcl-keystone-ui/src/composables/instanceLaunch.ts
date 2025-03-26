@@ -1,5 +1,5 @@
 import { useService } from '@/composables'
-import { AUTHORITY_DEV, AuthlibInjectorServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AuthlibInjectorServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey, generateLaunchOptionsWithGlobal } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useGlobalSettings, useSettingsState } from './setting'
@@ -129,92 +129,33 @@ export function useInstanceLaunch(
   async function generateLaunchOptions(instancePath: string, operationId: string, side = 'client' as 'client' | 'server', overrides?: Partial<LaunchOptions>, dry = false) {
     const ver = overrides?.version ?? side === 'client' ? version.value : serverVersion.value
 
-    if (!ver) {
-      throw new LaunchException({ type: 'launchNoVersionInstalled' })
-    }
-
-    const javaPath = overrides?.java ?? java.value?.path
-    if (!javaPath) {
-      throw new LaunchException({ type: 'launchNoProperJava', javaPath: '' })
-    }
-
-    let yggdrasilAgent: LaunchOptions['yggdrasilAgent']
-
-    const authority = tryParseUrl(userProfile.value.authority)
-
-    const inst = instance.value
-
-    const disableAuthlibInjector = inst.disableAuthlibInjector ?? globalDisableAuthlibInjector.value
-    if (!disableAuthlibInjector && authority && (authority.protocol === 'http:' || authority?.protocol === 'https:' || userProfile.value.authority === AUTHORITY_DEV)) {
-      try {
-        yggdrasilAgent = {
-          jar: await track(instancePath, getOrInstallAuthlibInjector(), 'preparing-authlib', operationId),
-          server: userProfile.value.authority,
-        }
-      } catch {
-        // TODO: notify user
+    return await generateLaunchOptionsWithGlobal(
+      { ...instance.value, path: instancePath },
+      userProfile.value,
+      ver,
+      {
+        operationId,
+        side,
+        overrides,
+        dry,
+        javaPath: java.value?.path,
+        globalEnv: globalEnv.value,
+        globalVmOptions: globalVmOptions.value,
+        globalMcOptions: globalMcOptions.value,
+        globalPrependCommand: globalPrependCommand.value,
+        globalAssignMemory: globalAssignMemory.value,
+        globalMinMemory: globalMinMemory.value,
+        globalMaxMemory: globalMaxMemory.value,
+        globalHideLauncher: globalHideLauncher.value,
+        globalShowLog: globalShowLog.value,
+        globalFastLaunch: globalFastLaunch.value,
+        globalDisableAuthlibInjector: globalDisableAuthlibInjector.value,
+        globalDisableElyByAuthlib: globalDisableElyByAuthlib.value,
+        modCount: mods.value.length,
+        getOrInstallAuthlibInjector,
+        track: track as any,
       }
-    }
-
-    const assignMemory = inst.assignMemory ?? globalAssignMemory.value
-    const hideLauncher = inst.hideLauncher ?? globalHideLauncher.value
-    const env = {
-      ...globalEnv.value,
-      ...inst.env,
-    }
-    const showLog = inst.showLog ?? globalShowLog.value
-    const fastLaunch = inst.fastLaunch ?? globalFastLaunch.value
-    const disableElyByAuthlib = inst.disableElybyAuthlib ?? globalDisableElyByAuthlib.value
-
-    let minMemory: number | undefined = inst.minMemory ?? globalMinMemory.value
-    let maxMemory: number | undefined = inst.maxMemory ?? globalMaxMemory.value
-    if (assignMemory === true && minMemory > 0) {
-      // noop
-    } else if (assignMemory === 'auto') {
-      if (!dry) {
-        assignStatus(instancePath, 'assigning-memory')
-      }
-
-      const modCount = mods.value.length
-      if (modCount === 0) {
-        minMemory = 1024
-      } else {
-        const level = modCount / 25
-        const rounded = Math.floor(level)
-        const percentage = level - rounded
-        minMemory = rounded * 1024 + (percentage > 0.5 ? 512 : 0) + 1024
-      }
-    } else {
-      minMemory = undefined
-    }
-    maxMemory = assignMemory === true && maxMemory > 0 ? maxMemory : undefined
-
-    const vmOptions = inst.vmOptions ?? globalVmOptions.value.filter(v => !!v)
-    const mcOptions = inst.mcOptions ?? globalMcOptions.value.filter(v => !!v)
-    const prependCommand = inst.prependCommand ?? globalPrependCommand.value
-
-    const options: LaunchOptions = {
-      operationId,
-      version: ver,
-      gameDirectory: instance.value.path,
-      user: userProfile.value,
-      java: javaPath,
-      hideLauncher,
-      env,
-      showLog,
-      minMemory,
-      maxMemory,
-      skipAssetsCheck: fastLaunch,
-      vmOptions,
-      mcOptions,
-      yggdrasilAgent,
-      disableElyByAuthlib,
-      prependCommand,
-      side,
-      server: inst.server ?? undefined,
-      ...overrides,
-    }
-    return options
+    )
   }
 
   function shouldEnableVoiceChat() {

@@ -35,11 +35,13 @@ import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilApi } from '@xmcl/runtime/user/pluginYggdrasilApi'
 import { pluginYggdrasilHandler } from '@xmcl/runtime/yggdrasilServer/pluginYggdrasilHandler'
+import { pluginDirectLaunch } from '@xmcl/runtime/launch/pluginDirectLaunch'
 
 import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
+  pluginDirectLaunch,
   pluginAutoUpdate,
   pluginPowerMonitor,
   pluginCommonProtocol,

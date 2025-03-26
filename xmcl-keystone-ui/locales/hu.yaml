@@ -558,6 +558,7 @@ labyMod:
   empty: A LabyMod nem támogatja a jelenlegi Minecraftot
 launch:
   cancel: Mégsem
+  createShortcut: Hozzon létre parancsikont
   kill: Leállítás
   killServer: Öld meg a Localhost szervert
   launch: Indítás

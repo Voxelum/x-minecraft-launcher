@@ -185,6 +185,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     let curseforgeConfig: CurseforgeModpackManifest | undefined
     let mcbbsManifest: McbbsModpackManifest | undefined
     let modrinthManifest: ModrinthModpackManifest | undefined
+    let xmclManifestExtension: Pick<InstanceData, 'disableElybyAuthlib' | 'disableAuthlibInjector' | 'upstream' | 'server'> | undefined
 
     if (emitCurseforge) {
       curseforgeConfig = getCurseforgeModpackFromInstance(instance)

@@ -143,6 +143,13 @@ export interface ReportOperationPayload {
   success?: boolean
 }
 
+export interface CreateLaunchShortcutOptions {
+  instancePath: string
+  userId: string
+  destination: string
+  icon?: string
+}
+
 export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap> {
   /**
    * Generate useable launch arguments for current profile
@@ -171,6 +178,10 @@ export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap
    * Only used for telemetry
    */
   reportOperation(options: ReportOperationPayload): Promise<void>
+  /**
+   * Create a launch shortcut
+   */
+  createLaunchShortcut(options: CreateLaunchShortcutOptions): Promise<void>
 }
 
 export type LaunchExceptions = {

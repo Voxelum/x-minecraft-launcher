@@ -2,6 +2,7 @@ import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync }
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
+import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
 import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
@@ -104,6 +105,7 @@ export default defineComponent({
     provide(kModsSearch, modsSearch)
     provide(kSaveSearch, useSavesSearch(instance.runtime, saves.saves, saves.sharedSaves))
     provide(kModUpgrade, modUpgrade)
+    provide(kEnvironment, useEnvironment())
     provide(kTheme, useTheme(vuetify.framework))
 
     useI18nSync(vuetify.framework, settings.state)

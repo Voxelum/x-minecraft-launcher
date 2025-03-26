@@ -636,6 +636,7 @@ labyMod:
   empty: LabyMod não é compatível com a versão atual do Minecraft.
 launch:
   cancel: Cancelar
+  createShortcut: Crie atalho
   kill: Parar
   killServer: Matar Localhost Server
   launch: Launch

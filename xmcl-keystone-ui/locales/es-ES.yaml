@@ -486,6 +486,7 @@ java:
   allocatedLong: Usar Java predeterminada del sistema
   allocatedShort: Asignación Automática
 launch:
+  createShortcut: Crear atajo
   killServer: Matar el servidor localhost
   launchAnyway: Lanzar de todos modos
 launchBlocked:

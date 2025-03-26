@@ -1,10 +1,10 @@
 import { injection } from '@/util/inject'
-import { useEnvironment } from './environment'
+import { kEnvironment } from './environment'
 import { kSettingsState } from './setting'
 
 export function useWindowStyle() {
   const { state } = injection(kSettingsState)
-  const env = useEnvironment()
+  const env = injection(kEnvironment)
   const maximized = ref(false)
   windowController.on('maximize', (v) => {
     maximized.value = v

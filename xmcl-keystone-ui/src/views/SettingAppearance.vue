@@ -467,25 +467,25 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { kSettingsState } from '@/composables/setting'
-import { kUILayout } from '@/composables/uiLayout'
-import { injection } from '@/util/inject'
-import SettingAppearanceColor from './SettingAppearanceColor.vue'
-import SettingItemSelect from '@/components/SettingItemSelect.vue'
-import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingHeader from '@/components/SettingHeader.vue'
-import { useEnvironment } from '@/composables/environment'
-import { BackgroundType, kTheme } from '@/composables/theme'
-import { basename } from '@/util/basename'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import SettingItemSelect from '@/components/SettingItemSelect.vue'
+import { kEnvironment } from '@/composables/environment'
 import { useService } from '@/composables/service'
+import { kSettingsState } from '@/composables/setting'
+import { BackgroundType, kTheme } from '@/composables/theme'
+import { kUILayout } from '@/composables/uiLayout'
+import { basename } from '@/util/basename'
+import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
+import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 const { blurSidebar, blurAppBar, fontSize, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
-const env = useEnvironment()
+const env = injection(kEnvironment)
 
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,

@@ -611,6 +611,7 @@ labyMod:
   empty: LabyMod unterstützt nicht das aktuelle Minecraft
 launch:
   cancel: Ablehnen
+  createShortcut: Verknüpfung erstellen
   kill: Stopp
   killServer: Töte den Localhost-Server
   launch: Los geht's

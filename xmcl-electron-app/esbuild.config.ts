@@ -37,7 +37,7 @@ const config = {
     '.webp': 'file',
     '.gif': 'file',
     '.cs': 'file',
-    '.vbs': 'file',
+    '.vbs': 'text',
     '.ico': 'file',
     '.class': 'binary',
     '.html': 'file',

@@ -99,6 +99,10 @@ export interface BaseService {
    */
   getGameDataDirectory(): Promise<string>
   /**
+   * Get the desktop directory folder.
+   */
+  getDesktopDirectory(): Promise<string>
+  /**
    * Migrate the launcher game data root to another directory
    * @param options The migration options
    */

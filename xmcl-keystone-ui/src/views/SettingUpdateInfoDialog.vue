@@ -111,7 +111,7 @@
 </template>
 
 <script lang=ts setup>
-import { useEnvironment } from '@/composables/environment'
+import { kEnvironment } from '@/composables/environment'
 import { useMarkdown } from '@/composables/markdown'
 import { kSettingsState, kUpdateSettings } from '@/composables/setting'
 import { getLocalDateString } from '@/util/date'
@@ -133,7 +133,7 @@ function renderUpdate() {
   return render(transformed)
 }
 const body = computed(() => state.value?.updateInfo?.operation === 'autoupdater' ? state.value?.updateInfo.body : renderUpdate())
-const env = useEnvironment()
+const env = injection(kEnvironment)
 const isAppX = computed(() => env.value?.env === 'appx')
 const isAppImage = computed(() => env.value?.env === 'appimage')
 const hintRedownload = computed(() =>

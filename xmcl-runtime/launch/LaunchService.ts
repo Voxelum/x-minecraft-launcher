@@ -1,23 +1,29 @@
 import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
-import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload, ResolvedServerVersion } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, CreateLaunchShortcutOptions, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload, ResolvedServerVersion } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { ChildProcess } from 'child_process'
 import { randomUUID } from 'crypto'
-import { constants } from 'fs'
-import { access } from 'fs-extra'
+import { constants, existsSync } from 'fs'
+import { access, writeFile } from 'fs-extra'
 import { EOL } from 'os'
-import { dirname, join } from 'path'
+import { basename, dirname, join } from 'path'
 import { setTimeout } from 'timers/promises'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { EncodingWorker, kEncodingWorker } from '~/encoding'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { UserTokenStorage, kUserTokenStorage } from '~/user'
+import { normalizeCommandLine } from '~/util/cmd'
 import { isSystemError } from '~/util/error'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
-import { normalizeCommandLine } from '~/util/cmd'
+import { kYggdrasilSeriveRegistry } from '~/user/YggdrasilSeriveRegistry'
+import { createICO } from 'png2icons'
+import createDesktopShortcut, { ShortcutOptions } from 'create-desktop-shortcuts'
+import vbTextContent from 'create-desktop-shortcuts/src/windows.vbs'
+import { Readable } from 'stream'
+import { finished } from 'stream/promises'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -542,5 +548,73 @@ export class LaunchService extends AbstractService implements ILaunchService {
         name: payload.name,
       })
     }
+  }
+
+  async createLaunchShortcut(options: CreateLaunchShortcutOptions): Promise<void> {
+    const iconUrl = options.icon
+
+    const instanceIcoPath = process.platform === 'win32'
+      ? join(options.instancePath, 'icon.ico')
+      : join(options.instancePath, 'icon.png')
+    if (iconUrl) {
+      const { body } = await this.app.protocol.handle({
+        method: 'GET',
+        url: iconUrl,
+      })
+      let buffer: Buffer
+      if (body) {
+        if (body instanceof Buffer) {
+          buffer = body
+        } else if (body instanceof Readable) {
+          const buffers = [] as Buffer[]
+          body.on('data', (b) => {
+            buffers.push(b)
+          })
+          await finished(body)
+          buffer = Buffer.concat(buffers)
+        } else {
+          buffer = Buffer.from(body)
+        }
+        if (process.platform === 'win32') {
+          const result = createICO(buffer, 0, 0, true, true)
+          if (result) {
+            buffer = result
+          }
+        }
+        await writeFile(instanceIcoPath, buffer)
+      }
+    }
+
+    const shortcutOptions: ShortcutOptions = {}
+
+    if (process.platform === 'win32') {
+      const c = vbTextContent
+      const vbPath = join(this.app.appDataPath, 'vbscript.vbs')
+      await writeFile(vbPath, c, { encoding: 'utf-8' })
+      shortcutOptions.windows = {
+        VBScriptPath: vbPath,
+        filePath: process.execPath,
+        outputPath: dirname(options.destination),
+        name: basename(options.destination),
+        icon: instanceIcoPath,
+        arguments: `launch "${options.userId}" "${options.instancePath}"`,
+      }
+      if (!existsSync(shortcutOptions.windows!.icon!)) {
+        delete shortcutOptions.windows.icon
+      }
+    } else {
+      shortcutOptions.linux = {
+        filePath: process.execPath,
+        outputPath: options.destination,
+        name: basename(options.destination),
+        icon: instanceIcoPath,
+        arguments: `launch "${options.userId}" "${options.instancePath}"`,
+      }
+      if (!existsSync(shortcutOptions.linux!.icon!)) {
+        delete shortcutOptions.linux.icon
+      }
+    }
+
+    createDesktopShortcut(shortcutOptions)
   }
 }
