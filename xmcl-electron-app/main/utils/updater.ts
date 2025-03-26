@@ -1,13 +1,12 @@
 import { AZURE_CDN, HAS_DEV_SERVER } from '@/constant'
 import { ElectronUpdateOperation, ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/app'
-import { BaseService } from '@xmcl/runtime/base'
 import { Logger } from '@xmcl/runtime/logger'
 import { AbortableTask, BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { shell } from 'electron'
-import { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
 import * as updater from 'electron-updater'
+import { AppUpdater, CancellationToken, UpdaterSignal } from 'electron-updater'
 import { createWriteStream } from 'fs'
 import { readFile, writeFile } from 'fs-extra'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
@@ -18,6 +17,7 @@ import { pipeline } from 'stream/promises'
 import { promisify } from 'util'
 import { createGunzip } from 'zlib'
 import { kGFW } from '~/gfw'
+import { kSettings } from '~/settings'
 import { AnyError, isSystemError } from '~/util/error'
 import { checksum } from '~/util/fs'
 import ElectronLauncherApp from '../ElectronLauncherApp'
@@ -230,8 +230,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
   async #getUpdateFromSelfHost(): Promise<ReleaseInfo> {
     const app = this.app
     this.logger.log('Try get update from selfhost')
-    const baseService = await app.registry.get(BaseService)
-    const { allowPrerelease, locale } = await baseService.getSettings()
+    const { allowPrerelease, locale } = await await app.registry.get(kSettings)
     const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
     const response = await this.app.fetch(url, {
       headers: {
