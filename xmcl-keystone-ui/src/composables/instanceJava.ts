@@ -4,7 +4,7 @@ import { InstanceResolveVersion } from './instanceVersion'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 
-export { AutoDetectedJava, JavaCompatibleState }
+export { JavaCompatibleState }
 
 export const kInstanceJava: InjectionKey<ReturnType<typeof useInstanceJava>> = Symbol('InstanceJava')
 

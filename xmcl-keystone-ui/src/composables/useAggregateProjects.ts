@@ -23,6 +23,9 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
     installedRecord[file.path] = file
   }
   a.installed = Object.values(installedRecord)
+
+  a.curseforgeProjectId = a.curseforgeProjectId || b.curseforgeProjectId
+  a.modrinthProjectId = a.modrinthProjectId || b.modrinthProjectId
 }
 
 /**
@@ -32,29 +35,12 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
  * @param mode The mod of the filtering project. 'online' only show the connected (curseforge/modrinth) projects. 'local' only show the installed projects.
  * @returns The sorted and filtered project
  */
-export function useProjectsFilterSort<T extends ProjectEntry>(
+export function useProjectsSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
-  mode: MaybeRef<'online' | 'local' | 'all'>,
-  isCurseforgeActive: MaybeRef<boolean>,
-  isModrinthActive: MaybeRef<boolean>,
 ) {
   const filterSorted = computed(() => {
-    const theMode = get(mode)
-    const filtered = theMode === 'online'
-      ? items.value.filter(p => {
-        if (!get(isCurseforgeActive) && p.curseforge) return false
-        if (!get(isModrinthActive) && p.modrinth) return false
-        return p.curseforge || p.modrinth || p.id === 'OptiFine'
-      })
-      : theMode === 'local'
-        ? items.value.filter(p => p.installed.length > 0)
-        : items.value.filter(p => {
-          if (p.installed.length > 0) return true
-          if (!get(isCurseforgeActive) && p.curseforge && !p.modrinth) return false
-          if (!get(isModrinthActive) && p.modrinth && !p.curseforge) return false
-          return true
-        })
+    const filtered = items.value
 
     if (!keyword.value) return filtered
 
@@ -66,6 +52,62 @@ export function useProjectsFilterSort<T extends ProjectEntry>(
     return result
   })
   return filterSorted
+}
+
+export function useMergedProjects<T extends ProjectEntry>(
+  items: Ref<[T[], T[]]>,
+) {
+  const result = computed(() => {
+    const all: T[] = []
+    const indices: Record<string, T> = {}
+    const insert = (mod: T) => {
+      indices[mod.id] = mod
+      if (mod.curseforgeProjectId) {
+        indices[mod.curseforgeProjectId] = mod
+      }
+      if (mod.modrinthProjectId) {
+        indices[mod.modrinthProjectId] = mod
+      }
+    }
+    const get = (mod: T) => {
+      if (indices[mod.id]) {
+        return indices[mod.id]
+      }
+      if (mod.curseforgeProjectId) {
+        return indices[mod.curseforgeProjectId]
+      }
+      if (mod.modrinthProjectId) {
+        return indices[mod.modrinthProjectId]
+      }
+      return undefined
+    }
+
+    const visit = (mod: T, addToList: boolean) => {
+      const existed = get(mod)
+      if (existed) {
+        assignProject(existed, mod)
+        insert(existed)
+      } else {
+        insert(mod)
+        if (addToList) {
+          all.push(mod)
+        }
+      }
+    }
+
+    const [source, decorators] = items.value
+
+    for (const item of source) {
+      visit(item, true)
+    }
+    for (const mod of decorators) {
+      visit(mod, false)
+    }
+
+    return all
+  })
+
+  return result
 }
 
 /**

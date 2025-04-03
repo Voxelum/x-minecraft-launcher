@@ -1,9 +1,8 @@
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { ProjectEntry } from '@/util/search'
-import { Mod as CurseforgeMod, ModsSearchSortField } from '@xmcl/curseforge'
-import { Ref } from 'vue'
+import { Mod as CurseforgeMod } from '@xmcl/curseforge'
 import { useCurseforgeSearchFunc } from './curseforge'
-import { ModLoaderFilter } from './modSearch'
+import { SearchModel } from './search'
 import { useSearchPattern } from './useSearchPattern'
 
 function getProjectFileFromCurseforge<T extends ProjectEntry>(i: CurseforgeMod) {
@@ -22,12 +21,14 @@ function getProjectFileFromCurseforge<T extends ProjectEntry>(i: CurseforgeMod) 
 
 export function useCurseforgeSearch<T extends ProjectEntry<any>>(
   classId: number,
-  keyword: Ref<string>,
-  modLoader: Ref<ModLoaderFilter | undefined>,
-  curseforgeCategory: Ref<number | undefined>,
-  sort: Ref<ModsSearchSortField | undefined>,
-  gameVersion: Ref<string>,
-  disabled: Ref<boolean>,
+  {
+    keyword,
+    modLoader,
+    curseforgeCategory,
+    curseforgeSort: sort,
+    gameVersion,
+    isCurseforgeDisabled: disabled,
+  }: SearchModel
 ) {
   const search = useCurseforgeSearchFunc(
     classId,

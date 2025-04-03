@@ -712,6 +712,13 @@ mod:
   switchDefaultSource: Modのデフォルトソースを切り替え
   toUpdate: '{count} 個のアップデート'
   ungroup: グループ化
+modFilter:
+  clear: クリアフィルター
+  dependenciesInstallOnly: 見逃された依存関係のMODのみを表示します
+  disabledOnly: 障害のあるMODのみを表示します
+  hasUpdateOnly: ショーのみに更新modがあります
+  incompatibleOnly: 互換性のないmodのみを表示します
+  unusedOnly: 未使用のライブラリMODのみを表示します
 modInstall:
   archived: '{name} はアーカイブされました。 作者がアーカイブを解除しない限り {name} はアップデートを受け取りません。'
   checkDependencies: 依存関係を確認
@@ -720,12 +727,14 @@ modInstall:
   checkedUpgrade: アップデートを確認しました
   currentVersion: 選択されたバージョン
   dependencyHint: 他のバージョン {version} がインストールされています
+  display: modsディスプレイ
   install: インストール
   installDependencies: 未インストールの依存関係をインストール
   installHint: '{file} を {dependencies} 個の依存関係とインストール'
   installed: インストール済み
   noVersionSupported: このModはMinecraft {supported} のみサポートしています。
   recommendation: '{first} または {second} 個のModを {modrinth} と {curseforge} で探索する!'
+  removeUnusedLibraries: 未使用のライブラリMODを削除します
   search: 検索結果
   searchHint: プロジェクトを検索して選ぶ
   skipVersion: 異なる Minecraft バージョンの Mod をスキップする
@@ -737,6 +746,7 @@ modUpgradePolicy:
   curseforgeOnly: Curseforgeのみ
   modrinth: モドリンスファースト
   modrinthOnly: モドリンスのみ
+  name: ポリシーをアップグレードします
 modified:
   reset: リセット
   save: 保存
@@ -868,6 +878,7 @@ modrinth:
   clientSide: クライアントサイド
   copyTitle: テキスト {title} をクリップボードにコピー
   createAt: 作成済み
+  createCollection: コレクションを作成します
   description: 説明
   downloads: ダウンロード
   environments:
@@ -880,6 +891,7 @@ modrinth:
     unsupported: 未サポート
   externalResources: 外部リンク
   featuredVersions: 推奨バージョン
+  followedProjects: プロジェクトに従った
   followers: フォロワー
   gallery: ギャラリー
   gameVersions:
@@ -892,6 +904,10 @@ modrinth:
   license: ライセンス
   licenses:
     name: ライセンス
+  loginHint: |-
+    操作には、実行するにはmodrinthが必要です。
+    ランチャーは、ブラウザウィンドウを開き、Modrinthをログインします。
+  loginTitle: Modrinthにログインします
   modLoaders:
     name: Modローダー
   perPage: ページ毎
@@ -903,6 +919,7 @@ modrinth:
     name: プロジェクトタイプ
     resourcePack: リソースパック
     shader: シェーダー
+  projects: '{count}プロジェクト'
   quickSearch: 検索 {title}
   searchText: 検索
   serverSide: サーバーサイド
@@ -1125,6 +1142,8 @@ screenshots:
   name: スクリーンショット
   playRandom: シャッフル
   playSequence: 順番に再生
+search:
+  favorate: コレクション
 server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください
@@ -1350,6 +1369,11 @@ shaderPack:
 shared:
   accept: 続行
   keepSelected: 選択したままにする
+sortBy:
+  alphabetAsc: アルファベットでソート（昇順）
+  alphabetDesc: アルファベットでソート（下降）
+  timeAsc: 変更時間ごとにソート（上昇）
+  timeDesc: 変更時間ごとにソート（下降）
 store:
   explore: 探索する
   latestMinecraft: 最新のMinecraftバージョン

@@ -11,23 +11,53 @@
           :keyword.sync="keywordBuffer"
           :curseforge-category.sync="curseforgeCategory"
           :modrinth-categories.sync="modrinthCategories"
+          :local-sort.sync="sortBy"
           curseforge-category-filter="mc-mods"
           modrinth-category-filter="mod"
+          :collection.sync="selectedCollection"
           :enable-curseforge.sync="isCurseforgeActive"
           :enable-modrinth.sync="isModrinthActive"
-          :local-only.sync="localOnly"
           :sort.sync="sort"
+          :mode.sync="source"
           :game-version.sync="gameVersion"
           :modloader.sync="modLoader"
           :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
-        />
+        >
+          <template #local>
+            <v-subheader class="flex">
+              {{ t('mod.filter') }}
+            </v-subheader>
+            <v-btn-toggle
+              background-color="transparent"
+              :value="localFilter === 'disabledOnly' ? 0 : localFilter === 'incompatibleOnly' ? 1 : undefined"
+              class="bg-transparent px-1"
+              @change="onUpdateLocalFilter(filterItems[$event]?.value)"
+            >
+              <v-btn
+                v-for="tag in filterItems"
+                :key="tag.value"
+                v-shared-tooltip="_ => tag.text"
+                :disabled="tag.disabled"
+                small
+                outlined
+              >
+                <v-icon
+                  class="material-icons-outlined"
+                  small
+                >
+                  {{ tag.icon }}
+                </v-icon>
+              </v-btn>
+            </v-btn-toggle>
+            <ModOptionsPage
+              :denseView.sync="denseView"
+              :groupInstalled.sync="groupInstalled"
+            />
+          </template>
+        </MarketTextFieldWithMenu>
       </div>
     </div>
-    <MarketExtensions
-      :modrinth="modrinthCount"
-      :curseforge="curseforgeCount"
-      :local="cachedMods.length"
-    />
+    <MarketExtensions />
   </div>
 </template>
 
@@ -37,17 +67,65 @@ import MarketExtensions from '@/components/MarketExtensions.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
-import { kModsSearch, ModLoaderFilter } from '@/composables/modSearch'
+import { kModsSearch } from '@/composables/modSearch'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
+import ModOptionsPage from './ModOptionsPage.vue'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { kModUpgrade } from '@/composables/modUpgrade'
+import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
+import { kModLibCleaner } from '@/composables/modLibCleaner'
+import { ModLoaderFilter, kSearchModel } from '@/composables/search'
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, gameVersion, cachedMods, localOnly, curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader } = injection(kModsSearch)
+const { plans } = injection(kModUpgrade)
+const { curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader, selectedCollection, gameVersion, source } = injection(kSearchModel)
+const { denseView, groupInstalled, sortBy, localFilter } = injection(kModsSearch)
 const { mods: modFiles } = injection(kInstanceModsContext)
-const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
-const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
+const { installation } = injection(kModDependenciesCheck)
+const { unusedMods } = injection(kModLibCleaner)
+
+
+const filterItems = computed(() => {
+  const hasUpdate = Object.keys(plans.value).length > 0
+  const hasDependenciesInstall = Object.keys(installation.value).length > 0
+  const hasUnusedMods = Object.keys(unusedMods.value).length > 0
+  const result = [{
+    icon: 'flash_off',
+    text: t('modFilter.disabledOnly'),
+    disabled: false,
+    value: 'disabledOnly',
+  }, {
+    icon: 'info',
+    text: t('modFilter.incompatibleOnly'),
+    value: 'incompatibleOnly',
+  }]
+  result.push({
+    icon: 'recycling',
+    disabled: !hasUnusedMods,
+    text: t('modFilter.unusedOnly'),
+    value: 'unusedOnly',
+  })
+  result.push({
+    icon: 'merge',
+    disabled: !hasDependenciesInstall,
+    text: t('modFilter.dependenciesInstallOnly'),
+    value: 'dependenciesInstallOnly',
+  })
+  result.push({
+    icon: 'update',
+    disabled: !hasUpdate,
+    text: t('modFilter.hasUpdateOnly'),
+    value: 'hasUpdateOnly',
+  })
+  return result
+})
+
+function onUpdateLocalFilter(filter: string) {
+  localFilter.value = filter as any
+}
 
 const route = useRoute()
 const updateSearch = debounce(() => {

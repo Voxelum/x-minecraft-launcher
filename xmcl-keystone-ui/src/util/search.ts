@@ -26,10 +26,6 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
   downloadCount?: number
   followerCount?: number
 
-  forge?: boolean
-  fabric?: boolean
-  quilt?: boolean
-
   /**
    * The installed file
    */
@@ -53,6 +49,7 @@ export interface ProjectEntry<T extends ProjectFile = ProjectFile> {
 export interface ProjectFile {
   path: string
   version: string
+  mtime: number
   enabled: boolean
   modrinth?: ResourceSourceModrinth
   curseforge?: ResourceSourceCurseforge

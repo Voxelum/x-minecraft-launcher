@@ -764,6 +764,15 @@ mod:
   switchDefaultSource: Alapértelmezett mod forrás
   toUpdate: '{count} frissítendő'
   ungroup: Csoportosítás
+modFilter:
+  clear: Átlátszó szűrő
+  dependenciesInstallOnly: Csak az elmulasztott függőségi modokat mutatja be
+  disabledOnly: Csak a fogyatékossággal élő modokat jelenítse meg
+  hasUpdateOnly: Csak a Show -nak van frissítése
+  incompatibleOnly: >-
+    Csak az összeegyeztethetetlen vagy hiányzó függőségek hiányzó modokat
+    mutatnak
+  unusedOnly: Csak a fel nem használt könyvtárak modokat mutatják be
 modInstall:
   archived: >-
     {name} archiválva. 
@@ -776,6 +785,7 @@ modInstall:
   checkedUpgrade: Frissítés ellenőrizve
   currentVersion: Kiválasztott verzió
   dependencyHint: Egy másik verzió {version} telepítése
+  display: Mods kijelző
   install: Telepítés
   installDependencies: Hiányzó függőségek telepítése
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
@@ -784,6 +794,7 @@ modInstall:
   recommendation: >-
     Fedezze fel a {first} vagy {second} modokat a {modrinth} és a {curseforge}
     oldalon!
+  removeUnusedLibraries: Távolítsa el a fel nem használt könyvtárak modokat
   search: Keresési találat
   searchHint: Keresés és projekt kiválasztása
   skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
@@ -795,6 +806,7 @@ modUpgradePolicy:
   curseforgeOnly: Csak Curseforge
   modrinth: Modrinth először
   modrinthOnly: Csak Modrinth
+  name: Frissítési politika
 modified:
   reset: Visszaállítás
   save: Mentés
@@ -927,6 +939,7 @@ modrinth:
   clientSide: Kliens oldali
   copyTitle: '{title} címe másolása vágólapra'
   createAt: Létrehozva
+  createCollection: Készítsen gyűjteményt
   description: Leírás
   downloads: Letöltések
   environments:
@@ -939,6 +952,7 @@ modrinth:
     unsupported: Nem támogatott
   externalResources: Külső források
   featuredVersions: Kiemelt verziók
+  followedProjects: Követett projektek
   followers: Követők
   gallery: Galéria
   gameVersions:
@@ -951,6 +965,10 @@ modrinth:
   license: Licenc
   licenses:
     name: Licencek
+  loginHint: |-
+    A művelethez a modrint elvégzéséhez szükséges. 
+    Az indító megnyitja a böngészőablakot a Modrinth bejelentkezéséhez.
+  loginTitle: Jelentkezzen be a Modrinthbe
   modLoaders:
     name: Mod betöltők
   perPage: Oldalanként
@@ -962,6 +980,7 @@ modrinth:
     name: Projekt típusa
     resourcePack: Forráscsomag
     shader: Shader
+  projects: '{count} projektek'
   quickSearch: Keresés {title}
   searchText: Keresés
   serverSide: Szerver oldali
@@ -1220,6 +1239,8 @@ screenshots:
   name: Képernyőképek
   playRandom: Játék véletlenszerűen
   playSequence: Játék sorrendben
+search:
+  favorate: Gyűjtemény
 server:
   acceptingMinecraftVersion: Minecraft verzió elfogadása
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
@@ -1472,6 +1493,11 @@ shared:
   accept: Elfogad
   keepSelected: Tartsa kiválasztva
   skipForNow: Most hagyd ki
+sortBy:
+  alphabetAsc: Rendezés ábécé szerint (emelkedő)
+  alphabetDesc: Rendezés ábécé szerint (csökkenő)
+  timeAsc: Rendezés módosítási idő szerint (növekvő)
+  timeDesc: Rendezés módosítási idő szerint (csökkenő)
 store:
   explore: Felfedezés
   latestMinecraft: Legfrissebb Minecraft verzió

@@ -101,10 +101,15 @@ export class ElectronSession {
         request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
       }
 
+      const headers = {} as Record<string, string>
+      request.headers.forEach((value, key) => {
+        headers[key] = value
+      })
+
       const response = await this.app.protocol.handle({
         url: new URL(url),
         method: request.method,
-        headers: request.headers,
+        headers: headers,
         body: request.body ? Readable.fromWeb(request.body as any) : request.body as any,
       })
 

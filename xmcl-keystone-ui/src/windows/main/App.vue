@@ -38,6 +38,7 @@
     <AppInstallSkipDialog />
     <AppMigrateWizardDialog />
     <AppExportServerDialog />
+    <AppModrinthLoginDialog />
   </v-app>
   <v-app
     v-else
@@ -83,6 +84,7 @@ import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppLaunchServerDialog from '@/views/AppLaunchServerDialog.vue'
 import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
+import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBar from '@/views/AppSideBar.vue'

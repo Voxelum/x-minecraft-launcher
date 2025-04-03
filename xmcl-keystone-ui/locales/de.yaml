@@ -827,6 +827,13 @@ mod:
   switchDefaultSource: Quelle der Standardänderung
   toUpdate: '{count} zu aktualisieren'
   ungroup: Ungruppierung
+modFilter:
+  clear: Klaren Filter
+  dependenciesInstallOnly: Zeigen Sie nur verpasste Abhängigkeiten Mods
+  disabledOnly: Zeigen Sie nur deaktivierte Mods an
+  hasUpdateOnly: Zeigen Sie nur, dass das Mods Update hat
+  incompatibleOnly: Zeigen Sie nur inkompatible oder fehlende Abhängigkeiten fehlende Mods an
+  unusedOnly: Zeigen Sie nur unbenutzte Bibliotheken Mods
 modInstall:
   archived: >-
     {name} wurde archiviert. 
@@ -839,12 +846,14 @@ modInstall:
   checkedUpgrade: Aktualisierung geprüft
   currentVersion: Ausgewählte Version
   dependencyHint: Eine andere Version ist installiert {version}
+  display: Mods Anzeige
   install: Installieren Sie
   installDependencies: Fehlende Abhängigkeiten installieren
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.
   recommendation: Entdecken Sie die {first} oder {second} Mods in {modrinth} und {curseforge}!
+  removeUnusedLibraries: Entfernen Sie unbenutzte Bibliotheken Mods
   search: Suchergebnis
   searchHint: Projektsuche und -auswahl
   skipVersion: Überspringen Sie die Mods mit einer anderen Minecraft-Version
@@ -856,6 +865,7 @@ modUpgradePolicy:
   curseforgeOnly: Nur Curseforge
   modrinth: Modrinth zuerst
   modrinthOnly: Nur Modrinth
+  name: Upgrade -Richtlinie
 modified:
   reset: Zurücksetzen
   save: Speichern Sie
@@ -993,6 +1003,7 @@ modrinth:
   clientSide: Kunden-Seite
   copyTitle: Text kopieren {title} in die Zwischenablage
   createAt: Erstellt von
+  createCollection: Sammlung erstellen
   downloads: Herunterladen
   environments:
     client: Kunde.
@@ -1004,6 +1015,7 @@ modrinth:
     unsupported: Nicht unterstützte
   externalResources: Externe Ressourcen
   featuredVersions: Beliebte Versionen
+  followedProjects: Folgte Projekte
   followers: Abonnenten
   gallery: Galerie
   gameVersions:
@@ -1016,6 +1028,10 @@ modrinth:
   license: Lizenz
   licenses:
     name: Lizenz
+  loginHint: |-
+    Der Betrieb erfordert, dass Modrinth durchgeführt wird. 
+    Der Launcher öffnet ein Browserfenster, um Modrinth zu melden.
+  loginTitle: Melden Sie sich bei Modrinth an
   modLoaders:
     name: Mod-Downloader
   perPage: Zur Seite
@@ -1027,6 +1043,7 @@ modrinth:
     name: Projekttyp
     resourcePack: Textur-Paket
     shader: Shader
+  projects: '{count} Projekte'
   quickSearch: Suche. {title}
   searchText: Suche.
   serverSide: Server-Seite
@@ -1286,6 +1303,8 @@ screenshots:
   name: Screenshots
   playRandom: Spielen Sie zufällig
   playSequence: Spielen Sie der Reihe nach
+search:
+  favorate: Sammlung
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
@@ -1559,6 +1578,11 @@ shared:
   accept: Akzeptieren
   keepSelected: Ausgewählt behalten
   skipForNow: Überspringen Sie es vorerst
+sortBy:
+  alphabetAsc: Sortieren Sie nach Alphabet (aufsteigend)
+  alphabetDesc: Sortieren Sie nach Alphabet (absteigend)
+  timeAsc: Sortieren nach Änderungszeit (aufsteigend)
+  timeDesc: Sortieren nach Änderungszeit (absteigend)
 summery: Sommer
 tag:
   create: Einen Tag erstellen

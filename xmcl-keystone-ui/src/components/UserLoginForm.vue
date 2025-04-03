@@ -91,7 +91,7 @@
         color="primary"
         rounded
         large
-        class="z-10 text-white"
+        class="text-white"
         @click="onLogin"
       >
         <span v-if="!isLogining">
@@ -128,7 +128,6 @@
       <a
         v-if="signUpLink"
         target="browser"
-        style="z-index: 20"
         :href="signUpLink"
       >
         {{ t("login.signupDescription") }}

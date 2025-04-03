@@ -98,7 +98,7 @@ function createRevalidateFunction(
         onResourceQueue({ filePath: file.path, file, record })
         continue
       }
-      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt && !resource.neoforge) {
+      if (basename(dir) === 'mods' && !resource.fabric && !resource.forge && !resource.quilt && !resource.neoforge && !file.isDirectory) {
         onResourceQueue({ filePath: file.path, file, record, metadata: resource })
         continue
       }
@@ -136,7 +136,7 @@ function createWorkerQueue(context: ResourceContext, domain: ResourceDomain,
 
     const metadata = await getOrParseMetadata(job.file, job.record, domain, context, job, parse)
 
-    if (parse) {
+    if (parse && metadata) {
       context.eventBus.emit('resourceParsed', job.record.sha1, domain, metadata)
     }
 

@@ -761,6 +761,13 @@ mod:
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
   ungroup: Розгрупний
+modFilter:
+  clear: Прозорий фільтр
+  dependenciesInstallOnly: Показати лише моди пропущених залежностей
+  disabledOnly: Показати лише інвалідні моди
+  hasUpdateOnly: Тільки шоу має моди оновлення
+  incompatibleOnly: Тільки показують несумісні або відсутні залежності, відсутні моди
+  unusedOnly: Показати лише моди невикористаних бібліотек
 modInstall:
   archived: >-
     {name} заархівовано. 
@@ -773,12 +780,14 @@ modInstall:
   checkedUpgrade: Оновлення перевірено
   currentVersion: Обрана версія
   dependencyHint: Встановлено іншу версію {version}
+  display: Відображення мод
   install: Встановити
   installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
   installed: Встановлено
   noVersionSupported: Мод підтримує тільки Minecraft {supported}.
   recommendation: Дослідіть {first} або {second} моди в {modrinth} і {curseforge}!
+  removeUnusedLibraries: Видаліть моди невикористаних бібліотек
   search: Результат пошуку
   searchHint: Пошук та вибір проекту
   skipVersion: Пропустіть моди з іншою версією Minecraft
@@ -790,6 +799,7 @@ modUpgradePolicy:
   curseforgeOnly: Тільки Curseforge
   modrinth: Modrinth Перший
   modrinthOnly: Тільки Модрінт
+  name: Політика оновлення
 modified:
   reset: Скидання
   save: Зберегти
@@ -923,6 +933,7 @@ modrinth:
   clientSide: Клієнтська сторона
   copyTitle: Копіювати текст {title} до буферу обміну
   createAt: Створено
+  createCollection: Створити колекцію
   description: Опис
   downloads: Завантажень
   environments:
@@ -935,6 +946,7 @@ modrinth:
     unsupported: Непідтримуваний
   externalResources: Зовнішні ресурси
   featuredVersions: Популярні версії
+  followedProjects: Дотримувались проектів
   followers: Передплатники
   gallery: Галерея
   gameVersions:
@@ -947,6 +959,10 @@ modrinth:
   license: Ліцензія
   licenses:
     name: Ліцензії
+  loginHint: |-
+    Операція вимагає виконання Модрінта. 
+    Запуск відкриє вікно браузера для входу в Modrinth.
+  loginTitle: Увійти в Модрінт
   modLoaders:
     name: Завантажувачі модів
   perPage: На сторінку
@@ -958,6 +974,7 @@ modrinth:
     name: Тип проекту
     resourcePack: Пакет текстури
     shader: Шейдер
+  projects: '{count} проекти'
   quickSearch: Пошук {title}
   searchText: Пошук
   serverSide: Серверна частина
@@ -1186,6 +1203,8 @@ screenshots:
   name: Скріншоти
   playRandom: Грайте випадковим чином
   playSequence: Грайте по порядку
+search:
+  favorate: Колекція
 server:
   acceptingMinecraftVersion: Ухвалення версії Minecraft
   creationHint: Вкажіть адресу сервера та пінг сервера
@@ -1440,6 +1459,11 @@ shaderPack:
     шейдерів.
   showFile: Відкрити цей шейдер у папці
 shared: Екземпляр використовує спільну папку пакета ресурсів
+sortBy:
+  alphabetAsc: Сортуйте за алфавітом (висхідне)
+  alphabetDesc: Сортуйте за алфавітом (спуск)
+  timeAsc: Сортуйте за часом модифікації (висхідного)
+  timeDesc: Сортуйте за часом модифікації (спуск)
 summery: Літній
 tag:
   create: Створити тег

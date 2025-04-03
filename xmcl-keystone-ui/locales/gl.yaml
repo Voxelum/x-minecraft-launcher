@@ -351,6 +351,13 @@ mod:
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
   ungroup: Desgroupe
+modFilter:
+  clear: Filtro claro
+  dependenciesInstallOnly: Só amosar mods de dependencias perdidas
+  disabledOnly: Só amosar mods con discapacidade
+  hasUpdateOnly: Só o programa ten mods de actualización
+  incompatibleOnly: Só mostran dependencias incompatibles ou que faltan mods que faltan
+  unusedOnly: Só amosan mods de bibliotecas non utilizadas
 modInstall:
   archived: >-
     {name} foi arquivado. 
@@ -359,15 +366,18 @@ modInstall:
     desarquivar o proxecto.
   checkDependencies: Comproba as dependencias
   checkedDependencies: Dependencias verificadas
+  display: Visualización de mods
   installDependencies: Instalar dependencias que faltan
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
   recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
+  removeUnusedLibraries: Elimina os mods das bibliotecas non utilizadas
   skipVersion: Salta os Mods con diferentes versións de Minecraft
 modUpgradePolicy:
   curseforge: Curseforge Primeiro
   curseforgeOnly: Só Curseforge
   modrinth: Modrinth Primeiro
   modrinthOnly: Só Modrinth
+  name: Política de actualización
 modrinth:
   categories:
     128x: 128x
@@ -394,9 +404,16 @@ modrinth:
     sponge: Sponge
     velocity: Velocity
     waterfall: Waterfall
+  createCollection: Crear colección
+  followedProjects: Seguiron proxectos
+  loginHint: |-
+    A operación require que Modrinth realice. 
+    O lanzador abrirá unha xanela do navegador para iniciar sesión Modrinth.
+  loginTitle: Inicia sesión en Modrinth
   projectType:
     mod: Mod
     shader: Shader
+  projects: '{count} Proxectos'
 multiplayer:
   exposedPortDescription: O porto que expuxo a outros compañeiros
   exposedPorts: Portos remitidos
@@ -431,6 +448,8 @@ save:
   unselected: arquivo compartido
   useCurrent: Usa o mundo actual
 saves: {}
+search:
+  favorate: Colección
 server:
   export: Servidor de exportación
   exportNoFilesHint: |-
@@ -488,6 +507,11 @@ shared:
   accept: Aceptar
   keepSelected: Manter seleccionado
   skipForNow: Saltar por agora
+sortBy:
+  alphabetAsc: Ordena por alfabeto (ascendente)
+  alphabetDesc: Ordena por alfabeto (descendente)
+  timeAsc: Ordena por tempo de modificación (ascendente)
+  timeDesc: Ordena por tempo de modificación (descendente)
 task:
   connection:
     connected: Conectado

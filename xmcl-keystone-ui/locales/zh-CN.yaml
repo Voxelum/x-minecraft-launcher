@@ -709,6 +709,7 @@ mod:
   filter: 筛选模组
   group: 分组
   groupInstalled: 分开显示已安装模组
+  hasUpdate: mod有一个新版本！
   hideIncompatible: 隐藏不兼容模组
   incompatible: 可能不兼容当前版本。
   incompatibleHint: 查看您的模组兼容性报告
@@ -736,6 +737,13 @@ mod:
   switchDefaultSource: 本地模组默认显示为
   toUpdate: '{count} 个有新版本'
   ungroup: 取消分组
+modFilter:
+  clear: 清除过滤器
+  dependenciesInstallOnly: 仅显示遗漏的依赖项mods
+  disabledOnly: 仅显示禁用的mod
+  hasUpdateOnly: 只有Show具有更新的mods
+  incompatibleOnly: 仅显示不兼容或缺少依赖的 Mods
+  unusedOnly: 仅显示未使用的库mods
 modInstall:
   archived: |-
     {name} 已存档。
@@ -746,12 +754,14 @@ modInstall:
   checkedUpgrade: 已刷新更新列表
   currentVersion: 已选版本
   dependencyHint: 安装了其他版本 {version}
+  display: 模组显示
   install: 安装
   installDependencies: 安装缺少的依赖项
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   noVersionSupported: Mod 仅支持 Minecraft {supported}。
   recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模组！
+  removeUnusedLibraries: 删除未使用的库mods
   search: 搜索结果
   searchHint: 搜索并选择模组
   skipVersion: 忽略不同 Minecraft 版本的 Mod
@@ -763,6 +773,7 @@ modUpgradePolicy:
   curseforgeOnly: 仅限 Curseforge
   modrinth: Modrinth 优先
   modrinthOnly: 仅限 Modrinth
+  name: 更新策略
 modified:
   reset: 重置
   save: 保存
@@ -891,6 +902,7 @@ modrinth:
   clientSide: 客户端
   copyTitle: 复制 "{title}" 到剪贴板
   createAt: 创建日期
+  createCollection: 创建集合
   description: 详情
   downloads: 下载量
   environments:
@@ -903,6 +915,7 @@ modrinth:
     unsupported: 不支持
   externalResources: 第三方链接
   featuredVersions: 推荐版本
+  followedProjects: 关注的项目
   followers: 关注数
   gallery: 图片展示
   gameVersions:
@@ -915,6 +928,10 @@ modrinth:
   license: 协议
   licenses:
     name: 协议
+  loginHint: |-
+    该操作需要Modrinth才能执行。
+    启动器将打开浏览器窗口以登录Modrinth。
+  loginTitle: 登录至Modrinth
   modLoaders:
     name: 模组加载器
   perPage: 显示数量
@@ -926,6 +943,7 @@ modrinth:
     name: 项目类型
     resourcePack: 资源包
     shader: 光影包
+  projects: '{count}个项目'
   quickSearch: 搜索 {title}
   searchText: 搜索
   serverSide: 服务端
@@ -1135,6 +1153,10 @@ screenshots:
   name: 截图
   playRandom: 随机播放
   playSequence: 顺序播放
+search:
+  favorate: 收藏
+  local: 已安装
+  market: Mod 市场
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   creationHint: 请填写服务器地址并尝试 Ping 服务器
@@ -1371,6 +1393,11 @@ shared:
   accept: 接受
   keepSelected: 只留下勾选的 Mod
   skipForNow: 先跳过
+sortBy:
+  alphabetAsc: 按字母（上升）排序
+  alphabetDesc: 按字母（下降）排序
+  timeAsc: 按修改时间（上升）排序
+  timeDesc: 通过修改时间（下降）排序
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

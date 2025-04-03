@@ -17,6 +17,8 @@ import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
 import { notNullish } from '@vueuse/core'
+import { useLocalStorageCacheBool, useLocalStorageCacheStringValue } from './cache'
+import { basename } from '@/util/basename'
 
 export type UpgradePlan = {
   /**
@@ -24,29 +26,40 @@ export type UpgradePlan = {
    */
   file: File
 
-  mod: ProjectEntry<ModFile>
+  mod: ModFile
 
   updating: boolean
+  /**
+   * Relative filepath to the instance
+   */
+  filePath: string
 } | {
   /**
    * The modrinth version
    */
   version: ProjectVersion
 
-  mod: ProjectEntry<ModFile>
+  mod: ModFile
 
   updating: boolean
+  /**
+   * Relative filepath to the instance
+   */
+  filePath: string
 }
 
 export const kModUpgrade: InjectionKey<ReturnType<typeof useModUpgrade>> = Symbol('kModUpgrade')
 
-export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ProjectEntry<ModFile>[]>) {
+export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ModFile[]>) {
   const { cache, dedupingInterval } = injection(kSWRVConfig)
   const plans = shallowRef({} as Record<string, UpgradePlan>)
   let operationId = ''
   let operationPath = ''
   const checked = ref(false)
   const { show } = useDialog(InstanceInstallDialog)
+
+  const skipVersion = useLocalStorageCacheBool(computed(() => `modsUpgradeSkipVersion:${path.value}`), false)
+  const upgradePolicy = useLocalStorageCacheStringValue(computed(() => `modsUpgradePolicy:${path.value}`), 'modrinth')
 
   useErrorHandler((e) => {
     if (e instanceof Error && 'instanceInstallErrorId' in e && e.instanceInstallErrorId === operationId) {
@@ -64,8 +77,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     operationPath = path.value
   })
 
-  async function checkCurseforgeUpgrade(mods: ProjectEntry<ModFile>[], runtime: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
-    const fileIds = mods.map(m => m.installed[0].curseforge?.fileId).filter(notNullish)
+  async function checkCurseforgeUpgrade(mods: ModFile[], runtime: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
+    const fileIds = mods.map(m => m.curseforge?.fileId).filter(notNullish)
     if (skipVersion) {
       const minecraft = runtime.minecraft
       const files = await clientCurseforgeV1.getFiles(fileIds)
@@ -75,7 +88,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
           shouldIgnored.add(f.id)
         }
       }
-      mods = mods.filter(m => !shouldIgnored.has(m.curseforgeProjectId!))
+      mods = mods.filter(m => !shouldIgnored.has(m.curseforge!.projectId))
     }
 
     // batch 8 curseforge requests each time
@@ -85,21 +98,22 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
         const gameVersion = runtime.minecraft
         const modLoaderType = getCurseforgeModLoaderTypeFromRuntime(runtime)
         // this is a curseforge project and installed
-        const files = await swrvGet(`/curseforge/${mod.curseforgeProjectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
-          modId: mod.curseforgeProjectId!,
+        const files = await swrvGet(`/curseforge/${mod.curseforge!.projectId}/files?gameVersion=${gameVersion}&modLoaderType=${modLoaderType}&index=0`, () => clientCurseforgeV1.getModFiles({
+          modId: mod.curseforge!.projectId!,
           gameVersion,
           modLoaderType,
         }), cache, dedupingInterval)
         if (files.data.length > 0) {
           const file = markRaw(files.data[0])
-          const current = mod.installed[0]
+          const current = mod
           if (file.id !== current.curseforge?.fileId) {
             // this is the new version
-            if (!result[mod.id]) {
-              result[mod.id] = {
+            if (!result[mod.curseforge!.projectId]) {
+              result[mod.curseforge!.projectId] = {
                 file,
                 mod,
                 updating: false,
+                filePath: basename(current.path),
               }
             }
           }
@@ -108,8 +122,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     }
   }
 
-  async function checkModrinthUpgrade(modrinthTarget: ProjectEntry<ModFile>[], runtimes: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
-    const hashes = modrinthTarget.map(m => m.installed[0].hash)
+  async function checkModrinthUpgrade(modrinthTarget: ModFile[], runtimes: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
+    const hashes = modrinthTarget.map(m => m.hash)
     if (skipVersion) {
       const minecraft = runtimes.minecraft
       const vers = await clientModrinthV2.getProjectVersionsByHash(hashes)
@@ -119,7 +133,7 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
           shouldIgnored.add(v.project_id)
         }
       }
-      modrinthTarget = modrinthTarget.filter(m => !shouldIgnored.has(m.modrinthProjectId!))
+      modrinthTarget = modrinthTarget.filter(m => !shouldIgnored.has(m.modrinth!.projectId))
     }
 
     const loaders = getModrinthModLoaders(runtimes)
@@ -130,14 +144,15 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
       loaders,
     })
     for (const [_, version] of Object.entries(updates)) {
-      const mod = modrinthTarget.find(m => m.modrinthProjectId === version.project_id)
-      const current = mod?.installed[0]
-      if (mod && version.id !== current?.modrinth?.versionId) {
+      const mod = modrinthTarget.find(m => m.modrinth!.projectId === version.project_id)
+      const current = mod
+      if (mod && current && version.id !== current?.modrinth?.versionId) {
         // this is the new version
-        result[mod.id] = {
+        result[mod.modrinth!.projectId] = {
           version,
           mod,
           updating: false,
+          filePath: basename(current.path),
         }
       }
     }
@@ -145,8 +160,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     return modrinthTarget
   }
 
-  function select(mods: Set<ProjectEntry<ModFile>>, isValid: (mod: ProjectEntry<ModFile>) => boolean) {
-    const result = [] as ProjectEntry<ModFile>[]
+  function select(mods: Set<ModFile>, isValid: (mod: ModFile) => boolean) {
+    const result = [] as ModFile[]
     for (const mod of mods) {
       if (isValid(mod)) {
         result.push(mod)
@@ -165,12 +180,12 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     const _path = path.value
 
     async function doCheckModrinthUpgrade() {
-      const modrinthTargets = select(mods, m => !!m.modrinthProjectId && m.installed.length > 0)
+      const modrinthTargets = select(mods, m => !!m.modrinth?.projectId)
       await checkModrinthUpgrade(modrinthTargets, runtimes, skipVersion, result)
     }
 
     async function doCurseforgeUpgrade() {
-      const curseforgeTargets = select(mods, m => !!m.curseforgeProjectId && m.installed.length > 0)
+      const curseforgeTargets = select(mods, m => !!m.curseforge?.projectId)
       await checkCurseforgeUpgrade(curseforgeTargets, runtimes, skipVersion, result)
     }
 
@@ -192,8 +207,12 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     operationPath = _path
   })
 
-  watch(instanceMods, () => {
-    plans.value = {}
+  watch(instanceMods, (mods) => {
+    const modsPaths = new Set(mods.map(m => basename(m.path)))
+    const plansItems = Object.entries(plans.value)
+    const filtered = plansItems.filter(([_, plan]) => modsPaths.has(plan.filePath))
+
+    plans.value = Object.fromEntries(filtered)
     checked.value = false
   })
 
@@ -202,13 +221,13 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
     const oldFiles: InstanceFile[] = []
     const files: InstanceFile[] = []
     for (const plan of Object.values(plans.value)) {
-      oldFiles.push(...plan.mod.installed.map(r => ({
-        path: `mods/${r.fileName}`,
+      oldFiles.push({
+        path: `mods/${plan.mod.fileName}`,
         hashes: {
-          sha1: r.hash,
+          sha1: plan.mod.hash,
         },
-        size: r.size || 0,
-      })))
+        size: plan.mod.size || 0,
+      })
       files.push('file' in plan ? getInstanceFileFromCurseforgeFile(plan.file) : getInstanceFileFromModrinthVersion(plan.version))
     }
 
@@ -242,6 +261,8 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   return {
     refresh,
     refreshing,
+    skipVersion,
+    upgradePolicy,
     error,
     plans,
     checked,

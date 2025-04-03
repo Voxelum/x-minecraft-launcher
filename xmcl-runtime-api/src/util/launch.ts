@@ -1,5 +1,5 @@
-import { Instance } from 'src/entities/instance'
-import { UserProfile } from 'src/entities/user.schema'
+import { Instance } from '../entities/instance'
+import { UserProfile } from '../entities/user.schema'
 import { LaunchException, LaunchOptions } from '../services/LaunchService'
 import { AUTHORITY_DEV } from './authority'
 

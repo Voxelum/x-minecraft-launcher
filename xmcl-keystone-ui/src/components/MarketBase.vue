@@ -17,9 +17,7 @@
       class="flex h-full w-full overflow-auto py-0"
     >
       <template #left>
-        <div
-          v-if="items.length > 0"
-        >
+        <div>
           <slot
             name="actions"
           />
@@ -33,12 +31,13 @@
             {{ error }}
           </v-alert>
         </div>
+        <slot v-if="$slots.options" name="options" />
         <v-virtual-scroll
-          v-if="items.length > 0"
+          v-else-if="items.length > 0"
           key="market-left"
           id="left-pane"
           :bench="16"
-          class="visible-scroll h-full max-h-full w-full overflow-auto pl-1"
+          class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
           :items="items"
           :item-height="itemHeight"
           @scroll="onScroll"
@@ -69,7 +68,7 @@
         <div
           key="market-right"
           id="right-pane"
-          class="flex h-full flex-grow-0 overflow-y-auto overflow-x-hidden"
+          class="flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot
             name="content"
@@ -191,7 +190,7 @@ const onScroll = (e: Event) => {
 const selections = inject('selections', () => ref({} as Record<string, boolean>), true)
 const { current } = injection(kDialogModel)
 const onKeyPress = (e: KeyboardEvent) => {
-  if (current.value) return
+  if (current.value.dialog) return
   // ctrl+a
   if (e.ctrlKey && e.key === 'a') {
     e.preventDefault()
@@ -250,15 +249,16 @@ onUnmounted(() => {
   border-color: rgba(255, 82, 82, 0.5) !important;
 }
 
-.market-base .v-sheet.v-alert:last-child {
-    margin: 0px 4px 8px 4px !important;
-}
-
 .market-base .v-sheet.v-alert {
-    margin: 0px 4px 4px 4px !important;
+    margin: 4px 4px 4px 4px !important;
 }
 
 .market-base .v-virtual-scroll__item {
   left: 6px;
+}
+
+.dark .market-right {
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
 }
 </style>

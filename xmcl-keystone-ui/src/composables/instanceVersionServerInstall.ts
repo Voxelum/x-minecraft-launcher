@@ -16,7 +16,7 @@ export function useInstanceVersionServerInstall() {
     let version = serverVersionId.value
     if (!version) {
       console.log('installServer')
-      const versionIdToInstall = await installServer(runtimeValue, instPath, version)
+      const versionIdToInstall = await installServer(runtimeValue, instPath)
       await installMinecraftJar(runtimeValue.minecraft, 'server')
       await installDependencies(versionIdToInstall, 'server')
       version = versionIdToInstall

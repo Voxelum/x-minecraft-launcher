@@ -5,7 +5,6 @@
     transition="slide-y-transition"
     :nudge-width="280"
     offset-y
-    class="z-20"
   >
     <template #activator="{ on, attrs }">
       <div

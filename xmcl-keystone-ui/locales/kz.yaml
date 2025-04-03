@@ -408,6 +408,28 @@ loginError:
 mod:
   group: Group up
   ungroup: Ungrouping
+modFilter:
+  clear: Clear Filter
+  dependenciesInstallOnly: Only show missed dependencies mods
+  disabledOnly: Only show disabled mods
+  hasUpdateOnly: Only show has update mods
+  incompatibleOnly: Only show incompatible mods
+  unusedOnly: Only show unused libraries mods
+modInstall:
+  display: Mods Display
+  removeUnusedLibraries: Remove unused libraries mods
+modUpgradePolicy:
+  name: Upgrade Policy
+modrinth:
+  createCollection: Create Collection
+  followedProjects: Followed Projects
+  loginHint: >-
+    The operation requires modrinth to perform. The launcher will open a browser
+    window to login modrinth.
+  loginTitle: Login to Modrinth
+  projects: '{count} projects'
+search:
+  favorate: Collection
 server:
   export: Export Server
   exportNoFilesHint: >-
@@ -423,3 +445,8 @@ server:
   exportToFolder: Export To Folder
   hostRequired: Please enter the server ip address
   upload: Upload Server
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)

@@ -6,7 +6,7 @@
   >
     <v-toolbar
       tabs
-      class="flex-grow-0 z-1"
+      class="flex-grow-0"
     >
       <v-toolbar-title>{{ t('task.manager') }}</v-toolbar-title>
       <v-spacer />

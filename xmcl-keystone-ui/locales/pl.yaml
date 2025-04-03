@@ -781,6 +781,13 @@ mod:
   switchDefaultSource: Domyślne źródło modów
   toUpdate: '{count} aktualizować'
   ungroup: Ungrouping
+modFilter:
+  clear: Przezroczysty filtr
+  dependenciesInstallOnly: Pokaż tylko pominięte mody
+  disabledOnly: Pokaż tylko niepełnosprawne mody
+  hasUpdateOnly: Tylko show ma mody aktualizacji
+  incompatibleOnly: Pokaż tylko niezgodne mody
+  unusedOnly: Pokaż tylko niewykorzystane mody bibliotek
 modInstall:
   archived: >-
     {name} zostało zarchiwizowane. 
@@ -793,12 +800,14 @@ modInstall:
   checkedUpgrade: Aktualizacja sprawdzona
   currentVersion: Wybrana wersja
   dependencyHint: Zainstalowana inna wersja {version}
+  display: Wyświetlacz modów
   install: Instalacja
   installDependencies: Zainstaluj brakujące zależności
   installHint: Zainstaluje się {file} plik z {dependencies} zależności
   installed: Zainstalowany
   noVersionSupported: Mod obsługuje tylko Minecrafta {supported}.
   recommendation: Odkryj {first} lub {second} mod w {modrinth} i {curseforge}!
+  removeUnusedLibraries: Usuń mody nieużywanych bibliotek
   search: Wynik wyszukiwania
   searchHint: SWyszukaj i wybierz projekt
   skipVersion: Pomiń mody z inną wersją Minecrafta
@@ -810,6 +819,7 @@ modUpgradePolicy:
   curseforgeOnly: Tylko Curseforge
   modrinth: Najpierw Modrinth
   modrinthOnly: Tylko Modrinth
+  name: Polityka aktualizacji
 modified:
   reset: Reset
   save: Zapisz
@@ -945,6 +955,7 @@ modrinth:
   clientSide: Strona klienta
   copyTitle: Kopiuj tekst {titel} do schowka
   createAt: Utworzony
+  createCollection: Utwórz kolekcję
   description: Opis
   downloads: Pliki do pobrania
   environments:
@@ -957,6 +968,7 @@ modrinth:
     unsupported: Nieobsługiwane
   externalResources: Zasoby zewnętrzne
   featuredVersions: Polecane wersje
+  followedProjects: Następujące projekty
   followers: Obserwujący
   gallery: Galeria
   gameVersions:
@@ -969,6 +981,9 @@ modrinth:
   license: Licencja
   licenses:
     name: Licencje
+  loginHint: |-
+    Operacja wymaga wykonania Modrinth. 
+    Launcher otworzy okno przeglądarki do logowania Modrinth.
   modLoaders:
     name: Mod Loadery
   perPage: Na stronę
@@ -980,6 +995,7 @@ modrinth:
     name: Typ projektu
     resourcePack: Pakiet zasobów
     shader: Shader
+  projects: '{Count} Projekty'
   quickSearch: Wyszukiwanie {title}
   searchText: Wyszukiwanie
   serverSide: Strona serwera
@@ -1228,6 +1244,8 @@ screenshots:
   name: Zrzuty ekranu
   playRandom: Graj losowo
   playSequence: Graj w kolejności
+search:
+  favorate: Kolekcja
 server:
   acceptingMinecraftVersion: Akceptowanie wersji Minecraft
   creationHint: Wypełnij adres serwera i wykonaj ping do serwera
@@ -1485,6 +1503,11 @@ shared:
   accept: Akceptuj
   keepSelected: Zachowaj wybrane
   skipForNow: Pomiń na razie
+sortBy:
+  alphabetAsc: Sortuj według alfabetu (rosnące)
+  alphabetDesc: Sortuj według alfabetu (zejście)
+  timeAsc: Sortuj według czasu modyfikacji (rosnący)
+  timeDesc: Sortuj według czasu modyfikacji (zstępowanie)
 store:
   explore: Eksploruj
   latestMinecraft: Najnowsza wersja Minecrafta

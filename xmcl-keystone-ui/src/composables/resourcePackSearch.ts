@@ -1,15 +1,17 @@
-import { clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import { InstanceData } from '@xmcl/runtime-api'
+import { TextComponent } from '@xmcl/text-component'
 import { InjectionKey, Ref } from 'vue'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceResourcePack } from './instanceResourcePack'
-import { useMarketSort } from './marketSort'
+import { useMarketCollectionSearch } from './marketCollectionSearch'
+import { kModrinthAuthenticatedAPI } from './modrinthAuthenticatedAPI'
 import { useModrinthSearch } from './modrinthSearch'
-import { searlizers, useQueryOverride } from './query'
-import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
-import { TextComponent } from '@xmcl/text-component'
+import { SearchModel } from './search'
+import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
+import { useLocalStorageCacheStringValue } from './cache'
+import { LocalSort } from './sortBy'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
@@ -18,12 +20,12 @@ export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePack
  */
 export type ResourcePackProject = ProjectEntry<InstanceResourcePack>
 
-function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[]>, disabled: Ref<InstanceResourcePack[]>) {
-  const result = computed(() => {
+function useLocalSearch(enabled: Ref<InstanceResourcePack[]>, disabled: Ref<InstanceResourcePack[]>, {
+  keyword
+}: SearchModel) {
+  const all = computed(() => {
     const indices: Record<string, ResourcePackProject> = {}
     const _all: ResourcePackProject[] = []
-    const _enabled: ResourcePackProject[] = []
-    const _disabled: ResourcePackProject[] = []
 
     const getFromResource = (m: InstanceResourcePack, enabled: boolean) => {
       const curseforgeId = m.curseforge?.projectId
@@ -34,7 +36,7 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
         obj.files?.push(m)
         obj.installed?.push(m)
       } else {
-        const proj: ResourcePackProject = markRaw({
+        const proj = markRaw({
           id: m.id,
           author: '',
           icon: m.icon,
@@ -48,7 +50,7 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
           modrinthProjectId: modrinthId,
           curseforgeProjectId: curseforgeId,
           files: [m],
-        })
+        } as ResourcePackProject)
         indices[name] = proj
         if (modrinthId) {
           indices[modrinthId] = proj
@@ -64,7 +66,6 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
       const mod = getFromResource(m, true)
       if (mod) {
         _all.push(mod)
-        _enabled.push(mod)
       }
     }
 
@@ -72,149 +73,81 @@ function useLocalSearch(keyword: Ref<string>, enabled: Ref<InstanceResourcePack[
       const pack = getFromResource(m, false)
       if (pack) {
         _all.push(pack)
-        _disabled.push(pack)
       }
     }
 
-    return markRaw([_disabled, _enabled, _all] as const)
+    return markRaw(_all)
   })
 
   const loadingCached = ref(false)
 
-  const _disabled = computed(() => result.value[0])
-  const _enabled = computed(() => result.value[1])
-  const _all = computed(() => result.value[2].filter(v => v.title.toLowerCase().includes(keyword.value.toLowerCase())))
+  const filtered = computed(() => all.value.filter(v => v.title.toLowerCase().includes(keyword.value.toLowerCase())))
 
-  // const { updateResources } = useService(ResourceServiceKey)
-  // async function update(files: InstanceResourcePack[]) {
-  //   const absent = files.filter(f => !f.resource.metadata.modrinth)
-  //   const versions = await clientModrinthV2.getProjectVersionsByHash(absent.map(a => a.resource.hash))
-  //   const options = Object.entries(versions).map(([hash, version]) => {
-  //     const f = files.find(f => f.resource.hash === hash)
-  //     if (f && f.resource.hash) return { hash: f.resource.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
-  //     return undefined
-  //   }).filter((v): v is any => !!v)
-  //   if (options.length > 0) {
-  //     console.log('update resource packs', options)
-  //     updateResources(options)
-  //   }
-  // }
-
-  function effect() {
-    // watch(enabled, update, { immediate: true })
-    // watch(disabled, update, { immediate: true })
-  }
+  function effect() { }
 
   return {
-    disabled: _disabled,
-    enabled: _enabled,
-    all: _all,
+    filtered,
+    all,
     loadingCached,
     effect,
   }
 }
 
-export function useResourcePackSearch(runtime: Ref<InstanceData['runtime']>, _enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>, enabledSet: Ref<Set<string>>) {
-  const keyword = ref('')
-  const gameVersion = ref('')
-  const modrinthCategories = ref([] as string[])
-  const curseforgeCategory = ref(undefined as number | undefined)
-  const sort = ref(0)
-  const isCurseforgeActive = ref(true)
-  const isModrinthActive = ref(true)
-  const localOnly = ref(false)
-
-  const { modrinthSort, curseforgeSort } = useMarketSort(sort)
-
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ResourcePackProject>('resourcepack', keyword, ref([]), modrinthCategories,
-    modrinthSort, gameVersion, localOnly)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: curseforgeEffect } = useCurseforgeSearch(CurseforgeBuiltinClassId.resourcePack, keyword, shallowRef(undefined), curseforgeCategory,
-    curseforgeSort, gameVersion, localOnly)
-  const { enabled, disabled, all: filtered, loadingCached, effect: localEffect } = useLocalSearch(keyword, _enabled, _disabled)
+export function useResourcePackSearch(_enabled: Ref<InstanceResourcePack[]>, _disabled: Ref<InstanceResourcePack[]>,
+  { collections, follows } = injection(kModrinthAuthenticatedAPI), searchModel: SearchModel) {
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: modrinthEffect } = useModrinthSearch<ResourcePackProject>('resourcepack', searchModel)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: curseforgeEffect } = useCurseforgeSearch(CurseforgeBuiltinClassId.resourcePack, searchModel)
+  const { filtered, all, loadingCached, effect: localEffect } = useLocalSearch(_enabled, _disabled, searchModel)
   const loading = computed(() => loadingModrinth.value || loadingCached.value || loadingCurseforge.value)
+  const { items: collectionItems, effect: onCollectionsEffect } = useMarketCollectionSearch('resourcepack', searchModel, collections, follows)
+  const { currentView } = searchModel
+  const sortBy = useLocalStorageCacheStringValue('resourcePackSort', '' as LocalSort)
 
-  const {
-    installed,
-    notInstalledButCached,
-    others,
-  } = useAggregateProjectsSplitted(
-    modrinth,
-    curseforge,
-    filtered,
-    enabled,
+  const merged = useMergedProjects<ResourcePackProject>(
+    computed(() => {
+      const view = currentView.value
+      if (view === 'local') {
+        return [filtered.value, all.value]
+      }
+      if (view === 'favorite') {
+        return [collectionItems.value, all.value]
+      }
+      return [
+        [
+          ...modrinth.value,
+          ...curseforge.value,
+        ],
+        all.value,
+      ]
+    }),
   )
 
-  const mode = computed(() =>
-    (modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)
-      ? 'online'
-      : (keyword.value ? 'all' : 'local'),
+  const items = useProjectsSort(
+    searchModel.keyword,
+    merged,
   )
 
-  const _installed = useProjectsFilterSort(
-    keyword,
-    installed,
-    mode,
-    isCurseforgeActive,
-    isModrinthActive,
-  )
-  const _notInstalledButCached = useProjectsFilterSort(
-    keyword,
-    notInstalledButCached,
-    mode,
-    isCurseforgeActive,
-    isModrinthActive,
-  )
-  const _others = useProjectsFilterSort(
-    keyword,
-    others,
-    mode,
-    isCurseforgeActive,
-    isModrinthActive,
-  )
+  const error = computed(() => curseforgeError.value || modrinthError.value)
 
   function effect() {
     modrinthEffect()
     curseforgeEffect()
     localEffect()
+    onCollectionsEffect()
+    searchModel.effect(() => undefined)
+  }
 
-    useQueryOverride('keyword', keyword, '', searlizers.string)
-    useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
-    useQueryOverride('modLoaders', modrinthCategories, [], searlizers.stringArray)
-    useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
-    useQueryOverride('sort', sort, 0, searlizers.number)
-    useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
-    useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
+  function loadMore() {
+    loadMoreModrinth()
+    loadMoreCurseforge()
   }
 
   return {
-    localOnly,
-    mode,
-    sort,
-    gameVersion,
-
-    modrinthCategories,
-
-    loadMoreModrinth,
-    modrinthError,
-    modrinth,
-    loadingModrinth,
-
-    curseforgeCategory,
-    loadMoreCurseforge,
-    loadingCurseforge,
-    curseforge,
-    curseforgeError,
-
-    enabled: _installed,
-    disabled: _notInstalledButCached,
-    others: _others,
-    local: filtered,
-    loadingCached,
-    keyword,
+    sortBy,
+    loadMore,
+    error,
+    items,
     loading,
-    isCurseforgeActive,
-    isModrinthActive,
-
     effect,
   }
 }

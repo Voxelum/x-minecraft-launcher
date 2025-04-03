@@ -734,6 +734,13 @@ mod:
   switchDefaultSource: 本地模組默认显示为
   toUpdate: '{count} 個有新版本'
   ungroup: 解體
+modFilter:
+  clear: 清除過濾器
+  dependenciesInstallOnly: 僅顯示遺漏的依賴項mods
+  disabledOnly: 僅顯示禁用的mod
+  hasUpdateOnly: 只有Show具有更新的mods
+  incompatibleOnly: 僅顯示不兼容或缺失的依賴項缺少mod
+  unusedOnly: 僅顯示未使用的庫mods
 modInstall:
   archived: |-
     {name} 已存檔。
@@ -744,12 +751,14 @@ modInstall:
   checkedUpgrade: 已重新整理更新列表
   currentVersion: 已選版本
   dependencyHint: 安裝了其他版本 {version}
+  display: mods顯示
   install: 安裝
   installDependencies: 安裝缺少的依賴項
   installHint: 安裝 {file} 個檔案和 {dependencies} 個依賴檔案
   installed: 已安裝
   noVersionSupported: Mod 僅支援 Minecraft {supported}。
   recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模組！
+  removeUnusedLibraries: 刪除未使用的庫mods
   search: 搜尋結果
   searchHint: 搜尋並選擇模組
   skipVersion: 忽略不同 Minecraft 版本的 Mod
@@ -761,6 +770,7 @@ modUpgradePolicy:
   curseforgeOnly: 限詛 Curseforge
   modrinth: Modrinth  第一
   modrinthOnly: 限 Modrinth
+  name: 升級政策
 modified:
   reset: 重置
   save: 儲存
@@ -889,6 +899,7 @@ modrinth:
   clientSide: 用戶端
   copyTitle: 複製 "{title}" 到剪貼簿
   createAt: 建立日期
+  createCollection: 創建集合
   description: 詳情
   downloads: 下載量
   environments:
@@ -901,6 +912,7 @@ modrinth:
     unsupported: 不支援
   externalResources: 第三方連結
   featuredVersions: 推薦版本
+  followedProjects: 跟隨項目
   followers: 關注數
   gallery: 圖片展示
   gameVersions:
@@ -913,6 +925,8 @@ modrinth:
   license: 協議
   licenses:
     name: 協議
+  loginHint: 該操作需要Modrinth才能執行。啟動器將打開瀏覽器窗口以登錄Modrinth。
+  loginTitle: 登錄至Modrinth
   modLoaders:
     name: 模組載入器
   perPage: 顯示數量
@@ -924,6 +938,7 @@ modrinth:
     name: 專案型別
     resourcePack: 資源包
     shader: 光影包
+  projects: '{count}項目'
   quickSearch: 搜尋 {title}
   searchText: 搜尋
   serverSide: 伺服器
@@ -1133,6 +1148,8 @@ screenshots:
   name: 截圖
   playRandom: 隨機播放
   playSequence: 順序播放
+search:
+  favorate: 收藏
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   creationHint: 請填寫伺服器地址並嘗試 Ping 伺服器
@@ -1369,6 +1386,11 @@ shared:
   accept: 接受
   keepSelected: 保持選擇
   skipForNow: 暫時跳過
+sortBy:
+  alphabetAsc: 按字母（上升）排序
+  alphabetDesc: 按字母（下降）排序
+  timeAsc: 按修改時間（上升）排序
+  timeDesc: 通過修改時間（下降）排序
 store:
   explore: 探索
   latestMinecraft: 使用近期 Minecraft 版本

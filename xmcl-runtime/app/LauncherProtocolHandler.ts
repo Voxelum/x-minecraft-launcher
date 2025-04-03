@@ -47,8 +47,7 @@ export type ResolvedResponse = Response & {
  */
 export class LauncherProtocolHandler {
   private handlers: [string, Handler][] = []
-
-  public onRegistered?: (protocol: string, handler: Handler) => void
+  private sinkHandlers: Record<string, Handler> = {}
 
   /**
    * Register a http-like handler for a specific protocol
@@ -56,9 +55,15 @@ export class LauncherProtocolHandler {
    * @param protocol The protocol
    * @param handler The protocol handler
    */
-  registerHandler(protocol: string, handler: Handler) {
+  registerHandler(protocol: string, handler: Handler, sink = false) {
+    if (sink) {
+      if (this.sinkHandlers[protocol]) {
+        throw new TypeError(`Handler for protocol ${protocol} already registered`)
+      }
+      this.sinkHandlers[protocol] = handler
+      return
+    }
     this.handlers.push([protocol, handler])
-    this.onRegistered?.(protocol, handler)
   }
 
   getProtocols() {
@@ -67,9 +72,11 @@ export class LauncherProtocolHandler {
 
   async handle(request: RequestOptions): Promise<ResolvedResponse> {
     const handle: Handler = async (ctx) => {
-      for (const [_, handler] of this.handlers.filter(v => `${v[0]}:` === ctx.request.url.protocol)) {
+      const handers = this.handlers.filter(v => `${v[0]}:` === ctx.request.url.protocol).map(v => v[1])
+      for (const handler of handers) {
         await handler(ctx)
       }
+      await this.sinkHandlers[ctx.request.url.protocol.substring(0, ctx.request.url.protocol.length - 1)]?.(ctx)
     }
     const context: Context = {
       request: {
