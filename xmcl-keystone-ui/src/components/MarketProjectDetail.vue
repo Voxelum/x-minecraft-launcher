@@ -62,6 +62,41 @@
           </v-btn>
 
           <div class="flex-grow" />
+          <template v-if="modrinth">
+            <v-menu>
+              <template #activator="{ on }">
+                <v-btn
+                  small
+                  :plain="!collection"
+                  icon
+                  :loading="loadingCollections"
+                  v-on="on"
+                >
+                  <v-icon
+                    :class="!collection ? 'material-icons-outlined' : ''"
+                  >
+                    label
+                  </v-icon>
+                </v-btn>
+              </template>
+              <AppCollectionList :project-id="modrinth" no-favorite :select="collection" @update:select="emit('collection', $event)" />
+            </v-menu>
+            <v-btn
+              small
+              :plain="!followed"
+              icon
+              color="yellow"
+              :loading="following"
+              @click="emit('follow', !followed)"
+            >
+              <v-icon
+                class="material-icons-outlined"
+              >
+                {{ followed ? 'star' : 'star_rate' }}
+              </v-icon>
+            </v-btn>
+          </template>
+
           <AppCopyChip
             v-if="(currentTarget === 'curseforge' ? curseforge : modrinth)"
             label
@@ -698,6 +733,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { BuiltinImages } from '@/constant'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
+import AppCollectionList from './AppCollectionList.vue'
 
 const props = defineProps<{
   detail: ProjectDetail
@@ -718,6 +754,10 @@ const props = defineProps<{
   curseforge?: number
   modrinth?: string
   currentTarget?: 'curseforge' | 'modrinth'
+  followed?: boolean
+  following?: boolean
+  loadingCollections?: boolean
+  collection?: string
 }>()
 
 const emit = defineEmits<{
@@ -731,6 +771,8 @@ const emit = defineEmits<{
   (event: 'select:category', category: string): void
   (event: 'refresh'): void
   (event: 'description-link-clicked', e: MouseEvent, href: string): void
+  (event: 'follow', followed: boolean): void
+  (event: 'collection', collection?: string): void
 }>()
 
 export interface ProjectDependency {

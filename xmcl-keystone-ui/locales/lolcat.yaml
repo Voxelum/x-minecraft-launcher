@@ -709,6 +709,13 @@ mod:
   switchDefaultSource: DEFAULT MOD SOURCE
   toUpdate: '{count} UPDATEZ'
   ungroup: Ungrouping
+modFilter:
+  clear: Clear Filter
+  dependenciesInstallOnly: Only show missed dependencies mods
+  disabledOnly: Only show disabled mods
+  hasUpdateOnly: Only show has update mods
+  incompatibleOnly: Only show incompatible mods
+  unusedOnly: Only show unused libraries mods
 modInstall:
   archived: >-
     {name} HAS BEEN ARCHIVD. {name} WILL NOT RECEIV ANY FURTHR UPDATEZ UNLES TEH
@@ -719,12 +726,14 @@ modInstall:
   checkedUpgrade: UPGRADE CHECKD
   currentVersion: SELECTD VERSHUN
   dependencyHint: INSTALLD ANOTHR VERSHUN {version}
+  display: Mods Display
   install: INSTALL
   installDependencies: INSTALL MISIN DEPENDENCIEZ
   installHint: Will INSTALL {file} FILE WIF {dependencies} DEPENDENCIEZ
   installed: INSTALLD
   noVersionSupported: MOD ONLY SUPPORTS MINECRAFT {supported}.
   recommendation: EXPLORE TEH {first} OR {second} MODZ IN {modrinth} AN {curseforge}!
+  removeUnusedLibraries: Remove unused libraries mods
   search: SEARCH RESULT
   searchHint: SEARCH AN SELECT PROJECT
   skipVersion: SKIP TEH MODZ WIF DIFFERENT MINECRAFT VERSHUN
@@ -741,6 +750,7 @@ modUpgradePolicy:
   curseforgeOnly: Curseforge ONLY
   modrinth: Modrinth FURST
   modrinthOnly: Modrinth ONLY
+  name: Upgrade Policy
 modified:
   reset: RESET
   save: SAVE
@@ -873,6 +883,7 @@ modrinth:
   clientSide: CLIENT SIDE
   copyTitle: COPY TEXT {title} 2 CLIPBORD
   createAt: CREATD
+  createCollection: Create Collection
   description: DESCRIPSHUN
   downloads: DOWNLOADZ
   environments:
@@ -885,6 +896,7 @@ modrinth:
     unsupported: UNSUPPORTD
   externalResources: EXTERNAL RESOURCEZ
   featuredVersions: FEATURD VERSHUNS
+  followedProjects: Followed Projects
   followers: FOLLOWERS
   gallery: GALLERY
   gameVersions:
@@ -897,6 +909,10 @@ modrinth:
   license: LICENSE
   licenses:
     name: LICENSEZ
+  loginHint: >-
+    The operation requires modrinth to perform. The launcher will open a browser
+    window to login modrinth.
+  loginTitle: Login to Modrinth
   modLoaders:
     name: MOD LOADERS
   perPage: PER PAEG
@@ -908,6 +924,7 @@ modrinth:
     name: PROJECT TYPE
     resourcePack: RESOURCE PACK
     shader: SHADR
+  projects: '{count} projects'
   quickSearch: SEARCH {title}
   searchText: SEARCH
   serverSide: SERVR SIDE
@@ -1150,6 +1167,8 @@ screenshots:
   name: SCREENSHOTS
   playRandom: SHUFFLE
   playSequence: PULAY IN ORDR
+search:
+  favorate: Collection
 server:
   acceptingMinecraftVersion: ACCEPTIN MINECRAFT VERSHUN
   creationHint: PLZ FILL TEH SERVR ADDRES AN PING TEH SERVR
@@ -1394,6 +1413,11 @@ shared:
   accept: ACCEPT
   keepSelected: KEEP SELECTD
   skipForNow: SKIP 4 NAO
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)
 store:
   explore: EXPLORE
   latestMinecraft: LATEST MINECRAFT VERSHUN

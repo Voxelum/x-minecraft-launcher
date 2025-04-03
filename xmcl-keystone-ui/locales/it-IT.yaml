@@ -767,6 +767,13 @@ mod:
   switchDefaultSource: Sorgente delle Mod Predefinita
   toUpdate: '{count} da aggiornare'
   ungroup: Non gruppo
+modFilter:
+  clear: Filtro chiaro
+  dependenciesInstallOnly: Mostra solo mod di dipendenze mancate
+  disabledOnly: Mostra solo le mod disabilitate
+  hasUpdateOnly: Solo lo spettacolo ha mod di aggiornamento
+  incompatibleOnly: Mostra solo mod incompatibili
+  unusedOnly: Mostra solo mod biblioteche inutilizzate
 modInstall:
   all: Tutti
   archived: >-
@@ -780,6 +787,7 @@ modInstall:
   checkedUpgrade: Aggiornamento controllato
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
+  display: Visualizza mod
   explore: Esplora il mercato
   install: Installa
   installDependencies: Installa le dipendenze mancanti
@@ -788,6 +796,7 @@ modInstall:
   local: Cache del disco
   noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
+  removeUnusedLibraries: Rimuovi le mod librerie inutilizzate
   search: Risultato della ricerca
   searchHint: Cerca e seleziona il progetto
   skipVersion: Salta le Mod con diverse versioni di Minecraft
@@ -799,6 +808,7 @@ modUpgradePolicy:
   curseforgeOnly: Solo Forgiamaledizione
   modrinth: Modrinth Primo
   modrinthOnly: Solo Modrinth
+  name: Politica di aggiornamento
 modified:
   reset: Reimposta
   save: Salva
@@ -933,6 +943,7 @@ modrinth:
   clientSide: Lato client
   copyTitle: Copia il testo {title} negli appunti
   createAt: Creato
+  createCollection: Crea collezione
   description: Descrizione
   downloads: Download
   environments:
@@ -945,6 +956,7 @@ modrinth:
     unsupported: Non supportato
   externalResources: Risorse esterne
   featuredVersions: Versioni in primo piano
+  followedProjects: Seguiti progetti
   followers: Seguaci
   gallery: Galleria
   gameVersions:
@@ -957,6 +969,10 @@ modrinth:
   license: Licenza
   licenses:
     name: Licenze
+  loginHint: |-
+    L'operazione richiede che ModRinth sia eseguita. 
+    Il lanciatore aprirà una finestra del browser per accedere a ModRinth.
+  loginTitle: Accedi a ModRinth
   modLoaders:
     name: Mod Loaders
   perPage: Per pagina
@@ -968,6 +984,7 @@ modrinth:
     name: Tipo di progetto
     resourcePack: Pacchetto di risorse
     shader: Shader
+  projects: '{count} Projects'
   quickSearch: Cerca {title}
   searchText: Cerca
   serverSide: Lato server
@@ -1217,6 +1234,8 @@ screenshots:
   name: Screenshots
   playRandom: Riproduci a caso
   playSequence: Riproduci in ordine
+search:
+  favorate: Collezione
 server:
   acceptingMinecraftVersion: Versione Minecraft accettata
   creationHint: Inserire l'indirizzo del server e fare ping al server
@@ -1477,6 +1496,11 @@ shared:
   accept: Accetta
   keepSelected: Mantieni selezionato
   skipForNow: Salta per ora
+sortBy:
+  alphabetAsc: Ordina per alfabeto (ascendente)
+  alphabetDesc: Ordina per alfabeto (discendente)
+  timeAsc: Ordina per tempo di modifica (ascendente)
+  timeDesc: Ordina per tempo di modifica (discendente)
 store:
   explore: Esplora
   latestMinecraft: Ultima versione di Minecraft

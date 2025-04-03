@@ -1,15 +1,15 @@
 import { ProjectEntry } from '@/util/search'
-import { RuntimeVersions } from '@xmcl/runtime-api'
 import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceSaveFile } from './instanceSave'
-import { useMarketSort } from './marketSort'
-import { searlizers, useQueryOverride } from './query'
-import { useAggregateProjectsSplitted, useProjectsFilterSort } from './useAggregateProjects'
+import { SearchModel } from './search'
+import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
+import { useLocalStorageCacheStringValue } from './cache'
+import { LocalSort } from './sortBy'
 
 export const kSaveSearch: InjectionKey<ReturnType<typeof useSavesSearch>> = Symbol('kSaveSearch')
 
-function useSaveLocalSearch(keyword: Ref<string>, saves: Ref<InstanceSaveFile[]>, shared: Ref<InstanceSaveFile[]>) {
+function useSaveLocalSearch({ keyword }: SearchModel, saves: Ref<InstanceSaveFile[]>, shared: Ref<InstanceSaveFile[]>) {
   const getProjectFromFile = (s: InstanceSaveFile) => {
     return {
       id: s.path,
@@ -49,7 +49,6 @@ function useSaveLocalSearch(keyword: Ref<string>, saves: Ref<InstanceSaveFile[]>
 
       result.push(getProjectFromFile(s))
     }
-    console.log(result)
     return result
   })
 
@@ -59,81 +58,47 @@ function useSaveLocalSearch(keyword: Ref<string>, saves: Ref<InstanceSaveFile[]>
   }
 }
 
-export function useSavesSearch(runtime: Ref<RuntimeVersions>, saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<InstanceSaveFile[]>) {
-  const curseforgeCategory = ref(undefined as number | undefined)
-  const keyword = ref('')
-  const gameVersion = ref('')
-  const sort = ref(0)
-  const localOnly = ref(false)
+export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<InstanceSaveFile[]>,
+  searchModel: SearchModel) {
+  const { loadMoreCurseforge: loadMore, loadingCurseforge: loading, curseforge, curseforgeError: error, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry>(CurseforgeBuiltinClassId.world, searchModel)
 
-  const { curseforgeSort } = useMarketSort(sort)
-  const isCurseforgeActive = ref(true)
+  const { instanceSaves, sharedSaves: _sharedSaves } = useSaveLocalSearch(searchModel, saves, sharedSaves)
+  const { currentView, keyword } = searchModel
 
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry>(CurseforgeBuiltinClassId.world, keyword, shallowRef(undefined), curseforgeCategory, curseforgeSort, gameVersion, localOnly)
-
-  const { instanceSaves, sharedSaves: _sharedSaves } = useSaveLocalSearch(keyword, saves, sharedSaves)
-
-  const {
-    installed,
-    notInstalledButCached,
-    others,
-  } = useAggregateProjectsSplitted(
-    curseforge,
-    ref([]),
-    _sharedSaves,
-    instanceSaves,
+  const result = useMergedProjects(
+    computed(() => {
+      const view = currentView.value
+      if (view === 'local') {
+        return [instanceSaves.value, _sharedSaves.value]
+      }
+      if (view === 'favorite') {
+        return [instanceSaves.value, _sharedSaves.value]
+      }
+      return [
+        curseforge.value,
+        [..._sharedSaves.value, ...instanceSaves.value],
+      ]
+    }),
   )
 
-  const mode = computed(() => curseforgeCategory.value !== undefined ? 'online' : keyword.value ? 'all' : 'local')
-
-  const _installed = useProjectsFilterSort(
+  const items = useProjectsSort(
     keyword,
-    installed,
-    mode,
-    isCurseforgeActive,
-    ref(false),
-  )
-  const _notInstalledButCached = useProjectsFilterSort(
-    keyword,
-    notInstalledButCached,
-    mode,
-    isCurseforgeActive,
-    ref(false),
-  )
-  const _others = useProjectsFilterSort(
-    keyword,
-    others,
-    mode,
-    isCurseforgeActive,
-    ref(false),
+    result,
   )
 
   function effect() {
     onCurseforgeEffect()
-    // onLocalEffect()
-
-    useQueryOverride('gameVersion', gameVersion, computed(() => runtime.value.minecraft), searlizers.string)
-    useQueryOverride('curseforgeCategory', curseforgeCategory, undefined, searlizers.number)
-    useQueryOverride('keyword', keyword, '', searlizers.string)
-    useQueryOverride('sort', sort, 0, searlizers.number)
+    searchModel.effect(() => undefined)
   }
 
+  const sortBy = useLocalStorageCacheStringValue('savesSort', '' as LocalSort)
+
   return {
-    localOnly,
-    curseforge,
-    loadingCurseforge,
-    curseforgeError,
-    loadMoreCurseforge,
+    sortBy,
+    loading,
+    error,
+    loadMore,
     effect,
-
-    installed: _installed,
-    notInstalledButCached: _notInstalledButCached,
-    others: _others,
-
-    curseforgeCategory,
-    keyword,
-    gameVersion,
-    sort,
-    isCurseforgeActive,
+    items,
   }
 }

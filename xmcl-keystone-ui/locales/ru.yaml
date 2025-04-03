@@ -825,6 +825,15 @@ mod:
   switchDefaultSource: Источник контента модов по умолчанию
   toUpdate: '{count} для обновления'
   ungroup: Негруппинг
+modFilter:
+  clear: Чистый фильтр
+  dependenciesInstallOnly: Только показывать пропущенные моды зависимости
+  disabledOnly: Только показывать отключенные моды
+  hasUpdateOnly: Только у шоу есть моды обновления
+  incompatibleOnly: >-
+    Показывать только несовместимые или отсутствующие зависимости отсутствующие
+    моды
+  unusedOnly: Показать только неиспользованные библиотечные моды
 modInstall:
   archived: >-
     {name} заархивировано. 
@@ -837,12 +846,14 @@ modInstall:
   checkedUpgrade: Обновления для модов проверены
   currentVersion: Выбранная версия
   dependencyHint: Установлена ​​другая версия {version}
+  display: Дисплей модов
   install: Установить
   installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
   recommendation: Исследуйте {first} или {second} в {modrinth} и {curseforge}!
+  removeUnusedLibraries: Удалить неиспользованные моды библиотеков
   search: Результаты поиска
   searchHint: Поиск и выбор проекта
   skipVersion: Пропустите моды с другой версией Minecraft
@@ -854,6 +865,7 @@ modUpgradePolicy:
   curseforgeOnly: Только в Кёрсфордже
   modrinth: Modrinth Первый
   modrinthOnly: Только Модринт
+  name: Политика обновления
 modified:
   reset: Сбросить
   save: Сохранить
@@ -987,6 +999,7 @@ modrinth:
   clientSide: Клиентская сторона
   copyTitle: Скопировать текст {title} в буфер обмена
   createAt: Создано
+  createCollection: Создать коллекцию
   description: Описание
   downloads: Скачиваний
   environments:
@@ -999,6 +1012,7 @@ modrinth:
     unsupported: Не поддерживается
   externalResources: Внешние ресурсы
   featuredVersions: Рекомендуемые версии
+  followedProjects: Следовал проектам
   followers: Подписчики
   gallery: Галерея
   gameVersions:
@@ -1011,6 +1025,10 @@ modrinth:
   license: Лицензия
   licenses:
     name: Лицензии
+  loginHint: |-
+    Операция требует от Modrinth для выполнения. 
+    Пусковая установка откроет окно браузера для входа в Modrinth.
+  loginTitle: Войдите в Modrinth
   modLoaders:
     name: Загрузчики модов
   perPage: На страницу
@@ -1022,6 +1040,7 @@ modrinth:
     name: Тип проекта
     resourcePack: Комплект ресурсов
     shader: Шейдер
+  projects: '{count} проекты'
   quickSearch: Поиск {title}
   searchText: Поиск
   serverSide: Серверная часть
@@ -1276,6 +1295,8 @@ screenshots:
   name: Скриншоты
   playRandom: Показывать случайным образом
   playSequence: Показывать по порядку
+search:
+  favorate: Коллекция
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
@@ -1545,6 +1566,11 @@ shared:
   accept: Принять
   keepSelected: Сохранить выбранное
   skipForNow: Пропустить сейчас
+sortBy:
+  alphabetAsc: Сортировка по алфавиту (восходящее)
+  alphabetDesc: Сортировка по алфавиту (спуск)
+  timeAsc: Сортировать по времени модификации (восходящая)
+  timeDesc: Сортировать по времени модификации (спуск)
 store:
   explore: Исследовать
   latestMinecraft: Последняя версия Minecraft

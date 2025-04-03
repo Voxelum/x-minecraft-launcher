@@ -31,6 +31,7 @@ import { pluginTasks } from '@xmcl/runtime/task/pluginTasks'
 import { pluginTelemetry } from '@xmcl/runtime/telemetry/pluginTelemetry'
 import { pluginUncaughtError } from '@xmcl/runtime/uncaughtError/pluginUncaughtError'
 import { pluginOfficialUserApi } from '@xmcl/runtime/user/pluginOfficialUserApi'
+import { pluginModrinthAccess } from '@xmcl/runtime/user/pluginModrinthAccess'
 import { pluginOffineUser } from '@xmcl/runtime/user/pluginOfflineUser'
 import { pluginUserTokenStorage } from '@xmcl/runtime/user/pluginUserTokenStorage'
 import { pluginYggdrasilApi } from '@xmcl/runtime/user/pluginYggdrasilApi'
@@ -44,7 +45,6 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginDirectLaunch,
   pluginAutoUpdate,
   pluginPowerMonitor,
-  pluginCommonProtocol,
   pluginIconProtocol,
   pluginResourceWorker,
   pluginEncodingWorker,
@@ -79,4 +79,8 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginOffineUser,
   pluginUndiciLogger,
   pluginUserTokenStorage,
+
+  pluginModrinthAccess,
+
+  pluginCommonProtocol,
 ]

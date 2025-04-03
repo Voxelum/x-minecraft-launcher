@@ -26,6 +26,6 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
       throw e
     }
   }
-  app.protocol.registerHandler('http', handler)
-  app.protocol.registerHandler('https', handler)
+  app.protocol.registerHandler('http', handler, true)
+  app.protocol.registerHandler('https', handler, true)
 }

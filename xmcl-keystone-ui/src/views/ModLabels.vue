@@ -27,7 +27,7 @@
       label
       outlined
     >
-      <v-avatar left>
+      <v-avatar left v-if="com.compatible === true">
         <img
           v-if="getDepIcon(com.modId, icons[com.modId])"
           :src="getDepIcon(com.modId, icons[com.modId])"
@@ -36,8 +36,11 @@
           $vuetify.icons.package
         </v-icon>
       </v-avatar>
+      <span class="color-orange mr-1" v-if="com.optional">
+        {{ t('optional') }}
+      </span>
       {{ com.modId }}
-      {{ com.requirements || '⭕' }}
+      <!-- {{ com.requirements || '⭕' }} -->
       <v-avatar right>
         {{ getCompatibleIcon(com) }}
       </v-avatar>
@@ -111,10 +114,12 @@ const { isDark } = injection(kTheme)
 const container = ref(null as null | HTMLElement)
 const { onWheel } = useScrollRight(container)
 
+const { t } = useI18n()
+
 </script>
 
 <style scoped>
 .mod-tag {
-  overflow: unset;
+  overflow: unset !important;
 }
 </style>

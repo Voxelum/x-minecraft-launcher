@@ -15,10 +15,10 @@
     @blur="searchTextFieldFocused = false"
     @click="emit('click', $event)"
   >
-    <template #prepend>
+    <!-- <template #prepend>
       <div class="flex items-center justify-center h-[40px] pr-1">
         <v-btn
-          v-shared-tooltip="t('filterLocalOnly')"
+          v-shared-tooltip="t('filter.favoriteOnly')"
           :class="{ 'v-btn--active': localOnly }"
           icon
           @click="emit('update:localOnly', !localOnly)"
@@ -28,7 +28,7 @@
           </v-icon>
         </v-btn>
       </div>
-    </template>
+    </template> -->
     <template #append>
       <v-chip
         v-if="gameVersion"

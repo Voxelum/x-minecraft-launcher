@@ -5,7 +5,7 @@ export function useTextFieldBehavior(searchTextField: Ref<any>, searchTextFieldF
     // ctrl+f
     if (e.ctrlKey && e.key === 'f') {
       e.preventDefault()
-      e.stopPropagation()
+      // e.stopPropagation()
       searchTextField.value?.focus()
     }
     // ctrl+a

@@ -7,7 +7,7 @@
     >
       <div class="flex justify-center">
         <UserSkin
-          class="z-5 min-w-50 relative flex items-center justify-center overflow-auto overflow-x-hidden"
+          class="z-2 min-w-50 relative flex items-center justify-center overflow-auto overflow-x-hidden"
           inspect
           :user="user"
           :profile="gameProfile"

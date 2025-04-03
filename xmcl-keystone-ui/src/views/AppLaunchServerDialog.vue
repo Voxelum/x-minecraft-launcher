@@ -238,7 +238,12 @@ const computedSides = computed(() => {
   return result
 })
 
-const { data: requestedSides } = useSWRV(enabled, async () => {
+const requestedSides: Ref<Record<string, string>> = shallowRef({})
+watch([enabled, isShown], async () => {
+  if (!isShown.value) {
+    requestedSides.value = {}
+    return
+  }
   const [modrinths, others] = enabled.value.reduce((acc, v) => {
     if (v.modrinth) {
       acc[0].push(v)
@@ -272,7 +277,7 @@ const { data: requestedSides } = useSWRV(enabled, async () => {
         : ''
   ]))
 
-  return hashToSide
+  requestedSides.value = hashToSide
 })
 
 

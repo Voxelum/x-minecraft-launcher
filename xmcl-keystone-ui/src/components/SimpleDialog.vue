@@ -29,7 +29,7 @@
         <v-btn
           :color="color ?? 'error'"
           text
-          @click="onDelete"
+          @click="onConfirm"
         >
           <v-icon left>
             {{ confirmIcon ?? 'delete' }}
@@ -56,7 +56,7 @@ const { t } = useI18n()
 
 const emit = defineEmits(['confirm', 'cancel', 'input'])
 
-const onDelete = () => {
+const onConfirm = () => {
   emit('confirm')
 }
 

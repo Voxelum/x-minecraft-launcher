@@ -175,7 +175,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     return minecraft
   }
 
-  async function installServer(runtime: RuntimeVersions, path: string, versionId: string | undefined) {
+  async function installServer(runtime: RuntimeVersions, path: string, versionId?: string) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
 
     if (versionId) {

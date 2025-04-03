@@ -51,7 +51,7 @@ export function useLocalStorageCacheInt(key: MaybeRef<string>, defaultValue: num
 }
 
 export function useLocalStorageCacheStringValue<T extends string = string>(key: MaybeRef<string>, defaultValue: T, options?: LocalStorageOptions): Ref<T> {
-  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T, options)
+  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => (s ?? defaultValue) as T, options)
 }
 
 export function useLocalStorageCacheBool(key: Ref<string> | string, defaultValue: boolean): Ref<boolean> {

@@ -1,32 +1,31 @@
 import { TaskItem } from '@/entities/task'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
-import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { getInstanceFileFromModrinthVersion, getModrinthModLoaders } from '@/util/modrinth'
 import { getSWRV } from '@/util/swrvGet'
 import { notNullish } from '@vueuse/core'
 import { FileRelationType } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions, TaskState } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
-import { kInstanceModsContext } from './instanceMods'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { getModrinthVersionModel } from './modrinthVersions'
 import { useRefreshable } from './refreshable'
 import { kSWRVConfig } from './swrvConfig'
 import { useTask } from './task'
 
-export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeVersions>) {
-  const { mods: instanceMods, updateMetadata } = injection(kInstanceModsContext)
-  const updates = ref([] as InstanceFile[])
+export const kModDependenciesCheck: InjectionKey<ReturnType<typeof useModDependenciesCheck>> = Symbol('mod-dependencies-check')
+
+export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeVersions>, instanceMods: Ref<ModFile[]>, updateMetadata: () => Promise<void>) {
+  const installation = shallowRef([] as [InstanceFile, ModFile][])
   const checked = ref(false)
   const config = inject(kSWRVConfig)
   let operationId = ''
   let operationPath = ''
   const { show } = useDialog(InstanceInstallDialog)
 
-  async function checkModrinthDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: InstanceFile[]) {
+  async function checkModrinthDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: [InstanceFile, ModFile][]) {
     const modrinthTarget = mods.filter(m => m.modrinth)
     const hashes = modrinthTarget.map(m => m.hash)
 
@@ -37,6 +36,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
 
     const versions = await clientModrinthV2.getProjectVersionsByHash(hashes, 'sha1')
     const deps: Record<string, string> = {}
+    const reverseDeps: Record<string, string> = {}
     for (const [sha1, version] of Object.entries(versions)) {
       for (const dep of version.dependencies) {
         if (dep.dependency_type === 'required') {
@@ -46,11 +46,10 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
             // If not, add it to the deps list
             if (dep.version_id) {
               deps[dep.project_id] = dep.version_id
-            } else {
-              if (!deps[dep.project_id]) {
-                deps[dep.project_id] = ''
-              }
+            } else if (!deps[dep.project_id]) {
+              deps[dep.project_id] = ''
             }
+            reverseDeps[dep.project_id] = version.project_id
           }
         }
       }
@@ -62,7 +61,9 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
 
       for (const v of toInstall) {
         delete deps[v.project_id]
-        result.push(getInstanceFileFromModrinthVersion(v))
+        const sourceDep = reverseDeps[v.project_id]
+        const file = modrinthTarget.find(m => m.modrinth!.projectId === sourceDep)!
+        result.push([getInstanceFileFromModrinthVersion(v), file])
       }
     }
 
@@ -71,12 +72,14 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     await Promise.allSettled(depProjects.map(async (p) => {
       const v = await getSWRV(getModrinthVersionModel(p, false, loaders[0], [runtimes.minecraft]), config)
       if (v[0]) {
-        result.push(getInstanceFileFromModrinthVersion(v[0]))
+        const sourceDep = reverseDeps[p]
+        const file = modrinthTarget.find(m => m.modrinth?.projectId === sourceDep)!
+        result.push([getInstanceFileFromModrinthVersion(v[0]), file])
       }
     }))
   }
 
-  async function checkCurseforgeDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: InstanceFile[]) {
+  async function checkCurseforgeDependencies(mods: ModFile[], runtimes: RuntimeVersions, result: [InstanceFile, ModFile][]) {
     const fileIds = mods.map(m => !m.modrinth ? m.curseforge?.fileId : undefined).filter(notNullish)
     if (fileIds.length === 0) {
       console.log('Skip curseforge dependencies check due to no curseforge mods')
@@ -84,12 +87,15 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     }
     const files = await clientCurseforgeV1.getFiles(fileIds)
     let deps = [] as number[]
+    const reverseDeps = {} as Record<string, string>
+
     for (const file of files) {
       for (const dep of file.dependencies) {
         if (dep.relationType === FileRelationType.RequiredDependency) {
           const depMod = mods.find(m => m.curseforge?.projectId === dep.modId)
           if (!depMod) {
             deps.push(dep.modId)
+            reverseDeps[dep.modId] = file.modId.toString()
           }
         }
       }
@@ -106,7 +112,9 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
           pageSize: 1,
         })
         if (data[0]) {
-          result.push(getInstanceFileFromCurseforgeFile(data[0]))
+          const sourceDep = reverseDeps[d]
+          const file = mods.find(m => m.curseforge?.projectId === Number(sourceDep))!
+          result.push([getInstanceFileFromCurseforgeFile(data[0]), file])
         }
       }))
     }
@@ -116,7 +124,7 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     await updateMetadata()
     await new Promise((resolve) => setTimeout(resolve, 500))
 
-    const result: InstanceFile[] = []
+    const result: [InstanceFile, ModFile][] = []
     const mods = instanceMods.value
     const _path = path.value
     const runtimes = runtime.value
@@ -149,24 +157,17 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     //   }
     // }
 
-    updates.value = result
+    installation.value = result
     checked.value = true
     operationId = crypto.getRandomValues(new Uint8Array(8)).join('')
     operationPath = _path
-  })
-
-  watch([path], () => {
-    checked.value = false
-    updates.value = []
-    operationId = ''
-    operationPath = path.value
   })
 
   function apply() {
     show({
       type: 'updates',
       oldFiles: [],
-      files: updates.value,
+      files: installation.value.map(([f]) => f),
       id: operationId,
     })
   }
@@ -182,19 +183,35 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     }
     return false
   })
-  watch(task, (newV, oldV) => {
-    if (oldV && isCurrentTask(oldV) && !newV) {
-      if (oldV.state === TaskState.Succeed) {
-        updates.value = []
+
+  function effect() {
+    onUnmounted(() => {
+      installation.value = []
+      checked.value = false
+      operationId = ''
+      operationPath = ''
+    })
+    watch(path, () => {
+      checked.value = false
+      installation.value = []
+      operationId = ''
+      operationPath = path.value
+    })
+    watch(task, (newV, oldV) => {
+      if (oldV && isCurrentTask(oldV) && !newV) {
+        if (oldV.state === TaskState.Succeed) {
+          installation.value = []
+        }
       }
-    }
-  })
+    })
+  }
 
   return {
+    effect,
     refresh,
     refreshing,
     error,
-    updates,
+    installation,
     checked,
     apply,
     installing: computed(() => !!task.value),

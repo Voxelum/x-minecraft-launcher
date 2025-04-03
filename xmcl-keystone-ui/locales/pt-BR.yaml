@@ -839,6 +839,13 @@ mod:
   switchDefaultSource: Fonte Padrão de Mod
   toUpdate: '{count} atualizações'
   ungroup: Sem agrupar
+modFilter:
+  clear: Filtro transparente
+  dependenciesInstallOnly: Mostrar apenas mods de dependências perdidas
+  disabledOnly: Mostrar apenas mods desativados
+  hasUpdateOnly: Somente show tem mods de atualização
+  incompatibleOnly: Apenas mostre mods incompatíveis
+  unusedOnly: Mostrar apenas mods de bibliotecas não utilizadas
 modInstall:
   archived: >-
     {name} foi arquivado. {name} não receberá mais atualizações, a menos que o
@@ -849,12 +856,14 @@ modInstall:
   checkedUpgrade: Atualização Verificada
   currentVersion: Versão Selecionada
   dependencyHint: Instalado outra versão {version}
+  display: Exibição de mods
   install: Instalar
   installDependencies: Instalar Dependências Faltantes
   installHint: Instalará o arquivo {file} com as dependências {dependencies}
   installed: Instalado
   noVersionSupported: O mod só suporta Minecraft {supported}.
   recommendation: Explore os mods {first} ou {second} no {modrinth} e {curseforge}!
+  removeUnusedLibraries: Remova mods de bibliotecas não utilizadas
   search: Resultado da Busca
   searchHint: Busque e selecione o projeto
   skipVersion: Pular Mods com versão diferente do Minecraft
@@ -866,6 +875,7 @@ modUpgradePolicy:
   curseforgeOnly: Somente Curseforge
   modrinth: Modrinth Primeiro
   modrinthOnly: Somente Modrinth
+  name: Política de atualização
 modified:
   reset: Resetar
   save: Salvar
@@ -1001,6 +1011,7 @@ modrinth:
   clientSide: Client Side
   copyTitle: Copiar texto {title} para a área de transferência
   createAt: Criado
+  createCollection: Criar coleção
   description: Descrição
   downloads: Downloads
   environments:
@@ -1013,6 +1024,7 @@ modrinth:
     unsupported: Não suportado
   externalResources: Links Externos
   featuredVersions: Versões em Destaque
+  followedProjects: Projetos seguidos
   followers: Seguidores
   gallery: Galeria
   gameVersions:
@@ -1025,6 +1037,10 @@ modrinth:
   license: Licença
   licenses:
     name: Licenças
+  loginHint: |-
+    A operação requer Modrinth para executar. 
+    O lançador abrirá uma janela do navegador para fazer login Modrinth.
+  loginTitle: Faça login no modrinth
   modLoaders:
     name: Mod Loaders
   perPage: Por Página
@@ -1036,6 +1052,7 @@ modrinth:
     name: Tipo de Projeto
     resourcePack: Pacote de Recursos
     shader: Shaders
+  projects: '{count} projetos'
   quickSearch: Pesquisar {title}
   searchText: Pesquisar
   serverSide: Servidor
@@ -1284,6 +1301,8 @@ screenshots:
   name: Capturas de Tela
   playRandom: Aleatório
   playSequence: Reproduzir em ordem
+search:
+  favorate: Coleção
 server:
   acceptingMinecraftVersion: Aceitando Versão do Minecraft
   creationHint: Preencha o endereço do servidor e faça o ping no servidor
@@ -1547,6 +1566,11 @@ shared:
   accept: Aceitar
   keepSelected: Manter seleção
   skipForNow: Pular por agora
+sortBy:
+  alphabetAsc: Classificar por alfabeto (ascendente)
+  alphabetDesc: Classificar por alfabeto (descendente)
+  timeAsc: Classificar por tempo de modificação (ascendente)
+  timeDesc: Classificar por tempo de modificação (descendente)
 store:
   explore: Explorar
   latestMinecraft: Última Versão do Minecraft

@@ -734,6 +734,13 @@ mod:
   switchDefaultSource: Default Mod Source
   toUpdate: '{count} updates'
   ungroup: Ungrouping
+modFilter:
+  clear: Clear Filter
+  dependenciesInstallOnly: Only show missed dependencies mods
+  disabledOnly: Only show disabled mods
+  hasUpdateOnly: Only show the mods has update
+  incompatibleOnly: Only show incompatible or missing dependencies missing mods
+  unusedOnly: Only show unused libraries mods
 modInstall:
   archived: >-
     {name} has been archived. {name} will not receive any further updates unless
@@ -744,12 +751,14 @@ modInstall:
   checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
+  display: Mods Display
   install: Install
   installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   noVersionSupported: Mod only supports Minecraft {supported}.
   recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
+  removeUnusedLibraries: Remove unused libraries mods
   search: Search Result
   searchHint: Search and select project
   skipVersion: Skip the Mods with different Minecraft version
@@ -761,6 +770,7 @@ modUpgradePolicy:
   curseforgeOnly: Curseforge Only
   modrinth: Modrinth First
   modrinthOnly: Modrinth Only
+  name: Upgrade Policy
 modified:
   reset: Reset
   save: Save
@@ -893,6 +903,7 @@ modrinth:
   clientSide: Client Side
   copyTitle: Copy Text {title} to clipboard
   createAt: Created
+  createCollection: Create Collection
   description: Description
   downloads: Downloads
   environments:
@@ -905,6 +916,7 @@ modrinth:
     unsupported: Unsupported
   externalResources: External Resources
   featuredVersions: Featured Versions
+  followedProjects: Followed Projects
   followers: Followers
   gallery: Gallery
   gameVersions:
@@ -917,6 +929,10 @@ modrinth:
   license: License
   licenses:
     name: Licenses
+  loginHint: >-
+    The operation requires modrinth to perform. The launcher will open a browser
+    window to login modrinth.
+  loginTitle: Login to Modrinth
   modLoaders:
     name: Mod Loaders
   perPage: Per Page
@@ -928,6 +944,7 @@ modrinth:
     name: Project Type
     resourcePack: Resource Pack
     shader: Shader
+  projects: '{count} projects'
   quickSearch: Search {title}
   searchText: Search
   serverSide: Server Side
@@ -1173,6 +1190,10 @@ screenshots:
   name: Screenshots
   playRandom: Shuffle
   playSequence: Play in order
+search:
+  favorate: Collection
+  local: Installed
+  market: Mod Market
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   creationHint: Please Fill the server address and ping the server
@@ -1420,6 +1441,11 @@ shared:
   accept: Accept
   keepSelected: Keep Selected
   skipForNow: Skip for now
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)
 store:
   explore: Explore
   latestMinecraft: Latest Minecraft Version

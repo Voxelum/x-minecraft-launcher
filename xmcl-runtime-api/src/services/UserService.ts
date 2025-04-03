@@ -1,10 +1,10 @@
 import { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
 import { GameProfileAndTexture, UserProfile } from '../entities/user.schema'
+import { AuthlibInjectorApiProfile } from '../entities/yggdrasil.schema'
 import { GenericEventEmitter } from '../events'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
-import { AuthlibInjectorApiProfile } from '../entities/yggdrasil.schema'
 
 export interface RefreshSkinOptions {
   gameProfileId?: string
@@ -211,6 +211,8 @@ export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
    * @param url The account api url
    */
   removeYggdrasilService(url: string): Promise<void>
+
+  loginModrinth(): Promise<void>
 }
 
 export interface AuthorityMetadata {
@@ -224,7 +226,7 @@ export interface AuthorityMetadata {
   kind: 'builtin' | 'yggdrasil'
   /**
    * The cache for authlib injector compatible api.
-   * 
+   *
    * This is only available for authlib-injector compatible service.
    */
   authlibInjector?: AuthlibInjectorApiProfile

@@ -4,12 +4,12 @@
     :items="groupedItems"
     :selection-mode="true"
     :item-height="itemHeight"
-    :loading="loadingCurseforge"
-    :error="error"
+    :loading="loading"
+    :error="error || searchError"
     :class="{
       dragover,
     }"
-    @load="loadMoreCurseforge"
+    @load="loadMore"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
       <v-subheader
@@ -110,11 +110,14 @@ import { useSimpleDialog } from '../composables/dialog'
 import { kInstance } from '../composables/instance'
 import SaveDetail from './SaveDetail.vue'
 import SaveItem from './SaveItem.vue'
+import { kSearchModel } from '@/composables/search'
+import { sort } from '@/composables/sortBy'
 
 const { path } = injection(kInstance)
 const { error, deleteSave } = injection(kInstanceSave)
 
-const { effect, installed, notInstalledButCached, others, curseforgeCategory, gameVersion, loadMoreCurseforge, loadingCurseforge } = injection(kSaveSearch)
+const { curseforgeCategory, gameVersion } = injection(kSearchModel)
+const { effect, items, sortBy, loadMore, loading, error: searchError } = injection(kSaveSearch)
 
 effect()
 
@@ -126,19 +129,38 @@ const itemHeight = computed(() => denseView.value ? 40 : 68)
 const groupedItems = computed(() => {
   const result: (ProjectEntry | string)[] = []
 
-  if (installed.value.length > 0) {
-    result.push('installed')
-    result.push(...installed.value)
+  const {
+    enabled,
+    disabled,
+    others,
+  } = items.value.reduce((arrays, item) => {
+    if (item.installed && item.installed.length > 0) {
+      if (item.disabled) {
+        arrays.disabled.push(item)
+      } else {
+        arrays.enabled.push(item)
+      }
+    } else {
+      arrays.others.push(item)
+    }
+    return arrays
+  }, {
+    enabled: [] as ProjectEntry[],
+    disabled: [] as ProjectEntry[],
+    others: [] as ProjectEntry[],
+  })
+  if (enabled.length > 0) {
+    result.push('enabled' as string)
+    result.push(...enabled)
   }
-
-  if (notInstalledButCached.value.length > 0) {
-    result.push('shared')
-    result.push(...notInstalledButCached.value)
+  if (disabled.length > 0) {
+    result.push('disabled' as string)
+    sort(sortBy.value, disabled)
+    result.push(...disabled)
   }
-
-  if (others.value.length > 0) {
-    result.push('search')
-    result.push(...others.value)
+  if (others.length > 0) {
+    result.push('search' as string)
+    result.push(...others)
   }
 
   return result

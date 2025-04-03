@@ -8,6 +8,7 @@ import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useDateString } from '@/composables/date'
 import { useI18nSearchFlights } from '@/composables/flights'
 import { useAutoI18nCommunityContent } from '@/composables/i18n'
+import { useInCollection, useModrinthFollow } from '@/composables/modrinthAuthenticatedAPI'
 import { useProjectDetailEnable, useProjectDetailUpdate } from '@/composables/projectDetail'
 import { useService } from '@/composables/service'
 import { useLoading, useSWRVModel } from '@/composables/swrv'
@@ -372,6 +373,8 @@ const onRefresh = () => {
 }
 
 const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.curseforge?.projectId === props.curseforgeId && v.modrinth)?.modrinth?.projectId || curseforgeProjectMapping.value?.modrinthId)
+const { isFollowed, following, onFollow } = useModrinthFollow(modrinthId)
+const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modrinthId)
 </script>
 <template>
   <MarketProjectDetail
@@ -390,7 +393,12 @@ const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.c
     :modrinth="modrinthId"
     :loading-dependencies="loadingDependencies"
     current-target="curseforge"
+    :followed="isFollowed"
+    :collection="collectionId"
+    :following="following"
+    :loading-collections="loadingCollections"
     @load-changelog="loadChangelog"
+    @collection="onAddOrRemove"
     @delete="onDelete"
     @enable="enabled = $event"
     @load-more="onLoadMore"
@@ -399,5 +407,6 @@ const modrinthId = computed(() => props.modrinth || props.allFiles.find(v => v.c
     @install-dependency="installDependency"
     @select:category="emit('category', Number($event))"
     @refresh="onRefresh"
+    @follow="onFollow"
   />
 </template>

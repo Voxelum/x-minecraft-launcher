@@ -58,14 +58,13 @@
     </div>
 
     <v-fab-transition>
-
       <v-btn
-      v-if="locked"
-      class="z-10 absolute right-6 bottom-4"
-      elevation="2"
-      color="primary"
-      fab
-      @click="scrollToBottom"
+        v-if="locked"
+        class="z-10 absolute right-6 bottom-4"
+        elevation="2"
+        color="primary"
+        fab
+        @click="scrollToBottom"
       >
       <v-icon>arrow_downward</v-icon>
     </v-btn>

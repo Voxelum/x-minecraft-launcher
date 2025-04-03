@@ -32,6 +32,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     enabled: shaderPack.value === f.fileName,
     fileName: f.fileName,
     size: f.size,
+    mtime: f.mtime,
     hash: f.hash,
     modrinth: f.metadata.modrinth,
     curseforge: f.metadata.curseforge,

@@ -26,6 +26,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
       ...s,
       icon: s.icon || BuiltinImages.unknownServer,
       version: '',
+      mtime: 0,
       enabled: true,
     }))
     return result
@@ -39,6 +40,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
       ...s,
       icon: s.icon || BuiltinImages.unknownServer,
       version: '',
+      mtime: 0,
       enabled: false,
     }))
     return result

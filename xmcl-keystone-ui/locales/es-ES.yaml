@@ -575,6 +575,15 @@ mod:
   switchDefaultSource: Fuente de Mods por Defecto
   toUpdate: '{count} para actualizar'
   ungroup: Desagrado
+modFilter:
+  clear: Filtro claro
+  dependenciesInstallOnly: Solo muestre modificaciones de dependencias perdidas
+  disabledOnly: Solo muestre modificaciones deshabilitadas
+  hasUpdateOnly: Solo Show tiene modificaciones de actualización
+  incompatibleOnly: >-
+    Solo muestran dependencias incompatibles o faltantes modificaciones
+    faltantes
+  unusedOnly: Solo muestran modificaciones de bibliotecas no utilizadas
 modInstall:
   archived: >-
     {name} ha sido archivado. 
@@ -587,12 +596,14 @@ modInstall:
   checkedUpgrade: Actualizaciones verificadas
   currentVersion: Versión Seleccionada
   dependencyHint: 'Otra versión instalada: {version}'
+  display: Pantalla de mods
   install: Instalar
   installDependencies: Instalar dependencias faltantes
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
   recommendation: ¡Explora las modificaciones {first} o {second} en {modrinth} y {curseforge}!
+  removeUnusedLibraries: Eliminar modificaciones de bibliotecas no utilizadas
   search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto
   skipVersion: Salta los Mods con diferentes versiones de Minecraft
@@ -604,6 +615,7 @@ modUpgradePolicy:
   curseforgeOnly: Sólo forja maldita
   modrinth: Modrinth primero
   modrinthOnly: Sólo Modrinth
+  name: Política de actualización
 modified:
   reset: Restablecer
   save: Guardar
@@ -738,6 +750,7 @@ modrinth:
   clientSide: Lado del Cliente
   copyTitle: Copiar Texto {title} al portapapeles
   createAt: Creado
+  createCollection: Crear colección
   description: Descripción
   downloads: Descargas
   environments:
@@ -750,6 +763,7 @@ modrinth:
     unsupported: No Soportado
   externalResources: Recursos Externos
   featuredVersions: Versiones Destacadas
+  followedProjects: Proyectos seguidos
   followers: Seguidores
   gallery: Galería
   gameVersions:
@@ -762,6 +776,12 @@ modrinth:
   license: Licencia
   licenses:
     name: Licencias
+  loginHint: >-
+    La operación requiere que el modrinth realice. 
+
+    El lanzador abrirá una ventana del navegador para iniciar sesión en
+    Modrinth.
+  loginTitle: Iniciar sesión en Modrinth
   modLoaders:
     name: Cargadores de Mods
   perPage: Por Página
@@ -773,6 +793,7 @@ modrinth:
     name: Tipo de Proyecto
     resourcePack: Paquete de Recursos
     shader: Shader
+  projects: '{count} Proyectos'
   quickSearch: Búsqueda de {title}
   searchText: Buscar
   serverSide: Lado del Servidor
@@ -927,6 +948,8 @@ screenshots:
   name: Capturas de Pantalla
   playRandom: Juega aleatoriamente
   playSequence: Jugar en orden
+search:
+  favorate: Recopilación
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor
@@ -1156,6 +1179,11 @@ shared:
   accept: Aceptar
   keepSelected: Mantener seleccionado
   skipForNow: Saltar por ahora
+sortBy:
+  alphabetAsc: Ordenar por alfabeto (ascendente)
+  alphabetDesc: Ordenar por alfabeto (descendente)
+  timeAsc: Ordenar por tiempo de modificación (ascendente)
+  timeDesc: Ordenar por tiempo de modificación (descendente)
 summery: Resumen
 tag:
   create: Crear Etiqueta

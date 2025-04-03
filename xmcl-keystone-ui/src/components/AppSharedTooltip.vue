@@ -5,7 +5,7 @@
     transition="scroll-y-reverse-transition"
     :position-x="cached.x"
     :position-y="cached.y"
-    class="z-100"
+    class="z-1000"
     :top="cached.top"
     :left="cached.left"
     :right="cached.right"

@@ -1,12 +1,12 @@
 <template>
   <MarketBase
-    :items="displayItems"
+    :items="items"
     :item-height="itemHeight"
     :plans="{}"
     :class="{
       dragover,
     }"
-    :error="modrinthError"
+    :error="error"
     :loading="loading"
     @load="onLoad"
   >
@@ -35,7 +35,7 @@
         v-else-if="(typeof item === 'object')"
         :pack="item"
         :dense="denseView"
-        :draggable="mode === 'local' && !item.disabled"
+        :draggable="currentView === 'local' && !item.disabled"
         :selection-mode="selectionMode"
         :item-height="itemHeight"
         :selected="selected"
@@ -126,25 +126,25 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
+import { kSearchModel } from '@/composables/search'
+import { sort } from '@/composables/sortBy'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
 const {
-  modrinthError,
-  loading,
-  modrinthCategories,
-  curseforgeCategory,
-
-  enabled,
-  disabled,
-  others,
-
-  loadMoreCurseforge,
-  loadMoreModrinth,
   keyword,
-  mode,
+  curseforgeCategory,
+  modrinthCategories,
+  currentView,
   gameVersion,
+} = injection(kSearchModel)
+const {
+  error,
+  loading,
+  loadMore,
+  items: originalItems,
   effect,
+  sortBy,
 } = injection(kResourcePackSearch)
 
 // Register the resource pack search effect
@@ -152,29 +152,49 @@ effect()
 
 const isLocalFile = (f: any): f is ProjectEntry<InstanceResourcePack> => !!f
 
-const displayItems = computed(() => {
+const items = computed(() => {
   const result: (string | ProjectEntry)[] = []
 
-  if (enabled.value.length > 0) {
-    result.push(
-      'enabled' as string,
-      ...enabled.value,
-    )
+  if (currentView.value === 'local') {
+    const {
+      enabled,
+      disabled,
+      others,
+    } = originalItems.value.reduce((arrays, item) => {
+      if (item.installed && item.installed.length > 0) {
+        if (item.disabled) {
+          arrays.disabled.push(item)
+        } else {
+          arrays.enabled.push(item)
+        }
+      } else {
+        arrays.others.push(item)
+      }
+      return arrays
+    }, {
+      enabled: [] as ProjectEntry[],
+      disabled: [] as ProjectEntry[],
+      others: [] as ProjectEntry[],
+    })
+    if (enabled.length > 0) {
+      result.push('enabled' as string)
+      result.push(...enabled)
+    }
+    if (disabled.length > 0) {
+      result.push('disabled' as string)
+      sort(sortBy.value, disabled)
+      result.push(...disabled)
+    }
+    if (others.length > 0) {
+      result.push('search' as string)
+      result.push(...others)
+    }
+  } else if (currentView.value === 'remote') {
+    result.push('search' as string)
+    result.push(...originalItems.value)
+  } else {
+    result.push(...originalItems.value)
   }
-  if (disabled.value.length > 0) {
-    result.push(
-      'disabled' as string,
-      ...disabled.value,
-    )
-  }
-
-  if (others.value.length > 0) {
-    result.push(
-      'search' as string,
-      ...others.value,
-    )
-  }
-
   return result
 })
 
@@ -192,17 +212,18 @@ const onDisable = (f: ProjectFile) => {
   disable([f as InstanceResourcePack])
 }
 const onDrop = (item: ResourcePackProject, id: string) => {
-  const target = enabled.value.indexOf(item)
-  const from = enabled.value.findIndex(e => e.id === id)
+  const _items = items.value
+  if (_items[0] !== 'enabled') {
+    return
+  }
+  const target = _items.indexOf(item)
+  const from = _items.findIndex(e => typeof e === 'object' && e.id === id)
   if (target !== -1 && from !== -1) {
     insert(from, target)
   }
 }
 
-const onLoad = () => {
-  loadMoreCurseforge()
-  loadMoreModrinth()
-}
+const onLoad = loadMore
 
 const toggleCategory = useToggleCategories(modrinthCategories)
 

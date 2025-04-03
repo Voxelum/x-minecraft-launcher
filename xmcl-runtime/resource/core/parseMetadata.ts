@@ -71,6 +71,10 @@ export async function getOrParseMetadata(file: File, record: ResourceSnapshotTab
       const uris = [] as string[]
       const icons = cachedMetadata.icons || []
 
+      if (Object.values(cachedMetadata).every(v => !v || !v.length) && file.isDirectory) {
+        return
+      }
+
       if (domain === ResourceDomain.Mods && !cachedMetadata.forge && !cachedMetadata.fabric && !cachedMetadata.quilt && !cachedMetadata.neoforge) {
         const { metadata, uris, icons, name } = await context.parse({
           path: file.path,

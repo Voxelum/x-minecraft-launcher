@@ -1,4 +1,5 @@
 import { ModFile } from '@/util/mod';
+import { sort as sortFunc } from '@/composables/sortBy'
 import { ProjectEntry, ProjectFile } from '@/util/search';
 import { useLocalStorage } from '@vueuse/core';
 import { ContextMenuItem } from './contextMenu';
@@ -42,24 +43,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   }
 
   function sort(result: GroupOrProject[]) {
-    const sort = sortBy.value
-    if (sort.startsWith('time')) {
-      result.sort((a, b) => {
-        const aMtime = 'mtime' in a ? a.mtime : a.installed[0]?.mtime
-        const bMtime = 'mtime' in b ? b.mtime : b.installed[0]?.mtime
-        if (!aMtime || !bMtime) return 0
-        if (sort.endsWith('asc')) return aMtime - bMtime
-        return bMtime - aMtime
-      })
-    } else if (sort.startsWith('alpha')) {
-      result.sort((a, b) => {
-        const aText = 'title' in a ? a.title : a.name
-        const bText = 'title' in b ? b.title : b.name
-
-        if (sort.endsWith('asc')) return aText.localeCompare(bText)
-        return bText.localeCompare(aText)
-      })
-    }
+    sortFunc(sortBy.value as any, result)
     return result
   }
 
@@ -71,7 +55,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     const currentGroup = instanceModGroupping.value
 
     for (const i of result) {
-      const group = currentGroup[i.installed?.[0].fileName]
+      const group = currentGroup[i.installed?.[0]?.fileName]
       if (group) {
         if (!resultByGroup[group]) {
           resultByGroup[group] = {

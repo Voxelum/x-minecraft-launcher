@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
 import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
+import { useInCollection, useModrinthFollow } from '@/composables/modrinthAuthenticatedAPI'
 import { getModrinthDependenciesModel } from '@/composables/modrinthDependencies'
 import { kModrinthInstaller } from '@/composables/modrinthInstaller'
 import { useModrinthProject } from '@/composables/modrinthProject'
@@ -179,6 +180,9 @@ const goCurseforgeProject = (id: number) => {
   replace({ query: { ...currentRoute.query, id: `curseforge:${id}` } })
 }
 
+const { isFollowed, following, onFollow } = useModrinthFollow(projectId)
+const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(projectId)
+
 const { t } = useI18n()
 </script>
 
@@ -215,6 +219,11 @@ const { t } = useI18n()
     :loading-versions="loadingVersions"
     :modrinth="projectId"
     :curseforge="curseforgeId"
+    :followed="isFollowed"
+    :following="following"
+    :collection="collectionId"
+    :loading-collections="loadingCollections"
+    @collection="onAddOrRemove"
     current-target="modrinth"
     @open-dependency="onOpenDependency"
     @install="onInstall"
@@ -223,5 +232,6 @@ const { t } = useI18n()
     @install-dependency="onInstallDependency"
     @select:category="emit('category', $event)"
     @refresh="refresh()"
+    @follow="onFollow"
   />
 </template>

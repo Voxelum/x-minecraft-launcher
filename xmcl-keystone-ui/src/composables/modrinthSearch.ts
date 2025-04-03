@@ -1,23 +1,25 @@
 import { ProjectEntry } from '@/util/search'
-import { Ref } from 'vue'
 import { useSearchPattern } from './useSearchPattern'
 import { useModrinthSearchFunc } from './modrinth'
+import { SearchModel } from './search'
 
 export function useModrinthSearch<T extends ProjectEntry<any>>(
   projectType: string,
-  keyword: Ref<string>,
-  loaders: Ref<string[]>,
-  categories: Ref<string[]>,
-  sort: Ref<'relevance' | 'downloads' | 'follows' | 'newest' | 'updated' | undefined>,
-  gameVersion: Ref<string>,
-  disabled: Ref<boolean>,
+  {
+    keyword,
+    modLoaders,
+    modrinthCategories: categories,
+    modrinthSort: sort,
+    gameVersion,
+    isModrinthDisabled: disabled,
+  }: SearchModel
 ) {
   const search = useModrinthSearchFunc(
     keyword,
     gameVersion,
     '',
     categories,
-    loaders,
+    modLoaders,
     '',
     sort,
     projectType,

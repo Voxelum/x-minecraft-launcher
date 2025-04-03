@@ -118,3 +118,8 @@ export interface UserSchema {
    */
   users: { [account: string]: UserProfileCompatible }
 }
+
+export interface ModrinthUser {
+  id: string
+  accessToken: string
+}

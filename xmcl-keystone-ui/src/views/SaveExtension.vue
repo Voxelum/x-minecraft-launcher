@@ -13,7 +13,8 @@
     </div>
     <v-spacer />
     <MarketTextFieldWithMenu
-      :placeholder="t('save.search')"
+      no-tab
+     :placeholder="t('save.search')"
       :keyword.sync="keyword"
       :curseforge-category.sync="curseforgeCategory"
       curseforge-category-filter="worlds"
@@ -21,7 +22,7 @@
       :modrinth-category-filter="''"
       :enable-curseforge.sync="isCurseforgeActive"
       :sort.sync="sort"
-      :local-only.sync="localOnly"
+      :mode="'remote'"
       :game-version.sync="gameVersion"
     />
   </div>
@@ -32,12 +33,12 @@ import AvatarItemList from '@/components/AvatarItemList.vue'
 import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceSave } from '@/composables/instanceSave'
-import { kSaveSearch } from '@/composables/savesSearch'
 import { kCompact } from '@/composables/scrollTop'
+import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 
-const { keyword, localOnly, gameVersion, curseforgeCategory, isCurseforgeActive, sort } = injection(kSaveSearch)
+const { keyword, source, gameVersion, curseforgeCategory, isCurseforgeActive, sort } = injection(kSearchModel)
 
 const { runtime: version } = injection(kInstance)
 const { isInstanceLinked } = injection(kInstanceSave)

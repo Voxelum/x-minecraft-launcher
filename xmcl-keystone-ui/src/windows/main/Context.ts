@@ -20,12 +20,16 @@ import { kInstanceVersionInstall, useInstanceVersionInstallInstruction } from '@
 import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
+import { kModDependenciesCheck, useModDependenciesCheck } from '@/composables/modDependenciesCheck'
+import { kModLibCleaner, useModLibCleaner } from '@/composables/modLibCleaner'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
+import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
 import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSaveSearch, useSavesSearch } from '@/composables/savesSearch'
+import { kSearchModel, useSearchModel } from '@/composables/search'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
@@ -67,11 +71,15 @@ export default defineComponent({
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionId)
     const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.versionId, instanceVersion.serverVersionId, instanceJava.java, user.userProfile, settings, instanceMods.mods)
 
-    const modsSearch = useModsSearch(instance.path, instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state)
-    const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
+    const modrinthAPI = useModrinthAuthenticatedAPI()
+    provide(kModrinthAuthenticatedAPI, modrinthAPI)
+    const searchModel = useSearchModel(instance.runtime)
+    provide(kSearchModel, searchModel)
+    const modsSearch = useModsSearch(instance.path, instance.runtime, instanceMods.mods, instanceMods.isValidating, settings.state, modrinthAPI, searchModel)
+    const modUpgrade = useModUpgrade(instance.path, instance.runtime, instanceMods.mods)
 
-    const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled, resourcePacks.enabledSet)
-    const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPacks)
+    const resourcePackSearch = useResourcePackSearch(resourcePacks.enabled, resourcePacks.disabled, modrinthAPI, searchModel)
+    const shaderPackSearch = useShaderPackSearch(shaderPacks.shaderPacks, modrinthAPI, searchModel)
 
     const install = useInstanceVersionInstallInstruction(instance.path, instance.instances, instanceVersion.resolvedVersion, instanceVersion.refreshResolvedVersion, localVersions.versions, localVersions.servers, java.all)
 
@@ -103,7 +111,9 @@ export default defineComponent({
     provide(kResourcePackSearch, resourcePackSearch)
     provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
-    provide(kSaveSearch, useSavesSearch(instance.runtime, saves.saves, saves.sharedSaves))
+    provide(kModDependenciesCheck, useModDependenciesCheck(instance.path, instance.runtime, instanceMods.mods, instanceVersion.refreshResolvedVersion))
+    provide(kModLibCleaner, useModLibCleaner(instanceMods.mods, instanceMods.allowLoaders))
+    provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
     provide(kEnvironment, useEnvironment())
     provide(kTheme, useTheme(vuetify.framework))

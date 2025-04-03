@@ -87,7 +87,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   }
 
   private getCandidatePath(name: string) {
-    const candidate = this.getPathUnder(filenamify(name))
+    const candidate = this.getPathUnder(filenamify(name, { replacement: '_' }))
     if (!existsSync(candidate)) {
       return candidate
     } else {
@@ -128,7 +128,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     option.name = option.name.trim()
 
     const name = option.name
-    const expectPath = this.getPathUnder(filenamify(name))
+    const expectPath = this.getPathUnder(filenamify(name, { replacement: '_' }))
 
     try {
       if (this.isUnderManaged(path) && expectPath !== path && !existsSync(expectPath)) {

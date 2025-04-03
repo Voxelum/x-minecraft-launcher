@@ -1,18 +1,27 @@
-import { clientModrinthV2, clientCurseforgeV1 } from '@/util/clients'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { Mod } from '@xmcl/curseforge'
 import { Project } from '@xmcl/modrinth'
 import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
-import { ModLoaderFilter } from './modSearch'
+import { SearchModel } from './search'
 import { useService } from './service'
 
-export function useI18nSearch<T extends ProjectFile>(keyword: Ref<string>, modLoader: Ref<ModLoaderFilter | undefined>, gameVersion: Ref<string>) {
+export function useI18nSearch<T extends ProjectFile>({
+  notRemote: disabled,
+  keyword,
+  modLoader,
+  gameVersion,
+}: SearchModel) {
   const { lookupByKeyword } = useService(ProjectMappingServiceKey)
 
   const projects = ref([] as ProjectEntry<T>[])
 
   async function doSearch(kw: string) {
+    if (disabled.value) {
+      projects.value = []
+      return
+    }
     if (!kw) {
       projects.value = []
       return
@@ -56,7 +65,7 @@ export function useI18nSearch<T extends ProjectFile>(keyword: Ref<string>, modLo
       return {
         id: m.name + (m.modrinthId || m.curseforgeId || '').toString(),
         icon: modrinth?.icon_url ?? curseforge?.logo?.thumbnailUrl ?? '',
-        title: m.name,
+        title: m.name || curseforge?.name || modrinth?.title,
         localizedTitle: m.name,
         description: m.description,
         localizedDescription: m.description,

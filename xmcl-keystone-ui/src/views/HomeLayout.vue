@@ -21,6 +21,7 @@
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
     <HomeInstanceInstallDialog />
+    <AppCollectionDialog />
   </div>
 </template>
 
@@ -37,6 +38,7 @@ import HomeInstanceInstallDialog from './HomeInstanceInstallDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
+import AppCollectionDialog from './AppCollectionDialog.vue'
 
 const router = useRouter()
 
