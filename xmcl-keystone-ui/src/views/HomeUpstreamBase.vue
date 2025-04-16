@@ -139,7 +139,7 @@ const scrollElement = inject('scrollElement', ref(null as HTMLElement | null))
 const offsetTop = ref(0)
 const containerRef = ref(null as HTMLElement | null)
 const virtualizerOptions = computed(() => ({
-  count: Object.keys(props.items).length,
+  count: listItems.value.length,
   getScrollElement: () => getEl(scrollElement.value) as any,
   paddingStart: offsetTop.value,
   overscan: 5,
