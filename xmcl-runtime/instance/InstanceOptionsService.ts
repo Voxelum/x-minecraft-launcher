@@ -260,6 +260,9 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     if (diff.lang) {
       diff.lang = diff.lang.toLowerCase().replace('-', '_')
     }
+    if (options.resourcePacks && !current.resourcePacks) {
+      diff.resourcePacks = options.resourcePacks
+    }
     if (Object.keys(diff).length > 0) {
       this.log(`Edit gamesetting: ${JSON.stringify(diff, null, 4)} to ${instancePath}`)
       const optionsTxtPath = join(instancePath, 'options.txt')
