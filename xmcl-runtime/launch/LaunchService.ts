@@ -191,14 +191,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
         ? getAddress()
         : launchOptions.yggdrasilAgent.server
       launchOptions.extraJVMArgs?.push(
-        '-Dauthlibinjector.legacySkinPolyfill=enabled',
-        '-Dauthlibinjector.disableHttpd',
-        '-Dauthlibinjector.mojangNamespace=enabled',
         '-Dauthlibinjector.debug',
-        '-Dauthlibinjector.mojangAntiFeatures=enabled',
-        '-Dauthlibinjector.profileKey=disabled',
-        '-Dauthlibinjector.usernameCheck=disabled',
       )
+
+      const reg = await this.app.registry.get(kYggdrasilSeriveRegistry)
+      const auth = reg.getYggdrasilServices().find(y => y.url === user.authority)
+      if (auth?.authlibInjector) {
+        const injectedBase64 = Buffer.from(JSON.stringify(auth.authlibInjector)).toString('base64')
+        launchOptions.extraJVMArgs?.push(`-Dauthlibinjector.yggdrasil.prefetched=${injectedBase64}`)
+      }
     }
 
     if (options.server) {

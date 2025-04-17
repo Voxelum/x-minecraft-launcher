@@ -1,6 +1,6 @@
 import { YggdrasilApi, YggdrasilSchema } from '@xmcl/runtime-api'
 import { join } from 'path'
-import { LauncherApp } from '~/app'
+import { InjectionKey, LauncherApp } from '~/app'
 import { kFlights } from '~/flights'
 import { Logger } from '~/logger'
 import { SafeFile, createSafeFile } from '~/util/persistance'
@@ -10,7 +10,7 @@ const BUILTIN_CLIENT = {
   'open.littleskin.cn': '393'
 } as Record<string, string>
 
-export const kYggdrasilSeriveRegistry = Symbol('YggdrasilSeriveRegistry')
+export const kYggdrasilSeriveRegistry: InjectionKey<YggdrasilSeriveRegistry> = Symbol('YggdrasilSeriveRegistry')
 
 export class YggdrasilSeriveRegistry {
   private yggdrasilServices: YggdrasilApi[] = []
