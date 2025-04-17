@@ -15,7 +15,7 @@
     >
       <div
         v-for="virtualRow in virtualRows"
-        :key="logs[virtualRow.index].raw"
+        :key="logs[virtualRow.index].raw + virtualRow.index"
         :ref="measureElement"
         :data-index="virtualRow.index"
         :style="{
