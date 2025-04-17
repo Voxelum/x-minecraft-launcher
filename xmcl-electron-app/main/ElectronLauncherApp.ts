@@ -110,8 +110,15 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
+    const init = { ...args[1], bypassCustomProtocolHandlers: true }
     try {
-      return await net.fetch(args[0], args[1] ? { ...args[1], bypassCustomProtocolHandlers: true } : undefined) as any
+      if (init.headers && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
+        delete init.headers.origin
+        delete init.headers['sec-ch-ua']
+        delete init.headers['sec-ch-ua-mobile']
+        delete init.headers['sec-ch-ua-platform']
+      }
+      return await net.fetch(args[0], init) as any
     } catch (e) {
       if (e instanceof Error) {
         let code: NetworkErrorCode | undefined
