@@ -444,7 +444,7 @@ export class InstallService extends AbstractService implements IInstallService {
     let version: string | undefined
     for (const java of validJavaPaths) {
       try {
-        this.log(`Start to install forge ${options.version} on ${options.mcversion} by ${java.path}`)
+        this.log(`Start to install ${side} forge ${options.version} on ${options.mcversion} by ${java.path}`)
         const mc = MinecraftFolder.from(this.getPath())
         version = await this.submit(installForgeTask(options, mc, {
           ...installOptions,
@@ -469,7 +469,7 @@ export class InstallService extends AbstractService implements IInstallService {
           },
         }).setName('installForge', { id: options.version }))
 
-        this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
+        this.log(`Success to install ${side} forge ${options.version} on ${options.mcversion}`)
         break
       } catch (err) {
         if (err instanceof Error) {
@@ -497,13 +497,13 @@ export class InstallService extends AbstractService implements IInstallService {
             }
           }
         }
-        this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
+        this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}, ${side}`)
         this.warn(err)
         throw err
       }
     }
     if (!version) {
-      throw new AnyError('ForgeInstallError', `Cannot install forge ${options.version} on ${options.mcversion}`)
+      throw new AnyError('ForgeInstallError', `Cannot install forge ${options.version} on ${options.mcversion}, ${side}`)
     }
     return version
   }
