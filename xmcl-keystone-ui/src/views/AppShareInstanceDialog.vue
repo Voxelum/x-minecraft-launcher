@@ -82,21 +82,6 @@
               </template>
             </v-text-field>
             <v-text-field
-              v-if="fabricLoader"
-              flat
-              dense
-              label="Fabric"
-              :value="fabricLoader"
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="BuiltinImages.fabric"
-                  width="32"
-                >
-              </template>
-            </v-text-field>
-            <v-text-field
               v-if="quiltLoader"
               flat
               dense
@@ -223,15 +208,15 @@
 </template>
 <script lang="ts" setup>
 import { useService } from '@/composables'
-import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, InstanceServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { kInstance } from '@/composables/instance'
+import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
+import { injection } from '@/util/inject'
+import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useDialog } from '../composables/dialog'
 import { useNotifier } from '../composables/notifier'
-import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
-import { injection } from '@/util/inject'
-import { kInstance } from '@/composables/instance'
-import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { BuiltinImages } from '../constant'
 
 const { isShown, parameter } = useDialog('share-instance')
@@ -248,7 +233,7 @@ const sharing = computed(() => isShown.value && !parameter.value)
  * The sharing user name. Only for sharing == false
  */
 const currentUser = ref('')
-const manifest: Ref<InstanceManifest | undefined> = ref(undefined)
+const manifest: Ref<InstanceManifest | undefined> = shallowRef(undefined)
 const selected = ref([] as string[])
 
 provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.files || [])))
@@ -321,7 +306,7 @@ watch(isShown, async (shown) => {
       manifest.value = parameter.value as any
     } else {
       loading.value = true
-      manifest.value = await getInstanceManifest({ path: path.value, hashes: ['sha1'] }).finally(() => { loading.value = false })
+      manifest.value = await getInstanceManifest({ path: path.value }).finally(() => { loading.value = false })
     }
   }
 })

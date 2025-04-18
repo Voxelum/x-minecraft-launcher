@@ -30,6 +30,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const queryGameProfile = async (name: string) => {
       return this.state.connections.find(c => c.userInfo.name === name || c.userInfo.id === name)?.userInfo
     }
+
     app.registry.register(kPeerFacade, {
       queryGameProfile,
       getHttpDownloadUrl(url) {
@@ -38,7 +39,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           throw new Error(`Bad url: ${url}`)
         }
 
-        const realUrl = `http://localhost:${port}/files/${peerUrl.host}?path=${peerUrl.pathname}`
+        const orignalFilePath = decodeURI(peerUrl.pathname)
+        const urlBase64 = Buffer.from(orignalFilePath).toString('base64url')
+
+        const realUrl = new URL(`http://localhost:${port}/files/${peerUrl.host}?path=${urlBase64}`).toString()
 
         return realUrl
       },

@@ -23,7 +23,7 @@ export function createPeerSharing(peers: Peers) {
       sharedManifest = options.manifest
       shareInstancePath = options.instancePath
       for (const sess of peers.entries) {
-        sess.send(MessageShareManifest, { manifest: options.manifest })
+        sess.send(MessageShareManifest, { })
       }
     },
   }

@@ -327,6 +327,7 @@ export class InstanceFileOperationHandler {
               algorithm: 'sha1',
             }
             : undefined,
+          expectedTotal: file.size,
         },
         file,
       })

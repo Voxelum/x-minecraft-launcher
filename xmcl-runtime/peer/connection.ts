@@ -3,7 +3,7 @@ import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
 import { join } from 'path'
-import { Writable } from 'stream'
+import { Readable, Writable, finished } from 'stream'
 import { PeerContext } from './PeerContext'
 import { ServerProxy } from './ServerProxy'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
@@ -11,6 +11,8 @@ import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEn
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
+import { WorkerQueue } from '~/util/aggregator'
+import { RTCDuplexChannel } from './RTCDuplexChannel'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -49,6 +51,38 @@ export class PeerSession {
   #updateDescriptor: () => void
 
   #interval: ReturnType<typeof setInterval>
+
+  #channelPool: RTCDuplexChannel[] = []
+
+  #getOrCreateDownloadChannel() {
+    let idel: RTCDuplexChannel | undefined
+    for (const channel of this.#channelPool) {
+      if (!channel.isBusy) {
+        idel = channel
+        break
+      }
+    }
+    if (idel) {
+      return idel
+    }
+    const channel = new RTCDuplexChannel(this.connection.createDataChannel(`download-${this.#channelPool.length}`, {
+      ordered: true,
+      protocol: 'download',
+    }), this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024)
+    this.#channelPool.push(channel)
+    return channel
+  }
+
+  #streamQueue = new WorkerQueue<{ file: string; destination: Writable }>(async ({ file, destination }) => {
+    return new Promise<any>((resolve) => {
+      const channel = this.#getOrCreateDownloadChannel()
+      finished(destination, resolve)
+      channel.download(file, destination)
+    })
+  }, 32, {
+    shouldRetry: () => false,
+    isEqual: () => false,
+  })
 
   constructor(
     /**
@@ -125,67 +159,70 @@ export class PeerSession {
         console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {
         console.log(`Receive peer file request: ${channel.label}`)
-        const path = unescape(label)
-        const createStream = (filePath: string) => {
-          if (filePath.startsWith('/sharing')) {
-            filePath = filePath.substring('/sharing'.length)
-            if (filePath.startsWith('/')) {
-              filePath = filePath.substring(1)
-            }
-            const man = this.context.getSharedInstance()
-            if (!man) {
-              return 'NO_PERMISSION'
-            }
-            if (!man.files.some(v => v.path === filePath)) {
-              return 'NO_PERMISSION'
-            }
-            const absPath = join(this.context.getShadedInstancePath(), filePath)
-            if (!existsSync(absPath)) {
-              return 'NOT_FOUND'
-            }
-            return createReadStream(absPath, {
-              highWaterMark: 16 * 1024,
-            })
-          } else if (filePath.startsWith('/image')) {
-            filePath = filePath.substring('/image'.length)
-            if (filePath.startsWith('/')) {
-              filePath = filePath.substring(1)
-            }
-            return createReadStream(this.context.getSharedImagePath(filePath), {
-              highWaterMark: 16 * 1024,
-            })
-          } else if (filePath.startsWith('/assets')) {
-            filePath = filePath.substring('/assets'.length)
-            return createReadStream(join(this.context.getSharedAssetsPath(), filePath), {
-              highWaterMark: 16 * 1024,
-            })
-          } else if (filePath.startsWith('/libraries')) {
-            filePath = filePath.substring('/libraries'.length)
-            return createReadStream(join(this.context.getSharedLibrariesPath(), filePath), {
-              highWaterMark: 16 * 1024,
-            })
-          }
-          return 'NOT_FOUND'
-        }
-        const result = createStream(path)
-        if (typeof result === 'string') {
-          // reject the file
-          console.log(`Reject peer file request ${path} due to ${result}`)
-          channel.send(result)
-          channel.close()
-        } else {
-          console.log(`Process peer file request: ${path}`)
-          result.on('data', (data: Buffer) => {
-            channel.send(data.buffer)
-          })
-          result.on('end', () => {
-            channel.send('end')
-          })
-        }
+        this.#channelPool.push(new RTCDuplexChannel(channel, this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024))
       } else {
         // TODO: emit error for unknown protocol
       }
     })
+  }
+
+  createStream = (filePath: string) => {
+    const maxChunk = this.connection.sctp?.maxMessageSize ?? 16 * 1024
+    if (filePath.startsWith('/sharing')) {
+      if (filePath === '/sharing') {
+        const man = this.context.getSharedInstance()
+        if (!man) {
+          return 'NOT_FOUND'
+        }
+        return new Readable({
+          read() {
+            const encoder = new TextEncoder()
+            const buf = encoder.encode(JSON.stringify(man))
+            this.push(buf)
+            this.push(null)
+          },
+          highWaterMark: maxChunk,
+        })
+      }
+      filePath = filePath.substring('/sharing'.length)
+      if (filePath.startsWith('/')) {
+        filePath = filePath.substring(1)
+      }
+      const man = this.context.getSharedInstance()
+      if (!man) {
+        return 'NO_PERMISSION'
+      }
+      const file = man.files.find(v => decodeURI(v.path) === filePath)
+      if (!file) {
+        return 'NO_PERMISSION'
+      }
+      const absPath = join(this.context.getShadedInstancePath(), file.path)
+      if (!existsSync(absPath)) {
+        return 'NOT_FOUND'
+      }
+      return createReadStream(absPath, {
+        highWaterMark: maxChunk,
+      })
+    } else if (filePath.startsWith('/image')) {
+      filePath = filePath.substring('/image'.length)
+      if (filePath.startsWith('/')) {
+        filePath = filePath.substring(1)
+      }
+      return createReadStream(this.context.getSharedImagePath(filePath), {
+        highWaterMark: 16 * 1024,
+      })
+    } else if (filePath.startsWith('/assets')) {
+      filePath = filePath.substring('/assets'.length)
+      return createReadStream(join(this.context.getSharedAssetsPath(), filePath), {
+        highWaterMark: 16 * 1024,
+      })
+    } else if (filePath.startsWith('/libraries')) {
+      filePath = filePath.substring('/libraries'.length)
+      return createReadStream(join(this.context.getSharedLibrariesPath(), filePath), {
+        highWaterMark: 16 * 1024,
+      })
+    }
+    return 'NOT_FOUND'
   }
 
   /**
@@ -245,31 +282,13 @@ export class PeerSession {
     })
   }
 
-  stream(file: string, writable: Writable) {
-    const channel = this.connection.createDataChannel(file, {
-      protocol: 'download',
-      ordered: true,
-    })
-
-    const onError = (e: Error) => {
-      channel.close()
-    }
-    channel.onmessage = (msg) => {
-      if (typeof msg.data === 'string') {
-        if (msg.data === 'end') {
-          writable.end()
-          channel.close()
-        } else {
-          writable.destroy(new Error(msg.data))
-        }
-      } else {
-        writable.write(Buffer.from(msg.data))
-      }
-    }
-    writable.on('error', onError)
-    channel.onerror = (e) => {
-      writable.destroy(new Error(e.type))
-    }
+  /**
+   * Download a file from peer
+   * @param file The file path to download
+   * @param destination The sink stream to receive the file content
+   */
+  stream(file: string, destination: Writable) {
+    this.#streamQueue.push({ file, destination })
   }
 
   /**
