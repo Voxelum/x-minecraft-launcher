@@ -738,7 +738,7 @@ modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
   disabledOnly: Only show disabled mods
-  hasUpdateOnly: Only show the mods has update
+  hasUpdateOnly: Only show mods with updates
   incompatibleOnly: Only show incompatible or missing dependencies missing mods
   unusedOnly: Only show unused libraries mods
 modInstall:
