@@ -1,6 +1,7 @@
 import { createServer } from 'http'
 import { Peers } from './multiplayerImpl'
 import { basename } from 'path'
+import { Transform } from 'stream'
 
 export function createHosting(peers: Peers) {
   const server = createServer((req, res) => {
@@ -15,6 +16,8 @@ export function createHosting(peers: Peers) {
         res.end()
         return
       }
+      const filePathBuffer = Buffer.from(filePath, 'base64url')
+      const filePathString = filePathBuffer.toString('utf-8')
       const peer = peers.get(peerId)
       if (!peer) {
         res.writeHead(404)
@@ -23,13 +26,15 @@ export function createHosting(peers: Peers) {
       }
       res.writeHead(200, {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${basename(filePath)}"`,
+        'Content-Disposition': `attachment; filename="${basename(filePathString)}"`,
       })
-      peer.stream(filePath, res)
+      peer.stream(filePathString, res)
     } else {
       res.writeHead(404)
       res.end()
     }
+  }).once('listening', () => {
+    console.log('Peer server listening on port', (server.address() as any).port)
   })
   return server
 }
