@@ -134,7 +134,6 @@ export class ModpackService extends AbstractService implements IModpackService {
     const options: CreateInstanceOption = {
       ...instance,
       name,
-      path: this.getPath('instances', name),
       version: matchedVersion?.id || instance.version,
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
