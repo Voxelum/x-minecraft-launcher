@@ -3,7 +3,7 @@ import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
 import { join } from 'path'
-import { Writable } from 'stream'
+import { Readable, Writable } from 'stream'
 import { PeerContext } from './PeerContext'
 import { ServerProxy } from './ServerProxy'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
@@ -11,6 +11,7 @@ import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEn
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
+import { WorkerQueue } from '~/util/aggregator'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -50,6 +51,40 @@ export class PeerSession {
 
   #interval: ReturnType<typeof setInterval>
 
+  #streamQueue = new WorkerQueue<{ file: string; destination: Writable }>(async ({ file, destination }) => {
+    return new Promise<void>((resolve) => {
+      const channel = this.connection.createDataChannel(file, {
+        protocol: 'download',
+        ordered: true,
+      })
+      const onError = (e: Error) => {
+        resolve()
+        channel.close()
+      }
+      channel.onclose = () => {
+        resolve()
+      }
+      channel.onmessage = (msg) => {
+        if (typeof msg.data === 'string') {
+          if (msg.data === 'end') {
+            destination.end()
+            channel.close()
+            resolve()
+          } else {
+            destination.destroy(new Error(msg.data))
+          }
+        } else {
+          destination.write(Buffer.from(msg.data))
+        }
+      }
+      destination.on('error', onError)
+      channel.onerror = (e) => {
+        resolve()
+        destination.destroy(new Error(e.type))
+      }
+    })
+  }, 246)
+
   constructor(
     /**
     * The session id
@@ -84,6 +119,7 @@ export class PeerSession {
       }
       this.#updateDescriptor()
     })
+    this.#streamQueue.workers = (this.connection.sctp?.maxChannels ?? 256) - 10
     this.connection.addEventListener('datachannel', (e) => {
       const channel = e.channel
       const label = channel.label
@@ -126,8 +162,24 @@ export class PeerSession {
       } else if (channel.protocol === 'download') {
         console.log(`Receive peer file request: ${channel.label}`)
         const path = unescape(label)
+        const maxChunk = this.connection.sctp?.maxMessageSize ?? 16 * 1024
         const createStream = (filePath: string) => {
           if (filePath.startsWith('/sharing')) {
+            if (filePath === '/sharing') {
+              const man = this.context.getSharedInstance()
+              if (!man) {
+                return 'NOT_FOUND'
+              }
+              return new Readable({
+                read() {
+                  const encoder = new TextEncoder()
+                  const buf = encoder.encode(JSON.stringify(man))
+                  this.push(buf)
+                  this.push(null)
+                },
+                highWaterMark: maxChunk,
+              })
+            }
             filePath = filePath.substring('/sharing'.length)
             if (filePath.startsWith('/')) {
               filePath = filePath.substring(1)
@@ -144,7 +196,7 @@ export class PeerSession {
               return 'NOT_FOUND'
             }
             return createReadStream(absPath, {
-              highWaterMark: 16 * 1024,
+              highWaterMark: maxChunk,
             })
           } else if (filePath.startsWith('/image')) {
             filePath = filePath.substring('/image'.length)
@@ -176,7 +228,16 @@ export class PeerSession {
         } else {
           console.log(`Process peer file request: ${path}`)
           result.on('data', (data: Buffer) => {
-            channel.send(data.buffer)
+            if (data.length > maxChunk) {
+              let pivot = 0
+              while (pivot < data.length) {
+                const sub = data.subarray(pivot, pivot + maxChunk)
+                channel.send(sub)
+                pivot += sub.length
+              }
+            } else {
+              channel.send(data.buffer)
+            }
           })
           result.on('end', () => {
             channel.send('end')
@@ -245,31 +306,13 @@ export class PeerSession {
     })
   }
 
-  stream(file: string, writable: Writable) {
-    const channel = this.connection.createDataChannel(file, {
-      protocol: 'download',
-      ordered: true,
-    })
-
-    const onError = (e: Error) => {
-      channel.close()
-    }
-    channel.onmessage = (msg) => {
-      if (typeof msg.data === 'string') {
-        if (msg.data === 'end') {
-          writable.end()
-          channel.close()
-        } else {
-          writable.destroy(new Error(msg.data))
-        }
-      } else {
-        writable.write(Buffer.from(msg.data))
-      }
-    }
-    writable.on('error', onError)
-    channel.onerror = (e) => {
-      writable.destroy(new Error(e.type))
-    }
+  /**
+   * Download a file from peer
+   * @param file The file path to download
+   * @param destination The sink stream to receive the file content
+   */
+  stream(file: string, destination: Writable) {
+    this.#streamQueue.push({ file, destination })
   }
 
   /**

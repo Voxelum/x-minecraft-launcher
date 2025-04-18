@@ -54,7 +54,7 @@ export class WorkerQueue<T> {
 
   constructor(
     private worker: (value: T) => Promise<void>,
-    private workers: number,
+    public workers: number,
     options: WorkerRetryOptions<T> = {},
   ) {
     this.retryCount = options.retryCount || this.retryCount
