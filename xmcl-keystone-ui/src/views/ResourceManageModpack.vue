@@ -137,7 +137,7 @@ function getModpackItem(resource: Resource): ModpackItem {
     id: resource.path,
     size: getExpectedSize(resource.size),
     icon: resource.icons ? resource.icons[0] : '',
-    name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? '',
+    name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? resource.fileName,
     version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
     author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
     tags: [],
