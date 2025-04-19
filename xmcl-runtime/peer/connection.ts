@@ -12,7 +12,7 @@ import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
 import { WorkerQueue } from '~/util/aggregator'
-import { DownloadChannel } from './DownloadChannel'
+import { RTCDuplexChannel } from './RTCDuplexChannel'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -52,17 +52,17 @@ export class PeerSession {
 
   #interval: ReturnType<typeof setInterval>
 
-  #channelPool: DownloadChannel[] = []
+  #channelPool: RTCDuplexChannel[] = []
 
   #getOrCreateDownloadChannel() {
-    let idel: DownloadChannel | undefined
+    let idel: RTCDuplexChannel | undefined
     for (const channel of this.#channelPool) {
       if (!channel.isBusy) {
         idel = channel
         break
       }
     }
-    const channel = new DownloadChannel(this.connection.createDataChannel(`download-${this.#channelPool.length}`, {
+    const channel = new RTCDuplexChannel(this.connection.createDataChannel(`download-${this.#channelPool.length}`, {
       ordered: true,
       protocol: 'download',
     }), this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024)
@@ -73,7 +73,7 @@ export class PeerSession {
     return new Promise<any>((resolve) => {
       const channel = this.#getOrCreateDownloadChannel()
       finished(destination, resolve)
-      channel.start(file, destination)
+      channel.download(file, destination)
     })
   }, 32, {
     shouldRetry: () => false,
@@ -155,7 +155,7 @@ export class PeerSession {
         console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {
         console.log(`Receive peer file request: ${channel.label}`)
-        this.#channelPool.push(new DownloadChannel(channel, this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024))
+        this.#channelPool.push(new RTCDuplexChannel(channel, this.createStream, this.connection.sctp?.maxMessageSize ?? 16 * 1024))
       } else {
         // TODO: emit error for unknown protocol
       }
