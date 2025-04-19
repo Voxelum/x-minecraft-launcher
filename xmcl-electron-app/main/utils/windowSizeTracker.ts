@@ -23,11 +23,11 @@ export function createWindowTracker(app: LauncherApp, role: string, man: Install
     x: undefined as undefined | number,
     y: undefined as undefined | number,
     maximized: false,
-    getWidth(min: number) {
-      return Math.max(this.width || 0, min)
+    getWidth(defaultWidth: number, min: number) {
+      return Math.max(this.width === -1 || !this.width ? defaultWidth : this.width, min)
     },
-    getHeight(min: number) {
-      return Math.max(this.height || 0, min)
+    getHeight(defaultHeight: number, min: number) {
+      return Math.max(this.height === -1 || !this.height ? defaultHeight : this.height, min)
     },
   }
   function isInsideScreen(x: number, y: number, width: number, height: number) {

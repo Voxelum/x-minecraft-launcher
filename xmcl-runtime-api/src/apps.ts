@@ -62,6 +62,9 @@ export interface AppManifest {
    * The min height of the launcher
    */
   minHeight?: number
+
+  defaultWidth?: number
+  defaultHeight?: number
 }
 
 export interface InstalledAppManifest extends Required<AppManifest> {
