@@ -112,6 +112,8 @@ export async function installWin32(url: string, appDir: string, man: AppManifest
     iconSets: man.iconUrls as any,
     minHeight: man.minHeight ?? 600,
     minWidth: man.minWidth ?? 800,
+    defaultHeight: man.defaultHeight ?? 600,
+    defaultWidth: man.defaultWidth ?? 800,
     ratio: man.ratio ?? false,
     backgroundColor: man.backgroundColor ?? '',
     vibrancy: false,
