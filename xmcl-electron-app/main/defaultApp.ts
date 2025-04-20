@@ -34,6 +34,8 @@ const manifest: InstalledAppManifest = {
     dockIcon: lightIcon,
     darkDockIcon: darkIcon,
   },
+  defaultWidth: 800,
+  defaultHeight: 600
 }
 
 export default manifest
