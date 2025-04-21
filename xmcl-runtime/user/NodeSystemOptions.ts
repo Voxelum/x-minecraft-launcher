@@ -1,8 +1,10 @@
-import { Constants, LogLevel } from '@azure/msal-common'
+import { LogLevel } from '@azure/msal-common'
 import { NodeSystemOptions } from '@azure/msal-node'
 import { Logger } from '~/logger'
+import { createNetworkClient } from './accountSystems/OAuthNetworkClient'
 
 export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis.fetch, signal?: AbortSignal, transformReqResp = false): NodeSystemOptions {
+  const client = createNetworkClient(fetch, signal)
   return {
     loggerOptions: {
       logLevel: LogLevel.Verbose,
@@ -12,33 +14,15 @@ export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis
     },
     networkClient: {
       sendGetRequestAsync: async (url, options, token) => {
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: options?.headers,
-          body: options?.body,
-          signal,
-        })
-
-        const body = await response.json()
-
-        if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
-          body.error !== Constants.AUTHORIZATION_PENDING) {
-          throw new Error(`HTTP status code ${response.status}`)
-        }
-
+        const response = await client.sendGetRequestAsync(url, options, token)
         // override well-known openid-configuration
         if (transformReqResp) {
           if (url.endsWith('.well-known/openid-configuration')) {
-            body.authorization_endpoint = body.device_authorization_endpoint
+            // @ts-ignore
+            response.body.authorization_endpoint = response.body.device_authorization_endpoint
           }
         }
-
-        return {
-          body,
-          // @ts-ignore
-          headers: Object.fromEntries(response.headers),
-          status: response.status,
-        }
+        return response as any
       },
       sendPostRequestAsync: async (url, options) => {
         if (transformReqResp && options) {
@@ -57,26 +41,7 @@ export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis
           }
         }
 
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { ...options?.headers, Accept: 'application/json' },
-          body: options?.body,
-          signal,
-        })
-
-        const body = await response.json()
-
-        if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
-          body.error !== Constants.AUTHORIZATION_PENDING) {
-          throw new Error(`HTTP status code ${response.status}`)
-        }
-
-        return {
-          body,
-          // @ts-ignore
-          headers: Object.fromEntries(response.headers),
-          status: response.status,
-        }
+        return client.sendPostRequestAsync(url, options) as any
       },
     },
   }

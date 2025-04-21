@@ -4,6 +4,7 @@ import { SecretStorage } from '~/app/SecretStorage'
 import { Logger } from '~/logger'
 import { AnyError } from '~/util/error'
 import { createPlugin } from '../credentialPlugin'
+import { createNetworkClient } from './OAuthNetworkClient'
 
 export class MicrosoftOAuthClient {
   constructor(
@@ -33,59 +34,7 @@ export class MicrosoftOAuthClient {
             this.logger.log(`${message}`)
           },
         },
-        networkClient: {
-          sendGetRequestAsync: async (url, options, token) => {
-            const response = await this.fetch(url, {
-              method: 'GET',
-              headers: options?.headers,
-              body: options?.body,
-              signal,
-            })
-
-            const body = await response.json()
-
-            if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
-              body.error !== Constants.AUTHORIZATION_PENDING) {
-              throw new Error(`HTTP status code ${response.status}`)
-            }
-
-            return {
-              body,
-              // @ts-ignore
-              headers: Object.fromEntries(response.headers),
-              status: response.status,
-            }
-          },
-          sendPostRequestAsync: async (url, options) => {
-            const response = await this.fetch(url, {
-              method: 'POST',
-              headers: options?.headers,
-              body: options?.body,
-              signal,
-            })
-
-            if (!response.ok) {
-              const body = await response.text()
-              try {
-                const json = JSON.parse(body)
-                if (json.error) {
-                  throw new ServerError(json.error, json.error_description, json.error_codes, json.error, response.status)
-                }
-              } catch (e) {
-                throw new ServerError('http', `HTTP status code ${response.status}`, undefined, body, response.status)
-              }
-            }
-
-            const body = await response.json()
-
-            return {
-              body,
-              // @ts-ignore
-              headers: Object.fromEntries(response.headers),
-              status: response.status,
-            }
-          },
-        },
+        networkClient: createNetworkClient(this.fetch, signal),
       },
     })
   }

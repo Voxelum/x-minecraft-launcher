@@ -14,7 +14,8 @@ export const pluginOfficialUserApi: LauncherAppPlugin = async (app) => {
   app.registry.get(kNetworkInterface).then((networkInterface) => {
   })
 
-  const mojangApi = new MojangClient()
+  // @ts-ignore
+  const mojangApi = new MojangClient({ fetch: (...args) => app.fetch(...args) })
   app.registry.register(MojangClient, mojangApi)
 
   const logger = app.getLogger('OfficialUserSystem')

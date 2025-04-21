@@ -2,6 +2,7 @@ import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
 import { Menu, app, net, shell } from 'electron'
+import { fetch as ufetch } from 'undici'
 import { stat } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { AnyError } from '~/util/error'
@@ -92,6 +93,30 @@ const getEnv = () => {
   }
 }
 
+function getErrorCode(e: Error) {
+  let code: NetworkErrorCode | undefined
+  if (e.message === 'net::ERR_CONNECTION_CLOSED') {
+    code = NetworkErrorCode.CONNECTION_CLOSED
+  } else if (e.message === 'net::ERR_INTERNET_DISCONNECTED') {
+    code = NetworkErrorCode.INTERNET_DISCONNECTED
+  } else if (e.message === 'net::ERR_TIMED_OUT') {
+    code = NetworkErrorCode.TIMED_OUT
+  } else if (e.message === 'net::ERR_CONNECTION_RESET') {
+    code = NetworkErrorCode.CONNECTION_RESET
+  } else if (e.message === 'net::ERR_CONNECTION_TIMED_OUT') {
+    code = NetworkErrorCode.CONNECTION_TIMED_OUT
+  } else if (e.message === 'net::ERR_NAME_NOT_RESOLVED') {
+    code = NetworkErrorCode.DNS_NOTFOUND
+  } else if (e.message === 'net::NETWORK_CHANGED') {
+    code = NetworkErrorCode.NETWORK_CHANGED
+  } else if (e.message === 'net::PROXY_CONNECTION_FAILED') {
+    code = NetworkErrorCode.PROXY_CONNECTION_FAILED
+  } else if (e.message === 'net::ERR_UNEXPECTED') {
+    code = NetworkErrorCode.CONNECTION_RESET
+  }
+  return code
+}
+
 export default class ElectronLauncherApp extends LauncherApp {
   readonly session: ElectronSession
 
@@ -113,7 +138,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     const init = { ...args[1], bypassCustomProtocolHandlers: true }
     try {
       if (init.headers && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
-        delete init.headers.origin
+        delete init.headers['origin']
         delete init.headers['sec-ch-ua']
         delete init.headers['sec-ch-ua-mobile']
         delete init.headers['sec-ch-ua-platform']
@@ -121,25 +146,15 @@ export default class ElectronLauncherApp extends LauncherApp {
       return await net.fetch(args[0], init) as any
     } catch (e) {
       if (e instanceof Error) {
-        let code: NetworkErrorCode | undefined
-        if (e.message === 'net::ERR_CONNECTION_CLOSED') {
-          code = NetworkErrorCode.CONNECTION_CLOSED
-        } else if (e.message === 'net::ERR_INTERNET_DISCONNECTED') {
-          code = NetworkErrorCode.INTERNET_DISCONNECTED
-        } else if (e.message === 'net::ERR_TIMED_OUT') {
-          code = NetworkErrorCode.TIMED_OUT
-        } else if (e.message === 'net::ERR_CONNECTION_RESET') {
-          code = NetworkErrorCode.CONNECTION_RESET
-        } else if (e.message === 'net::ERR_CONNECTION_TIMED_OUT') {
-          code = NetworkErrorCode.CONNECTION_TIMED_OUT
-        } else if (e.message === 'net::ERR_NAME_NOT_RESOLVED') {
-          code = NetworkErrorCode.DNS_NOTFOUND
-        } else if (e.message === 'net::NETWORK_CHANGED') {
-          code = NetworkErrorCode.NETWORK_CHANGED
-        } else if (e.message === 'net::PROXY_CONNECTION_FAILED') {
-          code = NetworkErrorCode.PROXY_CONNECTION_FAILED
-        } else if (e.message === 'net::ERR_UNEXPECTED') {
-          code = NetworkErrorCode.CONNECTION_RESET
+        let code: NetworkErrorCode | undefined = getErrorCode(e)
+        if (code === NetworkErrorCode.CONNECTION_CLOSED) {
+          try {
+            return await ufetch(args[0], init) as any
+          } catch (ee) {
+            if (ee instanceof Error) {
+              code = getErrorCode(ee)
+            }
+          }
         }
         if (code) {
           // expected exceptions
