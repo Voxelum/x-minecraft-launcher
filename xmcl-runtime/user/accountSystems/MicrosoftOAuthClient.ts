@@ -1,4 +1,4 @@
-import { Constants, DeviceCodeResponse } from '@azure/msal-common'
+import { Constants, DeviceCodeResponse, ServerError } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { SecretStorage } from '~/app/SecretStorage'
 import { Logger } from '~/logger'
@@ -64,12 +64,19 @@ export class MicrosoftOAuthClient {
               signal,
             })
 
-            const body = await response.json()
-
-            if ((response.status < 200 || response.status > 299) && // do not destroy the request for the device code flow
-              body.error !== Constants.AUTHORIZATION_PENDING) {
-              throw new Error(`HTTP status code ${response.status}`)
+            if (!response.ok) {
+              const body = await response.text()
+              try {
+                const json = JSON.parse(body)
+                if (json.error) {
+                  throw new ServerError(json.error, json.error_description, json.error_codes, json.error, response.status)
+                }
+              } catch (e) {
+                throw new ServerError('http', `HTTP status code ${response.status}`, undefined, body, response.status)
+              }
             }
+
+            const body = await response.json()
 
             return {
               body,
