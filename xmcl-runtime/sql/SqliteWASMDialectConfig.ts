@@ -13,4 +13,4 @@ export type SqliteWASMDialectWorkerConfig = {
   worker: DatabaseWorker
 } & SqliteWASMDialectConfigBase
 
-export type SqliteWASMDialectConfig = SqliteWASMDialectDatabaseConfig | SqliteWASMDialectWorkerConfig
+export type SqliteWASMDialectConfig = (SqliteWASMDialectDatabaseConfig | SqliteWASMDialectWorkerConfig) 

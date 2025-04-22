@@ -1,6 +1,8 @@
 import { ResourceType } from '@xmcl/runtime-api'
 import { Kysely, Migration, MigrationProvider, Migrator, sql } from 'kysely'
 import { Database } from './schema'
+import { Logger } from '~/logger'
+import { AnyError } from '~/util/error'
 
 export class ResourceMigrateProvider implements MigrationProvider {
   getMigrations(): Promise<Record<string, Migration>> {
@@ -61,15 +63,33 @@ async function fixResourceTable(db: Kysely<Database>) {
  * Migrate the database to latest version
  * @param db The sqldatabase
  */
-export async function migrate(db: Kysely<Database>) {
+export async function migrate(db: Kysely<Database>, logger: Logger) {
   const migrator = new Migrator({
     db,
     provider: new ResourceMigrateProvider(),
   })
-  await migrator.migrateToLatest()
 
-  await fixSnapshotTable(db)
-  await fixResourceTable(db)
+  try {
+    const { error, results } = await migrator.migrateToLatest()
+    if (error) {
+      throw error
+    }
+    if (results) {
+      for (const result of results) {
+        if (result.status === 'Error') {
+          logger.error(new AnyError('ResourceDatabaseMigration', `Failed to migrate database: ${result.migrationName}`))
+        }
+      }
+    }
+    await fixSnapshotTable(db)
+    await fixResourceTable(db)
+    return true
+  } catch (e) {
+    logger.error(Object.assign(e as any, {
+      cause: 'ResourceDatabaseMigration',
+    }))
+    return false
+  }
 }
 
 const v1: Migration = {
