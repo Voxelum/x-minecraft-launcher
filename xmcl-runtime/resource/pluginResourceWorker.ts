@@ -1,14 +1,14 @@
 import { InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
-import { Database } from 'node-sqlite3-wasm'
+import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { join } from 'path'
-import { LauncherAppPlugin, kGameDataPath } from '~/app'
+import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
 import { kFlights } from '~/flights'
 import { ImageStorage } from '~/imageStore'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
-import { SqliteWASMDialectConfig } from '~/sql'
+import { SqliteWASMDialectConfig, createDatabase } from '~/sql'
 import { DatabaseWorker } from '~/sql/type'
 import { ZipManager } from '~/zipManager/ZipManager'
 import createDbWorker from '../sql/sqlite.worker?worker'
@@ -19,16 +19,11 @@ import { migrate } from './core/migrateResources'
 import { getDomainedPath } from './core/snapshot'
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
+import { Database } from './core/schema'
+import { Kysely } from 'kysely'
+import { rename } from 'fs-extra'
 
-export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
-  const workerLogger = app.getLogger('ResourceWorker')
-  const [resourceWorker, dispose] = createLazyWorker<ResourceWorker>(createResourceWorker, {
-    methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
-  }, workerLogger, { name: 'CPUWorker' })
-  app.registryDisposer(dispose)
-  app.registry.register(kResourceWorker, resourceWorker)
-
-  const flights = await app.registry.get(kFlights)
+function loadDatabaseConfig(app: LauncherApp, flights: any) {
   let config: SqliteWASMDialectConfig
   const dbPath = join(app.appDataPath, 'resources.sqlite')
 
@@ -39,44 +34,73 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     }
   } catch { }
 
+  const onError: SqliteWASMDialectConfig['onError'] = (e) => {
+    if (e.name === 'SQLite3Error') {
+      if (e.message === 'unable to open database file'
+        || e.message.startsWith('no such table')
+      )
+        app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
+    }
+  }
   if (flights.enableResourceDatabaseWorker) {
     const dbLogger = app.getLogger('ResourceDbWorker')
     const [dbWorker, dispose]: [DatabaseWorker, () => void] = createLazyWorker(createDbWorker, {
       methods: ['executeQuery', 'streamQuery', 'init', 'destroy'],
       asyncGenerators: ['streamQuery'],
     }, dbLogger, { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' })
-    app.registryDisposer(dispose)
     config = {
       worker: dbWorker,
+      onError,
     }
   } else {
+    const database = new SQLDatabase(dbPath)
     config = {
-      database: new Database(dbPath),
-      onError: (e) => {
-        if (e.name === 'SQLite3Error' && e.message === 'unable to open database file') {
-          app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
-        }
-      }
+      database,
+      onError,
     }
   }
 
+  return config
+}
+
+export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
+  const workerLogger = app.getLogger('ResourceWorker')
+
+  const [resourceWorker, dispose] = createLazyWorker<ResourceWorker>(createResourceWorker, {
+    methods: ['checksum', 'hash', 'hashAndFileType', 'parse', 'fingerprint'],
+  }, workerLogger, { name: 'CPUWorker' })
+  app.registryDisposer(dispose)
+  app.registry.register(kResourceWorker, resourceWorker)
+
   const logger = app.getLogger('ResourceContext')
+  const flights = await app.registry.get(kFlights)
+
+  let db: Kysely<Database> | undefined
+  for (let i = 0; i < 3; i++) {
+    if (db) {
+      db.destroy()
+      const dbPath = join(app.appDataPath, 'resources.sqlite')
+      const bkPath = dbPath + +'.' + Date.now() + '.bk'
+      await rename(dbPath, bkPath).catch(() => { })
+    }
+    const config = loadDatabaseConfig(app, flights)
+    const [database, success] = await createDatabase<Database>(config, migrate, logger)
+    db = database
+    if (!success) {
+      continue
+    }
+    if ('database' in config) {
+      app.registry.get(kSettings).then((settings) => settings.databaseReadySet(config.database.isOpen))
+    }
+    break
+  }
+
   const imageStorage = await app.registry.get(ImageStorage)
   const getPath = await app.registry.get(kGameDataPath)
   const eventBus = new EventEmitter()
-  const context = createResourceContext(getPath(), imageStorage, eventBus, logger, resourceWorker, config)
-  try {
-    await migrate(context.db)
-  } catch (e) {
-    logger.error(Object.assign(e as any, {
-      cause: 'ResourceDatabaseMigration',
-    }))
-  }
-  app.registry.register(kResourceContext, context)
 
-  if ('database' in config) {
-    app.registry.get(kSettings).then((settings) => settings.databaseReadySet(config.database.isOpen))
-  }
+  const context = createResourceContext(getPath(), imageStorage, eventBus, logger, resourceWorker, db!)
+  app.registry.register(kResourceContext, context)
 
   app.registryDisposer(async () => {
     await context.db.destroy()
