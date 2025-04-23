@@ -1,0 +1,697 @@
+{
+  "modified": "Wed, 23 Apr 2025 14:20:45 GMT",
+  "java-runtime-alpha": [
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "f5f7701bf35d58e618c225f03e4852b9385f733d1ada39d566bd4cc81924094a",
+      "size": 76012136,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-fx-jre16.0.1-win_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "5e404efa094a41087cce3bb5e1cdb909541f1495101b9b7ac1d498eb02843686",
+      "size": 42661204,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "musl"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "edbd840646647e2ea034ab12807f7dfbc3ac52a7cd519ee85b2cd0bbc19eedeb",
+      "size": 49383298,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-linux_musl_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "733c4158cf8b56b1ab0fbaca2d24cdb6bdd5068b2908c70c4dd57232938ac698",
+      "size": 49654210,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "5ec8e83cfa2045d187977d9306d4f51366635a38777eb973618366d31b54780d",
+      "size": 38400648,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "52694417847e2e94392be2b17f582ebfa7e7894513e8076c36cdc65cdf436170",
+      "size": 46560849,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "28bc124b3fc87390e7af089b725a41e810afc7a21c7fb2d3ab3e58fa7ebcc582",
+      "size": 37541829,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-win_i686.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "dde4a76bd086bdd2907d677b5091a0ee7559f87897d48e73e1e5caeda7c64e9c",
+      "size": 45445664,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.15-ca-jre16.0.1-win_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "win32",
+      "sha256": "53bbc9cb5efb989994b543aa0b09e95ea0c8d57cb34ec59a19d8cfe9f3337a60",
+      "size": 37774014,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.17-ca-jre16.0.1-win_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "musl"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "1b4014870be5bbf9f75fa2b611fc77c66e2933e9c3a7c86c52875ccf1751714f",
+      "size": 41441564,
+      "url": "https://static.azul.com/zulu/bin/zulu16.30.19-ca-jre16.0.1-linux_musl_aarch64.tar.gz"
+    }
+  ],
+  "java-runtime-beta": [
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "3e5404c9bc1f0f5bcb818eda8362d9bae6d10452a56fcd69e063db33e40a8c34",
+      "size": 84058381,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "c3e118f0cc9724ac93130d3d6d25ae67e252d2656edbfb284fa4ceeb4d2582ee",
+      "size": 88022644,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-linux_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "9cab9b441632b57016148ed57daa24231fe023d8d81121a6288b161f115eb5dd",
+      "size": 75070368,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "63d5d7e22736686a25296ad3977102e566858a08ae08730b8c4b060cb0ec9814",
+      "size": 81020005,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-macosx_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "53337fe9a86b8db0a393874b282952e55e69a87bc2a17aa902f461d5f39b76e8",
+      "size": 67688365,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-win_i686.zip"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "9da1efbc311302e0f62d6c70fa76e55e81b34391c3ad6c30e1763bf6a2965f5b",
+      "size": 74658652,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-fx-jre17.0.1-win_x64.zip"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "162a67e76b44c7d8ecfe0150cfc3e8732dd9c6b9b2770dd233feb5b7daf05d8a",
+      "size": 39734336,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "b061befb2d75729afb4d740e7d2b84eaf2016ac19bca5d624e75886c4d94eb32",
+      "size": 46487389,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "musl"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "504fec0a3b66f89eef0ecd0abc9a85aeeecfc1f05835c9bcdf4c7b18f66037d2",
+      "size": 39699901,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-linux_musl_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "1fc247d0482ff5b0a9735bcc4cf617297ae4d606f84fdbcd09774dcf2bbb2fd7",
+      "size": 47037733,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "72b9bbd41ec8443fd14b6a8c300c4c8ea6e8e80bbae674aa67fdea4bd19567a8",
+      "size": 42499669,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "14ceae19c32a71c68c93c2003676bcd128bdbdf0406e749eb3aefae20b53c70c",
+      "size": 43663815,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "858cbcdbf5a1f77c1947778562e60545d7645057a4fcde2a10d89fbf8a636d90",
+      "size": 40179413,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-win_i686.zip"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "e35add53b3279b1954c17cfee2d45a50fbe6473ea0780d68a64e15df59881cd1",
+      "size": 42985959,
+      "url": "https://static.azul.com/zulu/bin/zulu17.30.15-ca-jre17.0.1-win_x64.zip"
+    }
+  ],
+  "java-runtime-gamma": [
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "4f708ed689c466cbaa4daaa78405911a3d082fbde305b3c914614d3f49dde88a",
+      "size": 80866798,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "32b338d4c0c9750da54075f1c90eda3697c8d169c206223916c9e91f0019d256",
+      "size": 90225384,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-linux_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "22d153a2cb2b80b8d27aed34344b6f427942b9141e3b9f43d6d02877ec5ce9cb",
+      "size": 77948918,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "9f2dd5e627129991cbd2c6a4521b3a2ff69f0dee24eccc440832d83364b52134",
+      "size": 82181713,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-macosx_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "a152aac207660a5558da2c1f227f640bf03dbffab59b8ba0fa1cbfd7f529c41a",
+      "size": 70304614,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-win_i686.zip"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "7a94871bddfac1eae5f5c62e9268fb83810eedfe0c3a09443945e454bbe596c3",
+      "size": 77989027,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-win_x64.zip"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "47db8d11af0f8b6e1bd4130f683a14ff4f127445fdd5b6d4abfddac401f75048",
+      "size": 46786338,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "29e19aa79e9931b1d750c860152987e46a5a3a183aa43d66937c547c0d53f0e7",
+      "size": 41357958,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "musl"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "f3754d884eedbfd2a8ea97576f700e0b61442f8db018df415e35492b81cb09d5",
+      "size": 46544176,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_musl_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "7d076a54f2977c36495a91f62585ec051049f9bee01eb08309d55b978eeba6c9",
+      "size": 46912031,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "df33c1f1cc6cbf45ad85b1971cae5e937cf57b5abe63df751b119c5747826726",
+      "size": 43090778,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "299b8f4fdd918ec03e3209988a38b545c8fae109a3b231e7e830894e5f6275ff",
+      "size": 44262215,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "4e0624a8e282e35b957cfa61593f38d64da2d7c44130de9481e12563abab235f",
+      "size": 40142698,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-win_i686.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "d26562284c67742f4db876d0bcdd7704b919fc33e3689484fcb9d2f99d8bc50b",
+      "size": 43252217,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-win_x64.tar.gz"
+    }
+  ],
+  "java-runtime-gamma-snapshot": [
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "4f708ed689c466cbaa4daaa78405911a3d082fbde305b3c914614d3f49dde88a",
+      "size": 80866798,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "32b338d4c0c9750da54075f1c90eda3697c8d169c206223916c9e91f0019d256",
+      "size": 90225384,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-linux_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "22d153a2cb2b80b8d27aed34344b6f427942b9141e3b9f43d6d02877ec5ce9cb",
+      "size": 77948918,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "9f2dd5e627129991cbd2c6a4521b3a2ff69f0dee24eccc440832d83364b52134",
+      "size": 82181713,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-macosx_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "a152aac207660a5558da2c1f227f640bf03dbffab59b8ba0fa1cbfd7f529c41a",
+      "size": 70304614,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-win_i686.zip"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "7a94871bddfac1eae5f5c62e9268fb83810eedfe0c3a09443945e454bbe596c3",
+      "size": 77989027,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-fx-jre17.0.8-win_x64.zip"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "47db8d11af0f8b6e1bd4130f683a14ff4f127445fdd5b6d4abfddac401f75048",
+      "size": 46786338,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "29e19aa79e9931b1d750c860152987e46a5a3a183aa43d66937c547c0d53f0e7",
+      "size": 41357958,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "musl"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "f3754d884eedbfd2a8ea97576f700e0b61442f8db018df415e35492b81cb09d5",
+      "size": 46544176,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_musl_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "7d076a54f2977c36495a91f62585ec051049f9bee01eb08309d55b978eeba6c9",
+      "size": 46912031,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "df33c1f1cc6cbf45ad85b1971cae5e937cf57b5abe63df751b119c5747826726",
+      "size": 43090778,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "299b8f4fdd918ec03e3209988a38b545c8fae109a3b231e7e830894e5f6275ff",
+      "size": 44262215,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "4e0624a8e282e35b957cfa61593f38d64da2d7c44130de9481e12563abab235f",
+      "size": 40142698,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-win_i686.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "d26562284c67742f4db876d0bcdd7704b919fc33e3689484fcb9d2f99d8bc50b",
+      "size": 43252217,
+      "url": "https://static.azul.com/zulu/bin/zulu17.44.15-ca-jre17.0.8-win_x64.tar.gz"
+    }
+  ],
+  "java-runtime-delta": [
+    {
+      "features": [
+        "crac"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "e4262e663475d1c04e071f7f0ffb857c4f53667d4d61f56c57513b6c9aad181b",
+      "size": 55146020,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-crac-jre21.0.3-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "crac"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "c1073c4592a488fc76dc8e7dfb66695633d3c2e4b4f671cce1b8154e7367fa4a",
+      "size": 55650257,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-crac-jre21.0.3-linux_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "f2903e6052f73256b05b6df0a72b86f28dd4212bb2d1ce909172c01882c02537",
+      "size": 86184614,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-fx-jre21.0.3-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "98d8e908739f4c007fb9af5f312828c498db214717ea05ddea5c8358572ba112",
+      "size": 89863859,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-fx-jre21.0.3-macosx_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "84a26cfbf30a7bdc6954add3e886ca61b680a01bd03d596fae013f143140a520",
+      "size": 87107691,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-fx-jre21.0.3-win_x64.zip"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "908b0357131747df386784e0e961e244fe8234e056b489cdfde3ffe1db8132d6",
+      "size": 52634147,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-jre21.0.3-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "a22dbf29ca368651088391094e9e64f653cc5a332f536ea4e7c3a6d82b2a5fe4",
+      "size": 53103754,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-jre21.0.3-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "1688dc09d4ea56ff501ed6fb1af94fd4fa04c3d2e19974a56b507249b12b4f27",
+      "size": 49027144,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-jre21.0.3-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "cd319c844ee2eba5d6a4319b41f7fb37c63693aa31aa5434346f304db340f881",
+      "size": 50175651,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-jre21.0.3-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "56c17e0f152055bfc110347b017e1efd2e1fc243e483d2e3fe371910287059f9",
+      "size": 48907967,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.19-ca-jre21.0.3-win_x64.zip"
+    },
+    {
+      "features": [
+        "crac",
+        "musl"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "b057361470e236155548dce3758672e61ae972f04b444937f4a34f0611800ca9",
+      "size": 56062183,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.21-ca-crac-jre21.0.3-linux_musl_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "crac",
+        "musl"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "a0850ae91308716eb205ffa5ee3aef3bb509e00672ae1abba159c272993b9517",
+      "size": 57140042,
+      "url": "https://static.azul.com/zulu/bin/zulu21.34.21-ca-crac-jre21.0.3-linux_musl_x64.tar.gz"
+    }
+  ],
+  "jre-legacy": [
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "b97c5e8a549ae837ab8ce0d4789a978a5e1cd22ab30ff541a062b06670abdba8",
+      "size": 100702050,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-fx-jre8.0.452-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "759535f61d855142ad7bdb257e4d70e4904283716bf5449f18bfdeff2cbc37e9",
+      "size": 103868253,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-fx-jre8.0.452-linux_i686.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "38da298fb526d0557a50bd01ef50a4fe48c2c7b9721886b1e070a34d94b8ef3e",
+      "size": 102455661,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-fx-jre8.0.452-linux_x64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "f139df3bfc43143340ee44622f25f2d0bcc4afc8199c8baeee91e834044bdbea",
+      "size": 87741039,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-fx-jre8.0.452-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [
+        "javafx"
+      ],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "a43b883e4d8f0949dcc54174ceb600ed2e1b6329a9402ab9ef5fe2ea6839ffd7",
+      "size": 91549652,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-fx-jre8.0.452-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "linux",
+      "sha256": "3e34c74de3c80a3d38b64c81f95a88d007083f215605e7bd64196489242c1e8e",
+      "size": 41660020,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-linux_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "linux",
+      "sha256": "c79ab8571c2f4352376203bc4022ed98af9ef4fa69a44abebb0c166912d9b5b0",
+      "size": 45078126,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-linux_i686.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "linux",
+      "sha256": "90b109e207531a168ac812e21b9bb62815296de5a9158beb9e2556f7b91b68f2",
+      "size": 42385260,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-linux_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "arm64",
+      "os": "darwin",
+      "sha256": "0b78a2c5dd599d132f2e81d5caf58b1e577398766c8557a669f9d91cec4c8c8f",
+      "size": 41147983,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-macosx_aarch64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "darwin",
+      "sha256": "884861b92b8d16c510d1b3c7e9cea4b1e60e645ff4543a60cf8f1167d1ec657b",
+      "size": 41508611,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-macosx_x64.tar.gz"
+    },
+    {
+      "features": [],
+      "architecture": "ia32",
+      "os": "win32",
+      "sha256": "4d8f6383418f725138dc4f62edc8783f91c9d1592dd521f9e801b6a3862cfd24",
+      "size": 38365947,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-win_i686.zip"
+    },
+    {
+      "features": [],
+      "architecture": "x64",
+      "os": "win32",
+      "sha256": "e9535fe99fd4a2a57719357f5f45a6aa43759af45cd990a213c970af5780324a",
+      "size": 40668732,
+      "url": "https://static.azul.com/zulu/bin/zulu8.86.0.25-ca-jre8.0.452-win_x64.zip"
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 import { JavaVersion } from '@xmcl/core'
-import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeManifest, JavaRuntimeTargetType, JavaRuntimes, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, Settings, SharedState } from '@xmcl/runtime-api'
+import { installJavaRuntimeWithJsonTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
+import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, SharedState } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { GFW, kGFW } from '~/gfw'
-import { JavaValidation, validateJavaPath } from '~/java'
+import { JavaValidation, getJavaExeFilePath, validateJavaPath } from '~/java'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { getApiSets, shouldOverrideApiSet } from '~/settings'
+import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
@@ -17,13 +17,14 @@ import { requireString } from '../util/object'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureClass, getJavaArch } from './detectJVMArch'
 import { getJavaPathsLinux, getJavaPathsLinuxSDK, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
+import { getOfficialJavaManifest } from './installDefaultJava'
+import { getZuluJRE, installZuluJavaTask, setupZuluCache } from './zulu'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config: SafeFile<JavaSchema>
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(Settings) private settings: Settings,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kGFW) private gfw: GFW,
@@ -44,6 +45,10 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.state.subscribeAll(() => {
         this.config.write(this.state)
       })
+
+      setupZuluCache(app).catch((e) => {
+        this.error(e)
+      })
     })
     this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
   }
@@ -58,18 +63,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return this.state
   }
 
-  getInternalJavaLocation(version: Pick<JavaVersion, 'component'>) {
-    return this.app.platform.os === 'osx'
-      ? this.getPath('jre', version.component, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
-      : this.getPath('jre', version.component, 'bin',
-        this.app.platform.os === 'windows' ? 'java.exe' : 'java')
-  }
-
-  getJavaForVersion(javaVersion: JavaVersion, validOnly = false) {
-    const expectedJava = this.state.all.find(j => j.majorVersion === javaVersion.majorVersion && (!validOnly || j.valid))
-    return expectedJava
-  }
-
   /**
    * Get java preferred java 8 for installing forge or other purpose. (non launching Minecraft)
    */
@@ -81,140 +74,61 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
   @Singleton()
-  async installDefaultJava(target?: JavaVersion) {
-    if (!target) {
-      target = {
-        majorVersion: 8,
-        component: 'jre-legacy',
-      }
-    }
-    const location = this.getInternalJavaLocation(target)
-    this.log(`Try to install official java ${target} to ${location}`)
+  async installJava(target: JavaVersion = {
+    majorVersion: 8,
+    component: 'jre-legacy',
+  }, forceZulu = false) {
+    this.log(`Try to install official java ${target.component} (${target.component})`)
+
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
+    const settings = await this.app.registry.get(kSettings)
+    const gfw = await this.app.registry.get(kGFW)
+
     let apiHost: string[] | undefined
-    if (shouldOverrideApiSet(this.settings, this.gfw.inside)) {
-      const apis = getApiSets(this.settings)
+    const apis = getApiSets(settings)
+    if (shouldOverrideApiSet(settings, gfw.inside)) {
       apiHost = apis.map(a => new URL(a.url).hostname)
     }
     if (!apiHost) {
-      const apis = getApiSets(this.settings)
+      const apis = getApiSets(settings)
       apiHost = apis.map(a => new URL(a.url).hostname)
 
-      if (!shouldOverrideApiSet(this.settings, this.gfw.inside)) {
+      if (!shouldOverrideApiSet(settings, gfw.inside)) {
         apiHost.unshift('https://launcher.mojang.com')
       }
     }
 
-    const downloadOptions = await this.app.registry.get(kDownloadOptions)
+    const officialManifest = !forceZulu
+      ? await getOfficialJavaManifest(this.app, target.component).catch(() => undefined)
+      : undefined
 
-    const resolveTarget = (manifest: JavaRuntimes) => {
-      if (process.platform === 'win32') {
-        if (process.arch === 'x64') {
-          return manifest['windows-x64']
-        }
-        if (process.arch === 'ia32') {
-          return manifest['windows-x86']
-        }
-        if (process.arch === 'arm64') {
-          return manifest['windows-arm64']
-        }
-        return manifest['windows-x64']
-      }
-      if (process.platform === 'darwin') {
-        if (process.arch === 'arm64') {
-          return manifest['mac-os-arm64']
-        }
-        return manifest['mac-os']
-      }
-      if (process.platform === 'linux' || process.platform === 'openbsd' || process.platform === 'freebsd') {
-        if (process.arch === 'ia32') {
-          return manifest['linux-i386']
-        }
-        if (process.arch === 'x64') {
-          return manifest.linux
-        }
-        return manifest.linux
-      }
+    const folder = this.getPath('jre', officialManifest ? target.component : target.component + '-zulu')
+    const exeLocation = getJavaExeFilePath(folder, this.app.platform)
+
+    if (!officialManifest) {
+      // use zulu
+      this.log(`Install zulu jre runtime ${target.component} (${target.majorVersion})`)
+      const zuluData = await getZuluJRE(this.app, target.component as any)
+      await this.submit(installZuluJavaTask(zuluData, folder, target.majorVersion, downloadOptions))
+    } else {
+      this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`)
+      await this.submit(installJavaRuntimeWithJsonTask({
+        target: officialManifest,
+        destination: folder,
+        ...downloadOptions,
+      }).setName('installJre', { version: target.majorVersion }))
     }
 
-    function normalizeUrls(url: string, fileHost?: string | string[]): string[] {
-      if (!fileHost) {
-        return [url]
-      }
-      if (typeof fileHost === 'string') {
-        const u = new URL(url)
-        u.hostname = fileHost
-        const result = u.toString()
-        if (result !== url) {
-          return [result, url]
-        }
-        return [result]
-      }
-      const result = fileHost.map((host) => {
-        const u = new URL(url)
-        u.hostname = host
-        return u.toString()
-      })
-
-      if (result.indexOf(url) === -1) {
-        result.push(url)
-      }
-
-      return result
-    }
-
-    const app = this.app
-    async function fetchJava(runtimeTarget: string) {
-      const resp = await app.fetch(normalizeUrls(DEFAULT_RUNTIME_ALL_URL, apiHost)[0])
-      const runtimes = await resp.json() as JavaRuntimes
-      const current = resolveTarget(runtimes)
-
-      if (!current) {
-        throw new Error('')
-      }
-      let targets = current[runtimeTarget]
-      const iterator = [JavaRuntimeTargetType.Gamma, JavaRuntimeTargetType.Delta, JavaRuntimeTargetType.Beta, JavaRuntimeTargetType.Alpha, JavaRuntimeTargetType.Legacy]
-      while (iterator.length > 0 && (!targets || targets.length === 0)) {
-        const cur = iterator.shift()
-        if (cur) {
-          targets = current[cur]
-        }
-      }
-      const target = targets[0]
-      const manifestUrl = normalizeUrls(target.manifest.url, apiHost)[0]
-      const response = await app.fetch(manifestUrl)
-      const manifest: JavaRuntimeManifest = await response.json()
-      const result: JavaRuntimeManifest = {
-        files: manifest.files,
-        target: runtimeTarget,
-        version: target.version,
-      }
-      return result
-    }
-
-    const manifest = await fetchJava(target.component).catch(e => {
-      if (e.name === 'Error') {
-        if (e.message === 'net::ERR_CONNECTION_RESET') {
-          e.name = 'ConnectionResetError'
-        }
-      }
-      throw e
-    })
-    this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
-    const dest = this.getPath('jre', target.component)
-
-    const task = installJavaRuntimeTask({
-      manifest,
-      apiHost,
-      destination: dest,
-      ...downloadOptions,
-    }).setName('installJre', { version: target.majorVersion })
-    await ensureFile(location)
-    await this.submit(task)
     if (this.app.platform.os !== 'windows') {
-      await chmod(location, 0o765)
+      await chmod(exeLocation, 0o765)
     }
-    this.log(`Successfully install java internally ${location}`)
-    const result = await this.resolveJava(location)
+
+    if (officialManifest) {
+      this.log(`Successfully install java internally ${exeLocation}`)
+    } else {
+
+    }
+    const result = await this.resolveJava(exeLocation)
     if (!result) {
       throw new AnyError('InstallDefaultJavaError', 'Fail to install java')
     }
@@ -346,10 +260,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.state.javaUpdate(javas)
     }
 
-    const cached = await readdirIfPresent(this.getPath('jre'))
+    const jreDir = this.getPath('jre')
+    const cached = await readdirIfPresent(jreDir)
     for (const component of cached) {
       if (component.startsWith('.')) continue
-      const local = this.getInternalJavaLocation({ component })
+      const local = getJavaExeFilePath(join(jreDir, component), this.app.platform)
       if (!this.state.all.map(j => j.path).some(p => p === local)) {
         this.resolveJava(local)
       }
