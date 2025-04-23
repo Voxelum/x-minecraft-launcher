@@ -147,7 +147,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     } catch (e) {
       if (e instanceof Error) {
         let code: NetworkErrorCode | undefined = getErrorCode(e)
-        if (code === NetworkErrorCode.CONNECTION_CLOSED) {
+        if (code === NetworkErrorCode.CONNECTION_CLOSED || code === NetworkErrorCode.CONNECTION_RESET || !code) {
           try {
             return await ufetch(args[0], init) as any
           } catch (ee) {
