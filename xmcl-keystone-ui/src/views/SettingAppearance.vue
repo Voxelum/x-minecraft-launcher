@@ -537,7 +537,7 @@ function selectImage() {
     properties: ['openFile'],
     filters: [{
       name: 'image',
-      extensions: ['png', 'jpg'],
+      extensions: ['png', 'jpg', 'gif', 'webp'],
     }],
   }).then((v) => {
     const imagePath = v.filePaths[0]
