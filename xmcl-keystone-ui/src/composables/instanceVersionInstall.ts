@@ -59,7 +59,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     installLabyModVersion,
   } = useService(InstallServiceKey)
   const { refreshVersion, refreshServerVersion, resolveLocalVersion } = useService(VersionServiceKey)
-  const { installDefaultJava } = useService(JavaServiceKey)
+  const { installJava } = useService(JavaServiceKey)
 
   const cfg = inject(kSWRVConfig)
 
@@ -93,7 +93,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     })
 
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
-    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installDefaultJava(javaOrInstall).then((r) => r.path)
+    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall).then((r) => r.path)
 
     let forgeVersion = undefined as undefined | string
     if (forge) {
@@ -204,7 +204,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       if (javas.value.length === 0 || javas.value.every(java => !java.valid)) {
         // no valid java
         const mcVersionResolved = await resolveLocalVersion(minecraft)
-        await installDefaultJava(mcVersionResolved.javaVersion)
+        await installJava(mcVersionResolved.javaVersion)
       }
 
       const id = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, side: 'server', root: path })
@@ -261,7 +261,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   const { installAssetsForVersion, installForge, installAssets, installMinecraftJar, installLibraries, installNeoForged, installDependencies, installOptifine, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
   const { resolveLocalVersion } = useService(VersionServiceKey)
-  const { installDefaultJava } = useService(JavaServiceKey)
+  const { installJava } = useService(JavaServiceKey)
   const { notify } = useNotifier()
 
   const { install, installServer } = useInstanceVersionInstall(versions, servers, instances, javas)
@@ -450,7 +450,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (instruction.profile) {
         const resolved = await resolveLocalVersion(instruction.resolvedVersion)
         const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
-        const javaPath = typeof java === 'string' ? java : await installDefaultJava(java).then((r) => r.path)
+        const javaPath = typeof java === 'string' ? java : await installJava(java).then((r) => r.path)
 
         await installByProfile({ profile: instruction.profile.installProfile, side: 'client', java: javaPath })
 
@@ -469,7 +469,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         const resolved = await resolveLocalVersion(version)
         const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
         if (typeof java === 'object') {
-          await installDefaultJava(java)
+          await installJava(java)
         }
         await commit(version)
         return
@@ -477,7 +477,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (instruction.forge) {
         const resolved = await resolveLocalVersion(instruction.forge.minecraft)
         const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
-        const javaPath = typeof java === 'string' ? java : await installDefaultJava(java).then((r) => r.path)
+        const javaPath = typeof java === 'string' ? java : await installJava(java).then((r) => r.path)
 
         const version = await installForge({
           mcversion: instruction.forge.minecraft,
@@ -493,7 +493,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       const resolved = await resolveLocalVersion(instruction.resolvedVersion)
       const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
       if (typeof java === 'object') {
-        await installDefaultJava(java)
+        await installJava(java)
       }
       if (instruction.libriares) {
         await installLibraries(instruction.libriares.map(v => v.library), instruction.runtime.minecraft, instruction.libriares.length > 15)

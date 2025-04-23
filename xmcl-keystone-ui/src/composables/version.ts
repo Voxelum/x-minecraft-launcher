@@ -1,6 +1,6 @@
 import { parse } from '@/util/forgeWebParser'
 import { MaybeRef, get } from '@vueuse/core'
-import type { LabyModManifest } from '@xmcl/installer'
+import type { JavaRuntimeManifest, JavaRuntimeTarget, JavaRuntimes, LabyModManifest } from '@xmcl/installer'
 import { FabricArtifactVersion, ForgeVersion, MinecraftVersions, OptifineVersion, QuiltArtifactVersion, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import { Ref, computed } from 'vue'
 import { useSWRVModel } from './swrv'
@@ -15,6 +15,36 @@ async function getJson<T>(url: string) {
     return result as T
   }
   throw new Error('Failed to load ' + url)
+}
+
+export function getOfficialJavaRuntimesModel() {
+  return {
+    key: '/java-manifests',
+    fetcher: async () => {
+      const result = await Promise.any([
+        getJson<JavaRuntimes>('https://launchermeta.mojang.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json'),
+        getJson<JavaRuntimes>('https://bmclapi2.bangbang93.com/v1/products/java-runtime/2ec0cc96c44e5a76b9c8b7c39df7210883d12871/all.json'),
+      ])
+      return markRaw(result)
+    },
+  }
+}
+
+export function getOfficalJavaRuntimeManifestModel(target: MaybeRef<JavaRuntimeTarget>) {
+  const targetValue = get(target)
+  return {
+    key: targetValue.manifest.url,
+    fetcher: async () => {
+      const result = await Promise.any([
+        getJson<JavaRuntimeManifest['files']>(targetValue.manifest.url),
+        getJson<JavaRuntimeManifest['files']>(targetValue.manifest.url.replace('https://piston-meta.mojang.com/', 'https://bmclapi2.bangbang93.com/')),
+      ])
+      return markRaw({
+        files: result,
+        version: targetValue.version,
+      })
+    }
+  }
 }
 
 export function getMinecraftVersionsModel() {

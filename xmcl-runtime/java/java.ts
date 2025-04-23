@@ -1,13 +1,22 @@
-import { access, chmod } from 'fs-extra'
 import { constants } from 'fs'
+import { access, chmod } from 'fs-extra'
 import { isSystemError } from '../util/error'
 import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'
+import { Platform } from '@xmcl/runtime-api'
+import { join } from 'path'
 
 export enum JavaValidation {
   Okay,
   NotExisted,
   NoPermission,
+}
+
+export function getJavaExeFilePath(javaPath: string, platform: Platform) {
+  return platform.os === 'osx'
+    ? join(javaPath, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
+    : join(javaPath, 'bin',
+      platform.os === 'windows' ? 'java.exe' : 'java')
 }
 
 export async function validateJavaPath(javaPath: string): Promise<JavaValidation> {
