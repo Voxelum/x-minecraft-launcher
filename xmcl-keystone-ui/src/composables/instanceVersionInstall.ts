@@ -100,7 +100,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     })
 
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
-    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall, true).then((r) => r.path)
+    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall).then((r) => r.path)
 
     let forgeVersion = undefined as undefined | string
     if (forge) {
@@ -500,7 +500,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       const resolved = await resolveLocalVersion(instruction.resolvedVersion)
       const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
       if (typeof java === 'object') {
-        await installJava(java, true)
+        await installJava(java)
       }
       if (instruction.libriares) {
         await installLibraries(instruction.libriares.map(v => v.library), instruction.runtime.minecraft, instruction.libriares.length > 15)

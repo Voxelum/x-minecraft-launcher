@@ -20,6 +20,7 @@ import { getJavaPathsLinux, getJavaPathsLinuxSDK, getJavaPathsOSX, getMojangJava
 import { getOfficialJavaManifest } from './installDefaultJava'
 import { getZuluJRE, installZuluJavaTask, setupZuluCache } from './zulu'
 import { FSWatcher } from 'chokidar'
+import { kFlights } from '~/flights'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -79,6 +80,12 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     component: 'jre-legacy',
   }, forceZulu = false) {
     this.log(`Try to install official java ${target.component} (${target.component})`)
+
+    const flights = await this.app.registry.get(kFlights)
+    if (flights.forceZuluJre) {
+      this.log('Force install zulu jre by flight')
+      forceZulu = true
+    }
 
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
     const settings = await this.app.registry.get(kSettings)
