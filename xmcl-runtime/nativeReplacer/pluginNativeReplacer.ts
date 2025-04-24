@@ -7,7 +7,11 @@ function replaceLibs(version: ResolvedVersion, replacement: Record<string, Versi
   const replaced: ResolvedLibrary[] = []
   for (const original of version.libraries) {
     const candidate = replacement[original.isNative ? `${original.groupId}:${original.artifactId}:${original.version}:natives` : original.name]
-    const resolved = candidate ? Version.resolveLibrary(candidate, app.platform as any) : undefined
+    const resolved = candidate ? Version.resolveLibrary(candidate, {
+      name: app.platform.os,
+      arch: app.platform.arch,
+      version: app.platform.osRelease,
+    }) : undefined
     replaced.push(resolved || original)
   }
   version.libraries = replaced
@@ -45,6 +49,7 @@ export const pluginNativeReplacer: LauncherAppPlugin = async (app) => {
             const natives = (await import('./natives.json')).default['osx-arm64']
             replaceLibs(version, natives, app)
           }
+          break
         }
         case 'linux': {
           // does not support linux arm64 anyway

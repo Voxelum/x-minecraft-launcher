@@ -2,14 +2,14 @@ import { DownloadBaseOptions } from '@xmcl/file-transfer';
 import { DownloadTask, UnzipTask } from '@xmcl/installer';
 import { task } from '@xmcl/task';
 import { open, readAllEntries } from '@xmcl/unzip';
-import { createReadStream, readJson, unlink, writeFile } from 'fs-extra';
-import { join } from 'path';
+import { createReadStream, ensureDir, readJson, symlink, unlink, writeFile } from 'fs-extra';
+import { basename, dirname, join } from 'path';
 import { pipeline } from 'stream/promises';
 import { extract } from 'tar-stream';
 import { createGunzip } from 'zlib';
 import { LauncherApp } from '~/app';
 import index from './zulu.json';
-import { existsSync } from 'fs';
+import { createWriteStream, existsSync } from 'fs';
 
 export interface ZuluJRE {
   features: string[];
@@ -22,7 +22,7 @@ export interface ZuluJRE {
 
 export function installZuluJavaTask(jre: ZuluJRE, destination: string, version: number, options: DownloadBaseOptions) {
   return task('installJre', async function () {
-    const packedFile = join(destination, '.tmp')
+    const packedFile = join(destination, basename(jre.url))
     await this.yield(new DownloadTask({
       url: jre.url,
       destination: packedFile,
@@ -31,18 +31,60 @@ export function installZuluJavaTask(jre: ZuluJRE, destination: string, version: 
         hash: jre.sha256,
       },
       expectedTotal: jre.size,
-    }))
+    }).setName('download'))
     if (jre.url.endsWith('.tar.gz')) {
-      await pipeline(
-        createReadStream(packedFile),
-        createGunzip(),
-        extract(),
-      )
+      const extractStream = extract()
+
+      const allPipe = [
+        pipeline(
+          createReadStream(packedFile),
+          createGunzip(),
+          extractStream,
+        )
+      ] as Promise<void>[]
+
+      let first = ''
+      let substring = 0
+      const links = [] as {
+        path: string
+        linkTo: string
+      }[]
+      for await (const e of extractStream) {
+        if (!first) {
+          first = e.header.name
+          if (first.endsWith('/') && jre.url.endsWith(e.header.name.substring(0, e.header.name.length - 1) + '.tar.gz')) {
+            // ignore first folder
+            substring = first.length
+            continue
+          }
+        }
+        const filePath = join(destination, join(e.header.name.substring(substring)))
+        if (e.header.type === 'directory') {
+          await ensureDir(filePath)
+        } else if (e.header.linkname && e.header.type === 'symlink') {
+          links.push({
+            path: join(destination, e.header.linkname),
+            linkTo: filePath,
+          })
+        } else if (e.header.type === 'file') {
+          await ensureDir(dirname(filePath))
+          allPipe.push(pipeline(
+            e,
+            createWriteStream(filePath)
+          ))
+        }
+      }
+
+      for (const l of links) {
+        await symlink(l.path, l.linkTo)
+      }
+
+      await Promise.all(allPipe)
     } else {
       // zip
       const zipFile = await open(packedFile)
       const entries = await readAllEntries(zipFile)
-      await this.yield(new UnzipTask(zipFile, entries, destination))
+      await this.yield(new UnzipTask(zipFile, entries, destination).setName('unzip'))
     }
     await unlink(packedFile)
   }, { version })

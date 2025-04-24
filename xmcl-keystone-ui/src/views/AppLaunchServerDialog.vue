@@ -352,7 +352,7 @@ const errorTitle = ref('')
 const errorDescription = ref('')
 const errorUnexpected = ref(false)
 const errorExtraText = ref('')
-const { onException } = useLaunchException(
+const { onError } = useLaunchException(
   errorTitle,
   errorDescription,
   errorUnexpected,
@@ -408,7 +408,7 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
 
 watch(error, (e) => {
   if (e) {
-    onException(e)
+    onError(e)
   }
 })
 

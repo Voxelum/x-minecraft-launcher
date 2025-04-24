@@ -13,7 +13,7 @@ export enum JavaValidation {
 }
 
 export function getJavaExeFilePath(javaPath: string, platform: Platform) {
-  return platform.os === 'osx'
+  return platform.os === 'osx' && !javaPath.endsWith('zulu')
     ? join(javaPath, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
     : join(javaPath, 'bin',
       platform.os === 'windows' ? 'java.exe' : 'java')
