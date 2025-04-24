@@ -70,7 +70,7 @@ const unexpected = ref(false)
 const extraText = ref('')
 const { t } = useI18n()
 
-const { onException: _onException } = useLaunchException(
+const { onException: _onException, onError } = useLaunchException(
   title,
   description,
   unexpected,
@@ -83,7 +83,7 @@ function onException(e: LaunchExceptions) {
 }
 
 on('error', (e) => {
-  _onException(e)
+  onError(e)
   isShown.value = true
 })
 

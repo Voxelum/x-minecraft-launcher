@@ -24,7 +24,7 @@ export function useJavaContext() {
     remove: (java: JavaRecord) => {
       removeJava(java.path)
     },
-    refresh,
+    refresh: (v?: boolean) => refresh(v),
     refreshing,
   }
 }
