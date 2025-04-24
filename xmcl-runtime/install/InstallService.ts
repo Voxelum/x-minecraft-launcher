@@ -143,7 +143,6 @@ export class InstallService extends AbstractService implements IInstallService {
 
   protected getInstallOptions(): Options {
     const option: Options = {
-      assetsDownloadConcurrency: 16,
       ...this.downloadOptions,
       side: 'client',
       useHashForAssetsIndex: true,
@@ -151,10 +150,15 @@ export class InstallService extends AbstractService implements IInstallService {
 
     const allSets = getApiSets(this.settings)
 
-    if (!shouldOverrideApiSet(this.settings, this.gfw.inside)) {
-      allSets.unshift({ name: 'mojang', url: '' })
-    } else {
+    if (shouldOverrideApiSet(this.settings, this.gfw.inside)) {
+      const existed = allSets.find(a => a.name === this.settings.apiSetsPreference)
+      if (existed) {
+        // make bmclapi echo 3 time
+        allSets.push(existed, existed, existed)
+      }
       allSets.push({ name: 'mojang', url: '' })
+    } else {
+      allSets.unshift({ name: 'mojang', url: '' })
     }
 
     option.assetsHost = allSets.map(api => api.url ? `${api.url}/assets` : DEFAULT_RESOURCE_ROOT_URL)
