@@ -27,7 +27,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServiceStateManager) store: ServiceStateManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(kGFW) private gfw: GFW,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, () => store.registerStatic(new JavaState(), JavaServiceKey), async () => {
@@ -40,7 +39,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.log(`Loaded ${valid.length} java from cache.`)
       this.state.javaUpdate(valid)
 
-      this.refreshLocalJava()
+      this.refreshLocalJava(true)
 
       this.state.subscribeAll(() => {
         this.config.write(this.state)

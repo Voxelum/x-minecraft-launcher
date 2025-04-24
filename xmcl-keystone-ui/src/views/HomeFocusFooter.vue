@@ -45,11 +45,24 @@
         </v-icon>
       </v-btn>
       <v-spacer />
+      <HomeHeaderInstallStatus
+        v-if="status === 1 || status === 3"
+        class="mr-2"
+        :name="taskName"
+        :total="total"
+        :progress="progress"
+      />
+      <HomeLaunchButtonStatus
+        v-else
+        :active="active"
+      />
       <HomeLaunchButton
         class="ml-4"
         :status="status"
         @pause="pause"
         @resume="resume"
+        @mouseenter="active = true"
+        @mouseleave="active = false"
       />
     </div>
   </div>
@@ -64,9 +77,12 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
+import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 
+const active = ref(false)
 const { path, refreshing } = injection(kInstance)
-const { status, pause, resume } = injection(kLaunchTask)
+const { total, progress, status, name: taskName, pause, resume } = injection(kLaunchTask)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showExport } = useDialog(AppExportDialogKey)
 const { show: showLogDialog } = useDialog('log')

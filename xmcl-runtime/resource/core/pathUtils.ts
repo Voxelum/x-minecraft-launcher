@@ -4,5 +4,6 @@ export function shouldIgnoreFile(file: string) {
     file.endsWith('.backup') ||
     // file.endsWith('.txt') ||
     file.endsWith('.gitkeep') ||
-    file.endsWith('.gitignore')
+    file.endsWith('.gitignore') ||
+    file.endsWith('.rartemp')
 }
