@@ -19,6 +19,7 @@ import { ensureClass, getJavaArch } from './detectJVMArch'
 import { getJavaPathsLinux, getJavaPathsLinuxSDK, getJavaPathsOSX, getMojangJavaPaths, getOpenJdkPaths, getOrcaleJavaPaths, getZuluJdkPath } from './javaPaths'
 import { getOfficialJavaManifest } from './installDefaultJava'
 import { getZuluJRE, installZuluJavaTask, setupZuluCache } from './zulu'
+import { FSWatcher } from 'chokidar'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
@@ -39,7 +40,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.log(`Loaded ${valid.length} java from cache.`)
       this.state.javaUpdate(valid)
 
-      this.refreshLocalJava(true)
+      this.refreshLocalJava()
 
       this.state.subscribeAll(() => {
         this.config.write(this.state)

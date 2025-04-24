@@ -103,33 +103,32 @@ export function getVersionPreference<T extends object>(
       }
     }
   } else if (minecraftMinor >= 13 && minecraftMinor < 17) {
-    if (forge) {
-      // use java 8 if forge as forge only compatible with jre8
-      versionPref = {
-        match: (j) => j.majorVersion === 8 && getBuilderNumber(j.version) < 321,
-        okay: (j) => j.majorVersion === 8,
-        requirement: '<8_321',
-      }
-      if (!javaVersion) {
-        javaVersion = {
-          component: 'jre-legacy',
-          majorVersion: 8,
-        }
-      }
-    } else {
-      // use greater java if no forge
-      versionPref = {
-        match: preferredMatchedVersion || (j => j.majorVersion >= 8 && j.majorVersion <= 16),
-        okay: _ => true,
-        requirement: javaVersion ? `=${javaVersion.majorVersion.toString()}` : '>=8,<=16',
-      }
-      if (!javaVersion) {
-        javaVersion = {
-          component: 'jre-legacy',
-          majorVersion: 8,
-        }
+    // if (forge) {
+    //   // use java 8 if forge as forge only compatible with jre8
+    //   versionPref = {
+    //     match: (j) => j.majorVersion === 8 && getBuilderNumber(j.version) < 321,
+    //     okay: (j) => j.majorVersion === 8,
+    //     requirement: '<8_321',
+    //   }
+    //   if (!javaVersion) {
+    //     javaVersion = {
+    //       component: 'jre-legacy',
+    //       majorVersion: 8,
+    //     }
+    //   }
+    // } else {
+    versionPref = {
+      match: preferredMatchedVersion || (j => j.majorVersion >= 8 && j.majorVersion <= 16),
+      okay: _ => true,
+      requirement: javaVersion ? `=${javaVersion.majorVersion.toString()}` : '>=8,<=16',
+    }
+    if (!javaVersion) {
+      javaVersion = {
+        component: 'jre-legacy',
+        majorVersion: 8,
       }
     }
+    // }
   } else {
     // new mc use new java
     versionPref = {
