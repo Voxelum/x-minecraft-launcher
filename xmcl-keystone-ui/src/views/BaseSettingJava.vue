@@ -151,6 +151,7 @@
       @clear="onEnvVarCleared"
       @add="onEnvVarAdded"
     />
+    <v-divider />
   </v-list>
 </template>
 

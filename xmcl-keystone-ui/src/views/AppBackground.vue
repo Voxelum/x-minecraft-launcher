@@ -35,7 +35,6 @@
       >
         <img
           :key="backgroundImageOverride"
-          style="filter: blur(3px);"
           :src="backgroundImageOverride"
           class="z-1 absolute h-full w-full"
         >
@@ -43,11 +42,15 @@
       <div class="img-container" />
     </template>
 
-    <div
-      v-if="backgroundColorOverlay"
-      class="z-3 absolute h-full w-full"
-      :style="{ 'background': backgroundColor }"
-    />
+    <transition
+      name="fade-transition"
+    >
+      <div
+        v-if="backgroundColorOverlay && !isHome"
+        class="z-3 absolute h-full w-full"
+        :style="{ 'background': backgroundColor }"
+      />
+    </transition>
   </div>
 </template>
 <script lang="ts" setup>
@@ -59,6 +62,9 @@ import { kInstanceLaunch } from '@/composables/instanceLaunch'
 
 const { sideBarColor, backgroundColorOverlay, backgroundColor, blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, volume, backgroundImageOverride } = injection(kTheme)
 const videoRef = ref(null as null | HTMLVideoElement)
+
+const route = useRoute()
+const isHome = computed(() => route.path === '/')
 
 watch(volume, (newVolume) => {
   if (videoRef.value) {

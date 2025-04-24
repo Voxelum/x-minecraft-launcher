@@ -39,6 +39,7 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
+    <v-divider />
   </v-list>
 </template>
 

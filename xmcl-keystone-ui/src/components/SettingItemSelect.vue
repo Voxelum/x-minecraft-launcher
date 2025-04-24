@@ -10,7 +10,7 @@
           {{ title }}
         </template>
       </v-list-item-title>
-      <v-list-item-subtitle>
+      <v-list-item-subtitle class="break-words whitespace-pre">
         {{ description }}
       </v-list-item-subtitle>
     </v-list-item-content>
