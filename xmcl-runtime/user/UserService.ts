@@ -26,7 +26,7 @@ import { UserAccountSystem } from './accountSystems/AccountSystem'
 import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
 import { ensureLauncherProfile, preprocessUserData } from './userData'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
-import { loginModrinth } from './loginModrinth'
+import { getModrinthAccessToken, loginModrinth } from './loginModrinth'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
@@ -89,6 +89,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.subscribeAll(() => {
       this.saveUserFile()
     })
+  }
+
+  async hasModrinthToken(): Promise<boolean> {
+    return !!await getModrinthAccessToken(this.app)
   }
 
   async loginModrinth(): Promise<void> {

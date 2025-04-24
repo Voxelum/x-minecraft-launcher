@@ -213,6 +213,8 @@ export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
   removeYggdrasilService(url: string): Promise<void>
 
   loginModrinth(): Promise<void>
+
+  hasModrinthToken(): Promise<boolean>
 }
 
 export interface AuthorityMetadata {

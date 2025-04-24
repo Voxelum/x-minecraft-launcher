@@ -11,7 +11,7 @@ import { getSWRV } from '@/util/swrvGet';
 export const kModrinthAuthenticatedAPI: InjectionKey<ReturnType<typeof useModrinthAuthenticatedAPI>> = Symbol('modrinth-authenticated-api')
 
 export function useModrinthAuthenticatedAPI() {
-  const { loginModrinth } = useService(UserServiceKey)
+  const { loginModrinth, hasModrinthToken } = useService(UserServiceKey)
   const config = inject(kSWRVConfig)
   const userData: Ref<User | undefined> = shallowRef(undefined)
   const collections: Ref<Collection[] | undefined> = shallowRef(undefined)
@@ -22,6 +22,14 @@ export function useModrinthAuthenticatedAPI() {
   const isValidatingCollections = shallowRef(false)
   const { show } = useDialog('modrinth-login')
   let signal = Promise.withResolvers<void>()
+
+  onMounted(() => {
+    hasModrinthToken().then((hasToken) => {
+      if (hasToken) {
+        login()
+      }
+    })
+  })
 
   function acceptSignal() {
     signal.resolve()
