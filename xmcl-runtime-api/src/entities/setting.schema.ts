@@ -32,7 +32,7 @@ export interface SettingSchema {
    * The download API set preferences
    * @default ""
    */
-  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | ''
+  apiSetsPreference: 'mojang' | 'bmcl' | ''
   /**
    * The supported unofficial api sets
    * @default []

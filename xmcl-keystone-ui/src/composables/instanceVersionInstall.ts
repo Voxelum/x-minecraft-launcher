@@ -47,7 +47,7 @@ function getJavaPathOrInstall(instances: Instance[], javas: JavaRecord[], resolv
 }
 
 
-function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, instances: Ref<Instance[]>, javas: Ref<JavaRecord[]>) {
+function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, instances: Ref<Instance[]>, javas: Ref<JavaRecord[]>, refreshJava: () => Promise<void>) {
   const {
     installForge,
     installNeoForged,
@@ -62,6 +62,13 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
   const { installJava } = useService(JavaServiceKey)
 
   const cfg = inject(kSWRVConfig)
+
+  function onInstallForgeError(e: any): never {
+    if (e.code === 'ENOENT') {
+      refreshJava()
+    }
+    throw e
+  }
 
   async function install(runtime: RuntimeVersions, jar = false) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
@@ -93,7 +100,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     })
 
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
-    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall).then((r) => r.path)
+    const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall, true).then((r) => r.path)
 
     let forgeVersion = undefined as undefined | string
     if (forge) {
@@ -103,7 +110,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
 
-        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, java: javaPath })
+        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, java: javaPath }).catch(onInstallForgeError)
       } else {
         forgeVersion = localForge.id
         await refreshVersion(localForge.id)
@@ -117,7 +124,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         const found = neoForgedVersion.find(v => v === neoForged)
         const id = found ?? neoForged
 
-        forgeVersion = await installNeoForged({ version: id, minecraft, java: javaPath })
+        forgeVersion = await installNeoForged({ version: id, minecraft, java: javaPath }).catch(onInstallForgeError)
       } else {
         forgeVersion = localNeoForge.id
         await refreshVersion(localNeoForge.id)
@@ -256,7 +263,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
   }
 }
 
-export function useInstanceVersionInstallInstruction(path: Ref<string>, instances: Ref<Instance[]>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, refreshResolvedVersion: () => void, versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, javas: Ref<JavaRecord[]>) {
+export function useInstanceVersionInstallInstruction(path: Ref<string>, instances: Ref<Instance[]>, resolvedVersion: Ref<InstanceResolveVersion | undefined>, refreshResolvedVersion: () => void, versions: Ref<VersionHeader[]>, servers: Ref<ServerVersionHeader[]>, javas: Ref<JavaRecord[]>, refreshJava: () => Promise<void>) {
   const { diagnoseAssets, diagnoseJar, diagnoseLibraries, diagnoseProfile } = useService(DiagnoseServiceKey)
   const { installAssetsForVersion, installForge, installAssets, installMinecraftJar, installLibraries, installNeoForged, installDependencies, installOptifine, installByProfile } = useService(InstallServiceKey)
   const { editInstance } = useService(InstanceServiceKey)
@@ -264,7 +271,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
   const { installJava } = useService(JavaServiceKey)
   const { notify } = useNotifier()
 
-  const { install, installServer } = useInstanceVersionInstall(versions, servers, instances, javas)
+  const { install, installServer } = useInstanceVersionInstall(versions, servers, instances, javas, refreshJava)
 
   let abortController = new AbortController()
   const instruction: ShallowRef<InstanceInstallInstruction | undefined> = shallowRef(undefined)
@@ -273,7 +280,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
 
   const instanceLock: Record<string, Mutex> = {}
 
-  async function update(version: InstanceResolveVersion | undefined) {
+  async function update(version: InstanceResolveVersion | undefined, jres: JavaRecord[] = javas.value) {
     if (!version) return
     abortController.abort()
     abortController = new AbortController()
@@ -290,7 +297,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
           if (_path !== path.value) {
             return
           }
-          const result = await getInstallInstruction(_path, runtiems, _selectedVersion, resolved, javas.value, abortController.signal)
+          const result = await getInstallInstruction(_path, runtiems, _selectedVersion, resolved, jres, abortController.signal)
           if (_path !== path.value) {
             return
           }
@@ -493,7 +500,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       const resolved = await resolveLocalVersion(instruction.resolvedVersion)
       const java = getJavaPathOrInstall(instances.value, javas.value, resolved, instruction.instance)
       if (typeof java === 'object') {
-        await installJava(java)
+        await installJava(java, true)
       }
       if (instruction.libriares) {
         await installLibraries(instruction.libriares.map(v => v.library), instruction.runtime.minecraft, instruction.libriares.length > 15)
@@ -539,9 +546,9 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     }
   }
 
-  watch(resolvedVersion, (v) => {
+  watch([resolvedVersion, javas], ([v]) => {
     instruction.value = undefined
-    update(v)
+    update(v, javas.value)
   }, { immediate: true })
 
   return {

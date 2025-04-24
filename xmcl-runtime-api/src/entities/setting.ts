@@ -3,7 +3,7 @@ import { ReleaseInfo } from './update'
 
 /**
  * The basic setting of the launcher.
- * 
+ *
  * It also contains the some state properties of the launcher.
  */
 export class Settings implements SettingSchema {
@@ -47,7 +47,7 @@ export class Settings implements SettingSchema {
   autoInstallOnAppQuit = false
   autoDownload = false
   enableDedicatedGPUOptimization = true
-  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | '' = ''
+  apiSetsPreference: 'mojang' | 'bmcl' | '' = ''
   apiSets = [{ name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
   /**
    * Is current environment connecting to internet?
@@ -161,7 +161,7 @@ export class Settings implements SettingSchema {
     if (typeof updateInfo === 'object') this.updateInfo = updateInfo
   }
 
-  apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs' | '') {
+  apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | '') {
     this.apiSetsPreference = apiSetsPreference
   }
 

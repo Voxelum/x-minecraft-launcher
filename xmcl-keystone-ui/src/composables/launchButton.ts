@@ -14,6 +14,7 @@ import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kLaunchTask } from './launchTask'
 import { useUserDiagnose } from './userDiagnose'
+import { kInstanceJava } from './instanceJava'
 
 export interface LaunchMenuItem {
   title: string
@@ -31,6 +32,7 @@ export function useLaunchButton() {
 
   const { path } = injection(kInstance)
   const { isValidating } = injection(kInstances)
+  const { isValidating: refreshingJava } = injection(kInstanceJava)
   const { isValidating: refreshingFiles } = injection(kInstanceFiles)
 
   const { fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
@@ -143,6 +145,7 @@ export function useLaunchButton() {
   const loading = computed(() => launching.value ||
     loadingVersionIssues.value ||
     refreshingFiles.value ||
+    refreshingJava.value ||
     isRefreshingVersion.value ||
     isValidating.value ||
     dirty.value)

@@ -1,4 +1,6 @@
+import { injection } from '@/util/inject'
 import { LaunchException, LaunchExceptions, isException } from '@xmcl/runtime-api'
+import { kJavaContext } from './java'
 
 export function useLaunchException(
   title: Ref<string>,
@@ -7,22 +9,26 @@ export function useLaunchException(
   extraText: Ref<string>,
 ) {
   const { t } = useI18n()
+  const { refresh } = injection(kJavaContext)
   function onException(e: LaunchExceptions) {
     if (e.type === 'launchInvalidJavaPath') {
       title.value = t('launchBlocked.launchInvalidJavaPath.title')
       description.value = t('launchBlocked.launchInvalidJavaPath.description', { javaPath: e.javaPath })
       unexpected.value = true
       extraText.value = ''
+      refresh(false)
     } else if (e.type === 'launchJavaNoPermission') {
       title.value = t('launchBlocked.launchJavaNoPermission.title')
       description.value = t('launchBlocked.launchJavaNoPermission.description', { javaPath: e.javaPath })
       unexpected.value = false
       extraText.value = ''
+      refresh(false)
     } else if (e.type === 'launchNoProperJava') {
       title.value = t('launchBlocked.launchNoProperJava.title')
       description.value = t('launchBlocked.launchNoProperJava.description', { javaPath: e.javaPath })
       unexpected.value = true
       extraText.value = ''
+      refresh(false)
     } else if (e.type === 'launchNoVersionInstalled') {
       title.value = t('launchBlocked.launchNoVersionInstalled.title')
       description.value = t('launchBlocked.launchNoVersionInstalled.description', { version: e.options?.version })
