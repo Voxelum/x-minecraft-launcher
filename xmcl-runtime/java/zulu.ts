@@ -83,8 +83,15 @@ export function installZuluJavaTask(jre: ZuluJRE, destination: string, version: 
     } else {
       // zip
       const zipFile = await open(packedFile)
-      const entries = await readAllEntries(zipFile)
-      await this.yield(new UnzipTask(zipFile, entries, destination).setName('unzip'))
+      const prefix = basename(jre.url).slice(0, -4) + '/'
+      const entries = await readAllEntries(zipFile).then(ens => ens.filter(e => e.fileName !== prefix))
+
+      await this.yield(new UnzipTask(zipFile, entries, destination, (e) => {
+        if (e.fileName.startsWith(prefix)) {
+          return e.fileName.substring(prefix.length)
+        }
+        return e.fileName
+      }).setName('unzip'))
     }
     await unlink(packedFile)
   }, { version })

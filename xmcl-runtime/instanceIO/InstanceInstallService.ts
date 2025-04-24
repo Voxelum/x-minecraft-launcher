@@ -3,8 +3,9 @@ import { ChecksumNotMatchError } from '@xmcl/file-transfer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, SharedState, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
+import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
-import { readJSON, unlink, writeFile } from 'fs-extra'
+import { readFile, readJSON, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance/InstanceService'
@@ -17,7 +18,6 @@ import { AnyError, isSystemError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { computeFileUpdates } from './computeFileUpdate'
-import { FSWatcher } from 'chokidar'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -286,7 +286,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
           if (ev === 'add' || ev === 'change') {
             if (filePath === '.install-profile') {
               const currentStatePath = join(path, '.install-profile')
-              const lock = await readJSON(currentStatePath).catch((e) => {
+              const lock = await readFile(currentStatePath, 'utf-8').then((content) => {
+                return JSON.parse(content) as InstanceInstallLockSchema
+              }, (e) => {
                 if (isSystemError(e) && e.code === 'ENOENT') {
                   return undefined
                 }

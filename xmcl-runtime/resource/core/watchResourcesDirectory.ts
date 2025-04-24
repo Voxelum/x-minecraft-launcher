@@ -2,7 +2,7 @@ import { File, FileUpdateAction, FileUpdateOperation, ResourceDomain, ResourceMe
 import { FSWatcher } from 'chokidar'
 import { randomBytes } from 'crypto'
 import { existsSync } from 'fs'
-import { copy, link } from 'fs-extra'
+import { copy, ensureDir, link } from 'fs-extra'
 import { basename, dirname, extname, join, resolve, sep } from 'path'
 import { Logger } from '~/logger'
 import { jsonArrayFrom } from '~/sql/sqlHelper'
@@ -420,11 +420,12 @@ export function watchResourceSecondaryDirectory(
             return
           }
           target = join(primaryDirectory, `${file.fileName}.${randomBytes(4).toString('hex')}`)
+          await ensureDir(target)
           copy(file.path, target).catch(onCopyDirectoryError)
           return
         }
       }
-      context.logger.error(new AnyError('ResourceCopyError', `Fail to copy resource ${file.path} to ${target}`, { cause: e }))
+      context.logger.error(new AnyError('ResourceCopyError', `Fail to copy folder resource ${file.path} to ${target}`, { cause: e }))
     }
     const inoMatched = await context.db.selectFrom('snapshots')
       .selectAll()
@@ -446,10 +447,11 @@ export function watchResourceSecondaryDirectory(
           if (isSystemError(e) && e.code === EEXIST_ERROR) {
             return
           }
-          context.logger.error(new AnyError('ResourceCopyError', `Fail to copy resource ${file.path} to ${target}`, { cause: e }))
+          context.logger.error(new AnyError('ResourceCopyError', `Fail to copy file resource ${file.path} to ${target}`, { cause: e }))
         })
       })
     } else {
+      await ensureDir(target)
       copy(file.path, target).catch(onCopyDirectoryError)
     }
   }
