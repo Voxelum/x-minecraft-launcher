@@ -1,35 +1,75 @@
 <template>
   <v-card
-    v-draggable-card
-    v-context-menu.force="getContextMenuItems"
-    class="draggable-card flex flex-grow-0 flex-col"
+    class="flex flex-col"
+    v-shared-tooltip="_ => name"
+    :outlined="isSelected"
     :color="isSelected ? 'primary' : ''"
-    :dark="isSelected"
-    outlined
-    :shaped="isSelected"
-    :class="{ selected: isSelected }"
-    style="padding: 0;"
-    hover
+    v-context-menu.force="getContextMenuItems"
     @click="emit('click', $event)"
   >
-    <!-- <div
-      class="absolute flex size-full items-center justify-center"
+    <v-list-item
+      :color="isSelected ? 'primary' : ''"
+      outlined
     >
-      <v-progress-circular
-        class="z-10"
-        :size="100"
-        :width="4"
-        indeterminate
-      />
-    </div> -->
-    <v-img
-      class="white--text favicon grey en-2 min-h-34 max-h-34 flex items-center"
-      :src="image"
-    >
+      <v-list-item-avatar size="96">
+        <v-img
+          :src="image"
+        />
+      </v-list-item-avatar>
+      <v-list-item-content>
+        <v-list-item-title>
+          <span class="text-center text-xl capitalize">{{ name }}</span>
+        </v-list-item-title>
+        <v-list-item-subtitle
+          v-if="description"
+          >
+          <TextComponent
+            :source="typeof instance.description === 'object' ? instance.description : { text: instance.description }"
+          />
+        </v-list-item-subtitle>
+        <v-list-item-subtitle class="flex gap-2 flex-wrap">
+          <template
+            v-for="version of versions"
+          >
+            <div
+              :key="version.text"
+              class="flex flex-grow-0 items-center gap-1 px-1 text-sm"
+            >
+              <v-img
+                width="24"
+                height="24"
+                class="rounded"
+                :src="version.icon"
+              />
+              {{ version.text }}
+            </div>
+            <v-divider
+              v-if="version !== versions[versions.length - 1]"
+              :key="version.text + 'divider'"
+              class="h-full"
+              vertical
+            />
+          </template>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-divider>
+    </v-divider>
+    <v-card-actions class="flex w-full items-center">
+      <v-chip
+        outlined
+        label
+        :input-value="false"
+      >
+        <v-icon left>
+          update
+        </v-icon>
+        {{ getDateString(instance.lastAccessDate, { dateStyle: 'long' }) }}
+      </v-chip>
+<!--
       <div
         class="flex flex-col items-center justify-center"
       >
-        <span class="text-center text-lg">{{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}</span>
         <div
           v-if="instance.server"
           class="text-sm dark:text-gray-300"
@@ -83,64 +123,15 @@
           </v-avatar>
           {{ status.players.online }} / {{ status.players.max }}
         </v-chip>
-      </div>
-    </v-img>
+      </div> -->
 
-    <v-card-text
-      v-if="description"
-      class="font-weight-bold"
-    >
-      <TextComponent
-        :source="typeof description === 'object' ? description : { text: description }"
-      />
-    </v-card-text>
-
-    <v-card-actions class="flex flex-col items-start gap-2">
-      <div class="flex flex-row gap-2">
-        <template
-          v-for="version of versions"
-        >
-          <div
-            :key="version.text"
-            class="flex items-center gap-2 px-1 text-sm"
-          >
-            <v-img
-              width="24"
-              class="rounded"
-              :src="version.icon"
-            />
-            {{ version.text }}
-          </div>
-          <v-divider
-            v-if="version !== versions[versions.length - 1]"
-            :key="version.text + 'divider'"
-            class="h-full"
-            vertical
-          />
-        </template>
-      </div>
-
-      <div class="flex w-full items-center">
-        <v-chip
-          small
-          outlined
-          label
-          :input-value="false"
-        >
-          <v-icon left>
-            update
-          </v-icon>
-          {{ getDateString(instance.lastAccessDate, { dateStyle: 'long' }) }}
-        </v-chip>
-        <div class="flex-grow" />
-        <v-btn
-          small
-          icon
-          @click.stop="onSettingClick"
-        >
-          <v-icon>more_vert</v-icon>
-        </v-btn>
-      </div>
+      <div class="flex-grow" />
+      <v-btn
+        icon
+        @click.stop="onSettingClick"
+      >
+        <v-icon>more_vert</v-icon>
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
@@ -152,12 +143,12 @@ import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
 import { useVersionsWithIcon } from '@/composables/versionLocal'
 import { BuiltinImages } from '@/constant'
-import { vDraggableCard } from '@/directives/draggableCard'
 import { getBanner } from '@/util/banner'
 import { injection } from '@/util/inject'
 import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{ instance: Instance }>()
 const { path } = injection(kInstance)
@@ -165,6 +156,7 @@ const isSelected = computed(() => path.value === props.instance.path)
 const { status } = useInstanceServerStatus(computed(() => props.instance))
 const { getDateString } = useDateString()
 
+const name = computed(() => props.instance.name || `Minecraft ${props.instance.runtime.minecraft}` )
 const versions = useVersionsWithIcon(computed(() => props.instance.runtime))
 const emit = defineEmits(['delete', 'click'])
 
@@ -199,7 +191,4 @@ const onSettingClick = (event: MouseEvent) => {
 </script>
 
 <style>
-.favicon .v-image__image {
-  filter: blur(2px);
-}
 </style>

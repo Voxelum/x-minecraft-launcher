@@ -665,6 +665,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     --color-border: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
     --color-highlight-bg: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
     --color-secondary-text: ${isDark.value ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)'};
+    --color-sidebar-bg: ${isDark.value ? sideBarColor.value : sideBarColor.value};
+    --color-appbar-bg: ${isDark.value ? appBarColor.value : appBarColor.value};
   }
 
   .v-application {

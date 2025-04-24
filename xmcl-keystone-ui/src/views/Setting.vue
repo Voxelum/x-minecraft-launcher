@@ -3,13 +3,18 @@
     two-line
     subheader
     color="transparent"
-    class="visible-scroll h-full w-full select-none overflow-auto p-4 xl:px-20 2xl:px-40"
+    class="visible-scroll select-none overflow-auto setting pt-4 pb-4"
   >
-    <SettingGeneral />
-    <SettingYggdrasilServices />
-    <SettingGlobal />
-    <SettingUpdate />
-    <SettingAppearance />
+    <div class="px-4">
+      <SettingGeneral />
+      <SettingAppearance />
+    </div>
+    <div class="px-4">
+      <SettingGlobal />
+      <SettingUpdate />
+      <SettingNetwork />
+      <SettingYggdrasilServices />
+    </div>
     <SettingUpdateInfoDialog />
     <SettingMigrationDialog />
   </v-list>
@@ -25,6 +30,7 @@ import SettingGlobal from './SettingGlobal.vue'
 import SettingYggdrasilServices from './SettingYggdrasilServices.vue'
 import { usePresence } from '@/composables/presence'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
+import SettingNetwork from './SettingNetwork.vue'
 
 const { t } = useI18n()
 usePresence(computed(() => t('presence.setting')))
@@ -32,3 +38,16 @@ usePresence(computed(() => t('presence.setting')))
 provide(kUpdateSettings, useUpdateSettings())
 
 </script>
+<style scoped>
+@media (min-width: 1660px) {
+  .setting {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .setting > div {
+    max-width: calc(50vw - 60px);
+  }
+}
+
+</style>

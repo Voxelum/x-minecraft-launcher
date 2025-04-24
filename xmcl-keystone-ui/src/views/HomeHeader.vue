@@ -32,9 +32,8 @@
         <router-view name="route" />
         <AvatarItem
           v-if="versionId"
-          v-ripple
           icon="fact_check"
-          class="ml-2 cursor-pointer"
+          class="ml-2 p-1"
           :title="t('version.name', 2)"
           :text="currentVersion"
           @click="onShowLocalVersion"
@@ -170,28 +169,11 @@ const overcount = ref(0)
 <style scoped>
 
 .compact {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
 }
+
 .dark .compact {
   background: rgba(0, 0, 0, 0.5);
 }
-
-/* .header-content {
-  max-width: 1300px;
-  width: 1220px;
-}
-
-.divider {
-  margin-top: 10px;
-}
-
-@media screen and (max-width: 1300px) {
-  .header-content {
-    max-width: 100%;
-  }
-
-  .divider {
-    margin-top: 0px;
-  }
-} */
 </style>

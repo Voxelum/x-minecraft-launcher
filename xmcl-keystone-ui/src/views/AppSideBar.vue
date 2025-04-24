@@ -147,9 +147,20 @@ function goMultiplayer() {
   flex-direction: column;
   /* @apply rounded-r-xl border-r-[hsla(0,0%,100%,.12)]; */
 }
-
 </style>
 <style>
+
+.dark .sidebar .theme--dark.v-icon {
+  color: var(--icon-color);
+}
+
+.dark .sidebar .v-list-item {
+  --icon-color: #d8d8d8;
+}
+
+.dark .sidebar .v-list-item:hover {
+  --icon-color: #fff;
+}
 
 .v-navigation-drawer__content {
   @apply flex flex-col flex-grow-0 h-full;

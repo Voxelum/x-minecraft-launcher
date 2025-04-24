@@ -12,7 +12,7 @@
       </div>
       <div
         :key="i + 'instances'"
-        class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4"
+        class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4"
       >
         <InstanceCard
           v-for="instance in inst"

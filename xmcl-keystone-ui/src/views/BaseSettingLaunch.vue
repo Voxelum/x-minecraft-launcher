@@ -159,6 +159,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-divider />
   </v-list>
 </template>
 
