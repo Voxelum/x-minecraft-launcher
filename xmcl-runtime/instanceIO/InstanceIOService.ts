@@ -15,7 +15,7 @@ import { isFulfilled, requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { parseCurseforgeInstance } from './parseCurseforgeInstance'
 import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
-import { parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
+import { detectMMCRoot, parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
 import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
 import { exportInstanceAsServer } from './exportInstanceAsServer'
 
@@ -62,6 +62,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
       if (type === 'mmc') {
+        path = detectMMCRoot(path)
         const instancesPath = join(path, 'instances')
         const instances = await readdir(instancesPath)
         const manifests = await Promise.allSettled(instances.map(async (instance) => {

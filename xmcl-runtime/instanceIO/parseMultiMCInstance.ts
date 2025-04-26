@@ -1,11 +1,29 @@
 import { CreateInstanceOption } from '@xmcl/runtime-api'
-import { readFile } from 'fs-extra'
-import { join } from 'path'
+import { existsSync, readFile } from 'fs-extra'
+import { dirname, join } from 'path'
 import { pathToFileURL } from 'url'
 import { Logger } from '~/logger'
 import { discover } from './InstanceFileDiscover'
 import { MultiMCConfig } from './entities/MultiMCConfig'
 import { MultiMCManifest } from './entities/MultiMCManifest'
+
+export function detectMMCRoot(path: string) {
+  const original = path
+  let instancesPath = join(path, 'instances')
+  if (!existsSync(instancesPath)) {
+    path = dirname(path)
+    instancesPath = join(path, 'instances')
+  }
+  if (!existsSync(instancesPath)) {
+    path = dirname(path)
+    instancesPath = join(path, 'instances')
+  }
+  if (!existsSync(instancesPath)) {
+    // not a MultiMC root... but return and throw error in later code path
+    return original
+  }
+  return path
+}
 
 export async function parseMultiMCInstance(path: string): Promise<CreateInstanceOption> {
   const instanceCFGText = await readFile(join(path, 'instance.cfg'), 'utf-8')
