@@ -37,7 +37,19 @@ export function useInstanceContextMenuItems(instance: Ref<Instance | undefined>)
         text: t('instance.duplicate'),
         icon: 'file_copy',
         onClick() {
-          duplicateInstance(inst.path)
+          duplicateInstance(inst.path).then((newPath) => {
+            try {
+              const grouping = localStorage.getItem('modsGrouping')
+              if (!grouping) return
+              const parsed = JSON.parse(grouping)
+              if (parsed[inst.path]) {
+                parsed[newPath] = parsed[inst.path]
+                localStorage.setItem('modsGrouping', JSON.stringify(parsed))
+              }
+            } catch (e) {
+              console.error('Failed to parse modsGrouping', e)
+            }
+          })
         },
       },
       {
