@@ -132,13 +132,12 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
         }
       } catch { }
     }
-    const sqlite = new SQLDatabase(filePath, {
-      readOnly: true,
-    })
 
     const db = new Kysely<Database>({
       dialect: new SqliteWASMDialect({
-        database: sqlite,
+        database: () => new SQLDatabase(filePath, {
+          readOnly: true,
+        }),
         onError: (e) => {
           // @ts-ignore
           e.source = 'ProjectMappingDatabase'
@@ -157,7 +156,7 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     }
 
     this.app.registryDisposer(async () => {
-      sqlite.close()
+      db.destroy()
     })
 
     return db

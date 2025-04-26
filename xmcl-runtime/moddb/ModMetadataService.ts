@@ -229,11 +229,10 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
       })
       await this.submit(task)
     }
-    const sqlite = new SQLDatabase(dbPath, {
-      readOnly: true,
-    })
     const dialect = new SqliteWASMDialect({
-      database: sqlite,
+      database: () => new SQLDatabase(dbPath, {
+        readOnly: true,
+      }),
     })
     const db = new Kysely<Database>({
       dialect,
