@@ -128,7 +128,7 @@ export interface InstanceOptionsService {
 
   getServerProperties(instancePath: string): Promise<Record<string, string>>
 
-  setServerProperties(instancePath: string, properties: Record<string, string>): Promise<void>
+  setServerProperties(instancePath: string, properties: Record<string, string | number | boolean>): Promise<void>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

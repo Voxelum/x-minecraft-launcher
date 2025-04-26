@@ -33,7 +33,7 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     return properties
   }
 
-  async setServerProperties(instancePath: string, properties: Record<string, string>): Promise<void> {
+  async setServerProperties(instancePath: string, properties: Record<string, string | number | boolean>): Promise<void> {
     const path = join(instancePath, 'server', 'server.properties')
     const original = await this.getServerProperties(instancePath)
     const merged = Object.assign(original, properties)

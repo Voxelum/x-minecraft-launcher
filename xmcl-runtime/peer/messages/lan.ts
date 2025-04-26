@@ -2,7 +2,6 @@ import { LanServerInfo } from '@xmcl/client'
 import { createServer } from 'net'
 import { defineMessage, MessageType } from './message'
 import { ServerProxy } from '../ServerProxy'
-import type { DataChannelInitConfig } from 'node-datachannel'
 import { listen } from '../../util/server'
 
 export const MessageLan: MessageType<LanServerInfo> = 'lan'
@@ -28,7 +27,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
   const server = createServer((socket) => {
     // create game data channel to pipe message
     console.log(`Create datachannel to actual port ${info.port}`)
-    const init: DataChannelInitConfig = {
+    const init: RTCDataChannelInit = {
       protocol: 'minecraft', // protocol minecraft
       ordered: true,
     }
