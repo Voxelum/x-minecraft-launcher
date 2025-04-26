@@ -15,7 +15,6 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   const flights = await app.registry.get(kFlights)
   const stateManager = await app.registry.get(ServiceStateManager)
 
-
   const MAX_MESSAGE_LENGTH = 32768;
 
   client.addTelemetryProcessor((envelope) => {
@@ -151,15 +150,6 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
 
   // Collect resource metadata
   app.registry.get(ResourceManager).then((manager) => {
-    manager.context.eventBus.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
-      if (settings.disableTelemetry) return
-      client.trackException({
-        exception: err,
-        properties: {
-          ...payload,
-        },
-      })
-    })
     manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
       client.trackTrace({

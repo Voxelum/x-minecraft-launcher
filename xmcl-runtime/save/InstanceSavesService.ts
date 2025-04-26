@@ -201,6 +201,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
             if (e.code === 'EBUSY') {
               return
             }
+            if (e.code === 'EPERM') {
+              return
+            }
           }
           if ((e as any).name === 'Error') {
             (e as any).name = 'FSWatcherError'

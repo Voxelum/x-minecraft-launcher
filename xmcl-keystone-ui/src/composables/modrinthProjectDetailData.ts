@@ -173,7 +173,7 @@ export function useModrinthProjectDetailVersions(versions: Ref<ProjectVersion[] 
     for (const i of files) {
       const minecraftVersion = isModFile(i) ? getModMinecraftVersion(i) : ''
       all.push({
-        id: i.modrinth?.versionId.toString() ?? '',
+        id: i.modrinth?.versionId.toString() ?? i.path,
         name: basename(i.path) ?? '',
         version: i.version,
         disabled: false,

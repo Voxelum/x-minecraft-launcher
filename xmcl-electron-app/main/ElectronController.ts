@@ -509,8 +509,12 @@ export class ElectronController implements LauncherAppController {
 
   openDevTools() {
     for (const win of BrowserWindow.getAllWindows()) {
-      win.webContents.closeDevTools()
-      win.webContents.openDevTools({ mode: 'detach' })
+      try {
+        win.webContents.closeDevTools()
+        win.webContents.openDevTools({ mode: 'detach' })
+      } catch {
+        
+      }
     }
   }
 }
