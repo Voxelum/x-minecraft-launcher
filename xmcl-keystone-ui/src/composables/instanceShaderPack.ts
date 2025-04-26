@@ -160,6 +160,19 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
           instancePath: instancePath.value,
           shaderPack: v ?? '',
         }).then(() => mutateShaderPackOptions())
+      } else {
+        editShaderOptions({
+          instancePath: instancePath.value,
+          shaderPack: v ?? '',
+        })
+        editIrisShaderOptions({
+          instancePath: instancePath.value,
+          shaderPack: v ?? '',
+        }).then(() => mutateShaderPackOptions())
+        editOculusShaderOptions({
+          instancePath: instancePath.value,
+          shaderPack: v ?? '',
+        }).then(() => mutateShaderPackOptions())
       }
     },
   })
