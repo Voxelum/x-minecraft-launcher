@@ -41,6 +41,8 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
       )
         app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
     }
+    // @ts-ignore
+    e.source = 'ResourceDatabase'
   }
   if (flights.enableResourceDatabaseWorker) {
     const dbLogger = app.getLogger('ResourceDbWorker')
@@ -53,9 +55,8 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
       onError,
     }
   } else {
-    const database = new SQLDatabase(dbPath)
     config = {
-      database,
+      database: () => new SQLDatabase(dbPath),
       onError,
     }
   }
@@ -89,9 +90,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     if (!success) {
       continue
     }
-    if ('database' in config) {
-      app.registry.get(kSettings).then((settings) => settings.databaseReadySet(config.database.isOpen))
-    }
+    app.registry.get(kSettings).then((settings) => settings.databaseReadySet(true))
     break
   }
 

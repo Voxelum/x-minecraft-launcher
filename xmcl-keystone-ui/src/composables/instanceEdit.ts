@@ -4,6 +4,7 @@ import { useGlobalSettings } from './setting'
 import debounce from 'lodash.debounce'
 import { injection } from '@/util/inject'
 import { kLaunchButton } from './launchButton'
+import { AnyError } from '@/util/error'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
@@ -494,15 +495,19 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
   }
   function onSelectLocalVersion(version: string) {
     data.version = version
-    const v = versions.value.find(ver => ver.id === version)!
-    data.runtime.minecraft = v.minecraft
-    data.runtime.forge = v.forge
-    data.runtime.liteloader = v.liteloader
-    data.runtime.fabricLoader = v.fabric
-    data.runtime.neoForged = v.neoForged
-    data.runtime.optifine = v.optifine
-    data.runtime.quiltLoader = v.quilt
-    data.runtime.labyMod = v.labyMod
+    const v = versions.value.find(ver => ver.id === version)
+    if (v) {
+      data.runtime.minecraft = v.minecraft
+      data.runtime.forge = v.forge
+      data.runtime.liteloader = v.liteloader
+      data.runtime.fabricLoader = v.fabric
+      data.runtime.neoForged = v.neoForged
+      data.runtime.optifine = v.optifine
+      data.runtime.quiltLoader = v.quilt
+      data.runtime.labyMod = v.labyMod
+    } else {
+      throw new AnyError('SelectLocalVersionError', `Cannot find version ${version}`)
+    }
   }
 
   return {

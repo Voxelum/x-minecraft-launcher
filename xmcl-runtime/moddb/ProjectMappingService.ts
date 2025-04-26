@@ -139,6 +139,10 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
     const db = new Kysely<Database>({
       dialect: new SqliteWASMDialect({
         database: sqlite,
+        onError: (e) => {
+          // @ts-ignore
+          e.source = 'ProjectMappingDatabase'
+        }
       }),
       log: (e) => {
         if (e.level === 'error') {

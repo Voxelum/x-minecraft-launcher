@@ -59,6 +59,7 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
 
   #db?: Database
   #connection?: SqliteConnection
+  #destroyed = false
 
   constructor(config: SqliteWASMDialectDatabaseConfig) {
     super()
@@ -66,8 +67,17 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
   }
 
   async init(): Promise<void> {
-    this.#db = this.#config.database
-    this.#connection = new SqliteConnection(this.#db, this.#config.onError)
+    this.#db = this.#config.database()
+    const onError = (e: Error) => {
+      if (e.message === 'Database already closed' && !this.#destroyed) {
+        // reopen the database
+        this.#db?.close()
+        this.#db = this.#config.database()
+        this.#connection = new SqliteConnection(this.#db, onError)
+      }
+      this.#config.onError?.(e)
+    }
+    this.#connection = new SqliteConnection(this.#db, onError)
   }
 
   async acquireConnection(): Promise<DatabaseConnection> {
@@ -78,6 +88,10 @@ export class SqliteWASMDriver extends AbstractSqliteDriver {
   }
 
   async destroy(): Promise<void> {
+    if (this.#destroyed) {
+      return
+    }
+    this.#destroyed = true
     this.#connection?.dispose()
     this.#db?.close()
   }

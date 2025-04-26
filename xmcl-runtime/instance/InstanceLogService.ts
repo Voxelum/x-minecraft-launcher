@@ -38,7 +38,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   async removeLog(instancePath: string, name: string) {
     const filePath = join(instancePath, 'logs', name)
     this.log(`Remove log ${filePath}`)
-    await unlink(filePath)
+    await unlink(filePath).catch(() => {})
   }
 
   /**

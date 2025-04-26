@@ -6,7 +6,7 @@ type SqliteWASMDialectConfigBase = {
 }
 
 export type SqliteWASMDialectDatabaseConfig = {
-  database: Database
+  database: () => Database
 } & SqliteWASMDialectConfigBase
 
 export type SqliteWASMDialectWorkerConfig = {

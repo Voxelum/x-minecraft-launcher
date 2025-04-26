@@ -178,6 +178,9 @@ function getItemKey(index: number) {
   if (typeof item === 'string') {
     return item + _only.value
   }
+  if (!item) {
+    return '-1'
+  }
   return item.id + _only.value
 }
 function getItemPaddingTop(index: number) {

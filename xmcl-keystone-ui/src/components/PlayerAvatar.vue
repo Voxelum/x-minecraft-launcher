@@ -28,6 +28,7 @@ const props = withDefaults(
 })
 
 const steveSrc = renderMinecraftPlayerTextHead(steve)
+const dataUrlSrc = ref('')
 
 watch(() => props.src, (s) => {
   renderMinecraftPlayerTextHead(s)?.then((v) => {
@@ -41,7 +42,6 @@ watch(() => props.src, (s) => {
   })
 }, { immediate: true })
 
-const dataUrlSrc = ref('')
 </script>
 
 <style></style>

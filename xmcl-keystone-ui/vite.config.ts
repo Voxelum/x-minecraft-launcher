@@ -28,6 +28,7 @@ export default defineConfig({
     sourcemap: true,
     terserOptions: {
       keep_classnames: true,
+      keep_fnames: true,
     },
     outDir: resolve(__dirname, './dist'),
     assetsInlineLimit: 0,
