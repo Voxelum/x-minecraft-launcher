@@ -20,32 +20,36 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
     autoSelectFamilyAttemptTimeout: 850,
   }
 
-  const proxy = new ProxySettingController()
+  const globalProxyHttps = process.env.HTTPS_PROXY || process.env.https_proxy
+
+  const proxyControl = new ProxySettingController()
   app.registry.get(kSettings).then((state) => {
     maxConnection = state.maxSockets > 0 ? state.maxSockets : 64
-    proxy.setProxyEnabled(state.httpProxyEnabled)
-    if (state.httpProxy) {
+    proxyControl.setProxyEnabled(state.httpProxyEnabled)
+    const proxy = state.httpProxy || globalProxyHttps
+    if (proxy) {
       try {
-        proxy.setProxy(new URL(state.httpProxy))
-        app.setProxy(state.httpProxy)
+        proxyControl.setProxy(new URL(proxy))
+        app.setProxy(proxy)
       } catch (e) {
-        logger.warn(`Fail to set url as it's not a valid url ${state.httpProxy}`, e)
+        logger.warn(`Fail to set url as it's not a valid url ${proxy}`, e)
       }
     }
+
     state.subscribe('maxSocketsSet', (val) => {
       maxConnection = val > 0 ? val : 64
     })
     state.subscribe('httpProxySet', (p) => {
       app.setProxy(p)
       try {
-        proxy.setProxy(new URL(p))
+        proxyControl.setProxy(new URL(p))
       } catch (e) {
         logger.warn(`Fail to set url as it's not a valid url ${p}`, e)
       }
     })
     state.subscribe('httpProxyEnabledSet', (e) => {
-      proxy.setProxyEnabled(e)
-      app.setProxy(e ? state.httpProxy : '')
+      proxyControl.setProxyEnabled(e)
+      app.setProxy(e ? (state.httpProxy || globalProxyHttps || '') : '')
     })
   })
 
@@ -171,7 +175,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
       return Math.max(maxConnection / 4, 4)
     }
   }
-  proxy.add(downloadProxy)
+  proxyControl.add(downloadProxy)
   app.registry.register(kDownloadOptions, {
     rangePolicy: new RangePolicy(2 * 1024 * 1024, Math.max(maxConnection / 4, 4)),
     dispatcher: downloadProxy,
