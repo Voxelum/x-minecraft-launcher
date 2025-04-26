@@ -79,7 +79,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     majorVersion: 8,
     component: 'jre-legacy',
   }, forceZulu = false) {
-    this.log(`Try to install official java ${target.component} (${target.component})`)
+    this.log(`Try to install java ${target.component} (${target.component})`)
 
     const flights = await this.app.registry.get(kFlights)
     if (flights.forceZuluJre) {
@@ -96,14 +96,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     if (shouldOverrideApiSet(settings, gfw.inside)) {
       apiHost = apis.map(a => new URL(a.url).hostname)
     }
-    if (!apiHost) {
-      const apis = getApiSets(settings)
-      apiHost = apis.map(a => new URL(a.url).hostname)
-
-      if (!shouldOverrideApiSet(settings, gfw.inside)) {
-        apiHost.unshift('https://launcher.mojang.com')
-      }
-    }
 
     const officialManifest = !forceZulu
       ? await getOfficialJavaManifest(this.app, target.component).catch(() => undefined)
@@ -118,11 +110,13 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       const zuluData = await getZuluJRE(this.app, target.component as any)
       await this.submit(installZuluJavaTask(zuluData, folder, target.majorVersion, downloadOptions))
     } else {
-      this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`)
+      this.log(`Install official jre runtime ${target.component} (${target.majorVersion}) ${officialManifest.version.name}`)
       await this.submit(installJavaRuntimeWithJsonTask({
         target: officialManifest,
         destination: folder,
         ...downloadOptions,
+        skipRevalidate: true,
+        apiHost,
       }).setName('installJre', { version: target.majorVersion }))
     }
 
