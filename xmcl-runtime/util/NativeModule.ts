@@ -1,11 +1,9 @@
 import { createPromiseSignal } from '@xmcl/runtime-api'
-import { writeFile } from 'fs-extra'
+import { writeFileSync } from 'fs-extra'
 import { unlink } from 'fs/promises'
 import { join } from 'path'
-import { PassThrough } from 'stream'
 import { extract } from 'tar-stream'
-import { stream } from 'undici'
-import { createGunzip } from 'zlib'
+import { gunzipSync } from 'zlib'
 import { AnyError } from '../util/error'
 
 export class NativeModuleLoader<T> {
@@ -16,13 +14,13 @@ export class NativeModuleLoader<T> {
   constructor(
     readonly nodeFileName: string,
     readonly getUrl: () => [string, string],
-    readonly loader: (root: string, mod: any) => T,
+    readonly loader: (root: string, mod: any) => Promise<T>,
   ) { }
 
   #tryResolve = async (root: string): Promise<void> => {
     try {
       const nativeModule = getDependencyIfExists(root, this.nodeFileName)
-      const result = this.loader(root, nativeModule)
+      const result = await this.loader(root, nativeModule)
       this.#signal.resolve(result)
     } catch (e) {
       if (this.#retryCount > 3) {
@@ -65,39 +63,38 @@ async function downloadNative(dir: string, primary: string, fallback: string, fi
   // Download the tarball and extract it to the specified directory
   const dest = join(dir, fileName)
 
-  const unzip = createGunzip()
-  const extractStream = extract()
-  unzip.pipe(extractStream)
-
-  const download = (u: string) => stream(u, { opaque: { unzip }, method: 'GET' }, ({ opaque, headers, statusCode }) => {
-    if (statusCode === 200) return (opaque as any).unzip
-    Object.assign(opaque as any, {
-      failed: true,
-      headers,
-      statusCode,
-    })
-    return new PassThrough()
-  })
-
-  const { opaque } = await download(primary)
-
-  if ((opaque as any).failed) {
-    const { opaque } = await download(fallback)
-
-    if ((opaque as any).failed) {
+  const download = (u: string) => fetch(u).then((res) => {
+    if (!res.ok || !res.body) {
       throw new AnyError('NativeDownloadError', 'Failed to download ' + fileName)
     }
-  }
+    return res.arrayBuffer()
+  })
 
-  for await (const e of extractStream) {
-    if (e.header.name.endsWith(fileName)) {
-      const bufs = [] as Buffer[]
-      for await (const d of e) {
-        bufs.push(d)
-      }
-      await writeFile(dest, Buffer.concat(bufs))
+  const buf = await download(primary).catch(() => {
+    return download(fallback)
+  })
+
+  const raw = gunzipSync(buf)
+
+  const extractStream = extract()
+  const bufs = [] as Buffer[]
+  const singal = Promise.withResolvers<Buffer>()
+  extractStream.on('entry', (header, stream, next) => {
+    if (header.name.endsWith(fileName)) {
+      stream.on('data', (buf) => {
+        bufs.push(buf)
+      })
+      stream.on('end', () => {
+        const buffer = Buffer.concat(bufs)
+        singal.resolve(buffer)
+      })
     }
-  }
+    next()
+  })
+
+  extractStream.end(raw)
+
+  writeFileSync(dest, await singal.promise)
 
   return dest
 }

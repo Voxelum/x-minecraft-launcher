@@ -142,8 +142,8 @@ importers:
         specifier: 3.60.0
         version: 3.60.0
       node-datachannel:
-        specifier: 0.9.1
-        version: 0.9.1
+        specifier: 0.26.0
+        version: 0.26.0
       node-disk-info:
         specifier: ^1.3.0
         version: 1.3.0
@@ -461,8 +461,8 @@ importers:
         specifier: ^2.0.1
         version: 2.0.1
       node-datachannel:
-        specifier: 0.9.1
-        version: 0.9.1
+        specifier: 0.26.0
+        version: 0.26.0
       node-disk-info:
         specifier: ^1.3.0
         version: 1.3.0
@@ -3976,8 +3976,8 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
-  napi-build-utils@1.0.2:
-    resolution: {integrity: sha512-ONmRUqK7zj7DWX0D9ADe03wbwOBZxNAfF20PlGfCWQcD3+/MakShIHrMqx9YwPTfxDdF1zLeL+RGZiR9kGMLdg==}
+  napi-build-utils@2.0.0:
+    resolution: {integrity: sha512-GEbrYkbfF7MoNaoh2iGG84Mnf/WZfB0GdGEsM8wz7Expx/LlWf5U8t9nvJKXSp3qr5IsEbK04cBGhol/KwOsWA==}
 
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
@@ -3996,17 +3996,13 @@ packages:
   node-api-version@0.2.0:
     resolution: {integrity: sha512-fthTTsi8CxaBXMaBAD7ST2uylwvsnYxh2PfaScwpMhos6KlSFajXQPcM4ogNE1q2s3Lbz9GCGqeIHC+C6OZnKg==}
 
-  node-datachannel@0.9.1:
-    resolution: {integrity: sha512-b6Uc6YN5We2/aZA6QGicxSdWUDSwlR+vcO/Dn44BY5gieF3AOwsL/zPD+Ril+1KvYDwVJkVbRIovbG76E4PpwA==}
-    engines: {node: '>=16.0.0'}
+  node-datachannel@0.26.0:
+    resolution: {integrity: sha512-i9ZcFNszK1HeV6Ym2AoQokmRHE5jk0L5023CdRLzbQl8rqyjJkOGecMxEjo1WSjNHDvRO3I3ay9waclBdD3jRQ==}
+    engines: {node: '>=18.20.0'}
 
   node-disk-info@1.3.0:
     resolution: {integrity: sha512-NEx858vJZ0AoBtmD/ChBIHLjFTF28xCsDIgmFl4jtGKsvlUx9DU/OrMDjvj3qp/E4hzLN0HvTg7eJx5XFQvbeg==}
     engines: {node: '>= 12'}
-
-  node-domexception@2.0.1:
-    resolution: {integrity: sha512-M85rnSC7WQ7wnfQTARPT4LrK7nwCHLdDFOCcItZMhTQjyCebJH8GciKqYJNgaOFZs9nFmTmd/VMyi3OW5jA47w==}
-    engines: {node: '>=16'}
 
   node-fetch-native@1.6.4:
     resolution: {integrity: sha512-IhOigYzAKHd244OC0JIMIUrjzctirCmPkaIfhDeGcEETWof5zKYUW7e7MYvChGWh/4CJeXEgsRyGzuF334rOOQ==}
@@ -4171,8 +4167,8 @@ packages:
     resolution: {integrity: sha512-YF2kKIUzAofPMpfH6hOi2cGnv/HrUlfucspc7pDyvv7kGdqXrfj8SCl/t8owkEgKEuu8ZcRjSOxFxVLqwChZ2Q==}
     engines: {node: ^10 || ^12 || >=14}
 
-  prebuild-install@7.1.1:
-    resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
+  prebuild-install@7.1.3:
+    resolution: {integrity: sha512-8Mf2cbV7x1cXPUILADGI3wuhfqWvtiLA1iclTDbFRZkgRQS0NqsPZphna9V+HyTEadheuPmjaJMsbzKQFOzLug==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -8026,7 +8022,7 @@ snapshots:
 
   nanoid@3.3.7: {}
 
-  napi-build-utils@1.0.2: {}
+  napi-build-utils@2.0.0: {}
 
   negotiator@0.6.3: {}
 
@@ -8043,16 +8039,13 @@ snapshots:
     dependencies:
       semver: 7.6.0
 
-  node-datachannel@0.9.1:
+  node-datachannel@0.26.0:
     dependencies:
-      node-domexception: 2.0.1
-      prebuild-install: 7.1.1
+      prebuild-install: 7.1.3
 
   node-disk-info@1.3.0:
     dependencies:
       iconv-lite: 0.6.3
-
-  node-domexception@2.0.1: {}
 
   node-fetch-native@1.6.4: {}
 
@@ -8225,14 +8218,14 @@ snapshots:
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
-  prebuild-install@7.1.1:
+  prebuild-install@7.1.3:
     dependencies:
       detect-libc: 2.0.1
       expand-template: 2.0.3
       github-from-package: 0.0.0
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
-      napi-build-utils: 1.0.2
+      napi-build-utils: 2.0.0
       node-abi: 3.60.0
       pump: 3.0.0
       rc: 1.2.8

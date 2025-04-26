@@ -92,7 +92,7 @@ export function createMultiplayer() {
     _PeerConnection = PeerConnection
   })
   import('node-datachannel/polyfill').then(({ RTCPeerConnection }) => {
-    _RTCPeerConnection = RTCPeerConnection
+    _RTCPeerConnection = RTCPeerConnection as any
   })
 
   const idSignal = createPromiseSignal<string>()
@@ -159,14 +159,15 @@ export function createMultiplayer() {
             portRangeEnd: privatePort,
             enableIceUdpMux: true,
             // @ts-ignore
-          }, { PeerConnection: _PeerConnection })
+          }, _PeerConnection)
         } else {
           return new RTCPeerConnection({
             iceServers: server ? [server] : [],
             iceCandidatePoolSize: 8,
           })
         }
-      } catch {
+      } catch (e) {
+        console.debug(e)
         console.log('Use webrtc fallback', server)
         return new RTCPeerConnection({
           iceServers: server ? [server] : [],
