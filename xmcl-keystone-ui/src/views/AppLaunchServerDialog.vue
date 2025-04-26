@@ -164,7 +164,6 @@ const rawWorldExists = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
 
-let _serverProperties: any
 let _eula: boolean
 
 const { launch, gameProcesses } = injection(kInstanceLaunch)
@@ -197,7 +196,6 @@ const { isShown } = useDialog('launch-server', () => {
     const parsedMaxPlayers = parseInt(p.maxPlayers, 10)
     maxPlayers.value = isNaN(parsedMaxPlayers) ? 20 : parsedMaxPlayers
     onlineMode.value = Boolean(p.onlineMode)
-    _serverProperties = p
   })
   getEULA(path.value).then((v) => {
     isAcceptEula.value = v
@@ -374,16 +372,13 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
     console.log('eula')
     await setEULA(instPath, true)
   }
-  if (_serverProperties) {
-    console.log('serverProperties')
-    await setServerProperties(instPath, {
-      ..._serverProperties,
-      port: _port ?? 25565,
-      motd: _motd || 'A Minecraft Server',
-      'max-players': _maxPlayers ?? 20,
-      'online-mode': _onlineMode ?? false,
-    })
-  }
+  console.log('serverProperties')
+  await setServerProperties(instPath, {
+    port: _port ?? 25565,
+    motd: _motd || 'A Minecraft Server',
+    'max-players': _maxPlayers ?? 20,
+    'online-mode': _onlineMode ?? false,
+  })
 
   version = await install()
 

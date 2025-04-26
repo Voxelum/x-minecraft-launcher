@@ -35,7 +35,9 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async setServerProperties(instancePath: string, properties: Record<string, string>): Promise<void> {
     const path = join(instancePath, 'server', 'server.properties')
-    const content = Object.entries(properties).map(([k, v]) => `${k}=${v}`).join('\n') + '\n'
+    const original = await this.getServerProperties(instancePath)
+    const merged = Object.assign(original, properties)
+    const content = Object.entries(merged).map(([k, v]) => `${k}=${v}`).join('\n') + '\n'
     await ensureFile(path)
     await writeFile(path, content)
   }
