@@ -18,6 +18,7 @@
     </transition>
 
     <HomeLogDialog />
+    <HomeDropModpackDialog />
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
     <HomeInstanceInstallDialog />
@@ -39,6 +40,7 @@ import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
 import AppCollectionDialog from './AppCollectionDialog.vue'
+import HomeDropModpackDialog from './HomeDropModpackDialog.vue'
 
 const router = useRouter()
 

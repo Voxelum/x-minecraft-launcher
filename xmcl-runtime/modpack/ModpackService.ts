@@ -463,6 +463,9 @@ export class ModpackService extends AbstractService implements IModpackService {
             },
           },
         }])
+      }).catch(e => {
+        this.error(new AnyError('ModpackInstallProfileError', 'Fail to update resource', { cause: e }))
+        state.modpackError(e)
       })
 
       return [state, zip.dispose]
