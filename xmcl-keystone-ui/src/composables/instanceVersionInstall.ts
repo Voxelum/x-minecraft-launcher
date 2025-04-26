@@ -357,18 +357,18 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       result.java = javaInstallOrPath
     }
 
+    const jarIssue = await diagnoseJar(resolved, 'client')
+    if (abortSignal?.aborted) { throw kAbort }
+    if (jarIssue) {
+      result.jar = markRaw(jarIssue)
+    }
+
     const profileIssue = await diagnoseProfile(resolved.id, 'client', path.value)
     if (abortSignal?.aborted) { throw kAbort }
 
     if (profileIssue) {
       result.profile = markRaw(profileIssue)
       return result
-    }
-
-    const jarIssue = await diagnoseJar(resolved, 'client')
-    if (abortSignal?.aborted) { throw kAbort }
-    if (jarIssue) {
-      result.jar = markRaw(jarIssue)
     }
 
     const librariesIssue = await diagnoseLibraries(resolved)

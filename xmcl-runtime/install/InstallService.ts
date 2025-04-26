@@ -1,12 +1,12 @@
 import { checksum, LibraryInfo, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError } from '@xmcl/installer'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, Options, PostProcessFailedError, PostProcessor } from '@xmcl/installer'
 import { InstallForgeOptions as _InstallForgeOptions, Asset, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineAsModOptions, InstallOptifineOptions, InstallProfileOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, Settings, SharedState } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
-import { dirname, join } from 'path'
+import { delimiter, dirname, join, sep } from 'path'
 import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, PathResolver } from '~/app'
 import { GFW, kGFW } from '~/gfw'
 import { JavaService } from '~/java'
@@ -20,6 +20,10 @@ import { VersionService } from '~/version'
 import { AnyError } from '../util/error'
 import { formatMinecraftSrg } from './formatMinecraftSrg'
 import { kOptifineInstaller } from './optifine'
+// @ts-ignore
+import clazData from './MultiJarLauncher.class?loader=binary'
+import { waitProcess } from '@xmcl/installer/utils'
+
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -39,9 +43,78 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   protected getForgeInstallOptions(java?: string): InstallForgeOptions {
+    const javaPath = java || this.javaService.getPreferredJava()?.path || ''
+    const handleDownloadMojangMaps = async (postProcessor: PostProcessor) => {
+      const parsedArgs = {} as Record<string, string>
+      for (let i = 0; i < postProcessor.args.length; i++) {
+        const arg = postProcessor.args[i]
+        if (arg.startsWith('--')) {
+          const next = postProcessor.args[i + 1]
+          if (next && !next.startsWith('--')) {
+            parsedArgs[arg] = postProcessor.args[i + 1]
+          }
+        }
+      }
+      const task = parsedArgs['--task']
+
+      if (task !== 'DOWNLOAD_MOJMAPS' || this.settings.apiSetsPreference === 'mojang' || this.settings.httpProxyEnabled) return false
+      if (!parsedArgs['--version'] || !parsedArgs['--side'] || !parsedArgs['--output']) return false
+
+      const sanitize = postProcessor.args.includes('--sanitize')
+
+      const versionContent = await readFile(this.getPath('versions', parsedArgs['--version'], `${parsedArgs['--version']}.json`), 'utf-8').catch(() => '')
+      if (!versionContent) return false
+
+      const version: Version = JSON.parse(versionContent)
+      const mapping = version.downloads?.[`${parsedArgs['--side']}_mappings`]
+      if (!mapping) return false
+      const output = parsedArgs['--output']
+      const originalOutput = output.replace('.tsrg', '.original.tsrg')
+      const sha1 = await checksum(originalOutput, 'sha1').catch(() => undefined)
+      if (sha1 === mapping.sha1) {
+        if (sanitize) {
+          const mc = MinecraftFolder.from(this.getPath())
+          const cps = postProcessor.classpath.map(LibraryInfo.resolve).map((p) => mc.getLibraryByPath(p.path))
+          await formatMinecraftSrg(originalOutput, output, java || 'java', this.app.appDataPath, cps).catch((e) => {
+            this.error(e)
+          })
+        }
+        return true
+      }
+      const url = new URL(mapping.url)
+      const urls = allSets.map(api => {
+        if (api.name === 'mojang') {
+          return url.toString()
+        }
+        return replaceHost(url, api.url)
+      })
+      for (const u of urls) {
+        try {
+          const response = await this.app.fetch(u)
+          if (response.ok) {
+            const text = await response.text()
+            await ensureDir(dirname(originalOutput))
+            await writeFile(originalOutput, text)
+            if (sanitize) {
+              const mc = MinecraftFolder.from(this.getPath())
+              const cps = postProcessor.classpath.map(LibraryInfo.resolve).map((p) => mc.getLibraryByPath(p.path))
+              await formatMinecraftSrg(originalOutput, output, java || 'java', this.app.appDataPath, cps).catch(async (e) => {
+                await writeFile(output, text)
+                this.error(e)
+              })
+            }
+            return true
+          }
+        } catch (e) {
+          this.warn(`Failed to download mojmap from ${u}`)
+          this.warn(e)
+        }
+      }
+      return false
+    }
     const options: InstallForgeOptions = {
       ...this.downloadOptions,
-      java: java || this.javaService.getPreferredJava()?.path,
+      java: javaPath,
       spawn: (cmd, args, opts) => {
         const a = args ? [...args] : []
         if (this.settings.httpProxy && this.settings.httpProxyEnabled) {
@@ -60,72 +133,35 @@ export class InstallService extends AbstractService implements IInstallService {
         }
         return spawn(cmd, a, opts || {})
       },
-      handler: async (postProcessor) => {
-        const parsedArgs = {} as Record<string, string>
-        for (let i = 0; i < postProcessor.args.length; i++) {
-          const arg = postProcessor.args[i]
-          if (arg.startsWith('--')) {
-            const next = postProcessor.args[i + 1]
-            if (next && !next.startsWith('--')) {
-              parsedArgs[arg] = postProcessor.args[i + 1]
+      handler: handleDownloadMojangMaps,
+      customPostProcessTask: (procs, folder, options) => {
+        const app = this.app
+        const toBase64String = (s: string) => Buffer.from(s).toString('base64')
+        return task('postProcessing', async function () {
+          const skip = [] as PostProcessor[]
+          for (const proc of procs) {
+            const handled = await handleDownloadMojangMaps(proc)
+            if (handled) {
+              skip.push(proc)
             }
           }
-        }
-        const task = parsedArgs['--task']
-
-        if (task !== 'DOWNLOAD_MOJMAPS' || this.settings.apiSetsPreference === 'mojang' || this.settings.httpProxyEnabled) return false
-        if (!parsedArgs['--version'] || !parsedArgs['--side'] || !parsedArgs['--output']) return false
-
-        const sanitize = postProcessor.args.includes('--sanitize')
-
-        const versionContent = await readFile(this.getPath('versions', parsedArgs['--version'], `${parsedArgs['--version']}.json`), 'utf-8').catch(() => '')
-        if (!versionContent) return false
-
-        const version: Version = JSON.parse(versionContent)
-        const mapping = version.downloads?.[`${parsedArgs['--side']}_mappings`]
-        if (!mapping) return false
-        const output = parsedArgs['--output']
-        const originalOutput = output.replace('.tsrg', '.original.tsrg')
-        const sha1 = await checksum(originalOutput, 'sha1').catch(() => undefined)
-        if (sha1 === mapping.sha1) {
-          if (sanitize) {
-            const mc = MinecraftFolder.from(this.getPath())
-            const cps = postProcessor.classpath.map(LibraryInfo.resolve).map((p) => mc.getLibraryByPath(p.path))
-            await formatMinecraftSrg(originalOutput, output, java || 'java', this.app.appDataPath, cps).catch((e) => {
-              this.error(e)
-            })
-          }
-          return true
-        }
-        const url = new URL(mapping.url)
-        const urls = allSets.map(api => {
-          if (api.name === 'mojang') {
-            return url.toString()
-          }
-          return replaceHost(url, api.url)
-        })
-        for (const u of urls) {
+          const clz = join(app.appDataPath, 'MultiJarLauncher.class')
+          await writeFile(clz, clazData)
           try {
-            const response = await this.app.fetch(u)
-            const text = await response.text()
-            await ensureDir(dirname(originalOutput))
-            await writeFile(originalOutput, text)
-            if (sanitize) {
-              const mc = MinecraftFolder.from(this.getPath())
-              const cps = postProcessor.classpath.map(LibraryInfo.resolve).map((p) => mc.getLibraryByPath(p.path))
-              await formatMinecraftSrg(originalOutput, output, java || 'java', this.app.appDataPath, cps).catch(async (e) => {
-                await writeFile(output, text)
-                this.error(e)
-              })
-            }
-            return true
-          } catch (e) {
-            this.warn(`Failed to download mojmap from ${u}`)
-            this.warn(e)
+            const pending = procs.filter(p => !skip.includes(p))
+            const classPaths = pending.map(p => p.jar).concat(pending.flatMap(p => p.classpath))
+              .map(p => folder.getLibraryByPath(LibraryInfo.resolve(p).path)).concat(app.appDataPath)
+
+            const args = pending.map(p => toBase64String([folder.getLibraryByPath(LibraryInfo.resolve(p.jar).path), ...p.args].join('|')))
+            const process = spawn(javaPath, ['-cp', classPaths.join(delimiter), 'MultiJarLauncher', ...args], {
+              cwd: app.appDataPath,
+            })
+            await waitProcess(process)
+          } finally {
+            await unlink(clz)
           }
-        }
-        return false
-      },
+        })
+      }
     }
 
     const allSets = getApiSets(this.settings)
