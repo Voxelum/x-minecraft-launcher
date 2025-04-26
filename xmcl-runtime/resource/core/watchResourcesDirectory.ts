@@ -178,6 +178,10 @@ function createWatcher(
     },
   }).on('all', async (event, file, stat) => {
     if (!file) return
+
+    const depth = file.split(sep).length
+    if (depth > 1) return
+
     if (shouldIgnoreFile(file)) return
     if (file.endsWith('.txt')) return
     if (event === 'unlink') {
@@ -413,20 +417,20 @@ export function watchResourceSecondaryDirectory(
 
   async function persist(file: File) {
     let target = join(primaryDirectory, file.fileName)
-    const onCopyDirectoryError = async (e: unknown) => {
-      if (isSystemError(e)) {
-        if (e.code === 'EEXIST') {
-          if (await isHardLinked(file.path, target)) {
-            return
-          }
-          target = join(primaryDirectory, `${file.fileName}.${randomBytes(4).toString('hex')}`)
-          await ensureDir(target)
-          copy(file.path, target).catch(onCopyDirectoryError)
-          return
-        }
-      }
-      context.logger.error(new AnyError('ResourceCopyError', `Fail to copy folder resource ${file.path} to ${target}`, { cause: e }))
-    }
+    // const onCopyDirectoryError = async (e: unknown) => {
+    //   if (isSystemError(e)) {
+    //     if (e.code === 'EEXIST') {
+    //       if (await isHardLinked(file.path, target)) {
+    //         return
+    //       }
+    //       target = join(primaryDirectory, `${file.fileName}.${randomBytes(4).toString('hex')}`)
+    //       await ensureDir(target)
+    //       copy(file.path, target).catch(onCopyDirectoryError)
+    //       return
+    //     }
+    //   }
+    //   context.logger.error(new AnyError('ResourceCopyError', `Fail to copy folder resource ${file.path} to ${target}`, { cause: e }))
+    // }
     const inoMatched = await context.db.selectFrom('snapshots')
       .selectAll()
       .where('ino', '=', file.ino)
@@ -451,8 +455,8 @@ export function watchResourceSecondaryDirectory(
         })
       })
     } else {
-      await ensureDir(target)
-      copy(file.path, target).catch(onCopyDirectoryError)
+      // await ensureDir(target)
+      // copy(file.path, target).catch(onCopyDirectoryError)
     }
   }
 
