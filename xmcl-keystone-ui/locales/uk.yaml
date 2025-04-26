@@ -834,6 +834,11 @@ modpack:
   showInModrinth: Показати {name} в Modrinth
   url: Посилання
   urlHint: Посилання домашньої сторінки вашого модпака
+modpackImportConfirm:
+  description: |-
+    Виявляйте, що ви опускаєте файл у пусковий заклад. 
+    Ви намагаєтесь імпортувати Modpack?
+  title: Ви намагаєтесь імпортувати Modpack?
 modrinth:
   browseUrl: Відкрити В Браузері {url}
   categories:

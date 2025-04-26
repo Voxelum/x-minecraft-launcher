@@ -378,6 +378,11 @@ modUpgradePolicy:
   modrinth: Modrinth Primeiro
   modrinthOnly: Só Modrinth
   name: Política de actualización
+modpackImportConfirm:
+  description: |-
+    Detectouche deixe un ficheiro no lanzador. 
+    ¿Estás intentando importar un modpack?
+  title: ¿Estás intentando importar un modpack?
 modrinth:
   categories:
     128x: 128x

@@ -779,6 +779,11 @@ modpack:
   showInModrinth: Modrinthで {name} を見る
   url: URL
   urlHint: あなたのModpackのホームページのURL
+modpackImportConfirm:
+  description: |-
+    ファイルをランチャーにドロップすることを検出します。 
+    modpackをインポートしようとしていますか？
+  title: modpackをインポートしようとしていますか？
 modrinth:
   browseUrl: ブラウザで開く {url}
   categories:

@@ -856,6 +856,11 @@ modpack:
   showInModrinth: Pokaż  {name} w Modrinth
   url: URL
   urlHint: Adres URL strony głównej modpacka
+modpackImportConfirm:
+  description: |-
+    Wykryjesz upuszczenie pliku do uruchamiającego. 
+    Czy próbujesz zaimportować modpack?
+  title: Czy próbujesz zaimportować modpack?
 modrinth:
   browseUrl: Otwórz w przeglądarce {url}
   categories:

@@ -845,6 +845,11 @@ modpack:
   showInModrinth: Mostra {name} in Modrinth
   url: URL
   urlHint: L'homepage del tuo modpack
+modpackImportConfirm:
+  description: |-
+    Rilevati rilasciare un file nel lanciatore. 
+    Stai cercando di importare un modpack?
+  title: Stai cercando di importare un modpack?
 modrinth:
   browseUrl: Apri nel browser {url}
   categories:

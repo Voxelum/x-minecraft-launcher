@@ -802,6 +802,9 @@ modpack:
   showInFtb: 在 FTB 中顯示 {name}
   url: URL
   urlHint: 整合包的主頁 URL 地址
+modpackImportConfirm:
+  description: 檢測您將文件放入啟動器中。您是否要導入ModPack？
+  title: 您是否要導入ModPack？
 modrinth:
   browseUrl: 在瀏覽器中開啟 {url}
   categories:

@@ -904,6 +904,11 @@ modpack:
   showInModrinth: anzeigen {name} in Modrinth
   url: Link
   urlHint: Link zur Homepage deines Modpacks
+modpackImportConfirm:
+  description: |-
+    Erkennen Sie, dass Sie eine Datei in den Launcher fallen lassen. 
+    Versuchen Sie, ein Modpack zu importieren?
+  title: Versuchen Sie, ein Modpack zu importieren?
 modrinth:
   browseUrl: Im Browser öffnen {url}
   categories:

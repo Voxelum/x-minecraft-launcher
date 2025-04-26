@@ -652,6 +652,11 @@ modpack:
   showInModrinth: Mostrar {name} en Modrinth
   url: URL
   urlHint: La página de inicio URL de tu modpack
+modpackImportConfirm:
+  description: |-
+    Detecte que suelte un archivo en el lanzador. 
+    ¿Estás tratando de importar un Modpack?
+  title: ¿Estás tratando de importar un Modpack?
 modrinth:
   browseUrl: Abrir en el Navegador {url}
   categories:

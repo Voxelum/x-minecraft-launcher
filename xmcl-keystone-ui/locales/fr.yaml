@@ -871,6 +871,11 @@ modpack:
   showInFtb: Afficher {name} dans FTB
   url: URL
   urlHint: L'URL de la page d'accueil de votre modpack
+modpackImportConfirm:
+  description: |-
+    Détecter que vous déposez un fichier dans le lanceur. 
+    Essayez-vous d'importer un modpack?
+  title: Essayez-vous d'importer un modpack?
 modrinth:
   browseUrl: Ouvrir dans le Navigateur {url}
   categories:

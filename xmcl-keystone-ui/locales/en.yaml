@@ -805,6 +805,11 @@ modpack:
   showInModrinth: Show {name} in Modrinth
   url: URL
   urlHint: The home page url of your modpack
+modpackImportConfirm:
+  description: >-
+    Detect you drop a file into the launcher. Are you trying to import a
+    modpack?
+  title: Are you trying to import a modpack?
 modrinth:
   browseUrl: Open In Browser {url}
   categories:

@@ -309,7 +309,7 @@ const localizedTexts = computed(() => markRaw({
 
 const { runtime, path } = injection(kInstance)
 
-const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, source } = injection(kSearchModel)
+const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, currentView } = injection(kSearchModel)
 
 // Ensure mod search effect is applied
 const {
@@ -332,12 +332,7 @@ onDependenciesEffect()
 const { unusedMods } = injection(kModLibCleaner)
 
 const isLocalView = computed(() => {
-  const kw = keyword.value
-  const local = source.value === 'local'
-  if (!kw) {
-    return true
-  }
-  return local
+  return currentView.value === 'local'
 })
 
 const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, currentGroup, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)

@@ -785,6 +785,11 @@ modpack:
   showInModrinth: SHOW {name} IN MODRINTH
   url: URL
   urlHint: TEH HOME PAEG URL OV UR MODPACK
+modpackImportConfirm:
+  description: >-
+    Detect you drop a file into the launcher. Are you trying to import a
+    modpack?
+  title: Are you trying to import a modpack?
 modrinth:
   browseUrl: OPEN IN BROWSR {url}
   categories:

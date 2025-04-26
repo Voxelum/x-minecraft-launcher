@@ -900,6 +900,11 @@ modpack:
   showInModrinth: Показать {name} в Modrinth
   url: URL-адрес
   urlHint: URL-адрес домашней страницы вашей сборки модов.
+modpackImportConfirm:
+  description: |-
+    Обнаружите, что вы бросите файл в пусковую установку. 
+    Вы пытаетесь импортировать Modpack?
+  title: Вы пытаетесь импортировать Modpack?
 modrinth:
   browseUrl: Открыть в браузере {url}
   categories:

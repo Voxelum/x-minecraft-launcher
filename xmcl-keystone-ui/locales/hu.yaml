@@ -841,6 +841,11 @@ modpack:
   showInModrinth: '{name} megnyitása Modrinth-en'
   url: URL
   urlHint: A modcsomag kezdőlapjának url-je
+modpackImportConfirm:
+  description: |-
+    Detektálja, hogy egy fájlt dobjon be az indítóba. 
+    Modpackot próbál importálni?
+  title: Modpackot próbál importálni?
 modrinth:
   browseUrl: Megnyitás böngészőben {url}
   categories:

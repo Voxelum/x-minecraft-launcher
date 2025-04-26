@@ -63,7 +63,6 @@ const emit = defineEmits(['click'])
     display: block !important;
   }
   .text {
-    padding-left: 0rem;
   }
 }
 </style>

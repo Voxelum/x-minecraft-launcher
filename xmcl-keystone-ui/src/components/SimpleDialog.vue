@@ -7,13 +7,15 @@
   >
     <v-card>
       <v-card-title
-        class="headline"
+        class="select-none"
         primary-title
       >
         {{ title }}
       </v-card-title>
 
-      <v-card-text>
+      <v-card-text
+        class="select-none"
+      >
         <slot />
       </v-card-text>
 
