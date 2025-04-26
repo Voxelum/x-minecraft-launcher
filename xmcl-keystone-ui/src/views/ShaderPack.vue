@@ -204,6 +204,15 @@
             </v-list-item>
           </v-list>
         </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            text
+            @click="skip"
+          >
+            {{ t('shared.skipForNow') }}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-dialog>
     <!-- <DeleteDialog
@@ -272,7 +281,12 @@ const {
 
 const { runtime, path } = injection(kInstance)
 
-const { model, show: showInstallShaderWizard } = useSimpleDialog<boolean>(() => {})
+const { model, show: showInstallShaderWizard, confirm } = useSimpleDialog<(bypass: boolean) => void>((f) => {
+  console.log('skip')
+  f?.(true)
+}, (f) => {
+  f?.(false)
+})
 
 const shouldDisableIris = computed(() => !!runtime.value.forge || !!runtime.value.optifine)
 const shouldDisableOculus = computed(() => !!runtime.value.fabricLoader || !!runtime.value.optifine || !!runtime.value.quiltLoader)
@@ -349,12 +363,20 @@ const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
   uninstall(path.value, files.map(f => f.path))
 }
-const onEnable = (f: ProjectFile | string) => {
+const onEnable = async (f: ProjectFile | string) => {
   if (!shaderMod.value && !runtime.value.optifine) {
-    showInstallShaderWizard(true)
-    return
+    await new Promise<void>((resolve, reject) => {
+      showInstallShaderWizard((v) => {
+        if (v) resolve()
+        else reject(new Error('cancel'))
+      })
+    })
   }
   shaderPack.value = typeof f === 'string' ? f : (f as InstanceShaderFile).fileName
+}
+
+const skip = () => {
+  confirm()
 }
 
 // Presence
@@ -384,14 +406,6 @@ onMounted(() => {
 const installModloaders = useInstanceModLoaderDefault()
 const { shaderMod } = injection(kInstanceShaderPacks)
 
-function installMoadloadersWrapped(...args: Parameters<typeof installModloaders>) {
-  if (!shaderMod.value && !runtime.value.optifine) {
-    showInstallShaderWizard(true)
-    throw new Error('No shader mod installed')
-  }
-  return installModloaders(...args)
-}
-
 const { push } = useRouter()
 function navigateToMod(type: string) {
   if (type === 'iris') {
@@ -411,7 +425,7 @@ const modrinthInstaller = useModrinthInstaller(
   shaderPacks,
   installFromMarket,
   onUninstall,
-  installMoadloadersWrapped,
+  installModloaders,
 )
 provide(kModrinthInstaller, modrinthInstaller)
 
@@ -422,7 +436,7 @@ const curseforgeInstaller = useCurseforgeInstaller(
   shaderPacks,
   installFromMarket,
   onUninstall,
-  installMoadloadersWrapped,
+  installModloaders,
 )
 provide(kCurseforgeInstaller, curseforgeInstaller)
 
