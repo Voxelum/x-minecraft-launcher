@@ -8,5 +8,7 @@ export const MessageHeartbeatPingEntry = defineMessage(MessageHeartbeatPing, fun
 })
 
 export const MessageHeartbeatPongEntry = defineMessage(MessageHeartbeatPong, function (msg) {
-  this.context.onHeartbeat(this.id, Math.floor((Date.now() - msg.time) / 2))
+  const latency = Math.floor((Date.now() - msg.time) / 2)
+  this.latency = latency
+  this.context.onHeartbeat(this.id, latency)
 })

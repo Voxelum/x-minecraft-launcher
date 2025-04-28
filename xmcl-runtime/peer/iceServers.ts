@@ -88,7 +88,7 @@ export async function loadIceServers(cachePath: string) {
 async function test(factory: PeerConnectionFactory, iceServer: RTCIceServer, portBegin?: number) {
   let start = Date.now()
   let ping = 0 as 'timeout' | number
-  const co = factory.createConnection(iceServer, portBegin)
+  const co = factory.createConnection([iceServer], portBegin)
   return new Promise<[string[], number | 'timeout']>((resolve) => {
     const ips = new Set<string>()
     co.onicegatheringstatechange = (s) => {

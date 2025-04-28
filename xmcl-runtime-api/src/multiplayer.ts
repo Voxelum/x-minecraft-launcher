@@ -36,33 +36,25 @@ export interface ConnectionUserInfo extends GameProfileAndTexture {
  * A peer might have multiple connections.
  */
 export interface Peer {
+  /**
+   * Session id
+   */
   id: string
+  /**
+   * The peer id
+   */
   remoteId: string
   userInfo: ConnectionUserInfo
-  initiator: boolean
-  /**
-   * Current ice server
-   */
-  iceServer: RTCIceServer
-  /**
-   * The tried ice servers
-   */
-  triedIceServers: RTCIceServer[]
-  /**
-   * The ice servers that this peer prefers
-   */
-  preferredIceServers: RTCIceServer[]
+  connectionState: ConnectionState
+  iceGatheringState: IceGatheringState
+  localDescriptionSDP: string
 
   selectedCandidate?: {
     local: SelectedCandidateInfo
     remote: SelectedCandidateInfo
   }
 
-  localDescriptionSDP: string
   ping: number
-  connectionState: ConnectionState
-  iceGatheringState: IceGatheringState
-  signalingState: SignalingState
   /**
    * The instance that this peer is sharing
    */

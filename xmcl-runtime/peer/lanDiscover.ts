@@ -1,7 +1,7 @@
 import { LanServerInfo, MinecraftLanDiscover } from '@xmcl/client'
 import { createSocket } from 'dgram'
 import { MessageLan } from './messages/lan'
-import type { Peers } from './multiplayerImpl'
+import type { Peers } from './Peers'
 import { EventEmitter } from 'stream'
 import { PromiseSignal } from '@xmcl/runtime-api'
 
@@ -17,9 +17,9 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
   })
 
   discover.on('discover', (info) => {
-    const peers = allPeers.entries.filter(c => c.connection.connectionState === 'connected')
+    const peers = allPeers.entries.filter(c => c.isDataChannelEstablished())
     for (const conn of peers) {
-      if (lanScope.has(conn.remoteId)) {
+      if (lanScope.has(conn.peerId)) {
         return
       }
 
