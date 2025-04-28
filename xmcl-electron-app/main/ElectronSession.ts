@@ -86,7 +86,6 @@ export class ElectronSession {
       request.headers.append('User-Agent', ua)
 
       if (request.url.startsWith('https://api.xmcl.app/translation') ||
-        request.url.startsWith('https://xmcl-web-api--dogfood.deno.dev') ||
         request.url.startsWith('https://api.xmcl.app/rtc/official')
       ) {
         const userService = await this.app.registry.get(UserService)

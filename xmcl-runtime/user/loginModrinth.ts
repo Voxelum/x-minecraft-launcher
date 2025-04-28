@@ -1,6 +1,7 @@
 import { LauncherApp } from '~/app'
 import { AnyError } from '~/util/error'
 import { UserService } from './UserService'
+import { kGFW } from '~/gfw'
 
 interface ModrinthOAuthResponse {
   access_token: string
@@ -52,7 +53,8 @@ export async function loginModrinth(app: LauncherApp, userService: UserService, 
         }
       })
     })
-    const authUrl = new URL('https://api.xmcl.app/modrinth/auth')
+    const gfw = await app.registry.get(kGFW)
+    const authUrl = gfw.inside ? new URL('https://xmcl-highfreq-function.azurewebsites.net/api/modrinth-auth') : new URL('https://api.xmcl.app/modrinth/auth')
     authUrl.searchParams.set('code', code)
     authUrl.searchParams.set('redirect_uri', redirect_uri)
     const response = await app.fetch(authUrl)

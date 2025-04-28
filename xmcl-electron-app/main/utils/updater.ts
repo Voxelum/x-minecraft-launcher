@@ -230,13 +230,17 @@ export class ElectronUpdater implements LauncherAppUpdater {
   async #getUpdateFromSelfHost(): Promise<ReleaseInfo> {
     const app = this.app
     this.logger.log('Try get update from selfhost')
-    const { allowPrerelease, locale } = await await app.registry.get(kSettings)
-    const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
-    const response = await this.app.fetch(url, {
+    const { allowPrerelease, locale } = await app.registry.get(kSettings)
+    const queryString = `version=v${app.version}&prerelease=${allowPrerelease || false}`
+    const response = await this.app.fetch(`https://api.xmcl.app/latest?${queryString}`, {
       headers: {
         'Accept-Language': locale,
       },
-    })
+    }).catch(() => this.app.fetch(`https://xmcl-highfreq-function.azurewebsites.net/api/latest?${queryString}`, {
+      headers: {
+        'Accept-Language': locale,
+      },
+    }))
     const result = await response.json() as any
     const files = result.assets.map((a: any) => ({ url: a.browser_download_url, name: a.name })) as Array<{ url: string; name: string }>
     const platformString = app.platform.os === 'windows' ? 'win' : app.platform.os === 'osx' ? 'mac' : 'linux'
