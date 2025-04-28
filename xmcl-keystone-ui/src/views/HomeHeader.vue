@@ -2,11 +2,12 @@
   <div
     class="header sticky max-w-full select-none transition-all px-2"
     :class="{
-      'backdrop-filter': !isInFocusMode,
-      'backdrop-blur-sm': !isInFocusMode,
       compact,
       'pt-10': !compact,
       'pt-5': compact,
+    }"
+    :style="{
+      'backdrop-filter': `blur(${blurAppBar}px)`,
     }"
     @transitionstart="onTransitionStart"
     @transitionend="onTransitionEnd"
@@ -109,6 +110,7 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
+import { kTheme } from '@/composables/theme'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { VersionServiceKey } from '@xmcl/runtime-api'
@@ -118,6 +120,7 @@ const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
+const { blurAppBar } = injection(kTheme)
 
 const transitioning = ref(false)
 provide('transitioning', transitioning)

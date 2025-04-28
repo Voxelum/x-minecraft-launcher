@@ -1,7 +1,7 @@
 import { InstanceManifest, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { MessageShareManifest } from './messages/download'
-import { Peers } from './multiplayerImpl'
+import { Peers } from './Peers'
 
 export function createPeerSharing(peers: Peers) {
   let sharedManifest: InstanceManifest | undefined
