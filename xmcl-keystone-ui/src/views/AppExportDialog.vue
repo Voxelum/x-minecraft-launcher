@@ -1,7 +1,6 @@
 <template>
   <v-dialog
     v-model="isShown"
-    fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
     scrollable

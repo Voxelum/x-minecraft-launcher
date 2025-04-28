@@ -1,7 +1,6 @@
 <template>
   <div
-    v-if="!isFocus"
-    class="grid gap-1 grid-cols-4 home-actions"
+    class="grid xl:gap-4 gap-1 grid-cols-4 home-actions"
   >
     <v-speed-dial
       open-on-hover

@@ -92,9 +92,8 @@
     </div>
     <v-divider
       v-if="!isFocus"
-      class="transition-all divider"
+      class="transition-all divider mx-0"
       :class="{
-        'mx-4': !compact,
       }"
     />
   </div>
@@ -169,11 +168,12 @@ const overcount = ref(0)
 <style scoped>
 
 .compact {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
+  /* background: rgba(255, 255, 255, 0.6); */
+  /* backdrop-filter: blur(10px); */
 }
 
 .dark .compact {
-  background: rgba(0, 0, 0, 0.5);
+  /* background: rgba(56, 56, 56, 0.4); */
 }
+
 </style>

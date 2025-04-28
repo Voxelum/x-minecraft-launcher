@@ -46,7 +46,7 @@
       name="fade-transition"
     >
       <div
-        v-if="backgroundColorOverlay && !isHome"
+        v-if="(backgroundColorOverlay && !isHome) || backgroundType === BackgroundType.NONE"
         class="z-3 absolute h-full w-full"
         :style="{ 'background': backgroundColor }"
       />

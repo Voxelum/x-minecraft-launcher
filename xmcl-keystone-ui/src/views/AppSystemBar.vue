@@ -2,7 +2,7 @@
   <v-system-bar
     topbar
     window
-    :color="appBarColor"
+    :color="'transparent'"
     class="moveable flex w-full grow-0 gap-1 p-0"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >

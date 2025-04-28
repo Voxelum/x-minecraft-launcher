@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="flex h-full flex-col transition-colors transition-transform"
+    class="flex h-full flex-col transition-colors transition-transform home-card"
     :class="{ highlighted: highlighted }"
     style="box-sizing: border-box"
     :color="highlighted ? 'yellow darken-2' : cardColor"
@@ -114,5 +114,10 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.home-card {
+  /* blur behand */
+  backdrop-filter: blur(5px);
 }
 </style>

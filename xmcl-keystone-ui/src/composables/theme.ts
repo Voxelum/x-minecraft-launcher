@@ -400,7 +400,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     colors.darkAppBarColor = '#111111FF'
     colors.darkSideBarColor = '#111111FF'
     colors.darkPrimaryColor = '#4caf50'
-    colors.darkBackground = '#121212'
+    colors.darkBackground = '#121212FF'
     colors.darkInfoColor = '#2196F3'
     colors.darkErrorColor = '#FF5252'
     colors.darkWarningColor = '#FB8C00'
@@ -414,7 +414,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     colors.lightAppBarColor = '#e0e0e0FF'
     colors.lightSideBarColor = '#FFFFFFFF'
     colors.lightPrimaryColor = '#1976D2'
-    colors.lightBackground = '#FFFFFF'
+    colors.lightBackground = '#FFFFFFFF'
     colors.lightInfoColor = '#2196F3'
     colors.lightErrorColor = '#FF5252'
     colors.lightWarningColor = '#FB8C00'
@@ -424,7 +424,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   }
 
   function resetToDefault() {
-    if (darkTheme.value) {
+    if (isDark.value) {
       resetDarkToDefault()
     } else {
       resetLightToDefault()

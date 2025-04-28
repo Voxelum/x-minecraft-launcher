@@ -1,7 +1,16 @@
 <template>
   <div class="w-full">
     <div class="relative mx-6 flex-grow flex gap-6 items-end">
-      <v-btn
+      <!-- <v-card> -->
+        <!-- <v-img>
+
+        </v-img>
+        <v-card-text>
+          123
+        </v-card-text> -->
+        <!-- <HomeModCard class="min-h-60" :row="1" :row-count="8" /> -->
+      <!-- </v-card> -->
+      <!-- <v-btn
         v-shared-tooltip="_ => t('baseSetting.title')"
         text
         icon
@@ -43,7 +52,7 @@
         <v-icon>
           share
         </v-icon>
-      </v-btn>
+      </v-btn> -->
       <v-spacer />
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"
@@ -76,7 +85,6 @@ import { kLaunchTask } from '@/composables/launchTask'
 import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import HomeLaunchButton from './HomeLaunchButton.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 

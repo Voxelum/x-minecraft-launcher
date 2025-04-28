@@ -34,11 +34,11 @@
       <v-list-item
         push
         class="non-moveable"
+        v-shared-tooltip.right="_ => t('instances.add')"
         @click="showAddInstance()"
       >
         <v-list-item-avatar
           id="create-instance-button"
-          v-shared-tooltip.right="_ => t('instances.add')"
           size="48"
           class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
           large
@@ -48,7 +48,7 @@
           </v-icon>
         </v-list-item-avatar>
 
-        <v-list-item-title>Instance</v-list-item-title>
+        <v-list-item-title>{{ t('instances.add') }}</v-list-item-title>
       </v-list-item>
       <v-spacer />
     </v-list>

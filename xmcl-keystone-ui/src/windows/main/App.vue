@@ -5,6 +5,11 @@
     :class="{ 'dark': isDark }"
   >
     <AppBackground />
+    <div class="w-full h-full absolute left-0 header-overlay" :style="{
+      height: headerHeight + (compact ? 30 : 70) + 'px',
+      'background-image': `linear-gradient(${appBarColor}, transparent)`
+    }">
+    </div>
     <AppSystemBar />
     <div
       class="relative flex h-full overflow-auto"
@@ -68,6 +73,7 @@ import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 import { useNotifier } from '@/composables/notifier'
+import { kCompact } from '@/composables/scrollTop'
 import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
@@ -99,6 +105,14 @@ provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 
 provide(kLaunchButton, useLaunchButton())
+
+const compact = ref(false)
+provide(kCompact, compact)
+
+const headerHeight = ref(0)
+provide('headerHeight', headerHeight)
+
+const { appBarColor } = injection(kTheme)
 
 const tutor = injection(kTutorial)
 // Set theme and start tutorial
