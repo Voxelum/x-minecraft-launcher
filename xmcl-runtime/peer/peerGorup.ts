@@ -158,6 +158,7 @@ export class PeerGroup {
   #initiate() {
     const { groupId, socket } = this
     const id = this.#id
+    console.log('[groupId]', id)
 
     socket.onopen = () => {
       this.state = 'connected'

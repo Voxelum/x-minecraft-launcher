@@ -111,9 +111,9 @@ export class PeerSession {
     // sess could proxy the this peer
   }
 
-  #run() {
+  async #run() {
     while (!this.isClosed && !this.#activeConnection) {
-      this.#connector.connect().then((c) => {
+      await this.#connector.connect().then((c) => {
         if (c) {
           this.setConnection(c)
         }

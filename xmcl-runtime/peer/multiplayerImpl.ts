@@ -1,30 +1,30 @@
-import { SharedState, PeerState, SetRemoteDescriptionOptions, TransferDescription, createPromiseSignal } from '@xmcl/runtime-api'
+import { PeerState, SetRemoteDescriptionOptions, SharedState, createPromiseSignal } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import EventEmitter from 'events'
+import debounce from 'lodash.debounce'
 import { promisify } from 'util'
-import { brotliCompress, brotliDecompress } from 'zlib'
+import { brotliCompress, brotliDecompressSync } from 'zlib'
+import { isNonnull } from '~/util/object'
 import { NodeDataChannelModule } from './NodeDataChannel'
 import { PeerConnectionFactory } from './PeerConnectionFactory'
 import { PeerContext, RTCPeerConnectionData } from './PeerContext'
+import { createPeerGroup } from './PeerGorup'
 import { createHosting } from './PeerHost'
 import { PeerSession } from './PeerSession'
+import { Peers } from './Peers'
 import { createIceServersProvider, getKey } from './iceServers'
 import { createLanDiscover } from './lanDiscover'
-import { exposeLocalPort, parseCandidate } from './mapAndGetPortCanidate'
 import { raceNatType } from './nat'
-import { createPeerGroup } from './PeerGorup'
 import { createPeerSharing } from './peerSharing'
 import { createPeerUserInfo } from './peerUserInfo'
 import { getDeviceInfo, isSupported } from './ssdpClient'
-import debounce from 'lodash.debounce'
-import { isNonnull } from '~/util/object'
-import { Peers } from './Peers'
 
-const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
 
 async function decode<T>(description: string): Promise<T> {
-  return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
+  const v = brotliDecompressSync(Buffer.from(description, 'base64'))
+  const s = v.toString('utf-8')
+  return JSON.parse(s)
 }
 async function encode<T>(description: T): Promise<string> {
   return (await pBrotliCompress(JSON.stringify(description))).toString('base64')
@@ -73,7 +73,11 @@ export function createMultiplayer() {
   const host = createHosting(peers)
   const group = createPeerGroup(idSignal, peers, userInfo.getUserInfo, initiate, async (peerId, payload) => {
     const result = await decode<DescriptorPayload>(payload)
-    onRemoteDescription(result)
+    onRemoteDescription({ 
+      id: peerId,
+      session: result.session,
+      connections: result.connections,
+    })
   }, (gstate) => {
     state.then(s => s.groupStateSet(gstate))
   }, (e) => {
@@ -184,14 +188,22 @@ export function createMultiplayer() {
         // divide stunservers into 4 array
         const result: RTCIceServer[][] = [[], [], [], []]
         for (const s of stunservers) {
+          if (result[pivot % 4].length > 0) {
+            break
+          }
           result[pivot % 4].push(s)
           pivot++
         }
         for (const s of turnservers) {
+          if (result[turnPivot % 4].length > 1) {
+            break
+          }
           result[turnPivot % 4].push(s)
           turnPivot++
         }
-        return result
+        const filtered = result.filter(r => r.length > 0)
+        console.log('Ice servers', filtered)
+        return filtered
       },
       createConnection: facotry.createConnection,
       getPeer: (peerId) => peers.get(peerId),
@@ -201,10 +213,10 @@ export function createMultiplayer() {
       onInstanceShared: (session, manifest) => {
         state.then(s => s.connectionShareManifest({ id: session, manifest }))
       },
-      onDescriptorUpdate: (session, connections) => {
+      onDescriptorUpdate: async (session, connections) => {
         console.log(connections)
 
-        const payload = { id: remoteId, session, connections }
+        const payload = { id: await idSignal, session, connections } as DescriptorPayload
 
         encode(payload).then((compressed) => {
           state.then(s => s.connectionLocalDescription({ id: payload.session, description: compressed }))
@@ -373,6 +385,7 @@ export function createMultiplayer() {
       if (existed) {
         existed.close()
         state.then(s => s.connectionDrop(id))
+        peers.remove(id)
       }
     },
 

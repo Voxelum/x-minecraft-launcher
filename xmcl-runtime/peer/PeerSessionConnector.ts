@@ -47,8 +47,7 @@ export class PeerSessionConnector {
     this.#connections = {}
   }
 
-  #createConnection(ices: RTCIceServer[]) {
-    const id = randomUUID()
+  #createConnection(ices: RTCIceServer[], id = randomUUID() as string) {
     const co = this.context.createConnection(ices, undefined)
     const signal = new Promise<boolean>((resolve) => {
       co.onconnectionstatechange = () => {
@@ -68,6 +67,15 @@ export class PeerSessionConnector {
       turnserver: ices.find(ic => ic.credential),
       signal,
     }
+    co.addEventListener('signalingstatechange', () => {
+      console.log(id, 'signalingstatechange', co.signalingState)
+      if (co.signalingState === 'have-local-offer' || co.signalingState === 'have-remote-offer') {
+        this.#updateDescriptor()
+      }
+    })
+    co.addEventListener('icegatheringstatechange', (ev) => {
+      console.log(id, 'icegatheringstatechange', co.iceGatheringState)
+    })
     co.addEventListener('icecandidate', (ev) => {
       const candidate = ev.candidate?.toJSON()
       if (candidate && candidate.candidate) {
@@ -76,6 +84,7 @@ export class PeerSessionConnector {
           mid: candidate.sdpMid ?? '',
         })
       }
+      console.log(id, 'icecandidate', candidate)
       this.#updateDescriptor()
     })
     this.#connections[id] = can
@@ -114,9 +123,7 @@ export class PeerSessionConnector {
         offerToReceiveAudio: false,
         offerToReceiveVideo: false,
       }).then((offer) => {
-        co.setLocalDescription(offer).then(() => {
-          this.#updateDescriptor()
-        })
+        co.setLocalDescription(offer)
       })
     }
 
@@ -159,7 +166,7 @@ export class PeerSessionConnector {
       const sdp = d.sdp
       let conn = this.#connections[id]
       if (!conn) {
-        conn = this.#createConnection(servers[i % servers.length])
+        conn = this.#createConnection(servers[i % servers.length], d.id)
       }
       // const sState = conn.connection.signalingState
       // if ((sState === 'stable' || sState === 'have-local-offer')) {
@@ -167,7 +174,10 @@ export class PeerSessionConnector {
       // }
 
       for (const c of d.candidates) {
-        conn.connection.addIceCandidate(c)
+        conn.connection.addIceCandidate({
+          candidate: c.candidate,
+          sdpMid: c.mid,
+        })
       }
 
       if (type === 'offer') {
@@ -180,8 +190,6 @@ export class PeerSessionConnector {
 
         console.log(`Set local description ${answer.type} ${answer.sdp}`)
         await conn.connection.setLocalDescription(answer)
-
-        this.#updateDescriptor()
       } else if (type === 'answer') {
         console.log(`Set remote to ${type} as answer`)
         console.log(sdp)
