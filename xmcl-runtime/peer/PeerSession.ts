@@ -114,6 +114,7 @@ export class PeerSession {
   async #run() {
     while (!this.isClosed && (!this.#activeConnection || this.#activeConnection.connectionState !== 'connected')) {
       await this.#connector.connect().then((c) => {
+        debugger
         if (c && c.channel) {
           this.setConnection(c.connection)
           this.setChannel(c.channel)

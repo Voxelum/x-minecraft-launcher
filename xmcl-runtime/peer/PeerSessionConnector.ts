@@ -94,12 +94,13 @@ export class PeerSessionConnector {
     let lastConnectionState = co.connectionState
     const signal = new Promise<boolean>((resolve) => {
       co.onconnectionstatechange = () => {
+        console.log(id, 'onconnectionstatechange', lastConnectionState + '->' + co.connectionState)
         if (co.connectionState === 'connected') {
           this.#firstConnected.resolve()
           resolve(true)
           this.#onFinished()
         } else if (co.connectionState === 'closed' || co.connectionState === 'disconnected' || co.connectionState === 'failed') {
-          if (lastConnectionState === 'connected') {
+          if (lastConnectionState === 'connected' || lastConnectionState === 'closed') {
             // connection is closed by peer
             this.#onPeerClose()
           }
