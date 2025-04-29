@@ -23,7 +23,12 @@ export const pluginImageStorage: LauncherAppPlugin = (app) => {
           const fileType = await fromBuffer(buf)
           response.body = createReadStream(image)
           if (fileType?.mime) {
-            response.headers['Content-Type'] = fileType.mime
+            if (fileType.ext === 'xml') {
+              // svg
+              response.headers['Content-Type'] = 'image/svg+xml'
+            } else {
+              response.headers['Content-Type'] = fileType.mime
+            }
           }
         }
       }

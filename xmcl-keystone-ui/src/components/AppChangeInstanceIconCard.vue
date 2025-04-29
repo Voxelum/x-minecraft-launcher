@@ -19,7 +19,7 @@ function pickIconFile() {
     filters: [
       {
         name: t('instanceSetting.icon'),
-        extensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif'],
+        extensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'svg'],
       },
     ],
     properties: ['openFile'],
