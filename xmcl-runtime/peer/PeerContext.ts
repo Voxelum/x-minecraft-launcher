@@ -11,6 +11,7 @@ export interface RTCPeerConnectionData {
 }
 
 export interface PeerContext {
+  isMaster(): boolean
   getUserInfo(): ConnectionUserInfo
   getSharedInstance(): InstanceManifest | undefined
   getShadedInstancePath(): string

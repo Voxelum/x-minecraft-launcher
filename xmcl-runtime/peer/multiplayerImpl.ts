@@ -43,6 +43,10 @@ export interface InitiateOptions {
    * The extra iceservers
    */
   iceServers?: RTCIceServer[]
+  /**
+   * Is you are master in this relationship
+   */
+  master?: boolean
 }
 
 interface DescriptorPayload {
@@ -178,27 +182,28 @@ export function createMultiplayer() {
   const portCandidate_2 = 35567
   const portCandidate_3 = 35568
 
-  const createContext = (remoteId: string | undefined, preferredIceServers: Array<RTCIceServer>): PeerContext => {
+  const createContext = (remoteId: string | undefined, master: boolean, preferredIceServers: Array<RTCIceServer>): PeerContext => {
     const isAllowTurn = () => localStorage.getItem('peerAllowTurn') === 'true'
     let pivot = 0
     let turnPivot = 0
     return {
+      isMaster: () => master,
       getIceServerCandidates: () => {
         const [stunservers, turnservers] = iceServers.get(preferredIceServers)
         // divide stunservers into 4 array
-        const result: RTCIceServer[][] = [[], [], [], []]
+        const result: RTCIceServer[][] = [[], []]
         for (const s of stunservers) {
-          if (result[pivot % 4].length > 0) {
+          if (result[pivot % result.length].length > 0) {
             break
           }
-          result[pivot % 4].push(s)
+          result[pivot % result.length].push(s)
           pivot++
         }
         for (const s of turnservers) {
-          if (result[turnPivot % 4].length > 1) {
+          if (result[turnPivot % result.length].length > 1) {
             break
           }
-          result[turnPivot % 4].push(s)
+          result[turnPivot % result.length].push(s)
           turnPivot++
         }
         const filtered = result.filter(r => r.length > 0)
@@ -283,6 +288,7 @@ export function createMultiplayer() {
     const remoteId = options.remoteId
     const sessionId = options.session || randomUUID()
     const iceServers = options.iceServers || []
+    const master = options.master ?? false
 
     console.log(`Create peer connection to [${remoteId}].`)
 
@@ -309,7 +315,7 @@ export function createMultiplayer() {
       selectedCandidate: undefined,
     }))
 
-    const ctx = createContext(remoteId, iceServers)
+    const ctx = createContext(remoteId, master, iceServers)
     const sess = new PeerSession(sessionId, ctx)
 
     peers.add(sess)

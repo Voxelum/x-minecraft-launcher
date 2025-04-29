@@ -89,7 +89,7 @@ export function createPeerGroup(
       const peer = peers.get(sender)
       // Ask sender to connect to me :)
       if (!peer) {
-        initiate({ remoteId: sender })
+        initiate({ remoteId: sender, master: _id.localeCompare(sender) > 0 })
       }
     }
     _group.ondescriptorV2 = onRemoteDescription

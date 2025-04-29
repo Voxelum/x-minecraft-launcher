@@ -1,4 +1,4 @@
-import { ConnectionUserInfo, RTCSessionDescription } from '@xmcl/runtime-api'
+import { ConnectionUserInfo } from '@xmcl/runtime-api'
 import { createReadStream, existsSync } from 'fs'
 import { createConnection } from 'net'
 import { join } from 'path'
@@ -112,10 +112,11 @@ export class PeerSession {
   }
 
   async #run() {
-    while (!this.isClosed && !this.#activeConnection) {
+    while (!this.isClosed && (!this.#activeConnection || this.#activeConnection.connectionState !== 'connected')) {
       await this.#connector.connect().then((c) => {
-        if (c) {
-          this.setConnection(c)
+        if (c && c.channel) {
+          this.setConnection(c.connection)
+          this.setChannel(c.channel)
         }
       })
     }
@@ -125,9 +126,9 @@ export class PeerSession {
     return this.#channel && this.#channel.readyState === 'open'
   }
 
-  setConnection(connection: RTCPeerConnection) {
+  private setConnection(connection: RTCPeerConnection) {
     this.#activeConnection = connection
-    connection.addEventListener('datachannel', (e) => {
+    connection.ondatachannel = (e) => {
       const channel = e.channel
       const label = channel.label
       if (channel.protocol === 'minecraft') {
@@ -162,17 +163,13 @@ export class PeerSession {
           console.error(new Error(`Game data channel ${port}(${id}) error`, { cause: e }))
         }
         console.log(`Create game channel to ${port}(${id})`)
-      } else if (channel.protocol === 'metadata') {
-        // this is a metadata channel
-        this.setChannel(e.channel)
-        console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {
         console.log(`Receive peer file request: ${channel.label}`)
         this.#duplexPool.push(new RTCDuplexChannel(channel, this.createStream, connection.sctp?.maxMessageSize ?? 16 * 1024))
       } else {
         // TODO: emit error for unknown protocol
       }
-    })
+    }
   }
 
   createStream = (filePath: string) => {
@@ -257,10 +254,10 @@ export class PeerSession {
    * Set metadata channel
    */
   private setChannel(channel: RTCDataChannel) {
-    channel.addEventListener('message', async (e) => {
+    channel.onmessage = async (e) => {
       const message = JSON.parse(e.data)
       handlers[message.type as string]?.call(this, message.payload)
-    })
+    }
     channel.onopen = () => {
       console.log(`Create metadata channel on ${channel.id}`)
       const info = this.context.getUserInfo()

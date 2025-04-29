@@ -1,8 +1,8 @@
-import { RTCSessionDescription } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import debounce from 'lodash.debounce'
 import { PeerContext, RTCPeerConnectionData } from './PeerContext'
 import { setTimeout } from 'timers/promises'
+import EventEmitter from 'events'
 
 
 interface Candidate {
@@ -11,11 +11,36 @@ interface Candidate {
    */
   id: string
   connection: RTCPeerConnection
+  channel: RTCDataChannel | undefined
   iceCandidates: Array<{ candidate: string; mid: string }>
   signal: Promise<boolean>
-  ready: boolean
   turnserver?: RTCIceServer
   latency: number
+}
+
+function isFinished(can: Candidate) {
+  return can.connection.connectionState === 'connected' || can.connection.connectionState === 'disconnected' || can.connection.connectionState === 'failed' || can.connection.connectionState === 'closed'
+}
+
+function isFailed(can: Candidate) {
+  return can.connection.connectionState === 'disconnected' || can.connection.connectionState === 'failed' || can.connection.connectionState === 'closed'
+}
+
+function isConnected(can: Candidate) {
+  return can.connection.connectionState === 'connected'
+}
+
+function handleMessage(can: Candidate, channel: RTCDataChannel, ev: MessageEvent<any>) {
+  if (typeof ev.data === 'string') {
+    if (ev.data.startsWith('ping:')) {
+      const time = Number.parseInt(ev.data.substring(5))
+      channel.send(`pong:${time}`)
+    } else if (ev.data.startsWith('pong:')) {
+      const time = Number.parseInt(ev.data.substring(5))
+      const latency = Date.now() - time
+      can.latency = latency
+    }
+  }
 }
 
 export class PeerSessionConnector {
@@ -24,19 +49,23 @@ export class PeerSessionConnector {
   #updateDescriptor: () => void
 
   #busy = false
+  #firstConnected = Promise.withResolvers<void>()
+  #winner = Promise.withResolvers<Candidate | undefined>()
 
   constructor(
     sessionId: string,
     private context: PeerContext
   ) {
     this.#updateDescriptor = debounce(() => {
-      context.onDescriptorUpdate(sessionId, Object.values(this.#connections).map((can) => ({
-        id: can.id,
-        sdp: can.connection.localDescription!.sdp,
-        type: can.connection.localDescription!.type,
-        tunserver: can.turnserver,
-        candidates: can.iceCandidates,
-      })))
+      context.onDescriptorUpdate(sessionId, Object.values(this.#connections)
+        .filter(c => c.connection.connectionState === 'connecting' || c.connection.connectionState === 'new')
+        .map((can) => ({
+          id: can.id,
+          sdp: can.connection.localDescription!.sdp,
+          type: can.connection.localDescription!.type,
+          tunserver: can.turnserver,
+          candidates: can.iceCandidates,
+        })))
     }, 1500) // debounce for 1.5 second
   }
 
@@ -47,15 +76,37 @@ export class PeerSessionConnector {
     this.#connections = {}
   }
 
+  #onFinished() {
+    if (Object.values(this.#connections).every(d => isFailed(d))) {
+      this.#winner.resolve(undefined)
+    }
+  }
+
+  #onPeerClose() {
+    const connected = Object.values(this.#connections).filter(c => isConnected(c))
+    if (connected.length === 1) {
+      this.#winner.resolve(connected[0])
+    }
+  }
+
   #createConnection(ices: RTCIceServer[], id = randomUUID() as string) {
     const co = this.context.createConnection(ices, undefined)
+    let lastConnectionState = co.connectionState
     const signal = new Promise<boolean>((resolve) => {
       co.onconnectionstatechange = () => {
         if (co.connectionState === 'connected') {
+          this.#firstConnected.resolve()
           resolve(true)
+          this.#onFinished()
         } else if (co.connectionState === 'closed' || co.connectionState === 'disconnected' || co.connectionState === 'failed') {
+          if (lastConnectionState === 'connected') {
+            // connection is closed by peer
+            this.#onPeerClose()
+          }
           resolve(false)
+          this.#onFinished()
         }
+        lastConnectionState = co.connectionState
       }
     })
     const can: Candidate = {
@@ -63,8 +114,8 @@ export class PeerSessionConnector {
       connection: co,
       iceCandidates: [],
       latency: Number.MAX_SAFE_INTEGER,
-      ready: false,
       turnserver: ices.find(ic => ic.credential),
+      channel: undefined,
       signal,
     }
     co.addEventListener('signalingstatechange', () => {
@@ -93,9 +144,40 @@ export class PeerSessionConnector {
 
   async connect() {
     if (this.#busy) {
-      throw new TypeError('PendingConnections is busy')
+      return this.#winner.promise
     }
     this.#busy = true
+    this.#firstConnected = Promise.withResolvers<void>()
+    this.#winner = Promise.withResolvers<Candidate | undefined>()
+    this.#winner.promise = this.#winner.promise.then((selected) => {
+      if (selected) {
+        console.log(`Selected ${selected.id} with latency ${selected.latency}`)
+        delete this.#connections[selected.id]
+      }
+      if (this.context.isMaster()) {
+        for (const conn of Object.values(this.#connections)) {
+          conn.connection.close()
+        }
+      }
+      this.#connections = {}
+      this.#busy = false
+      return selected
+    })
+
+    if (this.context.isMaster()) {
+      this.#firstConnected.promise.then(() => {
+        return setTimeout(5000)
+      }).then(() => {
+        const selected = Object.values(this.#connections).filter(c => isConnected(c) && c.channel && c.channel.readyState === 'open').reduce((prev, curr) => {
+          if (!prev) {
+            return curr
+          }
+          return prev.latency < curr.latency ? prev : curr
+        }, undefined as Candidate | undefined)
+        this.#winner.resolve(selected)
+      })
+    }
+
     const servers = this.context.getIceServerCandidates()
     for (const ices of servers) {
       const can = this.#createConnection(ices)
@@ -104,20 +186,12 @@ export class PeerSessionConnector {
         ordered: true,
         protocol: 'ping'
       })
+      can.channel = channel
       channel.onopen = () => {
         channel.send(`ping:${Date.now()}`)
       }
       channel.onmessage = (ev) => {
-        if (typeof ev.data === 'string') {
-          if (ev.data.startsWith('ping:')) {
-            const time = Number.parseInt(ev.data.substring(5))
-            channel.send(`pong:${time}`)
-          } else if (ev.data.startsWith('pong:')) {
-            const time = Number.parseInt(ev.data.substring(5))
-            const latency = Date.now() - time
-            can.latency = latency
-          }
-        }
+        handleMessage(can, channel, ev)
       }
       co.createOffer({
         offerToReceiveAudio: false,
@@ -127,31 +201,7 @@ export class PeerSessionConnector {
       })
     }
 
-    const connections = Object.values(this.#connections)
-    await Promise.race(connections.map((can) => can.signal))
-    // wait for 5 seconds for other peers
-    await setTimeout(5000)
-    // pick the lowest latency
-    const selected = connections.filter(c => c.ready).reduce((prev, curr) => {
-      if (!prev) {
-        return curr
-      }
-      return prev.latency < curr.latency ? prev : curr
-    }, undefined as Candidate | undefined)
-
-    if (selected) {
-      console.log(`Selected ${selected.id} with latency ${selected.latency}`)
-      delete this.#connections[selected.id]
-    }
-
-    for (const conn of Object.values(this.#connections)) {
-      conn.connection.close()
-    }
-    this.#connections = {}
-
-    this.#busy = false
-
-    return selected?.connection
+    return this.#winner.promise
   }
 
   async setRemoteDescription(connectionData: RTCPeerConnectionData[]) {
@@ -167,35 +217,36 @@ export class PeerSessionConnector {
       let conn = this.#connections[id]
       if (!conn) {
         conn = this.#createConnection(servers[i % servers.length], d.id)
+        conn.connection.ondatachannel = (ev) => {
+          const channel = ev.channel
+          conn.channel = channel
+          channel.onopen = () => {
+            channel.send(`ping:${Date.now()}`)
+          }
+          channel.onmessage = (ev) => {
+            handleMessage(conn, channel, ev)
+          }
+        }
       }
-      // const sState = conn.connection.signalingState
-      // if ((sState === 'stable' || sState === 'have-local-offer')) {
-      //   return
-      // }
+      if (!conn.connection.remoteDescription || !conn.connection.remoteDescription.type) {
+        console.log(`Set remote offer ${type} ${sdp}`)
+        await conn.connection.setRemoteDescription({
+          type: type as any,
+          sdp,
+        })
+      }
+      if (type === 'offer') {
+        if (!conn.connection.localDescription || !conn.connection.localDescription.type) {
+          const answer = await conn.connection.createAnswer()
+          console.log(`Set local description ${answer.type} ${answer.sdp}`)
+          await conn.connection.setLocalDescription(answer)
+        }
+      }
 
       for (const c of d.candidates) {
         conn.connection.addIceCandidate({
           candidate: c.candidate,
           sdpMid: c.mid,
-        })
-      }
-
-      if (type === 'offer') {
-        console.log(`Set remote offer ${type} ${sdp}`)
-        conn.connection.setRemoteDescription({
-          type,
-          sdp,
-        })
-        const answer = await conn.connection.createAnswer()
-
-        console.log(`Set local description ${answer.type} ${answer.sdp}`)
-        await conn.connection.setLocalDescription(answer)
-      } else if (type === 'answer') {
-        console.log(`Set remote to ${type} as answer`)
-        console.log(sdp)
-        await conn.connection.setRemoteDescription({
-          type,
-          sdp,
         })
       }
     }
