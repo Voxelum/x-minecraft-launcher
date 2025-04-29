@@ -1465,6 +1465,10 @@ setup:
     exists: >-
       Wybrany katalog nie jest pusty. W porządku, ale upewnij się, że wykonałeś
       kopię zapasową danych.
+    invalidChar: |-
+      Ścieżka zawiera nieprawidłowe znaki! 
+      Może to spowodować, że Minecraft nie zaczął się! 
+      Plaese używają tylko angielskich postaci i symbolu!
     noPermission: Launcher nie ma uprawnień dostępu do wybranego katalogu! Spróbuj inny.
     nonDictionary: Selected path is a file! Please select a directory!
   focusLayoutDescription: >-

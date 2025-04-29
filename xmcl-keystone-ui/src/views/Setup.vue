@@ -111,7 +111,7 @@
 <script lang=ts setup>
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, Drive } from '@xmcl/runtime-api'
+import { BaseServiceKey, Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
 import SetupAppearance from './SetupAppearance.vue'
 import SetDataRoot from './SetupDataRoot.vue'
 import SetupFooter from './SetupFooter.vue'
@@ -149,7 +149,7 @@ const data = reactive({
   minecraftPath: '',
   instancePath: '',
   path: '',
-  pathError: '' as '' | 'noperm' | 'bad' | 'nondictionary' | 'exists',
+  pathError: '' as InvalidDirectoryErrorCode,
   defaultPath: '',
   loading: false,
   drives: [] as Drive[],
@@ -172,7 +172,7 @@ bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }
 const hasError = computed(() => !!data.pathError && data.pathError !== 'exists')
 watch(() => data.path, (newPath) => {
   data.loading = true
-  data.pathError = ''
+  data.pathError = undefined
   validateDataDictionary(newPath).then((reason) => {
     data.loading = false
     if (!reason) {

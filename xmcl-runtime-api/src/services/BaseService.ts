@@ -41,12 +41,14 @@ export interface PoolStats {
   size: number
 }
 
+export type InvalidDirectoryErrorCode = 'bad' | 'invalidchar' | 'nondictionary' | 'noperm' | 'exists' | undefined
+
 export interface BaseService {
   getNetworkStatus(): Promise<Record<string, PoolStats>>
 
   destroyPool(origin: string): Promise<void>
 
-  validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'>
+  validateDataDictionary(path: string): Promise<InvalidDirectoryErrorCode>
 
   getSessionId(): Promise<string>
 
@@ -115,20 +117,8 @@ export type MigrationExceptions = {
   /**
    * Throw when dest is a file
    */
-  type: 'migrationDestinationIsFile'
-  destination: string
-} | {
-  /**
-   * Throw when dest is a dir but not empty.
-   */
-  type: 'migrationDestinationIsNotEmptyDirectory'
-  destination: string
-} | {
-  /**
-   * Throw rename has no permission.
-   */
-  type: 'migrationNoPermission'
-  source: string
+  type: 'migrationInvalidDestiantion'
+  code: InvalidDirectoryErrorCode
   destination: string
 }
 

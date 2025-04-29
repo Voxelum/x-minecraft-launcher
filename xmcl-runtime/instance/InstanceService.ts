@@ -562,7 +562,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   }
 
   async validateInstancePath(path: string) {
-    const err = await validateDirectory(this.app.platform, path)
+    const err = await validateDirectory(this.app.platform, path, true)
     if (err && err !== 'exists') {
       return err
     }

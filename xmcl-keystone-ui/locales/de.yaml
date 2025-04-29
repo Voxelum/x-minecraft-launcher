@@ -1535,6 +1535,10 @@ setup:
 
       Das ist normal, aber stellen Sie sicher, dass Sie eine Sicherungskopie
       Ihrer Daten.
+    invalidChar: |-
+      Pfad enthält ungültige Zeichen! 
+      Es könnte dazu führen, dass Minecraft nicht beginnt! 
+      Plaesen verwenden nur englische Charaktere und Symbol!
     noPermission: >-
       Der Starter hat keine Berechtigung, auf das ausgewählte Verzeichnis
       zuzugreifen! 

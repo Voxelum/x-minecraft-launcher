@@ -1454,6 +1454,10 @@ setup:
     exists: >-
       La directory selezionata non è vuota. Va bene, ma assicurati di eseguire
       il backup dei tuoi dati.
+    invalidChar: |-
+      Il percorso contiene caratteri non validi! 
+      Potrebbe causare inizio a Minecraft! 
+      Plaese usa solo personaggi inglesi e simbolo!
     noPermission: >-
       Il launcher non ha i permessi per accedere alla directory selezionata! Per
       favore, prova un'altra.

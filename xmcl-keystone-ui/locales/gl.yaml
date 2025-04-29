@@ -504,6 +504,11 @@ setting:
 setup:
   appearance:
     name: '@:setting.appearance'
+  error:
+    invalidChar: |-
+      O camiño contén caracteres non válidos. 
+      Podería causar que Minecraft non se inicie. 
+      Plaese só usa caracteres e símbolo inglés!
 shaderPack:
   noShaderMod: Non hai ningún Shader Mod instalado
   noShaderModHint: Non pode usar shader sen un mod shader

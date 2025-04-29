@@ -1377,6 +1377,7 @@ setup:
   error:
     badDataRoot: INVALID DIRECTORY 4 LAUNCHR DATA! PLZ TRY ANOTHR DIRECTORY!
     exists: SELECTD DIRECTORY IZ NOT EMPTY. IZ K BUT PLZ MAK SURE U BAKUP UR DATA.
+    invalidChar: Path contains invalid characters! It could cause Minecraft fail to start!
     noPermission: >-
       LAUNCHR DOEZ NOT HAS PERMISHUN 2 ACCES SELECTD DIRECTORY! PLZ TRY ANOTHR
       WAN.

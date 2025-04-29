@@ -1151,6 +1151,11 @@ setup:
       directorio de datos.
     name: Establecer Directorio de Datos
   defaultPath: Directorio Predeterminado
+  error:
+    invalidChar: |-
+      ¡El camino contiene personajes inválidos! 
+      ¡Podría causar que Minecraft no comience! 
+      ¡Plaese solo usa personajes y símbolos ingleses!
   game:
     description: >-
       Elige un directorio de juego existente (.minecraft) para importar recursos

@@ -1526,6 +1526,10 @@ setup:
     exists: >-
       O diretório selecionado não está vazio. Tudo bem, mas certifique-se de
       fazer backup dos seus dados..
+    invalidChar: |-
+      O caminho contém caracteres inválidos! 
+      Isso pode fazer com que o Minecraft não comece! 
+      Plaese usa apenas caracteres e símbolo em inglês!
     noPermission: >-
       O launcher não tem permissão para acessar o diretório selecionado! Por
       favor, tente outro.

@@ -450,6 +450,11 @@ server:
   exportToFolder: Export To Folder
   hostRequired: Please enter the server ip address
   upload: Upload Server
+setup:
+  error:
+    invalidChar: >-
+      Path contains invalid characters! It could cause Minecraft fail to start!
+      Plaese only use English characters and symbol!
 sortBy:
   alphabetAsc: Sort by alphabet (ascending)
   alphabetDesc: Sort by alphabet (descending)

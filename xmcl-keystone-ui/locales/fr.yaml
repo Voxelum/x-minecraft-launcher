@@ -1475,6 +1475,10 @@ setup:
     exists: |-
       Le répertoire sélectionné n'est pas vide. 
       Ce n'est pas grave, mais assurez-vous de sauvegarder vos données.
+    invalidChar: |-
+      Le chemin contient des caractères invalides! 
+      Cela pourrait provoquer le démarrage de Minecraft! 
+      Plaese utilise uniquement des caractères anglais et un symbole!
     noPermission: "Le lanceur n'est pas autorisé à accéder au répertoire sélectionné\_! \nVeuillez en essayer un autre."
     nonDictionary: "Le chemin sélectionné est un fichier\_! \nVeuillez sélectionner un répertoire\_!"
   focusLayoutDescription: >-

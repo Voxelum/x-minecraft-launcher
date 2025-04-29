@@ -44,9 +44,8 @@ import { DriveStep } from 'driver.js'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
 import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
-import HomeDatabaseError from './HomeDatabaseError.vue'
+import HomeDatabaseError from './HomeCriticalError.vue'
 import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
-import { useScroll } from '@vueuse/core'
 import { useQuery } from '@/composables/query'
 
 const { instance } = injection(kInstance)

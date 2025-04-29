@@ -1,13 +1,13 @@
 <template>
-  <v-card
+  <v-alert
     v-if="error"
-    class="mx-2"
-    color="red"
+    type="error"
+    prominent
+    border="left"
   >
-    <v-card-text>
+    <div class="flex items-center justify-center">
       {{ error }}
-    </v-card-text>
-    <v-card-actions>
+      <v-spacer />
       <v-btn
         text
         @click="push('/setting')"
@@ -17,22 +17,27 @@
         </v-icon>
         {{ t('setting.name', 2) }}
       </v-btn>
-    </v-card-actions>
-  </v-card>
+    </div>
+  </v-alert>
 </template>
 <script setup lang="ts">
-import { kDatabaseStatus } from '@/composables/databaseStatus'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
+import { kCriticalStatus } from '@/composables/criticalStatus'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
-const { isOpened, isNoEmptySpace } = injection(kDatabaseStatus)
+const { isOpened, isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const { push } = useRouter()
+const getDirErroText = useGetDataDirErrorText()
 const error = computed(() => {
   if (!isOpened.value) {
     return t('errors.DatabaseNotOpened')
   }
   if (isNoEmptySpace.value) {
     return t('errors.DiskIsFull')
+  }
+  if (invalidGameDataPath.value) {
+    return getDirErroText(invalidGameDataPath.value)
   }
   return ''
 })

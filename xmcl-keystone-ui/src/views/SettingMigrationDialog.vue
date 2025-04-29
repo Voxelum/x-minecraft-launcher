@@ -24,16 +24,16 @@
           :value="root"
           readonly
           :placeholder="t('dataMigration.placeholder')"
-          :error="!!error"
+          :error="!!errorText"
           :error-messages="errorText"
           append-icon="folder"
           class="mt-4"
           @click="pickupFile"
         />
-        <p
+        <!-- <p
           class="text-orange-400"
           v-html="t('dataMigration.directoryCriteriaHint')"
-        />
+        /> -->
 
         <p v-if="migrating">
           {{ t("dataMigration.waitReload") }}
@@ -58,6 +58,7 @@
         <v-btn
           text
           large
+          :disabled="errorText"
           color="primary"
           :loading="migrating"
           @click="apply()"
@@ -72,26 +73,24 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { useRefreshable } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { useGameDirectory } from '@/composables/setting'
 import { useEventBus } from '@vueuse/core'
-import { MigrationException, isException } from '@xmcl/runtime-api'
+import { BaseServiceKey, MigrationException, isException } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
 const { showOpenDialog } = windowController
 const { setGameDirectory, root: oldRoot } = useGameDirectory()
+const { validateDataDictionary } = useService(BaseServiceKey)
 const { t } = useI18n()
 
 const { isShown, hide } = useDialog('migration')
 const errorText = ref('')
 const error = ref(undefined as undefined | Error)
-const errorDetails = computed(() => {
-  if (error.value) {
-    return `${error.value.name}\n${error.value.message ?? ''}\n${error.value.stack ?? ''}`
-  }
-  return ''
-})
 const root = ref('')
+
+const getErrorText = useGetDataDirErrorText()
 
 async function pickupFile() {
   const { filePaths } = await showOpenDialog({
@@ -100,7 +99,13 @@ async function pickupFile() {
     properties: ['openDirectory', 'createDirectory'],
   })
   if (filePaths && filePaths.length !== 0) {
+    errorText.value = ''
     root.value = filePaths[0]
+    validateDataDictionary(root.value).then((result) => {
+      if (result) {
+        errorText.value = getErrorText(result)
+      }
+    })
   }
 }
 
@@ -116,15 +121,7 @@ const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
     await setGameDirectory(root.value)
   } catch (e) {
     if (isException(MigrationException, e)) {
-      if (e.exception.type === 'migrationDestinationIsFile') {
-        errorText.value = t('dataMigration.migrationDestinationIsFile')
-      } else if (e.exception.type === 'migrationDestinationIsNotEmptyDirectory') {
-        errorText.value = t('dataMigration.migrationDestinationIsNotEmptyDirectory')
-      } else if (e.exception.type === 'migrationNoPermission') {
-        errorText.value = t('dataMigration.migrationNoPermission')
-      } else {
-        errorText.value = t('dataMigration.unknownError')
-      }
+      errorText.value = getErrorText(e.exception.code)
     } else {
       errorText.value = t('dataMigration.unknownError')
     }

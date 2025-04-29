@@ -1453,6 +1453,10 @@ setup:
     exists: >-
       A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen
       biztonsági mentést az adatokról.
+    invalidChar: |-
+      Az elérési út érvénytelen karaktereket tartalmaz! 
+      Ez okozhatja, hogy a Minecraft nem kezdődik! 
+      A plakán csak angol karaktereket és szimbólumot használ!
     noPermission: >-
       Az launchernek nincs jogosultsága a kiválasztott könyvtárhoz! Kérlek,
       próbálj meg egy másikat.

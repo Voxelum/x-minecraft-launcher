@@ -1,3 +1,4 @@
+import { InvalidDirectoryErrorCode } from '../services/BaseService'
 import { SettingSchema } from './setting.schema'
 import { ReleaseInfo } from './update'
 
@@ -67,6 +68,8 @@ export class Settings implements SettingSchema {
   diskFullError = false
 
   databaseReady = false
+
+  invalidGameDataPath: InvalidDirectoryErrorCode = undefined
 
   config(config: SettingSchema) {
     this.locale = config.locale
@@ -203,6 +206,10 @@ export class Settings implements SettingSchema {
 
   databaseReadySet(ready: boolean) {
     this.databaseReady = ready
+  }
+
+  invalidGameDataPathSet(invalid: InvalidDirectoryErrorCode) {
+    this.invalidGameDataPath = invalid
   }
 
   globalInstanceSetting(settings: {

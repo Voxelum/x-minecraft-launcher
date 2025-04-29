@@ -95,13 +95,14 @@
   </v-list>
 </template>
 <script lang="ts" setup>
-import { Drive } from '@xmcl/runtime-api'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors';
+import { Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   defaultPath: string
   drives: Drive[]
   value: string
-  error: '' | 'noperm' | 'bad' | 'nondictionary' | 'exists'
+  error: InvalidDirectoryErrorCode
 }>()
 const emit = defineEmits<{
   (event: 'input', path: string): void
@@ -109,21 +110,9 @@ const emit = defineEmits<{
 const { showOpenDialog } = windowController
 const { t } = useI18n()
 
-const errorText = computed(() => {
-  if (!props.error) {
-    return ''
-  }
-  if (props.error === 'bad') {
-    return t('setup.error.badDataRoot')
-  }
-  if (props.error === 'nondictionary') {
-    return t('setup.error.nonDictionary')
-  }
-  if (props.error === 'noperm') {
-    return t('setup.error.noPermission')
-  }
-  return t('setup.error.exists')
-})
+const getDataDirErrorText = useGetDataDirErrorText()
+
+const errorText = computed(() => getDataDirErrorText(props.error))
 async function browse() {
   const { filePaths } = await showOpenDialog({
     title: t('browse'),

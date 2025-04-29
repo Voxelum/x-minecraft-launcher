@@ -24,6 +24,8 @@ import MutexManager from './MutexManager'
 import { Shell } from './Shell'
 import { kGameDataPath, kTempDataPath } from './gameDataPath'
 import { InjectionKey, ObjectFactory } from './objectRegistry'
+import { validateDirectory } from '~/util/validate'
+import { kSettings } from '~/settings'
 
 export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LauncherAppKey')
 
@@ -340,6 +342,11 @@ export class LauncherApp extends EventEmitter {
 
   async #registerGamePath(gamePath: string) {
     this.#gamePath = gamePath
+    validateDirectory(this.platform, gamePath).then((code) => {
+      if (code) {
+        this.registry.get(kSettings).then(s => s.invalidGameDataPathSet(code))
+      }
+    })
     this.registry.register(kGameDataPath, (...args) => {
       return join(this.#gamePath, ...args)
     })

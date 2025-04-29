@@ -1,6 +1,6 @@
 import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync } from '@/composables'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
-import { kDatabaseStatus, useDatabaseStatus } from '@/composables/databaseStatus'
+import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
@@ -85,7 +85,7 @@ export default defineComponent({
 
     useTelemetryTrack(settings.state)
 
-    provide(kDatabaseStatus, useDatabaseStatus(settings.state))
+    provide(kCriticalStatus, useCriticalStatus(settings.state))
 
     provide(kUserContext, user)
     provide(kJavaContext, java)

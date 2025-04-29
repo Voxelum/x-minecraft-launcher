@@ -1404,6 +1404,9 @@ setup:
     exists: >-
       Selected directory is not empty. It's okay but please make sure you backup
       your data.
+    invalidChar: >-
+      Path contains invalid characters! It could cause Minecraft fail to start!
+      Plaese only use English characters and symbol!
     noPermission: >-
       Launcher does not have permission to access selected directory! Please try
       another one.

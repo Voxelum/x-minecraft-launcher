@@ -1,4 +1,4 @@
-import { BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MigrationException, PoolStats, Settings, SharedState } from '@xmcl/runtime-api'
+import { BaseServiceKey, Environment, BaseService as IBaseService, InvalidDirectoryErrorCode, MigrateOptions, MigrationException, PoolStats, Settings, SharedState } from '@xmcl/runtime-api'
 import { readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
@@ -170,30 +170,21 @@ export class BaseService extends AbstractService implements IBaseService {
   }
 
   async migrate(options: MigrateOptions) {
-    const getPath = await this.app.registry.get(kGameDataPath)
     const destination = options.destination
-    const destStat = await stat(destination).catch(() => undefined)
-    if (destStat && destStat.isFile()) {
+    const code = await validateDirectory(this.app.platform, destination)
+    if (code) {
       throw new MigrationException({
-        type: 'migrationDestinationIsFile',
+        type: 'migrationInvalidDestiantion',
+        code,
         destination,
       })
-    }
-    if (destStat && destStat.isDirectory()) {
-      const files = await readdir(destination)
-      if (files.length !== 0) {
-        throw new MigrationException({
-          type: 'migrationDestinationIsNotEmptyDirectory',
-          destination,
-        })
-      }
     }
 
     this.app.relaunch([...process.argv.slice(1), '--migrate', destination])
     this.app.quit()
   }
 
-  async validateDataDictionary(path: string): Promise<undefined | 'noperm' | 'bad' | 'nondictionary' | 'exists'> {
+  async validateDataDictionary(path: string): Promise<InvalidDirectoryErrorCode> {
     return await validateDirectory(this.app.platform, path)
   }
 

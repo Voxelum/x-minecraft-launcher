@@ -18,14 +18,27 @@ async function isExistedXMCLDir(path: string) {
   return false
 }
 
-export async function validateDirectory(platform: Platform, path: string) {
+export function isValidPathName(pathName: string) {
+  const allowedChars = /^[a-zA-Z0-9\-_\.\s\/\\:\(\)\,\[\]\{\}'"!@#\$%\^&\+=;~`]+$/
+  if (!allowedChars.test(pathName)) {
+    return false
+  }
+  return true
+}
+
+export async function validateDirectory(platform: Platform, path: string, skipCharCheck = false) {
   path = resolve(path)
 
   // Check if the path is the root of the drive
   if ((platform.os === 'osx' || platform.os === 'linux') && path === '/') {
     return 'bad'
   }
-  if (platform.os === 'windows') { 
+
+  if (!skipCharCheck && !isValidPathName(path)) {
+    return 'invalidchar'
+  }
+
+  if (platform.os === 'windows') {
     if ((/^[a-zA-Z]:\\$/.test(path))) {
       return 'bad'
     }

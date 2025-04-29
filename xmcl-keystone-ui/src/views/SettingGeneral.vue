@@ -11,12 +11,13 @@
     />
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title>
+        <v-list-item-title :color="errorText ? 'red' : ''">
           {{
             t("setting.location")
           }}
         </v-list-item-title>
-        <v-list-item-subtitle>{{ root }}</v-list-item-subtitle>
+        <v-list-item-subtitle class="text-red!" v-if="errorText">{{ errorText }}</v-list-item-subtitle>
+        <v-list-item-subtitle v-else>{{ root }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action class="self-center mr-1">
         <v-btn
@@ -99,7 +100,12 @@ import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
+import { kCriticalStatus } from '@/composables/criticalStatus'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 
+const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
+const getDirErroText = useGetDataDirErrorText()
+const errorText = computed(() => isNoEmptySpace.value ? t('errors.DiskIsFull') : invalidGameDataPath.value ? getDirErroText(invalidGameDataPath.value) : undefined)
 const env = injection(kEnvironment)
 const {
   streamerMode,
