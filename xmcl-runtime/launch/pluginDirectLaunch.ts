@@ -113,6 +113,7 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
     user,
     versionHeader?.id,
     {
+      token: '',
       operationId: randomUUID(),
       side: 'client',
       javaPath: java?.path,
