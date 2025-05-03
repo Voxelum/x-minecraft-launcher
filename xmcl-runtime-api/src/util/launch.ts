@@ -12,6 +12,7 @@ function tryParseUrl(url: string) {
 }
 
 export interface GenerateLaunchOptions {
+  token: string
   operationId: string
   side?: 'client' | 'server'
   overrides?: Partial<LaunchOptions>
@@ -39,6 +40,7 @@ export async function generateLaunchOptionsWithGlobal(
   userProfile: UserProfile,
   version: string | undefined,
   {
+    token,
     operationId,
     side = 'client',
     overrides,
@@ -85,7 +87,7 @@ export async function generateLaunchOptionsWithGlobal(
   ) {
     try {
       yggdrasilAgent = {
-        jar: await track(inst.path, getOrInstallAuthlibInjector(), 'preparing-authlib', operationId),
+        jar: await track(token, getOrInstallAuthlibInjector(), 'preparing-authlib', operationId),
         server: userProfile.authority,
       }
     } catch {

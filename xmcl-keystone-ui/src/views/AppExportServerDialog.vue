@@ -9,6 +9,7 @@ import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/i
 import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
+import { kUserContext } from '@/composables/user'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
@@ -108,6 +109,7 @@ const totalSize = computed(() => {
 const { exportInstanceAsServer } = useService(InstanceIOServiceKey)
 const { generateLaunchOptions } = injection(kInstanceLaunch)
 const { showItemInDirectory } = useService(BaseServiceKey)
+const { userProfile } = injection(kUserContext)
 
 const { install } = useInstanceVersionServerInstall()
 
@@ -142,7 +144,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
     if (filePaths[0]) {
       await exportInstanceAsServer({
         output: { type: 'folder', path: filePaths[0] }, 
-        options: await generateLaunchOptions(path.value, '', 'server', { version: id }, true),
+        options: await generateLaunchOptions(path.value, userProfile.value, '', 'server', { version: id }, true),
         files: selectedFiles,
       })
         .then(() => {
@@ -166,7 +168,7 @@ const { refresh: exportAsFile, refreshing: exporting } = useRefreshable(async ()
           password: password.value
         },
       }, 
-      options: await generateLaunchOptions(path.value, '', 'server', { version: id }, true),
+      options: await generateLaunchOptions(path.value, userProfile.value, '', 'server', { version: id }, true),
       files: selectedFiles,
     })
       .then(() => {
@@ -217,7 +219,6 @@ const hasError = computed(() => {
 <template>
   <v-dialog
     v-model="isShown"
-    fullscreen
     hide-overlay
     transition="dialog-bottom-transition"
     scrollable
