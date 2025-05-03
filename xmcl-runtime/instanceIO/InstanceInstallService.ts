@@ -290,7 +290,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
                 try {
                   return JSON.parse(content) as InstanceInstallLockSchema
                 } catch (e) {
-                  Object.assign(e, {
+                  Object.assign((e as any), {
                     content,
                   })
                   throw e

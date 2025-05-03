@@ -52,10 +52,12 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
     }, dbLogger, { workerData: { fileName: dbPath }, name: 'ResourceDBWorker' })
     config = {
       worker: dbWorker,
+      databasePath: dbPath,
       onError,
     }
   } else {
     config = {
+      databasePath: dbPath,
       database: () => new SQLDatabase(dbPath),
       onError,
     }

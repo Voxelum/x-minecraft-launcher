@@ -3,6 +3,7 @@ import { DatabaseWorker } from './type'
 
 type SqliteWASMDialectConfigBase = {
   onError?: (error: Error) => void
+  databasePath?: string
 }
 
 export type SqliteWASMDialectDatabaseConfig = {
