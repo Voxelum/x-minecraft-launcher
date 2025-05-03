@@ -176,6 +176,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.upstream = option.upstream
     instance.playtime = option.playtime
     instance.lastPlayedDate = option.lastPlayedDate
+    instance.prependCommand = option.prependCommand
 
     if (option.server) {
       instance.server = option.server

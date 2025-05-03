@@ -57,6 +57,7 @@ export function createTemplate(): Instance {
     tags: [],
 
     assignMemory: undefined,
+    prependCommand: undefined,
     showLog: undefined,
     hideLauncher: undefined,
     disableAuthlibInjector: undefined,
