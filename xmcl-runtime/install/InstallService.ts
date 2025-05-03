@@ -134,8 +134,9 @@ export class InstallService extends AbstractService implements IInstallService {
         return spawn(cmd, a, opts || {})
       },
       handler: handleDownloadMojangMaps,
-      customPostProcessTask: (procs, folder, options) => {
+      customPostProcessTask: (procs, folder, options, originalTask) => {
         const app = this.app
+        const logger = this
         const toBase64String = (s: string) => Buffer.from(s).toString('base64')
         return task('postProcessing', async function () {
           const skip = [] as PostProcessor[]
@@ -157,6 +158,26 @@ export class InstallService extends AbstractService implements IInstallService {
               cwd: app.appDataPath,
             })
             await waitProcess(process)
+          } catch (e) {
+            Object.assign(e as any, {
+              name: 'CustomPostProcessError',
+            })
+            if (e instanceof Error) {
+              if (e.message.indexOf('Could not find or load main class')) {
+                Object.assign(e, {
+                  clzPath: clz,
+                  clzPathExists: existsSync(clz),
+                })
+              }
+            }
+            logger.error(e as any)
+            await this.yield(originalTask()).catch((e) => {
+              if (e instanceof Error) {
+                Object.assign(e, {
+                  phase: 'Retry'
+                })
+              }
+            })
           } finally {
             await unlink(clz)
           }
