@@ -27,6 +27,7 @@ import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystem
 import { ensureLauncherProfile, preprocessUserData } from './userData'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './loginModrinth'
+import { AnyError } from '~/util/error'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
@@ -95,8 +96,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     return !!await getModrinthAccessToken(this.app)
   }
 
-  async loginModrinth(): Promise<void> {
-    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], this.loginController?.signal)
+  async loginModrinth(invalidate = false): Promise<void> {
+    await loginModrinth(this.app, this, ['USER_READ_EMAIL', 'USER_READ', 'USER_WRITE', 'COLLECTION_CREATE', 'COLLECTION_READ', 'COLLECTION_WRITE', 'COLLECTION_DELETE'], invalidate, this.loginController?.signal)
   }
 
   addYggdrasilService(url: string): Promise<void> {
@@ -154,6 +155,12 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     } = options
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
+
+    if (!gameProfile) {
+      throw new AnyError('UploadSkinError', 'Unknown game profile.', {}, {
+        profilesIds: Object.keys(user.profiles),
+      })
+    }
 
     const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
 

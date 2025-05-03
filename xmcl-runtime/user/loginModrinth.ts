@@ -27,8 +27,8 @@ export async function getModrinthAccessToken(app: LauncherApp) {
   }
 }
 
-export async function loginModrinth(app: LauncherApp, userService: UserService, scopes: string[], signal?: AbortSignal) {
-  const token = await getModrinthAccessToken(app)
+export async function loginModrinth(app: LauncherApp, userService: UserService, scopes: string[], invalidate: boolean, signal?: AbortSignal) {
+  const token = invalidate ? undefined :await getModrinthAccessToken(app)
 
   if (!token) {
     const redirect_uri = `http://127.0.0.1:${await app.serverPort}/modrinth-auth`

@@ -212,7 +212,7 @@ export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
    */
   removeYggdrasilService(url: string): Promise<void>
 
-  loginModrinth(): Promise<void>
+  loginModrinth(invalidate?: boolean): Promise<void>
 
   hasModrinthToken(): Promise<boolean>
 }

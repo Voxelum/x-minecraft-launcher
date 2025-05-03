@@ -26,7 +26,7 @@ export function useModrinthAuthenticatedAPI() {
   onMounted(() => {
     hasModrinthToken().then((hasToken) => {
       if (hasToken) {
-        login()
+        login(hasToken)
       }
     })
   })
@@ -50,12 +50,15 @@ export function useModrinthAuthenticatedAPI() {
     }
   }
 
-  async function login() {
+  async function login(hasToken = false) {
     try {
       isValidatingUser.value = true
       await loginModrinth()
       userData.value = await clientModrinthV2.getAuthenticatedUser()
     } catch (e) {
+      if (hasToken) {
+        await loginModrinth(true)
+      }
       error.value = e as Error
     } finally {
       isValidatingUser.value = false
