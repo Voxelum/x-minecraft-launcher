@@ -287,7 +287,14 @@ export class InstanceInstallService extends AbstractService implements IInstance
             if (filePath === '.install-profile') {
               const currentStatePath = join(path, '.install-profile')
               const lock = await readFile(currentStatePath, 'utf-8').then((content) => {
-                return JSON.parse(content) as InstanceInstallLockSchema
+                try {
+                  return JSON.parse(content) as InstanceInstallLockSchema
+                } catch (e) {
+                  Object.assign(e, {
+                    content,
+                  })
+                  throw e
+                }
               }, (e) => {
                 if (isSystemError(e) && e.code === 'ENOENT') {
                   return undefined
