@@ -406,7 +406,9 @@ loginError:
     No game profile found! If you are a new Minecraft user, please login at
     least one time in Minecraft official launcher.
 mod:
+  applyGroupRules: Apply saved grouping rules
   group: Group up
+  syncGroupRules: Save grouping rules
   ungroup: Ungrouping
 modFilter:
   clear: Clear Filter

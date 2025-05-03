@@ -793,6 +793,7 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Aceitar {version}
+  applyGroupRules: Aplicar regras de agrupamento salvo
   compatible: Mod Compatível
   currentVersion: Versão Atual {current}
   deletion: Excluir Mod
@@ -837,6 +838,7 @@ mod:
   showInCurseforge: Mostrar o mod no CurseForge
   showInModrinth: Mostrar {name} no Modrinth
   switchDefaultSource: Fonte Padrão de Mod
+  syncGroupRules: Salvar regras de agrupamento
   toUpdate: '{count} atualizações'
   ungroup: Sem agrupar
 modFilter:

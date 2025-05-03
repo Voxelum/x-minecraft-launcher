@@ -736,6 +736,7 @@ minecraftVersion:
   snapshot: Migawka
 mod:
   acceptVersion: Akceptuj {version}
+  applyGroupRules: Zastosuj zapisane zasady grupowania
   compatible: Kompatybilny mod.
   currentVersion: Aktualny {current}
   deletion: Usuń mod
@@ -779,6 +780,7 @@ mod:
   showInCurseforge: Pokaż mod w curseforge
   showInModrinth: Pokaż  {name} w Modrinth
   switchDefaultSource: Domyślne źródło modów
+  syncGroupRules: Zapisz reguły grupowania
   toUpdate: '{count} aktualizować'
   ungroup: Ungrouping
 modFilter:

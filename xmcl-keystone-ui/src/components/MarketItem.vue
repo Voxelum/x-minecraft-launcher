@@ -51,7 +51,7 @@
     <div
       v-if="indent"
       class="indicator"
-      :style="{ height: `${height}px` }"
+      :style="{ height: `${height}px`, background: indentColor || 'rgb(250 204 21 / 1)' }"
     />
     <v-list-item-content
       :class="{
@@ -181,6 +181,7 @@ const props = defineProps<{
   height?: number
   draggable?: boolean
   indent?: boolean
+  indentColor?: string
   install?: (p: ProjectEntry) => Promise<void>
   getContextMenuItems?: () => ContextMenuItem[]
 }>()
@@ -353,7 +354,6 @@ const onInstall = async () => {
   @apply border border-dashed border-transparent border-yellow-400;
 }
 .indicator {
-  @apply bg-yellow-400;
   content: '';
   min-width: 2px;
   margin-right: 1rem;

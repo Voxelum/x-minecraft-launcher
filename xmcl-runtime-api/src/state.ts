@@ -3,6 +3,7 @@ import { Saves } from './entities/save'
 import { Settings } from './entities/setting'
 import { LocalVersions } from './entities/version'
 import { InstanceInstallStatus } from './services/InstanceInstallService'
+import { InstanceModsGroupState } from './services/InstanceModsGroupService'
 import { GameOptionsState } from './services/InstanceOptionsService'
 import { InstanceState } from './services/InstanceService'
 import { JavaState } from './services/JavaService'
@@ -26,4 +27,5 @@ export const AllStates = [
   LocalVersions,
   PeerState,
   InstanceInstallStatus,
+  InstanceModsGroupState,
 ]

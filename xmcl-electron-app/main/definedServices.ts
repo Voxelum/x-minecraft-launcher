@@ -7,7 +7,7 @@ import { InstanceLogService, InstanceOptionsService, InstanceScreenshotService, 
 import { InstanceIOService, InstanceInstallService, InstanceManifestService } from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
-import { InstanceModsService } from '@xmcl/runtime/mod'
+import { InstanceModsService, InstanceModsGroupService } from '@xmcl/runtime/mod'
 import { ProjectMappingService } from '@xmcl/runtime/moddb'
 import { ModMetadataService } from '@xmcl/runtime/moddb/ModMetadataService'
 import { ModpackService } from '@xmcl/runtime/modpack'
@@ -31,6 +31,7 @@ export const definedServices = [
   InstanceLogService,
   ElyByService,
   InstanceModsService,
+  InstanceModsGroupService,
   InstanceOptionsService,
   InstanceResourcePackService,
   InstanceSavesService,

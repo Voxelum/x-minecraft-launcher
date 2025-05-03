@@ -693,6 +693,7 @@ minecraftVersion:
   snapshot: 快照版
 mod:
   acceptVersion: 推荐 {version}
+  applyGroupRules: 应用已保存的分组规则
   compatible: 可用于当前版本。
   currentVersion: 当前是 {current}
   deletion: 删除模组
@@ -735,6 +736,7 @@ mod:
   showInCurseforge: 在 Curseforge 上显示该模组
   showInModrinth: 在 Modrinth 中显示 {name}
   switchDefaultSource: 本地模组默认显示为
+  syncGroupRules: 将分组规则保存
   toUpdate: '{count} 个有新版本'
   ungroup: 取消分组
 modFilter:

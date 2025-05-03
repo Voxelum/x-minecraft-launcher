@@ -716,6 +716,7 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Прийняти {version}
+  applyGroupRules: Застосовуйте збережене правила групування
   compatible: Сумісний мод.
   currentVersion: Поточна {current}
   deletion: Видалення мода
@@ -759,6 +760,7 @@ mod:
   showInCurseforge: Показувати мод на curseforge
   showInModrinth: Показувати {name} на Modrinth
   switchDefaultSource: Джерело модифікації за замовчуванням
+  syncGroupRules: Зберегти правила групування
   toUpdate: '{count} на оновлення'
   ungroup: Розгрупний
 modFilter:

@@ -61,7 +61,8 @@
       <ModItem
         v-if="(typeof item === 'object' && 'id' in item)"
         :item="item"
-        :indent="!!currentGroup[item.installed?.[0]?.fileName]"
+        :indent="!!isInGroup(item.installed?.[0]?.fileName)"
+        :indent-color="getGroupColor(item.installed?.[0]?.fileName)"
         :item-height="itemHeight"
         :has-update="hasUpdate"
         :checked="checked"
@@ -335,7 +336,7 @@ const isLocalView = computed(() => {
   return currentView.value === 'local'
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, currentGroup, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, isInGroup, getGroupColor, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
   const modId = p.installed?.[0]?.modId
@@ -532,10 +533,6 @@ const itemHeight = computed(() => denseView.value ? 40 : 90)
 const selections = ref({} as Record<string, boolean>)
 
 provide('selections', selections)
-// Clear selection when group changed
-watch(currentGroup, () => {
-  selections.value = {}
-})
 
 const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
   const result = [] as ContextMenuItem[]

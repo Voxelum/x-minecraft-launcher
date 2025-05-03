@@ -1,6 +1,7 @@
 <template>
   <MarketItem
     :indent="indent"
+    :indent-color="indentColor"
     :item="item"
     :selection-mode="selectionMode"
     :selected="selected"
@@ -49,6 +50,7 @@ const props = defineProps<{
   hasUpdate?: boolean
   dense?: boolean
   indent?: boolean
+  indentColor?: string
   getContextMenuItems?: (item: ProjectEntry<ModFile>) => ContextMenuItem[]
   install: (p: ProjectEntry) => Promise<void>
 }>()

@@ -761,6 +761,7 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Accepter {version}
+  applyGroupRules: Appliquer les règles de regroupement enregistrés
   compatible: Mod compatible.
   currentVersion: Actuel {current}
   deletion: Suppression du Mod
@@ -802,6 +803,7 @@ mod:
   showFile: Afficher le chemin du mod {file}
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
+  syncGroupRules: Enregistrer les règles de regroupement
   ungroup: Désordre
 modFilter:
   clear: Filtre effacer

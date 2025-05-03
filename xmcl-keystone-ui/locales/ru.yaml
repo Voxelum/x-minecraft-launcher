@@ -778,6 +778,7 @@ minecraftVersion:
   snapshot: Снапшот
 mod:
   acceptVersion: Принимает {version}
+  applyGroupRules: Применить сохраненные правила группировки
   compatible: Совместимый мод.
   currentVersion: Текущая {current}
   deletion: Удалить мод
@@ -823,6 +824,7 @@ mod:
   showInCurseforge: Показать мод в curseforge
   showInModrinth: Показать {name} на Modrinth
   switchDefaultSource: Источник контента модов по умолчанию
+  syncGroupRules: Сохранить правила группировки
   toUpdate: '{count} для обновления'
   ungroup: Негруппинг
 modFilter:

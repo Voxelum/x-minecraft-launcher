@@ -40,7 +40,7 @@
                 v-for="(child, i) in item.children"
                   :key="child.text"
                   class="min-w-40 mx-1 rounded-lg"
-                  @click="child.onClick"
+                  @click="child.onClick(); shown = false"
                 >
                 <v-list-item-icon
                   v-if="child.icon"

@@ -782,6 +782,7 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Akzeptieren {version}
+  applyGroupRules: Anwenden von gespeicherten Gruppierungsregeln anwenden
   compatible: Kompatibler Mod.
   currentVersion: Aktuell {current}
   deletion: Entfernen eines Mods
@@ -825,6 +826,7 @@ mod:
   showInCurseforge: Mods auf Curseforge anzeigen
   showInModrinth: anzeigen {name} auf Modrinth
   switchDefaultSource: Quelle der Standardänderung
+  syncGroupRules: Gruppierungsregeln speichern
   toUpdate: '{count} zu aktualisieren'
   ungroup: Ungruppierung
 modFilter:

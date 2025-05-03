@@ -691,6 +691,7 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Accept {version}
+  applyGroupRules: Apply saved grouping rules
   compatible: Compatible Mod.
   currentVersion: Current {current}
   deletion: Delete Mod
@@ -732,6 +733,7 @@ mod:
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   switchDefaultSource: Default Mod Source
+  syncGroupRules: Save grouping rules
   toUpdate: '{count} updates'
   ungroup: Ungrouping
 modFilter:

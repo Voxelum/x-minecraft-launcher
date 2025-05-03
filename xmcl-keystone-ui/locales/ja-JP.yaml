@@ -668,6 +668,7 @@ minecraftVersion:
   snapshot: スナップショット
 mod:
   acceptVersion: '{version} を受け入れる'
+  applyGroupRules: 保存されたグループ化ルールを適用します
   compatible: 利用可能なModです。
   currentVersion: 現在 {current}
   deletion: Modを削除
@@ -710,6 +711,7 @@ mod:
   showInCurseforge: CurseforgeでModを見る
   showInModrinth: Modrinthで {name} を見る
   switchDefaultSource: Modのデフォルトソースを切り替え
+  syncGroupRules: ''
   toUpdate: '{count} 個のアップデート'
   ungroup: グループ化
 modFilter:

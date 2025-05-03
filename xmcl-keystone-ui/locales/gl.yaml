@@ -333,6 +333,7 @@ me:
   modpacks: Os meus Modpacks
   versions: Versións instaladas
 mod:
+  applyGroupRules: Aplique regras de agrupación gardadas
   denseView: Vista Densa
   duplicatedDetected: '{count} modificacións duplicadas'
   duplicatedDetectedDescription: |-
@@ -350,6 +351,7 @@ mod:
   modloaderSelectNotSupported: Non se atopou {modloader} para Minecraft {minecraft}
   mods: '{count} Mods'
   searchOnCurseforge: Busca {name} en curseforge
+  syncGroupRules: Gardar regras de agrupación
   ungroup: Desgroupe
 modFilter:
   clear: Filtro claro
