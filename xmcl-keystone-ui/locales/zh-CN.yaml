@@ -427,6 +427,7 @@ instance:
   iconHint: 该图标可以是文件或互联网 URL 链接。
   iconUrl: 图片 URL
   includeVersion: 包含游戏版本
+  installModpack: 从modpack更新实例
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
   launchServer: 启动本地服务端

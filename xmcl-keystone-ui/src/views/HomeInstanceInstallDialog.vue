@@ -206,9 +206,30 @@ import { BuiltinImages } from '../constant'
 
 const selected = ref([] as string[])
 const search = ref('')
+const upgrade = ref(undefined as undefined | UpgradeValueType)
 
 // ref for virtual scrolling
 const scrollRef = ref<HTMLElement | null>(null)
+
+const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
+  if (!param) {
+    return
+  }
+
+  const upgradeValue = await getUpgradeValueFromParam(param)
+  const updateDelta = await previewInstanceFiles(upgradeValue.installation)
+  upgrade.value = {
+    ...upgradeValue,
+    delta: updateDelta,
+  }
+  if (selectable.value) {
+    const selectedResult = upgradeValue.installation.files.map(f => f.path)
+    if ('oldFiles' in upgradeValue.installation) {
+      selectedResult.push(...upgradeValue.installation.oldFiles.map(f => f.path))
+    }
+    selected.value = selectedResult
+  }
+})
 
 const { isShown } = useDialog(InstanceInstallDialog, (parm) => {
   refresh(parm)
@@ -227,7 +248,6 @@ type UpgradeValueType = {
   installation: InstallInstanceOptions
   delta: InstanceFileUpdate[]
 }
-const upgrade = ref(undefined as undefined | UpgradeValueType)
 
 const tOperations = computed(() => ({
   add: t('instanceFileOperation.add'),
@@ -353,32 +373,13 @@ async function getUpgradeValueFromParam(param: InstanceInstallOptions): Promise<
   })
 }
 
-const { refresh, refreshing, error } = useRefreshable<InstanceInstallOptions>(async (param) => {
-  if (!param) {
-    return
-  }
-
-  const upgradeValue = await getUpgradeValueFromParam(param)
-  const updateDelta = await previewInstanceFiles(upgradeValue.installation)
-  upgrade.value = {
-    ...upgradeValue,
-    delta: updateDelta,
-  }
-  if (selectable.value) {
-    const selectedResult = upgradeValue.installation.files.map(f => f.path)
-    if ('oldFiles' in upgradeValue.installation) {
-      selectedResult.push(...upgradeValue.installation.oldFiles.map(f => f.path))
-    }
-    selected.value = selectedResult
-  }
-})
 
 const selectable = computed(() => {
   const upgradeValue = upgrade.value
   const install = upgradeValue?.installation
-  if (install && 'upstream' in upgradeValue.installation) {
-    return false
-  }
+  // if (install && 'upstream' in upgradeValue.installation) {
+  //   return false
+  // }
   return true
 })
 
@@ -442,7 +443,7 @@ const confirm = async () => {
   }
 }
 
-const cancel = () => {
+function cancel() {
   isShown.value = false
 }
 </script>

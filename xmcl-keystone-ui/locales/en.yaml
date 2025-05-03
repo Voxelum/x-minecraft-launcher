@@ -409,6 +409,7 @@ instance:
   iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url
   includeVersion: Include Version | Include Versions
+  installModpack: Update instance from modpack
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
   launchServer: Launch localhost server

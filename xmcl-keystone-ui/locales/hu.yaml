@@ -407,6 +407,7 @@ instance:
   iconHint: Az ikon lehet fájl vagy internetes URL-hivatkozás.
   iconUrl: Ikon Url
   includeVersion: Verzió beépítése | Verzió beépítése
+  installModpack: Frissítse a példányt a ModPack -től
   lastPlayed: Utoljára játszott
   launchArguments: Indítási argumentumok Előnézet
   launchServer: Indítsa el a localhost szervert

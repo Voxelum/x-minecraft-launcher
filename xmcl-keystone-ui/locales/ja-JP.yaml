@@ -420,6 +420,7 @@ instance:
   iconHint: ファイルか画像のURLが使用できます。
   iconUrl: アイコンのURL
   includeVersion: 含まれたバージョン
+  installModpack: ModPackからインスタンスを更新します
   lastPlayed: 最後にプレイ
   launchArguments: 起動引数のプレビュー
   launchServer: Localhostサーバーを立ち上げる

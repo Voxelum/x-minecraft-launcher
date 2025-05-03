@@ -447,6 +447,7 @@ instance:
   includeVersion: |-
     Inclure la version | 
     Inclure les versions
+  installModpack: Mettre à jour l'instance de Modpack
   lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
   launchServer: Lancer le serveur localhost

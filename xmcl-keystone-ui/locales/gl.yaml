@@ -262,6 +262,7 @@ instance:
   deleteFailed: Produciuse un erro ao eliminar a instancia
   deleteFailedPermission: Outro programa ocupou o ficheiro
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
+  installModpack: Actualizar a instancia de Modpack
   launchServer: Inicia o servidor localhost
   linkFileDesc: |-
     Isto sobrescribirá a instancia local {file} co global {file}. 

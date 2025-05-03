@@ -397,6 +397,7 @@ instance:
   iconHint: TEH ICON CUD BE FILE OR INTERNET URL LINK.
   iconUrl: ICON URL
   includeVersion: INCLUDE VERSHUN | INCLUDE VERSHUNS
+  installModpack: Update instance from modpack
   lastPlayed: LAST PLAYD
   launchArguments: LAUNCH ARGUMENTS PREVIEW
   launchServer: LAUNCH LOCALHOST SERVR

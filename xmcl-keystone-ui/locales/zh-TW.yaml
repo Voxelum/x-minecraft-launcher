@@ -425,6 +425,7 @@ instance:
   iconHint: 該圖示可以是文件或網際網路 URL 連結。
   iconUrl: 圖片 URL
   includeVersion: 包含遊戲版本
+  installModpack: 從modpack更新實例
   lastPlayed: 上次遊玩
   launchArguments: 啟動命令預覽
   launchServer: 啟動本機主機伺服器

@@ -424,6 +424,7 @@ instance:
   iconHint: Піктограмою може бути файл або URL-адреса-посилання в Інтернеті.
   iconUrl: Значок Url
   includeVersion: Увімкнути версію | Вмикати версії
+  installModpack: Оновіть екземпляр з Modpack
   lastPlayed: Востаннє грали
   launchArguments: Попередній перегляд аргументів запуску
   launchServer: Запустіть локальний сервер

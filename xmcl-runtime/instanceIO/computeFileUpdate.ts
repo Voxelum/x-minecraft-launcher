@@ -27,7 +27,7 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
     } else {
       let currentSha1 = ''
       let currentCrc32 = 0
-      const isFileChanged = typeof oldInstallTime === 'number'
+      const isFileChangedComparedToOldFile = typeof oldInstallTime === 'number'
         ? oldInstallTime < file.mtime
         : oldFilesMap[p]?.hashes.sha1
           ? oldFilesMap[p]?.hashes.sha1 !== (currentSha1 = await getSha1(instancePath, file))
@@ -35,9 +35,9 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
             ? Number.parseInt(oldFilesMap[p]?.hashes.crc32) !== (currentCrc32 = await getCrc32(instancePath, file))
             : oldFilesMap[p]?.size
               ? oldFilesMap[p]?.size !== file.size
-              : false
+              : undefined
 
-      if (isFileChanged) {
+      if (isFileChangedComparedToOldFile) {
         // modified
         if (toAdd[p]) {
           result.push({
@@ -51,7 +51,6 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
           })
         }
       } else {
-        // The file isn't modified from last install
         if (toAdd[p]) {
           const toAddFile = toAdd[p]
 
@@ -71,10 +70,11 @@ export async function computeFileUpdates(instancePath: string, oldFiles: Instanc
             return false
           }
 
+          const dontKnowOldFile = isFileChangedComparedToOldFile === undefined
           const isFileDifferent = await isFileDiff()
           result.push({
             file: toAdd[p],
-            operation: isFileDifferent ? 'add' : 'keep'
+            operation: !isFileDifferent ? 'keep' : dontKnowOldFile ? 'backup-add' : 'add'
           })
         } else {
           result.push({

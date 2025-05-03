@@ -473,6 +473,7 @@ instance:
   iconHint: Значок может представлять собой файл или ссылку на URL-адрес в Интернете.
   iconUrl: URL-адрес иконки
   includeVersion: Включить версию | Включить версии
+  installModpack: Обновление экземпляра от Modpack
   lastPlayed: Последняя игра
   launchArguments: Предпросмотр аргументов запуска
   launchServer: Запустить локальный сервер

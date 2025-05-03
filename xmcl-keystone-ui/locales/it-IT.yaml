@@ -416,6 +416,7 @@ instance:
   iconHint: L'icona potrebbe essere un file o un collegamento URL Internet.
   iconUrl: Icona Url
   includeVersion: Includi versione | Includi versioni
+  installModpack: Aggiorna l'istanza da modpack
   lastPlayed: Giocato l'ultima volta
   launchArguments: Anteprima argomenti di avvio
   launchServer: Avvia il server localhost

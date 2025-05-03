@@ -373,6 +373,7 @@ instance:
   iconHint: El icono podría ser un archivo o un enlace URL de Internet.
   iconUrl: URL del Icono
   includeVersion: Incluir Versión | Incluir Versiones
+  installModpack: Actualizar instancia desde modpack
   lastPlayed: Última vez jugado
   launchArguments: Argumentos de Lanzamiento Previo
   launchServer: Iniciar el servidor localhost

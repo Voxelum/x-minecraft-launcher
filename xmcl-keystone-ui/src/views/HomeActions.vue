@@ -1,6 +1,9 @@
 <template>
   <div
-    class="grid xl:gap-4 gap-1 grid-cols-4 home-actions"
+    class="grid xl:gap-4 gap-1 home-actions"
+    :style="{
+      'grid-template-columns': `repeat(${instance && !instance.upstream ? 5 : 4}, minmax(0, 1fr))`
+    }"
   >
     <v-speed-dial
       open-on-hover
@@ -30,6 +33,19 @@
         </v-icon>
       </v-btn>
     </v-speed-dial>
+
+    <v-btn
+      v-if="instance && !instance.upstream"
+      v-shared-tooltip="_ => t('instance.installModpack')"
+      text
+      icon
+      :loading="isValidating"
+      @click="onClickInstallFromModpack()"
+    >
+      <v-icon>
+        drive_folder_upload
+      </v-icon>
+    </v-btn>
 
     <v-btn
       v-shared-tooltip="_ => t('logsCrashes.title')"
@@ -72,28 +88,52 @@
 <script lang=ts setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { kInstanceOptions } from '@/composables/instanceOptions'
+import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { kInstances } from '@/composables/instances'
-import { useInFocusMode } from '@/composables/uiLayout'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, ModpackServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { AppExportDialogKey, AppExportServerDialogKey } from '../composables/instanceExport'
 
-const isFocus = useInFocusMode()
-
-const { gameOptions } = injection(kInstanceOptions)
-const { path } = injection(kInstance)
+const { path, instance } = injection(kInstance)
 const { isValidating } = injection(kInstances)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
 const { show: showExportServer } = useDialog(AppExportServerDialogKey)
+const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog)
+const { openModpack } = useService(ModpackServiceKey)
 const { t } = useI18n()
 
 function showInstanceFolder() {
   openDirectory(path.value)
+}
+
+function onClickInstallFromModpack() {
+  windowController.showOpenDialog({
+    properties: ['openFile'],
+    filters: [
+      {
+        name: 'Modpack',
+        extensions: ['zip', 'mrpack'],
+      },
+    ],
+  }).then(async (result) => {
+    const file = result.canceled ? undefined : result.filePaths[0]
+    if (!file) {
+      return
+    }
+    const modpack = await openModpack(file)
+    const files = await waitModpackFiles(modpack)
+
+    showInstanceInstallDialog({
+      type: 'updates',
+      oldFiles: [],
+      files: files,
+      id: '',
+    })
+  })
 }
 
 </script>

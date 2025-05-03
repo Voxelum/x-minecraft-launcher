@@ -457,6 +457,7 @@ instance:
   iconHint: Das Symbol könnte eine Datei oder ein Internet-URL-Link sein.
   iconUrl: Url-Symbol
   includeVersion: Version freigeben | Versionen freigeben
+  installModpack: Aktualisieren Sie die Instanz von Modpack
   lastPlayed: Das letzte Mal spielten sie
   launchArguments: Vorschau der Startargumente
   launchServer: Starten Sie den Localhost-Server

@@ -387,6 +387,7 @@ forgeVersion:
   showRecommendedAndLatestOnly: Ұсынылған және тек соңғы нұсқа
   version: Forge нұсқасы
 instance:
+  installModpack: Update instance from modpack
   vmVar: Environment Variables
   vmVarHint: Click   button to add environemnt variables
 instanceInstallSkip:
