@@ -12,6 +12,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     modrinthSort: sort,
     gameVersion,
     isModrinthDisabled: disabled,
+    currentView
   }: SearchModel
 ) {
   const search = useModrinthSearchFunc(
@@ -47,13 +48,10 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
       if (disabled.value) {
         return false
       }
-      if (keyword.value) {
-        return true
+      if (currentView.value !== 'remote') {
+        return false
       }
-      if (categories.value.length > 0) {
-        return true
-      }
-      return false
+      return true
     },
   )
 
@@ -63,6 +61,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     watch(sort, onSearch)
     watch(gameVersion, onSearch)
     watch(disabled, onSearch)
+    onSearch()
   }
 
   const result = computed(() => {

@@ -8,9 +8,14 @@
     :text="dragover ? t('mod.dropHint') : t('mod.enabled', { count: enabledMods.length })"
     :icons="icons"
     :refreshing="isValidating"
+    :addition-button="{ 
+      icon: 'file_download',
+      text: t('install'),
+     }"
     :button="t('mod.manage')"
     :error="error"
     @navigate="push('/mods')"
+    @navigate-addition="push('/mods?source=remote')"
     @drop="onDrop"
   />
 </template>

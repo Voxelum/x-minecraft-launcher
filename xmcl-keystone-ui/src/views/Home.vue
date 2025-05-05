@@ -1,11 +1,11 @@
 <template>
   <HomeDefault
-    v-if="!isFocus"
+    v-if="layout === 'default'"
   />
   <HomeFocus v-else />
 </template>
 <script lang="ts" setup>
-import { useInFocusMode } from '@/composables/uiLayout'
+import { kUILayout, useInFocusMode } from '@/composables/uiLayout'
 import HomeDefault from './HomeDefault.vue'
 import HomeFocus from './HomeFocus.vue'
 import { injection } from '@/util/inject'
@@ -13,13 +13,16 @@ import { kCompact } from '@/composables/scrollTop'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { useDialog } from '@/composables/dialog'
 
-const isFocus = useInFocusMode()
+// const isFocus = useInFocusMode()
 const compact = injection(kCompact)
 onMounted(() => {
   compact.value = false
 })
 
 const { show } = useDialog('HomeDropModpackDialog')
+
+const layout = ref('default')
+provide(kUILayout, layout)
 
 useGlobalDrop({
   onDrop: async (e) => {

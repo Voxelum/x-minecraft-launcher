@@ -1,7 +1,7 @@
 import { RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { useMarketSort } from './marketSort'
-import { searlizers, useQueryOverride } from './query'
+import { searlizers, useQuery, useQueryOverride } from './query'
 import { MaybeRef } from '@vueuse/core'
 
 /**
@@ -34,10 +34,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
 
   const currentView = computed(() => {
     const sourceValue = source.value
-    const hasKeyword = !!keyword.value
-    const hasCategory = !!curseforgeCategory.value || !!modrinthCategories.value.length
-    const idle = !hasKeyword && !hasCategory && sourceValue === 'remote'
-    if (sourceValue === 'local' || idle) {
+    if (sourceValue === 'local') {
       return 'local'
     }
 
@@ -65,7 +62,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     useQueryOverride('sort', sort, 0, searlizers.number)
     useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
     useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
-    source.value = 'remote'
+    useQueryOverride('source', source, 'local', searlizers.string)
     selectedCollection.value = undefined
   }
 

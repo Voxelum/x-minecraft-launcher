@@ -66,15 +66,21 @@
           }"
         >
           <HomeUpstreamVersion
+            v-if="!loading"
             :version="getItemVersion(row.index)"
             :updating="updating"
             :duplicating="duplicating"
+            :color="'rgba(22,22,22,0.7)'"
             :outlined="row.index === 1"
             :no-action="row.index === 1 || currentVersion?.id === getItemVersion(row.index).id"
             :downgrade="isItemDowngrade(row.index)"
             @changelog="$emit('changelog', getItemVersion(row.index))"
             @update="$emit('update', getItemVersion(row.index))"
             @duplicate="$emit('duplicate', getItemVersion(row.index))"
+          />
+          <v-skeleton-loader
+            v-else
+            type="table-heading, list-item-two-line, table-tfoot"
           />
         </div>
       </template>
@@ -103,6 +109,7 @@ import { getEl } from '@/util/el'
 const props = defineProps<{
   duplicating?: boolean
   updating?: boolean
+  loading?: boolean
   items: Record<string, ProjectVersionProps[]>
   currentVersion?: ProjectVersionProps
   header?: UpstreamHeaderProps
@@ -139,7 +146,7 @@ const scrollElement = inject('scrollElement', ref(null as HTMLElement | null))
 const offsetTop = ref(0)
 const containerRef = ref(null as HTMLElement | null)
 const virtualizerOptions = computed(() => ({
-  count: listItems.value.length,
+  count: props.loading ? 10 : listItems.value.length,
   getScrollElement: () => getEl(scrollElement.value) as any,
   paddingStart: offsetTop.value,
   overscan: 5,

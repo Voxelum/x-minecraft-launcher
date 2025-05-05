@@ -28,6 +28,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     curseforgeSort: sort,
     gameVersion,
     isCurseforgeDisabled: disabled,
+    currentView,
   }: SearchModel
 ) {
   const search = useCurseforgeSearchFunc(
@@ -52,13 +53,10 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     if (disabled.value) {
       return false
     }
-    if (keyword.value) {
-      return true
+    if (currentView.value !== 'remote') {
+      return false
     }
-    if (curseforgeCategory.value) {
-      return true
-    }
-    return false
+    return true
   })
 
   function effect() {
@@ -68,6 +66,7 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     watch(sort, onSearch)
     watch(gameVersion, onSearch)
     watch(disabled, onSearch)
+    onSearch()
   }
 
   const mods = computed(() => {

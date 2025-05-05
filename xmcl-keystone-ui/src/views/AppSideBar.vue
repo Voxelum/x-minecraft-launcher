@@ -54,8 +54,7 @@
       <v-divider />
     </v-list>
 
-    <AppSideBarContentFocus v-if="useFocus" />
-    <AppSideBarContentNext v-else />
+    <AppSideBarContentNext />
 
     <v-list
       nav

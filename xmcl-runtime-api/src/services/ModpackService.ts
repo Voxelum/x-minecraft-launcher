@@ -157,7 +157,7 @@ export interface ModpackService {
    * @param iconUrl The icon url of the modpack
    * @returns The instance path
    */
-  importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
+  importModpack(modpackPath: string, iconUrl?: string, upstream?: InstanceData['upstream'], awaitInstance?: boolean): Promise<{
     instancePath: string
     version?: string
     runtime: RuntimeVersions

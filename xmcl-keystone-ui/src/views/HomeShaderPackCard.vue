@@ -7,6 +7,11 @@
     :button="t('shaderPack.manage')"
     :class="{ dragover }"
     :refreshing="refreshing"
+    :addition-button="{ 
+      icon: 'file_download',
+      text: t('install'),
+     }"
+    @navigate-addition="push('/shaderpacks?source=remote')"
     @navigate="push('/shaderpacks')"
     @drop="onDrop"
   />

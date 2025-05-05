@@ -1,9 +1,11 @@
 <template>
   <div
     class="header sticky max-w-full select-none transition-all px-2"
+    :style="{
+      'backdrop-filter': !compact ? 'none' : `blur(${blurAppBar}px)`,
+    }"
     :class="{
       'backdrop-filter': !isInFocusMode,
-      'backdrop-blur-sm': !isInFocusMode,
       compact,
       'pt-10': !compact,
       'pt-5': compact,
@@ -96,6 +98,11 @@
       :class="{
       }"
     />
+    <div class="flex items-center justify-center">
+      <v-icon @click="layout = 'focus'">
+        keyboard_arrow_down
+      </v-icon>
+    </div>
   </div>
 </template>
 
@@ -109,13 +116,16 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
-import { useInFocusMode } from '@/composables/uiLayout'
+import { kTheme } from '@/composables/theme'
+import { kUILayout, useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { VersionServiceKey } from '@xmcl/runtime-api'
 
 const { name, runtime: version } = injection(kInstance)
 const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
+const layout = injection(kUILayout)
+const { blurAppBar } = injection(kTheme)
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 

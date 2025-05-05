@@ -209,6 +209,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
         await writeFile(join(instancePath, 'unresolved-files.json'), JSON.stringify(handler.unresolvable))
       }
     } catch (e) {
+      if (isSystemError(e) && e.code === 'ENOENT') {
+      }
       throw Object.assign(e as any, {
         name: (e as any).name === 'Error' ? 'InstallInstanceFilesError' : (e as any).name,
         installInstance: {
@@ -288,6 +290,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
               const currentStatePath = join(path, '.install-profile')
               const lock = await readFile(currentStatePath, 'utf-8').then((content) => {
                 try {
+                  if (content.trim().length === 0) {
+                    return undefined
+                  }
                   return JSON.parse(content) as InstanceInstallLockSchema
                 } catch (e) {
                   Object.assign((e as any), {
@@ -362,7 +367,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         mtime: timestamp,
         backup: join(instancePath, '.backups', filenamify(new Date().toLocaleString(), { replacement: '-' })),
         workspace: join(instanceDir, `.${instanceName}-install-${timestamp}`),
-        finishedPath: [],
+        finishedPath: [], 
       }
 
       // save current state
