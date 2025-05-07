@@ -766,7 +766,7 @@ modInstall:
   searchHint: Search and select project
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
-  switch: Swtich Version
+  switch: Switch Version
   upgrade: Upgrade Mods
 modUpgradePolicy:
   curseforge: Curseforge First
