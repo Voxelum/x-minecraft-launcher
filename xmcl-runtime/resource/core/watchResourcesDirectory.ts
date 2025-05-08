@@ -185,7 +185,7 @@ function createWatcher(
     if (shouldIgnoreFile(file)) return
     if (file.endsWith('.txt')) return
     if (event === 'unlink') {
-      onResourceRemove(file)
+      onResourceRemove(join(path, file))
     } else if (event === 'add' || event === 'change') {
       if (!stat) {
         return
