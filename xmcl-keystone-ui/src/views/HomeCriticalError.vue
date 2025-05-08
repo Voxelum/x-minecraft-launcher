@@ -36,9 +36,9 @@ const error = computed(() => {
   if (isNoEmptySpace.value) {
     return t('errors.DiskIsFull')
   }
-  if (invalidGameDataPath.value) {
-    return getDirErroText(invalidGameDataPath.value)
-  }
+  // if (invalidGameDataPath.value) {
+  //   return getDirErroText(invalidGameDataPath.value)
+  // }
   return ''
 })
 </script>
