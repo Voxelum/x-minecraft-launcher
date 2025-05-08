@@ -66,7 +66,7 @@ const headerData = computed(() => {
 
   return result
 })
-const { data: files } = useSWRVModel(getCurseforgeProjectFilesModel(computed(() => props.id), ref(undefined), ref(undefined)))
+const { data: files, isValidating: loadingFiles } = useSWRVModel(getCurseforgeProjectFilesModel(computed(() => props.id), ref(undefined), ref(undefined)))
 const currentVersion = computed(() => {
   const val = upstream.value
   if (!val || val.type !== 'curseforge-modpack') return undefined
@@ -185,6 +185,7 @@ const loadChangelog = async (v: ProjectVersionProps) => {
     :duplicating="duplicating"
     :only-current-version.sync="onlyCurrentVersion"
     :updating="updating"
+    :loading="loadingFiles"
     @duplicate="onDuplicate"
     @update="onUpdate"
     @changelog="loadChangelog"

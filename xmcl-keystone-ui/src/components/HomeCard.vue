@@ -1,13 +1,19 @@
 <template>
   <v-card
-    class="flex h-full flex-col transition-colors transition-transform home-card"
+    class="flex h-full flex-col transition-all duration-500 home-card"
     :class="{ highlighted: highlighted }"
     style="box-sizing: border-box"
+    outlined
+    :style="{
+      borderColor: mouse > 0 ? 'white' : '',
+    }"
     :color="highlighted ? 'yellow darken-2' : cardColor"
     @dragover="emit('dragover', $event)"
     @drop="emit('drop', $event); dragover = 0;"
     @dragenter="dragover += 1"
     @dragleave="dragover -= 1"
+    @mouseenter="mouse += 1"
+    @mouseleave="mouse -= 1"
   >
     <v-progress-linear
       v-if="refreshing"
@@ -67,11 +73,21 @@
     </v-card-text>
     <v-card-actions>
       <v-btn
-        color="teal accent-4"
         text
         @click="emit('navigate')"
       >
         {{ button }}
+      </v-btn>
+      <v-spacer />
+      <v-btn
+        v-if="additionButton"
+        text
+        @click="emit('navigate-addition')"
+      >
+        <v-icon class="material-icons-outlined" left>
+          {{ additionButton.icon || 'add' }}
+        </v-icon>
+        {{ additionButton.text }}
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -89,17 +105,19 @@ defineProps<{
   subtitle?: string
   text: string
   button: string
+  additionButton?: { text: string; icon?: string }
   refreshing: boolean
   error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
-const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave'])
+const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave', 'navigate-addition'])
 const { cardColor, accentColor } = injection(kTheme)
 
 const slots = useSlots()
 
 const dragover = ref(0)
 const { dragover: globalDragover } = injection(kDropHandler)
+const mouse = ref(0)
 const highlighted = computed(() => globalDragover.value && dragover.value > 0)
 </script>
 
@@ -118,6 +136,5 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
 
 .home-card {
   /* blur behand */
-  backdrop-filter: blur(5px);
 }
 </style>

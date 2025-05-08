@@ -10,6 +10,11 @@
     :highlighted="highlight > 0"
     :button="t('resourcepack.manage')"
     :refreshing="false"
+    :addition-button="{ 
+      icon: 'file_download',
+      text: t('install'),
+     }"
+    @navigate-addition="push('/resourcepacks?source=remote')"
     @navigate="push('/resourcepacks')"
     @dragenter="highlight += 1"
     @dragleave="highlight -= 1"
