@@ -128,7 +128,9 @@ useTutorial(computed(() => [{
 @media (min-width: 1360px) {
   .base-setting {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    /* grid-template-columns: 1fr 1fr; */
+    grid-template-columns: calc(50% - 16px) calc(50% - 16px);
+
     grid-gap: 32px;
   }
 }
