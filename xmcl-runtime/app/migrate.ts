@@ -1,4 +1,4 @@
-import { copy, readdir, readlink, remove, rename, writeFile } from 'fs-extra'
+import { copy, ensureDir, readdir, readlink, remove, rename, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { Logger } from '~/logger'
 import type { LauncherApp } from './LauncherApp'
@@ -7,6 +7,7 @@ import { isSystemError } from '~/util/error'
 async function move(from: string, to: string) {
   await rename(from, to).catch(async (e) => {
     if (isSystemError(e) && e.code === 'EXDEV') {
+      await ensureDir(to)
       await copy(from, to, {
         errorOnExist: true,
         preserveTimestamps: true,
@@ -15,7 +16,6 @@ async function move(from: string, to: string) {
           return !link
         }
       })
-      await remove(from)
     } else {
       throw e
     }

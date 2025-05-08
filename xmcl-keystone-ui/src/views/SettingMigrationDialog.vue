@@ -58,7 +58,7 @@
         <v-btn
           text
           large
-          :disabled="errorText"
+          :disabled="!!errorText || !root"
           color="primary"
           :loading="migrating"
           @click="apply()"
