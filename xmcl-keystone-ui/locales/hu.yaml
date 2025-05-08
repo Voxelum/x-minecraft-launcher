@@ -218,6 +218,9 @@ diagnosis:
   missingVersionJar:
     message: Kattints erre a verzióra a telepítéshez
     name: Hiányzó verzió jar a Minecrafthoz %{version}
+  unzipFileNotFound:
+    description: Nem található {file}
+    title: A modpack fájl nem található
 disable: Letiltás
 disk:
   available: Elérhető

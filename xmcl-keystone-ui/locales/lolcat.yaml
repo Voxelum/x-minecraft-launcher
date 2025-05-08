@@ -208,6 +208,9 @@ diagnosis:
   missingVersionJar:
     message: CLICK 2 INSTALL DIS VERSHUN
     name: MISIN VERSHUN JAR 4 MINECRAFT %{version}
+  unzipFileNotFound:
+    description: Cannot find {file}
+    title: Modpack file not found
 disable: DISABLE
 disk:
   available: AVAILABLE

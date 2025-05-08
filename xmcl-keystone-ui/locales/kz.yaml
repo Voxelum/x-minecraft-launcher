@@ -270,6 +270,9 @@ diagnosis:
   missingVersionJar:
     message: Осы нұсқаны орнату үшін басыңыз
     name: Minecraft %{version} нұсқасының банкасы жоқ
+  unzipFileNotFound:
+    description: Cannot find {file}
+    title: Modpack file not found
 disable: Өшіру
 disk:
   available: Қол жетімді

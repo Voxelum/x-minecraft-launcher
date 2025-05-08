@@ -254,6 +254,9 @@ diagnosis:
   missingVersionJar:
     message: Klicken Sie, um diese Version zu installieren
     name: Die Version {version} ist nicht installiert!
+  unzipFileNotFound:
+    description: Kann {file} nicht finden
+    title: Modpack -Datei nicht gefunden
 disable: Ausschalten
 disk:
   available: Verfügbar

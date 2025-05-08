@@ -275,6 +275,9 @@ diagnosis:
   missingVersionJar:
     message: Нажмите, чтобы установить эту версию
     name: Отсутствует файл jar версии Minecraft {version}
+  unzipFileNotFound:
+    description: Не могу найти {file}
+    title: Файл Modpack не найден
 disable: Отключить
 disk:
   available: Доступно

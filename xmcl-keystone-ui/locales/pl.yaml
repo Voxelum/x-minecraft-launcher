@@ -233,6 +233,9 @@ diagnosis:
   missingVersionJar:
     message: Kliknij, aby zainstalować tę wersję
     name: Brakująca wersja słoika dla Minecrafta %{version}
+  unzipFileNotFound:
+    description: Nie można znaleźć {file}
+    title: Nie znaleziono pliku modpack
 disable: Wyłącz
 disk:
   available: Dostępne

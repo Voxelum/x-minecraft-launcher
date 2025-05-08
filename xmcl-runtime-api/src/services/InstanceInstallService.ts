@@ -71,6 +71,9 @@ export type InstallFileError = {
   file: InstanceFile
   expect: string
   actual: string
+} | {
+  name: 'UnpackZipFileNotFoundError'
+  file: string
 }
 
 /**

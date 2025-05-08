@@ -268,6 +268,19 @@ export class InstanceInstallService extends AbstractService implements IInstance
             actual: e.actual,
           }]
         }
+      } else {
+        if (isSystemError(e) && e.code === 'ENOENT') {
+          const path = e.path
+          if (path) {
+            const zipFileIsMissing = currentState.files.find(f => f.downloads && f.downloads.some(d => d.startsWith('zip://') && d.includes(path)))
+            if (zipFileIsMissing) {
+              return [{
+                file: path,
+                name: 'UnpackZipFileNotFoundError',
+              }]
+            }
+          }
+        }
       }
       throw e
     }
@@ -288,6 +301,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
               const currentStatePath = join(path, '.install-profile')
               const lock = await readFile(currentStatePath, 'utf-8').then((content) => {
                 try {
+                  if (content.trim().length === 0) {
+                    return undefined
+                  }
                   return JSON.parse(content) as InstanceInstallLockSchema
                 } catch (e) {
                   Object.assign((e as any), {

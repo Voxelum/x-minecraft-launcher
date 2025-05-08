@@ -24,6 +24,7 @@ export function useInstanceFiles(instancePath: Ref<string>) {
   interface ChecksumErrorFile { file: InstanceFile; expect: string; actual: string }
 
   const checksumErrorCount = shallowRef(undefined as undefined | { key: string; count: number; files: ChecksumErrorFile[] })
+  const unzipFileNotFound = shallowRef(undefined as undefined | string)
   const shouldHintUserSkipChecksum = computed(() => checksumErrorCount.value?.count)
   const blockingFiles = computed(() => checksumErrorCount.value?.files)
   const unresolvedFiles = computed(() => instanceFileStatus.value?.unresolvedFiles)
@@ -39,7 +40,12 @@ export function useInstanceFiles(instancePath: Ref<string>) {
   async function resumeInstall(instancePath: string, bypass?: InstanceFile[]) {
     const errors = await resumeInstanceInstall(instancePath, bypass)
     if (errors) {
-      countUpChecksumError(errors.map(e => e.expect).join(), errors.map(e => ({ file: e.file, expect: e.expect, actual: e.actual })))
+      const checksumErrors = errors.filter(e => e.name === 'ChecksumNotMatchError') as ChecksumErrorFile[]
+      countUpChecksumError(checksumErrors.map(e => e.expect).join(), checksumErrors.map(e => ({ file: e.file, expect: e.expect, actual: e.actual })))
+      const unzipErrors = errors.filter(e => e.name === 'UnpackZipFileNotFoundError').map(e => e as { file: string })
+      if (unzipErrors[0]?.file) {
+        unzipFileNotFound.value = unzipErrors[0].file
+      }
     }
   }
 
@@ -51,6 +57,7 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     instanceInstallStatus: instanceFileStatus,
     shouldHintUserSkipChecksum,
     unresolvedFiles,
+    unzipFileNotFound,
     resumeInstall,
     resetChecksumError,
     blockingFiles,

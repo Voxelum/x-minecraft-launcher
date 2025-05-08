@@ -251,6 +251,9 @@ diagnosis:
   missingVersionJar:
     message: 啟動器將自動下載 Jar 檔案
     name: '{version} 版本 Jar 檔案缺失'
+  unzipFileNotFound:
+    description: 找不到{file}
+    title: 找不到modpack文件
 disable: 禁用
 disk:
   available: 可用

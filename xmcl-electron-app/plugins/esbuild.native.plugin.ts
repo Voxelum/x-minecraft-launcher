@@ -77,6 +77,22 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         }
       )
 
+      // node_modules\.pnpm\yauzl@2.10.0\node_modules\yauzl\index.js
+      build.onLoad(
+        { filter: /^.+yauzl[\\/]index\.js$/g },
+        async ({ path }) => {
+          let content = await readFile(path, 'utf-8')
+          content = content.replace(
+            'var errorMessage = validateFileName(entry.fileName, self.validateFileNameOptions);',
+            `var errorMessage = self.validateFileName ? self.validateFileName(entry) : validateFileName(entry.fileName, self.validateFileNameOptions);`
+          )
+          return {
+            contents: content,
+            loader: 'js',
+          }
+        },
+      )
+
       // Intercept node_modules\node-datachannel\dist\esm\polyfill\RTCPeerConnection.mjs
       build.onLoad(
         { filter: /^.+node-datachannel[\\/]dist[\\/]esm[\\/]polyfill[\\/]RTCPeerConnection\.mjs$/g },

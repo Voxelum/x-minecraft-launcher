@@ -235,6 +235,9 @@ diagnosis:
   missingAssetsIndex:
     message: O Lanzador descargará o índice de assets por ti
     name: Falta o arquivo de índice de activos de {version}.
+  unzipFileNotFound:
+    description: Non se atopa {file}
+    title: O ficheiro de modpack non se atopa
 disable: Desactivar
 downloadUpdate: Descargar actualización
 env:

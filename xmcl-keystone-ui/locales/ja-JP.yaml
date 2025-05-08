@@ -237,6 +237,9 @@ diagnosis:
   missingVersionJar:
     message: クリックしてこのバージョンをインストール
     name: Minecraft %{version} 用のJarが見つかりません
+  unzipFileNotFound:
+    description: '{file}が見つかりません'
+    title: ModPackファイルが見つかりません
 disable: 無効化
 disk:
   available: 利用可能

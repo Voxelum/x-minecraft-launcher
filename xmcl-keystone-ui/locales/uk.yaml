@@ -233,6 +233,9 @@ diagnosis:
   missingVersionJar:
     message: Натисніть для встановлення цієї версії
     name: Версія jar для Minecraft %{version} відсутня
+  unzipFileNotFound:
+    description: Не вдається знайти {file}
+    title: Файл Modpack не знайдено
 disable: Вимкнути
 disk:
   available: Доступно

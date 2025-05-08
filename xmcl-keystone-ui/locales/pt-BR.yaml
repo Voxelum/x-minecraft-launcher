@@ -282,6 +282,9 @@ diagnosis:
   missingVersionJar:
     message: Clique para instalar esta versão
     name: Faltando o arquivo jar da versão do Minecraft %{version}
+  unzipFileNotFound:
+    description: Não é possível encontrar {file}
+    title: Arquivo modpack não encontrado
 disable: Desativar
 disk:
   available: Disponível
