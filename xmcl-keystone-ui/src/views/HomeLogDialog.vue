@@ -1,52 +1,28 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    :width="700"
-  >
+  <v-dialog v-model="isShown" :width="700">
     <v-card>
-      <v-toolbar
-        color="warning"
-        tabs
-      >
+      <v-toolbar color="warning" tabs>
         <v-toolbar-title class="white--text">
-          {{ t('logsCrashes.title') }}
+          {{ t("logsCrashes.title") }}
         </v-toolbar-title>
         <v-spacer />
-        <v-btn
-          icon
-          @click="hide"
-        >
+        <v-btn icon @click="hide">
           <v-icon>close</v-icon>
         </v-btn>
 
         <template #extension>
-          <v-tabs
-            v-model="data.tab"
-            align-with-title
-            color="white"
-          >
+          <v-tabs v-model="data.tab" align-with-title color="white">
             <v-tabs-slider color="yellow" />
-            <v-tab
-              :key="0"
-              :disabled="data.loadingList"
-              @click="goLog"
-            >
-              {{ t('logsCrashes.logs') }}
+            <v-tab :key="0" :disabled="data.loadingList" @click="goLog">
+              {{ t("logsCrashes.logs") }}
             </v-tab>
-            <v-tab
-              :key="1"
-              :disabled="data.loadingList"
-              @click="goCrash"
-            >
-              {{ t('logsCrashes.crashes') }}
+            <v-tab :key="1" :disabled="data.loadingList" @click="goCrash">
+              {{ t("logsCrashes.crashes") }}
             </v-tab>
           </v-tabs>
         </template>
       </v-toolbar>
-      <v-tabs-items
-        v-model="data.tab"
-        class="bg-transparent"
-      >
+      <v-tabs-items v-model="data.tab" class="bg-transparent">
         <TabItem
           :key="0"
           log
@@ -71,13 +47,13 @@
   </v-dialog>
 </template>
 
-<script lang=ts setup>
-import { useService } from '@/composables'
-import { kInstance } from '@/composables/instance'
-import { injection } from '@/util/inject'
-import { InstanceLogServiceKey } from '@xmcl/runtime-api'
-import { useDialog } from '../composables/dialog'
-import TabItem from './HomeLogDialogTab.vue'
+<script lang="ts" setup>
+import { useService } from "@/composables";
+import { kInstance } from "@/composables/instance";
+import { injection } from "@/util/inject";
+import { InstanceLogServiceKey } from "@xmcl/runtime-api";
+import { useDialog } from "../composables/dialog";
+import TabItem from "./HomeLogDialogTab.vue";
 
 const {
   listLogs,
@@ -88,11 +64,11 @@ const {
   getLogContent,
   showLog,
   showCrash: showCrashReport,
-} = useService(InstanceLogServiceKey)
-const { isShown, hide } = useDialog('log')
-const { t } = useI18n()
+} = useService(InstanceLogServiceKey);
+const { isShown, hide } = useDialog("log");
+const { t } = useI18n();
 
-const { path } = injection(kInstance)
+const { path } = injection(kInstance);
 
 const data = reactive({
   tab: null as any as number,
@@ -100,55 +76,59 @@ const data = reactive({
   loadingList: false,
   logs: [] as string[],
   crashes: [] as string[],
-})
-const _getLogContent = (name: string) => getLogContent(path.value, name)
-const _getCrashReportContent = (name: string) => getCrashReportContent(path.value, name)
-const _showLog = (name: string) => showLog(path.value, name)
-const _showCrashReport = (name: string) => showCrashReport(path.value, name)
+});
+const _getLogContent = (name: string) => getLogContent(path.value, name);
+const _getCrashReportContent = (name: string) =>
+  getCrashReportContent(path.value, name);
+const _showLog = (name: string) => showLog(path.value, name);
+const _showCrashReport = (name: string) => showCrashReport(path.value, name);
 
 function loadLogs() {
-  data.loadingList = true
-  listLogs(path.value).then((l) => {
-    data.logs = l
-  }).finally(() => {
-    data.loadingList = false
-  })
+  data.loadingList = true;
+  listLogs(path.value)
+    .then((l) => {
+      data.logs = l;
+    })
+    .finally(() => {
+      data.loadingList = false;
+    });
 }
 function loadCrashes() {
-  data.loadingList = true
-  listCrashReports(path.value).then((l) => {
-    data.crashes = l
-  }).finally(() => {
-    data.loadingList = false
-  })
+  data.loadingList = true;
+  listCrashReports(path.value)
+    .then((l) => {
+      data.crashes = l;
+    })
+    .finally(() => {
+      data.loadingList = false;
+    });
 }
 async function removeLog(name: string) {
-  await rmLog(path.value, name)
-  loadLogs()
+  await rmLog(path.value, name);
+  loadLogs();
 }
 async function removeCrashReport(name: string) {
-  await rmCrash(path.value, name)
-  loadCrashes()
+  await rmCrash(path.value, name);
+  loadCrashes();
 }
 watch(isShown, (s) => {
   if (s) {
-    data.tab = 0
-    loadLogs()
+    data.tab = 0;
+    loadLogs();
   } else {
-    data.logs = []
-    data.crashes = []
+    data.logs = [];
+    data.crashes = [];
   }
-})
+});
 function goLog() {
-  data.tab = 0
+  data.tab = 0;
 
-  loadLogs()
+  loadLogs();
 }
 function goCrash() {
-  data.tab = 1
-  loadCrashes()
+  data.tab = 1;
+  loadCrashes();
 }
 </script>
 
-<style>
-</style>
+<style></style>
