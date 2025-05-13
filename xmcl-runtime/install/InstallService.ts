@@ -445,6 +445,7 @@ export class InstallService extends AbstractService implements IInstallService {
     }
 
     let version: string | undefined
+    const mc = MinecraftFolder.from(this.getPath())
     for (const java of validJavaPaths) {
       try {
         this.log(`Start to install neoforge ${options.version} on ${options.minecraft} by ${java.path}`)
@@ -458,12 +459,16 @@ export class InstallService extends AbstractService implements IInstallService {
           neoforgeVersion = options.version
           target = options.version.startsWith(options.minecraft) ? 'forge' : 'neoforge'
         }
-        version = await this.submit(installNeoForgedTask(target, neoforgeVersion, this.getPath(), {
+        version = await this.submit(installNeoForgedTask(target, neoforgeVersion, mc, {
           ...installOptions,
           java: java.path,
           inheritsFrom: options.minecraft,
           side: options.side,
         }).setName('installForge', { id: options.version }))
+
+        const json = join(mc.getVersionRoot(version), 'install_profile.json')
+        await unlink(json).catch(() => { })
+
         this.log(`Success to install neoforge ${options.version} on ${options.minecraft}`)
         break
       } catch (err) {
@@ -503,10 +508,10 @@ export class InstallService extends AbstractService implements IInstallService {
     const setting = await this.app.registry.get(kSettings)
 
     let version: string | undefined
+    const mc = MinecraftFolder.from(this.getPath())
     for (const java of validJavaPaths) {
       try {
         this.log(`Start to install ${side} forge ${options.version} on ${options.mcversion} by ${java.path}`)
-        const mc = MinecraftFolder.from(this.getPath())
         version = await this.submit(installForgeTask(options, mc, {
           ...installOptions,
           java: java.path,
@@ -529,6 +534,9 @@ export class InstallService extends AbstractService implements IInstallService {
             return spawn(cmd, args)
           },
         }).setName('installForge', { id: options.version }))
+
+        const json = join(mc.getVersionRoot(version), 'install_profile.json')
+        await unlink(json).catch(() => { })
 
         this.log(`Success to install ${side} forge ${options.version} on ${options.mcversion}`)
         break
@@ -761,11 +769,14 @@ export class InstallService extends AbstractService implements IInstallService {
 
   async installByProfile({ profile, version, side, java }: InstallProfileOptions) {
     try {
-      await this.submit(installByProfileTask(profile, this.getPath(), {
+      const minecraftFolder = MinecraftFolder.from(this.getPath())
+      await this.submit(installByProfileTask(profile, minecraftFolder, {
         ...this.getForgeInstallOptions(java),
         side,
         java,
       }).setName('installForge', { id: version ?? profile.version }))
+      const json = join(minecraftFolder.getVersionRoot(profile.version), 'install_profile.json')
+      await unlink(json).catch(() => { })
     } catch (err) {
       if (err instanceof CancelledError) {
         return
