@@ -1,29 +1,29 @@
 import { MinecraftFolder, LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
 import { AUTHORITY_DEV, CreateLaunchShortcutOptions, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, ReportOperationPayload, ResolvedServerVersion } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
-import { ChildProcess } from 'child_process'
+import { ChildProcess, spawn } from 'child_process'
+import createDesktopShortcut, { ShortcutOptions } from 'create-desktop-shortcuts'
+import vbTextContent from 'create-desktop-shortcuts/src/windows.vbs'
 import { randomUUID } from 'crypto'
 import { constants, existsSync } from 'fs'
 import { access, writeFile } from 'fs-extra'
 import { EOL } from 'os'
 import { basename, dirname, join } from 'path'
+import { createICO } from 'png2icons'
+import { Readable } from 'stream'
+import { finished } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { EncodingWorker, kEncodingWorker } from '~/encoding'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { UserTokenStorage, kUserTokenStorage } from '~/user'
+import { kYggdrasilSeriveRegistry } from '~/user/YggdrasilSeriveRegistry'
 import { normalizeCommandLine } from '~/util/cmd'
 import { isSystemError } from '~/util/error'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
-import { kYggdrasilSeriveRegistry } from '~/user/YggdrasilSeriveRegistry'
-import { createICO } from 'png2icons'
-import createDesktopShortcut, { ShortcutOptions } from 'create-desktop-shortcuts'
-import vbTextContent from 'create-desktop-shortcuts/src/windows.vbs'
-import { Readable } from 'stream'
-import { finished } from 'stream/promises'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -50,6 +50,59 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
   async #isValidAndExeucatable(javaPath: string) {
     return await access(javaPath, constants.X_OK).then(() => true).catch(() => false)
+  }
+  
+  /**
+   * Execute pre-launch command
+   * @param command The command to execute
+   * @param cwd The working directory
+   * @param operationId The operation id
+   */
+  async #execPreCommand(command: string, cwd: string): Promise<void> {
+    if (!command.trim()) return;
+    
+    this.log(`Executing pre-launch command: ${command}`);
+    try {
+      const process = spawn(command, {
+        shell: true,
+        cwd,
+        stdio: 'pipe',
+      });
+      
+      return await new Promise<void>((resolve, reject) => {
+        const stdoutChunks: Buffer[] = [];
+        const stderrChunks: Buffer[] = [];
+        
+        process.stdout?.on('data', (data) => {
+          stdoutChunks.push(Buffer.from(data));
+          this.log(`[Pre-Launch CMD] ${data.toString('utf-8').trim()}`);
+        });
+        
+        process.stderr?.on('data', (data) => {
+          stderrChunks.push(Buffer.from(data));
+          this.warn(`[Pre-Launch CMD Error] ${data.toString('utf-8').trim()}`);
+        });
+        
+        process.on('error', (err) => {
+          this.warn(`Pre-launch command failed: ${err.message}`);
+          reject(new LaunchException({ type: 'launchPreExecuteCommandFailed', command, error: err.message }, 'Failed to execute pre-command'));
+        });
+        
+        process.on('exit', (code) => {
+          if (code === 0) {
+            this.log('Pre-launch command executed successfully');
+            resolve();
+          } else {
+            const stderr = Buffer.concat(stderrChunks).toString('utf-8');
+            const error = `Pre-launch command exited with code ${code}. Error: ${stderr}`;
+            reject(new LaunchException({ type: 'launchPreExecuteCommandFailed', command, error }, 'Pre-launch command failed'));
+          }
+        });
+      });
+    } catch (e) {
+      this.warn(`Failed to spawn pre-launch command: ${e}`);
+      throw new LaunchException({ type: 'launchPreExecuteCommandFailed', command, error: (e as Error).message }, 'Failed to execute pre-command');
+    }
   }
 
   async generateServerOptions(options: LaunchOptions, version: ResolvedServerVersion) {
@@ -315,6 +368,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       if (!javaPath) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
+      }
+
+      // Execute pre-launch command if specified
+      if (options.preExecuteCommand) {
+        this.log(`Executing pre-execute command: ${options.preExecuteCommand}`)
+        await this.#track(this.#execPreCommand(options.preExecuteCommand, options.gameDirectory), 'pre-execute-command', operationId)
       }
 
       let process: ChildProcess

@@ -27,7 +27,6 @@
             "enum": [
                 "",
                 "bmcl",
-                "mcbbs",
                 "mojang"
             ],
             "type": "string"
@@ -149,6 +148,10 @@
             "default": "",
             "type": "string"
         },
+        "globalPreExecuteCommand": {
+            "default": "",
+            "type": "string"
+        },
         "globalEnv": {
             "$ref": "#/definitions/Record<string,string>",
             "description": "The launch environment variables",
@@ -195,6 +198,7 @@
         "globalMaxMemory",
         "globalMcOptions",
         "globalMinMemory",
+        "globalPreExecuteCommand",
         "globalPrependCommand",
         "globalShowLog",
         "globalVmOptions",

@@ -466,6 +466,8 @@ instance:
   playtime: Temps de jeu
   prependCommand: Ajouter une commande
   prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
+  preExecCommand: Commande de pré-exécution
+  preExecCommandHint: Commande à exécuter avant le lancement de Minecraft
   requireName: Le nom est requis
   showInstance: Afficher le dossier du jeu
   useSharedOptions: Utiliser les paramètres de jeu partagés

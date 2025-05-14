@@ -124,6 +124,9 @@
         "prependCommand": {
             "type": "string"
         },
+        "preExecuteCommand": {
+            "type": "string"
+        },
         "url": {
             "default": "",
             "type": "string"
@@ -190,6 +193,9 @@
         },
         "upstream": {
             "anyOf": [
+                {
+                    "$ref": "#/definitions/ModrinthSpecialUpstream"
+                },
                 {
                     "$ref": "#/definitions/ModrinthUpstream"
                 },
@@ -279,6 +285,32 @@
         },
         "Record<string,string>": {
             "type": "object"
+        },
+        "ModrinthSpecialUpstream": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "modrinth-special"
+                    ]
+                },
+                "projectId": {
+                    "type": "string"
+                },
+                "versionId": {
+                    "type": "string"
+                },
+                "sha1": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "projectId",
+                "sha1",
+                "type",
+                "versionId"
+            ]
         },
         "ModrinthUpstream": {
             "type": "object",

@@ -98,6 +98,7 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
   const globalShowLog = settings.globalShowLog
   const globalFastLaunch = settings.globalFastLaunch
   const globalDisableAuthlibInjector = settings.globalDisableAuthlibInjector
+  const globalPreExecuteCommand = settings.globalPreExecuteCommand
   const globalDisableElyByAuthlib = settings.globalDisableElyByAuthlib
   const globalEnv = settings.globalEnv
   const globalVmOptions = settings.globalVmOptions
@@ -127,6 +128,7 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
       globalHideLauncher,
       globalDisableElyByAuthlib,
       globalDisableAuthlibInjector,
+      globalPreExecuteCommand,
       globalShowLog,
       globalMinMemory,
       track: async (_, p) => p,

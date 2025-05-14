@@ -430,6 +430,8 @@ instance:
   playtime: Playtime
   prependCommand: Prepend Command
   prependCommandHint: This will prepend this command before all the launch commands
+  preExecCommand: Pre-Execute Command
+  preExecCommandHint: Command to execute before launching Minecraft
   requireName: The name is required
   showInstance: Show game folder
   useSharedOptions: Use shared game settings
@@ -607,6 +609,10 @@ launchFailed:
   failedToLaunch: Launch failed to launch
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
+launchPreExecuteCommandFailed:
+  description: >-
+    The pre-execute command failed with an error: {error}. Please check the command and try again.
+  title: Pre-Execute Command Failed
 launchStatus:
   assigningMemory: Assigning memory
   exit: Exit Game?
@@ -1102,7 +1108,7 @@ peerSignalingState:
 popular: Popularity
 presence:
   curseforge: Viewing CurseForge
-  curseforgeProject: Viewing {name} in Curseforge
+  curseforgeProject: Viewing {name} in curseforge
   instance: Idle in Instance {instance}
   instanceSetting: 'Edit Instance Setting: {instance}'
   mod: Viewing Mods in {instance}

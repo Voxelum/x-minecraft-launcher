@@ -10,7 +10,7 @@
     outlined
     filled
     dense
-    prepend-inner-icon="search"
+    :prepend-inner-icon="icon"
     @focus="searchTextFieldFocused = true"
     @blur="searchTextFieldFocused = false"
     @click="emit('click', $event)"
@@ -68,6 +68,7 @@ const props = defineProps<{
   gameVersion?: string
   category?: boolean
   localOnly?: boolean
+  icon?: string
 }>()
 
 const _keyword = computed({

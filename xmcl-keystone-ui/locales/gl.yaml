@@ -537,7 +537,6 @@ task:
     running: Conexión en execución
     size: reconto total
   connections: Conexións de rede
-  viewBackgroundMusic: Ver músicas
 theme:
   selectImage: Seleccione Imaxe
   selectMusic: Seleccione Música

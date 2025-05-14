@@ -746,11 +746,7 @@ modInstall:
   source: MOD SOURCE
   switch: SWTICH VERSHUN
   upgrade: UPGRADE MODZ
-modSearchType:
-  all: ALL
-  explore: EXPLORE MARKIT
-  installed: INSTALLD
-  local: DISK CACHE
+modSearchType: {}
 modUpgradePolicy:
   curseforge: Curseforge FURST
   curseforgeOnly: Curseforge ONLY

@@ -120,6 +120,24 @@
     />
 
     <v-list-item>
+      <v-list-item-content class="max-w-70 mr-4">
+        <v-list-item-title>
+          {{ t("instance.preExecCommand") }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          <v-text-field
+            v-model="preExecuteCommand"
+            class="m-1 mt-2"
+            hide-details
+            required
+            dense
+            outlined
+            filled
+            :placeholder="t('instance.preExecCommandHint')"
+          />
+        </v-list-item-subtitle>
+      </v-list-item-content>
+
       <v-list-item-content style="flex: 1">
         <v-list-item-title>
           {{ t("instance.mcOptions") }}
@@ -165,6 +183,7 @@ const {
   globalDisableAuthlibInjector,
   globalDisableElyByAuthlib,
   globalPrependCommand,
+  globalPreExecuteCommand,
   globalEnv,
   setGlobalSettings,
 } = useGlobalSettings()
@@ -174,6 +193,7 @@ const minMem = ref(globalMinMemory.value)
 const maxMem = ref(globalMaxMemory.value)
 const vmOptions = ref(globalVmOptions.value.join(' '))
 const prependCommand = ref(globalPrependCommand.value)
+const preExecuteCommand = ref(globalPreExecuteCommand.value)
 const mcOptions = ref(globalMcOptions.value.join(' '))
 const fastLaunch = ref(globalFastLaunch.value)
 const hideLauncher = ref(globalHideLauncher.value)
@@ -194,6 +214,7 @@ onMounted(() => {
   disableAuthlibInjector.value = globalDisableAuthlibInjector.value
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
   prependCommand.value = globalPrependCommand.value
+  preExecuteCommand.value = globalPreExecuteCommand.value
 })
 
 const save = () => {
@@ -209,6 +230,7 @@ const save = () => {
     globalDisableAuthlibInjector: disableAuthlibInjector.value,
     globalDisableElyByAuthlib: disableElyByAuthlib.value,
     globalPrependCommand: prependCommand.value,
+    globalPreExecuteCommand: preExecuteCommand.value,
     globalEnv: env.value,
   })
 }

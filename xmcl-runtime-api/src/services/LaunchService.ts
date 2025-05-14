@@ -113,6 +113,11 @@ export interface LaunchOptions {
    */
   prependCommand?: string
   /**
+   * Command to execute before launching Minecraft
+   * This will be executed before the launch process starts
+   */
+  preExecuteCommand?: string
+  /**
    * The environment variables
    */
   env?: Record<string, string>
@@ -213,6 +218,13 @@ export type LaunchExceptions = {
 } | {
   type: 'launchBadVersion'
   version: string
+} | {
+  /**
+   * Pre-execute command failed
+   */
+  type: 'launchPreExecuteCommandFailed'
+  command: string
+  error?: string
 }
 
 export class LaunchException extends Exception<LaunchExceptions> { }
