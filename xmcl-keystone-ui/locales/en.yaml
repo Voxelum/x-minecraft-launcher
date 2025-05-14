@@ -1381,6 +1381,17 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
+  about: About
+  aboutDescription: X Minecraft Launcher is a free and open-source Minecraft launcher with comprehensive features
+  version: Version
+  website: Official Website
+  links: Links
+  sponsors: Sponsors
+  supportUs: Support Us
+  donateAfdian: Support on Afdian
+  donatePatreon: Support on Patreon
+  sponsorSignPath: Free code signing on Windows provided by SignPath.io, certificate by SignPath Foundation
+  sponsorDeno: XMCL leverages Deno Deploy's hassle-free platform for serverless JavaScript applications
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
