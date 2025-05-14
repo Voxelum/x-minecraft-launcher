@@ -117,6 +117,10 @@ export interface SettingSchema {
    */
   globalPrependCommand: string
   /**
+   * @default ""
+   */
+  globalPreExecuteCommand: string
+  /**
    * The launch environment variables
    * @default {}
    */

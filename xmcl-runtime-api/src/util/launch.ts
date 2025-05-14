@@ -30,6 +30,7 @@ export interface GenerateLaunchOptions {
   globalFastLaunch?: boolean
   globalDisableAuthlibInjector?: boolean
   globalDisableElyByAuthlib?: boolean
+  globalPreExecuteCommand?: string
   modCount: number
   getOrInstallAuthlibInjector: () => Promise<string>
   track: <T, S = string>(token: string, p: Promise<T>, name: S, id: string) => Promise<T>
@@ -58,6 +59,7 @@ export async function generateLaunchOptionsWithGlobal(
     globalFastLaunch,
     globalDisableAuthlibInjector,
     globalDisableElyByAuthlib,
+    globalPreExecuteCommand,
     modCount,
     getOrInstallAuthlibInjector,
     track,
@@ -97,6 +99,7 @@ export async function generateLaunchOptionsWithGlobal(
 
   const assignMemory = inst.assignMemory ?? globalAssignMemory
   const hideLauncher = inst.hideLauncher ?? globalHideLauncher
+  const preExecuteCommand = inst.preExecuteCommand ?? globalPreExecuteCommand
   const env = {
     ...globalEnv,
     ...inst.env,
@@ -143,6 +146,7 @@ export async function generateLaunchOptionsWithGlobal(
     mcOptions,
     yggdrasilAgent,
     disableElyByAuthlib,
+    preExecuteCommand,
     prependCommand,
     side,
     server: inst.server ?? undefined,

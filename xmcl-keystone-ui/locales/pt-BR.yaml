@@ -1106,7 +1106,6 @@ multiplayer:
     class='hint-text' style='font-style: italic;'>Se precisar conectar múltiplos
     pares, você deve criar <span style='font-weight: bold; color: rgba(245, 158,
     11)'>múltiplas</span> conexões.</span>"
-  creaLocalToken: Criar um token local
   createLocalToken: Criar Token Local
   currentIpTitle: IP Público Detectado
   currentNatTitle: 'Rede atual (NAT):'
@@ -1610,7 +1609,6 @@ task:
     running: Conexão em andamento
     size: Contagem total
   connections: Conexões de Rede
-  defaultDescription: Aparência padrão do Minecraft
   delete:
     content: >-
       Isso excluirá o arquivo texturepack do disco e não será possível
@@ -1633,7 +1631,6 @@ task:
   showFile: Abrir texturepack {file} na pasta
   showInCurseforge: Mostrar {name} no curseforge
   unselected: Pacotes de textura não selecionados
-  viewBackgroundMusic: Exibir música
 theme:
   selectImage: Selecionar Imagem
   selectMusic: Selecionar Música

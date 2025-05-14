@@ -159,6 +159,8 @@ export interface InstanceData {
   env?: Record<string, string>
 
   prependCommand?: string
+
+  preExecuteCommand?: string
   /**
    * @default ""
    */

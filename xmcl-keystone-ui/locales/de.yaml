@@ -479,7 +479,9 @@ instance:
   openLogFolder: Öffnen Sie den Ordner logs
   prependCommand: Befehl voranstellen
   prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
-  requireName: Name ist erforderlich
+  preExecCommand: Vor-Ausführungsbefehl
+  preExecCommandHint: Befehl, der vor dem Start von Minecraft ausgeführt wird
+  requireName: Der Name ist erforderlich
   showInstance: Spieleordner anzeigen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
   useSharedOptionsDesc: >-
