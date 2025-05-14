@@ -446,7 +446,9 @@ instance:
   openLogFolder: 打开日志文件夹
   playtime: 游玩时长
   prependCommand: 前置命令
-  prependCommandHint: 这将在所有启动命令之前添加此命令
+  prependCommandHint: 这将在启动命令之前添加此命令
+  preExecCommand: 启动前执行命令
+  preExecCommandHint: 在启动 Minecraft 之前要执行的命令
   requireName: 必须填写名称
   showInstance: 打开文件夹
   useSharedOptions: 共享 Minecraft 设置

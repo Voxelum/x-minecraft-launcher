@@ -19,7 +19,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     globalAssignMemory, globalFastLaunch, globalHideLauncher, globalMaxMemory,
     globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
     globalDisableAuthlibInjector, globalDisableElyByAuthlib,
-    globalPrependCommand,
+    globalPrependCommand, globalPreExecuteCommand,
     globalEnv,
   } = useGlobalSettings()
 
@@ -38,6 +38,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     vmOptions: instance.value?.vmOptions?.join(' '),
     mcOptions: instance.value?.mcOptions?.join(' '),
     prependCommand: instance.value?.prependCommand,
+    preExecuteCommand: instance.value?.preExecuteCommand,
     maxMemory: instance.value?.maxMemory,
     minMemory: instance.value?.minMemory,
     env: instance.value?.env ?? {},
@@ -80,6 +81,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const isGlobalDisableElyByAuthlib = computed(() => data.disableElyByAuthlib === undefined)
   const isGlobalDisableAuthlibInjector = computed(() => data.disableAuthlibInjector === undefined)
   const isGlobalPrependCommand = computed(() => data.prependCommand === undefined)
+  const isGlobalPreExecuteCommand = computed(() => data.preExecuteCommand === undefined)
+  
   const resetAssignMemory = () => {
     set(data, 'assignMemory', undefined)
     set(data, 'minMemory', undefined)
@@ -92,6 +95,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
   const resetPrependCommand = () => {
     set(data, 'prependCommand', undefined)
+    saveJIT()
+  }
+  const resetPreExecuteCommand = () => {
+    set(data, 'preExecuteCommand', undefined)
     saveJIT()
   }
   const resetMcOptions = () => {
@@ -154,6 +161,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const prependCommand = computed({
     get: () => data.prependCommand ?? globalPrependCommand.value,
     set: (v) => { set(data, 'prependCommand', v); saveJIT() },
+  })
+  const preExecuteCommand = computed({
+    get: () => data.preExecuteCommand ?? globalPreExecuteCommand.value,
+    set: (v) => { set(data, 'preExecuteCommand', v); saveJIT() },
   })
   const fastLaunch = computed({
     get: () => data.fastLaunch ?? globalFastLaunch.value,
@@ -272,6 +283,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       disableAuthlibInjector: data.disableAuthlibInjector,
       disableElybyAuthlib: data.disableElyByAuthlib,
       prependCommand: data.prependCommand,
+      preExecuteCommand: data.preExecuteCommand,
       author: data.author,
       description: data.description,
       env: data.env,
@@ -341,6 +353,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.disableAuthlibInjector = current.disableAuthlibInjector
       data.disableElyByAuthlib = current.disableElybyAuthlib
       data.prependCommand = current.prependCommand
+      data.preExecuteCommand = current.preExecuteCommand
       data.env = current.env ?? {}
 
       if (current.server) {
@@ -371,8 +384,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     isGlobalDisableElyByAuthlib,
     isGlobalDisableAuthlibInjector,
     isGlobalPrependCommand,
+    isGlobalPreExecuteCommand,
     assignMemory,
     prependCommand,
+    preExecuteCommand,
     fastLaunch,
     hideLauncher,
     showLog,
@@ -390,6 +405,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     resetDisableAuthlibInjector,
     resetDisableElyByAuthlib,
     resetPrependCommand,
+    resetPreExecuteCommand,
     minMemory,
     maxMemory,
     mcOptions,

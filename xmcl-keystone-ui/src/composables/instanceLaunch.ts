@@ -18,7 +18,7 @@ export function useInstanceLaunch(
 ) {
   const { refreshUser } = useService(UserServiceKey)
   const { launch, kill, on, getGameProcesses, reportOperation } = useService(LaunchServiceKey)
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalPreExecuteCommand, globalPrependCommand, globalMcOptions, globalVmOptions, globalFastLaunch, globalEnv, globalHideLauncher, globalShowLog, globalDisableAuthlibInjector, globalDisableElyByAuthlib } = useGlobalSettings(globalState)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
   type LaunchStatus = '' | 'spawning-process' | 'refreshing-user' | 'preparing-authlib' | 'assigning-memory' | 'checking-permission' | 'launching'
@@ -146,6 +146,7 @@ export function useInstanceLaunch(
         globalFastLaunch: globalFastLaunch.value,
         globalDisableAuthlibInjector: globalDisableAuthlibInjector.value,
         globalDisableElyByAuthlib: globalDisableElyByAuthlib.value,
+        globalPreExecuteCommand: globalPreExecuteCommand.value,
         modCount: mods.value.length,
         getOrInstallAuthlibInjector,
         track: track as any,

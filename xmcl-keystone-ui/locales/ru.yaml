@@ -492,6 +492,8 @@ instance:
   openCrashReportFolder: Открыть папку с отчётами об ошибках
   openLogFolder: Открыть папку с журналами
   playtime: Время игры
+  preExecCommand: Команда предварительного запуска
+  preExecCommandHint: Команда для выполнения перед запуском Minecraft
   prependCommand: Добавить команду в начало
   prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
@@ -1095,7 +1097,6 @@ multiplayer:
     italic;"> Если вам необходимо подключить нескольких пользователей,
     необходимо создать <span style="font-weight: bold; color: rgba(245, 158,
     11)">несколько</span> соединений.</span>
-  creaLocalToken: Создать локальный токен
   createLocalToken: Создать локальный токен
   currentIpTitle: Обнаруженный общедоступный IP
   currentNatTitle: 'Текущая сеть (NAT):'
@@ -1610,7 +1611,6 @@ task:
     running: Текущее соединение
     size: Общее количество
   connections: Сетевые подключения
-  defaultDescription: Внешний вид Minecraft по умолчанию
   delete:
     content: >-
       Это приведет к удалению файла текстурпака с диска, и мы не сможем его
@@ -1636,7 +1636,6 @@ task:
   showFile: Открыть текстурпак {file} в папке
   showInCurseforge: Показать {name} на curseforge
   unselected: Невыбранные текстурпаки
-  viewBackgroundMusic: Смотреть музыку
 theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку

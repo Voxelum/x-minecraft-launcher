@@ -781,7 +781,6 @@ modFilter:
   incompatibleOnly: Mostra solo mod incompatibili
   unusedOnly: Mostra solo mod biblioteche inutilizzate
 modInstall:
-  all: Tutti
   archived: >-
     {nome} è stato archiviato. 
 
@@ -794,12 +793,10 @@ modInstall:
   currentVersion: Versione Selezionata
   dependencyHint: Installata un'altra versione {version}
   display: Visualizza mod
-  explore: Esplora il mercato
   install: Installa
   installDependencies: Installa le dipendenze mancanti
   installHint: Verrà installato il file {file} con {dependencies} dipendenze
   installed: Installato
-  local: Cache del disco
   noVersionSupported: la mod supporta solo Minecraft {supported}.
   recommendation: Esplora {first} o {second} mod in {modrinth} e {curseforge}!
   removeUnusedLibraries: Rimuovi le mod librerie inutilizzate
@@ -1037,7 +1034,6 @@ multiplayer:
     class="hint-text" style="font-style: italic;">Se è necessario connettere più
     peer, è necessario creare <span style="font-weight: bold; color: rgba(245,
     158, 11)">più</span> connessioni.</span>"
-  creaLocalToken: Crea token locale
   createLocalToken: Crea token locale
   currentIpTitle: Rileva IP pubblico
   currentNatTitle: 'Rete corrente (NAT):'

@@ -435,9 +435,11 @@ instance:
   openCrashReportFolder: クラッシュレポートフォルダを開く
   openLogFolder: ログフォルダを開く
   playtime: プレイ時間
+  preExecCommand: 実行前コマンド
+  preExecCommandHint: Minecraftを起動する前に実行するコマンド
   prependCommand: 先頭にコマンドを追加
   prependCommandHint: 全ての起動コマンドの先頭に追加されます
-  requireName: 名前が必要です
+  requireName: 名前は必須項目です
   showInstance: ゲームフォルダを開く
   versionHint: この起動構成におけるMinecraftのバージョン
   vmOptions: JVM実行引数
@@ -967,7 +969,6 @@ multiplayer:
     <span class="hint-text" style="font-style: italic;">複数のピアに接続する必要がある場合、 <span
     style="font-weight: bold; color: rgba(245, 158,
     11)">複数の</span>接続を作ってください</span>"
-  creaLocalToken: ローカルトークンを作成
   createLocalToken: ローカルトークンを作成
   currentIpTitle: 検出されたパブリックIP
   currentNatTitle: '現在のネットワーク (NAT):'
@@ -1413,7 +1414,6 @@ task:
     running: 接続を実行中
     size: 合計
   connections: ネットワーク接続
-  defaultDescription: Minecraftのデフォルトの外観
   empty: 実行中のタスクなし
   failed: 失敗
   manager: タスクマネージャー
@@ -1423,7 +1423,6 @@ task:
   searchOnCurseforge: Curseforgeで {name} を見る
   searchOnModrinth: '@:mod.searchOnModrinth'
   showInCurseforge: Curseforgeで {name} を見る
-  viewBackgroundMusic: BGM
 theme:
   selectImage: 画像を選択
   selectMusic: 音楽を選択
