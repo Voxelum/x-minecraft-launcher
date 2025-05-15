@@ -107,7 +107,7 @@
         <v-btn
           text
           color="primary"
-          href="https://afdian.net/@ci010"
+          href="https://afdian.com/@ci010"
           target="_blank"
           class="mr-2"
         >

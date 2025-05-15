@@ -30,6 +30,8 @@ export interface Environment extends Platform {
    * The current build number
    */
   build: number
+
+  gfw: boolean
 }
 
 export interface PoolStats {
