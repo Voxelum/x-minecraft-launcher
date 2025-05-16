@@ -11,7 +11,7 @@ function getAppInstallerContent(version: string, publisher: string) {
           Publisher="${publisher}"
           Version="${version}.${process.env.BUILD_NUMBER || '0'}"
           ProcessorArchitecture="x64"
-          Uri="https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${version}/xmcl-${version}-win32-x64.appx" />
+          Uri="https://xmcl-core-api.azurewebsites.net/api/appx?version=${version}" />
       <UpdateSettings>
       </UpdateSettings>
   </AppInstaller>`
