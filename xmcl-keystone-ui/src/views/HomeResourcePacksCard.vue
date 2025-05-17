@@ -8,7 +8,10 @@
       dragover,
     }"
     :highlighted="highlight > 0"
-    :button="t('resourcepack.manage')"
+    :button="files.length > 0 ? {
+      text: t('mod.manage'),
+      icon: 'settings'
+     } : undefined"
     :refreshing="false"
     :addition-button="{ 
       icon: 'file_download',
@@ -32,7 +35,7 @@ import { useService } from '@/composables/service'
 
 const props = defineProps<{ row: number; rowCount: number }>()
 
-const { enabled } = injection(kInstanceResourcePacks)
+const { enabled, files } = injection(kInstanceResourcePacks)
 const resourcePackCount = computed(() => enabled.value?.length || 0)
 
 const icons = computed(() => {

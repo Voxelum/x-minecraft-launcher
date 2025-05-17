@@ -1,10 +1,13 @@
 import { clientCurseforgeV1 } from '@/util/clients'
-import { formatKey } from '@/util/swrvGet'
+import { SWRVModel, formatKey } from '@/util/swrvGet'
 import { MaybeRef, get } from '@vueuse/core'
 import { File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import useSWRV from 'swrv'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
+import { UpstreamHeaderProps } from '@/views/HomeUpstreamHeader.vue'
+import { getExpectedSize } from '@/util/size'
+import { useDateString } from './date'
 
 export interface CurseforgeProps {
   classId: number
@@ -214,11 +217,54 @@ export function getCurseforgeProjectDescriptionModel(projectId: Ref<number>) {
   }
 }
 
-export function getCurseforgeProjectModel(projectId: Ref<number>) {
+export function getCurseforgeProjectModel(projectId: Ref<number | undefined>) {
   return {
-    key: computed(() => `/curseforge/${projectId.value}`),
-    fetcher: (v: any) => clientCurseforgeV1.getMod(projectId.value),
-  }
+    key: computed(() => projectId.value && `/curseforge/${projectId.value}`),
+    fetcher: (v: any) => projectId.value ? clientCurseforgeV1.getMod(projectId.value) : undefined,
+  } as SWRVModel<Mod | undefined>
+}
+
+
+export function useCurseforgeUpstreamHeader(project: Ref<Mod | undefined>) {
+  const { t, te } = useI18n()
+  const { getDateString } = useDateString()
+  return computed(() => {
+    if (!project.value) return undefined
+    const result: UpstreamHeaderProps = {
+      url: project.value.links.websiteUrl,
+      icon: project.value.logo.url || '',
+      title: project.value.name || '',
+      description: project.value?.summary || '',
+      categories: project.value.categories.map((c) => {
+        return {
+          text: te(`curseforgeCategory.${c?.name}`) ? t(`curseforgeCategory.${c?.name}`) : c.name || '',
+          icon: c.iconUrl || '',
+          id: c.id.toString(),
+        }
+      }),
+      type: 'curseforge',
+      store: '/store/curseforge/' + project.value.id,
+      infos: [{
+        icon: 'file_download',
+        name: t('modrinth.downloads'),
+        value: getExpectedSize(project.value.downloadCount, ''),
+      }, {
+        icon: 'star_rate',
+        name: t('modrinth.followers'),
+        value: project.value.thumbsUpCount,
+      }, {
+        icon: 'event',
+        name: t('modrinth.createAt'),
+        value: getDateString(project.value.dateCreated, { dateStyle: 'long' }),
+      }, {
+        icon: 'update',
+        name: t('modrinth.updateAt'),
+        value: getDateString(project.value.dateModified, { dateStyle: 'long' }),
+      }],
+    }
+
+    return result
+  })
 }
 
 export function useCurseforgeCategories() {

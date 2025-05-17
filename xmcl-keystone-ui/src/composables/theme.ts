@@ -91,7 +91,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
       lightWarningColor: '#FB8C00',
       lightSuccessColor: '#4CAF50',
       lightAccentColor: '#82B1FF',
-      lightCardColor: '#e0e0e080',
+      lightCardColor: '#F3F3F380',
     },
     backgroundColorOverlay: true,
     backgroundVolume: 1,

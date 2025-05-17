@@ -374,7 +374,7 @@
                   color="primary"
                   icon
                   @click="c.sharing ? showAddInstasnce({
-                    type: 'manifest',
+                    format: 'manifest',
                     manifest: c.sharing,
                   }) : undefined"
                 >

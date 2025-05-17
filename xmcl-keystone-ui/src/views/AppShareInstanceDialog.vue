@@ -293,7 +293,7 @@ const { show } = useDialog(AddInstanceDialogKey)
 const onCreateInstance = () => {
   if (manifest.value) {
     show({
-      type: 'manifest',
+      format: 'manifest',
       manifest: manifest.value,
     })
   }

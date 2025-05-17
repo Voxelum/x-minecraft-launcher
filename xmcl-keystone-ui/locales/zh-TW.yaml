@@ -718,7 +718,7 @@ mod:
   incompatibleHintDescription: |-
     某些模組相依性可能會遺失。
     或某些依賴項版本不符。
-  manage: 管理模組
+  manage: 管理
   maybeCompatible: 也許相容於目前版本。
   modloaderSelectHint: |-
     此模組支援以下模組載入器。

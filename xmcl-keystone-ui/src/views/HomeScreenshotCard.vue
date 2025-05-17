@@ -2,6 +2,10 @@
   <v-card
     class="w-full"
     :color="cardColor"
+    outlined
+    :style="{
+      borderColor: refreshing ? 'white' : '',
+    }"
   >
     <v-btn
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
@@ -63,7 +67,7 @@
         </v-carousel-item>
       </template>
     </v-carousel>
-    <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" />
+    <!-- <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" /> -->
   </v-card>
 </template>
 <script lang="ts" setup>
@@ -75,7 +79,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
-const props = defineProps<{ instance: Instance; width: number; height: number }>()
+const props = defineProps<{ instance: Instance; height: number }>()
 
 const { cardColor } = injection(kTheme)
 

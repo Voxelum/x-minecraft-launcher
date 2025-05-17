@@ -42,7 +42,7 @@
         <div
           v-else
           :key="1"
-          class="visible-scroll flex max-h-[70vh] flex-col overflow-y-auto overflow-x-hidden"
+          class="flex flex-col overflow-y-auto overflow-x-hidden"
         >
           <v-card-title primary-title>
             {{ showedFile }}
@@ -57,13 +57,11 @@
               {{ t('back') }}
             </v-btn>
           </v-card-title>
-          <div class="flex max-h-full flex-col overflow-y-auto">
-            <LogView
-              v-if="log"
-              :logs="logs"
-            />
-            <pre class="mx-5 mb-5 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
-          </div>
+          <LogView
+            class="max-h-[50vh] overflow-auto"
+            v-if="log"
+            :logs="logs"
+          />
         </div>
       </Transition>
     </div>

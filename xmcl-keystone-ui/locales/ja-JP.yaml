@@ -698,7 +698,7 @@ mod:
   incompatibleHintDescription: |-
     一部の MOD の依存関係が欠落している可能性があります。
     または、一部の依存関係のバージョンが一致しません。
-  manage: Modを管理
+  manage: 管理
   maybeCompatible: おそらく適合しません。
   modloaderSelectHint: |-
     MOD は以下の MOD ローダーをサポートしています。

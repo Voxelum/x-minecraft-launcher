@@ -181,7 +181,7 @@ const onDuplicate = async (v: ProjectVersionProps) => {
       projectName: project.value?.name || '',
       authors: project.value?.authors || [],
     })
-    showAddInstanceDialog({ type: 'ftb', manifest: cached })
+    showAddInstanceDialog({ format: 'ftb', manifest: cached })
   } finally {
     duplicating.value = false
   }

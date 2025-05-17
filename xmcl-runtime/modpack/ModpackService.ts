@@ -79,7 +79,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     return result.map(r => r.path)
   }
 
-  async importModpack(modpackFile: string, iconUrl?: string, upstream?: InstanceData['upstream']): Promise<{
+  async importModpack(modpackFile: string, iconUrl?: string, upstream?: InstanceData['upstream'], awaitInstance?: boolean): Promise<{
     instancePath: string
     version?: string
     runtime: Instance['runtime']
@@ -147,7 +147,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const path = await this.instanceService.createInstance(options)
 
-    instanceInstallService.installInstanceFiles(upstream ? {
+    const promise = instanceInstallService.installInstanceFiles(upstream ? {
       path,
       files,
       upstream,
@@ -158,6 +158,10 @@ export class ModpackService extends AbstractService implements IModpackService {
     }).catch((e) => {
       this.error(e)
     })
+
+    if (awaitInstance) {
+      await promise
+    }
 
     return {
       instancePath: path,
@@ -421,7 +425,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       const hash = cached.sha1
 
       const entries = Object.values(zip.entries)
-      const [manifest, handler] = await this.getManifestAndHandler(zip.file, entries)
+      const [manifest, handler, errors] = await this.getManifestAndHandler(zip.file, entries)
       if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path: modpackFile })
 
       this.log(`Parse modpack profile ${modpackFile} with handler ${handler.constructor.name}`)
@@ -473,13 +477,17 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   private async getManifestAndHandler(zip: ZipFile, entries: Entry[]) {
+    const errors = [] as any[]
     for (const handler of Object.values(this.handlers)) {
-      const manifest = await handler.readManifest(zip, entries).catch(e => undefined)
+      const manifest = await handler.readManifest(zip, entries).catch((e) => {
+        errors.push(e)
+        return undefined
+      })
       if (manifest) {
-        return [manifest, handler] as const
+        return [manifest, handler, []] as const
       }
     }
-    return [undefined, undefined]
+    return [undefined, undefined, errors] as const
   }
 
   async showModpacksFolder(): Promise<void> {

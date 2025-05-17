@@ -86,7 +86,7 @@ export function installZuluJavaTask(jre: ZuluJRE, destination: string, version: 
       try {
         const prefix = basename(jre.url).slice(0, -4) + '/'
         const entries = await readAllEntries(zipFile).then(ens => ens.filter(e => e.fileName !== prefix && !e.fileName.endsWith('/')))
-        
+
         await this.yield(new UnzipTask(zipFile, entries, destination, (e) => {
           if (e.fileName.startsWith(prefix)) {
             return e.fileName.substring(prefix.length)
@@ -109,7 +109,7 @@ export async function setupZuluCache(app: LauncherApp) {
 
   const content = await readJson(filePath).catch(() => index) as typeof index
 
-  const response = await app.fetch('https://api.xmcl.app/zulu', {
+  const response = await app.fetch('https://raw.githubusercontent.com/Voxelum/xmcl-static-resource/refs/heads/main/zulu.json', {
     headers: {
       ['If-Modified-Since']: content.modified,
     }

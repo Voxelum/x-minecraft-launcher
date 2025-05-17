@@ -793,7 +793,7 @@ mod:
   incompatibleHintDescription: |-
     Certaines dépendances de mods peuvent manquer. 
     Ou certaines versions de dépendances ne correspondent pas.
-  manage: Gérer les Mods
+  manage: Gérer les
   maybeCompatible: Peut-être compatibles.
   modloaderSelectHint: |-
     Le mod prend en charge les chargeurs de mod suivants. 

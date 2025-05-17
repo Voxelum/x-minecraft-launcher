@@ -1,11 +1,10 @@
-import { UserService } from '@xmcl/runtime/user'
 import { Session, session } from 'electron'
 import { existsSync } from 'fs'
 import { createReadStream } from 'fs-extra'
 import { join } from 'path'
 import { Readable } from 'stream'
-import { HAS_DEV_SERVER, HOST } from './constant'
 import ElectronLauncherApp from './ElectronLauncherApp'
+import { HAS_DEV_SERVER, HOST } from './constant'
 
 export class ElectronSession {
   private cached: Record<string, Session> = {}
@@ -84,21 +83,6 @@ export class ElectronSession {
         })
       }
       request.headers.append('User-Agent', ua)
-
-      if (request.url.startsWith('https://api.xmcl.app/translation') ||
-        request.url.startsWith('https://api.xmcl.app/rtc/official')
-      ) {
-        const userService = await this.app.registry.get(UserService)
-        const profile = await userService.getOfficialUserProfile().catch(() => undefined)
-        if (profile && profile.accessToken) {
-          request.headers.set('Authorization', `Bearer ${profile.accessToken}`)
-        }
-        if (request.url.startsWith('https://api.xmcl.app/translation')) {
-          request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
-        }
-      } else if (request.url.startsWith('https://api.curseforge.com')) {
-        request.headers.set('x-api-key', process.env.CURSEFORGE_API_KEY || '')
-      }
 
       const headers = {} as Record<string, string>
       request.headers.forEach((value, key) => {

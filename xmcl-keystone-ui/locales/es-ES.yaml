@@ -560,7 +560,7 @@ mod:
   incompatibleHintDescription: |-
     Es posible que falten algunas dependencias de modificaciones. 
     O algunas versiones de dependencias no coinciden.
-  manage: Administrar Mods
+  manage: Administrar
   maybeCompatible: Posiblemente Compatible.
   modloaderSelectHint: |-
     El mod admite los siguientes cargadores de mod. 

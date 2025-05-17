@@ -10,7 +10,7 @@
     <template #activator="{ attrs }">
       <HomeLaunchButtonStatusItem
         v-bind="attrs"
-        class="flex-shrink-1 mr-4 flex-grow-0"
+        class="flex-shrink-1 flex-grow-0"
         :active="active || showMenu"
         :item="menuItems[0]"
         @mouseenter="onMouseEnter"

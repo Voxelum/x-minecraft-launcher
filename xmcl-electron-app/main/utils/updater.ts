@@ -1,4 +1,4 @@
-import { AZURE_CDN, HAS_DEV_SERVER } from '@/constant'
+import { HAS_DEV_SERVER } from '@/constant'
 import { ElectronUpdateOperation, ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/app'
 import { Logger } from '@xmcl/runtime/logger'
@@ -56,14 +56,11 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
     const gfw = await this.app.registry.get(kGFW)
     const urls = gfw.inside
       ? [
-        `https://files.0x.halac.cn/Services/XMCL/releases/${this.file}`,
-        `https://files-0x.halac.cn/Services/XMCL/releases/${this.file}`,
-        `${AZURE_CDN}/releases/${this.file}`,
+        `https://files.0x.cn/Soft_Mirrors/github-release/Voxelum/x-minecraft-launhcer/LatestRelease/${this.file}`,
         `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
       ]
       : [
         `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
-        `${AZURE_CDN}/releases/${this.file}`,
       ]
     for (const url of urls) {
       try {
@@ -75,7 +72,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
           return
         }
         const gzUrl = url + '.gz'
-        if (url.startsWith(AZURE_CDN)) {
+        if (url.startsWith('https://files.0x.cn')) {
           this.app.emit('download-cdn', 'asar', this.file)
         }
         const gzResponse = await this.app.fetch(gzUrl, { signal: this.abortController.signal })
@@ -180,10 +177,8 @@ export class DownloadFullUpdateTask extends AbortableTask<void> {
           [kPatched]: true,
           createRequest: (options: any, callback: any) => {
             if (gfw.inside) {
-              const url = new URL(AZURE_CDN)
-              options.hostname = url.hostname
-              options.pathname = `/releases/${basename(options.pathname)}`
-              options.path = options.pathname
+              options.hostname = 'files.0x.cn'
+              options.pathname = `/Soft_Mirrors/github-release/Voxelum/x-minecraft-launhcer/LatestRelease/${basename(options.pathname)}`
               this.app.emit('download-cdn', 'electron', basename(options.pathname))
             }
             return createRequest(options, callback)
@@ -236,7 +231,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
       headers: {
         'Accept-Language': locale,
       },
-    }).catch(() => this.app.fetch(`https://xmcl-highfreq-function.azurewebsites.net/api/latest?${queryString}`, {
+    }).catch(() => this.app.fetch(`https://xmcl-core-api.azurewebsites.net/api/latest?${queryString}`, {
       headers: {
         'Accept-Language': locale,
       },

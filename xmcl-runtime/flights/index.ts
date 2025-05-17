@@ -17,7 +17,7 @@ export const pluginFlights: LauncherAppPlugin = async (app) => {
       const build = app.build
       const queryString = `version=${app.version}&build=${build}&locale=${app.host.getLocale()}&clientToken=${clientSession}`
       const resp = await app.fetch(`https://api.xmcl.app/flights?${queryString}`, {
-      }).catch(() => app.fetch(`https://xmcl-highfreq-function.azurewebsites.net/api/flights?${queryString}`))
+      }).catch(() => app.fetch(`https://xmcl-core-api.azurewebsites.net/api/flights?${queryString}`))
       if (resp.status !== 200) {
         logger.error(new Error(`Failed to fetch flights: ${resp.status}`))
         return

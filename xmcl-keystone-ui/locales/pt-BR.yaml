@@ -823,7 +823,7 @@ mod:
   incompatibleHintDescription: >-
     Algumas dependências de mods podem estar faltando. Ou as versões de algumas
     dependências não coincidem.
-  manage: Gerenciar Mods
+  manage: Gerenciar
   maybeCompatible: Talvez Compatível
   modloaderSelectHint: >-
     O mod suporta os seguintes carregadores de mod. Por favor, selecione um para

@@ -133,7 +133,7 @@
             class="w-[50%]"
             type="error"
           >
-            {{ errorText ?? error }}
+            {{ errorText }}
             <div>
               {{ error?.path }}
             </div>
@@ -169,14 +169,11 @@ import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
 const { parseInstanceFiles } = useService(InstanceIOServiceKey)
-const updateData = async (man: CreateInstanceManifest) => {
-  await update(
+const onManifestSelect = async (man: CreateInstanceManifest) => {
+  update(
     man.options,
     man.isIsolated ? parseInstanceFiles(man.path, type.value as any) : Promise.resolve([]),
   )
-}
-const onManifestSelect = async (man: CreateInstanceManifest) => {
-  updateData(man)
   nextTick().then(() => {
     step.value += 1
   })
@@ -247,11 +244,11 @@ const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
         step.value = 2
       })
     }
-    if (param.type === 'modpack') {
+    if (param.format === 'modpack') {
       onSelectModpack(param.path).then(after)
-    } else if (param.type === 'ftb') {
+    } else if (param.format === 'ftb') {
       onSelectFTB(param.manifest).then(after)
-    } else if (param.type === 'manifest') {
+    } else if (param.format === 'manifest') {
       onSelectManifest(param.manifest).then(after)
     }
   }
@@ -378,7 +375,7 @@ onPeerService('share', (event) => {
       title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
       more() {
         if (!isShown.value && event.manifest) {
-          show({ type: 'manifest', manifest: event.manifest })
+          show({ format: 'manifest', manifest: event.manifest })
         }
       },
     })

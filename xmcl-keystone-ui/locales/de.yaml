@@ -814,7 +814,7 @@ mod:
   incompatibleHintDescription: |-
     Möglicherweise fehlen einige Mod-Abhängigkeiten. 
     Oder einige Abhängigkeitsversionen stimmen nicht überein.
-  manage: Mods verwalten
+  manage: Verwalten
   maybeCompatible: Möglicherweise kompatibel.
   modloaderSelectHint: |-
     Der Mod unterstützt folgende Mod-Loader. 

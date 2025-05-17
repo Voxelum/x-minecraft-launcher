@@ -69,8 +69,9 @@
             v-if="!loading"
             :version="getItemVersion(row.index)"
             :updating="updating"
+            :color="cardColor"
             :duplicating="duplicating"
-            :outlined="row.index === 1"
+            :outlined="true"
             :no-action="row.index === 1 || currentVersion?.id === getItemVersion(row.index).id"
             :downgrade="isItemDowngrade(row.index)"
             @changelog="$emit('changelog', getItemVersion(row.index))"
@@ -93,6 +94,7 @@
         {{ header?.type === 'modrinth' ? 'Modrinth' : header?.type === 'curseforge' ? 'Curseforge' : 'FTB' }}
       </v-subheader>
       <HomeUpstreamHeader
+        :color="cardColor"
         :value="header"
       />
     </div>
@@ -104,6 +106,8 @@ import HomeUpstreamHeader, { UpstreamHeaderProps } from './HomeUpstreamHeader.vu
 import HomeUpstreamVersion, { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
 import { getEl } from '@/util/el'
+import { injection } from '@/util/inject'
+import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   duplicating?: boolean
@@ -118,6 +122,7 @@ const props = defineProps<{
 const emit = defineEmits(['update', 'duplicate', 'changelog', 'update:onlyCurrentVersion'])
 
 const { t } = useI18n()
+const { cardColor } = injection(kTheme)
 const _only = useVModel(props, 'onlyCurrentVersion', emit)
 const isDowngrade = (current: string, target: string) => {
   const da = new Date(current)

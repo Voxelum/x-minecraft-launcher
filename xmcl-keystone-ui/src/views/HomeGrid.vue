@@ -1,133 +1,75 @@
 <template>
-  <div
-    ref="scrollElement"
-    class="relative mx-3 select-none"
+  <GridLayout
+    class="z-1"
+    :layout.sync="layout"
+    :responsive-layouts="layouts"
+    :is-draggable="true"
+    :cols="cols"
+    :col-num="12"
+    :row-height="32"
+    :is-resizable="true"
+    :responsive="true"
+    :vertical-compact="true"
+    :use-css-transforms="true"
+    @breakpoint-changed="onBreakpoint"
   >
-    <HomeDatabaseError />
-    <GridLayout
-      class="z-1 mt-3"
-      :layout.sync="layout"
-      :responsive-layouts="layouts"
-      :is-draggable="true"
-      :cols="cols"
-      :col-num="12"
-      :row-height="32"
-      :is-resizable="true"
-      :responsive="true"
-      :vertical-compact="true"
-      :use-css-transforms="true"
-      @breakpoint-changed="onBreakpoint"
+    <GridItem
+      v-for="item in layout"
+      :key="item.i"
+      :x="item.x"
+      :y="item.y"
+      :w="item.w"
+      :h="item.h"
+      :min-w="item.minW"
+      :min-h="item.minH"
+      :i="item.i"
+      drag-allow-from=".v-card__title"
+      drag-ignore-from=".no-drag"
+      :class="{ 'screenshot-item': Number(item.i) === CardType.Screenshots }"
+      @container-resized="onResized"
+      @resized="onResized"
     >
-      <GridItem
-        v-for="item in layout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :min-w="item.minW"
-        :min-h="item.minH"
-        :i="item.i"
-        drag-allow-from=".v-card__title"
-        drag-ignore-from=".no-drag"
-        :class="{ 'screenshot-item': Number(item.i) === CardType.Screenshots }"
-        @container-resized="onResized"
-        @resized="onResized"
-      >
-        <HomeModCard
-          v-if="isType(item.i, CardType.Mod)"
-          :row-count="modRowCount"
-          :row="item.h - 4"
-        />
-        <HomeResourcePacksCard
-          v-else-if="isType(item.i, CardType.ResourcePack)"
-          :row-count="resourcePackRowCount"
-          :row="item.h - 4"
-        />
-        <HomeShaderPackCard
-          v-else-if="isType(item.i, CardType.ShaderPack)"
-        />
-        <HomeSavesCard
-          v-else-if="isType(item.i, CardType.Save)"
-          :row-count="saveRowCount"
-          :row="item.h - 4"
-        />
-        <HomeScreenshotCard
-          v-else-if="isType(item.i, CardType.Screenshots)"
-          :width="item.w"
-          :height="screenshotHeight"
-          :instance="instance"
-        />
-      </GridItem>
-    </GridLayout>
-
-    <div
-      v-if="instance.upstream || isServer || !hideNews"
-      class="my-2"
-    />
-    <HomeServerStatusBar v-if="isServer" />
-    <HomeUpstreamCurseforge
-      v-else-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
-      :id="instance.upstream.modId"
-    />
-    <HomeUpstreamModrinth
-      v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-      :id="instance.upstream.projectId"
-    />
-    <HomeUpstreamFeedTheBeast
-      v-else-if="instance.upstream && instance.upstream.type === 'ftb-modpack'"
-      :id="instance.upstream.id"
-    />
-    <!-- <GridLayout
-      v-else-if="!hideNews"
-      :layout.sync="newsLayout"
-      :is-draggable="false"
-      :col-num="12"
-      :row-height="30"
-      :is-resizable="false"
-      :responsive="false"
-      :vertical-compact="true"
-      :use-css-transforms="true"
-    >
-      <GridItem
-        v-for="item in newsLayout"
-        :key="item.i"
-        :x="item.x"
-        :y="item.y"
-        :w="item.w"
-        :h="item.h"
-        :min-w="item.minW"
-        :min-h="item.minH"
-        :i="item.i"
-      >
-        <HomeNewsCard
-          :news="news[Number(item.i)]"
-        />
-      </GridItem>
-    </GridLayout> -->
-  </div>
+      <HomeModCard
+        v-if="isType(item.i, CardType.Mod)"
+        :row-count="modRowCount"
+        :row="item.h - 4"
+      />
+      <HomeResourcePacksCard
+        v-else-if="isType(item.i, CardType.ResourcePack)"
+        :row-count="resourcePackRowCount"
+        :row="item.h - 4"
+      />
+      <HomeShaderPackCard
+        v-else-if="isType(item.i, CardType.ShaderPack)"
+      />
+      <HomeSavesCard
+        v-else-if="isType(item.i, CardType.Save)"
+        :row-count="saveRowCount"
+        :row="item.h - 4"
+      />
+      <HomeScreenshotCard
+        v-else-if="isType(item.i, CardType.Screenshots)"
+        :width="item.w"
+        :height="screenshotHeight"
+        :instance="instance"
+      />
+    </GridItem>
+  </GridLayout>
 </template>
 <script lang="ts" setup>
-import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
+import { useLocalStorageCache } from '@/composables/cache'
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
-import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
-import { DriveStep } from 'driver.js'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
-import HomeDatabaseError from './HomeCriticalError.vue'
 import HomeModCard from './HomeModCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
-import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import HomeUpstreamCurseforge from './HomeUpstreamCurseforge.vue'
-import HomeUpstreamModrinth from './HomeUpstreamModrinth.vue'
-import HomeUpstreamFeedTheBeast from './HomeUpstreamFeedTheBeast.vue'
 
-const { instance, isServer } = injection(kInstance)
+const { instance } = injection(kInstance)
 
 enum CardType {
   Mod,
@@ -239,56 +181,12 @@ const onResized = (i: string, newH: number, newW: number, newHPx: number, newWPx
   saveLayouts()
 }
 
-const hideNews = useLocalStorageCacheBool('hideNews', false)
 const getRowCount = (width: number) => width ? Math.floor((width - 34) / 30) : 7
 const resourcePackRowCount = computed(() => getRowCount(containerWidths[CardType.ResourcePack]))
 const modRowCount = computed(() => getRowCount(containerWidths[CardType.Mod]))
 const saveRowCount = computed(() => getRowCount(containerWidths[CardType.Save]))
-
-// const newsLayout = ref([] as GridItemType[])
-
-// const { refresh, news } = useMojangNews()
-// onMounted(async () => {
-//   await refresh()
-//   const layout = [] as GridItemType[]
-//   for (let i = 0; i < news.value.length; ++i) {
-//     const n = news.value[i]
-//     const titleLines = Math.floor(n.title.length / 28)
-//     const textLine = Math.floor(n.text.length / 40)
-//     const x = (layout.length * 3) % (12)
-//     let y: number
-//     if ((layout.length - 3) > 0) {
-//       const lastLayout = layout[layout.length - 3]
-//       y = lastLayout.y + lastLayout.h
-//     } else {
-//       y = 0
-//     }
-//     const newLayout = {
-//       x,
-//       y,
-//       w: 3,
-//       h: 6 + titleLines + textLine,
-//       i: i.toString(),
-//     }
-//     layout.push(newLayout)
-//   }
-//   newsLayout.value = layout
-// })
-
-const scrollElement = ref(null as HTMLElement | null)
-provide('scrollElement', scrollElement)
-
-const { t } = useI18n()
-useTutorial(computed(() => {
-  const steps: DriveStep[] = [
-    { element: '#user-avatar', popover: { title: t('userAccount.add'), description: t('tutorial.userAccountDescription') } },
-    { element: '#create-instance-button', popover: { title: t('instances.add'), description: t('tutorial.instanceAddDescription') } },
-    { element: '#launch-button', popover: { title: t('launch.launch'), description: t('tutorial.launchDescription') } },
-    { element: '#feedback-button', popover: { title: t('feedback.name'), description: t('tutorial.feedbackDescription') } },
-  ]
-  return steps
-}))
 </script>
+
 
 <style scoped>
 .vue-grid-layout {

@@ -1,12 +1,12 @@
 <template>
   <div
     class="header sticky max-w-full select-none transition-all px-2"
+    :style="{
+      'backdrop-filter': !compact ? 'none' : `blur(${blurAppBar}px)`,
+    }"
     :class="{
       'backdrop-filter': !isInFocusMode,
-      'backdrop-blur-sm': !isInFocusMode,
       compact,
-      'pt-10': !compact,
-      'pt-5': compact,
     }"
     @transitionstart="onTransitionStart"
     @transitionend="onTransitionEnd"
@@ -21,7 +21,7 @@
       }"
     >
       <div
-        class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline px-6"
+        class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline pl-6 pr-2"
       >
         <span
           :style="{
@@ -60,7 +60,7 @@
       >
         <router-view
           name="extensions"
-          class="pl-4 pr-6"
+          class="px-4"
           :class="{
             'mt-5': !compact,
             'mt-3': compact,
@@ -90,12 +90,6 @@
         }"
       />
     </div>
-    <v-divider
-      v-if="!isFocus"
-      class="transition-all divider mx-0"
-      :class="{
-      }"
-    />
   </div>
 </template>
 
@@ -109,6 +103,7 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kCompact } from '@/composables/scrollTop'
+import { kTheme } from '@/composables/theme'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { VersionServiceKey } from '@xmcl/runtime-api'
@@ -116,6 +111,7 @@ import { VersionServiceKey } from '@xmcl/runtime-api'
 const { name, runtime: version } = injection(kInstance)
 const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
+const { blurAppBar } = injection(kTheme)
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
@@ -131,7 +127,6 @@ const onTransitionEnd = (e: TransitionEvent) => {
   transitioning.value = false
 }
 
-const isFocus = useInFocusMode()
 const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {
@@ -157,7 +152,7 @@ const onDropModpack = (e: DragEvent) => {
   const file = e.dataTransfer?.files.item(0)
   if (file) {
     show({
-      type: 'modpack',
+      format: 'modpack',
       path: file.path,
     })
   }
@@ -166,6 +161,15 @@ const onDropModpack = (e: DragEvent) => {
 const overcount = ref(0)
 </script>
 <style scoped>
+
+.header {
+  padding-top: 2.5rem;
+}
+
+.header.compact {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+}
 
 .compact {
   /* background: rgba(255, 255, 255, 0.6); */

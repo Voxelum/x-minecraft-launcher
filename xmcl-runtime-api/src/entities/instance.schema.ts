@@ -60,6 +60,13 @@ export interface RuntimeVersions {
   [id: string]: undefined | string
 }
 
+export interface ModrinthSpecialUpstream {
+  type: 'modrinth-special'
+  projectId: string
+  versionId: string
+  sha1: string
+}
+
 export interface ModrinthUpstream {
   type: 'modrinth-modpack'
   projectId: string
@@ -206,7 +213,7 @@ export interface InstanceData {
   upstream?: InstanceUpstream
 }
 
-export type InstanceUpstream = CurseforgeUpstream | ModrinthUpstream | FTBUpstream | PeerUpstream
+export type InstanceUpstream = CurseforgeUpstream | ModrinthUpstream | FTBUpstream | PeerUpstream | ModrinthSpecialUpstream
 
 /**
  * The instance lock schema. Represent the intermediate state of the instance files.
