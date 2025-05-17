@@ -1006,6 +1006,7 @@ serverStatus:
   refuse: §4¡El servidor lo ha rechazado!
   timeout: §4¡Conexión al servidor agotada!
 setting:
+  about: Acerca de
   allowPrerelease: Descargar Pre-lanzamientos
   allowPrereleaseDescription: Los pre-lanzamientos pueden no ser estables
   apiSets:

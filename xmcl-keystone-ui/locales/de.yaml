@@ -477,10 +477,10 @@ instance:
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs
-  prependCommand: Befehl voranstellen
-  prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   preExecCommand: Vor-Ausführungsbefehl
   preExecCommandHint: Befehl, der vor dem Start von Minecraft ausgeführt wird
+  prependCommand: Befehl voranstellen
+  prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Der Name ist erforderlich
   showInstance: Spieleordner anzeigen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
@@ -1367,6 +1367,7 @@ serverStatus:
   refuse: §4Der Server wurde abgelehnt!
   timeout: §4Es ist Zeit, sich mit dem Server zu verbinden!
 setting:
+  about: Um
   allowPrerelease: Download der vorherigen Version
   allowPrereleaseDescription: Die vorherige Version kann instabil sein
   apiSets:

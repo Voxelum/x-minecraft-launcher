@@ -1354,6 +1354,7 @@ serverStatus:
   refuse: §4Сервер отказал!
   timeout: §4Вышло время подключения к серверу!
 setting:
+  about: О
   allowPrerelease: Скачать предварительную версию
   allowPrereleaseDescription: Предварительная версия может быть нестабильной.
   apiSets:

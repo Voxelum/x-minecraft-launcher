@@ -1288,6 +1288,7 @@ serverStatus:
   refuse: §4Server rufiutato!
   timeout: §4Tmeout della conessione del server!
 setting:
+  about: Di
   allowPrerelease: Scarica la pre-release
   allowPrereleaseDescription: La pre-release potrebbe essere instabile
   apiSets:

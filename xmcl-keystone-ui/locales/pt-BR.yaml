@@ -1358,6 +1358,7 @@ serverStatus:
   refuse: §4Servidor recusado!
   timeout: §4Tempo de conexão do servidor expirado!
 setting:
+  about: Sobre
   allowPrerelease: Baixar Prerelease
   allowPrereleaseDescription: Prerelease pode ser instável
   apiSets:

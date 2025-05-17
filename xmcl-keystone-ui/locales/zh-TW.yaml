@@ -1229,6 +1229,7 @@ serverStatus:
   refuse: 伺服器中斷了連線！
   timeout: 伺服器響應超時！
 setting:
+  about: 關於
   allowPrerelease: 是否下載搶先版
   allowPrereleaseDescription: 搶先版可能不是那麼穩定
   apiSets:
