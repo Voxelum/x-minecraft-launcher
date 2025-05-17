@@ -7,12 +7,13 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
   app.registry.get(LaunchService).then((servi) => {
     servi.registerMiddleware({
       name: 'nvidia-gpu-linux',
-      async onBeforeLaunch(input, payload, output) {
+      async onBeforeLaunch(input, payload) {
         if (app.platform.os !== 'linux') return
         if (payload.side === 'server') return
+        const ops = payload.options
         const settings = await app.registry.get(kSettings)
         if (settings.enableDedicatedGPUOptimization) {
-          const env = output.extraExecOption?.env || {
+          const env = ops.extraExecOption?.env || {
             ...process.env,
           }
           const info = (await elec.getGPUInfo('basic')) as any
@@ -26,7 +27,7 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
           if (gpus.some((g) => g.vendorId === 4318)) {
             env.__NV_PRIME_RENDER_OFFLOAD = '1'
             env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
-            output.extraExecOption = { ...output.extraExecOption, env }
+            ops.extraExecOption = { ...ops.extraExecOption, env }
           }
         }
       },
