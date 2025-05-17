@@ -1302,6 +1302,7 @@ serverStatus:
   refuse: §4Serwer odmówił!
   timeout: §4Limit czasu połączenia z serwerem!
 setting:
+  about: O
   allowPrerelease: Pobierz wersję wstępną
   allowPrereleaseDescription: Wersja przedpremierowa może być niestabilna
   apiSets:

@@ -15,6 +15,7 @@
       <SettingNetwork />
       <SettingYggdrasilServices />
     </div>
+    <SettingAbout />
     <SettingUpdateInfoDialog />
     <SettingMigrationDialog />
   </v-list>
@@ -28,6 +29,7 @@ import SettingGeneral from './SettingGeneral.vue'
 import SettingMigrationDialog from './SettingMigrationDialog.vue'
 import SettingGlobal from './SettingGlobal.vue'
 import SettingYggdrasilServices from './SettingYggdrasilServices.vue'
+import SettingAbout from './SettingAbout.vue'
 import { usePresence } from '@/composables/presence'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 import SettingNetwork from './SettingNetwork.vue'

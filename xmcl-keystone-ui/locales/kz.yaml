@@ -456,6 +456,8 @@ server:
   exportToFolder: Export To Folder
   hostRequired: Please enter the server ip address
   upload: Upload Server
+setting:
+  about: About
 setup:
   error:
     invalidChar: >-

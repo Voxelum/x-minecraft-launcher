@@ -13,6 +13,7 @@ import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
 import { ZipTask } from '../util/zip'
+import { kGFW } from '~/gfw'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {
@@ -57,6 +58,7 @@ export class BaseService extends AbstractService implements IBaseService {
       env: this.app.env,
       version: this.app.version,
       build: this.app.build,
+      gfw: (await this.app.registry.get(kGFW)).inside,
     }
   }
 

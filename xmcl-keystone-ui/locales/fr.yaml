@@ -464,10 +464,10 @@ instance:
   openCrashReportFolder: Ouvrir le dossier de rapport de crash
   openLogFolder: Ouvrir le dossier de logs
   playtime: Temps de jeu
-  prependCommand: Ajouter une commande
-  prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   preExecCommand: Commande de pré-exécution
   preExecCommandHint: Commande à exécuter avant le lancement de Minecraft
+  prependCommand: Ajouter une commande
+  prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   requireName: Le nom est requis
   showInstance: Afficher le dossier du jeu
   useSharedOptions: Utiliser les paramètres de jeu partagés
@@ -1313,6 +1313,7 @@ serverStatus:
   refuse: §4Serveur refusé !
   timeout: §4Timeout de la connexion !
 setting:
+  about: À propos
   allowPrerelease: Télécharger les bêtas
   allowPrereleaseDescription: La bêta peut être instable
   apiSets:

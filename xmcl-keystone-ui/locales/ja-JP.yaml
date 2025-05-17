@@ -1199,6 +1199,7 @@ serverStatus:
   refuse: §4サーバーが拒否しました!
   timeout: §4サーバーへの接続がタイムアウト!
 setting:
+  about: について
   allowPrerelease: プレリリース版をダウンロード
   allowPrereleaseDescription: プレリリース版は不安定かもしれません
   apiSets:
