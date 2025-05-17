@@ -1387,6 +1387,7 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
+  about: About
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting

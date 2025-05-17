@@ -445,10 +445,10 @@ instance:
   neverPlayed: 从未游玩
   openLogFolder: 打开日志文件夹
   playtime: 游玩时长
-  prependCommand: 前置命令
-  prependCommandHint: 这将在启动命令之前添加此命令
   preExecCommand: 启动前执行命令
   preExecCommandHint: 在启动 Minecraft 之前要执行的命令
+  prependCommand: 前置命令
+  prependCommandHint: 这将在启动命令之前添加此命令
   requireName: 必须填写名称
   showInstance: 打开文件夹
   useSharedOptions: 共享 Minecraft 设置
@@ -1215,6 +1215,7 @@ serverStatus:
   refuse: 服务器断开了连接！
   timeout: 服务器响应超时！
 setting:
+  about: 关于
   allowPrerelease: 是否下载抢先版
   allowPrereleaseDescription: 抢先版可能不是那么稳定
   apiSets:

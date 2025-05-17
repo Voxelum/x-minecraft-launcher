@@ -1299,6 +1299,7 @@ serverStatus:
   refuse: §4A szerver elutasítot!
   timeout: §4Szerver csatlakozási időtúllépés!
 setting:
+  about: Körülbelül
   allowPrerelease: Előzetes kiadás letöltése
   allowPrereleaseDescription: Az előzetes kiadás instabil lehet
   apiSets:

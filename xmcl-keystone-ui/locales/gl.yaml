@@ -480,6 +480,7 @@ server:
   onlineMode: Modo en liña
   upload: Servidor de carga
 setting:
+  about: Sobre
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.
   backgroundMusic: Tema Música de fondo

@@ -1221,6 +1221,7 @@ serverStatus:
   refuse: §4SERVR REFUSD!
   timeout: §4CONNECT SERVR TIEMOUT!
 setting:
+  about: About
   allowPrerelease: DOWNLOAD PRERELEASE
   allowPrereleaseDescription: PRERELEASE MITE BE UNSTABLE
   apiSets:
