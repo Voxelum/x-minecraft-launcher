@@ -70,25 +70,19 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     throw e
   }
 
-  async function install(runtime: RuntimeVersions, jar = false) {
+  async function install(runtime: RuntimeVersions) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
     const local = versions.value
-    const localMinecraft = local.find(v => v.id === minecraft)
-    if (!localMinecraft || jar) {
-      const metadata = mcVersions.versions.find(v => v.id === minecraft)
-      if (metadata) {
-        await installMinecraft(metadata, 'client')
-      } else {
-        const exception = new AnyError('InstallMinecraftClientError', `Cannot find the minecraft version ${minecraft}`, {}, {
-          minecraft,
-          jar,
-        })
-        appInsights.trackException({ exception })
-        throw exception
-      }
+    const metadata = mcVersions.versions.find(v => v.id === minecraft)
+    if (metadata) {
+      await installMinecraft(metadata, 'client')
     } else {
-      await installMinecraftJar(localMinecraft.id, 'client')
+      const exception = new AnyError('InstallMinecraftClientError', `Cannot find the minecraft version ${minecraft}`, {}, {
+        minecraft,
+      })
+      appInsights.trackException({ exception })
+      throw exception
     }
 
     const resolvedMcVersion = await resolveLocalVersion(minecraft).catch((e) => {
@@ -182,23 +176,19 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     return minecraft
   }
 
-  async function installServer(runtime: RuntimeVersions, path: string, versionId?: string) {
+  async function installServer(runtime: RuntimeVersions, path: string) {
     const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
 
-    if (versionId) {
-      await installMinecraftJar(minecraft, 'server')
+    const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
+    const metadata = mcVersions.versions.find(v => v.id === minecraft)
+    if (metadata) {
+      await installMinecraft(metadata, 'server')
     } else {
-      const mcVersions = await getSWRV(getMinecraftVersionsModel(), cfg)
-      const metadata = mcVersions.versions.find(v => v.id === minecraft)
-      if (metadata) {
-        await installMinecraft(metadata, 'server')
-      } else {
-        const exception = new AnyError('InstallServerError', `Cannot find the minecraft version ${minecraft}`, {}, {
-          minecraft,
-        })
-        appInsights.trackException({ exception })
-        throw exception
-      }
+      const exception = new AnyError('InstallServerError', `Cannot find the minecraft version ${minecraft}`, {}, {
+        minecraft,
+      })
+      appInsights.trackException({ exception })
+      throw exception
     }
 
     if (forge) {
