@@ -23,6 +23,119 @@ export enum BackgroundType {
   VIDEO = 'video',
 }
 
+// Define interface for theme presets
+export interface ThemePreset {
+  name: string
+  description: string
+  backgroundPreviewUrl: string         // URL for preview display
+  backgroundType: BackgroundType
+  backgroundColorOverlay: boolean
+  backgroundImageFit?: 'cover' | 'contain' // How the background image should fit
+  colorPalette: string[]                // For UI display
+  colors: {
+    lightAppBarColor: string
+    lightSideBarColor: string
+    darkAppBarColor: string
+    darkSideBarColor: string
+    darkPrimaryColor: string
+    darkBackground: string
+    darkInfoColor: string
+    darkErrorColor: string
+    darkWarningColor: string
+    darkSuccessColor: string
+    darkAccentColor: string
+    darkCardColor: string
+    lightPrimaryColor: string
+    lightBackground: string
+    lightInfoColor: string
+    lightErrorColor: string
+    lightWarningColor: string
+    lightSuccessColor: string
+    lightAccentColor: string
+    lightCardColor: string
+  }
+  blur: number
+  blurSidebar: number
+  blurAppBar: number
+}
+
+// Builtin theme presets
+export const BUILTIN_THEME_PRESETS: ThemePreset[] = [
+  {
+    name: 'Minecraft Classic',
+    description: 'A clean and modern theme with green accents, inspired by Minecraft\'s classic look.',
+    backgroundPreviewUrl: `http://launcher/media?path=D:\\\\1.jpg`,
+    backgroundType: BackgroundType.IMAGE,
+    backgroundColorOverlay: true,
+    backgroundImageFit: 'cover',
+    colorPalette: ['#4caf50', '#00e676', '#121212', '#212121', '#4CAF50'],
+    colors: {
+      darkAppBarColor: '#111111FF',
+      darkSideBarColor: '#111111FF',
+      darkPrimaryColor: '#4caf50',
+      darkBackground: '#121212F2',
+      darkInfoColor: '#2196F3',
+      darkErrorColor: '#FF5252',
+      darkWarningColor: '#FB8C00',
+      darkSuccessColor: '#4CAF50',
+      darkAccentColor: '#00e676',
+      darkCardColor: '#212121CC',
+      lightPrimaryColor: '#1976D2',
+      lightBackground: '#FFFFFFFF',
+      lightInfoColor: '#2196F3',
+      lightErrorColor: '#FF5252',
+      lightWarningColor: '#FB8C00',
+      lightSuccessColor: '#4CAF50',
+      lightAccentColor: '#82B1FF',
+      lightCardColor: '#F3F3F390',
+      lightAppBarColor: '#e0e0e0FF',
+      lightSideBarColor: '#FFFFFFFF',
+    },
+    blur: 3,
+    blurSidebar: 5,
+    blurAppBar: 5
+  },
+  {
+    name: 'Nether Theme',
+    description: 'A dark red theme inspired by the Nether dimension with volcanic accents.',
+    backgroundPreviewUrl: 'http://launcher/media?path=D:\\\\1.jpg',
+    backgroundType: BackgroundType.IMAGE,
+    backgroundColorOverlay: true,
+    backgroundImageFit: 'cover',
+    colorPalette: ['#d32f2f', '#ff1744', '#212121', '#b71c1c', '#ff5252'],
+    colors: {
+      darkAppBarColor: '#1F1F1FFF',
+      darkSideBarColor: '#1F1F1FFF',
+      darkPrimaryColor: '#d32f2f',
+      darkBackground: '#212121F2',
+      darkInfoColor: '#2196F3',
+      darkErrorColor: '#FF5252',
+      darkWarningColor: '#FB8C00',
+      darkSuccessColor: '#4CAF50',
+      darkAccentColor: '#ff1744',
+      darkCardColor: '#1F1F1FCC',
+      lightPrimaryColor: '#d32f2f',
+      lightBackground: '#FFFFFFFF',
+      lightInfoColor: '#2196F3',
+      lightErrorColor: '#FF5252',
+      lightWarningColor: '#FB8C00',
+      lightSuccessColor: '#4CAF50',
+      lightAccentColor: '#ff1744',
+      lightCardColor: '#F3F3F390',
+      lightAppBarColor: '#e0e0e0FF',
+      lightSideBarColor: '#FFFFFFFF',
+    },
+    blur: 3,
+    blurSidebar: 5,
+    blurAppBar: 5
+  }
+]
+
+// Function to get a theme preset by name
+export function getThemePreset(name: string): ThemePreset | undefined {
+  return BUILTIN_THEME_PRESETS.find(preset => preset.name === name);
+}
+
 export interface UIThemeData {
   name: string
 
@@ -431,6 +544,95 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     }
   }
 
+  /**
+   * Apply a theme preset to the current theme
+   * @param preset The theme preset to apply
+   * @param saveThemeName Whether to save the theme with a preset-specific name
+   * @returns The name of the theme after applying preset
+   */
+  function applyThemePreset(preset: ThemePreset, saveThemeName = true) {
+    const theme = currentTheme.value;
+    if (!theme) return '';
+
+    // Update colors
+    Object.assign(theme.colors, preset.colors);
+    
+    // Update other theme properties
+    theme.blur = preset.blur;
+    theme.blurSidebar = preset.blurSidebar;
+    theme.blurAppBar = preset.blurAppBar;
+    theme.backgroundColorOverlay = preset.backgroundColorOverlay;
+    theme.backgroundType = preset.backgroundType;
+    if (preset.backgroundImageFit) {
+      theme.backgroundImageFit = preset.backgroundImageFit;
+    }
+    
+    // Apply background image if the preset has one
+    if (preset.backgroundPreviewUrl && preset.backgroundType === BackgroundType.IMAGE) {
+      // If it's an external URL and starts with http (not the launcher's local protocol), we can set it directly
+      if (preset.backgroundPreviewUrl.startsWith('http') && !preset.backgroundPreviewUrl.startsWith('http://launcher')) {
+        theme.backgroundImage = { 
+          url: preset.backgroundPreviewUrl, 
+          type: 'image',
+          mimeType: 'image/jpeg' 
+        };
+      }
+      // For local files or launcher's media protocol, we would need to use addMedia, 
+      // but we'll store the URL for later reference
+      else {
+        console.log(`Background image URL ${preset.backgroundPreviewUrl} will need to be loaded separately.`);
+        // We could store this URL somewhere in a custom property if needed:
+        // theme._pendingBackgroundUrl = preset.backgroundPreviewUrl;
+      }
+    }
+    
+    // Generate theme name
+    const themeName = saveThemeName ? 
+      `preset-${preset.name.toLowerCase().replace(/\s+/g, '-')}` : 
+      theme.name;
+    
+    // Apply the theme name if requested
+    if (saveThemeName) {
+      theme.name = themeName;
+      selectedThemeName.value = themeName;
+    }
+    
+    // Save the theme
+    writeTheme(theme.name, theme);
+    
+    return themeName;
+  }
+
+  /**
+   * Load a background image for a theme preset that needs local file access
+   * This should be called after the initial setup when file access is available
+   * @param presetName The name of the preset to load the background image for
+   */
+  async function loadBackgroundImageForPreset(presetName: string) {
+    const preset = BUILTIN_THEME_PRESETS.find(p => p.name === presetName);
+    if (!preset) return;
+    
+    // Only process local launcher paths (not HTTP URLs)
+    if (preset.backgroundPreviewUrl && 
+        preset.backgroundPreviewUrl.startsWith('http://launcher') &&
+        preset.backgroundType === BackgroundType.IMAGE) {
+      
+      try {
+        // Extract the actual path from the launcher URL
+        const path = decodeURIComponent(
+          preset.backgroundPreviewUrl.replace('http://launcher/media?path=', '')
+            .replace(/\\\\/g, '\\')
+        );
+        
+        // Load the background image using the addMedia function
+        await setBackgroundImage(path);
+        console.log(`Successfully loaded background image for preset ${presetName}`);
+      } catch (error) {
+        console.error(`Failed to load background image for preset ${presetName}:`, error);
+      }
+    }
+  }
+
   watch(selectedThemeName, async (theme) => {
     const t = readTheme(theme)
     if (t) {
@@ -679,22 +881,18 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   return {
     isDark,
+    darkTheme,
     currentTheme,
-    backgroundImage,
-    backgroundImageFit,
-    backgroundMusic,
+    selectedThemeName,
+
+    backgroundColorOverlay,
     backgroundType,
+    backgroundImageFit,
     particleMode,
+    blur,
     blurSidebar,
     blurAppBar,
     volume,
-    blur,
-    darkTheme,
-    exportTheme: _exportTheme,
-    importTheme: _importTheme,
-    backgroundImageOverride,
-    backgroundImageOverrideOpacity,
-    backgroundColorOverlay,
 
     appBarColor,
     sideBarColor,
@@ -706,16 +904,24 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     successColor,
     accentColor,
     cardColor,
-    resetToDefault,
-
     font,
-    setFont,
     fontSize,
-    resetFont,
 
-    removeMusic,
-    addMusic,
+    backgroundImage,
+    backgroundMusic,
+
     setBackgroundImage,
+    addMusic,
+    removeMusic,
     clearBackgroundImage,
+    resetDarkToDefault,
+    resetLightToDefault,
+    resetToDefault,
+    setFont,
+    resetFont,
+    applyThemePreset,
+    loadBackgroundImageForPreset,
+    exportTheme: _exportTheme,
+    importTheme: _importTheme,
   }
 }

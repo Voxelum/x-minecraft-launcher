@@ -118,7 +118,7 @@ import SetupFooter from './SetupFooter.vue'
 import SetupAccount from './SetupAccount.vue'
 import SetLocale from './SetupLocale.vue'
 import { kSettingsState } from '@/composables/setting'
-import { kTheme } from '@/composables/theme'
+import { kTheme, BackgroundType } from '@/composables/theme'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary } = useService(BaseServiceKey)
@@ -154,6 +154,7 @@ const data = reactive({
   loading: false,
   drives: [] as Drive[],
   theme: 'system',
+  themePreset: null,
 })
 provide('setup', data)
 bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
@@ -183,7 +184,7 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { darkTheme } = injection(kTheme)
+const { darkTheme, currentTheme, loadBackgroundImageForPreset } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   darkTheme.value = theme
@@ -206,6 +207,22 @@ async function setup() {
       dismiss()
     }
   }, { immediate: true })
+  
+  // If a theme preset was selected, it's already applied and saved via the applyThemePreset function
+  if (data.themePreset) {
+    console.log('Setup function - applying theme preset:', data.themePreset.name);
+    
+    // Schedule background image loading if it's needed (this will be executed once file system is available)
+    if (data.themePreset.backgroundType === BackgroundType.IMAGE) {
+      try {
+        // Load the background image for the preset if needed
+        loadBackgroundImageForPreset(data.themePreset.name);
+      } catch (error) {
+        console.error('Failed to load background image for preset:', error);
+      }
+    }
+  }
+  
   data.loading = true
 }
 </script>

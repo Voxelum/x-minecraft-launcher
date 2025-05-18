@@ -1379,6 +1379,14 @@ setting:
   themeSelectFont: Select Font
   themeShare: Share Theme
   themeShareDescription: You can share the theme with your friend.
+  themePresets: Theme Presets
+  themePresetsDescription: Choose a theme preset to customize the look and feel
+  themePresetClassicDescription: >-
+    The Classic theme features a green and dark color scheme that matches 
+    the traditional Minecraft feel. Perfect for players who enjoy the original look.
+  themePresetNetherDescription: >-
+    The Nether theme has a dramatic red and dark color palette inspired by
+    the Nether dimension, giving your launcher a more intense atmosphere.
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
@@ -1412,6 +1420,8 @@ setup:
     looks like apps like Discord. It's also inspired by other game launcher apps
     like Steam, etc.
   defaultPath: Default Path
+  themePresetClassicDescription: A clean and modern theme with green accents, inspired by Minecraft's classic look.
+  themePresetNetherDescription: A dark red theme inspired by the Nether dimension with volcanic accents.
   error:
     badDataRoot: Invalid directory for launcher data! Please try another directory!
     exists: >-

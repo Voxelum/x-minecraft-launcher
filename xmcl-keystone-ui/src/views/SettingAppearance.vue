@@ -464,6 +464,60 @@
         {{ t("setting.themeImport") }}
       </v-btn>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('setting.themePresets')
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('setting.themePresetsDescription')
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+
+    <!-- Theme Presets Selection -->
+    <v-item-group
+      v-model="selectedThemePreset"
+      class="mx-auto flex max-w-[90vw] items-center justify-center gap-4 p-2 mb-4"
+    >
+      <v-item
+        v-for="(preset, index) in themePresets"
+        :key="index"
+        v-slot="{ active, toggle }"
+      >
+        <v-card
+          :elevation="active ? 8 : 0"
+          @click="toggle"
+          class="theme-preset-card"
+          :style="{ backgroundImage: `url(${preset.backgroundPreviewUrl})`, backgroundSize: 'cover' }"
+        >
+          <div class="theme-preset-content pa-4">
+            <h3 class="theme-preset-title white--text">{{ preset.name }}</h3>
+            <div class="theme-preset-colors d-flex mt-2">
+              <div
+                v-for="(color, i) in preset.colorPalette"
+                :key="i"
+                class="color-sample mr-1"
+                :style="{ backgroundColor: color }"
+              ></div>
+            </div>
+          </div>
+        </v-card>
+      </v-item>
+    </v-item-group>
+
+    <div class="text-center mb-4">
+      <v-btn
+        color="primary"
+        @click="applySelectedThemePreset"
+      >
+        {{ t('setting.applyThemePreset') }}
+      </v-btn>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -473,7 +527,7 @@ import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { kEnvironment } from '@/composables/environment'
 import { useService } from '@/composables/service'
 import { kSettingsState } from '@/composables/setting'
-import { BackgroundType, kTheme } from '@/composables/theme'
+import { BackgroundType, kTheme, BUILTIN_THEME_PRESETS } from '@/composables/theme'
 import { kUILayout } from '@/composables/uiLayout'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
@@ -482,7 +536,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, fontSize, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { blurSidebar, blurAppBar, fontSize, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme, applyThemePreset, loadBackgroundImageForPreset } = injection(kTheme)
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
@@ -648,4 +702,61 @@ function onRevertFont() {
   resetFont()
 }
 
+// Theme presets
+const themePresets = ref(BUILTIN_THEME_PRESETS)
+const selectedThemePreset = ref(0)
+
+// Apply the selected theme preset
+function applySelectedThemePreset() {
+  const preset = themePresets.value[selectedThemePreset.value]
+  if (preset) {
+    applyThemePreset(preset)
+    
+    // If the preset has a background image and it's from an external URL, apply it
+    if (preset.backgroundType === BackgroundType.IMAGE && preset.backgroundPreviewUrl) {
+      loadBackgroundImageForPreset(preset.name)
+        .catch(err => console.error('Failed to load background image:', err))
+    }
+    
+    // Show success notification
+    window.dispatch('notification', `${t('setting.themePresetApplied')}: ${preset.name}`)
+  }
+}
+
 </script>
+<style lang="css" scoped>
+.theme-preset-card {
+  width: 240px;
+  height: 160px;
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.theme-preset-card:hover {
+  transform: translateY(-5px);
+}
+
+.theme-preset-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
+}
+
+.theme-preset-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.color-sample {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+}
+</style>
