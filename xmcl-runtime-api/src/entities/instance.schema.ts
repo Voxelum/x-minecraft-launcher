@@ -132,7 +132,7 @@ export interface InstanceData {
   /**
    * The resolution of the game
    */
-  resolution?: { width: number; height: number; fullscreen: boolean } | null
+  resolution?: { width: number; height: number; fullscreen: boolean }
   /**
    * Can be override by global setting
     */

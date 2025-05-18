@@ -21,6 +21,7 @@ export class Settings implements SettingSchema {
   globalHideLauncher = false
   globalShowLog = false
   globalEnv: Record<string, string> = {}
+  globalResolution: { width?: number; height?: number; fullscreen?: boolean } = {}
   discordPresence = false
   developerMode = false
   disableTelemetry = false
@@ -103,6 +104,7 @@ export class Settings implements SettingSchema {
     this.linuxTitlebar = config.linuxTitlebar
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
+    this.globalResolution = config.globalResolution
   }
 
   developerModeSet(developerMode: boolean) {
@@ -202,6 +204,10 @@ export class Settings implements SettingSchema {
     this.replaceNatives = replace
   }
 
+  globalResolutionSet(resolution: { width?: number; height?: number; fullscreen?: boolean }) {
+    this.globalResolution = resolution
+  }
+
   diskFullErrorSet(diskFullError: boolean) {
     this.diskFullError = diskFullError
   }
@@ -228,6 +234,7 @@ export class Settings implements SettingSchema {
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
+    globalResolution: { width?: number; height?: number; fullscreen?: boolean }
   }) {
     this.globalMinMemory = settings.globalMinMemory
     this.globalMaxMemory = settings.globalMaxMemory
@@ -242,5 +249,6 @@ export class Settings implements SettingSchema {
     this.globalPrependCommand = settings.globalPrependCommand
     this.globalPreExecuteCommand = settings.globalPreExecuteCommand
     this.globalEnv = settings.globalEnv
+    this.globalResolution = settings.globalResolution
   }
 }

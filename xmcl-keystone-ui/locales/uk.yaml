@@ -418,7 +418,9 @@ instance:
   fileApiHint: >-
     URL-адреса для синхронізації файлів екземпляра з віддаленого сервера
     конфігурації.
+  fullscreen: Повноцінний
   gameVersion: Версія гри
+  height: Висота
   icon: Іконка профілю
   iconHint: Іконка може бути файлом або посиланням на URL в Інтернеті.
   iconUrl: URL іконки
@@ -442,6 +444,8 @@ instance:
   prependCommand: Додати команду на початку
   prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Назва обов'язкова
+  resolution: Роздільна здатність вікон
+  resolutionPreset: Позначена роздільна здатність
   showInstance: Показати папку гри
   useSharedOptions: Використовувати спільні налаштування гри
   useSharedOptionsDesc: Це зв'яже options.txt зі спільним файлом для всіх екземплярів
@@ -452,6 +456,7 @@ instance:
   vmOptionsHint: Додаткові аргументи для передачі JVM
   vmVar: Змінні середовища
   vmVarHint: Натисніть кнопку +, щоб додати змінні середовища
+  width: Ширина
 instanceAge:
   older: Старші
   threeDay: Протягом трьох днів

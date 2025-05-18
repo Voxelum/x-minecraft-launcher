@@ -22,7 +22,7 @@ export function createTemplate(): Instance {
     path: '',
     name: '',
 
-    resolution: { width: 800, height: 400, fullscreen: false },
+    resolution: undefined,
     minMemory: undefined,
     maxMemory: undefined,
     vmOptions: undefined,

@@ -424,7 +424,9 @@ instance:
   fileApiHint: >-
     Adres URL do synchronizacji plików instancji ze zdalnego serwera
     konfiguracji.
+  fullscreen: Pełny ekran
   gameVersion: Wersja gry
+  height: Wysokość
   icon: Ikona profilu
   iconHint: Ikoną może być plik lub łącze internetowe.
   iconUrl: Ikona Adres URL
@@ -450,6 +452,8 @@ instance:
     Spowoduje to dodanie tego polecenia przed wszystkimi poleceniami
     uruchamiania
   requireName: Nazwa jest wymagana
+  resolution: Rozdzielczość okna
+  resolutionPreset: Postarowani rezolucji
   showInstance: Pokaż folder gry
   useSharedOptions: Użyj udostępnionych ustawień gry
   useSharedOptionsDesc: >-
@@ -464,6 +468,7 @@ instance:
   vmOptionsHint: Dodatkowe argumenty przekazywane do JVM
   vmVar: Zmienne środowiskowe
   vmVarHint: Kliknij przycisk, aby dodać zmienne środowiskowe
+  width: Szerokość
 instanceAge:
   older: Starszy
   threeDay: W trzy dni

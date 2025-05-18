@@ -264,6 +264,8 @@ instance:
   changeIcon: Cambiar icona
   deleteFailed: Produciuse un erro ao eliminar a instancia
   deleteFailedPermission: Outro programa ocupou o ficheiro
+  fullscreen: Pantalla completa
+  height: Altura
   iconHint: A icona pode ser un ficheiro ou unha ligazón URL de Internet.
   installModpack: Actualizar a instancia de Modpack
   launchServer: Inicia o servidor localhost
@@ -273,12 +275,15 @@ instance:
   linkFileTitle: Estás seguro de ligar {file}?
   prependCommand: Comando anteposto
   prependCommandHint: Isto antepoñerá este comando antes de todos os comandos de inicio
+  resolution: Resolución da xanela
+  resolutionPreset: Resolución preestablecida
   useSharedOptions: Usa a configuración compartida do xogo
   useSharedOptionsDesc: Isto enlazará o options.txt a un ficheiro compartido na instancia
   useSharedServersList: Usa a lista de servidores compartidos
   useSharedServersListDesc: Isto enlazará o servers.dat a un ficheiro compartido na instancia
   vmVar: Variables de ambiente
   vmVarHint: Fai clic no botón para engadir variables de ambiente
+  width: Ancho
 instanceDiscover:
   gameFolder: Descubre {count} cartafoles de xogos
   instanceFolder: Atopáronse {count} instancias

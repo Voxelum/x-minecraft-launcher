@@ -20,7 +20,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
     globalDisableAuthlibInjector, globalDisableElyByAuthlib,
     globalPrependCommand, globalPreExecuteCommand,
-    globalEnv,
+    globalEnv, globalResolution,
   } = useGlobalSettings()
 
   const data = reactive({
@@ -67,6 +67,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
     icon: instance.value?.icon,
 
+    resolution: instance.value?.resolution,
+
     loading: true,
   })
 
@@ -82,7 +84,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const isGlobalDisableAuthlibInjector = computed(() => data.disableAuthlibInjector === undefined)
   const isGlobalPrependCommand = computed(() => data.prependCommand === undefined)
   const isGlobalPreExecuteCommand = computed(() => data.preExecuteCommand === undefined)
-  
+  const isGlobalResolution = computed(() => data.resolution === undefined)
+
   const resetAssignMemory = () => {
     set(data, 'assignMemory', undefined)
     set(data, 'minMemory', undefined)
@@ -99,6 +102,11 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   }
   const resetPreExecuteCommand = () => {
     set(data, 'preExecuteCommand', undefined)
+    saveJIT()
+  }
+
+  const resetResolution = () => {
+    set(data, 'resolution', undefined)
     saveJIT()
   }
   const resetMcOptions = () => {
@@ -189,6 +197,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   const javaPath = computed({
     get: () => data.javaPath,
     set: (v) => { data.javaPath = v; saveJIT() },
+  })
+  const resolution = computed({
+    get: () => data.resolution ?? globalResolution.value,
+    set: (v) => { set(data, 'resolution', v); saveJIT() },
   })
   const env = computed({
     get: () => data.env,
@@ -287,6 +299,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       author: data.author,
       description: data.description,
       env: data.env,
+      resolution: data.resolution,
     } as EditInstanceOptions
     if (instance.value.server) {
       payload.server = instance.value?.server
@@ -308,6 +321,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       version: data.version,
       runtime: data.runtime,
       icon: data.icon,
+      resolution: data.resolution,
     }
     if (!instance.value?.server) {
       await edit({
@@ -368,6 +382,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.javaPath = current.java
       data.assignMemory = current.assignMemory
       data.fastLaunch = current.fastLaunch
+      data.resolution = current.resolution
     }
   }
 
@@ -406,10 +421,13 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     resetDisableElyByAuthlib,
     resetPrependCommand,
     resetPreExecuteCommand,
+    resetResolution,
     minMemory,
     maxMemory,
     mcOptions,
     vmOptions,
+    resolution,
+    isGlobalResolution,
     data,
     save,
     load,

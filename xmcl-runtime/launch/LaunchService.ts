@@ -220,6 +220,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       launcherName: options?.launcherName ?? launcherName,
       prependCommand: prepend,
       yggdrasilAgent,
+      resolution: options.resolution,
       useHashAssetsIndex: true,
       platform: {
         arch: process.arch,

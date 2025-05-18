@@ -432,6 +432,8 @@ instance:
   gameVersion: 遊戲版本
   icon: 實例圖示
   iconHint: 該圖示可以是檔案或網際網路 URL 連結。
+  fullscreen: 全螢幕
+  height: 高度
   iconUrl: 圖片 URL
   includeVersion: 包含遊戲版本
   installModpack: 從模組包更新實例
@@ -453,6 +455,8 @@ instance:
   prependCommand: 前置命令
   prependCommandHint: 這將在所有啟動命令之前添加此命令
   requireName: 必須填寫名稱
+  resolution: 分辨率
+  resolutionPreset: 分辨率預設
   showInstance: 開啟資料夾
   useSharedOptions: 共享 Minecraft 設定
   useSharedOptionsDesc: 這會將 options.txt 連結到跨實例的共用檔案
@@ -463,6 +467,7 @@ instance:
   vmOptionsHint: 額外的 JVM 的啟動引數
   vmVar: 環境變數
   vmVarHint: 按一下按鈕新增環境變數
+  width: 寬度
 instanceAge:
   older: 三天前
   threeDay: 三天內

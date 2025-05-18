@@ -470,6 +470,23 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       result.disableElybyAuthlib = options.disableElybyAuthlib
     }
 
+    if ('resolution' in options) {
+      // Compare resolution values
+      const currentRes = state.resolution
+      const newRes = options.resolution
+
+      if (!options.resolution) {
+        result.resolution = undefined
+      } else if ((currentRes === undefined && newRes !== undefined) ||
+        (currentRes !== undefined && newRes === undefined) ||
+        (currentRes && newRes &&
+          (currentRes.fullscreen !== newRes.fullscreen ||
+            currentRes.width !== newRes.width ||
+            currentRes.height !== newRes.height))) {
+        result.resolution = options.resolution
+      }
+    }
+
     if ('runtime' in options && options.runtime) {
       const runtime = options.runtime
       const currentRuntime = state.runtime

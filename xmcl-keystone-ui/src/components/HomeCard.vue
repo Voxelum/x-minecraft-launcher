@@ -64,6 +64,7 @@
             <img
               v-if="a.icon"
               :src="a.icon"
+              v-fallback-img="BuiltinImages.unknownServer"
               draggable="false"
             >
             <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
@@ -95,6 +96,8 @@
 <script lang="ts" setup>
 import { kDropHandler } from '@/composables/dropHandler'
 import { kTheme } from '@/composables/theme'
+import { BuiltinImages } from '@/constant'
+import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'

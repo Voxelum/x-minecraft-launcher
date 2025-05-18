@@ -405,7 +405,9 @@ instance:
   fileApiHint: >-
     Az url a példányfájlok szinkronizálásához egy távoli konfigurációs
     kiszolgálóról.
+  fullscreen: Teljes képernyő
   gameVersion: Játék verzió
+  height: Magasság
   icon: Profil ikon
   iconHint: Az ikon lehet fájl vagy internetes URL-hivatkozás.
   iconUrl: Ikon Url
@@ -429,6 +431,8 @@ instance:
   prependCommand: Parancs elé fűzni
   prependCommandHint: Ez a parancs az összes indítási parancs elé kerül
   requireName: A név megadása kötelező
+  resolution: Ablakfelbontás
+  resolutionPreset: Felbontás
   showInstance: Játék mappa megjelenítése
   useSharedOptions: Használja a megosztott játékbeállításokat
   useSharedOptionsDesc: >-
@@ -443,6 +447,7 @@ instance:
   vmOptionsHint: Extra argumentumok átadása a JVM-nek
   vmVar: Környezeti változók
   vmVarHint: Kattintson a gombra környezeti változók hozzáadásához
+  width: Szélesség
 instanceAge:
   older: Régebbi
   threeDay: Három napon belül

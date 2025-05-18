@@ -78,6 +78,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalPrependCommand = computed(() => state.value?.globalPrependCommand ?? '')
   const globalPreExecuteCommand = computed(() => state.value?.globalPreExecuteCommand ?? '')
   const globalEnv = computed(() => state.value?.globalEnv ?? {})
+  const globalResolution = computed(() => state.value?.globalResolution)
   const setGlobalSettings = (setting: {
     globalMinMemory: number
     globalMaxMemory: number
@@ -92,6 +93,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalPrependCommand: string
     globalPreExecuteCommand: string
     globalEnv: Record<string, string>
+    globalResolution: { width?: number; height?: number; fullscreen?: boolean }
   }) => {
     state.value?.globalInstanceSetting(setting)
   }
@@ -110,6 +112,7 @@ export function useGlobalSettings({ state } = injection(kSettingsState)) {
     globalPrependCommand,
     globalPreExecuteCommand,
     globalEnv,
+    globalResolution,
     setGlobalSettings,
   }
 }
