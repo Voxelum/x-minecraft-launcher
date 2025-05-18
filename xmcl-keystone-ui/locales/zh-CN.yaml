@@ -425,7 +425,9 @@ instance:
   duplicatedName: 名字冲突！
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
+  fullscreen: 全屏
   gameVersion: 游戏版本
+  height: 高度
   icon: 实例图标
   iconHint: 该图标可以是文件或互联网 URL 链接。
   iconUrl: 图片 URL
@@ -450,6 +452,8 @@ instance:
   prependCommand: 前置命令
   prependCommandHint: 这将在启动命令之前添加此命令
   requireName: 必须填写名称
+  resolution: 分辨率
+  resolutionPreset: 分辨率预设
   showInstance: 打开文件夹
   useSharedOptions: 共享 Minecraft 设置
   useSharedOptionsDesc: 这会将 options.txt 链接到跨实例的共享文件
@@ -460,6 +464,7 @@ instance:
   vmOptionsHint: 额外的 JVM 的启动参数
   vmVar: 环境变量
   vmVarHint: 点击按钮添加环境变量
+  width: 宽度
 instanceAge:
   older: 三天前
   threeDay: 三天内

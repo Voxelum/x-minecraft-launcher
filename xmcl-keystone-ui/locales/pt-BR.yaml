@@ -483,7 +483,9 @@ instance:
   fileApiHint: >-
     A URL para sincronizar arquivos de instância a partir de um servidor de
     configuração remoto.
+  fullscreen: Tela cheia
   gameVersion: Versão do jogo
+  height: Altura
   icon: Ícone de perfil
   iconHint: O ícone deve ser um arquivo ou URL da internet
   iconUrl: URL do Ícone
@@ -507,6 +509,8 @@ instance:
   prependCommand: Comando Inicial
   prependCommandHint: Isso irá adicionar esse comando antes de todos os comandos de inicialização
   requireName: O nome é obrigatório
+  resolution: Resolução da janela
+  resolutionPreset: Resolução predefinida
   showInstance: Mostrar a pasta do jogo
   useSharedOptions: Usar configurações compartilhadas do jogo
   useSharedOptionsDesc: >-
@@ -521,6 +525,7 @@ instance:
   vmOptionsHint: Argumentos extras a serem passados para a JVM
   vmVar: Variáveis ​​de ambiente
   vmVarHint: Clique no botão para adicionar variáveis ​​de ambiente
+  width: Largura
 instanceAge:
   older: Antigo
   threeDay: Em três dias

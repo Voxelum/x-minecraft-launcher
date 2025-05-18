@@ -145,5 +145,9 @@ export interface SettingSchema {
    * @default true
    */
   enableDedicatedGPUOptimization: boolean
-
+  /**
+   * Global resolution settings for Minecraft
+   * @default {}
+   */
+  globalResolution: { width?: number; height?: number; fullscreen?: boolean }
 }

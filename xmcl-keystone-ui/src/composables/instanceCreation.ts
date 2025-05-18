@@ -47,7 +47,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     fileApi: '',
     modpackVersion: '',
     description: '',
-    resolution: null,
+    resolution: undefined,
     url: '',
     icon: '',
     server: null,
@@ -101,7 +101,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     data.minMemory = 0
     data.author = gameProfile.value.name
     data.description = ''
-    data.resolution = null
+    data.resolution = undefined
     data.url = ''
     data.icon = ''
     data.server = null

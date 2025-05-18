@@ -42,6 +42,8 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       enableDedicatedGPUOptimization: state.enableDedicatedGPUOptimization,
       replaceNatives: state.replaceNatives,
       globalEnv: state.globalEnv,
+      globalPreExecuteCommand: state.globalPreExecuteCommand,
+      globalResolution: state.globalResolution,
     }), 1000)
 
   app.registryDisposer(async () => {

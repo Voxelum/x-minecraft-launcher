@@ -407,7 +407,9 @@ instance:
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
+  fullscreen: Fullscreen
   gameVersion: Game Version
+  height: Height
   icon: Profile Icon
   iconHint: The icon could be a file or internet url link.
   iconUrl: Icon Url
@@ -428,11 +430,14 @@ instance:
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
   playtime: Playtime
-  prependCommand: Prepend Command
-  prependCommandHint: This will prepend this command before all the launch commands
   preExecCommand: Pre-Execute Command
   preExecCommandHint: Command to execute before launching Minecraft
+  prependCommand: Prepend Command
+  prependCommandHint: This will prepend this command before all the launch commands
   requireName: The name is required
+  resolution: Resolution
+  resolutionEnabled: Enable custom resolution
+  resolutionPreset: Resolution Preset
   showInstance: Show game folder
   useSharedOptions: Use shared game settings
   useSharedOptionsDesc: This will link the options.txt to a shared file across instance
@@ -443,6 +448,7 @@ instance:
   vmOptionsHint: Extra arguments to pass to the JVM
   vmVar: Environment Variables
   vmVarHint: Click + button to add environemnt variables
+  width: Width
 instanceAge:
   older: Older
   threeDay: In Three Days
@@ -611,7 +617,8 @@ launchFailed:
   title: Game Exited with Abnormal Code
 launchPreExecuteCommandFailed:
   description: >-
-    The pre-execute command failed with an error: {error}. Please check the command and try again.
+    The pre-execute command failed with an error: {error}. Please check the
+    command and try again.
   title: Pre-Execute Command Failed
 launchStatus:
   assigningMemory: Assigning memory
@@ -1256,6 +1263,7 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  about: About
   allowPrerelease: Download Prerelease
   allowPrereleaseDescription: Prerelease might be unstable
   apiSets:
@@ -1387,7 +1395,6 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
-  about: About
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting

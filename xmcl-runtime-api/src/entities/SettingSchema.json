@@ -176,6 +176,22 @@
         "enableDedicatedGPUOptimization": {
             "default": true,
             "type": "boolean"
+        },
+        "globalResolution": {
+            "description": "Global resolution settings for Minecraft",
+            "default": {},
+            "type": "object",
+            "properties": {
+                "width": {
+                    "type": "number"
+                },
+                "height": {
+                    "type": "number"
+                },
+                "fullscreen": {
+                    "type": "boolean"
+                }
+            }
         }
     },
     "required": [
@@ -200,6 +216,7 @@
         "globalMinMemory",
         "globalPreExecuteCommand",
         "globalPrependCommand",
+        "globalResolution",
         "globalShowLog",
         "globalVmOptions",
         "httpProxy",

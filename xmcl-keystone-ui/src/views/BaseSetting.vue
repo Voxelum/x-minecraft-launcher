@@ -9,6 +9,7 @@
       <BaseSettingJava class="" />
       <BaseSettingSync class="" />
       <BaseSettingLaunch class="" />
+      <BaseSettingResolution class="" />
       <BaseSettingModpack class="" v-if="!isServer" />
       <BaseSettingServer class="" v-else />
     </div>
@@ -62,6 +63,7 @@ import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 import BaseSettingVersions from './BaseSettingVersions.vue'
+import BaseSettingResolution from './BaseSettingResolution.vue'
 import { useMediaQuery } from '@vueuse/core'
 
 const { isServer, name, instance } = injection(kInstance)

@@ -418,7 +418,9 @@ instance:
   duplicatedName: 複製された名前
   fileApi: ファイル同期サーバーのAPIのURL
   fileApiHint: このURLはリモートの同期サーバーから起動構成ファイルを同期します。
+  fullscreen: 全画面表示
   gameVersion: ゲームバージョン
+  height: 身長
   icon: プロファイルアイコン
   iconHint: ファイルか画像のURLが使用できます。
   iconUrl: アイコンのURL
@@ -440,12 +442,15 @@ instance:
   prependCommand: 先頭にコマンドを追加
   prependCommandHint: 全ての起動コマンドの先頭に追加されます
   requireName: 名前は必須項目です
+  resolution: 解像度
+  resolutionPreset: 解像度プリセット
   showInstance: ゲームフォルダを開く
   versionHint: この起動構成におけるMinecraftのバージョン
   vmOptions: JVM実行引数
   vmOptionsHint: JVMに渡される追加の引数
   vmVar: 環境変数
   vmVarHint: ボタンをクリックして環境変数を追加します
+  width: 幅
 instanceAge:
   older: 古い
   threeDay: 三日以内

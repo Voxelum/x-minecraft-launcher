@@ -165,6 +165,9 @@ export class InstanceState {
     if ('disableElybyAuthlib' in settings) {
       inst.disableElybyAuthlib = settings.disableElybyAuthlib
     }
+    if ('resolution' in settings) {
+      inst.resolution = settings.resolution
+    }
   }
 }
 

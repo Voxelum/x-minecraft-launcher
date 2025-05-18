@@ -125,6 +125,11 @@ export interface LaunchOptions {
   disableElyByAuthlib?: boolean
 
   nogui?: boolean
+  
+  /**
+   * Resolution settings for Minecraft
+   */
+  resolution?: { width?: number; height?: number; fullscreen?: boolean }
 }
 
 export interface GameProcess {

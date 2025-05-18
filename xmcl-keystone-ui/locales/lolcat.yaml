@@ -395,7 +395,9 @@ instance:
   duplicatedName: DUPLICATD NAYM
   fileApi: TEH SYNCHRONIZE FILE SERVR API URL
   fileApiHint: TEH URL 2 SYNCHRONIZE INSTANCE FILEZ FRUM REMOTE CONFIG SERVR.
+  fullscreen: Fullscreen
   gameVersion: GAME VERSHUN
+  height: Height
   icon: PROFILE ICON
   iconHint: TEH ICON CUD BE FILE OR INTERNET URL LINK.
   iconUrl: ICON URL
@@ -419,6 +421,8 @@ instance:
   prependCommand: PREPEND COMMAND
   prependCommandHint: DIS WILL PREPEND DIS COMMAND BEFORE ALL TEH LAUNCH COMMANDZ
   requireName: TEH NAYM IZ REQUIRD
+  resolution: Window Resolution
+  resolutionPreset: Resolution Preset
   showInstance: SHOW GAME FOLDR
   useSharedOptions: USE SHARD GAME SETTINGS
   useSharedOptionsDesc: DIS WILL LINK TEH OPSHUNS.TXT 2 SHARD FILE ACROS INSTANCE
@@ -427,6 +431,7 @@ instance:
   versionHint: TEH MINECRAFT VERSHUN OV DIS GAME
   vmOptions: JVM OPSHUNS
   vmOptionsHint: EXTRA ARGUMENTS 2 PAS 2 TEH JVM
+  width: Width
 instanceAge:
   older: OLDR
   threeDay: IN 3 DAIS

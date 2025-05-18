@@ -156,6 +156,53 @@
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
+    
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>{{ t("instance.resolution") }}</v-list-item-title>
+        <div class="mt-2 flex flex-row items-center gap-2">
+          <v-text-field
+            v-model="resolutionWidth"
+            :label="t('instance.width')"
+            type="number"
+            outlined
+            dense
+            filled
+            hide-details
+            class="mr-2 max-w-[150px]"
+          ></v-text-field>
+          <v-text-field
+            v-model="resolutionHeight"
+            :label="t('instance.height')"
+            type="number"
+            outlined
+            dense
+            filled
+            hide-details
+            class="ml-2 max-w-[150px]"
+          ></v-text-field>
+          <v-switch
+            v-model="resolutionFullscreen"
+            :label="t('instance.fullscreen')"
+            class="ma-0 pa-0"
+            hide-details
+          />
+          <v-spacer />
+          <v-select
+            v-model="selectedResolutionPreset"
+            :items="resolutionPresets"
+            item-text="text"
+            item-value="value"
+            :label="t('instance.resolutionPreset')"
+            outlined
+            filled
+            hide-details
+            dense
+            class="max-w-[300px]"
+          />
+        </div>
+      </v-list-item-content>
+    </v-list-item>
   </div>
 </template>
 
@@ -169,6 +216,8 @@ import { useEventListener } from '@vueuse/core'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
+import { computed } from 'vue'
+import { useResolutionPresets } from '@/composables/resolutionPresets'
 
 const { t } = useI18n()
 const {
@@ -185,6 +234,7 @@ const {
   globalPrependCommand,
   globalPreExecuteCommand,
   globalEnv,
+  globalResolution,
   setGlobalSettings,
 } = useGlobalSettings()
 
@@ -202,6 +252,25 @@ const disableAuthlibInjector = ref(globalDisableAuthlibInjector.value)
 const disableElyByAuthlib = ref(globalDisableElyByAuthlib.value)
 const env = ref(globalEnv.value)
 
+const resolutionFullscreen = ref(globalResolution.value?.fullscreen)
+const resolutionWidth = ref(globalResolution.value?.width)
+const resolutionHeight = ref(globalResolution.value?.height)
+
+const resolutionPresets = useResolutionPresets()
+
+const selectedResolutionPreset = computed({
+  get: () => {
+    const width = resolutionWidth.value
+    const height = resolutionHeight.value
+    const preset = resolutionPresets.value.find(p => p.value.width === width && p.value.height === height)
+    return preset ? preset.value : { width, height }
+  },
+  set: (value) => {
+    resolutionWidth.value = value.width
+    resolutionHeight.value = value.height
+  }
+})
+
 onMounted(() => {
   assignMemory.value = globalAssignMemory.value
   minMem.value = globalMinMemory.value
@@ -215,6 +284,12 @@ onMounted(() => {
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
   prependCommand.value = globalPrependCommand.value
   preExecuteCommand.value = globalPreExecuteCommand.value
+  
+  if (globalResolution.value) {
+    resolutionFullscreen.value = globalResolution.value.fullscreen
+    resolutionWidth.value = globalResolution.value.width
+    resolutionHeight.value = globalResolution.value.height
+  }
 })
 
 const save = () => {
@@ -232,6 +307,11 @@ const save = () => {
     globalPrependCommand: prependCommand.value,
     globalPreExecuteCommand: preExecuteCommand.value,
     globalEnv: env.value,
+    globalResolution: {
+      width: resolutionWidth.value,
+      height: resolutionHeight.value,
+      fullscreen: resolutionFullscreen.value,
+    },
   })
 }
 

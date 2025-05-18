@@ -390,9 +390,14 @@ forgeVersion:
   showRecommendedAndLatestOnly: Ұсынылған және тек соңғы нұсқа
   version: Forge нұсқасы
 instance:
+  fullscreen: Fullscreen
+  height: Height
   installModpack: Update instance from modpack
+  resolution: Window Resolution
+  resolutionPreset: Resolution Preset
   vmVar: Environment Variables
   vmVarHint: Click   button to add environemnt variables
+  width: Width
 instanceInstallSkip:
   ignore: Ignore
   skip: Skip

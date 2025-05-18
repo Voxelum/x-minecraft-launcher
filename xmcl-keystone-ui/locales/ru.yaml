@@ -471,7 +471,9 @@ instance:
   duplicatedName: Дублированное имя
   fileApi: URL API сервера синхронизации файлов
   fileApiHint: URL для синхронизации файлов экземпляра с удалённым сервером конфигурации.
+  fullscreen: Полноэкранный
   gameVersion: Версия игры экземпляра
+  height: Высота
   icon: Иконка профиля
   iconHint: Значок может представлять собой файл или ссылку на URL-адрес в Интернете.
   iconUrl: URL-адрес иконки
@@ -497,6 +499,8 @@ instance:
   prependCommand: Добавить команду в начало
   prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
+  resolution: Разрешение окна
+  resolutionPreset: Резолюция предустановлена
   showInstance: Открыть папку экземпляра
   useSharedOptions: Использовать общие настройки игры
   useSharedOptionsDesc: Это свяжет файл options.txt с общим файлом в экземпляре.
@@ -507,6 +511,7 @@ instance:
   vmOptionsHint: Дополнительные аргументы, передаваемые JVM
   vmVar: Переменные среды
   vmVarHint: Нажмите кнопку, чтобы добавить переменные среды.
+  width: Ширина
 instanceAge:
   older: Старые
   threeDay: В течение трёх дней
