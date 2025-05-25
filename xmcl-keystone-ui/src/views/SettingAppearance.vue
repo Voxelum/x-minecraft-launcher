@@ -14,7 +14,7 @@
       :description="t('setting.linuxTitlebarDescription')"
     />
     <SettingItemSelect
-      :select.sync="theme"
+      :select.sync="darkModel"
       :title="t('setting.darkTheme')"
       :description="t('setting.darkThemeDescription')"
       :items="themes"
@@ -490,7 +490,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { blurSidebar, blurAppBar, isDark, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
@@ -500,9 +500,21 @@ const linuxTitlebar = computed({
   set: v => state.value?.linuxTitlebarSet(v),
 })
 
+const darkModel = computed({
+  get: () => isDark.value ? 'dark' : 'light',
+  set: v => {
+    if (v === 'dark') {
+      isDark.value = true
+    } else if (v === 'light') {
+      isDark.value = false
+    } else {
+      isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+    }
+  },
+})
+
 const layout = injection(kUILayout)
 
-const theme = ref(undefined)
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
   value: 'dark',

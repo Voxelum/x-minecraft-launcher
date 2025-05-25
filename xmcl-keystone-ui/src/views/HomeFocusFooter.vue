@@ -156,7 +156,8 @@ const screenshotHeight = computed(() => {
 })
 const rowCount = computed(() => {
   const el = tabItems.value?.$el
-  height.value // keep the effect
+  // oxlint-disable-next-line
+  const windowHeight = height.value // keep the effect
   if (!el) {
     return 52
   }

@@ -7,6 +7,7 @@ import { InjectionKey, computed, set } from 'vue'
 import { Framework } from 'vuetify'
 import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
+import { injection } from '@/util/inject'
 
 export const kTheme: InjectionKey<ReturnType<typeof useTheme>> = Symbol('theme')
 
@@ -63,7 +64,7 @@ export interface UIThemeDataV1 {
   particleMode?: ParticleMode
 }
 
-function getDefaultDarkTheme(): UIThemeDataV1 {
+export function getDefaultDarkTheme(): UIThemeDataV1 {
   return {
     name: 'default-dark',
     dark: true,
@@ -93,7 +94,7 @@ function getDefaultDarkTheme(): UIThemeDataV1 {
   }
 }
 
-function getDefaultLightTheme(): UIThemeDataV1 {
+export function getDefaultLightTheme(): UIThemeDataV1 {
   return {
     name: 'default-light',
     dark: false,
@@ -123,23 +124,30 @@ function getDefaultLightTheme(): UIThemeDataV1 {
   }
 }
 
-export function useThemes() {
-  const themes = ref<UIThemeDataV1[]>([])
-  const { getThemes } = useService(ThemeServiceKey)
-  function update() {
-    getThemes().then((v) => {
-      themes.value = v.map((theme) => {
-        const t = deserialize(theme)
-        if (!t) return getDefaultDarkTheme()
-        return t
-      })
+export function useThemesItems() {
+  const { themes } = injection(kTheme)
+  const { t } = useI18n()
+  //   const themes = computed(() => [{
+  //   text: t('setting.theme.dark'),
+  //   value: 'dark',
+  // }, {
+  //   text: t('setting.theme.light'),
+  //   value: 'light',
+  // }, {
+  //   text: t('setting.theme.system'),
+  //   value: 'system',
+  // }])
+
+  const items = computed(() => {
+    return themes.value.map((theme) => {
+      return {
+        text: theme.name === 'default-dark' ? t('setting.theme.dark') : theme.name === 'default-light' ? t('setting.theme.light') : theme.name,
+        value: theme.name,
+      }
     })
-  }
-  onMounted(update)
-  return {
-    themes,
-    update
-  }
+  })
+
+  return items
 }
 
 export interface UIThemeData {
@@ -185,7 +193,26 @@ export interface UIThemeData {
 export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme, getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
   const currentTheme = ref<UIThemeDataV1>(getDefaultDarkTheme())
-  const isDark = computed(() => currentTheme.value.dark)
+  const themes = ref<UIThemeDataV1[]>([])
+
+  function update() {
+    getThemes().then((v) => {
+      themes.value = v.map((theme) => {
+        const t = deserialize(theme)
+        if (!t) return getDefaultDarkTheme()
+        return t
+      })
+    })
+  }
+  onMounted(update)
+
+  const isDark = computed({
+    get: () => currentTheme.value.dark,
+    set: (dark: boolean) => {
+      currentTheme.value.dark = dark
+      writeTheme(currentTheme.value.name, currentTheme.value)
+    }
+  })
   watch(isDark, (dark) => {
     framework.theme.dark = dark
   }, { immediate: true })
@@ -356,7 +383,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   }
 
   const flushWrite = debounce((name: string, theme: UIThemeDataV1) => {
-    setTheme(name, serialize(theme)).catch((e) => { })
+    setTheme(name, serialize(theme)).then(() => update, () => { })
   }, 800)
 
   function writeTheme(name: string, theme: UIThemeDataV1) {
@@ -549,6 +576,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   const backgroundImageOverrideOpacity = ref(1)
 
   return {
+    themes,
     isDark,
     currentTheme,
     backgroundImage,
