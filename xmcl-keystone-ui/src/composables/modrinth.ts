@@ -1,12 +1,16 @@
-import { Category, GameVersion, License } from '@xmcl/modrinth'
+import { Category, GameVersion, License, Project } from '@xmcl/modrinth'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
 import { clientModrinthV2 } from '@/util/clients'
 import debounce from 'lodash.debounce'
 import useSWRV from 'swrv'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
-import { MaybeRef, get } from '@vueuse/core'
+import { MaybeRef, get, notNullish } from '@vueuse/core'
 import { formatKey } from '@/util/swrvGet'
+import { UpstreamHeaderProps } from '@/views/HomeUpstreamHeader.vue'
+import { useDateString } from './date'
+import { injection } from '@/util/inject'
+import { getExpectedSize } from '@/util/size'
 
 export interface ModrinthOptions {
   query: string
@@ -206,4 +210,49 @@ export function useModrinth(
     refreshing,
     error,
   }
+}
+
+export function useModrinthHeaderData(project: Ref<Project | undefined>) {
+  const { t } = useI18n()
+  const { categories } = injection(kModrinthTags)
+  const { getDateString } = useDateString()
+  const headerData = computed(() => {
+    if (!project.value) return undefined
+    const result: UpstreamHeaderProps = {
+      url: `https://modrinth.com/${project.value.project_type}/${project.value.slug}`,
+      icon: project.value?.icon_url || '',
+      title: project.value?.title || '',
+      description: project.value?.description || '',
+      categories: project.value.categories.map((c) => {
+        const cat = categories.value.find(cat => cat.name === c)
+        return !cat ? undefined : {
+          text: t(`modrinth.categories.${cat.name}`) || '',
+          icon: cat.icon || '',
+          id: cat.name || '',
+        }
+      }).filter(notNullish),
+      type: 'modrinth',
+      store: '/store/modrinth/' + project.value.id,
+      infos: [{
+        icon: 'file_download',
+        name: t('modrinth.downloads'),
+        value: getExpectedSize(project.value.downloads, ''),
+      }, {
+        icon: 'star_rate',
+        name: t('modrinth.followers'),
+        value: project.value.followers,
+      }, {
+        icon: 'event',
+        name: t('modrinth.createAt'),
+        value: getDateString(project.value.published),
+      }, {
+        icon: 'update',
+        name: t('modrinth.updateAt'),
+        value: getDateString(project.value.updated),
+      }],
+    }
+
+    return result
+  })
+  return headerData
 }

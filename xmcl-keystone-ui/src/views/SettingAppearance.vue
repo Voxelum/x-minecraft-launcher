@@ -60,6 +60,8 @@
       >
         <SettingAppearanceColor
           v-model="appBarColor"
+          :blur.sync="blurAppBar"
+          has-blur
           :text="t('setting.colorTheme.appBarColor')"
         />
       </v-list-item-action>
@@ -69,6 +71,8 @@
       >
         <SettingAppearanceColor
           v-model="sideBarColor"
+          :blur.sync="blurSidebar"
+          has-blur
           :text="t('setting.colorTheme.sideBarColor')"
         />
       </v-list-item-action>
@@ -88,6 +92,8 @@
       >
         <SettingAppearanceColor
           v-model="cardColor"
+          :blur.sync="blurCard"
+          has-blur
           :text="t('setting.colorTheme.cardColor')"
         />
       </v-list-item-action>
@@ -97,6 +103,8 @@
       >
         <SettingAppearanceColor
           v-model="backgroundColor"
+          :blur.sync="blur"
+          has-blur
           :text="t('setting.colorTheme.backgroundColor')"
         />
       </v-list-item-action>
@@ -301,7 +309,7 @@
         {{ t("setting.backgroundVideoSelect") }}
       </v-btn>
     </v-list-item>
-    <v-list-item>
+    <!-- <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
           {{
@@ -356,7 +364,7 @@
         :hint="t('setting.blurAppBar')"
         :always-dirty="true"
       />
-    </v-list-item>
+    </v-list-item> -->
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -482,8 +490,8 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
-const { blurSidebar, blurAppBar, fontSize, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, darkTheme, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
+const { blurSidebar, blurAppBar, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
 
@@ -494,7 +502,7 @@ const linuxTitlebar = computed({
 
 const layout = injection(kUILayout)
 
-const theme = darkTheme
+const theme = ref(undefined)
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
   value: 'dark',

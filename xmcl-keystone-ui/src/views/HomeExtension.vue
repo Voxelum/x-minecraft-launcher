@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-1 flex-grow-0 flex-row items-center justify-start"
+    class="flex flex-1 flex-grow-0 flex-row items-center justify-start min-h-[52px]"
     :class="{
       'mb-3': !compact,
       'mb-2': compact,
@@ -40,27 +40,32 @@
         :text="lastPlayedText"
       />
     </div>
-    <div class="flex-grow" />
-    <template
-      v-if="!isInFocusMode"
-    >
-      <HomeHeaderInstallStatus
-        v-if="status === 1 || status === 3"
-        class="mr-2"
-        :name="taskName"
-        :total="total"
-        :progress="progress"
-      />
-      <HomeLaunchButtonStatus
-        v-else
-        :active="active"
-      />
-      <HomeLaunchButton
-        :compact="compact"
-        @mouseenter="active = true"
-        @mouseleave="active = false"
-      />
-    </template>
+    <div class="flex-grow mr-2" />
+    <transition name="fade-transition">
+      <div
+        key="launch-button-group"
+        class="flex items-center justify-end overflow-hidden"
+        v-if="!isInFocusMode || !(router.currentRoute.path === '/')"
+      >
+        <HomeHeaderInstallStatus
+          v-if="status === 1 || status === 3"
+          class="mr-2"
+          :name="taskName"
+          :total="total"
+          :progress="progress"
+        />
+        <HomeLaunchButtonStatus
+          v-else
+          :active="active"
+        />
+        <HomeLaunchButton
+          class="ml-4"
+          :compact="compact"
+          @mouseenter="active = true"
+          @mouseleave="active = false"
+        />
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -82,6 +87,7 @@ import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
 const { total, progress, status, name: taskName } = injection(kLaunchTask)
+const router = useRouter()
 
 const active = ref(false)
 

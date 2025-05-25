@@ -1321,6 +1321,7 @@ setting:
   autoDownloadDescription: Automatyczne pobieranie aktualizacji, jeśli jest dostępna
   autoInstallOnAppQuit: Autoinstalacja
   autoInstallOnAppQuitDescription: Automatyczna instalacja aktualizacji po zamknięciu aplikacji
+  backdropBlur: Tło rozmyte
   backgroundColorAbove: Pokaż kolor tła jako nakładkę
   backgroundColorAboveDescription: Spowoduje to wyświetlenie koloru tła nad obrazem tła lub wideo.
   backgroundImage: Obraz tła
@@ -1359,7 +1360,7 @@ setting:
     cardColor: Kolor karty
     description: Zmiana kolorów w motywie
     errorColor: Kolor błędu
-    name: Kolor motywu
+    name: Kolor motywu i rozmycie
     primaryColor: Kolor podstawowy
     secondaryColor: Kolor dodatkowy
     sideBarColor: Pasek boczny

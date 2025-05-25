@@ -40,9 +40,9 @@ export function useModrinthProject(id: Ref<string>) {
   }
 }
 
-export function getModrinthProjectModel(id: Ref<string>) {
+export function getModrinthProjectModel(id: Ref<string | undefined>) {
   return {
-    key: computed(() => getModrinthProjectKey(id.value)),
-    fetcher: async () => clientModrinthV2.getProject(id.value),
+    key: computed(() => id.value ? getModrinthProjectKey(id.value) : undefined),
+    fetcher: async () => !id.value ? undefined : clientModrinthV2.getProject(id.value),
   }
 }

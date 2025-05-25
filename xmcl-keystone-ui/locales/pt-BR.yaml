@@ -828,7 +828,7 @@ mod:
   incompatibleHintDescription: >-
     Algumas dependências de mods podem estar faltando. Ou as versões de algumas
     dependências não coincidem.
-  manage: Gerenciar Mods
+  manage: Gerenciar
   maybeCompatible: Talvez Compatível
   modloaderSelectHint: >-
     O mod suporta os seguintes carregadores de mod. Por favor, selecione um para
@@ -1377,6 +1377,7 @@ setting:
   autoDownloadDescription: Baixar a atualização automaticamente se estiver disponível
   autoInstallOnAppQuit: Instalação Automática
   autoInstallOnAppQuitDescription: Instalar a atualização automaticamente ao fechar o aplicativo
+  backdropBlur: Pano de fundo borrão
   backgroundColorAbove: Exibir cor de fundo como sobreposição
   backgroundColorAboveDescription: >-
     Isso fará com que a cor de fundo seja exibida acima da imagem ou vídeo de
@@ -1417,7 +1418,7 @@ setting:
     cardColor: Cor do cartão
     description: Altere as cores no tema
     errorColor: Cor de erro
-    name: Cor do tema
+    name: Cor tema e borrão
     primaryColor: Cor primária
     secondaryColor: Cor secundária
     sideBarColor: Cor da barra lateral

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
-import { getCurseforgeProjectFilesModel, getCurseforgeProjectModel } from '@/composables/curseforge'
+import { getCurseforgeProjectFilesModel, getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/composables/curseforge'
 import { getCurseforgeChangelogModel } from '@/composables/curseforgeChangelog'
 import { useDateString } from '@/composables/date'
 import { useDialog } from '@/composables/dialog'
@@ -12,11 +12,9 @@ import { useSWRVModel } from '@/composables/swrv'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
-import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
 import { CurseforgeUpstream, ModpackServiceKey } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
-import { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 
 const props = defineProps<{
@@ -26,46 +24,9 @@ const props = defineProps<{
 const { instance } = injection(kInstance)
 const upstream = computed(() => instance.value?.upstream as CurseforgeUpstream)
 
-const { t, te } = useI18n()
 const { data: project } = useSWRVModel(getCurseforgeProjectModel(computed(() => props.id)))
 const { getDateString } = useDateString()
-const headerData = computed(() => {
-  if (!project.value) return undefined
-  const result: UpstreamHeaderProps = {
-    url: project.value.links.websiteUrl,
-    icon: project.value.logo.url || '',
-    title: project.value.name || '',
-    description: project.value?.summary || '',
-    categories: project.value.categories.map((c) => {
-      return {
-        text: te(`curseforgeCategory.${c?.name}`) ? t(`curseforgeCategory.${c?.name}`) : c.name || '',
-        icon: c.iconUrl || '',
-        id: c.id.toString(),
-      }
-    }),
-    type: 'curseforge',
-    store: '/store/curseforge/' + project.value.id,
-    infos: [{
-      icon: 'file_download',
-      name: t('modrinth.downloads'),
-      value: getExpectedSize(project.value.downloadCount, ''),
-    }, {
-      icon: 'star_rate',
-      name: t('modrinth.followers'),
-      value: project.value.thumbsUpCount,
-    }, {
-      icon: 'event',
-      name: t('modrinth.createAt'),
-      value: getDateString(project.value.dateCreated, { dateStyle: 'long' }),
-    }, {
-      icon: 'update',
-      name: t('modrinth.updateAt'),
-      value: getDateString(project.value.dateModified, { dateStyle: 'long' }),
-    }],
-  }
-
-  return result
-})
+const headerData = useCurseforgeUpstreamHeader(project)
 const { data: files, isValidating: loadingFiles } = useSWRVModel(getCurseforgeProjectFilesModel(computed(() => props.id), ref(undefined), ref(undefined)))
 const currentVersion = computed(() => {
   const val = upstream.value
@@ -162,7 +123,7 @@ const onDuplicate = async (v: ProjectVersionProps) => {
       market: 1,
       file: { fileId: Number(v.id), icon: project.value?.logo.url || '' },
     })
-    showAddInstanceDialog({ type: 'modpack', path: modpack })
+    showAddInstanceDialog({ format: 'modpack', path: modpack })
   } finally {
     duplicating.value = false
   }

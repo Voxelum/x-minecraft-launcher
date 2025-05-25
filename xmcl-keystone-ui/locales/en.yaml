@@ -734,7 +734,7 @@ mod:
   incompatibleHintDescription: >-
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.
-  manage: Manage Mods
+  manage: Manage
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
@@ -1277,6 +1277,7 @@ setting:
   autoDownloadDescription: Auto Download Update if it's Available
   autoInstallOnAppQuit: Autoinstall
   autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
+  backdropBlur: Backdrop Blur
   backgroundColorAbove: Show background color as overlay
   backgroundColorAboveDescription: This will make background color display above the background image or video.
   backgroundImage: Background image
@@ -1315,7 +1316,7 @@ setting:
     cardColor: Card Color
     description: Change the colors in the theme
     errorColor: Error Color
-    name: Theme Color
+    name: Theme Color and Blur
     primaryColor: Primary Color
     secondaryColor: Secondary Color
     sideBarColor: Side Bar

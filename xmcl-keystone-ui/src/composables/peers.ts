@@ -40,7 +40,7 @@ export function usePeerConnections() {
               color: 'primary',
               handler() {
                 showAddInstance({
-                  type: 'manifest',
+                  format: 'manifest',
                   manifest,
                 })
               },

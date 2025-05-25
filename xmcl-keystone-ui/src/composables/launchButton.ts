@@ -40,7 +40,7 @@ export function useLaunchButton() {
   const { fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
   const versionIssues = useInstanceVersionDiagnose()
   const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
-  const { issue: filesIssue, fix: fixInstanceFileIssue } = useInstanceFilesDiagnose()
+  const { issue: filesIssue, fix: fixInstanceFileIssue, loading: loadingInstanceFiles } = useInstanceFilesDiagnose()
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
   const { status, pause, resume } = injection(kLaunchTask)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
@@ -165,6 +165,7 @@ export function useLaunchButton() {
     refreshingFiles.value ||
     refreshingJava.value ||
     isRefreshingVersion.value ||
+    loadingInstanceFiles.value ||
     isValidating.value ||
     dirty.value)
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)

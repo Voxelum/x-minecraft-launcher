@@ -1,7 +1,7 @@
 <template>
   <div
     ref="scroller" 
-    class="visible-scroll flex flex-col gap-1 rounded p-2 text-sm"
+    class="visible-scroll rounded p-2 text-sm"
     @wheel="onWheel"
   >
     <div

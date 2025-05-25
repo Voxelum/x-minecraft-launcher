@@ -2,8 +2,8 @@
   <v-card
     class="grid-cols-13 grid items-center gap-y-4 p-3 text-gray-700 dark:text-gray-300"
     :outlined="outlined"
-    :style="{ 'content-visibility': 'auto' }"
-    :color="color"
+    :style="{ 'content-visibility': 'auto', 'backdrop-filter': `blur(${blurCard}px)`, borderColor: '' }"
+    :color="cardColor"
   >
     <div class="col-span-4">
       {{ version.name }}
@@ -104,10 +104,11 @@
 </template>
 <script lang="ts" setup>
 import { useDateString } from '@/composables/date'
-import { useMarkdown } from '@/composables/markdown'
+import { kTheme } from '@/composables/theme'
 import { useVuetifyColor } from '@/composables/vuetify'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColorForReleaseType } from '@/util/color'
+import { injection } from '@/util/inject'
 
 export interface ProjectVersionProps {
   id: string
@@ -132,7 +133,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update', 'duplicate', 'changelog'])
-
+const { cardColor, blurCard } = injection(kTheme)
 const version = computed(() => props.version)
 const { getColorCode } = useVuetifyColor()
 const { t } = useI18n()

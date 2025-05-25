@@ -70,7 +70,7 @@
             :version="getItemVersion(row.index)"
             :updating="updating"
             :duplicating="duplicating"
-            :outlined="row.index === 1"
+            :outlined="true"
             :no-action="row.index === 1 || currentVersion?.id === getItemVersion(row.index).id"
             :downgrade="isItemDowngrade(row.index)"
             @changelog="$emit('changelog', getItemVersion(row.index))"
@@ -104,6 +104,8 @@ import HomeUpstreamHeader, { UpstreamHeaderProps } from './HomeUpstreamHeader.vu
 import HomeUpstreamVersion, { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
 import { getEl } from '@/util/el'
+import { injection } from '@/util/inject'
+import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   duplicating?: boolean

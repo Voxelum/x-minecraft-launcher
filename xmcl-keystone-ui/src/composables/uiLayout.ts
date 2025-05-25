@@ -8,8 +8,9 @@ export function useUILayout() {
 }
 
 export function useInFocusMode() {
-  const layout = injection(kUILayout)
-  return computed(() => layout.value === 'focus')
+  return injection(kInFocusMode)
 }
+
+export const kInFocusMode: InjectionKey<Ref<boolean>> = Symbol('InFocusMode')
 
 export const kUILayout: InjectionKey<ReturnType<typeof useUILayout>> = Symbol('UILayout')

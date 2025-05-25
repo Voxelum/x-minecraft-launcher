@@ -798,7 +798,7 @@ mod:
   incompatibleHintDescription: |-
     Certaines dépendances de mods peuvent manquer. 
     Ou certaines versions de dépendances ne correspondent pas.
-  manage: Gérer les Mods
+  manage: Gérer les
   maybeCompatible: Peut-être compatibles.
   modloaderSelectHint: |-
     Le mod prend en charge les chargeurs de mod suivants. 
@@ -1333,6 +1333,7 @@ setting:
   autoDownloadDescription: Mise à jour du téléchargement automatique si elle est disponible
   autoInstallOnAppQuit: Installation automatique
   autoInstallOnAppQuitDescription: Installer automatiquement la mise à jour à la fermeture de l'application
+  backdropBlur: Flou
   backgroundColorAbove: Afficher la couleur d'arrière-plan en superposition
   backgroundColorAboveDescription: >-
     Cela affichera la couleur d’arrière-plan au-dessus de l’image ou de la vidéo
@@ -1375,7 +1376,7 @@ setting:
     cardColor: Couleur de la carte
     description: Changer les couleurs du thème
     errorColor: Couleur d'erreur
-    name: Couleur du thème
+    name: Couleur du thème et flou
     primaryColor: Couleur primaire
     secondaryColor: Couleur secondaire
     sideBarColor: Barre latérale

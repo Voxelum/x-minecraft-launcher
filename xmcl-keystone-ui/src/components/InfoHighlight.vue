@@ -1,6 +1,13 @@
 <template>
   <span>
-    <div class="text-center text-2xl font-bold text-gray-600 dark:text-gray-300">
+    <div
+      class="text-center font-bold text-gray-600 dark:text-gray-300"
+      :class="{
+        'text-nowrap': dense,
+        'text-2xl': !dense,
+        'text-sm': dense,
+      }"
+    >
       {{ value.value }}
     </div>
     <div
@@ -13,7 +20,7 @@
       >
         {{ value.icon }}
       </v-icon>
-      <span class="whitespace-nowrap">{{ value.name }}</span>
+      <span class="whitespace-nowrap" :class="{ 'text-sm': dense }">{{ value.name }}</span>
     </div>
   </span>
 </template>
@@ -24,6 +31,7 @@ export interface Highlight {
   name: string
 }
 defineProps<{
+  dense?: boolean
   value: Highlight
 }>()
 </script>

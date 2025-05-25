@@ -7,17 +7,14 @@ import { kInstance } from '@/composables/instance'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useMarkdown } from '@/composables/markdown'
-import { kModrinthTags } from '@/composables/modrinth'
+import { useModrinthHeaderData } from '@/composables/modrinth'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { injection } from '@/util/inject'
-import { getExpectedSize } from '@/util/size'
 import { ModpackServiceKey, ModrinthUpstream } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
-import { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
-import { notNullish } from '@vueuse/core'
 
 const props = defineProps<{
   id: string
@@ -26,48 +23,9 @@ const props = defineProps<{
 const { instance } = injection(kInstance)
 const upstream = computed(() => instance.value?.upstream as ModrinthUpstream)
 
-const { t } = useI18n()
 const { data: project } = useSWRVModel(getModrinthProjectModel(computed(() => props.id)))
-const { categories } = injection(kModrinthTags)
 const { getDateString } = useDateString()
-const headerData = computed(() => {
-  if (!project.value) return undefined
-  const result: UpstreamHeaderProps = {
-    url: `https://modrinth.com/${project.value.project_type}/${project.value.slug}`,
-    icon: project.value?.icon_url || '',
-    title: project.value?.title || '',
-    description: project.value?.description || '',
-    categories: project.value.categories.map((c) => {
-      const cat = categories.value.find(cat => cat.name === c)
-      return !cat ? undefined : {
-        text: t(`modrinth.categories.${cat.name}`) || '',
-        icon: cat.icon || '',
-        id: cat.name || '',
-      }
-    }).filter(notNullish),
-    type: 'modrinth',
-    store: '/store/modrinth/' + project.value.id,
-    infos: [{
-      icon: 'file_download',
-      name: t('modrinth.downloads'),
-      value: getExpectedSize(project.value.downloads, ''),
-    }, {
-      icon: 'star_rate',
-      name: t('modrinth.followers'),
-      value: project.value.followers,
-    }, {
-      icon: 'event',
-      name: t('modrinth.createAt'),
-      value: getDateString(project.value.published),
-    }, {
-      icon: 'update',
-      name: t('modrinth.updateAt'),
-      value: getDateString(project.value.updated),
-    }],
-  }
-
-  return result
-})
+const headerData = useModrinthHeaderData(project)
 const { data } = useSWRVModel(getModrinthVersionModel(computed(() => props.id), undefined, ref(undefined), ref(undefined)))
 const { render } = useMarkdown()
 const currentVersion = computed(() => {
@@ -166,7 +124,7 @@ async function onDuplicate(v: ProjectVersionProps) {
       market: 0,
       version: { versionId: v.id, icon: project.value?.icon_url },
     })
-    showAddInstanceDialog({ type: 'modpack', path: result })
+    showAddInstanceDialog({ format: 'modpack', path: result })
   } finally {
     duplicating.value = false
   }

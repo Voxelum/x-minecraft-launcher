@@ -703,7 +703,7 @@ mod:
   incompatibleHintDescription: |-
     一部の MOD の依存関係が欠落している可能性があります。
     または、一部の依存関係のバージョンが一致しません。
-  manage: Modを管理
+  manage: 管理
   maybeCompatible: おそらく適合しません。
   modloaderSelectHint: |-
     MOD は以下の MOD ローダーをサポートしています。
@@ -1216,6 +1216,7 @@ setting:
   autoDownloadDescription: アップデートがあれば自動でダウンロードします
   autoInstallOnAppQuit: 自動インストール
   autoInstallOnAppQuitDescription: アップデートを自動でインストールし、アプリを閉じる
+  backdropBlur: 背景のぼかし
   backgroundColorAbove: 背景画像をオーバーレイとして表示
   backgroundColorAboveDescription: 背景の画像、映像の上に背景色を適用できるようにします
   backgroundImage: 背景画像

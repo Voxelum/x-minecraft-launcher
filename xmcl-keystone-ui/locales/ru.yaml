@@ -1373,6 +1373,7 @@ setting:
   autoDownloadDescription: Автоматическая загрузка обновлений, если они доступны.
   autoInstallOnAppQuit: Автоустановка
   autoInstallOnAppQuitDescription: Автоматическая установка обновлений при выходе из приложения.
+  backdropBlur: Фон размытие
   backgroundColorAbove: Показать цвет фона как наложение
   backgroundColorAboveDescription: Это позволит отобразить цвет фона над фоновым эффектом.
   backgroundImage: Фоновое изображение
@@ -1415,7 +1416,7 @@ setting:
     cardColor: Цвет карточки
     description: Изменить цвета в теме
     errorColor: Цвет ошибки
-    name: Цвет темы
+    name: Цвет темы и размытие
     primaryColor: Основной цвет
     secondaryColor: Вторичный цвет
     sideBarColor: Цвет боковой панели

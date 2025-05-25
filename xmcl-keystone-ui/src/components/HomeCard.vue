@@ -6,6 +6,7 @@
     outlined
     :style="{
       borderColor: mouse > 0 ? 'white' : '',
+      'backdrop-filter': `blur(${blurCard}px)`,
     }"
     :color="highlighted ? 'yellow darken-2' : cardColor"
     @dragover="emit('dragover', $event)"
@@ -72,23 +73,35 @@
         </div>
       </template>
     </v-card-text>
-    <v-card-actions>
+    <v-card-actions v-if="button || additionButton">
       <v-btn
+        v-if="button"
+        class="flex-1 justify-start flex-grow"
         text
+        ref="btnElem"
         @click="emit('navigate')"
       >
-        {{ button }}
+        <v-icon v-if="button.icon" left>
+          {{ button.icon }}
+        </v-icon>
+        <span :style="{ color: isOverflowed ? 'transparent' : '' }">
+          {{ button.text }}
+        </span>
       </v-btn>
-      <v-spacer />
+      <v-spacer v-else />
       <v-btn
+        class="justify-start"
         v-if="additionButton"
+        color="primary"
         text
         @click="emit('navigate-addition')"
       >
         <v-icon class="material-icons-outlined" left>
           {{ additionButton.icon || 'add' }}
         </v-icon>
-        {{ additionButton.text }}
+        <span>
+          {{ additionButton.text }}
+        </span>
       </v-btn>
     </v-card-actions>
   </v-card>
@@ -101,20 +114,33 @@ import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
+import Vue from 'vue'
+
+const btnElem = ref(null as Vue | null)
+
+const isOverflowed = computed(() => {
+  const el = btnElem.value?.$el
+  if (!el) {
+    return
+  }
+
+  const isOverflowed = el.scrollWidth > el.clientWidth
+  return isOverflowed
+})
 
 defineProps<{
   icon?: string
   title: string
   subtitle?: string
   text: string
-  button: string
+  button?: { text: string; icon?: string }
   additionButton?: { text: string; icon?: string }
   refreshing: boolean
   error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
 const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave', 'navigate-addition'])
-const { cardColor, accentColor } = injection(kTheme)
+const { cardColor, blurCard } = injection(kTheme)
 
 const slots = useSlots()
 
@@ -139,5 +165,17 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
 
 .home-card {
   /* blur behand */
+  container-type: size;
+  width: 100%;
+}
+
+.btn {
+  display: none;
+}
+
+@container (min-width: 300px) {
+  .btn {
+    display: block;
+  }
 }
 </style>

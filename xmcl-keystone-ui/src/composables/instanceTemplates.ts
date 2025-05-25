@@ -7,13 +7,13 @@ import { useService } from './service'
 import { renderMinecraftPlayerTextHead } from '@/util/avatarRenderer'
 
 export type AddInstanceDialogParameter = {
-  type: 'ftb'
+  format: 'ftb'
   manifest: CachedFTBModpackVersionManifest
 } | {
-  type: 'manifest'
+  format: 'manifest'
   manifest: InstanceManifest
 } | {
-  type: 'modpack'
+  format: 'modpack'
   path: string
 }
 
@@ -23,8 +23,6 @@ export interface Template {
   filePath: string
   name: string
   instance: ModpackInstallProfile['instance']
-  type: 'curseforge' | 'mcbbs' | 'modpack' | 'modrinth' | 'instance' | 'ftb' | 'peer'
-  description: string
   loadFiles: () => Promise<InstanceFile[]>
 }
 
@@ -36,26 +34,19 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
     const all = [] as Array<Template>
     for (const resource of modpackResources) {
       const config = resolveModpackInstanceConfig(resource)
-      const type = resource.metadata['modrinth-modpack']
-        ? 'modrinth'
-        : resource.metadata['curseforge-modpack']
-          ? 'curseforge'
-          : resource.metadata['mcbbs-modpack'] ? 'mcbbs' : 'modpack'
       if (config) {
         let promise: Promise<InstanceFile[]> | undefined
         const result: Template = markRaw({
           filePath: resource.path,
           name: config.name,
           instance: markRaw(config),
-          description: getActionText(type),
-          type,
           loadFiles: () => {
             if (!promise) {
               promise = openModpack(resource.path).then(state => waitModpackFiles(state))
             }
             return promise
           },
-        })
+        } as Template)
         all.push(result)
       }
     }
@@ -71,13 +62,6 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
     }
 
     return all
-  }
-
-  const getActionText = (type: string) => {
-    if (type === 'mcbbs') return t('instanceTemplate.mcbbs')
-    if (type === 'curseforge') return t('instanceTemplate.curseforge')
-    if (type === 'modrinth') return t('instanceTemplate.modrinth')
-    return t('instanceTemplate.modpack')
   }
 
   function getPeerTemplate(id: string, name: string, icon: string, man: InstanceManifest) {

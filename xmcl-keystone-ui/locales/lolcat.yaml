@@ -1240,6 +1240,7 @@ setting:
   autoDownloadDescription: AUTO DOWNLOAD UPDATE IF IZ AVAILABLE
   autoInstallOnAppQuit: AUTOINSTALL
   autoInstallOnAppQuitDescription: AUTOINSTALL TEH UPDATE ON APP QUIT
+  backdropBlur: Backdrop Blur
   backgroundColorAbove: SHOW BAKGROUND COLOR AS OVERLAY
   backgroundColorAboveDescription: DIS WILL MAK BAKGROUND COLOR DISPLAY ABOOV TEH BAKGROUND IMAGE OR VIDEO.
   backgroundImage: BAKGROUND IMAGE
@@ -1278,7 +1279,7 @@ setting:
     cardColor: CARD COLOR
     description: CHANGE TEH COLORS IN DA THEME
     errorColor: ERROR COLOR
-    name: THEME COLOR
+    name: Theme Color and Blur
     primaryColor: PRIMARY COLOR
     secondaryColor: SECONDARY COLOR
     sideBarColor: SIDE BAR
@@ -1363,6 +1364,7 @@ settingLabel:
   globalHint: DIS SETTIN WILL FOLLOW TEH GLOBAL SETTIN
   local: LOCAL
   localHint: DIS SETTIN IZ MODIFID BY CURRENT INSTANCE
+settings: {}
 setup:
   account:
     description: LOGIN UR GAME AKOWNT. IF U DOAN HAS WAN, U CAN SKIP IT 4 NAO.
