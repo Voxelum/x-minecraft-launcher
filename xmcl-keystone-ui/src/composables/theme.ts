@@ -31,17 +31,26 @@ export interface UIThemeDataV1 {
 
   dark: boolean
   colors: {
-    appBar: string
-    sideBar: string
-    background: string
-    card: string
-
-    primary: string
-    info: string
-    error: string
-    warning: string
-    success: string
-    accent: string
+    lightAppBarColor: string
+    lightSideBarColor: string
+    darkAppBarColor: string
+    darkSideBarColor: string
+    darkPrimaryColor: string
+    darkBackground: string
+    darkInfoColor: string
+    darkErrorColor: string
+    darkWarningColor: string
+    darkSuccessColor: string
+    darkAccentColor: string
+    darkCardColor: string
+    lightPrimaryColor: string
+    lightBackground: string
+    lightInfoColor: string
+    lightErrorColor: string
+    lightWarningColor: string
+    lightSuccessColor: string
+    lightAccentColor: string
+    lightCardColor: string
   }
 
   blur: {
@@ -64,63 +73,48 @@ export interface UIThemeDataV1 {
   particleMode?: ParticleMode
 }
 
-export function getDefaultDarkTheme(): UIThemeDataV1 {
+export function getDefaultTheme(): UIThemeDataV1 {
   return {
-    name: 'default-dark',
+    name: 'default',
     dark: true,
-    colors: {
-      appBar: '#111111FF',
-      sideBar: '#11111166',
-      background: '#121212FF',
-      card: '#0c0c0ccc',
-
-      primary: '#4caf50',
-      info: '#2196F3',
-      error: '#FF5252',
-      warning: '#FB8C00',
-      success: '#4CAF50',
-      accent: '#00e676',
-    },
-    blur: {
-      appBar: 3,
-      sideBar: 3,
-      background: 3,
-    },
     backgroundMusic: [],
     backgroundMusicPlayOrder: 'sequential',
+    colors: {
+      lightAppBarColor: '#e0e0e0FF',
+      lightSideBarColor: '#FFFFFFFF',
+      darkAppBarColor: '#111111FF',
+      darkSideBarColor: '#11111166',
+      darkPrimaryColor: '#4caf50',
+      darkBackground: '#121212A5',
+      darkInfoColor: '#2196F3',
+      darkErrorColor: '#FF5252',
+      darkWarningColor: '#FB8C00',
+
+      darkSuccessColor: '#4CAF50',
+      darkAccentColor: '#00e676',
+      darkCardColor: '#0c0c0ccc',
+      lightPrimaryColor: '#1976D2',
+      lightBackground: '#FFFFFF',
+      lightInfoColor: '#2196F3',
+      lightErrorColor: '#FF5252',
+      lightWarningColor: '#FB8C00',
+      lightSuccessColor: '#4CAF50',
+      lightAccentColor: '#82B1FF',
+      lightCardColor: '#e0e0e080',
+    },
+    backgroundColorOverlay: true,
+    backgroundVolume: 1,
+    backgroundImage: undefined,
     backgroundImageFit: 'cover',
     backgroundType: BackgroundType.NONE,
-    backgroundVolume: 1,
-  }
-}
-
-export function getDefaultLightTheme(): UIThemeDataV1 {
-  return {
-    name: 'default-light',
-    dark: false,
-    colors: {
-      appBar: '#e0e0e0FF',
-      sideBar: '#FFFFFFFF',
-      background: '#FFFFFFFF',
-      card: '#e0e0e080',
-
-      primary: '#1976D2',
-      info: '#2196F3',
-      error: '#FF5252',
-      warning: '#FB8C00',
-      success: '#4CAF50',
-      accent: '#82B1FF',
-    },
+    font: undefined,
+    fontSize: 16,
     blur: {
+      background: 3,
+      card: 20,
       appBar: 3,
       sideBar: 3,
-      background: 3,
-    },
-    backgroundMusic: [],
-    backgroundMusicPlayOrder: 'sequential',
-    backgroundImageFit: 'cover',
-    backgroundType: BackgroundType.NONE,
-    backgroundVolume: 1,
+    }
   }
 }
 
@@ -192,14 +186,14 @@ export interface UIThemeData {
 
 export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme, getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
-  const currentTheme = ref<UIThemeDataV1>(getDefaultDarkTheme())
+  const currentTheme = ref<UIThemeDataV1>(getDefaultTheme())
   const themes = ref<UIThemeDataV1[]>([])
 
   function update() {
     getThemes().then((v) => {
       themes.value = v.map((theme) => {
         const t = deserialize(theme)
-        if (!t) return getDefaultDarkTheme()
+        if (!t) return getDefaultTheme()
         return t
       })
     })
@@ -289,72 +283,112 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     },
   })
   const appBarColor = computed({
-    get: () => currentTheme.value.colors.appBar ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkAppBarColor : currentTheme.value.colors.lightAppBarColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.appBar = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkAppBarColor = v
+      } else {
+        currentTheme.value.colors.lightAppBarColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const sideBarColor = computed({
-    get: () => currentTheme.value.colors.sideBar ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkSideBarColor : currentTheme.value.colors.lightSideBarColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.sideBar = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkSideBarColor = v
+      } else {
+        currentTheme.value.colors.lightSideBarColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const primaryColor = computed({
-    get: () => currentTheme.value.colors.primary ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkPrimaryColor : currentTheme.value.colors.lightPrimaryColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.primary = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkPrimaryColor = v
+      } else {
+        currentTheme.value.colors.lightPrimaryColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const backgroundColor = computed({
-    get: () => currentTheme.value.colors.background ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkBackground : currentTheme.value.colors.lightBackground ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.background = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkBackground = v
+      } else {
+        currentTheme.value.colors.lightBackground = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const infoColor = computed({
-    get: () => currentTheme.value.colors.info ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkInfoColor : currentTheme.value.colors.lightInfoColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.info = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkInfoColor = v
+      } else {
+        currentTheme.value.colors.lightInfoColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const errorColor = computed({
-    get: () => currentTheme.value.colors.error ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkErrorColor : currentTheme.value.colors.lightErrorColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.error = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkErrorColor = v
+      } else {
+        currentTheme.value.colors.lightErrorColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const warningColor = computed({
-    get: () => currentTheme.value.colors.warning ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkWarningColor : currentTheme.value.colors.lightWarningColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.warning = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkWarningColor = v
+      } else {
+        currentTheme.value.colors.lightWarningColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const successColor = computed({
-    get: () => currentTheme.value.colors.success ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkSuccessColor : currentTheme.value.colors.lightSuccessColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.success = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkSuccessColor = v
+      } else {
+        currentTheme.value.colors.lightSuccessColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const accentColor = computed({
-    get: () => currentTheme.value.colors.accent ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkAccentColor : currentTheme.value.colors.lightAccentColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.accent = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkAccentColor = v
+      } else {
+        currentTheme.value.colors.lightAccentColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const cardColor = computed({
-    get: () => currentTheme.value.colors.card ?? '',
+    get: () => isDark.value ? currentTheme.value.colors.darkCardColor : currentTheme.value.colors.lightCardColor ?? '',
     set: (v: string) => {
-      currentTheme.value.colors.card = v
+      if (isDark.value) {
+        currentTheme.value.colors.darkCardColor = v
+      } else {
+        currentTheme.value.colors.lightCardColor = v
+      }
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
@@ -374,10 +408,15 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
       return color
     }
 
-    theme.colors.appBar = ensureRGBAHex(theme.colors.appBar)
-    theme.colors.sideBar = ensureRGBAHex(theme.colors.sideBar)
-    theme.colors.background = ensureRGBAHex(theme.colors.background)
-    theme.colors.card = ensureRGBAHex(theme.colors.card)
+    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
+    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
+    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
+    theme.colors.darkCardColor = ensureRGBAHex(theme.colors.darkCardColor)
+
+    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
+    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
+    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
+    theme.colors.lightCardColor = ensureRGBAHex(theme.colors.lightCardColor)
 
     currentTheme.value = theme
   }
@@ -392,33 +431,33 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   function resetDarkToDefault() {
     const colors = currentTheme.value.colors
-    const defaultColors = getDefaultDarkTheme().colors
-    colors.appBar = defaultColors.appBar
-    colors.sideBar = defaultColors.sideBar
-    colors.primary = defaultColors.primary
-    colors.background = defaultColors.background
-    colors.info = defaultColors.info
-    colors.error = defaultColors.error
-    colors.warning = defaultColors.warning
-    colors.success = defaultColors.success
-    colors.accent = defaultColors.accent
-    colors.card = defaultColors.card
+    const defaultColors = getDefaultTheme().colors
+    colors.darkAppBarColor = defaultColors.darkAppBarColor
+    colors.darkSideBarColor = defaultColors.darkSideBarColor
+    colors.darkPrimaryColor = defaultColors.darkPrimaryColor
+    colors.darkBackground = defaultColors.darkBackground
+    colors.darkInfoColor = defaultColors.darkInfoColor
+    colors.darkErrorColor = defaultColors.darkErrorColor
+    colors.darkWarningColor = defaultColors.darkWarningColor
+    colors.darkSuccessColor = defaultColors.darkSuccessColor
+    colors.darkAccentColor = defaultColors.darkAccentColor
+    colors.darkCardColor = defaultColors.darkCardColor
     writeTheme(currentTheme.value.name, currentTheme.value)
   }
 
   function resetLightToDefault() {
     const colors = currentTheme.value.colors
-    const defaultColors = getDefaultLightTheme().colors
-    colors.appBar = defaultColors.appBar
-    colors.sideBar = defaultColors.sideBar
-    colors.primary = defaultColors.primary
-    colors.background = defaultColors.background
-    colors.info = defaultColors.info
-    colors.error = defaultColors.error
-    colors.warning = defaultColors.warning
-    colors.success = defaultColors.success
-    colors.accent = defaultColors.accent
-    colors.card = defaultColors.card
+    const defaultColors = getDefaultTheme().colors
+    colors.lightAppBarColor = defaultColors.lightAppBarColor
+    colors.lightSideBarColor = defaultColors.lightSideBarColor
+    colors.lightPrimaryColor = defaultColors.lightPrimaryColor
+    colors.lightBackground = defaultColors.lightBackground
+    colors.lightInfoColor = defaultColors.lightInfoColor
+    colors.lightErrorColor = defaultColors.lightErrorColor
+    colors.lightWarningColor = defaultColors.lightWarningColor
+    colors.lightSuccessColor = defaultColors.lightSuccessColor
+    colors.lightAccentColor = defaultColors.lightAccentColor
+    colors.lightCardColor = defaultColors.lightCardColor
     writeTheme(currentTheme.value.name, currentTheme.value)
   }
 

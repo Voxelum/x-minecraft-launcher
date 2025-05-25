@@ -1,4 +1,4 @@
-import { BackgroundType, UIThemeDataV1 } from '@/composables/theme'
+import { BackgroundType, UIThemeDataV1, getDefaultTheme } from '@/composables/theme'
 import { MediaData, ThemeData } from '@xmcl/runtime-api'
 
 export function serialize(theme: UIThemeDataV1) {
@@ -61,21 +61,31 @@ export function serialize(theme: UIThemeDataV1) {
 }
 
 export function deserialize(data: ThemeData): UIThemeDataV1 {
+  const defaultColors = getDefaultTheme().colors
   const theme: UIThemeDataV1 = {
     name: data.name,
     dark: !!(data.settings?.dark),
     colors: {
-      appBar: data.colors?.appBar ?? '#111111FF',
-      sideBar: data.colors?.sideBar ?? '#11111166',
-      background: data.colors?.background ?? '#121212FF',
-      card: data.colors?.card ?? '#0c0c0ccc',
-
-      primary: data.colors?.primary ?? '#4caf50',
-      info: data.colors?.info ?? '#2196F3',
-      error: data.colors?.error ?? '#FF5252',
-      warning: data.colors?.warning ?? '#FB8C00',
-      success: data.colors?.success ?? '#4CAF50',
-      accent: data.colors?.accent ?? '#00e676',
+      lightAppBarColor: data.colors?.lightAppBarColor ?? defaultColors.lightAppBarColor,
+      lightSideBarColor: data.colors?.lightSideBarColor ?? defaultColors.lightSideBarColor,
+      darkAppBarColor: data.colors?.darkAppBarColor ?? defaultColors.darkAppBarColor,
+      darkSideBarColor: data.colors?.darkSideBarColor ?? defaultColors.darkSideBarColor,
+      darkPrimaryColor: data.colors?.darkPrimaryColor ?? defaultColors.darkPrimaryColor,
+      darkBackground: data.colors?.darkBackground ?? defaultColors.darkBackground,
+      darkInfoColor: data.colors?.darkInfoColor ?? defaultColors.darkInfoColor,
+      darkErrorColor: data.colors?.darkErrorColor ?? defaultColors.darkErrorColor,
+      darkWarningColor: data.colors?.darkWarningColor ?? defaultColors.darkWarningColor,
+      darkSuccessColor: data.colors?.darkSuccessColor ?? defaultColors.darkSuccessColor,
+      darkAccentColor: data.colors?.darkAccentColor ?? defaultColors.darkAccentColor,
+      darkCardColor: data.colors?.darkCardColor ?? defaultColors.darkCardColor,
+      lightPrimaryColor: data.colors?.lightPrimaryColor ?? defaultColors.lightPrimaryColor,
+      lightBackground: data.colors?.lightBackground ?? defaultColors.lightBackground,
+      lightInfoColor: data.colors?.lightInfoColor ?? defaultColors.lightInfoColor,
+      lightErrorColor: data.colors?.lightErrorColor ?? defaultColors.lightErrorColor,
+      lightWarningColor: data.colors?.lightWarningColor ?? defaultColors.lightWarningColor,
+      lightSuccessColor: data.colors?.lightSuccessColor ?? defaultColors.lightSuccessColor,
+      lightAccentColor: data.colors?.lightAccentColor ?? defaultColors.lightAccentColor,
+      lightCardColor: data.colors?.lightCardColor ?? defaultColors.lightCardColor,
     },
     backgroundMusic: [],
     backgroundMusicPlayOrder: 'sequential',
