@@ -12,13 +12,30 @@
         @click="on.click($event)"
       />
     </template>
-    <v-color-picker
-      :value="value"
-      dot-size="25"
-      show-swatches
-      swatches-max-height="200"
-      @input="emit('input', $event)"
-    />
+    <v-card class="overflow-hidden">
+      <v-color-picker
+        :value="value"
+        dot-size="25"
+        show-swatches
+        swatches-max-height="200"
+        @input="emit('input', $event)"
+      />
+      <template v-if="hasBlur">
+        <v-subheader>
+          {{ t('setting.backdropBlur') }}
+        </v-subheader>
+        <v-slider
+          class="mx-2"
+          :input-value="blur"
+          :value="blur"
+          @input="emit('update:blur', $event)"
+          :height="5"
+          :min="0"
+          :max="30"
+          dense
+        />
+      </template>
+    </v-card>
   </v-menu>
 </template>
 <script lang="ts" setup>
@@ -29,9 +46,12 @@ import { injection } from '@/util/inject'
 const props = defineProps<{
   value: string
   text: string
+  blur?: number
+  hasBlur?: boolean
 }>()
 
-const emit = defineEmits(['input'])
+const { t } = useI18n()
+const emit = defineEmits(['input', 'update:blur'])
 
 const { isDark } = injection(kTheme)
 

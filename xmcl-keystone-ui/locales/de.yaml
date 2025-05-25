@@ -819,7 +819,7 @@ mod:
   incompatibleHintDescription: |-
     Möglicherweise fehlen einige Mod-Abhängigkeiten. 
     Oder einige Abhängigkeitsversionen stimmen nicht überein.
-  manage: Mods verwalten
+  manage: Verwalten
   maybeCompatible: Möglicherweise kompatibel.
   modloaderSelectHint: |-
     Der Mod unterstützt folgende Mod-Loader. 
@@ -1387,6 +1387,7 @@ setting:
   autoDownloadDescription: Updates automatisch herunterladen, falls verfügbar
   autoInstallOnAppQuit: Auto-Installation
   autoInstallOnAppQuitDescription: Installiert automatisch Updates, wenn Sie die Anwendung beenden
+  backdropBlur: Hintergrund Unschärfe
   backgroundColorAbove: Hintergrundfarbe als Overlay anzeigen
   backgroundColorAboveDescription: >-
     Dadurch wird die Hintergrundfarbe über dem Hintergrundbild oder Video
@@ -1429,7 +1430,7 @@ setting:
     cardColor: Farbe der Karte
     description: Farben im Thema ändern
     errorColor: Farbe des Fehlers
-    name: Thema Farbe
+    name: Themenfarbe und Unschärfe
     primaryColor: Hauptfarbe
     secondaryColor: Sekundärfarbe
     sideBarColor: Seitenwand

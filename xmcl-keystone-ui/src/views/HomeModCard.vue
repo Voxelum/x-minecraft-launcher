@@ -8,11 +8,14 @@
     :text="dragover ? t('mod.dropHint') : t('mod.enabled', { count: enabledMods.length })"
     :icons="icons"
     :refreshing="isValidating"
-    :addition-button="{ 
+    :addition-button="noAction ? undefined : { 
       icon: 'file_download',
       text: t('install'),
      }"
-    :button="t('mod.manage')"
+    :button="noAction || mods.length === 0 ? undefined : {
+      text: t('mod.manage'),
+      icon: 'settings'
+     }"
     :error="error"
     @navigate="push('/mods')"
     @navigate-addition="push('/mods?source=remote')"
@@ -28,7 +31,7 @@ import { useService } from '@/composables'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { kInstance } from '@/composables/instance'
 
-const props = defineProps<{ row: number; rowCount: number }>()
+const props = defineProps<{ row: number; rowCount: number; noAction?: boolean }>()
 
 const { mods, enabledMods, isValidating, error } = injection(kInstanceModsContext)
 const icons = computed(() => mods.value.filter(i => i.enabled).map((m) => ({ name: m.name + ' (' + m.version + ')', icon: m.icon }))

@@ -176,9 +176,9 @@ onUnmounted(() => {
 const { show: showCreateDialog } = useDialog(AddInstanceDialogKey)
 const onCreate = (item: ModpackItem) => {
   if (item.resource) {
-    showCreateDialog({ type: 'modpack', path: item.resource.path })
+    showCreateDialog({ format: 'modpack', path: item.resource.path })
   } else if (item.ftb) {
-    showCreateDialog({ type: 'ftb', manifest: item.ftb })
+    showCreateDialog({ format: 'ftb', manifest: item.ftb })
   }
 }
 </script>

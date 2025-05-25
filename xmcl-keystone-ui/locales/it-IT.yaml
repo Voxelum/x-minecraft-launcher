@@ -1307,6 +1307,7 @@ setting:
   autoDownloadDescription: Aggiornamento automatico se disponibile
   autoInstallOnAppQuit: Installazione automatica
   autoInstallOnAppQuitDescription: Installa automaticamente l'aggiornamento alla chiusura dell'app
+  backdropBlur: Sfocatura
   backgroundColorAbove: Mostra il colore di sfondo come overlay
   backgroundColorAboveDescription: >-
     Questa opzione farà sì che il colore di sfondo venga visualizzato sopra
@@ -1347,7 +1348,7 @@ setting:
     cardColor: Colore della carta
     description: Cambia i colori del tema
     errorColor: Colore dell'errore
-    name: Colore del tema
+    name: Colore e sfocatura del tema
     primaryColor: Colore primario
     secondaryColor: Colore secondario
     sideBarColor: Barra laterale

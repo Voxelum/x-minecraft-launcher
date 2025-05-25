@@ -3,7 +3,7 @@ import { kInstanceFiles } from './instanceFiles'
 
 export function useInstanceFilesDiagnose() {
   const { t } = useI18n()
-  const { instanceInstallStatus, resumeInstall, unzipFileNotFound } = injection(kInstanceFiles)
+  const { instanceInstallStatus, resumeInstall, isResumingInstall, unzipFileNotFound } = injection(kInstanceFiles)
 
   const issue = computed(() =>
     unzipFileNotFound.value
@@ -25,8 +25,10 @@ export function useInstanceFilesDiagnose() {
       })
     }
   }
+  const loading = computed(() => instanceInstallStatus.value?.instance ? isResumingInstall(instanceInstallStatus.value?.instance) : false)
 
   return {
+    loading,
     issue,
     fix,
   }

@@ -1,10 +1,12 @@
+import { loadV1Theme } from '@/util/theme.v0'
+import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useStyleTag } from '@vueuse/core'
 import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { InjectionKey, computed, set } from 'vue'
 import { Framework } from 'vuetify'
 import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
-import debounce from 'lodash.debounce'
 
 export const kTheme: InjectionKey<ReturnType<typeof useTheme>> = Symbol('theme')
 
@@ -21,6 +23,123 @@ export enum BackgroundType {
   HALO = 'halo',
   IMAGE = 'image',
   VIDEO = 'video',
+}
+
+export interface UIThemeDataV1 {
+  name: string
+
+  dark: boolean
+  colors: {
+    appBar: string
+    sideBar: string
+    background: string
+    card: string
+
+    primary: string
+    info: string
+    error: string
+    warning: string
+    success: string
+    accent: string
+  }
+
+  blur: {
+    appBar?: number
+    sideBar?: number
+    background?: number
+    card?: number
+  }
+
+  backgroundMusic: MediaData[]
+  backgroundMusicPlayOrder?: 'sequential' | 'shuffle'
+  backgroundImage?: MediaData // image or video
+  backgroundColorOverlay?: boolean
+  backgroundType?: BackgroundType
+  backgroundVolume?: number
+  backgroundImageFit: 'cover' | 'contain'
+
+  font?: MediaData
+  fontSize?: number
+  particleMode?: ParticleMode
+}
+
+function getDefaultDarkTheme(): UIThemeDataV1 {
+  return {
+    name: 'default-dark',
+    dark: true,
+    colors: {
+      appBar: '#111111FF',
+      sideBar: '#11111166',
+      background: '#121212FF',
+      card: '#0c0c0ccc',
+
+      primary: '#4caf50',
+      info: '#2196F3',
+      error: '#FF5252',
+      warning: '#FB8C00',
+      success: '#4CAF50',
+      accent: '#00e676',
+    },
+    blur: {
+      appBar: 3,
+      sideBar: 3,
+      background: 3,
+    },
+    backgroundMusic: [],
+    backgroundMusicPlayOrder: 'sequential',
+    backgroundImageFit: 'cover',
+    backgroundType: BackgroundType.NONE,
+    backgroundVolume: 1,
+  }
+}
+
+function getDefaultLightTheme(): UIThemeDataV1 {
+  return {
+    name: 'default-light',
+    dark: false,
+    colors: {
+      appBar: '#e0e0e0FF',
+      sideBar: '#FFFFFFFF',
+      background: '#FFFFFFFF',
+      card: '#e0e0e080',
+
+      primary: '#1976D2',
+      info: '#2196F3',
+      error: '#FF5252',
+      warning: '#FB8C00',
+      success: '#4CAF50',
+      accent: '#82B1FF',
+    },
+    blur: {
+      appBar: 3,
+      sideBar: 3,
+      background: 3,
+    },
+    backgroundMusic: [],
+    backgroundMusicPlayOrder: 'sequential',
+    backgroundImageFit: 'cover',
+    backgroundType: BackgroundType.NONE,
+    backgroundVolume: 1,
+  }
+}
+
+export function useThemes() {
+  const themes = ref<UIThemeDataV1[]>([])
+  const { getThemes } = useService(ThemeServiceKey)
+  function update() {
+    getThemes().then((v) => {
+      themes.value = v.map((theme) => {
+        const t = deserialize(theme)
+        if (!t) return getDefaultDarkTheme()
+        return t
+      })
+    })
+  }
+  onMounted(update)
+  return {
+    themes,
+    update
+  }
 }
 
 export interface UIThemeData {
@@ -63,53 +182,10 @@ export interface UIThemeData {
   blurAppBar?: number
 }
 
-export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)) {
+export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme, getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
-  const darkTheme = useLocalStorageCacheStringValue<'dark' | 'light' | 'system'>('darkTheme', 'system')
-  const currentTheme = ref<UIThemeData>({
-    name: 'default',
-    backgroundMusic: [],
-    backgroundMusicPlayOrder: 'sequential',
-    colors: {
-      lightAppBarColor: '#e0e0e0FF',
-      lightSideBarColor: '#FFFFFFFF',
-      darkAppBarColor: '#111111FF',
-      darkSideBarColor: '#11111166',
-      darkPrimaryColor: '#4caf50',
-      darkBackground: '#121212A5',
-      darkInfoColor: '#2196F3',
-      darkErrorColor: '#FF5252',
-      darkWarningColor: '#FB8C00',
-
-      darkSuccessColor: '#4CAF50',
-      darkAccentColor: '#00e676',
-      darkCardColor: '#0c0c0ccc',
-      lightPrimaryColor: '#1976D2',
-      lightBackground: '#FFFFFF',
-      lightInfoColor: '#2196F3',
-      lightErrorColor: '#FF5252',
-      lightWarningColor: '#FB8C00',
-      lightSuccessColor: '#4CAF50',
-      lightAccentColor: '#82B1FF',
-      lightCardColor: '#e0e0e080',
-    },
-    backgroundColorOverlay: true,
-    backgroundVolume: 1,
-    backgroundImage: undefined,
-    backgroundImageFit: 'cover',
-    backgroundType: BackgroundType.NONE,
-    font: undefined,
-    fontSize: 16,
-    blur: 3,
-    blurSidebar: 3,
-    blurAppBar: 3,
-  })
-  const isDark = computed(() => {
-    if (darkTheme.value === 'system') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
-    return darkTheme.value === 'dark'
-  })
+  const currentTheme = ref<UIThemeDataV1>(getDefaultDarkTheme())
+  const isDark = computed(() => currentTheme.value.dark)
   watch(isDark, (dark) => {
     framework.theme.dark = dark
   }, { immediate: true })
@@ -122,11 +198,19 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     },
   })
   const blur = computed({
-    get() { return currentTheme.value.blur },
+    get() { return currentTheme.value.blur?.background ?? 0 },
     set(v: number) {
-      currentTheme.value.blur = v
-      writeTheme(currentTheme.value.name, currentTheme.value)
+      if (!currentTheme.value.blur) currentTheme.value.blur = {};
+      currentTheme.value.blur.background = v;
+      writeTheme(currentTheme.value.name, currentTheme.value);
     },
+  })
+  const blurCard = computed({
+    get() { return currentTheme.value.blur.card ?? 22 },
+    set(v: number) {
+      currentTheme.value.blur.card = v
+      writeTheme(currentTheme.value.name, currentTheme.value)
+    }
   })
   const backgroundImage = computed(() => currentTheme.value.backgroundImage)
   const backgroundColorOverlay = computed({
@@ -152,18 +236,20 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     },
   })
   const blurSidebar = computed({
-    get() { return currentTheme.value.blurSidebar ?? 4 },
+    get() { return currentTheme.value.blur?.sideBar ?? 4 },
     set(v: number) {
       if (!currentTheme.value) return
-      currentTheme.value.blurSidebar = v
+      if (!currentTheme.value.blur) currentTheme.value.blur = {};
+      currentTheme.value.blur.sideBar = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const blurAppBar = computed({
-    get() { return currentTheme.value.blurAppBar ?? 4 },
+    get() { return currentTheme.value.blur?.appBar ?? 4 },
     set(v: number) {
       if (!currentTheme.value) return
-      currentTheme.value.blurAppBar = v
+      if (!currentTheme.value.blur) currentTheme.value.blur = {};
+      currentTheme.value.blur.appBar = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
@@ -175,195 +261,85 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
-
   const appBarColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkAppBarColor : currentTheme.value.colors.lightAppBarColor ?? '',
+    get: () => currentTheme.value.colors.appBar ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkAppBarColor = v
-      } else {
-        currentTheme.value.colors.lightAppBarColor = v
-      }
+      currentTheme.value.colors.appBar = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const sideBarColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkSideBarColor : currentTheme.value.colors.lightSideBarColor ?? '',
+    get: () => currentTheme.value.colors.sideBar ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkSideBarColor = v
-      } else {
-        currentTheme.value.colors.lightSideBarColor = v
-      }
+      currentTheme.value.colors.sideBar = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const primaryColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkPrimaryColor : currentTheme.value.colors.lightPrimaryColor ?? '',
+    get: () => currentTheme.value.colors.primary ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkPrimaryColor = v
-      } else {
-        currentTheme.value.colors.lightPrimaryColor = v
-      }
+      currentTheme.value.colors.primary = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const backgroundColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkBackground : currentTheme.value.colors.lightBackground ?? '',
+    get: () => currentTheme.value.colors.background ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkBackground = v
-      } else {
-        currentTheme.value.colors.lightBackground = v
-      }
+      currentTheme.value.colors.background = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const infoColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkInfoColor : currentTheme.value.colors.lightInfoColor ?? '',
+    get: () => currentTheme.value.colors.info ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkInfoColor = v
-      } else {
-        currentTheme.value.colors.lightInfoColor = v
-      }
+      currentTheme.value.colors.info = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const errorColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkErrorColor : currentTheme.value.colors.lightErrorColor ?? '',
+    get: () => currentTheme.value.colors.error ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkErrorColor = v
-      } else {
-        currentTheme.value.colors.lightErrorColor = v
-      }
+      currentTheme.value.colors.error = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const warningColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkWarningColor : currentTheme.value.colors.lightWarningColor ?? '',
+    get: () => currentTheme.value.colors.warning ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkWarningColor = v
-      } else {
-        currentTheme.value.colors.lightWarningColor = v
-      }
+      currentTheme.value.colors.warning = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const successColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkSuccessColor : currentTheme.value.colors.lightSuccessColor ?? '',
+    get: () => currentTheme.value.colors.success ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkSuccessColor = v
-      } else {
-        currentTheme.value.colors.lightSuccessColor = v
-      }
+      currentTheme.value.colors.success = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const accentColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkAccentColor : currentTheme.value.colors.lightAccentColor ?? '',
+    get: () => currentTheme.value.colors.accent ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkAccentColor = v
-      } else {
-        currentTheme.value.colors.lightAccentColor = v
-      }
+      currentTheme.value.colors.accent = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
   const cardColor = computed({
-    get: () => isDark.value ? currentTheme.value.colors.darkCardColor : currentTheme.value.colors.lightCardColor ?? '',
+    get: () => currentTheme.value.colors.card ?? '',
     set: (v: string) => {
-      if (isDark.value) {
-        currentTheme.value.colors.darkCardColor = v
-      } else {
-        currentTheme.value.colors.lightCardColor = v
-      }
+      currentTheme.value.colors.card = v
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
 
-  function migrateLegacyTheme(ui: UIThemeData) {
-    const readNum = (key: string) => {
-      const v = localStorage.getItem(key)
-      if (v) {
-        localStorage.removeItem(key)
-        return parseInt(v)
-      }
+  async function readTheme(name: string) {
+    let theme = await getTheme(name).then(v => v ? deserializeV0(v) : undefined)
+    if (!theme) {
+      theme = loadV1Theme()
+    }
+    if (!theme) {
       return undefined
     }
-    const blur = readNum('blur')
-    const backgroundType = localStorage.getItem('backgroundType') as BackgroundType
-    const backgroundImage = localStorage.getItem('background')
-    const imageFill = localStorage.getItem('imageFill') as 'cover' | 'contain'
-    const particleMode = localStorage.getItem('particleMode') as ParticleMode
-    const backgroundVideo = localStorage.getItem('backgroundVideo')
-    const videoVolume = readNum('volume')
-    const blurSidebar = readNum('blurSidebar')
-    const blurAppBar = readNum('blurAppBar')
-
-    const lightAppBarColor = localStorage.getItem('lightAppBarColor')
-    const lightSideBarColor = localStorage.getItem('lightSideBarColor')
-    const darkAppBarColor = localStorage.getItem('darkAppBarColor')
-    const darkSideBarColor = localStorage.getItem('darkSideBarColor')
-    const darkPrimaryColor = localStorage.getItem('darkPrimaryColor')
-    const darkBackground = localStorage.getItem('darkBackground')
-    const darkInfoColor = localStorage.getItem('darkInfoColor')
-    const darkErrorColor = localStorage.getItem('darkErrorColor')
-    const darkWarningColor = localStorage.getItem('darkWarningColor')
-    const darkSuccessColor = localStorage.getItem('darkSuccessColor')
-    const darkAccentColor = localStorage.getItem('darkAccentColor')
-    const darkCardColor = localStorage.getItem('darkCardColor')
-    const lightPrimaryColor = localStorage.getItem('lightPrimaryColor')
-    const lightBackground = localStorage.getItem('lightBackground')
-    const lightInfoColor = localStorage.getItem('lightInfoColor')
-    const lightErrorColor = localStorage.getItem('lightErrorColor')
-    const lightWarningColor = localStorage.getItem('lightWarningColor')
-    const lightSuccessColor = localStorage.getItem('lightSuccessColor')
-    const lightAccentColor = localStorage.getItem('lightAccentColor')
-    const lightCardColor = localStorage.getItem('lightCardColor')
-
-    if (lightAppBarColor) ui.colors.lightAppBarColor = lightAppBarColor
-    if (lightSideBarColor) ui.colors.lightSideBarColor = lightSideBarColor
-    if (darkAppBarColor) ui.colors.darkAppBarColor = darkAppBarColor
-    if (darkSideBarColor) ui.colors.darkSideBarColor = darkSideBarColor
-    if (darkPrimaryColor) ui.colors.darkPrimaryColor = darkPrimaryColor
-    if (darkBackground) ui.colors.darkBackground = darkBackground
-    if (darkInfoColor) ui.colors.darkInfoColor = darkInfoColor
-    if (darkErrorColor) ui.colors.darkErrorColor = darkErrorColor
-    if (darkWarningColor) ui.colors.darkWarningColor = darkWarningColor
-    if (darkSuccessColor) ui.colors.darkSuccessColor = darkSuccessColor
-    if (darkAccentColor) ui.colors.darkAccentColor = darkAccentColor
-    if (darkCardColor) ui.colors.darkCardColor = darkCardColor
-    if (lightPrimaryColor) ui.colors.lightPrimaryColor = lightPrimaryColor
-    if (lightBackground) ui.colors.lightBackground = lightBackground
-    if (lightInfoColor) ui.colors.lightInfoColor = lightInfoColor
-    if (lightErrorColor) ui.colors.lightErrorColor = lightErrorColor
-    if (lightWarningColor) ui.colors.lightWarningColor = lightWarningColor
-    if (lightSuccessColor) ui.colors.lightSuccessColor = lightSuccessColor
-    if (lightAccentColor) ui.colors.lightAccentColor = lightAccentColor
-    if (lightCardColor) ui.colors.lightCardColor = lightCardColor
-
-    if (backgroundType) ui.backgroundType = backgroundType
-    if (backgroundImage && backgroundType === BackgroundType.IMAGE) ui.backgroundImage = { url: backgroundImage, type: 'image', mimeType: 'image/png' }
-    else if (backgroundVideo && backgroundType === BackgroundType.VIDEO) ui.backgroundImage = { url: backgroundVideo, type: 'video', mimeType: 'video/mp4' }
-    if (imageFill) ui.backgroundImageFit = imageFill
-    if (particleMode) ui.particleMode = particleMode
-    if (videoVolume) ui.backgroundVolume = videoVolume
-    if (blurSidebar) ui.blurSidebar = blurSidebar
-    if (blurAppBar) ui.blurAppBar = blurAppBar
-    if (blur) ui.blur = blur
-  }
-
-  function readTheme(name: string) {
-    const themes = localStorage.getItem('themes')
-    if (!themes) return
-    const parsed = JSON.parse(themes) as Record<string, UIThemeData>
-
     const ensureRGBAHex = (color: string) => {
       if (color.length === 7) {
         return color + 'FF'
@@ -371,56 +347,52 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
       return color
     }
 
-    const theme = parsed[name]
+    theme.colors.appBar = ensureRGBAHex(theme.colors.appBar)
+    theme.colors.sideBar = ensureRGBAHex(theme.colors.sideBar)
+    theme.colors.background = ensureRGBAHex(theme.colors.background)
+    theme.colors.card = ensureRGBAHex(theme.colors.card)
 
-    theme.colors.lightAppBarColor = ensureRGBAHex(theme.colors.lightAppBarColor)
-    theme.colors.lightSideBarColor = ensureRGBAHex(theme.colors.lightSideBarColor)
-    theme.colors.darkAppBarColor = ensureRGBAHex(theme.colors.darkAppBarColor)
-    theme.colors.darkSideBarColor = ensureRGBAHex(theme.colors.darkSideBarColor)
-    theme.colors.lightBackground = ensureRGBAHex(theme.colors.lightBackground)
-    theme.colors.darkBackground = ensureRGBAHex(theme.colors.darkBackground)
-
-    return theme
+    currentTheme.value = theme
   }
 
-  const flushWrite = debounce((name: string, theme: UIThemeData) => {
-    const themes = localStorage.getItem('themes')
-    const parsed = themes ? JSON.parse(themes) as Record<string, UIThemeData> : {}
-    parsed[name] = theme
-    console.log(theme)
-    localStorage.setItem('themes', JSON.stringify(parsed))
+  const flushWrite = debounce((name: string, theme: UIThemeDataV1) => {
+    setTheme(name, serialize(theme)).catch((e) => { })
   }, 800)
 
-  function writeTheme(name: string, theme: UIThemeData) {
+  function writeTheme(name: string, theme: UIThemeDataV1) {
     flushWrite(name, theme)
   }
 
   function resetDarkToDefault() {
     const colors = currentTheme.value.colors
-    colors.darkAppBarColor = '#111111FF'
-    colors.darkSideBarColor = '#111111FF'
-    colors.darkPrimaryColor = '#4caf50'
-    colors.darkBackground = '#121212FF'
-    colors.darkInfoColor = '#2196F3'
-    colors.darkErrorColor = '#FF5252'
-    colors.darkWarningColor = '#FB8C00'
-    colors.darkSuccessColor = '#4CAF50'
-    colors.darkAccentColor = '#00e676'
-    colors.darkCardColor = '#0c0c0ccc'
+    const defaultColors = getDefaultDarkTheme().colors
+    colors.appBar = defaultColors.appBar
+    colors.sideBar = defaultColors.sideBar
+    colors.primary = defaultColors.primary
+    colors.background = defaultColors.background
+    colors.info = defaultColors.info
+    colors.error = defaultColors.error
+    colors.warning = defaultColors.warning
+    colors.success = defaultColors.success
+    colors.accent = defaultColors.accent
+    colors.card = defaultColors.card
+    writeTheme(currentTheme.value.name, currentTheme.value)
   }
 
   function resetLightToDefault() {
     const colors = currentTheme.value.colors
-    colors.lightAppBarColor = '#e0e0e0FF'
-    colors.lightSideBarColor = '#FFFFFFFF'
-    colors.lightPrimaryColor = '#1976D2'
-    colors.lightBackground = '#FFFFFFFF'
-    colors.lightInfoColor = '#2196F3'
-    colors.lightErrorColor = '#FF5252'
-    colors.lightWarningColor = '#FB8C00'
-    colors.lightSuccessColor = '#4CAF50'
-    colors.lightAccentColor = '#82B1FF'
-    colors.lightCardColor = '#e0e0e080'
+    const defaultColors = getDefaultLightTheme().colors
+    colors.appBar = defaultColors.appBar
+    colors.sideBar = defaultColors.sideBar
+    colors.primary = defaultColors.primary
+    colors.background = defaultColors.background
+    colors.info = defaultColors.info
+    colors.error = defaultColors.error
+    colors.warning = defaultColors.warning
+    colors.success = defaultColors.success
+    colors.accent = defaultColors.accent
+    colors.card = defaultColors.card
+    writeTheme(currentTheme.value.name, currentTheme.value)
   }
 
   function resetToDefault() {
@@ -431,13 +403,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     }
   }
 
-  watch(selectedThemeName, async (theme) => {
-    const t = readTheme(theme)
-    if (t) {
-      currentTheme.value = t
-    } else {
-      migrateLegacyTheme(currentTheme.value)
-    }
+  watch(selectedThemeName, async (themeName) => {
+    readTheme(themeName)
   }, { immediate: true })
 
   async function addMusic(filePath: string) {
@@ -513,56 +480,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   function _exportTheme(filePath: string) {
     const theme = currentTheme.value
-    const assets: Record<string, MediaData | MediaData[]> = {}
-    if (theme.backgroundImage) {
-      assets.backgroundImage = theme.backgroundImage
-    }
-    if (theme.backgroundMusic) {
-      assets.backgroundMusic = theme.backgroundMusic
-    }
-    if (theme.font) {
-      assets.font = theme.font
-    }
-    const settings: ThemeData['settings'] = {}
-    if (theme.backgroundType) {
-      settings.backgroundType = theme.backgroundType
-    }
-    if (theme.backgroundImageFit) {
-      settings.backgroundImageFit = theme.backgroundImageFit
-    }
-    if (theme.backgroundMusicPlayOrder) {
-      settings.backgroundMusicPlayOrder = theme.backgroundMusicPlayOrder
-    }
-    if (theme.backgroundVolume) {
-      settings.backgroundVolume = theme.backgroundVolume
-    }
-    if (theme.particleMode) {
-      settings.particleMode = theme.particleMode
-    }
-    if (theme.blur) {
-      settings.blur = theme.blur
-    }
-    if (theme.blurSidebar) {
-      settings.blurSidebar = theme.blurSidebar
-    }
-    if (theme.blurAppBar) {
-      settings.blurAppBar = theme.blurAppBar
-    }
-    if (theme.backgroundColorOverlay) {
-      settings.backgroundColorOverlay = theme.backgroundColorOverlay
-    }
-    if (theme.fontSize) {
-      settings.fontSize = theme.fontSize
-    }
-    settings.dark = isDark.value
-    const serialized: ThemeData = {
-      name: theme.name,
-      ui: 'keystone',
-      version: 0,
-      assets,
-      colors: theme.colors,
-      settings,
-    }
+    const serialized: ThemeData = serialize(theme)
     return exportTheme(serialized, filePath)
   }
 
@@ -571,62 +489,15 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     if (data.ui !== 'keystone') {
       throw new Error('Invalid theme file')
     }
-    const theme: UIThemeData = {
-      name: data.name,
-      backgroundMusic: [],
-      colors: data.colors as any,
-      backgroundImageFit: 'cover',
-      blur: 4,
+    if (data.version === 0) {
+      const themeV1 = deserializeV0(data)
+      currentTheme.value = themeV1
+      writeTheme(themeV1.name, themeV1)
+    } else if (data.version === 1) {
+      const themeV1 = deserialize(data)
+      currentTheme.value = themeV1
+      writeTheme(themeV1.name, themeV1)
     }
-    if (data.assets.backgroundImage) {
-      theme.backgroundImage = data.assets.backgroundImage as MediaData
-    }
-    if (data.assets.backgroundMusic) {
-      theme.backgroundMusic = data.assets.backgroundMusic as MediaData[]
-    }
-    if (data.settings?.backgroundType) {
-      theme.backgroundType = data.settings.backgroundType as BackgroundType
-    } else {
-      theme.backgroundType = BackgroundType.NONE
-    }
-    if (data.settings?.backgroundImageFit) {
-      theme.backgroundImageFit = data.settings.backgroundImageFit as 'cover' | 'contain'
-    }
-    if (data.settings?.backgroundMusicPlayOrder) {
-      theme.backgroundMusicPlayOrder = data.settings.backgroundMusicPlayOrder as 'sequential' | 'shuffle'
-    }
-    if (data.settings?.backgroundVolume) {
-      theme.backgroundVolume = data.settings.backgroundVolume as number
-    }
-    if (data.settings?.particleMode) {
-      theme.particleMode = data.settings.particleMode as ParticleMode
-    }
-    if (data.settings?.blur) {
-      theme.blur = data.settings.blur as number
-    }
-    if (data.settings?.blurSidebar) {
-      theme.blurSidebar = data.settings.blurSidebar as number
-    }
-    if (data.settings?.blurAppBar) {
-      theme.blurAppBar = data.settings.blurAppBar as number
-    }
-    if (data.settings?.backgroundColorOverlay) {
-      theme.backgroundColorOverlay = data.settings?.backgroundColorOverlay as boolean
-    }
-    if (data.assets.font) {
-      theme.font = data.assets.font as MediaData
-    }
-    if (data.settings?.fontSize) {
-      theme.fontSize = data.settings.fontSize as number ?? 16
-    }
-    if (data.settings?.dark) {
-      darkTheme.value = data.settings.dark ? 'dark' : 'light'
-    } else {
-      darkTheme.value = 'light'
-    }
-    writeTheme(theme.name, theme)
-    currentTheme.value = theme
-    selectedThemeName.value = theme.name
   }
 
   watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
@@ -665,8 +536,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     --color-border: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
     --color-highlight-bg: ${isDark.value ? 'hsla(0, 0%, 100%, .12)' : 'hsla(0, 0%, 100%, .12)'};
     --color-secondary-text: ${isDark.value ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)'};
-    --color-sidebar-bg: ${isDark.value ? sideBarColor.value : sideBarColor.value};
-    --color-appbar-bg: ${isDark.value ? appBarColor.value : appBarColor.value};
+    --color-sidebar-bg: ${sideBarColor.value};
+    --color-appbar-bg: ${appBarColor.value};
   }
 
   .v-application {
@@ -687,11 +558,12 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     particleMode,
     blurSidebar,
     blurAppBar,
+    blurCard,
     volume,
     blur,
-    darkTheme,
-    exportTheme: _exportTheme,
-    importTheme: _importTheme,
+    // darkTheme, // This should be removed or replaced by isDark if it was exported
+    exportTheme: _exportTheme, // Note: _exportTheme also needs updates for V2
+    importTheme: _importTheme, // Note: _importTheme needs significant updates for V2
     backgroundImageOverride,
     backgroundImageOverrideOpacity,
     backgroundColorOverlay,

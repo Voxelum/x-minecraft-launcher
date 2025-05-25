@@ -37,8 +37,16 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     }
   }
 
+  const resumingInstall = shallowRef({} as Record<string, boolean>)
+
   async function resumeInstall(instancePath: string, bypass?: InstanceFile[]) {
-    const errors = await resumeInstanceInstall(instancePath, bypass)
+    if (resumingInstall.value[instancePath]) {
+      return
+    }
+    resumingInstall.value = { ...resumingInstall.value, [instancePath]: true }
+    const errors = await resumeInstanceInstall(instancePath, bypass).finally(() => {
+      resumingInstall.value = { ...resumingInstall.value, [instancePath]: false }
+    })
     if (errors) {
       const checksumErrors = errors.filter(e => e.name === 'ChecksumNotMatchError') as ChecksumErrorFile[]
       countUpChecksumError(checksumErrors.map(e => e.expect).join(), checksumErrors.map(e => ({ file: e.file, expect: e.expect, actual: e.actual })))
@@ -53,9 +61,14 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     checksumErrorCount.value = undefined
   }
 
+  function isResumingInstall(instancePath: string) {
+    return resumingInstall.value[instancePath]
+  }
+
   return {
     instanceInstallStatus: instanceFileStatus,
     shouldHintUserSkipChecksum,
+    isResumingInstall,
     unresolvedFiles,
     unzipFileNotFound,
     resumeInstall,

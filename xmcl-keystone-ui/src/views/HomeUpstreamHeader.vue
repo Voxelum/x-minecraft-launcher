@@ -1,11 +1,14 @@
 <template>
   <v-card
-    class="flex flex-col items-center justify-center gap-4 p-4 lg:flex-col"
+    class="flex flex-col items-center justify-center gap-4 p-4"
+    :color="cardColor"
+    :style="{ borderColor: '', 'backdrop-filter': `blur(${blurCard}px)` }"
     outlined
   >
     <v-img
-      height="150"
-      width="150"
+      v-if="!dense"
+      :height="150"
+      :width="150"
       max-width="150"
       :src="value.icon"
       class="rounded-lg"
@@ -17,16 +20,25 @@
     >
       {{ value.title }}
     </a>
-    <span class="text-center">{{ value.description }}</span>
-    <span class="flex flex-wrap justify-center gap-2">
+    <span class="text-center description">{{ value.description }}</span>
+    <span class="flex justify-center gap-2"
+      :class="{
+        'flex-wrap': !dense,
+      }"
+    >
       <CategoryChip
         v-for="v of value.categories"
         :key="v.id"
         :item="v"
+        :small="dense"
         outlined
       />
     </span>
-    <span class="grid grid-cols-4 items-center justify-center gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+    <span class="infos grid items-center justify-center gap-3"
+      :class="{
+        dense
+      }"
+    >
       <div
         v-for="(info, i) of value.infos"
         :key="info.name"
@@ -34,9 +46,10 @@
       >
         <InfoHighlight
           :value="info"
+          :dense="dense"
         />
         <v-divider
-          v-if="i !== value.infos.length - 1 && i % 2 === 0"
+          v-if="i !== value.infos.length - 1 && (dense ? true : i % 2 === 0)"
           class="absolute -right-1"
           vertical
         />
@@ -62,6 +75,8 @@
 <script lang="ts" setup>
 import CategoryChip, { CategoryChipProps } from '@/components/CategoryChip.vue'
 import InfoHighlight, { Highlight } from '@/components/InfoHighlight.vue'
+import { kTheme } from '@/composables/theme'
+import { injection } from '@/util/inject'
 
 export interface UpstreamHeaderProps {
   url: string
@@ -78,5 +93,34 @@ const { push } = useRouter()
 const { t } = useI18n()
 defineProps<{
   value: UpstreamHeaderProps
+  dense?: boolean
 }>()
+
+const { cardColor, blurCard } = injection(kTheme)
+
 </script>
+<style scoped>
+.infos {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.infos.dense {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+/* when width > 1024px */
+@media (min-width: 1024px) {
+  .infos {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .infos.dense {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+</style>

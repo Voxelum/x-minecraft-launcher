@@ -32,7 +32,7 @@ const { isShown } = useDialog('HomeDropModpackDialog', (v) => {
 
 function onConfirm() {
   show({
-    type: 'modpack',
+    format: 'modpack',
     path: target.value,
   })
 }

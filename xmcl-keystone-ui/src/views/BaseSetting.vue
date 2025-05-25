@@ -1,5 +1,5 @@
 <template>
-  <div class="base-setting px-10">
+  <div class="base-setting px-10 overflow-auto" @wheel.stop>
     <div>
       <BaseSettingGeneral class="" />
       <BaseSettingVersions :isExpanded="isExpanded" class=""  />
@@ -65,6 +65,7 @@ import BaseSettingSync from './BaseSettingSync.vue'
 import BaseSettingVersions from './BaseSettingVersions.vue'
 import BaseSettingResolution from './BaseSettingResolution.vue'
 import { useMediaQuery } from '@vueuse/core'
+import { kCompact } from '@/composables/scrollTop'
 
 const { isServer, name, instance } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)
@@ -95,6 +96,12 @@ useBeforeLeave(() => {
     return false
   }
   return true
+})
+
+// Page compact
+const compact = injection(kCompact)
+onMounted(() => {
+  compact.value = true
 })
 
 const isExpanded = useMediaQuery('(min-width: 1360px)')

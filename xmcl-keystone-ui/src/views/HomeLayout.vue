@@ -2,7 +2,7 @@
   <div
     ref="containerRef"
     class="home-page visible-scroll relative flex max-h-full flex-1 flex-col overflow-x-hidden"
-    :style="{ overflow: 'overlay' }"
+    :style="{ scrollbarGutter: 'stable' }"
     @wheel="onScroll"
   >
     <HomeHeader ref="headerEl" class="sticky top-0 z-20" />

@@ -565,7 +565,7 @@ mod:
   incompatibleHintDescription: |-
     Es posible que falten algunas dependencias de modificaciones. 
     O algunas versiones de dependencias no coinciden.
-  manage: Administrar Mods
+  manage: Administrar
   maybeCompatible: Posiblemente Compatible.
   modloaderSelectHint: |-
     El mod admite los siguientes cargadores de mod. 
@@ -1025,6 +1025,7 @@ setting:
   autoDownloadDescription: Descargar actualizaciones automáticamente si están disponibles
   autoInstallOnAppQuit: Autoinstalar
   autoInstallOnAppQuitDescription: Autoinstalar la actualización al salir de la aplicación
+  backdropBlur: Flojo de telón de fondo
   backgroundColorAbove: Mostrar color de fondo como superposición
   backgroundColorAboveDescription: >-
     Esto hará que el color de fondo se muestre encima de la imagen o el vídeo de
@@ -1064,7 +1065,7 @@ setting:
     cardColor: Color de Tarjeta
     description: Cambiar los colores en el tema
     errorColor: Color de Error
-    name: Color del Tema
+    name: Color y desenfoque del tema
     primaryColor: Color Principal
     secondaryColor: Color Secundario
     sideBarColor: Color de la Barra Lateral

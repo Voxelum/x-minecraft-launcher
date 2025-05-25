@@ -1,9 +1,5 @@
 <template>
-  <v-app
-    v-if="!showSetup"
-    class="h-full max-h-screen overflow-auto overflow-x-hidden"
-    :class="{ 'dark': isDark }"
-  >
+  <v-app v-if="!showSetup" class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
     <AppBackground />
     <div class="w-full h-full absolute left-0 header-overlay" :style="{
       height: headerHeight + (compact ? 30 : 70) + 'px',
@@ -11,17 +7,10 @@
     }">
     </div>
     <AppSystemBar />
-    <div
-      class="relative flex h-full overflow-auto"
-    >
+    <div class="relative flex h-full overflow-auto">
       <AppSideBar />
-      <main
-        class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
-      >
-        <transition
-          name="fade-transition"
-          mode="out-in"
-        >
+      <main class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto">
+        <transition name="fade-transition" mode="out-in">
           <router-view class="z-2" />
         </transition>
       </main>
@@ -45,18 +34,9 @@
     <AppExportServerDialog />
     <AppModrinthLoginDialog />
   </v-app>
-  <v-app
-    v-else
-    class="h-full max-h-screen overflow-auto overflow-x-hidden"
-    :class="{ 'dark': isDark }"
-  >
-    <AppSystemBar
-      no-user
-      no-task
-    />
-    <div
-      class="relative flex h-full overflow-auto"
-    >
+  <v-app v-else class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
+    <AppSystemBar no-user no-task />
+    <div class="relative flex h-full overflow-auto">
       <Setup @ready="onReady" />
     </div>
     <AppFeedbackDialog />
@@ -70,6 +50,7 @@ import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
+import { kInstance } from '@/composables/instance'
 import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 import { useNotifier } from '@/composables/notifier'
@@ -77,6 +58,8 @@ import { kCompact } from '@/composables/scrollTop'
 import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
+import { kInFocusMode, kUILayout } from '@/composables/uiLayout'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
@@ -97,12 +80,35 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
+import { useLocalStorage, useMediaQuery } from '@vueuse/core'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
+
+const layout = injection(kUILayout)
+const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
+const { path } = injection(kInstance)
+const isLessThan490px = useMediaQuery('(max-height: 490px)')
+provide(kInFocusMode, computed({
+  get() {
+    const less = isLessThan490px.value
+    const isDashboard = modes.value[basename(path.value)]
+    if (isDashboard === undefined) {
+      return layout.value === 'focus' ? true : false
+    }
+    if (less) {
+      return false
+    }
+    return !isDashboard
+  },
+  set(inFocus) {
+    const isDashboard = !inFocus
+    modes.value = { ...modes.value, [basename(path.value)]: isDashboard }
+  },
+}))
 
 provide(kLaunchButton, useLaunchButton())
 
@@ -146,15 +152,17 @@ useAuthProfileImportNotification(notify)
 .clip-head {
   clip-path: inset(0px 30px 30px 0px) !important;
   width: 64px;
-  height: auto; /*to preserve the aspect ratio of the image*/
+  height: auto;
+  /*to preserve the aspect ratio of the image*/
 }
+
 .v-input__icon--prepend {
   margin-right: 7px;
 }
+
 img {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
-
 </style>

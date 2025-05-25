@@ -1306,6 +1306,7 @@ setting:
   autoDownloadDescription: Автоматично завантажувати оновлення, якщо воно доступне
   autoInstallOnAppQuit: Автоматичне встановлення
   autoInstallOnAppQuitDescription: Автоматично встановлювати оновлення при виході з програми
+  backdropBlur: Розмиття фонів
   backgroundColorAbove: Показувати колір фону як накладення
   backgroundColorAboveDescription: Це зробить колір фону видимим поверх фонового зображення або відео.
   backgroundImage: Фонове зображення
@@ -1344,7 +1345,7 @@ setting:
     cardColor: Колір картки
     description: Змінити кольори в темі
     errorColor: Колір помилки
-    name: Колір теми
+    name: Колір теми та розмиття
     primaryColor: Основний колір
     secondaryColor: Другорядний колір
     sideBarColor: Колір бічної панелі

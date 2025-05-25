@@ -54,6 +54,23 @@ export interface ThemeService {
    */
   importTheme(zipFilePath: string): Promise<ThemeData>
 
+  /**
+   * Get the themes list
+   */
+  getThemes(): Promise<ThemeData[]>
+
+  /**
+   * Get the theme data by name
+   */
+  getTheme(name: string): Promise<ThemeData | undefined>
+
+  /**
+   * Set theme metadata
+   * @param name The theme name
+   * @param data The theme data
+   */
+  setTheme(name: string, data: ThemeData): Promise<void>
+
   showMediaItemInFolder(url: string): Promise<void>
 }
 

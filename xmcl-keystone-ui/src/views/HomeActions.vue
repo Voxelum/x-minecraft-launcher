@@ -35,7 +35,7 @@
       v-shared-tooltip="() => t('instance.installModpack')"
       text
       icon
-      :loading="isValidating"
+      :loading="isValidating || loading"
       @click="onClickInstallFromModpack()"
     >
       <v-icon> drive_folder_upload </v-icon>
@@ -105,7 +105,9 @@ function showInstanceFolder() {
   openDirectory(path.value);
 }
 
+const loading = ref(false)
 function onClickInstallFromModpack() {
+  loading.value = true
   windowController
     .showOpenDialog({
       properties: ["openFile"],
@@ -130,6 +132,8 @@ function onClickInstallFromModpack() {
         files: files,
         id: "",
       });
+    }).finally(() => {
+      loading.value = false
     });
 }
 </script>

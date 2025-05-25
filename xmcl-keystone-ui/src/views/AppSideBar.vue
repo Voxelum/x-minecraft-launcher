@@ -54,8 +54,7 @@
       <v-divider />
     </v-list>
 
-    <AppSideBarContentFocus v-if="useFocus" />
-    <AppSideBarContentNext v-else />
+    <AppSideBarContentNext />
 
     <v-list
       nav
@@ -113,15 +112,11 @@
 <script lang=ts setup>
 import { kSettingsState } from '@/composables/setting'
 import { injection } from '@/util/inject'
-import { kUILayout } from '../composables/uiLayout'
-import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { kTheme } from '@/composables/theme'
 
 const { blurSidebar } = injection(kTheme)
-const layout = injection(kUILayout)
-const useFocus = computed(() => layout.value === 'focus')
 const { state } = injection(kSettingsState)
 
 const { t } = useI18n()

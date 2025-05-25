@@ -1318,6 +1318,7 @@ setting:
   autoDownloadDescription: Automatikus letöltés, ha van elérhető frissítés
   autoInstallOnAppQuit: Automatikus telepítés
   autoInstallOnAppQuitDescription: A frissítés automatikus telepítése az alkalmazás bezárásakor
+  backdropBlur: Háttérkép elmosódás
   backgroundColorAbove: Háttérszín megjelenítése fedvényként
   backgroundColorAboveDescription: Ezzel a háttérszín jelenik meg a háttérkép vagy a videó felett.
   backgroundImage: Háttérkép
@@ -1358,7 +1359,7 @@ setting:
     cardColor: Lap színe
     description: A téma színeinek módosítása
     errorColor: Hiba színe
-    name: Téma szíbe
+    name: Téma színe és elmosódása
     primaryColor: Elsődleges szín
     secondaryColor: Másodlagos szín
     sideBarColor: Oldalsáv

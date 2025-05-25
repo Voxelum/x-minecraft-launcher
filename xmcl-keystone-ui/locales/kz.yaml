@@ -463,6 +463,7 @@ server:
   upload: Upload Server
 setting:
   about: About
+  backdropBlur: Backdrop Blur
 setup:
   error:
     invalidChar: >-

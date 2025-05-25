@@ -429,11 +429,11 @@ instance:
   duplicatedName: 名稱重複！
   fileApi: 遠端同步檔案伺服器 API 位址
   fileApiHint: 用於遠端同步實例檔案的連結
+  fullscreen: 全螢幕
   gameVersion: 遊戲版本
+  height: 高度
   icon: 實例圖示
   iconHint: 該圖示可以是檔案或網際網路 URL 連結。
-  fullscreen: 全螢幕
-  height: 高度
   iconUrl: 圖片 URL
   includeVersion: 包含遊戲版本
   installModpack: 從模組包更新實例
@@ -731,7 +731,7 @@ mod:
   incompatibleHintDescription: |-
     某些模組相依項可能遺失。
     或某些相依項版本不符。
-  manage: 管理模組
+  manage: 管理
   maybeCompatible: 也許相容於目前版本。
   modloaderSelectHint: |-
     此模組支援以下模組載入器。
@@ -1246,6 +1246,7 @@ setting:
   autoDownloadDescription: 自動下載最新的版本
   autoInstallOnAppQuit: 自動安裝
   autoInstallOnAppQuitDescription: 每次 App 退出後自動安裝更新
+  backdropBlur: 背景模糊
   backgroundColorAbove: 將背景顏色顯示為疊加層
   backgroundColorAboveDescription: 這將使背景顏色顯示在背景影象或影片上方。
   backgroundImage: 背景圖片
@@ -1284,7 +1285,7 @@ setting:
     cardColor: 卡片顏色
     description: 改變主題中的配色
     errorColor: 錯誤顏色
-    name: 主題顏色
+    name: 主題顏色和模糊
     primaryColor: 主要顏色
     secondaryColor: 次要顏色
     sideBarColor: 側邊欄
@@ -1359,7 +1360,8 @@ setting:
   useBmclAPIDescription: >
     "BMCLAPI 是由 bangbang93 建立的映象服務。這個服務由 bangbang93 和 OpenBMCLAPI
     社群共同提供。它透過提供國內下載伺服器來改善從 Mojang 官方 S3 物件儲存下載檔案慢的問題。由於 MCBBS 源已停服，BMCLAPI
-    會在下載高峰期時下載緩慢。有關 OpenBMCLAPI 伺服器的服務狀態，請存取 OpenBMCLAPI 排行榜網站 bd.bangbang93.com"
+    會在下載高峰期時下載緩慢。有關 OpenBMCLAPI 伺服器的服務狀態，請存取 OpenBMCLAPI 排行榜網站
+    bd.bangbang93.com"
   useProxy: HTTP 代理伺服器設定
   useProxyDescription: HTTP 請求的代理伺服器位址
   viewBackgroundMusic: 檢視背景音樂

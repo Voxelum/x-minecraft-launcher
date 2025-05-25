@@ -134,6 +134,7 @@ const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
 
 const files = injection(FileNodesSymbol)
 const flattened = ref<TreeItem<InstanceFileNode<any>>[]>([])
+const checkedFilesSets = computed(() => new Set(props.value))
 
 const checkedFolders = computed(() => {
   const result: string[] = []
@@ -147,7 +148,7 @@ const checkedFolders = computed(() => {
         continue
       }
 
-      if (!props.value.includes(item.path)) {
+      if (!checkedFilesSets.value.has(item.path)) {
         match = false
         continue
       }

@@ -4,9 +4,12 @@
     :title=" t('shaderPack.name', 2)"
     :text="dragover ? t('shaderPack.dropHint') : shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty')"
     :icons="[]"
-    :button="t('shaderPack.manage')"
     :class="{ dragover }"
     :refreshing="refreshing"
+    :button="shaderPacks.length > 0 ? {
+      text: t('mod.manage'),
+      icon: 'settings'
+     } : undefined"
     :addition-button="{ 
       icon: 'file_download',
       text: t('install'),
@@ -25,7 +28,7 @@ import { useService } from '@/composables/service'
 import { injection } from '@/util/inject'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
-const { shaderPack, refreshing, error } = injection(kInstanceShaderPacks)
+const { shaderPack, shaderPacks, refreshing, error } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 const { push } = useRouter()
 

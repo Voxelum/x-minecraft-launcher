@@ -4,7 +4,7 @@ import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { fromFile } from 'file-type'
 import { basename, join } from 'path'
-import { ensureDir, remove, copyFile, unlink, writeJson, existsSync, readJSON } from 'fs-extra'
+import { ensureDir, remove, copyFile, unlink, writeJson, existsSync, readJSON, readdir } from 'fs-extra'
 import { ZipTask } from '~/util/zip'
 import { kTaskExecutor } from '~/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
@@ -123,6 +123,46 @@ export class ThemeService extends AbstractService implements IThemeService {
 
     await Promise.all(promises)
 
+    const name = data.name
+    let fileName = name
+    while (existsSync(this.getAppDataPath('themes', fileName + '.json'))) {
+      fileName += Date.now().toString()
+    }
+    const themeFile = this.getAppDataPath('themes', fileName + '.json')
+    await writeJson(themeFile, data, { spaces: 2 })
+
     return data
+  }
+
+  async getThemes(): Promise<ThemeData[]> {
+    const themesPath = this.getAppDataPath('themes')
+    if (!existsSync(themesPath)) {
+      return Promise.resolve([])
+    }
+    const files = await readdir(themesPath)
+    const themes = [] as ThemeData[]
+    for (const file of files) {
+      if (!file.endsWith('.json')) {
+        continue
+      }
+      const filePath = join(themesPath, file)
+      const data = await readJSON(filePath).then((data) => data as ThemeData, () => undefined)
+      if (data) {
+        themes.push(data)
+      }
+    }
+
+    return themes
+  }
+
+  async getTheme(name: string): Promise<ThemeData | undefined> {
+    const themeFile = this.getAppDataPath('themes', name + '.json')
+    const data = await readJSON(themeFile).then((data) => data as ThemeData, () => undefined)
+    return data
+  }
+
+  async setTheme(name: string, data: ThemeData): Promise<void> {
+    const themeFile = this.getAppDataPath('themes', name + '.json')
+    await writeJson(themeFile, data, { spaces: 2 })
   }
 }
