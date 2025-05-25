@@ -4,6 +4,7 @@ import { pluginNvdiaGPULinux } from './pluginNvdiaGPULinux'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
 
 import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
+import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { pluginClientToken } from '@xmcl/runtime/clientToken/pluginClientToken'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
@@ -46,6 +47,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginAutoUpdate,
   pluginPowerMonitor,
   pluginIconProtocol,
+  pluginApiFallback,
   pluginResourceWorker,
   pluginEncodingWorker,
   pluginSetup,

@@ -109,7 +109,7 @@ export async function setupZuluCache(app: LauncherApp) {
 
   const content = await readJson(filePath).catch(() => index) as typeof index
 
-  const response = await app.fetch('https://api.xmcl.app/zulu', {
+  const response = await app.fetch('https://raw.githubusercontent.com/Voxelum/xmcl-static-resource/refs/heads/main/zulu.json', {
     headers: {
       ['If-Modified-Since']: content.modified,
     }
