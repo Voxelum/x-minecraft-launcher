@@ -79,14 +79,14 @@ const logsRecord: Record<number, Log[]> = reactive({})
 const tab = ref(0)
 
 // window.location.search.
-const { darkTheme } = injection(kTheme)
+const { isDark } = injection(kTheme)
 
 const iconSets = {
   dark: 'dark_mode',
   light: 'light_mode',
   system: 'settings_brightness',
 }
-const themeIcon = computed(() => iconSets[darkTheme.value])
+const themeIcon = computed(() => iconSets[isDark.value ? 'dark' : 'light'])
 function accept(pid: number, log: string) {
   let logs: Log[]
   if (logsRecord[pid]) {
@@ -138,13 +138,7 @@ onMounted(() => {
   })
 })
 function changeTheme() {
-  if (darkTheme.value === 'dark') {
-    darkTheme.value = 'light'
-  } else if (darkTheme.value === 'light') {
-    darkTheme.value = 'system'
-  } else if (darkTheme.value === 'system') {
-    darkTheme.value = 'dark'
-  }
+  isDark.value = !isDark.value
 }
 function close() {
   hide()

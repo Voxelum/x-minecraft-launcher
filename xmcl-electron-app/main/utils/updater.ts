@@ -56,7 +56,7 @@ export class DownloadAsarUpdateTask extends AbortableTask<void> {
     const gfw = await this.app.registry.get(kGFW)
     const urls = gfw.inside
       ? [
-        `https://files.0x.cn/Soft_Mirrors/github-release/Voxelum/x-minecraft-launhcer/LatestRelease/${this.file}`,
+        `https://files.0x.cn/Soft_Mirrors/github-release/Voxelum/x-minecraft-launcher/LatestRelease/${this.file}`,
         `https://github.com/Voxelum/x-minecraft-launcher/releases/download/v${this.version}/${this.file}`,
       ]
       : [
@@ -178,7 +178,7 @@ export class DownloadFullUpdateTask extends AbortableTask<void> {
           createRequest: (options: any, callback: any) => {
             if (gfw.inside) {
               options.hostname = 'files.0x.cn'
-              options.pathname = `/Soft_Mirrors/github-release/Voxelum/x-minecraft-launhcer/LatestRelease/${basename(options.pathname)}`
+              options.pathname = `/Soft_Mirrors/github-release/Voxelum/x-minecraft-launcher/LatestRelease/${basename(options.pathname)}`
               this.app.emit('download-cdn', 'electron', basename(options.pathname))
             }
             return createRequest(options, callback)
