@@ -72,19 +72,7 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     theme.dark = dark
   }
   if (data.colors) {
-    theme.colors = {
-      appBar: dark ? data.colors.darkAppBarColor : data.colors.lightAppBarColor,
-      sideBar: dark ? data.colors.darkSideBarColor : data.colors.lightSideBarColor,
-      background: dark ? data.colors.darkBackground : data.colors.lightBackground,
-      card: dark ? data.colors.darkCardColor : data.colors.lightCardColor,
-      
-      primary: dark ? data.colors.darkPrimaryColor : data.colors.lightPrimaryColor,
-      info: dark ? data.colors.darkInfoColor : data.colors.lightInfoColor,
-      error: dark ? data.colors.darkErrorColor : data.colors.lightErrorColor,
-      warning: dark ? data.colors.darkWarningColor : data.colors.lightWarningColor,
-      success: dark ? data.colors.darkSuccessColor : data.colors.lightSuccessColor,
-      accent: dark ? data.colors.darkAccentColor : data.colors.lightAccentColor,
-    }
+    theme.colors = data.colors as any
   }
 
   return theme
@@ -93,19 +81,7 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
 function getV1Theme(ui: UIThemeData, dark: boolean) {
   const newData: UIThemeDataV1 = {} as any
   newData.name = ui.name
-  newData.colors = {
-    appBar: dark ? ui.colors.darkAppBarColor : ui.colors.lightAppBarColor,
-    sideBar: dark ? ui.colors.darkSideBarColor : ui.colors.lightSideBarColor,
-    background: dark ? ui.colors.darkBackground : ui.colors.lightBackground,
-    card: dark ? ui.colors.darkCardColor : ui.colors.lightCardColor,
-
-    primary: dark ? ui.colors.darkPrimaryColor : ui.colors.lightPrimaryColor,
-    info: dark ? ui.colors.darkInfoColor : ui.colors.lightInfoColor,
-    error: dark ? ui.colors.darkErrorColor : ui.colors.lightErrorColor,
-    warning: dark ? ui.colors.darkWarningColor : ui.colors.lightWarningColor,
-    success: dark ? ui.colors.darkSuccessColor : ui.colors.lightSuccessColor,
-    accent: dark ? ui.colors.darkAccentColor : ui.colors.lightAccentColor,
-  }
+  newData.colors = ui.colors
   newData.blur = {
     appBar: ui.blurAppBar,
     sideBar: ui.blurSidebar,

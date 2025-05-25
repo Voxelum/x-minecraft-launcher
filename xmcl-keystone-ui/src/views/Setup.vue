@@ -118,7 +118,7 @@ import SetupFooter from './SetupFooter.vue'
 import SetupAccount from './SetupAccount.vue'
 import SetLocale from './SetupLocale.vue'
 import { kSettingsState } from '@/composables/setting'
-import { getDefaultDarkTheme, getDefaultLightTheme, kTheme } from '@/composables/theme'
+import { getDefaultTheme, kTheme } from '@/composables/theme'
 
 const emit = defineEmits(['ready'])
 const { validateDataDictionary } = useService(BaseServiceKey)
@@ -185,7 +185,7 @@ watch(() => data.path, (newPath) => {
 
 const { isDark, currentTheme } = injection(kTheme)
 watch(isDark, (dark) => {
-  currentTheme.value = dark ? getDefaultDarkTheme() : getDefaultLightTheme()
+  currentTheme.value = { ...getDefaultTheme(), dark }
 })
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
