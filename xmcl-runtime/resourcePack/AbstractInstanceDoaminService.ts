@@ -137,7 +137,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const files = file instanceof Array ? file : [file]
     for (const f of files) {
       const dest = join(instancePath, this.domain, basename(f))
-      await unlink(dest)
+      await unlink(dest).catch(() => {})
     }
   }
 
