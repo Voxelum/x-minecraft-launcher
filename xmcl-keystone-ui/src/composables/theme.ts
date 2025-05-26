@@ -604,6 +604,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     --color-secondary-text: ${isDark.value ? 'rgba(156, 163, 175, 1)' : 'rgba(75, 85, 99, 1)'};
     --color-sidebar-bg: ${sideBarColor.value};
     --color-appbar-bg: ${appBarColor.value};
+    --color-card-bg: ${cardColor.value};
+    --blur-card: ${blurCard.value}px;
   }
 
   .v-application {

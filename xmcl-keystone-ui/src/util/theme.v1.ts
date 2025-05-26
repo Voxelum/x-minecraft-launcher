@@ -104,6 +104,18 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     theme.font = data.assets.font as MediaData
   }
   if (data.settings) {
+    if (data.settings.backgroundVolume) {
+      theme.backgroundVolume = data.settings.backgroundVolume as number
+    }
+    if (data.settings.backgroundMusicPlayOrder) {
+      theme.backgroundMusicPlayOrder = data.settings.backgroundMusicPlayOrder as any
+    }
+    if (data.settings.backgroundColorOverlay) {
+      theme.backgroundColorOverlay = data.settings.backgroundColorOverlay as any
+    }
+    if (data.settings.fontSize) {
+      theme.fontSize = data.settings.fontSize as number
+    }
     if (data.settings.backgroundType) {
       theme.backgroundType = data.settings.backgroundType as any
     }
