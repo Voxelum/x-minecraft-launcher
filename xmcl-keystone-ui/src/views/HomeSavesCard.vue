@@ -14,7 +14,7 @@
       icon: 'file_download',
       text: t('install'),
      }"
-    @navigate-addition="push('/shaderpacks?source=remote')"
+    @navigate-addition="push('/save?source=remote')"
     @navigate="push('/save')"
     @drop="onDrop"
   />
