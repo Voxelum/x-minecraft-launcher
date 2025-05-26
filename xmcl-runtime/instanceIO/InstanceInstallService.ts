@@ -269,7 +269,10 @@ export class InstanceInstallService extends AbstractService implements IInstance
           }]
         }
       } else {
-        if (isSystemError(e) && e.code === 'ENOENT') {
+        if (e instanceof Error && e.name === 'InstanceUpstreamError') {
+          // remove profile
+          unlink(join(instancePath, '.install-profile')).catch(() => { })
+        } else if (isSystemError(e) && e.code === 'ENOENT') {
           const path = e.path
           if (path) {
             const zipFileIsMissing = currentState.files.find(f => f.downloads && f.downloads.some(d => d.startsWith('zip://') && d.includes(path)))
@@ -385,7 +388,13 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await this.#installLockFile.write(pendingInstallPath, currentState)
 
       this.log('Install instance files with lock', !!lockState)
-      return this.#install(instancePath, lockState, currentState, id)
+      return this.#install(instancePath, lockState, currentState, id).catch((e) => {
+        if (e.name === 'InstanceUpstreamError') {
+          // remove profile
+          unlink(join(instancePath, '.install-profile')).catch(() => { })
+        }
+        throw e
+      })
     } else {
       const oldFiles = options.oldFiles
       const files = options.files
