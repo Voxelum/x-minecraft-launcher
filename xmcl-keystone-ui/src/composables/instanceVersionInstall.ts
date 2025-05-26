@@ -442,7 +442,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         return
       }
       if (instruction.jar) {
-        await installMinecraftJar(instruction.runtime.minecraft, 'client')
+        await installMinecraftJar(instruction.version || instruction.runtime.minecraft, 'client')
       }
       if (instruction.profile) {
         const resolved = await resolveLocalVersion(instruction.resolvedVersion)
