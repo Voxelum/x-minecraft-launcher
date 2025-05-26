@@ -35,7 +35,7 @@ function onSkip() {
 
 </script>
 <template>
-  <v-dialog v-model="isShown" width="800">
+  <v-dialog v-model="isShown" width="600">
     <v-card>
       <v-card-title>
         {{ t('instanceInstallSkip.title') }}

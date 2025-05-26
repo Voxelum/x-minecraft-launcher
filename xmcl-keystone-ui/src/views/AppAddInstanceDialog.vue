@@ -70,6 +70,7 @@
           />
           <StepConfig
             v-if="tStep === 'config'"
+            :loading="loading"
             :valid.sync="valid"
           />
           <StepServer

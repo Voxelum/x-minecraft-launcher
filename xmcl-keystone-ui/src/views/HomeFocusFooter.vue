@@ -70,7 +70,7 @@
       </v-card>
       <div 
         key="launch-button-group"
-        class="flex flex-wrap justify-end gap-y-6 gap-x-2"
+        class="flex flex-wrap justify-end items-center gap-y-6 gap-x-2"
       >
         <HomeHeaderInstallStatus
           v-if="status === 1 || status === 3"
@@ -117,6 +117,7 @@ import { getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/compos
 import { useSWRVModel } from '@/composables/swrv'
 import { useModrinthHeaderData } from '@/composables/modrinth'
 import { getModrinthProjectModel } from '@/composables/modrinthProject'
+import { kTheme } from '@/composables/theme'
 
 const active = ref(false)
 const { path, refreshing, instance } = injection(kInstance)
@@ -126,6 +127,7 @@ const { t } = useI18n()
 const tabItems = ref(null as null | Vue)
 const counter = ref(0)
 const visible = ref(false)
+const { blurCard, cardColor } = injection(kTheme)
 
 const { data: project } = useSWRVModel(getCurseforgeProjectModel(computed(() => instance.value.upstream?.type === 'curseforge-modpack' ? Number(instance.value.upstream.modId) : undefined)))
 const curseforgeHeaderData = useCurseforgeUpstreamHeader(project)
@@ -245,4 +247,10 @@ transition: all 0.2s ease-in-out;
 }
 
 /* when height < 490px */
+</style>
+<style>
+.tabs>div[role="tablist"] {
+  background: var(--color-sidebar-bg) !important;
+  backdrop-filter: blur(var(--blur-card));
+}
 </style>

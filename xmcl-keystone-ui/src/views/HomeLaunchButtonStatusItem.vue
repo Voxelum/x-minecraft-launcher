@@ -1,8 +1,8 @@
 <template>
   <div
     v-if="item"
-    v-shared-tooltip="_ => item ? item.title : ''"
-    class="transition-opacity duration-500 select-none h-full flex whitespace-nowrap text-sm font-bold flex-col overflow-hidden text-ellipsis"
+    v-shared-tooltip="_ => item ? item.description : ''"
+    class="transition-opacity duration-500 select-none flex whitespace-nowrap text-sm font-bold flex-col"
     :style="{
       opacity: active ? '1' : '0.5',
       cursor: item?.onClick ? 'pointer' : 'unset',
@@ -18,7 +18,7 @@
     >
       {{ item.title }}
     </div>
-    <div class="text-gray-400 overflow-hidden text-ellipsis">
+    <div class="text-gray-400 overflow-hidden text-ellipsis max-w-42">
       {{ item.description }}
     </div>
   </div>

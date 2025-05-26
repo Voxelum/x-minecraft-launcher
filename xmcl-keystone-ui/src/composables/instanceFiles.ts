@@ -49,7 +49,9 @@ export function useInstanceFiles(instancePath: Ref<string>) {
     })
     if (errors) {
       const checksumErrors = errors.filter(e => e.name === 'ChecksumNotMatchError') as ChecksumErrorFile[]
-      countUpChecksumError(checksumErrors.map(e => e.expect).join(), checksumErrors.map(e => ({ file: e.file, expect: e.expect, actual: e.actual })))
+      if (checksumErrors.length > 0) {
+        countUpChecksumError(checksumErrors.map(e => e.expect).join(), checksumErrors.map(e => ({ file: e.file, expect: e.expect, actual: e.actual })))
+      }
       const unzipErrors = errors.filter(e => e.name === 'UnpackZipFileNotFoundError').map(e => e as { file: string })
       if (unzipErrors[0]?.file) {
         unzipFileNotFound.value = unzipErrors[0].file

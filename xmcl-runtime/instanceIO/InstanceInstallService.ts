@@ -247,7 +247,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
 
     try {
-      return this.#install(instancePath, lockState, currentState)
+      return await this.#install(instancePath, lockState, currentState)
     } catch (e) {
       if (e instanceof AggregateError) {
         if (e.errors.every(e => e instanceof ChecksumNotMatchError)) {

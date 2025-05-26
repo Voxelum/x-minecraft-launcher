@@ -21,6 +21,8 @@
               v-model="content.name"
               outlined
               autofocus
+              :loading="loading"
+              :disabled="loading"
               persistent-hint
               :hint="t('instance.nameHint')"
               :label="t('name')"
@@ -29,6 +31,8 @@
             />
             <v-text-field
               v-model="content.author"
+              :loading="loading"
+              :disabled="loading"
               outlined
               persistent-hint
               :hint="t('modpack.authorHint')"
@@ -37,6 +41,8 @@
             />
             <v-text-field
               v-model="content.description"
+              :loading="loading"
+              :disabled="loading"
               class="col-span-2"
               outlined
               persistent-hint

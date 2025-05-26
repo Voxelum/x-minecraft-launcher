@@ -7,6 +7,7 @@ import { dirname } from 'path'
 import { pipeline } from 'stream/promises'
 import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
+import { isSystemError } from '~/util/error'
 import { ZipManager } from '~/zipManager/ZipManager'
 
 export class UnzipFileTask extends AbortableTask<void> {
@@ -47,7 +48,12 @@ export class UnzipFileTask extends AbortableTask<void> {
 
     // Update the total size
     for (const { zipPath, entryName } of queue) {
-      const zip = await this.zipManager.open(zipPath)
+      const zip = await this.zipManager.open(zipPath).catch(e => {
+        if (isSystemError(e) && e.code === 'ENOENT') {
+          e.name = 'UnzipFileNotFoundError'
+        }
+        throw e
+      })
       const entry = zip.entries[entryName]
       if (entry) {
         this._total += entry.uncompressedSize
