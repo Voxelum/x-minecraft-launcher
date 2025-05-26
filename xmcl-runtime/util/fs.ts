@@ -170,7 +170,7 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
     await symlink(srcPath, destPath, 'dir')
     return true
   } catch (e) {
-    if ((e as any).code === EPERM_ERROR && process.platform === 'win32') {
+    if (((e as any).code === EPERM_ERROR || (e as any).code === 'EISDIR') && process.platform === 'win32') {
       await symlink(srcPath, destPath, 'junction').catch(e => {
         e.junction = true
         e.srcExists = existsSync(srcPath)
