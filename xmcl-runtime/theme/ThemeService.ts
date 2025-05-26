@@ -163,6 +163,7 @@ export class ThemeService extends AbstractService implements IThemeService {
 
   async setTheme(name: string, data: ThemeData): Promise<void> {
     const themeFile = this.getAppDataPath('themes', name + '.json')
+    await ensureDir(this.getAppDataPath('themes'))
     await writeJson(themeFile, data, { spaces: 2 })
   }
 }
