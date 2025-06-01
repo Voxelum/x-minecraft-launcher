@@ -121,6 +121,19 @@ export class ElectronController implements LauncherAppController {
       }
     })
 
+    this.app.on('second-instance', () => {
+      if (this.parking) {
+        if (this.mainWin) {
+          if (this.mainWin.isMinimized()) {
+            this.mainWin.restore()
+          } else if (!this.mainWin.isVisible()) {
+            this.mainWin.show()
+          }
+          this.mainWin.focus()
+        }
+      }
+    })
+
     this.logger = this.app.getLogger('Controller')
 
     protocol.registerSchemesAsPrivileged([{
@@ -513,7 +526,7 @@ export class ElectronController implements LauncherAppController {
         win.webContents.closeDevTools()
         win.webContents.openDevTools({ mode: 'detach' })
       } catch {
-        
+
       }
     }
   }

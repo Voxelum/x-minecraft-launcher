@@ -236,6 +236,9 @@ export class ElectronUpdater implements LauncherAppUpdater {
         'Accept-Language': locale,
       },
     }))
+    if (!response.ok)  {
+      throw new AnyError('UpdateError', `Fail to get update from selfhost: ${await response.text()}`, {}, { status: response.status })
+    }
     const result = await response.json() as any
     const files = result.assets.map((a: any) => ({ url: a.browser_download_url, name: a.name })) as Array<{ url: string; name: string }>
     const platformString = app.platform.os === 'windows' ? 'win' : app.platform.os === 'osx' ? 'mac' : 'linux'

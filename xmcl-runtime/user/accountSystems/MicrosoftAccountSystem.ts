@@ -157,7 +157,15 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
   }
 
   protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal, slientOnly = false) {
-    const logError = (e: any) => this.logger.error(Object.assign(e, { scenario: 'loginMicrosoft' }))
+    const logError = (e: any) => {
+      if (e.name === 'AbortError') {
+        return
+      }
+      if (e.name === 'Error') {
+        e.name = 'MicrosoftOLoginMicrosoftError'
+      }
+      this.logger.error(Object.assign(e, { scenario: 'loginMicrosoft' }))
+    }
     const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access'], {
       code: oauthCode,
       useDeviceCode,

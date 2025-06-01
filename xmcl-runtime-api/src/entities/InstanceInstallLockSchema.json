@@ -26,9 +26,6 @@
             "description": "The upstream data for this locked instance file state",
             "anyOf": [
                 {
-                    "$ref": "#/definitions/ModrinthSpecialUpstream"
-                },
-                {
                     "$ref": "#/definitions/ModrinthUpstream"
                 },
                 {
@@ -64,32 +61,6 @@
         "workspace"
     ],
     "definitions": {
-        "ModrinthSpecialUpstream": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "modrinth-special"
-                    ]
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "versionId": {
-                    "type": "string"
-                },
-                "sha1": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "projectId",
-                "sha1",
-                "type",
-                "versionId"
-            ]
-        },
         "ModrinthUpstream": {
             "type": "object",
             "properties": {

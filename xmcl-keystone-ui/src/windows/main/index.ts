@@ -123,6 +123,11 @@ Vue.config.warnHandler = (msg, vm, trace) => {
 }
 
 Vue.config.errorHandler = (err, vm, info) => {
+  if (err.message.indexOf('ResizeObserver') !== -1) {
+    // ignore ResizeObserver error
+    return
+  }
+
   const level = err.message.indexOf('TypeError') !== -1 ? 4 : 3
   appInsights.trackException({
     exception: err,

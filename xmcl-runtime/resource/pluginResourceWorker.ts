@@ -38,6 +38,7 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
     if (e.name === 'SQLite3Error') {
       if (e.message === 'unable to open database file'
         || e.message.startsWith('no such table')
+        || e.message.startsWith('out of memory')
       )
         app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
     }

@@ -51,7 +51,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
   async #isValidAndExeucatable(javaPath: string) {
     return await access(javaPath, constants.X_OK).then(() => true).catch(() => false)
   }
-  
+
   /**
    * Execute pre-launch command
    * @param command The command to execute
@@ -60,7 +60,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
    */
   async #execPreCommand(command: string, cwd: string): Promise<void> {
     if (!command.trim()) return;
-    
+
     this.log(`Executing pre-launch command: ${command}`);
     try {
       const process = spawn(command, {
@@ -68,26 +68,26 @@ export class LaunchService extends AbstractService implements ILaunchService {
         cwd,
         stdio: 'pipe',
       });
-      
+
       return await new Promise<void>((resolve, reject) => {
         const stdoutChunks: Buffer[] = [];
         const stderrChunks: Buffer[] = [];
-        
+
         process.stdout?.on('data', (data) => {
           stdoutChunks.push(Buffer.from(data));
           this.log(`[Pre-Launch CMD] ${data.toString('utf-8').trim()}`);
         });
-        
+
         process.stderr?.on('data', (data) => {
           stderrChunks.push(Buffer.from(data));
           this.warn(`[Pre-Launch CMD Error] ${data.toString('utf-8').trim()}`);
         });
-        
+
         process.on('error', (err) => {
           this.warn(`Pre-launch command failed: ${err.message}`);
           reject(new LaunchException({ type: 'launchPreExecuteCommandFailed', command, error: err.message }, 'Failed to execute pre-command'));
         });
-        
+
         process.on('exit', (code) => {
           if (code === 0) {
             this.log('Pre-launch command executed successfully');
@@ -469,16 +469,20 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       let encoding = undefined as string | undefined
       const processError = async (buf: Buffer) => {
-        encoding = encoding || await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || encoding
-        const result = await this.encoder.decode(buf, encoding!)
+        if (!encoding) {
+          encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
+        }
+        const result = await this.encoder.decode(buf, encoding)
         this.emit('minecraft-stderr', { pid: process.pid, stderr: result })
         const lines = result.split(EOL)
         errorLogs.push(...lines)
         this.warn(result)
       }
       const processLog = async (buf: any) => {
-        encoding = encoding || await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || encoding
-        const result = await this.encoder.decode(buf, encoding!)
+        if (!encoding) {
+          encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => UTF8) || UTF8
+        }
+        const result = await this.encoder.decode(buf, encoding)
         this.emit('minecraft-stdout', { pid: process.pid, stdout: result })
       }
 

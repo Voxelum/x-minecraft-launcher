@@ -18,9 +18,13 @@ setHandler({
                 return v + ":"
               }
               return v
-            });
-            const transformed = res.map((d: any) => new Drive('NTFS', 0, d.Used, d.Free, d.Used + d.Free, d.Name));
-            resolve(transformed);
+            })
+            if (res instanceof Array) {
+              const transformed = res.map((d: any) => new Drive('NTFS', 0, d.Used, d.Free, d.Used + d.Free, d.Name));
+              resolve(transformed)
+            } else {
+              resolve([])
+            }
           });
           child.on("error", reject);
         }).catch(() => [])

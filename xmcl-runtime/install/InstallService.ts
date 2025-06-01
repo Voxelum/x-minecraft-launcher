@@ -179,7 +179,7 @@ export class InstallService extends AbstractService implements IInstallService {
               }
             })
           } finally {
-            await unlink(clz)
+            await unlink(clz).catch(() => undefined)
           }
         })
       }

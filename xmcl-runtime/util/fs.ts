@@ -174,6 +174,7 @@ export async function linkDirectory(srcPath: string, destPath: string, logger: L
       await symlink(srcPath, destPath, 'junction').catch(e => {
         e.junction = true
         e.srcExists = existsSync(srcPath)
+        e.destExists = existsSync(destPath)
         throw e
       })
       return false

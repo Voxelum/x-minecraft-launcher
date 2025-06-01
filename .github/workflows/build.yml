@@ -69,6 +69,7 @@ jobs:
           name: sourcemap
           path: |
             xmcl-electron-app/dist/*.js.map
+            xmcl-electron-app/dist/renderer/assets/*.js.map
       - name: Upload Unsigned Appx
         if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }}
         id: upload-artifact

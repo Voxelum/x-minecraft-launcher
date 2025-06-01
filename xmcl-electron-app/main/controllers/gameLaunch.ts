@@ -17,12 +17,12 @@ export const gameLaunch: ControllerPlugin = function (this: ElectronController) 
           }
         }
       }).on('minecraft-start', ({ showLog }) => {
-        this.parking = true
+        this.parking = service.getProcesses().length > 0
         if (!this.getLoggerWindow() && showLog) {
           this.createMonitorWindow()
         }
       }).on('minecraft-exit', (status) => {
-        this.parking = false
+        this.parking = service.getProcesses().length > 0
         if (this.mainWin && !this.mainWin.isVisible()) {
           this.mainWin.show()
         }

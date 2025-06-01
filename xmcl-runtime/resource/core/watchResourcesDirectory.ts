@@ -401,6 +401,10 @@ export function watchResourceSecondaryDirectory(
       const file = await getFile(filePath)
       if (!file) return
       const isCached = await isFileCached(file).catch((e) => {
+        if (isSystemError(e) && (e.code === 'ENOENT' || e.code === 'EBUSY')) {
+          // ignore
+          return false
+        }
         context.logger.error(e)
         return false
       })

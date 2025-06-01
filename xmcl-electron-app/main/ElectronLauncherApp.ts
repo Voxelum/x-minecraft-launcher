@@ -113,6 +113,8 @@ function getErrorCode(e: Error) {
     code = NetworkErrorCode.PROXY_CONNECTION_FAILED
   } else if (e.message === 'net::ERR_UNEXPECTED') {
     code = NetworkErrorCode.CONNECTION_RESET
+  } else if (e.message === 'net::ERR_CONNECTION_ABORTED') {
+    code = NetworkErrorCode.ERR_CONNECTION_ABORTED
   }
   return code
 }
@@ -136,6 +138,33 @@ export default class ElectronLauncherApp extends LauncherApp {
 
   fetch: typeof fetch = async (...args: any[]) => {
     const init = { ...args[1], bypassCustomProtocolHandlers: true }
+    function assertError(e: unknown): asserts e is Error {
+      if (e instanceof Error || (typeof e === 'object' && e !== null && 'message' in e && typeof (e as any).message === 'string')) {
+        return
+      }
+      throw new TypeError(`Expected an Error, but got ${typeof e}: ${e}`)
+    }
+    async function handlError(e: Error, retry?: () => Promise<any>) {
+      const code = getErrorCode(e)
+
+      if (retry && (code === NetworkErrorCode.CONNECTION_CLOSED || code === NetworkErrorCode.CONNECTION_RESET || !code)) {
+        return await retry()
+      }
+
+      if (code) {
+        // expected exceptions
+        throw new NetworkException({
+          type: 'networkException',
+          code,
+        })
+      }
+      // unexpected errors
+      if (e.message.startsWith('net::')) {
+        throw new AnyError('NetworkError', e.message)
+      }
+
+      throw e
+    }
     try {
       if (init.headers && typeof init.headers === 'object' && !(init.headers instanceof Headers)) {
         delete init.headers['origin']
@@ -145,30 +174,8 @@ export default class ElectronLauncherApp extends LauncherApp {
       }
       return await net.fetch(args[0], init) as any
     } catch (e) {
-      if (e instanceof Error) {
-        let code: NetworkErrorCode | undefined = getErrorCode(e)
-        if (code === NetworkErrorCode.CONNECTION_CLOSED || code === NetworkErrorCode.CONNECTION_RESET || !code) {
-          try {
-            return await ufetch(args[0], init) as any
-          } catch (ee) {
-            if (ee instanceof Error) {
-              code = getErrorCode(ee)
-            }
-          }
-        }
-        if (code) {
-          // expected exceptions
-          throw new NetworkException({
-            type: 'networkException',
-            code,
-          })
-        }
-        // unexpected errors
-        if (e.message.startsWith('net::')) {
-          throw new AnyError('NetworkError', e.message)
-        }
-      }
-      throw e
+      assertError(e)
+      return await handlError(e, () => ufetch(args[0], init).catch(handlError))
     }
   }
 

@@ -348,7 +348,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         try {
           await rm(path, { recursive: true, force: true, maxRetries: 1 })
         } catch (e) {
-          if (isSystemError(e) && e.code === ENOENT_ERROR) {
+          if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
             this.warn(`Fail to remove instance ${path}`)
           } else {
             if ((e as any).name === 'Error') {

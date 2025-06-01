@@ -197,16 +197,14 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
 
       watcher
         .on('error', (e) => {
-          if (isSystemError(e)) {
-            if (e.code === 'EBUSY') {
-              return
-            }
-            if (e.code === 'EPERM') {
-              return
-            }
+          if ((e as any).code === 'EBUSY') {
+            return
+          }
+          if ((e as any).code === 'EPERM') {
+            return
           }
           if ((e as any).name === 'Error') {
-            (e as any).name = 'FSWatcherError'
+            (e as any).name = 'FSSaveWatcherError'
           }
           this.error(e as any)
         })
@@ -360,7 +358,9 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       }
     } else {
       // validate the source
-      const zipFile = await open(path)
+      const zipFile = await open(path).catch((e) => {
+        throw new ImportSaveException({ type: 'instanceImportIllegalSave', path }, e.message, { cause: e })
+      })
       const entries = await readAllEntries(zipFile)
 
       let saveRoot = undefined as string | undefined

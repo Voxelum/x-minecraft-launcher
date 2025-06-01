@@ -9,7 +9,10 @@ export function getDomainedPath(filePath: string, root: string) {
 
 export async function takeSnapshot(file: File, context: ResourceContext, parse: boolean): Promise<ResourceSnapshotTable> {
   const domainedPath = getDomainedPath(file.path, context.root)
-  const [sha1, type] = await context.hashAndFileType(file.path, file.size, file.isDirectory)
+  const [sha1, type] = await context.hashAndFileType(file.path, file.size, file.isDirectory).catch((e) => {
+    Object.setPrototypeOf(e, Error.prototype)
+    throw e
+  })
   const record = {
     domainedPath,
     ino: file.ino,
