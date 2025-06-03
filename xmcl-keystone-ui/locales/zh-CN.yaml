@@ -453,6 +453,7 @@ instance:
   prependCommandHint: 这将在启动命令之前添加此命令
   requireName: 必须填写名称
   resolution: 分辨率
+  resolutionEnabled: 启用自定义分辨率
   resolutionPreset: 分辨率预设
   showInstance: 打开文件夹
   useSharedOptions: 共享 Minecraft 设置

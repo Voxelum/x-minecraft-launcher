@@ -110,6 +110,7 @@ browseApps: Просмотр пользовательского интерфей
 cancel: Отмена
 checkUpdate:
   name: Проверить обновление
+color: Цвет
 confirm: Подтвердить
 copyClipboard:
   success: Скопировано в буфер обмена
@@ -210,6 +211,8 @@ dataMigration:
     Миграция данных. Пожалуйста, не закрывайте лаунчер или вы потеряете свои
     данные.
 delete:
+  'NO': НЕТ
+  YEZ: УДАЛИТЬ
   name: Удалить {name}
   'no': Нет
   'yes': Удалить
@@ -375,6 +378,7 @@ feedback:
   qqEnterGroup: Присоединиться
 fileDetail:
   fileSize: Размер файла
+  filesize: Размер файла
   hash: Hash
 filter: Фильтр
 filterLocalOnly: Показывать только установленные
@@ -500,6 +504,7 @@ instance:
   prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
   resolution: Разрешение окна
+  resolutionEnabled: Включить пользовательское разрешение
   resolutionPreset: Резолюция предустановлена
   showInstance: Открыть папку экземпляра
   useSharedOptions: Использовать общие настройки игры
