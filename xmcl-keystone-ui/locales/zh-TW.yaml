@@ -94,6 +94,7 @@ browseApp:
   default: 預設
   delete: 刪除
   launch: 啟動並設定為預設
+browseApps: 檢視啟動器的使用者介面
 cancel: 取消
 checkUpdate:
   name: 檢查更新
@@ -191,6 +192,7 @@ dataMigration:
   unknownError: 未知錯誤，請聯絡作者或重試。
   waitReload: 遷移資料中。請不要關閉啟動器，否則您可能會丟失一部分資料。
 delete:
+  YEZ: 刪除
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
@@ -267,7 +269,9 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小時'
   minute: '{duration} 分鐘'
+  'no': 沒有
   second: '{duration} 秒'
+  'yes': 是
 edit: 編輯
 enable: 啟用
 env:

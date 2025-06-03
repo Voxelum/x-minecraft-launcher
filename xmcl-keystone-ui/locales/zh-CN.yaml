@@ -93,6 +93,7 @@ browseApp:
   default: 默认
   delete: 删除
   launch: 启动并设置为默认
+browseApps: 查看启动器的用户界面
 cancel: 取消
 checkUpdate:
   name: 检查更新
@@ -189,6 +190,7 @@ dataMigration:
   unknownError: 未知错误，请联系作者或重试。
   waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
 delete:
+  YEZ: 删除
   name: 删除 {name}
   'no': 取消
   'yes': 删除
@@ -265,7 +267,9 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小时'
   minute: '{duration} 分钟'
+  'no': 没有
   second: '{duration} 秒'
+  'yes': 是
 edit: 编辑
 enable: 启用
 env:

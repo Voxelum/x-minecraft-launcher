@@ -101,6 +101,7 @@ browseApp:
   default: DEFAULT
   delete: Delete
   launch: Launch and set as Default
+browseApps: Viewing the launcher user interface
 cancel: Cancel
 checkUpdate:
   name: Check Update
@@ -131,6 +132,10 @@ curseforge:
   totalDownloads: Total Downloads
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: APIs and libraries
+  Addons: Supplements
+  Adventure: Adventure
+  Adventure and RPG: Adventure and RPG
   Fabric: Fabric
   Food: Food
 dataMigration:
@@ -152,6 +157,7 @@ dataMigration:
   unknownError: Unknown Error! Please retry or contact the developer!
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
+  YEZ: Delete
   name: Delete {name}
   'no': 'No'
   'yes': Delete
@@ -230,7 +236,9 @@ duration:
   day: '{duration} day | {duration} days'
   hour: '{duration} hour | {duration} hours'
   minute: '{duration} minute | {duration} minutes'
+  'no': 'No'
   second: '{duration} second | {duration} seconds'
+  'yes': 'Yes'
 edit: Edit
 enable: Enable
 env:

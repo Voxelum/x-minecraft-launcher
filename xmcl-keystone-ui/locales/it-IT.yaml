@@ -104,6 +104,7 @@ browseApp:
   default: DEFAULT
   delete: Elimina
   launch: Lancia e imposta come predefinito
+browseApps: Visualizzazione dell'interfaccia utente del launcher
 cancel: Annulla
 checkUpdate:
   name: Controlla aggiornamenti
@@ -132,6 +133,9 @@ curseforge:
   releasedDate: Data di rilascio
   search: Cerca
   totalDownloads: Download totali
+curseforgeCategory:
+  API and Library: API e librerie
+  Adventure: Aventure
 dataMigration:
   apply: Applica impostazioni
   directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
@@ -153,6 +157,7 @@ dataMigration:
     Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i
     dati.
 delete:
+  YEZ: Cancellare
   name: Elimina {name}
   'no': 'No'
   'yes': Elimina

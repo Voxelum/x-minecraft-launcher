@@ -159,6 +159,8 @@ curseforge:
   search: Rechercher
   totalDownloads: Téléchargements Totaux
 curseforgeCategory:
+  Adventure: Aventure
+  Adventure and RPG: Adventure and RPG
   MCreator: MCreator
   Magic: Magie
   Medieval: Médiéval
@@ -188,6 +190,7 @@ dataMigration:
     Migration des données. 
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
+  YEZ: Supprimer
   name: Supprimer {name}
   'no': Non
   'yes': Supprimer
@@ -276,7 +279,9 @@ duration:
   minute: |-
     {duration} minute | 
     {duration} minutes
+  'no': Non
   second: '{duration} seconde | {duration} secondes'
+  'yes': Oui
 edit: Éditer
 env:
   select:

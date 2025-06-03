@@ -106,6 +106,7 @@ browseApp:
   default: ALAPÉRTELMEZETT
   delete: Törlés
   launch: Indítás és beállítás alapértelmezettnek
+browseApps: Az indítóprogram felhasználói felületének megtekintése
 cancel: Mégsem
 checkUpdate:
   name: Frissítés keresése
@@ -137,6 +138,7 @@ curseforge:
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: ''
+  Adventure: Aventure
 dataMigration:
   apply: Alkalmazás
   directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
@@ -158,6 +160,7 @@ dataMigration:
     Adatok áthelyezése. Kérlek, ne zárd be a Launcher-t, különben elveszíted az
     adataidat.
 delete:
+  YEZ: Törlés
   name: Törlöd {name}
   'no': Nem
   'yes': Törlés
@@ -231,7 +234,9 @@ duration:
   day: '{duration} nap | {duration} nap'
   hour: '{duration} óra | {duration} óra'
   minute: '{duration} perc | {duration} perc'
+  'no': Nem
   second: '{duration} másodperc | {duration} másodperc'
+  'yes': Igen
 edit: Szerkesztés
 enable: Engedélyezés
 env:

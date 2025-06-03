@@ -108,6 +108,7 @@ browseApp:
   default: DEFAULT
   delete: Usuń
   launch: Uruchom i ustaw jako domyślne
+browseApps: Wyświetlanie interfejsu użytkownika programu uruchamiającego
 cancel: Anuluj
 checkUpdate:
   name: Sprawdź aktualizację
@@ -138,6 +139,10 @@ curseforge:
   totalDownloads: Łączna liczba pobrań
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: Interfejsy API i biblioteki
+  Addons: Suplementy
+  Adventure: Przygoda
+  Adventure and RPG: Przygodowe i RPG
   Fabric: Fabric
   FancyMenu: FancyMenu
   MCreator: MCreator
@@ -167,6 +172,7 @@ dataMigration:
     Migracja danych. Nie zamykaj programu uruchamiającego, ponieważ spowoduje to
     utratę danych.
 delete:
+  YEZ: Usuń
   name: Usuń {name}
   'no': Nie
   'yes': Usuń
@@ -248,6 +254,7 @@ duration:
   hour: '{duration} godzina | {duration} godziny'
   minute: '{duration} minuta | {duration} minuty'
   second: '{duration} drugi | {duration} sekundy'
+  'yes': Tak
 edit: Edytuj
 enable: Włącz
 env:
