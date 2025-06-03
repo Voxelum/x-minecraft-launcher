@@ -103,7 +103,6 @@ browseApp:
   default: ЗА ЗАМОВЧУВАННЯМ
   delete: Видалити
   launch: Запустити та встановити як типовий
-browseApps: Перегляд користувацького інтерфейсу пускової установки
 cancel: Скасувати
 checkUpdate:
   name: Перевірити оновлення
@@ -134,10 +133,6 @@ curseforge:
   totalDownloads: Усього завантажень
 curseforgeCard: {}
 curseforgeCategory:
-  API and Library: API та бібліотеки
-  Addons: Доповнення
-  Adventure: Пригоди
-  Adventure and RPG: Пригоди та RPG
   Fabric: Fabric
   Food: Їжа
 dataMigration:
@@ -163,7 +158,6 @@ dataMigration:
     Міграція даних. Будь ласка, не закривайте лаунчер, інакше ви втратите свої
     дані.
 delete:
-  YEZ: Видали
   name: Видалити {name}
   'no': Ні
   'yes': Видалити
@@ -244,9 +238,7 @@ duration:
   day: '{duration} день | {duration} дні | {duration} днів'
   hour: '{duration} година | {duration} години | {duration} годин'
   minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
-  'no': Ні
   second: '{duration} секунда | {duration} секунди | {duration} секунд'
-  'yes': Так
 edit: Редагувати
 enable: Увімкнути
 env:

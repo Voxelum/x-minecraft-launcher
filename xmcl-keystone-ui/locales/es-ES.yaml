@@ -97,7 +97,6 @@ browseApp:
   default: DEFECTO
   delete: Borrar
   launch: Iniciar y configurar como predeterminado
-browseApps: Ver la interfaz de usuario del lanzador
 cancel: Cancelar
 color: Color
 confirm: Comenzar
@@ -191,7 +190,6 @@ dataMigration:
   unknownError: ¡Error Desconocido! Vuelva a intentarlo o comuníquese con el desarrollador.
   waitReload: Migrando datos. Por favor, no cierres el Launcher o perderás tus datos.
 delete:
-  YEZ: Borrar
   name: Eliminar {name}
   'no': 'No'
   'yes': Borrar
@@ -238,9 +236,6 @@ diagnosis:
     title: Archivo modpack no encontrado
 disable: Desactivar
 downloadUpdate: Descarga de la actualización
-duration:
-  'no': 'No'
-  'yes': Sí
 env:
   select:
     all: Seleccionar todo

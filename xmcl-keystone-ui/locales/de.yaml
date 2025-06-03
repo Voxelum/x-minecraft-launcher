@@ -115,7 +115,6 @@ browseApp:
   default: DEFAULT
   delete: Löschen
   launch: Standardmäßig ausgeführt und eingestellt
-browseApps: Anzeigen der Benutzeroberfläche des Launcher
 cancel: Stornierung.
 checkUpdate:
   name: Nach Aktualisierungen suchen
@@ -151,10 +150,6 @@ curseforge:
   worlds: {}
 curseforgeCard: {}
 curseforgeCategory:
-  API and Library: APIs und Bibliotheken
-  Addons: Ergänzungen
-  Adventure: Abenteuer
-  Adventure and RPG: Abenteuer und Rollenspiele
   Fabric: Fabric
   FancyMenu: FancyMenu
   MCreator: MCreator
@@ -192,7 +187,6 @@ dataMigration:
     Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten
     verlieren.
 delete:
-  YEZ: Löschen
   name: Löschen {name}
   'no': Nein.
   'yes': Ja
@@ -274,9 +268,7 @@ duration:
   day: '{duration} Tag | {duration} Tage'
   hour: '{duration} Stunde  | {duration} Stunden'
   minute: '{duration} Minute | {duration} Minuten'
-  'no': Nein
   second: '{duration} zweite | {duration} zweiten'
-  'yes': Ja
 edit: bearbeiten
 enable: Aktivieren Sie
 env:

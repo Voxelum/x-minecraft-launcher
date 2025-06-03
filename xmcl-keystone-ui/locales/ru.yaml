@@ -210,7 +210,6 @@ dataMigration:
     Миграция данных. Пожалуйста, не закрывайте лаунчер или вы потеряете свои
     данные.
 delete:
-  YEZ: Удалить
   name: Удалить {name}
   'no': Нет
   'yes': Удалить
@@ -293,7 +292,6 @@ duration:
   name: Удалить {name}
   'no': Нет
   second: '{duration} секунда | {duration} секунд'
-  'yes': Да
 edit: Изменить
 enable: Включить
 env:
