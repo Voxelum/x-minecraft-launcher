@@ -629,6 +629,10 @@ launchFailed:
   failedToLaunch: 啟動器啟動失敗
   latestLog: 最新日誌檔案
   title: 遊戲未正常退出
+launchPreExecuteCommandFailed:
+  description: >-
+    預執行命令失敗，錯誤：{error}。請檢查命令並重試。
+  title: 預執行命令失敗
 launchGeneralException: {}
 launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
@@ -1567,7 +1571,7 @@ user:
   forgetChallenges: '我忘記了這些問題的答案，我想重新設定它們 '
   id: 使用者 ID
   info: 賬戶資訊
-  insecureClient: Minecraft 伺服器無法驗證您的身份，請回答密保問題！
+  insecureClient: 客戶端不安全！請驗證您的身份以上傳皮膚！
   name: 使用者名稱
   nameHint: 遊戲中顯示的名字
   profile: 個人資訊
@@ -1582,13 +1586,13 @@ userAccount:
   removeTitle: 移除帳號
 userCape:
   changeTitle: 披風設定
-  description: 披風是玩家參與活動獲得的特殊獎勵，或在特定事件發生後的紀念品
+  description: >-
+    披風是玩家參與活動獲得的特殊獎勵，或在特定事件發生後的紀念品。在這裡，您可以選擇您當前擁有的披風：
   noCape: 隱藏披風
 userService:
   add: 新增更多驗證或玩家資訊伺服器
   authLibInjector: 按照 authlib-injector 推薦流程建立
   baseUrlHint: 第三方伺服器的根 URL
-  service: null
   title: 第三方玩家資訊服務
   validateHint: 用來檢驗玩家憑證有效性
 userServices:
@@ -1630,4 +1634,12 @@ versionType:
   beta: Beta (測試版)
   name: 型別
   release: 穩定版
+upstream:
+  downgrade: 降級
+  missingModpackMetadata: >-
+    找不到舊的模組包元數據。
+
+    您仍然可以升級，但結果可能不正確。請備份您的實例檔案。
+  onlyShowCurrentVersion: 僅顯示當前 Minecraft 版本
+  update: 更新
 'yes': 是
