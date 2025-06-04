@@ -267,7 +267,7 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小时'
   minute: '{duration} 分钟'
-  name: 删除 {name｝
+  name: 删除 {name}
   second: '{duration} 秒'
   'yes': 是的，先生。
 edit: 编辑
@@ -1399,7 +1399,7 @@ setup:
     name: 导入已有的游戏
   locale:
     description: >-
-      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request
+      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以在我们的 GitHub 上打开 Pull Request
       来添加新语言！
     language: 当前语言
     name: 设置语言
