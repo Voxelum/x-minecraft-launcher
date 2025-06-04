@@ -103,6 +103,7 @@ browseApp:
   default: ЗА ЗАМОВЧУВАННЯМ
   delete: Видалити
   launch: Запустити та встановити як типовий
+browseApps: Перегляд користувацького інтерфейсу пускової установки
 cancel: Скасувати
 checkUpdate:
   name: Перевірити оновлення
@@ -158,6 +159,7 @@ dataMigration:
     Міграція даних. Будь ласка, не закривайте лаунчер, інакше ви втратите свої
     дані.
 delete:
+  'NO': Ні
   YEZ: ВИДАЛИТИ
   name: Видалити {name}
   'no': Ні
@@ -239,7 +241,10 @@ duration:
   day: '{duration} день | {duration} дні | {duration} днів'
   hour: '{duration} година | {duration} години | {duration} годин'
   minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
+  name: Видалити {name}
+  'no': Ні
   second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  'yes': Так, сер.
 edit: Редагувати
 enable: Увімкнути
 env:
@@ -322,6 +327,7 @@ feedback:
   qqEnterGroup: Приєднатися
 fileDetail:
   fileSize: Розмір файлу
+  filesize: Розмір файлу
   hash: Хеш
 filter: Фільтр
 filterLocalOnly: Показувати лише встановлені
@@ -631,6 +637,11 @@ launchFailed:
   failedToLaunch: Не вдалося запустити
   latestLog: Останні логи
   title: Гра завершилася з ненормальним кодом
+launchPreExecuteCommandFailed:
+  description: >-
+    Команда pre-execute завершилася з помилкою: {error}. Будь ласка, перевірте
+    команду і повторіть спробу.
+  title: Не вдалося виконати команду попереднього виконання
 launchStatus:
   assigningMemory: Виділення пам'яті
   exit: Вийти з гри?
@@ -1378,6 +1389,9 @@ setting:
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
   location: Місце зберігання
+  manualUpdateHint: >-
+    Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще
+    раз з офіційного сайту!
   maunalUpdateHint: >-
     Версію неможливо оновити автоматично. Будь ласка, завантажте лаунчер з
     вебсайту знову!
@@ -1545,6 +1559,7 @@ theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Кандидат хоста
@@ -1636,6 +1651,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Завантажити знову з офіційного вебсайту
 upstream:
+  ONLYShowCurrentVersion: Показувати тільки поточну версію майнкрафт
   downgrade: Понизити версію
   missingModpackMetadata: >-
     Старі метадані модпаку не знайдено.

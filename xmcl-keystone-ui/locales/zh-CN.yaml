@@ -93,6 +93,7 @@ browseApp:
   default: 默认
   delete: 删除
   launch: 启动并设置为默认
+browseApps: 查看启动器的用户界面
 cancel: 取消
 checkUpdate:
   name: 检查更新
@@ -189,6 +190,7 @@ dataMigration:
   unknownError: 未知错误，请联系作者或重试。
   waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
 delete:
+  'NO': 没有
   name: 删除 {name}
   'no': 取消
   'yes': 删除
@@ -265,7 +267,9 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小时'
   minute: '{duration} 分钟'
+  name: 删除 {name｝
   second: '{duration} 秒'
+  'yes': 是的，先生。
 edit: 编辑
 enable: 启用
 env:
@@ -332,6 +336,7 @@ feedback:
   qqEnterGroup: 加群
 fileDetail:
   fileSize: 文件大小
+  filesize: 文件大小
   hash: 哈希值
 filter: 检索
 filterLocalOnly: 只显示已安装
@@ -628,6 +633,9 @@ launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
 launchNoProperJava: {}
 launchNoVersionInstalled: {}
+launchPreExecuteCommandFailed:
+  description: 预执行命令失败，出现错误： {error}。请检查命令并重试。
+  title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
   exit: 关闭游戏？
@@ -1303,6 +1311,7 @@ setting:
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   location: 数据存储位置
+  manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-
     版本无法自动更新。
     请从网站重新下载启动器！
@@ -1454,6 +1463,7 @@ theme:
   selectImage: 选择图像
   selectMusic: 选择音乐
   selectVideo: 选择视频
+  title: X Minecraft Launcher
 transportType:
   host: 公网地址
   prflx: 同伴反射地址
@@ -1533,6 +1543,7 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官网重新下载
 upstream:
+  ONLYShowCurrentVersion: 只显示当前版本的 minecraft
   downgrade: 降级
   missingModpackMetadata: >-
     无法找到当前实例使用的整合包元数据。虽然您不会因此没法更新到最新的整合包版本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份您的文件。

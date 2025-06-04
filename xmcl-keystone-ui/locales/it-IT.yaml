@@ -104,6 +104,7 @@ browseApp:
   default: DEFAULT
   delete: Elimina
   launch: Lancia e imposta come predefinito
+browseApps: Visualizzazione dell'interfaccia utente del launcher
 cancel: Annulla
 checkUpdate:
   name: Controlla aggiornamenti
@@ -153,6 +154,7 @@ dataMigration:
     Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i
     dati.
 delete:
+  'NO': 'No'
   name: Elimina {name}
   'no': 'No'
   'yes': Elimina
@@ -234,7 +236,7 @@ duration:
   name: Elimina {name}
   'no': 'No'
   second: '{duration} secondo fa | {duration} seconid fa'
-  'yes': Elimina
+  'yes': Sì, signore.
 edit: Modifica
 enable: Abilita
 env:
@@ -315,6 +317,7 @@ feedback:
   qqEnterGroup: Unisciti
 fileDetail:
   fileSize: Dimensione del file
+  filesize: Dimensione del file
   hash: Hash
 filter: Filtro
 filterLocalOnly: Mostra solo installate
@@ -638,6 +641,11 @@ launchFailed:
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
+launchPreExecuteCommandFailed:
+  description: >-
+    Il comando di pre-esecuzione non è riuscito con un errore: {error}.
+    Controllare il comando e riprovare.
+  title: Comando pre-esecuzione fallito
 launchStatus:
   assigningMemory: Assegnazione memoria
   exit: Uscire dal gioco?
@@ -1248,6 +1256,8 @@ screenshots:
   playSequence: Riproduci in ordine
 search:
   favorate: Collezione
+  local: Installato
+  market: Mercato Mod
 server:
   acceptingMinecraftVersion: Versione Minecraft accettata
   creationHint: Inserire l'indirizzo del server e fare ping al server
@@ -1379,6 +1389,9 @@ setting:
   linuxTitlebar: Barra del titolo nativa Linux
   linuxTitlebarDescription: Usa la barra del titolo nativa di Linux per il launcher
   location: Posizione di archiviazione
+  manualUpdateHint: >-
+    La versione non può essere aggiornata automaticamente. Scaricate nuovamente
+    il launcher dal sito ufficiale!
   maunalUpdateHint: >-
     La versione non può essere aggiornata automaticamente. Per favore, riscarica
     il launcher dal sito web!
@@ -1551,6 +1564,7 @@ theme:
   selectImage: Scegli Immagine
   selectMusic: Scegli Musica
   selectVideo: Scegli Video
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Host Scelto
@@ -1640,6 +1654,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Riscarica dal sito web ufficiale
 upstream:
+  ONLYShowCurrentVersion: Mostra solo la versione corrente di Minecraft
   downgrade: Downgrade
   missingModpackMetadata: >-
     I vecchi metadati del modpack non sono stati trovati. Puoi comunque eseguire

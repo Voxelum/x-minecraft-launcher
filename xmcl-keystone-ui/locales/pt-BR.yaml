@@ -711,6 +711,8 @@ launchFailed:
   failedToLaunch: Falha ao iniciar o jogo
   latestLog: Log mais recente
   title: Jogo fechado com código anômalo
+launchPreExecuteCommandFailed:
+  title: Falha no comando de pré-execução
 launchStatus:
   assigningMemory: Atribuindo memória
   exit: Sair do jogo?
@@ -1728,6 +1730,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-baixar no site oficial
 upstream:
+  ONLYShowCurrentVersion: Mostrar apenas a versão atual do minecraft
   downgrade: Reverter versão
   missingModpackMetadata: >-
     Os metadados do modpack antigo não foram encontrados. Você ainda pode

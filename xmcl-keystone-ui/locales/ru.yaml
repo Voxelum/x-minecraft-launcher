@@ -295,6 +295,7 @@ duration:
   name: Удалить {name}
   'no': Нет
   second: '{duration} секунда | {duration} секунд'
+  'yes': Да, сэр.
 edit: Изменить
 enable: Включить
 env:
@@ -699,6 +700,11 @@ launchFailed:
   failedToLaunch: Не удалось запустить запуск
   latestLog: 'Последние логи '
   title: Игра завершилась с аномальным кодом
+launchPreExecuteCommandFailed:
+  description: >-
+    Команда предварительного выполнения завершилась с ошибкой: {error}.
+    Пожалуйста, проверьте команду и повторите попытку.
+  title: Команда предварительного выполнения не выполнена
 launchStatus:
   assigningMemory: Распределение памяти
   exit: Выйти из игры?
@@ -1319,6 +1325,8 @@ screenshots:
   playSequence: Показывать по порядку
 search:
   favorate: Коллекция
+  local: Установлено
+  market: Мод маркет
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
@@ -1458,6 +1466,9 @@ setting:
   linuxTitlebar: Нативный заголовок окна
   linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера.
   location: Место для хранения файлов лаунчера
+  manualUpdateHint: >-
+    Версия не может быть обновлена автоматически. Пожалуйста, скачайте пусковую
+    установку заново с официального сайта!
   maunalUpdateHint: >-
     Данная версия не может быть обновлена автоматически. Пожалуйста, скачайте
     лаунчер с сайта ещё раз!
@@ -1652,6 +1663,7 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Хост-кандидат
@@ -1745,6 +1757,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Повторная загрузка на официальном сайте
 upstream:
+  ONLYShowCurrentVersion: Показывать только текущую версию майнкрафт
   downgrade: Понизить версию
   missingModpackMetadata: >-
     Старые метаданные модпака не найдены.

@@ -94,6 +94,7 @@ browseApp:
   default: 預設
   delete: 刪除
   launch: 啟動並設定為預設
+browseApps: 檢視啟動器的使用者介面
 cancel: 取消
 checkUpdate:
   name: 檢查更新
@@ -191,6 +192,7 @@ dataMigration:
   unknownError: 未知錯誤，請聯絡作者或重試。
   waitReload: 遷移資料中。請不要關閉啟動器，否則您可能會丟失一部分資料。
 delete:
+  'NO': 沒有
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
@@ -267,7 +269,10 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小時'
   minute: '{duration} 分鐘'
+  name: 刪除 {name}
+  'no': 沒有
   second: '{duration} 秒'
+  'yes': 是的，先生
 edit: 編輯
 enable: 啟用
 env:
@@ -336,6 +341,7 @@ feedback:
   qqEnterGroup: 加入
 fileDetail:
   fileSize: 檔案大小
+  filesize: 檔案大小
   hash: 雜湊值
 filter: 搜尋
 filterLocalOnly: 只顯示已安裝
@@ -630,6 +636,9 @@ launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
 launchNoProperJava: {}
 launchNoVersionInstalled: {}
+launchPreExecuteCommandFailed:
+  description: 預先執行指令失敗，並產生錯誤： {error}。請檢查指令並重試。
+  title: 執行前指令失敗
 launchStatus:
   assigningMemory: 正在分配記憶體
   exit: 關閉遊戲？
@@ -1316,6 +1325,7 @@ setting:
   linuxTitlebar: 原生頂端欄
   linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
   location: 資料儲存位置
+  manualUpdateHint: 版本無法自動更新。請從官方網站重新下載啟動器！
   maunalUpdateHint: |-
     版本無法自動更新。
     請從網站重新下載啟動器！
@@ -1468,6 +1478,7 @@ theme:
   selectImage: 選擇影象
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: 公網位址
@@ -1548,6 +1559,7 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官網重新下載
 upstream:
+  ONLYShowCurrentVersion: 僅顯示目前版本的 minecraft
   downgrade: 降級
   missingModpackMetadata: >-
     無法找到目前實例使用的模組包後設資料。雖然您不會因此沒法更新到最新的模組包版本，但這樣更新的結果可能不正確，強烈推薦重新建立新實例。若要更新請備份您的檔案。

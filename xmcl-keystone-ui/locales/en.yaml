@@ -101,6 +101,7 @@ browseApp:
   default: DEFAULT
   delete: Delete
   launch: Launch and set as Default
+browseApps: Viewing the launcher user interface
 cancel: Cancel
 checkUpdate:
   name: Check Update
@@ -152,6 +153,7 @@ dataMigration:
   unknownError: Unknown Error! Please retry or contact the developer!
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
+  'NO': 'No'
   name: Delete {name}
   'no': 'No'
   'yes': Delete
@@ -230,7 +232,10 @@ duration:
   day: '{duration} day | {duration} days'
   hour: '{duration} hour | {duration} hours'
   minute: '{duration} minute | {duration} minutes'
+  name: Delete {name}
+  'no': 'No'
   second: '{duration} second | {duration} seconds'
+  'yes': Yes, sir.
 edit: Edit
 enable: Enable
 env:
@@ -312,6 +317,7 @@ feedback:
   qqEnterGroup: Join
 fileDetail:
   fileSize: File Size
+  filesize: File size
   hash: Hash
 filter: Filter
 filterLocalOnly: Only show installed
@@ -1347,6 +1353,9 @@ setting:
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
+  manualUpdateHint: >-
+    The version cannot be updated automatically. Please download the launcher
+    again from the official website!
   maunalUpdateHint: >-
     The version cannot be auto-updated. Please redownload the launcher from the
     website!
@@ -1507,6 +1516,7 @@ theme:
   selectImage: Select Image
   selectMusic: Select Music
   selectVideo: Select Video
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Host Candidate
@@ -1591,6 +1601,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-download on official website
 upstream:
+  ONLYShowCurrentVersion: Show only the current version of minecraft
   downgrade: Downgrade
   missingModpackMetadata: >-
     The old modpack metadata not found.
