@@ -115,6 +115,7 @@ browseApp:
   default: DEFAULT
   delete: Löschen
   launch: Standardmäßig ausgeführt und eingestellt
+browseApps: Anzeigen der Benutzeroberfläche des Launcher
 cancel: Stornierung.
 checkUpdate:
   name: Nach Aktualisierungen suchen
@@ -187,6 +188,7 @@ dataMigration:
     Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten
     verlieren.
 delete:
+  'NO': Nein
   name: Löschen {name}
   'no': Nein.
   'yes': Ja
@@ -268,7 +270,10 @@ duration:
   day: '{duration} Tag | {duration} Tage'
   hour: '{duration} Stunde  | {duration} Stunden'
   minute: '{duration} Minute | {duration} Minuten'
+  name: Löschen {name}
+  'no': Nein
   second: '{duration} zweite | {duration} zweiten'
+  'yes': Ja, Sir.
 edit: bearbeiten
 enable: Aktivieren Sie
 env:
@@ -356,6 +361,7 @@ feedback:
   qqEnterGroup: Beitreten
 fileDetail:
   fileSize: Größe der Datei
+  filesize: Größe der Datei
   hash: Hash
 filter: Filter.
 filterLocalOnly: Nur installiert anzeigen
@@ -686,6 +692,11 @@ launchFailed:
     Protokoll.
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
+launchPreExecuteCommandFailed:
+  description: >-
+    Der Pre-Execute-Befehl ist mit einem Fehler fehlgeschlagen: {error}. Bitte
+    überprüfen Sie den Befehl und versuchen Sie es erneut.
+  title: Vor-Ausführungsbefehl fehlgeschlagen
 launchStatus:
   assigningMemory: Speicher zuweisen
   exit: Das Spiel aufgeben?
@@ -1323,6 +1334,8 @@ screenshots:
   playSequence: Spielen Sie der Reihe nach
 search:
   favorate: Sammlung
+  local: Installiert
+  market: Mod-Markt
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
@@ -1465,6 +1478,9 @@ setting:
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort
+  manualUpdateHint: >-
+    Die Version kann nicht automatisch aktualisiert werden. Bitte laden Sie den
+    Launcher erneut von der offiziellen Website herunter!
   maunalUpdateHint: |-
     Die Version kann nicht automatisch aktualisiert werden. 
     Laden Sie den Launcher von der Website herunter!
@@ -1634,6 +1650,7 @@ theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik
   selectVideo: Wählen Sie Video
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Gastgeber-Kandidat
@@ -1743,6 +1760,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Erneuter Download auf der offiziellen Website
 upstream:
+  ONLYShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.
 

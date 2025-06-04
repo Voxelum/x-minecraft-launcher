@@ -188,6 +188,7 @@ dataMigration:
     Migration des données. 
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
+  'NO': Non
   name: Supprimer {name}
   'no': Non
   'yes': Supprimer
@@ -276,7 +277,10 @@ duration:
   minute: |-
     {duration} minute | 
     {duration} minutes
+  name: Supprimer {name}
+  'no': Non
   second: '{duration} seconde | {duration} secondes'
+  'yes': Oui, monsieur.
 edit: Éditer
 env:
   select:
@@ -350,6 +354,8 @@ feedback:
     Entrez dans le groupe de commentaires QQ et discutez directement avec les
     auteurs. Numéro de groupe : {number}
   qqEnterGroup: Rejoindre
+fileDetail:
+  filesize: Taille du fichier
 filter: Filtre
 filterLocalOnly: Afficher uniquement installé
 finish: Valider
@@ -667,6 +673,11 @@ launchFailed:
     Ceci est le log d'erreurs et le log le plus récent.
   latestLog: Dernier log
   title: Jeu terminé avec un code anormal
+launchPreExecuteCommandFailed:
+  description: >-
+    La commande de pré-exécution a échoué avec une erreur : {error}. Veuillez
+    vérifier la commande et réessayer.
+  title: Échec de la commande de pré-exécution
 launchStatus:
   assigningMemory: Attribution de mémoire
   injectingAuthLib: Configuration d'AuthLib tiers
@@ -1271,6 +1282,8 @@ screenshots:
   playSequence: Jouer dans l'ordre
 search:
   favorate: Collection
+  local: Installé
+  market: Mod Market
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
   creationHint: Veuillez remplir l'adresse du serveur et envoyer un ping au serveur
@@ -1411,6 +1424,9 @@ setting:
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin
+  manualUpdateHint: >-
+    La version ne peut pas être mise à jour automatiquement. Veuillez
+    télécharger à nouveau le lanceur à partir du site officiel !
   maunalUpdateHint: "La version ne peut pas être mise à jour automatiquement. \nVeuillez retélécharger le lanceur depuis le site Web\_!"
   maxSockets: Par hôte
   maxSocketsDescription: >-
@@ -1573,6 +1589,7 @@ theme:
   selectImage: Sélectionnez une image
   selectMusic: Sélectionnez la musique
   selectVideo: Sélectionnez la vidéo
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Candidat Hôte
@@ -1665,6 +1682,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-télécharger sur le site officiel
 upstream:
+  ONLYShowCurrentVersion: Afficher uniquement la version actuelle de Minecraft
   downgrade: Rétrograder
   missingModpackMetadata: >-
     Les anciennes métadonnées du modpack sont introuvables.

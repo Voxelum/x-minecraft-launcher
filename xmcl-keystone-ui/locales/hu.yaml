@@ -106,6 +106,7 @@ browseApp:
   default: ALAPÉRTELMEZETT
   delete: Törlés
   launch: Indítás és beállítás alapértelmezettnek
+browseApps: Az indítóprogram felhasználói felületének megtekintése
 cancel: Mégsem
 checkUpdate:
   name: Frissítés keresése
@@ -158,6 +159,7 @@ dataMigration:
     Adatok áthelyezése. Kérlek, ne zárd be a Launcher-t, különben elveszíted az
     adataidat.
 delete:
+  'NO': 'No'
   name: Törlöd {name}
   'no': Nem
   'yes': Törlés
@@ -231,7 +233,9 @@ duration:
   day: '{duration} nap | {duration} nap'
   hour: '{duration} óra | {duration} óra'
   minute: '{duration} perc | {duration} perc'
+  'no': 'no'
   second: '{duration} másodperc | {duration} másodperc'
+  'yes': Igen, uram.
 edit: Szerkesztés
 enable: Engedélyezés
 env:
@@ -306,6 +310,7 @@ feedback:
   qqEnterGroup: Csatlakozás
 fileDetail:
   fileSize: Fájl méret
+  filesize: Fájl mérete
   hash: Hash
 filter: Szűrő
 filterLocalOnly: Csak a telepített megjelenítés
@@ -632,6 +637,11 @@ launchFailed:
   failedToLaunch: Az indítás sikertelen volt
   latestLog: Legújabb napló
   title: A játék abnormális kóddal lépett ki
+launchPreExecuteCommandFailed:
+  description: >-
+    A végrehajtás előtti parancs hiba miatt sikertelen volt: {error}. Kérjük,
+    ellenőrizze a parancsot, és próbálja meg újra.
+  title: A végrehajtás előtti parancs sikertelen
 launchStatus:
   assigningMemory: Memória kiosztása
   exit: Kilépés?
@@ -1257,6 +1267,8 @@ screenshots:
   playSequence: Játék sorrendben
 search:
   favorate: Gyűjtemény
+  local: Telepített
+  market: Mod Market
 server:
   acceptingMinecraftVersion: Minecraft verzió elfogadása
   creationHint: Kérlek, töltsd ki a szerver címét és pingeld a szervert
@@ -1392,6 +1404,9 @@ setting:
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
   location: Áruház helye
+  manualUpdateHint: >-
+    A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az
+    indítóprogramot a hivatalos honlapról!
   maunalUpdateHint: >-
     A verzió nem frissíthető automatikusan. Kérlek, töltsd le újra az launchert
     a weboldalról!
@@ -1552,6 +1567,7 @@ theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget
   selectVideo: Válassza a Videó lehetőséget
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Kiszolgáló jelölt
@@ -1637,6 +1653,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Töltse le újra a hivatalos webhelyről
 upstream:
+  ONLYShowCurrentVersion: Csak a minecraft aktuális verziójának megjelenítése
   downgrade: Visszaváltás
   missingModpackMetadata: >-
     A régi modcsomag metaadatok nem találhatók.

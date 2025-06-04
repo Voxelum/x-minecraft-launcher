@@ -178,6 +178,7 @@ dataMigration:
   unknownError: 未知のエラーが発生しました! 再度試すか、開発者に連絡してください!
   waitReload: データを移行中です。ランチャーを閉じないでください。
 delete:
+  'NO': いいえ
   name: '{name} を削除'
   'no': いいえ
   'yes': はい
@@ -326,6 +327,7 @@ feedback:
   qqEnterGroup: 参加
 fileDetail:
   fileSize: ファイルサイズ
+  filesize: ファイルサイズ
   hash: ハッシュ値
 filter: フィルター
 filterLocalOnly: インストールされているものだけを表示
@@ -601,6 +603,9 @@ launchFailed:
   failedToLaunch: ランチャーの起動に失敗
   latestLog: 最新のログ
   title: ゲームが異常なコードで終了しました
+launchPreExecuteCommandFailed:
+  description: 実行前コマンドがエラーで失敗しました： {error}です。コマンドを確認して再試行してください。
+  title: 実行前コマンドの失敗
 launchStatus:
   assigningMemory: メモリを割り当て中
   exit: ゲームを終了しますか?
@@ -1161,6 +1166,8 @@ screenshots:
   playSequence: 順番に再生
 search:
   favorate: コレクション
+  local: 設置済み
+  market: モッドマーケット
 server:
   acceptingMinecraftVersion: Minecraftバージョンを使用中
   creationHint: サーバーアドレスを入力し、pingしてください
@@ -1288,6 +1295,7 @@ setting:
   linuxTitlebar: システムのタイトルバー
   linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
   location: 保管場所
+  manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
   maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
   maxSockets: ホスト毎
   maxSocketsDescription: ホスト毎の最大のソケット、または全ての最大のソケットを制限します。0で無制限。
@@ -1490,6 +1498,7 @@ universalDrop:
 update:
   goOfficialWebDownload: 公式サイトで再ダウンロード
 upstream:
+  ONLYShowCurrentVersion: 現在のバージョンのマインクラフトのみを表示する
   downgrade: ダウングレード
   missingModpackMetadata: |-
     古いModpackのメタデータが見つかりません。

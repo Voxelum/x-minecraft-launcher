@@ -97,6 +97,7 @@ browseApp:
   default: DEFECTO
   delete: Borrar
   launch: Iniciar y configurar como predeterminado
+browseApps: Ver la interfaz de usuario del lanzador
 cancel: Cancelar
 color: Color
 confirm: Comenzar
@@ -190,6 +191,7 @@ dataMigration:
   unknownError: ¡Error Desconocido! Vuelva a intentarlo o comuníquese con el desarrollador.
   waitReload: Migrando datos. Por favor, no cierres el Launcher o perderás tus datos.
 delete:
+  'NO': 'No'
   name: Eliminar {name}
   'no': 'No'
   'yes': Borrar
@@ -236,6 +238,10 @@ diagnosis:
     title: Archivo modpack no encontrado
 disable: Desactivar
 downloadUpdate: Descarga de la actualización
+duration:
+  name: Borrar {name}
+  'no': 'No'
+  'yes': Sí, señor.
 env:
   select:
     all: Seleccionar todo
@@ -281,6 +287,8 @@ feedback:
     Únete al grupo de QQ de comentarios y habla directamente con los autores.
     Número del grupo: {number}
   qqEnterGroup: Unirse
+fileDetail:
+  filesize: Tamaño del archivo
 filterLocalOnly: Mostrar solo instalado
 forgeVersion:
   common: Común
@@ -506,6 +514,11 @@ launchBlocked:
 
       Si esto aún no funciona, comuníquese con los desarrolladores.
     title: No se puede iniciar el proceso del juego
+launchPreExecuteCommandFailed:
+  description: >-
+    El comando de pre-ejecución falló con un error: {error}. Por favor,
+    compruebe el comando e inténtelo de nuevo.
+  title: Fallo del comando de preejecución
 launchStatus:
   refreshingUser: Actualizar token de usuario
   spawningProcess: ''
@@ -966,6 +979,8 @@ screenshots:
   playSequence: Jugar en orden
 search:
   favorate: Recopilación
+  local: Instalado
+  market: Mercado Mod
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor
@@ -1100,6 +1115,9 @@ setting:
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento
+  manualUpdateHint: >-
+    La versión no se puede actualizar automáticamente. Vuelve a descargar el
+    lanzador desde el sitio web oficial.
   maunalUpdateHint: |-
     La versión no se puede actualizar automáticamente. 
     ¡Vuelva a descargar el iniciador del sitio web!
@@ -1233,6 +1251,7 @@ theme:
   selectImage: Seleccionar imagen
   selectMusic: Seleccionar música
   selectVideo: Seleccionar vídeo
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Candidato de Anfitrión
@@ -1268,6 +1287,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Vuelva a descargar en el sitio web oficial.
 upstream:
+  ONLYShowCurrentVersion: Mostrar sólo la versión actual de minecraft
   missingModpackMetadata: >-
     No se encontraron los metadatos antiguos del modpack.
 

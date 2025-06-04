@@ -474,3 +474,5 @@ sortBy:
   alphabetDesc: Sort by alphabet (descending)
   timeAsc: Sort by modification time (ascending)
   timeDesc: Sort by modification time (descending)
+theme:
+  title: X Minecraft Launcher

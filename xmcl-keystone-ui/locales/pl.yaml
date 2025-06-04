@@ -108,6 +108,7 @@ browseApp:
   default: DEFAULT
   delete: Usuń
   launch: Uruchom i ustaw jako domyślne
+browseApps: Wyświetlanie interfejsu użytkownika programu uruchamiającego
 cancel: Anuluj
 checkUpdate:
   name: Sprawdź aktualizację
@@ -167,6 +168,7 @@ dataMigration:
     Migracja danych. Nie zamykaj programu uruchamiającego, ponieważ spowoduje to
     utratę danych.
 delete:
+  'NO': Nie
   name: Usuń {name}
   'no': Nie
   'yes': Usuń
@@ -247,7 +249,10 @@ duration:
   day: '{duration} dzień | {duration} dni'
   hour: '{duration} godzina | {duration} godziny'
   minute: '{duration} minuta | {duration} minuty'
+  name: Usuń {name}
+  'no': Ni
   second: '{duration} drugi | {duration} sekundy'
+  'yes': Tak jest.
 edit: Edytuj
 enable: Włącz
 env:
@@ -325,6 +330,7 @@ feedback:
   qqEnterGroup: Dołącz
 fileDetail:
   fileSize: Rozmiar pliku
+  filesize: Rozmiar pliku
   hash: Hash
 filter: Filtr
 filterLocalOnly: Pokaż tylko zainstalowane
@@ -653,6 +659,11 @@ launchFailed:
   failedToLaunch: Uruchomienie nie powiodło się
   latestLog: Najnowszy dziennik
   title: Gra zakończyła się z nieprawidłowym kodem
+launchPreExecuteCommandFailed:
+  description: >-
+    Polecenie wstępnego wykonania nie powiodło się z błędem: {error}. Sprawdź
+    polecenie i spróbuj ponownie.
+  title: Nie powiodło się polecenie przed wykonaniem
 launchStatus:
   assigningMemory: Przypisywanie pamięci
   exit: Wyjście z gry?
@@ -1262,6 +1273,8 @@ screenshots:
   playSequence: Graj w kolejności
 search:
   favorate: Kolekcja
+  local: Zainstalowany
+  market: Rynek modów
 server:
   acceptingMinecraftVersion: Akceptowanie wersji Minecraft
   creationHint: Wypełnij adres serwera i wykonaj ping do serwera
@@ -1393,6 +1406,9 @@ setting:
   linuxTitlebar: Natywny pasek tytułu
   linuxTitlebarDescription: Użyj natywnego linuksowego paska tytułu dla programu uruchamiającego
   location: Lokalizacja sklepu
+  manualUpdateHint: >-
+    Wersja nie może zostać zaktualizowana automatycznie. Prosimy o ponowne
+    pobranie launchera z oficjalnej strony!
   maunalUpdateHint: >-
     Wersja nie może być automatycznie aktualizowana. Prosimy o ponowne pobranie
     programu uruchamiającego ze strony strony internetowej!
@@ -1649,6 +1665,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Ponowne pobranie na oficjalnej stronie
 upstream:
+  ONLYShowCurrentVersion: Pokazuje tylko aktualną wersję gry Minecraft
   downgrade: Obniżenie oceny
   missingModpackMetadata: >-
     Nie znaleziono metadanych starego modpacka.
