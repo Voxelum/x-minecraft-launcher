@@ -1445,6 +1445,7 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任务
+  compatible: 格式 {format} 与 {version} 兼容
   connection:
     connected: 已连接
     free: 空闲
@@ -1459,6 +1460,7 @@ task:
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: 选择图像
   selectMusic: 选择音乐

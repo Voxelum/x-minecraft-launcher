@@ -126,8 +126,16 @@ curseforge:
   totalDownloads: TOTAL DOWNLOADZ
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: API ANDS LIBRARIS
   Fabric: FABRIC
+  FancyMenu: FancyMenu
   Food: FUD
+  MCreator: MCreator
+  QoL: QOL
+  Skyblock: SKYBLOKS
+  Steampunk: STEAMPANKS
+  Storage: STORAGEZ
+  Vanilla+: VANILLA+++
 dataMigration:
   apply: APPLY SETTIN
   directoryCriteriaHint: PLZ MAK SURE UR NEW DIRECTORY LOCASHUN IZ AN EMPTY DIRECTORY!
@@ -1462,6 +1470,7 @@ tag:
 task:
   cancelled: CANCELLD
   clear: CLEAR FINISHD TASKZ
+  compatible: THE {format} FORMATS IS CAMPATIBLE WIZ {version}
   connection:
     connected: CONNECTD
     free: FREE
@@ -1470,12 +1479,14 @@ task:
     running: RUNNIN CONNECSHUN
     size: TOTAL COUNT
   connections: NETWORK CONNECSHUNS
+  dropHint: DRAG AND DROPIK THE FALDER/ZIP TEXTUREZ HERE TO IMPORT.
   empty: NO RUNNIN TASKZ
   failed: FAILD
   manager: TASK MANAGR
   nTaskRunning: '{count} TASKZ R RUNNIN'
   name: TASK | TASKZ
   pause: PAUSE
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: SELECT IMAGE
   selectMusic: SELECT MUSIC

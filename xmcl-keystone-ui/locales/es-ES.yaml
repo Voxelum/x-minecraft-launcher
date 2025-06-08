@@ -1247,6 +1247,7 @@ task:
   nTaskRunning: '{count} tareas en ejecución'
   name: Tarea | Tareas
   pause: Pausar
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Seleccionar imagen
   selectMusic: Seleccionar música

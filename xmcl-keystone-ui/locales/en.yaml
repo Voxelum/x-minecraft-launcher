@@ -132,8 +132,58 @@ curseforge:
   totalDownloads: Total Downloads
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: APIs and libraries
+  Addons: Supplements
+  Adventure: Adventure
+  Adventure and RPG: Adventure and RPG
+  Animated: Animation
+  Armor, Tools, and Weapons: Armor, tools and weapons
+  Armor， Tools， and Weapons: Armor, tools and weapons
+  Combat / PvP: Competitions/PVP
+  Cosmetic: Appearance/decoration
+  Creation: Creative mode
+  Data Packs: Data packet
+  Education: Education
+  Exploration: Reconnaissance
+  Extra Large: Large size
+  FTB Official Pack: The official FTB package
   Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Fonts
   Food: Food
+  Game Map: Game Cards
+  Hardcore: Hardcore
+  MCreator: MCreator
+  Magic: Magic
+  Map Based: Based on the map
+  Map and Information: Maps and information
+  Medieval: Middle Ages
+  Mini Game: Mini-games
+  Miscellaneous: Miscellaneous
+  Mod Support: Mod support
+  Modded World: A mod for worlds
+  Modern: Modern
+  Multiplayer: Multiplayer
+  Parkour: Parkour
+  Photo Realistic: Realistic photography
+  Puzzle: Puzzles
+  QoL: QoL
+  Quests: Quests
+  Redstone: Redstone
+  Sci-Fi: Sci-Fi
+  Server Utility: Server tool
+  Skyblock: SkyBlock
+  Small / Light: A little bit
+  Steampunk: Steampunk
+  Storage: Storage
+  Survival: Survival
+  Tech: Technology
+  Technology: Technology
+  Traditional: Traditional
+  Twitch Integration: Twitch integration
+  Utility & QoL: Utility and Qol
+  Vanilla+: Vanilla+
+  World Gen: Peace Generator
 dataMigration:
   apply: Apply Setting
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
@@ -154,6 +204,7 @@ dataMigration:
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   'NO': 'No'
+  YEZ: DELETE
   name: Delete {name}
   'no': 'No'
   'yes': Delete
@@ -750,6 +801,7 @@ mod:
   openLink: Open the mod url {url}
   search: Search Mods
   searchOnCurseforge: Search {name} in curseforge
+  searchOnMcWiki: Look up {name} in the MC encyclopedia.
   searchOnModrinth: Search {name} in Modrinth
   showDirectory: Show mods directory
   showFile: Show the mod path {file}
@@ -897,6 +949,7 @@ modrinth:
     models: Models
     modloader: Mod Loader
     multiplayer: Multiplayer
+    name: Categories
     neoforge: NeoForge
     optifine: Optifine
     optimization: Optimizations
@@ -1350,6 +1403,8 @@ setting:
     focus: Focus Layout
   layoutDescription: The layout of the launcher UI
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
+  linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
@@ -1496,8 +1551,10 @@ tag:
   createSelected: Create Tag for Selected
   newTag: New Tag
 task:
+  available: Available
   cancelled: Cancelled
   clear: Clear Finished Tasks
+  compatible: The {format} format is compatible with {version}
   connection:
     connected: Connected
     free: Free
@@ -1506,12 +1563,31 @@ task:
     running: Running connection
     size: total count
   connections: Network Connections
+  delete:
+    content: >-
+      This will delete the texturepack file from the disk, and we won't be able
+      to recover it.
+       Are you sure you can recover it?
+    title: Delete texturepack
+  dropHint: Drag and drop the folder/zip textures here to import.
   empty: No Running Tasks
+  enable: 'Texturepacks included: {count}'
   failed: Failed
+  import: Import texturepack
+  incompatible: >-
+    Incompatible textstack format ({format}). Matching {accept}. Current
+    {actual}.
+  manage: Texturepack
   manager: Task Manager
   nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
+  searchOnCurseforge: Search {name} on curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Favorite texturepacks
+  showFile: Open the texturepack {file} in the folder
+  showInCurseforge: Show {name} on curseforge
+  unselected: Unselected texturepacks
 theme:
   selectImage: Select Image
   selectMusic: Select Music

@@ -1460,6 +1460,7 @@ tag:
 task:
   cancelled: 已取消
   clear: 清除已完成的任務
+  compatible: '{format} 格式與 {version} 相容。'
   connection:
     connected: 已連線
     free: 空閒
@@ -1474,6 +1475,7 @@ task:
   nTaskRunning: '{count} 個任務執行中'
   name: 任務 | 任務
   pause: 暫停
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: 選擇影象
   selectMusic: 選擇音樂

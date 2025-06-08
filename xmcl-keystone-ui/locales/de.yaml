@@ -151,14 +151,57 @@ curseforge:
   worlds: {}
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: APIs und Bibliotheken
+  Addons: Ergänzungen
+  Adventure: Abenteuer
+  Adventure and RPG: Abenteuer und Rollenspiele
+  Animated: Animation
+  Armor, Tools, and Weapons: Rüstungen, Werkzeuge und Waffen
+  Armor， Tools， and Weapons: Rüstungen, Werkzeuge und Waffen
+  Combat / PvP: Wettbewerbe/PVP
+  Cosmetic: Erscheinungsbild/Dekoration
+  Creation: Kreativ-Modus
+  Data Packs: Daten-Paket
+  Education: Bildung
+  Exploration: Aufklärungsarbeit
+  Extra Large: Großes Format
+  FTB Official Pack: Offizielles FTB-Paket
   Fabric: Fabric
   FancyMenu: FancyMenu
+  Font Packs: Schriftarten
+  Game Map: Spiel-Karten
+  Hardcore: Hardcore
   MCreator: MCreator
+  Magic: Magie
+  Map Based: Basierend auf der Karte
+  Map and Information: Karten und Informationen
+  Medieval: Mittelalter
+  Mini Game: Mini-Spiele
+  Miscellaneous: Sonstiges
+  Mod Support: Mod-Unterstützung
+  Modded World: Ein Mod für Welten
+  Modern: Modern
+  Multiplayer: Multiplayer
+  Parkour: Parkour
+  Photo Realistic: Realistische Fotografie
+  Puzzle: Rätsel
   QoL: QoL
+  Quests: Quests
   Redstone: Redstone
+  Sci-Fi: Sci-Fi
+  Server Utility: Server tool
   Skyblock: SkyBlock
+  Small / Light: Ein kleines bisschen
   Steampunk: Steampunk
+  Storage: Lagerung
+  Survival: Überleben
+  Tech: Technologie
+  Technology: Technologie
+  Traditional: Traditionell
+  Twitch Integration: Twitch-Integration
+  Utility & QoL: Nützlichkeit und Qol
   Vanilla+: Vanilla+
+  World Gen: Friedensgenerator
 dataMigration:
   apply: Einstellungen anwenden
   directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
@@ -189,6 +232,7 @@ dataMigration:
     verlieren.
 delete:
   'NO': Nein
+  YEZ: DELETE
   name: Löschen {name}
   'no': Nein.
   'yes': Ja
@@ -485,12 +529,13 @@ instance:
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs
-  preExecCommand: Vor-Ausführungsbefehl
-  preExecCommandHint: Befehl, der vor dem Start von Minecraft ausgeführt wird
+  preExecCommand: Vor-Start-Befehl
+  preExecCommandHint: Befehl zum Ausführen vor dem Start von Minecraft
   prependCommand: Befehl voranstellen
   prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Der Name ist erforderlich
   resolution: Fensterauflösung
+  resolutionEnabled: Benutzerdefinierte Autorisierung aktivieren
   resolutionPreset: Auflösung Voreinstellung
   showInstance: Spieleordner anzeigen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
@@ -704,7 +749,7 @@ launchStatus:
   launching: Starten...
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
   refreshingUser: Aktualisierung des Benutzertokens
-  spawningProcess: ''
+  spawningProcess: Start des Prozesses
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
@@ -842,6 +887,7 @@ mod:
   openLink: Link zur Mod öffnen {url}
   search: Suche nach Änderungen
   searchOnCurseforge: Fluchschmiede besuchen {name}
+  searchOnMcWiki: Schlagen Sie {Name} in der MC-Enzyklopädie nach.
   searchOnModrinth: Suche. {name} auf Modrinth
   showDirectory: Änderungskatalog anzeigen
   showFile: Den Weg zur Mode weisen {file}
@@ -1475,6 +1521,8 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Zuweisung eines dedizierten Grafikprozessors
+  linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess einen eigenen Grafikprozessor zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort
@@ -1629,8 +1677,10 @@ tag:
   createSelected: Stvoriti-Tag für Inverse
   newTag: Neuer Tag
 task:
+  available: Verfügbar
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
+  compatible: Das Format {format} ist kompatibel mit {version}
   connection:
     connected: In Verbindung gebracht
     free: Frei
@@ -1639,13 +1689,31 @@ task:
     running: Laufende Verbindung
     size: komplette Anzahl
   connections: Netzwerkverbindungen
+  delete:
+    content: >-
+      Dadurch wird die Texturepack-Datei vom Datenträger gelöscht, und wir
+      können sie nicht wiederherstellen.
+       Sind Sie sicher, dass Sie sie wiederherstellen können?
+    title: Texturpaket löschen
+  dropHint: Ziehen Sie die Ordner/Zip-Texturen zum Importieren hierher.
   empty: Keine Aufgaben laufen
+  enable: 'Texturepacks enthalten: {Anzahl}'
   failed: Gescheitert
+  import: Texturpaket importieren
+  incompatible: >-
+    Inkompatibles Textstapelformat ({format}). Passend zu {accept}. Aktuell
+    {actual}.
+  manage: Texturpak
   manager: Aufgaben-Manager
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
+  searchOnCurseforge: Suche {Name} auf curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Bevorzugte Texturepacks
+  showFile: Öffnen Sie das Texturpaket {file} im Ordner
+  showInCurseforge: Zeige {Name} auf curseforge
+  unselected: Nicht ausgewählte Texturepacks
 theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik
@@ -1659,6 +1727,8 @@ transportType:
   srflx: Gastgeber-Server Reflexive
 turnRegion:
   fr: Frankreich
+  guangzhou: Guangzhou, China
+  liaoning: Liaoning, China
   po: Polen
 tutorial:
   feedbackDescription: >-

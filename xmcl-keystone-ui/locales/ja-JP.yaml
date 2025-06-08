@@ -179,6 +179,7 @@ dataMigration:
   waitReload: データを移行中です。ランチャーを閉じないでください。
 delete:
   'NO': いいえ
+  YEZ: 削除
   name: '{name} を削除'
   'no': いいえ
   'yes': はい
@@ -431,6 +432,10 @@ instance:
   lastPlayed: 最後にプレイ
   launchArguments: 起動引数のプレビュー
   launchServer: Localhostサーバーを立ち上げる
+  linkFileDesc: |-
+    これはローカルの{file}インスタンスをグローバルの{file}インスタンスで上書きします。
+    本当にマージしますか？
+  linkFileTitle: 本当に{file}をリンクしますか？
   mcOptions: Minecraftのオプション
   mcOptionsHint: 追加のMinecraft実行引数
   name: 起動構成の名前
@@ -439,14 +444,19 @@ instance:
   openCrashReportFolder: クラッシュレポートフォルダを開く
   openLogFolder: ログフォルダを開く
   playtime: プレイ時間
-  preExecCommand: 実行前コマンド
+  preExecCommand: プレスタート・コマンド
   preExecCommandHint: Minecraftを起動する前に実行するコマンド
   prependCommand: 先頭にコマンドを追加
   prependCommandHint: 全ての起動コマンドの先頭に追加されます
   requireName: 名前は必須項目です
   resolution: 解像度
+  resolutionEnabled: カスタム認証を有効にする
   resolutionPreset: 解像度プリセット
   showInstance: ゲームフォルダを開く
+  useSharedOptions: 一般的なゲーム設定を使用する
+  useSharedOptionsDesc: これでoptions.txtファイルがインスタンスの共有ファイルにリンクされる。
+  useSharedServersList: 共有サーバーのリストを使う
+  useSharedServersListDesc: これにより、server.datファイルがインスタンスの共有ファイルにリンクされる。
   versionHint: この起動構成におけるMinecraftのバージョン
   vmOptions: JVM実行引数
   vmOptionsHint: JVMに渡される追加の引数
@@ -562,6 +572,7 @@ launch:
   kill: 停止
   killServer: Localhost Serverを終了
   launch: 起動
+  launchAnyway: どちらでも走れる
 launchBlocked:
   ignore: 強制的に起動
   launchBadVersion:
@@ -727,7 +738,7 @@ mod:
   showInCurseforge: CurseforgeでModを見る
   showInModrinth: Modrinthで {name} を見る
   switchDefaultSource: Modのデフォルトソースを切り替え
-  syncGroupRules: ''
+  syncGroupRules: グループ化ルールの保存
   toUpdate: '{count} 個のアップデート'
   ungroup: グループ化
 modFilter:
@@ -760,7 +771,7 @@ modInstall:
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
 modUpgradePolicy:
-  curseforge: ''
+  curseforge: カースフォージ・ファースト
   curseforgeOnly: Curseforgeのみ
   modrinth: モドリンスファースト
   modrinthOnly: モドリンスのみ
@@ -1400,6 +1411,7 @@ shaderPack:
 shared:
   accept: 続行
   keepSelected: 選択したままにする
+  skipForNow: 今すぐスキップする
 sortBy:
   alphabetAsc: アルファベットでソート（昇順）
   alphabetDesc: アルファベットでソート（下降）
@@ -1429,15 +1441,28 @@ task:
     running: 接続を実行中
     size: 合計
   connections: ネットワーク接続
+  delete:
+    content: |-
+      そうするとディスクからtexturepackファイルが削除され、復元できなくなります。
+       本当に復元できますか？
+    title: テクスチャパックの削除
+  dropHint: フォルダ/zipテクスチャをここにドラッグ＆ドロップしてインポートします。
   empty: 実行中のタスクなし
+  enable: テクスチャパックが含まれています： 数 {count}
   failed: 失敗
+  import: テクスチャパックのインポート
+  incompatible: 互換性のないテキストスタック形式 ({format})。マッチング {accept}。現在の{actual}。
+  manage: テキストパック
   manager: タスクマネージャー
   nTaskRunning: '{count} 個のタスクが実行中'
   name: タスク | タスク
   pause: 一時停止
   searchOnCurseforge: Curseforgeで {name} を見る
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: お気に入りのテクスチャパック
+  showFile: フォルダ内のtexturepack {file}を開きます。
   showInCurseforge: Curseforgeで {name} を見る
+  unselected: 未選択のテクスチャパック
 theme:
   selectImage: 画像を選択
   selectMusic: 音楽を選択
@@ -1448,9 +1473,12 @@ transportType:
   host: ホスト候補
   prflx: ピアの反射の候補
   relay: リレー候補
+  srflx: サーバー反射候補
 turnRegion:
   fr: フランス
+  guangzhou: 中国、広州
   hk: 香港
+  liaoning: 中国、遼寧省
   po: ポーランド
 tutorial:
   feedbackDescription: 問題に遭遇した場合は、このボタンを押してフィードバックを送ってください!

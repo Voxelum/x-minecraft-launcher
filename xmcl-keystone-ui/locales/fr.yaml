@@ -159,9 +159,22 @@ curseforge:
   search: Rechercher
   totalDownloads: Téléchargements Totaux
 curseforgeCategory:
+  FancyMenu: FancyMenu
+  Hardcore: Hardcore
   MCreator: MCreator
   Magic: Magie
   Medieval: Médiéval
+  Modern: Modern
+  Multiplayer: Multiplayer
+  Parkour: Parkour
+  QoL: QoL
+  Quests: Quests
+  Redstone: Redstone
+  Sci-Fi: Sci-Fi
+  Server Utility: Server tool
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
   World Gen: Génération du Monde
 dataMigration:
   apply: Appliquer le paramètre
@@ -1585,6 +1598,7 @@ task:
     Tâche | 
     Tâches
   pause: Pause
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Sélectionnez une image
   selectMusic: Sélectionnez la musique
@@ -1598,6 +1612,7 @@ transportType:
   srflx: Candidat Server Reflexive
 turnRegion:
   fr: France
+  liaoning: Liaoning, China
   po: Pologne
 tutorial:
   feedbackDescription: "Si vous rencontrez un problème, veuillez cliquer sur ce bouton pour envoyer vos commentaires\_!"

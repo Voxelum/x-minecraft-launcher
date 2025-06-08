@@ -544,6 +544,7 @@ task:
     running: Conexión en execución
     size: reconto total
   connections: Conexións de rede
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Seleccione Imaxe
   selectMusic: Seleccione Música

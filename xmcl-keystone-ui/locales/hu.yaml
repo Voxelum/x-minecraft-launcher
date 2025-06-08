@@ -138,6 +138,12 @@ curseforge:
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: ''
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Alkalmazás
   directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
@@ -1563,6 +1569,7 @@ task:
   nTaskRunning: '{count} folyamat fut'
   name: Folyamat | Folyamatok
   pause: Szüneteltetés
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget

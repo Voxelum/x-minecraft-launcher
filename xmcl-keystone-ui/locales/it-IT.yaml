@@ -133,6 +133,13 @@ curseforge:
   releasedDate: Data di rilascio
   search: Cerca
   totalDownloads: Download totali
+curseforgeCategory:
+  FancyMenu: FancyMenu
+  MCreator: MCreator
+  QoL: QoL
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Applica impostazioni
   directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
@@ -1560,6 +1567,7 @@ task:
   nTaskRunning: '{count} Attività sono in esecuzione'
   name: Attività | Attività
   pause: Pausa
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: Scegli Immagine
   selectMusic: Scegli Musica

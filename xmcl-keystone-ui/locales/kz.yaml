@@ -474,5 +474,7 @@ sortBy:
   alphabetDesc: Sort by alphabet (descending)
   timeAsc: Sort by modification time (ascending)
   timeDesc: Sort by modification time (descending)
+task:
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   title: X Minecraft Launcher
