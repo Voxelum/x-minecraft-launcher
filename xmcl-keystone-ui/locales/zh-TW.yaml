@@ -1107,7 +1107,7 @@ peerSignalingState:
 popular: 熱度
 presence:
   curseforge: 檢視 CurseForge
-  curseforgeProject: 在 Curseforge 中檢視 {name｝
+  curseforgeProject: 在 Curseforge 中檢視 {name}
   instance: 瀏覽實例 {instance}
   instanceSetting: 編輯實體設定：{instance}
   mod: 在 {instance} 瀏覽模組
