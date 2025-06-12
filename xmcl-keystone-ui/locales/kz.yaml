@@ -207,6 +207,7 @@ dataMigration:
     Деректерді тасымалдау. Іске қосу құралын жаппаңыз, әйтпесе деректеріңізді
     жоғалтасыз.
 delete:
+  YEZ: ''
   name: '{name} жою'
   'no': жоқ
   'yes': иә
@@ -437,6 +438,8 @@ modpackImportConfirm:
     modpack?
   title: Are you trying to import a modpack?
 modrinth:
+  categories:
+    neoforge: NeoForge
   createCollection: Create Collection
   followedProjects: Followed Projects
   loginHint: >-
@@ -478,3 +481,4 @@ task:
   searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   title: X Minecraft Launcher
+title: X Minecraft Launcher

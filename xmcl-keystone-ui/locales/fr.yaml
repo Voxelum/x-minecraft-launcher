@@ -3,6 +3,7 @@ AppAddInstanceDialog:
     Plusieurs profils de lancement détectés. 
     Veuillez en sélectionner un à importer.
   configTitle: Configuration
+  createTitle: Créer une instance
   downloadedNotification: |-
     Le modpack {name} a été téléchargé. 
     Voulez-vous créer une instance pour cela ?
@@ -159,6 +160,15 @@ curseforge:
   search: Rechercher
   totalDownloads: Téléchargements Totaux
 curseforgeCategory:
+  API and Library: API et bibliothèques
+  Addons: Suppléments
+  Adventure: Aventure
+  Adventure and RPG: Aventure et RPG
+  Animated: Animation
+  Armor, Tools, and Weapons: Armures, outils et armes
+  Armor， Tools， and Weapons: Armures, outils et armes
+  Combat / PvP: Compétitions/PVP
+  Fabric: Fabric
   FancyMenu: FancyMenu
   Hardcore: Hardcore
   MCreator: MCreator
@@ -202,6 +212,7 @@ dataMigration:
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
   'NO': Non
+  YEZ: DELETE
   name: Supprimer {name}
   'no': Non
   'yes': Supprimer
@@ -295,6 +306,7 @@ duration:
   second: '{duration} seconde | {duration} secondes'
   'yes': Oui, monsieur.
 edit: Éditer
+enable: Activer
 env:
   select:
     all: Tout sélectionner
@@ -491,6 +503,7 @@ instance:
   prependCommandHint: Cela ajoutera cette commande avant toutes les commandes de lancement
   requireName: Le nom est requis
   resolution: Résolution de fenêtres
+  resolutionEnabled: Mettez en œuvre votre propre résolution
   resolutionPreset: Résolution préréglé
   showInstance: Afficher le dossier du jeu
   useSharedOptions: Utiliser les paramètres de jeu partagés
@@ -699,7 +712,7 @@ launchStatus:
     Toujours en cours de lancement... Le démarrage du moteur graphique peut être
     lent...
   refreshingUser: Actualisation du jeton utilisateur
-  spawningProcess: ''
+  spawningProcess: Démarrage du processus
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer
@@ -906,6 +919,7 @@ modpack:
   showFile: Afficher le fichier {fichier}
   showInCurseforge: Afficher {name} dans Curseforge
   showInFtb: Afficher {name} dans FTB
+  showInModrinth: Afficher {name} dans Modrinth
   url: URL
   urlHint: L'URL de la page d'accueil de votre modpack
 modpackImportConfirm:
@@ -976,6 +990,7 @@ modrinth:
     modloader: Mod Loader
     multiplayer: Multijoueur
     name: Catégories
+    neoforge: NeoForge
     optifine: Optifine
     optimization: Optimisations
     paper: Paper
@@ -1237,6 +1252,7 @@ resourcepack:
   searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Packs de ressources sélectionnés
   shared: L'instance utilise le dossier du pack de ressources partagé
+  showDirectory: Ouvrez le dossier contenant les packs de ressources
   showFile: Afficher le pack de ressources dans le dossier {file}
   showInCurseforge: Afficher {name} dans curseforge
   unselected: Packs de ressources désélectionnés
@@ -1434,6 +1450,8 @@ setting:
     La disposition du launcher représentant différentes logiques d'interface
     utilisateur
   layoutTitle: Mise en page
+  linuxEnableDedicatedGPUOptimization: Attribution d'un processeur graphique dédié
+  linuxEnableDedicatedGPUOptimizationDescription: Cette option affecte un GPU dédié au processus Minecraft.
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin
@@ -1580,6 +1598,7 @@ tag:
   createSelected: Créer un tag pour la sélection
   newTag: Nouveau tag
 task:
+  available: Disponible
   cancelled: Annulé
   clear: Effacer les tâches terminées
   connection:
@@ -1590,15 +1609,35 @@ task:
     running: Connexion en cours
     size: le compte total
   connections: Les connexions de réseau
+  delete:
+    content: >-
+      Cela supprimera le fichier texturepack du disque et nous ne pourrons pas
+      le récupérer.
+       Êtes-vous sûr de pouvoir le récupérer ?
+    title: Supprimer le paquet de texture
+  dropHint: >-
+    Faites glisser et déposez le dossier/les textures zippées ici pour les
+    importer.
   empty: Aucune tâche en cours d'exécution
+  enable: 'Paquets de textures activés : {count}'
   failed: Échec
+  import: Importer le paquet de texture
+  incompatible: >-
+    Format de pile de texte incompatible ({format}). Correspondance {accept}.
+    Actuel {actual}.
+  manage: Texturpak
   manager: Gestionnaire des tâches
   nTaskRunning: '{count} tâches sont en cours d''exécution'
   name: |-
     Tâche | 
     Tâches
   pause: Pause
+  searchOnCurseforge: Recherche de {name} sur curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Paquets de texture préférés
+  showFile: Ouvrir le paquet de texture {file} dans le dossier
+  showInCurseforge: Afficher {name} sur curseforge
+  unselected: Paquets de texture non sélectionnés
 theme:
   selectImage: Sélectionnez une image
   selectMusic: Sélectionnez la musique
@@ -1612,6 +1651,7 @@ transportType:
   srflx: Candidat Server Reflexive
 turnRegion:
   fr: France
+  hk: Hong Kong
   liaoning: Liaoning, China
   po: Pologne
 tutorial:
@@ -1619,6 +1659,8 @@ tutorial:
   hideNewsHeaderDescription: |-
     Vous pouvez voir la vitrine Actualités sur la gauche. 
     Cliquer sur ce bouton peut masquer cette vitrine.
+  instance:
+    javaImportTitle: Importación de Java
   instanceAddDescription: >-
     Cliquez sur ce bouton pour importer Minecraft existant ou en créer un
     nouveau à partir de zéro ou un modpack.

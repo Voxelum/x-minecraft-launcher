@@ -113,6 +113,7 @@ curseforge:
   downloadOnly: Descargar
   file:
     gameVersion: Versión do Xogo
+    modLoader: Mod Loader
   install: Instalar
   installTo: Instalar en {path}
   installToStorage: Instalar en Almacenamento
@@ -194,6 +195,8 @@ dataMigration:
   unknownError: ¡Erro Descoñecido! Volva a intentalo ou comuníquese co desarrollador.
   waitReload: Migrando datos. Por favor, non peche o Lanzador ou perderás os teus datos.
 delete:
+  'NO': 'No'
+  YEZ: DELETE
   name: Eliminar {name}
   'no': Non
   'yes': Borrar
@@ -240,6 +243,8 @@ diagnosis:
     title: O ficheiro de modpack non se atopa
 disable: Desactivar
 downloadUpdate: Descargar actualización
+duration:
+  'no': 'No'
 env:
   select:
     all: Seleccionar todo
@@ -411,6 +416,7 @@ modrinth:
     iris: Iris
     liteloader: Liteloader
     minecraft: Minecraft
+    neoforge: NeoForge
     optifine: Optifine
     paper: Paper
     purpur: Purpur
@@ -493,6 +499,7 @@ setting:
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
   hideNewsHeader: Ocultar a presentación de noticias
+  linuxEnableDedicatedGPUOptimization: Asignación de un procesador gráfico dedicado
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
     Volve descargar o iniciador do sitio web!
@@ -550,8 +557,10 @@ theme:
   selectMusic: Seleccione Música
   selectVideo: Seleccione Vídeo
   title: X Minecraft Launcher
+title: X Minecraft Launcher
 turnRegion:
   fr: Francia
+  hk: Hong Kong
   po: Polonia
 tutorial:
   hideNewsHeaderDescription: |-

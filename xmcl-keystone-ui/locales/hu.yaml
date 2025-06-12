@@ -137,9 +137,29 @@ curseforge:
   totalDownloads: Összes letöltés
 curseforgeCard: {}
 curseforgeCategory:
-  API and Library: ''
+  API and Library: API-k és könyvtárak
+  Addons: Kiegészítők
+  Adventure and RPG: Kaland és RPG
+  Animated: Animation
+  Armor, Tools, and Weapons: Páncélok, szerszámok és fegyverek
+  Armor， Tools， and Weapons: Páncélok, szerszámok és fegyverek
+  Combat / PvP: Versenyek/PVP
+  Cosmetic: Megjelenés/dekoráció
+  Creation: Kreatív mód
+  Data Packs: Adatcsomag
+  Education: Oktatás
+  Exploration: Felderítés
+  Extra Large: Nagy méret
+  FTB Official Pack: Hivatalos FTB csomag
+  Fabric: Fabric
   FancyMenu: FancyMenu
+  Font Packs: Betűtípusok
+  Food: Élelmiszer
+  Game Map: Játék kártyák
+  Hardcore: Hardcore
   MCreator: MCreator
+  Magic: Magic
+  Map Based: A térkép alapján
   QoL: QoL
   Skyblock: SkyBlock
   Steampunk: Steampunk
@@ -166,6 +186,7 @@ dataMigration:
     adataidat.
 delete:
   'NO': 'No'
+  YEZ: DELETE
   name: Törlöd {name}
   'no': Nem
   'yes': Törlés
@@ -439,10 +460,13 @@ instance:
   openCrashReportFolder: Összeomlási jelentések mapppa megnyitása
   openLogFolder: Napló mappa megnyitása
   playtime: Játékidő
+  preExecCommand: Indítás előtti parancs
+  preExecCommandHint: A Minecraft elindítása előtt végrehajtandó parancs
   prependCommand: Parancs elé fűzni
   prependCommandHint: Ez a parancs az összes indítási parancs elé kerül
   requireName: A név megadása kötelező
   resolution: Ablakfelbontás
+  resolutionEnabled: Kapcsolja be a saját felbontását
   resolutionPreset: Felbontás
   showInstance: Játék mappa megjelenítése
   useSharedOptions: Használja a megosztott játékbeállításokat
@@ -935,6 +959,7 @@ modrinth:
     models: Modellek
     modloader: Mod betöltő
     multiplayer: Többjátékos
+    name: Kategóriák
     neoforge: NeoForge
     optifine: Optifine
     optimization: Optimalizálás
@@ -1216,6 +1241,7 @@ resourcepack:
   selectSearchHint: Keress és válassz forráscsomagot
   selected: Kiválasztott forráscsomagok
   shared: Példány használja a megosztott erőforráscsomag mappát
+  showDirectory: Nyissa meg az erőforrás csomagokat tartalmazó mappát
   showFile: '{file} megjelenítése fájlkezelőben'
   showInCurseforge: '{name} megjelenítése curseforge-on'
   unselected: Nem kiválasztott forráscsomagok
@@ -1300,7 +1326,7 @@ server:
   hostHint: A kiszolgáló állomáshelye (porttal együtt)
   hostRequired: Kérjük, írja be a szerver IP -címét
   ipAddress: IP cím
-  maxPlayers: ''
+  maxPlayers: Maximális játékosokg
   motd: Szerver MOTD
   name: Szerver | Szerverek
   nogui: Nincs Server Gui
@@ -1405,8 +1431,8 @@ setting:
     focus: Fókusz elrendezés
   layoutDescription: A különböző UI logikát reprezentáló launcher elrendezés
   layoutTitle: Elrendezés
-  linuxEnableDedicatedGPUOptimization: Dedikált GPU kijelölése
-  linuxEnableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft folyamathoz.
+  linuxEnableDedicatedGPUOptimization: Dedikált grafikus processzor hozzárendelése
+  linuxEnableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft-folyamathoz.
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
   location: Áruház helye
@@ -1553,6 +1579,7 @@ tag:
   createSelected: Címke létrehozása a kiválasztotthoz
   newTag: Új címke
 task:
+  available: Elérhető
   cancelled: Törölt
   clear: Befejezett folyamatok törlése
   connection:
@@ -1563,13 +1590,30 @@ task:
     running: Futó kapcsolat
     size: teljes számlálás
   connections: Hálózati kapcsolatok
+  delete:
+    content: >-
+      Ezzel töröljük a texturepack fájlt a lemezről, és nem tudjuk majd
+      visszaállítani.
+       Biztos, hogy vissza tudja állítani?
+    title: Texturepack törlése
+  dropHint: Húzza ide a mappát/zip textúrákat az importáláshoz.
   empty: Nincs futó folyamat
   failed: Sikertelen
+  import: Texturepack importálása
+  incompatible: >-
+    Nem kompatibilis szöveghalmaz formátum ({format}). Megfelelő {accept}.
+    Jelenlegi {actual}.
+  manage: Texturpak
   manager: Folyamatkezelő
   nTaskRunning: '{count} folyamat fut'
   name: Folyamat | Folyamatok
   pause: Szüneteltetés
+  searchOnCurseforge: Keresés {name} a curseforge-on
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Kedvenc texturepackek
+  showFile: Nyisd meg a texturepack {file} mappát a
+  showInCurseforge: Mutasd {name} a curseforge-on
+  unselected: Nem kiválasztott textúracsomagok
 theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget
@@ -1583,6 +1627,7 @@ transportType:
   srflx: Kiszolgáló Reflexív jelölt
 turnRegion:
   fr: Franciaország
+  hk: Hong Kong
   po: Lengyelország
 tutorial:
   feedbackDescription: >-
