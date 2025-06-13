@@ -204,6 +204,14 @@ const signUpLink = computed(() => {
 const allowDeviceCode = computed(() => {
   return currentAccountSystem.value?.flow.includes('device-code')
 })
+const emailOnly = computed(() => {
+  if (!currentAccountSystem.value?.authlibInjector) {
+    if (authority.value === AUTHORITY_MICROSOFT) {
+      return true // Microsoft account always has email-only flow
+    }
+  }
+  return false
+})
 const isPasswordReadonly = computed(() => !currentAccountSystem.value?.flow.includes('password') || data.useDeviceCode)
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
 const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
@@ -232,7 +240,7 @@ on('device-code', (code) => {
 const {
   usernameRules,
   passwordRules,
-} = useLoginValidation(isOffline)
+} = useLoginValidation(emailOnly)
 
 // Login Error
 const errorMessage = computed(() => {

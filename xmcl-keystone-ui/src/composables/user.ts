@@ -103,7 +103,7 @@ export function useUserExpired(user: Ref<UserProfile | undefined>) {
   return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
 }
 
-export function useLoginValidation(isOffline: Ref<boolean>) {
+export function useLoginValidation(emailOnly: Ref<boolean>) {
   const { t } = useI18n()
   const nameRules = [(v: unknown) => !!v || t('loginError.requireUsername')]
   const emailRules = [
@@ -112,9 +112,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
       t('loginError.illegalEmail'),
   ]
   const passwordRules = [(v: unknown) => !!v || t('loginError.requirePassword')]
-  const usernameRules = computed(() => (isOffline.value
-    ? nameRules
-    : emailRules))
+  const usernameRules = computed(() => emailOnly.value ? emailRules : nameRules)
   return {
     usernameRules,
     passwordRules,
