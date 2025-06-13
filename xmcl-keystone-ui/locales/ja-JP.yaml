@@ -660,6 +660,9 @@ loginError:
   requirePassword: パスワードが必要です
   requireUsername: ユーザー名が必要です
   timeout: ログインがタイムアウトしました。再度試すかネットワークを確認してください。
+  xboxAccountAgeIssue: |-
+    Microsoft TokenによってXboxをログインできません。 
+    Microsoftアカウントのセットアップを確認し、年齢を正しく確認してください。
 logsCrashes:
   crashes: クラッシュレポート
   logs: ログ

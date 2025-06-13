@@ -414,6 +414,9 @@ loginError:
   noProfileForNewUser: >-
     No game profile found! If you are a new Minecraft user, please login at
     least one time in Minecraft official launcher.
+  xboxAccountAgeIssue: >-
+    Fail to login xbox by Microsoft token. Please make sure your microsoft
+    account setup and verify (if need) your age correctly.
 mod:
   applyGroupRules: Apply saved grouping rules
   group: Group up

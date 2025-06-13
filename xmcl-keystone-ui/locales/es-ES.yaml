@@ -517,6 +517,11 @@ loginError:
 
     Si es un nuevo usuario de Minecraft, inicie sesión al menos una vez en el
     lanzador oficial de Minecraft.
+  xboxAccountAgeIssue: >-
+    No inicie sesión Xbox por Microsoft Token. 
+
+    Asegúrese de que la configuración de su cuenta de Microsoft y verifique (si
+    es necesario) su edad correctamente.
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros

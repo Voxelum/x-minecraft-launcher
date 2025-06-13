@@ -143,7 +143,7 @@ import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserException, UserServiceKey, XboxErrorCodes, isException } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
@@ -268,6 +268,9 @@ const errorMessage = computed(() => {
       return t('loginError.checkOwnershipFailed')
     }
     if (e.exception.type === 'userExchangeXboxTokenFailed') {
+      if (e.exception.code === XboxErrorCodes.InvalidAge || e.exception.code === XboxErrorCodes.NeedAdult || e.exception.code === XboxErrorCodes.AgeVerification) {
+        return t('loginError.xboxAccountAgeIssue')
+      }
       return t('loginError.loginXboxFailed')
     }
     if (e.exception.type === 'userLoginMinecraftByXboxFailed') {

@@ -337,6 +337,11 @@ loginError:
 
     Se es un novo usuario de Minecraft, inicie sesión polo menos unha vez no
     lanzador oficial de Minecraft.
+  xboxAccountAgeIssue: >-
+    Fall non iniciar sesión Xbox por Microsoft Token. 
+
+    Asegúrese de que a súa configuración da conta de Microsoft e verifique (se é
+    necesario) a súa idade correctamente.
 me:
   games: Os meus xogos
   modpacks: Os meus Modpacks

@@ -708,6 +708,11 @@ loginError:
   timeout: >-
     Bejelentkezési időtúllépés. Próbáld újra vagy ellenőrizd a hálózati
     kapcsolatot.
+  xboxAccountAgeIssue: >-
+    Nem jelentkezik be az Xbox bejelentkezése a Microsoft Token által. 
+
+    Kérjük, ellenőrizze, hogy a Microsoft -fiók beállítása, és ellenőrizze
+    (szükség esetén) az életkorát.
 logsCrashes:
   crashes: Hibanaplók
   logs: Naplók

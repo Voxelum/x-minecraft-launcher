@@ -688,6 +688,7 @@ loginError:
   requirePassword: 請輸入密碼
   requireUsername: 使用者名稱不能為空
   timeout: 登入超時，請重試或檢查您的網路！
+  xboxAccountAgeIssue: 無法通過Microsoft令牌登錄Xbox。請確保您的Microsoft帳戶設置並正確驗證（如果需要）您的年齡正確。
 logsCrashes:
   crashes: 當機報告
   logs: 日誌

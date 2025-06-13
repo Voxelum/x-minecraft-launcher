@@ -783,6 +783,11 @@ loginError:
   requirePassword: Senha é obrigatória
   requireUsername: Nome de usuário é obrigatório
   timeout: Tempo de login expirado. Tente novamente ou verifique sua rede.
+  xboxAccountAgeIssue: >-
+    Falha ao login Xbox pelo Microsoft Token. 
+
+    Certifique -se de que a configuração da sua conta da Microsoft e verifique
+    (se necessário) sua idade corretamente.
 logsCrashes:
   crashes: Relatórios de falhas
   logs: Logs

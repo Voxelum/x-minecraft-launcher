@@ -711,6 +711,11 @@ loginError:
   requirePassword: La password è obbligatoria
   requireUsername: Il nome utente è obbligatorio
   timeout: Timeout di accesso. Riprovare o controllare la connessione di rete.
+  xboxAccountAgeIssue: >-
+    Non riuscire a accedere a Xbox di Microsoft Token. 
+
+    Assicurati che il tuo account Microsoft configura e verifica (se necessario)
+    la tua età correttamente.
 logsCrashes:
   crashes: Report arresto anomalo
   logs: Log

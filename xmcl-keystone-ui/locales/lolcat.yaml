@@ -657,6 +657,9 @@ loginError:
   requirePassword: PASWORD IZ REQUIRD
   requireUsername: USERNAME IZ REQUIRD
   timeout: LOGIN TIEMOUT. PLZ RETRY OR CHECK UR NETWORK.
+  xboxAccountAgeIssue: >-
+    Fail to login xbox by Microsoft token. Please make sure your microsoft
+    account setup and verify (if need) your age correctly.
 logsCrashes:
   crashes: CRASH REPORTS
   logs: LOGS

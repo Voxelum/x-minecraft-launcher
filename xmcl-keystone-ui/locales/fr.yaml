@@ -753,6 +753,11 @@ loginError:
   timeout: |-
     Délai de connexion. 
     Veuillez réessayer ou vérifier votre réseau.
+  xboxAccountAgeIssue: >-
+    Échec de la connexion Xbox par Microsoft Token. 
+
+    Veuillez vous assurer que votre compte Microsoft configure et vérifiez (si
+    nécessaire) votre âge correctement.
 logsCrashes:
   crashes: Rapports de plantage
   logs: Journaux

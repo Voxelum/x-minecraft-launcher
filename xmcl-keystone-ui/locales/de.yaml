@@ -774,6 +774,11 @@ loginError:
   timeout: >-
     Das Zeitlimit für die Anmeldung ist abgelaufen. Bitte versuchen Sie es
     erneut oder überprüfen Sie Ihre Internetverbindung.
+  xboxAccountAgeIssue: >-
+    Die Xbox nicht von Microsoft Token anmelden. 
+
+    Bitte stellen Sie sicher, dass Ihr Microsoft -Konto eingerichtet wird, und
+    überprüfen Sie Ihr Alter bei Bedarf (falls erforderlich).
 logsCrashes:
   crashes: Berichte über Misserfolge
   logs: Логи

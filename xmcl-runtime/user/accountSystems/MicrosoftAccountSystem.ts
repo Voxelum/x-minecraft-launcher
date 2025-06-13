@@ -183,7 +183,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const oauthAccessToken = result.accessToken
     const { liveXstsResponse, minecraftXstsResponse } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
       logError(e)
-      throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Failed to exchange Xbox token', { cause: e })
+      throw new UserException({ type: 'userExchangeXboxTokenFailed', code: e.XErr }, 'Failed to exchange Xbox token', { cause: e })
     })
 
     const aquireAccessToken = async (xstsResponse: XBoxResponse) => {

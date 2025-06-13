@@ -248,12 +248,20 @@ export interface AuthorityMetadata {
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
 
+export const enum XboxErrorCodes {
+  NoAccount = 2148916233,
+  InvalidAge = 2148916238,
+  NeedAdult = 2148916236,
+  AgeVerification = 2148916227
+}
+
 export type UserExceptions = {
   type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral' | 'loginTimeout' | 'loginReset'
 } | {
   type: 'userAcquireMicrosoftTokenFailed'
 } | {
   type: 'userExchangeXboxTokenFailed'
+  code?: XboxErrorCodes
 } | {
   type: 'userLoginMinecraftByXboxFailed'
 } | {

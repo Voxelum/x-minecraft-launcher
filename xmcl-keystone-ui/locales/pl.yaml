@@ -726,6 +726,11 @@ loginError:
   requirePassword: Wymagane jest hasło
   requireUsername: Nazwa użytkownika jest wymagana
   timeout: Limit czasu logowania. Spróbuj ponownie lub sprawdź sieć.
+  xboxAccountAgeIssue: >-
+    Nie można zalogować się Xbox przez Microsoft Token. 
+
+    Upewnij się, że konfiguracja konta Microsoft i poprawnie sprawdź (w razie
+    potrzeby) swój wiek.
 logsCrashes:
   crashes: Raporty o wypadkach
   logs: Dzienniki
