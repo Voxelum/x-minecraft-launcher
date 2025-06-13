@@ -94,6 +94,7 @@ browseApp:
   default: 預設
   delete: 刪除
   launch: 啟動並設定為預設
+browseApps: 檢視啟動器的使用者介面
 cancel: 取消
 checkUpdate:
   name: 檢查更新
@@ -191,6 +192,8 @@ dataMigration:
   unknownError: 未知錯誤，請聯絡作者或重試。
   waitReload: 遷移資料中。請不要關閉啟動器，否則您可能會丟失一部分資料。
 delete:
+  'NO': 沒有
+  YEZ: 刪除
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
@@ -267,7 +270,10 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小時'
   minute: '{duration} 分鐘'
+  name: 刪除 {name}
+  'no': 沒有
   second: '{duration} 秒'
+  'yes': 是的，先生
 edit: 編輯
 enable: 啟用
 env:
@@ -336,6 +342,7 @@ feedback:
   qqEnterGroup: 加入
 fileDetail:
   fileSize: 檔案大小
+  filesize: 檔案大小
   hash: 雜湊值
 filter: 搜尋
 filterLocalOnly: 只顯示已安裝
@@ -452,10 +459,13 @@ instance:
   openCrashReportFolder: 開啟當機報告資料夾
   openLogFolder: 開啟日誌資料夾
   playtime: 遊玩時長
+  preExecCommand: 預先啟動指令
+  preExecCommandHint: 啟動 Minecraft 前要執行的指令
   prependCommand: 前置命令
   prependCommandHint: 這將在所有啟動命令之前添加此命令
   requireName: 必須填寫名稱
   resolution: 分辨率
+  resolutionEnabled: 開啟自己的決議
   resolutionPreset: 分辨率預設
   showInstance: 開啟資料夾
   useSharedOptions: 共享 Minecraft 設定
@@ -630,6 +640,9 @@ launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
 launchNoProperJava: {}
 launchNoVersionInstalled: {}
+launchPreExecuteCommandFailed:
+  description: 預先執行指令失敗，並產生錯誤： {error}。請檢查指令並重試。
+  title: 執行前指令失敗
 launchStatus:
   assigningMemory: 正在分配記憶體
   exit: 關閉遊戲？
@@ -887,7 +900,7 @@ modrinth:
     models: 模型
     modloader: 模組載入器
     multiplayer: 多人遊戲
-    name: 分類
+    name: 類別
     neoforge: NeoForge
     optifine: Optifine
     optimization: 最佳化
@@ -1093,13 +1106,13 @@ peerSignalingState:
   have-local-offer: 等待對方資訊中
 popular: 熱度
 presence:
-  curseforge: 瀏覽 CurseForge
-  curseforgeProject: 在 CurseForge 瀏覽 {name}
+  curseforge: 檢視 CurseForge
+  curseforgeProject: 在 Curseforge 中檢視 {name}
   instance: 瀏覽實例 {instance}
-  instanceSetting: '編輯實例設定: {instance}'
+  instanceSetting: 編輯實體設定：{instance}
   mod: 在 {instance} 瀏覽模組
-  modrinth: 瀏覽 Modrinth
-  modrinthProject: 在 Modrinth 瀏覽 {name}
+  modrinth: 檢視 Modrinth
+  modrinthProject: 在 Modrinth 中檢視 {name}
   resourcePack: 在 {instance} 瀏覽資源包
   save: 在 {instance} 瀏覽存檔
   setting: 瀏覽設定頁面
@@ -1135,7 +1148,7 @@ resourcepack:
   selectSearchHint: 檢視選擇的資源包
   selected: 已選資源包
   shared: 實例使用共享資源包資料夾
-  showDirectory: 顯示資源包資料夾
+  showDirectory: 開啟包含資源套件的資料夾
   showFile: 在資料夾中顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
   unselected: 未選資源包
@@ -1313,9 +1326,12 @@ setting:
     focus: 聚焦佈局
   layoutDescription: 不同佈局有不同的 UI 互動邏輯
   layoutTitle: 佈局
+  linuxEnableDedicatedGPUOptimization: 指派專用的圖形處理器
+  linuxEnableDedicatedGPUOptimizationDescription: 此選項為 Minecraft 程序指定專用 GPU。
   linuxTitlebar: 原生頂端欄
   linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
   location: 資料儲存位置
+  manualUpdateHint: 版本無法自動更新。請從官方網站重新下載啟動器！
   maunalUpdateHint: |-
     版本無法自動更新。
     請從網站重新下載啟動器！
@@ -1448,8 +1464,10 @@ tag:
   createSelected: 為所有選中的建立標籤
   newTag: 新標籤
 task:
+  available: 可用
   cancelled: 已取消
   clear: 清除已完成的任務
+  compatible: '{format} 格式與 {version} 相容。'
   connection:
     connected: 已連線
     free: 空閒
@@ -1458,16 +1476,33 @@ task:
     running: 連線中
     size: 總數
   connections: 網路連線
+  delete:
+    content: |-
+      這將會刪除光碟中的 texturepack 檔案，我們將無法復原它。
+       您確定可以復原嗎？
+    title: 刪除 texturepack
+  dropHint: 將資料夾/壓縮材質拖放至此即可匯入。
   empty: 目前沒有執行中的任務
+  enable: '已啟用的材質包: {count}'
   failed: 失敗
+  import: 匯入 texturepack
+  incompatible: 不相容的文字堆疊格式 ({format})。匹配 {accept}. 目前的 {actual}.
+  manage: Texturpak
   manager: 工作管理員
   nTaskRunning: '{count} 個任務執行中'
   name: 任務 | 任務
   pause: 暫停
+  searchOnCurseforge: 在 curseforge 上搜尋 {name}
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: 最喜歡的材質包
+  showFile: 開啟資料夾中的 texturepack {file}
+  showInCurseforge: 在 curseforge 上顯示 {name}
+  unselected: 未選擇的材質包
 theme:
   selectImage: 選擇影象
   selectMusic: 選擇音樂
   selectVideo: 選擇影片
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: 公網位址
@@ -1548,6 +1583,7 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官網重新下載
 upstream:
+  ONLYShowCurrentVersion: 僅顯示目前版本的 minecraft
   downgrade: 降級
   missingModpackMetadata: >-
     無法找到目前實例使用的模組包後設資料。雖然您不會因此沒法更新到最新的模組包版本，但這樣更新的結果可能不正確，強烈推薦重新建立新實例。若要更新請備份您的檔案。

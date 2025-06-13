@@ -110,6 +110,7 @@ browseApps: Просмотр пользовательского интерфей
 cancel: Отмена
 checkUpdate:
   name: Проверить обновление
+color: Цвет
 confirm: Подтвердить
 copyClipboard:
   success: Скопировано в буфер обмена
@@ -165,7 +166,7 @@ curseforgeCategory:
   Miscellaneous: Разное
   Mod Support: Поддержка модов
   Modded World: Мод для миров
-  Modern: Современный
+  Modern: Modern
   Multiplayer: Мультиплеер
   Parkour: Паркур
   Photo Realistic: Реалистичная фотография
@@ -210,6 +211,8 @@ dataMigration:
     Миграция данных. Пожалуйста, не закрывайте лаунчер или вы потеряете свои
     данные.
 delete:
+  'NO': НЕТ
+  YEZ: УДАЛИТЬ
   name: Удалить {name}
   'no': Нет
   'yes': Удалить
@@ -292,6 +295,7 @@ duration:
   name: Удалить {name}
   'no': Нет
   second: '{duration} секунда | {duration} секунд'
+  'yes': Да, сэр.
 edit: Изменить
 enable: Включить
 env:
@@ -375,6 +379,7 @@ feedback:
   qqEnterGroup: Присоединиться
 fileDetail:
   fileSize: Размер файла
+  filesize: Размер файла
   hash: Hash
 filter: Фильтр
 filterLocalOnly: Показывать только установленные
@@ -500,6 +505,7 @@ instance:
   prependCommandHint: Это добавит эту команду перед всеми командами запуска.
   requireName: Требуется имя
   resolution: Разрешение окна
+  resolutionEnabled: Включить пользовательское разрешение
   resolutionPreset: Резолюция предустановлена
   showInstance: Открыть папку экземпляра
   useSharedOptions: Использовать общие настройки игры
@@ -694,6 +700,11 @@ launchFailed:
   failedToLaunch: Не удалось запустить запуск
   latestLog: 'Последние логи '
   title: Игра завершилась с аномальным кодом
+launchPreExecuteCommandFailed:
+  description: >-
+    Команда предварительного выполнения завершилась с ошибкой: {error}.
+    Пожалуйста, проверьте команду и повторите попытку.
+  title: Команда предварительного выполнения не выполнена
 launchStatus:
   assigningMemory: Распределение памяти
   exit: Выйти из игры?
@@ -816,7 +827,7 @@ mod:
   incompatibleHintDescription: |-
     Некоторые зависимости модов могут отсутствовать. 
     Или некоторые версии зависимостей не совпадают.
-  manage: Моды
+  manage: Управление
   maybeCompatible: Возможно, совместим.
   modloaderSelectHint: |-
     Мод поддерживает следующие загрузчики модов. 
@@ -1251,7 +1262,7 @@ resourcepack:
     Несовместимый формат набора ресурсов ({format}). Подходящий {accept}.
     Текущий {actual}.
   independent: Экземпляр использует независимую папку для наборов ресурсов
-  manage: Пакеты ресурсов
+  manage: Управление
   name: Набор ресурсов | Наборы ресурсов
   searchHint: Поиск набора ресурсов
   searchOnCurseforge: Поиск {name} на CurseForge
@@ -1298,7 +1309,7 @@ save:
   importTitle: Импортировать мир
   independent: Экземпляр использует независимую папку сохранений
   levelName: Название уровня
-  manage: Управление мирами
+  manage: Управление
   name: Мир | Миры
   search: Поиск сохранений
   selected: местный архив
@@ -1314,6 +1325,8 @@ screenshots:
   playSequence: Показывать по порядку
 search:
   favorate: Коллекция
+  local: Установлено
+  market: Мод маркет
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   creationHint: Пожалуйста, заполните адрес сервера и протестируйте сервер
@@ -1453,6 +1466,9 @@ setting:
   linuxTitlebar: Нативный заголовок окна
   linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера.
   location: Место для хранения файлов лаунчера
+  manualUpdateHint: >-
+    Версия не может быть обновлена автоматически. Пожалуйста, скачайте пусковую
+    установку заново с официального сайта!
   maunalUpdateHint: >-
     Данная версия не может быть обновлена автоматически. Пожалуйста, скачайте
     лаунчер с сайта ещё раз!
@@ -1647,6 +1663,7 @@ theme:
   selectImage: Выберите изображение
   selectMusic: Выберите музыку
   selectVideo: Выберите видео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Хост-кандидат
@@ -1740,6 +1757,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Повторная загрузка на официальном сайте
 upstream:
+  ONLYShowCurrentVersion: Показывать только текущую версию майнкрафт
   downgrade: Понизить версию
   missingModpackMetadata: >-
     Старые метаданные модпака не найдены.

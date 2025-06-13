@@ -103,6 +103,7 @@ browseApp:
   default: ЗА ЗАМОВЧУВАННЯМ
   delete: Видалити
   launch: Запустити та встановити як типовий
+browseApps: Перегляд користувацького інтерфейсу пускової установки
 cancel: Скасувати
 checkUpdate:
   name: Перевірити оновлення
@@ -133,8 +134,58 @@ curseforge:
   totalDownloads: Усього завантажень
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: API та бібліотеки
+  Addons: Доповнення
+  Adventure: Пригода
+  Adventure and RPG: Пригоди та RPG
+  Animated: Анімація
+  Armor, Tools, and Weapons: Обладунки, інструменти та зброя
+  Armor， Tools， and Weapons: Обладунки, інструменти та зброя
+  Combat / PvP: Змагання/PVP
+  Cosmetic: Зовнішній вигляд/декор
+  Creation: Творчий режим
+  Data Packs: Пакет даних
+  Education: Освіта
+  Exploration: Розвідка
+  Extra Large: Великий розмір
+  FTB Official Pack: Офіційний пакет FTB
   Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Шрифти
   Food: Їжа
+  Game Map: Ігрові карти
+  Hardcore: Хардкор
+  MCreator: MCreator
+  Magic: Магія
+  Map Based: На основі карти
+  Map and Information: Карти та інформація
+  Medieval: Середньовіччя
+  Mini Game: Міні-ігри
+  Miscellaneous: Різне
+  Mod Support: Підтримка модів
+  Modded World: Мод для світів
+  Modern: Сучасний
+  Multiplayer: Мультиплеєр
+  Parkour: Паркур
+  Photo Realistic: Реалістична фотографія
+  Puzzle: Пазли
+  QoL: QoL
+  Quests: Квести
+  Redstone: Redstone
+  Sci-Fi: Наукова фантастика
+  Server Utility: Серверний інструмент
+  Skyblock: SkyBlock
+  Small / Light: Трохи
+  Steampunk: Steampunk
+  Storage: Зберігання
+  Survival: Виживання
+  Tech: Технологія
+  Technology: Технологія
+  Traditional: Традиційний
+  Twitch Integration: Інтеграція з Twitch
+  Utility & QoL: Утиліта і Qol
+  Vanilla+: Ваніла+
+  World Gen: Генератор світу
 dataMigration:
   apply: Застосувати налаштування
   directoryCriteriaHint: >-
@@ -158,6 +209,8 @@ dataMigration:
     Міграція даних. Будь ласка, не закривайте лаунчер, інакше ви втратите свої
     дані.
 delete:
+  'NO': Ні
+  YEZ: ВИДАЛИТИ
   name: Видалити {name}
   'no': Ні
   'yes': Видалити
@@ -238,7 +291,10 @@ duration:
   day: '{duration} день | {duration} дні | {duration} днів'
   hour: '{duration} година | {duration} години | {duration} годин'
   minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
+  name: Видалити {name}
+  'no': Ні
   second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  'yes': Так, сер.
 edit: Редагувати
 enable: Увімкнути
 env:
@@ -321,6 +377,7 @@ feedback:
   qqEnterGroup: Приєднатися
 fileDetail:
   fileSize: Розмір файлу
+  filesize: Розмір файлу
   hash: Хеш
 filter: Фільтр
 filterLocalOnly: Показувати лише встановлені
@@ -441,10 +498,13 @@ instance:
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
   playtime: Час гри
+  preExecCommand: Команда попереднього запуску
+  preExecCommandHint: Команда для виконання перед запуском Minecraft
   prependCommand: Додати команду на початку
   prependCommandHint: Це додасть цю команду перед усіма командами запуску
   requireName: Назва обов'язкова
   resolution: Роздільна здатність вікон
+  resolutionEnabled: Увімкнути власну роздільну здатність
   resolutionPreset: Позначена роздільна здатність
   showInstance: Показати папку гри
   useSharedOptions: Використовувати спільні налаштування гри
@@ -629,6 +689,11 @@ launchFailed:
   failedToLaunch: Не вдалося запустити
   latestLog: Останні логи
   title: Гра завершилася з ненормальним кодом
+launchPreExecuteCommandFailed:
+  description: >-
+    Команда pre-execute завершилася з помилкою: {error}. Будь ласка, перевірте
+    команду і повторіть спробу.
+  title: Не вдалося виконати команду попереднього виконання
 launchStatus:
   assigningMemory: Виділення пам'яті
   exit: Вийти з гри?
@@ -762,6 +827,7 @@ mod:
   openLink: Відкрити URL мода {url}
   search: Шукати моди
   searchOnCurseforge: Шукати {name} на Curseforge
+  searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Шукати {name} на Modrinth
   showDirectory: Показати каталог модів
   showFile: Показати шлях до мода {file}
@@ -909,6 +975,7 @@ modrinth:
     models: Моделі
     modloader: Завантажувач модів
     multiplayer: Мультиплеєр
+    name: Категорії
     neoforge: NeoForge
     optifine: Optifine
     optimization: Оптимізація
@@ -1373,9 +1440,14 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет інтерфейсу лаунчера
   layoutTitle: Макет
+  linuxEnableDedicatedGPUOptimization: Призначення виділеного графічного процесора
+  linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
   location: Місце зберігання
+  manualUpdateHint: >-
+    Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще
+    раз з офіційного сайту!
   maunalUpdateHint: >-
     Версію неможливо оновити автоматично. Будь ласка, завантажте лаунчер з
     вебсайту знову!
@@ -1523,8 +1595,10 @@ tag:
   createSelected: Створити тег для вибраного
   newTag: Новий тег
 task:
+  available: Доступно
   cancelled: Скасовано
   clear: Очистити завершені завдання
+  compatible: Формат {format} сумісний з {version}
   connection:
     connected: Підключено
     free: Вільно
@@ -1533,16 +1607,36 @@ task:
     running: Активне з'єднання
     size: загальна кількість
   connections: Мережеві з'єднання
+  delete:
+    content: >-
+      Це призведе до видалення файлу текстурпака з диска, і ми не зможемо його
+      відновити.
+       Ви впевнені, що можете його відновити?
+    title: Видалити текстурпак
+  dropHint: Перетягніть сюди папку/zip текстури для імпорту.
   empty: Немає активних завдань
+  enable: 'Увімкнено текстурпаков: {count}'
   failed: Невдача
+  import: Імпорт текстурпака
+  incompatible: >-
+    Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
+    {actual}.
+  manage: Текстурпак
   manager: Менеджер завдань
   nTaskRunning: '{count} завдань виконується'
   name: Завдання | Завдання
   pause: Пауза
+  searchOnCurseforge: Шукати {name} на curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Вибрані текстурпаки
+  showFile: Відкрити текстурпак {file} у папці
+  showInCurseforge: Показати {name} на curseforge
+  unselected: Невибрані текстурпаки
 theme:
   selectImage: Вибрати зображення
   selectMusic: Вибрати музику
   selectVideo: Вибрати відео
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Кандидат хоста
@@ -1634,6 +1728,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Завантажити знову з офіційного вебсайту
 upstream:
+  ONLYShowCurrentVersion: Показувати тільки поточну версію майнкрафт
   downgrade: Понизити версію
   missingModpackMetadata: >-
     Старі метадані модпаку не знайдено.

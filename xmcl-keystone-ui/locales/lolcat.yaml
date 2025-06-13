@@ -95,6 +95,7 @@ browseApp:
   default: DEFAULT
   delete: DELETE
   launch: LAUNCH AN SET AS DEFAULT
+browseApps: VIEWIN TEH LAUNCHR USR INTERFACE
 cancel: CANCEL
 checkUpdate:
   name: CHECK UPDATE
@@ -125,8 +126,19 @@ curseforge:
   totalDownloads: TOTAL DOWNLOADZ
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: API ANDS LIBRARIS
+  Animated: ANIMATIOZ
   Fabric: FABRIC
+  FancyMenu: FancyMenu
   Food: FUD
+  Hardcore: HARDICORE
+  MCreator: MCreator
+  Magic: MAGIK
+  QoL: QOL
+  Skyblock: SKYBLOKS
+  Steampunk: STEAMPANKS
+  Storage: STORAGEZ
+  Vanilla+: VANILLA+++
 dataMigration:
   apply: APPLY SETTIN
   directoryCriteriaHint: PLZ MAK SURE UR NEW DIRECTORY LOCASHUN IZ AN EMPTY DIRECTORY!
@@ -222,7 +234,10 @@ duration:
   day: '{duration} DAY | {duration} DAYZ'
   hour: '{duration} HOUR | {duration} HOURZ'
   minute: '{duration} MINIT | {duration} MINITZ'
+  name: DELETE {name}
+  'no': NOOO
   second: '{duration} SECOND | {duration} SECONDZ'
+  'yes': YEZ, SIR.
 edit: EDIT
 enable: ENABLE
 env:
@@ -590,6 +605,11 @@ launchFailed:
   failedToLaunch: LAUNCH FAILD 2 LAUNCH
   latestLog: LATEST LOG
   title: GAME EXITD WIF ABNORMAL CODE
+launchPreExecuteCommandFailed:
+  description: >-
+    TEH PRE-EXECUTE COMMAND FAILD WIF AN ERROR: {error}. PLZ CHECK TEH COMMAND
+    AN TRY AGAIN.
+  title: PRE-EXECUTE COMMAND FAILD
 launchStatus:
   assigningMemory: ASSIGNIN MEMS
   exit: EXIT GAME?
@@ -1181,6 +1201,8 @@ screenshots:
   playSequence: PULAY IN ORDR
 search:
   favorate: Collection
+  local: INSTALLD
+  market: MOD MARKIT
 server:
   acceptingMinecraftVersion: ACCEPTIN MINECRAFT VERSHUN
   creationHint: PLZ FILL TEH SERVR ADDRES AN PING TEH SERVR
@@ -1310,6 +1332,9 @@ setting:
   linuxTitlebar: NATIV TITLE BAR
   linuxTitlebarDescription: USE NATIV LINUX TITLE BAR 4 LAUNCHR
   location: STORE LOCASHUN
+  manualUpdateHint: >-
+    TEH VERSHUN CANT BE UPDATD AUTOMATICALLY. PLZ DOWNLOAD TEH LAUNCHR AGAIN
+    FRUM TEH OFFISHUL WEBSIET!
   maunalUpdateHint: >-
     TEH VERSHUN CANT BE AUTO-UPDATD. PLZ REDOWNLOAD TEH LAUNCHR FRUM TEH
     WEBSIET!
@@ -1448,6 +1473,7 @@ tag:
 task:
   cancelled: CANCELLD
   clear: CLEAR FINISHD TASKZ
+  compatible: THE {format} FORMATS IS CAMPATIBLE WIZ {version}
   connection:
     connected: CONNECTD
     free: FREE
@@ -1456,16 +1482,19 @@ task:
     running: RUNNIN CONNECSHUN
     size: TOTAL COUNT
   connections: NETWORK CONNECSHUNS
+  dropHint: DRAG AND DROPIK THE FALDER/ZIP TEXTUREZ HERE TO IMPORT.
   empty: NO RUNNIN TASKZ
   failed: FAILD
   manager: TASK MANAGR
   nTaskRunning: '{count} TASKZ R RUNNIN'
   name: TASK | TASKZ
   pause: PAUSE
+  searchOnModrinth: '@:mod.searchOnModrinth'
 theme:
   selectImage: SELECT IMAGE
   selectMusic: SELECT MUSIC
   selectVideo: SELECT VIDEO
+  title: X Minecraft Launcher
 title: X MINECRAFT LAUNCHR
 transportType:
   host: HOST CANDIDATE

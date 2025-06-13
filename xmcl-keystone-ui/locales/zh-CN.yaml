@@ -15,6 +15,7 @@ AppShareInstanceDialog:
   cancelShare: 取消分享
   description: 分享后，您的联机伙伴将可以下载您分享的游戏资源
   downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
+  downloadNotifyTitle: 从 {user} 下载实例
   downloadTitle: 从其他玩家那获得游戏资源
   downloadToLocal: 下载到当前实例中
   filesToDownload: 选择您想下载的文件
@@ -93,6 +94,7 @@ browseApp:
   default: 默认
   delete: 删除
   launch: 启动并设置为默认
+browseApps: 查看启动器的用户界面
 cancel: 取消
 checkUpdate:
   name: 检查更新
@@ -129,6 +131,7 @@ curseforgeCategory:
   Adventure and RPG: 冒险和剧情
   Animated: 动画
   Armor, Tools, and Weapons: 护甲、工具和武器
+  Armor， Tools， and Weapons: 盔甲、工具和武器
   Combat / PvP: 竞技/PVP
   Cosmetic: 外观/装饰
   Creation: 创造模式
@@ -189,6 +192,8 @@ dataMigration:
   unknownError: 未知错误，请联系作者或重试。
   waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
 delete:
+  'NO': 没有
+  YEZ: 删除
   name: 删除 {name}
   'no': 取消
   'yes': 删除
@@ -265,7 +270,10 @@ duration:
   day: '{duration} 天'
   hour: '{duration} 小时'
   minute: '{duration} 分钟'
+  name: 删除 {name}
+  'no': 没有
   second: '{duration} 秒'
+  'yes': 是的，先生。
 edit: 编辑
 enable: 启用
 env:
@@ -281,6 +289,7 @@ errors:
   BodyTimeoutError: 等待 HTTP 数据超时
   ChecksumNotMatchError: 文件校验失败！期望的哈希值是 {expect}，实际获取到的是 {actual}。
   ConnectTimeoutError: 与服务器建立连接超时
+  DNSNotFoundError: DNS 查询错误
   DatabaseNotOpened: |-
     数据库无法打开！
     启动器将无法正常工作！
@@ -332,6 +341,7 @@ feedback:
   qqEnterGroup: 加群
 fileDetail:
   fileSize: 文件大小
+  filesize: 文件大小
   hash: 哈希值
 filter: 检索
 filterLocalOnly: 只显示已安装
@@ -445,6 +455,7 @@ instance:
   name: 名称
   nameHint: 名称便于以后识别
   neverPlayed: 从未游玩
+  openCrashReportFolder: 打开包含错误报告的文件夹
   openLogFolder: 打开日志文件夹
   playtime: 游玩时长
   preExecCommand: 启动前执行命令
@@ -453,6 +464,7 @@ instance:
   prependCommandHint: 这将在启动命令之前添加此命令
   requireName: 必须填写名称
   resolution: 分辨率
+  resolutionEnabled: 启用自定义分辨率
   resolutionPreset: 分辨率预设
   showInstance: 打开文件夹
   useSharedOptions: 共享 Minecraft 设置
@@ -627,6 +639,9 @@ launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
 launchNoProperJava: {}
 launchNoVersionInstalled: {}
+launchPreExecuteCommandFailed:
+  description: 预执行命令失败，出现错误： {error}。请检查命令并重试。
+  title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
   exit: 关闭游戏？
@@ -816,6 +831,7 @@ modpack:
   showFile: 显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
   showInFtb: 在 FTB 中显示 {name}
+  showInModrinth: 在 Modrinth 显示 {name}
   url: URL
   urlHint: 整合包的主页 URL 地址
 modpackImportConfirm:
@@ -885,6 +901,8 @@ modrinth:
     models: 模型
     modloader: 模组加载器
     multiplayer: 多人游戏
+    name: 类别
+    neoforge: NeoForge
     optifine: Optifine
     optimization: 优化
     paper: Paper
@@ -1091,7 +1109,18 @@ peerSignalingState:
   have-local-offer: 等待对方信息中
 popular: 热度
 presence:
+  curseforge: 查看 CurseForge
+  curseforgeProject: 在 Curseforge 中查看 {name}
   instance: 浏览实例 {instance}
+  instanceSetting: 编辑实例设置： {instance}
+  mod: 查看 {instance}中的模式
+  modrinth: 查看 Modrinth
+  modrinthProject: 在 Modrinth 中查看 {name}
+  resourcePack: 查看 {instance} 中的资源集
+  save: '{instance}中的世界观'
+  setting: 查看设置页面
+  shaderPack: 查看 {instance}中的着色器集
+  version: 查看版本页面
 previous: 上一步
 proxy:
   host: 服务器地址
@@ -1122,6 +1151,7 @@ resourcepack:
   selectSearchHint: 查看选择的资源包
   selected: 已选资源包
   shared: 实例使用共享资源包文件夹
+  showDirectory: 打开装有资源包的文件夹
   showFile: 在文件夹中显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
@@ -1299,9 +1329,12 @@ setting:
     focus: 聚焦布局
   layoutDescription: 不同的布局有不同的 UI 交互逻辑
   layoutTitle: 布局
+  linuxEnableDedicatedGPUOptimization: 分配专用图形处理器
+  linuxEnableDedicatedGPUOptimizationDescription: 此选项为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   location: 数据存储位置
+  manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-
     版本无法自动更新。
     请从网站重新下载启动器！
@@ -1389,7 +1422,7 @@ setup:
     name: 导入已有的游戏
   locale:
     description: >-
-      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以去我们的 GitHub 上打开 Pull Request
+      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以在我们的 GitHub 上打开 Pull Request
       来添加新语言！
     language: 当前语言
     name: 设置语言
@@ -1433,8 +1466,10 @@ tag:
   createSelected: 为所有选中的创建标签
   newTag: 新标签
 task:
+  available: 可用
   cancelled: 已取消
   clear: 清除已完成的任务
+  compatible: 格式 {format} 与 {version} 兼容
   connection:
     connected: 已连接
     free: 空闲
@@ -1443,16 +1478,34 @@ task:
     running: 连接中
     size: 总数
   connections: 网络连接
+  delete:
+    content: |-
+      这将删除光盘中的纹理包文件，我们将无法恢复它。
+       您确定可以恢复吗？
+    title: 删除纹理包
+  dropHint: 将文件夹/压缩纹理拖放到此处进行导入。
   empty: 目前没有运行中的任务
+  enable: 已启用的纹理包： {count}
   failed: 失败
+  import: 导入纹理包
+  incompatible: 文本堆栈格式（{format}）不兼容。匹配 {accept}。当前的 {actual}。
+  manage: Texturpak
   manager: 任务管理器
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
+  searchOnCurseforge: 在 curseforge 上搜索 {name}
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: 最喜欢的纹理包
+  showFile: 打开文件夹中的纹理包 {file}
+  showInCurseforge: 在 curseforge 上显示 {name}
+  unselected: 未选择的纹理包
 theme:
   selectImage: 选择图像
   selectMusic: 选择音乐
   selectVideo: 选择视频
+  title: X Minecraft Launcher
+title: X Minecraft Launcher
 transportType:
   host: 公网地址
   prflx: 同伴反射地址
@@ -1532,6 +1585,7 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官网重新下载
 upstream:
+  ONLYShowCurrentVersion: 只显示当前版本的 minecraft
   downgrade: 降级
   missingModpackMetadata: >-
     无法找到当前实例使用的整合包元数据。虽然您不会因此没法更新到最新的整合包版本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份您的文件。
@@ -1594,6 +1648,7 @@ userSkin:
   importFile: 从文件导入
   importLink: 从链接导入
   placeUrlHere: 填写待导入皮肤 URL
+  reset: 重置
   save: 保存
   saveTitle: 保存皮肤到本地
   skinType: 皮肤类型

@@ -108,6 +108,7 @@ browseApp:
   default: DEFAULT
   delete: Usuń
   launch: Uruchom i ustaw jako domyślne
+browseApps: Wyświetlanie interfejsu użytkownika programu uruchamiającego
 cancel: Anuluj
 checkUpdate:
   name: Sprawdź aktualizację
@@ -138,11 +139,21 @@ curseforge:
   totalDownloads: Łączna liczba pobrań
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: Interfejsy API i biblioteki
+  Addons: Suplementy
+  Adventure: Przygoda
+  Adventure and RPG: Przygodowe i RPG
+  Animated: Animacja
+  Armor, Tools, and Weapons: Pancerz, narzędzia i broń
+  Combat / PvP: Konkursy/PVP
   Fabric: Fabric
   FancyMenu: FancyMenu
+  Hardcore: Hardcore
   MCreator: MCreator
+  Magic: Magic
   QoL: QoL
   Skyblock: SkyBlock
+  Steampunk: Steampunk
   Vanilla+: Vanilla+
 dataMigration:
   apply: Zastosuj ustawienia
@@ -167,6 +178,8 @@ dataMigration:
     Migracja danych. Nie zamykaj programu uruchamiającego, ponieważ spowoduje to
     utratę danych.
 delete:
+  'NO': Nie
+  YEZ: DELETE
   name: Usuń {name}
   'no': Nie
   'yes': Usuń
@@ -247,7 +260,10 @@ duration:
   day: '{duration} dzień | {duration} dni'
   hour: '{duration} godzina | {duration} godziny'
   minute: '{duration} minuta | {duration} minuty'
+  name: Usuń {name}
+  'no': Ni
   second: '{duration} drugi | {duration} sekundy'
+  'yes': Tak jest.
 edit: Edytuj
 enable: Włącz
 env:
@@ -325,6 +341,7 @@ feedback:
   qqEnterGroup: Dołącz
 fileDetail:
   fileSize: Rozmiar pliku
+  filesize: Rozmiar pliku
   hash: Hash
 filter: Filtr
 filterLocalOnly: Pokaż tylko zainstalowane
@@ -447,12 +464,15 @@ instance:
   openCrashReportFolder: Otwórz folder raportów o wypadkach
   openLogFolder: Otwórz folder dziennika
   playtime: Czas zabawy
+  preExecCommand: Polecenie przedstartowe
+  preExecCommandHint: Polecenie do wykonania przed uruchomieniem Minecrafta
   prependCommand: Dołącz polecenie
   prependCommandHint: >-
     Spowoduje to dodanie tego polecenia przed wszystkimi poleceniami
     uruchamiania
   requireName: Nazwa jest wymagana
   resolution: Rozdzielczość okna
+  resolutionEnabled: Włącz własną rozdzielczość
   resolutionPreset: Postarowani rezolucji
   showInstance: Pokaż folder gry
   useSharedOptions: Użyj udostępnionych ustawień gry
@@ -653,6 +673,11 @@ launchFailed:
   failedToLaunch: Uruchomienie nie powiodło się
   latestLog: Najnowszy dziennik
   title: Gra zakończyła się z nieprawidłowym kodem
+launchPreExecuteCommandFailed:
+  description: >-
+    Polecenie wstępnego wykonania nie powiodło się z błędem: {error}. Sprawdź
+    polecenie i spróbuj ponownie.
+  title: Nie powiodło się polecenie przed wykonaniem
 launchStatus:
   assigningMemory: Przypisywanie pamięci
   exit: Wyjście z gry?
@@ -1207,6 +1232,7 @@ resourcepack:
   selectSearchHint: Wyszukaj i wybierz pakiet zasobów
   selected: Wybrane pakiety zasobów
   shared: Wystąpienie używa folderu współdzielonego pakietu zasobów
+  showDirectory: Otwórz folder z pakietami zasobów
   showFile: Pokaż pakiet zasobów w folderze {file}
   showInCurseforge: Pokaż {name} w curseforge
   unselected: Niewybrane pakiety zasobów
@@ -1262,6 +1288,8 @@ screenshots:
   playSequence: Graj w kolejności
 search:
   favorate: Kolekcja
+  local: Zainstalowany
+  market: Rynek modów
 server:
   acceptingMinecraftVersion: Akceptowanie wersji Minecraft
   creationHint: Wypełnij adres serwera i wykonaj ping do serwera
@@ -1390,9 +1418,14 @@ setting:
     Układ programu uruchamiającego reprezentujący inną logikę interfejsu
     użytkownika
   layoutTitle: Układ
+  linuxEnableDedicatedGPUOptimization: Przypisanie dedykowanego procesora graficznego
+  linuxEnableDedicatedGPUOptimizationDescription: Ta opcja przypisuje dedykowany procesor graficzny do procesu Minecraft.
   linuxTitlebar: Natywny pasek tytułu
   linuxTitlebarDescription: Użyj natywnego linuksowego paska tytułu dla programu uruchamiającego
   location: Lokalizacja sklepu
+  manualUpdateHint: >-
+    Wersja nie może zostać zaktualizowana automatycznie. Prosimy o ponowne
+    pobranie launchera z oficjalnej strony!
   maunalUpdateHint: >-
     Wersja nie może być automatycznie aktualizowana. Prosimy o ponowne pobranie
     programu uruchamiającego ze strony strony internetowej!
@@ -1542,6 +1575,7 @@ tag:
   createSelected: Utwórz znacznik dla wybranych
   newTag: Nowa etykieta
 task:
+  available: Dostępne
   cancelled: Anulowane
   clear: Wyczyść ukończone zadania
   connection:
@@ -1552,18 +1586,32 @@ task:
     running: Działające połączenie
     size: całkowita liczba
   connections: Połączenia sieciowe
+  delete:
+    content: >-
+      Spowoduje to usunięcie pliku texturepack z dysku i nie będziemy w stanie
+      go odzyskać.
+       Czy na pewno można go odzyskać?
+    title: Usuń texturepack
+  dropHint: Przeciągnij i upuść tutaj folder/zip z teksturami do zaimportowania.
   empty: Brak uruchomionych zadań
+  enable: 'Włączone pakiety tekstur: {count}'
   failed: Nie powiodło się
+  manage: Texturpak
   manager: Menedżer zadań
   nTaskRunning: '{count} zadania są uruchomione'
   name: Zadanie | Zadania
   pause: Pauza
+  searchOnCurseforge: Wyszukaj {name} na curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Ulubione paczki tekstur
+  showInCurseforge: Pokaż {name} na curseforge
+  unselected: Niewybrane pakiety tekstur
 theme:
   selectImage: Wybierz obraz
   selectMusic: Wybierz muzykę
   selectVideo: Wybierz wideo
   title: X Minecraft Launcher
+title: X Minecraft Launcher
 transportType:
   host: Kandydat na gospodarza
   prflx: Refleksyjny kandydat na rówieśnika
@@ -1571,6 +1619,7 @@ transportType:
   srflx: Kandydat refleksyjny serwera
 turnRegion:
   fr: Francja
+  hk: Hong Kong
   po: Polska
 tutorial:
   feedbackDescription: >-
@@ -1649,6 +1698,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Ponowne pobranie na oficjalnej stronie
 upstream:
+  ONLYShowCurrentVersion: Pokazuje tylko aktualną wersję gry Minecraft
   downgrade: Obniżenie oceny
   missingModpackMetadata: >-
     Nie znaleziono metadanych starego modpacka.
