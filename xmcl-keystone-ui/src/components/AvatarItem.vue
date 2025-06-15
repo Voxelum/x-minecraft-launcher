@@ -7,7 +7,7 @@
     <v-avatar
       :left="true"
       class="hidden lg:block"
-      style="height: 34px; width: 34px"
+      style="height: 34px; width: 34px; min-width: 34px;"
       :class="{ responsive }"
     >
       <img

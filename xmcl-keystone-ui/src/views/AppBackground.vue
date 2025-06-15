@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute z-0 h-full w-full">
+  <div class="absolute z-0 h-full w-full ovferflow-hidden">
     <Particles
       v-if="backgroundType === BackgroundType.PARTICLE"
       color="#dedede"

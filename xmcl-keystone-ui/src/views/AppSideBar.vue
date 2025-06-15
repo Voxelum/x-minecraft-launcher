@@ -4,7 +4,7 @@
     permanent
     :mini-variant="true"
     :color="sideBarColor"
-    class="sidebar moveable z-10 rounded-[0.75rem] shadow-lg"
+    class="sidebar moveable z-10 rounded-lg shadow-lg"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list

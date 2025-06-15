@@ -16,7 +16,7 @@
         :color="color"
         :x-large="!compact"
         :large="compact"
-        class="px-10 text-xl/[28px] transition-all btn-left shadow-md"
+        class="px-10 text-xl/[28px] transition-all btn-left shadow-md !h-12 rounded-l-md"
         @click="loading ? undefined : onClick()"
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
@@ -57,7 +57,7 @@
       <template #activator="{ on }">
         <v-btn
           :disabled="isValidating"
-          class="min-w-unset! max-w-8! px-0! btn-right shadow-md"
+          class="min-w-unset! max-w-8! px-0! btn-right shadow-md !h-12 rounded-r-md"
           :color="color"
           :x-large="!compact"
           :large="compact"

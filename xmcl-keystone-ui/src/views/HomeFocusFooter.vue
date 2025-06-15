@@ -79,11 +79,11 @@
           :total="total"
           :progress="progress"
         />
-        <HomeLaunchButtonStatus
+        <!-- <HomeLaunchButtonStatus
           class="mr-4 ml-2"
           v-else
           :active="active"
-        />
+        /> -->
         <HomeLaunchButton
           class="ml-4"
           :status="status"
