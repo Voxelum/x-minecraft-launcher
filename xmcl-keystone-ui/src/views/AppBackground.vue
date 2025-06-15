@@ -15,7 +15,7 @@
     <img
       v-else-if="backgroundImage?.type === 'image' && backgroundType === BackgroundType.IMAGE"
       :src="backgroundImage.url"
-      class="absolute z-0 h-full w-full"
+      class="absolute z-0 h-[calc(100vh+16px)] w-[calc(100vw+16px)] -top-2 -left-2"
       :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
     >
     <video

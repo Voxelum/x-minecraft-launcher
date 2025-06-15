@@ -4,19 +4,19 @@
     permanent
     :mini-variant="true"
     :color="sideBarColor"
-    class="sidebar moveable z-10 rounded-[0.75rem]"
+    class="sidebar moveable z-10 rounded-[0.75rem] shadow-lg"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
       nav
       dense
-      class="ml-1 px-2"
+      class="px-2"
     >
       <v-list-item
         class="non-moveable"
         @click="goBack"
       >
-        <v-icon class="text-[18px]">
+        <v-icon :size="22">
           arrow_back
         </v-icon>
       </v-list-item>
@@ -30,7 +30,7 @@
         class="non-moveable"
       >
         <v-list-item-icon>
-          <v-icon> widgets </v-icon>
+          <v-icon :size="22"> widgets </v-icon>
         </v-list-item-icon>
         <v-list-item-title v-text="t('myStuff')" />
       </v-list-item>
@@ -43,23 +43,20 @@
         class="non-moveable"
       >
         <v-list-item-icon>
-          <v-icon
-            :size="28"
-          >
-            store
-          </v-icon>
+          <v-icon :size="22">store</v-icon>
         </v-list-item-icon>
         <v-list-item-title v-text="t('store.name', 2)" />
       </v-list-item>
-      <v-divider />
     </v-list>
+
+    <v-divider class="mx-2" />
 
     <AppSideBarContentNext />
 
     <v-list
       nav
       dense
-      class="ml-1 px-2"
+      class="px-2"
       style=""
     >
       <v-list-item
@@ -69,18 +66,20 @@
         @click="goMultiplayer"
       >
         <v-list-item-icon>
-          <v-icon
-            :size="23"
-          >
-            hub
-          </v-icon>
+          <v-icon :size="22">hub</v-icon>
         </v-list-item-icon>
         <v-list-item-title>{{ t('multiplayer.name') }}</v-list-item-title>
       </v-list-item>
+    </v-list>
 
-      <v-divider
-        class="mx-1 block"
-      />
+    <v-divider class="mx-2 block" />
+
+    <v-list
+      nav
+      dense
+      class="px-2"
+      style=""
+    >
 
       <v-list-item
         v-shared-tooltip.right="_ => t('setting.name', 2)"
@@ -98,9 +97,7 @@
             <template #badge>
               <span>{{ 1 }}</span>
             </template>
-            <v-icon>
-              settings
-            </v-icon>
+            <v-icon :size="22">settings</v-icon>
           </v-badge>
         </v-list-item-icon>
         <v-list-item-title>{{ t('setting.name', 2) }}</v-list-item-title>
@@ -135,14 +132,37 @@ function goMultiplayer() {
 
 <style scoped>
 .sidebar {
-  min-width: 80px;
-  max-height: 100%;
+  width: 64px !important;
+  min-width: 64px !important;
+  margin-left: 16px;
+  max-height: calc(100% - 16px);
   display: flex;
   flex-direction: column;
+  border: none !important;
   /* @apply rounded-r-xl border-r-[hsla(0,0%,100%,.12)]; */
 }
 </style>
 <style>
+.sidebar .v-navigation-drawer__border {
+  display: none;
+}
+
+.sidebar .v-list-item {
+  min-width: 48px !important;
+  min-height: 48px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+}
+
+.sidebar .v-list-item .v-list-item__icon {
+  margin: auto;
+}
+
+.sidebar .v-list-item:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
 
 .dark .sidebar .theme--dark.v-icon {
   color: var(--icon-color);
@@ -154,10 +174,15 @@ function goMultiplayer() {
 
 .dark .sidebar .v-list-item:hover {
   --icon-color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .v-navigation-drawer__content {
   @apply flex flex-col flex-grow-0 h-full;
+}
+
+.sidebar .v-list .v-list-item--active {
+  color: var(--color-primary);
 }
 
 .sidebar .v-list .v-list-item--active, .v-list .v-list-item--active .v-icon {
@@ -169,16 +194,11 @@ function goMultiplayer() {
   @apply text-white;
 }
 
-.sidebar .theme--dark.v-list-item--active:hover:before {
-  opacity: .5;
-}
-
 .sidebar .theme--light.v-list-item--active:before {
-  opacity: .25;
-  background-color: gray;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .avatar .v-list-group__header.v-list-item--active:not(:hover):not(:focus):before {
-  opacity: .24;
 }
 </style>

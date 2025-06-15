@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header sticky max-w-full select-none transition-all px-2"
+    class="header sticky max-w-full select-none transition-all pl-4"
     :style="{
       'backdrop-filter': !compact ? 'none' : `blur(${blurAppBar}px)`,
     }"
@@ -163,7 +163,7 @@ const overcount = ref(0)
 <style scoped>
 
 .header {
-  padding-top: 2.5rem;
+  padding-top: 2.2rem;
 }
 
 .header.compact {

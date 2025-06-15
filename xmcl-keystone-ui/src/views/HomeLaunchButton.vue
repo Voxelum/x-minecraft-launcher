@@ -16,7 +16,7 @@
         :color="color"
         :x-large="!compact"
         :large="compact"
-        class="px-12 text-lg transition-all btn-left"
+        class="px-10 text-xl/[28px] transition-all btn-left shadow-md"
         @click="loading ? undefined : onClick()"
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
@@ -27,14 +27,17 @@
         >
           {{ leftIcon }}
         </v-icon>
-        {{ text }}
-        <v-icon
-          v-if="!loading && icon"
-          right
-          class="pl-3 text-2xl"
-        >
-          {{ icon }}
-        </v-icon>
+        <span class="text-lg flex items-center">
+          {{ text }}
+          <v-icon
+            v-if="!loading && icon"
+            right
+            :size="20"
+            class="text-md ml-1.5"
+          >
+            {{ icon }}
+          </v-icon>
+        </span>
         <v-progress-circular
           v-if="loading"
           class="v-icon--right"
@@ -54,7 +57,7 @@
       <template #activator="{ on }">
         <v-btn
           :disabled="isValidating"
-          class="min-w-unset! max-w-5! px-0! btn-right"
+          class="min-w-unset! max-w-8! px-0! btn-right shadow-md"
           :color="color"
           :x-large="!compact"
           :large="compact"
