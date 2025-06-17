@@ -1,4 +1,6 @@
 AppAddInstanceDialog:
+  configTitle: Basado en el mapa
+  createTitle: Crear una instancia
   downloadedNotification: El modpack {name} se ha descargado. ¿Quieres crear una instancia para ello?
   serverTitle: Ingrese la dirección de su servidor
 AppShareInstanceDialog:
@@ -97,6 +99,7 @@ browseApp:
   default: DEFECTO
   delete: Borrar
   launch: Iniciar y configurar como predeterminado
+browseApps: Ver la interfaz de usuario del lanzador
 cancel: Cancelar
 color: Color
 confirm: Comenzar
@@ -108,6 +111,7 @@ curseforge:
   downloadOnly: Descargar
   file:
     gameVersion: Versión del Juego
+    modLoader: Mod Loader
   install: Instalar
   installTo: Instalar en {path}
   installToStorage: Instalar en Almacenamiento
@@ -126,6 +130,7 @@ curseforgeCategory:
   Adventure and RPG: Aventura y RPG
   Animated: Animación
   Armor, Tools, and Weapons: Armadura, Herramientas y Armas
+  Armor， Tools， and Weapons: Armaduras, herramientas y armas
   Combat / PvP: Competitivo/PVP
   Cosmetic: Apariencia/Decoración
   Creation: Modo creativo
@@ -190,6 +195,8 @@ dataMigration:
   unknownError: ¡Error Desconocido! Vuelva a intentarlo o comuníquese con el desarrollador.
   waitReload: Migrando datos. Por favor, no cierres el Launcher o perderás tus datos.
 delete:
+  'NO': 'No'
+  YEZ: DELETE
   name: Eliminar {name}
   'no': 'No'
   'yes': Borrar
@@ -236,12 +243,19 @@ diagnosis:
     title: Archivo modpack no encontrado
 disable: Desactivar
 downloadUpdate: Descarga de la actualización
+duration:
+  name: Borrar {name}
+  'no': 'No'
+  'yes': Sí, señor.
+enable: Activar
 env:
   select:
     all: Seleccionar todo
     fit: Seleccionar Ajustar
     none: Seleccionar Ninguno
 errors:
+  BadInstanceType: 'Instancia no válida: {type}'
+  DNSNotFoundError: Error de búsqueda DNS
   DatabaseNotOpened: |-
     ¡La base de datos no está abierta! 
     ¡El lanzador no funcionará correctamente! 
@@ -268,9 +282,16 @@ feedback:
   discord: Discord
   discordDescription: Unirse al canal de Discord
   discordJoin: Unirse
+  generateReport: Crear un informe
+  generateSaveAs: Guardar el informe
   github: Problema en Github
   githubDescription: Abrir un problema en Github para expresar tu opinión
   githubOpenIssue: Github
+  hint: >-
+    Haz clic en el botón para crear un informe y ponerte en contacto con el
+    equipo de desarrollo. El informe contendrá información sobre tu dispositivo,
+    incluido el tipo de sistema operativo, la versión, el nombre de usuario (en
+    el sistema operativo) y otros datos.
   kook: Kook
   kookDescription: >-
     Kook es una aplicación alternativa para usuarios de Discord en China
@@ -281,6 +302,8 @@ feedback:
     Únete al grupo de QQ de comentarios y habla directamente con los autores.
     Número del grupo: {number}
   qqEnterGroup: Unirse
+fileDetail:
+  filesize: Tamaño del archivo
 filterLocalOnly: Mostrar solo instalado
 forgeVersion:
   common: Común
@@ -394,10 +417,13 @@ instance:
   openCrashReportFolder: Abrir Carpeta de Informes de Errores
   openLogFolder: Abrir Carpeta de Registro
   playtime: Tiempo de Juego
+  preExecCommand: Orden de prearranque
+  preExecCommandHint: Comando a ejecutar antes de iniciar Minecraft
   prependCommand: Anteponer comando
   prependCommandHint: Esto antepondrá este comando antes de todos los comandos de inicio.
   requireName: El nombre es obligatorio
   resolution: Resolución de ventana
+  resolutionEnabled: Encienda su propia resolución
   resolutionPreset: Resolución preestablecida
   showInstance: Mostrar carpeta del juego
   useSharedOptions: Usar configuración de juego compartida
@@ -499,6 +525,11 @@ launch:
   killServer: Matar el servidor localhost
   launchAnyway: Lanzar de todos modos
 launchBlocked:
+  launchBadVersion:
+    description: >-
+      El archivo de la versión {version} está dañado o falta. Tal vez necesite
+      reinstalar esta versión.
+    title: Error de archivo de versión
   launchSpawnProcessFailed:
     description: >-
       Verifique su Java o otorgue más permisos al iniciador y vuelva a
@@ -506,9 +537,16 @@ launchBlocked:
 
       Si esto aún no funciona, comuníquese con los desarrolladores.
     title: No se puede iniciar el proceso del juego
+launchFailed:
+  failedToLaunch: Error al iniciar el arranque
+launchPreExecuteCommandFailed:
+  description: >-
+    El comando de pre-ejecución falló con un error: {error}. Por favor,
+    compruebe el comando e inténtelo de nuevo.
+  title: Fallo del comando de preejecución
 launchStatus:
   refreshingUser: Actualizar token de usuario
-  spawningProcess: ''
+  spawningProcess: Puesta en marcha del proceso
 liteloader:
   name: LiteLoader
 loginError:
@@ -558,7 +596,7 @@ mod:
   enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
   group: Agrupar
-  hasUpdate: ¡El Mod tiene una nueva versión!
+  hasUpdate: ¡El mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
   incompatible: Mod Incompatible.
   incompatibleHint: Consulte su informe de compatibilidad de mods
@@ -730,6 +768,7 @@ modrinth:
     models: Modelos
     modloader: Cargador de Mods
     multiplayer: Multijugador
+    name: Categorías
     neoforge: NeoForge
     optifine: Optifine
     optimization: Optimización
@@ -907,10 +946,13 @@ resourcepack:
   independent: La instancia utiliza la carpeta del paquete de recursos independiente
   manage: Gestionar Paquetes de Recursos
   name: Paquete de Recursos | Paquetes de Recursos
+  searchHint: Búsqueda de un conjunto de recursos
   searchOnCurseforge: Buscar {name} en CurseForge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: Buscar y seleccionar un paquete de recursos
   selected: Paquetes de Recursos Seleccionados
   shared: La instancia utiliza la carpeta del paquete de recursos compartido
+  showDirectory: Abra la carpeta con los paquetes de recursos
   showFile: Mostrar paquete de recursos en la carpeta {file}
   showInCurseforge: Mostrar {name} en CurseForge
   unselected: Paquetes de Recursos No Seleccionados
@@ -966,6 +1008,8 @@ screenshots:
   playSequence: Jugar en orden
 search:
   favorate: Recopilación
+  local: Instalado
+  market: Mercado Mod
 server:
   acceptingMinecraftVersion: Aceptando Versión de Minecraft
   creationHint: Por favor, completa la dirección del servidor y realiza un ping al servidor
@@ -1097,9 +1141,14 @@ setting:
     El diseño del lanzador representa una lógica de interfaz de usuario
     diferente
   layoutTitle: Diseño
+  linuxEnableDedicatedGPUOptimization: Asignación de un procesador gráfico dedicado
+  linuxEnableDedicatedGPUOptimizationDescription: Esta opción asigna una GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
   location: Ubicación del Almacenamiento
+  manualUpdateHint: >-
+    La versión no se puede actualizar automáticamente. Vuelve a descargar el
+    lanzador desde el sitio web oficial.
   maunalUpdateHint: |-
     La versión no se puede actualizar automáticamente. 
     ¡Vuelva a descargar el iniciador del sitio web!
@@ -1134,8 +1183,10 @@ setting:
     dark: Tema Oscuro
     light: Tema Claro
     system: Usar Tema del Sistema
+  themeExport: Exportar un tema
   themeFont: Fuente
   themeFontDescription: Cambia la fuente del lanzador.
+  themeImport: Importar un tema
   themeResetFont: Restablecer fuente
   themeSelectFont: Seleccionar fuente
   themeShare: Compartir tema
@@ -1154,6 +1205,12 @@ settingLabel:
   local: Local
   localHint: Esta configuración está modificada por la instancia actual
 setup:
+  account:
+    description: >-
+      Inicia sesión en tu cuenta del juego. Si no tienes una, puedes saltarte
+      esto por ahora.
+    name: Añadir una cuenta de juego
+    skip: Sáltatelo por ahora
   appearance:
     name: '@:setting.appearance'
   dataRoot:
@@ -1187,6 +1244,7 @@ setup:
 shaderPack:
   deletion: Eliminar Pack de Shaders
   deletionHint: Esto eliminará el archivo del pack de shaders {path} y no se podrá deshacer.
+  dropHint: Arrastra y suelta el archivo del conjunto de sombreadores (.zip) aquí
   empty: No se ha asignado ningún pack de shaders
   enable: Usando el pack de shaders {name}
   manage: Gestionar Packs de Shaders
@@ -1196,6 +1254,8 @@ shaderPack:
   noShaderModInstallHint: >-
     Debe instalar uno de los siguientes mods para cargar el paquete de
     sombreadores.
+  searchHint: Búsqueda de un conjunto de sombreadores
+  selectSearchHint: Localice y seleccione Shader Pack
   showDirectory: Mostrar directorio de packs de shaders
   showFile: Mostrar este pack de shaders en la carpeta
 shared:
@@ -1207,12 +1267,19 @@ sortBy:
   alphabetDesc: Ordenar por alfabeto (descendente)
   timeAsc: Ordenar por tiempo de modificación (ascendente)
   timeDesc: Ordenar por tiempo de modificación (descendente)
+store:
+  explore: Explore
+  latestMinecraft: La última versión de Minecraft
+  name: Tienda de kits mod
+  popular: Mods populares
+  recentUpdated: Recientemente actualizado
 summery: Resumen
 tag:
   create: Crear Etiqueta
   createSelected: Crear Etiqueta para la Selección
   newTag: Nueva Etiqueta
 task:
+  available: Disponible
   cancelled: Cancelada
   clear: Borrar tareas terminadas
   connection:
@@ -1223,16 +1290,35 @@ task:
     running: Conexión en ejecución
     size: cuenta total
   connections: Conexiones de red
+  delete:
+    content: |-
+      Esto borrará el archivo texturepack del disco y no podremos recuperarlo.
+       ¿Estás seguro de que puedes recuperarlo?
+    title: Borrar texturepack
+  dropHint: Arrastra y suelta la carpeta/zip de texturas aquí para importar.
   empty: No hay Tareas en Ejecución
+  enable: 'Paquetes de texturas activados: {count}'
   failed: Fallida
+  import: Importar paquete de texturas
+  incompatible: >-
+    Formato de pila de texto incompatible ({format}). Coincidencia {accept}.
+    Actual {actual}.
+  manage: Texturpak
   manager: Gestor de Tareas
   nTaskRunning: '{count} tareas en ejecución'
   name: Tarea | Tareas
   pause: Pausar
+  searchOnCurseforge: Buscar {name} en curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Paquetes de texturas favoritos
+  showFile: Abra el texturepack {file} en la carpeta
+  showInCurseforge: Mostrar {name} en curseforge
+  unselected: Paquetes de texturas no seleccionados
 theme:
   selectImage: Seleccionar imagen
   selectMusic: Seleccionar música
   selectVideo: Seleccionar vídeo
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Candidato de Anfitrión
@@ -1241,11 +1327,19 @@ transportType:
   srflx: Candidato Reflexivo de Servidor
 turnRegion:
   fr: francia
+  hk: Hong Kong
   po: Polonia
 tutorial:
   hideNewsHeaderDescription: |-
     Puedes ver el show de noticias a la izquierda. 
     Al hacer clic en este botón se puede ocultar esta vitrina.
+  instance:
+    iconDescription: Haz clic para cambiar el icono.
+    iconTitle: Icono de instancia
+    javaDescription: Seleccione o cambie la versión de Java.
+    javaImportDescription: Importar Java desde el almacenamiento local.
+    javaImportTitle: Importación de Java
+    javaTitle: Lista Java
   instanceSelectDescription: >-
     Al hacer clic en este botón se navegará a la página para seleccionar el
     juego y leer las noticias.
@@ -1268,11 +1362,15 @@ universalDrop:
 update:
   goOfficialWebDownload: Vuelva a descargar en el sitio web oficial.
 upstream:
+  ONLYShowCurrentVersion: Mostrar sólo la versión actual de minecraft
+  downgrade: Bajar la versión
   missingModpackMetadata: >-
     No se encontraron los metadatos antiguos del modpack.
 
     Todavía puedes actualizar, pero el resultado podría ser incorrecto. Por
     favor, haz una copia de seguridad de los archivos de la instancia.
+  onlyShowCurrentVersion: Mostrar sólo la versión actual de Minecraft
+  update: Actualización
 user:
   accessToken: Token de Acceso
   authMode: Servicio de Autenticación
@@ -1294,3 +1392,5 @@ user:
   submitChallenges: Enviar Respuestas
   tokenExpired: Caducado
   tokenValidUntil: Token Válido Hasta
+userSkin:
+  reset: Restablecer

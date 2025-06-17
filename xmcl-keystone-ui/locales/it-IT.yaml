@@ -104,6 +104,7 @@ browseApp:
   default: DEFAULT
   delete: Elimina
   launch: Lancia e imposta come predefinito
+browseApps: Visualizzazione dell'interfaccia utente del launcher
 cancel: Annulla
 checkUpdate:
   name: Controlla aggiornamenti
@@ -132,6 +133,35 @@ curseforge:
   releasedDate: Data di rilascio
   search: Cerca
   totalDownloads: Download totali
+curseforgeCategory:
+  API and Library: API e librerie
+  Addons: Integratori
+  Adventure: Avventura
+  Adventure and RPG: Avventura e RPG
+  Animated: Animation
+  Armor, Tools, and Weapons: Armature, strumenti e armi
+  Armor， Tools， and Weapons: Armature, strumenti e armi
+  Combat / PvP: Competizioni/PVP
+  Cosmetic: Aspetto/decorazione
+  Creation: Modalità creativa
+  Data Packs: Pacchetto dati
+  Education: Istruzione
+  Exploration: Ricognizione
+  Extra Large: Dimensione grande
+  FTB Official Pack: Pacchetto ufficiale FTB
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Caratteri
+  Food: Cibo
+  Game Map: Carte da gioco
+  Hardcore: Hardcore
+  MCreator: MCreator
+  Magic: Magic
+  Map Based: Sulla base della mappa
+  QoL: QoL
+  Skyblock: SkyBlock
+  Steampunk: Steampunk
+  Vanilla+: Vanilla+
 dataMigration:
   apply: Applica impostazioni
   directoryCriteriaHint: Assicurati che la nuova posizione della directory sia una directory VUOTA!
@@ -153,6 +183,8 @@ dataMigration:
     Migrazione dei dati in corso. Non chiudere il Launcher o si perderanno i
     dati.
 delete:
+  'NO': 'No'
+  YEZ: DELETE
   name: Elimina {name}
   'no': 'No'
   'yes': Elimina
@@ -234,7 +266,7 @@ duration:
   name: Elimina {name}
   'no': 'No'
   second: '{duration} secondo fa | {duration} seconid fa'
-  'yes': Elimina
+  'yes': Sì, signore.
 edit: Modifica
 enable: Abilita
 env:
@@ -315,6 +347,7 @@ feedback:
   qqEnterGroup: Unisciti
 fileDetail:
   fileSize: Dimensione del file
+  filesize: Dimensione del file
   hash: Hash
 filter: Filtro
 filterLocalOnly: Mostra solo installate
@@ -437,10 +470,13 @@ instance:
   openCrashReportFolder: Apri la cartella del report di arresto anomalo
   openLogFolder: Apri la cartella dei log
   playtime: Tempo di gioco
+  preExecCommand: Comando di pre-avvio
+  preExecCommandHint: Comando da eseguire prima di lanciare Minecraft
   prependCommand: Anteponi comando
   prependCommandHint: Questo anteporrà questo comando prima di tutti i comandi di avvio
   requireName: Il nome è obbligatorio
   resolution: Risoluzione della finestra
+  resolutionEnabled: Accendere la propria risoluzione
   resolutionPreset: Preimpostazione della risoluzione
   showInstance: Mostra la cartella del gioco
   useSharedOptions: Utilizza le impostazioni di gioco condivise
@@ -638,6 +674,11 @@ launchFailed:
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
+launchPreExecuteCommandFailed:
+  description: >-
+    Il comando di pre-esecuzione non è riuscito con un errore: {error}.
+    Controllare il comando e riprovare.
+  title: Comando pre-esecuzione fallito
 launchStatus:
   assigningMemory: Assegnazione memoria
   exit: Uscire dal gioco?
@@ -920,6 +961,7 @@ modrinth:
     models: Modelli
     modloader: Mod Loader
     multiplayer: Multigiocatore
+    name: Categorie
     neoforge: NeoForge
     optifine: Optifine
     optimization: Ottimizzazioni
@@ -1192,6 +1234,7 @@ resourcepack:
   selectSearchHint: Ricerca e selezione del pacchetto risorse
   selected: Pacchetti risorse selezionati
   shared: Istanza che utilizza la cartella del pacchetto risorse condivisa
+  showDirectory: Aprite la cartella con i pacchetti di risorse
   showFile: Mostra il pacchetto risorse nella cartella {file}
   showInCurseforge: Mostra {name} in curseforge
   unselected: Pacchetti risorse non selezionati
@@ -1248,6 +1291,8 @@ screenshots:
   playSequence: Riproduci in ordine
 search:
   favorate: Collezione
+  local: Installato
+  market: Mercato Mod
 server:
   acceptingMinecraftVersion: Versione Minecraft accettata
   creationHint: Inserire l'indirizzo del server e fare ping al server
@@ -1376,9 +1421,14 @@ setting:
     focus: Layout a fuoco
   layoutDescription: Il layout del launcher rappresenta una diversa logica UI
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Assegnazione di un processore grafico dedicato
+  linuxEnableDedicatedGPUOptimizationDescription: Questa opzione assegna una GPU dedicata al processo di Minecraft.
   linuxTitlebar: Barra del titolo nativa Linux
   linuxTitlebarDescription: Usa la barra del titolo nativa di Linux per il launcher
   location: Posizione di archiviazione
+  manualUpdateHint: >-
+    La versione non può essere aggiornata automaticamente. Scaricate nuovamente
+    il launcher dal sito ufficiale!
   maunalUpdateHint: >-
     La versione non può essere aggiornata automaticamente. Per favore, riscarica
     il launcher dal sito web!
@@ -1531,6 +1581,7 @@ tag:
   createSelected: Crea tag per selezionato
   newTag: Nuovo tag
 task:
+  available: Disponibile
   cancelled: Annullato
   clear: Cancella attività completate
   connection:
@@ -1541,16 +1592,34 @@ task:
     running: Connessione attiva
     size: Totale
   connections: Consessioni di rete
+  delete:
+    content: >-
+      Questo eliminerà il file texturepack dal disco e non sarà possibile
+      recuperarlo.
+       Sei sicuro di poterlo recuperare?
+    title: Elimina texturepack
+  dropHint: Trascinare e rilasciare la cartella/zip texture qui per importare.
   empty: Nessuna attività in esecuzione
   failed: Falitto
+  import: Importazione di texturepack
+  incompatible: >-
+    Formato di textstack incompatibile ({format}). Corrispondenza {accept}.
+    Corrente {actual}.
+  manage: Texturpak
   manager: Gestore attività
   nTaskRunning: '{count} Attività sono in esecuzione'
   name: Attività | Attività
   pause: Pausa
+  searchOnCurseforge: Cerca {name} su curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Texturepack preferiti
+  showFile: Aprite il texturepack {file} nella cartella
+  showInCurseforge: Mostra {name} su curseforge
 theme:
   selectImage: Scegli Immagine
   selectMusic: Scegli Musica
   selectVideo: Scegli Video
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Host Scelto
@@ -1640,6 +1709,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Riscarica dal sito web ufficiale
 upstream:
+  ONLYShowCurrentVersion: Mostra solo la versione corrente di Minecraft
   downgrade: Downgrade
   missingModpackMetadata: >-
     I vecchi metadati del modpack non sono stati trovati. Puoi comunque eseguire

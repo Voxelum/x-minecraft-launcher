@@ -216,6 +216,8 @@ dataMigration:
     desenvolvedor!
   waitReload: Migrando dados. Por favor, não feche o launcher ou você perderá seus dados.
 delete:
+  'NO': 'No'
+  YEZ: DELETE
   name: Deletar {name}
   'no': Não
   'yes': Deletar
@@ -506,10 +508,13 @@ instance:
   openCrashReportFolder: Abrir a pasta de relatórios de erro
   openLogFolder: Abrir a pasta de logs
   playtime: Tempo de Jogo
+  preExecCommand: Comando de pré-inicialização
+  preExecCommandHint: Comando a ser executado antes de iniciar o Minecraft
   prependCommand: Comando Inicial
   prependCommandHint: Isso irá adicionar esse comando antes de todos os comandos de inicialização
   requireName: O nome é obrigatório
   resolution: Resolução da janela
+  resolutionEnabled: Ative sua própria resolução
   resolutionPreset: Resolução predefinida
   showInstance: Mostrar a pasta do jogo
   useSharedOptions: Usar configurações compartilhadas do jogo
@@ -711,6 +716,8 @@ launchFailed:
   failedToLaunch: Falha ao iniciar o jogo
   latestLog: Log mais recente
   title: Jogo fechado com código anômalo
+launchPreExecuteCommandFailed:
+  title: Falha no comando de pré-execução
 launchStatus:
   assigningMemory: Atribuindo memória
   exit: Sair do jogo?
@@ -1728,6 +1735,7 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-baixar no site oficial
 upstream:
+  ONLYShowCurrentVersion: Mostrar apenas a versão atual do minecraft
   downgrade: Reverter versão
   missingModpackMetadata: >-
     Os metadados do modpack antigo não foram encontrados. Você ainda pode

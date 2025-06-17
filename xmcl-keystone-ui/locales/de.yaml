@@ -2,6 +2,8 @@ AppAddInstanceDialog:
   choiceTitle: |-
     Es werden mehrere Startprofile erkannt. 
     Wählen Sie eine zum Importieren aus.
+  configTitle: Konfiguration
+  createTitle: Eine Instanz erstellen
   downloadedNotification: Modpack {name} ist installiert. Soll ich eine Instanz dafür erstellen?
   serverTitle: Geben Sie Ihre Serveradresse ein
 AppShareInstanceDialog:
@@ -115,6 +117,7 @@ browseApp:
   default: DEFAULT
   delete: Löschen
   launch: Standardmäßig ausgeführt und eingestellt
+browseApps: Anzeigen der Benutzeroberfläche des Launcher
 cancel: Stornierung.
 checkUpdate:
   name: Nach Aktualisierungen suchen
@@ -131,6 +134,7 @@ curseforge:
   downloadOnly: Herunterladen
   file:
     gameVersion: Version des Spiels
+    modLoader: Mod Loader
   fileReleaseType: {}
   install: Installieren Sie
   installTo: Eingestellt in {path}
@@ -150,14 +154,58 @@ curseforge:
   worlds: {}
 curseforgeCard: {}
 curseforgeCategory:
+  API and Library: APIs und Bibliotheken
+  Addons: Ergänzungen
+  Adventure: Abenteuer
+  Adventure and RPG: Abenteuer und Rollenspiele
+  Animated: Animation
+  Armor, Tools, and Weapons: Rüstungen, Werkzeuge und Waffen
+  Armor， Tools， and Weapons: Rüstungen, Werkzeuge und Waffen
+  Combat / PvP: Wettbewerbe/PVP
+  Cosmetic: Erscheinungsbild/Dekoration
+  Creation: Kreativ-Modus
+  Data Packs: Daten-Paket
+  Education: Bildung
+  Exploration: Aufklärungsarbeit
+  Extra Large: Großes Format
+  FTB Official Pack: Offizielles FTB-Paket
   Fabric: Fabric
   FancyMenu: FancyMenu
+  Font Packs: Schriftarten
+  Food: Lebensmittel
+  Game Map: Spiel-Karten
+  Hardcore: Hardcore
   MCreator: MCreator
+  Magic: Magie
+  Map Based: Basierend auf der Karte
+  Map and Information: Karten und Informationen
+  Medieval: Mittelalter
+  Mini Game: Mini-Spiele
+  Miscellaneous: Sonstiges
+  Mod Support: Mod-Unterstützung
+  Modded World: Ein Mod für Welten
+  Modern: Modern
+  Multiplayer: Multiplayer
+  Parkour: Parkour
+  Photo Realistic: Realistische Fotografie
+  Puzzle: Rätsel
   QoL: QoL
+  Quests: Quests
   Redstone: Redstone
+  Sci-Fi: Sci-Fi
+  Server Utility: Server tool
   Skyblock: SkyBlock
+  Small / Light: Ein kleines bisschen
   Steampunk: Steampunk
+  Storage: Lagerung
+  Survival: Überleben
+  Tech: Technologie
+  Technology: Technologie
+  Traditional: Traditionell
+  Twitch Integration: Twitch-Integration
+  Utility & QoL: Nützlichkeit und Qol
   Vanilla+: Vanilla+
+  World Gen: Friedensgenerator
 dataMigration:
   apply: Einstellungen anwenden
   directoryCriteriaHint: Stellen Sie sicher, dass der neue Katalog ein LEERER Katalog ist!
@@ -187,6 +235,8 @@ dataMigration:
     Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten
     verlieren.
 delete:
+  'NO': Nein
+  YEZ: DELETE
   name: Löschen {name}
   'no': Nein.
   'yes': Ja
@@ -268,7 +318,10 @@ duration:
   day: '{duration} Tag | {duration} Tage'
   hour: '{duration} Stunde  | {duration} Stunden'
   minute: '{duration} Minute | {duration} Minuten'
+  name: Löschen {name}
+  'no': Nein
   second: '{duration} zweite | {duration} zweiten'
+  'yes': Ja, Sir.
 edit: bearbeiten
 enable: Aktivieren Sie
 env:
@@ -283,6 +336,7 @@ errors:
     Die jar-Datei des Forge-Installationsprogramms kann nicht analysiert werden.
     Vielleicht hat Forge ein neues Installer-Dateiformat Installer-Dateiformat?
     Bitte kontaktieren Sie die Entwickler, wenn das Problem weiterhin besteht.
+  BadInstanceType: 'Ungültige Instanz: {type}'
   BodyTimeoutError: HTTP Body Zeitüberschreitung ist abgelaufen
   ChecksumNotMatchError: >-
     Die Prüfsumme stimmt nicht überein! Sie sollte {expect} sein. Sie ist jetzt
@@ -341,9 +395,16 @@ feedback:
   discord: Discord
   discordDescription: Dem Discord-Kanal beitreten
   discordJoin: Beitreten
+  generateReport: Einen Bericht erstellen
+  generateSaveAs: Bericht speichern
   github: Github Issue
   githubDescription: Öffnen Sie einen GitHub Issue, um Ihre Meinung mitzuteilen
   githubOpenIssue: Github
+  hint: >-
+    Klicken Sie auf die Schaltfläche , um einen Bericht zu erstellen und das
+    Entwicklungsteam zu kontaktieren. Der Bericht enthält Informationen über Ihr
+    Gerät, einschließlich Betriebssystemtyp, Version, Benutzername (im
+    Betriebssystem) und andere Daten.
   kook: Kook
   kookDescription: >-
     Kook ist eine alternative Anwendung für Discord-Nutzer auf dem chinesischen
@@ -356,6 +417,7 @@ feedback:
   qqEnterGroup: Beitreten
 fileDetail:
   fileSize: Größe der Datei
+  filesize: Größe der Datei
   hash: Hash
 filter: Filter.
 filterLocalOnly: Nur installiert anzeigen
@@ -479,12 +541,14 @@ instance:
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs
-  preExecCommand: Vor-Ausführungsbefehl
-  preExecCommandHint: Befehl, der vor dem Start von Minecraft ausgeführt wird
+  playtime: Spielzeit
+  preExecCommand: Vor-Start-Befehl
+  preExecCommandHint: Befehl zum Ausführen vor dem Start von Minecraft
   prependCommand: Befehl voranstellen
   prependCommandHint: Dadurch wird dieser Befehl allen Startbefehlen vorangestellt
   requireName: Der Name ist erforderlich
   resolution: Fensterauflösung
+  resolutionEnabled: Benutzerdefinierte Autorisierung aktivieren
   resolutionPreset: Auflösung Voreinstellung
   showInstance: Spieleordner anzeigen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
@@ -629,6 +693,11 @@ launch:
   launchAnyway: Trotzdem starten
 launchBlocked:
   ignore: Erzwungener Start
+  launchBadVersion:
+    description: >-
+      Die Versionsdatei {version} ist beschädigt oder fehlt. Vielleicht müssen
+      Sie diese Version neu installieren?
+    title: Fehler in der Versionsdatei
   launchGeneralException:
     description: Einige Fehler führen zu einem fehlgeschlagenen Start.
     title: Der Start ist fehlgeschlagen
@@ -684,8 +753,14 @@ launchFailed:
   description: >-
     Es gibt keinen Absturzbericht. Dies sind Fehlerprotokolle und das letzte
     Protokoll.
+  failedToLaunch: Der Startvorgang konnte nicht gestartet werden
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
+launchPreExecuteCommandFailed:
+  description: >-
+    Der Pre-Execute-Befehl ist mit einem Fehler fehlgeschlagen: {error}. Bitte
+    überprüfen Sie den Befehl und versuchen Sie es erneut.
+  title: Vor-Ausführungsbefehl fehlgeschlagen
 launchStatus:
   assigningMemory: Speicher zuweisen
   exit: Das Spiel aufgeben?
@@ -693,7 +768,7 @@ launchStatus:
   launching: Starten...
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
   refreshingUser: Aktualisierung des Benutzertokens
-  spawningProcess: ''
+  spawningProcess: Start des Prozesses
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
@@ -813,6 +888,7 @@ mod:
   filter: Mod-Filter
   group: Gruppe
   groupInstalled: Gruppensatz Mods
+  hasUpdate: Die Mod hat eine neue Version!
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.
   incompatibleHint: Schauen Sie sich Ihren Mod-Kompatibilitätsbericht an
@@ -831,6 +907,7 @@ mod:
   openLink: Link zur Mod öffnen {url}
   search: Suche nach Änderungen
   searchOnCurseforge: Fluchschmiede besuchen {name}
+  searchOnMcWiki: Schlagen Sie {Name} in der MC-Enzyklopädie nach.
   searchOnModrinth: Suche. {name} auf Modrinth
   showDirectory: Änderungskatalog anzeigen
   showFile: Den Weg zur Mode weisen {file}
@@ -1022,6 +1099,7 @@ modrinth:
   copyTitle: Text kopieren {title} in die Zwischenablage
   createAt: Erstellt von
   createCollection: Sammlung erstellen
+  description: Beschreibung
   downloads: Herunterladen
   environments:
     client: Kunde.
@@ -1070,6 +1148,7 @@ modrinth:
     follows: Abonnenten
     newest: Die neu geschaffene
     relevance: Relevanz
+    title: Sortieren nach
     updated: Kürzlich aktualisiert
   sourceUrl: Quelle.
   technicalInformation: Technische Informationen
@@ -1263,10 +1342,13 @@ resourcepack:
   independent: Instanz verwendet einen unabhängigen Ressourcenpaketordner
   manage: Verwalten von Texturpaketen
   name: Texturpaket | Texturpakete
+  searchHint: Suche nach einer Gruppe von Ressourcen
   searchOnCurseforge: Suche nach. {name} in curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selectSearchHint: Suche nach und Auswahl eines Ressourcenpakets
   selected: Ausgewählte Texturpakete
   shared: Instanz verwendet den Ordner des freigegebenen Ressourcenpakets
+  showDirectory: Öffnen Sie den Ordner mit den Ressourcenpaketen
   showFile: Öffnen Sie das Texturpaket {file} im Ordner
   showInCurseforge: anzeigen {name} in curseforge
   unselected: Unausgewählte Texturpakete
@@ -1323,6 +1405,8 @@ screenshots:
   playSequence: Spielen Sie der Reihe nach
 search:
   favorate: Sammlung
+  local: Installiert
+  market: Mod-Markt
 server:
   acceptingMinecraftVersion: Eine Version von Minecraft adoptieren
   creationHint: Geben Sie die Serveradresse und den Server-Ping an
@@ -1462,9 +1546,14 @@ setting:
     focus: Layout der Fokussierung
   layoutDescription: Layout des Launcher, der verschiedene Logiken der Benutzeroberfläche anzeigt
   layoutTitle: Layout
+  linuxEnableDedicatedGPUOptimization: Zuweisung eines dedizierten Grafikprozessors
+  linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess einen eigenen Grafikprozessor zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
   location: Speicherort
+  manualUpdateHint: >-
+    Die Version kann nicht automatisch aktualisiert werden. Bitte laden Sie den
+    Launcher erneut von der offiziellen Website herunter!
   maunalUpdateHint: |-
     Die Version kann nicht automatisch aktualisiert werden. 
     Laden Sie den Launcher von der Website herunter!
@@ -1503,8 +1592,10 @@ setting:
     dark: Dunkles Thema
     light: Thema Licht
     system: Verwenden Sie das Systemthema
+  themeExport: Ein Thema exportieren
   themeFont: Schriftart
   themeFontDescription: Ändern Sie die Schriftart des Launchers.
+  themeImport: Ein Thema importieren
   themeResetFont: Schriftart zurücksetzen
   themeSelectFont: Wählen Sie Schriftart aus
   themeShare: Thema teilen
@@ -1524,6 +1615,12 @@ settingLabel:
   local: Lokales
   localHint: Diese Einstellung wird von der aktuellen Instanz außer Kraft gesetzt
 setup:
+  account:
+    description: >-
+      Loggen Sie sich in Ihr Spielkonto ein. Wenn Sie noch keinen Account haben,
+      können Sie dies vorerst überspringen.
+    name: Ein Spielkonto hinzufügen
+    skip: Überspringen Sie es vorerst
   appearance:
     name: '@:setting.appearance'
   dataRoot:
@@ -1587,6 +1684,7 @@ shaderPack:
     Damit wird die Shader-Datei gelöscht {path} und es wird unmöglich sein, sie
     wiederherzustellen.
   disabled: Shader Pack ist deaktiviert
+  dropHint: Ziehen Sie die Shader-Set-Datei (.zip) hierher und legen Sie sie ab
   empty: Shader nicht hervorgehoben
   enable: Verwendung eines Shaders {name}
   enabled: Shader-Pack aktiviert
@@ -1597,6 +1695,9 @@ shaderPack:
   noShaderModInstallHint: >-
     Sie müssen einen der folgenden Mods installieren, um das Shader-Paket zu
     laden.
+  searchHint: Suche nach einem Shader-Set
+  selectSearchHint: Suchen Sie das Shader Pack und wählen Sie es aus
+  showDirectory: Öffnen Sie den Ordner mit den Shader-Sets
   showFile: Відкрити цей шейдер у папці
 shared:
   accept: Akzeptieren
@@ -1607,14 +1708,22 @@ sortBy:
   alphabetDesc: Sortieren Sie nach Alphabet (absteigend)
   timeAsc: Sortieren nach Änderungszeit (aufsteigend)
   timeDesc: Sortieren nach Änderungszeit (absteigend)
+store:
+  explore: Erkunden Sie
+  latestMinecraft: Die neueste Version von Minecraft
+  name: Shop für Mod-Kits
+  popular: Beliebte Mod-Builds
+  recentUpdated: Kürzlich aktualisiert
 summery: Sommer
 tag:
   create: Einen Tag erstellen
   createSelected: Stvoriti-Tag für Inverse
   newTag: Neuer Tag
 task:
+  available: Verfügbar
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
+  compatible: Das Format {format} ist kompatibel mit {version}
   connection:
     connected: In Verbindung gebracht
     free: Frei
@@ -1623,17 +1732,36 @@ task:
     running: Laufende Verbindung
     size: komplette Anzahl
   connections: Netzwerkverbindungen
+  delete:
+    content: >-
+      Dadurch wird die Texturepack-Datei vom Datenträger gelöscht, und wir
+      können sie nicht wiederherstellen.
+       Sind Sie sicher, dass Sie sie wiederherstellen können?
+    title: Texturpaket löschen
+  dropHint: Ziehen Sie die Ordner/Zip-Texturen zum Importieren hierher.
   empty: Keine Aufgaben laufen
+  enable: 'Texturepacks enthalten: {Anzahl}'
   failed: Gescheitert
+  import: Texturpaket importieren
+  incompatible: >-
+    Inkompatibles Textstapelformat ({format}). Passend zu {accept}. Aktuell
+    {actual}.
+  manage: Texturpak
   manager: Aufgaben-Manager
   nTaskRunning: 'Begonnene Aufgaben: {count}'
   name: Aufgaben Aufgabenя
   pause: Pause
+  searchOnCurseforge: Suche {name} auf curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
+  selected: Bevorzugte Texturepacks
+  showFile: Öffnen Sie das Texturpaket {file} im Ordner
+  showInCurseforge: Zeige {Name} auf curseforge
+  unselected: Nicht ausgewählte Texturepacks
 theme:
   selectImage: Bild auswählen
   selectMusic: Wählen Sie Musik
   selectVideo: Wählen Sie Video
+  title: X Minecraft Launcher
 title: X Minecraft Launcher
 transportType:
   host: Gastgeber-Kandidat
@@ -1642,6 +1770,9 @@ transportType:
   srflx: Gastgeber-Server Reflexive
 turnRegion:
   fr: Frankreich
+  guangzhou: Guangzhou, China
+  hk: Hongkong
+  liaoning: Liaoning, China
   po: Polen
 tutorial:
   feedbackDescription: >-
@@ -1650,6 +1781,13 @@ tutorial:
   hideNewsHeaderDescription: |-
     Sie können die News-Show links sehen. 
     Durch Klicken auf diese Schaltfläche kann diese Vitrine ausgeblendet werden.
+  instance:
+    iconDescription: Klicken Sie auf , um das Symbol zu ändern.
+    iconTitle: Instanz-Symbol
+    javaDescription: Wählen oder ändern Sie die Java-Version.
+    javaImportDescription: Java aus dem lokalen Speicher importieren.
+    javaImportTitle: Java importieren
+    javaTitle: Java-Liste
   instanceAddDescription: >-
     Klicken Sie auf diese Schaltfläche, um ein bestehendes Minecraft zu
     importieren oder ein neues Minecraft von Grund auf zu erstellen oder ein von
@@ -1743,12 +1881,16 @@ universalDrop:
 update:
   goOfficialWebDownload: Erneuter Download auf der offiziellen Website
 upstream:
+  ONLYShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen
+  downgrade: Downgrade der Version
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.
 
     Sie können das System trotzdem aktualisieren, aber das Ergebnis ist
     möglicherweise nicht korrekt. Bitte erstellen Sie bitte eine Sicherungskopie
     der Instanzdatei.         
+  onlyShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen
+  update: Update
 user:
   accessToken: Zugangstoken
   authMode: Autorisierungsdienst
