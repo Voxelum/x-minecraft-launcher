@@ -3,7 +3,7 @@
     topbar
     window
     :color="'transparent'"
-    class="moveable flex w-full grow-0 gap-1 p-0"
+    class="moveable flex w-full grow-0 gap-1.5 p-0 flex-shrink-0 pr-2"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span
@@ -124,3 +124,9 @@ if (props.back) {
   }
 }
 </script>
+
+<style>
+.v-system-bar {
+  height: 48px !important;
+}
+</style>

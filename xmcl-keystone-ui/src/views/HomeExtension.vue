@@ -7,7 +7,7 @@
     }"
   >
     <div
-      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+      class="flex flex-grow-0 flex-row items-center justify-center gap-4"
     >
       <template
         v-for="ver of versions"
