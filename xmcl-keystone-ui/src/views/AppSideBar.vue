@@ -53,7 +53,7 @@
 
     <AppSideBarContentNext />
 
-    <v-list
+    <!-- <v-list
       nav
       dense
       class="px-2"
@@ -70,9 +70,9 @@
         </v-list-item-icon>
         <v-list-item-title>{{ t('multiplayer.name') }}</v-list-item-title>
       </v-list-item>
-    </v-list>
+    </v-list> -->
 
-    <v-divider class="mx-2 block" />
+    <!-- <v-divider class="mx-2 block" /> -->
 
     <v-list
       nav
@@ -122,10 +122,6 @@ const { back } = useRouter()
 
 function goBack() {
   back()
-}
-
-function goMultiplayer() {
-  windowController.openMultiplayerWindow()
 }
 
 </script>

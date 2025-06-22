@@ -26,7 +26,7 @@
             responsive
             :text="ver.version"
           />
-          <v-icon v-if="ver.title !== 'Minecraft'" size="20" class="opacity-90 dark:opacity-54">launch</v-icon>
+          <v-icon v-if="ver.title !== 'Minecraft'" size="20" class="opacity-90 dark:opacity-60 cursor-pointer hover:opacity-100">launch</v-icon>
           <!-- <div v-if="ver.title !== 'Minecraft'" class="opacity-50 flex items-center gap-2 text-sm">
             <v-icon size="16">launch</v-icon>
             安装模组
