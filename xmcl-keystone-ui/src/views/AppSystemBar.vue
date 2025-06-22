@@ -3,10 +3,16 @@
     topbar
     window
     :color="'transparent'"
-    class="moveable flex w-full grow-0 gap-1.5 p-0 flex-shrink-0 pr-2"
-    :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
+    class="moveable flex w-full grow-0 gap-1.5 p-0 flex-shrink-0 pr-2 z-2"
   >
-    <span
+    <div
+      :style="{
+        backdropFilter: `blur(${blurAppBar}px)`,
+        mask: 'linear-gradient(black, black 40%, transparent)',
+      }"
+      class="absolute top-0 left-0 right-0 -z-1 h-14 opacity-85"
+    />
+    <!-- <span
       v-if="back"
       class="flex shrink grow-0 p-0"
     >
@@ -23,7 +29,7 @@
       >
         arrow_back
       </v-icon>
-    </span>
+    </span> -->
     <slot />
 
     <AppAudioPlayer
@@ -31,6 +37,11 @@
       class="ml-22"
     />
     <div class="grow " />
+
+    <AppSystemBarBadge
+      icon="arrow_back"
+      @click="onBack()"
+    />
 
     <TaskSpeedMonitor v-if="!noTask" />
     <AppSystemBarBadge
@@ -108,6 +119,7 @@ const props = defineProps<{
 }>()
 
 const { appBarColor, blurAppBar } = injection(kTheme)
+console.log(blurAppBar.value)
 const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
@@ -115,13 +127,10 @@ const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
 const tutor = inject(kTutorial, undefined)
+const router = useRouter()
 
-let onBack = () => {}
-if (props.back) {
-  const router = useRouter()
-  onBack = () => {
-    router.back()
-  }
+const onBack = () => {
+  router.back()
 }
 </script>
 

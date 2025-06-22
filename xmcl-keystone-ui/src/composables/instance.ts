@@ -31,6 +31,7 @@ export function useInstance(path: Ref<string>, instances: Ref<Instance[]>) {
   const instance = computed(() => instances.value.find(i => i.path === path.value) ?? EMPTY_INSTANCE)
   const runtime = computed(() => instance.value.runtime)
   const name = computed(() => instance.value.name)
+  const description = computed(() => instance.value.description)
   const isServer = computed(() => instance.value.server !== null)
   const select = (p: string) => {
     path.value = p
@@ -44,6 +45,7 @@ export function useInstance(path: Ref<string>, instances: Ref<Instance[]>) {
     isServer,
     select,
     instance,
+    description,
     refreshing: computed(() => false),
   }
 }

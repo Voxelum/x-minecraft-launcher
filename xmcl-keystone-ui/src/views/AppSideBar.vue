@@ -12,14 +12,14 @@
       dense
       class="px-2"
     >
-      <v-list-item
+      <!-- <v-list-item
         class="non-moveable"
         @click="goBack"
       >
         <v-icon :size="22">
           arrow_back
         </v-icon>
-      </v-list-item>
+      </v-list-item> -->
 
       <v-list-item
         id="my-stuff-button"
@@ -30,7 +30,7 @@
         class="non-moveable"
       >
         <v-list-item-icon>
-          <v-icon :size="22"> widgets </v-icon>
+          <v-icon :size="22"> home </v-icon>
         </v-list-item-icon>
         <v-list-item-title v-text="t('myStuff')" />
       </v-list-item>

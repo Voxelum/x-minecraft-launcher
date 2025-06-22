@@ -1,20 +1,20 @@
 <template>
   <div
-    class="flex flex-grow-0 items-center rounded pr-2 text-sm"
+    class="flex flex-grow-0 items-center rounded pr-2 text-sm gap-2"
     :class="{ 'cursor-pointer': !!$listeners.click }"
     @click="emit('click', $event)"
   >
     <v-avatar
       :left="true"
       class="hidden lg:block"
-      style="height: 34px; width: 34px; min-width: 34px;"
+      style="height: 32px; width: 32px; min-width: 34px;"
       :class="{ responsive }"
     >
       <img
         v-if="avatar"
         :src="avatar"
       >
-      <v-icon v-else-if="icon">
+      <v-icon v-else-if="icon" :class="iconClass">
         {{ icon }}
       </v-icon>
     </v-avatar>
@@ -24,14 +24,16 @@
       class="text overflow-hidden overflow-ellipsis whitespace-nowrap"
     >
       <div
-        class="select-none font-semibold dark:text-gray-300"
+        class="select-none font-semibold"
         :style="{
           color: bgColor
         }"
       >
         {{ title }}
       </div>
-      {{ text }}
+      <div class="opacity-64">
+        {{ text }}
+      </div>
     </div>
   </div>
 </template>
@@ -45,6 +47,7 @@ const props = defineProps<{
   title?: string
   text?: string
   responsive?: boolean
+  iconClass?: string
 }>()
 const { getColorCode } = useVuetifyColor()
 const bgColor = computed(() => props.color ? getColorCode(props.color) : undefined)

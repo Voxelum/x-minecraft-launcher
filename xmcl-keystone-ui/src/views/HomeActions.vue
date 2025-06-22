@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex xl:gap-4 gap-1 home-actions items-end justify-center flex-col absolute right-2 top-0"
+    class="flex xl:gap-4 gap-1 home-actions items-end justify-center flex-col mt-1"
   >
     <v-btn
       v-shared-tooltip.left="() => t('instance.showInstance')"

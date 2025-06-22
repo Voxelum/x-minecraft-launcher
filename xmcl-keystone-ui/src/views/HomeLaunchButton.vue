@@ -13,7 +13,7 @@
       <v-btn
         id="launch-button"
         :disabled="isValidating"
-        :color="color"
+        :color="primaryColor"
         :x-large="!compact"
         :large="compact"
         class="px-10 text-xl/[28px] transition-all btn-left shadow-md !h-12 rounded-l-md"
@@ -21,12 +21,6 @@
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
       >
-        <v-icon
-          v-if="leftIcon"
-          class="-ml-1 pr-2 text-2xl"
-        >
-          {{ leftIcon }}
-        </v-icon>
         <span class="text-lg flex items-center">
           {{ text }}
           <v-icon
@@ -58,7 +52,7 @@
         <v-btn
           :disabled="isValidating"
           class="min-w-unset! max-w-8! px-0! btn-right shadow-md !h-12 rounded-r-md"
-          :color="color"
+          :color="primaryColor"
           :x-large="!compact"
           :large="compact"
           v-on="on"
@@ -78,6 +72,7 @@ import { injection } from '@/util/inject'
 import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
 import { kInstances } from '@/composables/instances'
 import { useInFocusMode } from '@/composables/uiLayout'
+import { kTheme } from '@/composables/theme'
 
 defineProps<{ compact?: boolean }>()
 
@@ -85,7 +80,8 @@ const isFocus = useInFocusMode()
 const emit = defineEmits(['mouseenter', 'mouseleave'])
 const { isValidating } = injection(kInstances)
 
-const { onClick, color, icon, text, loading, leftIcon, count } = injection(kLaunchButton)
+const { primaryColor } = injection(kTheme)
+const { onClick, color, icon, text, loading, count } = injection(kLaunchButton)
 
 const isShown = ref(false)
 </script>

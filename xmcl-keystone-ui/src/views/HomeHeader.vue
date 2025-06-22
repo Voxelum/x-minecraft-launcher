@@ -21,16 +21,18 @@
       }"
     >
       <div
-        class="flex flex-1 flex-col flex-grow-0 items-baseline pr-2 -mt-1 pl-4"
+        class="flex flex-1 flex-grow-0 pr-2 -mt-1 pl-4"
       >
-        <div
-          :style="{
-            fontSize: headerFontSize
-          }"
-          class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all font-medium font-[Telegraf,sans-serif]"
-        >{{ name || `Minecraft ${version.minecraft}` }}</div>
-        <div class="text-lg text-secondary overflow-hidden overflow-ellipsis whitespace-nowrap transition-all mt-0.5 -mb-2">
-          {{description || '暂无描述'}}
+        <div>
+          <div
+            :style="{
+              fontSize: headerFontSize
+            }"
+            class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all font-medium font-[Telegraf,sans-serif]"
+          >{{ name || `Minecraft ${version.minecraft}` }}</div>
+          <div class="text-lg text-secondary overflow-hidden overflow-ellipsis whitespace-nowrap transition-all mt-0.5">
+            {{description || ''}}
+          </div>
         </div>
         <router-view name="route" />
         <!-- <AvatarItem
