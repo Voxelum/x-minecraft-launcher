@@ -72,7 +72,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
     file.path = await hardLinkFiles(file.path, destination)
   }
 
-  async function downloadFile(instFile: InstanceFile, domainDir: string, downloadOptions: DownloadBaseOptions) {
+  async function downloadFile(instFile: InstanceFile, domainDir: string, downloadOptions: DownloadBaseOptions, id?: string) {
     const snapshoted = await getSnapshotByUris(instFile, domainDir)
     const filePath = join(domainDir, instFile.path)
     const uris = instFile.downloads
@@ -111,9 +111,11 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         projectId: instFile.modrinth.projectId,
         versionId: instFile.modrinth.versionId,
         filename: basename(instFile.path),
+        id,
       } : {
         projectId: instFile.curseforge!.projectId,
         fileId: instFile.curseforge!.fileId,
+        id,
       })
     await submit(task)
 
@@ -234,7 +236,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
       const files = await getFiles(options)
 
       const result = await Promise.all(files.map(async (file) => {
-        const result = await downloadFile(file, options.directory, downloadOptions)
+        const result = await downloadFile(file, options.directory, downloadOptions, options.id)
         await postprocess(result, options.directory, file.icon)
         return result
       }))

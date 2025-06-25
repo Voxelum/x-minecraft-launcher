@@ -16,6 +16,7 @@ import { kLaunchTask } from './launchTask'
 import { useUserDiagnose } from './userDiagnose'
 import { kInstanceJava } from './instanceJava'
 import { kUserContext } from './user'
+import { kInstanceUpstream } from './instanceUpstream'
 
 export interface LaunchMenuItem {
   title: string
@@ -40,6 +41,7 @@ export function useLaunchButton() {
   const { fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionInstall)
   const versionIssues = useInstanceVersionDiagnose()
   const { issue: javaIssue } = injection(kInstanceJavaDiagnose)
+  const { isUpToDate, updateToLatest, installing } = injection(kInstanceUpstream)
   const { issue: filesIssue, fix: fixInstanceFileIssue, loading: loadingInstanceFiles } = useInstanceFilesDiagnose()
   const { issue: userIssue, fix: fixUserIssue } = useUserDiagnose()
   const { status, pause, resume } = injection(kLaunchTask)
@@ -136,6 +138,15 @@ export function useLaunchButton() {
         menu: versionIssues.value,
         onClick: () => fixVersionIssues(),
       }
+    } else if (!isUpToDate.value) {
+      return {
+        icon: 'get_app',
+        text: t('setting.update'),
+        color: 'blue',
+        onClick: () => {
+          updateToLatest()
+        },
+      }
     } else {
       return {
         text: t('launch.launch'),
@@ -167,6 +178,7 @@ export function useLaunchButton() {
     isRefreshingVersion.value ||
     loadingInstanceFiles.value ||
     isValidating.value ||
+    installing.value ||
     dirty.value)
   const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
   const menuItems = computed<LaunchMenuItem[]>(() => dirty.value ? [] : launchButtonFacade.value.menu || [])

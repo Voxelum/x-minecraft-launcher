@@ -43,6 +43,7 @@ import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composable
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
 import { provide } from 'vue'
+import { kInstanceUpstream, useInstanceUpstream } from '@/composables/instanceUpstream'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -104,6 +105,7 @@ export default defineComponent({
     provide(kInstanceModsContext, instanceMods)
     provide(kInstanceFiles, files)
     provide(kLaunchTask, task)
+    provide(kInstanceUpstream, useInstanceUpstream(instance.instance, instances))
 
     provide(kInstanceVersionInstall, install)
 

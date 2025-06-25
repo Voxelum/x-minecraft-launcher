@@ -75,6 +75,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const result = await provider.installFile({
       ...options,
       directory: this.getPath('modpacks'),
+      id: options.id
     })
     return result.map(r => r.path)
   }

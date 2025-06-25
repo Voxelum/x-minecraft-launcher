@@ -21,7 +21,9 @@ export type InstallMarketOptionsCurseforge = {
   file: CurseforgeFileIdentifier | CurseforgeFileIdentifier[]
 }
 
-export type InstallMarketOptions = InstallMarketOptionsModrinth | InstallMarketOptionsCurseforge
+export type InstallMarketOptions = (InstallMarketOptionsModrinth | InstallMarketOptionsCurseforge) & {
+  id?: string
+}
 
 export type InstallMarketOptionWithInstance = InstallMarketOptions & {
   instancePath: string

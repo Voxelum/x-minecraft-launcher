@@ -40,12 +40,12 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
   }
 }
 
-export function getModrinthVersionModel(project: MaybeRef<string>, featured?: boolean, loaders?: MaybeRef<string | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
+export function getModrinthVersionModel(project: MaybeRef<string | undefined>, featured?: boolean, loaders?: MaybeRef<string | undefined>, gameVersions?: MaybeRef<string[] | undefined>) {
   return {
-    key: computed(() => getModrinthVersionKey(get(project), featured, get(loaders), get(gameVersions))),
+    key: computed(() => project ? getModrinthVersionKey(get(project)!, featured, get(loaders), get(gameVersions)) : undefined),
     fetcher: async () => {
       const loader = get(loaders)
-      const result = (await clientModrinthV2.getProjectVersions(get(project), { loaders: loader ? [loader] : undefined, gameVersions: get(gameVersions), featured })).map(markRaw)
+      const result = (await clientModrinthV2.getProjectVersions(get(project)!, { loaders: loader ? [loader] : undefined, gameVersions: get(gameVersions), featured })).map(markRaw)
       return result
     },
   }

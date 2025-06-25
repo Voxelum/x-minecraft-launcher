@@ -169,16 +169,16 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
   }
 }
 
-export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
+export function getCurseforgeProjectFilesModel(projectId: Ref<number | undefined>, gameVersion: MaybeRef<string | undefined>, modLoaderType: MaybeRef<FileModLoaderType | undefined>) {
   return {
-    key: computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
+    key: computed(() => projectId.value ? formatKey(`/curseforge/${projectId.value}/files`, {
       gameVersion,
       modLoaderType,
-    })),
+    }) : undefined),
     fetcher: () => clientCurseforgeV1.getModFiles({
-      modId: projectId.value,
-      gameVersion: gameVersion.value,
-      modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
+      modId: projectId.value!,
+      gameVersion: get(gameVersion),
+      modLoaderType: get(modLoaderType) === 0 ? undefined : get(modLoaderType),
     }).then(v => {
       for (const d of v.data) {
         markRaw(d)

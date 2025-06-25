@@ -5,12 +5,12 @@
         <div class="flex absolute top-0 h-4 z-4 right-0 p-1 icons" :class="{ visibled: pinned || counter > 0 }">
           <div class="flex-grow" />
           <v-btn :class="{ 'v-btn--active': pinned }" icon small @click="onPin">
-            <v-icon class="material-symbols-outlined ">
+            <v-icon size="20" class="material-symbols-outlined ">
               keep
             </v-icon>
           </v-btn>
           <v-btn icon small @click="onViewDashboard">
-            <v-icon class="rotate-[45deg]">
+            <v-icon size="20" class="rotate-[45deg]">
               unfold_more
             </v-icon>
           </v-btn>
@@ -40,6 +40,7 @@
             v-if="headerData"
           >
             <HomeUpstreamHeader
+              class="h-full"
               :value="headerData"
               dense
             />
@@ -171,7 +172,7 @@ const rowCount = computed(() => {
   return rows * cols
 })
 
-const pinned = useLocalStorage('home-pinned', true)
+const pinned = useLocalStorage('home-pinned', false)
 function onPin() {
   pinned.value = !pinned.value
 }

@@ -10,13 +10,13 @@
       <div
         id="user-avatar"
         v-bind="attrs"
-        class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 transition-all hover:bg-[rgba(255,255,255,0.2)]"
+        class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 py-1 transition-all hover:bg-[rgba(255,255,255,0.2)]"
         v-on="on"
       >
         <PlayerAvatar
           class="overflow-hidden rounded-full transition-all duration-300"
           :src="selectedUserGameProfile?.textures.SKIN.url"
-          :dimension="28"
+          :dimension="24"
         />
         {{ selectedUserGameProfile?.name }}
       </div>
