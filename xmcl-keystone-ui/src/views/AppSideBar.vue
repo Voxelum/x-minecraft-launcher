@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    :right="sidebarLocation === 'right'"
     :value="true"
     permanent
     :mini-variant="true"
@@ -115,9 +116,11 @@ import { injection } from '@/util/inject'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { kTheme } from '@/composables/theme'
+import { kUILayout } from '@/composables/uiLayout'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
+const { sidebarLocation } = injection(kUILayout)!
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
@@ -140,6 +143,9 @@ function goMultiplayer() {
   display: flex;
   flex-direction: column;
   /* @apply rounded-r-xl border-r-[hsla(0,0%,100%,.12)]; */
+}
+.sidebar.v-navigation-drawer--right {
+  /* @apply rounded-l-xl border-l-[hsla(0,0%,100%,.12)]; */
 }
 </style>
 <style>

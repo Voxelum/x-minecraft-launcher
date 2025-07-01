@@ -196,6 +196,10 @@ dataMigration:
     Место назначения миграции не является пустым каталогом! Выберите пустой
     каталог!
   migrationNoPermission: >-
+
+setting.sidebarLocation: Расположение боковой панели
+setting.sidebarLocation.left: Слева
+setting.sidebarLocation.right: Справа
     Нет разрешения на переименование старого каталога в новый! Убедитесь, что
     лаунчер имеет доступ к обоим местам!
   placeholder: Нажмите здесь, чтобы выбрать каталог

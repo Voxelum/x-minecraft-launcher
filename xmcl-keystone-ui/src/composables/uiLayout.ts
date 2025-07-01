@@ -4,7 +4,8 @@ import { useLocalStorageCacheStringValue } from './cache'
 
 export function useUILayout() {
   const layout = useLocalStorageCacheStringValue('ui_layout', 'default' as 'default' | 'focus')
-  return layout
+  const sidebarLocation = useLocalStorageCacheStringValue('sidebar_location', 'left' as 'left' | 'right')
+  return { layout, sidebarLocation }
 }
 
 export function useInFocusMode() {

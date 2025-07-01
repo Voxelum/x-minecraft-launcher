@@ -7,9 +7,9 @@
     }">
     </div>
     <AppSystemBar />
-    <div class="relative flex h-full overflow-auto">
+    <div class="relative flex h-full overflow-auto" :class="{ 'flex-row-reverse': sidebarLocation === 'right' }">
       <AppSideBar />
-      <main class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto">
+      <main class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto flex-grow">
         <transition name="fade-transition" mode="out-in">
           <router-view class="z-2" />
         </transition>
@@ -88,7 +88,7 @@ const { state } = injection(kSettingsState)
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 
-const layout = injection(kUILayout)
+const { layout, sidebarLocation } = injection(kUILayout)!
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
 const { path } = injection(kInstance)
 const isLessThan490px = useMediaQuery('(max-height: 490px)')

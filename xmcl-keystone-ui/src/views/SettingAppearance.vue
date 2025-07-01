@@ -14,6 +14,11 @@
       :description="t('setting.linuxTitlebarDescription')"
     />
     <SettingItemSelect
+      :select.sync="sidebarLocation"
+      :title="t('setting.sidebarLocation')"
+      :items="sidebarLocations"
+    />
+    <SettingItemSelect
       :select.sync="darkModel"
       :title="t('setting.darkTheme')"
       :description="t('setting.darkThemeDescription')"
@@ -513,7 +518,7 @@ const darkModel = computed({
   },
 })
 
-const layout = injection(kUILayout)
+const { layout, sidebarLocation } = injection(kUILayout)
 
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
@@ -533,6 +538,11 @@ const layouts = computed(() => [{
   text: t('setting.layout.focus'),
   value: 'focus',
 }])
+
+const sidebarLocations = computed(() => [
+  { text: t('setting.sidebarLocationLeft'), value: 'left' },
+  { text: t('setting.sidebarLocationRight'), value: 'right' },
+])
 
 const particleModes = computed(() => Object.entries({
   push: t('setting.particleMode.push'),
