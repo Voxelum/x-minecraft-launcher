@@ -3,7 +3,7 @@
     <v-list
       nav
       dense
-      class="ml-1 gap-1 flex flex-col flex-grow-0 justify-start overflow-auto px-2"
+      class="gap-1 flex flex-col flex-grow-0 justify-start overflow-auto px-2"
     >
       <template v-if="isValidating">
         <v-skeleton-loader
@@ -37,16 +37,7 @@
         v-shared-tooltip.right="_ => t('instances.add')"
         @click="showAddInstance()"
       >
-        <v-list-item-avatar
-          id="create-instance-button"
-          size="48"
-          class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
-          large
-        >
-          <v-icon class="text-3xl">
-            add
-          </v-icon>
-        </v-list-item-avatar>
+        <v-icon :size="22">add</v-icon>
 
         <v-list-item-title>{{ t('instances.add') }}</v-list-item-title>
       </v-list-item>
