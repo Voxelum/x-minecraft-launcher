@@ -454,6 +454,7 @@ instance:
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称
   nameHint: 名称便于以后识别
+  nameNoCyrillic: 无西里尔字母名称
   neverPlayed: 从未游玩
   openCrashReportFolder: 打开包含错误报告的文件夹
   openLogFolder: 打开日志文件夹

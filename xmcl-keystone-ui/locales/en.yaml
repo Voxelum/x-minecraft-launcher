@@ -483,6 +483,7 @@ instance:
   mcOptionsHint: Additional Minecraft launch arguments
   name: Profile Name
   nameHint: The name of the modpack
+  nameNoCyrillic: The name cannot contain Cyrillic characters
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder

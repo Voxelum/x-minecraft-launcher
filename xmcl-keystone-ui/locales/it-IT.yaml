@@ -466,6 +466,7 @@ instance:
   mcOptionsHint: Argomenti di avvio aggiuntivi di Minecraft
   name: Nome profilo
   nameHint: Il nome utilizzato per identificare il gioco
+  nameNoCyrillic: Il nome non può contenere caratteri cirillici
   neverPlayed: Mai giocato
   openCrashReportFolder: Apri la cartella del report di arresto anomalo
   openLogFolder: Apri la cartella dei log

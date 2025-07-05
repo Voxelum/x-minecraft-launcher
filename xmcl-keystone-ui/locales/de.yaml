@@ -538,6 +538,7 @@ instance:
   mcOptionsHint: Zusätzliche Anweisungen zum Starten von Minecraft
   name: Profilname
   nameHint: Der Name, der zur Identifizierung des Spiels verwendet wird
+  nameNoCyrillic: Der Name darf keine kyrillischen Zeichen enthalten
   neverPlayed: Nie gespielt
   openCrashReportFolder: Öffnen Sie den Ordner mit den Absturzberichten
   openLogFolder: Öffnen Sie den Ordner logs

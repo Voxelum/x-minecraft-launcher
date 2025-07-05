@@ -493,6 +493,7 @@ instance:
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil
   nameHint: Le nom utilisé pour identifier le jeu
+  nameNoCyrillic: Le nom ne doit pas contenir de caractères cyrilliques
   neverPlayed: Jamais Joué
   openCrashReportFolder: Ouvrir le dossier de rapport de crash
   openLogFolder: Ouvrir le dossier de logs

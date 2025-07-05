@@ -455,6 +455,7 @@ instance:
   mcOptionsHint: 額外的 Minecraft 啟動引數
   name: 名稱
   nameHint: 名稱便於以後識別
+  nameNoCyrillic: 名稱不應包含西里爾字母
   neverPlayed: 從未遊玩
   openCrashReportFolder: 開啟當機報告資料夾
   openLogFolder: 開啟日誌資料夾
