@@ -429,6 +429,7 @@ instance:
   mcOptionsHint: ADDISHUNAL MINECRAFT LAUNCH ARGUMENTS
   name: PROFILE NAYM
   nameHint: TEH NAYM OV TEH MODPACK
+  nameNoCyrillic: NO CYRILLIC CHARACTERZ ALLOWD
   neverPlayed: NEVR PLAYD
   openCrashReportFolder: OPEN CRASH REPORT FOLDR
   openLogFolder: OPEN LOG FOLDR

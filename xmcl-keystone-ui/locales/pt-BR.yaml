@@ -504,6 +504,7 @@ instance:
   mcOptionsHint: Argumentos adicionais para o lançamento do Minecraft
   name: Nome do Perfil
   nameHint: O nome do modpack
+  nameNoCyrillic: O nome não deve conter caracteres cirílicos
   neverPlayed: Nunca Jogado
   openCrashReportFolder: Abrir a pasta de relatórios de erro
   openLogFolder: Abrir a pasta de logs

@@ -96,6 +96,7 @@ const { instances } = injection(kInstances)
 const nameRules = computed(() => [
   (v: any) => !!v || t('instance.requireName'),
   (v: any) => !instances.value.some(i => i.name === v.trim()) || t('instance.duplicatedName'),
+  (v: any) => !/\p{Script=Cyrillic}/u.test(v) || t('instance.nameNoCyrillic'),
 ])
 
 const scrollElement = ref<HTMLElement | null>(null)

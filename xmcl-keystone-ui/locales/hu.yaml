@@ -456,6 +456,7 @@ instance:
   mcOptionsHint: Kiegészítő Minecraft indítási beállítások
   name: Profil név
   nameHint: A játék azonosítására használt név
+  nameNoCyrillic: A név nem tartalmazhat cirill karaktereket
   neverPlayed: Soha nem játszott
   openCrashReportFolder: Összeomlási jelentések mapppa megnyitása
   openLogFolder: Napló mappa megnyitása

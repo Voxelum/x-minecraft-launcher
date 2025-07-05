@@ -440,6 +440,7 @@ instance:
   mcOptionsHint: 追加のMinecraft実行引数
   name: 起動構成の名前
   nameHint: Modpackの名前
+  nameNoCyrillic: キリル文字は使用できません
   neverPlayed: 未プレイ
   openCrashReportFolder: クラッシュレポートフォルダを開く
   openLogFolder: ログフォルダを開く

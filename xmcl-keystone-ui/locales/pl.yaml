@@ -460,6 +460,7 @@ instance:
   mcOptionsHint: Dodatkowe poprawki dotyczące uruchomienia gry Minecraft
   name: Nazwa profilu
   nameHint: Nazwa używana do identyfikacji gry
+  nameNoCyrillic: Nazwa (bez znaków cyrylicy)
   neverPlayed: Nigdy nie grał
   openCrashReportFolder: Otwórz folder raportów o wypadkach
   openLogFolder: Otwórz folder dziennika

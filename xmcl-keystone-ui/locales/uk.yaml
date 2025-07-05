@@ -494,6 +494,7 @@ instance:
   mcOptionsHint: Додаткові аргументи запуску Minecraft
   name: Назва профілю
   nameHint: Назва модпаку
+  nameNoCyrillic: Назва повинна бути без кирилиці
   neverPlayed: Ніколи не грав
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів

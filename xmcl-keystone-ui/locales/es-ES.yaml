@@ -413,6 +413,7 @@ instance:
   mcOptionsHint: Argumentos adicionales de lanzamiento de Minecraft
   name: Nombre del Perfil
   nameHint: El nombre utilizado para identificar el juego
+  nameNoCyrillic: El nombre de la instancia no puede contener caracteres cirílicos
   neverPlayed: Nunca Jugado
   openCrashReportFolder: Abrir Carpeta de Informes de Errores
   openLogFolder: Abrir Carpeta de Registro
