@@ -18,24 +18,18 @@
       @dragleave="onDragLeave"
       @drop="onDrop"
     >
-      <v-list-item-avatar
-        size="48"
-        class="transition-all duration-300 hover:rounded"
-        large
-      >
-        <v-img
-          v-if="!dragging"
-          width="54"
-          height="54"
-          :src="favicon"
-          @dragenter="onDragEnter"
-          @dragleave="onDragLeave"
-        />
-        <v-skeleton-loader
-          v-else
-          type="avatar"
-        />
-      </v-list-item-avatar>
+      <v-img
+        v-if="!dragging"
+        width="32"
+        height="32"
+        :src="favicon"
+        @dragenter="onDragEnter"
+        @dragleave="onDragLeave"
+      />
+      <v-skeleton-loader
+        v-else
+        type="avatar"
+      />
       <v-list-item-title>{{ name }}</v-list-item-title>
     </v-list-item>
   </div>
