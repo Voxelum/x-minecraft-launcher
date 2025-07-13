@@ -55,6 +55,9 @@ export function selectJavaByPreference(allJava: JavaRecord[], { match, okay }: V
     }
   }
   if (bestMatched.length > 0) {
+    if (bestMatched.length > 1) {
+      bestMatched.sort((a, b) => a.path.indexOf('openj9') ? 1 : b.path.indexOf('openj9') ? -1 : 0)
+    }
     return [bestMatched[0], JavaCompatibleState.Matched] as const
   }
   if (fine.length > 0) {
