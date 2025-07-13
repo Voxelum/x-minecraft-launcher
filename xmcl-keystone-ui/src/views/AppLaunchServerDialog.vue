@@ -184,11 +184,11 @@ const selectedSave = computed({
   },
 })
 
-let lastPath = ''
-const { isShown } = useDialog('launch-server', () => {
-  if (lastPath === path.value) return
-  lastPath = path.value
-  revalidate()
+function refresh() {
+  getLinkedSaveWorld(path.value).then((v) => {
+    rawWorldExists.value = v !== undefined && v !== ''
+    linkedWorld.value = v ?? ''
+  })
   getServerProperties(path.value).then((p) => {
     const parsedPort = parseInt(p.port, 10)
     port.value = isNaN(parsedPort) ? 25565 : parsedPort
@@ -201,10 +201,16 @@ const { isShown } = useDialog('launch-server', () => {
     isAcceptEula.value = v
     _eula = v
   })
-  getLinkedSaveWorld(path.value).then((v) => {
-    rawWorldExists.value = v !== undefined && v !== ''
-    linkedWorld.value = v ?? ''
-  })
+}
+
+let lastPath = ''
+const { isShown } = useDialog('launch-server', () => {
+  if (lastPath === path.value) {
+    return
+  }
+  lastPath = path.value
+  revalidate()
+  refresh()
   loadingSelectedMods.value = true
   selectNone()
   getServerInstanceMods(path.value).then((mods) => {
