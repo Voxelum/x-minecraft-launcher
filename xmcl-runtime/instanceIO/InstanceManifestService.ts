@@ -43,6 +43,9 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       if (filePath.startsWith('libraries') || filePath.startsWith('versions') || filePath.startsWith('assets')) {
         return true
       }
+      if (filePath.endsWith('.DS_Store') || filePath.endsWith('.gitignore')) {
+        return true
+      }
       return false
     })
 
@@ -85,6 +88,9 @@ export class InstanceManifestService extends AbstractService implements IInstanc
           }
         }
         if (relativePath.startsWith('.backups')) {
+          return true
+        }
+        if (relativePath.endsWith('.DS_Store') || relativePath.endsWith('.gitignore')) {
           return true
         }
         if (relativePath === 'instance.json') {
