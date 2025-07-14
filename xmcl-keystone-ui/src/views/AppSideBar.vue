@@ -125,11 +125,17 @@ const { state } = injection(kSettingsState)
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
 const { sidebarHeight, sidebarPosition } = useSettings()
-const sidebarStyle = computed(() => ({
-  'backdrop-filter': `blur(${blurSidebar.value}px)`,
-  'max-height': sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%',
-  'margin': 'auto 0',
-}))
+const sidebarStyle = computed(() => {
+  const height = sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%';
+  const top = sidebarHeight.value === 'normal' ? '0' : '50%';
+  const transform = sidebarHeight.value === 'normal' ? 'none' : 'translateY(-50%)';
+  return {
+    'backdrop-filter': `blur(${blurSidebar.value}px)`,
+    height,
+    top,
+    transform,
+  };
+})
 const sidebarClass = computed(() => sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]')
 const { back } = useRouter()
 
