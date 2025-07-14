@@ -51,6 +51,8 @@ export interface UIThemeDataV1 {
     lightSuccessColor: string
     lightAccentColor: string
     lightCardColor: string
+    lightTextColor: string
+    darkTextColor: string
   }
 
   blur: {
@@ -101,6 +103,8 @@ export function getDefaultTheme(): UIThemeDataV1 {
       lightSuccessColor: '#4CAF50',
       lightAccentColor: '#82B1FF',
       lightCardColor: '#e0e0e080',
+      lightTextColor: '#000000',
+      darkTextColor: '#FFFFFF',
     },
     backgroundColorOverlay: true,
     backgroundVolume: 1,
@@ -392,6 +396,17 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
       writeTheme(currentTheme.value.name, currentTheme.value)
     },
   })
+  const textColor = computed({
+    get: () => isDark.value ? currentTheme.value.colors.darkTextColor : currentTheme.value.colors.lightTextColor ?? '',
+    set: (v: string) => {
+      if (isDark.value) {
+        currentTheme.value.colors.darkTextColor = v
+      } else {
+        currentTheme.value.colors.lightTextColor = v
+      }
+      writeTheme(currentTheme.value.name, currentTheme.value)
+    },
+  })
 
   async function readTheme(name: string) {
     let theme = await getTheme(name).then(v => v ? deserializeV0(v) : undefined)
@@ -581,6 +596,9 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   html {
     font-size: ${fontSize.value}px;
+  }
+  body {
+    color: ${textColor.value};
   }
   
   .v-application {

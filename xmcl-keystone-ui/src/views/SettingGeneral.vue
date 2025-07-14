@@ -96,15 +96,7 @@
       :description="t('setting.sidebarPositionDescription')"
       :items="[{text: t('setting.left'), value: 'left'}, {text: t('setting.right'), value: 'right'}]"
     />
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>{{ t('setting.textColor') }}</v-list-item-title>
-        <v-list-item-subtitle>{{ t('setting.textColorDescription') }}</v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-color-picker v-model="textColor" mode="hexa" />
-      </v-list-item-action>
-    </v-list-item>
+    
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'

@@ -1464,6 +1464,8 @@ setting:
   layoutTitle: Вид интерфейса
   sidebarPosition: Положение боковой панели
   sidebarPositionDescription: Выберите положение боковой панели (слева или справа)
+  setting.left: слева
+  setting.right: справа
   textColor: Цвет текста
   textColorDescription: Выберите цвет текста
   linuxEnableDedicatedGPUOptimization: Назначение выделенного графического процессора

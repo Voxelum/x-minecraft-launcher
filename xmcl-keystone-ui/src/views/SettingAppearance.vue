@@ -98,6 +98,15 @@
         />
       </v-list-item-action>
       <v-list-item-action
+        text
+        class="ml-[16px]"
+      >
+        <SettingAppearanceColor
+          v-model="textColor"
+          :text="t('setting.textColor')"
+        />
+      </v-list-item-action>
+      <v-list-item-action
         secondary
         class="ml-[16px]"
       >
@@ -491,7 +500,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 const { blurSidebar, blurAppBar, isDark, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
 
