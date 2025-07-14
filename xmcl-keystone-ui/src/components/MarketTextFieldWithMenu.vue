@@ -22,6 +22,7 @@
       />
     </template>
     <v-card
+      class="overflow-auto max-h-[80vh] flex flex-col"
       @mousedown.prevent
     >
       <v-tabs v-if="!noTab" v-model="tab" centered fixed-tabs>
@@ -36,7 +37,7 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab">
+      <v-tabs-items v-model="tab" class="overflow-auto flex">
         <v-tab-item class="tab">
           <v-subheader class="flex">
             {{ t('modrinth.sort.title') }}
