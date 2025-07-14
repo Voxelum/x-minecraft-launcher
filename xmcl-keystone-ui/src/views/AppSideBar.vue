@@ -127,13 +127,11 @@ const { sideBarColor } = injection(kTheme)
 const { sidebarHeight, sidebarPosition } = useSettings()
 const sidebarStyle = computed(() => {
   const height = sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%';
-  const top = sidebarHeight.value === 'normal' ? '0' : '50%';
-  const transform = sidebarHeight.value === 'normal' ? 'none' : 'translateY(-50%)';
+  const verticalAlign = sidebarHeight.value === 'normal' ? { top: '0' } : { bottom: '0' };
   return {
     'backdrop-filter': `blur(${blurSidebar.value}px)`,
     height,
-    top,
-    transform,
+    ...verticalAlign,
   };
 })
 const sidebarClass = computed(() => sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]')
