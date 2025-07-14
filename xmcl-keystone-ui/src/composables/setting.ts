@@ -197,6 +197,14 @@ export function useSettings() {
     get: () => state.value?.discordPresence ?? false,
     set: (v) => state.value?.discordPresenceSet(v),
   })
+  const sidebarPosition = computed({
+    get: () => state.value?.sidebarPosition ?? 'left',
+    set: v => state.value?.sidebarPositionSet(v),
+  })
+  const textColor = computed({
+    get: () => state.value?.textColor ?? '#ffffff',
+    set: v => state.value?.textColorSet(v),
+  })
   const apiSets = computed(() => state.value?.apiSets || [])
 
   onMounted(() => {
@@ -243,15 +251,9 @@ export function useSettings() {
     apiSetsPreference,
     apiSets,
     disableTelemetry,
+    sidebarPosition,
+    textColor,
     error,
     isValidating,
   }
 }
-const sidebarPosition = computed({
-  get: () => state.value?.sidebarPosition ?? 'left',
-  set: v => state.value?.sidebarPositionSet(v),
-})
-const textColor = computed({
-  get: () => state.value?.textColor ?? '#ffffff',
-  set: v => state.value?.textColorSet(v),
-})

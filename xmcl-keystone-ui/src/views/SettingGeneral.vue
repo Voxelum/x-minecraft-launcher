@@ -130,6 +130,8 @@ const {
   enableDiscord,
   locales: rawLocales,
   enableDedicatedGPUOptimization,
+  sidebarPosition,
+  textColor,
 } = useSettings()
 const { t } = useI18n()
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
