@@ -1404,6 +1404,10 @@ setting:
     focus: Focus Layout
   layoutDescription: The layout of the launcher UI
   layoutTitle: Layout
+  sidebarPosition: Sidebar Position
+  sidebarPositionDescription: Choose the position of the sidebar (left or right)
+  textColor: Text Color
+  textColorDescription: Choose the text color
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar

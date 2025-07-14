@@ -44,6 +44,8 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       globalEnv: state.globalEnv,
       globalPreExecuteCommand: state.globalPreExecuteCommand,
       globalResolution: state.globalResolution,
+      sidebarPosition: state.sidebarPosition,
+      textColor: state.textColor,
     }), 1000)
 
   app.registryDisposer(async () => {
