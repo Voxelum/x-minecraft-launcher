@@ -30,6 +30,8 @@ export class Settings implements SettingSchema {
   locale = ''
 
   theme = 'dark' as 'dark' | 'light' | 'system'
+  sidebarPosition = 'left' as 'left' | 'right'
+  textColor = '#000000'
   /**
    * All supported languages of the launcher
    */
@@ -85,6 +87,8 @@ export class Settings implements SettingSchema {
     this.maxAPISockets = config.maxAPISockets ?? 0
     this.allowTurn = config.allowTurn ?? false
     this.theme = config.theme
+    this.sidebarPosition = config.sidebarPosition ?? 'left'
+    this.textColor = config.textColor ?? '#000000'
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory
     this.globalAssignMemory = config.globalAssignMemory
@@ -117,6 +121,14 @@ export class Settings implements SettingSchema {
 
   themeSet(theme: 'dark' | 'light' | 'system') {
     this.theme = theme
+  }
+
+  sidebarPositionSet(position: 'left' | 'right') {
+    this.sidebarPosition = position
+  }
+
+  textColorSet(color: string) {
+    this.textColor = color
   }
 
   localeSet(language: string) {

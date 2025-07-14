@@ -1462,6 +1462,10 @@ setting:
     Вид интерфейса лаунчера, представляющий различную логику пользовательского
     интерфейса.
   layoutTitle: Вид интерфейса
+  sidebarPosition: Положение боковой панели
+  sidebarPositionDescription: Выберите положение боковой панели (слева или справа)
+  textColor: Цвет текста
+  textColorDescription: Выберите цвет текста
   linuxEnableDedicatedGPUOptimization: Назначение выделенного графического процессора
   linuxEnableDedicatedGPUOptimizationDescription: Эта опция назначает выделенный GPU для процесса Minecraft.
   linuxTitlebar: Нативный заголовок окна

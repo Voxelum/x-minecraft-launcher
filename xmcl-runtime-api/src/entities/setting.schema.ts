@@ -150,4 +150,14 @@ export interface SettingSchema {
    * @default {}
    */
   globalResolution: { width?: number; height?: number; fullscreen?: boolean }
+  /**
+   * The position of the sidebar
+   * @default "left"
+   */
+  sidebarPosition: 'left' | 'right'
+  /**
+   * The text color for the UI
+   * @default "#ffffff"
+   */
+  textColor: string
 }
