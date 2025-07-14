@@ -597,8 +597,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   html {
     font-size: ${fontSize.value}px;
   }
-  body {
-    color: ${textColor.value};
+  .v-application {
+    color: ${textColor.value} !important;
   }
   
   .v-application {

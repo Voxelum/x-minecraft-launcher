@@ -94,7 +94,7 @@
       :select.sync="sidebarPosition"
       :title="t('setting.sidebarPosition')"
       :description="t('setting.sidebarPositionDescription')"
-      :items="[{text: t('setting.left'), value: 'left'}, {text: t('setting.right'), value: 'right'}]"
+      :items="[{text: t('setting.sidebarPosition.left'), value: 'left'}, {text: t('setting.sidebarPosition.right'), value: 'right'}]"
     />
     
 </template>
