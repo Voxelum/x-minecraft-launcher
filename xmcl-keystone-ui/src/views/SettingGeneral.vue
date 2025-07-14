@@ -92,11 +92,16 @@
     />
     <SettingItemSelect
       :select.sync="sidebarPosition"
-      :title="t('setting.sidebarPosition')"
-      :description="t('setting.sidebarPositionDescription')"
+      :title="t('setting.sidebarPosition.name')"
+        :description="t('setting.sidebarPosition.description')"
       :items="[{text: t('setting.sidebarPosition.left'), value: 'left'}, {text: t('setting.sidebarPosition.right'), value: 'right'}]"
     />
-    
+    <SettingItemSelect
+      :select.sync="sidebarHeight"
+      :title="t('setting.sidebarHeight.name')"
+      :description="t('setting.sidebarHeight.description')"
+      :items="[{text: t('setting.sidebarHeight.normal'), value: 'normal'}, {text: t('setting.sidebarHeight.reduced25'), value: 'reduced25'}, {text: t('setting.sidebarHeight.reduced50'), value: 'reduced50'}]"
+    />
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'
@@ -123,6 +128,7 @@ const {
   locales: rawLocales,
   enableDedicatedGPUOptimization,
   sidebarPosition,
+  sidebarHeight,
   textColor,
 } = useSettings()
 const { t } = useI18n()

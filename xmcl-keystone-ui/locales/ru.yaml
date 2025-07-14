@@ -1462,10 +1462,19 @@ setting:
     Вид интерфейса лаунчера, представляющий различную логику пользовательского
     интерфейса.
   layoutTitle: Вид интерфейса
-  sidebarPosition: Положение боковой панели
-  sidebarPositionDescription: Выберите положение боковой панели (слева или справа)
-  left: слева
-  right: справа
+  sidebarPosition:
+    name: Положение боковой панели
+    description: >-
+      Выберите положение боковой панели (слева или справа)
+    left: слева
+    right: справа
+  sidebarHeight:
+    name: Высота боковой панели
+    description: >-
+      Выберите высоту боковой панели
+    normal: Нормальная
+    reduced25: Уменьшенная на 25%
+    reduced50: Уменьшенная на 50%
   textColor: Цвет текста
   textColorDescription: Выберите цвет текста
   linuxEnableDedicatedGPUOptimization: Назначение выделенного графического процессора

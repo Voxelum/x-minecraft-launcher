@@ -587,6 +587,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor }, { immediate: true })
   watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
   watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
+watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = newColor }, { immediate: true })
 
   useStyleTag(computed(() => `
   @font-face {

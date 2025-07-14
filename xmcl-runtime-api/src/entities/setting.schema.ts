@@ -154,7 +154,8 @@ export interface SettingSchema {
    * The position of the sidebar
    * @default "left"
    */
-  sidebarPosition: 'left' | 'right'
+  sidebarPosition: 'left' | 'right',
+sidebarHeight: 'normal' | 'reduced25' | 'reduced50'
   /**
    * The text color for the UI
    * @default "#ffffff"

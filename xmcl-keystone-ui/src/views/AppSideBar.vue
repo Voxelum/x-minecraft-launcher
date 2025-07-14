@@ -3,9 +3,10 @@
     :value="true"
     permanent
     :mini-variant="true"
+    :right="sidebarPosition === 'right'"
     :color="sideBarColor"
-    class="sidebar moveable z-10 rounded-[0.75rem]"
-    :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
+    :class="['sidebar', 'moveable', 'z-10', 'rounded-[0.75rem]', sidebarClass]"
+    :style="sidebarStyle"
   >
     <v-list
       nav
@@ -115,12 +116,21 @@ import { injection } from '@/util/inject'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { kTheme } from '@/composables/theme'
+import { computed } from 'vue'
+import { useSettings } from '@/composables/setting'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
+const { sidebarHeight, sidebarPosition } = useSettings()
+const sidebarStyle = computed(() => ({
+  'backdrop-filter': `blur(${blurSidebar.value}px)`,
+  'max-height': sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%',
+  'margin': 'auto 0',
+}))
+const sidebarClass = computed(() => sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]')
 const { back } = useRouter()
 
 function goBack() {
@@ -136,7 +146,6 @@ function goMultiplayer() {
 <style scoped>
 .sidebar {
   min-width: 80px;
-  max-height: 100%;
   display: flex;
   flex-direction: column;
   /* @apply rounded-r-xl border-r-[hsla(0,0%,100%,.12)]; */
