@@ -7,9 +7,9 @@
     }">
     </div>
     <AppSystemBar />
-    <div class="relative flex h-full overflow-auto">
+    <div class="relative flex h-full overflow-auto" :class="{ 'flex-row-reverse': sidebarPosition === 'right' }">
       <AppSideBar />
-      <main class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto">
+      <main class="relative flex max-h-full flex-col overflow-auto" :class="{ 'inset-y-0 right-0': sidebarPosition === 'left', 'inset-y-0 left-0': sidebarPosition === 'right' }">
         <transition name="fade-transition" mode="out-in">
           <router-view class="z-2" />
         </transition>
@@ -55,7 +55,7 @@ import { kLaunchButton, useLaunchButton } from '@/composables/launchButton'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
 import { useNotifier } from '@/composables/notifier'
 import { kCompact } from '@/composables/scrollTop'
-import { kSettingsState } from '@/composables/setting'
+import { useSettings } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
 import { kInFocusMode, kUILayout } from '@/composables/uiLayout'
@@ -146,6 +146,7 @@ const { isDark } = injection(kTheme)
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
+const { sidebarPosition, textColor } = useSettings()
 </script>
 
 <style scoped>

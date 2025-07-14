@@ -247,3 +247,11 @@ export function useSettings() {
     isValidating,
   }
 }
+const sidebarPosition = computed({
+  get: () => state.value?.sidebarPosition ?? 'left',
+  set: v => state.value?.sidebarPositionSet(v),
+})
+const textColor = computed({
+  get: () => state.value?.textColor ?? '#ffffff',
+  set: v => state.value?.textColorSet(v),
+})
