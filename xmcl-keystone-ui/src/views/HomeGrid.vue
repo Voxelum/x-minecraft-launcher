@@ -191,7 +191,7 @@ watch(visibleCards, () => {
     const item = current[i];
     const type = Number(item.i.split('@')[0]);
     presentTypes.push(type);
-    let str;
+    let str = '';
     switch (type) {
       case CardType.Mod: str = 'mod'; break;
       case CardType.ResourcePack: str = 'resource-pack'; break;
@@ -208,7 +208,7 @@ watch(visibleCards, () => {
   for (const t in CardType) {
     const type = CardType[t];
     if (typeof type === 'string') continue;
-    let str;
+    let str = '';
     switch (type) {
       case CardType.Mod: str = 'mod'; break;
       case CardType.ResourcePack: str = 'resource-pack'; break;

@@ -164,8 +164,8 @@ export function migrateLegacyTheme(ui: UIThemeData) {
   if (lightSuccessColor) ui.colors.lightSuccessColor = lightSuccessColor
   if (lightAccentColor) ui.colors.lightAccentColor = lightAccentColor
   if (lightCardColor) ui.colors.lightCardColor = lightCardColor
-  if (lightTextColor) ui.colors.lightTextColor = lightTextColor
-  if (darkTextColor) ui.colors.darkTextColor = darkTextColor
+  if (lightTextColor) (ui.colors as any).lightTextColor = lightTextColor
+  if (darkTextColor) (ui.colors as any).darkTextColor = darkTextColor
 
   if (backgroundType) ui.backgroundType = backgroundType
   if (backgroundImage && backgroundType === BackgroundType.IMAGE) ui.backgroundImage = { url: backgroundImage, type: 'image', mimeType: 'image/png' }
