@@ -30,6 +30,7 @@ export interface UIThemeDataV1 {
   name: string
 
   dark: boolean
+  enableCardBlur: boolean
   colors: {
     lightAppBarColor: string
     lightSideBarColor: string
@@ -69,6 +70,7 @@ export interface UIThemeDataV1 {
   backgroundType?: BackgroundType
   backgroundVolume?: number
   backgroundImageFit: 'cover' | 'contain'
+  visibleCards?: string[]
 
   font?: MediaData
   fontSize?: number
@@ -111,8 +113,10 @@ export function getDefaultTheme(): UIThemeDataV1 {
     backgroundImage: undefined,
     backgroundImageFit: 'cover',
     backgroundType: BackgroundType.NONE,
+    visibleCards: ['mod', 'resource-pack', 'shader-pack', 'save', 'screenshots'],
     font: undefined,
     fontSize: 16,
+    enableCardBlur: true,
     blur: {
       background: 3,
       card: 20,
@@ -231,7 +235,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     },
   })
   const blurCard = computed({
-    get() { return currentTheme.value.blur.card ?? 22 },
+    get() { return currentTheme.value.enableCardBlur ? (currentTheme.value.blur.card ?? 20) : 0 },
     set(v: number) {
       currentTheme.value.blur.card = v
       writeTheme(currentTheme.value.name, currentTheme.value)
@@ -446,6 +450,8 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   function resetDarkToDefault() {
     const colors = currentTheme.value.colors
+    currentTheme.value.visibleCards = getDefaultTheme().visibleCards
+    currentTheme.value.enableCardBlur = true
     const defaultColors = getDefaultTheme().colors
     colors.darkAppBarColor = defaultColors.darkAppBarColor
     colors.darkSideBarColor = defaultColors.darkSideBarColor
@@ -462,6 +468,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
 
   function resetLightToDefault() {
     const colors = currentTheme.value.colors
+    currentTheme.value.visibleCards = getDefaultTheme().visibleCards
     const defaultColors = getDefaultTheme().colors
     colors.lightAppBarColor = defaultColors.lightAppBarColor
     colors.lightSideBarColor = defaultColors.lightSideBarColor
@@ -635,6 +642,14 @@ watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = ne
   const backgroundImageOverride = ref('')
   const backgroundImageOverrideOpacity = ref(1)
 
+  const enableCardBlur = computed({
+    get() { return currentTheme.value.enableCardBlur },
+    set(v: boolean) {
+      currentTheme.value.enableCardBlur = v
+      writeTheme(currentTheme.value.name, currentTheme.value)
+    }
+  })
+
   return {
     themes,
     isDark,
@@ -647,6 +662,11 @@ watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = ne
     blurSidebar,
     blurAppBar,
     blurCard,
+    enableCardBlur,
+    visibleCards: computed({
+      get() { return currentTheme.value.visibleCards || getDefaultTheme().visibleCards },
+      set(v: string[]) { currentTheme.value.visibleCards = v; writeTheme(currentTheme.value.name, currentTheme.value) }
+    }),
     volume,
     blur,
     // darkTheme, // This should be removed or replaced by isDark if it was exported

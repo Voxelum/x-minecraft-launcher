@@ -1465,6 +1465,13 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
+  visibleCards:
+    name: Visible Cards
+    mods: Mods
+    resourcePacks: Resource Packs
+    shaderPacks: Shader Packs
+    saves: Saves
+    screenshots: Screenshots
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting

@@ -19,6 +19,27 @@
       :description="t('setting.darkThemeDescription')"
       :items="themes"
     />
+    <SettingHeader>{{ t('setting.visibleCards') }}</SettingHeader>
+    <SettingItemCheckbox
+      v-model="showMods"
+      :title="t('setting.visibleCards.mods')"
+    />
+    <SettingItemCheckbox
+      v-model="showResourcePacks"
+      :title="t('setting.visibleCards.resourcePacks')"
+    />
+    <SettingItemCheckbox
+      v-model="showShaderPacks"
+      :title="t('setting.visibleCards.shaderPacks')"
+    />
+    <SettingItemCheckbox
+      v-model="showSaves"
+      :title="t('setting.visibleCards.saves')"
+    />
+    <SettingItemCheckbox
+      v-model="showScreenshots"
+      :title="t('setting.visibleCards.screenshots')"
+    />
     <v-list-item class="items-center justify-center">
       <v-list-item-action class="self-center">
         <v-tooltip
@@ -95,6 +116,15 @@
           :blur.sync="blurCard"
           has-blur
           :text="t('setting.colorTheme.cardColor')"
+        />
+      </v-list-item-action>
+      <v-list-item-action
+        class="ml-[16px]"
+      >
+        <SettingItemCheckbox
+          v-model="enableCardBlur"
+          :title="t('setting.enableCardBlur')"
+          :description="t('setting.enableCardBlurDescription')"
         />
       </v-list-item-action>
       <v-list-item-action
@@ -500,7 +530,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 const { blurSidebar, blurAppBar, isDark, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor, visibleCards } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
 
@@ -535,6 +565,56 @@ const themes = computed(() => [{
   value: 'system',
 }])
 
+const showMods = computed({
+  get: () => visibleCards.value.includes('mod'),
+  set: (v) => {
+    if (v) {
+      visibleCards.value = [...visibleCards.value, 'mod']
+    } else {
+      visibleCards.value = visibleCards.value.filter(c => c !== 'mod')
+    }
+  }
+})
+const showResourcePacks = computed({
+  get: () => visibleCards.value.includes('resource-pack'),
+  set: (v) => {
+    if (v) {
+      visibleCards.value = [...visibleCards.value, 'resource-pack']
+    } else {
+      visibleCards.value = visibleCards.value.filter(c => c !== 'resource-pack')
+    }
+  }
+})
+const showShaderPacks = computed({
+  get: () => visibleCards.value.includes('shader-pack'),
+  set: (v) => {
+    if (v) {
+      visibleCards.value = [...visibleCards.value, 'shader-pack']
+    } else {
+      visibleCards.value = visibleCards.value.filter(c => c !== 'shader-pack')
+    }
+  }
+})
+const showSaves = computed({
+  get: () => visibleCards.value.includes('save'),
+  set: (v) => {
+    if (v) {
+      visibleCards.value = [...visibleCards.value, 'save']
+    } else {
+      visibleCards.value = visibleCards.value.filter(c => c !== 'save')
+    }
+  }
+})
+const showScreenshots = computed({
+  get: () => visibleCards.value.includes('screenshots'),
+  set: (v) => {
+    if (v) {
+      visibleCards.value = [...visibleCards.value, 'screenshots']
+    } else {
+      visibleCards.value = visibleCards.value.filter(c => c !== 'screenshots')
+    }
+  }
+})
 const layouts = computed(() => [{
   text: t('setting.layout.default'),
   value: 'default',

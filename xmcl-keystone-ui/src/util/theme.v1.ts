@@ -41,12 +41,16 @@ export function serialize(theme: UIThemeDataV1) {
     if (theme.blur.card !== undefined) {
       settings.blurCard = theme.blur.card;
     }
+    settings.enableCardBlur = theme.enableCardBlur;
   }
   if (theme.backgroundColorOverlay) {
     settings.backgroundColorOverlay = theme.backgroundColorOverlay
   }
   if (theme.fontSize) {
     settings.fontSize = theme.fontSize
+  }
+  if (theme.visibleCards) {
+    settings.visibleCards = theme.visibleCards
   }
   settings.dark = theme.dark
   const serialized: ThemeData = {
@@ -139,6 +143,10 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     if (data.settings.blurCard) {
       theme.blur.card = data.settings.blurCard as any
     }
+    if (data.settings.visibleCards) {
+      theme.visibleCards = data.settings.visibleCards as string[]
+    }
+    theme.enableCardBlur = data.settings.enableCardBlur ?? true;
   }
   return theme
 }

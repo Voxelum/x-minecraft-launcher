@@ -16,6 +16,7 @@
     <GridItem
       v-for="item in layout"
       :key="item.i"
+      v-if="isVisible(item.i)"
       :x="item.x"
       :y="item.y"
       :w="item.w"
@@ -68,8 +69,11 @@ import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
+import { kTheme } from '@/composables/theme'
+import { watch } from 'vue'
 
 const { instance } = injection(kInstance)
+const { visibleCards } = injection(kTheme)
 
 enum CardType {
   Mod,
@@ -88,6 +92,24 @@ function rawType(type: CardType) {
 function isType(id: string, type: CardType) {
   const [typeString, param] = id.split('@')
   return Number(typeString) === type
+}
+
+function isVisible(id: string) {
+  const type = Number(id.split('@')[0]);
+  switch (type) {
+    case CardType.Mod:
+      return visibleCards.value.includes('mod');
+    case CardType.ResourcePack:
+      return visibleCards.value.includes('resource-pack');
+    case CardType.ShaderPack:
+      return visibleCards.value.includes('shader-pack');
+    case CardType.Save:
+      return visibleCards.value.includes('save');
+    case CardType.Screenshots:
+      return visibleCards.value.includes('screenshots');
+    default:
+      return false;
+  }
 }
 
 interface GridItemType {
@@ -159,6 +181,52 @@ const screenshotHeight = ref(0)
 const saveLayouts = debounce(() => {
   localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
 }, 500)
+
+watch(visibleCards, () => {
+  if (!lastBreakpoint) return;
+  const current = layouts.value[lastBreakpoint];
+  const toRemove = [];
+  const presentTypes = [];
+  for (let i = 0; i < current.length; i++) {
+    const item = current[i];
+    const type = Number(item.i.split('@')[0]);
+    presentTypes.push(type);
+    let str;
+    switch (type) {
+      case CardType.Mod: str = 'mod'; break;
+      case CardType.ResourcePack: str = 'resource-pack'; break;
+      case CardType.ShaderPack: str = 'shader-pack'; break;
+      case CardType.Save: str = 'save'; break;
+      case CardType.Screenshots: str = 'screenshots'; break;
+    }
+    if (!visibleCards.value.includes(str)) {
+      toRemove.push(i);
+    }
+  }
+  toRemove.reverse().forEach(i => current.splice(i, 1));
+  const toAdd = [];
+  for (const t in CardType) {
+    const type = CardType[t];
+    if (typeof type === 'string') continue;
+    let str;
+    switch (type) {
+      case CardType.Mod: str = 'mod'; break;
+      case CardType.ResourcePack: str = 'resource-pack'; break;
+      case CardType.ShaderPack: str = 'shader-pack'; break;
+      case CardType.Save: str = 'save'; break;
+      case CardType.Screenshots: str = 'screenshots'; break;
+    }
+    if (visibleCards.value.includes(str) && !presentTypes.includes(type)) {
+      const maxY = current.length > 0 ? Math.max(...current.map(i => i.y + i.h)) : 0;
+      const defaultW = (lastBreakpoint === 'lg' || lastBreakpoint === 'md') ? 3 : 2;
+      const defaultH = type === CardType.Screenshots ? 5 : (type === CardType.Mod || type === CardType.ResourcePack) ? 9 : 4;
+      const minW = (type === CardType.Screenshots) ? 3 : 2;
+      toAdd.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
+    }
+  }
+  current.push(...toAdd);
+  layout.value = [...current];
+}, { deep: true })
 
 let screenshotItem = undefined as undefined | HTMLElement
 
