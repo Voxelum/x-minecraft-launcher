@@ -1,5 +1,5 @@
 import { MediaData, ThemeData } from '@xmcl/runtime-api'
-import { BackgroundType, ParticleMode, UIThemeData, UIThemeDataV1 } from '../composables/theme'
+import { BackgroundType, ParticleMode, UIThemeData, UIThemeDataV1, getDefaultTheme } from '../composables/theme'
 
 export function loadV1Theme(): UIThemeDataV1 {
   const name = localStorage.getItem('selectedThemeName')
@@ -19,13 +19,14 @@ export function loadV1Theme(): UIThemeDataV1 {
 
 export function deserialize(data: ThemeData): UIThemeDataV1 {
   const theme: UIThemeDataV1 = {
-    name: data.name,
-    backgroundMusic: [],
-    colors: {} as any,
-    backgroundImageFit: 'cover',
-    blur: {},
-    dark: false
-  }
+  name: data.name,
+  backgroundMusic: [],
+  colors: { ...getDefaultTheme().colors },
+  backgroundImageFit: "cover",
+  blur: {},
+  dark: false,
+  enableCardBlur: true
+}
   if (data.assets.backgroundImage) {
     theme.backgroundImage = data.assets.backgroundImage as MediaData
   }
@@ -71,17 +72,15 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
   if (dark) {
     theme.dark = dark
   }
-  if (data.colors) {
-    theme.colors = data.colors as any
-  }
+  theme.colors = { ...theme.colors, ... (data.colors || {}) }
 
   return theme
 }
 
 function getV1Theme(ui: UIThemeData, dark: boolean) {
-  const newData: UIThemeDataV1 = {} as any
+  const newData: UIThemeDataV1 = { ...getDefaultTheme() }
   newData.name = ui.name
-  newData.colors = ui.colors
+  newData.colors = { ...getDefaultTheme().colors, ... (ui.colors || {}) }
   newData.blur = {
     appBar: ui.blurAppBar,
     sideBar: ui.blurSidebar,
@@ -103,6 +102,7 @@ function getV1Theme(ui: UIThemeData, dark: boolean) {
 }
 
 export function migrateLegacyTheme(ui: UIThemeData) {
+  ui.colors = { ...getDefaultTheme().colors }
   const readNum = (key: string) => {
     const v = localStorage.getItem(key)
     if (v) {

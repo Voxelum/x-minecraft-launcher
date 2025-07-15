@@ -98,15 +98,15 @@ function isVisible(id: string) {
   const type = Number(id.split('@')[0]);
   switch (type) {
     case CardType.Mod:
-      return visibleCards.value.includes('mod');
+      return (visibleCards.value as string[]).includes('mod');
     case CardType.ResourcePack:
-      return visibleCards.value.includes('resource-pack');
+      return (visibleCards.value as string[]).includes('resource-pack');
     case CardType.ShaderPack:
-      return visibleCards.value.includes('shader-pack');
+      return (visibleCards.value as string[]).includes('shader-pack');
     case CardType.Save:
-      return visibleCards.value.includes('save');
+      return (visibleCards.value as string[]).includes('save');
     case CardType.Screenshots:
-      return visibleCards.value.includes('screenshots');
+      return (visibleCards.value as string[]).includes('screenshots');
     default:
       return false;
   }
@@ -199,7 +199,7 @@ watch(visibleCards, () => {
       case CardType.Save: str = 'save'; break;
       case CardType.Screenshots: str = 'screenshots'; break;
     }
-    if (!visibleCards.value.includes(str)) {
+    if (! (visibleCards.value as string[]).includes(str)) {
       toRemove.push(i);
     }
   }
@@ -216,8 +216,8 @@ watch(visibleCards, () => {
       case CardType.Save: str = 'save'; break;
       case CardType.Screenshots: str = 'screenshots'; break;
     }
-    if (visibleCards.value.includes(str) && !presentTypes.includes(type)) {
-      const maxY = current.length > 0 ? Math.max(...current.map(i => i.y + i.h)) : 0;
+    if ((visibleCards.value as string[]).includes(str) && !presentTypes.includes(type)) {
+      const maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
       const defaultW = (lastBreakpoint === 'lg' || lastBreakpoint === 'md') ? 3 : 2;
       const defaultH = type === CardType.Screenshots ? 5 : (type === CardType.Mod || type === CardType.ResourcePack) ? 9 : 4;
       const minW = (type === CardType.Screenshots) ? 3 : 2;

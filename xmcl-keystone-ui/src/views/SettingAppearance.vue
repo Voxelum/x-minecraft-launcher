@@ -530,7 +530,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 const { blurSidebar, blurAppBar, isDark, fontSize, blurCard, backgroundColorOverlay, backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, clearBackgroundImage, exportTheme, importTheme } = injection(kTheme)
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor, visibleCards } = injection(kTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor, visibleCards, enableCardBlur } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
 
@@ -566,52 +566,57 @@ const themes = computed(() => [{
 }])
 
 const showMods = computed({
-  get: () => visibleCards.value.includes('mod'),
+  get: () => (visibleCards.value as string[]).includes('mod'),
   set: (v) => {
+    const val = visibleCards.value as string[];
     if (v) {
-      visibleCards.value = [...visibleCards.value, 'mod']
+      visibleCards.value = [...val, 'mod'] as any;
     } else {
-      visibleCards.value = visibleCards.value.filter(c => c !== 'mod')
+      visibleCards.value = val.filter((c: string) => c !== 'mod') as any;
     }
   }
 })
 const showResourcePacks = computed({
-  get: () => visibleCards.value.includes('resource-pack'),
+  get: () => (visibleCards.value as string[]).includes('resource-pack'),
   set: (v) => {
+    const val = visibleCards.value as string[];
     if (v) {
-      visibleCards.value = [...visibleCards.value, 'resource-pack']
+      visibleCards.value = [...val, 'resource-pack'] as any;
     } else {
-      visibleCards.value = visibleCards.value.filter(c => c !== 'resource-pack')
+      visibleCards.value = val.filter((c: string) => c !== 'resource-pack') as any;
     }
   }
 })
 const showShaderPacks = computed({
-  get: () => visibleCards.value.includes('shader-pack'),
+  get: () => (visibleCards.value as string[]).includes('shader-pack'),
   set: (v) => {
+    const val = visibleCards.value as string[];
     if (v) {
-      visibleCards.value = [...visibleCards.value, 'shader-pack']
+      visibleCards.value = [...val, 'shader-pack'] as any;
     } else {
-      visibleCards.value = visibleCards.value.filter(c => c !== 'shader-pack')
+      visibleCards.value = val.filter((c: string) => c !== 'shader-pack') as any;
     }
   }
 })
 const showSaves = computed({
-  get: () => visibleCards.value.includes('save'),
+  get: () => (visibleCards.value as string[]).includes('save'),
   set: (v) => {
+    const val = visibleCards.value as string[];
     if (v) {
-      visibleCards.value = [...visibleCards.value, 'save']
+      visibleCards.value = [...val, 'save'] as any;
     } else {
-      visibleCards.value = visibleCards.value.filter(c => c !== 'save')
+      visibleCards.value = val.filter((c: string) => c !== 'save') as any;
     }
   }
 })
 const showScreenshots = computed({
-  get: () => visibleCards.value.includes('screenshots'),
+  get: () => (visibleCards.value as string[]).includes('screenshots'),
   set: (v) => {
+    const val = visibleCards.value as string[];
     if (v) {
-      visibleCards.value = [...visibleCards.value, 'screenshots']
+      visibleCards.value = [...val, 'screenshots'] as any;
     } else {
-      visibleCards.value = visibleCards.value.filter(c => c !== 'screenshots')
+      visibleCards.value = val.filter((c: string) => c !== 'screenshots') as any;
     }
   }
 })

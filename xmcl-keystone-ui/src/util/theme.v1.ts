@@ -41,7 +41,9 @@ export function serialize(theme: UIThemeDataV1) {
     if (theme.blur.card !== undefined) {
       settings.blurCard = theme.blur.card;
     }
+    if (theme.enableCardBlur !== undefined) {
     settings.enableCardBlur = theme.enableCardBlur;
+  }
   }
   if (theme.backgroundColorOverlay) {
     settings.backgroundColorOverlay = theme.backgroundColorOverlay
@@ -50,7 +52,7 @@ export function serialize(theme: UIThemeDataV1) {
     settings.fontSize = theme.fontSize
   }
   if (theme.visibleCards) {
-    settings.visibleCards = theme.visibleCards
+    settings.visibleCards = JSON.stringify(theme.visibleCards)
   }
   settings.dark = theme.dark
   const serialized: ThemeData = {
@@ -99,6 +101,7 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     backgroundType: BackgroundType.NONE,
     backgroundVolume: 1,
     blur: {},
+    enableCardBlur: true,
   }
   if (data.assets.backgroundImage) {
     theme.backgroundImage = data.assets.backgroundImage as MediaData
@@ -143,10 +146,16 @@ export function deserialize(data: ThemeData): UIThemeDataV1 {
     if (data.settings.blurCard) {
       theme.blur.card = data.settings.blurCard as any
     }
-    if (data.settings.visibleCards) {
-      theme.visibleCards = data.settings.visibleCards as string[]
+    if (data.settings.visibleCards && typeof data.settings.visibleCards === 'string') {
+      try {
+        theme.visibleCards = JSON.parse(data.settings.visibleCards);
+      } catch (e) {
+        theme.visibleCards = [];
+      }
+    } else {
+      theme.visibleCards = [];
     }
-    theme.enableCardBlur = data.settings.enableCardBlur ?? true;
+    theme.enableCardBlur = typeof data.settings.enableCardBlur === 'boolean' ? data.settings.enableCardBlur : true;
   }
   return theme
 }

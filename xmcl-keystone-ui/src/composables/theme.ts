@@ -664,7 +664,7 @@ watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = ne
     blurCard,
     enableCardBlur,
     visibleCards: computed({
-      get() { return currentTheme.value.visibleCards || getDefaultTheme().visibleCards },
+      get() { return currentTheme.value.visibleCards ?? getDefaultTheme().visibleCards ?? [] },
       set(v: string[]) { currentTheme.value.visibleCards = v; writeTheme(currentTheme.value.name, currentTheme.value) }
     }),
     volume,
