@@ -125,16 +125,16 @@ const { state } = injection(kSettingsState)
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
 const { sidebarHeight, sidebarPosition } = useSettings()
-const sidebarStyle = computed(() => {
-  const height = sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%';
-  const verticalAlign = sidebarHeight.value === 'normal' ? { top: '0' } : { bottom: '0' };
-  return {
-    'backdrop-filter': `blur(${blurSidebar.value}px)`,
-    height,
-    ...verticalAlign,
-  };
+const sidebarStyle = computed(() => ({
+  'backdrop-filter': `blur(${blurSidebar.value}px)`,
+  height: sidebarHeight.value === 'normal' ? '100%' : sidebarHeight.value === 'reduced25' ? '75%' : '50%',
+}))
+const sidebarClass = computed(() => {
+  const positionClass = sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]';
+  const heightClass = sidebarHeight.value === 'normal' ? '' : 'self-end';
+  const roundedClass = sidebarHeight.value === 'normal' ? '' : (sidebarPosition.value === 'right' ? 'rounded-tl-none' : 'rounded-tr-none');
+  return [positionClass, heightClass, roundedClass];
 })
-const sidebarClass = computed(() => sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]')
 const { back } = useRouter()
 
 function goBack() {

@@ -9,7 +9,7 @@
     <AppSystemBar />
     <div class="relative flex h-full overflow-auto" :class="{ 'flex-row-reverse': sidebarPosition === 'right' }">
       <AppSideBar />
-      <main class="relative flex max-h-full flex-col overflow-auto" :class="{ 'inset-y-0 right-0': sidebarPosition === 'left', 'inset-y-0 left-0': sidebarPosition === 'right' }">
+      <main class="relative flex flex-1 max-h-full flex-col overflow-auto">
         <transition name="fade-transition" mode="out-in">
           <router-view class="z-2" />
         </transition>
