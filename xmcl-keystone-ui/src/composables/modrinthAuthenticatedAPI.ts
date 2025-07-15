@@ -1,12 +1,13 @@
 import { clientModrinthV2 } from '@/util/clients';
+import { injection } from '@/util/inject';
+import { useSingleton } from '@/util/singleton';
+import { getSWRV } from '@/util/swrvGet';
+import { Collection, Project, User } from '@xmcl/modrinth';
 import { UserServiceKey } from '@xmcl/runtime-api';
 import { InjectionKey } from 'vue';
+import { useDialog } from './dialog';
 import { useService } from './service';
 import { kSWRVConfig } from './swrvConfig';
-import { injection } from '@/util/inject';
-import { Collection, Project, User } from '@xmcl/modrinth';
-import { useDialog } from './dialog';
-import { getSWRV } from '@/util/swrvGet';
 
 export const kModrinthAuthenticatedAPI: InjectionKey<ReturnType<typeof useModrinthAuthenticatedAPI>> = Symbol('modrinth-authenticated-api')
 
@@ -109,14 +110,14 @@ export function useModrinthAuthenticatedAPI() {
     return followSet.value.has(id)
   }
 
-  async function awaitLogin() {
+  const awaitLogin = useSingleton(async () => {
     if (userData.value) {
       return
     }
     show()
     await signal.promise
     await login()
-  }
+  })
 
   async function followProject(id: string) {
     await awaitLogin()
