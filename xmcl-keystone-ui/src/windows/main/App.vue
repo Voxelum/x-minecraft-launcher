@@ -146,10 +146,9 @@ const { isDark } = injection(kTheme)
 const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
-const { sidebarPosition, textColor, sidebarHeight } = useSettings()
+const { sidebarPosition, textColor } = useSettings()
 onMounted(() => {
   sidebarPosition.value = 'left'
-  sidebarHeight.value = 'normal'
 })
 </script>
 

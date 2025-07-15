@@ -201,10 +201,7 @@ export function useSettings() {
     get: () => state.value?.sidebarPosition ?? 'left',
     set: v => state.value?.sidebarPositionSet(v),
   })
-  const sidebarHeight = computed({
-    get: () => state.value?.sidebarHeight ?? 'normal',
-    set: (v) => state.value?.sidebarHeightSet(v),
-  })
+  
   const textColor = computed({
     get: () => state.value?.textColor ?? '#ffffff',
     set: v => state.value?.textColorSet(v),
