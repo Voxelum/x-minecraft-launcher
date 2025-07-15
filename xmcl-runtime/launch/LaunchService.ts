@@ -24,6 +24,7 @@ import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import { LaunchMiddleware } from './LaunchMiddleware'
+import { ensureDir } from '@xmcl/installer/utils'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
@@ -617,7 +618,6 @@ export class LaunchService extends AbstractService implements ILaunchService {
       })
     }
   }
-
   async createLaunchShortcut(options: CreateLaunchShortcutOptions): Promise<void> {
     const iconUrl = options.icon
 
@@ -625,10 +625,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       ? join(options.instancePath, 'icon.ico')
       : join(options.instancePath, 'icon.png')
     if (iconUrl) {
-      const { body } = await this.app.protocol.handle({
-        method: 'GET',
-        url: iconUrl,
-      })
+      const { body } = await this.app.protocol.handle({ method: "GET", url: iconUrl, })
       let buffer: Buffer
       if (body) {
         if (body instanceof Buffer) {
@@ -671,9 +668,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
         delete shortcutOptions.windows.icon
       }
     } else {
+      const outputDir = dirname(options.destination)
+      const absoluteOutputDir = require("path").resolve(outputDir)
+      await ensureDir(absoluteOutputDir)
       shortcutOptions.linux = {
         filePath: process.execPath,
-        outputPath: options.destination,
+        outputPath: absoluteOutputDir,
         name: basename(options.destination),
         icon: instanceIcoPath,
         arguments: `launch "${options.userId}" "${options.instancePath}"`,
