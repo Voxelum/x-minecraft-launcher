@@ -666,6 +666,7 @@ watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = ne
     successColor,
     accentColor,
     cardColor,
+    textColor,
     resetToDefault,
 
     font,

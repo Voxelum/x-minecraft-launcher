@@ -141,6 +141,8 @@ export function migrateLegacyTheme(ui: UIThemeData) {
   const lightSuccessColor = localStorage.getItem('lightSuccessColor')
   const lightAccentColor = localStorage.getItem('lightAccentColor')
   const lightCardColor = localStorage.getItem('lightCardColor')
+  const lightTextColor = localStorage.getItem('lightTextColor')
+  const darkTextColor = localStorage.getItem('darkTextColor')
 
   if (lightAppBarColor) ui.colors.lightAppBarColor = lightAppBarColor
   if (lightSideBarColor) ui.colors.lightSideBarColor = lightSideBarColor
@@ -162,6 +164,8 @@ export function migrateLegacyTheme(ui: UIThemeData) {
   if (lightSuccessColor) ui.colors.lightSuccessColor = lightSuccessColor
   if (lightAccentColor) ui.colors.lightAccentColor = lightAccentColor
   if (lightCardColor) ui.colors.lightCardColor = lightCardColor
+  if (lightTextColor) ui.colors.lightTextColor = lightTextColor
+  if (darkTextColor) ui.colors.darkTextColor = darkTextColor
 
   if (backgroundType) ui.backgroundType = backgroundType
   if (backgroundImage && backgroundType === BackgroundType.IMAGE) ui.backgroundImage = { url: backgroundImage, type: 'image', mimeType: 'image/png' }

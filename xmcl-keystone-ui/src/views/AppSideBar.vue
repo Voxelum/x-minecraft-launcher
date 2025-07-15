@@ -132,7 +132,7 @@ const sidebarStyle = computed(() => ({
 const sidebarClass = computed(() => {
   const positionClass = sidebarPosition.value === 'right' ? 'rounded-l-xl border-l-[hsla(0,0%,100%,.12)]' : 'rounded-r-xl border-r-[hsla(0,0%,100%,.12)]';
   
-  return [positionClass, heightClass, roundedClass];
+  return [positionClass];
 })
 const { back } = useRouter()
 
