@@ -97,6 +97,7 @@
       :items="[{text: t('setting.sidebarPosition.left'), value: 'left'}, {text: t('setting.sidebarPosition.right'), value: 'right'}]"
     />
     
+  </div>
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'
