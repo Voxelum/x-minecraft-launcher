@@ -94,12 +94,13 @@ import { useDialog } from '../composables/dialog';
 import { useGameDirectory, useSettings } from '../composables/setting';
 import { kCriticalStatus } from '@/composables/criticalStatus';
 import { useGetDataDirErrorText } from '@/composables/dataRootErrors';
-import { useI18n } from 'vue-i18n';
+import { getCurrentInstance } from 'vue';
 
 export default defineComponent({
   components: { SettingHeader, SettingItemCheckbox, SettingItemSelect },
   setup() {
-    const { t } = useI18n();
+    const instance = getCurrentInstance();
+    const t = instance.$t;
     const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus);
     const getDirErroText = useGetDataDirErrorText();
     const errorText = computed(() => isNoEmptySpace.value ? t('errors.DiskIsFull') : invalidGameDataPath.value ? getDirErroText(invalidGameDataPath.value) : undefined);
@@ -120,9 +121,9 @@ export default defineComponent({
     const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })));
     const replaceNativeItems = computed(() => [{ text: t('disable'), value: '' }, { text: t('setting.replaceNatives.legacy'), value: 'legacy-only' }, { text: t('setting.replaceNatives.all'), value: 'all' }]);
     const sidebarPositionItems = computed(() => [{ text: t('setting.sidebarPosition.left'), value: 'left' }, { text: t('setting.sidebarPosition.right'), value: 'right' }]);
-    const replaceNativeSelect = computed(() => replaceNative === false ? '' : replaceNative);
+    const replaceNativeSelect = computed(() => replaceNative.value === false ? '' : replaceNative.value);
     function onUpdateReplaceNative(event) {
-      replaceNative = !event ? false : event;
+      replaceNative.value = !event ? false : event;
     }
 
     const { show } = useDialog('migration');
