@@ -68,7 +68,7 @@
         </v-carousel-item>
       </template>
     </v-carousel>
-    <!-- <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" /> -->
+    <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" />
   </v-card>
 </template>
 <script lang="ts" setup>
