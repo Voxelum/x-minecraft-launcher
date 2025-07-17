@@ -7,6 +7,12 @@
       :description="t('setting.layoutDescription')"
       :items="layouts"
     />
+    <SettingItemSelect
+      :select.sync="sidebarPosition"
+      :title="t('setting.sidebarPosition')"
+      :description="t('setting.sidebarPositionDescription')"
+      :items="sidebarPositions"
+    />
     <SettingItemCheckbox
       v-if="env?.os === 'linux'"
       v-model="linuxTitlebar"
@@ -519,7 +525,7 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { kEnvironment } from '@/composables/environment'
 import { useService } from '@/composables/service'
-import { kSettingsState } from '@/composables/setting'
+import { kSettingsState, useSettings } from '@/composables/setting'
 import { BackgroundType, kTheme } from '@/composables/theme'
 import { kUILayout } from '@/composables/uiLayout'
 import { basename } from '@/util/basename'
@@ -533,6 +539,7 @@ const { blurSidebar, blurAppBar, isDark, fontSize, blurCard, backgroundColorOver
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault, currentTheme, font, setFont, resetFont, backgroundMusic, removeMusic, textColor, visibleCards, enableCardBlur } = injection(kTheme)
 const { state } = injection(kSettingsState)
 const env = injection(kEnvironment)
+const { sidebarPosition } = useSettings()
 
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,
@@ -626,6 +633,14 @@ const layouts = computed(() => [{
 }, {
   text: t('setting.layout.focus'),
   value: 'focus',
+}])
+
+const sidebarPositions = computed(() => [{
+  text: t('setting.sidebarPosition.left'),
+  value: 'left',
+}, {
+  text: t('setting.sidebarPosition.right'),
+  value: 'right',
 }])
 
 const particleModes = computed(() => Object.entries({
