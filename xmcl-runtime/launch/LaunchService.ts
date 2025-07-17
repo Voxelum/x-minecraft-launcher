@@ -259,6 +259,13 @@ export class LaunchService extends AbstractService implements ILaunchService {
       }
     }
 
+    if (options.server) {
+      launchOptions.server = {
+        ip: options.server.host,
+        port: options.server?.port,
+      }
+    }
+
     return launchOptions
   }
 

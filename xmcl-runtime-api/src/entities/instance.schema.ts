@@ -187,12 +187,6 @@ export interface InstanceData {
     port?: number
   } | null
   /**
-   * Quick play multiplayer server for Minecraft 1.20+
-   * Format: "server:port" or just "server" for default port 25565
-   * @default ""
-   */
-  quickPlayMultiplayer?: string
-  /**
    * The custom tags on instance
    * @default []
    */

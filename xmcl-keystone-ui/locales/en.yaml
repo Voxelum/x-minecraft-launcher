@@ -1310,8 +1310,6 @@ server:
   pings: Pings
   players: Players
   port: Port
-  quickPlayMultiplayer: Quick Play Multiplayer
-  quickPlayMultiplayerHint: Quick play server address for Minecraft 1.20+ (e.g., play.hypixel.net:25565)
   recommendedMinecraftVersion: Minecraft Version
   status: Server Status
   unknown: Unknown Server

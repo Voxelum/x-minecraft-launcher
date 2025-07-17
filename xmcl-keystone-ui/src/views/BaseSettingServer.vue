@@ -42,24 +42,6 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("server.quickPlayMultiplayer") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("server.quickPlayMultiplayerHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-text-field
-          v-model="data.quickPlayMultiplayer"
-          solo
-          hide-details
-          placeholder="play.hypixel.net:25565"
-        />
-      </v-list-item-action>
-    </v-list-item>
   </v-list>
 </template>
 

@@ -153,7 +153,7 @@ export async function generateLaunchOptionsWithGlobal(
     side,
     resolution: inst.resolution ?? globalResolution,
     server: inst.server ?? undefined,
-    quickPlayMultiplayer: inst.quickPlayMultiplayer ?? undefined,
+    quickPlayMultiplayer: inst.server ? `${inst.server.host}${inst.server.port ? `:${inst.server.port}` : ''}` : undefined,
     ...overrides,
   }
   return options
