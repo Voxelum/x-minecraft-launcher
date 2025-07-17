@@ -29,6 +29,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
     host: '', // mc.hypixel.com
     port: '', // 25565
+    quickPlayMultiplayer: '', // play.hypixel.net:25565
 
     author: '',
     description: '',
@@ -300,6 +301,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       description: data.description,
       env: data.env,
       resolution: data.resolution,
+      quickPlayMultiplayer: data.quickPlayMultiplayer || undefined,
     } as EditInstanceOptions
     if (instance.value.server) {
       payload.server = instance.value?.server
@@ -329,6 +331,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
         instancePath: instance.value?.path,
         author: data.author,
         description: data.description,
+        quickPlayMultiplayer: data.quickPlayMultiplayer || undefined,
       })
     } else {
       await edit({
@@ -338,6 +341,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
           host: data.host,
           port: Number.parseInt(data.port, 10),
         },
+        quickPlayMultiplayer: data.quickPlayMultiplayer || undefined,
       })
     }
     data.icon = instance.value?.icon
@@ -374,6 +378,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
         data.host = current.server.host
         data.port = current.server.port?.toString() || ''
       }
+      
+      data.quickPlayMultiplayer = current.quickPlayMultiplayer ?? ''
 
       data.maxMemory = current.maxMemory
       data.minMemory = current.minMemory
