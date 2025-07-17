@@ -29,6 +29,12 @@ export interface XaeroMapsService {
    * @param instancePath The path to the instance
    */
   migrateToSharedMaps(instancePath: string): Promise<void>
+
+  /**
+   * Setup server-specific shared maps based on server matching
+   * @param instancePath The path to the instance
+   */
+  setupServerSpecificMaps(instancePath: string): Promise<void>
 }
 
-export const XaeroMapsServiceKey: ServiceKey<XaeroMapsService> = Symbol('XaeroMapsService')
+export const XaeroMapsServiceKey: ServiceKey<XaeroMapsService> = 'XaeroMapsService'

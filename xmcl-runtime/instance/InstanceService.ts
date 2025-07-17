@@ -7,6 +7,7 @@ import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { kSettings } from '~/settings'
 import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
@@ -249,7 +250,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     // Setup shared Xaero maps for the new instance
     try {
       const xaeroMapsService = await this.app.registry.get(XaeroMapsServiceKey)
-      await xaeroMapsService.setupSharedMaps(instance.path)
+      const settings = await this.app.registry.get(kSettings)
+      
+      if (settings.xaeroMapsServerMatching && instance.server) {
+        await xaeroMapsService.setupServerSpecificMaps(instance.path)
+      } else {
+        await xaeroMapsService.setupSharedMaps(instance.path)
+      }
     } catch (error) {
       this.warn(`Failed to setup shared Xaero maps for instance ${instance.path}: ${error}`)
     }
