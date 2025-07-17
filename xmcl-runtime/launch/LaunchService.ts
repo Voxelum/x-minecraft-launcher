@@ -202,6 +202,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
       minMemory,
       maxMemory,
       version,
+      server: options.server
+        ? {
+          ip: options.server.host,
+          port: options.server.port,
+        }
+        : undefined,
       extraExecOption: {
         shell: prepend && prepend.length > 0,
         detached: true,
@@ -257,15 +263,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         ip: options.server.host,
         port: options.server?.port,
       }
-      // Generate quickPlayMultiplayer from server property if not explicitly provided
-      if (!options.quickPlayMultiplayer) {
-        launchOptions.quickPlayMultiplayer = `${options.server.host}${options.server.port ? `:${options.server.port}` : ''}`
-      }
-    }
-    
-    // Handle direct quickPlayMultiplayer option
-    if (options.quickPlayMultiplayer) {
-      launchOptions.quickPlayMultiplayer = options.quickPlayMultiplayer
+      launchOptions.quickPlayMultiplayer = `${options.server.host}${options.server.port ? `:${options.server.port}` : ''}`
     }
 
     return launchOptions

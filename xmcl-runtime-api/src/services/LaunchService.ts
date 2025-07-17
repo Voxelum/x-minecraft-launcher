@@ -54,11 +54,6 @@ export interface LaunchOptions {
     port?: number
   }
   /**
-   * Quick play multiplayer server for Minecraft 1.20+
-   * Format: "server:port" or just "server" for default port 25565
-   */
-  quickPlayMultiplayer?: string
-  /**
    * Support yushi's yggdrasil agent https://github.com/to2mbn/authlib-injector/wiki
    */
   yggdrasilAgent?: {
