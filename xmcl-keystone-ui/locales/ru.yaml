@@ -1376,6 +1376,16 @@ setting:
   about: О
   allowPrerelease: Скачать предварительную версию
   allowPrereleaseDescription: Предварительная версия может быть нестабильной.
+  textColor: Цвет текста
+  enableCardBlur: Включить размытие карточек
+  visibleCards: Видимые карточки
+    mods: Моды
+    resourcePacks: Наборы ресурсов
+    shaderPacks: Наборы шейдеров
+    saves: Сохранения
+    screenshots: Скриншоты
+  movableCards: Перемещаемые карточки
+  sidebarPosition: Положение боковой панели
   apiSets:
     auto: Автоматически (определяется сетью)
     official: Официальный (Mojang)

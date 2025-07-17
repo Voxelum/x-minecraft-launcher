@@ -714,6 +714,10 @@ watch(textColor, (newColor) => { framework.theme.currentTheme['on-surface'] = ne
       get() { return currentTheme.value.visibleCards ?? getDefaultTheme().visibleCards ?? [] },
       set(v: string[]) { currentTheme.value.visibleCards = v; writeTheme(currentTheme.value.name, currentTheme.value) }
     }),
+    homeLayout: computed({
+      get() { return currentTheme.value.homeLayout ?? getDefaultHomeLayout() },
+      set(v: Record<string, GridItemType[]>) { currentTheme.value.homeLayout = v; writeTheme(currentTheme.value.name, currentTheme.value) }
+    }),
     volume,
     blur,
     // darkTheme, // This should be removed or replaced by isDark if it was exported
