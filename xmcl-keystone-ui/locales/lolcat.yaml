@@ -1363,8 +1363,18 @@ setting:
   resetToDefault: RESET 2 DEFAULT
   showNewsHeader: UNHIDE NEWS SHOWCASE
   showRoot: SHOW
+  sidebarHeight:
+    description: SELECT TEH HEIGHT OV TEH SIDEBAR
+    name: SIDE PANEL HEIGHT
+  sidebarPosition:
+    description: SELECT TEH POSISHUN OV TEH SIDEBAR (LEFT OR RITE)
+    left: ON TEH LEFT
+    name: SIDE PANEL POSISHUN
+    right: ON TEH RITE
+  sidebarPositionDescription: CHOOSE TEH POSISHUN OV TEH SIDEBAR (LEFT OR RITE)
   streamerMode: STREAMIN MODE
   streamerModeDescription: DIS WILL HIDE UR PRIVATE INFORMASHUN LIEK EMAIL IN LAUNCHR.
+  textColor: TEXT COLOR
   theme:
     dark: DARK THEME
     light: LIGHT THEME
@@ -1385,6 +1395,13 @@ setting:
   useProxy: HTTP PROXY
   useProxyDescription: TEH PROXY SERVR ADDRES 4 DA HTTP REQUEST
   viewBackgroundMusic: VIEW MUSICS
+  visibleCards:
+    mods: MODZ
+    name: VISIBLE CARDZ
+    resourcePacks: RESOURCE PACKZ
+    saves: SAVEZ
+    screenshots: SCREENSHOTS
+    shaderPacks: SHADR PACKZ
 settingLabel:
   global: GLOBAL
   globalHint: DIS SETTIN WILL FOLLOW TEH GLOBAL SETTIN

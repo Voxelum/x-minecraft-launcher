@@ -521,6 +521,12 @@ setting:
   themeShare: Compartir tema
   themeShareDescription: Podes compartir o tema co teu amigo.
   update: Actualizar
+  visibleCards:
+    mods: Mods
+    resourcePacks: Resource Packs
+    saves: Saves
+    screenshots: Screenshot
+    shaderPacks: Shader Packs
 setup:
   appearance:
     name: '@:setting.appearance'

@@ -1404,10 +1404,6 @@ setting:
     focus: Focus Layout
   layoutDescription: The layout of the launcher UI
   layoutTitle: Layout
-  sidebarPosition: Sidebar Position
-  sidebarPositionDescription: Choose the position of the sidebar (left or right)
-  textColor: Text Color
-  textColorDescription: Choose the text color
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar
@@ -1443,8 +1439,15 @@ setting:
   resetToDefault: Reset to Default
   showNewsHeader: Unhide News showcase
   showRoot: Show
+  sidebarHeight:
+    description: Select the height of the sidebar
+    name: Side panel height
+  sidebarPosition: Sidebar Position
+  sidebarPositionDescription: Choose the position of the sidebar (left or right)
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
+  textColor: Text Color
+  textColorDescription: Choose the text color
   theme:
     dark: Dark Theme
     light: Light Theme
@@ -1466,12 +1469,12 @@ setting:
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
   visibleCards:
-    name: Visible Cards
     mods: Mods
+    name: Visible Cards
     resourcePacks: Resource Packs
-    shaderPacks: Shader Packs
     saves: Saves
     screenshots: Screenshots
+    shaderPacks: Shader Packs
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting

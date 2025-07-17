@@ -1176,10 +1176,21 @@ setting:
   resetToDefault: Restablecer a los Valores Predeterminados
   showNewsHeader: Mostrar escaparate de noticias
   showRoot: Mostrar
+  sidebarHeight:
+    description: Seleccione la altura de la barra lateral
+    name: Altura del panel lateral
+  sidebarPosition:
+    description: Seleccione la posición de la barra lateral (izquierda o derecha)
+    left: a la izquierda
+    name: Posición del panel lateral
+    right: a la derecha
+  sidebarPositionDescription: Elija la posición de la barra lateral (izquierda o derecha)
   streamerMode: Modo de transmisión
   streamerModeDescription: >-
     Esto ocultará su información privada, como el correo electrónico, en el
     iniciador.
+  textColor: Color del texto
+  textColorDescription: Seleccione el color del texto
   theme:
     dark: Tema Oscuro
     light: Tema Claro
@@ -1200,6 +1211,13 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
   viewBackgroundMusic: Ver músicas
+  visibleCards:
+    mods: Mods
+    name: Tarjetas visibles
+    resourcePacks: Resource Packs
+    saves: Saves
+    screenshots: Screenshot
+    shaderPacks: Shader Packs
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global

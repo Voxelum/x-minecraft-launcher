@@ -467,6 +467,8 @@ server:
 setting:
   about: About
   backdropBlur: Backdrop Blur
+  visibleCards:
+    mods: Моды
 setup:
   error:
     invalidChar: >-

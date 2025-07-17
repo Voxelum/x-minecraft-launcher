@@ -1331,8 +1331,19 @@ setting:
   resetToDefault: デフォルトにリセット
   showNewsHeader: ニュースを隠さない
   showRoot: 見る
+  sidebarHeight:
+    description: サイドバーの高さを選択する
+    name: サイドパネル高さ
+  sidebarPosition:
+    description: サイドバーの位置を選択（左または右）
+    left: 左側
+    name: サイドパネルの位置
+    right: 右側
+  sidebarPositionDescription: サイドバーの位置（左または右）を選択します。
   streamerMode: ストリーミングモード
   streamerModeDescription: ランチャーでメールアドレスのような機密性の高い情報を隠します。
+  textColor: テキストの色
+  textColorDescription: テキストの色を選択する
   theme:
     dark: ダークテーマ
     light: ライトテーマ
@@ -1351,6 +1362,13 @@ setting:
   useProxy: HTTPプロキシ
   useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
   viewBackgroundMusic: BGMフォルダを見る
+  visibleCards:
+    mods: Mods
+    name: 見えるカード
+    resourcePacks: リソース・パック
+    saves: 保存
+    screenshots: スクリーンショット
+    shaderPacks: シェーダーセット
 settingLabel:
   global: グローバル
   globalHint: グローバル設定に従います

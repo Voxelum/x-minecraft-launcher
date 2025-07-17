@@ -1454,10 +1454,21 @@ setting:
   resetToDefault: Przywróć ustawienia domyślne
   showNewsHeader: Odkryj wizytówkę wiadomości
   showRoot: Pokaż
+  sidebarHeight:
+    description: Wybierz wysokość paska bocznego
+    name: Wysokość panelu bocznego
+  sidebarPosition:
+    description: Wybierz pozycję paska bocznego (lewy lub prawy)
+    left: po lewej
+    name: Położenie panelu bocznego
+    right: po prawej
+  sidebarPositionDescription: Wybierz pozycję paska bocznego (lewy lub prawy).
   streamerMode: Tryb przesyłania strumieniowego
   streamerModeDescription: >-
     Spowoduje to ukrycie prywatnych informacji, takich jak adres e-mail, w
     programie uruchamiającym.
+  textColor: Kolor tekstu
+  textColorDescription: Wybierz kolor tekstu
   theme:
     dark: Ciemny motyw
     light: Motyw świetlny
@@ -1478,6 +1489,13 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Adres serwera proxy dla żądania http
   viewBackgroundMusic: Wyświetl muzykę
+  visibleCards:
+    mods: Mods
+    name: Widoczne karty
+    resourcePacks: Pakiety zasobów
+    saves: Konserwacja
+    screenshots: Zrzuty ekranu
+    shaderPacks: Zestawy shaderów
 settingLabel:
   global: Globalny
   globalHint: To ustawienie będzie zgodne z ustawieniem globalnym

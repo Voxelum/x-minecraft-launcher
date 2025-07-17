@@ -1358,8 +1358,19 @@ setting:
   resetToDefault: 重設到預設配色
   showNewsHeader: 取消隱藏最新消息展示
   showRoot: 瀏覽
+  sidebarHeight:
+    description: 選擇側邊欄的高度
+    name: 側板高度
+  sidebarPosition:
+    description: 選擇側邊欄的位置（左側或右側）
+    left: 在左邊
+    name: 側板的位置
+    right: 在右邊
+  sidebarPositionDescription: 選擇側邊欄的位置（左側或右側）
   streamerMode: 螢幕分享模式
   streamerModeDescription: 此功能可以保護您的隱私。開啟後，您的電子郵件等隱私資訊將會被隱藏。
+  textColor: 文字顏色
+  textColorDescription: 選擇文字的顏色
   theme:
     dark: 暗色主題
     light: 亮色主題
@@ -1382,6 +1393,13 @@ setting:
   useProxy: HTTP 代理伺服器設定
   useProxyDescription: HTTP 請求的代理伺服器位址
   viewBackgroundMusic: 檢視背景音樂
+  visibleCards:
+    mods: 模組
+    name: 可見卡
+    resourcePacks: 資源包
+    saves: 保存
+    screenshots: 螢幕截圖
+    shaderPacks: 著色器集
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定

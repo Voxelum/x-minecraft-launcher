@@ -1585,10 +1585,21 @@ setting:
   resetToDefault: Zurücksetzen auf den Standardwert
   showNewsHeader: Nachrichtenpräsentation einblenden
   showRoot: ВідображатиAnzeige
+  sidebarHeight:
+    description: Wählen Sie die Höhe der Seitenleiste
+    name: Höhe der Seitenwand
+  sidebarPosition:
+    description: Wählen Sie die Position der Seitenleiste (links oder rechts)
+    left: auf der linken Seite
+    name: Position der Seitenwand
+    right: auf der rechten Seite
+  sidebarPositionDescription: Wählen Sie die Position der Seitenleiste (links oder rechts)
   streamerMode: Streaming-Modus
   streamerModeDescription: >-
     Dadurch werden Ihre privaten Informationen wie E-Mails im Launcher
     ausgeblendet.
+  textColor: Textfarbe
+  textColorDescription: Wählen Sie die Farbe des Textes
   theme:
     dark: Dunkles Thema
     light: Thema Licht
@@ -1610,6 +1621,13 @@ setting:
   useProxy: HTTP-Proxy
   useProxyDescription: Proxy-Server-Adresse für http-Anfrage
   viewBackgroundMusic: Musik anzeigen
+  visibleCards:
+    mods: Mods
+    name: Sichtbare Karten
+    resourcePacks: Resource Packs
+    saves: Saves
+    screenshots: Screenshot
+    shaderPacks: Shader Packs
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung

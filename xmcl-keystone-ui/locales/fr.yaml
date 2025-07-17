@@ -1488,8 +1488,19 @@ setting:
   resetToDefault: Réinitialiser
   showNewsHeader: Afficher la vitrine des actualités
   showRoot: Afficher
+  sidebarHeight:
+    description: Sélectionnez la hauteur de la barre latérale
+    name: Hauteur du panneau latéral
+  sidebarPosition:
+    description: Sélectionner la position de la barre latérale (gauche ou droite)
+    left: à gauche
+    name: Position du panneau latéral
+    right: à droite
+  sidebarPositionDescription: Choisir la position de la barre latérale (gauche ou droite)
   streamerMode: Mode diffusion
   streamerModeDescription: Cela masquera vos informations privées comme les e-mails dans le lanceur.
+  textColor: Couleur du texte
+  textColorDescription: Sélectionner la couleur du texte
   theme:
     dark: Thème sombre
     light: Thème clair
@@ -1509,6 +1520,13 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
   viewBackgroundMusic: Voir les musiques
+  visibleCards:
+    mods: Mods
+    name: Cartes visibles
+    resourcePacks: Resource Packs
+    saves: Saves
+    screenshots: Screenshot
+    shaderPacks: Shader Packs
 settingLabel:
   global: Global
   globalHint: Ce réglage sera global

@@ -1476,8 +1476,19 @@ setting:
   resetToDefault: Скинути до типових
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
+  sidebarHeight:
+    description: Виберіть висоту бічної панелі
+    name: Висота бічної панелі
+  sidebarPosition:
+    description: Виберіть положення бічної панелі (ліворуч або праворуч)
+    left: ліворуч
+    name: Положення бічної панелі
+    right: справа
+  sidebarPositionDescription: Виберіть положення бічної панелі (ліворуч або праворуч)
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
+  textColor: Колір тексту
+  textColorDescription: Виберіть колір тексту
   theme:
     dark: Темна тема
     light: Світла тема
@@ -1498,6 +1509,13 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
+  visibleCards:
+    mods: Моди
+    name: Видимі картки
+    resourcePacks: Ресурсні пакети
+    saves: Збереження
+    screenshots: Скріншоти
+    shaderPacks: Набори шейдерів
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням

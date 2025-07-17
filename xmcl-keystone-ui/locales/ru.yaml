@@ -1462,21 +1462,6 @@ setting:
     Вид интерфейса лаунчера, представляющий различную логику пользовательского
     интерфейса.
   layoutTitle: Вид интерфейса
-  sidebarPosition:
-    name: Положение боковой панели
-    description: >-
-      Выберите положение боковой панели (слева или справа)
-    left: слева
-    right: справа
-  sidebarHeight:
-    name: Высота боковой панели
-    description: >-
-      Выберите высоту боковой панели
-    normal: Нормальная
-    reduced25: Уменьшенная на 25%
-    reduced50: Уменьшенная на 50%
-  textColor: Цвет текста
-  textColorDescription: Выберите цвет текста
   linuxEnableDedicatedGPUOptimization: Назначение выделенного графического процессора
   linuxEnableDedicatedGPUOptimizationDescription: Эта опция назначает выделенный GPU для процесса Minecraft.
   linuxTitlebar: Нативный заголовок окна
@@ -1512,10 +1497,24 @@ setting:
   resetToDefault: Сбросить к значениям по умолчанию
   showNewsHeader: Показать витрину новостей
   showRoot: Открыть папку
+  sidebarHeight:
+    description: Выберите высоту боковой панели
+    name: Высота боковой панели
+    normal: Нормальная
+    reduced25: Уменьшенная на 25%
+    reduced50: Уменьшенная на 50%
+  sidebarPosition:
+    description: Выберите положение боковой панели (слева или справа)
+    left: слева
+    name: Положение боковой панели
+    right: справа
+  sidebarPositionDescription: Выберите положение боковой панели (слева или справа).
   streamerMode: Режим стримера
   streamerModeDescription: >-
     Эта опция скроет вашу личную информацию, такую как электронная почта, в
     лаунчере.
+  textColor: Цвет текста
+  textColorDescription: Выберите цвет текста
   theme:
     dark: Тёмная тема
     light: Светлая тема
@@ -1535,12 +1534,12 @@ setting:
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
   visibleCards:
-    name: Видимые карточки
     mods: Моды
+    name: Видимые карточки
     resourcePacks: Наборы ресурсов
-    shaderPacks: Наборы шейдеров
     saves: Сохранения
     screenshots: Скриншоты
+    shaderPacks: Наборы шейдеров
 settingLabel:
   global: Глобальный
   globalHint: Это настройка будет следовать глобальной настройке.
