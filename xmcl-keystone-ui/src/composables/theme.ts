@@ -26,6 +26,51 @@ export enum BackgroundType {
   VIDEO = 'video',
 }
 
+export interface GridItemType {
+  x: number
+  y: number
+  w: number
+  h: number
+  i: string
+  minW?: number
+  minH?: number
+  maxW?: number
+  maxH?: number
+}
+
+export function getDefaultHomeLayout(): Record<string, GridItemType[]> {
+  return {
+    lg: [
+      { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: '0' },
+      { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: '1' },
+      { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: '3' },
+      { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: '2' },
+      { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: '4' },
+    ],
+    md: [
+      { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: '0' },
+      { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: '1' },
+      { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: '3' },
+      { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: '2' },
+      { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: '4' },
+    ],
+    sm: [
+      { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: '0' },
+      { x: 2, y: 0, w: 2, h: 5, minW: 2, minH: 4, i: '1' },
+      { x: 2, y: 5, w: 2, h: 5, minW: 2, minH: 4, i: '2' },
+      { x: 0, y: 6, w: 2, h: 4, minW: 2, minH: 4, i: '3' },
+      { x: 4, y: 0, w: 2, h: 10, minW: 2, minH: 4, i: '4' },
+    ],
+    xs: [
+      { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: '0' },
+      { x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4, i: '3' },
+      { x: 0, y: 6, w: 2, h: 6, minW: 2, minH: 4, i: '1' },
+      { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4, i: '2' },
+      { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4, i: '4' },
+    ],
+  }
+}
+
 export interface UIThemeDataV1 {
   name: string
 
@@ -71,6 +116,7 @@ export interface UIThemeDataV1 {
   backgroundVolume?: number
   backgroundImageFit: 'cover' | 'contain'
   visibleCards?: string[]
+  homeLayout?: Record<string, GridItemType[]>
 
   font?: MediaData
   fontSize?: number
@@ -114,6 +160,7 @@ export function getDefaultTheme(): UIThemeDataV1 {
     backgroundImageFit: 'cover',
     backgroundType: BackgroundType.NONE,
     visibleCards: ['mod', 'resource-pack', 'shader-pack', 'save', 'screenshots'],
+    homeLayout: getDefaultHomeLayout(),
     font: undefined,
     fontSize: 16,
     enableCardBlur: true,

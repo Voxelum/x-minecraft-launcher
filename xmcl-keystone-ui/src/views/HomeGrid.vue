@@ -58,7 +58,7 @@
   </GridLayout>
 </template>
 <script lang="ts" setup>
-import { useLocalStorageCache } from '@/composables/cache'
+
 import { kInstance } from '@/composables/instance'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { injection } from '@/util/inject'
@@ -126,36 +126,8 @@ interface GridItemType {
 
 const cols = { lg: 12, md: 12, sm: 6, xs: 4, xxs: 4 }
 
-const layouts = useLocalStorageCache('cardsLayout', () => ({
-  md: [
-    { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.Mod) },
-    { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
-    { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
-    { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
-    { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: rawType(CardType.Screenshots) },
-  ],
-  lg: [
-    { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.Mod) },
-    { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
-    { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
-    { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
-    { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: rawType(CardType.Screenshots) },
-  ],
-  sm: [
-    { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.Mod) },
-    { x: 2, y: 0, w: 2, h: 5, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
-    { x: 2, y: 5, w: 2, h: 5, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
-    { x: 0, y: 6, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
-    { x: 4, y: 0, w: 2, h: 10, minW: 2, minH: 4, i: rawType(CardType.Screenshots) },
-  ],
-  xs: [
-    { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.Mod) },
-    { x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
-    { x: 0, y: 6, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
-    { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
-    { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4, i: rawType(CardType.Screenshots) },
-  ],
-}), JSON.stringify, JSON.parse)
+const { homeLayout } = injection(kTheme)
+const layouts = computed(() => homeLayout.value || getDefaultHomeLayout())
 
 const layout = ref([] as GridItemType[])
 
@@ -164,7 +136,7 @@ let lastBreakpoint = ''
 const onBreakpoint = (newBreakpoint: string) => {
   if (lastBreakpoint) {
     layouts.value[lastBreakpoint] = layout.value
-    localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
+    homeLayout.value = layouts.value
   }
   lastBreakpoint = newBreakpoint
 }
@@ -179,7 +151,7 @@ const containerWidths = reactive({
 const screenshotHeight = ref(0)
 
 const saveLayouts = debounce(() => {
-  localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
+  homeLayout.value = layouts.value
 }, 500)
 
 watch(visibleCards, () => {
