@@ -208,6 +208,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           port: options.server.port,
         }
         : undefined,
+      quickPlayMultiplayer: options.quickPlayMultiplayer,
       extraExecOption: {
         shell: prepend && prepend.length > 0,
         detached: true,
@@ -255,13 +256,6 @@ export class LaunchService extends AbstractService implements ILaunchService {
       if (auth?.authlibInjector) {
         const injectedBase64 = Buffer.from(JSON.stringify(auth.authlibInjector)).toString('base64')
         launchOptions.extraJVMArgs?.push(`-Dauthlibinjector.yggdrasil.prefetched=${injectedBase64}`)
-      }
-    }
-
-    if (options.server) {
-      launchOptions.server = {
-        ip: options.server.host,
-        port: options.server?.port,
       }
     }
 
