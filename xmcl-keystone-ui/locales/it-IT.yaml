@@ -1448,8 +1448,6 @@ setting:
     push: Spingi
     remove: Rimuovi
     repulse: Ripulsa
-  sidebarPosition: Posizione della barra laterale
-  sidebarPositionDescription: Scegli la posizione della barra laterale (sinistra o destra)
   enableCardBlur: Abilita sfocatura carta
   enableCardBlurDescription: Abilita la sfocatura delle carte nell'interfaccia utente.
   visibleCards:

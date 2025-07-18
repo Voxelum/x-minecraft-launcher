@@ -1385,7 +1385,6 @@ setting:
   showSaves: Показывать карточку сохранений
   showScreenshots: Показывать карточку скриншотов
   movableCards: Перемещаемые карточки
-  sidebarPosition: Положение боковой панели
   apiSets:
     auto: Автоматически (определяется сетью)
     official: Официальный (Mojang)
