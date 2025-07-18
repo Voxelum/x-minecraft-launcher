@@ -1991,13 +1991,3 @@ versionType:
   name: Zustand.
   release: Freigabe
 'yes': Ja
-setting:
-  sidebarPosition: Seitenleistenposition
-  sidebarPositionDescription: Wählen Sie die Position der Seitenleiste (links oder rechts).
-  enableCardBlur: Kartenunschärfe aktivieren
-  enableCardBlurDescription: Wenden Sie einen Unschärfeeffekt auf Karten für einen modernen Look an.
-  showMods: Mods-Karte anzeigen
-  showResourcePacks: Ressourcenpakete-Karte anzeigen
-  showShaderPacks: Shader-Pakete-Karte anzeigen
-  showSaves: Speicherungen-Karte anzeigen
-  showScreenshots: Screenshots-Karte anzeigen
