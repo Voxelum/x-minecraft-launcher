@@ -89,10 +89,10 @@ export function useMinecraftVersions() {
 }
 
 export function useFabricVersions(minecraftVersion: Ref<string>) {
-  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getFabricLoaderVersionsModel(),
+  const { data: allVersions, isValidating, mutate: mutateLoaders, error } = useSWRVModel(getFabricLoaderVersionsModel(),
     inject(kSWRVConfig))
 
-  const { data: int } = useSWRVModel(getFabricGameVersionsModel(), inject(kSWRVConfig))
+  const { data: int, mutate: mutateInt } = useSWRVModel(getFabricGameVersionsModel(), inject(kSWRVConfig))
 
   const versions = computed(() => {
     if (!int.value || !int.value.includes(minecraftVersion.value)) {
@@ -102,6 +102,10 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
     if (!all) return []
     return all
   })
+
+  function mutate() {
+    return Promise.all([mutateLoaders(), mutateInt()])
+  }
 
   return {
     error,
@@ -180,10 +184,10 @@ export function getQuiltLoaderVersionsModel() {
 }
 
 export function useQuiltVersions(minecraftVersion: Ref<string>) {
-  const { data: allVersions, isValidating, mutate, error } = useSWRVModel(getQuiltLoaderVersionsModel(),
+  const { data: allVersions, isValidating, mutate: mutateLoaders, error } = useSWRVModel(getQuiltLoaderVersionsModel(),
     inject(kSWRVConfig))
 
-  const { data: int } = useSWRVModel(getQuiltGameVersionsModel(), inject(kSWRVConfig))
+  const { data: int, mutate: mutateInt } = useSWRVModel(getQuiltGameVersionsModel(), inject(kSWRVConfig))
 
   const versions = computed(() => {
     if (!int.value || !int.value.includes(minecraftVersion.value)) {
@@ -193,6 +197,10 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
     if (!all) return []
     return all
   })
+
+  function mutate() {
+    return Promise.all([mutateLoaders(), mutateInt()])
+  }
 
   return {
     error,

@@ -38,6 +38,17 @@
           {{ snapshotTooltip }}
         </v-tooltip>
       </template>
+      <template #append>
+        <v-btn
+          icon
+          @click="emit ('refresh')"
+        >
+          <v-icon
+          >
+            refresh
+          </v-icon>
+        </v-btn>
+      </template>
     </v-text-field>
     <v-skeleton-loader
       v-if="refreshing"
