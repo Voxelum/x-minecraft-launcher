@@ -1777,13 +1777,3 @@ versionType:
   name: Status
   release: Release
 'yes': 'Yes'
-setting:
-  sidebarPosition: Sidebar Position
-  sidebarPositionDescription: Choose the position of the sidebar (left or right).
-  enableCardBlur: Enable Card Blur
-  enableCardBlurDescription: Apply a blur effect to cards for a modern look.
-  showMods: Show Mods Card
-  showResourcePacks: Show Resource Packs Card
-  showShaderPacks: Show Shader Packs Card
-  showSaves: Show Saves Card
-  showScreenshots: Show Screenshots Card
