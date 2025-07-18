@@ -1,6 +1,6 @@
 <template>
   <v-app
-    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
+    class="h-full max-h-[100vh] overflow-hidden"
     :class="{ 'dark': isDark }"
   >
     <AppSystemBar
