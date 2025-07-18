@@ -1362,13 +1362,13 @@ setting:
   useProxy: HTTPプロキシ
   useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
   viewBackgroundMusic: BGMフォルダを見る
-  visibleCards:
-    mods: Mods
-    name: 見えるカード
-    resourcePacks: リソース・パック
-    saves: 保存
-    screenshots: スクリーンショット
-    shaderPacks: シェーダーセット
+  showMods: Modカードを表示
+  showResourcePacks: リソースパックカードを表示
+  showShaderPacks: シェーダーセットカードを表示
+  showSaves: 保存カードを表示
+  showScreenshots: スクリーンショットカードを表示
+  enableCardBlur: カードのぼかしを有効にする
+  enableCardBlurDescription: UIのカードにぼかし効果を適用します。
 settingLabel:
   global: グローバル
   globalHint: グローバル設定に従います

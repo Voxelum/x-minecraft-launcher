@@ -1448,6 +1448,16 @@ setting:
     push: Spingi
     remove: Rimuovi
     repulse: Ripulsa
+  sidebarPosition: Posizione della barra laterale
+  sidebarPositionDescription: Scegli la posizione della barra laterale (sinistra o destra)
+  enableCardBlur: Abilita sfocatura carta
+  enableCardBlurDescription: Abilita la sfocatura delle carte nell'interfaccia utente.
+  visibleCards:
+    showMods: Mostra carta mod
+    showResourcePacks: Mostra carta pacchetti risorse
+    showShaderPacks: Mostra carta pacchetti shader
+    showSaves: Mostra carta salvataggi
+    showScreenshots: Mostra carta schermate
   particleModeDescription: Seleziona il comportamento del clic della particella
   replaceNative: Sostituisci librerie native
   replaceNativeDescription: Sostituisci le librerie native in base all'architettura del tuo computer.
@@ -1491,13 +1501,6 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'indirizzo del server proxy per la richiesta http
   viewBackgroundMusic: Visualizza musiche
-  visibleCards:
-    mods: Mods
-    name: Carte visibili
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshot
-    shaderPacks: Shader Packs
 settingLabel:
   global: Globale
   globalHint: Questa impostazione seguirà le impostazioni globali

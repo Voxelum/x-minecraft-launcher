@@ -1498,13 +1498,13 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
   viewBackgroundMusic: Zenék megtekintése
-  visibleCards:
-    mods: Mods
-    name: Látható kártyák
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshot
-    shaderPacks: Shader Packs
+  enableCardBlur: Kártya elmosódás engedélyezése
+  enableCardBlurDescription: Alkalmazzon elmosódási effektust a kártyákra modern megjelenésért.
+  showMods: Modok kártya megjelenítése
+  showResourcePacks: Erőforrás csomagok kártya megjelenítése
+  showShaderPacks: Shader csomagok kártya megjelenítése
+  showSaves: Mentések kártya megjelenítése
+  showScreenshots: Képernyőképek kártya megjelenítése
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást

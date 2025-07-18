@@ -467,8 +467,15 @@ server:
 setting:
   about: About
   backdropBlur: Backdrop Blur
-  visibleCards:
-    mods: Моды
+  showMods: Модтар картасын көрсету
+  showResourcePacks: Ресурс пакеттері картасын көрсету
+  showShaderPacks: Шейдер пакеттері картасын көрсету
+  showSaves: Сақтаулар картасын көрсету
+  showScreenshots: Скриншоттар картасын көрсету
+  enableCardBlur: Карта бұлыңғырын қосу
+  enableCardBlurDescription: UI-дегі карталарға бұлыңғырлық әсерін қосу.
+  sidebarPosition: Бүйір панелінің орны
+  sidebarPositionDescription: Бүйір панелінің орнын таңдаңыз (сол немесе оң).
 setup:
   error:
     invalidChar: >-

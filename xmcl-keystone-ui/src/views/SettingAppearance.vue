@@ -124,15 +124,7 @@
           :text="t('setting.colorTheme.cardColor')"
         />
       </v-list-item-action>
-      <v-list-item-action
-        class="ml-[16px]"
-      >
-        <SettingItemCheckbox
-          v-model="enableCardBlur"
-          :title="t('setting.enableCardBlur')"
-          :description="t('setting.enableCardBlurDescription')"
-        />
-      </v-list-item-action>
+      
       <v-list-item-action
         text
         class="ml-[16px]"
@@ -142,6 +134,11 @@
           :text="t('setting.textColor')"
         />
       </v-list-item-action>
+      <SettingItemCheckbox
+        v-model="enableCardBlur"
+        :title="t('setting.enableCardBlur')"
+        :description="t('setting.enableCardBlurDescription')"
+      />
       <v-list-item-action
         secondary
         class="ml-[16px]"

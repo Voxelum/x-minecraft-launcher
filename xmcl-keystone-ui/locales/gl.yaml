@@ -521,12 +521,13 @@ setting:
   themeShare: Compartir tema
   themeShareDescription: Podes compartir o tema co teu amigo.
   update: Actualizar
-  visibleCards:
-    mods: Mods
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshot
-    shaderPacks: Shader Packs
+  enableCardBlur: Activar desenfoque de tarxeta
+  enableCardBlurDescription: Aplicar un efeito de desenfoque ás tarxetas para un aspecto moderno.
+  showMods: Mostrar tarxeta de mods
+  showResourcePacks: Mostrar tarxeta de paquetes de recursos
+  showShaderPacks: Mostrar tarxeta de paquetes de shaders
+  showSaves: Mostrar tarxeta de gardados
+  showScreenshots: Mostrar tarxeta de capturas de pantalla
 setup:
   appearance:
     name: '@:setting.appearance'

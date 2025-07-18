@@ -69,7 +69,7 @@ import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import { kTheme } from '@/composables/theme'
+import { kTheme, getDefaultHomeLayout } from '@/composables/theme'
 import { watch } from 'vue'
 
 const { instance } = injection(kInstance)
@@ -157,8 +157,8 @@ const saveLayouts = debounce(() => {
 watch(visibleCards, () => {
   if (!lastBreakpoint) return;
   const current = layouts.value[lastBreakpoint];
-  const toRemove = [];
-  const presentTypes = [];
+  const toRemove: number[] = [];
+  const presentTypes: number[] = [];
   for (let i = 0; i < current.length; i++) {
     const item = current[i];
     const type = Number(item.i.split('@')[0]);
@@ -176,9 +176,9 @@ watch(visibleCards, () => {
     }
   }
   toRemove.reverse().forEach(i => current.splice(i, 1));
-  const toAdd = [];
+  const toAdd: GridItemType[] = [];
   for (const t in CardType) {
-    const type = CardType[t];
+    const type = CardType[t as keyof typeof CardType];
     if (typeof type === 'string') continue;
     let str = '';
     switch (type) {

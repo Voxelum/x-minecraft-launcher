@@ -1395,13 +1395,13 @@ setting:
   useProxy: HTTP PROXY
   useProxyDescription: TEH PROXY SERVR ADDRES 4 DA HTTP REQUEST
   viewBackgroundMusic: VIEW MUSICS
-  visibleCards:
-    mods: MODZ
-    name: VISIBLE CARDZ
-    resourcePacks: RESOURCE PACKZ
-    saves: SAVEZ
-    screenshots: SCREENSHOTS
-    shaderPacks: SHADR PACKZ
+  showMods: SHOW MODZ CARD
+  showResourcePacks: SHOW RESOURCE PACKZ CARD
+  showShaderPacks: SHOW SHADR PACKZ CARD
+  showSaves: SHOW SAVEZ CARD
+  showScreenshots: SHOW SCREENSHOTS CARD
+  enableCardBlur: ENABLE CARD BLUR
+  enableCardBlurDescription: ENABLE BLUR ON CARDZ IN UI.
 settingLabel:
   global: GLOBAL
   globalHint: DIS SETTIN WILL FOLLOW TEH GLOBAL SETTIN

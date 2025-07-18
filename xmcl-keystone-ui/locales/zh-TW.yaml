@@ -1393,13 +1393,13 @@ setting:
   useProxy: HTTP 代理伺服器設定
   useProxyDescription: HTTP 請求的代理伺服器位址
   viewBackgroundMusic: 檢視背景音樂
-  visibleCards:
-    mods: 模組
-    name: 可見卡
-    resourcePacks: 資源包
-    saves: 保存
-    screenshots: 螢幕截圖
-    shaderPacks: 著色器集
+  enableCardBlur: 啟用卡片模糊
+  enableCardBlurDescription: 啟用主頁面卡片的模糊效果。
+  showMods: 顯示模組卡片
+  showResourcePacks: 顯示資源包卡片
+  showShaderPacks: 顯示著色器包卡片
+  showSaves: 顯示存檔卡片
+  showScreenshots: 顯示截圖卡片
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定

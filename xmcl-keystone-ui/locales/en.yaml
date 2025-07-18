@@ -1468,13 +1468,13 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
-  visibleCards:
-    mods: Mods
-    name: Visible Cards
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshots
-    shaderPacks: Shader Packs
+  enableCardBlur: Enable Card Blur
+  enableCardBlurDescription: Enable the blur effect for cards on the main page.
+  showModsCard: Show Mods Card
+  showResourcePacksCard: Show Resource Packs Card
+  showShaderPacksCard: Show Shader Packs Card
+  showSavesCard: Show Saves Card
+  showScreenshotsCard: Show Screenshots Card
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
@@ -1777,3 +1777,13 @@ versionType:
   name: Status
   release: Release
 'yes': 'Yes'
+setting:
+  sidebarPosition: Sidebar Position
+  sidebarPositionDescription: Choose the position of the sidebar (left or right).
+  enableCardBlur: Enable Card Blur
+  enableCardBlurDescription: Apply a blur effect to cards for a modern look.
+  showMods: Show Mods Card
+  showResourcePacks: Show Resource Packs Card
+  showShaderPacks: Show Shader Packs Card
+  showSaves: Show Saves Card
+  showScreenshots: Show Screenshots Card

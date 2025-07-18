@@ -1489,13 +1489,13 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Adres serwera proxy dla żądania http
   viewBackgroundMusic: Wyświetl muzykę
-  visibleCards:
-    mods: Mods
-    name: Widoczne karty
-    resourcePacks: Pakiety zasobów
-    saves: Konserwacja
-    screenshots: Zrzuty ekranu
-    shaderPacks: Zestawy shaderów
+  showMods: Pokaż kartę modów
+  showResourcePacks: Pokaż kartę pakietów zasobów
+  showShaderPacks: Pokaż kartę pakietów shaderów
+  showSaves: Pokaż kartę zapisów
+  showScreenshots: Pokaż kartę zrzutów ekranu
+  enableCardBlur: Włącz rozmycie karty
+  enableCardBlurDescription: Włącz efekt rozmycia dla kart w interfejsie.
 settingLabel:
   global: Globalny
   globalHint: To ustawienie będzie zgodne z ustawieniem globalnym

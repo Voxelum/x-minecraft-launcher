@@ -1211,13 +1211,13 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
   viewBackgroundMusic: Ver músicas
-  visibleCards:
-    mods: Mods
-    name: Tarjetas visibles
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshot
-    shaderPacks: Shader Packs
+  enableCardBlur: Habilitar desenfoque de tarjeta
+  enableCardBlurDescription: Aplicar un efecto de desenfoque a las tarjetas para un aspecto moderno.
+  showMods: Mostrar tarjeta de mods
+  showResourcePacks: Mostrar tarjeta de paquetes de recursos
+  showShaderPacks: Mostrar tarjeta de paquetes de shaders
+  showSaves: Mostrar tarjeta de guardados
+  showScreenshots: Mostrar tarjeta de capturas de pantalla
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global

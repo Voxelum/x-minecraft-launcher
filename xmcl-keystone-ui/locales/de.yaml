@@ -1621,13 +1621,13 @@ setting:
   useProxy: HTTP-Proxy
   useProxyDescription: Proxy-Server-Adresse für http-Anfrage
   viewBackgroundMusic: Musik anzeigen
-  visibleCards:
-    mods: Mods
-    name: Sichtbare Karten
-    resourcePacks: Resource Packs
-    saves: Saves
-    screenshots: Screenshot
-    shaderPacks: Shader Packs
+  enableCardBlur: Kartenunschärfe aktivieren
+  enableCardBlurDescription: Aktivieren Sie den Unschärfeeffekt für Karten auf der Hauptseite.
+  showMods: Mods-Karte anzeigen
+  showResourcePacks: Resource Packs-Karte anzeigen
+  showShaderPacks: Shader Packs-Karte anzeigen
+  showSaves: Saves-Karte anzeigen
+  showScreenshots: Screenshots-Karte anzeigen
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung
@@ -1991,3 +1991,13 @@ versionType:
   name: Zustand.
   release: Freigabe
 'yes': Ja
+setting:
+  sidebarPosition: Seitenleistenposition
+  sidebarPositionDescription: Wählen Sie die Position der Seitenleiste (links oder rechts).
+  enableCardBlur: Kartenunschärfe aktivieren
+  enableCardBlurDescription: Wenden Sie einen Unschärfeeffekt auf Karten für einen modernen Look an.
+  showMods: Mods-Karte anzeigen
+  showResourcePacks: Ressourcenpakete-Karte anzeigen
+  showShaderPacks: Shader-Pakete-Karte anzeigen
+  showSaves: Speicherungen-Karte anzeigen
+  showScreenshots: Screenshots-Karte anzeigen

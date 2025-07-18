@@ -1378,12 +1378,12 @@ setting:
   allowPrereleaseDescription: Предварительная версия может быть нестабильной.
   textColor: Цвет текста
   enableCardBlur: Включить размытие карточек
-  visibleCards: Видимые карточки
-    mods: Моды
-    resourcePacks: Наборы ресурсов
-    shaderPacks: Наборы шейдеров
-    saves: Сохранения
-    screenshots: Скриншоты
+  enableCardBlurDescription: Включает эффект размытия на карточках интерфейса.
+  showMods: Показывать карточку модов
+  showResourcePacks: Показывать карточку наборов ресурсов
+  showShaderPacks: Показывать карточку наборов шейдеров
+  showSaves: Показывать карточку сохранений
+  showScreenshots: Показывать карточку скриншотов
   movableCards: Перемещаемые карточки
   sidebarPosition: Положение боковой панели
   apiSets:
@@ -1543,13 +1543,11 @@ setting:
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
-  visibleCards:
-    mods: Моды
-    name: Видимые карточки
-    resourcePacks: Наборы ресурсов
-    saves: Сохранения
-    screenshots: Скриншоты
-    shaderPacks: Наборы шейдеров
+  showMods: Моды
+  showResourcePacks: Наборы ресурсов
+  showShaderPacks: Наборы шейдеров
+  showSaves: Сохранения
+  showScreenshots: Скриншоты
 settingLabel:
   global: Глобальный
   globalHint: Это настройка будет следовать глобальной настройке.
