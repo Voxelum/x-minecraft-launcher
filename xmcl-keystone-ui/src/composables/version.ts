@@ -119,11 +119,17 @@ export function getFabricGameVersionsModel() {
   return {
     key: computed(() => '/fabric-game-versions'),
     fetcher: async () => {
-      const int = await Promise.any([
+      const int = await Promise.allSettled([
         getJson<{ version: string }[]>('https://meta.fabricmc.net/v2/versions/game'),
         getJson<{ version: string }[]>('https://bmclapi2.bangbang93.com/fabric-meta/v2/versions/game'),
       ])
-      return int.map(v => v.version)
+      if (int[0].status === 'fulfilled') {
+        return int[0].value.map(v => v.version)
+      }
+      if (int[1].status === 'fulfilled') {
+        return int[1].value.map(v => v.version)
+      }
+      throw int[0].reason || int[1].reason || new Error('Failed to fetch Fabric game versions')
     },
   }
 }
@@ -160,11 +166,17 @@ export function getQuiltGameVersionsModel() {
   return {
     key: computed(() => '/quilt-game-versions'),
     fetcher: async () => {
-      const int = await Promise.any([
+      const int = await Promise.allSettled([
         getJson<{ version: string }[]>('https://meta.quiltmc.org/v3/versions/game'),
         getJson<{ version: string }[]>('https://bmclapi2.bangbang93.com/quilt-meta/v3/versions/game'),
       ])
-      return int.map(v => v.version)
+      if (int[0].status === 'fulfilled') {
+        return int[0].value.map(v => v.version)
+      }
+      if (int[1].status === 'fulfilled') {
+        return int[1].value.map(v => v.version)
+      }
+      throw int[0].reason || int[1].reason || new Error('Failed to fetch Quilt game versions')
     },
   }
 }
