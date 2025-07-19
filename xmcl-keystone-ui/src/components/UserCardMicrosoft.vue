@@ -13,57 +13,38 @@
           :profile="gameProfile"
         />
         <div>
-          <v-list-item>
-            <v-list-item-avatar class="md:hidden lg:block">
-              <v-icon>
-                badge
-              </v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('user.name') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('user.nameHint') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="flex grow-0 flex-row">
+          <v-list-item
+            prepend-icon="badge"
+            :title="t('user.name')"
+            :subtitle="t('user.nameHint')"
+          >
+            <template #append>
               <v-text-field
                 v-model="name"
-                dense
-                outlined
+                class="min-w-[100px]"
+                density="compact"
+                variant="outlined"
                 hide-details
               />
-            </v-list-item-action>
+            </template>
           </v-list-item>
-          <v-list-item>
-            <v-list-item-avatar class="md:hidden lg:block">
-              <v-icon>
-                accessibility_new
-              </v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('userSkin.useSlim') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('userSkin.skinType') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
+          <v-list-item
+            :title="t('userSkin.useSlim')"
+            prepend-icon="accessibility_new"
+            :subtitle="t('userSkin.skinType')"
+            class="flex items-center"
+          >
+            <template #append>
               <v-switch v-model="slim" />
-            </v-list-item-action>
+            </template>
           </v-list-item>
 
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ t('userCape.changeTitle') }}
-              </v-list-item-title>
+          <v-list-item :title="t('userCape.changeTitle')">
+            <template #subtitle>
               <v-list-item-subtitle class="max-w-100 overflow-hidden whitespace-pre-wrap">
                 {{ t('userCape.description') }}
               </v-list-item-subtitle>
-            </v-list-item-content>
+            </template>
           </v-list-item>
 
           <v-slide-group
@@ -126,11 +107,11 @@
         <v-btn
           :disabled="!changed"
           :loading="saving"
-          text
+          variant="text"
           @click="save"
         >
           {{ t('userSkin.save') }}
-          <v-icon right>
+          <v-icon end>
             save
           </v-icon>
         </v-btn>

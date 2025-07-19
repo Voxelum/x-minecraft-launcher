@@ -39,19 +39,13 @@ function pickIconFile() {
     class="transition-colors"
   >
     <v-list color="transparent">
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ t('instance.icon') }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ t('instance.iconHint') }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+      <v-list-item
+        :title="t('instance.icon')"
+        :subtitle="t('instance.iconHint')"
+      >
         <v-list-item-action>
           <v-btn
-            text
-            outlined
+            variant="outlined"
             @click="iconModel = ''"
           >
             {{ t('modified.reset') }}
@@ -69,9 +63,8 @@ function pickIconFile() {
           :label="t('instance.iconUrl')"
           small
           hide-details
-          outlined
-          filled
-          dense
+          variant="filled"
+          density="compact"
         />
         <v-list-item-action>
           <v-btn

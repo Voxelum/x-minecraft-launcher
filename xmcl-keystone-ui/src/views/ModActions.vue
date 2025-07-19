@@ -3,7 +3,7 @@
     <v-btn
       v-shared-tooltip="_ => 'Alt'"
       icon
-      large
+      size="large"
       :class="{ 'v-btn--active': isEnabledState }"
       @click="isEnabledState = !isEnabledState"
     >
@@ -12,7 +12,7 @@
     <v-btn
       v-shared-tooltip="_ => t('mod.showDirectory')"
       icon
-      large
+      size="large"
       @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>

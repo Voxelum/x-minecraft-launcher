@@ -3,26 +3,17 @@
     <v-list
       class="non-moveable w-full"
       color="transparent"
-      three-line
-      subheader
+      lines="three"
     >
-      <v-list-item class="items-center justify-center">
-        <v-list-item-content>
-          <v-list-item-title>
-            {{
-              t("setting.darkTheme")
-            }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{
-              t("setting.darkThemeDescription")
-            }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+      <v-list-item
+        class="items-center justify-center"
+        :title="t('setting.darkTheme')"
+        :subtitle="t('setting.darkThemeDescription')"
+      >
         <v-list-item-action>
           <v-select
             v-model="data.theme"
-            filled
+            variant="filled"
             style="max-width: 185px"
             hide-details
             :items="themes"
@@ -30,23 +21,15 @@
         </v-list-item-action>
       </v-list-item>
 
-      <v-list-item class="items-center justify-center">
-        <v-list-item-content>
-          <v-list-item-title>
-            {{
-              t("setting.layoutTitle")
-            }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{
-              t("setting.layoutDescription")
-            }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+      <v-list-item
+        class="items-center justify-center"
+        :title="t('setting.layoutTitle')"
+        :subtitle="t('setting.layoutDescription')"
+      >
         <v-list-item-action>
           <v-select
             v-model="layout"
-            filled
+            variant="filled"
             style="max-width: 185px"
             hide-details
             :items="layouts"

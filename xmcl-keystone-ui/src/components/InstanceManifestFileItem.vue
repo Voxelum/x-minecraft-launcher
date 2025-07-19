@@ -6,7 +6,7 @@
     class="instance-manifest-file-item"
     @click.stop="$emit('toggle')"
   >
-    <v-simple-checkbox
+    <v-checkbox-btn
       v-if="selectable"
       :value="value"
       class="select-checkbox"
@@ -28,7 +28,10 @@
       v-if="!item.children"
       class="mr-4"
     >
-      <v-avatar size="24" v-if="item.avatar">
+      <v-avatar
+        v-if="item.avatar"
+        size="24"
+      >
         <v-img
           :src="item.avatar"
         />
@@ -63,13 +66,13 @@
           v-if="item.modrinth"
           size="20"
         >
-          $vuetify.icons.modrinth
+          xmcl:modrinth
         </v-icon>
         <v-icon
           v-if="item.curseforge"
           size="20"
         >
-          $vuetify.icons.curseforge
+          xmcl:curseforge
         </v-icon>
       </div>
     </div>
@@ -97,7 +100,7 @@ const depth = computed(() => props.item.depth)
 
 function getIcon(file: InstanceFileNode<any>) {
   if (file.path.endsWith('.jar') || file.path.endsWith('.zip')) {
-    return '$vuetify.icons.package'
+    return 'xmcl:package'
   }
   return 'insert_drive_file'
 }

@@ -8,8 +8,8 @@
     >
       <template #item.id="{ item }">
         <v-icon
-          large
-          left
+          size="large"
+          start
         >
           {{ item.icon }}
         </v-icon>
@@ -68,7 +68,7 @@
             class="max-w-40 flex-shrink flex-grow-0 items-center"
             hide-details
             flat
-            solo
+            variant="solo"
             prepend-icon="filter_alt"
             :items="minecraftVersions"
             clearable
@@ -148,12 +148,12 @@ const headers = computed(() => [{
 }])
 
 const getIcon = (item: VersionHeader) => {
-  if (item.forge) return '$vuetify.icons.forge'
-  if (item.fabric) return '$vuetify.icons.fabric'
-  if (item.quilt) return '$vuetify.icons.quilt'
-  if (item.optifine) return '$vuetify.icons.optifine'
-  if (item.neoForged) return '$vuetify.icons.neoForged'
-  return '$vuetify.icons.minecraft'
+  if (item.forge) return 'xmcl:forge'
+  if (item.fabric) return 'xmcl:fabric'
+  if (item.quilt) return 'xmcl:quilt'
+  if (item.optifine) return 'xmcl:optifine'
+  if (item.neoForged) return 'xmcl:neoForged'
+  return 'xmcl:minecraft'
 }
 
 const items = computed(() => localVersions.value.filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft).map(v => ({
@@ -171,7 +171,7 @@ const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v =
 const { t } = useI18n()
 function getFilterOptions(item: VersionHeader) {
   return [
-    { label: '$vuetify.icons.minecraft', value: item.minecraft, color: 'lime' },
+    { label: 'xmcl:minecraft', value: item.minecraft, color: 'lime' },
   ]
 }
 const filterOptions = computed(() => localVersions.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))

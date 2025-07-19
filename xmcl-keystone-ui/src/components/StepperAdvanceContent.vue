@@ -1,13 +1,12 @@
 <template>
   <v-list
-    two-line
-    subheader
+    lines="two"
     style="background: transparent; width: 100%"
   >
     <div class="mx-4 grid grid-cols-4 gap-4">
       <v-select
         v-model="data.java"
-        outlined
+        variant="outlined"
         class="java-select col-span-2"
         :label="t('java.location')"
         :placeholder="t('java.allocatedLong')"
@@ -18,7 +17,7 @@
       />
       <v-text-field
         v-model="data.minMemory"
-        outlined
+        variant="outlined"
         hide-details
         type="number"
         :label="t('java.minMemory')"
@@ -27,7 +26,7 @@
       />
       <v-text-field
         v-model="data.maxMemory"
-        outlined
+        variant="outlined"
         hide-details
         type="number"
         :label="t('java.maxMemory')"

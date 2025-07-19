@@ -9,11 +9,11 @@
     :button="shaderPacks.length > 0 ? {
       text: t('mod.manage'),
       icon: 'settings'
-     } : undefined"
+    } : undefined"
     :addition-button="{ 
       icon: 'file_download',
       text: t('install'),
-     }"
+    }"
     @navigate-addition="push('/shaderpacks?source=remote')"
     @navigate="push('/shaderpacks')"
     @drop="onDrop"

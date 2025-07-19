@@ -1,22 +1,23 @@
 <template>
   <v-navigation-drawer
-    :value="true"
     permanent
-    :mini-variant="true"
+    :model-value="true"
+    rail
     :color="sideBarColor"
+    :width="80"
     class="sidebar moveable z-10 rounded-[0.75rem]"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
       nav
-      dense
-      class="ml-1 px-2"
+      density="compact"
+      class="flex-grow-1"
     >
       <v-list-item
         class="non-moveable"
         @click="goBack"
       >
-        <v-icon class="text-[18px]">
+        <v-icon>
           arrow_back
         </v-icon>
       </v-list-item>
@@ -28,11 +29,11 @@
         push
         to="/me"
         class="non-moveable"
+        value="my-stuff-button"
       >
-        <v-list-item-icon>
-          <v-icon> widgets </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title v-text="t('myStuff')" />
+        <v-icon>
+          widgets
+        </v-icon>
       </v-list-item>
       <v-list-item
         v-if="true"
@@ -42,42 +43,22 @@
         to="/store"
         class="non-moveable"
       >
-        <v-list-item-icon>
-          <v-icon
-            :size="28"
-          >
-            store
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title v-text="t('store.name', 2)" />
+        <v-icon>
+          store
+        </v-icon>
       </v-list-item>
       <v-divider />
     </v-list>
 
-    <AppSideBarContentNext />
+    <AppSideBarContentNext
+      class="gap-1 flex-grow-0 flex-shrink-100 justify-start overflow-auto px-2"
+    />
 
     <v-list
       nav
-      dense
-      class="ml-1 px-2"
-      style=""
+      density="compact"
+      class="flex-grow-1"
     >
-      <v-list-item
-        v-shared-tooltip.right="_ => t('multiplayer.name')"
-        link
-        class="non-moveable"
-        @click="goMultiplayer"
-      >
-        <v-list-item-icon>
-          <v-icon
-            :size="23"
-          >
-            hub
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>{{ t('multiplayer.name') }}</v-list-item-title>
-      </v-list-item>
-
       <v-divider
         class="mx-1 block"
       />
@@ -89,21 +70,17 @@
         to="/setting"
         class="non-moveable"
       >
-        <v-list-item-icon>
-          <v-badge
-            right
-            overlap
-            :value="state?.updateStatus !== 'none'"
-          >
-            <template #badge>
-              <span>{{ 1 }}</span>
-            </template>
-            <v-icon>
-              settings
-            </v-icon>
-          </v-badge>
-        </v-list-item-icon>
-        <v-list-item-title>{{ t('setting.name', 2) }}</v-list-item-title>
+        <v-badge
+          location="right"
+          :model-value="state?.updateStatus !== 'none'"
+        >
+          <template #badge>
+            <span>{{ 1 }}</span>
+          </template>
+          <v-icon>
+            settings
+          </v-icon>
+        </v-badge>
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
@@ -111,10 +88,10 @@
 
 <script lang=ts setup>
 import { kSettingsState } from '@/composables/setting'
+import { kTheme } from '@/composables/theme'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { kTheme } from '@/composables/theme'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
@@ -125,10 +102,6 @@ const { back } = useRouter()
 
 function goBack() {
   back()
-}
-
-function goMultiplayer() {
-  windowController.openMultiplayerWindow()
 }
 
 </script>
@@ -180,5 +153,16 @@ function goMultiplayer() {
 
 .avatar .v-list-group__header.v-list-item--active:not(:hover):not(:focus):before {
   opacity: .24;
+}
+
+.sidebar .v-list-item__spacer {
+  display: none;
+  position: absolute;
+}
+
+.sidebar .v-list-item__content {
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }
 </style>

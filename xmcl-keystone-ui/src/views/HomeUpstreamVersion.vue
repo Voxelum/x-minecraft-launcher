@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="grid-cols-13 grid items-center gap-y-4 p-3 text-gray-700 dark:text-gray-300"
-    :outlined="outlined"
+    :border="outlined"
     :style="{ 'content-visibility': 'auto', 'backdrop-filter': `blur(${blurCard}px)`, borderColor: '' }"
     :color="cardColor"
   >
@@ -9,10 +9,12 @@
       {{ version.name }}
     </div>
     <div class="col-span-2">
-      <template v-for="l of version.loaders">
+      <template 
+        v-for="l of version.loaders" 
+        :key="l"
+      >
         <v-icon
           v-if="getLoader(l)"
-          :key="l"
           v-shared-tooltip="l"
         >
           {{ getLoader(l) }}
@@ -31,25 +33,25 @@
     >
       <v-btn
         v-if="!noAction"
-        small
+        size="small"
         :color="downgrade ? 'warning' : 'primary'"
         :loading="updating"
         @click="$emit('update', version)"
       >
         {{ downgrade? t('upstream.downgrade') : t('upstream.update') }}
-        <v-icon right>
+        <v-icon end>
           {{ downgrade ? 'keyboard_double_arrow_down' : 'upgrade' }}
         </v-icon>
       </v-btn>
       <v-btn
         v-else
-        small
+        size="small"
         color="primary"
         :loading="updating"
         @click="$emit('update', version)"
       >
         {{ t('instances.fix') }}
-        <v-icon right>
+        <v-icon end>
           build
         </v-icon>
       </v-btn>
@@ -74,13 +76,13 @@
       class="col-span-4 justify-self-end"
     >
       <v-btn
-        small
-        text
+        size="small"
+        variant="text"
         :loading="duplicating"
         @click="$emit('duplicate', version)"
       >
         {{ t('instances.add') }}
-        <v-icon right>
+        <v-icon end>
           add
         </v-icon>
       </v-btn>
@@ -139,8 +141,8 @@ const { getColorCode } = useVuetifyColor()
 const { t } = useI18n()
 const getLoader = (loader: string) => {
   loader = loader.toLowerCase()
-  if (loader === 'forge') return '$vuetify.icons.forge'
-  if (loader === 'fabric') return '$vuetify.icons.fabric'
+  if (loader === 'forge') return 'xmcl:forge'
+  if (loader === 'fabric') return 'xmcl:fabric'
   return ''
 }
 const { getDateString } = useDateString()

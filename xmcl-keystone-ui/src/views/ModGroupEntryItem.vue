@@ -1,7 +1,7 @@
 <template>
   <v-list-item
-    link
     v-context-menu="getContextMenu"
+    link
     draggable
     :style="{
       minHeight: height ? height + 'px' : undefined,
@@ -12,30 +12,33 @@
     @dragover.prevent
     @click="emit('expand', expanded)"
   >
-    <v-list-item-avatar
-      :size="dense ? 30 : 40"
-      class="transition-all duration-300 rounded"
-      large
-    >
-      <div
-        class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
+    <template #prepend>
+      <v-avatar
+        class="transition-all"
+        :size="dense ? 30 : 40"
+        duration-300
+        rounded
       >
-        <v-img
-          v-for="i in avatars.slice(0, 4)"
-          :key="i"
-          :style="{ maxHeight: '20px', maxWidth: '20px' }"
-          :src="i"
-        />
-      </div>
-    </v-list-item-avatar>
-    <v-list-item-content>
-      <v-list-item-title>
-        {{ name }}
-      </v-list-item-title>
-      <v-list-item-subtitle v-if="!dense">
-        {{ t('mod.mods', { count: items.length }) }}
-      </v-list-item-subtitle>
-    </v-list-item-content>
+        <div
+          class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
+        >
+          <v-img
+            v-for="i in avatars.slice(0, 4)"
+            :key="i"
+            :style="{ maxHeight: '20px', maxWidth: '20px' }"
+            :src="i"
+          />
+        </div>
+      </v-avatar>
+    </template>
+    
+    <v-list-item-title>
+      {{ name }}
+    </v-list-item-title>
+    <v-list-item-subtitle v-if="!dense">
+      {{ t('mod.mods', { count: items.length }) }}
+    </v-list-item-subtitle>
+    
     <v-list-item-action class="mr-1.5">
       <v-icon>
         {{ expanded ? 'folder_open' : 'folder' }}

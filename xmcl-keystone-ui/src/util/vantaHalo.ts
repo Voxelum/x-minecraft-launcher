@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable */
+ 
 
 import { ShaderBase } from './vantaShaderBase'
 import { LinearFilter, RGBAFormat, WebGLRenderTarget } from 'three'

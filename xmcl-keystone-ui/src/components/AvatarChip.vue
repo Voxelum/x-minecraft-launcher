@@ -1,11 +1,11 @@
 <template>
   <v-chip
     label
-    outlined
+    variant="outlined"
     :small="small"
     @click="emit('click')"
   >
-    <v-avatar :left="true">
+    <v-avatar :start="true">
       <img
         :src="avatar"
       >

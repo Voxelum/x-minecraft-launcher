@@ -1,4 +1,4 @@
-import { computed, del, InjectionKey, reactive, Ref, set, toRefs } from 'vue'
+import { computed, InjectionKey, reactive, Ref, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey, UserState } from '@xmcl/runtime-api'
 
 import { useService } from '@/composables'
@@ -31,7 +31,7 @@ export function useUserContext() {
       const userProfile = this.users[userId]
       if (profile.id in userProfile.profiles) {
         const instance = { textures: { SKIN: { url: '' } }, ...profile }
-        set(userProfile.profiles, profile.id, instance)
+        userProfile.profiles[profile.id] = instance
       } else {
         userProfile.profiles[profile.id] = {
           textures: { SKIN: { url: '' } },
@@ -41,7 +41,7 @@ export function useUserContext() {
     }
 
     override userProfileRemove(userId: string) {
-      del(this.users, userId)
+      delete this.users[userId]
     }
 
     override userProfile(user: UserProfile) {
@@ -54,7 +54,7 @@ export function useUserContext() {
         current.selectedProfile = user.selectedProfile
         current.invalidated = user.invalidated
       } else {
-        set(this.users, user.id, user)
+        this.users[user.id] = user
       }
     }
   })

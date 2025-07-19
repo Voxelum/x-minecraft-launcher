@@ -7,8 +7,8 @@
       v-if="deleting"
       :key="1"
       absolute
-      fab
-      large
+      class="rounded-circle"
+      size="large"
       color="error"
       style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
       :loading="pinging"
@@ -20,8 +20,8 @@
       v-else
       :key="0"
       absolute
-      fab
-      large
+      class="rounded-circle"
+      size="large"
       color="primary"
       style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
       :loading="pinging"

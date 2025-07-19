@@ -97,7 +97,7 @@ authProfileAddedNotification: Profilo Auth {name} aggiunto
 author: Autore
 back: Indietro
 baseSetting:
-  title: Impostazioni di base
+  title: Impostazioni
 browse: Sfoglia
 browseApp:
   createShortcut: Crea collegamento

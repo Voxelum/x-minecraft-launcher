@@ -6,46 +6,20 @@
       'mb-2': compact,
     }"
   >
-    <div
-      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
-    >
-      <template
-        v-for="ver of versions"
-      >
-        <AvatarItem
-          :key="ver.title"
-          :avatar="ver.icon"
-          :title="ver.title"
-          responsive
-          :text="ver.version"
-        />
-        <v-divider
-          :key="`${ver.title}-divider`"
-          vertical
-        />
-      </template>
-      <AvatarItem
-        icon="schedule"
-        :title="t('instance.playtime')"
-        responsive
-        :text="playTimeText"
-      />
-      <v-divider
-        vertical
-      />
-      <AvatarItem
-        icon="update"
-        :title="t('instance.lastPlayed')"
-        responsive
-        :text="lastPlayedText"
-      />
-    </div>
+    <AppExtensionRoutes
+      :items="[
+        { icon: 'settings', title: t('baseSetting.title', 2), to: '/base-setting' },
+        { icon: 'palette', title: t('resourcepack.name', 2), to: '/resourcepacks' },
+        { icon: 'gradient', title: t('shaderPack.name', 2), to: '/shaderpacks' },
+        { icon: 'map', title: t('save.name', 2), to: '/saves' }
+      ]"
+    />
     <div class="flex-grow mr-2" />
     <transition name="fade-transition">
       <div
+        v-if="!isInFocusMode || !(currentRoute.path === '/')"
         key="launch-button-group"
         class="flex items-center justify-end overflow-hidden"
-        v-if="!isInFocusMode || !(router.currentRoute.path === '/')"
       >
         <HomeHeaderInstallStatus
           v-if="status === 1 || status === 3"
@@ -83,11 +57,12 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
+import AppExtensionRoutes from '@/components/AppExtensionRoutes.vue'
 
 const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
 const { total, progress, status, name: taskName } = injection(kLaunchTask)
-const router = useRouter()
+const { currentRoute } = useRouter()
 
 const active = ref(false)
 

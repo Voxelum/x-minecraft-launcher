@@ -40,7 +40,7 @@
         >
           <v-img
             :src="g.logo"
-            class="white--text max-w-36 min-w-36"
+            class="text-white max-w-36 min-w-36"
           />
           <div class="flex max-w-full flex-col overflow-auto">
             <v-card-title class="ml-1 max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap pt-3">
@@ -54,13 +54,13 @@
             <v-divider />
             <v-card-actions class="ml-1 flex max-h-10 gap-2 ">
               <v-chip
-                small
+                size="small"
                 :ripple="false"
-                outlined
+                variant="outlined"
               >
                 <v-icon
                   size="20"
-                  left
+                  start
                   class="material-icons-outlined "
                 >
                   update
@@ -71,7 +71,7 @@
               <v-icon
                 size="16"
               >
-                {{ g.type === 'modrinth' ? '$vuetify.icons.modrinth': '$vuetify.icons.curseforge' }}
+                {{ g.type === 'modrinth' ? 'xmcl:modrinth': 'xmcl:curseforge' }}
               </v-icon>
               <v-chip
                 v-for="c of g.categories.slice(0, 2)"
@@ -79,7 +79,7 @@
                 v-shared-tooltip="c"
                 class="hidden lg:block"
                 :ripple="false"
-                small
+                size="small"
               >
                 <span class="overflow-hidden overflow-ellipsis whitespace-nowrap">
                   {{ c }}

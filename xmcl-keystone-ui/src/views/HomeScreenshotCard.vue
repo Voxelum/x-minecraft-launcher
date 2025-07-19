@@ -2,7 +2,7 @@
   <v-card
     class="w-full"
     :color="cardColor"
-    outlined
+    border
     :style="{
       borderColor: refreshing ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
@@ -10,7 +10,7 @@
   >
     <v-btn
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
-      text
+      variant="text"
       icon
       class="z-6 absolute bottom-2 right-2"
       @click="randomPlayScreenshot = !randomPlayScreenshot"
@@ -22,7 +22,6 @@
     <v-carousel
       hide-delimiters
       :height="height"
-      show-arrows-on-hover
       :show-arrows="urls.length > 0"
       cycle
       interval="5000"
@@ -40,7 +39,7 @@
             class="flex h-full items-end justify-center pb-4 opacity-0 transition-opacity hover:opacity-100"
           >
             <v-btn
-              text
+              variant="text"
               icon
               @click.stop="onOpen(i)"
             >
@@ -60,7 +59,7 @@
             color="transparent"
             class="flex h-full items-center justify-center"
           >
-            <v-icon left>
+            <v-icon start>
               image
             </v-icon>
             {{ t('screenshots.empty') }}

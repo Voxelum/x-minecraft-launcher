@@ -1,12 +1,12 @@
 <template>
   <v-chip
     v-shared-tooltip="value"
-    v-ripple
     :label="label"
     color="dark:(grey darken-4)"
     class="cursor-pointer"
-    :small="!large"
+    :size="!large ? 'small' : undefined"
     :outlined="outlined"
+    :variant="outlined ? 'outlined' : 'text'"
     @click="onInfoClicked(value)"
   >
     <span
@@ -15,8 +15,8 @@
       {{ value }}
     </span>
     <v-icon
-      small
-      right
+      size="small"
+      end
       :color="clicked ? 'green' : ''"
     >
       {{ clicked ? 'check' : 'content_copy' }}

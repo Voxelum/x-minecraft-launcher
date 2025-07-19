@@ -1,7 +1,7 @@
 import debounce from 'lodash.debounce'
 
 const isShown = ref(false)
-const stack = ref([] as SharedTooltipData[])
+const stack = shallowRef([] as SharedTooltipData[])
 const blocked = ref(false)
 const pending = [undefined as boolean | undefined]
 const _setValue = debounce(() => {

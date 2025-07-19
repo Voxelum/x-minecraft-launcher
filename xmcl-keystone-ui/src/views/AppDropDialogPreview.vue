@@ -2,7 +2,7 @@
   <div
     style="display: flex; flex-direction: column; height: 100%;"
   >
-    <v-card-text class="headline font-weight-bold">
+    <v-card-text class="text-h5 font-weight-bold">
       {{ t('universalDrop.title') }}
     </v-card-text>
     <v-divider />
@@ -21,16 +21,16 @@
     <v-divider />
     <v-card-actions class="gap-4 px-10">
       <v-btn
-        large
-        text
+        size="large"
+        variant="text"
         @click="cancel"
       >
         {{ t('cancel') }}
       </v-btn>
       <v-spacer />
       <v-btn
-        large
-        text
+        size="large"
+        variant="text"
         style="margin-left: 10px;"
         color="primary"
         :loading="loading"

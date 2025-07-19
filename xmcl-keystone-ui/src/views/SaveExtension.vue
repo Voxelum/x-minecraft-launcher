@@ -13,17 +13,17 @@
     </div>
     <v-spacer />
     <MarketTextFieldWithMenu
+      v-model:keyword="keyword"
+      v-model:curseforge-category="curseforgeCategory"
+      v-model:enable-curseforge="isCurseforgeActive"
+      v-model:sort="sort"
+      v-model:game-version="gameVersion"
       no-tab
-     :placeholder="t('save.search')"
-      :keyword.sync="keyword"
-      :curseforge-category.sync="curseforgeCategory"
+      :placeholder="t('save.search')"
       curseforge-category-filter="worlds"
       :modrinth-categories="[]"
       :modrinth-category-filter="''"
-      :enable-curseforge.sync="isCurseforgeActive"
-      :sort.sync="sort"
       :mode="'remote'"
-      :game-version.sync="gameVersion"
     />
   </div>
 </template>

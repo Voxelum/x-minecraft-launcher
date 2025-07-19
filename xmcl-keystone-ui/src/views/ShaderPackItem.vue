@@ -69,7 +69,7 @@ const getContextMenuItems = () => {
   //     onClick: () => {
   //       goModrinthProject(id)
   //     },
-  //     icon: '$vuetify.icons.modrinth',
+  //     icon: 'xmcl:modrinth',
   //   })
   // }
   return all

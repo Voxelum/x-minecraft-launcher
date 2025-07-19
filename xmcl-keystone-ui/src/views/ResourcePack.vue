@@ -11,26 +11,23 @@
     @load="onLoad"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
-      <v-subheader
+      <SettingSubheader
         v-if="typeof item === 'string'"
-        class="flex"
+        padded
+        :title="item === 'enabled' ? t('resourcepack.selected') : item === 'disabled' ? t('resourcepack.unselected') : t('modInstall.search')"
         :style="{ height: itemHeight + 'px' }"
       >
-        {{
-          item === 'enabled' ? t("resourcepack.selected") :
-          item === 'disabled' ? t("resourcepack.unselected") :
-          t("modInstall.search")
-        }}
-        <div class="flex-grow" />
         <v-btn
           v-if="index === 0"
           v-shared-tooltip="_ => t('mod.denseView')"
           icon
+          variant="text"
+          size="small"
           @click="denseView = !denseView"
         >
           <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
         </v-btn>
-      </v-subheader>
+      </SettingSubheader>
       <ResourcePackItem
         v-else-if="(typeof item === 'object')"
         :pack="item"
@@ -128,6 +125,7 @@ import ResourcePackDetailResource from './ResourcePackDetailResource.vue'
 import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import SettingSubheader from '@/components/SettingSubheader.vue'
 
 const { runtime, path } = injection(kInstance)
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)

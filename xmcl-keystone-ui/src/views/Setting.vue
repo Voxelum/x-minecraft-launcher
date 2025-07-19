@@ -1,8 +1,7 @@
 <template>
   <v-list
-    two-line
-    subheader
-    color="transparent"
+    lines="two"
+    bg-color="transparent"
     class="visible-scroll select-none overflow-auto setting pt-4 pb-4"
   >
     <div class="px-4">

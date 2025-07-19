@@ -3,23 +3,18 @@
     v-model="isShown"
     :close-on-content-click="false"
     transition="slide-y-transition"
-    :nudge-width="280"
-    offset-y
   >
-    <template #activator="{ on, attrs }">
-      <div
-        id="user-avatar"
-        v-bind="attrs"
-        class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 transition-all hover:bg-[rgba(255,255,255,0.2)]"
-        v-on="on"
+    <template #activator="{ props }">
+      <AppSystemBarBadge
+        :text="selectedUserGameProfile?.name"
+        v-bind="props"
       >
         <PlayerAvatar
-          class="overflow-hidden rounded-full transition-all duration-300"
+          class="overflow-hidden rounded-full transition-all duration-300 mr-2"
           :src="selectedUserGameProfile?.textures.SKIN.url"
-          :dimension="28"
+          :dimension="24"
         />
-        {{ selectedUserGameProfile?.name }}
-      </div>
+      </AppSystemBarBadge>
     </template>
 
     <UserCard
@@ -36,6 +31,7 @@ import { kUserContext } from '@/composables/user'
 import UserCard from '@/components/UserCard.vue'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import { injection } from '@/util/inject'
+import AppSystemBarBadge from '@/components/AppSystemBarBadge.vue'
 
 const isShown = ref(false)
 const { gameProfile: selectedUserGameProfile } = injection(kUserContext)

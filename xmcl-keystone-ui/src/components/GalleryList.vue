@@ -35,7 +35,7 @@
           v-for="g of currentGroup"
           :key="g.id"
           class="flex flex-col overflow-auto"
-          outlined
+          border
           @click="$emit('enter', g)"
         >
           <v-img
@@ -49,23 +49,23 @@
               class="mr-1"
               size="16"
             >
-              {{ g.type === 'modrinth' ? '$vuetify.icons.modrinth': '$vuetify.icons.curseforge' }}
+              {{ g.type === 'modrinth' ? 'xmcl:modrinth': 'xmcl:curseforge' }}
             </v-icon> {{ g.title }}
           </v-card-subtitle>
 
           <v-divider />
           <v-card-actions>
             <v-chip
-              small
+              size="small"
               :ripple="false"
-              outlined
+              variant="outlined"
             >
               <v-icon
                 size="20"
-                left
-                class="material-icons-outlined "
+                start
+                icon="xmcl"
               >
-                $vuetify.icons.minecraft
+                minecraft
               </v-icon>
               {{ g.gameVersion }}
             </v-chip>
@@ -73,7 +73,7 @@
             <v-chip
               v-for="c of g.categories.slice(0, 1)"
               :key="c"
-              small
+              size="small"
               :ripple="false"
             >
               {{ c }}

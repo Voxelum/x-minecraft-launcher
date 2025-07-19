@@ -6,9 +6,9 @@
   >
     <v-chip
       v-if="modid"
-      small
+      size="small"
       class="mod-tag"
-      :outlined="isDark"
+      :variant="isDark ? 'outlined' : undefined"
       color="orange en-1"
       :disabled="disabled"
       label
@@ -23,25 +23,31 @@
       v-shared-tooltip="getTooltip(com)"
       class="mod-tag"
       :disabled="disabled"
-      small
+      size="small"
       label
-      outlined
+      variant="outlined"
     >
-      <v-avatar left v-if="com.compatible === true">
+      <v-avatar
+        v-if="com.compatible === true"
+        start
+      >
         <img
           v-if="getDepIcon(com.modId, icons[com.modId])"
           :src="getDepIcon(com.modId, icons[com.modId])"
         >
         <v-icon v-else>
-          $vuetify.icons.package
+          xmcl:package
         </v-icon>
       </v-avatar>
-      <span class="color-orange mr-1" v-if="com.optional">
+      <span
+        v-if="com.optional"
+        class="color-orange mr-1"
+      >
         {{ t('optional') }}
       </span>
       {{ com.modId }}
       <!-- {{ com.requirements || '⭕' }} -->
-      <v-avatar right>
+      <v-avatar end>
         {{ getCompatibleIcon(com) }}
       </v-avatar>
     </v-chip>
@@ -49,14 +55,14 @@
     <v-chip
       v-for="(tag, index) in tags"
       :key="`${tag}-${index}`"
-      :outlined="isDark"
+      :variant="isDark ? 'outlined' : undefined"
       class="mod-tag"
-      small
+      size="small"
       label
       :disabled="disabled"
       :color="getColor(tag)"
       style="margin-left: 1px;"
-      close
+      closable
       @click.stop
       @mousedown.stop
       @click:close="emit('delete-tag', tag)"

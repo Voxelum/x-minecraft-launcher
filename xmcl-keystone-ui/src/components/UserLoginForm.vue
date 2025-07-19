@@ -18,13 +18,13 @@
       v-model="data.username"
       :items="history"
       prepend-inner-icon="person"
-      outlined
+      variant="outlined"
       required
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
       :error="!!errorMessage"
       :error-messages="errorMessage"
-      @input="error = undefined"
+      @update:model-value="error = undefined"
       @keypress="error = undefined"
       @keypress.enter="onLogin"
     />
@@ -33,14 +33,14 @@
       ref="accountInput"
       v-model="data.username"
       prepend-inner-icon="person"
-      outlined
+      variant="outlined"
       required
       type="password"
       :label="getUserServiceAccount(authority)"
       :rules="usernameRules"
       :error="!!errorMessage"
       :error-messages="errorMessage"
-      @input="error = undefined"
+      @update:model-value="error = undefined"
       @keypress="error = undefined"
       @keypress.enter="onLogin"
     />
@@ -48,7 +48,7 @@
       v-if="!isOffline"
       v-model="data.password"
       prepend-inner-icon="lock"
-      outlined
+      variant="outlined"
       :type="passwordType"
       required
       :label="passwordLabel"
@@ -58,13 +58,13 @@
       :readonly="isPasswordReadonly"
       :error="!!errorMessage"
       :error-messages="errorMessage"
-      @input="error = undefined"
+      @update:model-value="error = undefined"
       @keypress.enter="onLogin"
     />
     <v-text-field
       v-else
       v-model="data.uuid"
-      outlined
+      variant="outlined"
       prepend-inner-icon="fingerprint"
       :placeholder="uuidLabel"
       :label="uuidLabel"
@@ -90,7 +90,7 @@
         :loading="isLogining && (!hovered)"
         color="primary"
         rounded
-        large
+        size="large"
         class="text-white"
         @click="onLogin"
       >

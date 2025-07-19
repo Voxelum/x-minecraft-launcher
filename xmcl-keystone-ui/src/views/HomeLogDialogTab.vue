@@ -1,5 +1,5 @@
 <template>
-  <v-tab-item>
+  <v-tabs-window-item>
     <div class="min-h-[420px]">
       <Transition
         name="fade-transition"
@@ -48,24 +48,24 @@
             {{ showedFile }}
             <v-spacer />
             <v-btn
-              text
+              variant="text"
               @click="goBack"
             >
-              <v-icon left>
+              <v-icon start>
                 arrow_back
               </v-icon>
               {{ t('back') }}
             </v-btn>
           </v-card-title>
           <LogView
-            class="max-h-[50vh] overflow-auto"
             v-if="log"
+            class="max-h-[50vh] overflow-auto"
             :logs="logs"
           />
         </div>
       </Transition>
     </div>
-  </v-tab-item>
+  </v-tabs-window-item>
 </template>
 
 <script lang=ts setup>

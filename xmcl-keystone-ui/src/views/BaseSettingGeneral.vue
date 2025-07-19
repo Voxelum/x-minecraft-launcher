@@ -1,110 +1,98 @@
 <template>
-  <v-list
-    class="base-settings"
-  >
-    <v-subheader style="">
-      {{ t("BaseSettingGeneral.title") }}
-    </v-subheader>
-
-    <v-list-item>
-      <v-list-item-action class="self-center">
-        <v-menu
-          v-model="changeIconModel"
-          :close-on-content-click="false"
-          :nudge-width="380"
-          offset-x
-        >
-          <template #activator="{ on, attrs }">
-            <v-avatar
-              id="instance-icon"
-              v-ripple
-              size="80"
-              v-bind="attrs"
-              v-on="on"
-            >
-              <img
-                v-if="data.icon"
-                :src="data.icon"
-              >
-              <v-icon v-else>
-                add
-              </v-icon>
-            </v-avatar>
-          </template>
-          <AppChangeInstanceIconCard
-            :color="highlighted ? 'info' : ''"
-            :icon.sync="data.icon"
-          />
-        </v-menu>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-subtitle>
-          {{ t("instance.iconHint") }}
-        </v-list-item-subtitle>
-        <div class="mt-1">
-          <v-btn
-            outlined
-            text
-            @click="changeIconModel = true"
+  <v-list-subheader style="">
+    {{ t("BaseSettingGeneral.title") }}
+  </v-list-subheader>
+  <v-list-item :subtitle="t('instance.iconHint')">
+    <template #prepend>
+      <v-menu
+        v-model="changeIconModel"
+        :close-on-content-click="false"
+      >
+        <template #activator="{ props }">
+          <v-avatar
+            id="instance-icon"
+            v-ripple
+            size="80"
+            v-bind="props"
           >
-            {{ t("instance.changeIcon") }}
-          </v-btn>
-        </div>
-      </v-list-item-content>
-
-      <div class="w-60">
-        <v-text-field
-          v-model="data.name"
-          :label="t('instance.name')"
-          :hint="t('instance.nameHint')"
-          filled
-          dense
-          :placeholder="`Minecraft ${data.runtime.minecraft}`"
+            <v-img
+              v-if="data.icon"
+              :src="data.icon"
+            />
+            <v-icon v-else>
+              add
+            </v-icon>
+          </v-avatar>
+        </template>
+        <AppChangeInstanceIconCard
+          v-model:icon="data.icon"
+          :color="highlighted ? 'info' : ''"
         />
-      </div>
-    </v-list-item>
+      </v-menu>
+    </template>
+      
+    <div class="mt-1">
+      <v-btn
+        variant="outlined"
+        @click="changeIconModel = true"
+      >
+        {{ t("instance.changeIcon") }}
+      </v-btn>
+    </div>
 
-    <SettingItemCheckbox
-      v-model="hideLauncher"
-      :title="t('instanceSetting.hideLauncher')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalHideLauncher"
-        @clear="resetHideLauncher"
+    <template #append>
+      <v-text-field
+        v-model="data.name"
+        :label="t('instance.name')"
+        :hint="t('instance.nameHint')"
+        variant="filled"
+        density="compact"
+        class="w-60"
+        :placeholder="`Minecraft ${data.runtime.minecraft}`"
       />
-    </SettingItemCheckbox>
-    <SettingItemCheckbox
-      v-model="showLog"
-      :title="t('instanceSetting.showLog')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalShowLog"
-        @clear="resetShowLog"
-      />
-    </SettingItemCheckbox>
-    <SettingItemCheckbox
-      v-if="isThirdparty"
-      v-model="disableAuthlibInjector"
-      :title="t('instanceSetting.disableAuthlibInjector')"
-      :description="t('instanceSetting.disableAuthlibInjectorDescription')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalDisableAuthlibInjector"
-        @clear="resetDisableAuthlibInjector"
-      />
-    </SettingItemCheckbox>
-    <SettingItemCheckbox
-      v-if="isElyBy"
-      v-model="disableElyByAuthlib"
-      :title="t('instanceSetting.disableElyByAuthlib')"
-      :description="t('instanceSetting.disableElyByAuthlibDescription')"
-    >
-      <BaseSettingGlobalLabel
-        :global="isGlobalDisableElyByAuthlib"
-        @clear="resetDisableElyByAuthlib"
-      />
-    </SettingItemCheckbox>
-  </v-list>
+    </template>
+  </v-list-item>
+
+  <SettingItemCheckbox
+    v-model="hideLauncher"
+    :title="t('instanceSetting.hideLauncher')"
+  >
+    <BaseSettingGlobalLabel
+      :global="isGlobalHideLauncher"
+      @clear="resetHideLauncher"
+    />
+  </SettingItemCheckbox>
+  <SettingItemCheckbox
+    v-model="showLog"
+    :title="t('instanceSetting.showLog')"
+  >
+    <BaseSettingGlobalLabel
+      :global="isGlobalShowLog"
+      @clear="resetShowLog"
+    />
+  </SettingItemCheckbox>
+  <SettingItemCheckbox
+    v-if="isThirdparty"
+    v-model="disableAuthlibInjector"
+    :title="t('instanceSetting.disableAuthlibInjector')"
+    :description="t('instanceSetting.disableAuthlibInjectorDescription')"
+  >
+    <BaseSettingGlobalLabel
+      :global="isGlobalDisableAuthlibInjector"
+      @clear="resetDisableAuthlibInjector"
+    />
+  </SettingItemCheckbox>
+  <SettingItemCheckbox
+    v-if="isElyBy"
+    v-model="disableElyByAuthlib"
+    :title="t('instanceSetting.disableElyByAuthlib')"
+    :description="t('instanceSetting.disableElyByAuthlibDescription')"
+  >
+    <BaseSettingGlobalLabel
+      :global="isGlobalDisableElyByAuthlib"
+      @clear="resetDisableElyByAuthlib"
+    />
+  </SettingItemCheckbox>
 </template>
 
 <script lang=ts setup>

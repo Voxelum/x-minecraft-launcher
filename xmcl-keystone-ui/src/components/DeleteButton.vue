@@ -2,10 +2,10 @@
   <v-fab-transition>
     <v-btn
       v-if="visible"
-      large
+      size="large"
       absolute
-      fab
-      bottom
+      class="rounded-circle"
+      location="bottom"
       color="error"
       @dragover.prevent
       @drop="drop"

@@ -7,7 +7,7 @@
     <v-img
       v-if="gallery.images[currentImageIndex]"
       cover
-      class="z-2 col-span-3 max-h-[360px] cursor-pointer overflow-hidden rounded-none rounded-l-lg shadow-2xl"
+      class="z-2 col-span-3 max-h-[360px] cursor-pointer overflow-hidden rounded-none rounded-s-lg shadow-2xl"
       :src="gallery.images[currentImageIndex][1]"
       :lazy-src="gallery.images[currentImageIndex][0]"
     />
@@ -56,14 +56,14 @@
       <div class="flex-grow" />
       <div class="ml-2 flex flex-grow-0 select-none gap-1">
         <v-icon class="mr-1">
-          {{ gallery.type === 'modrinth' ? '$vuetify.icons.modrinth': '$vuetify.icons.curseforge' }}
+          {{ gallery.type === 'modrinth' ? 'xmcl:modrinth': 'xmcl:curseforge' }}
         </v-icon>
         <v-chip
           v-for="cat of gallery.categories.slice(0, 3)"
           :key="cat"
-          small
+          size="small"
           label
-          outlined
+          variant="outlined"
         >
           {{ cat }}
         </v-chip>
@@ -76,7 +76,7 @@
         </span>
         <div class="flex-grow" />
         <v-chip
-          small
+          size="small"
           label
           color="primary"
         >

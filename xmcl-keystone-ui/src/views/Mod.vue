@@ -12,22 +12,23 @@
     @load="onLoad"
   >
     <template #actions>
-      <v-subheader class="flex gap-1">
-        {{ t('mod.mods', { count: items.length }) }}
-        <v-spacer />
-
+      <SettingSubheader padded :title="t('mod.mods', { count: items.length })">
         <v-btn
           id="default-source-button"
           v-shared-tooltip="_ => t('mod.switchDefaultSource') + ' ' + defaultSource"
           icon
+          size="tiny"
+          variant="text"
           @click="defaultSource = defaultSource === 'curseforge' ? 'modrinth' : 'curseforge'"
         >
-          <v-icon> {{ defaultSource === 'modrinth' ? '$vuetify.icons.modrinth' : '$vuetify.icons.curseforge' }} </v-icon>
+          <v-icon> {{ defaultSource === 'modrinth' ? 'xmcl:modrinth' : 'xmcl:curseforge' }} </v-icon>
         </v-btn>
         <v-btn
           v-shared-tooltip="_ => t('mod.groupInstalled')"
           :class="{'v-list-item--active': groupInstalled}"
           icon
+          size="tiny"
+          variant="text"
           @click="groupInstalled = !groupInstalled"
         >
           <v-icon> layers </v-icon>
@@ -35,22 +36,24 @@
         <v-btn
           v-shared-tooltip="_ => t('mod.denseView')"
           icon
+          size="tiny"
+          variant="text"
           @click="denseView = !denseView"
         >
           <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
         </v-btn>
-      </v-subheader>
+      </SettingSubheader>
       <v-alert
         v-if="upgradeError"
-        dense
+        density="compact"
         type="error"
       >
         {{ updateErrorMessage }}
       </v-alert>
       <v-alert
         v-if="Object.keys(conflicted).length > 0"
-        dense
-        class="cursor-pointer error"
+        density="compact"
+        class="cursor-pointer bg-error"
         type="error"
         @click="showDuplicatedDialog"
       >
@@ -84,24 +87,26 @@
         @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
         @setting="renameGroup(item.name, $event.name)"
       />
-      <v-subheader
+      <v-list-subheader
         v-else-if="item === 'search'"
+        class="mx-3"
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
         <!-- {{ t("modInstall.search") }} -->
         {{ localizedTexts.mod.search }}
         <v-divider class="ml-4" />
-      </v-subheader>
-      <v-subheader
+      </v-list-subheader>
+      <v-list-subheader
         v-else-if="item === 'unsupported'"
+        class="mx-3"
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
         <!-- {{ t("modrinth.environments.unsupported") }} -->
         {{ localizedTexts.mod.unsupported }}
         <v-divider class="ml-4" />
-      </v-subheader>
+      </v-list-subheader>
     </template>
     <template #placeholder>
       <Hint
@@ -153,7 +158,7 @@
         @category="curseforgeCategory = $event"
       />
       <ModDetailOptifine
-      v-else-if="isOptifineProject(selectedItem)"
+        v-else-if="isOptifineProject(selectedItem)"
         :key="selectedItem.id"
         :mod="selectedItem"
         :runtime="runtime"
@@ -193,20 +198,21 @@
               :key="i.title"
               @click="i.onSelect"
             >
-              <v-list-item-avatar>
-                <img :src="i.icon">
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ i.title }}
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  <a
-                    :href="i.url"
-                    @click.stop
-                  >{{ i.url }}</a>
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <img :src="i.icon">
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title>
+                {{ i.title }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <a
+                  :href="i.url"
+                  @click.stop
+                >{{ i.url }}</a>
+              </v-list-item-subtitle>
             </v-list-item>
           </v-list>
           <v-alert
@@ -269,6 +275,8 @@ import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { basename } from '@/util/basename'
 import { kSearchModel } from '@/composables/search'
+import SettingHeader from '@/components/SettingHeader.vue'
+import SettingSubheader from '@/components/SettingSubheader.vue'
 
 const localizedTexts = computed(() => markRaw({
   mod: {

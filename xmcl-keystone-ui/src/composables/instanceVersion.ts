@@ -65,7 +65,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     }
   }
 
-  const resolvedVersion = ref<InstanceResolveVersion | undefined>(undefined)
+  const resolvedVersion = shallowRef<InstanceResolveVersion | undefined>(undefined)
   const { editInstance } = useService(InstanceServiceKey)
   const { refreshing: isValidating, refresh: mutate, error } = useRefreshable<Instance>(async (i) => {
     const _path = i.path

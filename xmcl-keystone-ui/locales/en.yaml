@@ -94,7 +94,7 @@ authProfileAddedNotification: Auth Profile {name} Added
 author: Author
 back: Back
 baseSetting:
-  title: Base Settings
+  title: Settings
 browse: Browse
 browseApp:
   createShortcut: Create Shortcut

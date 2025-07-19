@@ -1,16 +1,16 @@
 <template>
   <div class="w-full mod-options-page overflow-auto">
-    <v-subheader>
+    <v-list-subheader>
       {{ t('dependencies.name') }}
-    </v-subheader>
-    <SettingItem
+    </v-list-subheader>
+    <VListItem
       :title="t('modInstall.checkDependencies')"
-      :description="checkedDependencies ? t('modInstall.checkedDependencies') : t('modInstall.checkDependencies')"
+      :subtitle="checkedDependencies ? t('modInstall.checkedDependencies') : t('modInstall.checkDependencies')"
     >
-      <template #preaction>
+      <template #prepend>
         <v-btn
-          icon
           v-shared-tooltip="_ => t('refresh')"
+          icon
           :disabled="mods.length === 0 || checkingDependencies"
           :loading="checkingDependencies"
           @click="checkDependencies"
@@ -22,31 +22,34 @@
           </v-icon>
         </v-btn>
       </template>
-      <template #action>
+      <template #append>
         <div class="flex">
           <v-btn
-            text
+            variant="text"
             :loading="installingDependencies"
             :disabled="dependenciesToUpdate.length === 0"
             @click="installDependencies"
           >
-            <v-icon left class="material-icons-outlined">
+            <v-icon
+              start
+              class="material-icons-outlined"
+            >
               file_download
             </v-icon>
             {{ t('install') }}
           </v-btn>
         </div>
       </template>
-    </SettingItem>
+    </VListItem>
 
-    <SettingItem
+    <VListItem
       :title="t('modInstall.removeUnusedLibraries')"
       :disabled="mods.length === 0 || installingDependencies"
     >
-      <template #preaction>
+      <template #prepend>
         <v-btn
-          icon
           v-shared-tooltip="_ => t('refresh')"
+          icon
           :loading="scanningUnusedMods"
           :disabled="mods.length === 0 || scanningUnusedMods"
           @click="scanUnusedMods"
@@ -56,7 +59,7 @@
           </v-icon>
         </v-btn>
       </template>
-      <template #action>
+      <template #append>
         <div class="flex gap-2">
           <v-btn
             color="red"
@@ -64,63 +67,75 @@
             :disabled="unusedMods.length === 0"
             @click="onCleanUnused"
           >
-            <v-icon left>
+            <v-icon start>
               delete
             </v-icon>
             {{ t('remove') }}
           </v-btn>
         </div>
       </template>
-    </SettingItem>
+    </VListItem>
     <v-divider />
-    <v-subheader>
-        {{ t('modInstall.checkUpgrade') }}
-    </v-subheader>
-    <SettingItem
+    <v-list-subheader>
+      {{ t('modInstall.checkUpgrade') }}
+    </v-list-subheader>
+    <VListItem
       :title="t('modUpgradePolicy.name')"
-      :description="t(`modUpgradePolicy.${upgradePolicy}`) "
+      :subtitle="t(`modUpgradePolicy.${upgradePolicy}`) "
     >
-      <template #action>
+      <template #prepend>
         <v-btn-toggle
           v-model="upgradePolicy"
           mandatory
           color="primary"
         >
           <v-btn
-            small
-            outlined
+            size="small"
+            variant="outlined"
             value="modrinth"
           >
-            <v-icon small>$vuetify.icons.modrinth</v-icon>
-            <v-icon small>$vuetify.icons.curseforge</v-icon>
+            <v-icon size="small">
+              xmcl:modrinth
+            </v-icon>
+            <v-icon size="small">
+              xmcl:curseforge
+            </v-icon>
           </v-btn>
           <v-btn
-            small
-            outlined
+            size="small"
+            variant="outlined"
             value="curseforge"
           >
-            <v-icon small>$vuetify.icons.curseforge</v-icon>
-            <v-icon small>$vuetify.icons.modrinth</v-icon>
+            <v-icon size="small">
+              xmcl:curseforge
+            </v-icon>
+            <v-icon size="small">
+              xmcl:modrinth
+            </v-icon>
           </v-btn>
 
           <v-btn
-            small
-            outlined
+            size="small"
+            variant="outlined"
             value="modrinthOnly"
           >
-            <v-icon small>$vuetify.icons.modrinth</v-icon>
+            <v-icon size="small">
+              xmcl:modrinth
+            </v-icon>
           </v-btn>
 
           <v-btn
-            small
-            outlined
+            size="small"
+            variant="outlined"
             value="curseforgeOnly"
           >
-            <v-icon small>$vuetify.icons.curseforge</v-icon>
+            <v-icon size="small">
+              xmcl:curseforge
+            </v-icon>
           </v-btn>
         </v-btn-toggle>
       </template>
-    </SettingItem>
+    </VListItem>
     <SettingItemCheckbox
       :value="skipVersion"
       :title="t('modInstall.skipVersion')"
@@ -130,24 +145,24 @@
       <template #action>
         <div class="flex gap-1">
           <v-btn
-            large
-            text
+            size="large"
+            variant="text"
             :loading="checkingUpgrade"
             @click="onCheckUpgrade"
           >
-            <v-icon left>
+            <v-icon start>
               refresh
             </v-icon>
             {{ t('modInstall.checkUpgrade') }}
           </v-btn>
           <v-spacer />
           <v-btn
-            large
+            size="large"
             :loading="upgrading"
             :disabled="Object.keys(plans).length === 0"
             @click="upgrade"
           >
-            <v-icon left>
+            <v-icon start>
               upgrade
             </v-icon>
             {{ t('modInstall.upgrade') }}

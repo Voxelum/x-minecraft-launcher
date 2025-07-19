@@ -1,38 +1,33 @@
 <template>
   <v-menu
     :close-on-content-click="false"
-    top
+    location="top"
   >
-    <template #activator="{ on, attrs }">
+    <template #activator="{ props }">
       <div
         v-shared-tooltip="_ => text"
         class="color-button min-w-5 max-w-5 dark:border-light-50 rounded-full border-2 p-5 transition-all"
-        v-bind="attrs"
+        :v-bind="props"
         :style="shadowColor"
-        @click="on.click($event)"
       />
     </template>
     <v-card class="overflow-hidden">
       <v-color-picker
-        :value="value"
+        :v-model="model"
         dot-size="25"
         show-swatches
         swatches-max-height="200"
-        @input="emit('input', $event)"
       />
       <template v-if="hasBlur">
-        <v-subheader>
+        <v-list-subheader>
           {{ t('setting.backdropBlur') }}
-        </v-subheader>
+        </v-list-subheader>
         <v-slider
+          v-model="blur"
           class="mx-2"
-          :input-value="blur"
-          :value="blur"
-          @input="emit('update:blur', $event)"
-          :height="5"
           :min="0"
           :max="30"
-          dense
+          density="compact"
         />
       </template>
     </v-card>
@@ -44,20 +39,20 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 
 const props = defineProps<{
-  value: string
   text: string
-  blur?: number
   hasBlur?: boolean
 }>()
 
+const model = defineModel<string>()
+const blur = defineModel<number>('blur', { required: false })
+
 const { t } = useI18n()
-const emit = defineEmits(['input', 'update:blur'])
 
 const { isDark } = injection(kTheme)
 
 const shadowColor = computed(() => ({
   '--shadow-color': isDark.value ? '255 255 255' : '0 0 0',
-  'background-color': props.value,
+  'background-color': model.value,
 }))
 
 </script>

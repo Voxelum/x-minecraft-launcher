@@ -4,7 +4,7 @@
       class="mx-4"
       :border="border"
       colored-border
-      outlined
+      variant="outlined"
       :type="icon ? 'info' : undefined"
     >
       {{ t('feedback.hint') }}
@@ -20,13 +20,13 @@
       >
         <v-icon
           v-if="!done"
-          left
+          start
         >
           bug_report
         </v-icon>
         <v-icon
           v-else
-          left
+          start
         >
           done
         </v-icon>

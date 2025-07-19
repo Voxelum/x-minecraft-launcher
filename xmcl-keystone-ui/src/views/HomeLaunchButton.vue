@@ -1,11 +1,10 @@
 <template>
   <div class="flex flex-grow-0 gap-[3px]">
     <v-badge
-      left
+      location="left"
       color="primary"
       bordered
-      overlap
-      :value="count !== 0"
+      :model-value="count !== 0"
     >
       <template #badge>
         <span v-ripple>{{ count }}</span>
@@ -14,8 +13,7 @@
         id="launch-button"
         :disabled="isValidating"
         :color="color"
-        :x-large="!compact"
-        :large="compact"
+        :size="!compact ? 'x-large' : undefined"
         class="px-12 text-lg transition-all btn-left"
         @click="loading ? undefined : onClick()"
         @mouseenter="emit('mouseenter')"
@@ -23,21 +21,22 @@
       >
         <v-icon
           v-if="leftIcon"
-          class="-ml-1 pr-2 text-2xl"
+          start
+          class="-ml-1 pr-2"
         >
           {{ leftIcon }}
         </v-icon>
         {{ text }}
         <v-icon
           v-if="!loading && icon"
-          right
-          class="pl-3 text-2xl"
+          end
+          class="pl-3"
         >
           {{ icon }}
         </v-icon>
         <v-progress-circular
           v-if="loading"
-          class="v-icon--right"
+          class="v-icon--end"
           indeterminate
           :size="20"
           :width="2"
@@ -46,19 +45,16 @@
     </v-badge>
     <v-menu
       v-model="isShown"
-      offset-y
-      left
-      :top="isFocus"
+      :location="isFocus ? 'bottom' : 'top'"
       transition="scroll-y-transition"
     >
-      <template #activator="{ on }">
+      <template #activator="{ props }">
         <v-btn
           :disabled="isValidating"
           class="min-w-unset! max-w-5! px-0! btn-right"
           :color="color"
-          :x-large="!compact"
-          :large="compact"
-          v-on="on"
+          :size="!compact ? 'x-large' : 'large'"
+          v-bind="props"
         >
           <v-icon>
             arrow_drop_down

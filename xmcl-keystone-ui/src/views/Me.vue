@@ -4,7 +4,10 @@
     class="visible-scroll h-full select-none overflow-auto pb-8"
     @wheel="onWheel"
   >
-    <div class="z-2 relative flex w-full flex-col py-4" @dragover.prevent>
+    <div
+      class="z-2 relative flex w-full flex-col py-4"
+      @dragover.prevent
+    >
       <!-- News Section (Large Banner + Scroller) -->
       <section class="mb-6 px-4 md:px-6">
         <MeSectionHeader :title="t('me.news')">
@@ -18,18 +21,26 @@
                     : t('setting.showNewsHeader')
               "
               icon
-              text
+              variant="text"
               @click="displayNewsHeader = !displayNewsHeader"
             >
-              <v-icon>{{
-                displayNewsHeader ? "visibility_off" : "visibility"
-              }}</v-icon>
+              <v-icon>
+                {{
+                  displayNewsHeader ? "visibility_off" : "visibility"
+                }}
+              </v-icon>
             </v-btn>
           </template>
         </MeSectionHeader>
 
-        <transition name="fade-transition" mode="out-in">
-          <div v-if="displayNewsHeader" class="mt-4">
+        <transition
+          name="fade-transition"
+          mode="out-in"
+        >
+          <div
+            v-if="displayNewsHeader"
+            class="mt-4"
+          >
             <!-- Large news banner -->
             <div
               v-if="currentNews"
@@ -51,7 +62,7 @@
               <div class="mt-5">
                 <v-btn
                   color="primary"
-                  large
+                  size="large"
                   @click="openInBrowser(currentNews.link)"
                 >
                   {{ t("news.readMore") }}
@@ -73,16 +84,25 @@
                 @click="openInBrowser(n.link)"
               >
                 <div class="flex justify-between items-center mb-2">
-                  <v-chip label outlined small>
-                    <v-icon left small> event </v-icon>
+                  <v-chip
+                    label
+                    variant="outlined"
+                    size="small"
+                  >
+                    <v-icon
+                      start
+                      size="small"
+                    >
+                      event
+                    </v-icon>
                     {{ getDateString(n.date, { dateStyle: "long" }) }}
                   </v-chip>
                   <v-chip
                     v-if="n.category"
                     label
                     color="primary"
-                    outlined
-                    small
+                    variant="outlined"
+                    size="small"
                   >
                     {{ n.category }}
                   </v-chip>

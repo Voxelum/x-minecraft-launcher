@@ -1,16 +1,12 @@
 import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
-import 'virtual:uno.css'
-import Vue, { h } from 'vue'
-import VueI18n from 'vue-i18n'
-import BrowseVue from './Browse.vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import 'virtual:uno.css'
+import { h } from 'vue'
+import BrowseVue from './Browse.vue'
 
-Vue.use(VueI18n, { bridge: true })
 
-const app = new Vue({
-  vuetify,
-  i18n,
+const app = createApp({
   setup() {
     const baseServiceChannel = serviceChannels.open(BaseServiceKey)
     baseServiceChannel.call('getSettings').then(state => state).then(state => {
@@ -22,5 +18,6 @@ const app = new Vue({
     return () => h(BrowseVue)
   },
 })
-
-app.$mount('#app')
+app.use(vuetify)
+app.use(i18n)
+app.mount('#app')

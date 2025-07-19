@@ -6,7 +6,7 @@
 
     <v-list
       v-if="!login"
-      dense
+      density="compact"
       class="mt-4"
     >
       <UserCardUserItem
@@ -19,16 +19,15 @@
         color="primary"
         @click="login = true"
       >
-        <v-list-item-avatar>
-          <v-icon>
-            person_add
-          </v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ t('userAccount.add') }}
-          </v-list-item-title>
-        </v-list-item-content>
+        <template #prepend>
+          <v-avatar>
+            <v-icon>
+              person_add
+            </v-icon>
+          </v-avatar>
+        </template>
+        
+        <v-list-item-title :title="t('userAccount.add')" />
       </v-list-item>
     </v-list>
     <div
@@ -42,7 +41,7 @@
         <v-btn
           block
           rounded
-          large
+          size="large"
           class="z-10 mt-4 dark:text-white"
           @click="login = false"
         >

@@ -132,7 +132,7 @@ watch(() => props.moveDirection, () => {
 })
 
 function initParticleJS() {
-  // eslint-disable-next-line no-undef
+   
   // @ts-ignore
   window.particlesJS('particles-js', {
     particles: {

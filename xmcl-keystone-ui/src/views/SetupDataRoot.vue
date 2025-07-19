@@ -1,27 +1,22 @@
 <template>
   <v-list
     class="non-moveable"
-    three-line
-    subheader
+    lines="three"
     style="background: transparent; width: 100%"
   >
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="whitespace-pre-wrap">
-          {{ t('setup.dataRoot.description') }}
-        </v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title class="whitespace-pre-wrap">
+        {{ t('setup.dataRoot.description') }}
+      </v-list-item-title>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>{{ t('setup.path') }}</v-list-item-title>
-        <v-list-item-subtitle>{{ value }}</v-list-item-subtitle>
-      </v-list-item-content>
+      <v-list-item-title>{{ t('setup.path') }}</v-list-item-title>
+      <v-list-item-subtitle>{{ value }}</v-list-item-subtitle>
+      
       <v-list-item-action class="self-center">
         <v-btn
           :disabled="value === defaultPath"
-          outlined
-          text
+          variant="outlined"
           style="margin-right: 10px;"
           @click="restore"
         >
@@ -30,9 +25,8 @@
       </v-list-item-action>
       <v-list-item-action class="self-center">
         <v-btn
-          outlined
+          variant="outlined"
           color="primary"
-          text
           style="margin-right: 10px;"
           @click="browse"
         >
@@ -47,9 +41,9 @@
     >
       {{ errorText }}
     </v-alert>
-    <v-subheader>
+    <v-list-subheader>
       {{ t('setup.dataRoot.drives') }}
-    </v-subheader>
+    </v-list-subheader>
     <v-list-item
       v-for="d of drives"
       :key="d.mounted"
@@ -58,39 +52,40 @@
       :class="{'v-list-item--active': d.selectedPath === value }"
       @click="onSelect(d)"
     >
-      <v-list-item-avatar>
-        <v-icon>storage</v-icon>
-      </v-list-item-avatar>
+      <template #prepend>
+        <v-avatar>
+          <v-icon>storage</v-icon>
+        </v-avatar>
+      </template>
 
-      <v-list-item-content>
-        <v-list-item-title class="flex w-full flex-grow-0 p-0 align-baseline">
-          {{ d.mounted }}
-          <div class="flex-grow" />
+      
+      <v-list-item-title class="flex w-full flex-grow-0 p-0 align-baseline">
+        {{ d.mounted }}
+        <div class="flex-grow" />
 
-          <span
-            class="whitespace-normal text-[hsla(0,0%,100%,.7)]"
-            style="font-size: 14px;"
-          >
-            {{ d.selectedPath }}
-          </span>
-        </v-list-item-title>
-        <v-progress-linear
-          class="my-2 p-0"
-          :value="d.used / (d.available + d.used) * 100"
-        />
-        <v-list-item-subtitle class="flex">
-          <span class="">
-            {{ t('disk.available') }}:
-            {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
-            {{ t('disk.used') }}:
-            {{ (d.used / 1024 / 1024 / 1024).toFixed(2) }}G
-          </span>
-          <div class="flex-grow" />
-          <span>
-            {{ d.capacity }}
-          </span>
-        </v-list-item-subtitle>
-      </v-list-item-content>
+        <span
+          class="whitespace-normal text-[hsla(0,0%,100%,.7)]"
+          style="font-size: 14px;"
+        >
+          {{ d.selectedPath }}
+        </span>
+      </v-list-item-title>
+      <v-progress-linear
+        class="my-2 p-0"
+        :model-value="d.used / (d.available + d.used) * 100"
+      />
+      <v-list-item-subtitle class="flex">
+        <span class="">
+          {{ t('disk.available') }}:
+          {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
+          {{ t('disk.used') }}:
+          {{ (d.used / 1024 / 1024 / 1024).toFixed(2) }}G
+        </span>
+        <div class="flex-grow" />
+        <span>
+          {{ d.capacity }}
+        </span>
+      </v-list-item-subtitle>
     </v-list-item>
   </v-list>
 </template>

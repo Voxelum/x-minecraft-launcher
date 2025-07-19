@@ -37,7 +37,7 @@
       :color="isDark ? 'white' : undefined"
       small
       :size="20"
-      :value="percentage"
+      :model-value="percentage"
       :width="3"
       :indeterminate="indeterminate"
     />

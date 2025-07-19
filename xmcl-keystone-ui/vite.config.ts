@@ -1,10 +1,11 @@
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
-import createVuePlugin from '@vitejs/plugin-vue2'
 import { readdirSync } from 'fs'
 import { join, resolve } from 'path'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import UnoCSS from 'unocss/vite'
+import vue from '@vitejs/plugin-vue'
+import vuetify from 'vite-plugin-vuetify'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -42,7 +43,6 @@ export default defineConfig({
       '~main': join(__dirname, './src/windows/main'),
       '~logger': join(__dirname, './src/windows/logger'),
       '~setup': join(__dirname, './src/windows/setup'),
-      '@vue/composition-api': 'vue',
       'vue-i18n-bridge':
         'vue-i18n-bridge/dist/vue-i18n-bridge.runtime.esm-bundler.js',
     },
@@ -55,39 +55,25 @@ export default defineConfig({
     },
   },
   plugins: [
-    createVuePlugin(),
+    vue(),
     UnoCSS(),
-    // WindiCSS({
-    //   config: {
-    //     important: true,
-    //   },
-    //   scan: {
-    //     dirs: [join(__dirname, './src')],
-    //     fileExtensions: ['vue', 'ts'],
-    //   },
-    // }),
-
     VueI18n({
       include: [
         resolve(__dirname, 'locales/**'),
       ],
-      esm: true,
+      allowDynamic: true,
       strictMessage: false,
-      bridge: false,
     }),
-
+    vuetify({ autoImport: true }), // Enabled by default
     AutoImport({
       imports: [
         'vue',
+        'vue-router',
         {
-          'vue-i18n-bridge': [
+          'vue-i18n': [
             'useI18n',
-          ],
-          'vue-router/composables': [
-            'useRouter',
-            'useRoute',
-          ],
-        },
+          ]
+        }
       ],
       dts: 'auto-imports.d.ts',
       exclude: ['node_modules', /xmcl\/packages.+/],

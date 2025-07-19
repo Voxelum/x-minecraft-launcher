@@ -1,13 +1,13 @@
 <template>
   <v-dialog
-    :value="value"
+    :model-value="value"
     transition="fade-transition"
     width="700"
-    @input="$emit('input', $event)"
+    @update:model-value="$emit('input', $event)"
   >
     <v-card
       rounded
-      outlined
+      border
       class="visible-scroll max-h-[90vh] overflow-auto flex flex-col"
     >
       <v-progress-linear
@@ -20,8 +20,8 @@
         v-if="selectedDetail"
       >
         <v-btn
-          text
-          large
+          variant="text"
+          size="large"
           @click="selectedDetail = undefined"
         >
           <v-icon>
@@ -39,9 +39,9 @@
           :disabled="loading"
           hide-details
           flat
-          solo
+          variant="solo"
           :items="gameVersions"
-          dense
+          density="compact"
           :label="t('modrinth.gameVersions.name')"
         />
         <v-select
@@ -50,9 +50,9 @@
           :disabled="loading"
           hide-details
           flat
-          solo
+          variant="solo"
           :items="loaders"
-          dense
+          density="compact"
           :label="t('modrinth.modLoaders.name')"
         />
         <v-select
@@ -61,9 +61,9 @@
           :disabled="loading"
           hide-details
           flat
-          solo
+          variant="solo"
           :items="versionTypes"
-          dense
+          density="compact"
           :label="t('versionType.name')"
         />
       </div>
@@ -130,22 +130,23 @@
               <v-list-item
                 :href="selectedDetail.dependencies[row.index].href"
               >
-                <v-list-item-avatar>
-                  <img :src="selectedDetail.dependencies[row.index].icon">
-                </v-list-item-avatar>
-                <v-list-item-content>
-                  <v-list-item-title v-text="selectedDetail.dependencies[row.index].title" />
-                  <v-list-item-subtitle v-text="selectedDetail.dependencies[row.index].title" />
-                </v-list-item-content>
+                <template #prepend>
+                  <v-avatar>
+                    <img :src="selectedDetail.dependencies[row.index].icon">
+                  </v-avatar>
+                </template>
+                
+                <v-list-item-title v-text="selectedDetail.dependencies[row.index].title" />
+                <v-list-item-subtitle v-text="selectedDetail.dependencies[row.index].title" />
               </v-list-item>
             </template>
             <template v-else>
               <template v-if="typeof all[row.index] === 'string'">
-                <v-subheader>
+                <v-list-subheader>
                   <v-divider class="mx-4" />
                   {{ t('modrinth.featuredVersions') }}
                   <v-divider class="mx-4" />
-                </v-subheader>
+                </v-list-subheader>
               </template>
               <StoreProjectInstallVersionDialogVersion
                 v-else

@@ -99,7 +99,7 @@ authProfileAddedNotification: Профиль аутентификации {name}
 author: Автор
 back: Назад
 baseSetting:
-  title: Локальные настройки
+  title: Настройки
 browse: Обзор
 browseApp:
   createShortcut: Создать ярлык

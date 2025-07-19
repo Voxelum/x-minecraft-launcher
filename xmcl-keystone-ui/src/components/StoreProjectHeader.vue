@@ -36,7 +36,7 @@
             @click="$emit('install')"
           >
             <v-icon
-              left
+              start
               class="material-icons-outlined"
             >
               file_download
@@ -49,7 +49,7 @@
             @click="$emit('open')"
           >
             <v-icon
-              left
+              start
               class="material-icons-outlined"
             >
               play_arrow
@@ -66,14 +66,13 @@
     >
       <template
         v-for="(x, i) of items"
+        :key="x.name"
       >
         <InfoHighlight
-          :key="x.name"
           :value="x"
         />
         <v-divider
           v-if="i !== items.length - 1"
-          :key="x.name + 'divider'"
           vertical
         />
       </template>

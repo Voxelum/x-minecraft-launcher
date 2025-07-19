@@ -2,26 +2,25 @@
   <v-list
     v-if="false"
     class="base-settings"
-    two-line
-    subheader
+    lines="two"
   >
-    <v-subheader style="padding-right: 2px">
+    <v-list-subheader style="padding-right: 2px">
       {{ t("modpack.name", 1) }}
-    </v-subheader>
+    </v-list-subheader>
     <v-list-item>
       <v-list-item-action>
         <v-checkbox
           hide-details
         />
       </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instance.fileApi") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("instance.fileApiHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      
+      <v-list-item-title>
+        {{ t("instance.fileApi") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ t("instance.fileApiHint") }}
+      </v-list-item-subtitle>
+      
       <v-list-item-action style="width: 50%">
         <v-text-field
           v-model="data.fileServerApi"
@@ -32,7 +31,7 @@
       <v-list-item-action>
         <v-btn
           icon
-          text
+          variant="text"
           @click="gotoHelp"
         >
           <v-icon>question_mark</v-icon>

@@ -25,17 +25,20 @@
             v-if="error"
             v-shared-tooltip="error.message"
             type="error"
-            dense
+            density="compact"
             class="overflow-hidden text-ellipsis whitespace-nowrap"
           >
             {{ error }}
           </v-alert>
         </div>
-        <slot v-if="$slots.options" name="options" />
+        <slot
+          v-if="$slots.options"
+          name="options"
+        />
         <v-virtual-scroll
           v-else-if="items.length > 0"
-          key="market-left"
           id="left-pane"
+          key="market-left"
           :bench="16"
           class="visible-scroll h-full max-h-full w-full overflow-auto pl-1 pt-2"
           :items="items"
@@ -66,8 +69,8 @@
       </template>
       <template #right>
         <div
-          key="market-right"
           id="right-pane"
+          key="market-right"
           class="flex flex-col h-full flex-grow-0 overflow-y-auto overflow-x-hidden market-right"
         >
           <slot

@@ -13,7 +13,7 @@
       'dragged-over': dragover > 0,
       dense,
     }"
-    :input-value="selected"
+    :model-value="selected"
     link
     @mouseenter="hover = true"
     @mouseleave="hover = false"
@@ -25,127 +25,135 @@
     @drop="onDrop"
     @click="emit('click', $event)"
   >
-    <v-list-item-avatar :size="dense ? 30 : 40">
-      <img
-        ref="iconImage"
-        v-fallback-img="BuiltinImages.unknownServer"
-        :class="{ 'opacity-20': item.installed.length === 0 && hover && !item.unsupported }"
-        :src="icon || item.icon || BuiltinImages.unknownServer"
-      >
-      <v-btn
-        v-if="install && item.installed.length === 0 && !item.unsupported"
-        class="absolute"
-        large
-        icon
-        :loading="installing"
-        @click.stop="onInstall()"
-      >
-        <v-icon
-          class="material-icons-outlined"
-          :class="{ 'opacity-0': !hover }"
+    <template #prepend>
+      <v-avatar :size="dense ? 30 : 40">
+        <v-img
+          ref="iconImage"
+          :lazy-src="BuiltinImages.unknownServer"
+          :class="{ 'opacity-20': item.installed.length === 0 && hover && !item.unsupported }"
+          :src="icon || item.icon || BuiltinImages.unknownServer"
+        />
+        <v-btn
+          v-if="install && item.installed.length === 0 && !item.unsupported"
+          size="large"
+          position="absolute"
+          variant="text"
+          icon
+          :loading="installing"
+          @click.stop="onInstall()"
         >
-          file_download
-        </v-icon>
-      </v-btn>
-    </v-list-item-avatar>
+          <v-icon
+            class="material-icons-outlined"
+            :class="{ 'opacity-0': !hover }"
+          >
+            file_download
+          </v-icon>
+        </v-btn>
+      </v-avatar>
+    </template>
     <div
       v-if="indent"
       class="indicator"
       :style="{ height: `${height}px`, background: indentColor || 'rgb(250 204 21 / 1)' }"
     />
-    <v-list-item-content
-      :class="{
-        indented: indent,
-        dense,
-      }"
+    
+    <template #title>
+      <v-list-item-title class="flex overflow-hidden">
+        <span class="max-w-full overflow-hidden overflow-ellipsis">
+          {{ (isEnabled ? item.localizedTitle : '') || title || item.title }}
+        </span>
+      </v-list-item-title>
+    </template>
+    <template
+      v-if="!dense"
+      #subtitle
     >
-      <v-badge
-        class="w-full"
-        color="red"
-        dot
-        inline
-        :value="hasUpdate"
-        :offset-y="5"
+      <template v-if="typeof descriptionTextOrObject === 'object' || descriptionTextOrObject?.includes('§')">
+        <TextComponent
+          class="overflow-hidden whitespace-nowrap overflow-ellipsis"
+          :source="descriptionTextOrObject"
+        />
+      </template>
+      <span
+        v-else
+        class="overflow-hidden whitespace-nowrap overflow-ellipsis"
       >
-        <v-list-item-title class="flex overflow-hidden">
-          <span class="max-w-full overflow-hidden overflow-ellipsis">
-            {{ (isEnabled ? item.localizedTitle : '') || title || item.title }}
-          </span>
-          <template v-if="item.installed.length > 0 && getContextMenuItems">
-            <div class="flex-grow" />
-            <v-icon
-              v-if="hasDuplicate"
-              v-shared-tooltip="props.item.installed.map(v => basename(v.path)).join(', ')"
-              size="15"
-              color="red"
-            >
-              warning
-            </v-icon>
-            <v-btn
-              x-small
-              icon
-              @click.stop="onSettingClick"
-            >
-              <v-icon
-                class="v-list-item__subtitle"
-                size="15"
-              >
-                settings
-              </v-icon>
-            </v-btn>
-          </template>
-          <template v-else-if="dense">
-            <div class="flex-grow" />
-            <v-icon small>
-              {{ getTrailingIcon() }}
-            </v-icon>
-          </template>
-        </v-list-item-title>
-      </v-badge>
-      <v-list-item-subtitle v-if="!dense">
-        <template v-if="typeof descriptionTextOrObject === 'object' || descriptionTextOrObject?.includes('§')">
-          <TextComponent :source="descriptionTextOrObject" />
-        </template>
-        <template v-else>
-          {{ descriptionTextOrObject }}
-        </template>
-      </v-list-item-subtitle>
-      <v-list-item-subtitle
-        v-if="!dense"
+        {{ descriptionTextOrObject }}
+      </span>
+      <div
         class="invisible-scroll flex flex-grow-0 gap-2"
       >
         <slot
           v-if="slots.labels"
           name="labels"
         />
-        <template v-else>
-          <template v-for="(tag, i) of tags">
-            <v-divider
-              v-if="i > 0"
-              :key="i + 'divider'"
-              vertical
-            />
-            <div
-              :key="i"
-              class="flex flex-grow-0"
+        <template 
+          v-for="(tag, i) of tags"
+          v-else 
+          :key="i"
+        >
+          <v-divider
+            v-if="i > 0"
+            vertical
+          />
+          <div
+            class="flex flex-grow-0"
+          >
+            <v-icon
+              v-if="tag.icon"
+              class="material-icons-outlined"
+              :start="!!tag.text"
+              :color="tag.color"
+              size="small"
             >
-              <v-icon
-                v-if="tag.icon"
-                class="material-icons-outlined"
-                :left="!!tag.text"
-                :color="tag.color"
-                small
-              >
-                {{ tag.icon }}
-              </v-icon>
-              <span class="pt-[2px]">
-                {{ tag.text }}
-              </span>
-            </div>
-          </template>
+              {{ tag.icon }}
+            </v-icon>
+            <span class="pt-[2px]">
+              {{ tag.text }}
+            </span>
+          </div>
         </template>
-      </v-list-item-subtitle>
-    </v-list-item-content>
+      </div>
+    </template>
+    <template #append>
+      <template v-if="item.installed.length > 0">
+        <v-icon
+          v-if="hasDuplicate"
+          v-shared-tooltip="props.item.installed.map(v => basename(v.path)).join(', ')"
+          size="15"
+          color="red"
+        >
+          warning
+        </v-icon>
+        <v-btn
+          v-if="getContextMenuItems"
+          size="x-small"
+          icon
+          variant="text"
+          @click.stop="onSettingClick"
+        >
+          <v-icon
+            class="v-list-item__subtitle"
+            size="15"
+          >
+            settings
+          </v-icon>
+        </v-btn>
+      </template>
+      <div class="pr-1.5" v-else-if="dense">
+        <v-icon size="small">
+          {{ getTrailingIcon() }}
+        </v-icon>
+      </div>
+
+      <v-badge
+        v-if="hasUpdate"
+        color="red"
+        dot
+        inline
+        :offset-y="5"
+      />
+    </template>
   </v-list-item>
 </template>
 
@@ -167,6 +175,7 @@ import { Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import TextComponent from './TextComponent'
 import { kLocalizedContent, useLocalizedContentControl } from '@/composables/localizedContent'
+import { has } from 'markdown-it/lib/common/utils'
 
 const props = defineProps<{
   item: ProjectEntry<ProjectFile>
@@ -282,10 +291,10 @@ const onSettingClick = (event: MouseEvent) => {
 
 function getTrailingIcon() {
   if (props.item.modrinth) {
-    return '$vuetify.icons.modrinth'
+    return 'xmcl:modrinth'
   }
   if (props.item.curseforge) {
-    return '$vuetify.icons.curseforge'
+    return 'xmcl:curseforge'
   }
 }
 
@@ -313,12 +322,12 @@ const tags = computed(() => {
   }
   if (props.item.modrinth || props.item.modrinthProjectId) {
     tags.push({
-      icon: '$vuetify.icons.modrinth',
+      icon: 'xmcl:modrinth',
     })
   }
   if (props.item.curseforge || props.item.curseforgeProjectId) {
     tags.push({
-      icon: '$vuetify.icons.curseforge',
+      icon: 'xmcl:curseforge',
     })
   }
   if (props.item.files && props.item.files.length > 0 && props.item.files[0]) {

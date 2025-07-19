@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     scrollable
     width="800"
@@ -29,7 +29,7 @@
         ref="scrollElement"
         class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
-        <v-subheader>{{ t('modpack.general') }}</v-subheader>
+        <v-list-subheader>{{ t('modpack.general') }}</v-list-subheader>
         <div
           class="grid grid-cols-2 gap-4 gap-y-2"
         >
@@ -71,7 +71,7 @@
             v-model="data.emitCurseforge"
             :label="t('modpack.emitCurseforge')"
             class="z-10"
-            prepend-icon="$vuetify.icons.curseforge"
+            prepend-icon="xmcl:curseforge"
             hide-details
           />
           <v-checkbox
@@ -85,7 +85,7 @@
             :label="t('modpack.emitModrinth')"
             class="z-10"
             hide-details
-            prepend-icon="$vuetify.icons.modrinth"
+            prepend-icon="xmcl:modrinth"
           />
 
           <v-checkbox
@@ -94,13 +94,13 @@
             :label="t('modpack.emitModrinthStrict')"
             class="z-10"
             hide-details
-            prepend-icon="$vuetify.icons.modrinth"
+            prepend-icon="xmcl:modrinth"
           >
             <template #append>
               <v-tooltip
-                top
+                location="top"
               >
-                <template #activator="{ on }">
+                <template #activator="{ props }">
                   <!-- <v-btn
                         text
                         icon
@@ -109,12 +109,12 @@
                     class="rounded border border-dashed border-green-300 pb-[2px]"
                     target="browser"
                     href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
-                    v-on="on"
+                    v-bind="props"
                   >
                     <v-icon
                       color="primary"
                       class="cursor-pointer"
-                      small
+                      size="small"
                     >
                       question_mark
                     </v-icon>
@@ -152,12 +152,12 @@
         </div>
 
         <div class="flex items-center">
-          <v-subheader v-if="data.emitCurseforge || data.emitMcbbs">
+          <v-list-subheader v-if="data.emitCurseforge || data.emitMcbbs">
             {{ t('modpack.overrides') }}
-          </v-subheader>
-          <v-subheader v-else>
+          </v-list-subheader>
+          <v-list-subheader v-else>
             {{ t('modpack.includes') }}
-          </v-subheader>
+          </v-list-subheader>
           <div class="flex-grow" />
           <v-text-field
             v-model="filterText"
@@ -185,20 +185,20 @@
                 v-if="item.data && canExport(item.data) && selected && data.emitModrinth"
               >
                 <v-tooltip
-                  left
+                  location="left"
                   color="green"
                 >
-                  <template #activator="{ on }">
+                  <template #activator="{ props }">
                     <v-chip
                       color="green"
                       label
-                      outlined
-                      :close="!!item.data.client"
-                      v-on="on"
+                      variant="outlined"
+                      :closable="!!item.data.client"
+                      v-bind="props"
                       @click:close="item.data.client = ''"
                       @click="item.data.client = nextEnv(item.data.client)"
                     >
-                      <v-avatar left>
+                      <v-avatar start>
                         C
                       </v-avatar>
                       {{ getEnvText(item.data.client) }}
@@ -207,20 +207,20 @@
                   {{ t('modrinth.environments.client') }}
                 </v-tooltip>
                 <v-tooltip
-                  top
+                  location="top"
                   color="blue"
                 >
-                  <template #activator="{ on }">
+                  <template #activator="{ props }">
                     <v-chip
                       color="blue"
                       label
-                      outlined
-                      :close="!!item.data.server"
-                      v-on="on"
+                      variant="outlined"
+                      :closable="!!item.data.server"
+                      v-bind="props"
                       @click:close="item.data.server = ''"
                       @click="item.data.server = nextEnv(item.data.server)"
                     >
-                      <v-avatar left>
+                      <v-avatar start>
                         S
                       </v-avatar>
                       {{ getEnvText(item.data.server) }}
@@ -236,8 +236,8 @@
       <div class="flex-grow" />
       <v-card-actions class="items-baseline gap-5">
         <v-btn
-          text
-          large
+          variant="text"
+          size="large"
           :disabled="exporting || refreshing"
           @click="cancel"
         >
@@ -248,9 +248,9 @@
           ~{{ getExpectedSize(totalSize) }}
         </div>
         <v-btn
-          text
+          variant="text"
           color="primary"
-          large
+          size="large"
           :loading="exporting || refreshing"
           @click="confirm"
         >

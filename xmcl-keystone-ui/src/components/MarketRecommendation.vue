@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 px-10 pb-10"
+    class="flex flex-col items-center flex-grow justify-center gap-2 px-10 pb-10"
     style="font-size: 30px; font-weight: 600; letter-spacing: 1px; word-spacing: 2px; line-height: 36px; "
   >
     <div class="flex flex-grow-0 gap-4">
@@ -9,14 +9,14 @@
         size="90"
         color="green"
       >
-        $vuetify.icons.modrinth
+        xmcl:modrinth
       </v-icon>
       <v-icon
         v-if="curseforge"
         size="100"
-        color="orange darken-2"
+        color="orange-darken-2"
       >
-        $vuetify.icons.curseforge
+        xmcl:curseforge
       </v-icon>
     </div>
     <i18n-t

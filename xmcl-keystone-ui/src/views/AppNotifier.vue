@@ -2,14 +2,13 @@
   <v-snackbar
     v-model="data.show"
     :multi-line="data.operations.length > 0"
-    :top="true"
-    :right="true"
+    :location="'top right'"
     class="select-none"
   >
     <v-icon
       v-if="data.level"
       :color="colors[data.level]"
-      left
+      start
     >
       {{ icons[data.level] }}
     </v-icon>
@@ -38,14 +37,14 @@
           <v-btn
             v-for="op in data.operations"
             :key="op.text"
-            text
-            small
+            variant="text"
+            size="small"
             :color="op.color"
             @click="op.handler(); close()"
           >
             <v-icon
               v-if="op.icon"
-              left
+              start
             >
               {{ op.icon }}
             </v-icon>
@@ -58,7 +57,7 @@
       <v-btn
         v-if="data.more"
         icon
-        text
+        variant="text"
         @click="more"
       >
         <v-icon>arrow_right</v-icon>
@@ -66,7 +65,7 @@
       <v-btn
         icon
         color="pink"
-        text
+        variant="text"
         @click="close"
       >
         <v-icon>close</v-icon>

@@ -14,11 +14,9 @@ const pairs = search.split('&').map((pair) => pair.split('='))
 const locale = pairs.find(p => p[0] === 'locale')?.[1] ?? 'en'
 const theme = pairs.find(p => p[0] === 'theme')?.[1] ?? 'dark'
 
-const app = new Vue(defineComponent({
-  vuetify,
-  i18n,
+const app = createApp(defineComponent({
   setup(props, context) {
-    provide(kTheme, useTheme(vuetify.framework, new ServiceFactoryImpl().getService(ThemeServiceKey)))
+    provide(kTheme, useTheme(new ServiceFactoryImpl().getService(ThemeServiceKey)))
 
     baseService.call('getSettings').then(state => state).then(state => {
       i18n.locale = state.locale
@@ -46,5 +44,6 @@ const app = new Vue(defineComponent({
     return () => h(App)
   },
 }))
-
-app.$mount('#app')
+app.use(vuetify)
+app.use(i18n)
+app.mount('#app')

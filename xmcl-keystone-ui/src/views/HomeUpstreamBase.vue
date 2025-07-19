@@ -12,10 +12,10 @@
     >
       <template
         v-for="row of virtualizer.getVirtualItems()"
+        :key="row.key"
       >
-        <v-subheader
+        <v-list-subheader
           v-if="row.index === 0"
-          :key="'currentVersion' + row.index"
           :ref="measureElement"
           class="flex"
           :data-index="row.index"
@@ -31,11 +31,11 @@
           <div class="flex-grow" />
           <v-switch
             v-model="_only"
-            dense
+            density="compact"
             :label="t('upstream.onlyShowCurrentVersion')"
           />
-        </v-subheader>
-        <v-subheader
+        </v-list-subheader>
+        <v-list-subheader
           v-else-if="isHeader(row.index)"
           :ref="measureElement"
           :key="getHeader(row.index)"
@@ -50,7 +50,7 @@
           }"
         >
           {{ getHeader(row.index) }}
-        </v-subheader>
+        </v-list-subheader>
         <div
           v-else
           :ref="measureElement"
@@ -89,9 +89,9 @@
       v-if="header"
       class="lg:(col-span-3 row-start-auto) col-span-9 row-start-1"
     >
-      <v-subheader class="px-1">
+      <v-list-subheader class="px-1">
         {{ header?.type === 'modrinth' ? 'Modrinth' : header?.type === 'curseforge' ? 'Curseforge' : 'FTB' }}
-      </v-subheader>
+      </v-list-subheader>
       <HomeUpstreamHeader
         :value="header"
       />

@@ -4,8 +4,8 @@
     <div class="flex flex-1 flex-grow-0 p-5 ">
       <v-btn
         v-if="prev"
-        text
-        large
+        variant="text"
+        size="large"
         :disabled="disabled"
         :loading="loading"
         @click="emit('prev')"
@@ -15,7 +15,7 @@
       <div class="flex-grow" />
       <v-btn
         v-if="next"
-        large
+        size="large"
         color="primary"
         :disabled="disabled"
         :loading="loading"

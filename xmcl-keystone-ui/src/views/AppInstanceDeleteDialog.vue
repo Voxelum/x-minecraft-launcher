@@ -6,7 +6,7 @@
   >
     <v-card>
       <v-card-title
-        class="headline"
+        class="text-h5"
         primary-title
       >
         {{ t('instance.delete') }}
@@ -25,7 +25,7 @@
       <v-divider />
       <v-card-actions>
         <v-btn
-          text
+          variant="text"
           @click="isShown = false"
         >
           {{ t('delete.no') }}
@@ -35,7 +35,7 @@
           color="error"
           @click="doDelete"
         >
-          <v-icon left>
+          <v-icon start>
             delete
           </v-icon>
           {{ t('delete.yes') }}

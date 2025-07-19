@@ -10,7 +10,7 @@
     </span>
     <v-btn
       icon
-      x-small
+      size="x-small"
       @click="prev"
     >
       <v-icon class="mr-0">
@@ -19,7 +19,7 @@
     </v-btn>
     <v-btn
       icon
-      x-small
+      size="x-small"
       @click="play"
     >
       <v-icon class="mr-0">
@@ -28,7 +28,7 @@
     </v-btn>
     <v-btn
       icon
-      x-small
+      size="x-small"
       @click="next"
     >
       <v-icon class="mr-0">
@@ -37,7 +37,7 @@
     </v-btn>
     <v-btn
       icon
-      x-small
+      size="x-small"
       @click="shuffle = !shuffle"
     >
       <v-icon class="mr-0">
@@ -54,12 +54,12 @@
     <v-menu
       offset-y
     >
-      <template #activator="{ on, attrs }">
+      <template #activator="{ props }">
         <v-btn
           icon
-          x-small
-          v-bind="attrs"
-          v-on="on"
+          size="x-small"
+         
+          v-bind="props"
           @wheel="onWheel"
         >
           <v-icon class="mr-0">
@@ -73,12 +73,12 @@
       >
         <v-slider
           v-model="volume"
-          vertical
+          direction="vertical"
           hide-details
           :step="0.01"
           :max="1"
           :min="0"
-          dense
+          density="compact"
         />
       </v-sheet>
     </v-menu>

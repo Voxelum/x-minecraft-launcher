@@ -1,48 +1,106 @@
 <template>
-  <v-dialog v-model="isShown" width="800">
+  <v-dialog
+    v-model="isShown"
+    width="800"
+  >
     <v-card class="select-none overflow-auto flex flex-col">
-      <v-toolbar class="flex-1 flex-grow-0 rounded-none" tabs color="green en">
+      <v-toolbar
+        class="flex-1 flex-grow-0 rounded-none"
+        tabs
+        color="green en"
+      >
         <v-toolbar-title class="text-white">
           {{ t('instance.launchServer') }}
         </v-toolbar-title>
 
         <v-spacer />
-        <v-btn class="non-moveable" icon @click="isShown = false">
+        <v-btn
+          class="non-moveable"
+          icon
+          @click="isShown = false"
+        >
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
       <div class="visible-scroll flex flex-col max-h-[60vh] mx-0 overflow-y-auto overflow-x-hidden px-6 py-2">
-        <v-alert v-if="error" type="error" class="select-text">
+        <v-alert
+          v-if="error"
+          type="error"
+          class="select-text"
+        >
           {{ errorTitle }}
-          <br />
-          <div v-html="errorDescription">
-          </div>
+          <br>
+          <div v-html="errorDescription" />
         </v-alert>
-        <v-subheader>{{ t('baseSetting.title') }}</v-subheader>
+        <v-list-subheader>{{ t('baseSetting.title') }}</v-list-subheader>
         <div class="grid grid-cols-3 gap-3 pt-2 px-2">
-          <v-text-field v-model="motd" :label="t('server.motd')" outlined hide-details />
-          <v-text-field v-model="port" :label="t('server.port')" outlined type="number" hide-details />
-          <v-text-field v-model="maxPlayers" :label="t('server.maxPlayers')" outlined type="number" hide-details />
-          <v-checkbox v-model="nogui" class="col-start-1" :label="t('server.nogui')" />
-          <v-checkbox v-model="onlineMode" class="col-start-3" :label="t('server.onlineMode')" />
+          <v-text-field
+            v-model="motd"
+            :label="t('server.motd')"
+            variant="outlined"
+            hide-details
+          />
+          <v-text-field
+            v-model="port"
+            :label="t('server.port')"
+            variant="outlined"
+            type="number"
+            hide-details
+          />
+          <v-text-field
+            v-model="maxPlayers"
+            :label="t('server.maxPlayers')"
+            variant="outlined"
+            type="number"
+            hide-details
+          />
+          <v-checkbox
+            v-model="nogui"
+            class="col-start-1"
+            :label="t('server.nogui')"
+          />
+          <v-checkbox
+            v-model="onlineMode"
+            class="col-start-3"
+            :label="t('server.onlineMode')"
+          />
         </div>
-        <v-subheader>{{ t('save.name') }}</v-subheader>
-        <v-item-group v-model="selectedSave" mandatory class="pt-2 px-2">
+        <v-list-subheader>{{ t('save.name') }}</v-list-subheader>
+        <v-item-group
+          v-model="selectedSave"
+          mandatory
+          class="pt-2 px-2"
+        >
           <div class="grid grid-cols-3 gap-2 max-h-40 overflow-auto">
             <v-item v-slot="{ active, toggle }">
-              <v-card :color="active ? 'primary' : ''" class="flex flex-col items-center justify-center h-[120px] gap-1"
-                @click="toggle">
+              <v-card
+                :color="active ? 'primary' : ''"
+                class="flex flex-col items-center justify-center h-[120px] gap-1"
+                @click="toggle"
+              >
                 <v-icon size="80">
                   {{ rawWorldExists ? 'save' : 'add' }}
                 </v-icon>
                 {{ rawWorldExists ? t('save.useCurrent') : t('save.createNew') }}
               </v-card>
             </v-item>
-            <v-item v-for="s of saves" :key="s.path" v-slot="{ active, toggle }">
-              <v-card :color="active ? 'primary' : ''" class="flex flex-col items-center justify-center gap-1"
-                @click="toggle">
-                <img v-fallback-img="BuiltinImages.unknownServer" class="rounded-lg object-contain" :src="s.icon"
-                  width="80px" height="80px">
+            <v-item
+              v-for="s of saves"
+              :key="s.path"
+              v-slot="{ active, toggle }"
+            >
+              <v-card
+                :color="active ? 'primary' : ''"
+                class="flex flex-col items-center justify-center gap-1"
+                @click="toggle"
+              >
+                <img
+                  v-fallback-img="BuiltinImages.unknownServer"
+                  class="rounded-lg object-contain"
+                  :src="s.icon"
+                  width="80px"
+                  height="80px"
+                >
                 {{ s.name }}
               </v-card>
             </v-item>
@@ -51,32 +109,61 @@
 
         <template v-if="enabled.length > 0">
           <div class="flex items-center mt-4 gap-2">
-            <v-subheader class="">
+            <v-list-subheader class="">
               {{ t('mod.name') }}
-            </v-subheader>
+            </v-list-subheader>
             <div class="flex-grow" />
-            <v-btn v-shared-tooltip="_ => t('env.select.all')" text icon @click="selectAll">
+            <v-btn
+              v-shared-tooltip="_ => t('env.select.all')"
+              variant="text"
+              icon
+              @click="selectAll"
+            >
               <v-icon>
                 select_all
               </v-icon>
             </v-btn>
-            <v-btn v-shared-tooltip="_ => t('env.select.fit')" text icon @click="selectFit">
+            <v-btn
+              v-shared-tooltip="_ => t('env.select.fit')"
+              variant="text"
+              icon
+              @click="selectFit"
+            >
               <v-icon>
                 tab_unselected
               </v-icon>
             </v-btn>
 
-            <v-btn v-shared-tooltip="_ => t('env.select.none')" text icon @click="selectNone">
+            <v-btn
+              v-shared-tooltip="_ => t('env.select.none')"
+              variant="text"
+              icon
+              @click="selectNone"
+            >
               <v-icon>
                 deselect
               </v-icon>
             </v-btn>
-            <v-text-field v-model="search" class="max-w-50 pl-1" dense outlined flat prepend-inner-icon="search"
-              hide-details />
+            <v-text-field
+              v-model="search"
+              class="max-w-50 pl-1"
+              density="compact"
+              variant="outlined"
+              flat
+              prepend-inner-icon="search"
+              hide-details
+            />
           </div>
           <div class="pt-2 px-2">
-            <v-data-table v-model="selectedMods" :disabled="loadingSelectedMods" item-key="path" show-select
-              :search="search" :headers="headers" :items="enabled">
+            <v-data-table
+              v-model="selectedMods"
+              :disabled="loadingSelectedMods"
+              item-key="path"
+              show-select
+              :search="search"
+              :headers="headers"
+              :items="enabled"
+            >
               <template #item.name="{ item }">
                 <!-- <v-chip
                   :color="getColor(item.calories)"
@@ -84,9 +171,9 @@
                 >
                   {{ item.calories }}
                 </v-chip> -->
-                <v-list-item-avatar :size="30">
-                  <img :src="item.icon || BuiltinImages.unknownServer">
-                </v-list-item-avatar>
+                <v-avatar size="30">
+                  <v-img :src="item.icon || BuiltinImages.unknownServer" />
+                </v-avatar>
 
                 {{ item.name }}
               </template>
@@ -107,9 +194,16 @@
         <div class="flex items-center pt-2 px-2">
           <v-checkbox v-model="isAcceptEula">
             <template #label>
-              <i18n-t keypath="eula.body" tag="span">
+              <i18n-t
+                keypath="eula.body"
+                tag="span"
+              >
                 <template #eula>
-                  <a href="https://aka.ms/MinecraftEULA" target="_blank" @click.stop>EULA</a>
+                  <a
+                    href="https://aka.ms/MinecraftEULA"
+                    target="_blank"
+                    @click.stop
+                  >EULA</a>
                 </template>
               </i18n-t>
             </template>
@@ -119,7 +213,12 @@
       <v-divider />
       <div class="flex p-4">
         <div class="flex-grow" />
-        <v-btn color="primary" :disabled="!isAcceptEula" :loading="loading" @click="onPlay">
+        <v-btn
+          color="primary"
+          :disabled="!isAcceptEula"
+          :loading="loading"
+          @click="onPlay"
+        >
           <v-icon>
             play_arrow
           </v-icon>
@@ -150,8 +249,6 @@ import { ModFile, getModSide } from '@/util/mod'
 import { Project } from '@xmcl/modrinth'
 import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-
-defineProps<{}>()
 
 const port = ref(25565)
 const motd = ref('')

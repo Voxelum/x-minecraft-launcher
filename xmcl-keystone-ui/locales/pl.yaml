@@ -101,7 +101,7 @@ authProfileAddedNotification: Dodano profil autoryzacji {name}
 author: Autor
 back: Powrót
 baseSetting:
-  title: Ustawienia podstawowe
+  title: Ustawienia
 browse: Przeglądaj
 browseApp:
   createShortcut: Utwórz skrót

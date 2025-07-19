@@ -1,24 +1,32 @@
 <template>
-  <v-list dense>
-    <v-list-item @click="onStartLocalhost">
-      <v-list-item-avatar size="20">
-        <v-icon size="20">
-          {{ serverCount > 0 ? 'cancel' : 'play_arrow' }}
-        </v-icon>
-      </v-list-item-avatar>
-      <v-list-item-title>
-        {{ text }}
-      </v-list-item-title>
+  <v-list
+    density="comfortable"
+    width="240"
+  >
+    <v-list-item
+      :title="text"
+      @click="onStartLocalhost"
+    >
+      <template #prepend>
+        <v-avatar size="20">
+          <v-icon size="20">
+            {{ serverCount > 0 ? 'cancel' : 'play_arrow' }}
+          </v-icon>
+        </v-avatar>
+      </template>
     </v-list-item>
-    <v-list-item v-if="env && env.os !== 'osx'" @click="onCreateShortcut">
-      <v-list-item-avatar size="20">
-        <v-icon size="20">
-          rocket_launch
-        </v-icon>
-      </v-list-item-avatar>
-      <v-list-item-title>
-        {{ t('launch.createShortcut') }}
-      </v-list-item-title>
+    <v-list-item
+      v-if="env && env.os !== 'osx'"
+      :title="t('launch.createShortcut')"
+      @click="onCreateShortcut"
+    >
+      <template #prepend>
+        <v-avatar size="20">
+          <v-icon size="20">
+            rocket_launch
+          </v-icon>
+        </v-avatar>
+      </template>
     </v-list-item>
   </v-list>
 </template>
@@ -35,7 +43,6 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey, LaunchServiceKey } from '@xmcl/runtime-api';
 
 const { t } = useI18n()
-defineProps<{}>()
 
 const { serverCount, kill } = injection(kInstanceLaunch)
 

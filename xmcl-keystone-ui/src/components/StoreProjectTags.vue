@@ -1,8 +1,8 @@
 <template>
   <div class="">
-    <v-subheader>
+    <v-list-subheader>
       {{ t('modrinth.technicalInformation') }}
-    </v-subheader>
+    </v-list-subheader>
     <div class="xl:(flex flex-col) grid grid-cols-2 gap-1 px-2">
       <div
         v-for="item of project.info"

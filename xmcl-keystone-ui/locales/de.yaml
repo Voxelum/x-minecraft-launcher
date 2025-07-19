@@ -110,7 +110,7 @@ authProfileAddedNotification: Authentifizierungsprofil {name} hinzugefügt.
 author: Autor.
 back: Zurück
 baseSetting:
-  title: Grundeinstellungen
+  title: Einstellungen
 browse: Überblick.
 browseApp:
   createShortcut: Eine Verknüpfung erstellen

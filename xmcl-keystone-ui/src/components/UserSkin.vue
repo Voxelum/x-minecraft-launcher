@@ -9,8 +9,8 @@
         <v-btn
           v-if="inspect && modified"
           color="secondary"
-          fab
-          small
+          class="rounded-circle"
+          size="small"
           style="z-index: 3;"
           :disabled="pending"
           @click="reset"
@@ -36,14 +36,12 @@
           v-show="!inspect && modified"
           v-shared-tooltip="_ => t('userSkin.reset')"
           color="secondary"
-          fab
-          small
+          icon="clear"
+          size="small"
           style="z-index: 3;"
           :disabled="pending"
           @click="reset"
-        >
-          <v-icon>clear</v-icon>
-        </v-btn>
+        />
       </v-fab-transition>
       <SpeedDial
         :value="hover || modified"
@@ -58,14 +56,13 @@
         <v-btn
           v-show="!inspect && modified"
           color="secondary"
-          fab
-          small
+          class="rounded-circle"
+          size="small"
+          icon="check"
           style="z-index: 3;"
           :disabled="pending"
           @click="save_"
-        >
-          <v-icon>check</v-icon>
-        </v-btn>
+        />
       </v-fab-transition>
     </div>
     <v-dialog

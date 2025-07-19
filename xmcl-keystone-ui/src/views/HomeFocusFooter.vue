@@ -1,51 +1,92 @@
 <template>
   <div class="w-full">
-    <div class="relative mx-6 flex-grow flex gap-6 items-end">
-      <v-card flat class="rounded-lg tabs-card" color="transparent" @mouseenter="onMouseEnter" @mouseleave="onMouseLeaved">
-        <div class="flex absolute top-0 h-4 z-4 right-0 p-1 icons" :class="{ visibled: pinned || counter > 0 }">
+    <div class="relative mx-10 mb-2 flex-grow flex gap-6 items-end justify-between">
+      <!-- <v-card
+        flat
+        class="rounded-lg tabs-card"
+        color="transparent"
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeaved"
+      >
+        <div
+          class="flex absolute top-0 h-4 z-4 right-0 p-1 icons"
+          :class="{ visibled: pinned || counter > 0 }"
+        >
           <div class="flex-grow" />
-          <v-btn :class="{ 'v-btn--active': pinned }" icon small @click="onPin">
+          <v-btn
+            :class="{ 'v-btn--active': pinned }"
+            icon
+            size="small"
+            @click="onPin"
+          >
             <v-icon class="material-symbols-outlined ">
               keep
             </v-icon>
           </v-btn>
-          <v-btn icon small @click="onViewDashboard">
+          <v-btn
+            icon
+            size="small"
+            @click="onViewDashboard"
+          >
             <v-icon class="rotate-[45deg]">
               unfold_more
             </v-icon>
           </v-btn>
         </div>
-        <v-tabs-items
+        <v-tabs-window
           ref="tabItems"
           v-model="tab"
           class="bg-transparent! tabs-items"
           :class="{ visibled: pinned || counter > 0 }"
         >
-          <v-tab-item>
-            <HomeModCard class="rounded-t-lg" :row="1" :row-count="rowCount" />
-          </v-tab-item>
-          <v-tab-item>
-            <HomeResourcePacksCard class="rounded-t-lg" :row="1" :row-count="rowCount" />
-          </v-tab-item>
-          <v-tab-item>
-            <HomeShaderPackCard class="rounded-t-lg" :row="1" :row-count="rowCount" />
-          </v-tab-item>
-          <v-tab-item>
-            <HomeSavesCard class="rounded-t-lg" :row="1" :row-count="rowCount" />
-          </v-tab-item>
-          <v-tab-item>
-            <HomeScreenshotCard :height="screenshotHeight" :instance="instance" />
-          </v-tab-item>
-          <v-tab-item
+          <v-tabs-window-item>
+            <HomeModCard
+              class="rounded-t-lg"
+              :row="1"
+              :row-count="rowCount"
+            />
+          </v-tabs-window-item>
+          <v-tabs-window-item>
+            <HomeResourcePacksCard
+              class="rounded-t-lg"
+              :row="1"
+              :row-count="rowCount"
+            />
+          </v-tabs-window-item>
+          <v-tabs-window-item>
+            <HomeShaderPackCard
+              class="rounded-t-lg"
+              :row="1"
+              :row-count="rowCount"
+            />
+          </v-tabs-window-item>
+          <v-tabs-window-item>
+            <HomeSavesCard
+              class="rounded-t-lg"
+              :row="1"
+              :row-count="rowCount"
+            />
+          </v-tabs-window-item>
+          <v-tabs-window-item>
+            <HomeScreenshotCard
+              :height="screenshotHeight"
+              :instance="instance"
+            />
+          </v-tabs-window-item>
+          <v-tabs-window-item
             v-if="headerData"
           >
             <HomeUpstreamHeader
               :value="headerData"
               dense
             />
-          </v-tab-item>
-        </v-tabs-items>
-        <v-tabs v-model="tab" :show-arrows="true" class="tabs">
+          </v-tabs-window-item>
+        </v-tabs-window>
+        <v-tabs
+          v-model="tab"
+          :show-arrows="true"
+          class="tabs"
+        >
           <v-tab>
             {{ t('mod.name') }}
           </v-tab>
@@ -67,7 +108,36 @@
             {{ instance.upstream && instance.upstream.type === 'curseforge-modpack' ? 'Curseforge' : 'Modrinth' }}
           </v-tab>
         </v-tabs>
-      </v-card>
+      </v-card> -->
+      
+
+      <div
+        class="flex flex-col gap-4 z-2"
+      >
+        <VTyping :steps="infos" loop />
+        <template
+          v-for="ver of versions"
+          :key="ver.title"
+        >
+          <div class="flex items-center gap-4">
+            <AvatarItem
+              :key="ver.title"
+              :avatar="ver.icon"
+              :title="ver.title"
+              responsive
+              :text="ver.version"
+            />
+          </div>
+        </template>
+        <AvatarItem
+          icon="schedule"
+          title="总时长 / 上次启动"
+          responsive
+          text="132小时 / 3天前"
+          icon-class="opacity-70"
+        />
+      </div>
+
       <div 
         key="launch-button-group"
         class="flex flex-wrap justify-end items-center gap-y-6 gap-x-2"
@@ -80,8 +150,8 @@
           :progress="progress"
         />
         <HomeLaunchButtonStatus
-          class="mr-4 ml-2"
           v-else
+          class="mr-4 ml-2"
           :active="active"
         />
         <HomeLaunchButton
@@ -97,30 +167,29 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useService } from '@/composables'
+import { getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/composables/curseforge'
 import { kInstance } from '@/composables/instance'
 import { kLaunchTask } from '@/composables/launchTask'
-import { useQuery, useQueryNumber } from '@/composables/query'
+import { useModrinthHeaderData } from '@/composables/modrinth'
+import { getModrinthProjectModel } from '@/composables/modrinthProject'
+import { useQueryNumber } from '@/composables/query'
+import { useSWRVModel } from '@/composables/swrv'
+import { kTheme } from '@/composables/theme'
 import { useInFocusMode } from '@/composables/uiLayout'
+import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 import { useLocalStorage, useWindowSize } from '@vueuse/core'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
-import HomeModCard from './HomeModCard.vue'
-import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
-import HomeSavesCard from './HomeSavesCard.vue'
-import HomeScreenshotCard from './HomeScreenshotCard.vue'
-import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import HomeUpstreamHeader from './HomeUpstreamHeader.vue'
-import { getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/composables/curseforge'
-import { useSWRVModel } from '@/composables/swrv'
-import { useModrinthHeaderData } from '@/composables/modrinth'
-import { getModrinthProjectModel } from '@/composables/modrinthProject'
-import { kTheme } from '@/composables/theme'
+import AvatarItem from '@/components/AvatarItem.vue'
+import VTyping from '@/components/VTyping.vue'
+import { kInstanceModsContext } from '@/composables/instanceMods'
+import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 
 const active = ref(false)
-const { path, refreshing, instance } = injection(kInstance)
+const { path, refreshing, instance, runtime: version } = injection(kInstance)
 const { total, progress, status, name: taskName, pause, resume } = injection(kLaunchTask)
 const tab = useQueryNumber('homeTab', 0)
 const { t } = useI18n()
@@ -128,6 +197,27 @@ const tabItems = ref(null as null | Vue)
 const counter = ref(0)
 const visible = ref(false)
 const { blurCard, cardColor } = injection(kTheme)
+
+const versions = computed(() => {
+  const ver = version.value
+  const items = getExtensionItemsFromRuntime(ver)
+  return items.map(i => ({
+    icon: i.avatar,
+    title: i.title,
+    version: i.text,
+  }))
+})
+
+const { enabledMods } = injection(kInstanceModsContext)
+const { enabled } = injection(kInstanceResourcePacks)
+const { shaderPack } = injection(kInstanceShaderPacks)
+const infos = computed(() => [
+  t('mod.enabled', { count: enabledMods.value.length }),
+  4000,
+  t('resourcepack.enable', { count: enabled.value.length }),
+  4000,
+  t('shaderPack.enable', { name: shaderPack.value }),
+])
 
 const { data: project } = useSWRVModel(getCurseforgeProjectModel(computed(() => instance.value.upstream?.type === 'curseforge-modpack' ? Number(instance.value.upstream.modId) : undefined)))
 const curseforgeHeaderData = useCurseforgeUpstreamHeader(project)

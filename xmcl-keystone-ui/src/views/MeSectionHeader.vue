@@ -11,10 +11,10 @@
       offset-y
       open-on-hover
     >
-      <template #activator="{ on }">
+      <template #activator="{ props }">
         <h2
           class="text-align-left cursor-pointer"
-          v-on="on"
+          v-bind="props"
         >
           {{ title }}
           <v-icon>
@@ -22,21 +22,14 @@
           </v-icon>
         </h2>
       </template>
-      <v-list dense>
+      <v-list density="compact">
         <v-list-item
           v-for="o of options"
           :key="o.value"
+          :prepend-icon="o.icon"
+          :title="o.text"
           @click="$emit('select', o.value)"
-        >
-          <v-list-item-icon>
-            <v-icon v-text="o.icon" />
-          </v-list-item-icon>
-          <v-list-item-content>
-            <v-list-item-title>
-              {{ o.text }}
-            </v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
+        />
       </v-list>
     </v-menu>
     <v-divider

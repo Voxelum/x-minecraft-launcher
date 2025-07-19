@@ -1,14 +1,13 @@
 <template>
   <v-tooltip
     v-if="instance.fileApi"
-    top
+    location="top"
   >
-    <template #activator="{ on }">
+    <template #activator="{ props }">
       <v-badge
-        right
+        location="right"
         color="primary"
-        overlap
-        :value="true"
+        :model-value="true"
       >
         <template #badge>
           <span>{{ 1 }}</span>
@@ -16,8 +15,8 @@
         <v-btn
           icon
           :loading="checkingUpdate"
+          v-bind="props"
           @click="show()"
-          v-on="on"
         >
           <v-icon>import_export</v-icon>
         </v-btn>

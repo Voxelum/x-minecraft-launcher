@@ -1,6 +1,6 @@
 <template>
   <v-list
-    two-line
+    lines="two"
     class="overflow-y-auto bg-transparent!"
   >
     <v-list-item
@@ -8,15 +8,16 @@
       :class="{ primary: value.path === '' }"
       @click="emit('input', { path: '', version: '', majorVersion: 0, valid: false })"
     >
-      <v-list-item-avatar>
-        <v-icon>close</v-icon>
-      </v-list-item-avatar>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("java.allocatedLong") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>{{ java?.path }}</v-list-item-subtitle>
-      </v-list-item-content>
+      <template #prepend>
+        <v-avatar>
+          <v-icon>close</v-icon>
+        </v-avatar>
+      </template>
+      
+      <v-list-item-title>
+        {{ t("java.allocatedLong") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>{{ java?.path }}</v-list-item-subtitle>
     </v-list-item>
     <v-list-item
       v-for="item in items"
@@ -24,38 +25,40 @@
       :class="{ primary: item.path === value.path && item.valid, error: item.path === value.path && !item.valid }"
       @click="emit('input', item)"
     >
-      <v-list-item-avatar>
-        <span
-          class="font-extrabold"
-          :style="{
-            color: item.path === value.path && item.valid ? 'white' : item.valid ? 'orange' : 'grey'
-          }"
-        >
-          {{ item.majorVersion }}
-        </span>
-      </v-list-item-avatar>
-      <v-list-item-content>
-        <v-list-item-title
-          v-if="item.valid"
-          class="flex items-center gap-2"
-        >
-          Java {{ item.version }}
-          <v-chip
-            v-if="item.arch"
-            class="h-[20px]"
-            color="orange"
-            small
-            label
-            outlined
+      <template #prepend>
+        <v-avatar>
+          <span
+            class="font-extrabold"
+            :style="{
+              color: item.path === value.path && item.valid ? 'white' : item.valid ? 'orange' : 'grey'
+            }"
           >
-            {{ item.arch }}
-          </v-chip>
-        </v-list-item-title>
-        <v-list-item-title v-else>
-          {{ t('java.invalid') }}
-        </v-list-item-title>
-        <v-list-item-subtitle>{{ item.path }}</v-list-item-subtitle>
-      </v-list-item-content>
+            {{ item.majorVersion }}
+          </span>
+        </v-avatar>
+      </template>
+      
+      <v-list-item-title
+        v-if="item.valid"
+        class="flex items-center gap-2"
+      >
+        Java {{ item.version }}
+        <v-chip
+          v-if="item.arch"
+          class="h-[20px]"
+          color="orange"
+          size="small"
+          label
+          variant="outlined"
+        >
+          {{ item.arch }}
+        </v-chip>
+      </v-list-item-title>
+      <v-list-item-title v-else>
+        {{ t('java.invalid') }}
+      </v-list-item-title>
+      <v-list-item-subtitle>{{ item.path }}</v-list-item-subtitle>
+      
       <v-list-item-action>
         <v-btn
           v-if="item.valid"

@@ -28,7 +28,7 @@
         :description="getDescription(flattened[virtualRow.index].data)"
         :selectable="selectable"
         @toggle="toggleOpen(flattened[virtualRow.index])"
-        @toggleValue="toggleValue(flattened[virtualRow.index])"
+        @toggle-value="toggleValue(flattened[virtualRow.index])"
       >
         <template #default="{ item }">
           <slot

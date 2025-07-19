@@ -1,8 +1,8 @@
 <template>
   <div>
-    <v-subheader>
+    <v-list-subheader>
       {{ t('modrinth.projectMembers') }}
-    </v-subheader>
+    </v-list-subheader>
     <ErrorView
       :error="error"
     />
@@ -20,13 +20,14 @@
         :key="m.id"
         @click="onClick(m)"
       >
-        <v-list-item-avatar>
-          <v-img :src="m.avatar" />
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title v-text="m.name" />
-          <v-list-item-subtitle v-text="m.role" />
-        </v-list-item-content>
+        <template #prepend>
+          <v-avatar>
+            <v-img :src="m.avatar" />
+          </v-avatar>
+        </template>
+        
+        <v-list-item-title v-text="m.name" />
+        <v-list-item-subtitle v-text="m.role" />
       </v-list-item>
     </v-list>
   </div>

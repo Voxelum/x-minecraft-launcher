@@ -3,7 +3,7 @@
     v-data-transfer:id="source.name"
     v-data-transfer-image="icon"
     hover
-    outlined
+    border
     class="dark:white--text draggable-card p-2"
     style="margin-top: 10px; transition-duration: 0.2s; margin-bottom: 20px"
     @dragstart="onDragStart"
@@ -30,8 +30,8 @@
           />
 
           <v-chip
-            small
-            outlined
+            size="small"
+            variant="outlined"
             label
             color="amber"
             style="margin-left: 1px;"
@@ -40,8 +40,8 @@
           </v-chip>
           <v-chip
             v-if="source.cheat"
-            small
-            outlined
+            size="small"
+            variant="outlined"
             color="orange en-1"
             label
             style="margin-left: 1px;"
@@ -52,21 +52,21 @@
       </div>
       <div style="flex-grow: 0">
         <v-btn
-          text
+          variant="text"
           icon
           @click="showItemInDirectory(source.path)"
         >
           <v-icon>folder</v-icon>
         </v-btn>
         <v-btn
-          text
+          variant="text"
           icon
           @click="exportSave(source.path)"
         >
           <v-icon>launch</v-icon>
         </v-btn>
         <v-btn
-          text
+          variant="text"
           icon
           color="red"
           @click="emit('remove')"

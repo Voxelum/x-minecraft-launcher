@@ -3,26 +3,42 @@
     :disabled="disabled"
     @click="!disabled ? emit('input', !value) : undefined"
   >
-    <v-list-item-action class="self-center">
+    <template
+      #prepend
+    >
       <v-checkbox
+        class="mr-6"
         hide-details
         :disabled="disabled"
         :readonly="true"
-        :input-value="value"
+        :model-value="value"
         :value="value"
         @click.stop.prevent.capture="!disabled ? emit('input', !value) : undefined"
-        @change="emit('input', !value)"
+        @update:model-value="emit('input', !value)"
       />
-    </v-list-item-action>
-    <v-list-item-content>
+    </template>
+    
+    <template #title>
       <v-list-item-title>
         {{ title }}
         <slot />
       </v-list-item-title>
-      <v-list-item-subtitle v-if="description">
+    </template>
+    
+    <template
+      v-if="description"
+      #subtitle
+    >
+      <v-list-item-subtitle>
         {{ description }}
       </v-list-item-subtitle>
-    </v-list-item-content>
+    </template>
+    <template
+      v-if="$slots.append"
+      #append
+    >
+      <slot name="append" />
+    </template>
   </v-list-item>
 </template>
 <script setup lang="ts">

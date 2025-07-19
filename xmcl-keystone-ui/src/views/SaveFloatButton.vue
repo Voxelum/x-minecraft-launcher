@@ -3,11 +3,10 @@
     <v-btn
       v-if="visible"
       style="right: 40vw; bottom: 10px;"
-      large
+      size="large"
       absolute
-
-      fab
-      bottom
+      class="rounded-circle"
+      location="bottom"
       :color="'error'"
       @dragover.prevent
       @drop="$emit('drop', $event)"

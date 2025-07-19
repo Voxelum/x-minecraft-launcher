@@ -15,12 +15,15 @@
     >
       <v-icon
         class="material-icons-outlined"
-        left
-        small
+        start
+        size="small"
       >
         {{ value.icon }}
       </v-icon>
-      <span class="whitespace-nowrap" :class="{ 'text-sm': dense }">{{ value.name }}</span>
+      <span
+        class="whitespace-nowrap"
+        :class="{ 'text-sm': dense }"
+      >{{ value.name }}</span>
     </div>
   </span>
 </template>

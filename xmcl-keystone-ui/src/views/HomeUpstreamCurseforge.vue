@@ -140,11 +140,11 @@ const loadChangelog = async (v: ProjectVersionProps) => {
 </script>
 <template>
   <HomeUpstreamBase
+    v-model:only-current-version="onlyCurrentVersion"
     :items="items"
     :current-version="currentVersion"
     :header="headerData"
     :duplicating="duplicating"
-    :only-current-version.sync="onlyCurrentVersion"
     :updating="updating"
     :loading="loadingFiles"
     @duplicate="onDuplicate"

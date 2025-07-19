@@ -2,12 +2,12 @@
   <v-chip
     filter
     :disabled="disabled"
-    outlined
+    variant="outlined"
     label
     @click="disabled || $emit('click', value)"
   >
     <v-avatar
-      left
+      start
     >
       <v-img
         :src="value.iconUrl"

@@ -1,23 +1,20 @@
 <template>
   <v-menu
     v-model="focused"
-    offset-y
-    bottom
-    :close-on-click="false"
+    location="bottom"
     :close-on-content-click="false"
   >
-    <template #activator="{ }">
+    <template #activator="{ props }">
       <MarketTextField
-        ref="field"
+        v-bind="props"
         :clearable="!!curseforgeCategory || modrinthCategories.length > 0 || !!keyword"
-        :value="keyword"
         :placeholder="placeholder"
         :game-version="gameVersion !== runtime.minecraft ? gameVersion : undefined"
         :category="!!curseforgeCategory || modrinthCategories.length > 0"
         :icon="tab === 0 ? 'file_download' : tab === 1 ? 'search' : 'favorite'"
         @clear="onClear"
         @clear-version="emit('update:gameVersion', runtime.minecraft)"
-        @input="emit('update:keyword', $event)"
+        @input="emit('update:keyword', $event); props.onClick($event)"
         @clear-category="onClear"
       />
     </template>
@@ -25,7 +22,12 @@
       class="overflow-auto max-h-[80vh] flex flex-col"
       @mousedown.prevent
     >
-      <v-tabs v-if="!noTab" v-model="tab" centered fixed-tabs>
+      <v-tabs
+        v-if="!noTab"
+        v-model="tab"
+        align-tabs="center"
+        fixed-tabs
+      >
         <v-tab>
           {{ t('search.market') }}
         </v-tab>
@@ -37,37 +39,40 @@
         </v-tab>
       </v-tabs>
 
-      <v-tabs-items v-model="tab" class="overflow-auto flex">
-        <v-tab-item class="tab">
-          <v-subheader class="flex">
+      <v-tabs-window
+        v-model="tab"
+        class="overflow-auto flex"
+      >
+        <v-tabs-window-item class="tab">
+          <v-list-subheader class="flex">
             {{ t('modrinth.sort.title') }}
-          </v-subheader>
+          </v-list-subheader>
           <v-btn-toggle
-            background-color="transparent"
-            :value="sort"
+            :model-value="sort"
             mandatory
+            density="compact"
             class="bg-transparent px-1"
-            @change="emit('update:sort', $event || 'alpha_asc')"
+            @update:model-value="emit('update:sort', $event || 'alpha_asc')"
           >
             <v-btn
               v-for="tag in sortByItems"
               :key="tag.value"
               v-shared-tooltip="tag.text"
-              small
-              outlined
+              size="small"
+              variant="outlined"
             >
               <v-icon
                 class="material-icons-outlined"
-                small
+                size="small"
               >
                 {{ tag.icon }}
               </v-icon>
             </v-btn>
           </v-btn-toggle>
 
-          <v-subheader class="flex">
+          <v-list-subheader class="flex">
             {{ t('minecraftVersion.name') }}
-          </v-subheader>
+          </v-list-subheader>
           <v-chip-group
             ref="chipGroup"
             v-model="gameVersionModel"
@@ -80,32 +85,31 @@
               v-for="v of versionIds"
               :key="v"
               filter
-              outlined
+              variant="outlined"
               label
             >
               {{ v }}
             </v-chip>
           </v-chip-group>
 
-          <v-subheader
+          <v-list-subheader
             v-if="modLoaders"
           >
             {{ t('modrinth.modLoaders.name') }}
-          </v-subheader>
+          </v-list-subheader>
           <v-btn-toggle
             v-if="modLoaders"
             background-color="transparent"
             class="px-1"
-            dense
-            :value="modloader"
-            @change="emit('update:modloader', $event)"
+            density="compact"
+            :model-value="modloader"
+            @update:model-value="emit('update:modloader', $event)"
           >
             <v-btn
               v-for="loader in modLoaders"
               :key="loader"
-              outlined
-              text
-              small
+              variant="outlined"
+              size="small"
               :value="loader"
             >
               <img
@@ -116,16 +120,16 @@
           </v-btn-toggle>
 
           <template v-if="modrinthCategoryFilter">
-            <v-subheader class="flex gap-1">
+            <v-list-subheader class="flex gap-1">
               Modrinth
               <div class="flex-grow" />
               <v-switch
-                dense
+                density="compact"
                 flat
-                :input-value="enableModrinth"
-                @change="emit('update:enableModrinth', $event)"
+                :model-value="enableModrinth"
+                @update:model-value="emit('update:enableModrinth', $event)"
               />
-            </v-subheader>
+            </v-list-subheader>
             <v-chip-group
               v-model="modrinthSelectModel"
               column
@@ -140,17 +144,17 @@
             </v-chip-group>
           </template>
           <template v-if="curseforgeCategoryFilter">
-            <v-subheader class="flex">
+            <v-list-subheader class="flex">
               Curseforge
 
               <div class="flex-grow" />
               <v-switch
-                dense
+                density="compact"
                 flat
-                :input-value="enableCurseforge"
-                @change="emit('update:enableCurseforge', $event)"
+                :model-value="enableCurseforge"
+                @update:model-value="emit('update:enableCurseforge', $event)"
               />
-            </v-subheader>
+            </v-list-subheader>
             <v-chip-group
               v-model="curseforgeSelectModel"
               column
@@ -164,31 +168,31 @@
               />
             </v-chip-group>
           </template>
-        </v-tab-item>
-        <v-tab-item class="tab">
-          <v-subheader class="flex">
+        </v-tabs-window-item>
+        <v-tabs-window-item class="tab">
+          <v-list-subheader class="flex">
             {{ t('modrinth.sort.title') }}
-          </v-subheader>
+          </v-list-subheader>
           <v-btn-toggle
             background-color="transparent"
-            :value="sortByItems.findIndex(i => i.value === localSort)"
+            :model-value="sortByItems.findIndex(i => i.value === localSort)"
             class="bg-transparent px-1"
-            @change="updateLocalSort"
+            @update:model-value="updateLocalSort"
           >
             <v-btn
               v-for="tag in sortByLocalItems"
               :key="tag.value"
               v-shared-tooltip="tag.text"
-              small
-              outlined
+              size="small"
+              variant="outlined"
             >
               <v-icon
                 class="material-icons-outlined"
-                small
+                size="small"
               >
                 {{ tag.icon }}
               </v-icon>
-              <v-icon small>
+              <v-icon size="small">
                 {{ tag.value.endsWith('asc') ? 'arrow_upward' : 'arrow_downward' }}
               </v-icon>
             </v-btn>
@@ -196,14 +200,14 @@
           
 
           <slot name="local" />
-        </v-tab-item>
-        <v-tab-item class="tab">
+        </v-tabs-window-item>
+        <v-tabs-window-item class="tab">
           <AppCollectionList
             :select="collection"
             @update:select="emit('update:collection', $event)"
           />
-        </v-tab-item>
-      </v-tabs-items>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </v-card>
   </v-menu>
 </template>
@@ -314,13 +318,13 @@ function filterGameVersion(v: string) {
 }
 const versionIds = computed(() => versions.value.map(v => v.id).filter(filterGameVersion))
 
-const field = ref(null as any)
-watch(() => props.curseforgeCategory, (v) => {
-  field.value?.focus()
-})
-watch(() => props.modrinthCategories, (v) => {
-  field.value?.focus()
-}, { deep: true })
+// const field = ref(null as any)
+// watch(() => props.curseforgeCategory, (v) => {
+//   field.value?.focus()
+// })
+// watch(() => props.modrinthCategories, (v) => {
+//   field.value?.focus()
+// }, { deep: true })
 
 const modrinthSelectModel = computed({
   get() {
@@ -353,7 +357,7 @@ const localSearchKey = keys['Ctrl+D']
 const remoteSearchKey = keys['Ctrl+F']
 watch(localSearchKey, (v) => {
   if (v) {
-    field.value?.focus()
+    // field.value?.focus()
     nextTick(() => {
       tab.value = 1
     })

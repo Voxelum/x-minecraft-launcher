@@ -116,9 +116,9 @@ export default defineComponent({
     provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
     provide(kEnvironment, useEnvironment())
-    provide(kTheme, useTheme(vuetify.framework))
+    provide(kTheme, useTheme())
 
-    useI18nSync(vuetify.framework, settings.state)
+    useI18nSync(settings.state)
 
     const router = useRouter()
     useExternalRoute(router)

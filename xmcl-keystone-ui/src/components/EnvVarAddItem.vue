@@ -13,18 +13,16 @@
       autofocus
       label="Key"
       placeholder="Key"
-      solo
-      outlined
-      dense
+      variant="solo"
+      density="compact"
       hide-details
     />
     <v-text-field
       v-model="envVarValue"
       label="Value"
       placeholder="Value"
-      solo
-      outlined
-      dense
+      variant="solo"
+      density="compact"
       hide-details
     />
     <v-btn

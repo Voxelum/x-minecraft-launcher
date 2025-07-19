@@ -123,7 +123,7 @@ authProfileAddedNotification: Profil d'authentification {name} ajouté
 author: Auteur
 back: Revenir
 baseSetting:
-  title: Paramètres de base
+  title: Paramètres
 browse: Parcourir
 browseApp:
   createShortcut: Créer un raccourci

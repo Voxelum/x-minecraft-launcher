@@ -1,38 +1,41 @@
 <template>
-  <div>
-    <SettingHeader v-if="!disableUpdate">
-      🚀 {{ t("setting.update") }}
-    </SettingHeader>
-    <v-list-item v-if="!disableUpdate">
-      <v-list-item-action class="self-center">
+  <SettingHeader v-if="!disableUpdate">
+    🚀 {{ t("setting.update") }}
+  </SettingHeader>
+  <v-list-item
+    v-if="!disableUpdate"
+    :title="t('setting.latestVersion')"
+  >
+    <template #prepend>
+      <v-list-item-action class="self-center mr-4">
         <v-btn
           v-shared-tooltip="_ => t('setting.checkUpdate')"
           icon
+          variant="text"
           :loading="checkingUpdate"
           @click="checkUpdate"
         >
           <v-icon>refresh</v-icon>
         </v-btn>
       </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.latestVersion")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          v{{ version }}
-          {{
-            hasNewUpdate && updateInfo ? `-> ${updateInfo.name}` : ""
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+    </template>
+      
+    <template #subtitle>
+      <v-list-item-subtitle>
+        v{{ version }}
+        {{
+          hasNewUpdate && updateInfo ? `-> ${updateInfo.name}` : ""
+        }}
+      </v-list-item-subtitle>
+    </template>
+
+    <template #append>
       <v-list-item-action class="self-center">
         <v-btn
           :loading="checkingUpdate || installing"
           :disabled="updateStatus === 'none'"
           :color="updateStatus !== 'none' ? 'primary' : ''"
-          :text="updateStatus === 'none'"
+          :variant="updateStatus === 'none' ? 'text' : undefined"
           @click="showUpdateInfo()"
         >
           {{
@@ -44,8 +47,9 @@
           }}
         </v-btn>
       </v-list-item-action>
-    </v-list-item>
-    <!-- <v-list-item avatar>
+    </template>
+  </v-list-item>
+  <!-- <v-list-item avatar>
             <v-list-item-action>
               <v-checkbox v-model="autoInstallOnAppQuit" />
             </v-list-item-action>
@@ -75,7 +79,6 @@
               <v-list-item-subtitle>{{ t('setting.allowPrereleaseDescription') }}</v-list-item-subtitle>
             </v-list-item-content>
         </v-list-item>-->
-  </div>
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'

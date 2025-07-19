@@ -9,7 +9,7 @@ export type VSharedTooltipParam = {
 } | string
 
 export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam> = (el, bindings, node, prevNode) => {
-  if (prevNode.tag) return
+  if (prevNode && prevNode.tag) return
   const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
     if (blocked.value) return

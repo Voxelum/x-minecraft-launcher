@@ -133,12 +133,12 @@ async function onDuplicate(v: ProjectVersionProps) {
 </script>
 <template>
   <HomeUpstreamBase
+    v-model:only-current-version="onlyCurrentVersion"
     :items="items"
     :current-version="currentVersion"
     :header="headerData"
     :updating="updating"
     :duplicating="duplicating"
-    :only-current-version.sync="onlyCurrentVersion"
     @update="onUpdate"
     @duplicate="onDuplicate"
   />

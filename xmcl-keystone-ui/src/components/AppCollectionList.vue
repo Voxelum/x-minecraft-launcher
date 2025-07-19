@@ -1,37 +1,47 @@
 <template>
   <v-list nav>
-    <v-list-item-group :input-value="selectedIndex" :value="selectedIndex" color="primary"
-      @change="selectedIndex = $event">
-      <v-list-item v-for="c of collectionItems" :key="c.id" @click="">
-        <v-list-item-avatar>
-          <v-icon v-if="'icon' in c" color="red">{{ c.icon }}</v-icon>
-          <v-img v-else-if="c.icon_url" :src="c.icon_url" />
+    <v-list-item
+      v-for="c of collectionItems"
+      :key="c.id"
+      :active="selectedIndex === collectionItems.indexOf(c)"
+      color="primary"
+      :text="c.name"
+      @click="selectedIndex = collectionItems.indexOf(c)"
+    >
+      <template #prepend>
+        <v-avatar>
+          <v-icon
+            v-if="'icon' in c"
+            color="red"
+          >
+            {{ c.icon }}
+          </v-icon>
+          <v-img
+            v-else-if="c.icon_url"
+            :src="c.icon_url"
+          />
           <div v-else>
-            <span class="white--text text-h5 capitalize">{{ c.name[0] }}</span>
+            <span class="text-white text-h5 capitalize">{{ c.name[0] }}</span>
           </div>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ c.name }}
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            {{ c.description }}
-          </v-list-item-subtitle>
-          <v-list-item-subtitle>
-            {{ t('modrinth.projects', { count: c.count }) }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list-item-group>
-    <v-list-item v-if="projectId" color="primary" @click="show(props.projectId)">
-      <v-list-item-icon>
+        </v-avatar>
+      </template>
+      
+      <v-list-item-subtitle>
+        {{ c.description }}
+      </v-list-item-subtitle>
+      <v-list-item-subtitle>
+        {{ t('modrinth.projects', { count: c.count }) }}
+      </v-list-item-subtitle>
+    </v-list-item>
+    <v-list-item
+      v-if="projectId"
+      color="primary"
+      :text="t('modrinth.createCollection')"
+      @click="show(props.projectId)"
+    >
+      <template #prepend>
         <v-icon>add</v-icon>
-      </v-list-item-icon>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t('modrinth.createCollection') }}
-        </v-list-item-title>
-      </v-list-item-content>
+      </template>
     </v-list-item>
   </v-list>
 </template>

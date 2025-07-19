@@ -10,7 +10,7 @@
         <template #extension>
           <v-tabs
             v-model="tab"
-            centered
+            align-tabs="center"
           >
             <v-tabs-slider color="yellow" />
             <v-tab>
@@ -23,14 +23,14 @@
         </template>
       </v-toolbar>
       <v-container class="max-h-[70vh]">
-        <v-tabs-items v-model="tab">
-          <v-tab-item :key="0">
+        <v-tabs-window v-model="tab">
+          <v-tabs-window-item :key="0">
             <HomeSyncDialogPull :shown="tab === 0" />
-          </v-tab-item>
-          <v-tab-item :key="1">
+          </v-tabs-window-item>
+          <v-tabs-window-item :key="1">
             <HomeSyncDialogPush :shown="tab === 1" />
-          </v-tab-item>
-        </v-tabs-items>
+          </v-tabs-window-item>
+        </v-tabs-window>
       </v-container>
     </v-card>
   </v-dialog>

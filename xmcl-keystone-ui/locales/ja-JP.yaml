@@ -76,7 +76,7 @@ authProfileAddedNotification: 認証プロファイル {name} が追加されま
 author: 著者
 back: 戻る
 baseSetting:
-  title: 基本設定
+  title: 設定
 browse: ブラウズ
 browseApp:
   createShortcut: ショートカットを作成

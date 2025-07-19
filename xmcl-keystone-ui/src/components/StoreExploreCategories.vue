@@ -35,9 +35,9 @@
     >
       <template
         v-for="g of groups"
+        :key="g.text"
       >
         <span
-          :key="g.text"
           class="list-title"
         >{{ g.text }}</span>
         <template v-if="g.type === 'checkbox'">
@@ -48,7 +48,7 @@
             @click="emit('select', { category: cat.id, group: g.id })"
           >
             <v-checkbox
-              :input-value="selected.indexOf(cat.id) !== -1"
+              :model-value="selected.indexOf(cat.id) !== -1"
               hide-details
               class="mt-0 pt-0"
             />
@@ -69,25 +69,24 @@
         </template>
         <div
           v-else-if="g.type === 'buttons'"
-          :key="g.text + 'toggle'"
           class="py-2"
         >
           <v-btn-toggle
-            :value="g.categories.findIndex(v => selected.includes(v.id))"
+            :model-value="g.categories.findIndex(v => selected.includes(v.id))"
             background-color="transparent"
             class="px-1"
-            @change="emit('select', { category: g.categories.at($event)?.id ?? '', group: g.id })"
+            @update:model-value="emit('select', { category: g.categories.at($event)?.id ?? '', group: g.id })"
           >
             <v-btn
               v-for="tag in g.categories"
               :key="tag.id"
               v-shared-tooltip="tag.text"
-              small
-              outlined
+              size="small"
+              variant="outlined"
             >
               <v-icon
                 class="material-icons-outlined"
-                small
+                size="small"
               >
                 {{ tag.icon }}
               </v-icon>
@@ -96,9 +95,8 @@
         </div>
         <v-combobox
           v-else
-          :key="g.text + 'select'"
           class="flex-grow-0"
-          solo
+          variant="solo"
           flat
           clearable
           :label="g.text"
@@ -107,8 +105,8 @@
           :item-value="
             // @ts-ignore
             (v) => v.id"
-          :value="g.categories.find(v => selected.includes(v.id))"
-          @input="emit('select', { category: $event?.id || '', group: g.id })"
+          :model-value="g.categories.find(v => selected.includes(v.id))"
+          @update:model-value="emit('select', { category: $event?.id || '', group: g.id })"
         />
       </template>
     </div>

@@ -4,7 +4,7 @@
       v-shared-tooltip="_ => isInstanceLinked ? t('save.shared') : t('save.independent')"
       icon
       :loading="loading"
-      large
+      size="large"
       @click="onLinkClicked"
     >
       <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
@@ -12,7 +12,7 @@
     <v-btn
       v-shared-tooltip.left="_ => t('save.showDirectory')"
       icon
-      large
+      size="large"
       @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>

@@ -18,7 +18,7 @@
       <div class="my-2 flex items-center justify-center">
         <v-btn
           v-if="offline"
-          text
+          variant="text"
           :disabled="Object.keys(user.profiles).length === 1"
           color="red"
           @click="removeGameProfile(profile.name)"
@@ -28,7 +28,7 @@
           </v-icon>
         </v-btn>
         <v-btn
-          text
+          variant="text"
           color="primary"
           :disabled="profile.id === user.selectedProfile"
           @click="selectGameProfile(user, profile.id)"

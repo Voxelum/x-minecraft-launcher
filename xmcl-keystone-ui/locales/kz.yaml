@@ -95,7 +95,7 @@ authProfileAddedNotification: Авторлық профиль {name} қосыл�
 author: Автор
 back: Артқа
 baseSetting:
-  title: Негізгі параметрлер
+  title: Settings
 browse: Шолу
 browseApp:
   createShortcut: Таңбаша жасау

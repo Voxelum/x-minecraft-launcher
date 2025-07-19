@@ -96,7 +96,7 @@ authProfileAddedNotification: Профіль автентифікації {name}
 author: Автор
 back: Назад
 baseSetting:
-  title: Основні налаштування
+  title: Налаштування
 browse: Огляд
 browseApp:
   createShortcut: Створити ярлик

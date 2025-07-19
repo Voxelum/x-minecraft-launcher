@@ -92,7 +92,7 @@ authProfileAddedNotification: Perfil de Autenticación {name} Añadido
 author: Autor
 back: Atrás
 baseSetting:
-  title: Configuración Básica
+  title: Ajustes
 browse: Explorar
 browseApp:
   createShortcut: Crear Acceso directo

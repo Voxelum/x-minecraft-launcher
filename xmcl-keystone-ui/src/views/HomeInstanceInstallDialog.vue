@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     scrollable
     width="800"
   >
@@ -25,20 +25,20 @@
         class="visible-scroll mx-0 max-h-screen items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <template v-if="upgrade && upgrade.edit">
-          <v-subheader>
+          <v-list-subheader>
             {{ t('instanceUpdate.basic') }}
-          </v-subheader>
+          </v-list-subheader>
 
           <div
             class="grid grid-cols-2 gap-4"
           >
             <v-text-field
-              :value="getVersionString(oldRuntime.minecraft, runtime.minecraft)"
+              :model-value="getVersionString(oldRuntime.minecraft, runtime.minecraft)"
               persistent-hint
               label="Minecraft"
               readonly
               flat
-              dense
+              density="compact"
               required
             >
               <template #prepend-inner>
@@ -50,12 +50,12 @@
             </v-text-field>
             <v-text-field
               v-if="runtime.forge"
-              :value="getVersionString(oldRuntime.forge, runtime.forge)"
+              :model-value="getVersionString(oldRuntime.forge, runtime.forge)"
               persistent-hint
               label="Forge"
               readonly
               flat
-              dense
+              density="compact"
               required
             >
               <template #prepend-inner>
@@ -67,12 +67,12 @@
             </v-text-field>
             <v-text-field
               v-if="runtime.fabricLoader"
-              :value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
+              :model-value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
               persistent-hint
               readonly
               label="Fabric"
               flat
-              dense
+              density="compact"
               required
             >
               <template #prepend-inner>
@@ -87,7 +87,7 @@
           <v-alert
             v-if="loaderDifferences.old.length > 0 || loaderDifferences.new.length > 0"
             colored-border
-            outlined
+            variant="outlined"
             type="error"
             color="error"
           >
@@ -98,8 +98,8 @@
               <template #modloader>
                 <v-chip
                   label
-                  small
-                  outlined
+                  size="small"
+                  variant="outlined"
                 >
                   {{ loaderDifferences.old.join(', ') }}
                 </v-chip>
@@ -107,8 +107,8 @@
               <template #newModloader>
                 <v-chip
                   label
-                  small
-                  outlined
+                  size="small"
+                  variant="outlined"
                 >
                   {{ loaderDifferences.new.join(', ') }}
                 </v-chip>
@@ -118,14 +118,22 @@
         </template>
 
         <div>
-          <v-subheader>
+          <v-list-subheader>
             {{ t('instanceUpdate.files') }}
             <v-spacer />
-            <v-btn class="z-3" icon @click="filterKeep = !filterKeep">
-              <v-icon v-if="filterKeep">visibility_off</v-icon>
-              <v-icon v-else>visibility</v-icon>
+            <v-btn
+              class="z-3"
+              icon
+              @click="filterKeep = !filterKeep"
+            >
+              <v-icon v-if="filterKeep">
+                visibility_off
+              </v-icon>
+              <v-icon v-else>
+                visibility
+              </v-icon>
             </v-btn>
-          </v-subheader>
+          </v-list-subheader>
         </div>
 
         <InstanceManifestFileTree
@@ -139,10 +147,10 @@
               v-if="item.data"
               class="pointer-events-none"
               label
-              outlined
+              variant="outlined"
               :color="cOperations[item.data.operation]"
             >
-              <v-icon left>
+              <v-icon start>
                 {{ iOperations[item.data.operation] }}
               </v-icon>
               {{ tOperations[item.data.operation] }}
@@ -155,7 +163,10 @@
           icon="visibility_off"
           :text="t('instanceUpdate.summary', { add: counts.add, remove: counts.remove, keep: counts.keep })"
         />
-        <div v-else class="flex items-center gap-4 h-4 my-8">
+        <div
+          v-else
+          class="flex items-center gap-4 h-4 my-8"
+        >
           <v-divider />
           {{ t('instanceUpdate.summary', { add: counts.add, remove: counts.remove, keep: counts.keep }) }}
           <v-divider />
@@ -163,8 +174,8 @@
       </div>
       <v-card-actions class="items-baseline gap-5">
         <v-btn
-          text
-          large
+          variant="text"
+          size="large"
           :disabled="refreshing"
           @click="cancel"
         >
@@ -172,9 +183,9 @@
         </v-btn>
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           color="primary"
-          large
+          size="large"
           :loading="refreshing"
           @click="confirm"
         >

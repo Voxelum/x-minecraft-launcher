@@ -1,28 +1,24 @@
 <template>
-  <v-list
-    two-line
-    subheader
-    style="background: transparent; width: 100%"
-  >
-    <v-subheader>Minecraft</v-subheader>
+  <v-list-subheader>Minecraft</v-list-subheader>
 
-    <SettingItemCheckbox
-      :value="isGameOptionsLinkedCache || false"
-      :disabled="isGameOptionsLinkedCache === undefined"
-      :title="t('instance.useSharedOptions')"
-      :description="t('instance.useSharedOptionsDesc')"
-      @input="!isGameOptionsLinkedCache ? show('options.txt') : unlinkGameOptions(path).then(() => mutateOptions())"
-    />
-    <SettingItemCheckbox
-      :value="isServersListLinkedCache || false"
-      :disabled="isServersListLinkedCache === undefined"
-      :title="t('instance.useSharedServersList')"
-      :description="t('instance.useSharedServersListDesc')"
-      @input="!isServersListLinkedCache ? show('servers.dat') : unlinkServersList(path).then(() => mutateServers())"
-    />
+  <SettingItemCheckbox
+    :value="isGameOptionsLinkedCache || false"
+    :disabled="isGameOptionsLinkedCache === undefined"
+    :title="t('instance.useSharedOptions')"
+    :description="t('instance.useSharedOptionsDesc')"
+    @input="!isGameOptionsLinkedCache ? show('options.txt') : unlinkGameOptions(path).then(() => mutateOptions())"
+  />
+  <SettingItemCheckbox
+    :value="isServersListLinkedCache || false"
+    :disabled="isServersListLinkedCache === undefined"
+    :title="t('instance.useSharedServersList')"
+    :description="t('instance.useSharedServersListDesc')"
+    @input="!isServersListLinkedCache ? show('servers.dat') : unlinkServersList(path).then(() => mutateServers())"
+  />
 
+  <div class="grid grid-cols-4">
     <v-list-item>
-      <v-list-item-content class="max-w-70 mr-4">
+      <template #title>
         <v-list-item-title>
           {{ t("instance.preExecCommand") }}
           <BaseSettingGlobalLabel
@@ -31,20 +27,21 @@
             @click="gotoSetting"
           />
         </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="preExecuteCommand"
-            outlined
-            filled
-            dense
-            class="m-1 mt-2"
-            hide-details
-            required
-            :placeholder="t('instance.preExecCommandHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-content style="flex: 1">
+      </template>
+      <template #subtitle>
+        <v-text-field
+          v-model="preExecuteCommand"
+          variant="filled"
+          density="compact"
+          class="m-1 mt-2"
+          hide-details
+          required
+          :placeholder="t('instance.preExecCommandHint')"
+        />
+      </template>
+    </v-list-item>
+    <v-list-item class="col-span-3">
+      <template #title>
         <v-list-item-title>
           {{ t("instance.mcOptions") }}
           <BaseSettingGlobalLabel
@@ -53,136 +50,129 @@
             @click="gotoSetting"
           />
         </v-list-item-title>
+      </template>
+      <template #subtitle>
         <v-list-item-subtitle>
           <v-text-field
             v-model="mcOptions"
-            outlined
-            filled
-            dense
+            variant="filled"
+            density="compact"
             class="m-1 mt-2"
             hide-details
             required
             :placeholder="t('instance.mcOptionsHint')"
           />
         </v-list-item-subtitle>
-      </v-list-item-content>
+      </template>
     </v-list-item>
+  </div>
 
-    <v-list-item>
-      <v-list-item-action>
-        <v-icon class="material-icons-outlined icon-image-preview">
-          preview
-        </v-icon>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("instance.launchArguments")
-          }}
-        </v-list-item-title>
-      </v-list-item-content>
+  <v-list-item
+    :title="t('instance.launchArguments')"
+  >
+    <template #prepend>
+      <v-icon class="material-icons-outlined icon-image-preview">
+        preview
+      </v-icon>
+    </template>
 
-      {{ t('modrinth.environments.server') }}
-      <v-divider
-        vertical
-        class="my-4 mx-2"
-      />
-      <v-list-item-action>
-        <v-btn
-          icon
-          @click="copyToClipboard('server')"
-        >
-          <v-icon>content_copy</v-icon>
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action>
-        <v-btn
-          icon
-          @click="showPreview('server')"
-        >
-          <v-icon>print</v-icon>
-        </v-btn>
-      </v-list-item-action>
-      <span class="mx-4" />
-      {{ t('modrinth.environments.client') }}
-      <v-divider
-        vertical
-        class="my-4 mx-2"
-      />
-      <v-list-item-action>
+    {{ t('modrinth.environments.server') }}
+    <v-divider
+      vertical
+      class="my-4 mx-2"
+    />
+    <template #append>
+      <v-btn
+        icon
+        @click="copyToClipboard('server')"
+      >
+        <v-icon>content_copy</v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        @click="showPreview('server')"
+      >
+        <v-icon>print</v-icon>
+      </v-btn>
+    </template>
+
+    <span class="mx-4" />
+    {{ t('modrinth.environments.client') }}
+    <v-divider
+      vertical
+      class="my-4 mx-2"
+    />
+  </v-list-item>
+  <!-- <template #append>
         <v-btn
           icon
           @click="copyToClipboard('client')"
         >
           <v-icon>content_copy</v-icon>
         </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="mx-0">
         <v-btn
           icon
           @click="showPreview('client')"
         >
           <v-icon>print</v-icon>
         </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-    <v-dialog
-      v-model="isPreviewShown"
-      :width="500"
-      style="overflow: hidden"
-    >
-      <v-card>
-        <v-toolbar color="primary">
-          {{
-            t("instance.launchArguments")
-          }}
-        </v-toolbar>
-        <v-textarea
-          hide-details
-          readonly
-          filled
-          :value="previewText"
-          no-resize
-          :height="480"
-        />
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="model"
-      width="400"
-    >
-      <v-card>
-        <v-card-title>
-          {{ t('instance.linkFileTitle', { file: target }) }}
-        </v-card-title>
+      </template> -->
+  <v-dialog
+    v-model="isPreviewShown"
+    :width="500"
+    style="overflow: hidden"
+  >
+    <v-card>
+      <v-toolbar color="primary">
+        {{
+          t("instance.launchArguments")
+        }}
+      </v-toolbar>
+      <v-textarea
+        hide-details
+        readonly
+        variant="filled"
+        :model-value="previewText"
+        no-resize
+        :height="480"
+      />
+    </v-card>
+  </v-dialog>
+  <v-dialog
+    v-model="model"
+    width="400"
+  >
+    <v-card>
+      <v-card-title>
+        {{ t('instance.linkFileTitle', { file: target }) }}
+      </v-card-title>
 
-        <v-card-text>
-          {{ t('instance.linkFileDesc', { file: target }) }}
-        </v-card-text>
+      <v-card-text>
+        {{ t('instance.linkFileDesc', { file: target }) }}
+      </v-card-text>
 
-        <v-card-actions>
-          <v-btn
-            text
-            @click="cancel"
-          >
-            {{ t('cancel') }}
-          </v-btn>
-          <div class="flex-grow" />
-          <v-btn
-            text
-            color="primary"
-            @click="confirm"
-          >
-            <v-icon left>
-              link
-            </v-icon>
-            {{ t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-divider />
-  </v-list>
+      <v-card-actions>
+        <v-btn
+          variant="text"
+          @click="cancel"
+        >
+          {{ t('cancel') }}
+        </v-btn>
+        <div class="flex-grow" />
+        <v-btn
+          variant="text"
+          color="primary"
+          @click="confirm"
+        >
+          <v-icon start>
+            link
+          </v-icon>
+          {{ t('yes') }}
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <v-divider />
 </template>
 
 <script lang=ts setup>

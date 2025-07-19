@@ -7,51 +7,51 @@
       <div class="flex-grow" />
       <div class="invisible-scroll flex justify-end gap-4 overflow-x-auto">
         <MarketTextFieldWithMenu
+          v-model:keyword="keywordBuffer"
+          v-model:curseforge-category="curseforgeCategory"
+          v-model:modrinth-categories="modrinthCategories"
+          v-model:local-sort="sortBy"
+          v-model:collection="selectedCollection"
+          v-model:enable-curseforge="isCurseforgeActive"
+          v-model:enable-modrinth="isModrinthActive"
+          v-model:sort="sort"
+          v-model:mode="source"
+          v-model:game-version="gameVersion"
+          v-model:modloader="modLoader"
           :placeholder="t('mod.search')"
-          :keyword.sync="keywordBuffer"
-          :curseforge-category.sync="curseforgeCategory"
-          :modrinth-categories.sync="modrinthCategories"
-          :local-sort.sync="sortBy"
           curseforge-category-filter="mc-mods"
           modrinth-category-filter="mod"
-          :collection.sync="selectedCollection"
-          :enable-curseforge.sync="isCurseforgeActive"
-          :enable-modrinth.sync="isModrinthActive"
-          :sort.sync="sort"
-          :mode.sync="source"
-          :game-version.sync="gameVersion"
-          :modloader.sync="modLoader"
           :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
         >
           <template #local>
-            <v-subheader class="flex">
+            <v-list-subheader class="flex">
               {{ t('mod.filter') }}
-            </v-subheader>
+            </v-list-subheader>
             <v-btn-toggle
               background-color="transparent"
-              :value="localFilter === 'disabledOnly' ? 0 : localFilter === 'incompatibleOnly' ? 1 : undefined"
+              :model-value="localFilter === 'disabledOnly' ? 0 : localFilter === 'incompatibleOnly' ? 1 : undefined"
               class="bg-transparent px-1"
-              @change="onUpdateLocalFilter(filterItems[$event]?.value)"
+              @update:model-value="onUpdateLocalFilter(filterItems[$event]?.value)"
             >
               <v-btn
                 v-for="tag in filterItems"
                 :key="tag.value"
                 v-shared-tooltip="_ => tag.text"
                 :disabled="tag.disabled"
-                small
-                outlined
+                size="small"
+                variant="outlined"
               >
                 <v-icon
                   class="material-icons-outlined"
-                  small
+                  size="small"
                 >
                   {{ tag.icon }}
                 </v-icon>
               </v-btn>
             </v-btn-toggle>
             <ModOptionsPage
-              :denseView.sync="denseView"
-              :groupInstalled.sync="groupInstalled"
+              v-model:dense-view="denseView"
+              v-model:group-installed="groupInstalled"
             />
           </template>
         </MarketTextFieldWithMenu>

@@ -11,11 +11,11 @@
     :addition-button="noAction ? undefined : { 
       icon: 'file_download',
       text: t('install'),
-     }"
+    }"
     :button="noAction || mods.length === 0 ? undefined : {
       text: t('mod.manage'),
       icon: 'settings'
-     }"
+    }"
     :error="error"
     @navigate="push('/mods')"
     @navigate-addition="push('/mods?source=remote')"

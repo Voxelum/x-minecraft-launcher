@@ -16,9 +16,7 @@ document.addEventListener('dragstart', (e) => {
   }
 })
 
-const app = new Vue(defineComponent({
-  i18n,
-  vuetify,
+const app = createApp(defineComponent({
   setup() {
     provide(kServiceFactory, useServiceFactory())
     provide(kDialogModel, useDialogModel())
@@ -27,10 +25,10 @@ const app = new Vue(defineComponent({
     return () => h(Context, [h(App)])
   },
 }))
-
-Vue.component('TextComponent', TextComponent)
-
-app.$mount('#app')
+app.use(vuetify)
+app.use(i18n)
+app.component('TextComponent', TextComponent)
+app.mount('#app')
 
 window.addEventListener('message', (e) => {
   windowController.focus()

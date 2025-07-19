@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="z-5 rounded-lg py-1 pr-2 shadow"
-    outlined
+    border
   >
     <div
       class="flex flex-shrink flex-grow-0 items-center gap-2"
@@ -19,12 +19,12 @@
       </v-btn>
 
       <v-btn
-        large
+        size="large"
         color="primary"
         @click="emit('install')"
       >
         Add
-        <v-icon right>
+        <v-icon end>
           add
         </v-icon>
       </v-btn>

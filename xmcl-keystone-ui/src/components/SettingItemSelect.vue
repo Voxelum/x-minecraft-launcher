@@ -1,6 +1,6 @@
 <template>
   <v-list-item>
-    <v-list-item-content>
+    <template #title>
       <v-list-item-title>
         <slot
           v-if="slots.title"
@@ -10,26 +10,32 @@
           {{ title }}
         </template>
       </v-list-item-title>
-      <v-list-item-subtitle class="break-words whitespace-pre">
-        {{ description }}
-      </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action>
+    </template>
+
+    <template
+      v-if="description"
+      #subtitle
+    >
+      {{ description }}
+    </template>
+    
+    <template #append>
       <v-select
         v-model="model"
-        filled
+        variant="filled"
+        item-title="text"
         style="max-width: 185px"
         hide-details
         :items="items"
       />
-    </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core'
 
 const props = defineProps<{
-  title: string
+  title?: string
   description?: string
   select: string
   items: Array<{ text: string; value: string }>

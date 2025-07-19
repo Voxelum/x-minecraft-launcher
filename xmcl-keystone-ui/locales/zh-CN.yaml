@@ -87,7 +87,7 @@ authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
 back: 返回
 baseSetting:
-  title: 基础设置
+  title: 设置
 browse: 浏览
 browseApp:
   createShortcut: 创建快捷方式

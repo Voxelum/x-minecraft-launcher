@@ -1,72 +1,72 @@
 <template>
   <v-card
-    class="flex flex-col"
     v-shared-tooltip="_ => name"
-    :outlined="isSelected"
-    :color="isSelected ? 'primary' : ''"
     v-context-menu.force="getContextMenuItems"
+    class="flex flex-col"
+    :border="isSelected"
+    :color="isSelected ? 'primary' : ''"
     @click="emit('click', $event)"
   >
     <v-list-item
       :color="isSelected ? 'primary' : ''"
       outlined
     >
-      <v-list-item-avatar size="96">
-        <v-img
-          :src="image"
-        />
-      </v-list-item-avatar>
-      <v-list-item-content>
-        <v-list-item-title>
-          <span class="text-center text-xl capitalize">{{ name }}</span>
-        </v-list-item-title>
-        <v-list-item-subtitle
-          v-if="description"
-          >
-          <TextComponent
-            :source="typeof instance.description === 'object' ? instance.description : { text: instance.description }"
+      <template #prepend>
+        <v-avatar size="96">
+          <v-img
+            :src="image"
           />
-        </v-list-item-subtitle>
-        <v-list-item-subtitle class="flex gap-2 flex-wrap">
-          <template
-            v-for="version of versions"
+        </v-avatar>
+      </template>
+      
+      <v-list-item-title>
+        <span class="text-center text-xl capitalize">{{ name }}</span>
+      </v-list-item-title>
+      <v-list-item-subtitle
+        v-if="description"
+      >
+        <TextComponent
+          :source="typeof instance.description === 'object' ? instance.description : { text: instance.description }"
+        />
+      </v-list-item-subtitle>
+      <v-list-item-subtitle class="flex gap-2 flex-wrap">
+        <template
+          v-for="version of versions"
+          :key="version.text"
+        >
+          <div
+            class="flex flex-grow-0 items-center gap-1 px-1 text-sm"
           >
-            <div
-              :key="version.text"
-              class="flex flex-grow-0 items-center gap-1 px-1 text-sm"
-            >
-              <v-img
-                width="24"
-                height="24"
-                class="rounded"
-                :src="version.icon"
-              />
-              {{ version.text }}
-            </div>
-            <v-divider
-              v-if="version !== versions[versions.length - 1]"
-              :key="version.text + 'divider'"
-              class="h-full"
-              vertical
+            <v-img
+              width="24"
+              height="24"
+              class="rounded"
+              :src="version.icon"
             />
-          </template>
-        </v-list-item-subtitle>
-      </v-list-item-content>
+            {{ version.text }}
+          </div>
+          <v-divider
+            v-if="version !== versions[versions.length - 1]"
+            :key="version.text + 'divider'"
+            class="h-full"
+            vertical
+          />
+        </template>
+      </v-list-item-subtitle>
     </v-list-item>
-    <v-divider>
-    </v-divider>
+    <v-divider />
     <v-card-actions class="flex w-full items-center">
       <v-chip
-        outlined
+        variant="outlined"
         label
-        :input-value="false"
+        :model-value="false"
       >
-        <v-icon left>
+        <v-icon start>
           update
         </v-icon>
         {{ getDateString(instance.lastAccessDate, { dateStyle: 'long' }) }}
       </v-chip>
-<!--
+      <!--
       <div
         class="flex flex-col items-center justify-center"
       >

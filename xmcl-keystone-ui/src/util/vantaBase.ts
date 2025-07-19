@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable */
+ 
 
 import { Camera, Color, IUniform, PerspectiveCamera, Scene, Texture, Vector2, Vector3, WebGLRenderer } from 'three'
 import { extend, mobileCheck as isMobile, q, color2Hex } from './vantaHelpers'

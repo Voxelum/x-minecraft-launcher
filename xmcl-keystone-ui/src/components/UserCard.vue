@@ -1,8 +1,8 @@
 <template>
   <v-card
-    :outlined="outlined"
+    :border="outlined"
     flat
-    class="invisible-scroll user-menu"
+    class="user-menu"
   >
     <transition
       name="fade-transition"
@@ -33,7 +33,7 @@
           />
 
           <v-divider v-if="usersToSwitch.length > 0" />
-          <v-list dense>
+          <v-list density="compact">
             <UserCardUserItem
               v-for="(item) of usersToSwitch"
               :key="item.id"
@@ -45,21 +45,22 @@
           </v-list>
 
           <v-divider />
-          <v-list dense>
+          <v-list density="compact">
             <v-list-item
               color="primary"
               @click="login = true"
             >
-              <v-list-item-avatar>
-                <v-icon>
-                  person_add
-                </v-icon>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ t('userAccount.add') }}
-                </v-list-item-title>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <v-icon>
+                    person_add
+                  </v-icon>
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title>
+                {{ t('userAccount.add') }}
+              </v-list-item-title>
             </v-list-item>
           </v-list>
         </div>
@@ -72,10 +73,10 @@
           <div class="relative">
             <v-btn
               v-if="users.length > 0"
-              text
+              variant="text"
               @click="login = false"
             >
-              <v-icon small>
+              <v-icon size="small">
                 arrow_back
               </v-icon>
             </v-btn>

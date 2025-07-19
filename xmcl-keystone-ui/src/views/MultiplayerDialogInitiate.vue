@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     fullscreen
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     scrollable
   >
@@ -26,8 +26,7 @@
           </div>
           <div class="flex-grow" />
           <v-btn
-            text
-            outlined
+            variant="outlined"
             color="primary"
             @click="initiate"
           >
@@ -67,9 +66,9 @@
             </div>
           </div>
           <v-textarea
-            :value="localDescription"
+            :model-value="localDescription"
             class="mt-4"
-            outlined
+            variant="outlined"
             readonly
             :label="t('multiplayer.localToken')"
             @mousedown="copyLocalDescription"
@@ -77,19 +76,18 @@
           <div v-html="t('multiplayer.copyLocalHint')" />
           <div class="mt-3 flex items-center justify-center gap-2 text-amber-500">
             <v-btn
-              text
-              outlined
+              variant="outlined"
               @click="copyLocalDescription"
             >
               <v-icon
                 v-if="!copied"
-                left
+                start
               >
                 content_copy
               </v-icon>
               <v-icon
                 v-else
-                left
+                start
                 color="success"
               >
                 check
@@ -98,8 +96,7 @@
             </v-btn>
             <div class="flex-grow" />
             <v-btn
-              text
-              outlined
+              variant="outlined"
               :color="initiating ? '' : 'primary'"
               :disabled="freeze"
               @click="step++"
@@ -119,7 +116,7 @@
         {{ t('multiplayer.enterRemoteTokenHint') }}
         <v-textarea
           v-model="remoteDescription"
-          outlined
+          variant="outlined"
           class="mt-4 flex-grow-0"
           :label="t('multiplayer.enterRemoteToken')"
           :error="error"
@@ -127,16 +124,14 @@
         />
         <div class="flex">
           <v-btn
-            text
-            outlined
+            variant="outlined"
             @click="step--"
           >
             {{ t('multiplayer.previous') }}
           </v-btn>
           <div class="flex-grow" />
           <v-btn
-            text
-            outlined
+            variant="outlined"
             color="primary"
             :loading="connecting"
             @click="connect"
