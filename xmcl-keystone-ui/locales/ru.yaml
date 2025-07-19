@@ -1541,11 +1541,6 @@ setting:
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
-  showMods: Моды
-  showResourcePacks: Наборы ресурсов
-  showShaderPacks: Наборы шейдеров
-  showSaves: Сохранения
-  showScreenshots: Скриншоты
 settingLabel:
   global: Глобальный
   globalHint: Это настройка будет следовать глобальной настройке.
