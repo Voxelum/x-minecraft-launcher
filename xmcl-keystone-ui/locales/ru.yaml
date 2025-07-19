@@ -1376,7 +1376,6 @@ setting:
   about: О
   allowPrerelease: Скачать предварительную версию
   allowPrereleaseDescription: Предварительная версия может быть нестабильной.
-  textColor: Цвет текста
   enableCardBlur: Включить размытие карточек
   enableCardBlurDescription: Включает эффект размытия на карточках интерфейса.
   showMods: Показывать карточку модов
