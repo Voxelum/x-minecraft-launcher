@@ -7,7 +7,6 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
-import { set } from 'vue'
 
 const { isShown } = useDialog('mod-duplicated')
 const { conflicted } = injection(kInstanceModsContext)
@@ -42,7 +41,7 @@ watch(conflicted, (all) => {
 
 const omitted = ref({} as Record<string, ModFile>)
 const onSelect = (item: ModFile) => {
-  set(omitted.value, item.modId, item)
+  omitted.value[item.modId] = item
 }
 
 const { t } = useI18n()
@@ -91,47 +90,47 @@ function view(modId: string) {
         {{ t('mod.duplicatedDetectedDescription') }}
 
         <v-list
-          dense
+          density="compact"
           nav
           class="overflow-auto"
         >
-          <template v-for="(item, i) of items">
-            <v-subheader
+          <template 
+            v-for="(item, i) of items" 
+            :key="typeof item === 'string' ? item + i : item.fileName + i"
+          >
+            <v-list-subheader
               v-if="typeof item === 'string'"
-              :key="item + i"
             >
               {{ item }}
               <v-spacer />
               <v-btn
-                text
-                small
+                variant="text"
+                size="small"
                 @click="view(item)"
               >
-                <v-icon small>
+                <v-icon size="small">
                   arrow_forward
                 </v-icon>
               </v-btn>
-            </v-subheader>
+            </v-list-subheader>
             <v-list-item
               v-else
-              :key="item.fileName + i"
               :style="{
                 textDecoration: omitted[item.modId] === item ? '' : 'line-through'
               }"
               @click="onSelect(item)"
             >
               <v-list-item-action>
-                <v-simple-checkbox
+                <v-checkbox-btn
                   :value="omitted[item.modId] === item"
                   :input-value="omitted[item.modId] === item"
                   readonly
                   @click="onSelect(item)"
                 />
               </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ item.fileName }}</v-list-item-title>
-                <v-list-item-subtitle>{{ item.version }}</v-list-item-subtitle>
-              </v-list-item-content>
+              
+              <v-list-item-title>{{ item.fileName }}</v-list-item-title>
+              <v-list-item-subtitle>{{ item.version }}</v-list-item-subtitle>
             </v-list-item>
           </template>
         </v-list>
@@ -139,14 +138,14 @@ function view(modId: string) {
       <v-card-actions>
         <v-spacer />
         <v-btn
-        v-shared-tooltip="t('filter')"
+          v-shared-tooltip="t('filter')"
           icon 
           @click="selectDefaults(conflicted)"
         >
           <v-icon>filter_alt</v-icon>
         </v-btn>
         <v-btn
-          text
+          variant="text"
           color="primary"
           @click="process"
         >

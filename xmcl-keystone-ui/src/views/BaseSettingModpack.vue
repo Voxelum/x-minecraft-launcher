@@ -2,68 +2,60 @@
   <v-list
     class="base-settings"
     color="transparent"
-    two-line
-    subheader
+    lines="two"
   >
-    <v-subheader style="padding-right: 2px">
+    <v-list-subheader style="padding-right: 2px">
       {{ t("modpack.name", 1) }}
-    </v-subheader>
+    </v-list-subheader>
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("modpack.author") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("modpack.authorHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      <v-list-item-title>
+        {{ t("modpack.author") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ t("modpack.authorHint") }}
+      </v-list-item-subtitle>
+      
       <v-list-item-action style="flex-grow: 0">
         <v-text-field
           v-model="data.author"
           hide-details
           :placeholder="gameProfile.name"
-          outlined
-          filled
-          dense
+          variant="filled"
+          density="compact"
           required
         />
       </v-list-item-action>
     </v-list-item>
     <v-list-item style="margin-top: 5px">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("modpack.description") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="data.description"
-            class="m-1 mt-2"
-            outlined
-            filled
-            dense
-            hide-details
-            :placeholder="t('modpack.descriptionHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      <v-list-item-title>
+        {{ t("modpack.description") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        <v-text-field
+          v-model="data.description"
+          class="m-1 mt-2"
+          variant="filled"
+          density="compact"
+          hide-details
+          :placeholder="t('modpack.descriptionHint')"
+        />
+      </v-list-item-subtitle>
     </v-list-item>
 
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("modpack.url") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("modpack.urlHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      <v-list-item-title>
+        {{ t("modpack.url") }}
+      </v-list-item-title>
+      <v-list-item-subtitle>
+        {{ t("modpack.urlHint") }}
+      </v-list-item-subtitle>
+      
       <v-list-item-action style="width: 50%">
         <v-text-field
           v-model="data.url"
           class="m-1 mt-2"
-          outlined
-          filled
-          dense
+          variant="filled"
+          density="compact"
           hide-details
           :placeholder="t('modpack.urlHint')"
         />

@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     scrollable
     width="900"
@@ -41,37 +41,39 @@
                 color="transparent"
                 class="overflow-auto"
               >
-                <v-subheader>
+                <v-list-subheader>
                   {{ t('instanceDiscover.gameFolder', { count: activeFolders.length }) }}
-                </v-subheader>
+                </v-list-subheader>
                 <v-list-item
                   v-for="folder in activeFolders"
                   :key="folder"
                   @click="onEnableFolder(folder)"
                 >
-                  <v-list-item-avatar>
-                    <v-icon>
-                      folder
-                    </v-icon>
-                  </v-list-item-avatar>
-                  <v-list-item-content>
-                    <v-list-item-title>{{ basename(folder) }}</v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ folder }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
+                  <template #prepend>
+                    <v-avatar>
+                      <v-icon>
+                        folder
+                      </v-icon>
+                    </v-avatar>
+                  </template>
+                  
+                  <v-list-item-title>{{ basename(folder) }}</v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ folder }}
+                  </v-list-item-subtitle>
+                  
                   <v-list-item-action>
                     <v-checkbox
                       :value="included.includes(folder)"
-                      :input-value="included.includes(folder)"
+                      :model-value="included.includes(folder)"
                       readonly
                       @input="onEnableFolder(folder)"
                     />
                   </v-list-item-action>
                 </v-list-item>
-                <v-subheader>
+                <v-list-subheader>
                   {{ t('instanceDiscover.instanceFolder', { count: manifest.instances.length }) }}
-                </v-subheader>
+                </v-list-subheader>
 
                 <InstanceItem
                   v-for="m of manifest.instances"
@@ -96,7 +98,7 @@
                 class="pointer-events-none absolute left-0 flex w-full justify-center"
               >
                 <v-alert
-                  dense
+                  density="compact"
                   class="w-[50%]"
                   type="error"
                 >

@@ -2,7 +2,7 @@
   <v-card
     v-ripple
     v-context-menu="contextMenu"
-    outlined
+    border
     :color="cardColor"
     hoverable
     :disabled="disabled"
@@ -25,8 +25,8 @@
           <span class="secondary-text"> by {{ value.author }}</span>
           <div class="flex-grow" />
           <v-icon>
-            {{ value.type === 'curseforge' ? '$vuetify.icons.curseforge' :
-              value.type === 'ftb' ? '$vuetify.icons.ftb' : '$vuetify.icons.modrinth' }}
+            {{ value.type === 'curseforge' ? 'xmcl:curseforge' :
+              value.type === 'ftb' ? 'xmcl:ftb' : 'xmcl:modrinth' }}
           </v-icon>
         </div>
         {{ value.description }}
@@ -36,7 +36,7 @@
             :key="label.id"
             class="text-sm"
           >
-            <v-icon small>
+            <v-icon size="small">
               {{ label.icon }}
             </v-icon>
             {{ label.text }}

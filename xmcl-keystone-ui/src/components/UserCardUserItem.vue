@@ -2,25 +2,27 @@
   <v-list-item
     v-if="user"
     :link="link"
+    :title="userNameText"
   >
-    <v-list-item-avatar>
-      <v-img
-        v-if="user.avatar"
-        :src="user.avatar"
-      />
-      <PlayerAvatar
-        v-else
-        :src="user.profiles[user.selectedProfile]?.textures.SKIN.url"
-        :dimension="48"
-      />
-    </v-list-item-avatar>
-    <v-list-item-content>
-      <v-list-item-title>
-        {{ userNameText }}
-      </v-list-item-title>
+    <template #prepend>
+      <v-avatar>
+        <v-img
+          v-if="user.avatar"
+          :src="user.avatar"
+        />
+        <PlayerAvatar
+          v-else
+          :src="user.profiles[user.selectedProfile]?.textures.SKIN.url"
+          :dimension="48"
+        />
+      </v-avatar>
+    </template>
+    
+    <template #subtitle>
       <v-list-item-subtitle>
         <v-icon
-          small
+          size="small"
+          start
           color="blue"
         >
           verified
@@ -32,7 +34,8 @@
       </v-list-item-subtitle>
       <v-list-item-subtitle>
         <v-icon
-          small
+          start
+          size="small"
           :color="expired ? 'red': 'primary'"
         >
           {{ expired ? 'cancel': 'check_circle' }}
@@ -51,47 +54,53 @@
             {{ expired ? t('user.tokenExpired'): t('user.tokenValidUntil') }}
           </span>
           <v-icon
-            small
+            size="small"
             :color="expired ? 'red': 'primary'"
           >
             all_inclusive
           </v-icon>
         </template>
       </v-list-item-subtitle>
-    </v-list-item-content>
-    <v-list-item-action v-if="controls">
-      <v-btn
-        text
-        :loading="refreshing && !hoverRefresh"
-        @mouseenter="hoverRefresh = true"
-        @mouseleave="hoverRefresh = false"
-        @click="refreshing ? emit('abort-refresh') : emit('refresh')"
-      >
-        <template v-if="hoverRefresh && refreshing">
-          <v-icon
-            color="red"
-          >
-            close
-          </v-icon>
-        </template>
-        <template v-else>
+    </template>
+    
+    <template
+      v-if="controls"
+      #append
+    >
+      <v-list-item-action>
+        <v-btn
+          variant="text"
+          :loading="refreshing && !hoverRefresh"
+          @mouseenter="hoverRefresh = true"
+          @mouseleave="hoverRefresh = false"
+          @click="refreshing ? emit('abort-refresh') : emit('refresh')"
+        >
+          <template v-if="hoverRefresh && refreshing">
+            <v-icon
+              color="red"
+            >
+              close
+            </v-icon>
+          </template>
+          <template v-else>
+            <v-icon>
+              refresh
+            </v-icon>
+          </template>
+        </v-btn>
+      </v-list-item-action>
+      <v-list-item-action>
+        <v-btn
+          variant="text"
+          color="red"
+          @click="emit('remove')"
+        >
           <v-icon>
-            refresh
+            delete
           </v-icon>
-        </template>
-      </v-btn>
-    </v-list-item-action>
-    <v-list-item-action v-if="controls">
-      <v-btn
-        text
-        color="red"
-        @click="emit('remove')"
-      >
-        <v-icon>
-          delete
-        </v-icon>
-      </v-btn>
-    </v-list-item-action>
+        </v-btn>
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 <script lang="ts" setup>

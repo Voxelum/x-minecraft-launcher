@@ -1,5 +1,5 @@
 // @ts-nocheck
-/* eslint-disable */
+ 
 
 import { Camera, Mesh, PlaneGeometry, ShaderMaterial, TextureLoader, Vector2, Vector3 } from 'three'
 import { UserOptions, VantaBase } from './vantaBase'

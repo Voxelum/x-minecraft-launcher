@@ -1,7 +1,7 @@
 <template>
   <GridLayout
+    v-model:layout="layout"
     class="z-1"
-    :layout.sync="layout"
     :responsive-layouts="layouts"
     :is-draggable="true"
     :cols="cols"

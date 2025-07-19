@@ -196,8 +196,15 @@ const { t } = useI18n()
     :text="t('errors.NotFoundError')"
   >
     <div>
-      <v-btn color="primary" text v-if="curseforgeId" @click="goCurseforgeProject(curseforgeId)">
-        <v-icon left>$vuetify.icons.curseforge</v-icon>
+      <v-btn
+        v-if="curseforgeId"
+        color="primary"
+        variant="text"
+        @click="goCurseforgeProject(curseforgeId)"
+      >
+        <v-icon start>
+          xmcl:curseforge
+        </v-icon>
         Curseforge
       </v-btn>
     </div>
@@ -223,8 +230,8 @@ const { t } = useI18n()
     :following="following"
     :collection="collectionId"
     :loading-collections="loadingCollections"
-    @collection="onAddOrRemove"
     current-target="modrinth"
+    @collection="onAddOrRemove"
     @open-dependency="onOpenDependency"
     @install="onInstall"
     @enable="enabled = $event"

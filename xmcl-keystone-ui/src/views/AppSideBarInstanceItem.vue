@@ -18,25 +18,25 @@
       @dragleave="onDragLeave"
       @drop="onDrop"
     >
-      <v-list-item-avatar
-        size="48"
-        class="transition-all duration-300 hover:rounded"
-        large
-      >
-        <v-img
-          v-if="!dragging"
-          width="54"
-          height="54"
-          :src="favicon"
-          @dragenter="onDragEnter"
-          @dragleave="onDragLeave"
-        />
-        <v-skeleton-loader
-          v-else
-          type="avatar"
-        />
-      </v-list-item-avatar>
-      <v-list-item-title>{{ name }}</v-list-item-title>
+      <template #prepend>
+        <v-avatar
+          size="48"
+          class="transition-all! duration-300! hover:rounded"
+        >
+          <v-img
+            v-if="!dragging"
+            width="54"
+            height="54"
+            :src="favicon"
+            @dragenter="onDragEnter"
+            @dragleave="onDragLeave"
+          />
+          <v-skeleton-loader
+            v-else
+            type="avatar"
+          />
+        </v-avatar>
+      </template>
     </v-list-item>
   </div>
 </template>
@@ -81,7 +81,7 @@ const runtimes = computed(() => {
   return iconAndVersion
 })
 
-const router = useRouter()
+const { currentRoute, push } = useRouter()
 
 const { select } = injection(kInstance)
 
@@ -95,8 +95,8 @@ const favicon = computed(() => {
 const getItems = useInstanceContextMenuItems(instance)
 
 const navigate = () => {
-  if (router.currentRoute.path !== '/') {
-    router.push('/').then(() => {
+  if (currentRoute.value.path !== '/') {
+    push('/').then(() => {
       select(props.path)
     })
   } else {

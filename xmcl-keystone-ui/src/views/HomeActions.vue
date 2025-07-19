@@ -2,16 +2,14 @@
   <div
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
-      'grid-template-columns': `repeat(${
-        instance && !instance.upstream ? 5 : 4
-      }, minmax(0, 1fr))`,
+      'grid-template-columns': `repeat(2, minmax(0, 1fr))`,
     }"
   >
-    <v-speed-dial open-on-hover>
+    <!-- <v-speed-dial open-on-hover>
       <template #activator>
         <v-btn
           v-shared-tooltip.left="() => t('modpack.export')"
-          text
+          variant="text"
           icon
           :loading="isValidating"
           @click="showExport()"
@@ -28,22 +26,22 @@
       >
         <v-icon> ios_share </v-icon>
       </v-btn>
-    </v-speed-dial>
+    </v-speed-dial> -->
 
-    <v-btn
+    <!-- <v-btn
       v-if="instance && !instance.upstream"
       v-shared-tooltip="() => t('instance.installModpack')"
-      text
+      variant="text"
       icon
       :loading="isValidating || loading"
       @click="onClickInstallFromModpack()"
     >
       <v-icon> drive_folder_upload </v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <v-btn
       v-shared-tooltip="() => t('logsCrashes.title')"
-      text
+      variant="text"
       icon
       :loading="isValidating"
       @click="showLogDialog()"
@@ -53,22 +51,12 @@
 
     <v-btn
       v-shared-tooltip="() => t('instance.showInstance')"
-      text
+      variant="text"
       icon
       :loading="isValidating"
       @click="showInstanceFolder"
     >
       <v-icon> folder </v-icon>
-    </v-btn>
-
-    <v-btn
-      v-shared-tooltip="() => t('baseSetting.title', 2)"
-      text
-      icon
-      :loading="isValidating"
-      to="/base-setting"
-    >
-      <v-icon> tune </v-icon>
     </v-btn>
   </div>
 </template>

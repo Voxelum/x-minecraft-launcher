@@ -2,11 +2,11 @@
   <v-dialog
     v-model="isShown"
     width="800"
-    @input="$emit('input', $event)"
+    @update:model-value="$emit('input', $event)"
   >
     <v-card
       v-if="updateInfo"
-      outlined
+      border
       class="visible-scroll max-h-90vh overflow-auto flex flex-col"
     >
       <v-alert
@@ -34,22 +34,22 @@
       </v-alert>
       <v-card-actions>
         <v-btn
-          text
+          variant="text"
           @click="openOfficialWebsite()"
         >
           <v-icon
-            left
+            start
           >
             web
           </v-icon>
           {{ t('setting.officialWebsite') }}
         </v-btn>
         <v-btn
-          text
+          variant="text"
           @click="openGithub()"
         >
           <v-icon
-            left
+            start
           >
             signpost
           </v-icon>
@@ -60,13 +60,13 @@
           <v-btn
             v-if="updateStatus === 'pending'"
             color="primary"
-            text
+            variant="text"
             :loading="downloadingUpdate"
             :disabled="downloadingUpdate"
             @click="downloadUpdate()"
           >
             <v-icon
-              left
+              start
             >
               cloud_download
             </v-icon>
@@ -79,7 +79,7 @@
             @click="quitAndInstall()"
           >
             <v-icon
-              left
+              start
             >
               refresh
             </v-icon>

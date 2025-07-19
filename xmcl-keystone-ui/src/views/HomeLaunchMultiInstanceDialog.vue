@@ -5,8 +5,8 @@
     persistent
   >
     <v-alert
-      dense
-      border="left"
+      density="compact"
+      border="start"
       type="warning"
       prominent
     >
@@ -23,14 +23,14 @@
         </v-card-text>
         <v-card-actions>
           <v-btn
-            text
+            variant="text"
             @click="isShown = false"
           >
             {{ t('cancel') }}
           </v-btn>
           <v-spacer />
           <v-btn
-            text
+            variant="text"
             @click="launch(); isShown = false"
           >
             {{ t('HomeLaunchMultiInstanceDialog.confirm') }}

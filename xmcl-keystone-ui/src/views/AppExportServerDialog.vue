@@ -219,7 +219,7 @@ const hasError = computed(() => {
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     scrollable
     width="800"
@@ -245,34 +245,33 @@ const hasError = computed(() => {
       </v-toolbar>
 
       <div
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
         ref="scrollElement"
-
+        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
       >
-        <v-subheader>{{ t('server.exportOption') }}</v-subheader>
+        <v-list-subheader>{{ t('server.exportOption') }}</v-list-subheader>
         <div
           class="grid grid-cols-2 gap-4 gap-y-2 z-10"
         >
           <v-checkbox
             :value="!exportToServer"
-            :input-value="!exportToServer"
+            :model-value="!exportToServer"
             class="z-10"
             :label="t('server.exportToFolder')"
-            @change="exportToServer = !$event"
-          ></v-checkbox>
+            @update:model-value="exportToServer = !$event"
+          />
           <v-checkbox
             class="z-10"
             :value="exportToServer"
-            :input-value="exportToServer"
+            :model-value="exportToServer"
             :label="t('server.upload')"
-            @change="exportToServer = $event"
-          ></v-checkbox>
+            @update:model-value="exportToServer = $event"
+          />
         </div>
-        <v-subheader
+        <v-list-subheader
           v-if="exportToServer"
         >
           {{ t('server.exportSSHOptions') }}
-        </v-subheader>
+        </v-list-subheader>
         <div
           v-if="exportToServer"
           class="grid grid-cols-3 gap-4 gap-y-2 z-10"
@@ -322,13 +321,13 @@ const hasError = computed(() => {
           />
         </div>
         <div class="px-6">
-          <v-subheader>
+          <v-list-subheader>
             {{ t('modpack.includes') }}
             <v-spacer />
             <v-btn
-              class="z-10"
               v-shared-tooltip="_ => t('env.select.all')"
-              text
+              class="z-10"
+              variant="text"
               icon
               @click="selectAll"
             >
@@ -337,9 +336,9 @@ const hasError = computed(() => {
               </v-icon>
             </v-btn>
             <v-btn
-              class="z-10"
               v-shared-tooltip="_ => t('env.select.fit')"
-              text
+              class="z-10"
+              variant="text"
               icon
               @click="selectFit"
             >
@@ -349,9 +348,9 @@ const hasError = computed(() => {
             </v-btn>
 
             <v-btn
-              class="z-10"
               v-shared-tooltip="_ => t('env.select.none')"
-              text
+              class="z-10"
+              variant="text"
               icon
               @click="selectNone"
             >
@@ -359,7 +358,7 @@ const hasError = computed(() => {
                 deselect
               </v-icon>
             </v-btn>
-          </v-subheader>
+          </v-list-subheader>
         </div>
         <div
           style="padding: 5px; margin-bottom: 5px"
@@ -385,8 +384,8 @@ const hasError = computed(() => {
       </v-alert>
       <v-card-actions class="items-baseline gap-5">
         <v-btn
-          text
-          large
+          variant="text"
+          size="large"
           :disabled="exporting || refreshing"
           @click="cancel"
         >
@@ -397,10 +396,10 @@ const hasError = computed(() => {
           ~{{ getExpectedSize(totalSize) }}
         </div>
         <v-btn
-          text
+          variant="text"
           :disabled="hasError"
           color="primary"
-          large
+          size="large"
           :loading="exporting || refreshing"
           @click="exportAsFile"
         >

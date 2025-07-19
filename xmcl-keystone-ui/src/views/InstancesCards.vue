@@ -2,16 +2,17 @@
   <div
     class="flex h-full w-full select-none flex-col items-start justify-start gap-4 overflow-auto"
   >
-    <template v-for="(inst, i) of instancesByTime">
+    <template 
+      v-for="(inst, i) of instancesByTime" 
+      :key="i"
+    >
       <div
-        :key="i + 'title'"
         class="flex w-full flex-1 flex-grow-0 justify-center"
         style="color: grey;"
       >
         {{ title[i] }}
       </div>
       <div
-        :key="i + 'instances'"
         class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4"
       >
         <InstanceCard

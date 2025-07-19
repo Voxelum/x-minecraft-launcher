@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     width="500"
   >
@@ -17,21 +17,19 @@
     </v-toolbar>
     <v-list
       class="overflow-auto max-h-full visible-scroll"
-      three-line
-      subheader
+      lines="three"
     >
-      <v-subheader>{{ t('feedback.description') }}</v-subheader>
+      <v-list-subheader>{{ t('feedback.description') }}</v-list-subheader>
 
       <FeedbackCard />
-      <v-subheader> {{ t('feedback.channel') }} </v-subheader>
+      <v-list-subheader> {{ t('feedback.channel') }} </v-list-subheader>
       <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>{{ t('feedback.github') }}</v-list-item-title>
-          <v-list-item-subtitle>{{ t('feedback.githubDescription') }}</v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title>{{ t('feedback.github') }}</v-list-item-title>
+        <v-list-item-subtitle>{{ t('feedback.githubDescription') }}</v-list-item-subtitle>
+        
         <v-list-item-action>
           <v-btn
-            text
+            variant="text"
             target="browser"
             href="https://github.com/Voxelum/x-minecraft-launcher/issues/new"
           >
@@ -40,18 +38,17 @@
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>{{ t('feedback.qq') }}</v-list-item-title>
-          <v-list-item-subtitle
-            style="max-width: 80%"
-          >
-            {{ t('feedback.qqDescription', { number: 858391850 }) }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title>{{ t('feedback.qq') }}</v-list-item-title>
+        <v-list-item-subtitle
+          style="max-width: 80%"
+        >
+          {{ t('feedback.qqDescription', { number: 858391850 }) }}
+        </v-list-item-subtitle>
+        
 
         <v-list-item-action>
           <v-btn
-            text
+            variant="text"
             href="https://jq.qq.com/?_wv=1027&k=5Py5zM1"
           >
             {{ t('feedback.qqEnterGroup') }}
@@ -59,18 +56,17 @@
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>{{ t('feedback.kook') }}</v-list-item-title>
-          <v-list-item-subtitle
-            style="max-width: 80%"
-          >
-            {{ t('feedback.kookDescription') }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title>{{ t('feedback.kook') }}</v-list-item-title>
+        <v-list-item-subtitle
+          style="max-width: 80%"
+        >
+          {{ t('feedback.kookDescription') }}
+        </v-list-item-subtitle>
+        
 
         <v-list-item-action>
           <v-btn
-            text
+            variant="text"
             target="browser"
             href="https://kook.top/gqjSHh"
           >
@@ -80,18 +76,17 @@
       </v-list-item>
 
       <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title>{{ t('feedback.discord') }}</v-list-item-title>
-          <v-list-item-subtitle
-            style="max-width: 80%"
-          >
-            {{ t('feedback.discordDescription') }}
-          </v-list-item-subtitle>
-        </v-list-item-content>
+        <v-list-item-title>{{ t('feedback.discord') }}</v-list-item-title>
+        <v-list-item-subtitle
+          style="max-width: 80%"
+        >
+          {{ t('feedback.discordDescription') }}
+        </v-list-item-subtitle>
+        
 
         <v-list-item-action>
           <v-btn
-            text
+            variant="text"
             target="browser"
             href="https://discord.gg/W5XVwYY7GQ"
           >

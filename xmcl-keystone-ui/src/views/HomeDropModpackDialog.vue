@@ -1,14 +1,14 @@
 <template>
   <SimpleDialog
+    v-model="isShown"
     :title="t('modpackImportConfirm.title')"
     :width="500"
     :persistent="true"
-    v-model="isShown"
-    @confirm="onConfirm"
-    @cancel="isShown = false"
     :confirm="t('yes')"
     :confirm-icon="'check'"
     color="primary"
+    @confirm="onConfirm"
+    @cancel="isShown = false"
   >
     {{ t('modpackImportConfirm.description') }}
     <div class="select-text mt-4 p-2 px-4 dark:bg-[rgba(0,0,0,0.4)] light:bg-[rgba(255,255,255,0.1)] rounded">

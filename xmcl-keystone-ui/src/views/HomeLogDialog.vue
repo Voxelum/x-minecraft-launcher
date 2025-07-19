@@ -1,28 +1,51 @@
 <template>
-  <v-dialog v-model="isShown" :width="700">
+  <v-dialog
+    v-model="isShown"
+    :width="700"
+  >
     <v-card>
-      <v-toolbar color="warning" tabs>
-        <v-toolbar-title class="white--text">
+      <v-toolbar
+        color="warning"
+        tabs
+      >
+        <v-toolbar-title class="text-white">
           {{ t("logsCrashes.title") }}
         </v-toolbar-title>
         <v-spacer />
-        <v-btn icon @click="hide">
+        <v-btn
+          icon
+          @click="hide"
+        >
           <v-icon>close</v-icon>
         </v-btn>
 
         <template #extension>
-          <v-tabs v-model="data.tab" align-with-title color="white">
-            <v-tabs-slider color="yellow" />
-            <v-tab :key="0" :disabled="data.loadingList" @click="goLog">
+          <v-tabs
+            v-model="data.tab"
+            align-tabs="title"
+            color="yellow"
+          >
+            <v-tab
+              :key="0"
+              :disabled="data.loadingList"
+              @click="goLog"
+            >
               {{ t("logsCrashes.logs") }}
             </v-tab>
-            <v-tab :key="1" :disabled="data.loadingList" @click="goCrash">
+            <v-tab
+              :key="1"
+              :disabled="data.loadingList"
+              @click="goCrash"
+            >
               {{ t("logsCrashes.crashes") }}
             </v-tab>
           </v-tabs>
         </template>
       </v-toolbar>
-      <v-tabs-items v-model="data.tab" class="bg-transparent">
+      <v-tabs-window
+        v-model="data.tab"
+        class="bg-transparent"
+      >
         <TabItem
           :key="0"
           log
@@ -42,7 +65,7 @@
           :remove-file="removeCrashReport"
           :show-file="_showCrashReport"
         />
-      </v-tabs-items>
+      </v-tabs-window>
     </v-card>
   </v-dialog>
 </template>

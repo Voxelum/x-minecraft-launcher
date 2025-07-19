@@ -3,11 +3,11 @@ import { deserialize, deserialize as deserializeV0, serialize } from '@/util/the
 import { useStyleTag } from '@vueuse/core'
 import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
-import { InjectionKey, computed, set } from 'vue'
-import { Framework } from 'vuetify'
+import { InjectionKey, computed } from 'vue'
 import { useLocalStorageCacheStringValue } from './cache'
 import { useService } from './service'
 import { injection } from '@/util/inject'
+import { vuetify } from '@/vuetify'
 
 export const kTheme: InjectionKey<ReturnType<typeof useTheme>> = Symbol('theme')
 
@@ -184,7 +184,7 @@ export interface UIThemeData {
   blurAppBar?: number
 }
 
-export function useTheme(framework: Framework, { addMedia, removeMedia, exportTheme, importTheme, getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
+export function useTheme({ addMedia, removeMedia, exportTheme, importTheme, getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
   const currentTheme = ref<UIThemeDataV1>(getDefaultTheme())
   const themes = ref<UIThemeDataV1[]>([])
@@ -208,7 +208,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     }
   })
   watch(isDark, (dark) => {
-    framework.theme.dark = dark
+    vuetify.theme.change(dark ? 'dark' : 'light')
   }, { immediate: true })
 
   const backgroundType = computed({
@@ -500,7 +500,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     if (old) {
       await removeMedia(old.url).catch(() => { })
     }
-    set(theme, 'backgroundImage', media)
+    theme.backgroundImage = media
     writeTheme(theme.name, theme)
   }
 
@@ -566,12 +566,12 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
     }
   }
 
-  watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
-  watch(accentColor, (newColor) => { framework.theme.currentTheme.accent = newColor }, { immediate: true })
-  watch(infoColor, (newColor) => { framework.theme.currentTheme.info = newColor }, { immediate: true })
-  watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor }, { immediate: true })
-  watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
-  watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
+  // watch(primaryColor, (newColor) => { framework.theme.currentTheme.primary = newColor }, { immediate: true })
+  // watch(accentColor, (newColor) => { framework.theme.currentTheme.accent = newColor }, { immediate: true })
+  // watch(infoColor, (newColor) => { framework.theme.currentTheme.info = newColor }, { immediate: true })
+  // watch(errorColor, (newColor) => { framework.theme.currentTheme.error = newColor }, { immediate: true })
+  // watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
+  // watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
 
   useStyleTag(computed(() => `
   @font-face {

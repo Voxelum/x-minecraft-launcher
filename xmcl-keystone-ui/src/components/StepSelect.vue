@@ -9,20 +9,22 @@
       class="rounded-lg"
       @click="emit('select', item.value)"
     >
-      <v-list-item-avatar class="self-center">
-        <v-icon
-          :color="item.color"
-        >
-          {{ item.icon }}
-        </v-icon>
-      </v-list-item-avatar>
+      <template #prepend>
+        <v-avatar class="self-center">
+          <v-icon
+            :color="item.color"
+          >
+            {{ item.icon }}
+          </v-icon>
+        </v-avatar>
+      </template>
 
-      <v-list-item-content>
-        <v-list-item-title>{{ item.title }}</v-list-item-title>
-        <v-list-item-subtitle v-if="item.subtitle">
-          {{ item.subtitle }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      
+      <v-list-item-title>{{ item.title }}</v-list-item-title>
+      <v-list-item-subtitle v-if="item.subtitle">
+        {{ item.subtitle }}
+      </v-list-item-subtitle>
+      
       <v-list-item-action class="self-center">
         <v-icon>
           arrow_right
@@ -53,24 +55,24 @@ const items = computed(() => {
   },  */{
     title: 'MultiMC',
     subtitle: t('instances.addMMCDescription'),
-    icon: '$vuetify.icons.mmc',
+    icon: 'xmcl:mmc',
     value: 'mmc',
   }, {
     title: 'Modrinth',
     subtitle: t('instances.addModrinthDescription'),
-    icon: '$vuetify.icons.modrinth',
+    icon: 'xmcl:modrinth',
     value: 'modrinth',
     color: 'green',
   }, {
     title: 'CurseForge',
     subtitle: t('instances.addCurseForgeDescription'),
-    icon: '$vuetify.icons.curseforge',
+    icon: 'xmcl:curseforge',
     value: 'curseforge',
     color: 'red',
   }, {
     title: t('instances.addVanilla'),
     subtitle: t('instances.addVanillaDescription'),
-    icon: '$vuetify.icons.minecraft',
+    icon: 'xmcl:minecraft',
     value: 'vanilla',
   }, /* , {
     title: t('instances.addManually'),

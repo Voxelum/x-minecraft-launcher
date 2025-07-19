@@ -20,38 +20,38 @@
       @dragleave="onDragLeave"
       @drop="onDrop"
     >
-      <v-list-item-avatar
-        size="48"
-        class="transition-all duration-300 rounded"
-        large
-      >
-        <Transition
-          name="scroll-y-reverse-transition"
-          mode="out-in"
+      <template #prepend>
+        <v-avatar
+          size="48"
+          class="transition-all duration-300 rounded"
         >
-          <v-skeleton-loader
-            v-if="dragging"
-            type="avatar"
-          />
-          <div
-            v-else-if="!expanded"
-            class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
+          <Transition
+            name="scroll-y-reverse-transition"
+            mode="out-in"
           >
-            <v-img
-              v-for="i in instances.slice(0, 4)"
-              :key="i.path"
-              :style="{ maxHeight: '20px', maxWidth: '20px' }"
-              :src="getInstanceIcon(i, i.server ? undefined : undefined)"
-              @dragenter="onDragEnter"
-              @dragleave="onDragLeave"
+            <v-skeleton-loader
+              v-if="dragging"
+              type="avatar"
             />
-          </div>
-          <v-icon v-else>
-            folder
-          </v-icon>
-        </Transition>
-      </v-list-item-avatar>
-      <v-list-item-title>123</v-list-item-title>
+            <div
+              v-else-if="!expanded"
+              class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl w-full"
+            >
+              <v-img
+                v-for="i in instances.slice(0, 4)"
+                :key="i.path"
+                :style="{ maxHeight: '20px', maxWidth: '20px' }"
+                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+                @dragenter="onDragEnter"
+                @dragleave="onDragLeave"
+              />
+            </div>
+            <v-icon v-else>
+              folder
+            </v-icon>
+          </Transition>
+        </v-avatar>
+      </template>
     </v-list-item>
     <template v-if="expanded">
       <AppSideBarInstanceItem

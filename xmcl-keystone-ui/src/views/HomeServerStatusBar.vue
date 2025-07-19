@@ -26,11 +26,11 @@
       <v-chip
         label
         class="mr-2"
-        small
-        outlined
-        :input-value="false"
+        size="small"
+        variant="outlined"
+        :model-value="false"
       >
-        <v-avatar left>
+        <v-avatar start>
           <v-icon>people</v-icon>
         </v-avatar>
         {{ status.players.online }} / {{ status.players.max }}
@@ -38,11 +38,11 @@
       <v-chip
         :style="{ color: status.ping < 100 ? 'green' : status.ping < 450 ? 'orange' : 'red' }"
         label
-        outlined
-        small
-        :input-value="false"
+        variant="outlined"
+        size="small"
+        :model-value="false"
       >
-        <v-avatar left>
+        <v-avatar start>
           <v-icon
             :style="{ color: status.ping < 100 ? 'green' : status.ping < 450 ? 'orange' : 'red' }"
           >
@@ -53,13 +53,13 @@
       </v-chip>
       <v-spacer />
       <v-btn
-        text
+        variant="text"
         :loading="pinging"
         @click="refresh"
       >
         <v-icon
           color="primary"
-          left
+          start
         >
           refresh
         </v-icon>

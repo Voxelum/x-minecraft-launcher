@@ -6,7 +6,7 @@
   >
     <v-alert
       class="blocked-dialog mb-0"
-      border="left"
+      border="start"
       type="error"
       prominent
     >
@@ -26,7 +26,7 @@
 
           <v-textarea
             v-if="extraText"
-            :value="extraText"
+            :model-value="extraText"
             readonly
           />
 
@@ -43,7 +43,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            text
+            variant="text"
             @click="hide"
           >
             {{ t('ok') }}

@@ -1,71 +1,65 @@
 <template>
-  <v-list
-    class="base-settings"
-    subheader
-  >
-    <v-subheader>
-      {{ t('version.name', 2) }}
-      <div class="flex-grow" />
-      <v-btn
-        v-if="!isExpanded"
-        icon
-        @click="showAll = !showAll"
-      >
-        <v-icon v-if="!showAll">
-          unfold_more
-        </v-icon>
-        <v-icon v-else>
-          unfold_less
-        </v-icon>
-      </v-btn>
-    </v-subheader>
-    <VersionInputMinecraft
-      :value="data.runtime.minecraft"
-      @input="onSelectMinecraft"
-    />
-    <VersionInputNeoForged
-      v-if="showNeoForged"
-      :value="data.runtime.neoForged"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectNeoForged"
-    />
-    <VersionInputForge
-      v-if="showForge"
-      :value="data.runtime.forge"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectForge"
-    />
-    <VersionInputFabric
-      v-if="showFabric"
-      :value="data.runtime.fabricLoader"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectFabric"
-    />
-    <VersionInputQuilt
-      v-if="showQuilt"
-      :value="data.runtime.quiltLoader"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectQuilt"
-    />
-    <VersionInputOptifine
-      v-if="showOptifine"
-      :value="data.runtime.optifine"
-      :forge="data.runtime.forge || ''"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectOptifine"
-    />
-    <VersionInputLabymod
-      v-if="showLabyMod"
-      :value="data.runtime.labyMod"
-      :minecraft="data.runtime.minecraft"
-      @input="onSelectLabyMod"
-    />
-    <VersionInputLocal
-      :value="data.version"
-      :versions="versions"
-      @input="onSelectLocalVersion"
-    />
-  </v-list>
+  <SettingSubheader :title="t('version.name', 2)">
+    <v-btn
+      v-if="!isExpanded"
+      icon
+      variant="text"
+      @click="showAll = !showAll"
+    >
+      <v-icon v-if="!showAll">
+        unfold_more
+      </v-icon>
+      <v-icon v-else>
+        unfold_less
+      </v-icon>
+    </v-btn>
+  </SettingSubheader>
+  <VersionInputMinecraft
+    :value="data.runtime.minecraft"
+    @input="onSelectMinecraft"
+  />
+  <VersionInputNeoForged
+    v-if="showNeoForged"
+    :value="data.runtime.neoForged"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectNeoForged"
+  />
+  <VersionInputForge
+    v-if="showForge"
+    :value="data.runtime.forge"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectForge"
+  />
+  <VersionInputFabric
+    v-if="showFabric"
+    :value="data.runtime.fabricLoader"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectFabric"
+  />
+  <VersionInputQuilt
+    v-if="showQuilt"
+    :value="data.runtime.quiltLoader"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectQuilt"
+  />
+  <VersionInputOptifine
+    v-if="showOptifine"
+    :value="data.runtime.optifine"
+    :forge="data.runtime.forge || ''"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectOptifine"
+  />
+  <VersionInputLabymod
+    v-if="showLabyMod"
+    :value="data.runtime.labyMod"
+    :minecraft="data.runtime.minecraft"
+    @input="onSelectLabyMod"
+  />
+  <VersionInputLocal
+    :value="data.version"
+    :versions="versions"
+    @input="onSelectLocalVersion"
+  />
 </template>
 
 <script lang=ts setup>
@@ -80,6 +74,7 @@ import VersionInputQuilt from '@/components/VersionInputQuilt.vue'
 import { kLocalVersions } from '@/composables/versionLocal'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey, useInstanceEditVersions } from '../composables/instanceEdit'
+import SettingSubheader from '@/components/SettingSubheader.vue'
 
 const props = defineProps<{
   isExpanded: boolean

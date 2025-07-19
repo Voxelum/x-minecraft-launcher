@@ -1,49 +1,37 @@
 <template>
-  <div>
-    <SettingHeader>
-      🌐 {{ t('setting.network') }}
-    </SettingHeader>
-    <SettingItemSelect
-      :select.sync="apiSetsPreference"
-      :title="''"
-      :description="t('setting.useBmclAPIDescription')"
-      :items="apiSetItems"
-    >
-      <template #title>
-        {{ t('setting.useBmclAPI') }}
-        <a
-          class="primary ml-1 underline"
-          target="browser"
-          href="https://bmclapidoc.bangbang93.com/"
-        >
-          <v-icon small>
-            question_mark
-          </v-icon>
-        </a>
-      </template>
-    </SettingItemSelect>
-    <v-list-item>
-      <v-list-item-action class="self-center">
-        <v-checkbox v-model="httpProxyEnabled" />
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.useProxy")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.useProxyDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
+  <SettingHeader>
+    🌐 {{ t('setting.network') }}
+  </SettingHeader>
+  <SettingItemSelect
+    v-model:select="apiSetsPreference"
+    :description="t('setting.useBmclAPIDescription')"
+    :items="apiSetItems"
+  >
+    <template #title>
+      {{ t('setting.useBmclAPI') }}
+      <a
+        class="bg-primary ml-1 underline"
+        target="browser"
+        href="https://bmclapidoc.bangbang93.com/"
+      >
+        <v-icon size="small">
+          question_mark
+        </v-icon>
+      </a>
+    </template>
+  </SettingItemSelect>
+  <SettingItemCheckbox
+    v-model="httpProxyEnabled"
+    :title="t('setting.useProxy')"
+    :description="t('setting.useProxyDescription')"
+  >
+    <template #append>
+      <div class="flex flex-grow-0 flex-row gap-1">
         <v-text-field
           v-model="proxy.host"
           :disabled="!httpProxyEnabled"
-          filled
-          dense
+          variant="filled"
+          density="compact"
           hide-details
           :label="t('proxy.host')"
         />
@@ -51,46 +39,40 @@
           v-model="proxy.port"
           :disabled="!httpProxyEnabled"
           class="w-20"
-          filled
-          dense
+          variant="filled"
+          density="compact"
           hide-details
           type="number"
           :label="t('proxy.port')"
         />
-      </v-list-item-action>
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.maxSocketsTitle")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.maxSocketsDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
+      </div>
+    </template>
+  </SettingItemCheckbox>
+  <v-list-item
+    :title="t('setting.maxSocketsTitle')"
+    :subtitle="t('setting.maxSocketsDescription')"
+  >
+    <template #append>
+      <div class="flex flex-grow-0 flex-row gap-1">
         <v-text-field
           v-model="maxSockets"
           class="w-40"
-          filled
-          dense
+          variant="filled"
+          density="compact"
           hide-details
           type="number"
           :label="t('setting.maxSockets')"
         />
-      </v-list-item-action>
-    </v-list-item>
-  </div>
+      </div>
+    </template>
+  </v-list-item>
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useDialog } from '../composables/dialog'
 import { useSettings } from '../composables/setting'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 
 const {
   proxy, httpProxyEnabled, apiSets,

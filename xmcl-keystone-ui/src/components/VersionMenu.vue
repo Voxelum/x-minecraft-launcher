@@ -1,42 +1,37 @@
 <template>
   <v-menu
     v-model="data.opened"
-    bottom
+    location="bottom"
     :close-on-content-click="false"
     :disabled="disabled"
   >
-    <template #activator="{ on }">
-      <slot :on="on" />
+    <template #activator="{ props: aProps }">
+      <slot v-bind="{ props: aProps }" />
     </template>
     <v-text-field
       v-model="data.filterText"
       color="green"
-      append-icon="filter_list"
+      append-inner-icon="filter_list"
       :label="t('filter')"
-      solo
+      variant="solo-filled"
+      autofocus
       class="rounded-none"
       hide-details
     >
-      <template #prepend>
-        <v-tooltip
+      <template #prepend-inner>
+        <v-chip
           v-if="hasSnapshot"
-          top
+          v-shared-tooltip="snapshotTooltip ?? ''"
+          :color="snapshot ? 'primary' : ''"
+          style="height: 48px;"
+          class="mr-1"
+          label
+          @click="emit('update:snapshot', !snapshot)"
         >
-          <template #activator="{ on }">
-            <v-chip
-              v-if="hasSnapshot"
-              :color="snapshot ? 'primary' : ''"
-              icon
-              style="margin: 0px; height: 48px; border-radius: 0;"
-              @click="emit('update:snapshot', !snapshot)"
-            >
-              <v-icon v-on="on">
-                bug_report
-              </v-icon>
-            </v-chip>
-          </template>
-          {{ snapshotTooltip }}
-        </v-tooltip>
+          <v-icon v-bind="props">
+            bug_report
+          </v-icon>
+        </v-chip>
       </template>
       <template #append>
         <v-btn
@@ -71,14 +66,16 @@
         ripple
         @click="onSelect('')"
       >
-        <v-list-item-avatar>
-          <v-icon>close</v-icon>
-        </v-list-item-avatar>
+        <template #prepend>
+          <v-avatar>
+            <v-icon>close</v-icon>
+          </v-avatar>
+        </template>
         {{ clearText }}
         <div class="flex-grow" />
       </v-list-item>
       <v-virtual-scroll
-        class="box-content h-full max-h-[300px] w-full overflow-y-auto"
+        class="box-content h-full max-h-[300px] w-full overflow-y-auto visible-scroll overflow-x-hidden"
         :items="filteredItems"
         :item-height="48"
         :bench="10"
@@ -87,17 +84,14 @@
           <v-list-item
             :key="item.name"
             ripple
+            :title="item.name"
             @click="onSelect(item.name)"
           >
-            {{ item.name }}
-            <div class="flex-grow" />
-            <v-chip
-              v-if="item.tag"
-              label
-              :color="item.tagColor"
-            >
-              {{ item.tag }}
-            </v-chip>
+            <template #subtitle>
+              <v-list-item-subtitle :style="{ color: getColorCode(item.tagColor) }">
+                {{ item.tag }}
+              </v-list-item-subtitle>
+            </template>
           </v-list-item>
         </template>
       </v-virtual-scroll>
@@ -109,7 +103,9 @@
 </template>
 
 <script lang=ts setup>
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import ErrorView from './ErrorView.vue'
+import { useVuetifyColor } from '@/composables/vuetify'
 
 export interface VersionItem {
   tag?: string
@@ -131,6 +127,7 @@ const props = defineProps<{
   error?: any
 }>()
 
+const { getColorCode } = useVuetifyColor()
 const emit = defineEmits(['update:snapshot', 'select', 'refresh'])
 const { t } = useI18n()
 

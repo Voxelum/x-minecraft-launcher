@@ -19,7 +19,7 @@
       <template #extension>
         <v-tabs
           v-model="tab"
-          centered
+          align-tabs="center"
         >
           <v-tab>{{ t('task.name', 2) }}</v-tab>
           <v-tab>{{ t('task.connections' ) }}</v-tab>
@@ -28,8 +28,8 @@
     </v-toolbar>
 
     <v-card-text class="visible-scroll max-h-[400px] overflow-auto">
-      <v-tabs-items v-model="tab">
-        <v-tab-item
+      <v-tabs-window v-model="tab">
+        <v-tabs-window-item
           :key="0"
         >
           <div
@@ -84,47 +84,46 @@
               </div>
             </template>
           </v-treeview>
-        </v-tab-item>
-        <v-tab-item
+        </v-tabs-window-item>
+        <v-tabs-window-item
           :key="1"
         >
           <v-list
-            dense
+            density="compact"
             two-lines
           >
             <v-list-item
               v-for="[o, s] of Object.entries(stat)"
               :key="o"
             >
-              <v-list-item-content>
-                <v-list-item-title>
-                  {{ o }}
-                </v-list-item-title>
-                <v-list-item-subtitle class="flex gap-3">
-                  <span>
-                    {{ t('task.connection.connected') }}: {{ s.connected }}
-                  </span>
-                  <span>
-                    {{ t('task.connection.free') }}: {{ s.free }}
-                  </span>
-                  <span>
-                    {{ t('task.connection.pending') }}: {{ s.pending }}
-                  </span>
-                  <span>
-                    {{ t('task.connection.queued') }}: {{ s.queued }}
-                  </span>
-                  <span>
-                    {{ t('task.connection.running') }}: {{ s.running }}
-                  </span>
-                  <span>
-                    {{ t('task.connection.size') }}: {{ s.size }}
-                  </span>
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <v-list-item-title>
+                {{ o }}
+              </v-list-item-title>
+              <v-list-item-subtitle class="flex gap-3">
+                <span>
+                  {{ t('task.connection.connected') }}: {{ s.connected }}
+                </span>
+                <span>
+                  {{ t('task.connection.free') }}: {{ s.free }}
+                </span>
+                <span>
+                  {{ t('task.connection.pending') }}: {{ s.pending }}
+                </span>
+                <span>
+                  {{ t('task.connection.queued') }}: {{ s.queued }}
+                </span>
+                <span>
+                  {{ t('task.connection.running') }}: {{ s.running }}
+                </span>
+                <span>
+                  {{ t('task.connection.size') }}: {{ s.size }}
+                </span>
+              </v-list-item-subtitle>
+              
               <v-list-item-action>
                 <v-btn
                   icon
-                  small
+                  size="small"
                   @click="destroyPool(o)"
                 >
                   <v-icon>
@@ -134,18 +133,18 @@
               </v-list-item-action>
             </v-list-item>
           </v-list>
-        </v-tab-item>
-      </v-tabs-items>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </v-card-text>
     <div class="flex-grow" />
     <v-card-actions class="flex flex-grow-0">
       <div class="flex-grow" />
       <v-btn
-        text
-        small
+        variant="text"
+        size="small"
         @click="onClear"
       >
-        <v-icon left>
+        <v-icon start>
           delete_forever
         </v-icon>
         {{ t('task.clear') }}

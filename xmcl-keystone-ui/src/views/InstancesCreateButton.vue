@@ -1,11 +1,11 @@
 <template>
   <v-btn
-    v-shared-tooltip="(_: HTMLElement) => t('instances.add')"
-    text
+    v-shared-tooltip="_ => t('instances.add')"
+    variant="text"
     @click="showAddInstanceDialog()"
   >
     <v-icon
-      left
+      start
     >
       add
     </v-icon>

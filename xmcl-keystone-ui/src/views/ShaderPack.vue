@@ -11,24 +11,23 @@
     @load="loadMore"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
-      <v-subheader
+      <SettingSubheader
         v-if="typeof item === 'string'"
+        padded
         :style="{ height: itemHeight + 'px' }"
-        class="flex"
+        :title="item === 'enabled' ? t('shaderPack.enabled') : item === 'disabled' ? t('shaderPack.disabled') : t('modInstall.search')"
       >
-        {{ item === 'enabled' ? t("shaderPack.enabled") : item === 'disabled' ? t("shaderPack.disabled") :
-          t('modInstall.search') }}
-
-        <div class="flex-grow" />
         <v-btn
           v-if="index === 0"
           v-shared-tooltip="_ => t('mod.denseView')"
           icon
+          variant="text"
+          size="small"
           @click="denseView = !denseView"
         >
           <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
         </v-btn>
-      </v-subheader>
+      </SettingSubheader>
       <ShaderPackItem
         v-else
         :pack="item"
@@ -108,20 +107,22 @@
               :disabled="shouldDisableIris"
               @click="navigateToMod('iris')"
             >
-              <v-list-item-avatar>
-                <img :src="BuiltinImages.iris">
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Iris
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  <a
-                    href="https://modrinth.com/mod/iris"
-                    @click.stop
-                  >https://modrinth.com/mod/iris</a>
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <img :src="BuiltinImages.iris">
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title>
+                Iris
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <a
+                  href="https://modrinth.com/mod/iris"
+                  @click.stop
+                >https://modrinth.com/mod/iris</a>
+              </v-list-item-subtitle>
+              
               <v-list-item-action class="flex flex-row flex-grow-0 gap-1">
                 <AvatarChip
                   :avatar="BuiltinImages.fabric"
@@ -144,20 +145,22 @@
               :disabled="shouldDisableOptifine"
               @click="navigateToMod('optifine')"
             >
-              <v-list-item-avatar>
-                <img :src="BuiltinImages.optifine">
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Optifine
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  <a
-                    href="https://optifine.net/home"
-                    @click.stop
-                  >https://optifine.net/home</a>
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <img :src="BuiltinImages.optifine">
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title>
+                Optifine
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <a
+                  href="https://optifine.net/home"
+                  @click.stop
+                >https://optifine.net/home</a>
+              </v-list-item-subtitle>
+              
               <v-list-item-action class="flex flex-row gap-1 flex-grow-0">
                 <AvatarChip
                   :avatar="BuiltinImages.forge"
@@ -175,20 +178,22 @@
               :disabled="shouldDisableOculus"
               @click="navigateToMod('oculus')"
             >
-              <v-list-item-avatar>
-                <img :src="BuiltinImages.oculus">
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>
-                  Oculus
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  <a
-                    href="https://www.curseforge.com/minecraft/mc-mods/oculus"
-                    @click.stop
-                  >https://www.curseforge.com/minecraft/mc-mods/oculus</a>
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <img :src="BuiltinImages.oculus">
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title>
+                Oculus
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                <a
+                  href="https://www.curseforge.com/minecraft/mc-mods/oculus"
+                  @click.stop
+                >https://www.curseforge.com/minecraft/mc-mods/oculus</a>
+              </v-list-item-subtitle>
+              
               <v-list-item-action class="flex flex-row gap-1 flex-grow-0">
                 <AvatarChip
                   :avatar="BuiltinImages.forge"
@@ -207,7 +212,7 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            text
+            variant="text"
             @click="skip"
           >
             {{ t('shared.skipForNow') }}
@@ -262,6 +267,7 @@ import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import SettingSubheader from '@/components/SettingSubheader.vue'
 
 const {
   gameVersion,

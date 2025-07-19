@@ -40,8 +40,8 @@ export function useI18nSearch<T extends ProjectFile>({
     ])
 
     const result: ProjectEntry<T>[] = mappings.map((m) => {
-      let modrinth: Project | undefined = modrinthsDict[m.modrinthId ?? '']
-      let curseforge: Mod | undefined = curseforgeDict[m.curseforgeId ?? '']
+      const modrinth: Project | undefined = modrinthsDict[m.modrinthId ?? '']
+      const curseforge: Mod | undefined = curseforgeDict[m.curseforgeId ?? '']
 
       let unsupportedModrinth = false
       if (modrinth && modLoader.value && !modrinth.loaders.includes(modLoader.value)) {

@@ -8,7 +8,7 @@
       class="flex h-full items-center justify-center"
     >
       <div
-        class="headline text-button select-none text-center"
+        class="text-h5 text-button select-none text-center"
       >
         <v-icon
           :style="{ 'font-size' : `${size}px`, 'color': color }"

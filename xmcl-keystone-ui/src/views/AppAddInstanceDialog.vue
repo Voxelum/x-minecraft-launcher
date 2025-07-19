@@ -34,11 +34,11 @@
 
         <div class="flex-grow" />
         <v-btn
-          outlined
+          variant="outlined"
           color="primary"
           @click="onMigrateFromOther"
         >
-          <v-icon left>
+          <v-icon start>
             local_shipping
           </v-icon>
           {{ t("setting.migrateFromOther") }}
@@ -70,12 +70,12 @@
           />
           <StepConfig
             v-if="tStep === 'config'"
+            v-model:valid="valid"
             :loading="loading"
-            :valid.sync="valid"
           />
           <StepServer
             v-if="tStep === 'server'"
-            :valid.sync="valid"
+            v-model:valid="valid"
           />
         </v-stepper-content>
       </v-stepper-items>
@@ -97,28 +97,27 @@
           <v-menu
             offset-y
             open-on-hover
-            top
+            location="top"
           >
-            <template #activator="{ on }">
+            <template #activator="{ props }">
               <v-btn
-                text
-                outlined
+                variant="outlined"
                 :loading="loading"
-                v-on="on"
+                v-bind="props"
                 @click="onImportModpack"
               >
-                <v-icon left>
+                <v-icon start>
                   note_add
                 </v-icon>
                 {{ t('importModpack.name') }}
               </v-btn>
             </template>
             <v-btn
-              large
+              size="large"
               :loading="loading"
               @click="onSelectTemplate"
             >
-              <v-icon left>
+              <v-icon start>
                 list
               </v-icon>
               {{ t('instances.addTemplate') }}
@@ -130,7 +129,7 @@
           class="pointer-events-none absolute left-0 flex w-full justify-center"
         >
           <v-alert
-            dense
+            density="compact"
             class="w-[50%]"
             type="error"
           >

@@ -1,67 +1,57 @@
 <template>
-  <v-list
-    two-line
-    subheader
-    style="background: transparent; width: 100%"
-  >
-    <v-subheader>
-      {{ t('instance.resolution') }}
-      <BaseSettingGlobalLabel
-        :global="isGlobalResolution"
-        @clear="resetResolution"
-        @click="gotoSetting"
-      />
-    </v-subheader>
+  <v-list-subheader>
+    {{ t('instance.resolution') }}
+    <BaseSettingGlobalLabel
+      :global="isGlobalResolution"
+      @clear="resetResolution"
+      @click="gotoSetting"
+    />
+  </v-list-subheader>
     
-    <v-list-item>
-      <v-list-item-content>
-        <div class="flex flex-row items-center gap-2">
-          <v-text-field
-            v-model="resolutionWidth"
-            :label="t('instance.width')"
-            :disabled="resolutionFullscreen"
-            type="number"
-            outlined
-            dense
-            hide-details
-            filled
-            class="mr-2 max-w-[150px]"
-          />
-          <v-text-field
-            v-model="resolutionHeight"
-            :disabled="resolutionFullscreen"
-            :label="t('instance.height')"
-            type="number"
-            outlined
-            dense
-            hide-details
-            filled
-            class="ml-2 max-w-[150px]"
-          />
-          <v-switch
-            v-model="resolutionFullscreen"
-            :label="t('instance.fullscreen')"
-            class="ma-0 pa-0"
-            hide-details
-          />
-        </div>
-      </v-list-item-content>
-      <v-list-item-action>
-         <v-select
-            v-model="selectedResolutionPreset"
-            :items="resolutionPresets"
-            item-text="text"
-            item-value="value"
-            :label="t('instance.resolutionPreset')"
-            outlined
-            filled
-            dense
-            hide-details
-            class="mb-4 max-w-[300px]"
-          ></v-select>
-      </v-list-item-action>
-    </v-list-item>
-  </v-list>
+  <v-list-item>
+    <div class="flex flex-row items-center gap-2">
+      <v-text-field
+        v-model="resolutionWidth"
+        :label="t('instance.width')"
+        :disabled="resolutionFullscreen"
+        type="number"
+        variant="filled"
+        density="compact"
+        hide-details
+        class="mr-2 max-w-[150px]"
+      />
+      <v-text-field
+        v-model="resolutionHeight"
+        :disabled="resolutionFullscreen"
+        :label="t('instance.height')"
+        type="number"
+        variant="filled"
+        density="compact"
+        hide-details
+        class="ml-2 max-w-[150px]"
+      />
+      <v-switch
+        v-model="resolutionFullscreen"
+        :label="t('instance.fullscreen')"
+        class="ma-0 pa-0"
+        hide-details
+      />
+    </div>
+      
+    <v-list-item-action>
+      <v-select
+        v-model="selectedResolutionPreset"
+        :items="resolutionPresets"
+        item-title="text"
+        item-value="value"
+        :label="t('instance.resolutionPreset')"
+        variant="filled"
+        density="compact"
+        hide-details
+        class="mb-4 max-w-[300px]"
+      />
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang="ts" setup>

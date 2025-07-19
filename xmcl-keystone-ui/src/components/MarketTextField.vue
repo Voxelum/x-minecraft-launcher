@@ -7,12 +7,9 @@
     :placeholder="placeholder"
     small
     hide-details
-    outlined
-    filled
-    dense
+    variant="filled"
+    density="compact"
     :prepend-inner-icon="icon"
-    @focus="searchTextFieldFocused = true"
-    @blur="searchTextFieldFocused = false"
     @click="emit('click', $event)"
   >
     <!-- <template #prepend>
@@ -33,9 +30,9 @@
       <v-chip
         v-if="gameVersion"
         label
-        outlined
-        small
-        close
+        variant="outlined"
+        size="small"
+        closable
         @click:close="emit('clear-version')"
       >
         {{ gameVersion }}
@@ -43,12 +40,12 @@
       <v-chip
         v-if="category"
         label
-        outlined
-        small
-        close
+        variant="outlined"
+        size="small"
+        closable
         @click:close="emit('clear-category')"
       >
-        <v-icon small>
+        <v-icon size="small">
           filter_alt
         </v-icon>
       </v-chip>
@@ -98,33 +95,33 @@ const clear = () => {
 
 const { t } = useI18n()
 
-const searchTextField = ref(undefined as any | undefined)
+// const searchTextField = ref(undefined as any | undefined)
 const searchTextFieldFocused = inject('focused', ref(false))
-const transitioning = inject('transitioning', ref(false))
-let pendingFocus = false
-watch(transitioning, (v) => {
-  if (!v && pendingFocus) {
-    if (!searchTextFieldFocused.value) {
-      searchTextField.value?.focus()
-      pendingFocus = false
-    }
-  }
-}, { immediate: true })
-useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
-defineExpose({
-  focus() {
-    if (!searchTextFieldFocused.value) {
-      if (!transitioning.value) {
-        searchTextField.value?.focus()
-      } else {
-        pendingFocus = true
-      }
-    }
-  },
-})
-onMounted(() => {
-  if (!searchTextFieldFocused.value) {
-    pendingFocus = true
-  }
-})
+// const transitioning = inject('transitioning', ref(false))
+// let pendingFocus = false
+// watch(transitioning, (v) => {
+//   if (!v && pendingFocus) {
+//     if (!searchTextFieldFocused.value) {
+//       searchTextField.value?.focus()
+//       pendingFocus = false
+//     }
+//   }
+// }, { immediate: true })
+// useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
+// defineExpose({
+//   focus() {
+//     if (!searchTextFieldFocused.value) {
+//       if (!transitioning.value) {
+//         searchTextField.value?.focus()
+//       } else {
+//         pendingFocus = true
+//       }
+//     }
+//   },
+// })
+// onMounted(() => {
+//   if (!searchTextFieldFocused.value) {
+//     pendingFocus = true
+//   }
+// })
 </script>

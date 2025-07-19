@@ -12,7 +12,7 @@
     @load="loadMore"
   >
     <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
-      <v-subheader
+      <v-list-subheader
         v-if="typeof item === 'string'"
         class="flex"
         :style="{ height: itemHeight + 'px' }"
@@ -31,7 +31,7 @@
         >
           <v-icon> {{ denseView ? 'reorder' : 'list' }} </v-icon>
         </v-btn>
-      </v-subheader>
+      </v-list-subheader>
       <SaveItem
         v-else
         :item="item"

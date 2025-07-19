@@ -2,14 +2,14 @@
   <v-chip
     filter
     :disabled="disabled"
-    outlined
+    variant="outlined"
     label
     :small="small"
     @click="disabled || $emit('click', tag)"
   >
     <v-avatar
       v-if="tag.icon"
-      left
+      start
       v-html="tag.icon"
     />
     {{ t('modrinth.categories.' + tag.name) }}

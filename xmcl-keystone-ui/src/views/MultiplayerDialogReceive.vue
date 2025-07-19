@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     fullscreen
-    hide-overlay
+    :scrim="false"
     transition="dialog-bottom-transition"
     scrollable
   >
@@ -24,7 +24,7 @@
         <v-textarea
           v-model="remoteDescription"
           class="mt-4 flex-grow-0"
-          outlined
+          variant="outlined"
           :label="t('multiplayer.remoteToken')"
           :error="error"
           :error-messages="errorText"
@@ -32,8 +32,7 @@
         <div class="flex w-full">
           <div class="flex-grow" />
           <v-btn
-            text
-            outlined
+            variant="outlined"
             color="primary"
             :loading="answering"
             @click="answer(); "
@@ -71,9 +70,9 @@
           </div>
         </div>
         <v-textarea
-          :value="localDescription"
+          :model-value="localDescription"
           class="mt-4"
-          outlined
+          variant="outlined"
           readonly
           :label="t('multiplayer.localToken')"
           @mousedown="copyLocalDescription"
@@ -83,19 +82,18 @@
         </div>
         <div class="flex">
           <v-btn
-            text
-            outlined
+            variant="outlined"
             @click="copyLocalDescription"
           >
             <v-icon
               v-if="!copied"
-              left
+              start
             >
               content_copy
             </v-icon>
             <v-icon
               v-else
-              left
+              start
               color="success"
             >
               check

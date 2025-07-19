@@ -3,7 +3,7 @@
     class="flex h-full flex-col transition-all duration-500 home-card"
     :class="{ highlighted: highlighted }"
     style="box-sizing: border-box"
-    outlined
+    border
     :style="{
       borderColor: mouse > 0 ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
@@ -22,7 +22,7 @@
       indeterminate
     />
     <v-card-title>
-      <v-icon left>
+      <v-icon start>
         {{ icon }}
       </v-icon>
       {{ title }}
@@ -47,7 +47,7 @@
         >
           <v-icon
             color="red"
-            small
+            size="small"
           > warning </v-icon>
           {{ (error.message || error) }}
         </span>
@@ -64,8 +64,8 @@
           >
             <img
               v-if="a.icon"
-              :src="a.icon"
               v-fallback-img="BuiltinImages.unknownServer"
+              :src="a.icon"
               draggable="false"
             >
             <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
@@ -76,12 +76,15 @@
     <v-card-actions v-if="button || additionButton">
       <v-btn
         v-if="button"
-        class="flex-1 justify-start flex-grow"
-        text
         ref="btnElem"
+        class="flex-1 justify-start flex-grow"
+        variant="text"
         @click="emit('navigate')"
       >
-        <v-icon v-if="button.icon" left>
+        <v-icon
+          v-if="button.icon"
+          start
+        >
           {{ button.icon }}
         </v-icon>
         <span :style="{ color: isOverflowed ? 'transparent' : '' }">
@@ -90,13 +93,16 @@
       </v-btn>
       <v-spacer v-else />
       <v-btn
-        class="justify-start"
         v-if="additionButton"
+        class="justify-start"
         color="primary"
-        text
+        variant="text"
         @click="emit('navigate-addition')"
       >
-        <v-icon class="material-icons-outlined" left>
+        <v-icon
+          class="material-icons-outlined"
+          start
+        >
           {{ additionButton.icon || 'add' }}
         </v-icon>
         <span>

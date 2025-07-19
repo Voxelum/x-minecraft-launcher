@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    hide-overlay
+    :scrim="false"
     width="700"
     style="max-height: 100%"
     class="task-dialog"

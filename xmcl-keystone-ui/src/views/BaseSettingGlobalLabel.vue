@@ -3,10 +3,10 @@
     v-shared-tooltip="_ => global ? t('settingLabel.globalHint') : t('settingLabel.localHint')"
     class="mb-1 ml-2"
     label
-    small
+    size="small"
     dark
     :color="global ? 'lighten-2 purple' : 'lighten-2 blue'"
-    :close="!global"
+    :closable="!global"
     @click.stop="emit('click')"
     @click:close="emit('clear')"
   >

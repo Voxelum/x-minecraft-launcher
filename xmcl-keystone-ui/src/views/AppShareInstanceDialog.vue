@@ -34,14 +34,14 @@
         <v-card-text v-if="!sharing">
           {{ t('AppShareInstanceDialog.alterDownloadDescription') }}
         </v-card-text>
-        <v-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-subheader>
+        <v-list-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-list-subheader>
         <div class="flex flex-col p-5 ">
           <div class="flex gap-5">
             <v-text-field
               flat
-              :value="minecraft"
+              :model-value="minecraft"
               label="Minecraft"
-              dense
+              density="compact"
               readonly
             >
               <template #prepend-inner>
@@ -54,9 +54,9 @@
             <v-text-field
               v-if="forge"
               flat
-              dense
+              density="compact"
               label="Forge"
-              :value="forge"
+              :model-value="forge"
               readonly
             >
               <template #prepend-inner>
@@ -69,9 +69,9 @@
             <v-text-field
               v-if="fabricLoader"
               flat
-              dense
+              density="compact"
               label="Fabric"
-              :value="fabricLoader"
+              :model-value="fabricLoader"
               readonly
             >
               <template #prepend-inner>
@@ -84,9 +84,9 @@
             <v-text-field
               v-if="quiltLoader"
               flat
-              dense
+              density="compact"
               label="Fabric"
-              :value="quiltLoader"
+              :model-value="quiltLoader"
               readonly
             >
               <template #prepend-inner>
@@ -99,9 +99,9 @@
             <v-text-field
               v-if="neoForged"
               flat
-              dense
+              density="compact"
               label="Fabric"
-              :value="neoForged"
+              :model-value="neoForged"
               readonly
             >
               <template #prepend-inner>
@@ -115,7 +115,7 @@
           <div class="flex gap-5">
             <v-text-field
               v-if="vmOptions.length > 0"
-              :value="vmOptions"
+              :model-value="vmOptions"
               readonly
               :label="t('instance.vmOptions')"
             />
@@ -123,20 +123,20 @@
           <div class="flex gap-5">
             <v-text-field
               v-if="mcOptions.length > 0"
-              :value="mcOptions"
+              :model-value="mcOptions"
               readonly
               :label="t('instance.mcOptions')"
             />
           </div>
         </div>
-        <v-subheader>
+        <v-list-subheader>
           <template v-if="sharing">
             {{ t('AppShareInstanceDialog.filesToShare') }}
           </template>
           <template v-else>
             {{ t('AppShareInstanceDialog.filesToDownload') }}
           </template>
-        </v-subheader>
+        </v-list-subheader>
 
         <div v-if="loading">
           <v-skeleton-loader
@@ -154,22 +154,22 @@
       </v-container>
       <v-card-actions v-if="sharing">
         <v-btn
-          text
+          variant="text"
           color="error"
           @click="onCancelShare"
         >
-          <v-icon left>
+          <v-icon start>
             delete
           </v-icon>
           {{ t('AppShareInstanceDialog.cancelShare') }}
         </v-btn>
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           color="primary"
           @click="onShareInstance"
         >
-          <v-icon left>
+          <v-icon start>
             share
           </v-icon>
           {{ t('AppShareInstanceDialog.share') }}
@@ -177,27 +177,27 @@
       </v-card-actions>
       <v-card-actions v-else>
         <v-btn
-          text
+          variant="text"
           @click="isShown = false"
         >
           {{ t('cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn
-          text
+          variant="text"
           @click="onCreateInstance"
         >
-          <v-icon left>
+          <v-icon start>
             add
           </v-icon>
           {{ t('instances.add') }}
         </v-btn>
         <v-btn
-          text
+          variant="text"
           color="primary"
           @click="onDownloadInstance"
         >
-          <v-icon left>
+          <v-icon start>
             download
           </v-icon>
           {{ t('download') }}

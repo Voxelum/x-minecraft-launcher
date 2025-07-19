@@ -60,15 +60,14 @@
     <v-fab-transition>
       <v-btn
         v-if="locked"
-        class="z-10 absolute right-6 bottom-4"
+        class="z-10 absolute right-6 bottom-4 rounded-circle"
         elevation="2"
         color="primary"
-        fab
         @click="scrollToBottom"
       >
-      <v-icon>arrow_downward</v-icon>
-    </v-btn>
-  </v-fab-transition>
+        <v-icon>arrow_downward</v-icon>
+      </v-btn>
+    </v-fab-transition>
   </div>
 </template>
 <script lang="ts" setup>

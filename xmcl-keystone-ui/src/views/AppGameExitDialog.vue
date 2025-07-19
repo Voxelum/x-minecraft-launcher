@@ -6,14 +6,14 @@
     <v-card class="visible-scroll flex max-h-[80vh] flex-col overflow-auto">
       <v-toolbar color="error">
         <v-toolbar-title
-          class="white--text"
+          class="text-white"
         >
           {{ data.isCrash ? t('launchFailed.crash') : t('launchFailed.title') }}
         </v-toolbar-title>
         <v-spacer />
         <v-toolbar-items v-if="!data.launcherError">
           <v-btn
-            text
+            variant="text"
             @click="openFolder"
           >
             {{ data.isCrash ? t('instance.openCrashReportFolder') : t('instance.openLogFolder') }}

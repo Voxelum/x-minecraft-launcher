@@ -1,24 +1,25 @@
 <template>
   <div
-    class="flex flex-grow-0 items-center rounded pr-2 text-sm"
-    :class="{ 'cursor-pointer': !!$listeners.click }"
+    class="flex items-center rounded text-sm"
+    :class="{ 'cursor-pointer': !!$attrs.onClick }"
     @click="emit('click', $event)"
   >
     <v-avatar
-      :left="true"
-      class="hidden lg:block"
-      style="height: 34px; width: 34px"
+      start
+      size="34"
       :class="{ responsive }"
     >
-      <img
+      <v-img
         v-if="avatar"
         :src="avatar"
+      />
+      <v-icon
+        v-else-if="icon"
+        size="28"
       >
-      <v-icon v-else-if="icon">
         {{ icon }}
       </v-icon>
     </v-avatar>
-
     <div
       v-if="text"
       class="text overflow-hidden overflow-ellipsis whitespace-nowrap"
@@ -60,9 +61,10 @@ const emit = defineEmits(['click'])
 }
 @media (min-width: 1000px) {
   .responsive {
-    display: block !important;
+    display: flex !important;
   }
   .text {
+    padding-left: 0rem;
   }
 }
 </style>

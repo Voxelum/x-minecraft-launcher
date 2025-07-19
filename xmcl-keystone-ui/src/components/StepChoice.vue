@@ -2,7 +2,7 @@
   <v-list
     color="transparent"
     class="w-200 stepper-select mx-auto flex flex-grow-0 flex-col gap-2 px-2"
-    three-line
+    lines="three"
   >
     <v-list-item
       v-for="item of items"
@@ -10,16 +10,18 @@
       class="rounded-lg"
       @click="emit('select', item.value)"
     >
-      <v-list-item-avatar class="self-center">
-        <v-img :src="item.icon" />
-      </v-list-item-avatar>
+      <template #prepend>
+        <v-avatar class="self-center">
+          <v-img :src="item.icon" />
+        </v-avatar>
+      </template>
 
-      <v-list-item-content>
-        <v-list-item-title>{{ item.title }}</v-list-item-title>
-        <v-list-item-subtitle v-if="item.subtitle">
-          {{ item.subtitle }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+      
+      <v-list-item-title>{{ item.title }}</v-list-item-title>
+      <v-list-item-subtitle v-if="item.subtitle">
+        {{ item.subtitle }}
+      </v-list-item-subtitle>
+      
       <v-list-item-action class="self-center">
         <v-icon>
           arrow_right

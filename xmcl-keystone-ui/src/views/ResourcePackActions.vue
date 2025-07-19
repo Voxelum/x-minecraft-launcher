@@ -3,7 +3,7 @@
     <v-btn
       v-shared-tooltip="_ => 'Alt'"
       icon
-      large
+      size="large"
       :class="{ 'v-btn--active': isEnabledState }"
       @click="isEnabledState = !isEnabledState"
     >
@@ -13,7 +13,7 @@
       v-shared-tooltip="() => isInstanceLinked ? t('resourcepack.shared') : t('resourcepack.independent')"
       icon
       :loading="loading"
-      large
+      size="large"
       @click="onLinkClicked"
     >
       <v-icon>{{ isInstanceLinked ? 'account_tree' : 'looks_one' }}</v-icon>
@@ -21,7 +21,7 @@
     <v-btn
       v-shared-tooltip="() => t('resourcepack.showDirectory')"
       icon
-      large
+      size="large"
       @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>

@@ -1,5 +1,4 @@
 import { applyUpdateToResource, FileUpdateAction, FileUpdateOperation, Resource, ResourceState, UpdateResourcePayload } from '@xmcl/runtime-api'
-import { set } from 'vue'
 
 export class ReactiveResourceState extends ResourceState {
   override filesUpdates(ops: FileUpdateOperation[]) {
@@ -25,6 +24,6 @@ export class ReactiveResourceState extends ResourceState {
         }
       }
     }
-    set(this, 'files', mods)
+    this.files = mods
   }
 }

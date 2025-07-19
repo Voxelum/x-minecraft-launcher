@@ -1,9 +1,9 @@
 <template>
   <v-dialog
-    :value="value"
+    :model-value="value"
     :persistent="persistent"
     :width="width"
-    @input="emit('input', $event)"
+    @update:model-value="emit('input', $event)"
   >
     <v-card>
       <v-card-title
@@ -22,7 +22,7 @@
       <v-divider />
       <v-card-actions>
         <v-btn
-          text
+          variant="text"
           @click="onCancel"
         >
           {{ t('delete.no') }}
@@ -30,10 +30,10 @@
         <v-spacer />
         <v-btn
           :color="color ?? 'error'"
-          text
+          variant="text"
           @click="onConfirm"
         >
-          <v-icon left>
+          <v-icon start>
             {{ confirmIcon ?? 'delete' }}
           </v-icon>
           {{ confirm ?? t('delete.yes') }}

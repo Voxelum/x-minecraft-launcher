@@ -1,7 +1,7 @@
 <template>
   <v-select
     v-model="selected"
-    outlined
+    variant="outlined"
     prepend-inner-icon="vpn_key"
     :items="items"
     :label="t('user.authMode')"
@@ -13,20 +13,21 @@
         :key="item.value"
         v-on="on"
       >
-        <v-list-item-avatar>
-          <v-img
-            v-if="item.icon.startsWith('http')"
-            :src="item.icon"
-          />
-          <v-icon v-else>
-            {{ item.icon }}
-          </v-icon>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title>
-            {{ item.text }}
-          </v-list-item-title>
-        </v-list-item-content>
+        <template #prepend>
+          <v-avatar>
+            <v-img
+              v-if="item.icon.startsWith('http')"
+              :src="item.icon"
+            />
+            <v-icon v-else>
+              {{ item.icon }}
+            </v-icon>
+          </v-avatar>
+        </template>
+        
+        <v-list-item-title>
+          {{ item.text }}
+        </v-list-item-title>
       </v-list-item>
     </template>
   </v-select>

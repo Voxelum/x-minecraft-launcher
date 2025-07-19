@@ -99,7 +99,7 @@ authProfileAddedNotification: Belépési profil {name} hozzáadva
 author: Készítő
 back: Vissza
 baseSetting:
-  title: Alapbeállítások
+  title: Beállítások
 browse: Böngészés
 browseApp:
   createShortcut: Parancsikon létrehozása

@@ -2,12 +2,12 @@
   <v-combobox
     ref="filterCombobox"
     v-model="selectedFilterOptions"
+    v-model:search-input="filterTextBuffer"
     v-focus-on-search="() => true"
     tabindex="0"
     :items="filterOptions"
     :label="label"
-    :search-input.sync="filterTextBuffer"
-    item-text="value"
+    item-title="value"
     chips
     clearable
     hide-details
@@ -16,11 +16,10 @@
     class="filter-combobox invisible-scroll"
     prepend-inner-icon="filter_list"
     multiple
-    outlined
-    dense
+    density="compact"
     :height="46"
     :placeholder="placeholder"
-    filled
+    variant="filled"
     @click:clear="clearFilterItems"
     @wheel.native="onWheel"
   >
@@ -34,30 +33,30 @@
         </v-list-item-action>
         <v-chip
           label
-          outlined
+          variant="outlined"
           :color="item.color ? item.color : getColor(item.value)"
         >
-          <v-icon left>
+          <v-icon start>
             {{ item.label ? item.label : 'label' }}
           </v-icon>
           {{ item.value }}
         </v-chip>
       </div>
     </template>
-    <template #selection="{ index, item, selected }">
+    <template #chip="{ index, item, selected }">
       <v-chip
         v-if="typeof item === 'object'"
         label
-        outlined
+        variant="outlined"
         class="overflow-visible"
         :color="item.color ? item.color : getColor(item.value)"
-        :input-value="selected"
-        close
+        :model-value="selected"
+        closable
         @click:close="removeFilteredItem(index)"
       >
         <v-icon
           v-if="item.label"
-          left
+          start
         >
           {{ item.label }}
         </v-icon>
@@ -67,9 +66,9 @@
         v-else
         class="overflow-visible"
         label
-        outlined
-        :input-value="selected"
-        close
+        variant="outlined"
+        :model-value="selected"
+        closable
         @click:close="removeFilteredItem(index)"
       >
         <!-- <v-icon left v-if="item.label">{{ item.label }}</v-icon> -->

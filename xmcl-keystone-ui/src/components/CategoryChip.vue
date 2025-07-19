@@ -7,7 +7,7 @@
   >
     <v-avatar
       v-if="item.icon?.startsWith('http')"
-      left
+      start
     >
       <v-img
         :src="item.icon"
@@ -15,7 +15,7 @@
     </v-avatar>
     <v-avatar
       v-else-if="item.icon"
-      left
+      start
       v-html="item.icon"
     />
     {{ item.text }}

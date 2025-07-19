@@ -29,7 +29,7 @@
         <template #extension>
           <v-tabs
             v-model="tab"
-            align-with-title
+            align-tabs="title"
             class="non-moveable"
           >
             <v-tabs-slider color="yellow" />
@@ -43,11 +43,11 @@
           </v-tabs>
         </template>
       </v-toolbar>
-      <v-tabs-items
+      <v-tabs-window
         v-model="tab"
         class="h-full flex-grow overflow-auto"
       >
-        <v-tab-item
+        <v-tabs-window-item
           v-for="item in Object.entries(logsRecord)"
           :key="item[0]"
           class="h-full flex-grow overflow-auto"
@@ -56,14 +56,13 @@
             class="h-full flex-grow overflow-auto"
             :logs="item[1]"
           />
-        </v-tab-item>
-      </v-tabs-items>
+        </v-tabs-window-item>
+      </v-tabs-window>
     </v-card>
   </v-app>
 </template>
 
 <script lang=ts setup>
-import { set } from 'vue'
 import LogView from '@/components/LogView.vue'
 import { LogRecord, parseLog } from '@/util/log'
 import { kTheme } from '@/composables/theme'
@@ -92,7 +91,7 @@ function accept(pid: number, log: string) {
   if (logsRecord[pid]) {
     logs = logsRecord[pid]
   } else {
-    logs = set(logsRecord, pid, [])
+    logs = logsRecord[pid] = []
   }
   // console.log(log)
   if (log.startsWith('[')) {

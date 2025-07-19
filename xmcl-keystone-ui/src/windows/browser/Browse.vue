@@ -11,7 +11,7 @@
           <v-btn
             class="non-moveable mx-2 mt-1.5"
             :loading="refreshing"
-            text
+            variant="text"
             icon
             @click="refresh"
           >
@@ -24,7 +24,7 @@
             :error="!!error"
             :disabled="loading"
             class="non-moveable rounded-2xl"
-            solo
+            variant="solo"
             text
             append-icon="arrow_right"
             @keypress.enter="onEnter"
@@ -32,7 +32,7 @@
           <v-btn
             class="non-moveable mx-2 mt-1.5"
             :loading="refreshing"
-            text
+            variant="text"
             icon
             @click="onEnter"
           >
@@ -43,13 +43,13 @@
           <v-icon
             v-ripple
             class="xy-0 non-moveable flex cursor-pointer select-none items-center px-2 py-1 hover:bg-[rgba(255,255,255,0.5)]"
-            small
+            size="small"
             @click="minimize"
           >minimize</v-icon>
           <v-icon
             v-ripple
             class="non-moveable top-0 flex cursor-pointer select-none items-center px-2 py-1 hover:bg-[rgb(209,12,12)]"
-            small
+            size="small"
             @click="close"
           >close</v-icon>
         </span>

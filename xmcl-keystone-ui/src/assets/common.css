@@ -139,9 +139,9 @@ html ::-webkit-scrollbar {
     background-color: #000 !important;
 }
 
-.v-list-item {
+/* .v-list-item {
     justify-content: center;
-}
+} */
 
 .v-menu {
     /* fix wrong menu width */

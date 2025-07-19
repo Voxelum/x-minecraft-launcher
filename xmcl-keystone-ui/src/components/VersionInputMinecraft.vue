@@ -26,6 +26,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
+    v-model:snapshot="showAlpha"
     :icon="BuiltinImages.minecraft"
     title="Minecraft"
     url="https://minecraft.net"
@@ -34,7 +35,6 @@ const emit = defineEmits<{
     :error="error"
     :refreshing="isValidating"
     :has-snapshot="true"
-    :snapshot.sync="showAlpha"
     :snapshot-tooltip="t('fabricVersion.showSnapshot')"
     :placeholder="''"
     :value="value"

@@ -4,11 +4,13 @@
     color="error"
     @click="tryEnable"
   >
-    <v-list-item-avatar>
-      <v-icon :size="30">
-        {{ value.icon }}
-      </v-icon>
-    </v-list-item-avatar>
+    <template #prepend>
+      <v-avatar>
+        <v-icon :size="30">
+          {{ value.icon }}
+        </v-icon>
+      </v-avatar>
+    </template>
     <v-list-item-content style="">
       <v-list-item-title
         :class="{ 'text-gray-400': disabled }"
@@ -24,7 +26,7 @@
         v-for="tt of value.type"
         :key="tt"
         label
-        small
+        size="small"
       >
         {{ tt }}
       </v-chip>

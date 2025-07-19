@@ -1,60 +1,52 @@
 <template>
-  <div>
-    <SettingHeader>
-      <div class="flex">
-        🔑 {{ t('userService.title') }}
+  <SettingHeader>
+    <div class="flex">
+      🔑 {{ t('userService.title') }}
 
-        <v-spacer />
-        <v-btn
-          v-shared-tooltip.left="_ => t('userService.add')"
-          icon
-          @click="addNew"
-        >
-          <v-icon>add</v-icon>
-        </v-btn>
-      </div>
-    </SettingHeader>
-    <v-list
-      color="transparent"
-      hover
-    >
-      <v-list-item
-        v-for="(a, i) of items || []"
-        :key="i"
+      <v-spacer />
+      <v-btn
+        v-shared-tooltip.left="_ => t('userService.add')"
+        icon
+        @click="addNew"
       >
-        <v-list-item-content>
-          <v-text-field
-            v-model="a.url"
-            :readonly="!a.new"
-            filled
-            :rules="urlsRules"
-            dense
-            hide-details
-            :placeholder="t('userService.baseUrlHint')"
-          />
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn
-            v-if="a.new"
-            icon
-            text
-            @click="save(a)"
-          >
-            <v-icon>save</v-icon>
-          </v-btn>
-          <v-btn
-            v-else
-            color="error"
-            icon
-            text
-            @click="remove(a)"
-          >
-            <v-icon>delete</v-icon>
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
-    </v-list>
-  </div>
+        <v-icon>add</v-icon>
+      </v-btn>
+    </div>
+  </SettingHeader>
+  <v-list-item
+    v-for="(a, i) of items || []"
+    :key="i"
+  >
+    <v-text-field
+      v-model="a.url"
+      :readonly="!a.new"
+      variant="filled"
+      :rules="urlsRules"
+      density="compact"
+      hide-details
+      :placeholder="t('userService.baseUrlHint')"
+    />
+        
+    <template #append>
+      <v-btn
+        v-if="a.new"
+        icon
+        variant="text"
+        @click="save(a)"
+      >
+        <v-icon>save</v-icon>
+      </v-btn>
+      <v-btn
+        v-else
+        color="error"
+        icon
+        variant="text"
+        @click="remove(a)"
+      >
+        <v-icon>delete</v-icon>
+      </v-btn>
+    </template>
+  </v-list-item>
 </template>
 <script setup lang="ts">
 import SettingHeader from '@/components/SettingHeader.vue'
@@ -88,7 +80,7 @@ const addNew = () => {
 
 const isValidUrl = (s: string) => {
   try {
-    // eslint-disable-next-line no-new
+     
     const u = new URL(s)
     return u.protocol === 'http:' || u.protocol === 'https:'
   } catch (e) { return false }

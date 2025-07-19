@@ -1,4 +1,4 @@
-import { Ref, set } from 'vue'
+import { Ref } from 'vue'
 
 export function useTagCreation() {
   const { t } = useI18n()
@@ -88,7 +88,7 @@ export function useTags(tags: Ref<string[]>, selected: Ref<boolean> = ref(false)
           return
         }
         if (text !== undefined) {
-          set(tags.value, lastEditIndex, text)
+          tags.value[lastEditIndex] = text
         }
       }
     }

@@ -15,24 +15,23 @@
     <v-card-actions>
       <v-alert
         :value="!!errorText"
-        outlined
-        border="left"
-        dense
-        transition="scale-transition"
+        variant="outlined"
+        border="start"
+        density="compact"
         type="error"
       >
         {{ errorText }}
       </v-alert>
       <v-spacer />
       <v-btn
-        text
+        variant="text"
         :loading="gettingManifest"
         @click="refresh"
       >
         {{ t('HomeSyncDialogPush.refresh') }}
       </v-btn>
       <v-btn
-        text
+        variant="text"
         :loading="uploadingInstanceManifest"
         color="primary"
         @click="upload"

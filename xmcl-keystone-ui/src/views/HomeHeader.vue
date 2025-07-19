@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header sticky max-w-full select-none transition-all px-2"
+    class="header sticky max-w-full select-none transition-all pl-4"
     :style="{
       'backdrop-filter': !compact ? 'none' : `blur(${blurAppBar}px)`,
     }"
@@ -21,16 +21,16 @@
       }"
     >
       <div
-        class="align-center flex max-h-20 flex-1 flex-grow-0 items-baseline pl-6 pr-2"
+        class="flex flex-1 flex-grow-0 pr-2 -mt-1 pl-4"
       >
         <span
           :style="{
             fontSize: headerFontSize
           }"
-          class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
+          class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all font-medium font-[Telegraf,sans-serif]"
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
-        <AvatarItem
+        <!-- <AvatarItem
           v-if="versionId"
           icon="fact_check"
           class="ml-2 p-1"
@@ -45,28 +45,34 @@
           class="ml-2"
           :title="t('version.name', 2)"
           :text="currentVersion"
-        />
+        /> -->
         <div class="flex-grow" />
+        <router-view
+          v-slot="{ Component }"
+          name="actions"
+        >
+          <transition
+            name="slide-x-transition"
+            mode="out-in"
+          >
+            <component :is="Component" />
+          </transition>
+        </router-view>
+      </div>
+      <router-view
+        v-slot="{ Component }"
+        name="extensions"
+        class="px-4"
+        :class="{
+        }"
+      >
         <transition
-          name="slide-x-transition"
+          name="slide-y-reverse-transition"
           mode="out-in"
         >
-          <router-view name="actions" />
+          <component :is="Component" />
         </transition>
-      </div>
-      <transition
-        name="slide-y-reverse-transition"
-        mode="out-in"
-      >
-        <router-view
-          name="extensions"
-          class="px-4"
-          :class="{
-            'mt-5': !compact,
-            'mt-3': compact,
-          }"
-        />
-      </transition>
+      </router-view>
     </div>
     <div
       v-if="dragover"
@@ -94,7 +100,6 @@
 </template>
 
 <script lang=ts setup>
-import AvatarItem from '@/components/AvatarItem.vue'
 import Hint from '@/components/Hint.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
@@ -136,7 +141,7 @@ const headerFontSize = computed(() => {
   if (name.value && name.value.length > 30) {
     return '2rem'
   }
-  return '2.425rem'
+  return '3rem'
 })
 
 const onShowLocalVersion = () => {
@@ -168,7 +173,7 @@ const overcount = ref(0)
 
 .header.compact {
   padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
+  /* padding-bottom: 1.25rem; */
 }
 
 .compact {

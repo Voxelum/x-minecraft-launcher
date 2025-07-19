@@ -11,7 +11,7 @@
       v-else
       color="transparent"
       class="flex flex-col overflow-auto p-0"
-      two-line
+      lines="two"
     >
       <v-list-item class="mb-2">
         <div class="flex w-full gap-3">
@@ -28,7 +28,7 @@
             ref="searchTextRef"
             v-model="filterText"
             hide-details
-            filled
+            variant="filled"
             append-icon="filter_list"
             :label="t('filter')"
           />

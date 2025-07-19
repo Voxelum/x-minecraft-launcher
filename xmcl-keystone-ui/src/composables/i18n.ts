@@ -1,20 +1,20 @@
+import { vuetify } from '@/vuetify'
 import { Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { Framework } from 'vuetify'
 
 const locales = import.meta.glob('../../locales/*.yaml')
 
-export function useI18nSync(framework: Framework, state: Ref<Settings | undefined>) {
+export function useI18nSync( state: Ref<Settings | undefined>) {
   const { locale, setLocaleMessage } = useI18n()
   watch(computed(() => state.value?.locale || ''), (newValue: string, oldValue: string) => {
     console.log(`Locale changed ${oldValue} -> ${newValue}`)
-    const lang = framework.lang
+    const lang = vuetify.locale
     if (newValue === 'zh-CN') {
-      lang.current = 'zhHans'
+      lang.current.value = 'zhHans'
     } else if (newValue === 'ru') {
-      lang.current = 'ru'
+      lang.current.value = 'ru'
     } else {
-      lang.current = 'en'
+      lang.current.value = 'en'
     }
 
     if (!locales[`../../locales/${newValue}.yaml`]) {

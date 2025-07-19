@@ -1,20 +1,20 @@
-/* eslint-disable vue/one-component-per-file */
+
 import TextComponent from '@/components/TextComponent'
 import { kServiceFactory, useServiceFactory } from '@/composables'
 import { kDialogModel, useDialogModel } from '@/composables/dialog'
+import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
+import { kFlights } from '@/composables/flights'
+import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
 import { kTaskManager, useTaskManager } from '@/composables/taskManager'
 import { i18n } from '@/i18n'
+import { appInsights } from '@/telemetry'
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
-import Vue, { defineComponent, getCurrentInstance, h, provide } from 'vue'
+import { defineComponent, h, provide } from 'vue'
 import App from './App.vue'
 import Context from './Context'
 import { router } from './router'
-import { kFlights } from '@/composables/flights'
-import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
-import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { appInsights } from '@/telemetry'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -61,10 +61,7 @@ function handleMigrate(from: string, to: string) {
   }
 }
 
-const app = new Vue(defineComponent({
-  i18n,
-  vuetify,
-  router,
+const app = createApp(defineComponent({
   setup() {
     // get from to from the query
     const query = new URLSearchParams(window.location.search)
@@ -73,20 +70,6 @@ const app = new Vue(defineComponent({
     if (from && to) {
       handleMigrate(from, to)
     }
-
-    const root = getCurrentInstance()!.proxy.$root
-    Object.defineProperty(root, '$router', {
-      value: new Proxy(root.$router, {
-        get(target, key) {
-          const prop = Reflect.get(target, key)
-          if (prop instanceof Function) {
-            return (prop as Function).bind(target)
-          }
-          return prop
-        },
-      }),
-    })
-
     provide(kFlights, (window as any).flights || {})
     provide(kNotificationQueue, useNotificationQueue())
     provide(kExceptionHandlers, useExceptionHandlers())
@@ -95,15 +78,17 @@ const app = new Vue(defineComponent({
     provide(kDialogModel, useDialogModel())
     provide(kSWRVConfig, useSWRVConfig())
 
-    return () => h(Context, [h(App)])
+    return () => h(Context, () => [h(App)])
   },
 }))
 
-Vue.component('TextComponent', TextComponent)
+app.component('TextComponent', TextComponent)
+app.use(vuetify)
+app.use(i18n)
+app.use(router)
+app.mount('#app')
 
-app.$mount('#app')
-
-Vue.config.warnHandler = (msg, vm, trace) => {
+app.config.warnHandler = (msg, vm, trace) => {
   const level = msg.indexOf('TypeError') !== -1 ? 4 : 3
   appInsights.trackException({
     exception: {
@@ -122,7 +107,7 @@ Vue.config.warnHandler = (msg, vm, trace) => {
   }
 }
 
-Vue.config.errorHandler = (err, vm, info) => {
+app.config.errorHandler = (err: any, vm, info) => {
   if (err.message.indexOf('ResizeObserver') !== -1) {
     // ignore ResizeObserver error
     return

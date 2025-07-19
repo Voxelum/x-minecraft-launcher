@@ -5,9 +5,7 @@ import 'virtual:uno.css'
 import Vue, { h } from 'vue'
 import App from './App.vue'
 
-const app = new Vue(defineComponent({
-  vuetify,
-  i18n,
+const app = createApp(defineComponent({
   setup(props, context) {
     const preferDark = usePreferredDark()
     const updateTheme = (theme: string) => {
@@ -24,5 +22,6 @@ const app = new Vue(defineComponent({
     return () => h(App)
   },
 }))
-
-app.$mount('#app')
+app.use(vuetify)
+app.use(i18n)
+app.mount('#app')

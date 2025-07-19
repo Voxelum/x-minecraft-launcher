@@ -9,7 +9,7 @@
     <v-progress-linear
       rounded
       color="blue"
-      :value="percentage"
+      :model-value="percentage"
       height="6"
     />
     <span class="whitespace-nowrap text-center text-sm font-bold text-gray-400">

@@ -1,25 +1,23 @@
 <template>
   <v-list
     class="base-settings"
-    two-line
-    subheader
+    lines="two"
   >
-    <v-subheader
+    <v-list-subheader
       style="padding-right: 2px"
     >
       {{ t("server.name", 1) }}
-    </v-subheader>
+    </v-list-subheader>
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("server.host") }}
-        </v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title>
+        {{ t("server.host") }}
+      </v-list-item-title>
+      
       <v-list-item-action>
         <v-text-field
           v-model="data.host"
           hide-details
-          solo
+          variant="solo"
 
           placeholder="www.whatever.com"
           required
@@ -27,15 +25,14 @@
       </v-list-item-action>
     </v-list-item>
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("server.port") }}
-        </v-list-item-title>
-      </v-list-item-content>
+      <v-list-item-title>
+        {{ t("server.port") }}
+      </v-list-item-title>
+      
       <v-list-item-action>
         <v-text-field
           v-model="data.port"
-          solo
+          variant="solo"
           hide-details
           placeholder="25565"
           required

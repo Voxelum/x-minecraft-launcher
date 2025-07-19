@@ -59,7 +59,7 @@
       >
         <v-btn
           v-if="exiting || javaIssue"
-          text
+          variant="text"
           @click="onCancel"
         >
           {{ t('cancel') }}
@@ -67,11 +67,11 @@
         <div class="flex-grow" />
         <v-btn
           v-if="exiting"
-          text
+          variant="text"
           color="red"
           @click="onKill"
         >
-          <v-icon left>
+          <v-icon start>
             exit_to_app
           </v-icon>
           {{ t('yes') }}
@@ -80,10 +80,10 @@
           <v-btn
             color="warning"
             :loading="selected"
-            text
+            variant="text"
             @click="onLaunchAnyway"
           >
-            <v-icon left>
+            <v-icon start>
               play_arrow
             </v-icon>
             {{ t('launch.launchAnyway') }}
@@ -93,7 +93,7 @@
             :loading="selected"
             @click="selectLocalJava"
           >
-            <v-icon left>
+            <v-icon start>
               play_arrow
             </v-icon>
             {{ t('HomeJavaIssueDialog.optionSwitch.name', {
@@ -103,7 +103,7 @@
         </template>
         <v-btn
           v-if="refreshUserTimeout"
-          text
+          variant="text"
           color="primary"
           @click="skipRefresh()"
         >
@@ -114,7 +114,7 @@
         </v-btn>
         <v-btn
           v-if="authLibTimeout"
-          text
+          variant="text"
           color="primary"
           @click="skipAuthLib()"
         >

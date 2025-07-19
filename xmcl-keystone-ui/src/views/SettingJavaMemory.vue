@@ -3,7 +3,7 @@
     <v-progress-linear
       class="mt-3 rounded"
       :active="assignMemory !== false"
-      :value="minMemoryProgress"
+      :model-value="minMemoryProgress"
       color="deep-orange"
       :buffer-value="maxMemoryProgress"
       striped
@@ -28,12 +28,11 @@
       min="0"
       :step="step"
       class="z-10 mt-[-25px]"
-      height="25"
       track-fill-color="transparent"
       track-color="transparent"
       color="red"
       hide-details
-      @input="mem = $event"
+      @update:model-value="mem = $event"
     >
       <template #thumb-label="{ value }">
         {{ getExpectedSize(value, '', 1) }}
@@ -41,14 +40,14 @@
     </v-range-slider>
     <v-progress-linear
       class="mt-3 rounded"
-      :value="memoryProgress"
+      :model-value="memoryProgress"
       color="blue"
       height="25"
       reverse
     >
       <template #default>
         <div class="flex items-center justify-center">
-          <v-icon left>
+          <v-icon start>
             memory
           </v-icon>
           <strong class="flex flex-grow-0 items-center justify-center">

@@ -21,7 +21,7 @@
         color="green"
         class="rounded-xl search-field pr-4"
         append-icon="search"
-        solo
+        variant="solo"
         hide-details
         clearable
         :placeholder="t('modrinth.searchText')"
@@ -35,12 +35,12 @@
         id="popular-modpacks"
         class="section"
       >
-        <v-subheader>
-          <v-icon left>
+        <v-list-subheader>
+          <v-icon start>
             local_fire_department
           </v-icon>
           {{ t('store.popular') }}
-        </v-subheader>
+        </v-list-subheader>
 
         <v-carousel
           :interval="7000"
@@ -62,15 +62,15 @@
         </v-carousel>
       </div>
       <div class="section">
-        <v-subheader>
+        <v-list-subheader>
           <v-icon
-            left
+            start
             size="20"
           >
             update
           </v-icon>
           {{ t('store.recentUpdated') }}
-        </v-subheader>
+        </v-list-subheader>
 
         <GalleryGrid
           :items="recentUpdatedItems"
@@ -78,12 +78,12 @@
         />
       </div>
       <div class="section">
-        <v-subheader>
-          <v-icon left>
-            $vuetify.icons.minecraft
+        <v-list-subheader>
+          <v-icon start>
+            xmcl:minecraft
           </v-icon>
           {{ t('store.latestMinecraft') }}
-        </v-subheader>
+        </v-list-subheader>
 
         <GalleryList
           :items="recentMinecraftItems"
@@ -91,12 +91,12 @@
         />
       </div>
 
-      <v-subheader ref="exploreHeader">
-        <v-icon left>
+      <v-list-subheader ref="exploreHeader">
+        <v-icon start>
           explore
         </v-icon>
         {{ t('store.explore') }}
-      </v-subheader>
+      </v-list-subheader>
 
       <div class="content">
         <div
@@ -707,7 +707,7 @@ useTutorial(computed(() => {
   justify-content: center;
 }
 
-.section .v-subheader {
+.section .v-list-subheader {
   margin-top: 16px;
   margin-bottom: 16px;
 }
@@ -757,7 +757,7 @@ useTutorial(computed(() => {
   }
 }
 
-.v-subheader {
+.v-list-subheader {
   z-index: 4;
 }
 </style>

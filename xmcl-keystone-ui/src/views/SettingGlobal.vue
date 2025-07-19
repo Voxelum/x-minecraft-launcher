@@ -1,209 +1,188 @@
 <template>
-  <div>
-    <SettingHeader>
-      <div class="flex flex-col">
-        🌍 {{ t('setting.globalSetting') }}
+  <SettingHeader>
+    <div class="flex flex-col">
+      🌍 {{ t('setting.globalSetting') }}
 
-        <v-subheader class="my-0 h-[unset] px-0">
-          {{ t('setting.globalSettingHint') }}
-        </v-subheader>
-      </div>
-    </SettingHeader>
-    <SettingItemCheckbox
-      v-model="fastLaunch"
-      :title="t('instanceSetting.fastLaunch')"
-      :description="t('instanceSetting.fastLaunchHint')"
-    />
-    <SettingItemCheckbox
-      v-model="hideLauncher"
-      :title="t('instanceSetting.hideLauncher')"
-    />
-    <SettingItemCheckbox
-      v-model="showLog"
-      :title="t('instanceSetting.showLog')"
-      :description="t('instanceSetting.showLogHint')"
-    />
-    <SettingItemCheckbox
-      v-model="disableAuthlibInjector"
-      :title="t('instanceSetting.disableAuthlibInjector')"
-      :description="t('instanceSetting.disableAuthlibInjectorDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="disableElyByAuthlib"
-      :title="t('instanceSetting.disableElyByAuthlib')"
-      :description="t('instanceSetting.disableElyByAuthlibDescription')"
-    />
+      <v-list-subheader class="my-0 h-[unset] px-0">
+        {{ t('setting.globalSettingHint') }}
+      </v-list-subheader>
+    </div>
+  </SettingHeader>
+  <SettingItemCheckbox
+    v-model="fastLaunch"
+    :title="t('instanceSetting.fastLaunch')"
+    :description="t('instanceSetting.fastLaunchHint')"
+  />
+  <SettingItemCheckbox
+    v-model="hideLauncher"
+    :title="t('instanceSetting.hideLauncher')"
+  />
+  <SettingItemCheckbox
+    v-model="showLog"
+    :title="t('instanceSetting.showLog')"
+    :description="t('instanceSetting.showLogHint')"
+  />
+  <SettingItemCheckbox
+    v-model="disableAuthlibInjector"
+    :title="t('instanceSetting.disableAuthlibInjector')"
+    :description="t('instanceSetting.disableAuthlibInjectorDescription')"
+  />
+  <SettingItemCheckbox
+    v-model="disableElyByAuthlib"
+    :title="t('instanceSetting.disableElyByAuthlib')"
+    :description="t('instanceSetting.disableElyByAuthlibDescription')"
+  />
 
-    <v-list-item>
-      <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
-        <div class="flex flex-row items-center">
-          {{ t("java.memory") }}
-          <div class="flex-grow" />
-          <SettingJavaMemoryAssign v-model="assignMemory" />
-        </div>
-        <SettingJavaMemory
-          :assign-memory="assignMemory"
-          :min.sync="minMem"
-          :max.sync="maxMem"
-        />
+  <v-list-item :title="t('java.memory')">
+    <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
+      <div class="flex flex-row items-center">
+        <div class="flex-grow" />
+        <SettingJavaMemoryAssign v-model="assignMemory" />
       </div>
-    </v-list-item>
-    <v-list-item
-      style="margin-top: 5px"
-    >
-      <v-list-item-content class="max-w-70 mr-4">
-        <v-list-item-title>
-          {{ t("instance.prependCommand") }}
-        </v-list-item-title>
-        <v-list-item-subtitle
+      <SettingJavaMemory
+        v-model:min="minMem"
+        v-model:max="maxMem"
+        :assign-memory="assignMemory"
+      />
+    </div>
+  </v-list-item>
+  <div
+    class="grid grid-cols-4 gap-1 mt-2"
+  >
+    <v-list-item :title="t('instance.prependCommand')">
+      <template #subtitle>
+        <v-text-field
+          v-model="prependCommand"
           v-shared-tooltip="_ => t('instance.prependCommandHint')"
-        >
-          <v-text-field
-            v-model="prependCommand"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.prependCommandHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instance.vmOptions") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="vmOptions"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.vmOptionsHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
+          class="mt-2"
+          hide-details
+          required
+          density="compact"
+          variant="filled"
+          :placeholder="t('instance.prependCommandHint')"
+        />
+      </template>
     </v-list-item>
+      
+    <v-list-item
+      class="col-span-3"
+      :title="t('instance.vmOptions')"
+    >
+      <v-list-item-subtitle>
+        <v-text-field
+          v-model="vmOptions"
+          class="mt-2"
+          hide-details
+          required
+          density="compact"
+          variant="filled"
+          :placeholder="t('instance.vmOptionsHint')"
+        />
+      </v-list-item-subtitle>
+    </v-list-item>
+  </div>
 
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instance.vmVar") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("instance.vmVarHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+  <v-list-item
+    :title="t('instance.vmVar')"
+    :subtitle="t('instance.vmVarHint')"
+  > 
+    <template #append>
       <v-list-item-action>
         <v-btn
           icon
+          variant="text"
           @click="onAddEnvVar"
         >
           <v-icon>add</v-icon>
         </v-btn>
       </v-list-item-action>
+    </template>
+  </v-list-item>
+
+  <EnvVarTableItem
+    :env="env"
+    @delete="onEnvVarDeleted"
+  />
+
+  <EnvVarAddItem
+    v-if="adding"
+    @clear="onEnvVarCleared"
+    @add="onEnvVarAdded"
+  />
+
+  <div class="grid grid-cols-4">
+    <v-list-item :title="t('instance.preExecCommand')">
+      <template #subtitle>
+        <v-text-field
+          v-model="preExecuteCommand"
+          class="mt-2"
+          hide-details
+          required
+          density="compact"
+          variant="filled"
+          :placeholder="t('instance.preExecCommandHint')"
+        />
+      </template>
     </v-list-item>
 
-    <EnvVarTableItem
-      :env="env"
-      @delete="onEnvVarDeleted"
-    />
-
-    <EnvVarAddItem
-      v-if="adding"
-      @clear="onEnvVarCleared"
-      @add="onEnvVarAdded"
-    />
-
-    <v-list-item>
-      <v-list-item-content class="max-w-70 mr-4">
-        <v-list-item-title>
-          {{ t("instance.preExecCommand") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="preExecuteCommand"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.preExecCommandHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-content style="flex: 1">
-        <v-list-item-title>
-          {{ t("instance.mcOptions") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="mcOptions"
-            dense
-            outlined
-            filled
-            class="m-1 mt-2"
-            hide-details
-            required
-            :placeholder="t('instance.mcOptionsHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-    
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>{{ t("instance.resolution") }}</v-list-item-title>
-        <div class="mt-2 flex flex-row items-center gap-2">
-          <v-text-field
-            v-model="resolutionWidth"
-            :label="t('instance.width')"
-            type="number"
-            outlined
-            dense
-            filled
-            hide-details
-            class="mr-2 max-w-[150px]"
-          ></v-text-field>
-          <v-text-field
-            v-model="resolutionHeight"
-            :label="t('instance.height')"
-            type="number"
-            outlined
-            dense
-            filled
-            hide-details
-            class="ml-2 max-w-[150px]"
-          ></v-text-field>
-          <v-switch
-            v-model="resolutionFullscreen"
-            :label="t('instance.fullscreen')"
-            class="ma-0 pa-0"
-            hide-details
-          />
-          <v-spacer />
-          <v-select
-            v-model="selectedResolutionPreset"
-            :items="resolutionPresets"
-            item-text="text"
-            item-value="value"
-            :label="t('instance.resolutionPreset')"
-            outlined
-            filled
-            hide-details
-            dense
-            class="max-w-[300px]"
-          />
-        </div>
-      </v-list-item-content>
+    <v-list-item
+      class="col-span-3"
+      :title="t('instance.mcOptions')"
+    >
+      <template #subtitle>
+        <v-text-field
+          v-model="mcOptions"
+          density="compact"
+          variant="filled"
+          class="mt-2"
+          hide-details
+          required
+          :placeholder="t('instance.mcOptionsHint')"
+        />
+      </template>
     </v-list-item>
   </div>
+    
+  <v-list-item :title="t('instance.resolution')">
+    <div class="mt-2 flex flex-row items-center gap-2">
+      <v-text-field
+        v-model="resolutionWidth"
+        :label="t('instance.width')"
+        type="number"
+        variant="filled"
+        density="compact"
+        hide-details
+        class="mr-2 max-w-[150px]"
+      />
+      <v-text-field
+        v-model="resolutionHeight"
+        :label="t('instance.height')"
+        type="number"
+        variant="filled"
+        density="compact"
+        hide-details
+        class="ml-2 max-w-[150px]"
+      />
+      <v-switch
+        v-model="resolutionFullscreen"
+        :label="t('instance.fullscreen')"
+        class="ma-0 pa-0"
+        hide-details
+      />
+      <v-spacer />
+      <v-select
+        v-model="selectedResolutionPreset"
+        :items="resolutionPresets"
+        item-title="text"
+        item-value="value"
+        :label="t('instance.resolutionPreset')"
+        variant="filled"
+        hide-details
+        density="compact"
+        class="max-w-[300px]"
+      />
+    </div>
+  </v-list-item>
 </template>
 
 <script setup lang="ts">

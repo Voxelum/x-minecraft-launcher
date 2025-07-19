@@ -3,7 +3,7 @@
     class="flex flex-col items-center justify-center gap-4 p-4"
     :color="cardColor"
     :style="{ borderColor: '', 'backdrop-filter': `blur(${blurCard}px)` }"
-    outlined
+    border
   >
     <v-img
       v-if="!dense"
@@ -21,7 +21,8 @@
       {{ value.title }}
     </a>
     <span class="text-center description">{{ value.description }}</span>
-    <span class="flex justify-center gap-2"
+    <span
+      class="flex justify-center gap-2"
       :class="{
         'flex-wrap': !dense,
       }"
@@ -34,7 +35,8 @@
         outlined
       />
     </span>
-    <span class="infos grid items-center justify-center gap-3"
+    <span
+      class="infos grid items-center justify-center gap-3"
       :class="{
         dense
       }"
@@ -57,12 +59,12 @@
     </span>
     <span>
       <v-btn
-        text
+        variant="text"
         color="primary"
         @click="push(value.store)"
       >
         <v-icon
-          left
+          start
           class="material-icons-outlined"
         >
           open_in_new

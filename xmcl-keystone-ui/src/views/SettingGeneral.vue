@@ -1,96 +1,98 @@
 <template>
-  <div>
-    <SettingHeader>
-      ⚙️ {{ t("setting.general") }}
-    </SettingHeader>
-    <SettingItemSelect
-      :select.sync="selectedLocale"
-      :title="t('setting.language')"
-      :description="t('setting.languageDescription')"
-      :items="locales"
-    />
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title :color="errorText ? 'red' : ''">
-          {{
-            t("setting.location")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle class="text-red!" v-if="errorText">{{ errorText }}</v-list-item-subtitle>
-        <v-list-item-subtitle v-else>{{ root }}</v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="self-center mr-1">
-        <v-btn
-          outlined
-          text
-          style="margin-right: 10px"
-          @click="onMigrateFromOther"
-        >
-          <v-icon left>
-            local_shipping
-          </v-icon>
-          {{ t("setting.migrateFromOther") }}
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="self-center">
-        <v-btn
-          outlined
-          text
-          @click="browseRootDir"
-        >
-          <v-icon left>
-            edit
-          </v-icon>
-          {{ t("setting.browseRoot") }}
-        </v-btn>
-      </v-list-item-action>
-      <v-list-item-action class="self-center">
-        <v-btn
-          outlined
-          text
-          @click="showGameDirectory()"
-        >
-          <v-icon left>
-            folder
-          </v-icon>
-          {{ t("setting.showRoot") }}
-        </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-    <SettingItemCheckbox
-      v-model="disableTelemetry"
-      :title="t('setting.disableTelemetry')"
-      :description="t('setting.disableTelemetryDescription')"
-    />
-    <SettingItemCheckbox
-      v-if="env?.os === 'linux' || env?.os === 'windows'"
-      v-model="enableDedicatedGPUOptimization"
-      :title="t('setting.enableDedicatedGPUOptimization')"
-      :description="t('setting.enableDedicatedGPUOptimizationDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="enableDiscord"
-      :title="t('setting.enableDiscord')"
-      :description="t('setting.enableDiscordDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="developerMode"
-      :title="t('setting.developerMode')"
-      :description="t('setting.developerModeDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="streamerMode"
-      :title="t('setting.streamerMode')"
-      :description="t('setting.streamerModeDescription')"
-    />
-    <SettingItemSelect
-      :select="replaceNative === false ? '' : replaceNative"
-      :title="t('setting.replaceNative')"
-      :description="t('setting.replaceNativeDescription')"
-      :items="replaceNativeItems"
-      @update:select="replaceNative = !$event ? false : $event"
-    />
-  </div>
+  <SettingHeader>
+    ⚙️ {{ t("setting.general") }}
+  </SettingHeader>
+  <SettingItemSelect
+    v-model:select="selectedLocale"
+    :title="t('setting.language')"
+    :description="t('setting.languageDescription')"
+    :items="locales"
+  />
+  <v-list-item>
+    <template #title>
+      <v-list-item-title :color="errorText ? 'red' : ''">
+        {{
+          t("setting.location")
+        }}
+      </v-list-item-title>
+    </template>
+    <template #subtitle>
+      <v-list-item-subtitle
+        v-if="errorText"
+        class="text-red!"
+      >
+        {{ errorText }}
+      </v-list-item-subtitle>
+      <v-list-item-subtitle v-else>
+        {{ root }}
+      </v-list-item-subtitle>
+    </template>
+      
+    <template #append>
+      <v-btn
+        variant="outlined"
+        style="margin-right: 10px"
+        @click="onMigrateFromOther"
+      >
+        <v-icon start>
+          local_shipping
+        </v-icon>
+        {{ t("setting.migrateFromOther") }}
+      </v-btn>
+      <v-btn
+        style="margin-right: 10px"
+        variant="outlined"
+        @click="browseRootDir"
+      >
+        <v-icon start>
+          edit
+        </v-icon>
+        {{ t("setting.browseRoot") }}
+      </v-btn>
+      <v-btn
+        variant="outlined"
+        @click="showGameDirectory()"
+      >
+        <v-icon start>
+          folder
+        </v-icon>
+        {{ t("setting.showRoot") }}
+      </v-btn>
+    </template>
+  </v-list-item>
+  <SettingItemCheckbox
+    v-model="disableTelemetry"
+    :title="t('setting.disableTelemetry')"
+    :description="t('setting.disableTelemetryDescription')"
+  />
+  <SettingItemCheckbox
+    v-if="env?.os === 'linux' || env?.os === 'windows'"
+    v-model="enableDedicatedGPUOptimization"
+    :title="t('setting.enableDedicatedGPUOptimization')"
+    :description="t('setting.enableDedicatedGPUOptimizationDescription')"
+  />
+  <SettingItemCheckbox
+    v-model="enableDiscord"
+    :title="t('setting.enableDiscord')"
+    :description="t('setting.enableDiscordDescription')"
+  />
+  <SettingItemCheckbox
+    v-model="developerMode"
+    :title="t('setting.developerMode')"
+    :description="t('setting.developerModeDescription')"
+  />
+  <SettingItemCheckbox
+    v-model="streamerMode"
+    :title="t('setting.streamerMode')"
+    :description="t('setting.streamerModeDescription')"
+  />
+  <SettingItemSelect
+    :select="replaceNative === false ? '' : replaceNative"
+    :title="t('setting.replaceNative')"
+    :description="t('setting.replaceNativeDescription')"
+    :items="replaceNativeItems"
+    @update:select="replaceNative = !$event ? false : $event"
+  />
 </template>
 <script lang="ts" setup>
 import SettingHeader from '@/components/SettingHeader.vue'

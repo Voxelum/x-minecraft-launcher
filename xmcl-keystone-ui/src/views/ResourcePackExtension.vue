@@ -10,23 +10,22 @@
       </div>
       <div class="flex-grow" />
       <MarketTextFieldWithMenu
-        :keyword.sync="keyword"
+        v-model:keyword="keyword"
+        v-model:modrinth-categories="modrinthCategories"
+        v-model:local-sort="sortBy"
+        v-model:curseforge-category="curseforgeCategory"
+        v-model:enable-curseforge="isCurseforgeActive"
+        v-model:enable-modrinth="isModrinthActive"
+        v-model:sort="sort"
+        v-model:game-version="gameVersion"
+        v-model:mode="filterMode"
+        v-model:collection="selectedCollection"
         :placeholder="t('resourcepack.searchHint')"
-        :modrinth-categories.sync="modrinthCategories"
         modrinth-category-filter="resourcepack"
-        :local-sort.sync="sortBy"
-        :curseforge-category.sync="curseforgeCategory"
         curseforge-category-filter="texture-packs"
-        :enable-curseforge.sync="isCurseforgeActive"
-        :enable-modrinth.sync="isModrinthActive"
-        :sort.sync="sort"
-        :game-version.sync="gameVersion"
-        :mode.sync="filterMode"
-        :collection.sync="selectedCollection"
       />
     </div>
-    <MarketExtensions
-    />
+    <MarketExtensions />
   </div>
 </template>
 

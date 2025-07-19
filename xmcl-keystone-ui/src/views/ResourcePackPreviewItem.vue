@@ -1,9 +1,7 @@
 <template>
   <v-list-item @click="source.onClick">
-    <v-list-item-content>
-      <v-list-item-title>{{ name }}</v-list-item-title>
-      <v-list-item-subtitle>{{ variantsCount }} variants </v-list-item-subtitle>
-    </v-list-item-content>
+    <v-list-item-title>{{ name }}</v-list-item-title>
+    <v-list-item-subtitle>{{ variantsCount }} variants </v-list-item-subtitle>
   </v-list-item>
 </template>
 

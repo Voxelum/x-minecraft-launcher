@@ -3,16 +3,16 @@
     v-if="error"
     type="error"
     prominent
-    border="left"
+    border="start"
   >
     <div class="flex items-center justify-center">
       {{ error }}
       <v-spacer />
       <v-btn
-        text
+        variant="text"
         @click="push('/setting')"
       >
-        <v-icon left>
+        <v-icon start>
           settings
         </v-icon>
         {{ t('setting.name', 2) }}

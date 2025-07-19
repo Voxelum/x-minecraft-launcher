@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-4">
     <v-btn
-      text
+      variant="text"
       :disabled="creating"
       @click="emit('quit')"
     >

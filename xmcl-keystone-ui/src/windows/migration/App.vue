@@ -1,27 +1,46 @@
 <template>
   <v-app class="relative h-full max-h-[100vh] overflow-auto">
     <v-card class="flex h-full flex-col overflow-auto">
-      <v-toolbar class="moveable w-full" flat>
+      <v-toolbar
+        class="moveable w-full"
+        flat
+      >
         <v-toolbar-title>{{ t('title') }}</v-toolbar-title>
         <v-spacer />
-        <v-btn icon class="non-moveable" @click="hide">
+        <v-btn
+          icon
+          class="non-moveable"
+          @click="hide"
+        >
           <v-icon>
             close
           </v-icon>
         </v-btn>
       </v-toolbar>
-      <div v-if="progressRef" class="px-2 h-full flex-grow overflow-auto flex flex-col items-center justify-center">
+      <div
+        v-if="progressRef"
+        class="px-2 h-full flex-grow overflow-auto flex flex-col items-center justify-center"
+      >
         <!-- <div class="flex items-center justify-center"> -->
         <v-card-title>
           {{ progressRef.from }}
         </v-card-title>
         <!-- </div> -->
-        <v-progress-linear :value="progressRef.progress" :total="progressRef.total"
-          :indeterminate="progressRef.progress === 0" :height="10" class="rounded-none" />
+        <v-progress-linear
+          :model-value="progressRef.progress"
+          :total="progressRef.total"
+          :indeterminate="progressRef.progress === 0"
+          :height="10"
+          class="rounded-none"
+        />
         <v-card-title>
           {{ progressRef.to }}
         </v-card-title>
-        <v-progress-circular class="mt-13" :size="40" indeterminate />
+        <v-progress-circular
+          class="mt-13"
+          :size="40"
+          indeterminate
+        />
       </div>
     </v-card>
   </v-app>

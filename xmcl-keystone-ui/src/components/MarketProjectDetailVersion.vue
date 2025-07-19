@@ -108,13 +108,13 @@ export interface ProjectVersion {
 }
 
 const loaders = computed(() => props.version.loaders.map(l => {
-  if (l.toLowerCase() === 'vanilla') return { icon: '$vuetify.icons.minecraft', loader: l }
-  if (l.toLowerCase() === 'forge') return { icon: '$vuetify.icons.forge', loader: l }
-  if (l.toLowerCase() === 'fabric') return { icon: '$vuetify.icons.fabric', loader: l }
-  if (l.toLowerCase() === 'quilt') return { icon: '$vuetify.icons.quilt', loader: l }
-  if (l.toLowerCase() === 'neoforge') return { icon: '$vuetify.icons.neoForged', loader: l }
-  if (l.toLowerCase() === 'iris') return { icon: '$vuetify.icons.iris', loader: l }
-  if (l.toLowerCase() === 'optifine') return { icon: '$vuetify.icons.optifine', loader: l }
+  if (l.toLowerCase() === 'vanilla') return { icon: 'xmcl:minecraft', loader: l }
+  if (l.toLowerCase() === 'forge') return { icon: 'xmcl:forge', loader: l }
+  if (l.toLowerCase() === 'fabric') return { icon: 'xmcl:fabric', loader: l }
+  if (l.toLowerCase() === 'quilt') return { icon: 'xmcl:quilt', loader: l }
+  if (l.toLowerCase() === 'neoforge') return { icon: 'xmcl:neoForged', loader: l }
+  if (l.toLowerCase() === 'iris') return { icon: 'xmcl:iris', loader: l }
+  if (l.toLowerCase() === 'optifine') return { icon: 'xmcl:optifine', loader: l }
   return { loader: l }
 }))
 const { getColorCode } = useVuetifyColor()

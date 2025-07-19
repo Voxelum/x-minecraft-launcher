@@ -4,14 +4,11 @@
     style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
   >
     <v-form
-      lazy-validation
       style="height: 100%;"
-      :value="valid"
-      @input="onUpdate"
+      @v-model="valid"
     >
       <v-list
-        three-line
-        subheader
+        lines="three"
         color="transparent"
         style="width: 100%"
       >
@@ -19,7 +16,7 @@
           <div class="mt-4 grid grid-cols-4 gap-4">
             <v-text-field
               v-model="content.name"
-              outlined
+              variant="outlined"
               autofocus
               :loading="loading"
               :disabled="loading"
@@ -33,7 +30,7 @@
               v-model="content.author"
               :loading="loading"
               :disabled="loading"
-              outlined
+              variant="outlined"
               persistent-hint
               :hint="t('modpack.authorHint')"
               :label="t('author')"
@@ -44,7 +41,7 @@
               :loading="loading"
               :disabled="loading"
               class="col-span-2"
-              outlined
+              variant="outlined"
               persistent-hint
               :hint="t('modpack.descriptionHint')"
               :label="t('description')"
@@ -53,10 +50,10 @@
         </v-list-item>
       </v-list>
     </v-form>
-    <StepperAdvanceContent :valid.sync="valid" />
-    <v-subheader v-if="loading || error || files.length > 0">
+    <StepperAdvanceContent :valid="valid" />
+    <v-list-subheader v-if="loading || error || files.length > 0">
       {{ t('instanceTemplate.preview') }}
-    </v-subheader>
+    </v-list-subheader>
     <v-skeleton-loader
       v-if="loading"
       type="list-item-avatar-two-line,list-item-avatar-two-line,list-item-avatar-two-line,list-item-avatar-two-line,list-item-avatar-two-line"
@@ -80,16 +77,16 @@ import { provideFileNodes } from '@/composables/instanceFileNodeData'
 import { kInstances } from '@/composables/instances'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
-import { required } from '@/util/props'
 import { kInstanceCreation } from '../composables/instanceCreation'
 import ErrorView from './ErrorView.vue'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
 import StepperAdvanceContent from './StepperAdvanceContent.vue'
 
-defineProps({
-  valid: required(Boolean),
+defineModel('valid', {
+  type: Boolean,
+  default: true,
+  required: true,
 })
-const emit = defineEmits(['update:valid'])
 const { t } = useI18n()
 const { data: content, files, loading, error } = injection(kInstanceCreation)
 const { instances } = injection(kInstances)
@@ -100,10 +97,6 @@ const nameRules = computed(() => [
 ])
 
 const scrollElement = ref<HTMLElement | null>(null)
-
-const onUpdate = ($event: any) => {
-  emit('update:valid', $event)
-}
 
 provideFileNodes(computed(() => files.value.map(f => ({
   path: f.path,

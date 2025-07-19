@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+    class="flex flex-grow-0 items-center justify-center gap-3"
   >
     <template
       v-for="(i) of items"
+      :key="i.title"
     >
       <AvatarItem
-        :key="i.title"
         :icon="i.icon"
         :title="i.title"
         :text="i.text"
@@ -15,7 +15,6 @@
       />
       <v-divider
         v-if="i !== items[items.length - 1]"
-        :key="i.title + 'divider'"
         vertical
       />
     </template>

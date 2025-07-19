@@ -1,58 +1,70 @@
 <template>
   <v-menu
     v-model="shown"
-    :position-x="x"
-    :position-y="y"
+    :target="[x, y]"
     absolute
-    offset-y
     z-index="205"
   >
-    <v-list dense>
-      <template v-for="(item, index) in items">
+    <v-list density="compact">
+      <template 
+        v-for="(item, index) in items" 
+        :key="item.text"
+      >
         <v-list-item
-          :key="item.text"
           class="min-w-40 mx-1 rounded-lg"
+          :title="item.text"
           @click="item.onClick"
+        >
+          <template 
+            v-if="item.icon" 
+            #prepend
           >
-          <v-list-item-icon v-if="item.icon">
             <v-icon
-              :size="item.icon === '$vuetify.icons.curseforge' ? 22 : undefined"
+              :size="item.icon === 'xmcl:curseforge' ? 22 : undefined"
               :color="item.color || ''"
             >
               {{ item.icon }}
             </v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>{{ item.text }}</v-list-item-title>
-          <v-menu v-if="item.children" :key="item.text" offset-x open-on-hover>
-            <template #activator="{ on, attrs }">
+          </template>
+          <v-menu
+            v-if="item.children"
+            :key="item.text"
+            location="end"
+            open-on-hover
+          >
+            <template #activator="{ props }">
               <v-list-item-action
                 class="w-[100%] justify-end"
-                v-bind="attrs"
-                v-on="on"
+               
+                v-bind="props"
                 @click.stop="item.onClick"
               >
                 <v-icon>arrow_right</v-icon>
               </v-list-item-action>
             </template>
 
-            <v-list dense :color="isDark ? 'secondary' : ''">
+            <v-list
+              density="compact"
+              :color="isDark ? 'secondary' : ''"
+            >
               <v-list-item
-                v-for="(child, i) in item.children"
-                  :key="child.text"
-                  class="min-w-40 mx-1 rounded-lg"
-                  @click="child.onClick(); shown = false"
-                >
-                <v-list-item-icon
+                v-for="child in item.children"
+                :key="child.text"
+                :title="child.text"
+                class="min-w-40 mx-1 rounded-lg"
+                @click="child.onClick(); shown = false"
+              >
+                <template 
                   v-if="child.icon"
+                  #prepend
                 >
                   <v-icon
-                    :size="child.icon === '$vuetify.icons.curseforge' ? 22 : undefined"
+                    :size="child.icon === 'xmcl:curseforge' ? 22 : undefined"
                     :color="child.color || ''"
                   >
                     {{ child.icon }}
                   </v-icon>
-                </v-list-item-icon>
-                <v-list-item-title>{{ child.text }}</v-list-item-title>
+                </template>
               </v-list-item>
             </v-list>
           </v-menu>

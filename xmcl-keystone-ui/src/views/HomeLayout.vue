@@ -1,21 +1,27 @@
 <template>
   <div
     ref="containerRef"
-    class="home-page visible-scroll relative flex max-h-full flex-1 flex-col overflow-x-hidden"
+    class="home-page visible-scroll relative flex max-h-full h-full flex-1 flex-col overflow-x-hidden"
     :style="{ scrollbarGutter: 'stable' }"
     @wheel="onScroll"
   >
-    <HomeHeader ref="headerEl" class="sticky top-0 z-20" />
+    <HomeHeader
+      ref="headerEl"
+      class="sticky top-0 z-20"
+    />
 
-    <!-- This is to fix strange hover color issue... -->
-    <transition
-      name="fade-transition"
-      mode="out-in"
-      @after-enter="end"
-      @leave="start"
+    <router-view
+      v-slot="{ Component }"
     >
-      <router-view />
-    </transition>
+      <transition
+        name="fade-transition"
+        mode="out-in"
+        @after-enter="end"
+        @leave="start"
+      >
+        <component :is="Component" />
+      </transition>
+    </router-view>
 
     <HomeLogDialog />
     <HomeDropModpackDialog />

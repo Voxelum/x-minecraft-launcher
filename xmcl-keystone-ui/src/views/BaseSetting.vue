@@ -1,8 +1,14 @@
 <template>
-  <div class="base-setting px-10 overflow-auto" @wheel.stop>
+  <v-list
+    class="base-setting px-10 overflow-auto"
+    @wheel.stop
+  >
     <div>
       <BaseSettingGeneral class="" />
-      <BaseSettingVersions :isExpanded="isExpanded" class=""  />
+      <BaseSettingVersions
+        :is-expanded="isExpanded"
+        class=""
+      />
       <v-divider v-if="!isExpanded" />
     </div>
     <div>
@@ -10,15 +16,21 @@
       <BaseSettingSync class="" />
       <BaseSettingLaunch class="" />
       <BaseSettingResolution class="" />
-      <BaseSettingModpack class="" v-if="!isServer" />
-      <BaseSettingServer class="" v-else />
+      <BaseSettingModpack
+        v-if="!isServer"
+        class=""
+      />
+      <BaseSettingServer
+        v-else
+        class=""
+      />
     </div>
 
     <v-snackbar
       :color="snackbarColor"
       :class="{ 'shake-animation': hasAnimation }"
       :timeout="-1"
-      :value="isModified"
+      :model-value="isModified"
     >
       <div class="text-button mr-4">
         {{ t('modified.unsaved') }}
@@ -30,7 +42,7 @@
           v-bind="attrs"
         >
           <v-btn
-            text
+            variant="text"
             @click="onReset"
           >
             {{ t('modified.reset') }}
@@ -44,7 +56,7 @@
         </div>
       </template>
     </v-snackbar>
-  </div>
+  </v-list>
 </template>
 
 <script lang=ts setup>

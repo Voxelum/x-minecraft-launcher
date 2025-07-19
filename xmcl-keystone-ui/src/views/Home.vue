@@ -4,14 +4,24 @@
     class="select-none"
   >
     <HomeCriticalError />
-    <transition name="slide-y-reverse-transition" mode="out-in">
-      <div v-if="!isFocus" class="mx-3 relative" >
+    <transition
+      name="slide-y-reverse-transition"
+      mode="out-in"
+    >
+      <div
+        v-if="!isFocus"
+        class="mx-3 relative"
+      >
         <Transition name="slide-y-reverse-transition">
           <div class="flex items-center justify-center gap-1 sticky top-40 z-3">
             <v-divider
               class="divider mx-0"
             />
-            <v-btn class="z-4" icon @click="isFocus = true">
+            <v-btn
+              class="z-4"
+              icon
+              @click="isFocus = true"
+            >
               <v-icon>
                 keyboard_arrow_down
               </v-icon>

@@ -3,23 +3,21 @@
     style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
   >
     <v-form
-      lazy-validation
       style="height: 100%;"
-      :value="valid"
-      @input="emit('update:valid', $event)"
+      :model-value="valid"
+      @update:model-value="emit('update:valid', $event)"
     >
       <div
         class="flex flex-col gap-4"
       >
         <v-list
-          three-line
-          subheader
+          lines="three"
           color="transparent"
           class="w-full pb-0"
         >
           <v-list-item>
             <v-card
-              outlined
+              border
               class="mb-6 flex flex-col gap-4 p-2 hover:bg-[rgba(0,0,0,0.2)]"
             >
               <div class="flex w-full items-center gap-5">
@@ -48,9 +46,9 @@
               <div class="mb-2 grid grid-cols-12 gap-4">
                 <v-combobox
                   class="col-span-6"
-                  outlined
+                  variant="outlined"
                   hide-details
-                  :value="acceptingMinecrafts"
+                  :model-value="acceptingMinecrafts"
                   append-icon="title"
                   :label="t('server.version')"
                   :readonly="true"
@@ -58,9 +56,9 @@
                 />
                 <v-text-field
                   class="col-span-4"
-                  outlined
+                  variant="outlined"
                   hide-details
-                  :value="status.players.online + '/' + status.players.max"
+                  :model-value="status.players.online + '/' + status.players.max"
                   append-icon="people"
                   :label="t('server.players')"
                   :readonly="true"
@@ -68,8 +66,8 @@
                 />
                 <v-text-field
                   class="col-span-2"
-                  :value="status.ping"
-                  outlined
+                  :model-value="status.ping"
+                  variant="outlined"
                   hide-details
                   append-icon="signal_cellular_alt"
                   :label="t('server.ping')"
@@ -85,7 +83,7 @@
               <v-text-field
                 v-model="serverField"
                 :rules="[!serverField ? 'Required' : undefined]"
-                outlined
+                variant="outlined"
                 persistent-hint
                 autofocus
                 :hint="t('server.hostHint')"
@@ -95,15 +93,14 @@
               <div />
               <div class="flex justify-end">
                 <v-btn
-                  text
-                  x-large
+                  size="x-large"
                   color="primary"
                   :disabled="!server.host"
                   :loading="pinging"
-                  outlined
+                  variant="outlined"
                   @click="refresh"
                 >
-                  <v-icon left>
+                  <v-icon start>
                     wifi
                   </v-icon>
                   {{ t('refresh') }}

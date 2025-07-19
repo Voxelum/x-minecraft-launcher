@@ -1,12 +1,12 @@
 <template>
   <v-dialog
-    :value="value"
+    :model-value="value"
     width="500"
     persistent
   >
     <v-card>
       <v-card-title
-        class="headline"
+        class="text-h5"
         primary-title
       >
         {{ t('save.copy.title') }}
@@ -30,14 +30,14 @@
         <v-spacer />
         <v-btn
           color="error"
-          text
+          variant="text"
           @click="cancel"
         >
           {{ t('save.copy.cancel') }}
         </v-btn>
         <v-btn
           color="primary"
-          text
+          variant="text"
           @click="operate"
         >
           {{ t('save.copy.confirm') }}

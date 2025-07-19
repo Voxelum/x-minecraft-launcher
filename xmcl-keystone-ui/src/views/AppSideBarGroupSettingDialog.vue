@@ -58,9 +58,9 @@ const { t } = useI18n()
           autofocus
         />
         <template v-if="hasColor">
-          <v-subheader class="px-0">
+          <v-list-subheader class="px-0">
             {{ t('color') }}
-          </v-subheader>
+          </v-list-subheader>
           <v-color-picker
             v-model="color"
             dot-size="25"
@@ -73,7 +73,7 @@ const { t } = useI18n()
       <v-divider />
       <v-card-actions>
         <v-btn
-          text
+          variant="text"
           @click="isShown = false"
         >
           {{ t('cancel') }}
@@ -83,7 +83,7 @@ const { t } = useI18n()
           color="primary"
           @click="onSave"
         >
-          <v-icon left>
+          <v-icon start>
             save
           </v-icon>
           {{ t('modified.save') }}

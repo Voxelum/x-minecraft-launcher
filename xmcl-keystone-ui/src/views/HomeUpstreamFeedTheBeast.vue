@@ -201,11 +201,11 @@ function onChangelog(version: ProjectVersionProps) {
 </script>
 <template>
   <HomeUpstreamBase
+    v-model:only-current-version="onlyCurrentVersion"
     :items="items"
     :current-version="currentVersion"
     :header="headerData"
     :duplicating="duplicating"
-    :only-current-version.sync="onlyCurrentVersion"
     @duplicate="onDuplicate"
     @update="onUpdate"
     @changelog="onChangelog"

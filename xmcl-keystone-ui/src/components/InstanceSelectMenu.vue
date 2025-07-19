@@ -1,13 +1,13 @@
 <template>
   <v-menu>
-    <template #activator="{ on }">
+    <template #activator="{ props }">
       <v-btn
         :block="block"
         :disabled="disabled"
-        text
-        v-on="on"
+        variant="text"
+        v-bind="props"
       >
-        <v-icon left>
+        <v-icon start>
           keyboard_arrow_down
         </v-icon>
         <span class="lg:max-w-88 max-w-full overflow-ellipsis break-all">
@@ -20,35 +20,43 @@
       </v-btn>
     </template>
     <v-list class="max-h-100 overflow-auto">
-      <v-list-item @click="onSelect(defaultItem)">
-        <v-list-item-avatar>
-          <v-icon>close</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-title>{{ defaultItem.name }}</v-list-item-title>
+      <v-list-item
+        :title="defaultItem.name"
+        @click="onSelect(defaultItem)"
+      >
+        <template #prepend>
+          <v-avatar>
+            <v-icon>close</v-icon>
+          </v-avatar>
+        </template>
       </v-list-item>
       <v-list-item
         v-for="(item, index) in items"
         :key="item.path + index"
         @click="onSelect(item)"
       >
-        <v-list-item-avatar>
-          <v-icon>golf_course</v-icon>
-        </v-list-item-avatar>
-        <v-list-item-title class="flex items-center">
-          {{
-            t("curseforge.installTo", { path: item.name })
-          }}
-          <div class="flex-grow" />
-          <v-chip
-            v-if="path === item.path"
-            color="primary"
-            outlined
-            label
-            small
-          >
-            {{ t('instance.current') }}
-          </v-chip>
-        </v-list-item-title>
+        <template #prepend>
+          <v-avatar>
+            <v-icon>golf_course</v-icon>
+          </v-avatar>
+        </template>
+        <template #title>
+          <v-list-item-title class="flex items-center">
+            {{
+              t("curseforge.installTo", { path: item.name })
+            }}
+            <div class="flex-grow" />
+            <v-chip
+              v-if="path === item.path"
+              color="primary"
+              variant="outlined"
+              label
+              size="small"
+            >
+              {{ t('instance.current') }}
+            </v-chip>
+          </v-list-item-title>
+        </template>
       </v-list-item>
     </v-list>
   </v-menu>

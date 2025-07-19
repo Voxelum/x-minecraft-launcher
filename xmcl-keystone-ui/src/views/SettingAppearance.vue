@@ -2,7 +2,7 @@
   <div>
     <SettingHeader>🎨 {{ t("setting.appearance") }}</SettingHeader>
     <SettingItemSelect
-      :select.sync="layout"
+      v-model:select="layout"
       :title="t('setting.layoutTitle')"
       :description="t('setting.layoutDescription')"
       :items="layouts"
@@ -14,121 +14,117 @@
       :description="t('setting.linuxTitlebarDescription')"
     />
     <SettingItemSelect
-      :select.sync="darkModel"
+      v-model:select="darkModel"
       :title="t('setting.darkTheme')"
       :description="t('setting.darkThemeDescription')"
       :items="themes"
     />
-    <v-list-item class="items-center justify-center">
-      <v-list-item-action class="self-center">
-        <v-tooltip
-          color="warning"
-          outlined
-          right
+    <v-list-item
+      class="items-center justify-center"
+      :title="t('setting.colorTheme.name')"
+      :subtitle="t('setting.colorTheme.description')"
+    >
+      <template #prepend>
+        <v-list-item-action class="self-center">
+          <v-tooltip
+            color="warning"
+            outlined
+            location="right"
+          >
+            <template #activator="{ props }">
+              <v-btn
+                variant="text"
+                icon
+                v-bind="props"
+                @click="resetToDefault"
+              >
+                <v-icon>
+                  restore
+                </v-icon>
+              </v-btn>
+            </template>
+            {{ t('setting.resetToDefault') }}
+          </v-tooltip>
+        </v-list-item-action>
+      </template>
+      
+      <template #append>
+        <v-list-item-action
+          app-bar
+          class="ml-[16px]"
         >
-          <template #activator="{ on }">
-            <v-btn
-              text
-              icon
-              v-on="on"
-              @click="resetToDefault"
-            >
-              <v-icon>
-                restore
-              </v-icon>
-            </v-btn>
-          </template>
-          {{ t('setting.resetToDefault') }}
-        </v-tooltip>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.colorTheme.name")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.colorTheme.description")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
+          <SettingAppearanceColor
+            v-model="appBarColor"
+            v-model:blur="blurAppBar"
+            has-blur
+            :text="t('setting.colorTheme.appBarColor')"
+          />
+        </v-list-item-action>
+        <v-list-item-action
+          sidebar
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="sideBarColor"
+            v-model:blur="blurSidebar"
+            has-blur
+            :text="t('setting.colorTheme.sideBarColor')"
+          />
+        </v-list-item-action>
 
-      <v-list-item-action
-        app-bar
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="appBarColor"
-          :blur.sync="blurAppBar"
-          has-blur
-          :text="t('setting.colorTheme.appBarColor')"
-        />
-      </v-list-item-action>
-      <v-list-item-action
-        sidebar
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="sideBarColor"
-          :blur.sync="blurSidebar"
-          has-blur
-          :text="t('setting.colorTheme.sideBarColor')"
-        />
-      </v-list-item-action>
-
-      <v-list-item-action
-        primary
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="primaryColor"
-          :text="t('setting.colorTheme.primaryColor')"
-        />
-      </v-list-item-action>
-      <v-list-item-action
-        primary
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="cardColor"
-          :blur.sync="blurCard"
-          has-blur
-          :text="t('setting.colorTheme.cardColor')"
-        />
-      </v-list-item-action>
-      <v-list-item-action
-        secondary
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="backgroundColor"
-          :blur.sync="blur"
-          has-blur
-          :text="t('setting.colorTheme.backgroundColor')"
-        />
-      </v-list-item-action>
-      <v-list-item-action
-        warning
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="warningColor"
-          :text="t('setting.colorTheme.warningColor')"
-        />
-      </v-list-item-action>
-      <v-list-item-action
-        error
-        class="ml-[16px]"
-      >
-        <SettingAppearanceColor
-          v-model="errorColor"
-          :text="t('setting.colorTheme.errorColor')"
-        />
-      </v-list-item-action>
+        <v-list-item-action
+          primary
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="primaryColor"
+            :text="t('setting.colorTheme.primaryColor')"
+          />
+        </v-list-item-action>
+        <v-list-item-action
+          primary
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="cardColor"
+            v-model:blur="blurCard"
+            has-blur
+            :text="t('setting.colorTheme.cardColor')"
+          />
+        </v-list-item-action>
+        <v-list-item-action
+          secondary
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="backgroundColor"
+            v-model:blur="blur"
+            has-blur
+            :text="t('setting.colorTheme.backgroundColor')"
+          />
+        </v-list-item-action>
+        <v-list-item-action
+          warning
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="warningColor"
+            :text="t('setting.colorTheme.warningColor')"
+          />
+        </v-list-item-action>
+        <v-list-item-action
+          error
+          class="ml-[16px]"
+        >
+          <SettingAppearanceColor
+            v-model="errorColor"
+            :text="t('setting.colorTheme.errorColor')"
+          />
+        </v-list-item-action>
+      </template>
     </v-list-item>
     <SettingItemSelect
-      :select.sync="backgroundType"
+      v-model:select="backgroundType"
       :title="t('setting.backgroundType')"
       :description="t('setting.backgroundTypeDescription')"
       :items="backgroundTypes"
@@ -140,337 +136,232 @@
     />
     <SettingItemSelect
       v-if="backgroundType === 'particle'"
-      :select.sync="particleMode"
+      v-model:select="particleMode"
       :title="t('setting.particleMode.name')"
       :description="t('setting.particleModeDescription')"
       :items="particleModes"
     />
-    <v-list-item v-if="backgroundType === 'image'">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.backgroundImage")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.backgroundImageDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="mr-4">
+    <v-list-item 
+      v-if="backgroundType === 'image'"
+      :title="t('setting.backgroundImage')"
+      :subtitle="t('setting.backgroundImageDescription')"
+    >      
+      <template #prepend>
         <v-select
           v-model="backgroundImageFit"
           class="mr-4 w-40"
-          filled
+          variant="filled"
           hide-details
+          item-title="text"
           :label="t('setting.backgroundImageFit.name')"
           :items="backgroundImageFits"
         />
-      </v-list-item-action>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        :disabled="!backgroundImage"
-        @click="clearImage"
-      >
-        {{ t("setting.backgroundImageClear") }}
-      </v-btn>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="selectImage"
-      >
-        {{ t("setting.backgroundImageSelect") }}
-      </v-btn>
+      </template>
+      <template #append>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          :disabled="!backgroundImage"
+          @click="clearImage"
+        >
+          {{ t("setting.backgroundImageClear") }}
+        </v-btn>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="selectImage"
+        >
+          {{ t("setting.backgroundImageSelect") }}
+        </v-btn>
+      </template>
     </v-list-item>
-    <v-list-item v-if="backgroundType === 'video'">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.backgroundVideo")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.backgroundVideoDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action class="mr-4">
+    <v-list-item 
+      v-if="backgroundType === 'video'"
+      :title="t('setting.backgroundVideo')"
+      :subtitle="t('setting.backgroundVideoDescription')"
+    >      
+      <template #prepend>
         <v-select
           v-model="backgroundImageFit"
           class="mr-4 w-40"
-          filled
+          variant="filled"
           hide-details
           :label="t('setting.backgroundImageFit.name')"
+          item-title="text"
           :items="backgroundImageFits"
         />
-      </v-list-item-action>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        :disabled="!backgroundImage"
-        @click="clearVideo"
-      >
-        {{ t("setting.backgroundImageClear") }}
-      </v-btn>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="selectVideo"
-      >
-        {{ t("setting.backgroundVideoSelect") }}
-      </v-btn>
-    </v-list-item>
-    <v-list-item v-if="backgroundType === BackgroundType.VIDEO">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.backgroundVideoVolume")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.backgroundVideoVolumeDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-slider
-        v-model="volume"
-        step="0.01"
-        :min="0"
-        :max="1"
-        :hint="t('setting.backgroundVideoVolume')"
-        :always-dirty="true"
-      />
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-title>
-        {{
-          t("setting.backgroundMusic")
-        }}
-      </v-list-item-title>
-      <v-menu
-        offset-y
-        :disabled="backgroundMusic.length === 0"
-      >
-        <template #activator="{ on }">
-          <v-btn
-            outlined
-            text
-            :disabled="backgroundMusic.length === 0"
-            style="margin-right: 10px"
-            v-on="on"
-          >
-            {{ t("setting.viewBackgroundMusic") }}
-          </v-btn>
-        </template>
-        <v-list
-          dense
-          two-line
-        >
-          <v-list-item
-            v-for="(m, i) of backgroundMusic"
-            :key="m.url"
-            @click="viewMusic(m.url)"
-          >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ basename(m.url, '/') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ m.mimeType }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                icon
-                @click="removeMusic(i)"
-              >
-                <v-icon color="red">
-                  delete
-                </v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="selectMusic"
-      >
-        {{ t("setting.backgroundVideoSelect") }}
-      </v-btn>
-    </v-list-item>
-    <!-- <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.backgroundImageBlur")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t("setting.backgroundImageBlurDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-slider
-        v-model="blur"
-        :height="5"
-        :min="0"
-        :max="20"
-        :hint="t('setting.backgroundImageBlur')"
-        :always-dirty="true"
-      />
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.blurSidebar")
-          }}
-        </v-list-item-title>
-      </v-list-item-content>
-      <v-slider
-        v-model="blurSidebar"
-        :height="5"
-        :min="0"
-        :max="20"
-        :hint="t('setting.blurSidebar')"
-        :always-dirty="true"
-      />
-    </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t("setting.blurAppBar")
-          }}
-        </v-list-item-title>
-      </v-list-item-content>
-      <v-slider
-        v-model="blurAppBar"
-        :height="5"
-        :min="0"
-        :max="20"
-        :hint="t('setting.blurAppBar')"
-        :always-dirty="true"
-      />
-    </v-list-item> -->
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t('setting.themeFont')
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t('setting.themeFontDescription')
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <div class="flex flex-grow-0 gap-1 mr-2">
-        <v-btn-toggle
-          v-model="fontDelta"
-          mandatory
-          solo
-          dense
-        >
-          <v-btn
-            solo
-            class="h-unset!"
-          >
-            1px
-          </v-btn>
-          <v-btn
-            solo
-            class="h-unset!"
-          >
-            0.1px
-          </v-btn>
-        </v-btn-toggle>
+      </template>
+      <template #append>
         <v-btn
-          icon
-          @click="onFontSizeDecrease"
+          variant="outlined"
+          style="margin-right: 10px"
+          :disabled="!backgroundImage"
+          @click="clearVideo"
         >
-          <v-icon>
-            text_decrease
-          </v-icon>
+          {{ t("setting.backgroundImageClear") }}
         </v-btn>
-        <v-text-field
-          :value="`${Math.round(fontSize * 10) / 10}px`"
-          readonly
-          class="max-w-20"
-          solo
-          outlined
-          dense
-          hide-details
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="selectVideo"
+        >
+          {{ t("setting.backgroundVideoSelect") }}
+        </v-btn>
+      </template>
+    </v-list-item>
+    <v-list-item 
+      v-if="backgroundType === BackgroundType.VIDEO"
+      :title="t('setting.backgroundVideoVolume')"
+      :subtitle="t('setting.backgroundVideoVolumeDescription')"
+    > 
+      <template #append>
+        <v-slider
+          v-model="volume"
+          step="0.01"
+          :min="0"
+          :max="1"
+          :hint="t('setting.backgroundVideoVolume')"
+          :always-dirty="true"
         />
-        <v-btn
-          icon
-          @click="onFontSizeIncrease"
+      </template>
+    </v-list-item>
+    <v-list-item :title="t('setting.backgroundMusic')">
+      <template #append>
+        <v-menu
+          :disabled="backgroundMusic.length === 0"
         >
-          <v-icon>
-            text_increase
-          </v-icon>
+          <template #activator="{ props }">
+            <v-btn
+              variant="outlined"
+              :disabled="backgroundMusic.length === 0"
+              style="margin-right: 10px"
+              v-bind="props"
+            >
+              {{ t("setting.viewBackgroundMusic") }}
+            </v-btn>
+          </template>
+          <v-list
+            density="compact"
+            lines="two"
+          >
+            <v-list-item
+              v-for="(m, i) of backgroundMusic"
+              :key="m.url"
+              :title="basename(m.url, '/')"
+              :subtitle="m.mimeType"
+              @click="viewMusic(m.url)"
+            >
+              <template #append>
+                <v-btn
+                  icon
+                  @click="removeMusic(i)"
+                >
+                  <v-icon color="red">
+                    delete
+                  </v-icon>
+                </v-btn>
+              </template>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="selectMusic"
+        >
+          {{ t("setting.backgroundVideoSelect") }}
         </v-btn>
-      </div>
+      </template>
+    </v-list-item>
+    <v-list-item
+      :title="t('setting.themeFont')"
+      :subtitle="t('setting.themeFontDescription')"
+    >      
+      <template #append>
+        <div class="flex flex-grow-0 gap-1 mr-2">
+          <v-btn-toggle
+            v-model="fontDelta"
+            mandatory
+            solo
+            density="compact"
+          >
+            <v-btn
+              variant="tonal"
+              class="h-unset!"
+            >
+              1px
+            </v-btn>
+            <v-btn
+              variant="tonal"
+              class="h-unset!"
+            >
+              0.1px
+            </v-btn>
+          </v-btn-toggle>
+          <v-btn
+            icon
+            variant="text"
+            @click="onFontSizeDecrease"
+          >
+            <v-icon>
+              text_decrease
+            </v-icon>
+          </v-btn>
+          <v-text-field
+            :model-value="`${Math.round(fontSize * 10) / 10}px`"
+            readonly
+            class="max-w-20"
+            variant="solo"
+            density="compact"
+            hide-details
+          />
+          <v-btn
+            icon
+            variant="text"
+            @click="onFontSizeIncrease"
+          >
+            <v-icon>
+              text_increase
+            </v-icon>
+          </v-btn>
+        </div>
 
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="onSelectFont"
-      >
-        {{ t("setting.themeSelectFont") }}
-      </v-btn>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="onRevertFont"
-      >
-        {{ t("setting.themeResetFont") }}
-      </v-btn>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="onSelectFont"
+        >
+          {{ t("setting.themeSelectFont") }}
+        </v-btn>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="onRevertFont"
+        >
+          {{ t("setting.themeResetFont") }}
+        </v-btn>
+      </template>
     </v-list-item>
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            t('setting.themeShare')
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            t('setting.themeShareDescription')
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="onExportTheme"
-      >
-        {{ t("setting.themeExport") }}
-      </v-btn>
-      <v-btn
-        outlined
-        text
-        style="margin-right: 10px"
-        @click="onImportTheme"
-      >
-        {{ t("setting.themeImport") }}
-      </v-btn>
+    <v-list-item
+      :title="t('setting.themeShare')"
+      :subtitle="t('setting.themeShareDescription')"
+    >
+      <template #append>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="onExportTheme"
+        >
+          {{ t("setting.themeExport") }}
+        </v-btn>
+        <v-btn
+          variant="outlined"
+          style="margin-right: 10px"
+          @click="onImportTheme"
+        >
+          {{ t("setting.themeImport") }}
+        </v-btn>
+      </template>
     </v-list-item>
   </div>
 </template>

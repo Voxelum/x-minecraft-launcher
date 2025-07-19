@@ -12,35 +12,28 @@
           v-model="fab"
           v-shared-tooltip.left="() => t('userSkin.importFile')"
           :disabled="disabled || !hasSkin"
-          fab
+          icon="edit"
           color="primary"
           @click="load"
-        >
-          <v-icon>edit</v-icon>
-        </v-btn>
+        />
       </v-fab-transition>
     </template>
     <v-btn
       v-shared-tooltip.left="() => t('userSkin.importLink')"
       :disabled="disabled || !hasSkin"
-      fab
-      light
-      small
+      icon="link"
+      size="small"
       color="white"
       @click="upload"
-    >
-      <v-icon>link</v-icon>
-    </v-btn>
+    />
     <v-btn
       v-shared-tooltip.left="() => t('userSkin.saveTitle')"
       :disabled="disabled"
-      fab
-      small
+      icon="save"
+      size="small"
       color="blue"
       @click="save"
-    >
-      <v-icon>save</v-icon>
-    </v-btn>
+    />
   </v-speed-dial>
 </template>
 

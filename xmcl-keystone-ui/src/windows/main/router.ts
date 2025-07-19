@@ -1,4 +1,5 @@
 import BaseSetting from '@/views/BaseSetting.vue'
+import BaseSettingExtension from '@/views/BaseSettingExtension.vue'
 import Home from '@/views/Home.vue'
 import HomeActions from '@/views/HomeActions.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
@@ -23,11 +24,10 @@ import StoreEntry from '@/views/StoreEntry.vue'
 import StoreProjectCurseforge from '@/views/StoreProjectCurseforge.vue'
 import StoreProjectFeedTheBeast from '@/views/StoreProjectFeedTheBeast.vue'
 import StoreProjectModrinth from '@/views/StoreProjectModrinth.vue'
-import Vue from 'vue'
-import Router from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-Vue.use(Router)
-export const router = new Router({
+export const router = createRouter({
+  history: createWebHashHistory(),
   routes: [
     {
       path: '/',
@@ -77,7 +77,7 @@ export const router = new Router({
           path: '/base-setting',
           components: {
             default: BaseSetting,
-            extensions: HomeExtension,
+            extensions: BaseSettingExtension,
             actions: HomeActions,
           },
         },

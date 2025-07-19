@@ -2,7 +2,7 @@
   <v-list-item
     v-if="Object.keys(env).length > 0"
     class="fix-after gap-x-4 grid grid-cols-2"
-    dense
+    density="compact"
   >
     <!-- <div> -->
     <div
@@ -10,7 +10,7 @@
       :key="key"
       class="flex items-center v-list-item__subtitle"
     >
-      <v-icon left>
+      <v-icon start>
         key
       </v-icon>
       <span

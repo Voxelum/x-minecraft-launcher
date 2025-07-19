@@ -1,5 +1,5 @@
 import { Instance, PingServerOptions, ServerStatus, ServerStatusServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey, Ref, computed, ref, set, watch } from 'vue'
+import { InjectionKey, Ref, computed, ref, watch } from 'vue'
 
 import { useService } from '@/composables'
 import { useLocalStorageCache } from '@/composables/cache'
@@ -79,11 +79,11 @@ export function useInstancesServerStatus() {
   const pingingStatus = usePinging()
   async function refreshOne(server: { host: string; port?: number }) {
     const id = `${server.host}:${server.port ?? 25565}`
-    set(cache.value, id, pingingStatus.value)
-    set(cache.value, id, await pingServer({
+    cache.value[id] = pingingStatus.value
+    cache.value[id] = await pingServer({
       host: server.host,
       port: server.port,
-    }))
+    })
     // Workaround to force save as reactivity is broken
     localStorage.setItem('serverStatusCache', JSON.stringify(cache.value))
   }
@@ -106,13 +106,13 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
   const serverId = computed(() => `${serverRef.value.host}:${serverRef.value.port ?? 25565}`)
   watch(serverId, () => {
     if (!cache.value[serverId.value]) {
-      set(cache.value, serverId.value, unknownStatus.value)
+      cache.value[serverId.value] = unknownStatus.value
     }
   }, { immediate: true })
   const status = computed<ServerStatus>({
     get() { return cache.value[serverId.value] ?? unknownStatus.value },
     set(v) {
-      set(cache.value, serverId.value, v)
+      cache.value[serverId.value] = v
       localStorage.setItem('serverStatusCache', JSON.stringify(cache.value))
     },
   })

@@ -5,9 +5,9 @@
       class="w-full"
       :rules="rules"
       :label="t('userSkin.placeUrlHere')"
-      validate-on-blur
+      validate-on="blur"
       clearable
-      @input="validate"
+      @update:model-value="validate"
     />
     <div class="flex w-full">
       <v-spacer />
@@ -15,7 +15,7 @@
         :disabled="data.error"
         @click="submit"
       >
-        <v-icon left>
+        <v-icon start>
           inbox
         </v-icon>
         {{ t('userSkin.import') }}

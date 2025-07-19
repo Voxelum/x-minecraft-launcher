@@ -11,12 +11,12 @@
     :button="files.length > 0 ? {
       text: t('mod.manage'),
       icon: 'settings'
-     } : undefined"
+    } : undefined"
     :refreshing="false"
     :addition-button="{ 
       icon: 'file_download',
       text: t('install'),
-     }"
+    }"
     @navigate-addition="push('/resourcepacks?source=remote')"
     @navigate="push('/resourcepacks')"
     @dragenter="highlight += 1"

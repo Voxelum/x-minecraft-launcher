@@ -45,44 +45,46 @@ const { t } = useI18n()
           {{ t('mod.incompatibleHintDescription') }}
         </div>
         <v-list
-          dense
+          density="compact"
           nav
           class="overflow-auto"
         >
-          <template v-for="(item, i) of items">
-            <v-subheader
+          <template 
+            v-for="(item, i) of items" 
+            :key="typeof item === 'string' ? item + i : item.modId + i"
+          >
+            <v-list-subheader
               v-if="typeof item === 'string'"
-              :key="item + i"
             >
               {{ item }}
-            </v-subheader>
+            </v-list-subheader>
             <v-list-item
               v-else
-              :key="item.modId + i"
               small
             >
-              <v-list-item-avatar>
-                <!-- <img :src="modsIconsMap[item.modId]"> -->
-                {{ getCompatibleIcon(item) }}
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title class="flex gap-2 items-center">
-                  {{ item.modId }}
-                  <v-chip
-                    v-if="item.optional"
-                    small
-                    label
-                    outlined
-                    color="yellow darken-2"
-                    class="mb-1"
-                  >
-                    {{ t('optional') }}
-                  </v-chip>
-                </v-list-item-title>
-                <v-list-item-subtitle>
-                  {{ getTooltip(item) }}
-                </v-list-item-subtitle>
-              </v-list-item-content>
+              <template #prepend>
+                <v-avatar>
+                  <!-- <img :src="modsIconsMap[item.modId]"> -->
+                  {{ getCompatibleIcon(item) }}
+                </v-avatar>
+              </template>
+              
+              <v-list-item-title class="flex gap-2 items-center">
+                {{ item.modId }}
+                <v-chip
+                  v-if="item.optional"
+                  size="small"
+                  label
+                  variant="outlined"
+                  color="yellow-darken-2"
+                  class="mb-1"
+                >
+                  {{ t('optional') }}
+                </v-chip>
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ getTooltip(item) }}
+              </v-list-item-subtitle>
             </v-list-item>
           </template>
         </v-list>

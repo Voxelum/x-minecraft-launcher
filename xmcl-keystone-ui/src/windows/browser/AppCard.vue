@@ -7,7 +7,7 @@
         width="45px"
         height="45px"
         style="min-width: 45px; min-height: 45px;"
-        contain
+        cover
         :src="icon"
       >
     </div>
@@ -32,12 +32,12 @@
       >
         {{ t('browseApp.default') }}
       </v-chip>
-      <v-tooltip top>
-        <template #activator="{ on }">
+      <v-tooltip location="top">
+        <template #activator="{ props }">
           <v-btn
             icon
             class="v-10"
-            v-on="on"
+            v-bind="props"
             @click.stop.prevent="$emit('shortcut')"
           >
             <v-icon>shortcut</v-icon>
@@ -45,12 +45,12 @@
         </template>
         {{ t('browseApp.createShortcut') }}
       </v-tooltip>
-      <v-tooltip top>
-        <template #activator="{ on }">
+      <v-tooltip location="top">
+        <template #activator="{ props }">
           <v-btn
             icon
             class="v-10"
-            v-on="on"
+            v-bind="props"
             @click.stop.prevent="$emit('boot')"
           >
             <v-icon>play_arrow</v-icon>
@@ -58,13 +58,13 @@
         </template>
         {{ t('browseApp.launch') }}
       </v-tooltip>
-      <v-tooltip top>
-        <template #activator="{ on }">
+      <v-tooltip location="top">
+        <template #activator="{ props }">
           <v-btn
             icon
-            text
+            variant="text"
             color="error"
-            v-on="on"
+            v-bind="props"
             @click.stop.prevent="$emit('uninstall')"
           >
             <v-icon>delete_outline</v-icon>

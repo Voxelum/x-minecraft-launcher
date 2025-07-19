@@ -79,12 +79,12 @@ export function useAppDropHandler() {
   const { previewUrl } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {
-    mods: '$vuetify.icons.package',
+    mods: 'xmcl:package',
     unclassified: 'question_mark',
-    resourcepacks: '$vuetify.icons.zip',
-    shaderpacks: '$vuetify.icons.zip',
-    modpacks: '$vuetify.icons.package',
-    saves: '$vuetify.icons.zip',
+    resourcepacks: 'xmcl:zip',
+    shaderpacks: 'xmcl:zip',
+    modpacks: 'xmcl:package',
+    saves: 'xmcl:zip',
   }
 
   function getDescription(rsize: number | undefined, url: string) {
@@ -137,19 +137,19 @@ export function useAppDropHandler() {
 
   function getIcon(resource: Resource | undefined) {
     if (resource?.metadata['curseforge-modpack']) {
-      return '$vuetify.icons.curseforge'
+      return 'xmcl:curseforge'
     }
     if (resource?.metadata['modrinth-modpack']) {
-      return '$vuetify.icons.modrinth'
+      return 'xmcl:modrinth'
     }
     if (resource?.metadata['mcbbs-modpack']) {
-      return '$vuetify.icons.package'
+      return 'xmcl:package'
     }
     if (resource?.metadata.forge) {
-      return '$vuetify.icons.forge'
+      return 'xmcl:forge'
     }
     if (resource?.metadata.fabric) {
-      return '$vuetify.icons.fabric'
+      return 'xmcl:fabric'
     }
     return 'question_mark'
   }

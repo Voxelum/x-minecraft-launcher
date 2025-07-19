@@ -45,6 +45,7 @@ const emit = defineEmits<{
 </script>
 <template>
   <VersionInput
+    v-model:snapshot="canShowBuggy"
     :icon="BuiltinImages.forge"
     title="Forge"
     url="https://github.com/MinecraftForge/MinecraftForge"
@@ -54,7 +55,6 @@ const emit = defineEmits<{
     :error="error"
     :clear-text="t('forgeVersion.disable')"
     :empty-text="t('forgeVersion.empty', { version: minecraft })"
-    :snapshot.sync="canShowBuggy"
     :snapshot-tooltip="t('fabricVersion.showSnapshot')"
     :refreshing="isValidating"
     :placeholder="t('forgeVersion.disable')"
