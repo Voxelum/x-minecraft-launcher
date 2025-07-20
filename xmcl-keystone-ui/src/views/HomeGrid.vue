@@ -12,6 +12,7 @@
     :vertical-compact="true"
     :use-css-transforms="true"
     @breakpoint-changed="onBreakpoint"
+    :key="layoutKey"
   >
     <GridItem
       v-for="item in layout"
@@ -130,6 +131,7 @@ const { homeLayout } = injection(kTheme)
 const layouts = computed(() => homeLayout.value || getDefaultHomeLayout())
 
 const layout = ref([] as GridItemType[])
+const layoutKey = ref(0)
 
 let lastBreakpoint = ''
 
@@ -198,6 +200,7 @@ watch(visibleCards, () => {
   }
   current.push(...toAdd);
   layout.value = [...current];
+  layoutKey.value++  // Force re-render
 }, { deep: true })
 
 let screenshotItem = undefined as undefined | HTMLElement
