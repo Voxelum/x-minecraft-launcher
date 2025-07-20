@@ -1511,11 +1511,12 @@ setting:
   viewBackgroundMusic: Переглянути музику
   enableCardBlur: Увімкнути розмиття карток
   enableCardBlurDescription: Увімкнути ефект розмиття для карток на головній сторінці.
-  showMods: Показувати картку модів
-  showResourcePacks: Показувати картку ресурсних пакетів
-  showShaderPacks: Показувати картку наборів шейдерів
-  showSaves: Показувати картку збережень
-  showScreenshots: Показувати картку скріншотів
+  visibleCards:
+    showMods: Показувати картку модів
+    showResourcePacks: Показувати картку ресурсних пакетів
+    showShaderPacks: Показувати картку наборів шейдерів
+    showSaves: Показувати картку світів
+    showScreenshots: Показувати картку скріншотів
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням

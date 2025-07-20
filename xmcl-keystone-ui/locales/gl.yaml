@@ -523,11 +523,12 @@ setting:
   update: Actualizar
   enableCardBlur: Activar desenfoque de tarxeta
   enableCardBlurDescription: Aplicar un efeito de desenfoque ás tarxetas para un aspecto moderno.
-  showMods: Mostrar tarxeta de mods
-  showResourcePacks: Mostrar tarxeta de paquetes de recursos
-  showShaderPacks: Mostrar tarxeta de paquetes de shaders
-  showSaves: Mostrar tarxeta de gardados
-  showScreenshots: Mostrar tarxeta de capturas de pantalla
+  visibleCards:
+    showMods: Mostrar tarxeta de mods
+    showResourcePacks: Mostrar tarxeta de paquetes de recursos
+    showShaderPacks: Mostrar tarxeta de paquetes de shaders
+    showSaves: Mostrar tarxeta de mundos
+    showScreenshots: Mostrar tarxeta de capturas de pantalla
 setup:
   appearance:
     name: '@:setting.appearance'

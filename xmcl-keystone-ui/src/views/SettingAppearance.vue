@@ -46,6 +46,11 @@
       v-model="showScreenshots"
       :title="t('setting.visibleCards.screenshots')"
     />
+    <SettingItemCheckbox
+      v-model="enableCardBlur"
+      :title="t('setting.enableCardBlur')"
+      :description="t('setting.enableCardBlurDescription')"
+    />
     <v-list-item class="items-center justify-center">
       <v-list-item-action class="self-center">
         <v-tooltip
@@ -134,11 +139,6 @@
           :text="t('setting.textColor')"
         />
       </v-list-item-action>
-      <SettingItemCheckbox
-        v-model="enableCardBlur"
-        :title="t('setting.enableCardBlur')"
-        :description="t('setting.enableCardBlurDescription')"
-      />
       <v-list-item-action
         secondary
         class="ml-[16px]"

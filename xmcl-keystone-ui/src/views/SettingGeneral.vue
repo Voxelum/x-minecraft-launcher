@@ -74,13 +74,7 @@
       :items="replaceNativeItems"
       @update:select="onUpdateReplaceNative"
     />
-    <SettingItemSelect
-      :select="sidebarPosition"
-      :title="String($t('setting.sidebarPosition.name'))"
-      :description="String($t('setting.sidebarPosition.description'))"
-      :items="sidebarPositionItems"
-      @update:select="onUpdateSidebarPosition"
-    />
+    
   </div>
 </template>
 <script lang="ts" setup>
@@ -115,14 +109,12 @@ const {
 } = useSettings();
 const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })));
 const replaceNativeItems = computed(() => [{ text: t('disable'), value: '' }, { text: t('setting.replaceNatives.legacy'), value: 'legacy-only' }, { text: t('setting.replaceNatives.all'), value: 'all' }]);
-const sidebarPositionItems = computed(() => [{ text: t('setting.sidebarPosition.left'), value: 'left' }, { text: t('setting.sidebarPosition.right'), value: 'right' }]);
+
 const replaceNativeSelect = computed(() => replaceNative.value === false ? '' : replaceNative.value);
 function onUpdateReplaceNative(event: string) {
   replaceNative.value = !event ? false : event;
 }
-function onUpdateSidebarPosition(event: string) {
-  sidebarPosition.value = event as 'left' | 'right';
-}
+
 const { show } = useDialog('migration');
 const { root, showGameDirectory } = useGameDirectory();
 async function browseRootDir() {
@@ -135,9 +127,7 @@ const replaceNativeSelect = computed(() => replaceNative.value === false ? '' : 
 function onUpdateReplaceNative(event: string) {
   replaceNative.value = !event ? false : event;
 }
-function onUpdateSidebarPosition(event: string) {
-  sidebarPosition.value = event as 'left' | 'right';
-}
+// Remove sidebarPositionItems and onUpdateSidebarPosition
 const { show } = useDialog('migration');
 const { root, showGameDirectory } = useGameDirectory();
 async function browseRootDir() {

@@ -1395,11 +1395,12 @@ setting:
   useProxy: HTTP PROXY
   useProxyDescription: TEH PROXY SERVR ADDRES 4 DA HTTP REQUEST
   viewBackgroundMusic: VIEW MUSICS
-  showMods: SHOW MODZ CARD
-  showResourcePacks: SHOW RESOURCE PACKZ CARD
-  showShaderPacks: SHOW SHADR PACKZ CARD
-  showSaves: SHOW SAVEZ CARD
-  showScreenshots: SHOW SCREENSHOTS CARD
+  visibleCards:
+    showMods: SHOW MODZ CARD
+    showResourcePacks: SHOW RESOURCE PACKZ CARD
+    showShaderPacks: SHOW SHADR PACKZ CARD
+    showSaves: SHOW WORLDZ CARD
+    showScreenshots: SHOW SCREENSHOTS CARD
   enableCardBlur: ENABLE CARD BLUR
   enableCardBlurDescription: ENABLE BLUR ON CARDZ IN UI.
 settingLabel:

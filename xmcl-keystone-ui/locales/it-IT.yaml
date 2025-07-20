@@ -1454,7 +1454,7 @@ setting:
     showMods: Mostra carta mod
     showResourcePacks: Mostra carta pacchetti risorse
     showShaderPacks: Mostra carta pacchetti shader
-    showSaves: Mostra carta salvataggi
+    showSaves: Mostra carta mondi
     showScreenshots: Mostra carta schermate
   particleModeDescription: Seleziona il comportamento del clic della particella
   replaceNative: Sostituisci librerie native

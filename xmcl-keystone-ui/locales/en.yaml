@@ -1470,11 +1470,12 @@ setting:
   viewBackgroundMusic: View Musics
   enableCardBlur: Enable Card Blur
   enableCardBlurDescription: Enable the blur effect for cards on the main page.
-  showModsCard: Show Mods Card
-  showResourcePacksCard: Show Resource Packs Card
-  showShaderPacksCard: Show Shader Packs Card
-  showSavesCard: Show Saves Card
-  showScreenshotsCard: Show Screenshots Card
+  visibleCards:
+    showMods: Show Mods Card
+    showResourcePacks: Show Resource Packs Card
+    showShaderPacks: Show Shader Packs Card
+    showSaves: Show Worlds Card
+    showScreenshots: Show Screenshots Card
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting

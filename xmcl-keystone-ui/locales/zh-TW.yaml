@@ -1395,11 +1395,12 @@ setting:
   viewBackgroundMusic: 檢視背景音樂
   enableCardBlur: 啟用卡片模糊
   enableCardBlurDescription: 啟用主頁面卡片的模糊效果。
-  showMods: 顯示模組卡片
-  showResourcePacks: 顯示資源包卡片
-  showShaderPacks: 顯示著色器包卡片
-  showSaves: 顯示存檔卡片
-  showScreenshots: 顯示截圖卡片
+  visibleCards:
+    showMods: 顯示模組卡片
+    showResourcePacks: 顯示資源包卡片
+    showShaderPacks: 顯示著色器包卡片
+    showSaves: 顯示世界卡片
+    showScreenshots: 顯示截圖卡片
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定

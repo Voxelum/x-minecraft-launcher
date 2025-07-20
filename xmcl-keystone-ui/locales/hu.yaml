@@ -1500,11 +1500,12 @@ setting:
   viewBackgroundMusic: Zenék megtekintése
   enableCardBlur: Kártya elmosódás engedélyezése
   enableCardBlurDescription: Alkalmazzon elmosódási effektust a kártyákra modern megjelenésért.
-  showMods: Modok kártya megjelenítése
-  showResourcePacks: Erőforrás csomagok kártya megjelenítése
-  showShaderPacks: Shader csomagok kártya megjelenítése
-  showSaves: Mentések kártya megjelenítése
-  showScreenshots: Képernyőképek kártya megjelenítése
+  visibleCards:
+    showMods: Modok kártya megjelenítése
+    showResourcePacks: Erőforrás csomagok kártya megjelenítése
+    showShaderPacks: Shader csomagok kártya megjelenítése
+    showSaves: Világok kártya megjelenítése
+    showScreenshots: Képernyőképek kártya megjelenítése
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást

@@ -1623,11 +1623,12 @@ setting:
   viewBackgroundMusic: Musik anzeigen
   enableCardBlur: Kartenunschärfe aktivieren
   enableCardBlurDescription: Aktivieren Sie den Unschärfeeffekt für Karten auf der Hauptseite.
-  showMods: Mods-Karte anzeigen
-  showResourcePacks: Resource Packs-Karte anzeigen
-  showShaderPacks: Shader Packs-Karte anzeigen
-  showSaves: Saves-Karte anzeigen
-  showScreenshots: Screenshots-Karte anzeigen
+  visibleCards:
+    showMods: Mods-Karte anzeigen
+    showResourcePacks: Ressourcenpakete-Karte anzeigen
+    showShaderPacks: Shader Packs-Karte anzeigen
+    showSaves: Welten-Karte anzeigen
+    showScreenshots: Bildschirmfotos-Karte anzeigen
 settingLabel:
   global: Global
   globalHint: Diese Einstellung entspricht der globalen Einstellung

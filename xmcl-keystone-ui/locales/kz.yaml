@@ -467,11 +467,12 @@ server:
 setting:
   about: About
   backdropBlur: Backdrop Blur
-  showMods: Модтар картасын көрсету
-  showResourcePacks: Ресурс пакеттері картасын көрсету
-  showShaderPacks: Шейдер пакеттері картасын көрсету
-  showSaves: Сақтаулар картасын көрсету
-  showScreenshots: Скриншоттар картасын көрсету
+  visibleCards:
+    showMods: Модтар картасын көрсету
+    showResourcePacks: Ресурс пакеттері картасын көрсету
+    showShaderPacks: Шейдер пакеттері картасын көрсету
+    showSaves: Әлемдер картасын көрсету
+    showScreenshots: Скриншоттар картасын көрсету
   enableCardBlur: Карта бұлыңғырын қосу
   enableCardBlurDescription: UI-дегі карталарға бұлыңғырлық әсерін қосу.
   sidebarPosition: Бүйір панелінің орны

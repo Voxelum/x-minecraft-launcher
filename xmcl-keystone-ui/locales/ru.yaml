@@ -1378,11 +1378,12 @@ setting:
   allowPrereleaseDescription: Предварительная версия может быть нестабильной.
   enableCardBlur: Включить размытие карточек
   enableCardBlurDescription: Включает эффект размытия на карточках интерфейса.
-  showMods: Показывать карточку модов
-  showResourcePacks: Показывать карточку наборов ресурсов
-  showShaderPacks: Показывать карточку наборов шейдеров
-  showSaves: Показывать карточку сохранений
-  showScreenshots: Показывать карточку скриншотов
+  visibleCards:
+    showMods: Показывать карточку модов
+    showResourcePacks: Показывать карточку наборов ресурсов
+    showShaderPacks: Показывать карточку наборов шейдеров
+    showSaves: Показывать карточку миров
+    showScreenshots: Показывать карточку скриншотов
   movableCards: Перемещаемые карточки
   apiSets:
     auto: Автоматически (определяется сетью)

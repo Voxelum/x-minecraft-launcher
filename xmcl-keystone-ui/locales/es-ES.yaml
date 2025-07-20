@@ -1213,11 +1213,12 @@ setting:
   viewBackgroundMusic: Ver músicas
   enableCardBlur: Habilitar desenfoque de tarjeta
   enableCardBlurDescription: Aplicar un efecto de desenfoque a las tarjetas para un aspecto moderno.
-  showMods: Mostrar tarjeta de mods
-  showResourcePacks: Mostrar tarjeta de paquetes de recursos
-  showShaderPacks: Mostrar tarjeta de paquetes de shaders
-  showSaves: Mostrar tarjeta de guardados
-  showScreenshots: Mostrar tarjeta de capturas de pantalla
+  visibleCards:
+    showMods: Mostrar tarjeta de mods
+    showResourcePacks: Mostrar tarjeta de paquetes de recursos
+    showShaderPacks: Mostrar tarjeta de paquetes de shaders
+    showSaves: Mostrar tarjeta de mundos
+    showScreenshots: Mostrar tarjeta de capturas de pantalla
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global

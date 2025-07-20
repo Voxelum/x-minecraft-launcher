@@ -1362,11 +1362,12 @@ setting:
   useProxy: HTTPプロキシ
   useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
   viewBackgroundMusic: BGMフォルダを見る
-  showMods: Modカードを表示
-  showResourcePacks: リソースパックカードを表示
-  showShaderPacks: シェーダーセットカードを表示
-  showSaves: 保存カードを表示
-  showScreenshots: スクリーンショットカードを表示
+  visibleCards:
+    showMods: Modカードを表示
+    showResourcePacks: リソースパックカードを表示
+    showShaderPacks: シェーダーパックカードを表示
+    showSaves: ワールドカードを表示
+    showScreenshots: スクリーンショットカードを表示
   enableCardBlur: カードのぼかしを有効にする
   enableCardBlurDescription: UIのカードにぼかし効果を適用します。
 settingLabel:

@@ -1526,11 +1526,12 @@ setting:
   viewBackgroundMusic: Visualizar Músicas
   enableCardBlur: Ativar Desfoque de Cartão
   enableCardBlurDescription: Ativa o efeito de desfoque nos cartões da interface.
-  showMods: Mostrar Cartão de Mods
-  showResourcePacks: Mostrar Cartão de Pacotes de Recursos
-  showShaderPacks: Mostrar Cartão de Pacotes de Shader
-  showSaves: Mostrar Cartão de Saves
-  showScreenshots: Mostrar Cartão de Capturas de Tela
+  visibleCards:
+    showMods: Mostrar Cartão de Mods
+    showResourcePacks: Mostrar Cartão de Pacotes de Recursos
+    showShaderPacks: Mostrar Cartão de Pacotes de Shader
+    showSaves: Mostrar Cartão de Mundos
+    showScreenshots: Mostrar Cartão de Capturas de Tela
 settingLabel:
   global: Global
   globalHint: Esta configuração seguirá a configuração global

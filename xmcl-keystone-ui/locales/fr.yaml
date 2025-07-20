@@ -1520,11 +1520,12 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
   viewBackgroundMusic: Voir les musiques
-  showMods: Afficher la carte des mods
-  showResourcePacks: Afficher la carte des packs de ressources
-  showShaderPacks: Afficher la carte des packs de shaders
-  showSaves: Afficher la carte des sauvegardes
-  showScreenshots: Afficher la carte des captures d'écran
+  visibleCards:
+    showMods: Afficher la carte des mods
+    showResourcePacks: Afficher la carte des packs de ressources
+    showShaderPacks: Afficher la carte des packs de shaders
+    showSaves: Afficher la carte des mondes
+    showScreenshots: Afficher la carte des captures d'écran
   enableCardBlur: Activer le flou de carte
   enableCardBlurDescription: Appliquer un effet de flou aux cartes pour un aspect moderne.
 settingLabel:

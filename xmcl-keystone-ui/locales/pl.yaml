@@ -1489,11 +1489,12 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: Adres serwera proxy dla żądania http
   viewBackgroundMusic: Wyświetl muzykę
-  showMods: Pokaż kartę modów
-  showResourcePacks: Pokaż kartę pakietów zasobów
-  showShaderPacks: Pokaż kartę pakietów shaderów
-  showSaves: Pokaż kartę zapisów
-  showScreenshots: Pokaż kartę zrzutów ekranu
+  visibleCards:
+    showMods: Pokaż kartę modów
+    showResourcePacks: Pokaż kartę pakietów zasobów
+    showShaderPacks: Pokaż kartę pakietów shaderów
+    showSaves: Pokaż kartę światów
+    showScreenshots: Pokaż kartę zrzutów ekranu
   enableCardBlur: Włącz rozmycie karty
   enableCardBlurDescription: Włącz efekt rozmycia dla kart w interfejsie.
 settingLabel:
