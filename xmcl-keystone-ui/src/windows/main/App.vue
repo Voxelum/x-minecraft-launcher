@@ -147,9 +147,7 @@ const { notify } = useNotifier()
 useDefaultErrorHandler(notify)
 useAuthProfileImportNotification(notify)
 const { sidebarPosition, textColor } = useSettings()
-onMounted(() => {
-  sidebarPosition.value = 'left'
-})
+
 </script>
 
 <style scoped>
