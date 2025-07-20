@@ -1541,6 +1541,12 @@ setting:
   useBmclAPIDescription: Скачайте Minecraft в Китае с помощью BMCL-API
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
+  visibleCards:
+    showMods: Показывать карточку модов
+    showResourcePacks: Показывать карточку пакетов ресурсов
+    showShaderPacks: Показывать карточку пакетов шейдеров
+    showSaves: Показывать карточку сохранений
+    showScreenshots: Показывать карточку скриншотов
   viewBackgroundMusic: Просмотр музыки
 settingLabel:
   global: Глобальный
