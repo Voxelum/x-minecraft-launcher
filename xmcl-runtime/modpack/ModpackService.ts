@@ -1,6 +1,6 @@
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, SharedState, ResourceDomain, ResourceMetadata, ResourceState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { ensureDir, mkdir, readdir, remove, stat, unlink } from 'fs-extra'
+import { ensureDir, mkdir, readdir, remove, stat, unlink, existsSync } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -102,18 +102,12 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     let name = instance.name
     let idx = 1
+    let candidatePath = this.getPath('instances', name)
 
-    while (true) {
-      try {
-        await mkdir(this.getPath('instances', name))
-        break
-      } catch (e) {
-        if (isSystemError(e) && e.code === 'EEXIST') {
-          name = `${name}-${idx++}`
-          continue
-        }
-        throw e
-      }
+    // Find an available directory name without creating the directory
+    while (existsSync(candidatePath)) {
+      name = `${instance.name}-${idx++}`
+      candidatePath = this.getPath('instances', name)
     }
 
     const matchedVersion = findMatchedVersion(versionService.state.local,
@@ -134,6 +128,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const options: CreateInstanceOption = {
       ...instance,
       name,
+      path: candidatePath,
       version: matchedVersion?.id || instance.version,
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
