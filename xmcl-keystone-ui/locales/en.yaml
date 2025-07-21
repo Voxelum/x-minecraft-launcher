@@ -1443,10 +1443,10 @@ setting:
     description: Select the height of the sidebar
     name: Side panel height
   sidebarPosition:
-  name: Sidebar Position
-  description: Choose the position of the sidebar (left or right)
-  left: Left
-  right: Right
+    name: Sidebar Position
+    description: Choose the position of the sidebar (left or right)
+    left: Left
+    right: Right
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   textColor: Text Color
