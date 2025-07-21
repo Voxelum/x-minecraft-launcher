@@ -28,23 +28,23 @@
     <SettingHeader>{{ t('setting.visibleCards') }}</SettingHeader>
     <SettingItemCheckbox
       v-model="showMods"
-      :title="t('setting.visibleCards.mods')"
+      :title="t('setting.visibleCards.showMods')"
     />
     <SettingItemCheckbox
       v-model="showResourcePacks"
-      :title="t('setting.visibleCards.resourcePacks')"
+      :title="t('setting.visibleCards.showResourcePacks')"
     />
     <SettingItemCheckbox
       v-model="showShaderPacks"
-      :title="t('setting.visibleCards.shaderPacks')"
+      :title="t('setting.visibleCards.showShaderPacks')"
     />
     <SettingItemCheckbox
       v-model="showSaves"
-      :title="t('setting.visibleCards.saves')"
+      :title="t('setting.visibleCards.showSaves')"
     />
     <SettingItemCheckbox
       v-model="showScreenshots"
-      :title="t('setting.visibleCards.screenshots')"
+      :title="t('setting.visibleCards.showScreenshots')"
     />
     <SettingItemCheckbox
       v-model="enableCardBlur"
