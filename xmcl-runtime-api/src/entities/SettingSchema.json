@@ -192,6 +192,31 @@
                     "type": "boolean"
                 }
             }
+        },
+        "sidebarPosition": {
+            "type": "string",
+            "default": "left",
+            "enum": [
+                "left",
+                "right"
+            ]
+        },
+        "visibleCards": {
+            "type": "array",
+            "default": [
+                "mod",
+                "resource-pack",
+                "shader-pack",
+                "save",
+                "screenshots"
+            ],
+            "items": {
+                "type": "string"
+            }
+        },
+        "textColor": {
+            "type": "string",
+            "default": "#ffffff"
         }
     },
     "required": [
@@ -225,7 +250,10 @@
         "locale",
         "maxSockets",
         "replaceNatives",
-        "theme"
+        "theme",
+        "sidebarPosition",
+        "visibleCards",
+        "textColor"
     ],
     "definitions": {
         "Record<string,string>": {

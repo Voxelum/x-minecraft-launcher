@@ -45,6 +45,7 @@ export const pluginSettings: LauncherAppPlugin = async (app) => {
       globalPreExecuteCommand: state.globalPreExecuteCommand,
       globalResolution: state.globalResolution,
       sidebarPosition: state.sidebarPosition,
+      visibleCards: state.visibleCards,
       textColor: state.textColor,
     }), 1000)
 

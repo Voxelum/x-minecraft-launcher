@@ -498,6 +498,12 @@ setting:
   backgroundMusic: Tema Música de fondo
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
+  sidebarPosition:
+    name: Posición da barra lateral
+    description: Escolla a posición da barra lateral (esquerda ou dereita)
+  textColor:
+    name: Cor do texto
+    description: A cor usada para o texto na IU
   hideNewsHeader: Ocultar a presentación de noticias
   linuxEnableDedicatedGPUOptimization: Asignación de un procesador gráfico dedicado
   maunalUpdateHint: |-
@@ -524,6 +530,7 @@ setting:
   enableCardBlur: Activar desenfoque de tarxeta
   enableCardBlurDescription: Aplicar un efeito de desenfoque ás tarxetas para un aspecto moderno.
   visibleCards:
+    name: Tarxetas visibles
     showMods: Mostrar tarxeta de mods
     showResourcePacks: Mostrar tarxeta de paquetes de recursos
     showShaderPacks: Mostrar tarxeta de paquetes de shaders
