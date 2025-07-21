@@ -31,6 +31,7 @@ export class Settings implements SettingSchema {
 
   theme = 'dark' as 'dark' | 'light' | 'system'
   sidebarPosition = 'left' as 'left' | 'right'
+  visibleCards: string[] = ['mod', 'resource-pack', 'shader-pack', 'save', 'screenshots']
   textColor = '#000000'
   /**
    * All supported languages of the launcher
@@ -125,6 +126,10 @@ export class Settings implements SettingSchema {
 
   sidebarPositionSet(position: 'left' | 'right') {
     this.sidebarPosition = position
+  }
+
+  visibleCardsSet(cards: string[]) {
+    this.visibleCards = cards
   }
 
   textColorSet(color: string) {

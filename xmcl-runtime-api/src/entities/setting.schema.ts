@@ -160,5 +160,11 @@ export interface SettingSchema {
    * The text color for the UI
    * @default "#ffffff"
    */
-  textColor: string
+  textColor: string,
+
+        /**
+         * The visible cards in the home page
+         * @default ["mod", "resource-pack", "shader-pack", "save", "screenshots"]
+         */
+        visibleCards: string[]
 }

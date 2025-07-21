@@ -1379,6 +1379,7 @@ setting:
   enableCardBlur: Включить размытие карточек
   enableCardBlurDescription: Включает эффект размытия на карточках интерфейса.
   visibleCards:
+    name: Видимые карточки
     showMods: Показывать карточку модов
     showResourcePacks: Показывать карточку наборов ресурсов
     showShaderPacks: Показывать карточку наборов шейдеров

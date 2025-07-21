@@ -1442,8 +1442,11 @@ setting:
   sidebarHeight:
     description: Select the height of the sidebar
     name: Side panel height
-  sidebarPosition: Sidebar Position
-  sidebarPositionDescription: Choose the position of the sidebar (left or right)
+  sidebarPosition:
+  name: Sidebar Position
+  description: Choose the position of the sidebar (left or right)
+  left: Left
+  right: Right
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   textColor: Text Color
@@ -1471,6 +1474,7 @@ setting:
   enableCardBlur: Enable Card Blur
   enableCardBlurDescription: Enable the blur effect for cards on the main page.
   visibleCards:
+    name: Visible Cards
     showMods: Show Mods Card
     showResourcePacks: Show Resource Packs Card
     showShaderPacks: Show Shader Packs Card

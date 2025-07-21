@@ -9,8 +9,8 @@
     />
     <SettingItemSelect
       :select.sync="sidebarPosition"
-      :title="t('setting.sidebarPosition')"
-      :description="t('setting.sidebarPositionDescription')"
+      :title="t('setting.sidebarPosition.name')"
+      :description="t('setting.sidebarPosition.description')"
       :items="sidebarPositions"
     />
     <SettingItemCheckbox
@@ -25,7 +25,7 @@
       :description="t('setting.darkThemeDescription')"
       :items="themes"
     />
-    <SettingHeader>{{ t('setting.visibleCards') }}</SettingHeader>
+    <SettingHeader>{{ t('setting.visibleCards.name') }}</SettingHeader>
     <SettingItemCheckbox
       v-model="showMods"
       :title="t('setting.visibleCards.showMods')"

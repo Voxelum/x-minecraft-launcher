@@ -201,6 +201,11 @@ export function useSettings() {
     get: () => state.value?.sidebarPosition ?? 'left',
     set: v => state.value?.sidebarPositionSet(v),
   })
+
+  const visibleCards = computed({
+    get: () => state.value?.visibleCards ?? ['mod', 'resource-pack', 'shader-pack', 'save', 'screenshots'],
+    set: v => state.value?.visibleCardsSet(v),
+  })
   
   const textColor = computed({
     get: () => state.value?.textColor ?? '#ffffff',
@@ -253,6 +258,7 @@ export function useSettings() {
     apiSets,
     disableTelemetry,
     sidebarPosition,
+    visibleCards,
     textColor,
     error,
     isValidating,
