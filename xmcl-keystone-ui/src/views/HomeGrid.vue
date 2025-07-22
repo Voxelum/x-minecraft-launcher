@@ -135,30 +135,9 @@ const layoutKey = ref(0)
 
 let lastBreakpoint = ''
 
-const onBreakpoint = (newBreakpoint: string) => {
-  if (lastBreakpoint) {
-    layouts.value[lastBreakpoint] = layout.value
-    homeLayout.value = layouts.value
-  }
-  lastBreakpoint = newBreakpoint
-}
-
-const containerWidths = reactive({
-  [CardType.Mod]: 0,
-  [CardType.ResourcePack]: 0,
-  [CardType.Save]: 0,
-  [CardType.ShaderPack]: 0,
-} as Record<string, number>)
-
-const screenshotHeight = ref(0)
-
-const saveLayouts = debounce(() => {
-  homeLayout.value = layouts.value
-}, 500)
-
-watch(visibleCards, () => {
-  if (!lastBreakpoint) return;
-  const current = layouts.value[lastBreakpoint];
+function syncLayout(breakpoint: string) {
+  if (!breakpoint) return;
+  let current = layouts.value[breakpoint] ?? getDefaultHomeLayout()[breakpoint];
   const toRemove: number[] = [];
   const presentTypes: number[] = [];
   for (let i = 0; i < current.length; i++) {
@@ -173,7 +152,7 @@ watch(visibleCards, () => {
       case CardType.Save: str = 'save'; break;
       case CardType.Screenshots: str = 'screenshots'; break;
     }
-    if (! (visibleCards.value as string[]).includes(str)) {
+    if (!(visibleCards.value as string[]).includes(str)) {
       toRemove.push(i);
     }
   }
@@ -192,7 +171,7 @@ watch(visibleCards, () => {
     }
     if ((visibleCards.value as string[]).includes(str) && !presentTypes.includes(type)) {
       const maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
-      const defaultW = (lastBreakpoint === 'lg' || lastBreakpoint === 'md') ? 3 : 2;
+      const defaultW = (breakpoint === 'lg' || breakpoint === 'md') ? 3 : 2;
       const defaultH = type === CardType.Screenshots ? 5 : (type === CardType.Mod || type === CardType.ResourcePack) ? 9 : 4;
       const minW = (type === CardType.Screenshots) ? 3 : 2;
       toAdd.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
@@ -200,8 +179,32 @@ watch(visibleCards, () => {
   }
   current.push(...toAdd);
   layout.value = [...current];
-  layoutKey.value++  // Force re-render
-}, { deep: true })
+  layoutKey.value++;
+}
+
+watch(visibleCards, () => syncLayout(lastBreakpoint), { deep: true });
+
+const onBreakpoint = (newBreakpoint: string) => {
+  if (lastBreakpoint) {
+    layouts.value[lastBreakpoint] = [...layout.value];
+    homeLayout.value = { ...layouts.value };
+  }
+  lastBreakpoint = newBreakpoint;
+  syncLayout(newBreakpoint);
+};
+
+const containerWidths = reactive({
+  [CardType.Mod]: 0,
+  [CardType.ResourcePack]: 0,
+  [CardType.Save]: 0,
+  [CardType.ShaderPack]: 0,
+} as Record<string, number>)
+
+const screenshotHeight = ref(0)
+
+const saveLayouts = debounce(() => {
+  homeLayout.value = layouts.value
+}, 500)
 
 let screenshotItem = undefined as undefined | HTMLElement
 
