@@ -137,9 +137,9 @@ let lastBreakpoint = ''
 
 
 
-watch(visibleCards, () => {
-  const breakpoint = lastBreakpoint || 'lg';
-  let current = [...layout.value];
+function syncLayout(breakpoint: string) {
+  if (!breakpoint) return;
+  let current = [...(layouts.value[breakpoint] ?? getDefaultHomeLayout()[breakpoint])];
   const toRemove: number[] = [];
   const presentTypes: number[] = [];
   for (let i = 0; i < current.length; i++) {
@@ -182,7 +182,9 @@ watch(visibleCards, () => {
   current.push(...toAdd);
   layout.value = current;
   layoutKey.value++;
-}, { deep: true });
+}
+
+watch(visibleCards, () => syncLayout(lastBreakpoint), { deep: true });
 
 const onBreakpoint = (newBreakpoint: string) => {
   if (lastBreakpoint) {
@@ -190,7 +192,7 @@ const onBreakpoint = (newBreakpoint: string) => {
     homeLayout.value = { ...layouts.value };
   }
   lastBreakpoint = newBreakpoint;
-  layout.value = layouts.value[newBreakpoint] ?? getDefaultHomeLayout()[newBreakpoint];
+  syncLayout(newBreakpoint);
 };
 
 const containerWidths = reactive({
