@@ -137,9 +137,9 @@ let lastBreakpoint = ''
 
 
 
-function syncLayout(breakpoint: string) {
-  if (!breakpoint) return;
-  let current = [...(layouts.value[breakpoint] ?? getDefaultHomeLayout()[breakpoint])];
+watch(visibleCards, () => {
+  const breakpoint = lastBreakpoint || 'lg';
+  let current = [...layout.value];
   const toRemove: number[] = [];
   const presentTypes: number[] = [];
   for (let i = 0; i < current.length; i++) {
@@ -159,7 +159,7 @@ function syncLayout(breakpoint: string) {
     }
   }
   toRemove.reverse().forEach(i => current.splice(i, 1));
-  const toAdd: GridItemType[] = [];
+  let maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
   for (const t in CardType) {
     const type = CardType[t as keyof typeof CardType];
     if (typeof type === 'string') continue;
@@ -172,19 +172,16 @@ function syncLayout(breakpoint: string) {
       case CardType.Screenshots: str = 'screenshots'; break;
     }
     if ((visibleCards.value as string[]).includes(str) && !presentTypes.includes(type)) {
-      const maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
       const defaultW = (breakpoint === 'lg' || breakpoint === 'md') ? 3 : 2;
       const defaultH = type === CardType.Screenshots ? 5 : (type === CardType.Mod || type === CardType.ResourcePack) ? 9 : 4;
       const minW = (type === CardType.Screenshots) ? 3 : 2;
-      toAdd.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
+      current.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
+      maxY += defaultH;
     }
   }
-  current.push(...toAdd);
   layout.value = current;
   layoutKey.value++;
-}
-
-watch(visibleCards, () => syncLayout(lastBreakpoint), { deep: true });
+}, { deep: true });
 
 const onBreakpoint = (newBreakpoint: string) => {
   if (lastBreakpoint) {
@@ -192,7 +189,7 @@ const onBreakpoint = (newBreakpoint: string) => {
     homeLayout.value = { ...layouts.value };
   }
   lastBreakpoint = newBreakpoint;
-  syncLayout(newBreakpoint);
+  layout.value = layouts.value[newBreakpoint] ?? getDefaultHomeLayout()[newBreakpoint];
 };
 
 const containerWidths = reactive({
