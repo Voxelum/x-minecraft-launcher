@@ -159,7 +159,7 @@ watch(visibleCards, () => {
     }
   }
   toRemove.reverse().forEach(i => current.splice(i, 1));
-  let maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
+  const toAdd: GridItemType[] = [];
   for (const t in CardType) {
     const type = CardType[t as keyof typeof CardType];
     if (typeof type === 'string') continue;
@@ -172,13 +172,14 @@ watch(visibleCards, () => {
       case CardType.Screenshots: str = 'screenshots'; break;
     }
     if ((visibleCards.value as string[]).includes(str) && !presentTypes.includes(type)) {
+      const maxY = current.length > 0 ? Math.max(...current.map((i: GridItemType) => i.y + i.h)) : 0;
       const defaultW = (breakpoint === 'lg' || breakpoint === 'md') ? 3 : 2;
       const defaultH = type === CardType.Screenshots ? 5 : (type === CardType.Mod || type === CardType.ResourcePack) ? 9 : 4;
       const minW = (type === CardType.Screenshots) ? 3 : 2;
-      current.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
-      maxY += defaultH;
+      toAdd.push({ x: 0, y: maxY, w: defaultW, h: defaultH, minW, minH: 4, i: type + '' });
     }
   }
+  current.push(...toAdd);
   layout.value = current;
   layoutKey.value++;
 }, { deep: true });
