@@ -53,6 +53,27 @@ export class LaunchService extends AbstractService implements ILaunchService {
   }
 
   /**
+   * Build extra JVM arguments including platform-specific ones
+   * @param vmOptions User-provided VM options
+   * @returns Combined JVM arguments with platform-specific additions
+   */
+  #buildExtraJVMArgs(vmOptions: string[]): string[] {
+    const jvmArgs = [...vmOptions]
+
+    // Add OpenAL compatibility arguments for Linux systems to fix PulseAudio issues
+    if (process.platform === 'linux') {
+      // Disable real-time priority to prevent "Operation not permitted" errors
+      jvmArgs.push('-Dalsoft.rt.prio=0')
+      // Force OpenAL to use PulseAudio backend for better compatibility
+      jvmArgs.push('-Dalsoft.drivers=pulse')
+      // Use compatible resampler to avoid audio connection issues
+      jvmArgs.push('-Dalsoft.pc.resampler=1')
+    }
+
+    return jvmArgs
+  }
+
+  /**
    * Execute pre-launch command
    * @param command The command to execute
    * @param cwd The working directory
@@ -163,7 +184,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         env: { ...process.env, ...options.env },
       },
 
-      extraJVMArgs: jvmArgs,
+      extraJVMArgs: this.#buildExtraJVMArgs(jvmArgs),
       extraMCArgs: mcArgs,
       prependCommand: prepend,
 
@@ -214,7 +235,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         cwd: minecraftFolder.root,
         env: { ...process.env, ...options.env },
       },
-      extraJVMArgs: options.vmOptions?.filter(v => !!v),
+      extraJVMArgs: this.#buildExtraJVMArgs(options.vmOptions?.filter(v => !!v) || []),
       extraMCArgs: options.mcOptions?.filter(v => !!v),
       launcherBrand: options?.launcherBrand ?? launcherName,
       launcherName: options?.launcherName ?? launcherName,
