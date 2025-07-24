@@ -100,21 +100,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const versionService = await this.app.registry.get(VersionService)
     const files = await this.#processFiles(handler, modpackFile, manifest, cached.sha1, entries)
 
-    let name = instance.name
-    let idx = 1
-
-    while (true) {
-      try {
-        await mkdir(this.getPath('instances', name))
-        break
-      } catch (e) {
-        if (isSystemError(e) && e.code === 'EEXIST') {
-          name = `${name}-${idx++}`
-          continue
-        }
-        throw e
-      }
-    }
+    const name = instance.name
 
     const matchedVersion = findMatchedVersion(versionService.state.local,
       '',
