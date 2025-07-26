@@ -150,4 +150,14 @@ export interface SettingSchema {
    * @default {}
    */
   globalResolution: { width?: number; height?: number; fullscreen?: boolean }
+  /**
+   * Enable Xaero's maps sharing across instances
+   * @default true
+   */
+  xaeroMapsShared: boolean
+  /**
+   * Use server matching for Xaero's maps (instead of folder names)
+   * @default true
+   */
+  xaeroMapsServerMatching: boolean
 }
