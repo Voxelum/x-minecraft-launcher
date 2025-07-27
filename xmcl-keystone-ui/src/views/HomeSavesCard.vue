@@ -45,6 +45,7 @@ function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
     const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
     importSave({ instancePath: path.value, path: filePaths[0] })
+    e.preventDefault()
   }
 }
 </script>

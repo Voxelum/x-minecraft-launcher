@@ -47,8 +47,9 @@ export function useDropHandler() {
     }
   })
   document.addEventListener('drop', (e) => {
-    onDrop(e)
     dragover.value = false
+    if (e.defaultPrevented) return
+    onDrop(e)
     e.preventDefault()
   })
   document.addEventListener('dragover', (e) => {

@@ -50,6 +50,7 @@ function onDrop(e: DragEvent) {
       path: path.value,
       mods: filePaths,
     })
+    e.preventDefault()
   }
 }
 
