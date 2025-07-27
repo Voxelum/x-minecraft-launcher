@@ -152,7 +152,7 @@ jobs:
           .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
         env:
           TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
-          URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}-win32-x64.appx', steps.version.outputs.result) }}
+          URL: ${{ format('https://xmcl-core-api.azurewebsites.net/api/appx?version={0}', steps.version.outputs.result) }}
 
   # publish-msstore:
   #   runs-on: windows-latest
