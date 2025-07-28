@@ -158,8 +158,8 @@ dataMigration:
   unknownError: UNKNOWN ERROR! PLZ RETRY OR CONTACT TEH DEVELOPR!
   waitReload: MIGRATIN DATA. PLZ DOAN CLOSE TEH LAUNCHR OR U WILL LOSE UR DATA.
 delete:
-  'NO': 'NO'
-  YEZ: DELETE
+  'no': 'NO'
+  yes: YEZ
   name: DELETE {name}
 dependencies:
   embedded: EMBEDDD
@@ -1574,7 +1574,6 @@ universalDrop:
 update:
   goOfficialWebDownload: RE-DOWNLOAD ON OFFISHUL WEBSIET
 upstream:
-  ONLYShowCurrentVersion: ONLY SHOW CURRENT MINECRAFT VERSHUN
   downgrade: DOWNGRADE
   missingModpackMetadata: >-
     TEH OLD MODPACK METADATA NOT FINDZ.

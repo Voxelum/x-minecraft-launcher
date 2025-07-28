@@ -178,8 +178,6 @@ dataMigration:
   unknownError: 未知のエラーが発生しました! 再度試すか、開発者に連絡してください!
   waitReload: データを移行中です。ランチャーを閉じないでください。
 delete:
-  'NO': いいえ
-  YEZ: 削除
   name: '{name} を削除'
   'no': いいえ
   'yes': はい
@@ -1527,7 +1525,6 @@ universalDrop:
 update:
   goOfficialWebDownload: 公式サイトで再ダウンロード
 upstream:
-  ONLYShowCurrentVersion: 現在のバージョンのマインクラフトのみを表示する
   downgrade: ダウングレード
   missingModpackMetadata: |-
     古いModpackのメタデータが見つかりません。

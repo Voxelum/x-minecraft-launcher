@@ -203,8 +203,6 @@ dataMigration:
   unknownError: Unknown Error! Please retry or contact the developer!
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
-  'NO': 'No'
-  YEZ: DELETE
   name: Delete {name}
   'no': 'No'
   'yes': Delete
@@ -1678,7 +1676,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-download on official website
 upstream:
-  ONLYShowCurrentVersion: Show only the current version of minecraft
   downgrade: Downgrade
   missingModpackMetadata: >-
     The old modpack metadata not found.

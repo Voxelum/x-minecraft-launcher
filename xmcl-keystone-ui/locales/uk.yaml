@@ -209,8 +209,6 @@ dataMigration:
     Міграція даних. Будь ласка, не закривайте лаунчер, інакше ви втратите свої
     дані.
 delete:
-  'NO': Ні
-  YEZ: ВИДАЛИТИ
   name: Видалити {name}
   'no': Ні
   'yes': Видалити
@@ -1729,7 +1727,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Завантажити знову з офіційного вебсайту
 upstream:
-  ONLYShowCurrentVersion: Показувати тільки поточну версію майнкрафт
   downgrade: Понизити версію
   missingModpackMetadata: >-
     Старі метадані модпаку не знайдено.

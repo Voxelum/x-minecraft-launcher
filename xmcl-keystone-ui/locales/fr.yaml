@@ -211,8 +211,6 @@ dataMigration:
     Migration des données. 
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
-  'NO': Non
-  YEZ: DELETE
   name: Supprimer {name}
   'no': Non
   'yes': Supprimer
@@ -1740,7 +1738,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-télécharger sur le site officiel
 upstream:
-  ONLYShowCurrentVersion: Afficher uniquement la version actuelle de Minecraft
   downgrade: Rétrograder
   missingModpackMetadata: >-
     Les anciennes métadonnées du modpack sont introuvables.

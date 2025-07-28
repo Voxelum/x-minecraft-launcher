@@ -195,8 +195,6 @@ dataMigration:
   unknownError: ¡Error Desconocido! Vuelva a intentarlo o comuníquese con el desarrollador.
   waitReload: Migrando datos. Por favor, no cierres el Launcher o perderás tus datos.
 delete:
-  'NO': 'No'
-  YEZ: DELETE
   name: Eliminar {name}
   'no': 'No'
   'yes': Borrar
@@ -1363,7 +1361,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Vuelva a descargar en el sitio web oficial.
 upstream:
-  ONLYShowCurrentVersion: Mostrar sólo la versión actual de minecraft
   downgrade: Bajar la versión
   missingModpackMetadata: >-
     No se encontraron los metadatos antiguos del modpack.

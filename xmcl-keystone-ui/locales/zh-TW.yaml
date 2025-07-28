@@ -192,8 +192,6 @@ dataMigration:
   unknownError: 未知錯誤，請聯絡作者或重試。
   waitReload: 遷移資料中。請不要關閉啟動器，否則您可能會丟失一部分資料。
 delete:
-  'NO': 沒有
-  YEZ: 刪除
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
@@ -1584,7 +1582,6 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官網重新下載
 upstream:
-  ONLYShowCurrentVersion: 僅顯示目前版本的 minecraft
   downgrade: 降級
   missingModpackMetadata: >-
     無法找到目前實例使用的模組包後設資料。雖然您不會因此沒法更新到最新的模組包版本，但這樣更新的結果可能不正確，強烈推薦重新建立新實例。若要更新請備份您的檔案。

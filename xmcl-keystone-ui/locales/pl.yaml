@@ -178,8 +178,6 @@ dataMigration:
     Migracja danych. Nie zamykaj programu uruchamiającego, ponieważ spowoduje to
     utratę danych.
 delete:
-  'NO': Nie
-  YEZ: DELETE
   name: Usuń {name}
   'no': Nie
   'yes': Usuń
@@ -1699,7 +1697,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Ponowne pobranie na oficjalnej stronie
 upstream:
-  ONLYShowCurrentVersion: Pokazuje tylko aktualną wersję gry Minecraft
   downgrade: Obniżenie oceny
   missingModpackMetadata: >-
     Nie znaleziono metadanych starego modpacka.

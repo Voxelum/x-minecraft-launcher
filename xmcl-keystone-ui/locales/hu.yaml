@@ -185,8 +185,6 @@ dataMigration:
     Adatok áthelyezése. Kérlek, ne zárd be a Launcher-t, különben elveszíted az
     adataidat.
 delete:
-  'NO': 'No'
-  YEZ: DELETE
   name: Törlöd {name}
   'no': Nem
   'yes': Törlés
@@ -1706,7 +1704,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Töltse le újra a hivatalos webhelyről
 upstream:
-  ONLYShowCurrentVersion: Csak a minecraft aktuális verziójának megjelenítése
   downgrade: Visszaváltás
   missingModpackMetadata: >-
     A régi modcsomag metaadatok nem találhatók.

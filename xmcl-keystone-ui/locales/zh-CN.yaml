@@ -192,8 +192,6 @@ dataMigration:
   unknownError: 未知错误，请联系作者或重试。
   waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
 delete:
-  'NO': 没有
-  YEZ: 删除
   name: 删除 {name}
   'no': 取消
   'yes': 删除
@@ -1586,7 +1584,6 @@ universalDrop:
 update:
   goOfficialWebDownload: 到官网重新下载
 upstream:
-  ONLYShowCurrentVersion: 只显示当前版本的 minecraft
   downgrade: 降级
   missingModpackMetadata: >-
     无法找到当前实例使用的整合包元数据。虽然您不会因此没法更新到最新的整合包版本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份您的文件。

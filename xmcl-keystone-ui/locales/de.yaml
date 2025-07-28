@@ -235,8 +235,6 @@ dataMigration:
     Datenübertragung. Schließen Sie den Launcher nicht, da Sie sonst Daten
     verlieren.
 delete:
-  'NO': Nein
-  YEZ: DELETE
   name: Löschen {name}
   'no': Nein.
   'yes': Ja
@@ -1882,7 +1880,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Erneuter Download auf der offiziellen Website
 upstream:
-  ONLYShowCurrentVersion: Nur die aktuelle Version von Minecraft anzeigen
   downgrade: Downgrade der Version
   missingModpackMetadata: >-
     Die Metadaten für das alte Mod Pack wurden nicht gefunden.

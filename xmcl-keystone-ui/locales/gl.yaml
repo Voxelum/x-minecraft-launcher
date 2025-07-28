@@ -195,8 +195,6 @@ dataMigration:
   unknownError: ¡Erro Descoñecido! Volva a intentalo ou comuníquese co desarrollador.
   waitReload: Migrando datos. Por favor, non peche o Lanzador ou perderás os teus datos.
 delete:
-  'NO': 'No'
-  YEZ: DELETE
   name: Eliminar {name}
   'no': Non
   'yes': Borrar

@@ -216,8 +216,6 @@ dataMigration:
     desenvolvedor!
   waitReload: Migrando dados. Por favor, não feche o launcher ou você perderá seus dados.
 delete:
-  'NO': 'No'
-  YEZ: DELETE
   name: Deletar {name}
   'no': Não
   'yes': Deletar
@@ -1736,7 +1734,6 @@ universalDrop:
 update:
   goOfficialWebDownload: Re-baixar no site oficial
 upstream:
-  ONLYShowCurrentVersion: Mostrar apenas a versão atual do minecraft
   downgrade: Reverter versão
   missingModpackMetadata: >-
     Os metadados do modpack antigo não foram encontrados. Você ainda pode
