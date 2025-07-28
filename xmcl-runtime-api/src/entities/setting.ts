@@ -73,6 +73,10 @@ export class Settings implements SettingSchema {
 
   invalidGameDataPath: InvalidDirectoryErrorCode = undefined
 
+  xaeroMapsShared = true
+
+  xaeroMapsServerMatching = true
+
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
@@ -105,6 +109,8 @@ export class Settings implements SettingSchema {
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
     this.globalResolution = config.globalResolution
+    this.xaeroMapsShared = config.xaeroMapsShared ?? true
+    this.xaeroMapsServerMatching = config.xaeroMapsServerMatching ?? true
   }
 
   developerModeSet(developerMode: boolean) {
@@ -250,5 +256,13 @@ export class Settings implements SettingSchema {
     this.globalPreExecuteCommand = settings.globalPreExecuteCommand
     this.globalEnv = settings.globalEnv
     this.globalResolution = settings.globalResolution
+  }
+
+  xaeroMapsSharedSet(shared: boolean) {
+    this.xaeroMapsShared = shared
+  }
+
+  xaeroMapsServerMatchingSet(serverMatching: boolean) {
+    this.xaeroMapsServerMatching = serverMatching
   }
 }
