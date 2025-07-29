@@ -372,7 +372,7 @@ export class ElectronController implements LauncherAppController {
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       titleBarStyle: this.getTitlebarStyle(),
-      trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
+      trafficLightPosition: this.app.platform.os === 'osx' ? { x: 21, y: 16 } : undefined,
       webPreferences: {
         preload: indexPreload,
         session: restoredSession,
@@ -504,6 +504,9 @@ export class ElectronController implements LauncherAppController {
   }
 
   private getTitlebarStyle() {
+    if (this.app.platform.os === 'osx') {
+      return 'hiddenInset'
+    }
     return this.app.platform.os === 'linux' &&
       this.settings?.linuxTitlebar
       ? 'default'
