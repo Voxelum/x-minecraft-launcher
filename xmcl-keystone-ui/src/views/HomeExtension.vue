@@ -9,6 +9,7 @@
     <AppExtensionRoutes
       :items="[
         { icon: 'settings', title: t('baseSetting.title', 2), to: '/base-setting' },
+        { icon: 'extension', title: t('mod.name', 2), to: '/mods' },
         { icon: 'palette', title: t('resourcepack.name', 2), to: '/resourcepacks' },
         { icon: 'gradient', title: t('shaderPack.name', 2), to: '/shaderpacks' },
         { icon: 'map', title: t('save.name', 2), to: '/saves' }

@@ -26,6 +26,11 @@
     @click="emit('click', $event)"
   >
     <template #prepend>
+      <div
+        v-if="indent"
+        class="indicator"
+        :style="{ height: `${height}px`, background: indentColor || 'rgb(250 204 21 / 1)' }"
+      />
       <v-avatar :size="dense ? 30 : 40">
         <v-img
           ref="iconImage"
@@ -51,11 +56,6 @@
         </v-btn>
       </v-avatar>
     </template>
-    <div
-      v-if="indent"
-      class="indicator"
-      :style="{ height: `${height}px`, background: indentColor || 'rgb(250 204 21 / 1)' }"
-    />
     
     <template #title>
       <v-list-item-title class="flex overflow-hidden">
@@ -140,7 +140,10 @@
           </v-icon>
         </v-btn>
       </template>
-      <div class="pr-1.5" v-else-if="dense">
+      <div
+        v-else-if="dense"
+        class="pr-1.5"
+      >
         <v-icon size="small">
           {{ getTrailingIcon() }}
         </v-icon>
@@ -364,7 +367,10 @@ const onInstall = async () => {
 }
 .indicator {
   content: '';
+  position: absolute;
+  left: 0;
   min-width: 2px;
+  max-width: 2px;
   margin-right: 1rem;
 }
 </style>

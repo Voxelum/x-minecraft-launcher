@@ -137,9 +137,8 @@
       </template>
     </VListItem>
     <SettingItemCheckbox
-      :value="skipVersion"
+      v-model="skipVersion"
       :title="t('modInstall.skipVersion')"
-      @input="skipVersion = $event"
     />
     <SettingItem>
       <template #action>

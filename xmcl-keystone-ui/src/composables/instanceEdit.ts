@@ -35,6 +35,8 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     url: '',
     fileServerApi: '',
 
+    modpackVersion: instance.value.modpackVersion,
+
     vmOptions: instance.value?.vmOptions?.join(' '),
     mcOptions: instance.value?.mcOptions?.join(' '),
     prependCommand: instance.value?.prependCommand,
@@ -69,7 +71,31 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
 
     resolution: instance.value?.resolution,
 
+    emitCurseforge: false,
+    emitMcbbs: false,
+    emitModrinth: true,
+    emitModrinthStrict: true,
+
     loading: true,
+  })
+
+  watch(() => data.emitModrinth, (v) => {
+    if (v) {
+      data.emitCurseforge = false
+      data.emitMcbbs = false
+    }
+  })
+
+  watch(() => data.emitCurseforge, (v) => {
+    if (v) {
+      data.emitModrinth = false
+    }
+  })
+
+  watch(() => data.emitMcbbs, (v) => {
+    if (v) {
+      data.emitModrinth = false
+    }
   })
 
   const isGlobalAssignMemory = computed(() => data.assignMemory === undefined)
@@ -298,8 +324,13 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       preExecuteCommand: data.preExecuteCommand,
       author: data.author,
       description: data.description,
+      modpackVersion: data.modpackVersion,
       env: data.env,
       resolution: data.resolution,
+      emitCurseforge: data.emitCurseforge,
+      emitMcbbs: data.emitMcbbs,
+      emitModrinth: data.emitModrinth,
+      emitModrinthStrict: data.emitModrinthStrict,
     } as EditInstanceOptions
     if (instance.value.server) {
       payload.server = instance.value?.server
@@ -355,6 +386,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.author = current.author
       data.fileServerApi = current.fileApi
       data.description = current.description || ''
+      data.modpackVersion = current.modpackVersion
       data.runtime.fabricLoader = current.runtime.fabricLoader ?? ''
       data.runtime.forge = current.runtime.forge ?? ''
       data.runtime.minecraft = current.runtime.minecraft ?? ''
@@ -383,6 +415,10 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.assignMemory = current.assignMemory
       data.fastLaunch = current.fastLaunch
       data.resolution = current.resolution
+      data.emitCurseforge = current.emitCurseforge ?? false
+      data.emitMcbbs = current.emitMcbbs ?? false
+      data.emitModrinth = current.emitModrinth ?? true
+      data.emitModrinthStrict = current.emitModrinthStrict ?? true
     }
   }
 

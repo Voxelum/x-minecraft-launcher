@@ -11,10 +11,11 @@ const { t } = useI18n();
     }"
   >
     <AppExtensionRoutes
+      nested
       :items="[
-        { icon: 'home', title: t('back', 2), to: '/' },
-        { icon: 'home', title: t('back', 2), to: '/' },
-        { icon: 'share', title: t('modpack.export'), to: '/modpack-export' },
+        { icon: 'home', title: t('home', 2), to: '/' },
+        { icon: 'settings', title: t('setting.name', 2), to: '/base-setting' },
+        { icon: 'share', title: t('modpack.export'), to: '/base-setting/modpack' },
       ]"
     />
   </div>

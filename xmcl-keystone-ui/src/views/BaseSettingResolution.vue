@@ -7,50 +7,53 @@
       @click="gotoSetting"
     />
   </v-list-subheader>
-    
+
   <v-list-item>
-    <div class="flex flex-row items-center gap-2">
-      <v-text-field
-        v-model="resolutionWidth"
-        :label="t('instance.width')"
-        :disabled="resolutionFullscreen"
-        type="number"
-        variant="filled"
-        density="compact"
-        hide-details
-        class="mr-2 max-w-[150px]"
-      />
-      <v-text-field
-        v-model="resolutionHeight"
-        :disabled="resolutionFullscreen"
-        :label="t('instance.height')"
-        type="number"
-        variant="filled"
-        density="compact"
-        hide-details
-        class="ml-2 max-w-[150px]"
-      />
-      <v-switch
-        v-model="resolutionFullscreen"
-        :label="t('instance.fullscreen')"
-        class="ma-0 pa-0"
-        hide-details
-      />
-    </div>
-      
-    <v-list-item-action>
-      <v-select
-        v-model="selectedResolutionPreset"
-        :items="resolutionPresets"
-        item-title="text"
-        item-value="value"
-        :label="t('instance.resolutionPreset')"
-        variant="filled"
-        density="compact"
-        hide-details
-        class="mb-4 max-w-[300px]"
-      />
-    </v-list-item-action>
+    <template #title>
+      <div class="flex flex-row items-center gap-2">
+        <v-text-field
+          v-model="resolutionWidth"
+          :label="t('instance.width')"
+          :disabled="resolutionFullscreen"
+          type="number"
+          variant="filled"
+          density="compact"
+          hide-details
+          class="mr-2 max-w-[150px]"
+        />
+        <v-text-field
+          v-model="resolutionHeight"
+          :disabled="resolutionFullscreen"
+          :label="t('instance.height')"
+          type="number"
+          variant="filled"
+          density="compact"
+          hide-details
+          class="ml-2 max-w-[150px]"
+        />
+        <v-switch
+          v-model="resolutionFullscreen"
+          :label="t('instance.fullscreen')"
+          class="ml-2"
+          hide-details
+        />
+      </div>
+    </template>
+    <template #append>
+      <v-list-item-action>
+        <v-select
+          v-model="selectedResolutionPreset"
+          :items="resolutionPresets"
+          item-title="text"
+          item-value="value"
+          :label="t('instance.resolutionPreset')"
+          variant="filled"
+          density="compact"
+          hide-details
+          class="mb-4 max-w-[300px] w-40"
+        />
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 

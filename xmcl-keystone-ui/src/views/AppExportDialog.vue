@@ -49,14 +49,6 @@
             :label="t('author')"
             required
           />
-          <v-text-field
-            v-model="data.version"
-            prepend-inner-icon="history"
-            persistent-hint
-            :hint="t('modpack.modpackVersion')"
-            :label="t('modpack.modpackVersion')"
-            required
-          />
           <v-select
             v-model="data.gameVersion"
             :items="localVersions"
@@ -67,70 +59,6 @@
             :label="t('instance.gameVersion')"
             required
           />
-          <v-checkbox
-            v-model="data.emitCurseforge"
-            :label="t('modpack.emitCurseforge')"
-            class="z-10"
-            prepend-icon="xmcl:curseforge"
-            hide-details
-          />
-          <v-checkbox
-            v-model="data.emitMcbbs"
-            :label="t('modpack.emitMcbbs')"
-            class="z-10"
-            hide-details
-          />
-          <v-checkbox
-            v-model="data.emitModrinth"
-            :label="t('modpack.emitModrinth')"
-            class="z-10"
-            hide-details
-            prepend-icon="xmcl:modrinth"
-          />
-
-          <v-checkbox
-            v-if="data.emitModrinth"
-            v-model="data.emitModrinthStrict"
-            :label="t('modpack.emitModrinthStrict')"
-            class="z-10"
-            hide-details
-            prepend-icon="xmcl:modrinth"
-          >
-            <template #append>
-              <v-tooltip
-                location="top"
-              >
-                <template #activator="{ props }">
-                  <!-- <v-btn
-                        text
-                        icon
-                      > -->
-                  <a
-                    class="rounded border border-dashed border-green-300 pb-[2px]"
-                    target="browser"
-                    href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
-                    v-bind="props"
-                  >
-                    <v-icon
-                      color="primary"
-                      class="cursor-pointer"
-                      size="small"
-                    >
-                      question_mark
-                    </v-icon>
-                  </a>
-                  <!-- </v-btn> -->
-                </template>
-                {{ t('modpack.emitModrinthStrictDescription') }}
-                <ul class="list-disc">
-                  <li> cdn.modrinth.com </li>
-                  <li>github.com</li>
-                  <li>raw.githubusercontent.com</li>
-                  <li>gitlab.com</li>
-                </ul>
-              </v-tooltip>
-            </template>
-          </v-checkbox>
           <template
             v-if="!(data.emitCurseforge || data.emitMcbbs || data.emitModrinth)"
           >
@@ -315,17 +243,17 @@ const filterText = ref('')
 const data = reactive({
   name: name.value,
   author: author.value,
-  version: inc(baseVersion, 'patch') ?? '0.0.1',
+  version: inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1',
   gameVersion: versionId.value,
   selected: [] as string[],
   fileApi: '',
   files: [] as InstanceFile[],
   includeLibraries: false,
   includeAssets: false,
-  emitCurseforge: false,
-  emitModrinth: true,
-  emitModrinthStrict: true,
-  emitMcbbs: false,
+  emitCurseforge: instance.value.emitCurseforge ?? false,
+  emitModrinth: instance.value.emitModrinth ?? true,
+  emitModrinthStrict: instance.value.emitModrinthStrict ?? true,
+  emitMcbbs: instance.value.emitMcbbs ?? false,
 })
 
 const enableCurseforge = computed(() => data.emitCurseforge || data.emitMcbbs)
@@ -391,6 +319,10 @@ function reset() {
   data.selected = []
   data.gameVersion = versionId.value ?? ''
   data.version = inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1'
+  data.emitCurseforge = instance.value.emitCurseforge ?? false
+  data.emitMcbbs = instance.value.emitMcbbs ?? false
+  data.emitModrinth = instance.value.emitModrinth ?? true
+  data.emitModrinthStrict = instance.value.emitModrinthStrict ?? true
 }
 
 const exclusions = [

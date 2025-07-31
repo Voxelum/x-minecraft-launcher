@@ -5,7 +5,7 @@
     rail
     :color="sideBarColor"
     :width="80"
-    class="sidebar moveable z-10 rounded-[0.75rem]"
+    class="sidebar moveable z-10 "
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list

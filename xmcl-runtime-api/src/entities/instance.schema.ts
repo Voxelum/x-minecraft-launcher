@@ -204,6 +204,11 @@ export interface InstanceData {
   lastPlayedDate?: number
 
   upstream?: InstanceUpstream
+
+  emitCurseforge?: boolean
+  emitMcbbs?: boolean
+  emitModrinth?: boolean
+  emitModrinthStrict?: boolean
 }
 
 export type InstanceUpstream = CurseforgeUpstream | ModrinthUpstream | FTBUpstream | PeerUpstream

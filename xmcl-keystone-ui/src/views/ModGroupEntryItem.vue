@@ -2,12 +2,14 @@
   <v-list-item
     v-context-menu="getContextMenu"
     link
+    :title="name"
+    :subtitle="t('mod.mods', { count: items.length })"
     draggable
     :style="{
       minHeight: height ? height + 'px' : undefined,
       maxHeight: height ? height + 'px' : undefined,
     }"
-    class="non-moveable sidebar-item flex-1 flex-grow-0"
+    class="non-moveable flex-1 flex-grow-0 py-0"
     :class="{ expanded }"
     @dragover.prevent
     @click="emit('expand', expanded)"
@@ -16,8 +18,6 @@
       <v-avatar
         class="transition-all"
         :size="dense ? 30 : 40"
-        duration-300
-        rounded
       >
         <div
           class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
@@ -32,18 +32,13 @@
       </v-avatar>
     </template>
     
-    <v-list-item-title>
-      {{ name }}
-    </v-list-item-title>
-    <v-list-item-subtitle v-if="!dense">
-      {{ t('mod.mods', { count: items.length }) }}
-    </v-list-item-subtitle>
-    
-    <v-list-item-action class="mr-1.5">
-      <v-icon>
-        {{ expanded ? 'folder_open' : 'folder' }}
-      </v-icon>
-    </v-list-item-action>
+    <template #append>
+      <v-list-item-action class="mr-1.5">
+        <v-icon>
+          {{ expanded ? 'folder_open' : 'folder' }}
+        </v-icon>
+      </v-list-item-action>
+    </template>
   </v-list-item>
 </template>
 

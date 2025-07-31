@@ -1,20 +1,19 @@
 <template>
-  <v-list-subheader>Minecraft</v-list-subheader>
-
   <SettingItemCheckbox
-    :value="isGameOptionsLinkedCache || false"
+    :model-value="isGameOptionsLinkedCache || false"
     :disabled="isGameOptionsLinkedCache === undefined"
     :title="t('instance.useSharedOptions')"
     :description="t('instance.useSharedOptionsDesc')"
-    @input="!isGameOptionsLinkedCache ? show('options.txt') : unlinkGameOptions(path).then(() => mutateOptions())"
+    @update:model-value="!isGameOptionsLinkedCache ? show('options.txt') : unlinkGameOptions(path).then(() => mutateOptions())"
   />
   <SettingItemCheckbox
-    :value="isServersListLinkedCache || false"
+    :model-value="isServersListLinkedCache || false"
     :disabled="isServersListLinkedCache === undefined"
     :title="t('instance.useSharedServersList')"
     :description="t('instance.useSharedServersListDesc')"
-    @input="!isServersListLinkedCache ? show('servers.dat') : unlinkServersList(path).then(() => mutateServers())"
+    @update:model-value="!isServersListLinkedCache ? show('servers.dat') : unlinkServersList(path).then(() => mutateServers())"
   />
+  <BaseSettingResolution />
 
   <div class="grid grid-cols-4">
     <v-list-item>
@@ -70,53 +69,43 @@
   <v-list-item
     :title="t('instance.launchArguments')"
   >
-    <template #prepend>
-      <v-icon class="material-icons-outlined icon-image-preview">
-        preview
-      </v-icon>
-    </template>
-
-    {{ t('modrinth.environments.server') }}
-    <v-divider
-      vertical
-      class="my-4 mx-2"
-    />
-    <template #append>
-      <v-btn
-        icon
-        @click="copyToClipboard('server')"
-      >
-        <v-icon>content_copy</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click="showPreview('server')"
-      >
-        <v-icon>print</v-icon>
-      </v-btn>
-    </template>
-
-    <span class="mx-4" />
-    {{ t('modrinth.environments.client') }}
-    <v-divider
-      vertical
-      class="my-4 mx-2"
-    />
-  </v-list-item>
-  <!-- <template #append>
+    <div class="grid grid-cols-2">
+      <div>
+        {{ t('modrinth.environments.server') }}
         <v-btn
           icon
+          variant="text"
+          @click="copyToClipboard('server')"
+        >
+          <v-icon>content_copy</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          variant="text"
+          @click="showPreview('server')"
+        >
+          <v-icon>print</v-icon>
+        </v-btn>
+      </div>
+      <div>
+        {{ t('modrinth.environments.client') }}
+        <v-btn
+          icon
+          variant="text"
           @click="copyToClipboard('client')"
         >
           <v-icon>content_copy</v-icon>
         </v-btn>
         <v-btn
           icon
+          variant="text"
           @click="showPreview('client')"
         >
           <v-icon>print</v-icon>
         </v-btn>
-      </template> -->
+      </div>
+    </div>
+  </v-list-item>
   <v-dialog
     v-model="isPreviewShown"
     :width="500"
@@ -172,7 +161,6 @@
       </v-card-actions>
     </v-card>
   </v-dialog>
-  <v-divider />
 </template>
 
 <script lang=ts setup>
@@ -187,6 +175,7 @@ import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { useNotifier } from '../composables/notifier'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import BaseSettingResolution from './BaseSettingResolution.vue'
 
 const { t } = useI18n()
 const { preview, refresh, command, error } = useLaunchPreview()

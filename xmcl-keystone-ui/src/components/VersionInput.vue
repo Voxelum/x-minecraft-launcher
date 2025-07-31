@@ -1,5 +1,5 @@
 <template>
-  <v-list-item :title="title">
+  <v-list-item lines="two" :title="title">
     <template #prepend>
       <img
         class="mr-4"

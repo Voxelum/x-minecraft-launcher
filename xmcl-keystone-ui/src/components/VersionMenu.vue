@@ -11,7 +11,6 @@
     <v-text-field
       v-model="data.filterText"
       color="green"
-      append-inner-icon="filter_list"
       :label="t('filter')"
       variant="solo-filled"
       autofocus
@@ -23,8 +22,8 @@
           v-if="hasSnapshot"
           v-shared-tooltip="snapshotTooltip ?? ''"
           :color="snapshot ? 'primary' : ''"
-          style="height: 48px;"
-          class="mr-1"
+          style="height: 36px;"
+          class="mr-2"
           label
           @click="emit('update:snapshot', !snapshot)"
         >
@@ -33,13 +32,14 @@
           </v-icon>
         </v-chip>
       </template>
-      <template #append>
+      <template #append-inner>
         <v-btn
           icon
-          @click="emit ('refresh')"
+          variant="text"
+          size="small"
+          @click="emit('refresh')"
         >
-          <v-icon
-          >
+          <v-icon>
             refresh
           </v-icon>
         </v-btn>

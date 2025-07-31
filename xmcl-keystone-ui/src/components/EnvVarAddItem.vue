@@ -2,36 +2,46 @@
   <v-list-item
     class="gap-2"
   >
-    <v-btn
-      icon
-      @click="onEnvVarCleared"
-    >
-      <v-icon>close</v-icon>
-    </v-btn>
-    <v-text-field
-      v-model="envVarKey"
-      autofocus
-      label="Key"
-      placeholder="Key"
-      variant="solo"
-      density="compact"
-      hide-details
-    />
-    <v-text-field
-      v-model="envVarValue"
-      label="Value"
-      placeholder="Value"
-      variant="solo"
-      density="compact"
-      hide-details
-    />
-    <v-btn
-      icon
-      color="primary"
-      @click="onEnvVarAdded"
-    >
-      <v-icon>check</v-icon>
-    </v-btn>
+    <template #prepend>
+      <v-btn
+        icon
+        variant="text"
+        @click="onEnvVarCleared"
+      >
+        <v-icon>close</v-icon>
+      </v-btn>
+    </template>
+    <template #title>
+      <div class="flex gap-2">
+        <v-text-field
+          v-model="envVarKey"
+          autofocus
+          label="Key"
+          placeholder="Key"
+          variant="solo"
+          density="compact"
+          hide-details
+        />
+        <v-text-field
+          v-model="envVarValue"
+          label="Value"
+          placeholder="Value"
+          variant="solo"
+          density="compact"
+          hide-details
+        />
+      </div>
+    </template>
+    <template #append>
+      <v-btn
+        icon
+        variant="text"
+        color="primary"
+        @click="onEnvVarAdded"
+      >
+        <v-icon>check</v-icon>
+      </v-btn>
+    </template> 
   </v-list-item>
 </template>
 

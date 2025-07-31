@@ -58,23 +58,23 @@
     </div>
     <!-- t('java.noMemory') -->
   </v-list-item>
-  <v-list-item
-    style="margin-top: 5px"
-  >
-    <v-list-item-content class="max-w-70 mr-4">
-      <v-list-item-title>
-        {{ t("instance.prependCommand") }}
-        <BaseSettingGlobalLabel
-          :global="isGlobalPrependCommand"
-          @clear="resetPrependCommand"
-          @click="gotoSetting"
-        />
-      </v-list-item-title>
-      <v-list-item-subtitle
-        v-shared-tooltip="_ => t('instance.prependCommandHint')"
-      >
+  <div class="flex gap-1 pt-2">
+    <v-list-item class="w-70">
+      <template #title>
+        <v-list-item-title>
+          {{ t("instance.prependCommand") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalPrependCommand"
+            @clear="resetPrependCommand"
+            @click="gotoSetting"
+          />
+        </v-list-item-title>
+      </template>
+
+      <template #subtitle>
         <v-text-field
           v-model="prependCommand"
+          v-shared-tooltip="_ => t('instance.prependCommandHint')"
           class="m-1 mt-2"
           hide-details
           required
@@ -82,29 +82,34 @@
           density="compact"
           :placeholder="t('instance.prependCommandHint')"
         />
-      </v-list-item-subtitle>
-    </v-list-item-content>
-      
-    <v-list-item-title>
-      {{ t("instance.vmOptions") }}
-      <BaseSettingGlobalLabel
-        :global="isGlobalVmOptions"
-        @clear="resetVmOptions"
-        @click="gotoSetting"
-      />
-    </v-list-item-title>
-    <v-list-item-subtitle>
-      <v-text-field
-        v-model="vmOptions"
-        class="m-1 mt-2"
-        hide-details
-        required
-        variant="filled"
-        density="compact"
-        :placeholder="t('instance.vmOptionsHint')"
-      />
-    </v-list-item-subtitle>
-  </v-list-item>
+      </template>
+    </v-list-item>
+    <v-list-item class="flex-grow!">
+      <template #title>
+        <v-list-item-title>
+          {{ t("instance.vmOptions") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalVmOptions"
+            @clear="resetVmOptions"
+            @click="gotoSetting"
+          />
+        </v-list-item-title>
+      </template>
+
+      <template #subtitle>
+        <v-text-field
+          v-model="vmOptions"
+          class="m-1 mt-2"
+          hide-details
+          required
+          variant="filled"
+          density="compact"
+          :placeholder="t('instance.vmOptionsHint')"
+        />
+      </template>
+    </v-list-item>
+  </div>
+
   <v-list-item
     :title="t('instance.vmVar')"
     :subtitle="t('instance.vmVarHint')"
@@ -112,6 +117,7 @@
     <template #append>
       <v-btn
         icon
+        variant="text"
         @click="onAddEnvVar"
       >
         <v-icon>add</v-icon>

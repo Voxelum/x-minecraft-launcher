@@ -1,5 +1,7 @@
 import BaseSetting from '@/views/BaseSetting.vue'
 import BaseSettingExtension from '@/views/BaseSettingExtension.vue'
+import BaseSettingMain from '@/views/BaseSettingMain.vue'
+import BaseSettingModpack from '@/views/BaseSettingModpack.vue'
 import Home from '@/views/Home.vue'
 import HomeActions from '@/views/HomeActions.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
@@ -80,6 +82,16 @@ export const router = createRouter({
             extensions: BaseSettingExtension,
             actions: HomeActions,
           },
+          children: [
+            {
+              path: '',
+              component: BaseSettingMain,
+            },
+            {
+              path: 'modpack',
+              component: BaseSettingModpack,
+            }
+          ],
         },
       ],
     },
@@ -88,21 +100,21 @@ export const router = createRouter({
       component: Store,
       children: [
         {
-          path: '/',
+          path: '',
           component: StoreEntry,
         },
         {
-          path: '/store/modrinth/:id',
+          path: 'modrinth/:id',
           component: StoreProjectModrinth,
           props: (route) => ({ id: route.path.split('/')[3] }),
         },
         {
-          path: '/store/curseforge/:id',
+          path: 'curseforge/:id',
           component: StoreProjectCurseforge,
           props: (route) => ({ id: Number(route.path.split('/')[3]) }),
         },
         {
-          path: '/store/ftb/:id',
+          path: 'ftb/:id',
           component: StoreProjectFeedTheBeast,
           props: (route) => ({ id: Number(route.path.split('/')[3]) }),
         },

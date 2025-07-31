@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     :disabled="disabled"
-    @click="!disabled ? emit('input', !value) : undefined"
+    @click="!disabled ? (model = !model) : undefined"
   >
     <template
       #prepend
@@ -11,10 +11,9 @@
         hide-details
         :disabled="disabled"
         :readonly="true"
-        :model-value="value"
-        :value="value"
-        @click.stop.prevent.capture="!disabled ? emit('input', !value) : undefined"
-        @update:model-value="emit('input', !value)"
+        :model-value="model"
+        @click.stop.prevent.capture="!disabled ? (model = !model) : undefined"
+        @update:model-value="(model = !model)"
       />
     </template>
     
@@ -42,17 +41,13 @@
   </v-list-item>
 </template>
 <script setup lang="ts">
-import { useVModel } from '@vueuse/core'
-
-const props = defineProps<{
-  value: boolean
+defineProps<{
   title: string
   disabled?: boolean
   description?: string
 }>()
-const emit = defineEmits<{
-  (event: 'input', value: boolean): void
-}>()
 
-const model = useVModel(props, 'value', emit)
+const model = defineModel<boolean>({
+  required: false,
+})
 </script>

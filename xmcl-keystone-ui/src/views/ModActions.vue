@@ -1,18 +1,18 @@
 <template>
   <div class="flex items-center justify-end gap-3">
     <v-btn
-      v-shared-tooltip="_ => 'Alt'"
+      v-shared-tooltip.left="_ => 'Alt'"
       icon
-      size="large"
+      variant="text"
       :class="{ 'v-btn--active': isEnabledState }"
       @click="isEnabledState = !isEnabledState"
     >
       <v-icon>translate</v-icon>
     </v-btn>
     <v-btn
-      v-shared-tooltip="_ => t('mod.showDirectory')"
+      v-shared-tooltip.left="_ => t('mod.showDirectory')"
       icon
-      size="large"
+      variant="text"
       @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>

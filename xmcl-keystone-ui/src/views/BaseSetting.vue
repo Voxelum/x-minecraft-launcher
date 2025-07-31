@@ -3,28 +3,7 @@
     class="base-setting px-10 overflow-auto"
     @wheel.stop
   >
-    <div>
-      <BaseSettingGeneral class="" />
-      <BaseSettingVersions
-        :is-expanded="isExpanded"
-        class=""
-      />
-      <v-divider v-if="!isExpanded" />
-    </div>
-    <div>
-      <BaseSettingJava class="" />
-      <BaseSettingSync class="" />
-      <BaseSettingLaunch class="" />
-      <BaseSettingResolution class="" />
-      <BaseSettingModpack
-        v-if="!isServer"
-        class=""
-      />
-      <BaseSettingServer
-        v-else
-        class=""
-      />
-    </div>
+    <router-view />
 
     <v-snackbar
       :color="snackbarColor"
@@ -68,14 +47,6 @@ import { usePresence } from '@/composables/presence'
 import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
-import BaseSettingGeneral from './BaseSettingGeneral.vue'
-import BaseSettingJava from './BaseSettingJava.vue'
-import BaseSettingLaunch from './BaseSettingLaunch.vue'
-import BaseSettingModpack from './BaseSettingModpack.vue'
-import BaseSettingServer from './BaseSettingServer.vue'
-import BaseSettingSync from './BaseSettingSync.vue'
-import BaseSettingVersions from './BaseSettingVersions.vue'
-import BaseSettingResolution from './BaseSettingResolution.vue'
 import { useMediaQuery } from '@vueuse/core'
 import { kCompact } from '@/composables/scrollTop'
 

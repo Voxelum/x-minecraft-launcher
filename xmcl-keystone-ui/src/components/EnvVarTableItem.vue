@@ -1,47 +1,48 @@
 <template>
   <v-list-item
     v-if="Object.keys(env).length > 0"
-    class="fix-after gap-x-4 grid grid-cols-2"
+    class="fix-after grid grid-cols-2"
     density="compact"
   >
-    <!-- <div> -->
-    <div
-      v-for="(value, key) in items"
-      :key="key"
-      class="flex items-center v-list-item__subtitle"
-    >
-      <v-icon start>
-        key
-      </v-icon>
-      <span
-        v-shared-tooltip="key"
-        class="overflow-hidden text-ellipsis"
+    <template #subtitle>
+      <div
+        v-for="(value, key) in items"
+        :key="key"
+        class="flex items-center gap-2"
       >
-        {{ key }}
-      </span>
-      <BaseSettingGlobalLabel
-        v-if="readonly?.includes(key)"
-        :global="true"
-      />
-      <v-spacer class="mr-4" />
-      <span
-        v-shared-tooltip="value"
-        class="overflow-hidden text-ellipsis"
-      >
-        {{ value }}
-      </span>
-      <v-btn
-        v-if="!readonly?.includes(key)"
-        icon
-        color="error"
-        @click="emit('delete', key)"
-      >
-        <v-icon class="material-icons-outlined">
-          delete
+        <v-icon start>
+          key
         </v-icon>
-      </v-btn>
-    </div>
-    <!-- </div> -->
+        <span
+          v-shared-tooltip="key"
+          class="overflow-hidden text-ellipsis"
+        >
+          {{ key }}
+        </span>
+        <BaseSettingGlobalLabel
+          v-if="readonly?.includes(key)"
+          :global="true"
+        />
+        <v-spacer class="mr-4" />
+        <span
+          v-shared-tooltip="value"
+          class="overflow-hidden text-ellipsis"
+        >
+          {{ value }}
+        </span>
+        <v-btn
+          v-if="!readonly?.includes(key)"
+          icon
+          variant="text"
+          color="error"
+          @click="emit('delete', key)"
+        >
+          <v-icon class="material-icons-outlined">
+            delete
+          </v-icon>
+        </v-btn>
+      </div>
+    </template>
   </v-list-item>
 </template>
 
