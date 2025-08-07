@@ -7,10 +7,17 @@ export type VSharedTooltipParam = {
   color?: string
   list?: Array<string>
 } | string
-
+const { blocked, isShown, stack, setValue } = useSharedTooltipData()
+const observer = new MutationObserver(mutations => {
+  for (const m of mutations) {
+    for (const node of m.removedNodes) {
+      stack.value = stack.value.filter((v) => v.el?.deref() !== node)
+      setValue(false)
+    }
+  }
+});
 export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam> = (el, bindings, node, prevNode) => {
   if (prevNode && prevNode.tag) return
-  const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
     if (blocked.value) return
     const target = e.target as HTMLElement
@@ -24,6 +31,7 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VShare
       color: 'black',
       items: undefined,
       list: undefined,
+      el: new WeakRef(el),
     }
     if (bindings.modifiers.left) {
       newData.direction = 'left'
@@ -76,20 +84,17 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VShare
   })
   el.addEventListener('click', (e) => {
     if (blocked.value) return
-    stack.value = stack.value.slice(0, stack.value.length - 1)
+    stack.value = stack.value.filter((v) => v.el?.deref() !== el)
     setValue(false)
   })
   el.addEventListener('mouseleave', (e) => {
     if (blocked.value) return
-    stack.value = stack.value.slice(0, stack.value.length - 1)
+    stack.value = stack.value.filter((v) => v.el?.deref() !== el)
     if (stack.value.length > 0) {
       setValue(true)
     } else {
       setValue(false)
     }
   })
-  el.addEventListener('DOMNodeRemoved', (e) => {
-    stack.value = stack.value.slice(0, stack.value.length - 1)
-    setValue(false)
-  })
+  observer.observe(el, { childList: true, subtree: true });
 }

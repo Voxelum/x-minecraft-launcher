@@ -5,7 +5,7 @@
     rail
     :color="sideBarColor"
     :width="80"
-    class="sidebar moveable z-10 "
+    class="sidebar moveable z-10!"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
@@ -50,7 +50,7 @@
       <v-divider />
     </v-list>
 
-    <AppSideBarContentNext
+    <AppSideBarContent
       class="gap-1 flex-grow-0 flex-shrink-100 justify-start overflow-auto px-2"
     />
 
@@ -59,6 +59,16 @@
       density="compact"
       class="flex-grow-1"
     >
+      <v-list-item
+        v-shared-tooltip.right="_ => t('multiplayer.name')"
+        link
+        class="non-moveable"
+        @click="goMultiplayer"
+      >
+        <v-icon>
+          hub
+        </v-icon>
+      </v-list-item>
       <v-divider
         class="mx-1 block"
       />
@@ -91,7 +101,7 @@ import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import AppSideBarContentNext from './AppSideBarContentNext.vue'
+import AppSideBarContent from './AppSideBarContent.vue'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
@@ -103,6 +113,11 @@ const { back } = useRouter()
 function goBack() {
   back()
 }
+
+function goMultiplayer() {
+  windowController.openMultiplayerWindow()
+}
+
 
 </script>
 

@@ -6,7 +6,7 @@
   >
     <v-list-item
       v-for="item of items"
-      :key="item.value"
+      :key="item.value.path"
       class="rounded-lg"
       @click="emit('select', item.value)"
     >

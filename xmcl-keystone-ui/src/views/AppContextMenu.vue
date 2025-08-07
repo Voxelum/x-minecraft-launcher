@@ -3,7 +3,7 @@
     v-model="shown"
     :target="[x, y]"
     absolute
-    z-index="205"
+    z-index="300"
   >
     <v-list density="compact">
       <template 

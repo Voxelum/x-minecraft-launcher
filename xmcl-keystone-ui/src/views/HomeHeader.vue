@@ -21,7 +21,7 @@
       }"
     >
       <div
-        class="flex flex-1 flex-grow-0 pr-2 -mt-1 pl-4"
+        class="flex flex-1 flex-grow-0 pr-2 -mt-1"
       >
         <span
           :style="{
@@ -30,22 +30,6 @@
           class="overflow-hidden ml-3.5 overflow-ellipsis whitespace-nowrap transition-all font-medium font-[Telegraf,sans-serif]"
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
-        <!-- <AvatarItem
-          v-if="versionId"
-          icon="fact_check"
-          class="ml-2 p-1"
-          :title="t('version.name', 2)"
-          :text="currentVersion"
-          @click="onShowLocalVersion"
-        />
-        <AvatarItem
-          v-else
-          color="warning"
-          icon="fact_check"
-          class="ml-2"
-          :title="t('version.name', 2)"
-          :text="currentVersion"
-        /> -->
         <div class="flex-grow" />
         <router-view
           v-slot="{ Component }"

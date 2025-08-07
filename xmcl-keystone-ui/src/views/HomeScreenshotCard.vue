@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="w-full"
+    class="w-full! flex!"
     :color="cardColor"
     border
     :style="{
@@ -12,7 +12,7 @@
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
       variant="text"
       icon
-      class="z-6 absolute bottom-2 right-2"
+      class="z-6 absolute! bottom-2 right-2"
       @click="randomPlayScreenshot = !randomPlayScreenshot"
     >
       <v-icon>
@@ -57,7 +57,7 @@
         >
           <v-sheet
             color="transparent"
-            class="flex h-full items-center justify-center"
+            class="flex! h-full items-center justify-center"
           >
             <v-icon start>
               image

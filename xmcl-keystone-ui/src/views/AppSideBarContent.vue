@@ -40,7 +40,7 @@
       <v-avatar
         id="create-instance-button"
         size="48"
-        class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
+        class="bg-[rgba(80,80,80,0.4)] transition-all! duration-300 hover:rounded-xl hover:bg-green-500"
       >
         <v-icon class="text-3xl">
           add
@@ -73,9 +73,6 @@ import { useNotifier } from '@/composables/notifier'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import AppSideBarGroupItem from './AppSideBarGroupItem.vue'
-import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
-import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 
 const { t } = useI18n()
 

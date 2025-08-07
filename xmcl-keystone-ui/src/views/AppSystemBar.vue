@@ -41,13 +41,13 @@
     <AppSystemBarAvatar
       v-if="!noUser"
     />
-    <AppSystemBarBadge
+    <!-- <AppSystemBarBadge
       v-if="!noUser"
       v-tooltip.bottom="t('multiplayer.name')"
       icon="hub"
       can-hide-text
       @click="goMultiplayer"
-    />
+    /> -->
     <AppSystemBarBadge
       v-if="tutor"
       id="tutor-button"

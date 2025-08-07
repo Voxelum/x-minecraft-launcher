@@ -1,8 +1,7 @@
 <template>
   <v-card
-    class="flex h-full flex-col transition-all duration-500 home-card"
-    :class="{ highlighted: highlighted }"
-    style="box-sizing: border-box"
+    class="flex! h-full flex-col transition-all duration-500 home-card"
+    :class="{ highlighted: highlighted && !noTransform }"
     border
     :style="{
       borderColor: mouse > 0 ? 'white' : '',
@@ -21,7 +20,7 @@
       class="absolute left-0 bottom-0 z-20 m-0 p-0"
       indeterminate
     />
-    <v-card-title>
+    <v-card-title class="mb-2">
       <v-icon start>
         {{ icon }}
       </v-icon>
@@ -62,22 +61,24 @@
             :color="a.color ? a.color : !a.icon ? getColor(a.name) : undefined"
             size="30px"
           >
-            <img
+            <v-img
               v-if="a.icon"
               v-fallback-img="BuiltinImages.unknownServer"
               :src="a.icon"
               draggable="false"
-            >
+            />
             <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
           </v-avatar>
         </div>
       </template>
     </v-card-text>
-    <v-card-actions v-if="button || additionButton">
+    <v-card-actions
+      v-if="button || additionButton"
+      class="flex justify-between"
+    >
       <v-btn
         v-if="button"
         ref="btnElem"
-        class="flex-1 justify-start flex-grow"
         variant="text"
         @click="emit('navigate')"
       >
@@ -94,7 +95,6 @@
       <v-spacer v-else />
       <v-btn
         v-if="additionButton"
-        class="justify-start"
         color="primary"
         variant="text"
         @click="emit('navigate-addition')"
@@ -120,19 +120,6 @@ import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
-import Vue from 'vue'
-
-const btnElem = ref(null as Vue | null)
-
-const isOverflowed = computed(() => {
-  const el = btnElem.value?.$el
-  if (!el) {
-    return
-  }
-
-  const isOverflowed = el.scrollWidth > el.clientWidth
-  return isOverflowed
-})
 
 defineProps<{
   icon?: string
@@ -144,7 +131,21 @@ defineProps<{
   refreshing: boolean
   error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>
+  noTransform?: boolean
 }>()
+
+const btnElem = ref(null as any | null)
+
+const isOverflowed = computed(() => {
+  const el = btnElem.value?.$el
+  if (!el) {
+    return
+  }
+
+  const isOverflowed = el.scrollWidth > el.clientWidth
+  return isOverflowed
+})
+
 const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave', 'navigate-addition'])
 const { cardColor, blurCard } = injection(kTheme)
 

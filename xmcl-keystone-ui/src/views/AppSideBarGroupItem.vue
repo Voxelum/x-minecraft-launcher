@@ -1,57 +1,53 @@
 <template>
   <v-sheet
-    class="relative rounded-xl hover:rounded-lg! transition-all"
+    class="relative rounded-xl hover:rounded-lg! transition-all cursor-pointer"
     :color="color"
+    draggable="true"
+    @click="onClick"
+    @dragover.prevent
+    @dragstart="onDragStart"
+    @dragend="onDragEnd"
+    @dragover="onDragOver"
+    @dragenter="onDragEnter"
+    @dragleave="onDragLeave"
+    @drop="onDrop"
   >
     <AppSideBarGroupItemIndicator :state="overState" />
     <v-list-item
       v-context-menu="getItems"
       v-shared-tooltip.right="() => group.name ? group.name : { list: instances.map(instance => instance.name || `Minecraft ${instance.runtime.minecraft}`) }"
-      push
-      link
-      draggable
       class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-      @click="onClick"
-      @dragover.prevent
-      @dragstart="onDragStart"
-      @dragend="onDragEnd"
-      @dragover="onDragOver"
-      @dragenter="onDragEnter"
-      @dragleave="onDragLeave"
-      @drop="onDrop"
     >
-      <template #prepend>
-        <v-avatar
-          size="48"
-          class="transition-all duration-300 rounded"
+      <v-avatar
+        size="48"
+        class="transition-all duration-300 rounded"
+      >
+        <Transition
+          name="scroll-y-reverse-transition"
+          mode="out-in"
         >
-          <Transition
-            name="scroll-y-reverse-transition"
-            mode="out-in"
+          <v-skeleton-loader
+            v-if="dragging"
+            type="avatar"
+          />
+          <div
+            v-else-if="!expanded"
+            class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl w-full"
           >
-            <v-skeleton-loader
-              v-if="dragging"
-              type="avatar"
+            <v-img
+              v-for="i in instances.slice(0, 4)"
+              :key="i.path"
+              :style="{ maxHeight: '20px', maxWidth: '20px' }"
+              :src="getInstanceIcon(i, i.server ? undefined : undefined)"
+              @dragenter="onDragEnter"
+              @dragleave="onDragLeave"
             />
-            <div
-              v-else-if="!expanded"
-              class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl w-full"
-            >
-              <v-img
-                v-for="i in instances.slice(0, 4)"
-                :key="i.path"
-                :style="{ maxHeight: '20px', maxWidth: '20px' }"
-                :src="getInstanceIcon(i, i.server ? undefined : undefined)"
-                @dragenter="onDragEnter"
-                @dragleave="onDragLeave"
-              />
-            </div>
-            <v-icon v-else>
-              folder
-            </v-icon>
-          </Transition>
-        </v-avatar>
-      </template>
+          </div>
+          <v-icon v-else>
+            folder
+          </v-icon>
+        </Transition>
+      </v-avatar>
     </v-list-item>
     <template v-if="expanded">
       <AppSideBarInstanceItem

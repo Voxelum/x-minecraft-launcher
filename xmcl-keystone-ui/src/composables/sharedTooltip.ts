@@ -22,6 +22,7 @@ export interface SharedTooltipData {
   color: string
   items: Array<{ text: string; icon: string }> | undefined
   list: Array<string> | undefined
+  el: WeakRef<HTMLElement> | undefined
 }
 
 export function useSharedTooltipData() {

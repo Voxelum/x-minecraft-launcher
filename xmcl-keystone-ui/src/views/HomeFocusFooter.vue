@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div class="relative mx-10 mb-2 flex-grow flex gap-6 items-end justify-between">
-      <!-- <v-card
+      <v-card
         flat
         class="rounded-lg tabs-card"
         color="transparent"
@@ -17,6 +17,7 @@
             :class="{ 'v-btn--active': pinned }"
             icon
             size="small"
+            variant="text"
             @click="onPin"
           >
             <v-icon class="material-symbols-outlined ">
@@ -26,6 +27,7 @@
           <v-btn
             icon
             size="small"
+            variant="text"
             @click="onViewDashboard"
           >
             <v-icon class="rotate-[45deg]">
@@ -108,10 +110,10 @@
             {{ instance.upstream && instance.upstream.type === 'curseforge-modpack' ? 'Curseforge' : 'Modrinth' }}
           </v-tab>
         </v-tabs>
-      </v-card> -->
+      </v-card>
       
 
-      <div
+      <!-- <div
         class="flex flex-col gap-4 z-2"
       >
         <VTyping :steps="infos" loop />
@@ -136,7 +138,7 @@
           text="132小时 / 3天前"
           icon-class="opacity-70"
         />
-      </div>
+      </div> -->
 
       <div 
         key="launch-button-group"
@@ -182,8 +184,6 @@ import { useLocalStorage, useWindowSize } from '@vueuse/core'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
-import AvatarItem from '@/components/AvatarItem.vue'
-import VTyping from '@/components/VTyping.vue'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
@@ -193,7 +193,7 @@ const { path, refreshing, instance, runtime: version } = injection(kInstance)
 const { total, progress, status, name: taskName, pause, resume } = injection(kLaunchTask)
 const tab = useQueryNumber('homeTab', 0)
 const { t } = useI18n()
-const tabItems = ref(null as null | Vue)
+const tabItems = ref(null as null | any)
 const counter = ref(0)
 const visible = ref(false)
 const { blurCard, cardColor } = injection(kTheme)

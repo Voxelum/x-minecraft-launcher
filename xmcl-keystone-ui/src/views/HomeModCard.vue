@@ -2,6 +2,7 @@
   <HomeCard
     icon="extension"
     :title="t('mod.name', 2)"
+    :no-transform="noTransform"
     :class="{
       dragover,
     }"
@@ -31,7 +32,7 @@ import { useService } from '@/composables'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import { kInstance } from '@/composables/instance'
 
-const props = defineProps<{ row: number; rowCount: number; noAction?: boolean }>()
+const props = defineProps<{ row: number; rowCount: number; noAction?: boolean; noTransform?: boolean }>()
 
 const { mods, enabledMods, isValidating, error } = injection(kInstanceModsContext)
 const icons = computed(() => mods.value.filter(i => i.enabled).map((m) => ({ name: m.name + ' (' + m.version + ')', icon: m.icon }))

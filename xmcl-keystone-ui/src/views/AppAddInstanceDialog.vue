@@ -15,24 +15,11 @@
       >
         <v-icon>arrow_back</v-icon>
       </v-btn>
-      <v-toolbar-title class="flex items-center">
-        <div v-if="steps[step - 1] === 'template'">
-          {{ t('instanceTemplate.title') }}
-        </div>
-        <template v-if="steps[step - 1] === 'config'">
-          {{ t('instances.add') }}
-        </template>
-        <template v-if="steps[step - 1] === 'choice'">
-          {{ t('AppAddInstanceDialog.choiceTitle') }}
-        </template>
-        <template v-if="steps[step - 1] === 'create'">
-          {{ t('AppAddInstanceDialog.createTitle') }}
-        </template>
-        <template v-if="steps[step - 1] === 'server'">
-          {{ t('AppAddInstanceDialog.serverTitle') }}
-        </template>
-
-        <div class="flex-grow" />
+      <v-toolbar-title
+        class="flex! items-center"
+        :text="titleTexts[steps[step - 1]]"
+      />
+      <template #append>
         <v-btn
           variant="outlined"
           color="primary"
@@ -43,103 +30,106 @@
           </v-icon>
           {{ t("setting.migrateFromOther") }}
         </v-btn>
-      </v-toolbar-title>
+      </template>
     </v-toolbar>
 
     <v-stepper v-model="step">
-      <v-stepper-items class="visible-scroll overflow-y-auto">
-        <v-stepper-content
-          v-for="(tStep, i) in steps"
-          :key="tStep"
-          class="max-h-[70vh]"
-          :step="i + 1"
+      <template #default="{ next }">
+        <v-stepper-window
+          v-model="step"
+          class="my-0!"
         >
-          <AppLoadingCircular
-            v-if="tStep === 'create' && loading"
-            :texts="[t('instances.loadingFiles') + '...']"
-          />
-          <StepChoice
-            v-if="tStep === 'choice'"
-            :manifests="manifests"
-            @select="onManifestSelect"
-          />
-          <StepTemplate
-            v-if="tStep === 'template'"
-            :is-shown="isShown"
-            @select="next()"
-          />
-          <StepConfig
-            v-if="tStep === 'config'"
-            v-model:valid="valid"
-            :loading="loading"
-          />
-          <StepServer
-            v-if="tStep === 'server'"
-            v-model:valid="valid"
-          />
-        </v-stepper-content>
-      </v-stepper-items>
-      <v-divider />
-      <StepperFooter
-        class="px-6 pb-6 pt-4"
-        :disabled="!valid || loading"
-        :creating="loading"
-        :next="step !== steps.length"
-        :create="step === steps.length"
-        @create="onCreate"
-        @next="next"
-        @quit="quit"
-      >
-        <div
-          v-if="type === 'template' || type === 'manual' || !type"
-          class="flex justify-end"
-        >
-          <v-menu
-            offset-y
-            open-on-hover
-            location="top"
+          <v-stepper-window-item
+            v-for="(tStep, i) of steps"
+            :key="`${tStep}-content`"
+            :value="i + 1"
           >
-            <template #activator="{ props }">
+            <AppLoadingCircular
+              v-if="tStep === 'create' && loading"
+              :texts="[t('instances.loadingFiles') + '...']"
+            />
+            <StepChoice
+              v-if="tStep === 'choice'"
+              :manifests="manifests"
+              @select="onManifestSelect"
+            />
+            <StepTemplate
+              v-if="tStep === 'template'"
+              :is-shown="isShown"
+              @select="next()"
+            />
+            <StepConfig
+              v-if="tStep === 'config'"
+              v-model:valid="valid"
+              :loading="loading"
+            />
+            <StepServer
+              v-if="tStep === 'server'"
+              v-model:valid="valid"
+            />
+          </v-stepper-window-item>
+        </v-stepper-window>
+        <v-divider />
+        <StepperFooter
+          class="px-6 pb-6 pt-4"
+          :disabled="!valid || loading"
+          :creating="loading"
+          :next="step !== steps.length"
+          :create="step === steps.length"
+          @create="onCreate"
+          @next="next"
+          @quit="quit"
+        >
+          <div
+            v-if="type === 'template' || type === 'manual' || !type"
+            class="flex justify-end"
+          >
+            <v-menu
+              open-on-hover
+              location="top"
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  variant="outlined"
+                  :loading="loading"
+                  v-bind="props"
+                  @click="onImportModpack"
+                >
+                  <v-icon start>
+                    note_add
+                  </v-icon>
+                  {{ t('importModpack.name') }}
+                </v-btn>
+              </template>
               <v-btn
-                variant="outlined"
+                size="large"
                 :loading="loading"
-                v-bind="props"
-                @click="onImportModpack"
+                @click="onSelectTemplate"
               >
                 <v-icon start>
-                  note_add
+                  list
                 </v-icon>
-                {{ t('importModpack.name') }}
+                {{ t('instances.addTemplate') }}
               </v-btn>
-            </template>
-            <v-btn
-              size="large"
-              :loading="loading"
-              @click="onSelectTemplate"
-            >
-              <v-icon start>
-                list
-              </v-icon>
-              {{ t('instances.addTemplate') }}
-            </v-btn>
-          </v-menu>
-        </div>
-        <div
-          v-if="error"
-          class="pointer-events-none absolute left-0 flex w-full justify-center"
-        >
-          <v-alert
-            density="compact"
-            class="w-[50%]"
-            type="error"
+            </v-menu>
+          </div>
+          <div
+            v-if="error"
+            class="pointer-events-none absolute left-0 flex w-full justify-center"
           >
-            {{ errorText }}
-            <div>
-              {{ error?.path }}
-            </div>
-          </v-alert>
-        </div>
-      </StepperFooter>
+            <v-alert
+              density="compact"
+              class="w-[50%]"
+              type="error"
+            >
+              {{ errorText }}
+              <div>
+                {{ error?.path }}
+              </div>
+            </v-alert>
+          </div>
+        </StepperFooter>
+      </template>
     </v-stepper>
   </v-dialog>
 </template>
@@ -280,6 +270,15 @@ window.addEventListener('keydown', (e) => {
 
 const { t } = useI18n()
 
+const titleTexts = computed(() => ({
+  template: t('instanceTemplate.title'),
+  config: t('instances.add'),
+  choice: t('AppAddInstanceDialog.choiceTitle'),
+  create: t('AppAddInstanceDialog.createTitle'),
+  server: t('AppAddInstanceDialog.serverTitle'),
+} as Record<string, string>))
+
+
 // Instance create data
 const { gameProfile } = injection(kUserContext)
 const { instances } = injection(kInstances)
@@ -289,12 +288,12 @@ const { create, reset, error, update, loading } = creation
 provide(kInstanceCreation, creation)
 
 // Install
-const router = useRouter()
+const { currentRoute, push } = useRouter()
 const { fix } = injection(kInstanceVersionInstall)
 const onCreate = async () => {
   const newPath = await create((newPath) => {
     path.value = newPath
-    if (router.currentRoute.path !== '/') router.push('/')
+    if (currentRoute.value.path !== '/') push('/')
     hide()
   })
   if (newPath === path.value) {
@@ -317,11 +316,11 @@ const steps = computed(() => {
 
   return ['config']
 })
-function next() {
-  if (step.value < steps.value.length) {
-    step.value += 1
-  }
-}
+// function next() {
+//   if (step.value < steps.value.length) {
+//     step.value += 1
+//   }
+// }
 function back() {
   if (step.value > 1) {
     step.value -= 1

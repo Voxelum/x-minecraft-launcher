@@ -2,7 +2,7 @@
   <v-card
     v-shared-tooltip="_ => name"
     v-context-menu.force="getContextMenuItems"
-    class="flex flex-col"
+    class="flex! flex-col"
     :border="isSelected"
     :color="isSelected ? 'primary' : ''"
     @click="emit('click', $event)"
@@ -29,7 +29,7 @@
           :source="typeof instance.description === 'object' ? instance.description : { text: instance.description }"
         />
       </v-list-item-subtitle>
-      <v-list-item-subtitle class="flex gap-2 flex-wrap">
+      <v-list-item-subtitle class="flex! gap-2 flex-wrap">
         <template
           v-for="version of versions"
           :key="version.text"
@@ -55,7 +55,7 @@
       </v-list-item-subtitle>
     </v-list-item>
     <v-divider />
-    <v-card-actions class="flex w-full items-center">
+    <v-card-actions class="flex! w-full items-center">
       <v-chip
         variant="outlined"
         label

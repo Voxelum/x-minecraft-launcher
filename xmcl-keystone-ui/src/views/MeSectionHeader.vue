@@ -2,18 +2,17 @@
   <div class="flex items-center gap-3">
     <h2
       v-if="!options"
-      class="text-align-left"
+      class="text-align-left whitespace-nowrap"
     >
       {{ title }}
     </h2>
     <v-menu
       v-else
-      offset-y
       open-on-hover
     >
       <template #activator="{ props }">
         <h2
-          class="text-align-left cursor-pointer"
+          class="text-align-left cursor-pointer whitespace-nowrap"
           v-bind="props"
         >
           {{ title }}
@@ -22,7 +21,7 @@
           </v-icon>
         </h2>
       </template>
-      <v-list density="compact">
+      <v-list density="compact" width="300">
         <v-list-item
           v-for="o of options"
           :key="o.value"
@@ -52,6 +51,7 @@
   </div>
 </template>
 <script setup lang="ts">
+
 defineProps<{
   title: string
   options?: Array<{ text: string; value: string; icon?: string }>

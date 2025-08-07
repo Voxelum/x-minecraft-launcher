@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="grid-cols-13 grid items-center gap-y-4 p-3 text-gray-700 dark:text-gray-300"
+    class="grid! grid-cols-13 items-center gap-y-4 p-3 text-gray-700 dark:text-gray-300 p-2!"
     :border="outlined"
     :style="{ 'content-visibility': 'auto', 'backdrop-filter': `blur(${blurCard}px)`, borderColor: '' }"
     :color="cardColor"

@@ -3,7 +3,7 @@ declare module '*.webp' {
   export default value
 }
 
-declare module 'vue-grid-layout' {
+declare module 'grid-layout-plus' {
   export const GridLayout: import('vue').Component<any, any, any, { size: number; remain: number }>
   export const GridItem: import('vue').Component<any, any, any, { w: number }>
 }

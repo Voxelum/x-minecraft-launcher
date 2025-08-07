@@ -60,6 +60,7 @@ export function useGroupDragDropState(emit: (event: 'arrange' | 'group' | 'drop-
   }
 
   const onDragOver = (e: DragEvent) => {
+    e.preventDefault()
     const hasGroup = e.dataTransfer?.items[1]?.type === 'group' || e.dataTransfer?.items[0]?.type === 'group'
     overState.value = getOverState(e, !!hasGroup || dragging.value)
   }

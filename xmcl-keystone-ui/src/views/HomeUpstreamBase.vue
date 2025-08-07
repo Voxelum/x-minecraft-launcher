@@ -99,13 +99,11 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { getEl } from '@/util/el'
+import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
 import { useVModel } from '@vueuse/core'
 import HomeUpstreamHeader, { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import HomeUpstreamVersion, { ProjectVersionProps } from './HomeUpstreamVersion.vue'
-import { useVirtualizer, VirtualizerOptions } from '@tanstack/vue-virtual'
-import { getEl } from '@/util/el'
-import { injection } from '@/util/inject'
-import { kTheme } from '@/composables/theme'
 
 const props = defineProps<{
   duplicating?: boolean

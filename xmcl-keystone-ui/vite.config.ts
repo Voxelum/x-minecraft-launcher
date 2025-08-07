@@ -1,11 +1,13 @@
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
+import vue from '@vitejs/plugin-vue'
 import { readdirSync } from 'fs'
 import { join, resolve } from 'path'
+import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
-import UnoCSS from 'unocss/vite'
-import vue from '@vitejs/plugin-vue'
-import vuetify from 'vite-plugin-vuetify'
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import Fonts from 'unplugin-fonts/vite'
+import Components from 'unplugin-vue-components/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -48,14 +50,32 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['electron'],
+    exclude: ['electron', 'vuetify'],
     esbuildOptions: {
       minify: false,
       keepNames: true,
     },
   },
   plugins: [
-    vue(),
+    vue({
+      template: { transformAssetUrls },
+    }),
+    Components({
+      dirs: [join(__dirname, './src/components'), join(__dirname, './src/views')],
+      deep: false,
+      dts: 'components.d.ts',
+    }),
+    Fonts({
+      fontsource: {
+        families: [
+          {
+            name: 'Roboto',
+            weights: [100, 300, 400, 500, 700, 900],
+            styles: ['normal', 'italic'],
+          },
+        ],
+      },
+    }),
     UnoCSS(),
     VueI18n({
       include: [

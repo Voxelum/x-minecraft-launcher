@@ -1,42 +1,36 @@
 <template>
-  <div class="relative">
+  <div
+    class="relative"
+    draggable="true"
+    @dragstart="onDragStart"
+    @dragend="onDragEnd"
+    @dragover="onDragOver"
+    @dragenter="onDragEnter"
+    @dragleave="onDragLeave"
+    @drop="onDrop" 
+  >
     <AppSideBarGroupItemIndicator :state="overState" />
     <v-list-item
       v-context-menu="getItems"
       v-shared-tooltip.right="() => ({ text: name, items: runtimes })"
       push
       link
-      draggable
       class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
       :class="{ 'v-list-item--active': path === selectedInstance }"
       @click="navigate"
-      @dragover.prevent
-      @dragstart="onDragStart"
-      @dragend="onDragEnd"
-      @dragover="onDragOver"
-      @dragenter="onDragEnter"
-      @dragleave="onDragLeave"
-      @drop="onDrop"
     >
-      <template #prepend>
-        <v-avatar
-          size="48"
-          class="transition-all! duration-300! hover:rounded"
-        >
-          <v-img
-            v-if="!dragging"
-            width="54"
-            height="54"
-            :src="favicon"
-            @dragenter="onDragEnter"
-            @dragleave="onDragLeave"
-          />
-          <v-skeleton-loader
-            v-else
-            type="avatar"
-          />
-        </v-avatar>
-      </template>
+      <v-avatar
+        size="48"
+        class="transition-all! duration-300! hover:rounded"
+      >
+        <v-img
+          width="54"
+          height="54"
+          :src="favicon"
+          @dragenter="onDragEnter"
+          @dragleave="onDragLeave"
+        />
+      </v-avatar>
     </v-list-item>
   </div>
 </template>

@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="flex flex-col items-center justify-center gap-4 p-4"
+    class="flex! flex-col items-center justify-center gap-4 p-4!"
     :color="cardColor"
     :style="{ borderColor: '', 'backdrop-filter': `blur(${blurCard}px)` }"
     border

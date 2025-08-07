@@ -12,25 +12,26 @@
         v-if="!isFocus"
         class="mx-3 relative"
       >
-        <Transition name="slide-y-reverse-transition">
-          <div class="flex items-center justify-center gap-1 sticky top-40 z-3">
-            <v-divider
-              class="divider mx-0"
-            />
-            <v-btn
-              class="z-4"
-              icon
-              @click="isFocus = true"
-            >
-              <v-icon>
-                keyboard_arrow_down
-              </v-icon>
-            </v-btn>
-            <v-divider
-              class="divider mx-0"
-            />
-          </div>
-        </Transition>
+        <!-- <Transition name="slide-y-reverse-transition"> -->
+        <div class="flex items-center justify-center gap-1 sticky top-40 z-3">
+          <v-divider
+            class="divider mx-0"
+          />
+          <v-btn
+            class="z-4"
+            icon
+            variant="text"
+            @click="isFocus = true"
+          >
+            <v-icon>
+              keyboard_arrow_down
+            </v-icon>
+          </v-btn>
+          <v-divider
+            class="divider mx-0"
+          />
+        </div>
+        <!-- </Transition> -->
         <HomeGrid />
         <HomeUpstreamCurseforge
           v-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
