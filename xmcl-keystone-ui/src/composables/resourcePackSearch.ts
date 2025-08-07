@@ -12,6 +12,7 @@ import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
 import { useLocalStorageCacheStringValue } from './cache'
 import { LocalSort } from './sortBy'
+import { mergeSorted } from '@/util/sort'
 
 export const kResourcePackSearch: InjectionKey<ReturnType<typeof useResourcePackSearch>> = Symbol('ResourcePackSearch')
 
@@ -113,10 +114,10 @@ export function useResourcePackSearch(_enabled: Ref<InstanceResourcePack[]>, _di
         return [collectionItems.value, all.value]
       }
       return [
-        [
-          ...modrinth.value,
-          ...curseforge.value,
-        ],
+        mergeSorted(
+          modrinth.value,
+          curseforge.value,
+        ),
         all.value,
       ]
     }),

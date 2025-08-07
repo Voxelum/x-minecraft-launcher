@@ -16,7 +16,7 @@
         <PlayerAvatar
           class="overflow-hidden rounded-full transition-all duration-300"
           :src="selectedUserGameProfile?.textures.SKIN.url"
-          :dimension="28"
+          :dimension="24"
         />
         {{ selectedUserGameProfile?.name }}
       </div>

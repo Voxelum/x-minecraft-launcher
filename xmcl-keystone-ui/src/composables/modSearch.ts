@@ -3,7 +3,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
-import { getDiceCoefficient } from '@/util/sort'
+import { getDiceCoefficient, mergeSorted } from '@/util/sort'
 import { notNullish } from '@vueuse/core'
 import { InstanceData, InstanceModsServiceKey, ProjectMapping, ProjectMappingServiceKey, Resource, RuntimeVersions, Settings } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
@@ -233,8 +233,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
         return [collectionItems.value, [...cachedMods.value, ...instancesAll.value]]
       }
       return [[
-        ...modrinth.value,
-        ...curseforge.value,
+        ...mergeSorted(modrinth.value, curseforge.value),
         ...i18nProjects.value,
         ...cachedMods.value,
       ], [...instancesAll.value, ...instances.value]

@@ -172,6 +172,7 @@ import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
+import { mergeSorted } from '@/util/sort'
 import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
 import { Mod, ModsSearchSortField } from '@xmcl/curseforge'
@@ -203,17 +204,6 @@ const keyword = ref(query)
 const { t } = useI18n()
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
-
-function merge<T>(first: T[], second: T[]) {
-  const result: T[] = []
-  for (let i = 0; i < Math.max(first.length, second.length); i++) {
-    const m = first[i]
-    const c = second[i]
-    if (m) result.push(m)
-    if (c) result.push(c)
-  }
-  return result
-}
 
 // Popular list
 const { data: modrinthResult, error, isValidating } = useSWRV('/modrinth/featured', async () => {
@@ -269,7 +259,7 @@ const popularItems = computed(() => {
   const modrinth = getGameGalleryFromModrinth(modrinthResult.value ?? [])
   const curseforge = getGameGalleryFromCurseforge(curseforgeResult.value ?? [])
 
-  return merge(modrinth, curseforge)
+  return mergeSorted(modrinth, curseforge)
 })
 
 // Recent updated
@@ -293,7 +283,7 @@ const recentUpdatedItems = computed(() => {
   const recent = modrinthRecent.value || []
   const cfRecent = curseforgeRecent.value || []
 
-  return merge(
+  return mergeSorted(
     recent.map((r) => ({
       title: r.title,
       id: r.project_id,
@@ -337,7 +327,7 @@ const recentMinecraftItems = computed(() => {
   const modrinths = modrinthRecentMinecraft.value || []
   const curseforges = curseforgeRecentMinecraft.value || []
 
-  return merge(
+  return mergeSorted(
     modrinths.map((r) => ({
       title: r.title,
       type: 'modrinth',
@@ -494,7 +484,7 @@ const items = computed(() => {
     return modrinths
   }
 
-  return merge(merge(modrinths, ftbItems.value), curseforges)
+  return mergeSorted(mergeSorted(modrinths, ftbItems.value), curseforges)
 })
 
 // Scroll to the search result

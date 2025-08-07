@@ -13,6 +13,7 @@ import { SearchModel } from './search'
 import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
 import { useLocalStorageCacheStringValue } from './cache'
 import { LocalSort } from './sortBy'
+import { mergeSorted } from '@/util/sort'
 
 export const kShaderPackSearch: InjectionKey<ReturnType<typeof useShaderPackSearch>> = Symbol('ShaderPackSearch')
 
@@ -123,10 +124,10 @@ export function useShaderPackSearch(shaderPacks: Ref<InstanceShaderFile[]>,
         return [collectionItems.value, all.value]
       }
       return [
-        [
-          ...modrinth.value,
-          ...curseforge.value,
-        ],
+        mergeSorted(
+          modrinth.value,
+          curseforge.value,
+        ),
         all.value,
       ]
     }),
