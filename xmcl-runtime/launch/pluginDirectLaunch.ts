@@ -11,6 +11,7 @@ import { AuthlibInjectorService } from '~/authlibInjector';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import { Logger } from '~/logger';
+import { AnyError } from '~/util/error';
 
 function getLaunchArguments(argv: string[]) {
   const indexOfLaunch = argv.indexOf('launch')
@@ -51,13 +52,16 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
 
   // user
   const users = await userSerivce.getUserState()
-  const user = users.users[userId]
-  await userSerivce.refreshUser(userId)
+  const user = users.users[userId] || Object.values(users.users)[0]
+  if (!user) {
+    throw new AnyError('DirectLaunchError', `User ${userId} not found`)
+  }
+  await userSerivce.refreshUser(user.id)
 
   // instance
   const instance = instanceService.state.all[instancePath]
   if (!instance) {
-    throw new Error('Instance not found')
+    throw new AnyError('DirectLaunchError', 'Instance not found')
   }
 
   // version
