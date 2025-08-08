@@ -1,6 +1,6 @@
 {
     "name": "@xmcl/runtime-api",
-    "version": "0.34.1",
+    "version": "0.34.2",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "Shared API for between launcher renderer & main process",
     "license": "MIT",
