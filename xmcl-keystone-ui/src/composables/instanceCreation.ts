@@ -1,8 +1,10 @@
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
 import { generateBaseName, generateDistinctName } from '@/util/instanceName'
 import { CreateInstanceOption, Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
+import { kLatestMinecraftVersion } from './version'
 
 export type InstanceCreation = ReturnType<typeof useInstanceCreation>
 
@@ -13,17 +15,15 @@ export const kInstanceCreation: InjectionKey<InstanceCreation> = Symbol('CreateO
  */
 export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Ref<Instance[]>) {
   const { createInstance: create } = useService(InstanceServiceKey)
-  const { getLatestMinecraftRelease } = useService(VersionMetadataServiceKey)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-  let latest = ''
-  getLatestMinecraftRelease().then(v => {
-    latest = v
-    if (data.runtime.minecraft === '') {
-      data.runtime.minecraft = latest
+  const { release } = injection(kLatestMinecraftVersion)
+  watch(release, (v) => {
+    if (v && data.runtime.minecraft === '') {
+      data.runtime.minecraft = v
     }
   })
   const getNewRuntime = () => ({
-    minecraft: latest || '',
+    minecraft: release.value || '',
     forge: '',
     liteloader: '',
     fabricLoader: '',

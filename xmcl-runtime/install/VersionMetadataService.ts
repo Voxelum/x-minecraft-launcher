@@ -6,7 +6,7 @@ import { LauncherApp } from '../app/LauncherApp'
 @ExposeServiceKey(VersionMetadataServiceKey)
 export class VersionMetadataService extends AbstractService implements IVersionMetadataService {
   private latest = {
-    release: '1.21.4',
+    release: '1.21.8',
     snapshot: '21w37a',
   }
 
@@ -24,10 +24,6 @@ export class VersionMetadataService extends AbstractService implements IVersionM
 
   async getLatestMinecraftRelease() {
     return this.latest.release
-  }
-
-  async getLatestMinecraftSnapshot() {
-    return this.latest.snapshot
   }
 
   async setLatestMinecraft(release: string, snapshot: string) {

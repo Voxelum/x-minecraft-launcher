@@ -2,11 +2,12 @@ import { parse } from '@/util/forgeWebParser'
 import { MaybeRef, get } from '@vueuse/core'
 import type { JavaRuntimeManifest, JavaRuntimeTarget, JavaRuntimes, LabyModManifest } from '@xmcl/installer'
 import { FabricArtifactVersion, ForgeVersion, MinecraftVersions, OptifineVersion, QuiltArtifactVersion, VersionMetadataServiceKey } from '@xmcl/runtime-api'
-import { Ref, computed } from 'vue'
+import { InjectionKey, Ref, computed } from 'vue'
 import { useSWRVModel } from './swrv'
 import { kSWRVConfig } from './swrvConfig'
 import { useService } from './service'
 import { gt } from 'semver'
+import { injection } from '@/util/inject'
 
 async function getJson<T>(url: string) {
   const res = await fetch(url)
@@ -61,15 +62,35 @@ export function getMinecraftVersionsModel() {
   }
 }
 
+export const kLatestMinecraftVersion: InjectionKey<ReturnType<typeof useMinecraftLatestRelease>> = Symbol('kLatestMinecraftVersion')
+
+export function useMinecraftLatestRelease() {
+  const release = shallowRef<string | undefined>()
+  const snapshot = shallowRef<string | undefined>()
+
+  function setLatestMinecraft(_release: string, _snapshot: string) {
+    release.value = _release
+    snapshot.value = _snapshot
+  }
+
+  return {
+    release,
+    snapshot,
+    setLatestMinecraft
+  }
+}
+
 export function useMinecraftVersions() {
   const { data, isValidating, mutate, error } = useSWRVModel(
     getMinecraftVersionsModel(),
     inject(kSWRVConfig),
   )
 
+  const { setLatestMinecraft: setLatestMinecraftVersion } = injection(kLatestMinecraftVersion)
   const { setLatestMinecraft } = useService(VersionMetadataServiceKey)
   watch(data, (d) => {
     if (d) {
+      setLatestMinecraftVersion(d.latest.release, d.latest.snapshot)
       setLatestMinecraft(d.latest.release, d.latest.snapshot)
     }
   }, { immediate: true })

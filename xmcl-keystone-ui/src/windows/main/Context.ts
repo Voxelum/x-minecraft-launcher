@@ -43,6 +43,7 @@ import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composable
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
 import { provide } from 'vue'
+import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -87,6 +88,7 @@ export default defineComponent({
 
     provide(kCriticalStatus, useCriticalStatus(settings.state))
 
+    provide(kLatestMinecraftVersion, useMinecraftLatestRelease())
     provide(kUserContext, user)
     provide(kJavaContext, java)
     provide(kSettingsState, settings)
