@@ -280,6 +280,7 @@ export function watchResourcesDirectory(
   }, onRemove, revalidate)
 
   workerQueue.onerror = ({ filePath }, e) => {
+    if (disposed) return
     if ((e as any)?.code && ['EBUSY', 'ENOENT'].includes((e as any).code)) {
       // ignore the busy file
       return

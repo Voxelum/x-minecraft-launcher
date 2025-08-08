@@ -76,6 +76,7 @@ export class WorkerQueue<T> {
         if (this.disposed) return
         this.queue.shift()
       } catch (e) {
+        if (this.disposed) return
         this.queue.shift()
         if (retry < this.retryCount && this.shouldRetry(e as Error)) {
           await new Promise((resolve) => setTimeout(resolve, this.retryAwait(retry)))
