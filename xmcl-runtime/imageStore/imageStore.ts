@@ -1,14 +1,18 @@
 import { createHash } from 'crypto'
 import { existsSync } from 'fs'
-import { ensureFile, writeFile } from 'fs-extra'
+import { ensureDir, ensureFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { checksum, linkOrCopyFile } from '~/util/fs'
 
 export class ImageStorage {
+  init: Promise<void>
+
   constructor(readonly root: string) {
+    this.init = ensureDir(root)
   }
 
   async addImage(pathOrData: string | Uint8Array) {
+    await this.init
     if (typeof pathOrData === 'string' && pathOrData.startsWith('image://')) {
       pathOrData = pathOrData.substring('image://'.length)
     }
