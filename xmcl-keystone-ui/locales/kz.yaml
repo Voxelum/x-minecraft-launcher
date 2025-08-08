@@ -411,6 +411,9 @@ instanceUpdate:
 launch:
   createShortcut: Create shortcut
 loginError:
+  loginXboxAgeRestricted: >-
+    Fail to login Xbox due the the age issue. Please make sure the age is set
+    for your Microsoft account and the age is above 18.
   noProfileForNewUser: >-
     No game profile found! If you are a new Minecraft user, please login at
     least one time in Minecraft official launcher.

@@ -183,12 +183,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const oauthAccessToken = result.accessToken
     const { liveXstsResponse, minecraftXstsResponse } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
       logError(e)
-      throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Failed to exchange Xbox token', { cause: e })
+      const xErr = Number(e.XErr)
+      throw new UserException({ type: 'userExchangeXboxTokenFailed', reason: xErr === 2148916233 ? 'NO_ACCOUNT' : [2148916238, 2148916236, 2148916227].includes(xErr) ? 'BAD_AGE' : undefined }, 'Failed to exchange Xbox token', { cause: e })
     })
 
     const aquireAccessToken = async (xstsResponse: XBoxResponse) => {
       if (isBadXstsResponse(xstsResponse)) {
-        throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Invalid XSTS response ' + JSON.stringify(xstsResponse))
+        throw new UserException({ type: 'userExchangeXboxTokenFailed', reason: 'BAD_XSTS' }, 'Invalid XSTS response ' + JSON.stringify(xstsResponse))
       }
 
       this.logger.log('Successfully login Xbox')

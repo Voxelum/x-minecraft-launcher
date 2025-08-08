@@ -691,6 +691,7 @@ loginError:
   illegalEmail: 目前的電子郵件格式無效
   invalidCredentials: 無法驗證。使用者名稱或密碼錯誤。
   loginMinecraftByXboxFailed: 在透過 Xbox 令牌交換 Minecraft 令牌的過程中發生錯誤，請確認您的 Xbox 帳號擁有 Minecraft。您可以嘗試重試登入
+  loginXboxAgeRestricted: 由於年齡問題，無法登錄Xbox。請確保為您的Microsoft帳戶設定年齡，並且年齡高於18歲。
   loginXboxFailed: 請求 Xbox 令牌失敗，請確保您的微軟帳號已經綁定了一個 Xbox 帳號！
   noProfileForNewUser: |-
     找不到遊戲資料！

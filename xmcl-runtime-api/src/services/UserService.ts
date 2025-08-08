@@ -254,6 +254,7 @@ export type UserExceptions = {
   type: 'userAcquireMicrosoftTokenFailed'
 } | {
   type: 'userExchangeXboxTokenFailed'
+  reason?: 'NO_ACCOUNT' | 'BAD_AGE' | 'BAD_XSTS'
 } | {
   type: 'userLoginMinecraftByXboxFailed'
 } | {

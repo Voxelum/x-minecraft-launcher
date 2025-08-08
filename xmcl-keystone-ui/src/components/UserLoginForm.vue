@@ -268,6 +268,9 @@ const errorMessage = computed(() => {
       return t('loginError.checkOwnershipFailed')
     }
     if (e.exception.type === 'userExchangeXboxTokenFailed') {
+      if (e.exception.reason === 'BAD_AGE') {
+        return t('loginError.loginXboxAgeRestricted')
+      }
       return t('loginError.loginXboxFailed')
     }
     if (e.exception.type === 'userLoginMinecraftByXboxFailed') {

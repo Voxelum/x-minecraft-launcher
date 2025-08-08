@@ -549,6 +549,11 @@ launchStatus:
 liteloader:
   name: LiteLoader
 loginError:
+  loginXboxAgeRestricted: >-
+    No inicie sesión Xbox debido al problema de edad. 
+
+    Asegúrese de que la edad esté configurada para su cuenta de Microsoft y que
+    la edad sea superior a 18.
   noProfileForNewUser: >-
     ¡No se encontró perfil de juego! 
 

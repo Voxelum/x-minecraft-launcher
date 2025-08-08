@@ -830,6 +830,11 @@ loginError:
     Ich konnte einen Minecraft-Token nicht gegen einen XBox-Token eintauschen.
     Bitte, vergewissern Sie sich, dass Sie Minecraft auf Ihrer Xbox haben, oder
     versuchen Sie es erneut.
+  loginXboxAgeRestricted: >-
+    Mach nicht die Xbox aufgrund des Altersproblems anzumelden. 
+
+    Bitte stellen Sie sicher, dass das Alter für Ihr Microsoft -Konto festgelegt
+    ist und das Alter über 18 liegt.
   loginXboxFailed: >-
     Ich konnte mich nicht mit meinem Microsoft-Token bei der Xbox anmelden.
     Stellen Sie sicher, dass Ihr Sie ein Xbox-Konto haben, das mit Ihrem

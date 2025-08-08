@@ -771,6 +771,11 @@ loginError:
   loginMinecraftByXboxFailed: |-
     Échec de l'échange du token Minecraft par le token XBox. 
     Assurez-vous d'avoir Minecraft sur Xbox ou réessayez.
+  loginXboxAgeRestricted: >-
+    Ne pas connecter Xbox en raison du problème de l'âge. 
+
+    Veuillez vous assurer que l'âge est défini pour votre compte Microsoft et
+    que l'âge est supérieur à 18 ans.
   loginXboxFailed: |-
     Échec de la connexion Xbox par token Microsoft. 
     Assurez-vous d'avoir un compte xbox lié à votre compte Microsoft. 

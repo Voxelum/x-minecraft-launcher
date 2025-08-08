@@ -665,6 +665,9 @@ loginError:
   invalidCredentials: 認証情報が無効です。ユーザー名またはパスワードが間違っています。
   loginMinecraftByXboxFailed: >-
     XboxトークンのMinecraftトークンへの引き換えに失敗しました。XboxでMinecraftを所持しているか確認してください。再度試してください。
+  loginXboxAgeRestricted: |-
+    年齢の問題が原因でXboxのログインに失敗します。 
+    Microsoftアカウントの年齢が設定されており、年齢が18を超えていることを確認してください。
   loginXboxFailed: >-
     MicrosoftトークンでのXboxへのログインに失敗しました。Microsoftアカウントへ接続された孤立していないXboxアカウントか確認してください。再度試してください。
   noProfileForNewUser: |-

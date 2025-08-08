@@ -158,9 +158,9 @@ dataMigration:
   unknownError: UNKNOWN ERROR! PLZ RETRY OR CONTACT TEH DEVELOPR!
   waitReload: MIGRATIN DATA. PLZ DOAN CLOSE TEH LAUNCHR OR U WILL LOSE UR DATA.
 delete:
-  'no': 'NO'
-  yes: YEZ
   name: DELETE {name}
+  'no': 'NO'
+  'yes': YEZ
 dependencies:
   embedded: EMBEDDD
   incompatible: INCOMPATIBLE
@@ -667,6 +667,9 @@ loginError:
   loginMinecraftByXboxFailed: >-
     FAIL 2 EXCHANGE MINECRAFT TOKEN BY XBOX TOKEN. PLZ MAK SURE U HAS MINECRAFT
     IN XBOX, OR RETRY.
+  loginXboxAgeRestricted: >-
+    Fail to login Xbox due the the age issue. Please make sure the age is set
+    for your Microsoft account and the age is above 18.
   loginXboxFailed: >-
     FAIL 2 LOGIN XBOX BY MICROSOFT TOKEN. PLZ MAK SURE U HAS AN INDEPENDENT XBOX
     AKOWNT 2 UR MICROSOFT AKOWNT. PLZ TRY AGAIN.

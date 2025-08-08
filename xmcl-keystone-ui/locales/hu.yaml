@@ -729,6 +729,11 @@ loginError:
   loginMinecraftByXboxFailed: >-
     Nem sikerült a Minecraft tokent lekérni az Xboxtól. Kérlek ellenőrizd, hogy
     megvan-e a játék Xboxon és próbáld újra.
+  loginXboxAgeRestricted: >-
+    Nem jelentkezik be az Xbox -ba az életkorkibocsátás miatt. 
+
+    Kérjük, ellenőrizze, hogy a Microsoft -fiókhoz be van -e állítva, és az
+    életkor 18 felett van.
   loginXboxFailed: >-
     Nem sikerül bejelentkezni az Xboxra Microsoft tokennel. Kérlek, győződj meg
     róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek,

@@ -690,6 +690,9 @@ loginError:
   illegalEmail: 当前的邮箱格式不合法
   invalidCredentials: 无法验证。用户名或密码错误。
   loginMinecraftByXboxFailed: 在通过 Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认您的 Xbox 账号拥有 Minecraft。您可以尝试重试登录
+  loginXboxAgeRestricted: |-
+    由于年龄问题，无法登录Xbox。
+    请确保为您的Microsoft帐户设定年龄，并且年龄高于18岁。
   loginXboxFailed: 请求 Xbox 通证失败，请确保您的微软账号已经绑定了一个 Xbox 账号！
   noProfileForNewUser: |-
     找不到游戏资料！

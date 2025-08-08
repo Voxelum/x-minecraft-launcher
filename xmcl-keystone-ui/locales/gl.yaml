@@ -335,6 +335,11 @@ launchBlocked:
       Se isto aínda non funciona, póñase en contacto cos desenvolvedores.
     title: Non se puido iniciar o proceso de xogo
 loginError:
+  loginXboxAgeRestricted: >-
+    Non lograr a Xbox debido ao problema de idade. 
+
+    Asegúrese de que a idade está configurada para a súa conta de Microsoft e a
+    idade superior aos 18 anos.
   noProfileForNewUser: >-
     Non se atopou ningún perfil de xogo. 
 
