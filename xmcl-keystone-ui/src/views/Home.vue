@@ -35,10 +35,7 @@
           :id="instance.upstream.id"
         />
       </div>
-      <HomeFocusFooter
-        v-else
-        class="absolute bottom-0 left-0 pb-[26px]"
-      />
+      <HomeFocusFooter v-else />
     </transition>
   </div>
 </template>
