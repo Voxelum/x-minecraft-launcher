@@ -331,6 +331,7 @@ export function watchResourceSecondaryDirectory(
   context: ResourceContext,
   onDispose: () => void,
 ) {
+  let disposed = false
   async function isFileCached(file: File) {
     let record = await context.db.selectFrom('snapshots')
       .selectAll()
@@ -388,18 +389,22 @@ export function watchResourceSecondaryDirectory(
     },
   }).on('all', async (event, file) => {
     if (event === 'addDir' && file === '') return
+    if (disposed) return true
 
     const depth = file.split(sep).length
     if (depth > 1) return
 
     const filePath = resolve(directory, file)
     if (event === 'unlink') {
+      if (disposed) return true
       await context.db.deleteFrom('snapshots')
         .where('domainedPath', '=', getDomainedPath(filePath, context.root))
         .execute()
     } else if (event === 'change' || event === 'add' || event === 'addDir') {
+      if (disposed) return true
       const file = await getFile(filePath)
       if (!file) return
+      if (disposed) return true
       const isCached = await isFileCached(file).catch((e) => {
         if (isSystemError(e) && (e.code === 'ENOENT' || e.code === 'EBUSY')) {
           // ignore
