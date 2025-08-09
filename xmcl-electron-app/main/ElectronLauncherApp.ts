@@ -70,11 +70,6 @@ class ElectronShell implements Shell {
      */
     toastActivatorClsid?: string
   }): boolean {
-    // TODO: make sure this
-    // if (details.target === app.getPath('exe') && this.env === 'appx') {
-    //   details.target = 'C:\\Windows\\Explorer.exe'
-    //   details.args = `shell:AppsFolder\\${getPackageFamilyName()}!App ${details.args}`
-    // }
     return shell.writeShortcutLink(path, details)
   }
 }

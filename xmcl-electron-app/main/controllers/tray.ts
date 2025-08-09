@@ -46,6 +46,13 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
           this.openMultiplayerWindow()
         },
       },
+      {
+        label: t('makeDesktopShortcut'),
+        type: 'normal',
+        click: () => {
+          this.app.registry.get(BaseService).then(service => service.makeDesktopShortcut())
+        },
+      },
       // {
       //   label: t('browseApps'),
       //   type: 'normal',

@@ -22,3 +22,4 @@ urlFailed: Unknown url {url}. Please check your url or contact developer!
 urlSuccess: Success! Now you can close this window and return to the launcher!
 autoCloseHint: This window will close in {time} seconds
 multiplayer: P2P Multiplayer
+makeDesktopShortcut: Make Desktop Shortcut

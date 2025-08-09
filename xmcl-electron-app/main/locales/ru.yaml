@@ -20,3 +20,4 @@ task:
 title: X Minecraft Launcher
 urlFailed: Неизвестная ссылка {url}. Проверьте ссылку или обратитесь к разработчику.
 urlSuccess: Готово ! Можете закрыть это окно и вернуться к лаунчеру.
+makeDesktopShortcut: Создать ярлык на рабочем столе

@@ -19,3 +19,4 @@ urlFailed: >-
   Url non atopada {url}. Por favor revisa a URL ou contacta co
   desarrollador
 urlSuccess: Feito! Xa podes pechar a lapela e volver ó launcher.
+makeDesktopShortcut: Crear un acceso directo en el escritorio

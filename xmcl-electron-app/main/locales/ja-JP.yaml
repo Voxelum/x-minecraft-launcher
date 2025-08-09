@@ -22,3 +22,4 @@ urlFailed: "{url}: 未知のURLです。 URLを確認するか、開発者に連
 urlSuccess: 成功! このウィンドウを閉じてランチャーに戻ることができます!
 autoCloseHint: このウィンドウは {time} 秒で閉じます
 multiplayer: P2P マルチプレイヤー
+makeDesktopShortcut: デスクトップショートカットを作成

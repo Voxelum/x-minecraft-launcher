@@ -54,6 +54,8 @@ export interface BaseService {
   getSessionId(): Promise<string>
 
   getSettings(): Promise<SharedState<Settings>>
+
+  makeDesktopShortcut(): Promise<boolean>
   /**
    * Get the environment of the launcher
    */
