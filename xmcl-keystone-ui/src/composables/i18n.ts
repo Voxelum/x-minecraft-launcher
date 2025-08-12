@@ -1,6 +1,7 @@
 import { Settings } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { Framework } from 'vuetify'
+import { useI18nSearchFlights } from './flights'
 
 const locales = import.meta.glob('../../locales/*.yaml')
 
@@ -26,6 +27,15 @@ export function useI18nSync(framework: Framework, state: Ref<Settings | undefine
       locale.value = newValue
     })
   })
+}
+
+export function useAutoI18nEnabled() {
+  const i18nSearch = useI18nSearchFlights()
+  const { locale } = useI18n()
+  if (i18nSearch?.includes(locale.value)) {
+    return true
+  }
+  return false
 }
 
 export function useAutoI18nCommunityContent(allowLocale: string[] = []) {
