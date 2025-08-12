@@ -101,7 +101,7 @@ const { path } = injection(kInstance)
 const onDelete = async () => {
   updating.value = true
   disable(props.installed)
-  await uninstall(path.value, props.installed.map(i => i.path))
+  await uninstall({ path: path.value, files: props.installed.map(i => i.path) })
 }
 
 const { enable, disable } = injection(kInstanceResourcePacks)

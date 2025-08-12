@@ -59,7 +59,7 @@ function process() {
     }
   }
   console.log('Uninstall ' + paths.join(', '))
-  uninstall({ mods: paths, path: path.value })
+  uninstall({ files: paths, path: path.value })
   isShown.value = false
 }
 

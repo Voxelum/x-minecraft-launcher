@@ -41,8 +41,6 @@ import { kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kSearchModel } from '@/composables/search'
 import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
-import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
 
 const { path, runtime } = injection(kInstance)
 const { enabled } = injection(kInstanceResourcePacks)
@@ -51,14 +49,8 @@ const extensionItems = computed(() => {
     icon: 'palette',
     title: t('resourcepack.name', 2),
     text: t('resourcepack.enable', { count: enabled.value.length }),
-  }, {
-    icon: isInstanceLinked.value ? 'account_tree' : 'looks_one',
-    title: t('resourcepack.name', 2) + ' ',
-    text: isInstanceLinked.value ? t('resourcepack.shared') : t('resourcepack.independent'),
   }]
 })
-const { isLinked } = useService(InstanceResourcePacksServiceKey)
-const { data: isInstanceLinked } = useSWRV(computed(() => path.value), isLinked)
 const {
   keyword, modrinthCategories, curseforgeCategory,
   isCurseforgeActive, isModrinthActive, source: filterMode, selectedCollection,

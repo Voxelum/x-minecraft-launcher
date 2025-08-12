@@ -398,7 +398,7 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   console.log('installToServerInstance')
   await installToServerInstance({
     path: instPath,
-    mods: _mods.map(v => v.path),
+    files: _mods.map(v => v.path),
   })
   console.log('launch')
 

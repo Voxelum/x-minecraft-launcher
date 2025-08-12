@@ -120,7 +120,7 @@ const onInstall = async (m: ProjectVersion) => {
     } else {
       if (deleteOld) {
         await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
-        await uninstallMod({ path: instancePath, mods: oldFiles })
+        await uninstallMod({ path: instancePath, files: oldFiles })
       } else {
         await installOptifineAsMod({ mcversion: mc, type, patch, instancePath })
       }
@@ -140,7 +140,7 @@ const onDelete = () => {
   }
 
   if (props.mod.installed.length > 0) {
-    uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.path) })
+    uninstallMod({ path: path.value, files: props.mod.installed.map(i => i.path) })
   }
 }
 const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(

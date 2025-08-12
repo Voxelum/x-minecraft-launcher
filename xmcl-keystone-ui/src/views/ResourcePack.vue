@@ -202,11 +202,11 @@ const items = computed(() => {
 const onUninstall = (v: ProjectFile[]) => {
   const packs = v as InstanceResourcePack[]
   disable(packs)
-  uninstall(path.value, packs.map(p => p.path))
+  uninstall({ path: path.value, files: packs.map(p => p.path) })
 }
 const onEnable = (f: ProjectFile) => {
   enable([f as InstanceResourcePack])
-  install(path.value, [f.path])
+  install({ path: path.value, files: [f.path]})
 }
 const onDisable = (f: ProjectFile) => {
   disable([f as InstanceResourcePack])
@@ -255,7 +255,7 @@ const { dragover } = useGlobalDrop({
       paths.push(f.path)
     }
     if (paths.length > 0) {
-      const installed = await install(path.value, paths)
+      const installed = await install({ path: path.value, files: paths })
       await enable(installed)
     }
   },
@@ -287,7 +287,7 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
   (f) => {
-    install(path.value, [f.path])
+    install({ path: path.value, files: [f.path] })
     enable([f.path])
   },
 )

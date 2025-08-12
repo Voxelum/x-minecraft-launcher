@@ -120,7 +120,7 @@ const getContextMenuItems = () => {
     all.push({
       text: t('delete.name', { name: props.pack.title }),
       onClick: () => {
-        uninstall(path.value, props.pack.installed.map(f => f.path).filter(p => !!p))
+        uninstall({ path: path.value, files: props.pack.installed.map(f => f.path).filter(p => !!p) })
       },
       icon: 'delete',
       color: 'error',

@@ -361,7 +361,7 @@ const { shaderPack } = injection(kInstanceShaderPacks)
 
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
-  uninstall(path.value, files.map(f => f.path))
+  uninstall({ path: path.value, files: files.map(f => f.path) })
 }
 const onEnable = async (f: ProjectFile | string) => {
   if (!shaderMod.value && !runtime.value.optifine) {
@@ -391,7 +391,7 @@ const { dragover } = useGlobalDrop({
     for (const f of t.files) {
       paths.push(f.path)
     }
-    const resources = await install(path.value, paths)
+    const resources = await install({ path: path.value, files: paths })
     shaderPack.value = basename(resources[0])
   },
   onLeave: () => { },
@@ -446,7 +446,7 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
   (f) => {
-    install(path.value, [f.path])
+    install({ path: path.value, files: [f.path] })
     onEnable(f)
   },
 )

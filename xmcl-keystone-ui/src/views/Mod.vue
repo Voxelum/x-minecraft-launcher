@@ -507,7 +507,7 @@ const onLoad = loadMore
 // install / uninstall / enable / disable
 const { install, uninstall, enable, disable, installFromMarket } = useService(InstanceModsServiceKey)
 const onUninstall = (f: ProjectFile[], _path?: string) => {
-  uninstall({ path: _path ?? path.value, mods: f.map(f => f.path) }).then(() => {
+  uninstall({ path: _path ?? path.value, files: f.map(f => f.path) }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
@@ -515,12 +515,12 @@ const onEnable = async (f: ProjectFile, _path?: string) => {
   if (await wizardHandleOnEnable(f as ModFile, _path || path.value)) {
     return
   }
-  enable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
+  enable({ path: _path ?? path.value, files: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
 const onDisable = (f: ProjectFile, _path?: string) => {
-  disable({ path: _path ?? path.value, mods: [f.path] }).then(() => {
+  disable({ path: _path ?? path.value, files: [f.path] }).then(() => {
     setTimeout(revalidate, 1500)
   })
 }
@@ -554,7 +554,7 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
     icon: 'delete',
     color: 'error',
     onClick: () => {
-      uninstall({ path: path.value, mods })
+      uninstall({ path: path.value, files: mods })
     },
   })
   result.push({
@@ -563,9 +563,9 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
     color: 'grey',
     onClick: () => {
       if (allEnabled) {
-        disable({ path: path.value, mods })
+        disable({ path: path.value, files: mods })
       } else {
-        enable({ path: path.value, mods })
+        enable({ path: path.value, files:  mods })
       }
     },
   })
@@ -602,7 +602,7 @@ const { dragover } = useGlobalDrop({
     for (const f of t.files) {
       paths.push(f.path)
     }
-    await install({ path: path.value, mods: paths })
+    await install({ path: path.value, files: paths })
   },
 })
 
@@ -637,7 +637,7 @@ const onInstallProject = useProjectInstall(
   curseforgeInstaller,
   modrinthInstaller,
   (file) => {
-    install({ path: path.value, mods: [file.path] })
+    install({ path: path.value, files: [file.path] })
   },
 )
 

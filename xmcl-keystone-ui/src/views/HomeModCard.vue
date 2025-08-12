@@ -48,7 +48,7 @@ function onDrop(e: DragEvent) {
     const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
     install({
       path: path.value,
-      mods: filePaths,
+      files: filePaths,
     })
     e.preventDefault()
   }

@@ -93,7 +93,7 @@ const { shaderPack: selectedShaderPack } = injection(kInstanceShaderPacks)
 const { uninstall } = useService(InstanceShaderPacksServiceKey)
 const onDelete = async () => {
   updating.value = true
-  await uninstall(path.value, props.installed.map(i => basename(i.path)))
+  await uninstall({ path: path.value, files: props.installed.map(i => basename(i.path)) })
 }
 
 const onEnable = (v: boolean) => {

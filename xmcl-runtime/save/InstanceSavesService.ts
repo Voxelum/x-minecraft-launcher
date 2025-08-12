@@ -221,14 +221,6 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
             } else if (event === 'unlink') {
               state.instanceSaveRemove(savePath)
             }
-          } else if (file.endsWith('.zip')) {
-            if (dirname(absPath) === resolve(savesDir)) {
-              // deploy the zip
-              this.importSave({
-                instancePath: path,
-                path: absPath,
-              })
-            }
           } else if (event === 'unlinkDir' && (file === path || !file)) {
             dispose()
           }
