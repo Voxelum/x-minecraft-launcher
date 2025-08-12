@@ -61,7 +61,7 @@ const highlight = ref(0)
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
     const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
-    install(path.value, filePaths)
+    install({ path: path.value, files: filePaths })
     e.preventDefault()
   }
   highlight.value = 0

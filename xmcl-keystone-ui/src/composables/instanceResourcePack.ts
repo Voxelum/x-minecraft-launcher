@@ -71,7 +71,7 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<GameOptions | undefined>) {
-  const { watch } = useService(InstanceResourcePacksServiceKey)
+  const { watch, install } = useService(InstanceResourcePacksServiceKey)
   const { state, isValidating, revalidate, error } = useState(() => path.value ? watch(path.value) : undefined, ReactiveResourceState)
 
   const { t } = useI18n()
@@ -145,6 +145,10 @@ export function useInstanceResourcePacks(path: Ref<string>, gameOptions: Ref<Gam
 
   function enable(pack: (InstanceResourcePack | string)[]) {
     const newEnabled = [...pack.map(e => typeof e === 'string' ? e : e.id), ...enabled.value.map(e => e.id)]
+    install({
+      path: path.value,
+      files: pack.map(v => typeof v === 'string' ? v : v.path)
+    })
     return editGameSetting({
       instancePath: path.value,
       resourcePacks: newEnabled.reverse(),

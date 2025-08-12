@@ -5,8 +5,6 @@ import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceOptionsService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { linkWithTimeoutOrCopy, missing } from '../util/fs'
-import { InstanceResourcePackService } from './InstanceResourcePacksService'
-import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 
 export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -14,10 +12,6 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
 
   async function ensureResourcePacksLinked(path: string) {
-    const resourcePackService = await app.registry.get(InstanceResourcePackService)
-    const linked = await resourcePackService.isLinked(path)
-    if (linked) return
-
     const folder = join(path, ResourceDomain.ResourcePacks)
     await ensureDir(folder)
     const files = await readdir(folder).catch(() => [] as string[])
@@ -53,16 +47,13 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
           if (e.name === 'Error') {
             Object.assign(e, { name: 'LinkResourcePackError' })
           }
-          resourcePackService.error(e)
+          launchService.error(e)
         }))
       }
     }
     await Promise.all(promises)
   }
   async function ensureShaderPacksLinked(path: string) {
-    const shaderPackService = await app.registry.get(InstanceShaderPacksService)
-    const linked = await shaderPackService.isLinked(path)
-    if (linked) return
     const [opShader, irisShader, ocShader] = await Promise.all([
       options.getShaderOptions(path),
       options.getIrisShaderOptions(path).catch(() => ({}) as any),
@@ -79,7 +70,7 @@ export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
           if (e.name === 'Error') {
             Object.assign(e, { name: 'LinkShaderPackError' })
           }
-          shaderPackService.error(e)
+          launchService.error(e)
         })
       }
     }

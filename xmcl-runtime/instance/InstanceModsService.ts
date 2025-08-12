@@ -1,26 +1,24 @@
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceModsService as IInstanceModsService, InstallMarketOptionWithInstance, InstallModsOptions, InstanceModsServiceKey, LockKey, Resource, ResourceDomain, ResourceState, SharedState, getInstanceModStateKey } from '@xmcl/runtime-api'
-import { emptyDir, ensureDir, rename, stat, unlink } from 'fs-extra'
-import { basename, dirname, join } from 'path'
+import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, Resource, ResourceDomain, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { emptyDir, ensureDir, rename, stat } from 'fs-extra'
+import { dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
-import { InstanceService } from '~/instance'
-import { kMarketProvider } from '~/market'
 import { ResourceManager, kResourceWorker } from '~/resource'
-import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { AnyError } from '~/util/error'
+import { ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { linkDirectory, linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { readdirIfPresent } from '../util/fs'
+import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
 @ExposeServiceKey(InstanceModsServiceKey)
-export class InstanceModsService extends AbstractService implements IInstanceModsService {
+export class InstanceModsService extends AbstractInstanceDomainService implements IInstanceModsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceManager) private resourceManager: ResourceManager,
   ) {
-    super(app)
+    super(app, ResourceDomain.Mods)
   }
 
   async refreshMetadata(instancePath: string): Promise<void> {
@@ -113,77 +111,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     }
   }
 
-  async showDirectory(path: string): Promise<void> {
-    await this.app.shell.openDirectory(join(path, 'mods'))
-  }
-
-  async watch(instancePath: string): Promise<SharedState<ResourceState>> {
-    if (!instancePath) throw new AnyError('WatchModError', 'Cannot watch instance mods on empty path')
-    const lock = this.mutex.of(LockKey.instance(instancePath))
-    const stateManager = await this.app.registry.get(ServiceStateManager)
-    return stateManager.registerOrGet(getInstanceModStateKey(instancePath), async ({ doAsyncOperation }) => {
-      const basePath = join(instancePath, 'mods')
-
-      await ensureDir(basePath)
-      const { dispose, revalidate, state } = this.resourceManager.watch(basePath, ResourceDomain.Mods, (func) => doAsyncOperation(lock.waitForUnlock().then(func)))
-
-      const instanceService = await this.app.registry.get(InstanceService)
-      instanceService.registerRemoveHandler(instancePath, dispose)
-
-      this.log(`Mounted on instance mods: ${basePath}`)
-
-      return [state, dispose, revalidate]
-    })
-  }
-
-  async installFromMarket(options: InstallMarketOptionWithInstance): Promise<string[]> {
-    const provider = await this.app.registry.get(kMarketProvider)
-    const result = await provider.installInstanceFile({
-      ...options,
-      instancePath: options.instancePath,
-      domain: ResourceDomain.Mods,
-    })
-    return result.map(v => v.path)
-  }
-
-  async install({ mods: resources, path }: InstallModsOptions) {
-    const promises: Promise<void>[] = []
-    this.log(`Install ${resources.length} to ${path}/mods`)
-    const modDir = join(path, ResourceDomain.Mods)
-    for (const res of resources) {
-      if (res.startsWith(modDir)) {
-        // some stupid case
-        continue
-      }
-      const src = res
-      const dest = join(modDir, basename(res))
-      const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
-
-      let promise: Promise<any> | undefined
-      if (!destStat) {
-        if (srcStat.isDirectory()) {
-          promise = linkDirectory(src, dest, this.logger)
-        } else {
-          promise = linkWithTimeoutOrCopy(src, dest)
-        }
-      } else if (srcStat.ino !== destStat.ino) {
-        promise = unlink(dest).then(() => linkWithTimeoutOrCopy(src, dest))
-      }
-      if (promise) {
-        promises.push(promise.catch((e) => {
-          if (e.name === 'Error') {
-            e.name = 'ModInstallError'
-          }
-          throw e
-        }))
-      }
-    }
-    if (promises.length > 0) {
-      await Promise.all(promises)
-    }
-  }
-
-  async enable({ mods, path }: InstallModsOptions): Promise<void> {
+  async enable({ files: mods, path }: UpdateInstanceResourcesOptions): Promise<void> {
     this.log(`Enable ${mods.length} mods from ${path}`)
     const promises: Promise<void>[] = []
     const instanceModsDir = join(path, ResourceDomain.Mods)
@@ -194,17 +122,13 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
         this.warn(`Skip to enable enabled mod file on ${resource}!`)
       } else {
         promises.push(rename(resource, resource.substring(0, resource.length - '.disabled'.length)).catch(e => {
-          // if (e.code === 'ENOENT') {
-          //   // Force remove
-          //   this.state.instanceModRemove([resource])
-          // }
         }))
       }
     }
     await Promise.all(promises)
   }
 
-  async disable({ mods, path }: InstallModsOptions) {
+  async disable({ files: mods, path }: UpdateInstanceResourcesOptions) {
     this.log(`Disable ${mods.length} mods from ${path}`)
     const promises: Promise<void>[] = []
     const instanceModsDir = join(path, ResourceDomain.Mods)
@@ -216,38 +140,14 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       } else {
         promises.push(rename(resource, resource + '.disabled').catch(e => {
           this.warn(e)
-          // if (e.code === 'ENOENT') {
-          //   // Force remove
-          //   this.state.instanceModRemove([resource])
-          // }
         }))
       }
     }
     await Promise.all(promises)
   }
 
-  async uninstall(options: InstallModsOptions) {
-    const { mods, path } = options
-    this.log(`Uninstall ${mods.length} mods from ${path}`)
-    const promises: Promise<void>[] = []
-    const instanceModsDir = join(path, ResourceDomain.Mods)
-    for (const resource of mods) {
-      if (dirname(resource) !== instanceModsDir) {
-        continue
-      }
-      promises.push(unlink(resource).catch(e => {
-        // if (e.code === 'ENOENT') {
-        //   // Force remove
-        //   this.state.instanceModRemove([resource])
-        // }
-      }))
-    }
-    await Promise.all(promises)
-    this.log(`Finish to uninstall ${mods.length} from ${path}`)
-  }
-
-  async installToServerInstance(options: InstallModsOptions): Promise<void> {
-    this.log(`Install ${options.mods.length} mods to server instance at ${options.path}`)
+  async installToServerInstance(options: UpdateInstanceResourcesOptions): Promise<void> {
+    this.log(`Install ${options.files.length} mods to server instance at ${options.path}`)
     const modsDir = join(options.path, 'server', 'mods')
     await ensureDir(modsDir)
     await emptyDir(modsDir)

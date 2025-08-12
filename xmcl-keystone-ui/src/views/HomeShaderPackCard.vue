@@ -39,7 +39,7 @@ const { path } = injection(kInstance)
 function onDrop(e: DragEvent) {
   if (e.dataTransfer) {
     const filePaths = Array.from(e.dataTransfer.files).map(f => f.path)
-    install(path.value, filePaths)
+    install({ path: path.value, files: filePaths })
     e.preventDefault()
   }
 }

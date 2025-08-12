@@ -63,14 +63,14 @@ const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
 const _getContextMenuItems = useModItemContextMenuItems(computed(() => props.item), () => {
   if (props.item.installed) {
-    uninstall({ path: path.value, mods: props.item.installed.map(i => i.path) })
+    uninstall({ path: path.value, files: props.item.installed.map(i => i.path) })
   }
 }, () => { }, () => {
   if (props.item.installed && props.item.installed.length > 0) {
     if (props.item.installed[0].enabled) {
-      disable({ path: path.value, mods: props.item.installed.map(i => i.path) })
+      disable({ path: path.value, files: props.item.installed.map(i => i.path) })
     } else {
-      enable({ path: path.value, mods: props.item.installed.map(i => i.path) })
+      enable({ path: path.value, files: props.item.installed.map(i => i.path) })
     }
   }
 })

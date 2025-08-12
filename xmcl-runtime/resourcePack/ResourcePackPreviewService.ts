@@ -2,11 +2,10 @@ import { ModelLoader, ResourceManager, ResourcePack, ResourcePackWrapper } from 
 import { BlockStateJson, ResourcePackPreviewService as IResourcePackPreviewService, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
-import { InstanceService } from '~/instance'
+import { InstanceResourcePackService, InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { Mutex } from 'async-mutex'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {

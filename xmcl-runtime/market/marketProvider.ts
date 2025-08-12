@@ -1,6 +1,5 @@
-import { File, InstallMarketOptions, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstallMarketOptions, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { InjectionKey } from '~/app'
-import { ResourceSnapshotTable } from '~/resource/core/schema'
 
 export const kMarketProvider: InjectionKey<MarketProvider> = Symbol('MarketProvider')
 

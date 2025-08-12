@@ -21,7 +21,7 @@ export interface InstanceShaderFile extends ProjectFile {
 }
 
 export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<RuntimeVersions>, mods: Ref<ModFile[]>, gameOptions: Ref<GameOptionsState | undefined>) {
-  const { link, watch: watchShaderPacks } = useService(InstanceShaderPacksServiceKey)
+  const { watch: watchShaderPacks } = useService(InstanceShaderPacksServiceKey)
   const { editOculusShaderOptions, getOculusShaderOptions, getIrisShaderOptions, editIrisShaderOptions, getShaderOptions, editShaderOptions } = useService(InstanceOptionsServiceKey)
 
   const { state, error, isValidating } = useState(() => instancePath.value ? watchShaderPacks(instancePath.value) : undefined, ReactiveResourceState)
@@ -37,11 +37,6 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     modrinth: f.metadata.modrinth,
     curseforge: f.metadata.curseforge,
   } as InstanceShaderFile)) || [])
-  const linked = ref(false)
-  const { refresh: refreshLinkedStatus, refreshing } = useRefreshable<string>(async (path) => {
-    if (!path) return
-    linked.value = await link(path)
-  })
   const shaderMod = computed(() => {
     if (runtime.value.optifine) {
       return {
@@ -180,15 +175,11 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
   function effect() {
   }
 
-  watch(instancePath, refreshLinkedStatus, { immediate: true })
-
   return {
-    linked,
     shaderMod,
     shaderPack,
     shaderPacks,
-    refresh: refreshLinkedStatus,
-    refreshing: computed(() => refreshing.value || isValidating.value),
+    refreshing: isValidating,
     error,
     effect,
   }

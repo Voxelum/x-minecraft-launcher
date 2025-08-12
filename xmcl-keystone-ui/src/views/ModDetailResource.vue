@@ -137,8 +137,8 @@ const { enabled, installed, hasInstalledVersion } = useProjectDetailEnable(
   selectedVersion,
   computed(() => props.installed),
   updating,
-  (f) => enable({ path: path.value, mods: [f.path] }),
-  (f) => disable({ path: path.value, mods: [f.path] }),
+  (f) => enable({ path: path.value, files: [f.path] }),
+  (f) => disable({ path: path.value, files: [f.path] }),
 )
 const { path } = injection(kInstance)
 
@@ -147,7 +147,7 @@ const onDelete = async () => {
   updating.value = true
   const file = props.files.find(f => f.path === selectedVersion.value.id)
   if (file) {
-    await uninstall({ path: path.value, mods: [file.path] })
+    await uninstall({ path: path.value, files: [file.path] })
   }
 }
 
@@ -163,7 +163,7 @@ const onInstall = async () => {
       await installDefaultModLoader(_path, runtime, file.modLoaders)
     }
 
-    await install({ path: _path, mods: [file.path] })
+    await install({ path: _path, files: [file.path] })
   }
 }
 
