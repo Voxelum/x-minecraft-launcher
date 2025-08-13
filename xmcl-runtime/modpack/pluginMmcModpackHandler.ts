@@ -1,9 +1,9 @@
-import { InstanceFile, MMCModpackManifest, getInstanceConfigFromMmcModpack } from '@xmcl/runtime-api'
+import { InstanceFile, MMCModpackManifest, getInstanceConfigFromMmcModpack } from '@xmcl/instance'
 import { readEntry } from '@xmcl/unzip'
 import { Entry, ZipFile } from 'yauzl'
 import { LauncherAppPlugin } from '~/app'
-import { ModpackService } from './ModpackService'
 import { parseCFG } from '~/util/cfg'
+import { ModpackService } from './ModpackService'
 
 export const pluginMmcModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)

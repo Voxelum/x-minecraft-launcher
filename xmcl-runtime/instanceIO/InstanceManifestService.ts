@@ -10,8 +10,8 @@ import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { AnyError } from '~/util/error'
 import { LauncherApp } from '../app/LauncherApp'
 import { isNonnull } from '../util/object'
-import { decorateInstanceFiles, discover } from './InstanceFileDiscover'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
+import { decorateInstanceFiles, discoverInstanceFiles } from '@xmcl/instance'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -38,8 +38,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     let files = [] as Array<InstanceFile>
 
-    const logger = this
-    const fileWithStats = await discover(join(instancePath, 'server'), logger, (filePath) => {
+    const fileWithStats = await discoverInstanceFiles(join(instancePath, 'server'), this, (filePath) => {
       if (filePath.startsWith('libraries') || filePath.startsWith('versions') || filePath.startsWith('assets')) {
         return true
       }
@@ -81,7 +80,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     const pendingResourceUpdates = new Set<InstanceFile>()
     await task('getInstanceManifest', async function () {
       const start = performance.now()
-      const fileWithStats = await discover(instancePath, logger, (relativePath, stat) => {
+      const fileWithStats = await discoverInstanceFiles(instancePath, logger, (relativePath, stat) => {
         if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
           if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
             return true

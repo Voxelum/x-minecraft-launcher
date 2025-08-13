@@ -1,5 +1,6 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
+import { computeFileUpdates } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, SharedState, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
@@ -10,6 +11,7 @@ import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance/InstanceService'
 import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
+import { getFile } from '~/resource/core/files'
 import { getDomainedPath } from '~/resource/core/snapshot'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
@@ -17,7 +19,6 @@ import { createSafeIO } from '~/util/persistance'
 import { AnyError, isSystemError } from '../util/error'
 import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
-import { computeFileUpdates } from './computeFileUpdate'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -100,11 +101,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
   async #getDelta(instancePath: string, lockState: InstanceLockSchema | undefined, newUpstream: InstanceUpstream, newFiles: InstanceFile[]) {
     let fileDelta: InstanceFileUpdate[] = []
+    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32 }
 
     if (lockState) {
       // check if upstream are the same
       if (isUpstreamIsSameOrigin(newUpstream, lockState.upstream)) {
-        fileDelta = await computeFileUpdates(instancePath, lockState.files, newFiles, lockState.mtime, this.getSha1, this.getCrc32)
+        fileDelta = await computeFileUpdates(instancePath, lockState.files, newFiles, lockState.mtime, fs)
       } else {
         throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
       }
@@ -113,12 +115,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
       if (legacy) {
         const { upstream, files } = legacy
         if (isUpstreamIsSameOrigin(newUpstream, upstream)) {
-          fileDelta = await computeFileUpdates(instancePath, files, newFiles, undefined, this.getSha1, this.getCrc32)
+          fileDelta = await computeFileUpdates(instancePath, files, newFiles, undefined, fs)
         } else {
           throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
         }
       } else {
-        fileDelta = await computeFileUpdates(instancePath, [], newFiles, undefined, this.getSha1, this.getCrc32)
+        fileDelta = await computeFileUpdates(instancePath, [], newFiles, undefined, fs)
       }
     }
     return fileDelta
@@ -228,7 +230,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return delta
     }
 
-    return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), this.getSha1, this.getCrc32)
+    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32 }
+    return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), fs)
   }
 
   async resumeInstanceInstall(instancePath: string, overrides?: InstanceFile[]): Promise<void | InstallFileError[]> {

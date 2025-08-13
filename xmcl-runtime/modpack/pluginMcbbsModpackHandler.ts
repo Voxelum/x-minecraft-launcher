@@ -1,5 +1,5 @@
 import { CurseforgeV1Client, File, HashAlgo, Mod } from '@xmcl/curseforge'
-import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, ResourceDomain, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
+import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, ResourceDomain } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
 import { Entry } from 'yauzl'
@@ -8,6 +8,7 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { ModpackService } from './ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
 import { resolveHashes } from './resolveHashes'
+import { getInstanceConfigFromMcbbsModpack } from '@xmcl/instance'
 
 export const pluginMcbbsModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)

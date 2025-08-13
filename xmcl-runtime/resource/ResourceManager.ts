@@ -59,7 +59,7 @@ export class ResourceManager {
     return uris ? uris.map((v) => v.uri) : []
   }
 
-  async getSnapshotsByIon(inos: number[]): Promise<ResourceSnapshotTable[]> {
+  async getSnapshotsByIno(inos: number[]): Promise<ResourceSnapshotTable[]> {
     const items = await this.context.db.selectFrom('snapshots')
       .selectAll()
       .where('snapshots.ino', 'in', inos)
@@ -68,7 +68,7 @@ export class ResourceManager {
   }
 
   async getSnapshotByIno(ino: number): Promise<ResourceSnapshotTable | undefined> {
-    return this.getSnapshotsByIon([ino]).then(v => v[0])
+    return this.getSnapshotsByIno([ino]).then(v => v[0])
   }
 
   async getSnapshotsByHash(sha1: string[]): Promise<ResourceSnapshotTable[]> {

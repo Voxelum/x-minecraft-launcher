@@ -264,44 +264,6 @@ export interface CurseforgeModpackManifest extends ModpackManifest {
   overrides: string
 }
 
-export function getInstanceConfigFromMcbbsModpack(manifest: McbbsModpackManifest) {
-  return {
-    name: `${manifest.name}-${manifest.version}`,
-    author: manifest.author,
-    modpackVersion: manifest.version,
-    url: manifest.url,
-    description: manifest.description,
-    runtime: {
-      minecraft: manifest.addons.find(a => a.id === 'game')?.version ?? '',
-      forge: manifest.addons.find(a => a.id === 'forge')?.version ?? '',
-      liteloader: '',
-      fabricLoader: manifest.addons.find(a => a.id === 'fabric')?.version ?? '',
-      yarn: '',
-    },
-    mcOptions: manifest.launchInfo ? manifest.launchInfo.launchArgument : undefined,
-    vmOptions: manifest.launchInfo ? manifest.launchInfo.javaArgument : undefined,
-    minMemory: manifest.launchInfo ? Number(manifest.launchInfo.minMemory) : undefined,
-  }
-}
-
-export function getInstanceConfigFromMmcModpack(manifest: MMCModpackManifest) {
-  const forge = manifest.json.components.find(c => c.uid === 'net.minecraftforge')
-  const fabric = manifest.json.components.find(c => c.uid === 'net.fabricmc.fabric-loader')
-  const quilt = manifest.json.components.find(c => c.uid === 'net.quiltmc.quilt-loader')
-  const neoForge = manifest.json.components.find(c => c.uid === 'net.neoforge')
-  return {
-    name: manifest.cfg.name,
-    modpackVersion: '',
-    runtime: {
-      minecraft: manifest.json.components.find(c => c.uid === 'net.minecraft')!.version,
-      forge: forge ? forge.version : '',
-      fabricLoader: fabric ? fabric.version : '',
-      quiltLoader: quilt ? quilt.version : '',
-      neoForged: neoForge ? neoForge.version : '',
-    },
-  }
-}
-
 export function getInstanceConfigFromCurseforgeModpack(manifest: CurseforgeModpackManifest) {
   const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
   const fabricId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))

@@ -1,4 +1,5 @@
-import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LaunchOptions, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
+import { detectMMCRoot, parseCurseforgeInstance, parseModrinthInstance, parseModrinthInstanceFiles, parseMultiMCInstance, parseMultiMCInstanceFiles, parseVanillaInstance, parseVanillaInstanceFiles } from '@xmcl/instance'
+import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
 import { readFile, readdir } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -13,10 +14,6 @@ import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, exists } from '../util/fs'
 import { isFulfilled, requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { parseCurseforgeInstance } from './parseCurseforgeInstance'
-import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
-import { detectMMCRoot, parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
-import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
 import { exportInstanceAsServer } from './exportInstanceAsServer'
 
 @ExposeServiceKey(InstanceIOServiceKey)
@@ -50,7 +47,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
   async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
     if (type === 'mmc') {
-      return await parseMultiMcInstanceFiles(path, this.logger)
+      return await parseMultiMCInstanceFiles(path, this.logger)
     }
     if (type === 'modrinth') {
       const worker = await this.app.registry.get(kResourceWorker)
@@ -140,7 +137,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       }
 
       const versionMetadataService = await this.app.registry.get(VersionMetadataService)
-      const vanillaInstances = await parseVanillaInstance(path, versionMetadataService)
+      const vanillaInstances = await parseVanillaInstance(path)
 
       const assets = join(path, 'assets')
       const libraries = join(path, 'libraries')
