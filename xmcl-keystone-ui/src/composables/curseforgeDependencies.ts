@@ -38,6 +38,9 @@ const visit = async (current: ProjectDependency, modLoaderType: Ref<FileModLoade
   visited.add(file.modId)
 
   const dependencies = await Promise.all(file.dependencies.map(async (child) => {
+    if (child.relationType === FileRelationType.OptionalDependency) {
+      return []
+    }
     try {
       const modLoaderTypes = getModLoaderTypesForFile(file)
       const loaderType = modLoaderTypes.has(modLoaderType.value) ? modLoaderType.value : FileModLoaderType.Any

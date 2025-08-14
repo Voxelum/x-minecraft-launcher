@@ -33,24 +33,31 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
     return []
   }
   visited.add(version.project_id)
-  const deps = await Promise.all(version.dependencies.map(async (child) => {
-    const loaders = version.loaders
-    const project = await swrvGet(getModrinthProjectKey(child.project_id), () => clientModrinthV2.getProject(child.project_id), config.cache!, config.dedupingInterval!)
-    const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, loaders, version.game_versions),
-      () => clientModrinthV2.getProjectVersions(child.project_id, { loaders, gameVersions: version.game_versions }),
-      config.cache!, config.dedupingInterval!)
-    const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id)! : versions[0]
-    const result = await visit(markRaw({
-      project,
-      versions,
-      recommendedVersion,
-      parent: current.project,
-      type: child.dependency_type === 'required'
-        ? current.type === 'required' ? 'required' : current.type || child.dependency_type
-        : child.dependency_type,
-      relativeType: child.dependency_type,
-    }), visited, config)
-    return result
+  const deps = current.type === 'optional' ? [] : await Promise.all(version.dependencies.map(async (child) => {
+    try {
+      const loaders = version.loaders
+      const project = await swrvGet(getModrinthProjectKey(child.project_id), () => clientModrinthV2.getProject(child.project_id), config.cache!, config.dedupingInterval!)
+      const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, loaders, version.game_versions),
+        () => clientModrinthV2.getProjectVersions(child.project_id, { loaders, gameVersions: version.game_versions }),
+        config.cache!, config.dedupingInterval!)
+      const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id)! : versions[0]
+      const result = await visit(markRaw({
+        project,
+        versions,
+        recommendedVersion,
+        parent: current.project,
+        type: child.dependency_type === 'required'
+          ? current.type === 'required' ? 'required' : current.type || child.dependency_type
+          : child.dependency_type,
+        relativeType: child.dependency_type,
+      }), visited, config)
+      return result
+    } catch (e) {
+      if (child.dependency_type === 'optional') {
+        return []
+      }
+      throw e
+    }
   }))
 
   return [current, ...deps.reduce((a, b) => [...a, ...b], [])]
