@@ -11,6 +11,7 @@
     <v-text-field
       v-model="data.filterText"
       color="green"
+      autofocus
       append-icon="filter_list"
       :label="t('filter')"
       solo
