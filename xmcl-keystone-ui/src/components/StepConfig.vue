@@ -24,7 +24,9 @@
               :loading="loading"
               :disabled="loading"
               persistent-hint
+              persistent-placeholder
               :hint="t('instance.nameHint')"
+              :placeholder="placeHolderName"
               :label="t('name')"
               :rules="nameRules"
               required
@@ -91,10 +93,10 @@ defineProps({
 })
 const emit = defineEmits(['update:valid'])
 const { t } = useI18n()
-const { data: content, files, loading, error } = injection(kInstanceCreation)
+const { data: content, files, loading, error, placeHolderName } = injection(kInstanceCreation)
 const { instances } = injection(kInstances)
 const nameRules = computed(() => [
-  (v: any) => !!v || t('instance.requireName'),
+  // (v: any) => !!v || t('instance.requireName'),
   (v: any) => !instances.value.some(i => i.name === v.trim()) || t('instance.duplicatedName'),
   (v: any) => !/\p{Script=Cyrillic}/u.test(v) || t('instance.nameNoCyrillic'),
 ])

@@ -22,6 +22,9 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
       data.runtime.minecraft = v
     }
   })
+  const placeHolderName = computed(() => {
+    return generateDistinctName(generateBaseName(data.runtime), instances.value.map(i => i.name))
+  })
   const getNewRuntime = () => ({
     minecraft: release.value || '',
     forge: '',
@@ -116,7 +119,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     files,
     loading,
     error,
-
+    placeHolderName,
     update,
     /**
      * Commit this creation. It will create and select the instance.
@@ -126,7 +129,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         loading.value = true
         const runtime = { ...data.runtime }
         if (!data.name) {
-          data.name = generateDistinctName(generateBaseName(runtime), instances.value.map(i => i.name))
+          data.name = placeHolderName.value
         }
         const pendingFiles = [...files.value]
         const newPath = await create({

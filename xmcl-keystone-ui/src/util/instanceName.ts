@@ -7,9 +7,16 @@ export function generateBaseName(runtime: RuntimeVersions) {
     } else if (runtime.liteloader) {
         name += `-liteloader${runtime.liteloader}`
     } else if (runtime.fabricLoader) {
-        name += `-fabricLoader${runtime.fabricLoader}`
+        name += `-fabric${runtime.fabricLoader}`
     } else if (runtime.quiltLoader) {
-        name += `-quiltLoader${runtime.quiltLoader}`
+        name += `-quilt${runtime.quiltLoader}`
+    } else if (runtime.neoForged) {
+        name += `-neoforge${runtime.neoForged}`
+    } else if (runtime.labyMod) {
+        name += `-labyMod${runtime.labyMod}`
+    }
+    if (runtime.optifine) {
+        name += `-optifine${runtime.optifine}`
     }
     return name
 }
