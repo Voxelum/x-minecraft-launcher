@@ -90,7 +90,7 @@ export function useLaunchButton() {
         return {
           text: t('launch.launch'),
           color: !javaIssue.value ? 'primary' : 'primary darken-1',
-          leftIcon: 'play_arrow',
+          icon: 'play_arrow',
           onClick: async () => {
             await fixInstanceFileIssue()
             if (javaIssue.value) {
@@ -140,7 +140,7 @@ export function useLaunchButton() {
       return {
         text: t('launch.launch'),
         color: !javaIssue.value ? 'primary' : 'primary darken-1',
-        leftIcon: 'play_arrow',
+        icon: 'play_arrow',
         onClick: async () => {
           await fixInstanceFileIssue()
           if (javaIssue.value) {
@@ -168,7 +168,6 @@ export function useLaunchButton() {
     loadingInstanceFiles.value ||
     isValidating.value ||
     dirty.value)
-  const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
   const menuItems = computed<LaunchMenuItem[]>(() => dirty.value ? [] : launchButtonFacade.value.menu || [])
 
   const listeners = new Set<() => void | Promise<void>>()
@@ -207,7 +206,6 @@ export function useLaunchButton() {
     icon,
     text,
     loading,
-    leftIcon,
     menuItems,
   }
 }

@@ -3,10 +3,16 @@
     topbar
     window
     :color="'transparent'"
-    class="moveable flex w-full grow-0 gap-1 p-0"
-    :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
+    class="moveable flex w-full grow-0 gap-1.5 p-0 flex-shrink-0 pr-2 z-2"
   >
-    <span
+    <div
+      :style="{
+        backdropFilter: `blur(${blurAppBar}px)`,
+        mask: 'linear-gradient(black, black 40%, transparent)',
+      }"
+      class="absolute top-0 left-0 right-0 -z-1 h-14 opacity-85"
+    />
+    <!-- <span
       v-if="back"
       class="flex shrink grow-0 p-0"
     >
@@ -23,7 +29,7 @@
       >
         arrow_back
       </v-icon>
-    </span>
+    </span> -->
     <slot />
 
     <AppAudioPlayer
@@ -31,6 +37,11 @@
       class="ml-22"
     />
     <div class="grow " />
+
+    <AppSystemBarBadge
+      icon="arrow_back"
+      @click="onBack()"
+    />
 
     <TaskSpeedMonitor v-if="!noTask" />
     <AppSystemBarBadge
@@ -44,9 +55,15 @@
     />
     <AppSystemBarBadge
       v-if="tutor"
+      icon="hub"
+      text="联机"
+      can-hide-text
+      @click="goMultiplayer"
+    />
+    <AppSystemBarBadge
+      v-if="tutor"
       id="tutor-button"
       icon="quiz"
-      :text="t('help')"
       can-hide-text
       @click="tutor.start()"
     />
@@ -54,9 +71,9 @@
       v-if="!noDebug"
       id="feedback-button"
       icon="bug_report"
-      :text="t('feedback.name')"
       can-hide-text
       @click="showFeedbackDialog"
+      class="mr-0.5"
     />
 
     <span class="flex h-full shrink grow-0 p-0">
@@ -108,6 +125,7 @@ const props = defineProps<{
 }>()
 
 const { appBarColor, blurAppBar } = injection(kTheme)
+console.log(blurAppBar.value)
 const { maximize, minimize, close, hide } = windowController
 const { shouldShiftBackControl, hideWindowControl } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
@@ -115,12 +133,19 @@ const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
 const tutor = inject(kTutorial, undefined)
+const router = useRouter()
 
-let onBack = () => {}
-if (props.back) {
-  const router = useRouter()
-  onBack = () => {
-    router.back()
-  }
+const onBack = () => {
+  router.back()
+}
+
+function goMultiplayer() {
+  windowController.openMultiplayerWindow()
 }
 </script>
+
+<style>
+.v-system-bar {
+  height: 48px !important;
+}
+</style>

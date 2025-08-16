@@ -1,12 +1,13 @@
 <template>
   <div
-    class="non-moveable flex flex-grow-0 cursor-pointer rounded px-2 py-1 transition-all hover:bg-[rgba(255,255,255,0.2)]"
+    class="non-moveable flex flex-grow-0 cursor-pointer rounded px-2 py-1.5 transition-all hover:bg-[rgba(255,255,255,0.2)] gap-2"
     @click="$emit('click', $event)"
   >
-    <v-icon class="badge-icon">
+    <v-icon class="badge-icon mr-0">
       {{ icon }}
     </v-icon>
     <span
+      v-if="text"
       class="whitespace-nowrap"
       :class="{ 'badge-text': canHideText }"
     >
@@ -17,7 +18,7 @@
 <script setup lang="ts">
 defineProps<{
   icon: string
-  text: string
+  text?: string
   canHideText?: boolean
 }>()
 
