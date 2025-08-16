@@ -33,6 +33,8 @@ export function getModLoaderTypesForFile(file: File) {
         modLoaderTypes.add(FileModLoaderType.Quilt)
       } else if (ver.gameVersionName === 'LiteLoader') {
         modLoaderTypes.add(FileModLoaderType.LiteLoader)
+      } else if (ver.gameVersionName === 'NeoForge') {
+        modLoaderTypes.add(FileModLoaderType.NeoForge)
       }
     }
   }
