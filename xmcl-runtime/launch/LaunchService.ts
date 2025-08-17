@@ -511,9 +511,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
         Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
+          const errorLog = errorLogs.join('\n');
           for (const plugin of this.middlewares) {
             try {
-              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation }, { version, options: launchOptions, side } as any, context)
+              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation, errorLog }, options, { version, options: launchOptions, side } as any, context)
             } catch (e) {
               this.warn('Fail to run plugin')
               this.error(e as any)
@@ -528,7 +529,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
             crashReport,
             duration: playTime,
             crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-            errorLog: errorLogs.join('\n'),
+            errorLog,
           })
         })
         delete this.processes[processData.pid]

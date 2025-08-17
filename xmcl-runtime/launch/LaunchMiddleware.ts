@@ -33,5 +33,9 @@ export interface LaunchMiddleware {
      * The location of the crash report
      */
     crashReportLocation: string
-  }, payload: ServerRunContext | ClientRunContext, context: Record<string, any>): void
+    /**
+     * The error log content
+     */
+    errorLog: string
+  }, input: LaunchOptions, payload: ServerRunContext | ClientRunContext, context: Record<string, any>): void
 }

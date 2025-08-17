@@ -51,6 +51,13 @@ export class ElyByService extends AbstractService implements IElyByService {
     }>
   }
 
+  async uncacheElyLibrary(minecraftVersion: string) {
+    const jsonPath = this.getAppDataPath('ely-authlib.json')
+    const content: Record<string, any> = await readFile(jsonPath, 'utf-8').then(JSON.parse).catch(() => ({}))
+    delete content[minecraftVersion]
+    await writeFile(jsonPath, JSON.stringify(content, null, 2))
+  }
+
   async installAuthlib(minecraftVersion: string) {
     interface RecordVersion { path: string; sha1: string; version: string }
 
@@ -89,9 +96,11 @@ export class ElyByService extends AbstractService implements IElyByService {
     }
 
     const entries = await this.#getCache()
-    const valid = entries.filter(e => minecraftVersion.startsWith(e.minecraft))
-    const resolvedVersion = valid.find(e => e.minecraft === minecraftVersion) ||
-      (valid.length > 0 ? valid[0] : undefined)
+    const primaryMinecraftVersion = minecraftVersion.split('.').slice(0, 2).join('.')
+    const primaryMatched = entries.filter(e => e.minecraft.startsWith(primaryMinecraftVersion))
+    const exact = primaryMatched.find(e => e.minecraft === minecraftVersion)
+    const resolvedVersion = exact ||
+      (primaryMatched.length > 0 ? primaryMatched[0] : undefined)
 
     if (!resolvedVersion) {
       return undefined

@@ -194,7 +194,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
             ctx.runtime = runtime
           }
         },
-        async onAfterLaunch(result, opt, ctx) {
+        async onAfterLaunch(result, input, opt, ctx) {
           if (result.code !== 0) {
             return
           }
