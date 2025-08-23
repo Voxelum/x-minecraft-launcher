@@ -1,4 +1,4 @@
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate, LockKey } from '@xmcl/runtime-api'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate, LockKey, XaeroMapsServiceKey } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
@@ -7,6 +7,7 @@ import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { kSettings } from '~/settings'
 import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
@@ -246,6 +247,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     await this.instanceFile.write(join(instance.path, 'instance.json'), instance)
     this.state.instanceAdd(instance)
 
+    // Setup shared Xaero maps for the new instance
+    try {
+      const xaeroMapsService = await this.app.registry.get(XaeroMapsServiceKey)
+      const settings = await this.app.registry.get(kSettings)
+      
+      if (settings.xaeroMapsServerMatching && instance.server) {
+        await xaeroMapsService.setupServerSpecificMaps(instance.path)
+      } else {
+        await xaeroMapsService.setupSharedMaps(instance.path)
+      }
+    } catch (error) {
+      this.warn(`Failed to setup shared Xaero maps for instance ${instance.path}: ${error}`)
+    }
+
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))
 
@@ -341,6 +356,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (isManaged && await exists(path)) {
       await lock.runExclusive(async () => {
         instanceLock.cancel()
+        
+        // Clean up shared Xaero maps for the instance before deletion
+        try {
+          const xaeroMapsService = await this.app.registry.get(XaeroMapsServiceKey)
+          await xaeroMapsService.removeSharedMaps(path)
+        } catch (error) {
+          this.warn(`Failed to clean up shared Xaero maps for instance ${path}: ${error}`)
+        }
+        
         const oldHandlers = this.#removeHandlers[path]
         for (const handlerRef of oldHandlers || []) {
           handlerRef.deref()?.()
