@@ -4,7 +4,8 @@ import { InstanceFile } from '@xmcl/runtime-api'
 import { AbortableTask } from '@xmcl/task'
 import { errors } from 'undici'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { RequiredPick } from './instanceInstall'
+
+export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
 /**
  * Resolve instance file download link via curseforge and modrinth.

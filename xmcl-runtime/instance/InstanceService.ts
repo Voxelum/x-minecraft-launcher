@@ -1,4 +1,5 @@
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate, LockKey } from '@xmcl/runtime-api'
+import { computeInstanceEditChanges, loadInstanceFromOptions } from '@xmcl/instance'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, SharedState, createTemplate } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
@@ -115,6 +116,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!await isDirectory(path)) {
       return false
     }
+
     this.log(`Start load instance under ${path}`)
     try {
       option = await this.instanceFile.read(join(path, 'instance.json'))
@@ -125,9 +127,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     // Fix the wrong path if user set the name start/end with space
-    option.name = option.name.trim()
+    const instance = loadInstanceFromOptions(
+      option,
+      this.versionMetadataService,
+    )
 
-    const name = option.name
+    const name = instance.name
     const expectPath = this.getPathUnder(filenamify(name, { replacement: '_' }))
 
     try {
@@ -139,47 +144,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     } catch (e) {
       this.warn(`Fail to rename instance ${path} -> ${expectPath}`)
       this.warn(e)
-    }
-
-    const instance = createTemplate()
-
-    instance.author = instance.author || ''
-
-    assignShallow(instance, option)
-    if (option.runtime) {
-      assignShallow(instance.runtime, option.runtime)
-    }
-    instance.assignMemory = option.assignMemory
-    instance.showLog = option.showLog
-    instance.hideLauncher = option.hideLauncher
-    instance.fastLaunch = option.fastLaunch
-    instance.icon = option.icon
-    instance.maxMemory = option.maxMemory
-    instance.minMemory = option.minMemory
-    instance.vmOptions = option.vmOptions
-    instance.mcOptions = option.mcOptions
-    instance.creationDate = option.creationDate
-    instance.lastAccessDate = option.lastAccessDate
-    instance.disableAuthlibInjector = option.disableAuthlibInjector
-    instance.disableElybyAuthlib = option.disableElybyAuthlib
-    if (option.resolution) {
-      if (instance.resolution) {
-        instance.resolution.width = option.resolution.width
-        instance.resolution.height = option.resolution.height
-        instance.resolution.fullscreen = option.resolution.fullscreen
-      } else {
-        instance.resolution = option.resolution
-      }
-    }
-
-    instance.runtime.minecraft = instance.runtime.minecraft || this.versionMetadataService.getLatestRelease()
-    instance.upstream = option.upstream
-    instance.playtime = option.playtime
-    instance.lastPlayedDate = option.lastPlayedDate
-    instance.prependCommand = option.prependCommand
-
-    if (option.server) {
-      instance.server = option.server
     }
 
     instance.path = path
@@ -401,19 +365,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    const ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true }
-    const result: Record<string, any> = {}
-    for (const key of Object.keys(options)) {
-      if (key in ignored) {
-        continue
-      }
-      if (key in state) {
-        if ((state as any)[key] !== (options as any)[key]) {
-          result[key] = (options as any)[key]
-        }
-      }
-    }
-
     if (options.name) {
       if (this.isUnderManaged(instancePath)) {
         const newPath = join(dirname(instancePath), options.name)
@@ -426,120 +377,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    if (typeof options.fileApi === 'string' && options.fileApi !== state.fileApi) {
-      result.fileApi = options.fileApi
-    }
-
-    if ('maxMemory' in options && options.maxMemory !== state.maxMemory) {
-      if (typeof options.maxMemory === 'undefined') {
-        result.maxMemory = undefined
-      } else if (typeof options.maxMemory === 'number') {
-        result.maxMemory = Math.floor(options.maxMemory > 0 ? options.maxMemory : 0)
-      } else {
-        throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
-      }
-    }
-    if ('minMemory' in options && options.minMemory !== state.minMemory) {
-      if (typeof options.minMemory === 'undefined') {
-        result.minMemory = undefined
-      } else if (typeof options.minMemory === 'number') {
-        result.minMemory = Math.floor(options.minMemory > 0 ? options.minMemory : 0)
-      } else {
-        throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
-      }
-    }
-    if ('prependCommand' in options && options.prependCommand !== state.prependCommand) {
-      result.prependCommand = options.prependCommand
-    }
-    if ('assignMemory' in options && options.assignMemory !== state.assignMemory) {
-      result.assignMemory = options.assignMemory
-    }
-    if ('showLog' in options && options.showLog !== state.showLog) {
-      result.showLog = options.showLog
-    }
-    if ('hideLauncher' in options && options.hideLauncher !== state.hideLauncher) {
-      result.hideLauncher = options.hideLauncher
-    }
-    if ('fastLaunch' in options && options.fastLaunch !== state.fastLaunch) {
-      result.fastLaunch = options.fastLaunch
-    }
-    if ('disableAuthlibInjector' in options && options.disableAuthlibInjector !== state.disableAuthlibInjector) {
-      result.disableAuthlibInjector = options.disableAuthlibInjector
-    }
-    if ('disableElybyAuthlib' in options && options.disableElybyAuthlib !== state.disableElybyAuthlib) {
-      result.disableElybyAuthlib = options.disableElybyAuthlib
-    }
-
-    if ('resolution' in options) {
-      // Compare resolution values
-      const currentRes = state.resolution
-      const newRes = options.resolution
-
-      if (!options.resolution) {
-        result.resolution = undefined
-      } else if ((currentRes === undefined && newRes !== undefined) ||
-        (currentRes !== undefined && newRes === undefined) ||
-        (currentRes && newRes &&
-          (currentRes.fullscreen !== newRes.fullscreen ||
-            currentRes.width !== newRes.width ||
-            currentRes.height !== newRes.height))) {
-        result.resolution = options.resolution
-      }
-    }
-
-    if ('runtime' in options && options.runtime) {
-      const runtime = options.runtime
-      const currentRuntime = state.runtime
-      const resultRuntime: Partial<RuntimeVersions> = {}
-      for (const version of Object.keys(runtime)) {
-        if (version in currentRuntime) {
-          if (currentRuntime[version] !== runtime[version]) {
-            resultRuntime[version] = runtime[version] || ''
-          }
-        } else {
-          resultRuntime[version] = runtime[version] || ''
-        }
-      }
-      if (Object.keys(resultRuntime).length > 0) {
-        result.runtime = resultRuntime
-      }
-    }
-
-    if (result.runtime && state.version && typeof result.version === 'undefined') {
-      // Reset the version if the runtime is changed
-      result.version = ''
-    }
-
-    if ('server' in options) {
-      if (options.server) {
-        if (options.server.host !== state.server?.host || options.server.port !== state.server.port) {
-          result.server = options.server
-        }
-      } else if (state.server !== undefined) {
-        result.server = options.server
-      }
-    }
-
-    if ('vmOptions' in options) {
-      const hasDiff = typeof options.vmOptions !== typeof state.vmOptions || options.vmOptions?.length !== state.vmOptions?.length || options.vmOptions?.some((e, i) => e !== state.vmOptions?.[i])
-      if (hasDiff) {
-        result.vmOptions = options.vmOptions
-      }
-    }
-
-    if ('mcOptions' in options) {
-      const hasDiff = typeof options.mcOptions !== typeof state.mcOptions || options.mcOptions?.length !== state.mcOptions?.length || options.mcOptions?.some((e, i) => e !== state.mcOptions?.[i])
-      if (hasDiff) {
-        result.mcOptions = options.mcOptions
-      }
-    }
-
-    if ('env' in options) {
-      const hasDiff = typeof options.env !== typeof state.env || (options.env && state.env && Object.keys(options.env).some(k => options.env?.[k] !== state.env?.[k]))
-      if (hasDiff) {
-        result.env = options.env
-      }
-    }
+    const result = computeInstanceEditChanges(
+      state,
+      options,
+    )
 
     if ('icon' in result && result.icon) {
       try {
