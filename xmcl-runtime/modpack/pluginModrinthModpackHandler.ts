@@ -29,14 +29,32 @@ export const pluginModrinthModpackHandler: LauncherAppPlugin = async (app) => {
         const b = await readEntry(zip, modrinthManifest)
         return JSON.parse(b.toString()) as ModrinthModpackManifest
       }
+      const nonStandard = entries.find(e => e.fileName.endsWith('/modrinth.index.json'))
+      if (nonStandard) {
+        const b = await readEntry(zip, nonStandard)
+        const basePath = nonStandard.fileName.substring(0, nonStandard.fileName.lastIndexOf('/'))
+        return Object.assign(JSON.parse(b.toString()) as ModrinthModpackManifest, {
+          __nonStandard: basePath
+        })
+      }
       return Promise.resolve(undefined)
     },
     resolveUnpackPath: (manifest: ModrinthModpackManifest, e: Entry) => {
-      if (e.fileName.startsWith('overrides')) {
-        return e.fileName.substring('overrides/'.length)
-      }
-      if (e.fileName.startsWith('client-overrides')) {
-        return e.fileName.substring('client-overrides/'.length)
+      if ('__nonStandard' in manifest) {
+        const prefix = manifest.__nonStandard as string
+        if (e.fileName.startsWith(prefix + '/overrides')) {
+          return e.fileName.substring((prefix + '/overrides').length + 1)
+        }
+        if (e.fileName.startsWith(prefix + '/client-overrides')) {
+          return e.fileName.substring((prefix + '/client-overrides').length + 1)
+        }
+      } else {
+        if (e.fileName.startsWith('overrides')) {
+          return e.fileName.substring('overrides/'.length)
+        }
+        if (e.fileName.startsWith('client-overrides')) {
+          return e.fileName.substring('client-overrides/'.length)
+        }
       }
     },
     resolveInstanceOptions: getInstanceConfigFromModrinthModpack,

@@ -306,7 +306,7 @@ const onCreate = async () => {
 // Stepper model
 const valid = ref(false)
 const step = ref(1)
-const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : 'Minecraft' }))
+const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : '' }))
 const steps = computed(() => {
   if (type.value === 'template') {
     return ['template', 'config']

@@ -412,7 +412,11 @@ export class ModpackService extends AbstractService implements IModpackService {
         for (const e of errors) {
           this.error(Object.assign(e, { name: e.name || 'ModpackParseError', cause: 'ModpackParsing' }))
         }
-        throw new ModpackException({ type: 'invalidModpack', path: modpackFile })
+        state.error = new ModpackException({ type: 'invalidModpack', path: modpackFile })
+        return [
+          state,
+          zip.dispose,
+        ]
       }
 
       this.log(`Parse modpack profile ${modpackFile} with handler ${handler.constructor.name}`)
