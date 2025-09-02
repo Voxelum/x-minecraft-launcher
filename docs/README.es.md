@@ -9,7 +9,7 @@
     <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
   </a>
   <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
-    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
+    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="Licencia">
   </a>
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
@@ -31,15 +31,15 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+¡Visita el [sitio oficial](https://xmcl.app) para descargar la aplicación!
 
-If you have winget, you can use winget to install
+Si tienes winget, puedes usarlo para instalar:
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-HomeBrew installation also available via tap
+La instalación con HomeBrew también está disponible a través de tap:
 
 ```bash
 brew tap voxelum/xmcl
@@ -57,40 +57,39 @@ brew install --cask --no-quarantine voxelum/xmcl
 
 
 
-## Features
+## Características
 
+- 📥 **Descarga y autocompletado**. Soporta la descarga de `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` desde repositorios oficiales o de terceros.
+- ⚡️ **Descarga Rápida**. Reutiliza sockets a través de agentes HTTP/HTTPS y descarga archivos en partes de forma concurrente.
+- 💻 **Multiplataforma**. El lanzador está basado en Electron y es compatible con 🗔 Windows 10/11, 🍎 MacOS y 🐧 Linux.
+- 📚 **Múltiples Instancias**. Los usuarios pueden crear múltiples instancias para aislar diferentes versiones, mods y configuraciones de lanzamiento.
+- 🗂 **Gestiona todos los recursos**. Usa enlaces (duros/simbólicos) para instalar recursos en las instancias, manteniendo óptimo el uso de tu disco. ¡No más copias de mods por todas partes! 😆
+- 🔥 **Soporte integrado para CurseForge y Modrinth**. Puedes descargar recursos desde el lanzador.
+- 📦 **Soporta importación/exportación** de modpacks de CurseForge y Modrinth.
+- 🔒 **Soporte para múltiples sistemas de cuentas**. Inicio de sesión de Microsoft y API Yggdrasil de Mojang integrados. También tiene soporte nativo para [ely.by](https://ely.by/) y [littleskin.cn](https://littleskin.cn). ¡También puedes añadir servidores de autenticación de terceros!
+- 🔗 **Conexión punto a punto entre usuarios**. ¡Puedes jugar en multijugador por LAN incluso si no estás en la misma LAN física!
+- 🔑 **Firma de código y empaquetado moderno**. En Windows, puedes usar `appx` y `appinstaller` para instalar la aplicación. ¡No recibirás más mensajes de bloqueo de tu navegador ni verás errores de SmartScreen! 😎
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
-
-## Contribute
+## Contribuir
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Voxelum/x-minecraft-launcher)
 
-For general developer, see [Contributing](./CONTRIBUTING.md)
+Para desarrolladores en general, consulta [Cómo contribuir](./CONTRIBUTING.md)
 
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
+Para desarrolladores de i18n y localización, por favor sigue la [Guía de inicio para la localización](https://docs.xmcl.app/en/guide/i18n)
 
-## LICENSE
+## LICENCIA
 
 [MIT](LICENSE)
 
-## Sponsorship
+## Patrocinio
 
-| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/) |
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Firma de código gratuita en Windows proporcionada por [SignPath.io](https://signpath.io/), certificado por [SignPath Foundation](https://signpath.org/) |
 | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
-| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL leverage its hassle-free platform for serverless JavaScript applications. Provided by [Deno](https://deno.com/)   |
-| [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Best Asian CDN, Edge, and Secure Solutions - Tencent EdgeOne](https://edgeone.ai/),CDN acceleration and security protection for this project are sponsored by Tencent EdgeOne. |
+| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL aprovecha su plataforma sin complicaciones para aplicaciones JavaScript sin servidor. Proporcionado por [Deno](https://deno.com/)   |
+| [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Mejores soluciones CDN, Edge y de Seguridad de Asia - Tencent EdgeOne](https://edgeone.ai/), la aceleración CDN y protección de seguridad para este proyecto están patrocinadas por Tencent EdgeOne. |
 
-### Sponsor (AFDIAN)
+### Patrocinador (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -110,22 +109,22 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+## Créditos
 
-[BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
+[BANSAFAn](https://github.com/BANSAFAn), quien me ayuda mucho en la comunidad RU/UK.
 
-[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), manteniendo el registro de paquetes AUR.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), manteniendo winget.
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), ¡tradujeron completamente al idioma ucraniano!
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+[vanja-san](https://github.com/vanja-san), ¡proporcionó el idioma ruso!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) me ayudan en el núcleo del Launcher.
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[laolarou726](https://github.com/laolarou726), quien ayuda mucho en el diseño del launcher.
 
-Also, special thanks to
+También, agradecimientos especiales a
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
