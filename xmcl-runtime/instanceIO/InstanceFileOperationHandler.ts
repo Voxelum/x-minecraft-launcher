@@ -365,7 +365,7 @@ export class InstanceFileOperationHandler {
         !cachedMetadata ||
         (metadata.modrinth && !cachedMetadata.modrinth) ||
         (metadata.curseforge && cachedMetadata.curseforge) ||
-        (urls.length > 0 && urls.some(u => uris.indexOf(u) === -1))
+        (urls.some(u => uris.indexOf(u) === -1))
       ) {
         this.#resourceToUpdate.push({ destination, hash: sha1, metadata, uris: urls })
       }
