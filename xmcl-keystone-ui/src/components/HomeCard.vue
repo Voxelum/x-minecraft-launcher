@@ -5,7 +5,6 @@
     style="box-sizing: border-box"
     outlined
     :style="{
-      borderColor: mouse > 0 ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
     }"
     :color="highlighted ? 'yellow darken-2' : cardColor"
@@ -99,7 +98,7 @@
         <v-icon class="material-icons-outlined" left>
           {{ additionButton.icon || 'add' }}
         </v-icon>
-        <span>
+        <span class="pr-1">
           {{ additionButton.text }}
         </span>
       </v-btn>
@@ -167,6 +166,11 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
   /* blur behand */
   container-type: size;
   width: 100%;
+}
+
+.home-card .v-card__title {
+  padding: 8px 16px;
+  font-size: 1rem;
 }
 
 .btn {
