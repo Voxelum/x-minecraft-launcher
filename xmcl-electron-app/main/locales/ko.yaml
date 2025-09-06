@@ -1,0 +1,25 @@
+browseApps: 앱 찾아보기
+checkUpdate: 업데이트 확인
+openUrl:
+  cancel: 취소
+  message: >-
+    런처가 {url}을 기본 브라우저에서 열려고 합니다.
+    이 작업을 허용하시겠습니까??
+  title: 브라우저에서 열기
+  trust: 이 사이트를 신뢰하고 다음에 표시하지 않음
+  'yes': 예
+quit: 종료
+relaunch: 재실행
+showDiagnosis: 진단 표시
+showLauncher: 런처 표시
+showLogsFolder: 로그 폴더 표시
+task:
+  continue: 런처에서 보기
+  fail: 작업 실패
+  success: 작업 성공
+title: X Minecraft Launcher
+urlFailed: 알 수 없는 URL {url}. URL을 확인하거나 개발자에게 문의하세요!
+urlSuccess: 성공! 이제 이 창을 닫고 런처로 돌아갈 수 있습니다!
+autoCloseHint: 이 창은 {time} 초 후에 닫힙니다
+multiplayer: P2P 멀티플레이어
+makeDesktopShortcut: 바탕 화면 바로 가기 만들기
