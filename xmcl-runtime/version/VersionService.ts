@@ -164,6 +164,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
     }
   }
 
+  @Singleton(v => v)
   async refreshServerVersion(id: string) {
     try {
       const filePath = this.getPath('versions', id, 'server.json')
