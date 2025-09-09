@@ -1,9 +1,11 @@
 import { ExportInstanceAsServerOptions } from '@xmcl/runtime-api';
 import { SSHManager } from '../ssh/SSHManager';
 import { InstanceIOService } from './InstanceIOService';
+import { ServerFSExporter } from '@xmcl/instance'
 import { SSHInstanceExporter } from './SSHInstanceExporter';
-import { FSInstanceExporter } from './instanceExportServer';
 import { BaseTask, task } from '@xmcl/task';
+import { LaunchService } from '~/launch';
+import { FSInstanceExporter } from './instanceExportServer';
 
 class UploadSSHTask extends BaseTask<void> {
   constructor(
@@ -38,7 +40,11 @@ class UploadSSHTask extends BaseTask<void> {
 
 export async function exportInstanceAsServer(this: InstanceIOService, options: ExportInstanceAsServerOptions) {
   if (options.output.type === 'folder') {
-    await new FSInstanceExporter(this.app, this.getPath(), options.output.path).exportInstance(options.options, options.files);
+    // await new ServerFSExporter(this.getPath(), options.output.path, {
+    //   generateServerOptions: (o, s) => this.app.registry.get(LaunchService).then(l => l.generateServerOptions(o, s)),
+    //   resolveServerVersion: (v) => this.versionService.resolveServerVersion(v),
+    // }).exportInstance(options.options, options.files);
+    new FSInstanceExporter(this.app, this.getPath(), options.output.path).exportInstance(options.options, options.files);
   } else if (options.output.type === 'ssh') {
     const manager = await this.app.registry.getOrCreate(SSHManager);
     const ssh = await manager.open({

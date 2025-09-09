@@ -1,5 +1,5 @@
-import { computeInstanceEditChanges, loadInstanceFromOptions } from '@xmcl/instance'
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, SharedState, createTemplate } from '@xmcl/runtime-api'
+import { computeInstanceEditChanges, createInstance, loadInstanceFromOptions } from '@xmcl/instance'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, SharedState } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
@@ -12,7 +12,7 @@ import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
-import { assignShallow, requireObject, requireString } from '../util/object'
+import { requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 
 const INSTANCES_FOLDER = 'instances'
@@ -162,38 +162,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       throw new TypeError('payload.name should not be empty!')
     }
 
-    const instance = createTemplate()
-
-    assignShallow(instance, payload)
-    if (payload.runtime) {
-      assignShallow(instance.runtime, payload.runtime)
-    }
-    if (payload.resolution) {
-      if (instance.resolution) {
-        assignShallow(instance.resolution, payload.resolution)
-      } else {
-        instance.resolution = payload.resolution
-      }
-    }
-    if (payload.server) {
-      instance.server = payload.server
-    }
-
-    payload.name = payload.name.trim()
-
-    if (!payload.path) {
-      instance.path = this.getCandidatePath(payload.name)
-    }
-
-    instance.runtime.minecraft = instance.runtime.minecraft || this.versionMetadataService.getLatestRelease()
-    instance.creationDate = Date.now()
-    instance.lastAccessDate = Date.now()
-
-    instance.author = payload.author ?? instance.author
-    instance.description = payload.description ?? instance.description
-    instance.showLog = payload.showLog ?? instance.showLog
-    instance.upstream = payload.upstream
-    instance.icon = payload.icon ?? ''
+    const instance = createInstance(payload, (v) => this.getCandidatePath(v), () => this.versionMetadataService.getLatestRelease())
 
     if (!isPathDiskRootPath(instance.path)) {
       await ensureDir(instance.path).catch(() => undefined)

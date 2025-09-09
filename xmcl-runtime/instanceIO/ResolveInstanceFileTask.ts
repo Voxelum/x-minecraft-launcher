@@ -14,7 +14,7 @@ export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 export class ResolveInstanceFileTask extends AbortableTask<boolean> {
   private controller?: AbortController
 
-  constructor(private files: InstanceFile[], private curseforgeClient: CurseforgeV1Client, private modrinthClient: ModrinthV2Client) {
+  constructor(private files: Iterable<InstanceFile>, private curseforgeClient: CurseforgeV1Client, private modrinthClient: ModrinthV2Client) {
     super()
     this.name = 'resolve'
   }

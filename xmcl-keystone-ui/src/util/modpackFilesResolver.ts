@@ -1,4 +1,4 @@
-import { Resource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromMmcModpack, getInstanceConfigFromModrinthModpack } from '@xmcl/runtime-api'
+import { Resource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromModrinthModpack } from '@xmcl/runtime-api'
 
 export function resolveModpackInstanceConfig(r: Resource) {
   if (r.metadata['modrinth-modpack']) {

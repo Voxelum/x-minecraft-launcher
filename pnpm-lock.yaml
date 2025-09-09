@@ -195,6 +195,9 @@ importers:
       '@xmcl/installer':
         specifier: workspace:*
         version: link:../xmcl/packages/installer
+      '@xmcl/instance':
+        specifier: workspace:*
+        version: link:../xmcl/packages/instance
       '@xmcl/mod-parser':
         specifier: workspace:*
         version: link:../xmcl/packages/mod-parser
@@ -920,6 +923,9 @@ importers:
 
   xmcl/packages/instance:
     dependencies:
+      '@xmcl/core':
+        specifier: workspace:*
+        version: link:../core
       '@xmcl/task':
         specifier: workspace:*
         version: link:../task

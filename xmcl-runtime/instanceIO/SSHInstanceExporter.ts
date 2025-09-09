@@ -20,7 +20,7 @@ export class SSHInstanceExporter extends InstanceExporter {
       _total += total
       _progress += progress
     }
-    this.onProgress(chunk, _progress, _total)
+    // this.onProgress(chunk, _progress, _total)
   }
 
   abort() {
