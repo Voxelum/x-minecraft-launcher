@@ -418,6 +418,9 @@ installInstance:
   name: Update Instance
   resolve: Resolve Instance Config
   unzip: Unzip {count} Files
+duplicateInstance:
+  file: Copying Instance File {file}
+  name: Duplicate Instance
 installJre:
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
