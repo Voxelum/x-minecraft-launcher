@@ -1,4 +1,5 @@
 import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, SharedState, RuntimeVersions, createTemplate, LockKey } from '@xmcl/runtime-api'
+import { task } from '@xmcl/task'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
@@ -7,6 +8,7 @@ import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { TaskFn, kTaskExecutor } from '~/task'
 import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
@@ -30,6 +32,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(VersionMetadataService) private versionMetadataService: VersionMetadataService,
     @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(ImageStorage) private imageStore: ImageStorage,
+    @Inject(kTaskExecutor) private submit: TaskFn,
   ) {
     super(app, () => store.registerStatic(new InstanceState(), InstanceServiceKey), async () => {
       const instanceConfig = await this.instancesFile.read()
@@ -263,66 +266,92 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const newPath = this.getCandidatePath(instance.name || basename(path))
     const newName = basename(newPath)
 
+    // Create the instance first
     await this.createInstance({
       ...JSON.parse(JSON.stringify(instance)),
       path: newPath,
       name: newName,
     })
 
-    let hasMods = false
-    let hasResourcepacks = false
-    let hasShaderpacks = false
-    await copy(path, newPath, {
-      filter: async (src, dest) => {
-        const linked = await readlink(src).catch(() => '')
+    // Create and submit a task to handle the file copy operations
+    const duplicateTask = task('duplicateInstance', async function () {
+      let hasMods = false
+      let hasResourcepacks = false
+      let hasShaderpacks = false
 
-        if (linked) {
-          return false
-        }
+      // Update task name to show source and destination
+      this.update(0, undefined, `${basename(path)} -> ${newName}`)
+      
+      // First, copy the main instance files (excluding special directories)
+      await copy(path, newPath, {
+        filter: async (src, dest) => {
+          const linked = await readlink(src).catch(() => '')
 
-        const relativePath = relative(path, src).replaceAll('\\', '/')
-        if (relativePath.startsWith('mods')) {
-          hasMods = true
-          return false
+          if (linked) {
+            return false
+          }
+
+          const relativePath = relative(path, src).replaceAll('\\', '/')
+          if (relativePath.startsWith('mods')) {
+            hasMods = true
+            return false
+          }
+          if (relativePath.startsWith('resourcepacks')) {
+            hasResourcepacks = true
+            return false
+          }
+          if (relativePath.startsWith('shaderpacks')) {
+            hasShaderpacks = true
+            return false
+          }
+          return true
+        },
+      })
+      
+      // Report progress after main copy
+      this.update(1, 4, `Copied main instance files`)
+
+      // Handle mods directory
+      if (hasMods) {
+        this.update(2, 4, `Copying mods...`)
+        const modDirSrc = join(path, 'mods')
+        await ensureDir(join(newPath, 'mods'))
+        // hard link all source to new path
+        const files = await readdir(modDirSrc)
+        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
+      }
+
+      // Handle resourcepacks directory
+      if (hasResourcepacks) {
+        this.update(3, 4, `Copying resourcepacks...`)
+        const resourcepacksDirSrc = join(path, 'resourcepacks')
+        const status = await stat(resourcepacksDirSrc)
+        if (!status.isSymbolicLink()) {
+          // hard link all files
+          await ensureDir(join(newPath, 'resourcepacks'))
+          const files = await readdir(resourcepacksDirSrc)
+          await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
         }
-        if (relativePath.startsWith('resourcepacks')) {
-          hasResourcepacks = true
-          return false
+      }
+
+      // Handle shaderpacks directory
+      if (hasShaderpacks) {
+        this.update(4, 4, `Copying shaderpacks...`)
+        const shaderpacksDirSrc = join(path, 'shaderpacks')
+        const status = await stat(shaderpacksDirSrc)
+        if (!status.isSymbolicLink()) {
+          // hard link all files
+          await ensureDir(join(newPath, 'shaderpacks'))
+          const files = await readdir(shaderpacksDirSrc)
+          await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
         }
-        if (relativePath.startsWith('shaderpacks')) {
-          hasShaderpacks = true
-          return false
-        }
-        return true
-      },
+      }
+
+      this.update(4, 4, `Duplication completed`)
     })
-    if (hasMods) {
-      const modDirSrc = join(path, 'mods')
-      await ensureDir(join(newPath, 'mods'))
-      // hard link all source to new path
-      const files = await readdir(modDirSrc)
-      await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
-    }
-    if (hasResourcepacks) {
-      const resourcepacksDirSrc = join(path, 'resourcepacks')
-      const status = await stat(resourcepacksDirSrc)
-      if (!status.isSymbolicLink()) {
-        // hard link all files
-        await ensureDir(join(newPath, 'resourcepacks'))
-        const files = await readdir(resourcepacksDirSrc)
-        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
-      }
-    }
-    if (hasShaderpacks) {
-      const shaderpacksDirSrc = join(path, 'shaderpacks')
-      const status = await stat(shaderpacksDirSrc)
-      if (!status.isSymbolicLink()) {
-        // hard link all files
-        await ensureDir(join(newPath, 'shaderpacks'))
-        const files = await readdir(shaderpacksDirSrc)
-        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
-      }
-    }
+
+    // Submit the task with proper naming
+    await this.submit(duplicateTask.setName('duplicateInstance', { from: instance.name || basename(path), to: newName }))
 
     return newPath
   }
