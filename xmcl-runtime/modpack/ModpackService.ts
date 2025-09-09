@@ -176,15 +176,20 @@ export class ModpackService extends AbstractService implements IModpackService {
       curseforgeConfig = getCurseforgeModpackFromInstance(instance)
       curseforgeConfig.author = author ?? curseforgeConfig.author
       curseforgeConfig.name = name ?? curseforgeConfig.name
+      curseforgeConfig.version = version ?? curseforgeConfig.version
     }
 
     if (emitMcbbs) {
       mcbbsManifest = getMcbbsModpackFromInstance(instance)
       mcbbsManifest.author = author ?? mcbbsManifest.author
       mcbbsManifest.name = name ?? mcbbsManifest.name
+      mcbbsManifest.version = version ?? mcbbsManifest.version
     }
     if (emitModrinth) {
       modrinthManifest = getModrinthModpackFromInstance(instance)
+      modrinthManifest.name = name ?? modrinthManifest.name
+      modrinthManifest.versionId = version ?? modrinthManifest.versionId
+      modrinthManifest.summary = modrinthManifest.summary ?? instance.description
     }
 
     const zipTask = new ZipTask(destinationPath)
