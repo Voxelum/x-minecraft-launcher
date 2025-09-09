@@ -118,11 +118,19 @@ function accept(pid: number, log: string) {
         id: logs.length,
       })
     } else {
-      const last = logs[logs.length - 1]
-      const buffer = last?.raw + '\n' + log
-      logs[logs.length - 1] = {
-        ...parseLog(buffer),
-        id: logs.length,
+      const index = logs.length - 1
+      if (index >= 0) {
+        const last = logs[logs.length - 1]
+        const buffer = last?.raw ? last?.raw + '\n' + log : log
+        logs[logs.length - 1] = {
+          ...parseLog(buffer),
+          id: logs.length,
+        }
+      } else {
+        logs.push({
+          ...parseLog(log),
+          id: logs.length,
+        })
       }
     }
   }

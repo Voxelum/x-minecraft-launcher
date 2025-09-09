@@ -34,8 +34,8 @@
             <span
               class="level"
             >{{ levelText[logs[virtualRow.index].level] ? levelText[logs[virtualRow.index].level] : logs[virtualRow.index].level.toUpperCase() }}</span>
-            <span class="date">{{ logs[virtualRow.index].date }}</span>
-            <span class="source">{{ logs[virtualRow.index].source }}</span>
+            <span v-if="logs[virtualRow.index].date" class="date">{{ logs[virtualRow.index].date }}</span>
+            <span v-if="logs[virtualRow.index].source" class="source">{{ logs[virtualRow.index].source }}</span>
           </div>
           <span class="content">{{ logs[virtualRow.index].content }}</span>
         </div>
