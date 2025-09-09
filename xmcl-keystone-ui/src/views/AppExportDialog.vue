@@ -315,7 +315,7 @@ const filterText = ref('')
 const data = reactive({
   name: name.value,
   author: author.value,
-  version: inc(baseVersion, 'patch') ?? '0.0.1',
+  version: modpackVersion.value || '0.0.1',
   gameVersion: versionId.value,
   selected: [] as string[],
   fileApi: '',
@@ -390,7 +390,7 @@ function reset() {
   data.files = []
   data.selected = []
   data.gameVersion = versionId.value ?? ''
-  data.version = inc(modpackVersion.value || '0.0.0', 'patch') ?? '0.0.1'
+  data.version = modpackVersion.value || '0.0.1'
 }
 
 const exclusions = [
