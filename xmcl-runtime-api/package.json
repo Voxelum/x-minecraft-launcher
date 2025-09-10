@@ -27,6 +27,7 @@
     },
     "dependencies": {
         "@xmcl/client": "workspace:*",
+        "@xmcl/instance": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/forge-site-parser": "workspace:*",

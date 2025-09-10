@@ -56,7 +56,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
           if (event === 'unlink' || event === 'add' || event === 'change') {
             const id = basename(dirname(file))
             if (file.endsWith('server.json')) {
-              this.refreshServerVersion(file)
+              this.refreshServerVersion(id)
             } else {
               this.refreshVersion(id)
             }

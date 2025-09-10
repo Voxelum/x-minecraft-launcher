@@ -27,7 +27,7 @@
       </v-toolbar>
       <div
         ref="scrollElement"
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll mx-0 max-h-[60vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>{{ t('modpack.general') }}</v-subheader>
         <div

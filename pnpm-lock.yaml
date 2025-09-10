@@ -519,8 +519,8 @@ importers:
         specifier: ~20
         version: 20.12.7
       '@types/ssh2':
-        specifier: ^1.15.4
-        version: 1.15.4
+        specifier: ^1.15.5
+        version: 1.15.5
       '@types/tar-stream':
         specifier: ^3.1.3
         version: 3.1.3
@@ -578,6 +578,9 @@ importers:
       '@xmcl/installer':
         specifier: workspace:*
         version: link:../xmcl/packages/installer
+      '@xmcl/instance':
+        specifier: workspace:*
+        version: link:../xmcl/packages/instance
       '@xmcl/mod-parser':
         specifier: workspace:*
         version: link:../xmcl/packages/mod-parser
@@ -923,6 +926,9 @@ importers:
 
   xmcl/packages/instance:
     dependencies:
+      '@types/ssh2':
+        specifier: ^1.15.5
+        version: 1.15.5
       '@xmcl/core':
         specifier: workspace:*
         version: link:../core
@@ -2533,8 +2539,8 @@ packages:
   '@types/shimmer@1.0.5':
     resolution: {integrity: sha512-9Hp0ObzwwO57DpLFF0InUjUm/II8GmKAvzbefxQTihCb7KI6yc9yzf0nLc4mVdby5N4DRCgQM2wCup9KTieeww==}
 
-  '@types/ssh2@1.15.4':
-    resolution: {integrity: sha512-9JTQgVBWSgq6mAen6PVnrAmty1lqgCMvpfN+1Ck5WRUsyMYPa6qd50/vMJ0y1zkGpOEgLzm8m8Dx/Y5vRouLaA==}
+  '@types/ssh2@1.15.5':
+    resolution: {integrity: sha512-N1ASjp/nXH3ovBHddRJpli4ozpk6UdDYIX4RJWFa9L1YKnzdhTlVmiGHm4DZnj/jLbqZpes4aeR30EFGQtvhQQ==}
 
   '@types/stats.js@0.17.0':
     resolution: {integrity: sha512-9w+a7bR8PeB0dCT/HBULU2fMqf6BAzvKbxFboYhmDtDkKPiyXYbjoe2auwsXlEFI7CFNMF1dCv3dFH5Poy9R1w==}
@@ -6654,7 +6660,7 @@ snapshots:
 
   '@types/shimmer@1.0.5': {}
 
-  '@types/ssh2@1.15.4':
+  '@types/ssh2@1.15.5':
     dependencies:
       '@types/node': 18.15.13
 

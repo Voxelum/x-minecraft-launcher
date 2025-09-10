@@ -12,7 +12,6 @@ import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, exists } from '../util/fs'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { createInstanceSystemEnv } from './createInstanceSystemEnv'
 import { exportInstanceAsServer } from './exportInstanceAsServer'
 
 @ExposeServiceKey(InstanceIOServiceKey)
@@ -45,7 +44,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
-    const result = await parseInstanceFiles(path, createInstanceSystemEnv(this), type)
+    const result = await parseInstanceFiles(path, type)
     return result
   }
 

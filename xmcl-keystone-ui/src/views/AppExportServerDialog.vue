@@ -245,7 +245,7 @@ const hasError = computed(() => {
       </v-toolbar>
 
       <div
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
+        class="visible-scroll mx-0 max-h-[60vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
         ref="scrollElement"
 
       >

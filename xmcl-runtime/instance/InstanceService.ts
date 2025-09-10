@@ -1,17 +1,18 @@
-import { computeInstanceEditChanges, createInstance, loadInstanceFromOptions } from '@xmcl/instance'
-import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, SharedState } from '@xmcl/runtime-api'
+import { DuplicateInstanceTask, EditInstanceOptions, computeInstanceEditChanges, createInstance, loadInstanceFromOptions } from '@xmcl/instance'
+import { CreateInstanceOption, InstanceService as IInstanceService, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, SharedState } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { copy, ensureDir, readdir, readlink, rename, rm, stat } from 'fs-extra'
+import { ensureDir, rename, rm } from 'fs-extra'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
 import { ImageStorage } from '~/imageStore'
 import { VersionMetadataService } from '~/install'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
+import { kTaskExecutor } from '~/task'
 import { AnyError, isSystemError } from '~/util/error'
 import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
-import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
+import { ENOENT_ERROR, exists, isDirectory, isPathDiskRootPath, readdirEnsured } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { SafeFile, createSafeFile, createSafeIO } from '../util/persistance'
 
@@ -99,6 +100,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
       return candidate + i
     }
+  }
+
+  registerRemoveHandler(path: string, handler: () => Promise<void> | void) {
+    if (!this.#removeHandlers[path]) {
+      this.#removeHandlers[path] = []
+    }
+    this.#removeHandlers[path].push(new WeakRef(handler))
   }
 
   async loadInstance(path: string) {
@@ -202,60 +210,14 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       name: newName,
     })
 
-    let hasMods = false
-    let hasResourcepacks = false
-    let hasShaderpacks = false
-    await copy(path, newPath, {
-      filter: async (src, dest) => {
-        const linked = await readlink(src).catch(() => '')
+    const task = new DuplicateInstanceTask(
+      path,
+      newPath,
+      this
+    )
 
-        if (linked) {
-          return false
-        }
-
-        const relativePath = relative(path, src).replaceAll('\\', '/')
-        if (relativePath.startsWith('mods')) {
-          hasMods = true
-          return false
-        }
-        if (relativePath.startsWith('resourcepacks')) {
-          hasResourcepacks = true
-          return false
-        }
-        if (relativePath.startsWith('shaderpacks')) {
-          hasShaderpacks = true
-          return false
-        }
-        return true
-      },
-    })
-    if (hasMods) {
-      const modDirSrc = join(path, 'mods')
-      await ensureDir(join(newPath, 'mods'))
-      // hard link all source to new path
-      const files = await readdir(modDirSrc)
-      await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
-    }
-    if (hasResourcepacks) {
-      const resourcepacksDirSrc = join(path, 'resourcepacks')
-      const status = await stat(resourcepacksDirSrc)
-      if (!status.isSymbolicLink()) {
-        // hard link all files
-        await ensureDir(join(newPath, 'resourcepacks'))
-        const files = await readdir(resourcepacksDirSrc)
-        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
-      }
-    }
-    if (hasShaderpacks) {
-      const shaderpacksDirSrc = join(path, 'shaderpacks')
-      const status = await stat(shaderpacksDirSrc)
-      if (!status.isSymbolicLink()) {
-        // hard link all files
-        await ensureDir(join(newPath, 'shaderpacks'))
-        const files = await readdir(shaderpacksDirSrc)
-        await Promise.allSettled(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
-      }
-    }
+    const submit = await this.app.registry.get(kTaskExecutor)
+    await submit(task)
 
     return newPath
   }
@@ -298,12 +260,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.state.instanceRemove(path)
   }
 
-  registerRemoveHandler(path: string, handler: () => Promise<void> | void) {
-    if (!this.#removeHandlers[path]) {
-      this.#removeHandlers[path] = []
-    }
-    this.#removeHandlers[path].push(new WeakRef(handler))
-  }
 
   /**
    * Edit the instance. If the `path` is not present, it will edit the current selected instance.
@@ -349,19 +305,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const result = computeInstanceEditChanges(
       state,
       options,
+      async (path: string) => this.imageStore.addImage(path).catch((e) => {
+        this.error(e)
+        return ''
+      })
     )
-
-    if ('icon' in result && result.icon) {
-      try {
-        const iconURL = new URL(result.icon)
-        const path = iconURL.searchParams.get('path')
-        if (iconURL.host === 'launcher' && iconURL.pathname === '/media' && path) {
-          result.icon = await this.imageStore.addImage(path)
-        }
-      } catch (e) {
-        if (e instanceof Error) this.error(e)
-      }
-    }
 
     if (Object.keys(result).length > 0) {
       this.log(`Modify instance ${instancePath} (${options.name}) ${JSON.stringify(result, null, 4)}.`)

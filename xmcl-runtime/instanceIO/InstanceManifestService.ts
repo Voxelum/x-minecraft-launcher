@@ -9,7 +9,6 @@ import { ResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
-import { createInstanceSystemEnv } from './createInstanceSystemEnv'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -32,7 +31,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     let files = [] as Array<InstanceFile>
 
-    const fileWithStats = await getInstanceFiles(join(instancePath, 'server'), createInstanceSystemEnv(this), (filePath) => {
+    const fileWithStats = await getInstanceFiles(join(instancePath, 'server'), this, (filePath) => {
       if (filePath.startsWith('libraries') || filePath.startsWith('versions') || filePath.startsWith('assets')) {
         return true
       }
@@ -61,10 +60,9 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     const worker = await this.app.registry.get(kResourceWorker)
     const manager = await this.app.registry.get(ResourceManager)
-    const env = createInstanceSystemEnv(this)
 
     const undecorated = new Set<InstanceFile>()
-    const result = await generateInstanceManifest(options, instance, worker, manager, env, undecorated)
+    const result = await generateInstanceManifest(options, instance, worker, manager, this, undecorated)
 
     const resolveTask = new ResolveInstanceFileTask(
       undecorated,

@@ -1,3 +1,4 @@
+import type { EditInstanceOptions } from '@xmcl/instance'
 import { Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { SharedState } from '../util/SharedState'
@@ -19,14 +20,6 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
    * Create shaderpacks folder
    */
   shaderpacks?: boolean
-}
-export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runtime' | 'server'>> {
-  resolution?: InstanceSchema['resolution']
-  runtime?: InstanceSchema['runtime']
-  /**
-   * If this is undefined, it will disable the server of this instance
-   */
-  server?: InstanceSchema['server']
 }
 
 export class InstanceState {
@@ -104,6 +97,7 @@ export class InstanceState {
         inst.runtime.neoForged = ''
         inst.runtime.liteloader = ''
         inst.runtime.optifine = ''
+        inst.version = ''
       }
 
       for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
