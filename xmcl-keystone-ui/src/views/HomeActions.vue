@@ -1,75 +1,79 @@
 <template>
   <div
-    class="grid xl:gap-4 gap-1 home-actions"
-    :style="{
-      'grid-template-columns': `repeat(${
-        instance && !instance.upstream ? 5 : 4
-      }, minmax(0, 1fr))`,
-    }"
+    class="flex xl:gap-4 gap-1 home-actions items-end justify-center flex-col mt-1"
   >
-    <v-speed-dial open-on-hover>
+    <v-btn
+      v-shared-tooltip.left="() => t('instance.showInstance')"
+      text
+      icon
+      :loading="isValidating"
+      @click="showInstanceFolder"
+    >
+      <v-icon> folder_open </v-icon>
+    </v-btn>
+
+    <v-btn
+      v-shared-tooltip.left="() => t('baseSetting.title', 2)"
+      text
+      icon
+      :loading="isValidating"
+      to="/base-setting"
+    >
+      <v-icon> settings </v-icon>
+    </v-btn>
+
+    <v-speed-dial open-on-hover direction="bottom">
       <template #activator>
         <v-btn
-          v-shared-tooltip.left="() => t('modpack.export')"
+          v-shared-tooltip.left="() => t('modpack.actions')"
           text
           icon
           :loading="isValidating"
-          @click="showExport()"
         >
-          <v-icon> share </v-icon>
+          <v-icon> more_horiz </v-icon>
         </v-btn>
       </template>
 
       <v-btn
+        v-shared-tooltip.left="() => t('modpack.export')"
+        text
+        icon
+        :loading="isValidating"
+        @click="showExport()"
+      >
+        <v-icon> share </v-icon>
+      </v-btn>
+
+      <v-btn
+        v-if="instance && !instance.upstream"
+        v-shared-tooltip="() => t('instance.installModpack')"
+        text
+        icon
+        :loading="isValidating || loading"
+        @click="onClickInstallFromModpack()"
+      >
+        <v-icon> drive_folder_upload </v-icon>
+      </v-btn>
+
+      <v-btn
+        v-shared-tooltip="() => t('logsCrashes.title')"
+        text
+        icon
+        :loading="isValidating"
+        @click="showLogDialog()"
+      >
+        <v-icon> subtitles </v-icon>
+      </v-btn>
+
+      <!-- <v-btn
         v-shared-tooltip.left="() => t('server.export')"
         icon
         :loading="isValidating"
         @click="showExportServer()"
       >
         <v-icon> ios_share </v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-speed-dial>
-
-    <v-btn
-      v-if="instance && !instance.upstream"
-      v-shared-tooltip="() => t('instance.installModpack')"
-      text
-      icon
-      :loading="isValidating || loading"
-      @click="onClickInstallFromModpack()"
-    >
-      <v-icon> drive_folder_upload </v-icon>
-    </v-btn>
-
-    <v-btn
-      v-shared-tooltip="() => t('logsCrashes.title')"
-      text
-      icon
-      :loading="isValidating"
-      @click="showLogDialog()"
-    >
-      <v-icon> subtitles </v-icon>
-    </v-btn>
-
-    <v-btn
-      v-shared-tooltip="() => t('instance.showInstance')"
-      text
-      icon
-      :loading="isValidating"
-      @click="showInstanceFolder"
-    >
-      <v-icon> folder </v-icon>
-    </v-btn>
-
-    <v-btn
-      v-shared-tooltip="() => t('baseSetting.title', 2)"
-      text
-      icon
-      :loading="isValidating"
-      to="/base-setting"
-    >
-      <v-icon> tune </v-icon>
-    </v-btn>
   </div>
 </template>
 

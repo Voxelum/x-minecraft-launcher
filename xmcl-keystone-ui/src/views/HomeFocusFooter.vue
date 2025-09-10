@@ -1,16 +1,16 @@
 <template>
-  <div class="w-full">
-    <div class="relative mx-6 flex-grow flex gap-6 items-end">
-      <v-card flat class="rounded-lg tabs-card" color="transparent" @mouseenter="onMouseEnter" @mouseleave="onMouseLeaved">
-        <div class="flex absolute top-0 h-4 z-4 right-0 p-1 icons" :class="{ visibled: pinned || counter > 0 }">
+  <div class="w-full absolute bottom-0 left-0 pb-6 z-20">
+    <div class="relative mx-8 flex-grow flex gap-6 items-end">
+      <!-- <v-card flat class="rounded-lg tabs-card" color="transparent" @mouseenter="onMouseEnter" @mouseleave="onMouseLeaved">
+        <div class="flex absolute top-2 h-4 z-4 right-2 p-1 icons gap-1" :class="{ visibled: pinned || counter > 0 }">
           <div class="flex-grow" />
           <v-btn :class="{ 'v-btn--active': pinned }" icon small @click="onPin">
-            <v-icon class="material-symbols-outlined ">
+            <v-icon class="material-symbols-outlined " :size="18">
               keep
             </v-icon>
           </v-btn>
           <v-btn icon small @click="onViewDashboard">
-            <v-icon class="rotate-[45deg]">
+            <v-icon class="rotate-[45deg]" :size="18">
               unfold_more
             </v-icon>
           </v-btn>
@@ -67,7 +67,7 @@
             {{ instance.upstream && instance.upstream.type === 'curseforge-modpack' ? 'Curseforge' : 'Modrinth' }}
           </v-tab>
         </v-tabs>
-      </v-card>
+      </v-card> -->
       <div 
         key="launch-button-group"
         class="flex flex-wrap justify-end items-center gap-y-6 gap-x-2"
@@ -79,11 +79,11 @@
           :total="total"
           :progress="progress"
         />
-        <HomeLaunchButtonStatus
+        <!-- <HomeLaunchButtonStatus
           class="mr-4 ml-2"
           v-else
           :active="active"
-        />
+        /> -->
         <HomeLaunchButton
           class="ml-4"
           :status="status"
