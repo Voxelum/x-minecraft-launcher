@@ -12,8 +12,6 @@ import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance/InstanceService'
 import { kPeerFacade } from '~/peer'
 import { kResourceWorker, ResourceManager, ResourceWorker } from '~/resource'
-import { getFile } from '~/resource/core/files'
-import { getDomainedPath } from '~/resource/core/snapshot'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { kTaskExecutor, TaskFn } from '~/task'
 import { createSafeIO } from '~/util/persistance'
@@ -23,6 +21,7 @@ import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
 import { InstanceFileLinkTask } from './InstanceFileOperationTask'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { UnzipFileTask } from './UnzipFileTask'
+import { getDomainedPath, getFile } from '@xmcl/resource'
 
 /**
  * Provide the abilities to import/export instance from/to modpack

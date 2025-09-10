@@ -37,6 +37,7 @@
         "@xmcl/modrinth": "workspace:*",
         "@xmcl/nat-api": "workspace:*",
         "@xmcl/nbt": "workspace:*",
+        "@xmcl/resource": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/stun-client": "^1.0.0",

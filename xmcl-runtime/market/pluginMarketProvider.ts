@@ -9,7 +9,6 @@ import { LauncherAppPlugin } from '~/app'
 import { InstanceInstallService } from '~/instanceIO'
 import { kDownloadOptions } from '~/network'
 import { ResourceManager } from '~/resource'
-import { getFile } from '~/resource/core/files'
 import { kTaskExecutor } from '~/task'
 import { guessCurseforgeFileUrl } from '~/util/curseforge'
 import { hardLinkFiles } from '~/util/fs'
@@ -137,17 +136,14 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         icons: icon ? [icon] : undefined,
       })
     } else {
-      const file = await getFile(result.path)
-      if (file) {
-        const snapshot = await resourceManager.getSnapshot(file)
-        if (snapshot) {
-          await resourceManager.updateMetadata([{
-            hash: snapshot.sha1,
-            metadata: result.metadata,
-            uris: result.uris,
-            icons: icon ? [icon] : undefined,
-          }])
-        }
+      const snapshot = await resourceManager.getSnapshot(result.path)
+      if (snapshot) {
+        await resourceManager.updateMetadata([{
+          hash: snapshot.sha1,
+          metadata: result.metadata,
+          uris: result.uris,
+          icons: icon ? [icon] : undefined,
+        }])
       }
     }
   }

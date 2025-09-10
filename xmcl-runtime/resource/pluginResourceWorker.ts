@@ -1,6 +1,8 @@
 import { InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
+import { rename } from 'fs-extra'
+import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
@@ -16,12 +18,10 @@ import { createLazyWorker } from '../worker'
 import { kResourceContext } from './ResourceManager'
 import { createResourceContext } from './core/createResourceContext'
 import { migrate } from './core/migrateResources'
+import { Database } from './core/schema'
 import { getDomainedPath } from './core/snapshot'
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
-import { Database } from './core/schema'
-import { Kysely } from 'kysely'
-import { rename } from 'fs-extra'
 
 function loadDatabaseConfig(app: LauncherApp, flights: any) {
   let config: SqliteWASMDialectConfig

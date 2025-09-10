@@ -13,18 +13,6 @@ import { upsertMetadata } from './core/upsertMetadata'
 import { Inject, InjectionKey } from '~/app'
 import { AnyError } from '~/util/error'
 
-export interface ResourceParsedEvent {
-  file: File
-  record: ResourceSnapshotTable
-  metadata: ResourceMetadata & {
-    icons?: string[] | undefined
-  }
-  uris: string[]
-  icons: string[]
-  cacheHit: boolean
-  dirty: boolean
-}
-
 export const kResourceContext: InjectionKey<ResourceContext> = Symbol('resourceContext')
 
 export class ResourceManager {
@@ -99,7 +87,7 @@ export class ResourceManager {
     return file
   }
 
-  getSnapshotPath(snapshot: ResourceSnapshotTable) {
+  getSnapshotPath(snapshot: Pick<ResourceSnapshotTable, 'domainedPath'>) {
     return join(this.context.root, snapshot.domainedPath)
   }
 
@@ -121,8 +109,11 @@ export class ResourceManager {
     return this.getSnapshotsByDomainedPath([domainedPath]).then(v => v[0])
   }
 
-  async getSnapshot(file: File) {
-    return takeSnapshot(file, this.context, true)
+  async getSnapshot(file: File | string) {
+    const resolved = typeof file === 'string' ? await getFile(file) : file
+    if (resolved) {
+      return takeSnapshot(resolved, this.context, true)
+    }
   }
 
   async getResourcesByKeyword(keyword: string, prefix: string): Promise<Resource[]> {
