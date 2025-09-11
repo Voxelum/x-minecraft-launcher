@@ -11,7 +11,7 @@ import { AuthlibInjectorService } from '~/authlibInjector';
 import { join } from 'path';
 import { randomUUID } from 'crypto';
 import { Logger } from '~/logger';
-import { AnyError } from '~/util/error';
+import { AnyError } from '@xmcl/utils';
 
 function getLaunchArguments(argv: string[]) {
   const indexOfLaunch = argv.indexOf('launch')

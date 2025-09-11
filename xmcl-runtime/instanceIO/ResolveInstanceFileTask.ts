@@ -1,9 +1,9 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile } from '@xmcl/runtime-api'
 import { AbortableTask } from '@xmcl/task'
 import { errors } from 'undici'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
+import { InstanceFile } from '@xmcl/instance'
 
 export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 

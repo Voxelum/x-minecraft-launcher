@@ -78,7 +78,8 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
-import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
+import { Instance } from '@xmcl/instance'
+import { InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{ instance: Instance; height: number }>()
 

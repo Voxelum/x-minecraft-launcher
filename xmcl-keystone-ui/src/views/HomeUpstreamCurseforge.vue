@@ -13,9 +13,10 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getSWRV } from '@/util/swrvGet'
-import { CurseforgeUpstream, ModpackServiceKey } from '@xmcl/runtime-api'
+import { ModpackServiceKey } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
+import { CurseforgeUpstream } from '@xmcl/instance'
 
 const props = defineProps<{
   id: number

@@ -1,5 +1,7 @@
+import { CurseforgeModpackManifest, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackInstallProfile, ModrinthModpackManifest, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, ResourceState, SharedState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { ResourceDomain, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import { CreateInstanceOption, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, ModpackException, ModpackServiceKey, ModpackState, ResourceState, SharedState, findMatchedVersion, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { ensureDir, stat, unlink } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
@@ -482,16 +484,18 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   async watchModpackFolder(): Promise<SharedState<ResourceState>> {
-    const states = await this.app.registry.getOrCreate(ServiceStateManager)
-    return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
-      const dir = this.getPath('modpacks')
-      await ensureDir(dir)
-      const { dispose, revalidate, state } = this.resourceManager.watch(dir,
-        ResourceDomain.Modpacks,
-        (func) => doAsyncOperation(func()),
-      )
-      return [state, dispose, revalidate]
-    })
+    throw new Error('')
+    // const states = await this.app.registry.getOrCreate(ServiceStateManager)
+    // return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
+    //   const dir = this.getPath('modpacks')
+    //   await ensureDir(dir)
+    //   const { dispose, revalidate, state } = this.resourceManager.watch({
+    //     directory: dir,
+    //     domain: ResourceDomain.Modpacks,
+    //     processUpdate: (func) => doAsyncOperation(func()),
+    //   })
+    //   return [state, dispose, revalidate]
+    // })
   }
 
   async removeModpack(path: string): Promise<void> {

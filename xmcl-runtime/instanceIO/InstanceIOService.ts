@@ -1,5 +1,5 @@
-import { parseInstanceFiles, parseLauncherData } from '@xmcl/instance'
-import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
+import { InstanceFile, parseInstanceFiles, parseLauncherData } from '@xmcl/instance'
+import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceType, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
@@ -50,10 +50,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
-      const result = await parseLauncherData(
-        path,
-        type,
-      )
+      const result = await parseLauncherData(path, type)
       return result
     } catch (e) {
       if (isSystemError(e)) {
@@ -168,38 +165,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     } finally {
       releases.forEach(l => l())
     }
-  }
-
-  async importInstance(options: CreateInstanceOption & { importPath: string }) {
-    const { importPath } = options
-
-    const mcDir = importPath
-
-    const instancePath = await this.instanceService.createInstance(options)
-
-    await copyPassively(mcDir, instancePath, (v) => {
-      if (v.endsWith('libraries')) {
-        return false
-      }
-      if (v.endsWith('assets')) {
-        return false
-      }
-      if (v.endsWith('versions')) {
-        return false
-      }
-      return true
-    })
-
-    if (await exists(join(mcDir, 'libraries'))) {
-      await copyPassively(join(mcDir, 'libraries'), this.getPath('libraries'))
-    }
-    if (await exists(join(mcDir, 'assets'))) {
-      await copyPassively(join(mcDir, 'assets'), this.getPath('assets'))
-    }
-    if (await exists(join(mcDir, 'versions'))) {
-      await copyPassively(join(mcDir, 'versions'), this.getPath('versions'))
-    }
-
-    return instancePath
   }
 }

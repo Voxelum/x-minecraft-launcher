@@ -1,8 +1,9 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { computeFileUpdates, InstanceFileOperationHandler as InstanceFileOperationHandlerV2 } from '@xmcl/instance'
+import { computeFileUpdates, InstanceFile, InstanceFileOperationHandler as InstanceFileOperationHandlerV2, InstanceUpstream } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, isUpstreamIsSameOrigin, LockKey, ResourceMetadata, SharedState } from '@xmcl/runtime-api'
+import { File, getDomainedPath, getFile, ResourceManager, ResourceMetadata } from '@xmcl/resource'
+import { InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, isUpstreamIsSameOrigin, LockKey, SharedState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
@@ -11,17 +12,17 @@ import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance/InstanceService'
 import { kPeerFacade } from '~/peer'
-import { kResourceWorker, ResourceManager, ResourceWorker } from '~/resource'
+import { kResourceWorker, ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { kTaskExecutor, TaskFn } from '~/task'
 import { createSafeIO } from '~/util/persistance'
 import { ZipManager } from '~/zipManager/ZipManager'
 import { AnyError, isSystemError } from '../util/error'
 import { InstanceFileDownloadTask } from './InstanceFileDownloadTask'
-import { InstanceFileLinkTask } from './InstanceFileOperationTask'
+import { InstanceFileOperationTask } from './InstanceFileOperationTask'
 import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
 import { UnzipFileTask } from './UnzipFileTask'
-import { getDomainedPath, getFile } from '@xmcl/resource'
+import { kDownloadOptions } from '~/network'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -139,9 +140,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
-    const resourceService = this.resourceManager
     const zipManager = await this.app.registry.getOrCreate(ZipManager)
     const resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
     const handler = new InstanceFileOperationHandlerV2(
       instancePath,
@@ -165,8 +166,17 @@ export class InstanceInstallService extends AbstractService implements IInstance
         getCachedResource: (sha1) => this.resourceManager.getSnapshotByHash(sha1).then(r => r ? this.resourceManager.getSnapshotPath(r) : undefined),
         getPeerActualUrl: (url) => this.app.registry.getIfPresent(kPeerFacade).then(peers => peers?.getHttpDownloadUrl(url)),
         getUnzipTask: (payloads, finished) => new UnzipFileTask(zipManager, payloads, finished),
-        getDownloadTask: (payloads, finished) => new InstanceFileDownloadTask(payloads, finished),
-        getFileOperationTask: (payloads, finished, unhandled) => new InstanceFileLinkTask(payloads, this.app.platform, finished, unhandled),
+        getDownloadTask: (payloads, finished) => new InstanceFileDownloadTask(payloads.map(v => ({
+          options: {
+            ...downloadOptions,
+            url: v.options.urls,
+            validator: v.options.sha1 ? { algorithm: 'sha1', hash: v.options.sha1 } : undefined,
+            destination: v.options.destination,
+            expectedTotal: v.options.size,
+          },
+          file: v.file,
+        })), finished),
+        getFileOperationTask: (payloads, finished, unhandled) => new InstanceFileOperationTask(payloads, this.app.platform, finished, unhandled),
       },
     )
 

@@ -1,6 +1,6 @@
 import { DownloadOptions } from '@xmcl/file-transfer'
 import { DownloadMultipleTask } from '@xmcl/installer'
-import { InstanceFile } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance';
 
 export class InstanceFileDownloadTask extends DownloadMultipleTask {
   constructor(

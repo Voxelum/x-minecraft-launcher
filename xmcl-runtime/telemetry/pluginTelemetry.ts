@@ -1,4 +1,4 @@
-import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, UpdateResourcePayload } from '@xmcl/runtime-api'
+import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
@@ -11,7 +11,7 @@ import { IS_DEV } from '../constant'
 import { ErrorDiagnose } from './ErrorDiagnose'
 import { setupResourceTelemetryClient } from './ResourceTelemetryClient'
 import { parseStack } from './telemetry'
-import { ResourceManager } from '~/resource'
+import { ResourceManager, UpdateResourcePayload } from '@xmcl/resource'
 
 const getSdkVersion = () => {
   let sdkVersion = ''
@@ -132,7 +132,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     const settings = await app.registry.get(kSettings)
 
     app.registry.get(ResourceManager).then((manager) => {
-      manager.context.eventBus.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
+      manager.context.event.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
         if (settings.disableTelemetry) return
         defaultClient.trackException({
           exception: err,

@@ -1,6 +1,6 @@
 import { AssetIndexIssue, AssetIssue, diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService, RuntimeVersions, Version } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, DiagnoseService as IDiagnoseService } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'

@@ -1,5 +1,4 @@
-import type { EditInstanceOptions } from '@xmcl/instance'
-import { Instance } from '../entities/instance'
+import type { EditInstanceOptions, Instance } from '@xmcl/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { SharedState } from '../util/SharedState'
 import { DeepPartial } from '../util/object'

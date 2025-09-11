@@ -8,7 +8,7 @@ import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Lock } from '~/service'
 import { getApiSets, kSettings } from '~/settings'
 import { TaskFn, kTaskExecutor } from '~/task'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { LauncherApp } from '../app/LauncherApp'
 import { validateSha256 } from '../util/fs'
 

@@ -35,6 +35,7 @@
         "@xmcl/modrinth": "workspace:*",
         "@xmcl/semver": "workspace:*",
         "@xmcl/resourcepack": "workspace:*",
+        "@xmcl/resource": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/text-component": "workspace:*",
         "@xmcl/user": "workspace:*",

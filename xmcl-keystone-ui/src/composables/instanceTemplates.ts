@@ -1,10 +1,12 @@
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
-import { CachedFTBModpackVersionManifest, InstanceFile, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, Peer, Resource, waitModpackFiles } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, Peer, waitModpackFiles } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { useService } from './service'
 import { renderMinecraftPlayerTextHead } from '@/util/avatarRenderer'
+import { Resource } from '@xmcl/resource'
+import { InstanceFile } from '@xmcl/instance'
 
 export type AddInstanceDialogParameter = {
   format: 'ftb'

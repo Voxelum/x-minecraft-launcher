@@ -4,7 +4,7 @@ import { LaunchService } from '@xmcl/runtime/launch'
 import { exec } from 'child_process'
 import { powerMonitor, app as elec } from 'electron'
 import { ensureElevateExe } from './utils/elevate'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { kSettings } from '~/settings'
 
 const enum PerformanceType {

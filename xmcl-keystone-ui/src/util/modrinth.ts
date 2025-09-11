@@ -1,6 +1,6 @@
 import { clientModrinthV2 } from '@/util/clients'
+import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { InstanceFile, RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
 export async function resolveModrinthDependencies(version: ProjectVersion) {
   const visited = new Set<string>()

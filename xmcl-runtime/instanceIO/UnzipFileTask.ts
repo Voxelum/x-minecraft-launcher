@@ -1,4 +1,4 @@
-import { InstanceFile } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
 import { AbortableTask } from '@xmcl/task'
 import { openEntryReadStream } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'

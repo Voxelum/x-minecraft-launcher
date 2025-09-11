@@ -24,7 +24,6 @@ import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
-import { ResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { AnyError, isSystemError } from '~/util/error'
 import { readlinkSafe } from '~/util/linkResourceFolder'
@@ -33,6 +32,7 @@ import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } 
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { getInstanceSaveHeader, readInstanceSaveMetadata } from './save'
+import { ResourceManager } from '@xmcl/resource'
 
 /**
  * Provide the ability to preview saves data of an instance

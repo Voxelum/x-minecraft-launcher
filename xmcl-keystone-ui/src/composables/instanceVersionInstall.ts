@@ -3,7 +3,7 @@ import { AnyError } from '@/util/error'
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, JavaRecord, JavaServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
@@ -11,6 +11,7 @@ import { useNotifier } from './notifier'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
+import { Instance, RuntimeVersions } from '@xmcl/instance'
 
 export interface InstanceInstallInstruction {
   instance: string

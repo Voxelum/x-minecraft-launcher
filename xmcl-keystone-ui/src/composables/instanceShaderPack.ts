@@ -2,13 +2,14 @@ import { BuiltinImages } from '@/constant'
 import { ModFile } from '@/util/mod'
 import { ProjectFile } from '@/util/search'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, Resource, ResourceState, RuntimeVersions } from '@xmcl/runtime-api'
+import { GameOptionsState, InstanceOptionsServiceKey, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 import { useState } from './syncableState'
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
+import { RuntimeVersions } from '@xmcl/instance'
 
 export const kInstanceShaderPacks: InjectionKey<ReturnType<typeof useInstanceShaderPacks>> = Symbol('InstanceShaderPacks')
 

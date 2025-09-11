@@ -1,10 +1,10 @@
-import { getInstanceModStateKey, ResourceDomain, ResourceMetadata, ResourceState, Settings, UpdateResourcePayload } from '@xmcl/runtime-api'
+import { ResourceDomain, ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import { getInstanceModStateKey, ResourceState, Settings } from '@xmcl/runtime-api'
 import { LauncherApp } from '~/app'
 import { kFlights } from '~/flights'
 import { InstanceService } from '~/instance'
 import { JavaService } from '~/java'
 import { LaunchService } from '~/launch'
-import { ResourceManager } from '~/resource'
 import { ServiceStateManager } from '~/service'
 
 const RESOURCE_TELEMETRY_CLIENT_STRING = 'InstrumentationKey=f0634ffa-7578-4751-8f64-581fd90bf347;IngestionEndpoint=https://eastasia-0.in.applicationinsights.azure.com/;LiveEndpoint=https://eastasia.livediagnostics.monitor.azure.com/;ApplicationId=4f19b6fd-9974-4da8-a399-77aac5b3e800'
@@ -150,13 +150,13 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
 
   // Collect resource metadata
   app.registry.get(ResourceManager).then((manager) => {
-    manager.context.eventBus.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
+    manager.context.event.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
       client.trackTrace({
         message: JSON.stringify(getPayload(sha1, metadata, undefined, domain)),
       })
     })
-    manager.context.eventBus.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
+    manager.context.event.on('resourceUpdate', (payloads: UpdateResourcePayload[]) => {
       if (settings.disableTelemetry) return
       for (const payload of payloads) {
         if (payload.metadata) {

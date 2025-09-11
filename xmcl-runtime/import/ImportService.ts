@@ -1,6 +1,6 @@
-import { ImportService as IImportService, ImportServiceKey, ImportUrlOptions, Resource } from '@xmcl/runtime-api'
+import { ImportService as IImportService, ImportServiceKey, ImportUrlOptions } from '@xmcl/runtime-api'
 import { Inject, LauncherAppKey } from '~/app'
-import { ResourceManager } from '~/resource'
+import { Resource, ResourceManager } from '@xmcl/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'

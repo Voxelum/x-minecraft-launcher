@@ -1,4 +1,5 @@
-import { InstanceData, Resource } from '@xmcl/runtime-api'
+import { InstanceData } from '@xmcl/instance'
+import { Resource } from '@xmcl/resource'
 
 export function getUpstreamFromResource(resource: Resource): InstanceData['upstream'] {
   if (resource.metadata.curseforge) {

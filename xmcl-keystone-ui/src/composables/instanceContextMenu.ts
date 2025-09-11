@@ -1,10 +1,11 @@
-import { BaseServiceKey, Instance, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
 import { useDialog } from './dialog'
 import { useService } from './service'
 import { injection } from '@/util/inject'
 import { kInstance } from './instance'
+import { Instance } from '@xmcl/instance'
 
 export function useInstanceContextMenuItems(instance: Ref<Instance | undefined>) {
   const { show: showDeleteDialog } = useDialog('delete-instance')

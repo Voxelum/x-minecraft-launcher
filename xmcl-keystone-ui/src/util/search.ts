@@ -1,6 +1,6 @@
 import { Mod } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
-import { ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/runtime-api'
+import { ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/resource'
 import { TextComponent } from '@xmcl/text-component'
 
 /**

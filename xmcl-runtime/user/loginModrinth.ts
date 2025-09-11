@@ -1,5 +1,5 @@
 import { LauncherApp } from '~/app'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { UserService } from './UserService'
 import { kGFW } from '~/gfw'
 

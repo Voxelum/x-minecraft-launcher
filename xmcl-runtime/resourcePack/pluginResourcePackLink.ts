@@ -1,10 +1,10 @@
-import { ResourceDomain } from '@xmcl/runtime-api'
 import { ensureDir, readdir } from 'fs-extra'
 import { basename, join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstanceOptionsService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { linkWithTimeoutOrCopy, missing } from '../util/fs'
+import { ResourceDomain } from '@xmcl/resource'
 
 export const pluginResourcePackLink: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)

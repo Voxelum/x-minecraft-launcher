@@ -1,5 +1,5 @@
-import { Template } from '@/composables/instanceTemplates'
-import { CachedFTBModpackVersionManifest, FTBFile, InstanceFile, JavaRecord, ModpackInstallProfile } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
+import { CachedFTBModpackVersionManifest, FTBFile, JavaRecord, ModpackInstallProfile } from '@xmcl/runtime-api'
 
 export function getFTBPath(file: FTBFile) {
   const name = file.name.startsWith('/') ? file.name.substring(1) : file.name

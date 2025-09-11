@@ -1,4 +1,4 @@
-import { ResourceDomain } from '../entities/resource'
+import { ResourceDomain } from '@xmcl/resource'
 import { ServiceKey } from './Service'
 
 export interface ModMetadata {

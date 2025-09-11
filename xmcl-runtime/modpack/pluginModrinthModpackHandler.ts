@@ -1,10 +1,9 @@
-import { InstanceFile, ModrinthModpackManifest } from '@xmcl/runtime-api'
-import { LauncherAppPlugin } from '~/app'
-import { ModpackService } from './ModpackService'
+import { InstanceFile, ModrinthModpackManifest, getInstanceConfigFromModrinthModpack } from '@xmcl/instance'
+import { ModrinthV2Client } from '@xmcl/modrinth'
 import { readEntry } from '@xmcl/unzip'
 import { Entry } from 'yauzl'
-import { ModrinthV2Client } from '@xmcl/modrinth'
-import { getInstanceConfigFromModrinthModpack } from '@xmcl/instance'
+import { LauncherAppPlugin } from '~/app'
+import { ModpackService } from './ModpackService'
 
 export const pluginModrinthModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)

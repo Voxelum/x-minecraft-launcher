@@ -2,7 +2,8 @@ import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefa
 import { isNoModLoader } from '@/util/isNoModloader'
 import { ProjectFile } from '@/util/search'
 import { File, FileRelationType, Mod } from '@xmcl/curseforge'
-import { InstallMarketOptionWithInstance, MarketType, RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
+import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 
 export const kCurseforgeInstaller: InjectionKey<ReturnType<typeof useCurseforgeInstaller>> = Symbol('curseforgeInstaller')

@@ -27,7 +27,7 @@ import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystem
 import { ensureLauncherProfile, preprocessUserData } from './userData'
 import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
 import { getModrinthAccessToken, loginModrinth } from './loginModrinth'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {

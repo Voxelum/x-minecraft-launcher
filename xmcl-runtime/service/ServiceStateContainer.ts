@@ -1,5 +1,5 @@
 import EventEmitter from 'events'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { ServiceStateContext } from './ServiceStateManager'
 import { Client } from '~/app'
 import { SharedState, createPromiseSignal } from '@xmcl/runtime-api'

@@ -27,6 +27,7 @@
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/discord-rpc": "workspace:*",
         "@xmcl/instance": "workspace:*",
+        "@xmcl/utils": "workspace:*",
         "@xmcl/file-transfer": "workspace:*",
         "@xmcl/forge-site-parser": "workspace:*",
         "@xmcl/game-data": "workspace:*",

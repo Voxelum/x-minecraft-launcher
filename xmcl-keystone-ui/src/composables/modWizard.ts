@@ -1,5 +1,5 @@
 import { BuiltinImages } from '@/constant'
-import { PromiseSignal, RuntimeVersions, createPromiseSignal } from '@xmcl/runtime-api'
+import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
 import { useSimpleDialog } from './dialog'
 import { notNullish } from '@vueuse/core'
 import { useInstanceModLoaderDefault } from './instanceModLoaderDefault'
@@ -8,6 +8,7 @@ import { ModFile } from '@/util/mod'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { injection } from '@/util/inject'
 import { kInstance } from './instance'
+import { RuntimeVersions } from '@xmcl/instance'
 
 // Install modloader wizard
 interface WizardOptions {

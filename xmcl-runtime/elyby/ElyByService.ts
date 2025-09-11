@@ -7,7 +7,7 @@ import { dirname, isAbsolute, join, relative } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { ResourceWorker, kResourceWorker } from '~/resource'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '../app'
 import { AbstractService, ExposeServiceKey } from '../service'
 

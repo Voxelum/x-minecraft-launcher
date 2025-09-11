@@ -1,6 +1,5 @@
-import { Instance } from '@xmcl/runtime-api'
+import { Instance } from '@xmcl/instance'
 import { InjectionKey, Ref, computed } from 'vue'
-import { useLocalStorageCacheStringValue } from './cache'
 
 export const kInstance: InjectionKey<ReturnType<typeof useInstance>> = Symbol('Instance')
 

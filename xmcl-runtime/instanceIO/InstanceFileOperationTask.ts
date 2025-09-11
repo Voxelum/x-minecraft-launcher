@@ -1,16 +1,17 @@
-import { InstanceFile, Platform } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
+import { Platform } from '@xmcl/runtime-api'
 import { AbortableTask } from '@xmcl/task'
 import { copyFile, ensureDir, stat, unlink } from 'fs-extra'
 import { dirname } from 'path'
-import { ENOENT_ERROR, isInSameDisk, linkWithTimeoutOrCopy } from '../util/fs'
 import { isSystemError } from '~/util/error'
+import { ENOENT_ERROR, isInSameDisk, linkWithTimeoutOrCopy } from '../util/fs'
 
 /**
  * Link existed files into temp folder.
  * 
  * All returned files are unhandled.
  */
-export class InstanceFileLinkTask extends AbortableTask<void> {
+export class InstanceFileOperationTask extends AbortableTask<void> {
   constructor(
     readonly files: Array<{ file: InstanceFile; src: string; destination: string }>,
     readonly platform: Platform,

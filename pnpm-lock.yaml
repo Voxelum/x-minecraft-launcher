@@ -81,6 +81,9 @@ importers:
       '@xmcl/task':
         specifier: workspace:*
         version: link:../xmcl/packages/task
+      '@xmcl/utils':
+        specifier: workspace:*
+        version: link:../xmcl/packages/utils
       '@xmcl/windows-utils':
         specifier: ^0.0.15
         version: 0.0.15
@@ -207,6 +210,9 @@ importers:
       '@xmcl/modrinth':
         specifier: workspace:*
         version: link:../xmcl/packages/modrinth
+      '@xmcl/resource':
+        specifier: workspace:*
+        version: link:../xmcl/packages/resource
       '@xmcl/resourcepack':
         specifier: workspace:*
         version: link:../xmcl/packages/resourcepack
@@ -415,6 +421,9 @@ importers:
       '@xmcl/user':
         specifier: workspace:*
         version: link:../xmcl/packages/user
+      '@xmcl/utils':
+        specifier: workspace:*
+        version: link:../xmcl/packages/utils
       ajv:
         specifier: ^8.11.2
         version: 8.12.0
@@ -596,6 +605,9 @@ importers:
       '@xmcl/nbt':
         specifier: workspace:*
         version: link:../xmcl/packages/nbt
+      '@xmcl/resource':
+        specifier: workspace:*
+        version: link:../xmcl/packages/resource
       '@xmcl/resourcepack':
         specifier: workspace:*
         version: link:../xmcl/packages/resourcepack
@@ -938,6 +950,9 @@ importers:
       '@xmcl/task':
         specifier: workspace:*
         version: link:../task
+      '@xmcl/utils':
+        specifier: workspace:*
+        version: link:../utils
       fs-extra:
         specifier: ^11.1.0
         version: 11.3.1
@@ -1107,6 +1122,9 @@ importers:
       '@xmcl/system':
         specifier: workspace:*
         version: link:../system
+      '@xmcl/utils':
+        specifier: workspace:*
+        version: link:../utils
       chokidar:
         specifier: ^4.0.3
         version: 4.0.3
@@ -1282,6 +1300,28 @@ importers:
       undici:
         specifier: 7.2.3
         version: 7.2.3
+
+  xmcl/packages/utils:
+    dependencies:
+      lodash.throttle:
+        specifier: ^4.1.1
+        version: 4.1.1
+    devDependencies:
+      '@types/fs-extra':
+        specifier: ^11.0.1
+        version: 11.0.1
+      '@types/lodash.throttle':
+        specifier: ^4.1.7
+        version: 4.1.7
+      '@types/node':
+        specifier: ~20
+        version: 20.12.7
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@20.12.7)(terser@5.20.0)
 
 packages:
 

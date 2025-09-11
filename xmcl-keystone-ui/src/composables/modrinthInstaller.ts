@@ -1,7 +1,8 @@
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
 import { ProjectFile } from '@/util/search'
+import { RuntimeVersions } from '@xmcl/instance'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { InstallMarketOptionWithInstance, MarketType, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstallMarketOptionWithInstance, MarketType } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 
 export const kModrinthInstaller: InjectionKey<ReturnType<typeof useModrinthInstaller>> = Symbol('modrinthInstaller')

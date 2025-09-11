@@ -1,41 +1,8 @@
 import { CancelledException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { CancelledError } from '@xmcl/task'
+import { SystemError, isSystemError } from '@xmcl/utils'
 import { Dispatcher, errors } from 'undici'
-
-export interface SystemError extends Error {
-  /**
-   * Please see `constants.errno` in `os` module
-   */
-  errno: number | string
-  code: string
-  syscall?: string
-  path?: string
-}
-
-export class AnyError extends Error {
-  constructor(name: string, message?: string, options?: ErrorOptions, properties?: any) {
-    super(message, options)
-    this.name = name
-    if (properties) {
-      Object.assign(this, properties)
-    }
-  }
-
-  static make(name: string) {
-    return class extends AnyError {
-      constructor(message?: string, options?: ErrorOptions) {
-        super(name, message, options)
-      }
-    }
-  }
-}
-
-export function isSystemError(e: any): e is SystemError {
-  if (typeof e.errno === 'number' && typeof e.code === 'string' && e instanceof Error) {
-    return true
-  }
-  return false
-}
+export { AnyError, SystemError, isSystemError } from "@xmcl/utils"
 
 /**
  * Convert some common error to exception.

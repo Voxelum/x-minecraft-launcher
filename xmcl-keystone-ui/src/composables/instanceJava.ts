@@ -1,8 +1,9 @@
-import { AutoDetectedJava, Instance, JavaCompatibleState, JavaRecord, JavaServiceKey, getAutoOrManuallJava, getAutoSelectedJava } from '@xmcl/runtime-api'
+import { AutoDetectedJava, JavaCompatibleState, JavaRecord, JavaServiceKey, getAutoOrManuallJava, getAutoSelectedJava } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { Instance } from '@xmcl/instance'
 
 export { JavaCompatibleState }
 

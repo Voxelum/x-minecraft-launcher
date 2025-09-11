@@ -15,7 +15,8 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { useLocalStorage } from '@vueuse/core'
-import { BaseServiceKey, InstanceFile, InstanceIOServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
+import { BaseServiceKey, InstanceIOServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 
 const { isShown, hide: cancel } = useDialog(AppExportServerDialogKey, () => {
   refresh()

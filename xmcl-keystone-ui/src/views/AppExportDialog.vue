@@ -262,7 +262,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -274,6 +274,7 @@ import { injection } from '@/util/inject'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { kLocalVersions } from '@/composables/versionLocal'
+import { InstanceFile } from '@xmcl/instance'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
 const { exportInstance } = useService(InstanceIOServiceKey)
