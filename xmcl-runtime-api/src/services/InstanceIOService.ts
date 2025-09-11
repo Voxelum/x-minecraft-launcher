@@ -2,7 +2,7 @@ import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 import { LaunchOptions } from './LaunchService'
-import { InstanceFile } from '@xmcl/instance'
+import type { InstanceFile } from '@xmcl/instance'
 
 export interface ExportInstanceOptions {
   /**

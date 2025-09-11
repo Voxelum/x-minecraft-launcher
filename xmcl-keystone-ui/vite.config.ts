@@ -2,9 +2,10 @@ import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 import createVuePlugin from '@vitejs/plugin-vue2'
 import { readdirSync } from 'fs'
 import { join, resolve } from 'path'
+import { visualizer } from "rollup-plugin-visualizer"
+import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
-import UnoCSS from 'unocss/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -48,7 +49,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    exclude: ['electron'],
+    exclude: ['electron', '@xmcl/utils', '@xmcl/resource'],
     esbuildOptions: {
       minify: false,
       keepNames: true,

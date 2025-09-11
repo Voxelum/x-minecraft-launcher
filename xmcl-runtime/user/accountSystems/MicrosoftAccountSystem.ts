@@ -2,7 +2,7 @@ import { AUTHORITY_MICROSOFT, AuthorityMetadata, GameProfileAndTexture, LoginOpt
 import { MicrosoftAuthenticator, MicrosoftMinecraftProfile, MojangClient, MojangError } from '@xmcl/user'
 import { randomUUID } from 'crypto'
 import { LauncherApp } from '~/app'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { toRecord } from '~/util/object'
 import { XBoxResponse, normalizeSkinData } from '../user'
 import { UserTokenStorage } from '../userTokenStore'

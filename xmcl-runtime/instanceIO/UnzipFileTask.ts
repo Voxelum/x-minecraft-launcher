@@ -8,7 +8,7 @@ import { pipeline } from 'stream/promises'
 import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
 import { isSystemError } from '~/util/error'
-import { ZipManager } from '~/zipManager/ZipManager'
+import { ZipManager } from '~/infra'
 
 export class UnzipFileTask extends AbortableTask<void> {
   #abortController = new AbortController()

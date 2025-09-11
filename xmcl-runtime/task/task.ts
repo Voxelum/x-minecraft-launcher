@@ -1,7 +1,7 @@
 import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { InjectionKey } from '~/app'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'

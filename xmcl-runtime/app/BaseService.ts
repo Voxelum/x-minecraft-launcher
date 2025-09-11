@@ -1,10 +1,9 @@
 import { BaseServiceKey, Environment, BaseService as IBaseService, InvalidDirectoryErrorCode, MigrateOptions, MigrationException, PoolStats, Settings, SharedState } from '@xmcl/runtime-api'
-import { readdir, stat } from 'fs-extra'
+import { readdir } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
-import { kClientToken } from '~/clientToken'
-import { kLogRoot } from '~/logger'
+import { kClientToken, kGFW, kLogRoot } from '~/infra'
 import { kNetworkInterface } from '~/network'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { kSettings } from '~/settings'
@@ -13,7 +12,6 @@ import { validateDirectory } from '~/util/validate'
 import { LauncherApp } from '../app/LauncherApp'
 import { HAS_DEV_SERVER } from '../constant'
 import { ZipTask } from '../util/zip'
-import { kGFW } from '~/gfw'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends AbstractService implements IBaseService {

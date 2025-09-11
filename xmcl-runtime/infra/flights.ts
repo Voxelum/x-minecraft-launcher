@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
 import { InjectionKey, LauncherAppPlugin } from '~/app'
-import { kClientToken } from '~/clientToken'
+import { kClientToken } from '~/infra'
 
 export const kFlights: InjectionKey<Record<string, any>> = Symbol('Flights')
 

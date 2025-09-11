@@ -34,24 +34,24 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>) {
 
   const getTemplates = (modpackResources: Resource[], peers: Peer[], ftb: CachedFTBModpackVersionManifest[]) => {
     const all = [] as Array<Template>
-    for (const resource of modpackResources) {
-      const config = resolveModpackInstanceConfig(resource)
-      if (config) {
-        let promise: Promise<InstanceFile[]> | undefined
-        const result: Template = markRaw({
-          filePath: resource.path,
-          name: config.name,
-          instance: markRaw(config),
-          loadFiles: () => {
-            if (!promise) {
-              promise = openModpack(resource.path).then(state => waitModpackFiles(state))
-            }
-            return promise
-          },
-        } as Template)
-        all.push(result)
-      }
-    }
+    // for (const resource of modpackResources) {
+    //   const config = resolveModpackInstanceConfig(resource)
+    //   if (config) {
+    //     let promise: Promise<InstanceFile[]> | undefined
+    //     const result: Template = markRaw({
+    //       filePath: resource.path,
+    //       name: config.name,
+    //       instance: markRaw(config),
+    //       loadFiles: () => {
+    //         if (!promise) {
+    //           promise = openModpack(resource.path).then(state => waitModpackFiles(state))
+    //         }
+    //         return promise
+    //       },
+    //     } as Template)
+    //     all.push(result)
+    //   }
+    // }
 
     for (const c of peers) {
       if (c.sharing) {

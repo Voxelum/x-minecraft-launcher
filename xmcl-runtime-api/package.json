@@ -5,10 +5,7 @@
     "description": "Shared API for between launcher renderer & main process",
     "license": "MIT",
     "main": "index.ts",
-    "publishConfig": {
-        "main": "dist/index.js",
-        "module": "dist/index.mjs"
-    },
+    "type": "module",
     "engines": {
         "node": ">=20"
     },

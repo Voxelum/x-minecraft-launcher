@@ -4,7 +4,7 @@ import { ExportInstanceAsServerOptions } from '@xmcl/runtime-api';
 import { BaseTask } from '@xmcl/task';
 import { LaunchService } from '~/launch';
 import { VersionService } from '~/version';
-import { SSHManager } from '../ssh/SSHManager';
+import { SSHManager } from '../infra';
 import { InstanceIOService } from './InstanceIOService';
 
 class UploadSSHTask extends BaseTask<void> {

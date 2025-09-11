@@ -1,7 +1,7 @@
 import { Constants, DeviceCodeResponse, ServerError } from '@azure/msal-common'
 import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { SecretStorage } from '~/app/SecretStorage'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { AnyError } from '@xmcl/utils'
 import { createPlugin } from '../credentialPlugin'
 import { createNetworkClient } from './OAuthNetworkClient'

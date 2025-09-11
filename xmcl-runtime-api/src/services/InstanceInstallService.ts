@@ -1,4 +1,4 @@
-import { InstanceFile, InstanceUpstream } from '@xmcl/instance'
+import type { InstanceFile, InstanceUpstream } from '@xmcl/instance'
 import { SharedState } from '../util/SharedState'
 import { ServiceKey } from './Service'
 

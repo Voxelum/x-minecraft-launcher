@@ -1,6 +1,6 @@
 import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
 import { VersionRange, parseVersion } from '../util/mavenVersion'
-import { RuntimeVersions } from '@xmcl/instance'
+import type { RuntimeVersions } from '@xmcl/instance'
 
 export interface MinecraftVersion {
   id: string

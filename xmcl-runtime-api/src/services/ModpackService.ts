@@ -1,5 +1,5 @@
-import { InstanceData, InstanceFile, RuntimeVersions } from '@xmcl/instance'
-import { ResourceMetadata, ResourceState } from '@xmcl/resource'
+import type { InstanceData, InstanceFile, RuntimeVersions } from '@xmcl/instance'
+import type { ResourceMetadata, ResourceState } from '@xmcl/resource'
 import { Exception } from '../entities/exception'
 import { InstallMarketOptions } from '../entities/market'
 import { SharedState } from '../util/SharedState'

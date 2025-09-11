@@ -1,8 +1,8 @@
 import { YggdrasilApi, YggdrasilSchema } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { InjectionKey, LauncherApp } from '~/app'
-import { kFlights } from '~/flights'
-import { Logger } from '~/logger'
+import { kFlights } from '~/infra'
+import { Logger } from '~/infra'
 import { SafeFile, createSafeFile } from '~/util/persistance'
 import { loadYggdrasilApiProfile } from './user'
 

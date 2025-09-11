@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
-import { TaskMonitor as ITaskChannel, TaskPayload } from '@xmcl/runtime-api'
+import type { TaskMonitor as ITaskChannel, TaskPayload } from '@xmcl/runtime-api'
 
 function createTaskMonitor(): ITaskChannel {
   const emitter = new EventEmitter()

@@ -1,6 +1,6 @@
 import { SharedState, ServiceKey, State } from '@xmcl/runtime-api'
 import { Client, LauncherApp } from '~/app'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { AnyError } from '@xmcl/utils'
 import { ServiceStateContainer, ServiceStateFactory } from './ServiceStateContainer'
 

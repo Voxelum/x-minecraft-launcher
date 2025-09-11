@@ -1,4 +1,4 @@
-import { InstanceUpstream } from '@xmcl/instance'
+import type { InstanceUpstream } from '@xmcl/instance'
 
 export function isUpstreamIsSameOrigin(a: InstanceUpstream, b: InstanceUpstream) {
   const aType = a.type

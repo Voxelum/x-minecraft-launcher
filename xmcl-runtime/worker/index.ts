@@ -1,6 +1,6 @@
 import { Exception } from '@xmcl/runtime-api'
 import { Worker, WorkerOptions } from 'worker_threads'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 
 export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker, signatures: {
   methods: Array<keyof T>
