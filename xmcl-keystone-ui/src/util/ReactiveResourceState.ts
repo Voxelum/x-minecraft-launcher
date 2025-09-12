@@ -1,4 +1,5 @@
-import { ResourceAction, ResourceActionTuple, ResourceState, UpdateResourcePayload, applyUpdateToResource } from '@xmcl/resource'
+import { ResourceAction, ResourceActionTuple, UpdateResourcePayload } from '@xmcl/resource'
+import { ResourceState, applyUpdateToResource } from '@xmcl/runtime-api'
 import { set } from 'vue'
 
 export class ReactiveResourceState extends ResourceState {

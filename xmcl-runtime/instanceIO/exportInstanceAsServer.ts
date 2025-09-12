@@ -1,6 +1,6 @@
-import { ServerOptions } from '@xmcl/core';
+import type { ServerOptions } from '@xmcl/core';
 import { ServerFSExporter, ServerSSHExporter } from '@xmcl/instance';
-import { ExportInstanceAsServerOptions } from '@xmcl/runtime-api';
+import type { ExportInstanceAsServerOptions } from '@xmcl/runtime-api';
 import { BaseTask } from '@xmcl/task';
 import { LaunchService } from '~/launch';
 import { VersionService } from '~/version';

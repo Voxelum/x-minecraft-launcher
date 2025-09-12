@@ -1,9 +1,9 @@
 import type { EditInstanceOptions, Instance } from '@xmcl/instance'
-import { InstanceSchema } from '../entities/instance.schema'
-import { SharedState } from '../util/SharedState'
-import { DeepPartial } from '../util/object'
-import { InvalidDirectoryErrorCode } from './BaseService'
-import { ServiceKey } from './Service'
+import type { InstanceSchema } from '../entities/instance.schema'
+import type { SharedState } from '../util/SharedState'
+import type { DeepPartial } from '../util/object'
+import type { InvalidDirectoryErrorCode } from './BaseService'
+import type { ServiceKey } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
@@ -21,7 +21,7 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
   shaderpacks?: boolean
 }
 
-export class InstanceState {
+export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
   /**
    * All loaded launch instances
    */

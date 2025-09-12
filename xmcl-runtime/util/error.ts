@@ -1,8 +1,9 @@
 import { CancelledException, NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { CancelledError } from '@xmcl/task'
-import { SystemError, isSystemError } from '@xmcl/utils'
+import { type SystemError, isSystemError } from '@xmcl/utils'
 import { Dispatcher, errors } from 'undici'
-export { AnyError, SystemError, isSystemError } from "@xmcl/utils"
+export { AnyError, isSystemError } from "@xmcl/utils"
+export type { SystemError } from "@xmcl/utils"
 
 /**
  * Convert some common error to exception.

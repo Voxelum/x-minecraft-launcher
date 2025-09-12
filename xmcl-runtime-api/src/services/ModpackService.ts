@@ -1,10 +1,10 @@
 import type { InstanceData, InstanceFile, RuntimeVersions } from '@xmcl/instance'
 import type { ResourceMetadata, ResourceState } from '@xmcl/resource'
 import { Exception } from '../entities/exception'
-import { InstallMarketOptions } from '../entities/market'
-import { SharedState } from '../util/SharedState'
-import { CreateInstanceOption } from './InstanceService'
-import { ServiceKey } from './Service'
+import type { InstallMarketOptions } from '../entities/market'
+import type { SharedState } from '../util/SharedState'
+import type { CreateInstanceOption } from './InstanceService'
+import type { ServiceKey } from './Service'
 
 export interface ExportFileDirective {
   path: string

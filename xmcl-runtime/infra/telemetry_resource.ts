@@ -1,4 +1,4 @@
-import { ResourceDomain, ResourceManager, ResourceMetadata, ResourceState, UpdateResourcePayload } from '@xmcl/resource'
+import { ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState, type UpdateResourcePayload } from '@xmcl/resource'
 import { getInstanceModStateKey, Settings } from '@xmcl/runtime-api'
 import { LauncherApp } from '~/app'
 import { kFlights } from '~/infra'

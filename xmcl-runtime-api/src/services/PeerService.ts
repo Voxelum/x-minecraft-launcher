@@ -1,8 +1,8 @@
-import { InstanceManifest } from '../entities/instanceManifest.schema'
-import { GenericEventEmitter } from '../events'
-import { ConnectionState, ConnectionUserInfo, IceGatheringState, Peer, SelectedCandidateInfo, SignalingState } from '../multiplayer'
-import { SharedState } from '../util/SharedState'
-import { ServiceKey } from './Service'
+import type { InstanceManifest } from '../entities/instanceManifest.schema'
+import type { GenericEventEmitter } from '../events'
+import type { ConnectionState, ConnectionUserInfo, IceGatheringState, Peer, SelectedCandidateInfo, SignalingState } from '../multiplayer'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 
 export type NatType = 'Blocked' | 'Open Internet' | 'Full Cone' | 'Symmetric UDP Firewall' | 'Restrict NAT' | 'Restrict Port NAT' | 'Symmetric NAT' | 'Unknown'
 

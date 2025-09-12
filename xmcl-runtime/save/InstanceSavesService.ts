@@ -1,18 +1,19 @@
 import { UnzipTask } from '@xmcl/installer'
+import { ResourceManager } from '@xmcl/resource'
 import {
-  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  getInstanceSaveKey,
-  InstanceSavesService as IInstanceSavesService,
   ImportSaveException,
-  ImportSaveOptions,
-  InstallMarketOptionWithInstance,
   InstanceSavesServiceKey,
-  LaunchOptions,
-  LinkSaveAsServerWorldOptions,
   LockKey,
   MarketType,
   Saves,
-  ShareSaveOptions,
+  getInstanceSaveKey,
+  type CloneSaveOptions, type DeleteSaveOptions, type ExportSaveOptions,
+  type InstanceSavesService as IInstanceSavesService,
+  type ImportSaveOptions,
+  type InstallMarketOptionWithInstance,
+  type LaunchOptions,
+  type LinkSaveAsServerWorldOptions,
+  type ShareSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { FSWatcher } from 'chokidar'
@@ -20,7 +21,7 @@ import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
-import { Inject, kGameDataPath, LauncherAppKey, PathResolver } from '~/app'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
@@ -32,7 +33,6 @@ import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } 
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { getInstanceSaveHeader, readInstanceSaveMetadata } from './save'
-import { ResourceManager } from '@xmcl/resource'
 
 /**
  * Provide the ability to preview saves data of an instance

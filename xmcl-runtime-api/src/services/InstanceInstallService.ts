@@ -1,6 +1,6 @@
 import type { InstanceFile, InstanceUpstream } from '@xmcl/instance'
-import { SharedState } from '../util/SharedState'
-import { ServiceKey } from './Service'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 
 export type InstanceFileUpdate = {
   file: InstanceFile

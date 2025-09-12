@@ -1,7 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 
-import { ResourceState } from '@xmcl/resource'
-import { GameOptionsState, InstanceInstallStatus, InstanceModsGroupState, InstanceState, JavaState, LocalVersions, ModpackState, PeerState, Saves, ServiceChannels, ServiceKey, Settings, SharedState, StateMetadata, UserState } from '@xmcl/runtime-api'
+import { GameOptionsState, InstanceInstallStatus, InstanceModsGroupState, InstanceState, JavaState, LocalVersions, ModpackState, PeerState, ResourceState, Saves, ServiceChannels, ServiceKey, Settings, SharedState, StateMetadata, UserState } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 

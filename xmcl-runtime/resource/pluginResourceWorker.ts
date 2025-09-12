@@ -1,5 +1,5 @@
-import { Database, ResourceContext, getDomainedPath, migrate } from '@xmcl/resource'
-import { Exception, InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
+import { Database, ResourceContext, ResourceManager, getDomainedPath, migrate } from '@xmcl/resource'
+import { Exception, InstanceServiceKey, InstanceState, ResourceState, SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
 import { rename } from 'fs-extra'
@@ -131,8 +131,12 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     throwException: ({ type, code }) => {
       throw new ParseException({ type, code })
     },
+    createResourceState: function (): ResourceState {
+      return new ResourceState()
+    }
   }
   app.registry.register(kResourceContext, context)
+  app.registry.register(ResourceManager, new ResourceManager(context))
 
   app.registryDisposer(async () => {
     await context.db.destroy()

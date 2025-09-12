@@ -1,7 +1,7 @@
-import { CachedFTBModpackVersionManifest, ModpackServiceKey } from '@xmcl/runtime-api'
+import type { Resource } from '@xmcl/resource'
+import { CachedFTBModpackVersionManifest, ModpackServiceKey, ResourceState } from '@xmcl/runtime-api'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { Resource, ResourceState } from '@xmcl/resource'
 
 export interface ModpackItem {
   resource?: Resource

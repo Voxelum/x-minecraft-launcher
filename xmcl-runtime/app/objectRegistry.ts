@@ -1,4 +1,4 @@
-import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
+import { type PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
 import { AnyError } from '@xmcl/utils'
 
 /**
