@@ -1,17 +1,19 @@
+import { getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, type CurseforgeModpackManifest, type Instance, type InstanceData, type InstanceFile, type McbbsModpackManifest, type ModpackInstallProfile, type ModrinthModpackManifest } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, ResourceState, SharedState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { ensureDir, stat, unlink } from 'fs-extra'
+import { ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import { ModpackException, ModpackServiceKey, ModpackState, ResourceState, findMatchedVersion, isAllowInModrinthModpack, type CreateInstanceOption, type ExportModpackOptions, type ModpackService as IModpackService, type InstallMarketOptions, type SharedState } from '@xmcl/runtime-api'
+import { stat, unlink } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
-import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { ZipManager } from '~/infra'
 import { InstanceService } from '~/instance'
 import { InstanceInstallService } from '~/instanceIO'
 import { kMarketProvider } from '~/market'
-import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
+import { kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
+import { kTaskExecutor, type TaskFn } from '~/task'
 import { VersionService } from '~/version'
-import { ZipManager } from '~/zipManager/ZipManager'
 import { AnyError } from '../util/error'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
@@ -486,16 +488,18 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   async watchModpackFolder(): Promise<SharedState<ResourceState>> {
-    const states = await this.app.registry.getOrCreate(ServiceStateManager)
-    return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
-      const dir = this.getPath('modpacks')
-      await ensureDir(dir)
-      const { dispose, revalidate, state } = this.resourceManager.watch(dir,
-        ResourceDomain.Modpacks,
-        (func) => doAsyncOperation(func()),
-      )
-      return [state, dispose, revalidate]
-    })
+    throw new Error('')
+    // const states = await this.app.registry.getOrCreate(ServiceStateManager)
+    // return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
+    //   const dir = this.getPath('modpacks')
+    //   await ensureDir(dir)
+    //   const { dispose, revalidate, state } = this.resourceManager.watch({
+    //     directory: dir,
+    //     domain: ResourceDomain.Modpacks,
+    //     processUpdate: (func) => doAsyncOperation(func()),
+    //   })
+    //   return [state, dispose, revalidate]
+    // })
   }
 
   async removeModpack(path: string): Promise<void> {

@@ -1,14 +1,15 @@
-import { CurseforgeV1Client, File, HashAlgo, Mod } from '@xmcl/curseforge'
-import { CurseforgeModpackManifest, InstanceFile, ResourceDomain, getInstanceConfigFromCurseforgeModpack } from '@xmcl/runtime-api'
+import { CurseforgeV1Client, File, Mod } from '@xmcl/curseforge'
+import { CurseforgeModpackManifest, InstanceFile, getInstanceConfigFromCurseforgeModpack } from '@xmcl/instance'
+import { ResourceDomain } from '@xmcl/resource'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { LauncherAppPlugin } from '~/app'
+import { kResourceWorker } from '~/resource'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { ModpackService } from './ModpackService'
 import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
 import { resolveHashes } from './resolveHashes'
-import { kResourceWorker } from '~/resource'
 
 export const pluginCurseforgeModpackHandler: LauncherAppPlugin = async (app) => {
   const modpackService = await app.registry.get(ModpackService)

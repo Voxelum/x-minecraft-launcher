@@ -5,10 +5,7 @@
     "description": "Shared API for between launcher renderer & main process",
     "license": "MIT",
     "main": "index.ts",
-    "publishConfig": {
-        "main": "dist/index.js",
-        "module": "dist/index.mjs"
-    },
+    "type": "module",
     "engines": {
         "node": ">=20"
     },
@@ -27,6 +24,8 @@
     },
     "dependencies": {
         "@xmcl/client": "workspace:*",
+        "@xmcl/instance": "workspace:*",
+        "@xmcl/resource": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/forge-site-parser": "workspace:*",

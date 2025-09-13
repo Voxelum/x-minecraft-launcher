@@ -1,10 +1,10 @@
 import { basename } from '@/util/basename';
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients';
 import { ModFile } from '@/util/mod';
-import { InstanceFile } from '@xmcl/runtime-api';
 import { useRefreshable } from './refreshable';
 import { InstanceInstallDialog } from './instanceUpdate';
 import { useDialog } from './dialog';
+import { InstanceFile } from '@xmcl/instance';
 
 export const kModLibCleaner: InjectionKey<ReturnType<typeof useModLibCleaner>> = Symbol('mod-lib-cleaner')
 

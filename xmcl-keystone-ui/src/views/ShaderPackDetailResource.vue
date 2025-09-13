@@ -9,7 +9,8 @@ import { ShaderPackProject } from '@/composables/shaderPackSearch'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { InstanceShaderPacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
+import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   shaderPack: ShaderPackProject

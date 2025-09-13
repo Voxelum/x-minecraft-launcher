@@ -1,7 +1,7 @@
 import type { Frame as GameSetting } from '@xmcl/gamesetting'
-import { ShaderOptions } from '../entities/shaderpack'
-import { SharedState } from '../util/SharedState'
-import { ServiceKey } from './Service'
+import type { ShaderOptions } from '../entities/shaderpack'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**
    * The instance to edit game setting.

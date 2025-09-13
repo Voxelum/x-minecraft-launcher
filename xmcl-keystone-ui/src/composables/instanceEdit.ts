@@ -1,5 +1,6 @@
-import { EditInstanceOptions, Instance, InstanceData, VersionHeader, RuntimeVersions, isFileNoFound } from '@xmcl/runtime-api'
+import { VersionHeader } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
+import type { EditInstanceOptions, Instance, InstanceData, RuntimeVersions } from '@xmcl/instance'
 import { useGlobalSettings } from './setting'
 import debounce from 'lodash.debounce'
 import { injection } from '@/util/inject'

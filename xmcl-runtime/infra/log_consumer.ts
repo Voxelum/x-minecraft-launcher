@@ -1,12 +1,55 @@
+import { Exception } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { WriteStream, createWriteStream, ensureDir, readFile, readdir, stat, unlink } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { PassThrough, Transform } from 'stream'
-import { LauncherAppPlugin } from '~/app'
+import { errors } from 'undici'
+import { format } from 'util'
+import { InjectionKey, LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '../constant'
 import { isSystemError } from '../util/error'
 import { ZipTask } from '../util/zip'
-import { formatLogMessage, getMessageFromError, kLogRoot } from './logger'
+
+export const kLogRoot: InjectionKey<string> = Symbol('LogRoot')
+
+export function formatLogMessage(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
+
+export function getMessageFromError(e: Error): string {
+  if (!e.message && e instanceof Exception) {
+    e.message = JSON.stringify(e.exception)
+  }
+  let message = e.stack ?? e.message
+  if (e instanceof AggregateError) {
+    message = e.errors.map(getMessageFromError).join('\n')
+  }
+  if (e.cause && e.cause instanceof Error) {
+    return `${message}\nCaused by: ${getMessageFromError(e.cause)}`
+  }
+  return message
+}
+
+function filterSensitiveData(object: any) {
+  const filterOptions = (o: object) => {
+    if ('headers' in o && o && typeof o.headers === 'object' && o.headers && 'Authorization' in o.headers) {
+      o.headers.Authorization = '***'
+    }
+    if ('body' in o && typeof o.body === 'string') {
+      if (o.body.indexOf('accessToken') !== -1) {
+        o.body = JSON.stringify(JSON.parse(o.body), (k, v) => {
+          if (v === 'accessToken') return '***'
+          return v
+        })
+      }
+    }
+  }
+  if (object instanceof errors.UndiciError) {
+    filterOptions(object)
+    if ('options' in object && object.options) {
+      filterOptions(object.options)
+    }
+  }
+  return object
+}
 
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
 

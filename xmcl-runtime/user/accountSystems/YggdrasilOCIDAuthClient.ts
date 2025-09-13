@@ -1,8 +1,8 @@
 import { DeviceCodeResponse } from '@azure/msal-common'
 import { AuthenticationResult, PublicClientApplication } from '@azure/msal-node'
 import { SecretStorage } from '~/app/SecretStorage'
-import { Logger } from '~/logger'
-import { AnyError } from '~/util/error'
+import { Logger } from '~/infra'
+import { AnyError } from '@xmcl/utils'
 import { createNodeSystemOptions } from '../NodeSystemOptions'
 import { createPlugin } from '../credentialPlugin'
 

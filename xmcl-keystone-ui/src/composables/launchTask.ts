@@ -1,6 +1,6 @@
-import { Instance, VersionHeader, TaskState } from '@xmcl/runtime-api'
 import { Ref, InjectionKey } from 'vue'
 import { useTask } from './task'
+import { Instance } from '@xmcl/instance'
 
 export const kLaunchTask: InjectionKey<ReturnType<typeof useLaunchTask>> = Symbol('LaunchTask')
 

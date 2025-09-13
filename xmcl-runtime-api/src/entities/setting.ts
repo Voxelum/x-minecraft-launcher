@@ -1,6 +1,6 @@
-import { InvalidDirectoryErrorCode } from '../services/BaseService'
-import { SettingSchema } from './setting.schema'
-import { ReleaseInfo } from './update'
+import { type InvalidDirectoryErrorCode } from '../services/BaseService'
+import { type SettingSchema } from './setting.schema'
+import { type ReleaseInfo } from './update'
 
 /**
  * The basic setting of the launcher.

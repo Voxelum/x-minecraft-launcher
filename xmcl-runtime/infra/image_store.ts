@@ -1,10 +1,36 @@
-import { createReadStream } from 'fs'
+import { createHash } from 'crypto'
+import { fromBuffer } from 'file-type'
+import { createReadStream, existsSync } from 'fs'
+import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
+import { checksum, linkOrCopyFile } from '~/util/fs'
 import { missing } from '../util/fs'
-import { ImageStorage } from './imageStore'
-import { readFile } from 'fs-extra'
-import { fromBuffer } from 'file-type'
+
+export class ImageStorage {
+  init: Promise<void>
+
+  constructor(readonly root: string) {
+    this.init = ensureDir(root)
+  }
+
+  async addImage(pathOrData: string | Uint8Array) {
+    await this.init
+    if (typeof pathOrData === 'string' && pathOrData.startsWith('image://')) {
+      pathOrData = pathOrData.substring('image://'.length)
+    }
+    const sha1 = typeof pathOrData === 'string' ? await checksum(pathOrData, 'sha1') : createHash('sha1').update(pathOrData).digest('hex')
+    const imagePath = join(this.root, sha1)
+    if (!existsSync(imagePath)) {
+      if (typeof pathOrData === 'string') {
+        await linkOrCopyFile(pathOrData, imagePath)
+      } else {
+        await writeFile(imagePath, pathOrData)
+      }
+    }
+    return `http://launcher/image/${sha1}`
+  }
+}
 
 export const pluginImageStorage: LauncherAppPlugin = (app) => {
   const root = join(app.appDataPath, 'resource-images')

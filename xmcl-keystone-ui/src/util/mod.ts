@@ -1,8 +1,10 @@
-import { FabricModMetadata, ForgeModMetadata, ForgeModTOMLData, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
-import { ForgeModCommonMetadata, NeoforgeMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
-import { ModDependencies, ModDependency, getModDependencies, getModProvides } from './modDependencies'
-import { ProjectFile } from './search'
 import { notNullish } from '@vueuse/core'
+import { RuntimeVersions } from '@xmcl/instance'
+import { FabricModMetadata, ForgeModMetadata, ForgeModTOMLData, QuiltModMetadata } from '@xmcl/mod-parser'
+import { Resource, ResourceSourceCurseforge, ResourceSourceModrinth } from '@xmcl/resource'
+import { ForgeModCommonMetadata, NeoforgeMetadata } from '@xmcl/runtime-api'
+import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
+import { ProjectFile } from './search'
 
 interface ModMetadata {
   /**

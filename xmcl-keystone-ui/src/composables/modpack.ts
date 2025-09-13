@@ -1,7 +1,7 @@
-import { CachedFTBModpackVersionManifest, ModpackServiceKey, Resource, ResourceDomain, ResourceState } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
-import { useState } from './syncableState'
+import type { Resource } from '@xmcl/resource'
+import { CachedFTBModpackVersionManifest, ModpackServiceKey, ResourceState } from '@xmcl/runtime-api'
 import { useService } from './service'
+import { useState } from './syncableState'
 
 export interface ModpackItem {
   resource?: Resource

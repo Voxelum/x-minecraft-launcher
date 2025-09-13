@@ -1,9 +1,9 @@
 import { InjectionKey, Ref } from 'vue'
-import { InstanceFile } from '@xmcl/runtime-api'
 import { basename } from '@/util/basename'
 import { CSSProperties } from 'vue/types/jsx'
 import { injection } from '@/util/inject'
 import { kInstanceModsContext } from './instanceMods'
+import { InstanceFile } from '@xmcl/instance'
 
 export interface InstanceFileNode<T = never> {
   name: string

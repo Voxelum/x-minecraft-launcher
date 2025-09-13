@@ -1,10 +1,11 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceFile } from '@xmcl/runtime-api'
 import { AbortableTask } from '@xmcl/task'
 import { errors } from 'undici'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { RequiredPick } from './instanceInstall'
+import { InstanceFile } from '@xmcl/instance'
+
+export type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
 /**
  * Resolve instance file download link via curseforge and modrinth.
@@ -13,7 +14,7 @@ import { RequiredPick } from './instanceInstall'
 export class ResolveInstanceFileTask extends AbortableTask<boolean> {
   private controller?: AbortController
 
-  constructor(private files: InstanceFile[], private curseforgeClient: CurseforgeV1Client, private modrinthClient: ModrinthV2Client) {
+  constructor(private files: Iterable<InstanceFile>, private curseforgeClient: CurseforgeV1Client, private modrinthClient: ModrinthV2Client) {
     super()
     this.name = 'resolve'
   }

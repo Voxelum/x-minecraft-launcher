@@ -1,7 +1,7 @@
 import { createPromiseSignal, PromiseSignal, ServiceKey, SharedState, State } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { LauncherApp } from '../app/LauncherApp'
 import { AnyError } from '../util/error'
 

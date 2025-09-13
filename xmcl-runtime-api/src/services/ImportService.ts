@@ -1,4 +1,4 @@
-import { Resource, ResourceDomain } from '../entities/resource'
+import type { Resource, ResourceDomain } from '@xmcl/resource'
 import { ServiceKey } from './Service'
 export interface ImportModpackPolicy {
   /**

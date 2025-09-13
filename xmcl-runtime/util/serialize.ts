@@ -1,6 +1,6 @@
 import { Schema } from '@xmcl/runtime-api'
 import Ajv, { ErrorObject } from 'ajv'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { AnyError } from './error'
 
 export interface Serializer<D, T> {

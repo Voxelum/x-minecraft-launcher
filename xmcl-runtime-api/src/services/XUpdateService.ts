@@ -1,4 +1,5 @@
-import { InstanceFile, InstanceManifest } from '../entities/instanceManifest.schema'
+import { InstanceFile } from '@xmcl/instance'
+import { InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
 export interface InstanceUpdate {

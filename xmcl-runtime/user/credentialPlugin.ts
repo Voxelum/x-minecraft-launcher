@@ -5,8 +5,8 @@
 
 import { ICachePlugin, TokenCacheContext } from '@azure/msal-common'
 import { SecretStorage } from '~/app/SecretStorage'
-import { Logger } from '~/logger'
-import { AnyError } from '~/util/error'
+import { Logger } from '~/infra'
+import { AnyError } from '@xmcl/utils'
 
 const CredentialSerializeError = AnyError.make('CredentialSerializeError')
 

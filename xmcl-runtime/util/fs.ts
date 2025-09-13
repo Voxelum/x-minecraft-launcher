@@ -8,7 +8,7 @@ import { platform } from 'os'
 import { extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { AnyError, isSystemError } from './error'
 
 const pip = promisify(pipeline)

@@ -1,5 +1,5 @@
-import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
-import { AnyError } from '~/util/error'
+import { type PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
 
 /**
  * The helper class to hold type to object map

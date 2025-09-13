@@ -1,7 +1,7 @@
 import { AuthorityMetadata, GameProfileAndTexture, LoginOptions, OICDLikeConfig, RefreshUserOptions, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
 import { GameProfile, YggdrasilError, YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
 import { LauncherApp } from '~/app'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { isSystemError } from '~/util/error'
 import { toRecord } from '~/util/object'
 import { isValidUrl } from '~/util/url'

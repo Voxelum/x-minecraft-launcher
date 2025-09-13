@@ -1,6 +1,7 @@
 import { useEventBus, useLocalStorage } from '@vueuse/core'
-import { EditInstanceOptions, Instance, InstanceSchema, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
+import { InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
 import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
+import type { EditInstanceOptions, Instance, InstanceSchema } from '@xmcl/instance'
 import { InjectionKey, set } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'

@@ -1,10 +1,11 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { generateBaseName, generateDistinctName } from '@/util/instanceName'
-import { CreateInstanceOption, Instance, InstanceData, InstanceFile, InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
+import { CreateInstanceOption, InstanceInstallServiceKey, InstanceServiceKey, VersionMetadataServiceKey } from '@xmcl/runtime-api'
 import type { GameProfile } from '@xmcl/user'
 import { InjectionKey, Ref, reactive } from 'vue'
 import { kLatestMinecraftVersion } from './version'
+import { Instance, InstanceData, InstanceFile } from '@xmcl/instance'
 
 export type InstanceCreation = ReturnType<typeof useInstanceCreation>
 
@@ -140,7 +141,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
         onCreated?.(newPath)
         reset()
         if (pendingFiles.length > 0) {
-          await installInstanceFiles(data.upstream ?{
+          await installInstanceFiles(data.upstream ? {
             path: newPath,
             files: pendingFiles,
             upstream: data.upstream,

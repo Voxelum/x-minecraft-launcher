@@ -1,8 +1,24 @@
 /* eslint-disable no-dupe-class-members */
 
-import { AllStates, ServiceChannels, ServiceKey, SharedState, StateMetadata } from '@xmcl/runtime-api'
+import { GameOptionsState, InstanceInstallStatus, InstanceModsGroupState, InstanceState, JavaState, LocalVersions, ModpackState, PeerState, ResourceState, Saves, ServiceChannels, ServiceKey, Settings, SharedState, StateMetadata, UserState } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
+
+export const AllStates = [
+  Settings,
+  InstanceState,
+  ResourceState,
+  ModpackState,
+  GameOptionsState,
+  Saves,
+  JavaState,
+  UserState,
+  LocalVersions,
+  PeerState,
+  InstanceInstallStatus,
+  InstanceModsGroupState,
+]
+
 
 function getPrototypeMetadata(T: { new(): object }, prototype: object, name: string) {
   const methods = Object.getOwnPropertyNames(prototype)

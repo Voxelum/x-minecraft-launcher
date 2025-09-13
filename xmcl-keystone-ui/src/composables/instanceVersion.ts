@@ -1,9 +1,10 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
-import { findMatchedVersion, getResolvedVersionHeader, Instance, InstanceServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
+import { findMatchedVersion, getResolvedVersionHeader, InstanceServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { Instance, RuntimeVersions } from '@xmcl/instance'
 
 export const kInstanceVersion: InjectionKey<ReturnType<typeof useInstanceVersion>> = Symbol('InstanceVersion')
 

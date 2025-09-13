@@ -143,12 +143,12 @@ import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
 import { useVersionsWithIcon } from '@/composables/versionLocal'
 import { BuiltinImages } from '@/constant'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getBanner } from '@/util/banner'
 import { injection } from '@/util/inject'
-import { Instance } from '@xmcl/runtime-api'
+import { Instance } from '@xmcl/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{ instance: Instance }>()
 const { path } = injection(kInstance)

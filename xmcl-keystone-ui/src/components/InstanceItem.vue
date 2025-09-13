@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance';
 import { BuiltinImages } from '../constant'
 
 defineProps<{

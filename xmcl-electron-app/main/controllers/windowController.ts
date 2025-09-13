@@ -2,6 +2,8 @@ import { ElectronController } from '@/ElectronController'
 import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
+import { join } from 'path'
+import { writeFile } from 'fs-extra'
 
 export enum Operation {
   Minimize = 0,
@@ -48,6 +50,32 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
   })
   ipcMain.handle('stop-find-in-page', (event) => {
     event.sender.stopFindInPage('clearSelection')
+  })
+  ipcMain.handle('start-profiling', (event) => {
+    event.sender.devToolsWebContents?.executeJavaScript(`(async () => {
+      await window.ui.devToolsAPI.setRecordingCPUProfiler(true);
+      window.ui.devToolsAPI.startRecordingCPUProfiler();
+    })();`)
+  })
+  ipcMain.handle('stop-profiling', async (event) => {
+    const data = await event.sender.devToolsWebContents?.executeJavaScript(`(async () => {
+      const data = await window.ui.devToolsAPI.stopRecordingCPUProfiler();
+      await window.ui.devToolsAPI.setRecordingCPUProfiler(false);
+      return data;
+    })();`)
+
+    if (data) {
+      const fileName = `profile-${Date.now()}.cpuprofile`
+      dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender)!, {
+        defaultPath: fileName,
+      }).then(({ filePath: path }) => {
+        if (path && data) {
+          writeFile(path, JSON.stringify(data)).catch((e) => {
+            this.logger.error(e)
+          })
+        }
+      })
+    }
   })
   ipcMain.handle('isMaximized', (event) => {
     const window = BrowserWindow.fromWebContents(event.sender)

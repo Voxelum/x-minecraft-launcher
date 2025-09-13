@@ -1,8 +1,11 @@
+import { InjectionKey } from '~/app'
 import { randomUUID } from 'crypto'
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
-import { kClientToken, kIsNewClient } from '~/clientToken'
+
+export const kClientToken: InjectionKey<string> = Symbol('ClientToken')
+export const kIsNewClient: InjectionKey<boolean> = Symbol('IsNewClient')
 
 export const pluginClientToken: LauncherAppPlugin = async (app) => {
   const clientSessionFile = join(app.appDataPath, 'client_session')

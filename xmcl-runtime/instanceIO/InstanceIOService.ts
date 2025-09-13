@@ -1,22 +1,17 @@
-import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LaunchOptions, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
-import { readFile, readdir } from 'fs-extra'
+import { parseInstanceFiles, parseLauncherData, type InstanceFile } from '@xmcl/instance'
+import { InstanceIOServiceKey, LockKey, type ExportInstanceAsServerOptions, type ExportInstanceOptions, type InstanceIOService as IInstanceIOService, type InstanceType, type ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
+import { readFile } from 'fs-extra'
 import { basename, join, resolve } from 'path'
-import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
-import { VersionMetadataService } from '~/install'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
-import { kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
+import { kTaskExecutor, type TaskFn } from '~/task'
 import { AnyError, isSystemError } from '~/util/error'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, exists } from '../util/fs'
-import { isFulfilled, requireObject } from '../util/object'
+import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { parseCurseforgeInstance } from './parseCurseforgeInstance'
-import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
-import { detectMMCRoot, parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
-import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
 import { exportInstanceAsServer } from './exportInstanceAsServer'
 
 @ExposeServiceKey(InstanceIOServiceKey)
@@ -49,116 +44,14 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
-    if (type === 'mmc') {
-      return await parseMultiMcInstanceFiles(path, this.logger)
-    }
-    if (type === 'modrinth') {
-      const worker = await this.app.registry.get(kResourceWorker)
-      return await parseModrinthInstanceFiles(path, worker, this.logger)
-    }
-    return await parseVanillaInstanceFiles(path, this.logger)
+    const result = await parseInstanceFiles(path, type)
+    return result
   }
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
-      if (type === 'mmc') {
-        path = detectMMCRoot(path)
-        const instancesPath = join(path, 'instances')
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseMultiMCInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-        return {
-          folder: {
-            assets: join(path, 'assets'),
-            libraries: join(path, 'libraries'),
-            versions: '',
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      if (type === 'modrinth') {
-        const instancesPath = join(path, 'profiles')
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseModrinthInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-
-        const assets = join(path, 'meta', 'assets')
-        const libraries = join(path, 'meta', 'libraries')
-        const versions = join(path, 'meta', 'versions')
-        const jre = join(path, 'meta', 'java_versions')
-
-        return {
-          folder: {
-            assets: await exists(assets) ? assets : '',
-            libraries: await exists(libraries) ? libraries : '',
-            versions: await exists(versions) ? versions : '',
-            jre: await exists(jre) ? jre : undefined,
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      if (type === 'curseforge') {
-        const instancesPath = join(path, 'Instances')
-        const minecraftDataPath = join(path, 'Install')
-
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseCurseforgeInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-
-        const versionDir = join(minecraftDataPath, 'versions')
-        const libDir = join(minecraftDataPath, 'libraries')
-        const assetsDir = join(minecraftDataPath, 'assets')
-
-        return {
-          folder: {
-            versions: await exists(versionDir) ? versionDir : '',
-            libraries: await exists(libDir) ? libDir : '',
-            assets: await exists(assetsDir) ? assetsDir : '',
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      const versionMetadataService = await this.app.registry.get(VersionMetadataService)
-      const vanillaInstances = await parseVanillaInstance(path, versionMetadataService)
-
-      const assets = join(path, 'assets')
-      const libraries = join(path, 'libraries')
-      const versions = join(path, 'versions')
-      const jre = join(path, 'jre')
-
-      return {
-        folder: {
-          assets: await exists(assets) ? assets : '',
-          libraries: await exists(libraries) ? libraries : '',
-          versions: await exists(versions) ? versions : '',
-          jre: await exists(jre) ? jre : '',
-        },
-        instances: vanillaInstances.map((v) => ({
-          options: v.options,
-          path: v.path,
-        })),
-      }
+      const result = await parseLauncherData(path, type)
+      return result
     } catch (e) {
       if (isSystemError(e)) {
         if (e.code === 'ENOENT') {
@@ -272,38 +165,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     } finally {
       releases.forEach(l => l())
     }
-  }
-
-  async importInstance(options: CreateInstanceOption & { importPath: string }) {
-    const { importPath } = options
-
-    const mcDir = importPath
-
-    const instancePath = await this.instanceService.createInstance(options)
-
-    await copyPassively(mcDir, instancePath, (v) => {
-      if (v.endsWith('libraries')) {
-        return false
-      }
-      if (v.endsWith('assets')) {
-        return false
-      }
-      if (v.endsWith('versions')) {
-        return false
-      }
-      return true
-    })
-
-    if (await exists(join(mcDir, 'libraries'))) {
-      await copyPassively(join(mcDir, 'libraries'), this.getPath('libraries'))
-    }
-    if (await exists(join(mcDir, 'assets'))) {
-      await copyPassively(join(mcDir, 'assets'), this.getPath('assets'))
-    }
-    if (await exists(join(mcDir, 'versions'))) {
-      await copyPassively(join(mcDir, 'versions'), this.getPath('versions'))
-    }
-
-    return instancePath
   }
 }

@@ -1,7 +1,7 @@
 import { File, FileModLoaderType, FileRelationType, HashAlgo } from '@xmcl/curseforge'
-import { InstanceFile, RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
 import { ModLoaderFilter } from '@/composables/search'
+import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
 
 export function getCurseforgeRelationType(type: FileRelationType) {
   return type === FileRelationType.RequiredDependency

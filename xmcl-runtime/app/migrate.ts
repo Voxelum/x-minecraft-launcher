@@ -1,6 +1,6 @@
 import { copy, ensureDir, readdir, readlink, remove, rename, writeFile } from 'fs-extra'
 import { join } from 'path'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import type { LauncherApp } from './LauncherApp'
 import { isSystemError } from '~/util/error'
 

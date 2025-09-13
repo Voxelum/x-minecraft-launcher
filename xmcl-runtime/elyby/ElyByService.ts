@@ -1,14 +1,14 @@
 import { LibraryInfo, Version } from '@xmcl/core'
-import { ElyByServiceKey, ElyByService as IElyByService } from '@xmcl/runtime-api'
+import { ElyByServiceKey, type ElyByService as IElyByService } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, walkEntriesGenerator } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import { ensureDir, readFile, readJSON, stat, writeFile, writeJSON } from 'fs-extra'
 import { dirname, isAbsolute, join, relative } from 'path'
 import { Writable } from 'stream'
 import { pipeline } from 'stream/promises'
-import { ResourceWorker, kResourceWorker } from '~/resource'
-import { AnyError } from '~/util/error'
-import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '../app'
+import { type ResourceWorker, kResourceWorker } from '~/resource'
+import { AnyError } from '@xmcl/utils'
+import { Inject, LauncherApp, LauncherAppKey, type PathResolver, kGameDataPath } from '../app'
 import { AbstractService, ExposeServiceKey } from '../service'
 
 @ExposeServiceKey(ElyByServiceKey)

@@ -1,5 +1,6 @@
-import { CurseforgeV1Client, File, HashAlgo, Mod } from '@xmcl/curseforge'
-import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, ResourceDomain, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
+import { CurseforgeV1Client, File, Mod } from '@xmcl/curseforge'
+import { InstanceFile, McbbsModpackManifest, ModpackFileInfoCurseforge, getInstanceConfigFromMcbbsModpack } from '@xmcl/instance'
+import { ResourceDomain } from '@xmcl/resource'
 import { readEntry } from '@xmcl/unzip'
 import { join } from 'path'
 import { Entry } from 'yauzl'

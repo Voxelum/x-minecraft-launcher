@@ -1,8 +1,8 @@
-import { InstanceFile } from '../entities/instanceManifest.schema'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 import { LaunchOptions } from './LaunchService'
+import type { InstanceFile } from '@xmcl/instance'
 
 export interface ExportInstanceOptions {
   /**

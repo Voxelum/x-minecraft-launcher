@@ -1,6 +1,21 @@
+import { InjectionKey } from '~/app'
 import { Client } from 'undici'
 import { LauncherAppPlugin } from '~/app'
-import { GFW, kGFW } from './gfw'
+
+export const kGFW: InjectionKey<GFW> = Symbol('GFW')
+
+export class GFW {
+  inside = false
+
+  env: 'cn' | 'yandex' | 'global' = 'global'
+
+  constructor(readonly signal: Promise<'cn' | 'yandex' | 'global'>) {
+    signal.then(env => {
+      this.env = env
+      this.inside = this.env === 'cn'
+    })
+  }
+}
 
 export const pluginGFW: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('GFW')

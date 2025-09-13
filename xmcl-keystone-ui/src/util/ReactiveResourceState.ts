@@ -1,18 +1,19 @@
-import { applyUpdateToResource, FileUpdateAction, FileUpdateOperation, Resource, ResourceState, UpdateResourcePayload } from '@xmcl/runtime-api'
+import { ResourceAction, ResourceActionTuple, UpdateResourcePayload } from '@xmcl/resource'
+import { ResourceState, applyUpdateToResource } from '@xmcl/runtime-api'
 import { set } from 'vue'
 
 export class ReactiveResourceState extends ResourceState {
-  override filesUpdates(ops: FileUpdateOperation[]) {
+  override filesUpdates(ops: ResourceActionTuple[]) {
     const mods = [...this.files]
     for (const [payload, action] of ops) {
-      if (action === FileUpdateAction.Upsert) {
+      if (action === ResourceAction.Upsert) {
         const index = mods.findIndex(m => m?.path === payload?.path)
         if (index === -1) {
           mods.push(markRaw(payload))
         } else {
           mods[index] = markRaw(payload)
         }
-      } else if (action === FileUpdateAction.Remove) {
+      } else if (action === ResourceAction.Remove) {
         const index = mods.findIndex(m => m?.path === payload)
         if (index !== -1) mods.splice(index, 1)
       } else {

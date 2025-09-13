@@ -1,5 +1,5 @@
 import { LauncherAppPlugin } from '~/app'
-import { shouldLog, decorateError } from './decorateError'
+import { shouldLog, decorateError } from './errors/error_decorate'
 
 export const pluginUncaughtError: LauncherAppPlugin = (app) => {
   const logger = app.getLogger('App')

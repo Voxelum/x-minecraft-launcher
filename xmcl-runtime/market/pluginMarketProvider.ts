@@ -2,14 +2,14 @@ import { isNotNull } from '@xmcl/core/utils'
 import { File as CurseforgeFile, CurseforgeV1Client, HashAlgo } from '@xmcl/curseforge'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
+import { InstanceFile as _InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
-import { File, InstanceFile as _InstanceFile, getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri } from '@xmcl/runtime-api'
+import { File, ResourceManager } from '@xmcl/resource'
+import { getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri } from '@xmcl/runtime-api'
 import { basename, dirname, join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { InstanceInstallService } from '~/instanceIO'
 import { kDownloadOptions } from '~/network'
-import { ResourceManager } from '~/resource'
-import { getFile } from '~/resource/core/files'
 import { kTaskExecutor } from '~/task'
 import { guessCurseforgeFileUrl } from '~/util/curseforge'
 import { hardLinkFiles } from '~/util/fs'
@@ -137,17 +137,14 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         icons: icon ? [icon] : undefined,
       })
     } else {
-      const file = await getFile(result.path)
-      if (file) {
-        const snapshot = await resourceManager.getSnapshot(file)
-        if (snapshot) {
-          await resourceManager.updateMetadata([{
-            hash: snapshot.sha1,
-            metadata: result.metadata,
-            uris: result.uris,
-            icons: icon ? [icon] : undefined,
-          }])
-        }
+      const snapshot = await resourceManager.getSnapshot(result.path)
+      if (snapshot) {
+        await resourceManager.updateMetadata([{
+          hash: snapshot.sha1,
+          metadata: result.metadata,
+          uris: result.uris,
+          icons: icon ? [icon] : undefined,
+        }])
       }
     }
   }

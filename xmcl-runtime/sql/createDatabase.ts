@@ -1,5 +1,5 @@
 import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, UnknownRow, ValueNode } from 'kysely'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { SqliteWASMDialect } from './SqliteWASMDialect'
 import { SqliteWASMDialectConfig } from './SqliteWASMDialectConfig'
 

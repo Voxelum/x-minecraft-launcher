@@ -1,5 +1,5 @@
 import { ensureDir, lstat, readdir, readlink, rename, unlink } from 'fs-extra'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { isSystemError } from './error'
 import { ENOENT_ERROR, linkDirectory } from './fs'
 import { sep } from 'path'

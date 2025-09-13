@@ -3,12 +3,14 @@ import { basename } from '@/util/basename'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { CompatibleDetail, getModsCompatiblity, resolveDepsCompatible } from '@/util/modCompatible'
 import { refThrottled, useEventListener } from '@vueuse/core'
-import { InstanceModsServiceKey, JavaRecord, Resource, ResourceState, RuntimeVersions, SharedState } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, JavaRecord, ResourceState, SharedState } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useLocalStorageCache } from './cache'
 import { useService } from './service'
 import { useState } from './syncableState'
+import { RuntimeVersions } from '@xmcl/instance'
+import { Resource } from '@xmcl/resource'
 
 export const kInstanceModsContext: InjectionKey<ReturnType<typeof useInstanceMods>> = Symbol('instance-mods')
 

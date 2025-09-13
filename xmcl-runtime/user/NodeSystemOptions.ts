@@ -1,6 +1,6 @@
 import { LogLevel } from '@azure/msal-common'
 import { NodeSystemOptions } from '@azure/msal-node'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { createNetworkClient } from './accountSystems/OAuthNetworkClient'
 
 export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis.fetch, signal?: AbortSignal, transformReqResp = false): NodeSystemOptions {

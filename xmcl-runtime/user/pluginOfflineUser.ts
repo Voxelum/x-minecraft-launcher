@@ -1,7 +1,7 @@
 import { AUTHORITY_DEV, AuthorityMetadata, UserProfile } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
-import { ImageStorage } from '~/imageStore'
+import { ImageStorage } from '~/infra'
 import { getUUID } from '~/util/offlineUser'
 import { UserService } from './UserService'
 import { kUserTokenStorage } from './userTokenStore'

@@ -15,7 +15,8 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { useLocalStorage } from '@vueuse/core'
-import { BaseServiceKey, InstanceFile, InstanceIOServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
+import { BaseServiceKey, InstanceIOServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 
 const { isShown, hide: cancel } = useDialog(AppExportServerDialogKey, () => {
   refresh()
@@ -245,7 +246,7 @@ const hasError = computed(() => {
       </v-toolbar>
 
       <div
-        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
+        class="visible-scroll mx-0 max-h-[60vh] items-center justify-center overflow-y-auto overflow-x-hidden flex-grow px-6 py-2"
         ref="scrollElement"
 
       >

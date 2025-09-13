@@ -29,7 +29,7 @@
 </template>
 
 <script lang=ts setup>
-import { Instance } from '@xmcl/runtime-api'
+import { Instance } from '@xmcl/instance';
 import InstanceCard from './InstancesCard.vue'
 import { Ref } from 'vue'
 
