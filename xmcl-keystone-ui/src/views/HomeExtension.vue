@@ -44,7 +44,7 @@
     <transition name="fade-transition">
       <div
         key="launch-button-group"
-        class="flex items-center justify-end overflow-hidden"
+        class="flex items-center justify-end overflow-visible"
         v-if="!isInFocusMode || !(router.currentRoute.path === '/')"
       >
         <HomeHeaderInstallStatus
