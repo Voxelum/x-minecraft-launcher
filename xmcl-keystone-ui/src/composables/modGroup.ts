@@ -40,7 +40,33 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   const { t } = useI18n()
 
   type GroupOrProject = ProjectGroup<ModFile> | ProjectEntry<ModFile>
-  const groupCollapsedState = ref({} as Record<string, boolean>)
+  
+  // Persistent group collapsed state using localStorage with instance path as key
+  const getStorageKey = () => `modGroupsCollapsed:${path.value}`
+  const loadCollapsedState = (): Record<string, boolean> => {
+    try {
+      const stored = localStorage.getItem(getStorageKey())
+      return stored ? JSON.parse(stored) : {}
+    } catch {
+      return {}
+    }
+  }
+  
+  const groupCollapsedState = ref(loadCollapsedState())
+  
+  // Watch for changes and persist to localStorage
+  watch(groupCollapsedState, (newState) => {
+    try {
+      localStorage.setItem(getStorageKey(), JSON.stringify(newState))
+    } catch (error) {
+      console.warn('Failed to save group collapsed state:', error)
+    }
+  }, { deep: true })
+  
+  // Watch for path changes and reload state for new instance
+  watch(path, () => {
+    groupCollapsedState.value = loadCollapsedState()
+  })
 
   const groupNames = computed(() => Object.keys(instanceModGroupping.value))
 
@@ -52,6 +78,14 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
       color: '',
     }
     instanceModGroupping.value = newVal
+    
+    // Ensure new groups start collapsed by default
+    if (!(newGroupName in groupCollapsedState.value)) {
+      groupCollapsedState.value = { 
+        ...groupCollapsedState.value, 
+        [newGroupName]: true // true means collapsed
+      }
+    }
   }
 
   function renameGroup(oldName: string, newName: string) {
@@ -62,10 +96,31 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     delete newVal[oldName]
     newVal[newName] = group
     instanceModGroupping.value = newVal
+    
+    // Preserve collapsed state when renaming
+    const collapsedState = groupCollapsedState.value[oldName]
+    if (collapsedState !== undefined) {
+      const newCollapsedState = { ...groupCollapsedState.value }
+      delete newCollapsedState[oldName]
+      newCollapsedState[newName] = collapsedState
+      groupCollapsedState.value = newCollapsedState
+    }
   }
 
   function sort(result: GroupOrProject[]) {
-    sortFunc(sortBy.value as any, result)
+    // Separate groups from individual items
+    const groups = result.filter(item => 'projects' in item) as ProjectGroup<ModFile>[]
+    const individuals = result.filter(item => !('projects' in item)) as ProjectEntry<ModFile>[]
+    
+    // Always sort groups by name first (alphabetical)
+    groups.sort((a, b) => a.name.localeCompare(b.name))
+    
+    // Apply user-selected sorting to individual items
+    sortFunc(sortBy.value as any, individuals)
+    
+    // Return groups first, then individual items
+    result.length = 0
+    result.push(...groups, ...individuals)
     return result
   }
 
@@ -126,6 +181,13 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     if (!group) return
     delete newVal[groupName]
     instanceModGroupping.value = markRaw(newVal)
+    
+    // Clean up collapsed state when group is removed
+    if (groupName in groupCollapsedState.value) {
+      const newCollapsedState = { ...groupCollapsedState.value }
+      delete newCollapsedState[groupName]
+      groupCollapsedState.value = newCollapsedState
+    }
   }
 
   function getContextMenuItemsForGroup(proj: ProjectEntry<ModFile>) {
@@ -241,6 +303,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   async function applySharedGroupRules() {
     const rules = await getSharedGroupRules()
     const newVal = { ...instanceModGroupping.value }
+    const newlyCreatedGroups: string[] = []
 
     const modIdToGroup = {} as Record<string, string>
     for (const [groupName, group] of Object.entries(rules)) {
@@ -261,6 +324,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
             files: [],
             color: '',
           }
+          newlyCreatedGroups.push(expectedGroup)
         }
         const group = newVal[expectedGroup]
         if (!group.files.includes(fileName)) {
@@ -274,7 +338,29 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     }
 
     instanceModGroupping.value = newVal
+    
+    // Ensure newly created groups from rules start collapsed
+    if (newlyCreatedGroups.length > 0) {
+      const newCollapsedState = { ...groupCollapsedState.value }
+      for (const groupName of newlyCreatedGroups) {
+        if (!(groupName in newCollapsedState)) {
+          newCollapsedState[groupName] = true // true means collapsed
+        }
+      }
+      groupCollapsedState.value = newCollapsedState
+    }
   }
+
+  // Auto-apply group rules when items change (e.g., when mods are enabled/disabled)
+  watch(items, async () => {
+    if (isLocalView.value) {
+      try {
+        await applySharedGroupRules()
+      } catch (error) {
+        console.warn('Failed to auto-apply group rules:', error)
+      }
+    }
+  }, { deep: true })
 
   return {
     isInGroup,
