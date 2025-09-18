@@ -5,6 +5,7 @@ import { InstanceModsGroupServiceKey, InstanceModsGroupState, ModGroupData } fro
 import { ContextMenuItem } from './contextMenu';
 import { useService } from './service';
 import { useState } from './syncableState';
+import { Ref, computed, ref, watch, onMounted, markRaw } from 'vue';
 
 export type ProjectGroup<T extends ProjectFile = ProjectFile> = { name: string; projects: ProjectEntry<T>[]; mtime: number }
 
