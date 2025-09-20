@@ -83,11 +83,17 @@ ago:
   hour: '{duration} 小时前'
   minute: '{duration} 分钟前'
   second: '{duration} 秒前'
+askAICrash:
+  copyPrompt: 复制提示询问AI
+  description: |-
+    让AI分析游戏崩溃！
+    请按照下面的说明向AI询问有关此游戏崩溃的信息！
+  selectPlatform: 打开一个AI平台，粘贴您刚刚复制的提示。
 authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
 back: 返回
 baseSetting:
-  title: 基础设置
+  title: 实例设置
 browse: 浏览
 browseApp:
   createShortcut: 创建快捷方式
@@ -823,6 +829,8 @@ modpack:
   emitModrinthStrict: 严格遵守 Modrinth 整合包格式
   emitModrinthStrictDescription: 下载链接只允许包含 Modrinth 官网定义的四个域名
   export: 导出整合包
+  exportDirectory: 导出目录
+  exportDirectoryDescription: 默认情况下，modpack将导出到下载文件夹
   general: 基本信息
   includeAssets: 是否包含游戏资源 (Assets) 文件
   includeLibraries: 是否包含 Libraries 文件

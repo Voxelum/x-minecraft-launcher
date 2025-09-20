@@ -83,6 +83,10 @@ ago:
   hour: '{duration} 小時前'
   minute: '{duration} 分鐘前'
   second: '{duration} 秒前'
+askAICrash:
+  copyPrompt: 複製提示詢問AI
+  description: 讓AI幫助您了解遊戲崩潰！請按照下面的說明向AI詢問有關此遊戲崩潰的信息！
+  selectPlatform: 打開一個AI平台，粘貼您剛剛複制的提示。
 authProfileAddedNotification: 已新增第三方驗證 {name}
 author: 作者
 back: 返回
@@ -822,6 +826,8 @@ modpack:
   emitModrinthStrict: 嚴格遵守 Modrinth 模組包格式
   emitModrinthStrictDescription: 下載連結只允許包含 Modrinth 官網定義的四個網域
   export: 匯出模組包
+  exportDirectory: 导出目錄
+  exportDirectoryDescription: 默認情況下，modpack將導出到下載文件夾
   general: 基本資訊
   includeAssets: 是否包含遊戲資源 (Assets) 檔案
   includeLibraries: 是否包含 Libraries 檔案

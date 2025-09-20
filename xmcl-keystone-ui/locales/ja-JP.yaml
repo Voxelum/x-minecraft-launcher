@@ -72,6 +72,12 @@ ago:
   hour: '{duration} 時間前'
   minute: '{duration} 分前'
   second: '{duration} 秒前'
+askAICrash:
+  copyPrompt: プロンプトをコピーしてAIに尋ねます
+  description: |-
+    AIがゲームのクラッシュを理解するのを手伝ってください！
+    以下の指示に従って、このゲームのクラッシュについてAIに尋ねてください！
+  selectPlatform: AIプラットフォームを開き、コピーしたプロンプトを貼り付けます。
 authProfileAddedNotification: 認証プロファイル {name} が追加されました
 author: 著者
 back: 戻る
@@ -797,6 +803,8 @@ modpack:
   emitModrinthStrict: 厳密なModrinthフォーマット
   emitModrinthStrictDescription: Modrinthのドキュメントに記載された4つのドメインのURLのみ許可します
   export: Modpackとしてエクスポート
+  exportDirectory: エクスポートディレクトリ
+  exportDirectoryDescription: ModPackはデフォルトでダウンロードフォルダーにエクスポートされます
   general: 全般
   includeAssets: アセットを含む
   includeLibraries: ライブラリを含む

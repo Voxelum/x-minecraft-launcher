@@ -106,6 +106,16 @@ ago:
   hour: '{duration} Stunde | {duration} Stunden'
   minute: '{duration} Minute | {duration} Minuten'
   second: '{duration} Sekunde | {duration} Sekunden'
+askAICrash:
+  copyPrompt: Kopieren Sie die Eingabeaufforderung, KI zu fragen
+  description: >-
+    Lassen Sie sich von AI helfen, den Spielabsturz zu verstehen! 
+
+    Befolgen Sie die folgenden Anweisungen, um KI nach diesem Spielabsturz zu
+    fragen!
+  selectPlatform: >-
+    Öffnen Sie eine KI -Plattform und fügen Sie die Eingabeaufforderung ein, die
+    Sie gerade kopiert haben.
 authProfileAddedNotification: Authentifizierungsprofil {name} hinzugefügt.
 author: Autor.
 back: Zurück
@@ -985,6 +995,8 @@ modpack:
   emitModrinthStrict: Strenges Modrinth-Format
   emitModrinthStrictDescription: Nur Links von den 4 im modrinth-Dokument aufgeführten Domains sind erlaubt
   export: Als Modpack exportieren
+  exportDirectory: Exportverzeichnis
+  exportDirectoryDescription: Der Modpack wird standardmäßig in den Ordner Downloads exportiert
   general: Allgemeine Informationen
   includeAssets: Aktiva einbeziehen
   includeLibraries: Bibliotheken einbeziehen

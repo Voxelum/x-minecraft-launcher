@@ -91,6 +91,12 @@ ago:
   hour: '{duration} сағат бұрын | {duration} сағат бұрын'
   minute: '{duration} минут бұрын | {duration} минут бұрын'
   second: '{duration} секунд бұрын | {duration} секунд бұрын'
+askAICrash:
+  copyPrompt: Copy the prompt to ask AI
+  description: >-
+    Let AI help you to understand the game crash! Follow the instructions below
+    to ask AI about this game crash!
+  selectPlatform: Open an AI platform and paste the prompt you just copied.
 authProfileAddedNotification: Авторлық профиль {name} қосылды
 author: Автор
 back: Артқа
@@ -434,6 +440,9 @@ modInstall:
   removeUnusedLibraries: Remove unused libraries mods
 modUpgradePolicy:
   name: Upgrade Policy
+modpack:
+  exportDirectory: Export Directory
+  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
 modpackImportConfirm:
   description: >-
     Detect you drop a file into the launcher. Are you trying to import a

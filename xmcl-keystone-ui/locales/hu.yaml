@@ -95,6 +95,14 @@ ago:
   hour: '{duration} órája | {duration} órája'
   minute: '{duration} perce | {duration} perce'
   second: '{duration} másodperce | {duration} másodperce'
+askAICrash:
+  copyPrompt: Másolja a felszólítást, hogy megkérdezze az AI -t
+  description: >-
+    Hagyja, hogy az AI segítsen megérteni a játék összeomlását! 
+
+    Kövesse az alábbi utasításokat, hogy megkérdezze az AI -t a játék
+    összeomlásáról!
+  selectPlatform: Nyisson meg egy AI platformot, és illessze be az éppen lemásolt promptot.
 authProfileAddedNotification: Belépési profil {name} hozzáadva
 author: Készítő
 back: Vissza
@@ -883,6 +891,10 @@ modpack:
   emitModrinthStrict: Szigorú Modrinth formátum
   emitModrinthStrictDescription: Csak a modrinth dokumentumban felsorolt 4 domain URL-je engedélyezett.
   export: Exportálás modcsomagként
+  exportDirectory: Exportkönyvtár
+  exportDirectoryDescription: >-
+    A modpack alapértelmezés szerint a Modpack -t a letöltési mappába
+    exportálják
   general: Általános információk
   includeAssets: Tartalmazott elemek
   includeLibraries: Tartalmazott könyvtárak

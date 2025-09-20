@@ -90,11 +90,17 @@ ago:
   hour: '{duration} hour ago | {duration} hours ago'
   minute: '{duration} minute ago | {duration} minutes ago'
   second: '{duration} second ago | {duration} seconds ago'
+askAICrash:
+  copyPrompt: Copy the prompt to ask AI
+  description: >-
+    Let AI help you to understand the game crash! Follow the instructions below
+    to ask AI about this game crash!
+  selectPlatform: Open an AI platform and paste the prompt you just copied.
 authProfileAddedNotification: Auth Profile {name} Added
 author: Author
 back: Back
 baseSetting:
-  title: Base Settings
+  title: Instance Settings
 browse: Browse
 browseApp:
   createShortcut: Create Shortcut
@@ -871,6 +877,8 @@ modpack:
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
   export: Export as Modpack
+  exportDirectory: Export Directory
+  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
   general: General Information
   includeAssets: Include Assets
   includeLibraries: Include Libraries

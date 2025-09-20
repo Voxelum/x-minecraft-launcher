@@ -88,6 +88,14 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Seleccionar Directorio Raíz
 add: Añadir
+askAICrash:
+  copyPrompt: Copie el indicador para preguntar a AI
+  description: >-
+    ¡Deja que Ai te ayude a entender el bloqueo del juego! 
+
+    ¡Siga las instrucciones a continuación para preguntarle a AI sobre este
+    bloqueo del juego!
+  selectPlatform: Abra una plataforma AI y pegue el mensaje que acaba de copiar.
 authProfileAddedNotification: Perfil de Autenticación {name} Añadido
 author: Autor
 back: Atrás
@@ -692,6 +700,8 @@ modpack:
     Solo se permiten las URL de los 4 dominios listados en el documento de
     Modrinth
   export: Exportar como Modpack
+  exportDirectory: Directorio de exportación
+  exportDirectoryDescription: El modpack se exportará a la carpeta de descargas de forma predeterminada
   general: Información General
   includeAssets: Incluir Recursos
   includeLibraries: Incluir Bibliotecas
