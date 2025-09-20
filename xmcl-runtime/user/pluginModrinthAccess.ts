@@ -1,6 +1,6 @@
 import { LauncherAppPlugin } from '~/app'
 import { UserService } from './UserService'
-import { getModrinthAccessToken } from './loginModrinth'
+import { getModrinthAccessToken } from './utils/loginModrinth'
 
 export const pluginModrinthAccess: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('ModrinthAccess')

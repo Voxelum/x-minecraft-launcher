@@ -30,22 +30,6 @@
           class="overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
         >{{ name || `Minecraft ${version.minecraft}` }}</span>
         <router-view name="route" />
-        <AvatarItem
-          v-if="versionId"
-          icon="fact_check"
-          class="ml-2 p-1"
-          :title="t('version.name', 2)"
-          :text="currentVersion"
-          @click="onShowLocalVersion"
-        />
-        <AvatarItem
-          v-else
-          color="warning"
-          icon="fact_check"
-          class="ml-2"
-          :title="t('version.name', 2)"
-          :text="currentVersion"
-        />
         <div class="flex-grow" />
         <transition
           name="slide-x-transition"
@@ -94,9 +78,7 @@
 </template>
 
 <script lang=ts setup>
-import AvatarItem from '@/components/AvatarItem.vue'
 import Hint from '@/components/Hint.vue'
-import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kDropHandler } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
@@ -106,14 +88,11 @@ import { kCompact } from '@/composables/scrollTop'
 import { kTheme } from '@/composables/theme'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import { VersionServiceKey } from '@xmcl/runtime-api'
 
 const { name, runtime: version } = injection(kInstance)
-const { versionId } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
 const { blurAppBar } = injection(kTheme)
 const { t } = useI18n()
-const { showVersionDirectory } = useService(VersionServiceKey)
 
 const transitioning = ref(false)
 provide('transitioning', transitioning)
@@ -127,7 +106,6 @@ const onTransitionEnd = (e: TransitionEvent) => {
   transitioning.value = false
 }
 
-const currentVersion = computed(() => !versionId.value ? t('version.notInstalled') : versionId.value)
 const compact = injection(kCompact)
 const headerFontSize = computed(() => {
   if (compact.value) {
@@ -138,12 +116,6 @@ const headerFontSize = computed(() => {
   }
   return '2.425rem'
 })
-
-const onShowLocalVersion = () => {
-  if (versionId.value) {
-    showVersionDirectory(versionId.value)
-  }
-}
 
 const { dragover } = injection(kDropHandler)
 const { show } = useDialog(AddInstanceDialogKey)

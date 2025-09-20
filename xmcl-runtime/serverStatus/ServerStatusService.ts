@@ -2,7 +2,7 @@ import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, protocolToMinecraft, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
-import { isSystemError } from '../util/error'
+import { isSystemError } from '@xmcl/utils'
 import { AbstractService, ExposeServiceKey } from '~/service'
 
 @ExposeServiceKey(ServerStatusServiceKey)

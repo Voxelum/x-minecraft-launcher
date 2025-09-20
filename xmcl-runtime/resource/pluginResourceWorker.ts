@@ -1,27 +1,23 @@
-import { InstanceServiceKey, InstanceState, SharedState } from '@xmcl/runtime-api'
+import { Database, ResourceContext, ResourceManager, getDomainedPath, migrate } from '@xmcl/resource'
+import { Exception, InstanceServiceKey, InstanceState, ResourceState, SharedState } from '@xmcl/runtime-api'
 import EventEmitter from 'events'
 import { existsSync, rmSync } from 'fs'
+import { rename } from 'fs-extra'
+import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { join } from 'path'
 import { LauncherApp, LauncherAppPlugin, kGameDataPath } from '~/app'
-import { kFlights } from '~/flights'
-import { ImageStorage } from '~/imageStore'
+import { ImageStorage, ZipManager, kFlights } from '~/infra'
 import { ServiceStateManager } from '~/service'
 import { kSettings } from '~/settings'
 import { SqliteWASMDialectConfig, createDatabase } from '~/sql'
 import { DatabaseWorker } from '~/sql/type'
-import { ZipManager } from '~/zipManager/ZipManager'
+import { AnyError } from '@xmcl/utils'
 import createDbWorker from '../sql/sqlite.worker?worker'
 import { createLazyWorker } from '../worker'
-import { kResourceContext } from './ResourceManager'
-import { createResourceContext } from './core/createResourceContext'
-import { migrate } from './core/migrateResources'
-import { getDomainedPath } from './core/snapshot'
+import { kResourceContext } from './index'
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
-import { Database } from './core/schema'
-import { Kysely } from 'kysely'
-import { rename } from 'fs-extra'
 
 function loadDatabaseConfig(app: LauncherApp, flights: any) {
   let config: SqliteWASMDialectConfig
@@ -66,6 +62,8 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
 
   return config
 }
+class ParseException extends Exception<{ type: 'parseResourceException'; code: string }> {
+}
 
 export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const workerLogger = app.getLogger('ResourceWorker')
@@ -88,7 +86,24 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
       await rename(dbPath, bkPath).catch(() => { })
     }
     const config = loadDatabaseConfig(app, flights)
-    const [database, success] = await createDatabase<Database>(config, migrate, logger)
+    const [database, success] = await createDatabase<Database>(config, async (db, logger) => {
+      try {
+        const results = await migrate(db)
+        if (results) {
+          for (const result of results) {
+            if (result.status === 'Error') {
+              logger.error(new AnyError('ResourceDatabaseMigration', `Failed to migrate database: ${result.migrationName}`))
+            }
+          }
+        }
+        return true
+      } catch (e) {
+        logger.error(Object.assign(e as any, {
+          cause: 'ResourceDatabaseMigration',
+        }))
+        return false
+      }
+    }, logger)
     db = database
     if (!success) {
       continue
@@ -101,8 +116,25 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
   const getPath = await app.registry.get(kGameDataPath)
   const eventBus = new EventEmitter()
 
-  const context = createResourceContext(getPath(), imageStorage, eventBus, logger, resourceWorker, db!)
+  const context: ResourceContext = {
+    root: getPath(),
+    db: db!,
+    cacheImage: (b) => imageStorage.addImage(b),
+    event: eventBus,
+    parse: resourceWorker.parse,
+    hashAndFileType: resourceWorker.hashAndFileType,
+    onError: (e) => {
+      logger.error(e)
+    },
+    throwException: ({ type, code }) => {
+      throw new ParseException({ type, code })
+    },
+    createResourceState: function (): ResourceState {
+      return new ResourceState()
+    }
+  }
   app.registry.register(kResourceContext, context)
+  app.registry.register(ResourceManager, new ResourceManager(context))
 
   app.registryDisposer(async () => {
     await context.db.destroy()

@@ -9,7 +9,8 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
-import { InstanceResourcePacksServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
+import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   resourcePack: ProjectEntry<InstanceResourcePack>

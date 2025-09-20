@@ -1,10 +1,10 @@
-import { GameProfile } from '@xmcl/user'
+import type { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
-import { GameProfileAndTexture, UserProfile } from '../entities/user.schema'
-import { AuthlibInjectorApiProfile } from '../entities/yggdrasil.schema'
-import { GenericEventEmitter } from '../events'
-import { SharedState } from '../util/SharedState'
-import { ServiceKey } from './Service'
+import type { GameProfileAndTexture, UserProfile } from '../entities/user.schema'
+import type { AuthlibInjectorApiProfile } from '../entities/yggdrasil.schema'
+import type { GenericEventEmitter } from '../events'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 
 export interface RefreshSkinOptions {
   gameProfileId?: string

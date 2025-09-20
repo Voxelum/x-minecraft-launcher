@@ -1,6 +1,6 @@
-import type { LibraryInfo, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
-import { parseVersion, VersionRange } from '../util/mavenVersion'
-import { RuntimeVersions } from './instance.schema'
+import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import { VersionRange, parseVersion } from '../util/mavenVersion'
+import type { RuntimeVersions } from '@xmcl/instance'
 
 export interface MinecraftVersion {
   id: string
@@ -406,7 +406,6 @@ function isVersionMatched(version: VersionHeader,
   }
 
   if (neoForged) {
-    console.log(version.neoForged)
     // require neoForged
     if (!version.neoForged || version.neoForged !== neoForged) {
       // require neoForged but not neoForged
@@ -569,17 +568,8 @@ export type ServerVersionHeader = {
   type: 'vanilla' | 'forge' | 'fabric' | 'quilt' | 'neoforge'
   version?: string
 }
-export interface ResolvedServerVersion {
-  id: string
-  libraries: ResolvedLibrary[]
-  mainClass: string
-  jar?: string
-  minecraftVersion: string
-  arguments: {
-    game: string[]
-    jvm: string[]
-  }
-}
+
+export type { ResolvedServerVersion } from '@xmcl/core'
 
 export class LocalVersions {
   /**

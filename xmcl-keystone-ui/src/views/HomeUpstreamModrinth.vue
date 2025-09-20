@@ -12,9 +12,10 @@ import { getModrinthProjectModel } from '@/composables/modrinthProject'
 import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useSWRVModel } from '@/composables/swrv'
 import { injection } from '@/util/inject'
-import { ModpackServiceKey, ModrinthUpstream } from '@xmcl/runtime-api'
+import { ModpackServiceKey } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
+import { ModrinthUpstream } from '@xmcl/instance'
 
 const props = defineProps<{
   id: string

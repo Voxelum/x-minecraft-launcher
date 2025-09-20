@@ -1,7 +1,7 @@
 import { Schema } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
 import Ajv, { ErrorObject } from 'ajv'
-import { Logger } from '~/logger'
-import { AnyError } from './error'
+import { Logger } from '~/infra'
 
 export interface Serializer<D, T> {
   serialize(value: T): D | Promise<D>

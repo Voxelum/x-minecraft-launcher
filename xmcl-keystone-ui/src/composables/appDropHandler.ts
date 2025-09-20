@@ -1,11 +1,12 @@
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { ImportServiceKey, Resource, UserServiceKey } from '@xmcl/runtime-api'
+import { ImportServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { kDropHandler } from './dropHandler'
 import { kInstance } from './instance'
 import { AddInstanceDialogKey } from './instanceTemplates'
 import { useService } from './service'
+import { Resource } from '@xmcl/resource'
 
 export interface DropItem {
   id: string
@@ -136,15 +137,15 @@ export function useAppDropHandler() {
   }
 
   function getIcon(resource: Resource | undefined) {
-    if (resource?.metadata['curseforge-modpack']) {
-      return '$vuetify.icons.curseforge'
-    }
-    if (resource?.metadata['modrinth-modpack']) {
-      return '$vuetify.icons.modrinth'
-    }
-    if (resource?.metadata['mcbbs-modpack']) {
-      return '$vuetify.icons.package'
-    }
+    // if (resource?.metadata['curseforge-modpack']) {
+    //   return '$vuetify.icons.curseforge'
+    // }
+    // if (resource?.metadata['modrinth-modpack']) {
+    //   return '$vuetify.icons.modrinth'
+    // }
+    // if (resource?.metadata['mcbbs-modpack']) {
+    //   return '$vuetify.icons.package'
+    // }
     if (resource?.metadata.forge) {
       return '$vuetify.icons.forge'
     }

@@ -3,7 +3,7 @@ import { AnyError } from '@/util/error'
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, InstallServiceKey, Instance, InstanceServiceKey, JavaRecord, JavaServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, JavaRecord, JavaServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
@@ -11,6 +11,7 @@ import { useNotifier } from './notifier'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
 import { getForgeVersionsModel, getLabyModManifestModel, getMinecraftVersionsModel, getNeoForgedVersionModel } from './version'
+import { Instance, RuntimeVersions } from '@xmcl/instance'
 
 export interface InstanceInstallInstruction {
   instance: string
@@ -19,7 +20,7 @@ export interface InstanceInstallInstruction {
   resolvedVersion?: string
   jar?: MinecraftJarIssue
   profile?: InstallProfileIssueReport
-  libriares?: LibraryIssue[]
+  libraries?: LibraryIssue[]
   assets?: AssetIssue[]
   assetIndex?: AssetIndexIssue
   optifine?: {
@@ -287,7 +288,9 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
           if (_path !== path.value) {
             return
           }
+          console.log('start to get install profile', 'resolved:', resolved ? resolved.id : 'unresolved')
           const result = await getInstallInstruction(_path, runtiems, _selectedVersion, resolved, jres, abortController.signal)
+          console.log('got install profile', 'resolved:', result.resolvedVersion ? result.resolvedVersion : 'unresolved')
           if (_path !== path.value) {
             return
           }
@@ -377,7 +380,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         }
       }
       if (commonIssues.length > 0) {
-        result.libriares = commonIssues
+        result.libraries = commonIssues
       }
       if (optifinesIssues.length > 0) {
         const { type, patch } = parseOptifineVersion(runtime.optifine!)
@@ -492,8 +495,8 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
       if (typeof java === 'object') {
         await installJava(java)
       }
-      if (instruction.libriares) {
-        await installLibraries(instruction.libriares.map(v => v.library), instruction.runtime.minecraft, instruction.libriares.length > 15)
+      if (instruction.libraries) {
+        await installLibraries(instruction.libraries.map(v => v.library), instruction.runtime.minecraft, instruction.libraries.length > 15)
       }
       if (instruction.assetIndex) {
         const list = await getSWRV(getMinecraftVersionsModel(), config)
@@ -528,6 +531,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
     if (!inst) {
       return
     }
+    await refreshResolvedVersion()
     const last = resolvedVersion.value
     const lock = getInstanceLock(path.value)
     await lock.runExclusive(() => handleInstallInstruction(inst))

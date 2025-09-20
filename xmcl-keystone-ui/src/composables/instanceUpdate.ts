@@ -1,4 +1,5 @@
-import { CachedFTBModpackVersionManifest, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpstream } from '@xmcl/runtime-api'
+import { InstanceData, InstanceFile, InstanceUpstream } from '@xmcl/instance'
+import { CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { DialogKey } from './dialog'
 

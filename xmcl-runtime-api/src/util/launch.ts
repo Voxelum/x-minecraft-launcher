@@ -1,4 +1,4 @@
-import { Instance } from '../entities/instance'
+import type { Instance } from '@xmcl/instance'
 import { UserProfile } from '../entities/user.schema'
 import { LaunchException, LaunchOptions } from '../services/LaunchService'
 import { AUTHORITY_DEV } from './authority'

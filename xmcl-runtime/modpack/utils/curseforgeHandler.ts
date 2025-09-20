@@ -1,0 +1,113 @@
+import { CurseforgeV1Client, File, Mod, guessCurseforgeFileUrl } from '@xmcl/curseforge'
+import { CurseforgeModpackManifest, InstanceFile, getInstanceConfigFromCurseforgeModpack } from '@xmcl/instance'
+import { ResourceDomain } from '@xmcl/resource'
+import { readEntry } from '@xmcl/unzip'
+import { join } from 'path'
+import { Entry, ZipFile } from 'yauzl'
+import { LauncherApp } from '~/app'
+import { kResourceWorker } from '~/resource'
+import { ModpackHandler } from '../ModpackService'
+import { getCurseforgeFiles, getCurseforgeProjects } from './getCurseforgeFiles'
+import { resolveHashes } from './resolveHashes'
+
+export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<CurseforgeModpackManifest> {
+  function getDomain(type: number) {
+    if (type === 12 || (type >= 6945 && type <= 6953) || (type >= 393 && type <= 405) || [4465, 5193, 5244].includes(type)) {
+      return ResourceDomain.ResourcePacks
+    }
+    if (type === 6 || (type >= 406 && type <= 436) ||
+      [4485, 4545, 4558, 4671, 4672, 4773, 4843, 4906, 5191, 5232,
+        5299, 5314, 6145, 6484, 6814, 6821, 6954].includes(type)) {
+      return ResourceDomain.Mods
+    }
+    if (type >= 6552 && type <= 6555) {
+      return ResourceDomain.ShaderPacks
+    }
+  }
+
+  return {
+    async resolveModpackMarketMetadata(path, sha1) {
+      const client = await app.registry.getOrCreate(CurseforgeV1Client)
+      const worker = await app.registry.getOrCreate(kResourceWorker)
+
+      const print = await worker.fingerprint(path)
+      const result = await client.getFingerprintsMatchesByGameId(432, [print])
+      const f = result.exactMatches[0]
+      if (!f) return undefined
+      return { curseforge: { projectId: f.file.modId, fileId: f.file.id } }
+    },
+    resolveUnpackPath: function (manifest: CurseforgeModpackManifest, e: Entry) {
+      let overridePrefix = manifest.overrides ?? 'overrides/'
+      if (!overridePrefix.endsWith('/')) overridePrefix += '/'
+      if (e.fileName.startsWith(overridePrefix)) {
+        return e.fileName.substring(overridePrefix.length)
+      }
+    },
+    readManifest: async (zipFile: ZipFile, entries: Entry[]): Promise<CurseforgeModpackManifest | undefined> => {
+      const curseforgeManifest = entries.find(e => e.fileName === 'manifest.json')
+      if (curseforgeManifest) {
+        const b = await readEntry(zipFile, curseforgeManifest)
+        return JSON.parse(b.toString()) as CurseforgeModpackManifest
+      }
+    },
+    resolveInstanceOptions: getInstanceConfigFromCurseforgeModpack,
+    resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
+      // curseforge or mcbbs
+      const curseforgeFiles = manifest.files
+      if (curseforgeFiles && curseforgeFiles.length > 0) {
+        const ids = curseforgeFiles.map(f => f.fileID).filter(id => typeof id === 'number')
+        if (ids.length === 0) return []
+
+        const client = await app.registry.getOrCreate(CurseforgeV1Client)
+        const files = await getCurseforgeFiles(client, ids)
+        const mods = await getCurseforgeProjects(client, files.map(f => f.modId))
+        const infos: InstanceFile[] = []
+
+        const dict: Record<string, File> = {}
+        for (const file of files) {
+          if (dict[file.id]) {
+            console.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
+          }
+          dict[file.id] = file
+        }
+        const modDict: Record<string, Mod> = {}
+        for (const mod of mods) {
+          if (modDict[mod.id]) {
+            console.warn(`Duplicated curseforge mod return from curseforge API: ${mod.id}`)
+          }
+          modDict[mod.id] = mod
+        }
+
+        for (let i = 0; i < curseforgeFiles.length; i++) {
+          const manifestFile = curseforgeFiles[i]
+          const file = dict[manifestFile.fileID]
+          const mod = modDict[file.modId]
+          if (!file) {
+            console.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
+            continue
+          }
+          let domain: ResourceDomain | undefined
+          if (mod) {
+            domain = getDomain(mod.primaryCategoryId)
+          }
+          if (!domain) {
+            domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          }
+          infos.push({
+            downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+            path: join(domain, file.fileName),
+            hashes: resolveHashes(file),
+            curseforge: {
+              fileId: file.id,
+              projectId: file.modId,
+            },
+            size: file.fileLength,
+          })
+        }
+        return infos
+      }
+
+      return []
+    },
+  }
+}

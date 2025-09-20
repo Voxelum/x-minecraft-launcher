@@ -1,4 +1,4 @@
-import { Resource } from '../entities/resource'
+import type { Resource } from '@xmcl/resource'
 import { InstanceResourcesService, UpdateInstanceResourcesOptions } from './InstanceResourcesService'
 import { ServiceKey } from './Service'
 

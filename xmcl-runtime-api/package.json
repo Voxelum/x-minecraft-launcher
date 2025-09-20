@@ -5,10 +5,7 @@
     "description": "Shared API for between launcher renderer & main process",
     "license": "MIT",
     "main": "index.ts",
-    "publishConfig": {
-        "main": "dist/index.js",
-        "module": "dist/index.mjs"
-    },
+    "type": "module",
     "engines": {
         "node": ">=20"
     },
@@ -17,6 +14,7 @@
         "url": "https://github.com/voxelum/x-minecraft-launcher"
     },
     "scripts": {
+        "build:schema": "node ./scripts/buildSchema.cjs",
         "build": "pnpm run build:cjs && pnpm run build:esm && pnpm run build:type",
         "build:cjs": "esbuild --bundle --platform=node --outfile=dist/index.js --target=es2020 --format=cjs --external:semver index.ts",
         "build:esm": "esbuild --bundle --platform=node --outfile=dist/index.mjs --target=es2020 --format=esm --external:semver index.ts",
@@ -27,6 +25,8 @@
     },
     "dependencies": {
         "@xmcl/client": "workspace:*",
+        "@xmcl/instance": "workspace:*",
+        "@xmcl/resource": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",
         "@xmcl/forge-site-parser": "workspace:*",
@@ -50,6 +50,6 @@
         "esbuild": "^0.17.16",
         "tslib": "^2.5.0",
         "typescript": "5.4.5",
-        "typescript-json-schema": "^0.53.1"
+        "typescript-json-schema": "^0.65.1"
     }
 }

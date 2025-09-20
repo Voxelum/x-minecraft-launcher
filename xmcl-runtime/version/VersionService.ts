@@ -1,12 +1,12 @@
-import { LibraryInfo, ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { VersionService as IVersionService, LocalVersions, ResolvedServerVersion, SharedState, VersionServiceKey, filterForgeVersion, findNeoForgedVersion, getResolvedVersionHeader, isFabricLoaderLibrary, isForgeLibrary, isQuiltLibrary } from '@xmcl/runtime-api'
+import { Version, type ResolvedServerVersion, type ResolvedVersion, type VersionParseError } from '@xmcl/core'
+import { LocalVersions, VersionServiceKey, filterForgeVersion, findNeoForgedVersion, getResolvedVersionHeader, isFabricLoaderLibrary, isForgeLibrary, isQuiltLibrary, type VersionService as IVersionService, type SharedState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher, watch } from 'chokidar'
-import { ensureDir, readFile, readdir, rm } from 'fs-extra'
+import { ensureDir, readdir, rm } from 'fs-extra'
 import { basename, dirname, join, relative, sep } from 'path'
-import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { kTaskExecutor, type TaskFn } from '~/infra'
 import { ExposeServiceKey, ServiceStateManager, Singleton, StatefulService } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkOrCopyFile, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
@@ -56,7 +56,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
           if (event === 'unlink' || event === 'add' || event === 'change') {
             const id = basename(dirname(file))
             if (file.endsWith('server.json')) {
-              this.refreshServerVersion(file)
+              this.refreshServerVersion(id)
             } else {
               this.refreshVersion(id)
             }
@@ -148,35 +148,21 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
   }
 
   async resolveServerVersion(id: string): Promise<ResolvedServerVersion> {
-    const filePath = this.getPath('versions', id, 'server.json')
-    const content = await readFile(filePath, 'utf-8')
-    const profile = JSON.parse(content) as Version
-    return {
-      id,
-      minecraftVersion: profile.inheritsFrom || profile.id,
-      mainClass: profile.mainClass,
-      jar: profile.jar,
-      libraries: profile.libraries.map(l => Version.resolveLibrary(l)).filter(isNonnull),
-      arguments: {
-        jvm: profile.arguments?.jvm || [] as any,
-        game: profile.arguments?.game || [] as any,
-      },
-    }
+    const result = await Version.parseServer(this.getPath(), id)
+    return result
   }
 
   @Singleton(v => v)
   async refreshServerVersion(id: string) {
     try {
-      const filePath = this.getPath('versions', id, 'server.json')
-      const content = await readFile(filePath, 'utf-8')
-      const profile = JSON.parse(content) as Version
-      const libs = profile.libraries.map(l => LibraryInfo.resolve(l)).filter(isNonnull)
+      const profile = await Version.parseServer(this.getPath(), id)
       let type = 'vanilla' as 'vanilla' | 'forge' | 'fabric' | 'quilt' | 'neoforge'
       let minecraft = profile.id
       let version = undefined as string | undefined
-      if (profile.inheritsFrom) {
+      if (profile.minecraftVersion) {
+        const libs = profile.libraries
         const resolved = {
-          neoforge: findNeoForgedVersion(profile.inheritsFrom, { libraries: libs, arguments: profile.arguments as any }),
+          neoforge: findNeoForgedVersion(profile.minecraftVersion, { libraries: libs, arguments: profile.arguments as any }),
           forge: filterForgeVersion(libs.find(isForgeLibrary)?.version ?? ''),
           fabric: libs.find(isFabricLoaderLibrary)?.version ?? '',
           quilt: libs.find(isQuiltLibrary)?.version ?? '',
@@ -189,7 +175,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
         }
         const [existed] = Object.entries(resolved).filter(([_, v]) => !!v)
         type = existed?.[0] as any
-        minecraft = profile.inheritsFrom
+        minecraft = profile.minecraftVersion
         version = existed?.[1]
       }
       this.state.serverProfileAdd({

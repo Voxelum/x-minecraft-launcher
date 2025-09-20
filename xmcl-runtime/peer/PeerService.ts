@@ -3,7 +3,7 @@ import { PeerService as IPeerService, SharedState, PeerServiceKey, PeerState, Sh
 import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { ExposeServiceKey, ServiceStateManager, StatefulService } from '~/service'
 import { kPeerFacade } from './PeerServiceFacade'
-import { kClientToken } from '~/clientToken'
+import { kClientToken } from '~/infra'
 
 @ExposeServiceKey(PeerServiceKey)
 export class PeerService extends StatefulService<PeerState> implements IPeerService {

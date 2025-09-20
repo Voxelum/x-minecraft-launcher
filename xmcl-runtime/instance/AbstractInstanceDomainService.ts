@@ -1,14 +1,14 @@
-import { InstallMarketOptionWithInstance, LockKey, ResourceDomain, UpdateInstanceResourcesOptions } from '@xmcl/runtime-api'
+import { InstallMarketOptionWithInstance, LockKey, UpdateInstanceResourcesOptions } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, stat, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
-import { ResourceManager } from '~/resource'
+import { ResourceDomain, ResourceManager } from '@xmcl/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
-import { isSystemError } from '~/util/error'
+import { isSystemError } from '@xmcl/utils'
 import { linkDirectory, linkWithTimeoutOrCopy } from '../util/fs'
-import { readlinkSafe } from '../util/linkResourceFolder'
+import { readlinkSafe } from './utils/readLinkSafe'
 
 function getMigrateLegacy(domain: ResourceDomain) {
   if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks) {
@@ -83,7 +83,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
       const basePath = join(instancePath, this.domain)
 
       await ensureDir(basePath)
-      const { dispose, revalidate, state } = resourceManager.watch(basePath, this.domain, (func) => doAsyncOperation(lock.waitForUnlock().then(func)))
+      const { dispose, revalidate, state } = resourceManager.watch({ directory: basePath, domain: this.domain, processUpdate: (func) => doAsyncOperation(lock.waitForUnlock().then(func)) })
 
       const instanceService = await this.app.registry.get(InstanceService)
       instanceService.registerRemoveHandler(instancePath, dispose)

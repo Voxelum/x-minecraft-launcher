@@ -1,23 +1,19 @@
-import { CreateInstanceOption, ExportInstanceAsServerOptions, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceFile, InstanceIOServiceKey, InstanceType, LaunchOptions, LockKey, ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
-import { readFile, readdir } from 'fs-extra'
+import { ServerFSExporter, ServerSSHExporter, parseInstanceFiles, parseLauncherData, type InstanceFile } from '@xmcl/instance'
+import { InstanceIOServiceKey, LockKey, type ExportInstanceAsServerOptions, type ExportInstanceOptions, type InstanceIOService as IInstanceIOService, type InstanceType, type ThirdPartyLauncherManifest } from '@xmcl/runtime-api'
+import { readFile } from 'fs-extra'
 import { basename, join, resolve } from 'path'
-import { Inject, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
-import { VersionMetadataService } from '~/install'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { SSHManager, kTaskExecutor, type TaskFn } from '~/infra'
 import { InstanceService } from '~/instance'
-import { kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
-import { AnyError, isSystemError } from '~/util/error'
+import { AnyError, isSystemError } from '@xmcl/utils'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, exists } from '../util/fs'
-import { isFulfilled, requireObject } from '../util/object'
+import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import { parseCurseforgeInstance } from './parseCurseforgeInstance'
-import { parseModrinthInstance, parseModrinthInstanceFiles } from './parseModrinthInstance'
-import { detectMMCRoot, parseMultiMCInstance, parseMultiMcInstanceFiles } from './parseMultiMCInstance'
-import { parseVanillaInstance, parseVanillaInstanceFiles } from './parseVanillaInstance'
-import { exportInstanceAsServer } from './exportInstanceAsServer'
+import { LaunchService } from '~/launch'
+import { UploadSSHTask } from './utils/UploadSSHTask'
 
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
@@ -31,7 +27,36 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async exportInstanceAsServer(options: ExportInstanceAsServerOptions): Promise<void> {
-    await exportInstanceAsServer.call(this, options)
+    const launchService = await this.app.registry.get(LaunchService)
+    const versionService = await this.app.registry.get(VersionService)
+    const serverVersion = await versionService.resolveServerVersion(options.options.version)
+    const ops = await launchService.generateServerOptions(options.options, serverVersion)
+    if (options.output.type === 'folder') {
+      await new ServerFSExporter(this.getPath(), options.output.path).exportInstance(options.options.gameDirectory, ops, options.files.map(f => f.path));
+    } else if (options.output.type === 'ssh') {
+      const manager = await this.app.registry.getOrCreate(SSHManager);
+      const ssh = await manager.open({
+        host: options.output.host,
+        port: options.output.port,
+        username: options.output.username,
+        credentials: options.output.credentials,
+      });
+      const sftp = await manager.openSFTP(ssh);
+      if (!sftp) {
+        throw new Error('Failed to open sftp');
+      }
+      const exporter = new ServerSSHExporter(this.getPath(), options.output.path, ssh, sftp)
+
+      await this.submit(new UploadSSHTask(
+        exporter,
+        options.options.gameDirectory,
+        ops,
+        options.files.map(f => f.path)
+      ))
+
+      sftp.end();
+      ssh.end();
+    }
   }
 
   async getGameDefaultPath(type?: 'modrinth' | 'modrinth-instances' | 'vanilla' | 'curseforge') {
@@ -49,116 +74,14 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   async parseInstanceFiles(path: string, type?: InstanceType): Promise<InstanceFile[]> {
-    if (type === 'mmc') {
-      return await parseMultiMcInstanceFiles(path, this.logger)
-    }
-    if (type === 'modrinth') {
-      const worker = await this.app.registry.get(kResourceWorker)
-      return await parseModrinthInstanceFiles(path, worker, this.logger)
-    }
-    return await parseVanillaInstanceFiles(path, this.logger)
+    const result = await parseInstanceFiles(path, type)
+    return result
   }
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
-      if (type === 'mmc') {
-        path = detectMMCRoot(path)
-        const instancesPath = join(path, 'instances')
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseMultiMCInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-        return {
-          folder: {
-            assets: join(path, 'assets'),
-            libraries: join(path, 'libraries'),
-            versions: '',
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      if (type === 'modrinth') {
-        const instancesPath = join(path, 'profiles')
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseModrinthInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-
-        const assets = join(path, 'meta', 'assets')
-        const libraries = join(path, 'meta', 'libraries')
-        const versions = join(path, 'meta', 'versions')
-        const jre = join(path, 'meta', 'java_versions')
-
-        return {
-          folder: {
-            assets: await exists(assets) ? assets : '',
-            libraries: await exists(libraries) ? libraries : '',
-            versions: await exists(versions) ? versions : '',
-            jre: await exists(jre) ? jre : undefined,
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      if (type === 'curseforge') {
-        const instancesPath = join(path, 'Instances')
-        const minecraftDataPath = join(path, 'Install')
-
-        const instances = await readdir(instancesPath)
-        const manifests = await Promise.allSettled(instances.map(async (instance) => {
-          const instancePath = join(instancesPath, instance)
-          const options = await parseCurseforgeInstance(instancePath)
-          return {
-            options,
-            path: instancePath,
-          }
-        }))
-
-        const versionDir = join(minecraftDataPath, 'versions')
-        const libDir = join(minecraftDataPath, 'libraries')
-        const assetsDir = join(minecraftDataPath, 'assets')
-
-        return {
-          folder: {
-            versions: await exists(versionDir) ? versionDir : '',
-            libraries: await exists(libDir) ? libDir : '',
-            assets: await exists(assetsDir) ? assetsDir : '',
-          },
-          instances: manifests.filter(isFulfilled).map((m) => m.value),
-        }
-      }
-
-      const versionMetadataService = await this.app.registry.get(VersionMetadataService)
-      const vanillaInstances = await parseVanillaInstance(path, versionMetadataService)
-
-      const assets = join(path, 'assets')
-      const libraries = join(path, 'libraries')
-      const versions = join(path, 'versions')
-      const jre = join(path, 'jre')
-
-      return {
-        folder: {
-          assets: await exists(assets) ? assets : '',
-          libraries: await exists(libraries) ? libraries : '',
-          versions: await exists(versions) ? versions : '',
-          jre: await exists(jre) ? jre : '',
-        },
-        instances: vanillaInstances.map((v) => ({
-          options: v.options,
-          path: v.path,
-        })),
-      }
+      const result = await parseLauncherData(path, type)
+      return result
     } catch (e) {
       if (isSystemError(e)) {
         if (e.code === 'ENOENT') {
@@ -207,103 +130,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
         return true
       })
     }))
-  }
-
-  /**
-   * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
-   * @param options The export instance options
-   */
-  async exportInstance(options: ExportInstanceOptions) {
-    requireObject(options)
-
-    const { src, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
-
-    const version = await this.versionService.resolveLocalVersion(options.version)
-
-    const root = this.getPath()
-    const from = src
-
-    const zipTask = new ZipTask(dest).setName('modpack.export')
-
-    const releases: Array<() => void> = []
-
-    // add assets
-    if (includeAssets) {
-      releases.push(await this.mutex.of(LockKey.assets).acquire())
-      const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
-      zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
-      const objects = await readFile(assetsJson, 'utf8').then(JSON.parse).then(manifest => manifest.objects)
-      for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
-        zipTask.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`)
-      }
-    }
-
-    // add version json and jar
-    const versionsChain = version.pathChain
-    for (const versionPath of versionsChain) {
-      const versionId = basename(versionPath)
-      releases.push(await this.mutex.of(LockKey.version(versionId)).acquire())
-      if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
-        zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
-      }
-      zipTask.addFile(join(versionPath, `${versionId}.json`), `versions/${versionId}/${versionId}.json`)
-    }
-
-    // add libraries
-    if (includeLibraries) {
-      releases.push(await this.mutex.of(LockKey.libraries).acquire())
-      for (const lib of version.libraries) {
-        zipTask.addFile(resolve(root, 'libraries', lib.download.path),
-          `libraries/${lib.download.path}`)
-      }
-    }
-
-    // add misc files like config, log...
-    if (files) {
-      for (const file of files) {
-        zipTask.addFile(join(src, file), file)
-      }
-    } else {
-      await zipTask.includeAs(from, '')
-    }
-
-    try {
-      await this.submit(zipTask)
-    } finally {
-      releases.forEach(l => l())
-    }
-  }
-
-  async importInstance(options: CreateInstanceOption & { importPath: string }) {
-    const { importPath } = options
-
-    const mcDir = importPath
-
-    const instancePath = await this.instanceService.createInstance(options)
-
-    await copyPassively(mcDir, instancePath, (v) => {
-      if (v.endsWith('libraries')) {
-        return false
-      }
-      if (v.endsWith('assets')) {
-        return false
-      }
-      if (v.endsWith('versions')) {
-        return false
-      }
-      return true
-    })
-
-    if (await exists(join(mcDir, 'libraries'))) {
-      await copyPassively(join(mcDir, 'libraries'), this.getPath('libraries'))
-    }
-    if (await exists(join(mcDir, 'assets'))) {
-      await copyPassively(join(mcDir, 'assets'), this.getPath('assets'))
-    }
-    if (await exists(join(mcDir, 'versions'))) {
-      await copyPassively(join(mcDir, 'versions'), this.getPath('versions'))
-    }
-
-    return instancePath
   }
 }

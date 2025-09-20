@@ -76,12 +76,13 @@ import { useService } from '@/composables'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { useModpacks } from '@/composables/modpack'
 import { getExpectedSize } from '@/util/size'
-import { BaseServiceKey, CachedFTBModpackVersionManifest, ModpackServiceKey, Resource } from '@xmcl/runtime-api'
+import { BaseServiceKey, CachedFTBModpackVersionManifest, ModpackServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import SimpleDialog from '../components/SimpleDialog.vue'
 import { useDialog, useSimpleDialog } from '../composables/dialog'
 import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 import { ModpackItem } from '../composables/modpack'
+import { Resource } from '@xmcl/resource'
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
@@ -130,20 +131,20 @@ const { isValidating, state } = useModpacks()
 const { removeModpack } = useService(ModpackServiceKey)
 const { cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 
-function getModpackItem(resource: Resource): ModpackItem {
-  const metadata = resource.metadata
-  return ({
-    resource,
-    id: resource.path,
-    size: getExpectedSize(resource.size),
-    icon: resource.icons ? resource.icons[0] : '',
-    name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? resource.fileName,
-    version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
-    author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
-    tags: [],
-    type: metadata.modpack ? 'raw' : (metadata['curseforge-modpack'] ? 'curseforge' : 'modrinth'),
-  })
-}
+// function getModpackItem(resource: Resource): ModpackItem {
+//   const metadata = resource.metadata
+//   return ({
+//     resource,
+//     id: resource.path,
+//     size: getExpectedSize(resource.size),
+//     icon: resource.icons ? resource.icons[0] : '',
+//     name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? resource.fileName,
+//     version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
+//     author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
+//     tags: [],
+//     type: metadata.modpack ? 'raw' : (metadata['curseforge-modpack'] ? 'curseforge' : 'modrinth'),
+//   })
+// }
 function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): ModpackItem {
   return ({
     ftb: resource,
@@ -158,7 +159,7 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
   })
 }
 const items: Ref<ModpackItem[]> = computed(() => [
-  ...(state.value?.files || []).map(getModpackItem),
+  // ...(state.value?.files || []).map(getModpackItem),
   ...ftb.value.map(getModpackItemByFtb),
 ].sort((a, b) => a.name.localeCompare(b.name)))
 onUnmounted(() => {

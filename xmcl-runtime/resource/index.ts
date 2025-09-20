@@ -2,4 +2,8 @@
  * This package contains the resource manipulation core logics
  */
 export * from './worker'
-export * from './ResourceManager'
+
+import type { ResourceContext } from '@xmcl/resource'
+import type { InjectionKey } from '~/app'
+
+export const kResourceContext: InjectionKey<ResourceContext> = Symbol('resourceContext')

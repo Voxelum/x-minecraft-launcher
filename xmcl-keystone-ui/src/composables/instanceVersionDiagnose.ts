@@ -41,8 +41,8 @@ export function useInstanceVersionDiagnose() {
           description: computed(() => t('diagnosis.missingVersionJar.message')),
         }))
     }
-    if (i.libriares) {
-      const libs = i.libriares
+    if (i.libraries) {
+      const libs = i.libraries
       const options = { count: libs.length, name: libs[0].library.path }
       items.push(libs.some(v => v.type === 'corrupted')
         ? reactive({

@@ -1,4 +1,4 @@
-import { WindowController } from '@xmcl/runtime-api'
+import type { WindowController } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer, clipboard } from 'electron'
 import EventEmitter from 'events'
 
@@ -79,6 +79,12 @@ function createController(): WindowController {
     },
     stopFindInPage() {
       return ipcRenderer.invoke('stop-find-in-page')
+    },
+    startProfiling() {
+      return ipcRenderer.invoke('start-profiling')
+    },
+    stopProfiling() {
+      return ipcRenderer.invoke('stop-profiling')
     },
   }
 }

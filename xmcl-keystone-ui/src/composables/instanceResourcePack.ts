@@ -2,10 +2,11 @@ import { BuiltinImages } from '@/constant'
 import { ReactiveResourceState } from '@/util/ReactiveResourceState'
 import { ProjectFile } from '@/util/search'
 import { PackMeta } from '@xmcl/resourcepack'
-import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Resource } from '@xmcl/runtime-api'
+import { GameOptions, InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, packFormatVersionRange } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
+import { Resource } from '@xmcl/resource'
 
 export interface InstanceResourcePack extends PackMeta.Pack, ProjectFile {
   /**
@@ -56,7 +57,7 @@ function getResourcePackItem(resource: Resource, enabled: Set<string>): Instance
     size: resource.size,
     hash: resource.hash,
     acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata.resourcepack)] ?? '[*]',
-    icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
+    icon: resource.icons?.[0] ?? '',
     modrinth: resource.metadata.modrinth,
     curseforge: resource.metadata.curseforge,
   }

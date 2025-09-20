@@ -1,9 +1,10 @@
 import { ServiceKey } from '@xmcl/runtime-api'
 import { Client, LauncherAppPlugin } from '../app'
-import { AnyError, getNormalizeException, getSerializedError } from '../util/error'
 import { AbstractService, ServiceConstructor, getServiceKey } from './Service'
 import { ServiceStateManager } from './ServiceStateManager'
 import { isStateObject } from './stateUtils'
+import { AnyError } from '@xmcl/utils'
+import { getNormalizeException, getSerializedError } from '~/infra/errors'
 
 export const pluginServicesHandler = (services: ServiceConstructor[]): LauncherAppPlugin => (app, manifest) => {
   const logger = app.getLogger('Services')

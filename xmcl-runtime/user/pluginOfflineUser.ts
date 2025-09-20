@@ -1,10 +1,10 @@
 import { AUTHORITY_DEV, AuthorityMetadata, UserProfile } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
 import { LauncherAppPlugin } from '~/app'
-import { ImageStorage } from '~/imageStore'
-import { getUUID } from '~/util/offlineUser'
+import { ImageStorage } from '~/infra'
 import { UserService } from './UserService'
 import { kUserTokenStorage } from './userTokenStore'
+import { getUUID } from './utils/offlineUser'
 
 export const pluginOffineUser: LauncherAppPlugin = async (app) => {
   const OFFLINE_USER_ID = 'OFFLINE'

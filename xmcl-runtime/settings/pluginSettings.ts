@@ -2,9 +2,9 @@ import { SettingSchema, Settings } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { LauncherAppPlugin } from '~/app'
 import { ServiceStateManager } from '~/service'
-import { AggregateExecutor } from '../util/aggregator'
 import { createSafeFile } from '../util/persistance'
 import { kSettings } from './settings'
+import { AggregateExecutor } from '@xmcl/utils'
 
 export const pluginSettings: LauncherAppPlugin = async (app) => {
   const stateManager = await app.registry.get(ServiceStateManager)

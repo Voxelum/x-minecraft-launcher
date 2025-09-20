@@ -10,7 +10,8 @@ import { useOptifineVersions } from '@/composables/version'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
-import { InstallServiceKey, InstanceModsServiceKey, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
+import { InstallServiceKey, InstanceModsServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
 const props = defineProps<{

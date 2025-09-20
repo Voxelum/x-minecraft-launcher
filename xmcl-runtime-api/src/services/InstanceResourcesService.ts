@@ -1,5 +1,5 @@
+import type { ResourceState } from '@xmcl/resource'
 import { InstallMarketOptionWithInstance } from '../entities/market'
-import { ResourceState } from '../entities/resource'
 import { SharedState } from '../util/SharedState'
 
 export interface UpdateInstanceResourcesOptions {

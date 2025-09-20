@@ -4,7 +4,7 @@ import { ensureFile, pathExists, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { AnyError } from '~/util/error'
+import { AnyError } from '@xmcl/utils'
 import { LauncherApp } from '../app/LauncherApp'
 
 /**

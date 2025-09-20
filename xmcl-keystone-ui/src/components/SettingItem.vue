@@ -22,7 +22,7 @@
         {{ description }}
       </v-list-item-subtitle>
     </v-list-item-content>
-    <v-list-item-action>
+    <v-list-item-action :style="longAction ? 'width: 50%' : ''">
       <slot name="action" />
     </v-list-item-action>
   </v-list-item>
@@ -32,6 +32,7 @@
 const props = defineProps<{
   title?: string
   description?: string
+  longAction?: boolean
 }>()
 
 const slots = useSlots()

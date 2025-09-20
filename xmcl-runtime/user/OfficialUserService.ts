@@ -1,9 +1,9 @@
 import { OfficialUserService as IOfficialUserService, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import { MojangChallengeResponse, MojangClient } from '@xmcl/user'
+import { AnyError } from '@xmcl/utils'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kUserTokenStorage } from '~/user'
-import { AnyError } from '../util/error'
 
 const UserAuthenticationError = AnyError.make('UserAuthenticationError')
 

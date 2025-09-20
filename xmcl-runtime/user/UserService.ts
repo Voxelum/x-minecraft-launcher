@@ -2,15 +2,15 @@
 import { DownloadTask } from '@xmcl/installer'
 import {
   AUTHORITY_MICROSOFT,
-  AuthorityMetadata,
-  UserService as IUserService,
-  LoginOptions,
-  RefreshUserOptions,
-  SaveSkinOptions,
-  SharedState,
-  UploadSkinOptions,
+  type AuthorityMetadata,
+  type UserService as IUserService,
+  type LoginOptions,
+  type RefreshUserOptions,
+  type SaveSkinOptions,
+  type SharedState,
+  type UploadSkinOptions,
   UserException,
-  UserProfile,
+  type UserProfile,
   UserSchema,
   UserServiceKey,
   UserState
@@ -20,14 +20,14 @@ import { Inject, LauncherApp, LauncherAppKey, kGameDataPath } from '~/app'
 import { kDownloadOptions } from '~/network'
 import { ExposeServiceKey, Lock, ServiceStateManager, Singleton, StatefulService } from '~/service'
 import { requireObject, requireString } from '~/util/object'
-import { SafeFile, createSafeFile } from '~/util/persistance'
+import { type SafeFile, createSafeFile } from '~/util/persistance'
 import { YggdrasilSeriveRegistry, kYggdrasilSeriveRegistry } from './YggdrasilSeriveRegistry'
-import { UserAccountSystem } from './accountSystems/AccountSystem'
+import type { UserAccountSystem } from './accountSystems/AccountSystem'
 import { YggdrasilAccountSystem, kYggdrasilAccountSystem } from './accountSystems/YggdrasilAccountSystem'
-import { ensureLauncherProfile, preprocessUserData } from './userData'
-import { UserTokenStorage, kUserTokenStorage } from './userTokenStore'
-import { getModrinthAccessToken, loginModrinth } from './loginModrinth'
-import { AnyError } from '~/util/error'
+import { ensureLauncherProfile, preprocessUserData } from './utils/userData'
+import { type UserTokenStorage, kUserTokenStorage } from './userTokenStore'
+import { getModrinthAccessToken, loginModrinth } from './utils/loginModrinth'
+import { AnyError } from '@xmcl/utils'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {

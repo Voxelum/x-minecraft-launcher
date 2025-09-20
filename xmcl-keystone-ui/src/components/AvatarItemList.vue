@@ -12,6 +12,8 @@
         :text="i.text"
         :color="i.color"
         :avatar="i.avatar"
+        :responsive="i.responsive"
+        :onclick="i.onclick"
       />
       <v-divider
         v-if="i !== items[items.length - 1]"
@@ -22,14 +24,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import AvatarItem from './AvatarItem.vue'
+import AvatarItem, { AvatarItemProps } from './AvatarItem.vue'
 
-defineProps<{ items: {
-  small?: boolean
-  color?: string
-  avatar?: string
-  icon?: string
-  title?: string
-  text?: string
-}[] }>()
+defineProps<{ items: AvatarItemProps[] }>()
 </script>

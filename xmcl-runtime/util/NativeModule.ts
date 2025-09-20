@@ -1,10 +1,10 @@
 import { createPromiseSignal } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
 import { writeFileSync } from 'fs-extra'
 import { unlink } from 'fs/promises'
 import { join } from 'path'
 import { extract } from 'tar-stream'
 import { gunzipSync } from 'zlib'
-import { AnyError } from '../util/error'
 
 export class NativeModuleLoader<T> {
   #retryCount = 0

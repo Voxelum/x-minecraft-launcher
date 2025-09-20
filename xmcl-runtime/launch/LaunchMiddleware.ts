@@ -1,5 +1,5 @@
-import { LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions } from '@xmcl/core'
-import { LaunchOptions, ResolvedServerVersion } from '@xmcl/runtime-api'
+import { LaunchOption as ResolvedLaunchOptions, ResolvedVersion, ServerOptions, ResolvedServerVersion } from '@xmcl/core'
+import { LaunchOptions } from '@xmcl/runtime-api'
 
 export interface ServerRunContext {
   side: 'server'

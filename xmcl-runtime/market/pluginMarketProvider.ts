@@ -1,17 +1,17 @@
 import { isNotNull } from '@xmcl/core/utils'
-import { File as CurseforgeFile, CurseforgeV1Client, HashAlgo } from '@xmcl/curseforge'
+import { File as CurseforgeFile, CurseforgeV1Client, HashAlgo, guessCurseforgeFileUrl } from '@xmcl/curseforge'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
+import { InstanceFile as _InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client, ProjectVersion } from '@xmcl/modrinth'
-import { File, InstanceFile as _InstanceFile, getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri } from '@xmcl/runtime-api'
+import { File, ResourceManager } from '@xmcl/resource'
+import { getCurseforgeFileUri, getModrinthPrimaryFile, getModrinthVersionFileUri } from '@xmcl/runtime-api'
 import { basename, dirname, join } from 'path'
 import { LauncherAppPlugin } from '~/app'
+import { kTaskExecutor } from '~/infra'
 import { InstanceInstallService } from '~/instanceIO'
 import { kDownloadOptions } from '~/network'
-import { ResourceManager } from '~/resource'
-import { getFile } from '~/resource/core/files'
-import { kTaskExecutor } from '~/task'
-import { guessCurseforgeFileUrl } from '~/util/curseforge'
+import { kResourceWorker } from '~/resource'
 import { hardLinkFiles } from '~/util/fs'
 import { InstallMarketDirectoryOptions, InstallMarketInstanceOptions, InstallResult, kMarketProvider } from './marketProvider'
 
@@ -27,22 +27,26 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
 
   const resourceManager = await app.registry.get(ResourceManager)
   const submit = await app.registry.get(kTaskExecutor)
+  const hashWorker = await app.registry.get(kResourceWorker)
 
   async function getSnapshotByUris(file: InstanceFile, preferDir: string) {
-    const uris = file.curseforge ? [getCurseforgeFileUri({ modId: file.curseforge.projectId, id: file.curseforge.fileId })] : [getModrinthVersionFileUri({ project_id: file.modrinth!.projectId, id: file.modrinth!.versionId, filename: basename(file.path) })]
-    uris.push(...file.downloads)
+    const sha1 = file.hashes.sha1 ? file.hashes.sha1
+      : await resourceManager.getHashByUri(
+        file.downloads[0]
+        ?? (file.curseforge ? getCurseforgeFileUri({ modId: file.curseforge.projectId, id: file.curseforge.fileId }) : getModrinthVersionFileUri({ project_id: file.modrinth!.projectId, id: file.modrinth!.versionId, filename: basename(file.path) }))
+      )
 
-    const hashes = await resourceManager.getHashesByUris(uris)
-
-    if (hashes.length > 0) {
-      const snapshots = await resourceManager.getSnapshotsByHash(hashes)
-
+    if (sha1) {
+      const snapshots = await resourceManager.getSnapshotsByHash([sha1])
       const all = await Promise.all(snapshots.map(async (snapshot) => {
-        const file = await resourceManager.validateSnapshotFile(snapshot)
-        if (!file) {
+        const cachedFile = await resourceManager.validateSnapshotFile(snapshot)
+        if (!cachedFile) {
           return undefined
         }
-        return [file, snapshot] as const
+        if (await hashWorker.hash(cachedFile.path, cachedFile.size) !== sha1) {
+          return undefined
+        }
+        return [cachedFile, snapshot] as const
       }))
 
       const existed = all.filter(isNotNull)
@@ -53,11 +57,10 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         return undefined
       }
 
-      const [file, snapshot] = matched
-
-      const metadata = await resourceManager.getMetadataByHash(snapshot.sha1)
-      return [file, snapshot, metadata || {}] as const
+      const metadata = await resourceManager.getMetadataByHash(sha1)
+      return [...matched, metadata || {}] as const
     }
+
     return undefined
   }
 
@@ -137,17 +140,14 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
         icons: icon ? [icon] : undefined,
       })
     } else {
-      const file = await getFile(result.path)
-      if (file) {
-        const snapshot = await resourceManager.getSnapshot(file)
-        if (snapshot) {
-          await resourceManager.updateMetadata([{
-            hash: snapshot.sha1,
-            metadata: result.metadata,
-            uris: result.uris,
-            icons: icon ? [icon] : undefined,
-          }])
-        }
+      const snapshot = await resourceManager.getSnapshot(result.path)
+      if (snapshot) {
+        await resourceManager.updateMetadata([{
+          hash: snapshot.sha1,
+          metadata: result.metadata,
+          uris: result.uris,
+          icons: icon ? [icon] : undefined,
+        }])
       }
     }
   }

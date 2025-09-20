@@ -1,8 +1,8 @@
 <template>
   <div
     class="flex flex-grow-0 items-center rounded pr-2 text-sm"
-    :class="{ 'cursor-pointer': !!$listeners.click }"
-    @click="emit('click', $event)"
+    :class="{ 'cursor-pointer': !!$listeners.click || !!onclick }"
+    @click="onclick ? onclick($event) : emit('click', $event)"
   >
     <v-avatar
       :left="true"
@@ -38,14 +38,16 @@
 <script lang="ts" setup>
 import { useVuetifyColor } from '@/composables/vuetify'
 
-const props = defineProps<{
+export interface AvatarItemProps {
   color?: string
   avatar?: string
   icon?: string
   title?: string
   text?: string
   responsive?: boolean
-}>()
+  onclick?: (e: Event) => void
+}
+const props = defineProps<AvatarItemProps>()
 const { getColorCode } = useVuetifyColor()
 const bgColor = computed(() => props.color ? getColorCode(props.color) : undefined)
 const emit = defineEmits(['click'])

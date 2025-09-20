@@ -1,20 +1,27 @@
+import { getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, type CurseforgeModpackManifest, type Instance, type InstanceData, type InstanceFile, type McbbsModpackManifest, type ModpackInstallProfile, type ModrinthModpackManifest } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { CreateInstanceOption, CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstallMarketOptions, Instance, InstanceData, InstanceFile, McbbsModpackManifest, ModpackException, ModpackInstallProfile, ModpackServiceKey, ModpackState, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, ResourceState, SharedState, UpdateResourcePayload, findMatchedVersion, getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { ensureDir, stat, unlink } from 'fs-extra'
-import { dirname, join } from 'path'
+import { ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
+import { InstanceLockSchema, ModpackException, ModpackServiceKey, ModpackState, ResourceState, findMatchedVersion, isAllowInModrinthModpack, type CreateInstanceOption, type ExportModpackOptions, type ModpackService as IModpackService, type InstallMarketOptions, type SharedState } from '@xmcl/runtime-api'
+import { AnyError } from '@xmcl/utils'
+import { readJson, stat, unlink } from 'fs-extra'
+import { dirname, join, relative } from 'path'
 import { Entry, ZipFile } from 'yauzl'
-import { Inject, LauncherApp, LauncherAppKey, PathResolver, kGameDataPath } from '~/app'
+import { Inject, LauncherApp, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { ZipManager, kTaskExecutor, type TaskFn } from '~/infra'
 import { InstanceService } from '~/instance'
 import { InstanceInstallService } from '~/instanceIO'
 import { kMarketProvider } from '~/market'
-import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
+import { kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
 import { VersionService } from '~/version'
-import { ZipManager } from '~/zipManager/ZipManager'
-import { AnyError } from '../util/error'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
+import { createCurseforgeHandler } from './utils/curseforgeHandler'
+import { createMcbbsHandler } from './utils/mcbbsHandler'
+import { createMmcHandler } from './utils/mmcHandler'
+import { createModrinthHandler } from './utils/modrinthHandler'
+import { exportOfflineModpack } from './utils/exportOffline'
+import { readEntry } from '@xmcl/unzip'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -22,6 +29,8 @@ export interface ModpackDownloadableFile {
   hashes: Record<string, string>
   metadata: ResourceMetadata
 }
+
+type SelectedXMCLFields = Pick<InstanceData, 'disableElybyAuthlib' | 'disableAuthlibInjector' | 'upstream' | 'server' | 'resolution' | 'showLog' | 'hideLauncher'>
 
 const transformFile = (file: InstanceFile) => {
   file.path = file.path.replaceAll('\\', '/')
@@ -64,10 +73,10 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app)
-  }
-
-  registerHandler<M>(type: string, handler: ModpackHandler<M>) {
-    this.handlers[type] = handler
+    this.handlers['curseforge'] = createCurseforgeHandler(app)
+    this.handlers['mcbbs'] = createMcbbsHandler(app)
+    this.handlers['mmc'] = createMmcHandler(app)
+    this.handlers['modrinth'] = createModrinthHandler(app)
   }
 
   async installModapckFromMarket(options: InstallMarketOptions): Promise<string[]> {
@@ -159,7 +168,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   async exportModpack(options: ExportModpackOptions) {
     requireObject(options)
 
-    const { instancePath, destinationPath, files, name, version, gameVersion, author, emitCurseforge, emitMcbbs, emitModrinth = false } = options
+    const { instancePath, destinationDirectory, files, name, version, gameVersion, author, emitCurseforge, emitModrinth, emitOffline } = options
 
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
@@ -167,10 +176,21 @@ export class ModpackService extends AbstractService implements IModpackService {
       return
     }
 
+    if (!emitCurseforge && !emitModrinth && !emitOffline) {
+      return
+    }
+
     let curseforgeConfig: CurseforgeModpackManifest | undefined
-    let mcbbsManifest: McbbsModpackManifest | undefined
     let modrinthManifest: ModrinthModpackManifest | undefined
-    let xmclManifestExtension: Pick<InstanceData, 'disableElybyAuthlib' | 'disableAuthlibInjector' | 'upstream' | 'server'> | undefined
+    let xmclManifestExtension: SelectedXMCLFields = {
+      disableElybyAuthlib: instance.disableElybyAuthlib,
+      disableAuthlibInjector: instance.disableAuthlibInjector,
+      upstream: instance.upstream,
+      server: instance.server,
+      resolution: instance.resolution,
+      showLog: instance.showLog,
+      hideLauncher: instance.hideLauncher,
+    }
 
     if (emitCurseforge) {
       curseforgeConfig = getCurseforgeModpackFromInstance(instance)
@@ -178,46 +198,86 @@ export class ModpackService extends AbstractService implements IModpackService {
       curseforgeConfig.name = name ?? curseforgeConfig.name
     }
 
-    if (emitMcbbs) {
-      mcbbsManifest = getMcbbsModpackFromInstance(instance)
-      mcbbsManifest.author = author ?? mcbbsManifest.author
-      mcbbsManifest.name = name ?? mcbbsManifest.name
-    }
     if (emitModrinth) {
       modrinthManifest = getModrinthModpackFromInstance(instance)
     }
 
-    const zipTask = new ZipTask(destinationPath)
+    const curseforgeZip = emitCurseforge ? new ZipTask(join(destinationDirectory, `${name}-${version}.zip`)) : undefined
+    const modrinthZip = emitModrinth ? new ZipTask(join(destinationDirectory, `${name}-${version}.mrpack`)) : undefined
+    const offlineZip = emitOffline ? new ZipTask(join(destinationDirectory, `${name}-${version}-offline.zip`)) : undefined
 
-    zipTask.addEmptyDirectory('overrides')
+    curseforgeZip?.addEmptyDirectory('overrides')
+    modrinthZip?.addEmptyDirectory('overrides')
+
+    const xmclJson = Buffer.from(JSON.stringify(xmclManifestExtension, null, 4))
+    curseforgeZip?.addBuffer(xmclJson, 'xmcl.json')
+    modrinthZip?.addBuffer(xmclJson, 'xmcl.json')
+    offlineZip?.addBuffer(xmclJson, 'xmcl.json')
 
     const backfillModrinth: [ModrinthModpackManifest['files'][number], UpdateResourcePayload][] = []
+    const instanceLockContent: InstanceLockSchema | undefined = await readJson(join(instancePath, 'instance-lock.json')).catch(() => undefined)
+    const lockHashLookup = Object.fromEntries(instanceLockContent?.files.map(f => [f.path, f]) || [])
+
+    const lookupFile = async (filePath: string) => {
+      const fStat = await stat(filePath).catch(() => null)
+      if (!fStat?.isFile()) {
+        return undefined
+      }
+      const relativePath = relative(instancePath, filePath).replaceAll('\\', '/')
+      const lockedFile = lockHashLookup[relativePath]
+      if (lockedFile) {
+        return lockedFile
+      }
+
+      const snapshot = await this.resourceManager.getSnapshotByIno(fStat.ino)
+      let sha1: string | undefined
+      if (!snapshot) {
+        sha1 = await this.worker.checksum(filePath, 'sha1')
+      } else {
+        sha1 = snapshot.sha1
+      }
+      const metadata = await this.resourceManager.getMetadataByHash(sha1)
+      const downloads = await this.resourceManager.getUriByHash(sha1).then(uris => uris.filter(u => u.startsWith('http')))
+      return {
+        path: relativePath,
+        hashes: { sha1 },
+        ...metadata,
+        downloads
+      }
+    }
+
+    if (offlineZip) {
+      const versionService = await this.app.registry.get(VersionService)
+      const resolved = await versionService.resolveLocalVersion(gameVersion)
+      await exportOfflineModpack(offlineZip, this.getPath(), resolved)
+    }
+
+    const addAsOverride = (src: string, path: string) => {
+      curseforgeZip?.addFile(src, `overrides/${path}`)
+      modrinthZip?.addFile(src, `overrides/${path}`)
+    }
 
     for (const file of files) {
       const filePath = join(instancePath, file.path)
+      // Add offline anyway
+      offlineZip?.addFile(filePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
-        const fStat = await stat(filePath)
-        const snapshot = await this.resourceManager.getSnapshotByIno(fStat.ino)
-        let sha1: string | undefined
-        if (!snapshot) {
-          sha1 = await this.worker.checksum(filePath, 'sha1')
+        if (file.override) {
+          addAsOverride(filePath, file.path)
         } else {
-          sha1 = snapshot.sha1
-        }
-        const metadata = await this.resourceManager.getMetadataByHash(sha1)
-
-        if (!file.override && metadata) {
-          let handled = false
-          if (metadata.curseforge && (curseforgeConfig || mcbbsManifest)) {
-            // curseforge
-            curseforgeConfig?.files?.push({ projectID: metadata.curseforge.projectId, fileID: metadata.curseforge.fileId, required: true })
-            mcbbsManifest?.files!.push({ projectID: metadata.curseforge.projectId, fileID: metadata.curseforge.fileId, type: 'curse', force: false })
-            handled = true
+          const fileLike = await lookupFile(filePath)
+          if (!fileLike) {
+            addAsOverride(filePath, file.path)
+            continue
           }
 
-          if (modrinthManifest) {
-            const urls = await this.resourceManager.getUriByHash(sha1)
+          if (fileLike.curseforge) {
+            curseforgeConfig?.files?.push({ projectID: fileLike.curseforge.projectId, fileID: fileLike.curseforge.fileId, required: true })
+          }
+          if (fileLike.modrinth) {
+            modrinthManifest?.files.push({ path: file.path, hashes: fileLike.hashes, downloads: fileLike.downloads || [], fileSize: fileLike.size })
             // modrinth not allowed to include curseforge source by regulation
+            const urls = fileLike.downloads || []
             const availableDownloads = urls.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
             const env = {} as Record<string, string>
             if (file.env?.client) {
@@ -230,7 +290,7 @@ export class ModpackService extends AbstractService implements IModpackService {
             const result = {
               path: file.path,
               hashes: {
-                sha1,
+                sha1: fileLike.hashes.sha1 || await this.worker.checksum(filePath, 'sha1'),
                 sha512: await this.worker.checksum(filePath, 'sha512'),
               },
               downloads: availableDownloads,
@@ -240,23 +300,18 @@ export class ModpackService extends AbstractService implements IModpackService {
 
             if (availableDownloads.length === 0) {
               backfillModrinth.push([result, {
-                hash: sha1,
-                metadata,
+                hash: result.hashes.sha1,
+                metadata: fileLike,
                 uris: urls,
               }])
             } else {
               modrinthManifest?.files.push(result)
             }
-            handled = true
-          }
-
-          if (handled) {
-            continue
           }
         }
+      } else {
+        addAsOverride(filePath, file.path)
       }
-      zipTask.addFile(filePath, `overrides/${file.path}`)
-      mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await this.worker.checksum(filePath, 'sha1') })
     }
 
     if (backfillModrinth.length > 0) {
@@ -285,27 +340,34 @@ export class ModpackService extends AbstractService implements IModpackService {
         }
 
         const filePath = join(instancePath, file.path)
-        zipTask.addFile(filePath, `overrides/${file.path}`)
+        modrinthZip?.addFile(filePath, `overrides/${file.path}`)
       }
     }
 
     if (curseforgeConfig) {
       this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`)
-      zipTask.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig, null, 4)), 'manifest.json')
-    }
-
-    if (mcbbsManifest) {
-      this.log(`Export instance ${instancePath} to mcbbs ${JSON.stringify(mcbbsManifest, null, 4)}`)
-      zipTask.addBuffer(Buffer.from(JSON.stringify(mcbbsManifest, null, 4)), 'mcbbs.packmeta')
+      curseforgeZip?.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig, null, 4)), 'manifest.json')
     }
 
     if (modrinthManifest) {
       this.log(`Export instance ${instancePath} to modrinth ${JSON.stringify(modrinthManifest, null, 4)}`)
-      zipTask.addBuffer(Buffer.from(JSON.stringify(modrinthManifest, null, 4)), 'modrinth.index.json')
+      modrinthZip?.addBuffer(Buffer.from(JSON.stringify(modrinthManifest, null, 4)), 'modrinth.index.json')
     }
 
-    await this.submit(zipTask)
-    this.app.shell.showItemInFolder(destinationPath)
+    if (curseforgeZip) {
+      await this.submit(curseforgeZip)
+    }
+    if (modrinthZip) {
+      await this.submit(modrinthZip)
+    }
+    if (offlineZip) {
+      await this.submit(offlineZip)
+    }
+
+    const destinationPath = modrinthZip?.destination ?? curseforgeZip?.destination ?? offlineZip?.destination
+    if (destinationPath) {
+      this.app.shell.showItemInFolder(destinationPath)
+    }
   }
 
   protected async getCachedInstallProfile(path: string) {
@@ -390,20 +452,6 @@ export class ModpackService extends AbstractService implements IModpackService {
       const state = new ModpackState()
       state.modpackPath = modpackFile
 
-      if (typeof cached === 'object' && cached.instance) {
-        this.log(`Use cached modpack profile ${modpackFile}`)
-        state.config = {
-          ...cached.instance.instance,
-          upstream: cached.upstream,
-        }
-        state.files = cached.instance.files
-        state.ready = true
-        return [
-          state,
-          zip.dispose,
-        ]
-      }
-
       const hash = cached.sha1
 
       const entries = Object.values(zip.entries)
@@ -421,9 +469,24 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       this.log(`Parse modpack profile ${modpackFile} with handler ${handler.constructor.name}`)
       const instance = handler.resolveInstanceOptions(manifest)
+
+      const b = await readEntry(zip.file, zip.entries['xmcl.json'])
+      const xmclCache = JSON.parse(b.toString()) as SelectedXMCLFields
+
       state.config = {
         ...instance,
+        ...xmclCache,
         upstream: cached.upstream,
+      }
+
+      if (typeof cached === 'object' && cached.instance) {
+        this.log(`Use cached modpack profile ${modpackFile}`)
+        state.files = cached.instance.files
+        state.ready = true
+        return [
+          state,
+          zip.dispose,
+        ]
       }
 
       // Update the market metadata
@@ -486,16 +549,18 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   async watchModpackFolder(): Promise<SharedState<ResourceState>> {
-    const states = await this.app.registry.getOrCreate(ServiceStateManager)
-    return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
-      const dir = this.getPath('modpacks')
-      await ensureDir(dir)
-      const { dispose, revalidate, state } = this.resourceManager.watch(dir,
-        ResourceDomain.Modpacks,
-        (func) => doAsyncOperation(func()),
-      )
-      return [state, dispose, revalidate]
-    })
+    throw new Error('')
+    // const states = await this.app.registry.getOrCreate(ServiceStateManager)
+    // return states.registerOrGet('modpacks', async ({ doAsyncOperation }) => {
+    //   const dir = this.getPath('modpacks')
+    //   await ensureDir(dir)
+    //   const { dispose, revalidate, state } = this.resourceManager.watch({
+    //     directory: dir,
+    //     domain: ResourceDomain.Modpacks,
+    //     processUpdate: (func) => doAsyncOperation(func()),
+    //   })
+    //   return [state, dispose, revalidate]
+    // })
   }
 
   async removeModpack(path: string): Promise<void> {
