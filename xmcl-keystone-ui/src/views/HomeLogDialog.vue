@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isShown" :width="700">
+  <v-dialog v-model="isShown" :width="1200">
     <v-card>
       <v-toolbar color="warning" tabs>
         <v-toolbar-title class="white--text">

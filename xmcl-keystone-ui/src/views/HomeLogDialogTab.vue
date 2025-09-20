@@ -62,7 +62,14 @@
             v-if="log"
             :logs="logs"
           />
-          <pre v-else class="mx-5 mb-5 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
+          <div v-else class="overflow-auto mx-5 mb-5 grid grid-cols-4 gap-6">
+            <pre class="col-span-3 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
+            <AppCrashAIHint
+              class="col-span-1"
+              :useCNAI="useCNAI"
+              :getPrompt="getPrompt"
+            />
+          </div>
         </div>
       </Transition>
     </div>
@@ -73,6 +80,11 @@
 import { parseLog } from '@/util/log'
 import LogView from '@/components/LogView.vue'
 import HomeLogDialogTabItem from './HomeLogDialogTabItem.vue'
+import AppCrashAIHint from '@/components/AppCrashAIHint.vue';
+import { kEnvironment } from '@/composables/environment';
+import { kSettingsState } from '@/composables/setting';
+import { getCrashPrompt } from '@/util/crashPrompt';
+import { injection } from '@/util/inject';
 
 const props = defineProps<{
   files: string[]
@@ -110,6 +122,20 @@ const logs = computed(() => {
   }
   return logLines.map(parseLog)
 })
+
+
+const env = injection(kEnvironment)
+const useCNAI = computed(() => {
+  return env.value?.gfw || env.value?.region === 'zh-CN'
+})
+
+const { state } = injection(kSettingsState)
+function getPrompt(raw?: boolean) {
+  if (raw) {
+    return content.value
+  }
+  return getCrashPrompt(useCNAI.value, content.value, '', state.value?.locale || 'en-US')
+}
 
 watch(() => props.visible, (v) => {
   if (!v) {

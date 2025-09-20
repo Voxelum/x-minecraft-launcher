@@ -44,47 +44,18 @@
           </div>
           <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.log }}</pre>
         </div>
-        <div class="col-span-3 mt-2 items-center justify-center flex flex-col gap-6 select-none">
-          <v-icon size="60">
-            hail
-          </v-icon>
-          <span class="text-lg">
-            {{ t('askAICrash.description') }}
-          </span>
-          <ol>
-            <li>
-              {{ t('askAICrash.copyPrompt') }}
-              <v-btn color="primary" :outlined="copied" small @click="onCopyPrompt">
-                <v-icon left>
-                  {{ copied ? 'check' : 'smart_toy'}}
-                </v-icon>
-                {{ t( 'copyClipboard.success' )}}
-              </v-btn>
-            </li>
-            <li>
-              {{ t('askAICrash.selectPlatform') }}
-              <ul>
-                <template v-if="useCNAI">
-                  <li><a href="https://chatglm.cn/share/kFiK3rVp" @click="onGMLClicked">GLM</a></li>
-                  <li><a href="https://doubao.com/chat">豆包</a></li>
-                  <li><a href="https://chat.deepseek.com/">Deepseek</a></li>
-                </template>
-                <template v-else>
-                  <li><a href="https://chat.openai.com">ChatGPT</a></li>
-                  <li><a href="https://gemini.google.com">Gemini</a></li>
-                  <li><a href="https://chat.deepseek.com/">Deepseek</a></li>
-                  <li><a href="https://chat.z.ai">z.ai</a></li>
-                </template>
-              </ul>
-            </li>
-          </ol>
-        </div>
+        <AppCrashAIHint
+          class="col-span-3 mt-2"
+          :useCNAI="useCNAI"
+          :getPrompt="getPrompt"
+        />
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang=ts setup>
+import AppCrashAIHint from '@/components/AppCrashAIHint.vue'
 import { useService } from '@/composables'
 import { kEnvironment } from '@/composables/environment'
 import { kInstance } from '@/composables/instance'
@@ -161,20 +132,12 @@ const useCNAI = computed(() => {
   return env.value?.gfw || env.value?.region === 'zh-CN'
 })
 
-const copied = ref(false)
 const { state } = injection(kSettingsState)
-function onCopyPrompt() {
-  const useCN = useCNAI.value
-  const prompt = getCrashPrompt(useCN, data.log, data.errorLog, state.value?.locale || 'en-US')
-  windowController.writeClipboard(prompt)
-  copied.value = true
-  setTimeout(() => {
-    copied.value = false
-  }, 2000)
-}
-
-function onGMLClicked() {
-  windowController.writeClipboard(data.errorLog)
+function getPrompt(raw?: boolean) {
+  if (raw) {
+    return data.errorLog
+  }
+  return getCrashPrompt(useCNAI.value, data.log, data.errorLog, state.value?.locale || 'en-US')
 }
 </script>
 
