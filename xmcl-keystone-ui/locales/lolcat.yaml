@@ -84,6 +84,12 @@ ago:
   hour: '{duration} HOUR AGO | {duration} HOURS AGO'
   minute: '{duration} MINIT AGO | {duration} MINUTEZ AGO'
   second: '{duration} SECOND AGO | {duration} SECONDZ AGO'
+askAICrash:
+  copyPrompt: Copy the prompt to ask AI
+  description: >-
+    Let AI help you to understand the game crash! Follow the instructions below
+    to ask AI about this game crash!
+  selectPlatform: Open an AI platform and paste the prompt you just copied.
 authProfileAddedNotification: AUTH PROFILE {name} ADDD
 author: AUTHOR
 back: BAK
@@ -803,6 +809,8 @@ modpack:
   emitModrinthStrict: STRICT MODRINTH FORMATNTH MODPACK
   emitModrinthStrictDescription: ONLY TEH URLS FRUM 4 DOMAINS LISTD IN MODRINTH DOCUMENT R ALLOWD
   export: EXPORT AS MODPACK
+  exportDirectory: Export Directory
+  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
   general: GENERAL INFORMASHUN
   includeAssets: INCLUDE ASSETS
   includeLibraries: INCLUDE LIBRARIEZ

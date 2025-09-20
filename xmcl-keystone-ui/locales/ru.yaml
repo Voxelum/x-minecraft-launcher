@@ -95,6 +95,12 @@ ago:
   hour: '{duration} час назад | {duration} часов назад'
   minute: '{duration} минуту назад | {duration} минут назад'
   second: '{duration} секунду назад | {duration} секунд назад'
+askAICrash:
+  copyPrompt: Скопируйте подсказку, чтобы спросить AI
+  description: |-
+    Пусть AI поможет вам понять игровой сбой! 
+    Следуйте инструкциям ниже, чтобы спросить ИИ об этом игровом сбое!
+  selectPlatform: Откройте платформу для ИИ и вставьте только что только что скопированное.
 authProfileAddedNotification: Профиль аутентификации {name} добавлен
 author: Автор
 back: Назад
@@ -915,6 +921,8 @@ modpack:
   emitModrinthStrict: Строгий формат Modrinth
   emitModrinthStrictDescription: Разрешены только URL-адреса из 4 доменов, перечисленных в документе Modrinth
   export: Экспортировать как сборку модов
+  exportDirectory: Экспортный каталог
+  exportDirectoryDescription: Modpack будет экспортирован в папку загрузки по умолчанию
   general: Общая информация
   includeAssets: Включить ресурсы
   includeLibraries: Включить библиотеки

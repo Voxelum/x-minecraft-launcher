@@ -92,6 +92,12 @@ ago:
   hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
   minute: '{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому'
   second: '{duration} секунду тому | {duration} секунди тому | {duration} секунд тому'
+askAICrash:
+  copyPrompt: Скопіюйте підказку, щоб запитати AI
+  description: |-
+    Нехай AI допоможе вам зрозуміти краху гри! 
+    Дотримуйтесь інструкцій нижче, щоб запитати AI про цю гру!
+  selectPlatform: Відкрийте платформу AI та вставте підказку, яку ви щойно скопіювали.
 authProfileAddedNotification: Профіль автентифікації {name} додано
 author: Автор
 back: Назад
@@ -899,6 +905,8 @@ modpack:
   emitModrinthStrict: Суворий формат Modrinth
   emitModrinthStrictDescription: Дозволені лише URL-адреси з 4 доменів, перелічених у документації Modrinth
   export: Експортувати як модпак
+  exportDirectory: Експортний каталог
+  exportDirectoryDescription: Modpack буде експортований на завантаження папки за замовчуванням
   general: Загальна інформація
   includeAssets: Включити ресурси
   includeLibraries: Включити бібліотеки

@@ -101,6 +101,12 @@ ago:
   hour: '{duration} hora atrás | {duration} horas atrás'
   minute: '{duration} minuto atrás | {duration} minutos atrás'
   second: '{duration} segundo atrás | {duration} segundos atrás'
+askAICrash:
+  copyPrompt: Copie o prompt para perguntar ai
+  description: |-
+    Deixe a IA ajudá -lo a entender o acidente de jogo! 
+    Siga as instruções abaixo para perguntar à IA sobre este acidente de jogo!
+  selectPlatform: Abra uma plataforma de IA e cole o aviso que acabou de copiar.
 authProfileAddedNotification: Perfil de autenticação {name} adicionado
 author: Autor
 back: Voltar
@@ -921,6 +927,8 @@ modpack:
     Apenas URLs de 4 domínios listados na documentação do Modrinth são
     permitidas
   export: Exportar como Modpack
+  exportDirectory: Diretório de exportação
+  exportDirectoryDescription: O Modpack será exportado para a pasta Downloads por padrão
   general: Informações Gerais
   includeAssets: Incluir Assets
   includeLibraries: Incluir Bibliotecas

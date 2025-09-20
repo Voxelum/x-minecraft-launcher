@@ -97,6 +97,14 @@ ago:
   hour: '{duration} godzinę temu | {duration} godzin temu'
   minute: '{duration} minutę temu | {duration} minut temu'
   second: '{duration} sekundę temu | {duration} sekund temu'
+askAICrash:
+  copyPrompt: Skopiuj monit o zapytanie AI
+  description: >-
+    Niech AI pomoże ci zrozumieć awarię gry! 
+
+    Postępuj zgodnie z poniższymi instrukcjami, aby zapytać AI o tę katastrofę
+    gry!
+  selectPlatform: Otwórz platformę AI i wklej monit, który właśnie skopiowałeś.
 authProfileAddedNotification: Dodano profil autoryzacji {name}
 author: Autor
 back: Powrót
@@ -883,6 +891,8 @@ modpack:
   emitModrinthStrict: Ścisły format Modrinth
   emitModrinthStrictDescription: Dozwolone są tylko adresy URL z 4 domen wymienionych w dokumencie modrinth
   export: Eksportuj jako Modpack
+  exportDirectory: Katalog eksportowy
+  exportDirectoryDescription: Modpack zostanie domyślnie wyeksportowany do folderu do pobrania
   general: Informacje ogólne
   includeAssets: Uwzględnij aktywa
   includeLibraries: Obejmuje biblioteki

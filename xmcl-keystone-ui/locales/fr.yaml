@@ -119,6 +119,14 @@ ago:
     Il y a {duration} heures
   minute: Il y a {duration} minute | Il y a {duration} minutes
   second: Il y a {duration} seconde | Il y a {duration} secondes
+askAICrash:
+  copyPrompt: Copiez l'invite pour demander l'IA
+  description: >-
+    Laissez l'IA vous aider à comprendre l'accident de jeu! 
+
+    Suivez les instructions ci-dessous pour interroger l'IA sur cet accident de
+    jeu!
+  selectPlatform: Ouvrez une plate-forme AI et collez l'invite que vous venez de copier.
 authProfileAddedNotification: Profil d'authentification {name} ajouté
 author: Auteur
 back: Revenir
@@ -913,6 +921,8 @@ modpack:
     Seules les URL des 4 domaines répertoriés dans le document modrinth sont
     autorisées
   export: Exporter en tant que Modpack
+  exportDirectory: Répertoire d'exportation
+  exportDirectoryDescription: Le modpack sera exporté vers le dossier des téléchargements par défaut
   general: Informations générales
   includeAssets: Inclure les Assets
   includeLibraries: Inclure les Librairies

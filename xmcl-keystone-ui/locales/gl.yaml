@@ -91,6 +91,14 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Seleccionar Directorio Raíz
 add: Engadir
+askAICrash:
+  copyPrompt: Copia o aviso para preguntar a AI
+  description: >-
+    Deixa que AI che axude a comprender o choque do xogo. 
+
+    Siga as instrucións a continuación para preguntar a IA sobre este accidente
+    de xogo.
+  selectPlatform: Abre unha plataforma AI e pega o aviso que acaba de copiar.
 authProfileAddedNotification: Perfil de Autenticación {name} Engadido
 author: Autor
 back: Atrás
@@ -397,6 +405,9 @@ modUpgradePolicy:
   modrinth: Modrinth Primeiro
   modrinthOnly: Só Modrinth
   name: Política de actualización
+modpack:
+  exportDirectory: Directorio de exportación
+  exportDirectoryDescription: O modpack exportarase ao cartafol de descargas de xeito predeterminado
 modpackImportConfirm:
   description: |-
     Detectouche deixe un ficheiro no lanzador. 
