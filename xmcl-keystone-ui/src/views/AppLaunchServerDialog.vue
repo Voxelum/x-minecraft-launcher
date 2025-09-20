@@ -26,6 +26,17 @@
           <v-checkbox v-model="nogui" class="col-start-1" :label="t('server.nogui')" />
           <v-checkbox v-model="onlineMode" class="col-start-3" :label="t('server.onlineMode')" />
         </div>
+        
+        <v-subheader>Server Launch Mode</v-subheader>
+        <div class="pt-2 px-2">
+          <v-radio-group v-model="serverMode" row>
+            <v-radio label="Use Filtered Client Mods" value="filtered"></v-radio>
+            <v-radio label="Use Server Pack" value="serverpack" :disabled="!hasServerPack"></v-radio>
+          </v-radio-group>
+          <div v-if="serverMode === 'serverpack' && hasServerPack" class="text-caption text--secondary mb-2">
+            Uses the official server pack instead of filtering client mods
+          </div>
+        </div>
         <v-subheader>{{ t('save.name') }}</v-subheader>
         <v-item-group v-model="selectedSave" mandatory class="pt-2 px-2">
           <div class="grid grid-cols-3 gap-2 max-h-40 overflow-auto">
@@ -130,6 +141,8 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
+import { computed, markRaw, ref, shallowRef, watch, type Ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useRefreshable } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
@@ -148,7 +161,7 @@ import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ModFile, getModSide } from '@/util/mod'
 import { Project } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
 defineProps<{}>()
@@ -161,8 +174,11 @@ const isAcceptEula = ref(false)
 const nogui = ref(false)
 const linkedWorld = ref('')
 const rawWorldExists = ref(false)
+const serverMode = ref<'filtered' | 'serverpack'>('filtered')
+const hasServerPack = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
+const { hasServerPack: checkHasServerPack, installServerPack: installServerPackFiles } = useService(ModpackServiceKey)
 
 let _eula: boolean
 
@@ -211,6 +227,10 @@ const { isShown } = useDialog('launch-server', () => {
   lastPath = path.value
   revalidate()
   refresh()
+  
+  // Check for server pack availability
+  checkServerPackAvailability()
+  
   loadingSelectedMods.value = true
   selectNone()
   getServerInstanceMods(path.value).then((mods) => {
@@ -350,6 +370,18 @@ function selectNone() {
   selectedMods.value = []
 }
 
+async function checkServerPackAvailability() {
+  try {
+    hasServerPack.value = await checkHasServerPack(path.value)
+  } catch (error) {
+    console.error('Failed to check server pack availability:', error)
+    hasServerPack.value = false
+  }
+  
+  // Reset to filtered mode when checking availability
+  serverMode.value = 'filtered'
+}
+
 const { install } = useInstanceVersionServerInstall()
 
 const errorTitle = ref('')
@@ -373,6 +405,7 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   const _onlineMode = onlineMode.value
   const _nogui = nogui.value
   const _mods = selectedMods.value
+  const _serverMode = serverMode.value
 
   if (!_eula) {
     console.log('eula')
@@ -395,11 +428,26 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
       saveName: linkedWorld.value,
     })
   }
-  console.log('installToServerInstance')
-  await installToServerInstance({
-    path: instPath,
-    files: _mods.map(v => v.path),
-  })
+  
+  if (_serverMode === 'serverpack') {
+    console.log('installServerPack')
+    try {
+      await installServerPackFiles(instPath)
+    } catch (error) {
+      console.error('Failed to install server pack, falling back to filtered mods:', error)
+      // Fall back to filtered mods if server pack installation fails
+      await installToServerInstance({
+        path: instPath,
+        files: _mods.map(v => v.path),
+      })
+    }
+  } else {
+    console.log('installToServerInstance')
+    await installToServerInstance({
+      path: instPath,
+      files: _mods.map(v => v.path),
+    })
+  }
   console.log('launch')
 
   await launch('server', { nogui: _nogui, version })

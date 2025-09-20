@@ -47,12 +47,18 @@ export function createModrinthHandler(app: LauncherApp): ModpackHandler<Modrinth
         if (e.fileName.startsWith(prefix + '/client-overrides')) {
           return e.fileName.substring((prefix + '/client-overrides').length + 1)
         }
+        if (e.fileName.startsWith(prefix + '/server-overrides')) {
+          return e.fileName.substring((prefix + '/server-overrides').length + 1)
+        }
       } else {
         if (e.fileName.startsWith('overrides')) {
           return e.fileName.substring('overrides/'.length)
         }
         if (e.fileName.startsWith('client-overrides')) {
           return e.fileName.substring('client-overrides/'.length)
+        }
+        if (e.fileName.startsWith('server-overrides')) {
+          return e.fileName.substring('server-overrides/'.length)
         }
       }
     },

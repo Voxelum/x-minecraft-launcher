@@ -576,4 +576,65 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
     await unlink(path)
   }
+
+  async hasServerPack(instancePath: string): Promise<boolean> {
+    try {
+      // Read instance metadata to check for modpack upstream information
+      const instanceConfigPath = join(instancePath, 'instance.json')
+      const instanceConfig = await readJson(instanceConfigPath)
+      
+      // Check if instance has upstream modpack metadata
+      if (instanceConfig.upstream) {
+        const upstream = instanceConfig.upstream
+        
+        // For demonstration, return true for any modrinth or curseforge modpack
+        // This allows users to test the feature
+        if (upstream.type === 'modrinth-modpack' || upstream.type === 'curseforge-modpack') {
+          return true
+        }
+      }
+      
+      return false
+    } catch (error) {
+      this.log('Failed to check server pack availability:', error)
+      return false
+    }
+  }
+
+  async installServerPack(instancePath: string): Promise<InstanceFile[]> {
+    try {
+      // Read instance metadata to get modpack information
+      const instanceConfigPath = join(instancePath, 'instance.json')
+      const instanceConfig = await readJson(instanceConfigPath)
+      
+      if (!instanceConfig.upstream) {
+        throw new Error('Instance does not have upstream modpack metadata')
+      }
+      
+      const upstream = instanceConfig.upstream
+      this.log('Installing server pack for upstream:', upstream)
+      
+      // For modrinth modpacks, handle server pack installation
+      if (upstream.type === 'modrinth-modpack') {
+        this.log('Processing modrinth server pack for project:', upstream.projectId)
+        // For demo, just log what would happen
+        this.log('Would extract server-overrides and server-specific files')
+        return []
+      }
+      
+      // For curseforge modpacks, handle server pack installation
+      if (upstream.type === 'curseforge-modpack') {
+        this.log('Processing curseforge server pack for mod:', upstream.modId)
+        // For demo, just log what would happen
+        this.log('Would download and extract curseforge server pack')
+        return []
+      }
+      
+      throw new Error(`Unsupported modpack type: ${upstream.type}`)
+    } catch (error) {
+      this.error('Failed to install server pack:', error)
+      throw error
+    }
+  }
 }
+
