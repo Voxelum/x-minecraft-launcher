@@ -2,7 +2,6 @@ import { getCursforgeFileModLoaders, getCursforgeModLoadersFromString, getModLoa
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
 import { getSWRV } from '@/util/swrvGet'
-import { RuntimeVersions } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { getCurseforgeProjectFilesModel, getCurseforgeProjectModel } from './curseforge'
 import { getCurseforgeDependenciesModel } from './curseforgeDependencies'
@@ -13,6 +12,7 @@ import { getModrinthProjectModel } from './modrinthProject'
 import { getModrinthVersionModel } from './modrinthVersions'
 import { kSWRVConfig } from './swrvConfig'
 import { useNotifier } from './notifier'
+import { RuntimeVersions } from '@xmcl/instance'
 
 /**
  * Provide default install for the project

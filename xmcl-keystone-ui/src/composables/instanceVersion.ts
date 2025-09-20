@@ -1,9 +1,10 @@
 import type { ResolvedVersion, VersionParseError } from '@xmcl/core'
-import { findMatchedVersion, getResolvedVersionHeader, Instance, InstanceServiceKey, RuntimeVersions, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
+import { findMatchedVersion, getResolvedVersionHeader, InstanceServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
+import { Instance, RuntimeVersions } from '@xmcl/instance'
 
 export const kInstanceVersion: InjectionKey<ReturnType<typeof useInstanceVersion>> = Symbol('InstanceVersion')
 
@@ -65,9 +66,10 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     }
   }
 
-  const resolvedVersion = ref<InstanceResolveVersion | undefined>(undefined)
+  const resolvedVersion = shallowRef<InstanceResolveVersion | undefined>(undefined)
   const { editInstance } = useService(InstanceServiceKey)
   const { refreshing: isValidating, refresh: mutate, error } = useRefreshable<Instance>(async (i) => {
+    console.log('refresh instance version', i.path, i.version, i.runtime)
     const _path = i.path
     if (!_path) {
       return undefined
@@ -86,10 +88,10 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     const _version = i.version
     const start = performance.now()
     const version = await getResolvedVersion(header, _version)
-    console.log('getResolvedVersion', performance.now() - start, 'ms')
+    console.log('getResolvedVersion', performance.now() - start, 'ms', 'version:', version?.id || 'not installed')
     if (instance.value.version !== _version ||
-      header !== versionHeader.value ||
       _path !== instance.value.path) {
+      console.log('instance changed during version resolving, skip applying the resolved version', 'instance:', instance.value, 'path:', _path)
       return
     }
     if (version) {
@@ -122,6 +124,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
 
     const unresolvedVersion: UnresolvedVersion = { requirements: { ...instance.value.runtime }, version: _version, instance: _path }
 
+    console.log('set resolved version', version ? version.id : 'unresolved')
     resolvedVersion.value = version
       ? { ...version, ...unresolvedVersion }
       : unresolvedVersion

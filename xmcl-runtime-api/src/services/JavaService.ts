@@ -1,9 +1,8 @@
-import { JavaVersion } from '@xmcl/core'
-import { JavaRecord } from '../entities/java'
-import { Java } from '../entities/java.schema'
-import { SharedState } from '../util/SharedState'
-import { ServiceKey } from './Service'
-import { JavaRuntimeTarget, JavaRuntimeTargetType, JavaRuntimes } from '@xmcl/installer'
+import type { JavaVersion } from '@xmcl/core'
+import type { JavaRecord } from '../entities/java'
+import type { Java } from '../entities/java.schema'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 
 export class JavaState {
   all = [] as JavaRecord[]

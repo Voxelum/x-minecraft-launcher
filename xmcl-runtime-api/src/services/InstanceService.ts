@@ -1,9 +1,9 @@
-import { Instance } from '../entities/instance'
-import { InstanceSchema } from '../entities/instance.schema'
-import { SharedState } from '../util/SharedState'
-import { DeepPartial } from '../util/object'
-import { InvalidDirectoryErrorCode } from './BaseService'
-import { ServiceKey } from './Service'
+import type { EditInstanceOptions, Instance } from '@xmcl/instance'
+import type { InstanceModpackMetadataSchema, InstanceSchema } from '../entities/instance.schema'
+import type { SharedState } from '../util/SharedState'
+import type { DeepPartial } from '../util/object'
+import type { InvalidDirectoryErrorCode } from './BaseService'
+import type { ServiceKey } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
@@ -20,16 +20,8 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
    */
   shaderpacks?: boolean
 }
-export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runtime' | 'server'>> {
-  resolution?: InstanceSchema['resolution']
-  runtime?: InstanceSchema['runtime']
-  /**
-   * If this is undefined, it will disable the server of this instance
-   */
-  server?: InstanceSchema['server']
-}
 
-export class InstanceState {
+export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
   /**
    * All loaded launch instances
    */
@@ -104,6 +96,7 @@ export class InstanceState {
         inst.runtime.neoForged = ''
         inst.runtime.liteloader = ''
         inst.runtime.optifine = ''
+        inst.version = ''
       }
 
       for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
@@ -204,6 +197,10 @@ export interface InstanceService {
   acquireInstanceById(id: string): Promise<string>
 
   validateInstancePath(path: string): Promise<InvalidDirectoryErrorCode>
+
+  getInstanceModpackMetadata(path: string): Promise<InstanceModpackMetadataSchema | undefined>
+
+  setInstanceModpackMetadata(path: string, metadata: InstanceModpackMetadataSchema | undefined): Promise<void>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'

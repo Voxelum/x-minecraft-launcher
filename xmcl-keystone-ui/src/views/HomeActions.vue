@@ -3,44 +3,10 @@
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
       'grid-template-columns': `repeat(${
-        instance && !instance.upstream ? 5 : 4
+        instance && !instance.upstream ? 3 : 3
       }, minmax(0, 1fr))`,
     }"
   >
-    <v-speed-dial open-on-hover>
-      <template #activator>
-        <v-btn
-          v-shared-tooltip.left="() => t('modpack.export')"
-          text
-          icon
-          :loading="isValidating"
-          @click="showExport()"
-        >
-          <v-icon> share </v-icon>
-        </v-btn>
-      </template>
-
-      <v-btn
-        v-shared-tooltip.left="() => t('server.export')"
-        icon
-        :loading="isValidating"
-        @click="showExportServer()"
-      >
-        <v-icon> ios_share </v-icon>
-      </v-btn>
-    </v-speed-dial>
-
-    <v-btn
-      v-if="instance && !instance.upstream"
-      v-shared-tooltip="() => t('instance.installModpack')"
-      text
-      icon
-      :loading="isValidating || loading"
-      @click="onClickInstallFromModpack()"
-    >
-      <v-icon> drive_folder_upload </v-icon>
-    </v-btn>
-
     <v-btn
       v-shared-tooltip="() => t('logsCrashes.title')"
       text
@@ -61,15 +27,49 @@
       <v-icon> folder </v-icon>
     </v-btn>
 
-    <v-btn
-      v-shared-tooltip="() => t('baseSetting.title', 2)"
-      text
-      icon
-      :loading="isValidating"
-      to="/base-setting"
+    <v-speed-dial
+      :direction="'bottom'"
+      :open-on-hover="true"
     >
-      <v-icon> tune </v-icon>
-    </v-btn>
+      <template #activator>
+        <v-btn
+          v-shared-tooltip="() => t('baseSetting.title', 2)"
+          text
+          icon
+          :loading="isValidating"
+          to="/base-setting"
+        >
+          <v-icon> settings </v-icon>
+        </v-btn>
+      </template>
+      <v-btn
+        v-shared-tooltip.left="() => t('modpack.export')"
+        text
+        icon
+        :loading="isValidating"
+        to="/base-setting?target=modpack"
+      >
+        <v-icon> share </v-icon>
+      </v-btn>
+      <v-btn
+        v-shared-tooltip.left="() => t('server.export')"
+        icon
+        :loading="isValidating"
+        @click="showExportServer()"
+      >
+        <v-icon> ios_share </v-icon>
+      </v-btn>
+      <v-btn
+        v-if="instance && !instance.upstream"
+        v-shared-tooltip.left="() => t('instance.installModpack')"
+        text
+        icon
+        :loading="isValidating || loading"
+        @click="onClickInstallFromModpack()"
+      >
+        <v-icon> drive_folder_upload </v-icon>
+      </v-btn>
+    </v-speed-dial>
   </div>
 </template>
 
@@ -87,7 +87,6 @@ import {
 } from "@xmcl/runtime-api";
 import { useDialog } from "../composables/dialog";
 import {
-  AppExportDialogKey,
   AppExportServerDialogKey,
 } from "../composables/instanceExport";
 
@@ -95,7 +94,6 @@ const { path, instance } = injection(kInstance);
 const { isValidating } = injection(kInstances);
 const { openDirectory } = useService(BaseServiceKey);
 const { show: showLogDialog } = useDialog("log");
-const { show: showExport } = useDialog(AppExportDialogKey);
 const { show: showExportServer } = useDialog(AppExportServerDialogKey);
 const { show: showInstanceInstallDialog } = useDialog(InstanceInstallDialog);
 const { openModpack } = useService(ModpackServiceKey);

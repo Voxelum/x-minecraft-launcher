@@ -1,17 +1,17 @@
 import { isNotNull } from '@xmcl/core/utils'
 import { DownloadTask } from '@xmcl/installer'
-import { ModMetadataService as IModMetadataService, ModMetadata, ModMetadataServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
+import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
 import { Kysely } from 'kysely'
 import { Database as SQLDatabase } from 'node-sqlite3-wasm'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
-import { ResourceManager } from '~/resource'
+import { kTaskExecutor, type TaskFn } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { SqliteWASMDialect } from '~/sql'
-import { TaskFn, kTaskExecutor } from '~/task'
+import { jsonObjectFrom } from '~/sql/sqlHelper'
 import { checksumFromStream } from '~/util/fs'
 import { isNonnull } from '~/util/object'
-import { jsonObjectFrom } from '~/sql/sqlHelper'
 
 interface Database {
   file: {

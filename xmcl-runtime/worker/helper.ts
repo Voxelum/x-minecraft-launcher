@@ -1,6 +1,6 @@
 import { MessagePort, parentPort } from 'worker_threads'
-import { getSerializedError } from '~/util/error'
 import type { WorkPayload } from './index'
+import { getSerializedError } from '~/infra/errors'
 
 if (parentPort !== null) {
   main(parentPort)

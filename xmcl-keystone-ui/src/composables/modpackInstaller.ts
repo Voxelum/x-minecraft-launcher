@@ -1,9 +1,10 @@
 import { injection } from '@/util/inject'
-import { InstallMarketOptions, InstanceData, MarketType, ModpackServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { MarketType, ModpackServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
+import { InstanceData } from '@xmcl/instance'
 
 export type InstallModpackOptions = {
   market: MarketType.CurseForge

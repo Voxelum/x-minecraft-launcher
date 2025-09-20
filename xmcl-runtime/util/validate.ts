@@ -1,8 +1,8 @@
 import { Platform } from '@xmcl/runtime-api'
+import { isSystemError } from '@xmcl/utils'
 import { randomBytes } from 'crypto'
 import { existsSync, mkdir, readdir, rmdir, stat, unlink, writeFile } from 'fs-extra'
 import { dirname, join, resolve } from 'path'
-import { isSystemError } from '../util/error'
 
 async function isExistedXMCLDir(path: string) {
   const versions = join(path, 'versions')

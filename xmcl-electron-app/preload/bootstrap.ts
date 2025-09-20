@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import { Bootstrap } from '@xmcl/runtime-api'
+import type { Bootstrap } from '@xmcl/runtime-api'
 
 const bootstrap: Bootstrap = {
   preset() {

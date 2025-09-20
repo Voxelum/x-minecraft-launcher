@@ -132,6 +132,7 @@ function getIcon(file: InstanceFileNode<any>) {
 
   .select-checkbox {
     padding-top: 0;
-    margin-top: 0
+    margin-top: 0;
+    display: flex;
   }
 </style>

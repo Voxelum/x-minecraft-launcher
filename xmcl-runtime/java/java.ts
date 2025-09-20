@@ -1,6 +1,6 @@
 import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
-import { isSystemError } from '../util/error'
+import { isSystemError } from '@xmcl/utils'
 import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Platform } from '@xmcl/runtime-api'

@@ -6,6 +6,7 @@
       position: 'relative',
       width: '100%',
       marginTop: `${-offsetTop}px`,
+      zIndex: 0,
     }"
   >
     <div
@@ -18,7 +19,8 @@
         top: 0,
         left: 0,
         width: '100%',
-        transform: `translateY(${virtualRow.start}px)`
+        transform: `translateY(${virtualRow.start}px)`,
+        zIndex: 0,
       }"
     >
       <InstanceManifestFileItem
@@ -49,6 +51,7 @@ import { injection } from '@/util/inject'
 import { useVirtualizer, VirtualItem, VirtualizerOptions } from '@tanstack/vue-virtual'
 import InstanceManifestFileItem from './InstanceManifestFileItem.vue'
 import { flatTree, treeItemKey, TreeItem } from '@/util/tree'
+import { useVModel } from '@vueuse/core'
 
 const props = defineProps<{
   value: string[]
@@ -56,6 +59,11 @@ const props = defineProps<{
   openAll?: boolean
   scrollElement?: HTMLElement | null
 }>()
+
+const emit = defineEmits<{
+  (e: 'input', value: string[]): void
+}>()
+const model = useVModel(props, 'value', emit, { eventName: 'input' })
 
 const { t } = useI18n()
 
@@ -98,10 +106,13 @@ const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
 const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
   if (item.data.children) {
     if (checkedFolders.value.includes(item.data.path)) {
+      const newModel = []
       for (let i = props.value.length - 1; i > 0; i--) {
         const v = props.value[i]
-        if (v.startsWith(item.data.path + '/')) props.value.splice(i, 1)
+        if (v.startsWith(item.data.path + '/')) continue
+        newModel.push(v)
       }
+      model.value = newModel.reverse()
     } else {
       const targets: string[] = []
 
@@ -123,12 +134,12 @@ const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
 
       recurse(files.value)
 
-      props.value.push(...targets)
+      model.value = [...props.value, ...targets]
     }
   } else {
     const idx = props.value.indexOf(item.data.path)
-    if (idx >= 0) props.value.splice(idx, 1)
-    else props.value.push(item.data.path)
+    if (idx >= 0) model.value = props.value.filter((v, i) => i !== idx)
+    else model.value = [...props.value, item.data.path]
   }
 }
 

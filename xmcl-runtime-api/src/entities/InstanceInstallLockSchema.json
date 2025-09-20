@@ -18,29 +18,16 @@
             "type": "string"
         },
         "version": {
-            "description": "The instance lock",
+            "description": "The instance lock version",
             "default": 1,
             "type": "number"
         },
         "upstream": {
-            "description": "The upstream data for this locked instance file state",
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/ModrinthUpstream"
-                },
-                {
-                    "$ref": "#/definitions/CurseforgeUpstream"
-                },
-                {
-                    "$ref": "#/definitions/FTBUpstream"
-                },
-                {
-                    "$ref": "#/definitions/PeerUpstream"
-                }
-            ]
+            "$ref": "#/definitions/InstanceUpstream",
+            "description": "The upstream data for this locked instance file state"
         },
         "files": {
-            "description": "All the files accociated with current upstream",
+            "description": "All the files associated with current upstream",
             "type": "array",
             "items": {
                 "$ref": "#/definitions/InstanceFile"
@@ -61,14 +48,30 @@
         "workspace"
     ],
     "definitions": {
+        "InstanceUpstream": {
+            "description": "Union type for all possible upstream configurations",
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/ModrinthUpstream"
+                },
+                {
+                    "$ref": "#/definitions/CurseforgeUpstream"
+                },
+                {
+                    "$ref": "#/definitions/FTBUpstream"
+                },
+                {
+                    "$ref": "#/definitions/PeerUpstream"
+                }
+            ]
+        },
         "ModrinthUpstream": {
+            "description": "Modrinth modpack upstream configuration",
             "type": "object",
             "properties": {
                 "type": {
                     "type": "string",
-                    "enum": [
-                        "modrinth-modpack"
-                    ]
+                    "const": "modrinth-modpack"
                 },
                 "projectId": {
                     "type": "string"
@@ -87,13 +90,12 @@
             ]
         },
         "CurseforgeUpstream": {
+            "description": "Curseforge modpack upstream configuration",
             "type": "object",
             "properties": {
                 "type": {
                     "type": "string",
-                    "enum": [
-                        "curseforge-modpack"
-                    ]
+                    "const": "curseforge-modpack"
                 },
                 "modId": {
                     "type": "number"
@@ -112,13 +114,12 @@
             ]
         },
         "FTBUpstream": {
+            "description": "FTB modpack upstream configuration",
             "type": "object",
             "properties": {
                 "type": {
                     "type": "string",
-                    "enum": [
-                        "ftb-modpack"
-                    ]
+                    "const": "ftb-modpack"
                 },
                 "id": {
                     "type": "number"
@@ -134,13 +135,12 @@
             ]
         },
         "PeerUpstream": {
+            "description": "Peer upstream configuration (for local sharing)",
             "type": "object",
             "properties": {
                 "type": {
                     "type": "string",
-                    "enum": [
-                        "peer"
-                    ]
+                    "const": "peer"
                 },
                 "id": {
                     "type": "string"

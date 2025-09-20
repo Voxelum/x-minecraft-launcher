@@ -1,15 +1,15 @@
 import { ThemeService as IThemeService, MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
-import { LauncherApp } from '../app/LauncherApp'
-import { Inject, LauncherAppKey } from '~/app'
-import { AbstractService, ExposeServiceKey } from '~/service'
-import { fromFile } from 'file-type'
-import { basename, join } from 'path'
-import { ensureDir, remove, copyFile, unlink, writeJson, existsSync, readJSON, readdir } from 'fs-extra'
-import { ZipTask } from '~/util/zip'
-import { kTaskExecutor } from '~/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
+import { fromFile } from 'file-type'
 import { createWriteStream } from 'fs'
+import { copyFile, ensureDir, existsSync, readJSON, readdir, remove, unlink, writeJson } from 'fs-extra'
+import { basename, join } from 'path'
 import { pipeline } from 'stream/promises'
+import { Inject, LauncherAppKey } from '~/app'
+import { kTaskExecutor } from '~/infra'
+import { AbstractService, ExposeServiceKey } from '~/service'
+import { ZipTask } from '~/util/zip'
+import { LauncherApp } from '../app/LauncherApp'
 
 @ExposeServiceKey(ThemeServiceKey)
 export class ThemeService extends AbstractService implements IThemeService {

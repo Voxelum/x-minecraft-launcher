@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="isShown" width="800">
-    <v-card class="select-none overflow-auto flex flex-col">
+    <v-card class="select-none overflow-hidden flex flex-col">
       <v-toolbar class="flex-1 flex-grow-0 rounded-none" tabs color="green en">
         <v-toolbar-title class="text-white">
           {{ t('instance.launchServer') }}

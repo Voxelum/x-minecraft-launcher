@@ -7,9 +7,9 @@ import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
-import { isSystemError } from '../util/error'
+import { isSystemError } from '@xmcl/utils'
 import { handleMigrateRoot } from './migrate'
 import { listen } from '../util/server'
 import { createDummyLogger } from './DummyLogger'
@@ -97,6 +97,8 @@ export class LauncherApp extends EventEmitter {
    * The version of the launcher
    */
   get version() { return this.host.getVersion() }
+
+  get systemLocale() { return this.host.getLocale() }
 
   get userAgent() {
     const version = IS_DEV ? '0.0.0' : this.host.getVersion()

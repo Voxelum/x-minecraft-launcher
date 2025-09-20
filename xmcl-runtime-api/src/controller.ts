@@ -135,6 +135,10 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
     matchCase?: boolean
   }): void
 
+  startProfiling(): void
+
+  stopProfiling(): void
+
   stopFindInPage(): void
 
   showOpenDialog(options: OpenDialogOptions): Promise<{

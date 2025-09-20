@@ -11,8 +11,8 @@ import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEn
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
-import { WorkerQueue } from '../util/aggregator'
 import { RTCDuplexChannel } from './RTCDuplexChannel'
+import { WorkerQueue } from '@xmcl/utils'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}

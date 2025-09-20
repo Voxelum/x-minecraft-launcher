@@ -1,8 +1,9 @@
 import { useService } from '@/composables'
 import { useSWRVConfig } from '@/composables/swrvConfig'
 import { getFabricGameVersionsModel, getFabricLoaderVersionsModel, getForgeVersionsModel, getLatestNeoforge, getNeoForgedVersionModel, getQuiltGameVersionsModel, getQuiltLoaderVersionsModel } from '@/composables/version'
-import { InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { getSWRV } from '../util/swrvGet'
+import { RuntimeVersions } from '@xmcl/instance'
 
 export function useInstanceModLoaderDefault() {
   const config = useSWRVConfig()

@@ -1,7 +1,6 @@
-import { SharedState } from '../util/SharedState'
-import { InstanceUpstream } from '../entities/instance.schema'
-import { InstanceFile } from '../entities/instanceManifest.schema'
-import { ServiceKey } from './Service'
+import type { InstanceFile, InstanceUpstream } from '@xmcl/instance'
+import type { SharedState } from '../util/SharedState'
+import type { ServiceKey } from './Service'
 
 export type InstanceFileUpdate = {
   file: InstanceFile

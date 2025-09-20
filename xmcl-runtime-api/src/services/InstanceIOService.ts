@@ -1,8 +1,8 @@
-import { InstanceFile } from '../entities/instanceManifest.schema'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { CreateInstanceOption } from './InstanceService'
 import { ServiceKey } from './Service'
 import { LaunchOptions } from './LaunchService'
+import type { InstanceFile } from '@xmcl/instance'
 
 export interface ExportInstanceOptions {
   /**
@@ -100,12 +100,6 @@ export interface ExportInstanceAsServerOptions {
  * Provide the abilities to import/export instance from/to modpack
  */
 export interface InstanceIOService {
-  /**
-   * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
-   * @param options The export instance options
-   */
-  exportInstance(options: ExportInstanceOptions): Promise<void>
-
   getGameDefaultPath(type?: 'modrinth' | 'modrinth-instances' | 'curseforge' | 'vanilla'): Promise<string>
   /**
    * Parse other launcher data folder to get the instances

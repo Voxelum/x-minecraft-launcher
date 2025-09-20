@@ -1,9 +1,11 @@
 import { checksum } from '@xmcl/core'
-import { XUpdateService as IXUpdateService, InstanceFile, InstanceIOException, InstanceManifest, InstanceUpdate, SetInstanceManifestOptions } from '@xmcl/runtime-api'
+import type { InstanceFile } from '@xmcl/instance'
+import { InstanceIOException, type XUpdateService as IXUpdateService, type InstanceManifest, type InstanceUpdate, type SetInstanceManifestOptions } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { createReadStream } from 'fs'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
+import { Readable } from 'stream'
 import { Inject, LauncherAppKey, kTempDataPath } from '~/app'
 import { InstanceService } from '~/instance'
 import { AbstractService, Singleton } from '~/service'
@@ -12,7 +14,6 @@ import { LauncherApp } from '../app/LauncherApp'
 import { missing } from '../util/fs'
 import { isValidUrl, joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
-import { Readable } from 'stream'
 
 export class XUpdateService extends AbstractService implements IXUpdateService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,

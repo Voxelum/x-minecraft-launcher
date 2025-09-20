@@ -10,7 +10,8 @@ import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModMinecraftVersion, isModFile } from '@/util/mod'
 import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
-import { InstanceModsServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
 
 const props = defineProps<{
   mod: ProjectEntry<ModFile>

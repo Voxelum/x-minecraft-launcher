@@ -11,12 +11,13 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { getSWRV } from '@/util/swrvGet'
-import { CachedFTBModpackVersionManifest, FTBModpackVersionManifest, FTBUpstream } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, FTBModpackVersionManifest } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { UpstreamHeaderProps } from './HomeUpstreamHeader.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 import { useMarkdown } from '@/composables/markdown'
+import { FTBUpstream } from '@xmcl/instance'
 
 const props = defineProps<{
   id: number

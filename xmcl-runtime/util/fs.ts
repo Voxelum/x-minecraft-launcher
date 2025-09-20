@@ -1,6 +1,7 @@
 import { checksum } from '@xmcl/core'
 import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
+import { AnyError, isSystemError } from '@xmcl/utils'
 import { createHash } from 'crypto'
 import { constants, existsSync } from 'fs'
 import { access, close, copyFile, ensureDir, ensureFile, link, open, read, readdir, stat, symlink, unlink } from 'fs-extra'
@@ -8,8 +9,7 @@ import { platform } from 'os'
 import { extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
-import { Logger } from '~/logger'
-import { AnyError, isSystemError } from './error'
+import { Logger } from '~/infra'
 
 const pip = promisify(pipeline)
 

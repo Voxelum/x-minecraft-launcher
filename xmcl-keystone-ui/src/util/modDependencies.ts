@@ -1,5 +1,6 @@
 import { ForgeModMetadata } from '@xmcl/mod-parser'
-import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, isQuiltResource, NeoforgeMetadata, Resource } from '@xmcl/runtime-api'
+import { FabricResource, ForgeResource, Resource, isFabricResource, isForgeResource, isLiteloaderResource, isQuiltResource } from '@xmcl/resource'
+import { NeoforgeMetadata } from '@xmcl/runtime-api'
 
 export type ModDependencies = ModDependency[]
 

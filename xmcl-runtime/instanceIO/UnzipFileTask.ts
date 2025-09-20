@@ -1,4 +1,4 @@
-import { InstanceFile } from '@xmcl/runtime-api'
+import { InstanceFile } from '@xmcl/instance'
 import { AbortableTask } from '@xmcl/task'
 import { openEntryReadStream } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
@@ -7,8 +7,8 @@ import { dirname } from 'path'
 import { pipeline } from 'stream/promises'
 import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
-import { isSystemError } from '~/util/error'
-import { ZipManager } from '~/zipManager/ZipManager'
+import { isSystemError } from '@xmcl/utils'
+import { ZipManager } from '~/infra'
 
 export class UnzipFileTask extends AbortableTask<void> {
   #abortController = new AbortController()

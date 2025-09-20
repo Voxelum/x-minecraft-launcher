@@ -1,7 +1,7 @@
 import { Schema } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'atomically'
 import { copyFile, ensureFile, writeFile as writeFileOriginal } from 'fs-extra'
-import { Logger } from '~/logger'
+import { Logger } from '~/infra'
 import { missing } from './fs'
 import { SafeJsonSerializer } from './serialize'
 

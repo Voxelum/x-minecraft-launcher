@@ -30,6 +30,9 @@ export interface Environment extends Platform {
    * The current build number
    */
   build: number
+
+  region: string
+
   gfw: boolean
 }
 

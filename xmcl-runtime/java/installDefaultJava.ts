@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core';
 import { DEFAULT_RUNTIME_ALL_URL, JavaRuntimeTargetType, JavaRuntimes } from '@xmcl/installer';
 import { LauncherApp } from '~/app';
-import { kGFW } from '~/gfw';
+import { kGFW } from '~/infra';
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings';
 
 function normalizeUrls(url: string, fileHost?: string | string[]): string[] {

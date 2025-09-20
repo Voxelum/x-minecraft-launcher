@@ -42,7 +42,7 @@
         <div
           v-else
           :key="1"
-          class="flex flex-col overflow-y-auto overflow-x-hidden"
+          class="flex flex-col overflow-y-auto visible-scroll max-h-[70vh] overflow-x-hidden"
         >
           <v-card-title primary-title>
             {{ showedFile }}
@@ -62,6 +62,7 @@
             v-if="log"
             :logs="logs"
           />
+          <pre v-else class="mx-5 mb-5 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
         </div>
       </Transition>
     </div>
@@ -98,7 +99,7 @@ const openFile = async (name: string) => {
 }
 const pending = computed(() => props.refreshing || loading.value)
 const logs = computed(() => {
-  const lines = content.value.split('\n').map(l => l.replace('\r', ''))
+  const lines = content.value.split(/[\r?\n]/g)
   const logLines = [] as string[]
   for (const line of lines) {
     if (line.startsWith('[')) {

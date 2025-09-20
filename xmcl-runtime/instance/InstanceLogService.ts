@@ -1,14 +1,14 @@
-import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
+import { InstanceLogServiceKey, type InstanceLogService as IInstanceLogService } from '@xmcl/runtime-api'
 import { readFile, unlink } from 'fs-extra'
 import { isAbsolute, join } from 'path'
+import { Inject, LauncherAppKey } from '~/app'
+import { kEncodingWorker, type EncodingWorker } from '~/encoding'
+import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey, Inject } from '~/app'
-import { EncodingWorker, kEncodingWorker } from '~/encoding'
 import { UTF8 } from '../util/encoding'
+import { AnyError, isSystemError } from '@xmcl/utils'
 import { ENOENT_ERROR, readdirIfPresent } from '../util/fs'
 import { gunzip } from '../util/zip'
-import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
-import { AnyError, isSystemError } from '../util/error'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.

@@ -1,23 +1,27 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
+import { InstanceFileOperationHandler as InstanceFileOperationHandlerV2, computeFileUpdates, type InstanceFile, type InstanceUpstream } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { File, InstanceInstallService as IInstanceInstallService, InstallFileError, InstallInstanceOptions, InstanceFile, InstanceFileUpdate, InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, InstanceUpstream, LockKey, ResourceMetadata, SharedState, isUpstreamIsSameOrigin } from '@xmcl/runtime-api'
+import { ResourceManager, getDomainedPath, getFile, type File, type ResourceMetadata } from '@xmcl/resource'
+import { InstanceInstallLockSchema, InstanceInstallServiceKey, InstanceInstallStatus, InstanceLockSchema, LockKey, isUpstreamIsSameOrigin, type InstanceInstallService as IInstanceInstallService, type InstallFileError, type InstallInstanceOptions, type InstanceFileUpdate, type SharedState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
+import { AnyError, isSystemError } from '@xmcl/utils'
 import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
 import { readFile, readJSON, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, join, resolve } from 'path'
 import { Inject, LauncherApp, LauncherAppKey } from '~/app'
+import { ZipManager, kTaskExecutor, type TaskFn } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
-import { ResourceManager, ResourceWorker, kResourceWorker } from '~/resource'
-import { getDomainedPath } from '~/resource/core/snapshot'
+import { kDownloadOptions } from '~/network'
+import { kPeerFacade } from '~/peer'
+import { kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
-import { TaskFn, kTaskExecutor } from '~/task'
 import { createSafeIO } from '~/util/persistance'
-import { AnyError, isSystemError } from '../util/error'
-import { InstanceFileOperationHandler } from './InstanceFileOperationHandler'
-import { ResolveInstanceFileTask } from './ResolveInstanceFileTask'
-import { computeFileUpdates } from './computeFileUpdate'
+import { UnzipFileTask } from './UnzipFileTask'
+import { InstanceFileDownloadTask } from './utils/InstanceFileDownloadTask'
+import { InstanceFileOperationTask } from './utils/InstanceFileOperationTask'
+import { ResolveInstanceFileTask } from './utils/ResolveInstanceFileTask'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -100,11 +104,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
   async #getDelta(instancePath: string, lockState: InstanceLockSchema | undefined, newUpstream: InstanceUpstream, newFiles: InstanceFile[]) {
     let fileDelta: InstanceFileUpdate[] = []
+    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32, join }
 
     if (lockState) {
       // check if upstream are the same
       if (isUpstreamIsSameOrigin(newUpstream, lockState.upstream)) {
-        fileDelta = await computeFileUpdates(instancePath, lockState.files, newFiles, lockState.mtime, this.getSha1, this.getCrc32)
+        fileDelta = await computeFileUpdates(instancePath, lockState.files, newFiles, lockState.mtime, fs)
       } else {
         throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
       }
@@ -113,12 +118,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
       if (legacy) {
         const { upstream, files } = legacy
         if (isUpstreamIsSameOrigin(newUpstream, upstream)) {
-          fileDelta = await computeFileUpdates(instancePath, files, newFiles, undefined, this.getSha1, this.getCrc32)
+          fileDelta = await computeFileUpdates(instancePath, files, newFiles, undefined, fs)
         } else {
           throw new AnyError('InstanceUpstreamError', 'The instance is locked by another upstream')
         }
       } else {
-        fileDelta = await computeFileUpdates(instancePath, [], newFiles, undefined, this.getSha1, this.getCrc32)
+        fileDelta = await computeFileUpdates(instancePath, [], newFiles, undefined, fs)
       }
     }
     return fileDelta
@@ -134,17 +139,45 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const curseforgeClient = this.curseforgeClient
     const modrinthClient = this.modrinthClient
-    const resourceService = this.resourceManager
+    const zipManager = await this.app.registry.getOrCreate(ZipManager)
+    const resourceToUpdate: Array<{ hash: string; metadata: ResourceMetadata; uris: string[]; destination: string }> = []
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
 
-    const handler = new InstanceFileOperationHandler(
-      this.app,
-      resourceService,
-      this.worker,
-      this,
+    const handler = new InstanceFileOperationHandlerV2(
       instancePath,
       new Set(targetState.finishedPath),
       targetState.workspace,
       targetState.backup,
+      {
+        worker: this.worker,
+        logger: this,
+        onSpecialFile: (file) => {
+          resourceToUpdate.push({
+            hash: file.hashes.sha1,
+            metadata: {
+              modrinth: file.modrinth,
+              curseforge: file.curseforge,
+            },
+            uris: file.downloads || [],
+            destination: file.path,
+          })
+        },
+        getCachedResource: (sha1) => this.resourceManager.getSnapshotByHash(sha1).then(r => r ? this.resourceManager.validateSnapshotFile(r) : undefined)
+          .then(r => r?.path),
+        getPeerActualUrl: (url) => this.app.registry.getIfPresent(kPeerFacade).then(peers => peers?.getHttpDownloadUrl(url)),
+        getUnzipTask: (payloads, finished) => new UnzipFileTask(zipManager, payloads, finished),
+        getDownloadTask: (payloads, finished) => new InstanceFileDownloadTask(payloads.map(v => ({
+          options: {
+            ...downloadOptions,
+            url: v.options.urls,
+            validator: v.options.sha1 ? { algorithm: 'sha1', hash: v.options.sha1 } : undefined,
+            destination: v.options.destination,
+            expectedTotal: v.options.size,
+          },
+          file: v.file,
+        })), finished),
+        getFileOperationTask: (payloads, finished, unhandled) => new InstanceFileOperationTask(payloads, this.app.platform, finished, unhandled),
+      },
     )
 
     const lock = this.mutex.of(LockKey.instance(instancePath))
@@ -185,7 +218,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
         await handler.backupAndRename()
 
-        await handler.updateResourceMetadata(modrinthClient)
+        // await handler.updateResourceMetadata(modrinthClient)
       })
     }, { instance: instancePath, id })
 
@@ -228,7 +261,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return delta
     }
 
-    return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), this.getSha1, this.getCrc32)
+    const fs = { getFile, getSha1: this.getSha1, getCrc32: this.getCrc32, join }
+    return await computeFileUpdates(instancePath, options.oldFiles, options.files, Date.now(), fs)
   }
 
   async resumeInstanceInstall(instancePath: string, overrides?: InstanceFile[]): Promise<void | InstallFileError[]> {

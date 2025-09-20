@@ -1,5 +1,5 @@
-import { Client, SetActivity } from '@xmcl/discord-rpc'
-import { PresenceService as IPresenceService, SharedState, PresenceServiceKey, Settings } from '@xmcl/runtime-api'
+import { Client, type SetActivity } from '@xmcl/discord-rpc'
+import { type PresenceService as IPresenceService, type SharedState, PresenceServiceKey, Settings } from '@xmcl/runtime-api'
 import { Inject, LauncherAppKey } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { kSettings } from '~/settings'

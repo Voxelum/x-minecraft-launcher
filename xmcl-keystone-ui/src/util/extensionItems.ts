@@ -1,5 +1,5 @@
 import { BuiltinImages } from '@/constant'
-import { RuntimeVersions } from '@xmcl/runtime-api'
+import { RuntimeVersions } from '@xmcl/instance'
 
 export function getExtensionItemsFromRuntime(runtime: RuntimeVersions) {
   const items = [

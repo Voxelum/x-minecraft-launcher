@@ -1,11 +1,11 @@
 import { NetworkErrorCode, NetworkException } from '@xmcl/runtime-api'
 import { LauncherApp, Shell } from '@xmcl/runtime/app'
 import { LAUNCHER_NAME } from '@xmcl/runtime/constant'
+import { AnyError } from '@xmcl/utils'
 import { Menu, app, net, shell } from 'electron'
-import { fetch as ufetch } from 'undici'
 import { stat } from 'fs-extra'
-import { isAbsolute, join } from 'path'
-import { AnyError } from '~/util/error'
+import { join } from 'path'
+import { fetch as ufetch } from 'undici'
 import { ElectronController } from './ElectronController'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { ElectronSession } from './ElectronSession'
@@ -129,6 +129,10 @@ export default class ElectronLauncherApp extends LauncherApp {
     )
     this.session = new ElectronSession(this)
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
+  }
+
+  get systemLocale(): string {
+    return app.getSystemLocale()
   }
 
   fetch: typeof fetch = async (...args: any[]) => {
