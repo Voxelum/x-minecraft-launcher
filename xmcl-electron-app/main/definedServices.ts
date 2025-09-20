@@ -19,6 +19,7 @@ import { ServerStatusService } from '@xmcl/runtime/serverStatus'
 import { ThemeService } from '@xmcl/runtime/theme'
 import { OfficialUserService, UserService } from '@xmcl/runtime/user'
 import { VersionService } from '@xmcl/runtime/version'
+import { XaeroMapsService } from '@xmcl/runtime/xaeroMaps'
 
 export const definedServices = [
   VersionMetadataService,
@@ -54,4 +55,5 @@ export const definedServices = [
   ModMetadataService,
   PeerService,
   ThemeService,
+  XaeroMapsService,
 ]
