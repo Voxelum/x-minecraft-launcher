@@ -630,4 +630,6 @@ export class ModpackService extends AbstractService implements IModpackService {
       this.error('Failed to install server pack:', error)
       throw error
     }
+  }
 }
+
