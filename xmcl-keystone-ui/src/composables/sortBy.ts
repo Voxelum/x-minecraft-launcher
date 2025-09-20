@@ -46,8 +46,10 @@ export function sort(sort: LocalSort, result: (ProjectEntry | { mtime: number; n
       const aText = 'title' in a ? (a.title) : a.name
       const bText = 'title' in b ? (b.title) : b.name
 
-      if (sort.endsWith('asc')) return aText.localeCompare(bText)
-      return bText.localeCompare(aText)
+      // Use numeric sorting to handle cases like "1-name", "2-fileName", "10-name", "20-folderName"
+      // This will sort 10 after 2, not between 1 and 2
+      if (sort.endsWith('asc')) return aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
+      return bText.localeCompare(aText, undefined, { numeric: true, sensitivity: 'base' })
     })
   }
   return result

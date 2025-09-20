@@ -5,7 +5,7 @@ import { InstanceModsGroupServiceKey, InstanceModsGroupState, ModGroupData } fro
 import { ContextMenuItem } from './contextMenu';
 import { useService } from './service';
 import { useState } from './syncableState';
-import { Ref, computed, ref, watch, onMounted, markRaw } from 'vue';
+import { Ref, computed, ref, shallowRef, watch, onMounted, markRaw } from 'vue';
 
 export type ProjectGroup<T extends ProjectFile = ProjectFile> = { name: string; projects: ProjectEntry<T>[]; mtime: number }
 
@@ -53,7 +53,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     }
   }
   
-  const groupCollapsedState = ref(loadCollapsedState())
+  const groupCollapsedState = shallowRef(loadCollapsedState())
   
   // Watch for changes and persist to localStorage
   watch(groupCollapsedState, (newState) => {
@@ -62,20 +62,26 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     } catch (error) {
       console.warn('Failed to save group collapsed state:', error)
     }
-  }, { deep: true })
+  })
   
   // Watch for path changes and reload state for new instance
   watch(path, () => {
     groupCollapsedState.value = loadCollapsedState()
   })
 
+  // Helper function to normalize file names by removing .disabled suffix
+  function normalizeFileName(fileName: string): string {
+    return fileName.endsWith('.disabled') ? fileName.slice(0, -9) : fileName
+  }
+
   const groupNames = computed(() => Object.keys(instanceModGroupping.value))
 
   function group(fileNames: string[]) {
     const newVal = { ...instanceModGroupping.value }
-    const newGroupName = fileNames.join(',')
+    const normalizedFileNames = fileNames.map(normalizeFileName)
+    const newGroupName = normalizedFileNames.join(',')
     newVal[newGroupName] = {
-      files: fileNames,
+      files: normalizedFileNames,
       color: '',
     }
     instanceModGroupping.value = newVal
@@ -113,8 +119,8 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     const groups = result.filter(item => 'projects' in item) as ProjectGroup<ModFile>[]
     const individuals = result.filter(item => !('projects' in item)) as ProjectEntry<ModFile>[]
     
-    // Always sort groups by name first (alphabetical)
-    groups.sort((a, b) => a.name.localeCompare(b.name))
+    // Always sort groups by name first (alphabetical with numeric sorting)
+    groups.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }))
     
     // Apply user-selected sorting to individual items
     sortFunc(sortBy.value as any, individuals)
@@ -130,7 +136,12 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     const currentGroup = instanceModGroupping.value
     for (const [groupName, group] of Object.entries(currentGroup)) {
       for (const file of group.files) {
+        // Map both original and normalized file names to handle disabled mods
         groupMap[file] = groupName
+        const normalized = normalizeFileName(file)
+        if (normalized !== file) {
+          groupMap[normalized] = groupName
+        }
       }
     }
     return groupMap
@@ -144,7 +155,13 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     const _groupMap = groupMap.value
 
     for (const i of result) {
-      const group = _groupMap[i.installed?.[0]?.fileName]
+      const fileName = i.installed?.[0]?.fileName
+      if (!fileName) continue
+      
+      // Use normalized file name for group lookup to handle disabled mods
+      const normalizedFileName = normalizeFileName(fileName)
+      const group = _groupMap[normalizedFileName]
+      
       if (group) {
         if (!resultByGroup[group]) {
           resultByGroup[group] = {
@@ -226,30 +243,35 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
       icon: 'label',
       text: t('mod.group'),
       onClick: () => {
-        group([fileName])
+        group([normalizeFileName(fileName)])
       },
       children: groupNames.value.map((g) => ({
         text: g,
         icon: '',
         onClick: () => {
           const newVal = { ...instanceModGroupping.value }
+          const normalizedFileName = normalizeFileName(fileName)
           for (const group of Object.values(newVal)) {
-            group.files = group.files.filter((f) => f !== fileName)
+            group.files = group.files.filter((f) => normalizeFileName(f) !== normalizedFileName)
           }
           const group = newVal[g]
-          group.files.push(fileName)
+          group.files.push(normalizedFileName)
           instanceModGroupping.value = newVal
         },
       })),
     })
 
-    if (instanceModGroupping.value[fileName]) {
+    if (isInGroup(fileName)) {
       result.push({
         icon: 'label_off',
         text: t('mod.ungroup'),
         onClick: () => {
           const newVal = { ...instanceModGroupping.value }
-          delete newVal[fileName]
+          const normalizedFileName = normalizeFileName(fileName)
+          // Remove from all groups using normalized filename
+          for (const group of Object.values(newVal)) {
+            group.files = group.files.filter((f) => normalizeFileName(f) !== normalizedFileName)
+          }
           instanceModGroupping.value = newVal
         },
       })
@@ -259,11 +281,11 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   }
 
   function isInGroup(fileName: string) {
-    return groupMap.value[fileName] !== undefined
+    return groupMap.value[normalizeFileName(fileName)] !== undefined
   }
 
   function getGroupColor(fileName: string) {
-    const groupName = groupMap.value[fileName]
+    const groupName = groupMap.value[normalizeFileName(fileName)]
     if (!groupName) return ''
     const group = instanceModGroupping.value[groupName]
     if (!group) return ''
@@ -279,7 +301,8 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
       const file = mod.installed?.[0]
       if (!file) continue
       const fileName = file.fileName
-      const group = groupMap.value[fileName]
+      const normalizedFileName = normalizeFileName(fileName)
+      const group = groupMap.value[normalizedFileName]
       if (group) {
         if (!currentRules[group]) {
           currentRules[group] = []
@@ -318,7 +341,9 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
       if (!file) continue
       const modId = file.modId
       const fileName = file.fileName
+      const normalizedFileName = normalizeFileName(fileName)
       const expectedGroup = modIdToGroup[modId]
+      
       if (expectedGroup) {
         if (!newVal[expectedGroup]) {
           newVal[expectedGroup] = {
@@ -328,12 +353,14 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
           newlyCreatedGroups.push(expectedGroup)
         }
         const group = newVal[expectedGroup]
-        if (!group.files.includes(fileName)) {
-          group.files.push(fileName)
+        // Store the normalized filename to handle disabled mods properly
+        if (!group.files.includes(normalizedFileName)) {
+          group.files.push(normalizedFileName)
         }
       } else {
+        // Remove from all groups using normalized filename
         for (const group of Object.values(newVal)) {
-          group.files = group.files.filter((f) => f !== fileName)
+          group.files = group.files.filter((f) => normalizeFileName(f) !== normalizedFileName)
         }
       }
     }
@@ -351,17 +378,6 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
       groupCollapsedState.value = newCollapsedState
     }
   }
-
-  // Auto-apply group rules when items change (e.g., when mods are enabled/disabled)
-  watch(items, async () => {
-    if (isLocalView.value) {
-      try {
-        await applySharedGroupRules()
-      } catch (error) {
-        console.warn('Failed to auto-apply group rules:', error)
-      }
-    }
-  }, { deep: true })
 
   return {
     isInGroup,
