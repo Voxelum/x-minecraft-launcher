@@ -44,6 +44,7 @@ import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
 import { provide } from 'vue'
 import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
+import { kModpackExport, useModpackExport } from '@/composables/modpack'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -132,6 +133,7 @@ export default defineComponent({
     provide(kTutorial, useTutorialModel())
     provide(kModrinthTags, useModrinthTags())
     provide(kCurseforgeCategories, useCurseforgeCategories())
+    provide(kModpackExport, useModpackExport())
 
     return () => ctx.slots.default?.()
   },

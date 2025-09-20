@@ -1,4 +1,5 @@
 import BaseSetting from '@/views/BaseSetting.vue'
+import BaseSettingExtension from '@/views/BaseSettingExtension.vue'
 import Home from '@/views/Home.vue'
 import HomeActions from '@/views/HomeActions.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
@@ -77,7 +78,7 @@ export const router = new Router({
           path: '/base-setting',
           components: {
             default: BaseSetting,
-            extensions: HomeExtension,
+            extensions: BaseSettingExtension,
             actions: HomeActions,
           },
         },

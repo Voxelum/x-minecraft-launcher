@@ -1,6 +1,7 @@
 <template>
   <v-list
     class="base-settings"
+    color="transparent"
   >
     <v-subheader style="">
       {{ t("BaseSettingGeneral.title") }}
