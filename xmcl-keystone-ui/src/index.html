@@ -8,10 +8,32 @@
     <link rel="stylesheet" href="./assets/google.font.css">
     <link rel="stylesheet" href="./assets/preload.css">
     <script src="http://launcher/flights"></script>
+    <style>
+        .unloaded {
+            background-color: rgb(18, 18, 18);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            overflow: hidden;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
 </head>
 
-<body class="flex-1 overflow-y-auto">
-    <div id="app"></div>
+<body class="overflow-y-auto unloaded">
+    <div id="app">
+        <img src="./assets/logo.webp" alt="Logo">
+    </div>
     <script type="module" src="./windows/main/index.ts"></script>
 </body>
 

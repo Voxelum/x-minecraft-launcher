@@ -66,6 +66,7 @@ const app = new Vue(defineComponent({
   vuetify,
   router,
   setup() {
+    document.body.classList.remove('unloaded')
     // get from to from the query
     const query = new URLSearchParams(window.location.search)
     const from = query.get('from')
