@@ -571,4 +571,77 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
     await unlink(path)
   }
+
+  async hasServerPack(instancePath: string): Promise<boolean> {
+    try {
+      // Read instance metadata to check for modpack upstream information
+      const instanceConfigPath = join(instancePath, 'instance.json')
+      const instanceConfig = await readJson(instanceConfigPath)
+      
+      // Check if instance has upstream modpack metadata
+      if (instanceConfig.upstream) {
+        const upstream = instanceConfig.upstream
+        
+        // For modrinth modpacks, check if server pack variant exists
+        if (upstream.type === 'modrinth-modpack') {
+          // TODO: Implement actual modrinth API check for server pack variant
+          return true
+        }
+        
+        // For curseforge modpacks, check if server pack variant exists  
+        if (upstream.type === 'curseforge-modpack') {
+          // TODO: Implement actual curseforge API check for server pack variant
+          return true
+        }
+      }
+      
+      return false
+    } catch (error) {
+      this.log('Failed to check server pack availability:', error)
+      return false
+    }
+  }
+
+  async installServerPack(instancePath: string): Promise<InstanceFile[]> {
+    try {
+      // Read instance metadata to get modpack information
+      const instanceConfigPath = join(instancePath, 'instance.json')
+      const instanceConfig = await readJson(instanceConfigPath)
+      
+      if (!instanceConfig.upstream) {
+        throw new Error('Instance does not have upstream modpack metadata')
+      }
+      
+      const upstream = instanceConfig.upstream
+      
+      // For modrinth modpacks, download and extract server pack
+      if (upstream.type === 'modrinth-modpack') {
+        return await this.#installModrinthServerPack(instancePath, upstream)
+      }
+      
+      // For curseforge modpacks, download and extract server pack
+      if (upstream.type === 'curseforge-modpack') {
+        return await this.#installCurseforgeServerPack(instancePath, upstream)
+      }
+      
+      throw new Error(`Unsupported modpack type: ${upstream.type}`)
+    } catch (error) {
+      this.error('Failed to install server pack:', error)
+      throw error
+    }
+  }
+
+  async #installModrinthServerPack(instancePath: string, upstream: any): Promise<InstanceFile[]> {
+    // TODO: Implement modrinth server pack installation
+    // For now, return empty array as placeholder
+    this.log('Installing modrinth server pack for project:', upstream.projectId)
+    return []
+  }
+
+  async #installCurseforgeServerPack(instancePath: string, upstream: any): Promise<InstanceFile[]> {
+    // TODO: Implement curseforge server pack installation  
+    // For now, return empty array as placeholder
+    this.log('Installing curseforge server pack for project:', upstream.modId)
+    return []
+  }
 }

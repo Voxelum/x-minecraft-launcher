@@ -173,6 +173,20 @@ export interface ModpackService {
   watchModpackFolder(): Promise<SharedState<ResourceState>>
 
   removeModpack(path: string): Promise<void>
+  
+  /**
+   * Check if an instance has an available server pack
+   * @param instancePath The instance path
+   * @returns True if server pack is available
+   */
+  hasServerPack(instancePath: string): Promise<boolean>
+  
+  /**
+   * Install server pack for an instance
+   * @param instancePath The instance path
+   * @returns The installed server pack files
+   */
+  installServerPack(instancePath: string): Promise<InstanceFile[]>
 }
 
 export function waitModpackFiles(modpack: SharedState<ModpackState>) {

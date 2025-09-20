@@ -161,7 +161,7 @@ import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ModFile, getModSide } from '@/util/mod'
 import { Project } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 
 defineProps<{}>()
@@ -178,6 +178,7 @@ const serverMode = ref<'filtered' | 'serverpack'>('filtered')
 const hasServerPack = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
+const { hasServerPack: checkHasServerPack, installServerPack: installServerPackFiles } = useService(ModpackServiceKey)
 
 let _eula: boolean
 
@@ -369,10 +370,13 @@ function selectNone() {
   selectedMods.value = []
 }
 
-function checkServerPackAvailability() {
-  // TODO: Implement proper server pack detection by checking instance metadata
-  // For now, assume server pack is available for demonstration purposes
-  hasServerPack.value = true
+async function checkServerPackAvailability() {
+  try {
+    hasServerPack.value = await checkHasServerPack(path.value)
+  } catch (error) {
+    console.error('Failed to check server pack availability:', error)
+    hasServerPack.value = false
+  }
   
   // Reset to filtered mode when checking availability
   serverMode.value = 'filtered'
@@ -427,12 +431,16 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
   
   if (_serverMode === 'serverpack') {
     console.log('installServerPack')
-    // TODO: Implement server pack installation
-    // For now, fall back to filtered mods
-    await installToServerInstance({
-      path: instPath,
-      files: _mods.map(v => v.path),
-    })
+    try {
+      await installServerPackFiles(instPath)
+    } catch (error) {
+      console.error('Failed to install server pack, falling back to filtered mods:', error)
+      // Fall back to filtered mods if server pack installation fails
+      await installToServerInstance({
+        path: instPath,
+        files: _mods.map(v => v.path),
+      })
+    }
   } else {
     console.log('installToServerInstance')
     await installToServerInstance({
