@@ -29,6 +29,10 @@ t('installInstance.resolve')
 t('installInstance.unzip')
 t('installInstance.link')
 
+// Duplicate Instance
+t('duplicateInstance.name')
+t('duplicateInstance.file')
+
 // Install Libraries
 t('installLibraries.library')
 t('installLibraries.name')
