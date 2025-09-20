@@ -2,6 +2,7 @@
   <v-list
     class="base-settings"
     subheader
+    color="transparent"
   >
     <v-subheader>
       {{ t('version.name', 2) }}
@@ -12,7 +13,7 @@
         @click="showAll = !showAll"
       >
         <v-icon v-if="!showAll">
-          unfold_more
+          add
         </v-icon>
         <v-icon v-else>
           unfold_less

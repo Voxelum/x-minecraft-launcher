@@ -1,19 +1,25 @@
 <template>
-  <div class="base-setting px-10 overflow-auto" @wheel.stop>
-    <div>
-      <BaseSettingGeneral class="" />
-      <BaseSettingVersions :isExpanded="isExpanded" class=""  />
-      <v-divider v-if="!isExpanded" />
-    </div>
-    <div>
-      <BaseSettingJava class="" />
-      <BaseSettingSync class="" />
-      <BaseSettingLaunch class="" />
-      <BaseSettingResolution class="" />
-      <BaseSettingModpack class="" v-if="!isServer" />
-      <BaseSettingServer class="" v-else />
-    </div>
-
+  <div class="base-setting px-10 overflow-auto" ref="root" @wheel.stop>
+    <template v-if="!targetQuery || targetQuery === 'general'">
+      <div>
+        <BaseSettingGeneral class="" />
+        <BaseSettingVersions :isExpanded="isExpanded" class=""  />
+        <v-divider v-if="!isExpanded" />
+      </div>
+      <div>
+        <BaseSettingJava class="" />
+        <BaseSettingSync class="" />
+        <BaseSettingLaunch class="" />
+        <BaseSettingResolution class="" />
+      </div>
+    </template>
+    <template v-else-if="targetQuery === 'modpack'">
+      <BaseSettingModpack />
+      <BaseSettingModpackFiles />
+    </template>
+    <template v-else-if="targetQuery === 'advanced'">
+      <BaseSettingAdvanced />
+    </template>
     <v-snackbar
       :color="snackbarColor"
       :class="{ 'shake-animation': hasAnimation }"
@@ -59,13 +65,16 @@ import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instan
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
-import BaseSettingModpack from './BaseSettingModpack.vue'
-import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 import BaseSettingVersions from './BaseSettingVersions.vue'
 import BaseSettingResolution from './BaseSettingResolution.vue'
-import { useMediaQuery } from '@vueuse/core'
+import { templateRef, useMediaQuery } from '@vueuse/core'
 import { kCompact } from '@/composables/scrollTop'
+import { useQuery } from '@/composables/query'
+import BaseSettingModpack from './BaseSettingModpack.vue'
+import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
+import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
+import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'
 
 const { isServer, name, instance } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)
@@ -74,6 +83,11 @@ const { t } = useI18n()
 provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(() => {}, edit.load)
 const { isModified } = edit
+const root = ref<HTMLElement | null>(null)
+provide('root', root)
+provide('modpackMetadata', useInstanceModpackMetadata())
+
+const targetQuery = useQuery('target')
 
 function onReset() {
   edit.load()
