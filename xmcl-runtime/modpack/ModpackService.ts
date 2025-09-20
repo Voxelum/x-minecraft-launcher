@@ -470,8 +470,13 @@ export class ModpackService extends AbstractService implements IModpackService {
       this.log(`Parse modpack profile ${modpackFile} with handler ${handler.constructor.name}`)
       const instance = handler.resolveInstanceOptions(manifest)
 
-      const b = await readEntry(zip.file, zip.entries['xmcl.json'])
-      const xmclCache = JSON.parse(b.toString()) as SelectedXMCLFields
+      let xmclCache: SelectedXMCLFields | undefined
+      if (zip.entries['xmcl.json']) {
+        try {
+          const b = await readEntry(zip.file, zip.entries['xmcl.json'])
+          xmclCache = JSON.parse(b.toString()) as SelectedXMCLFields
+        } catch {}
+      }
 
       state.config = {
         ...instance,

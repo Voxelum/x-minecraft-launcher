@@ -97,10 +97,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useService } from '@/composables'
+import { getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/composables/curseforge'
 import { kInstance } from '@/composables/instance'
 import { kLaunchTask } from '@/composables/launchTask'
-import { useQuery, useQueryNumber } from '@/composables/query'
+import { useModrinthHeaderData } from '@/composables/modrinth'
+import { getModrinthProjectModel } from '@/composables/modrinthProject'
+import { useQueryNumber } from '@/composables/query'
+import { useSWRVModel } from '@/composables/swrv'
+import { kTheme } from '@/composables/theme'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { useLocalStorage, useWindowSize } from '@vueuse/core'
@@ -113,11 +117,6 @@ import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeUpstreamHeader from './HomeUpstreamHeader.vue'
-import { getCurseforgeProjectModel, useCurseforgeUpstreamHeader } from '@/composables/curseforge'
-import { useSWRVModel } from '@/composables/swrv'
-import { useModrinthHeaderData } from '@/composables/modrinth'
-import { getModrinthProjectModel } from '@/composables/modrinthProject'
-import { kTheme } from '@/composables/theme'
 
 const active = ref(false)
 const { path, refreshing, instance } = injection(kInstance)
@@ -199,7 +198,6 @@ function onMouseEnter() {
 .tabs-card {
   max-width: 450px;
   min-width: 450px;
-  
 }
 
 .tabs-card>.icons, .tabs-card>.tabs-items {
@@ -212,7 +210,8 @@ transition: all 0.2s ease-in-out;
 }
 
 .tabs {
-  @apply rounded;
+  @apply rounded-md!;
+  margin-bottom: 0.125rem;
 }
 
 .tabs-items, .tabs-items .v-window-item {

@@ -27,10 +27,9 @@
         </v-btn>
       </v-toolbar>
       <v-card-text class="grid grid-cols-12 overflow-auto gap-4">
-        <div class="col-span-9 flex flex-col overflow-auto">
+        <div class="col-span-9 flex flex-col overflow-auto mt-4">
           <div
             v-if="data.errorLog"
-            style="padding: 10px"
           >
             {{ data.launcherError ? t('launchFailed.failedToLaunch') : data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
           </div>
@@ -39,7 +38,7 @@
             class="overflow-auto min-h-[200px] rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]"
           >{{ data.errorLog }}</pre>
           <div
-            style="padding: 10px"
+            v-if="!data.isCrash"
           >
             {{ t(`launchFailed.latestLog`) }}
           </div>
@@ -124,29 +123,26 @@ watch(error, (e) => {
   data.launcherError = true
   data.errorLog = JSON.stringify(e, null, 2)
 })
-function decorate(log: string) {
-  return log
-}
 async function displayLog() {
   const log = await getLogContent(path.value, 'latest.log')
-  data.log = decorate(log)
+  data.log = log
   data.isShown = true
 }
-async function displayCrash() {
-  const log = await getCrashReportContent(path.value, data.crashReportLocation)
-  data.log = decorate(log)
+async function displayCrash(crashReport: string | undefined) {
+  const log = await getCrashReportContent(path.value, data.crashReportLocation) || crashReport || ''
+  data.log = log
   data.isShown = true
 }
-on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog }) => {
+on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog }) => {
   if (!code && signal === 'SIGTERM') {
     return
   }
   if (code !== 0) {
-    data.errorLog = errorLog || crashReport || ''
+    data.errorLog = (errorLog || '' + '\n' + (stdLog || '')).trim()
     if (crashReportLocation) {
       data.crashReportLocation = crashReportLocation
       data.isCrash = true
-      displayCrash()
+      displayCrash(crashReport)
     } else {
       displayLog()
     }
@@ -162,7 +158,6 @@ function openFolder() {
 
 const env = injection(kEnvironment)
 const useCNAI = computed(() => {
-  console.log(env.value?.region)
   return env.value?.gfw || env.value?.region === 'zh-CN'
 })
 
@@ -170,7 +165,7 @@ const copied = ref(false)
 const { state } = injection(kSettingsState)
 function onCopyPrompt() {
   const useCN = useCNAI.value
-  const prompt = getCrashPrompt(useCN, data.errorLog, data.log, state.value?.locale || 'en-US')
+  const prompt = getCrashPrompt(useCN, data.log, data.errorLog, state.value?.locale || 'en-US')
   windowController.writeClipboard(prompt)
   copied.value = true
   setTimeout(() => {

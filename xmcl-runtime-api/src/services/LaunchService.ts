@@ -13,7 +13,7 @@ interface LaunchServiceEventMap {
     forge: string
     fabricLoader: string
   } & LaunchOptions
-  'minecraft-exit': LaunchOptions & { pid: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string }
+  'minecraft-exit': LaunchOptions & { pid: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string; stdLog?: string }
   'minecraft-stdout': { pid: number; stdout: string }
   'minecraft-stderr': { pid: number; stdout: string }
   'launch-performance-pre': { id: string; name: string }

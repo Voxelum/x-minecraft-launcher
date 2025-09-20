@@ -460,6 +460,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
+      const stdLogs = [] as string[]
       const startTime = Date.now()
       this.emit('minecraft-start', {
         pid: process.pid,
@@ -486,6 +487,9 @@ export class LaunchService extends AbstractService implements ILaunchService {
         }
         const result = await this.encoder.decode(buf, encoding)
         this.emit('minecraft-stdout', { pid: process.pid, stdout: result })
+        if (!processData.ready) {
+          stdLogs.push(...result.split(EOL))
+        }
       }
 
       const errPromises = [] as Promise<any>[]
@@ -493,7 +497,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
         errPromises.push(processError(buf))
       })
       process.stdout?.on('data', (s) => {
-        processLog(s).catch(this.error)
+        const p = processLog(s).catch(this.error)
+        if (!processData.ready) {
+          errPromises.push(p)
+        }
       })
 
       watcher.on('error', (err) => {
@@ -530,11 +537,13 @@ export class LaunchService extends AbstractService implements ILaunchService {
             duration: playTime,
             crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
             errorLog,
+            stdLog: stdLogs.join('\n'),
           })
         })
         delete this.processes[processData.pid]
       }).on('minecraft-window-ready', () => {
         processData.ready = true
+        stdLogs.splice(0, stdLogs.length)
         this.emit('minecraft-window-ready', { pid: processData.pid, ...options })
       })
       process.unref()
