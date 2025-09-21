@@ -27,6 +27,7 @@ export const kModpackExport: InjectionKey<ReturnType<typeof useModpackExport>> =
 export function useModpackExport() {
   let onExport: (() => Promise<void>) | undefined
   const exporting = ref(false)
+  const loading = ref(false)
   function setExportHandler(handler?: () => Promise<void>) {
     onExport = handler
   }
@@ -43,6 +44,7 @@ export function useModpackExport() {
     }
   }
   return {
+    loading,
     exporting,
     setExportHandler,
     exportModpack,

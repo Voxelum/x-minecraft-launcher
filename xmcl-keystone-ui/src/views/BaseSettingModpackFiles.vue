@@ -101,19 +101,19 @@
 
 <script lang="ts" setup>
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
+import SettingItem from '@/components/SettingItem.vue'
+import SettingSubheader from '@/components/SettingSubheader.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { kInstanceVersion } from '@/composables/instanceVersion'
+import { kModpackExport } from '@/composables/modpack'
 import { injection } from '@/util/inject'
+import { getExpectedSize } from '@/util/size'
+import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
 import { ExportFileDirective, InstanceManifestServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { getExpectedSize } from '@/util/size'
-import SettingItem from '@/components/SettingItem.vue'
-import SettingSubheader from '@/components/SettingSubheader.vue'
-import { kModpackExport } from '@/composables/modpack'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -244,7 +244,8 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   }
 })
 
-const { setExportHandler } = injection(kModpackExport)
+const { setExportHandler, loading } = injection(kModpackExport)
+syncRef(loading, refreshing)
 onMounted(() => {
   setExportHandler(() => {
     return confirm()

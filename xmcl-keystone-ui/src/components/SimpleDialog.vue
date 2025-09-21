@@ -68,7 +68,7 @@ const onCancel = () => {
 }
 
 const onKeypress = (e: KeyboardEvent) => {
-  if (e.key === 'Escape') {
+  if (e.key === 'Escape' && props.value) {
     onCancel()
   }
 }

@@ -52,7 +52,7 @@
         <v-btn
           color="primary"
           large
-          :loading="exporting"
+          :loading="exporting || loading"
           @click="exportModpack"
         >
           <v-icon left>
@@ -94,6 +94,6 @@ const targetQuery = useQuery('target')
 
 const { replace } = useRouter()
 
-const { exportModpack, exporting } = injection(kModpackExport)
+const { exportModpack, exporting, loading } = injection(kModpackExport)
 
 </script>

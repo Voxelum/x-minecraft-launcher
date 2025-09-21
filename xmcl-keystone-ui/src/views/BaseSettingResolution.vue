@@ -98,11 +98,15 @@ watch(() => resolution.value, (newValue) => {
 }, { immediate: true })
 
 // Update resolution when controls change
-watch([resolutionFullscreen, resolutionWidth, resolutionHeight], () => {
+watch([resolutionFullscreen, resolutionWidth, resolutionHeight], ([full, w, h]) => {
+  if (!full && !w && !h) {
+    resolution.value = undefined
+    return
+  }
   resolution.value = {
-    fullscreen: resolutionFullscreen.value,
-    width: resolutionWidth.value,
-    height: resolutionHeight.value,
+    fullscreen: full,
+    width: Number(w) || undefined,
+    height: Number(h) || undefined,
   }
 })
 

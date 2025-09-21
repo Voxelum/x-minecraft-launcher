@@ -106,13 +106,8 @@ const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
 const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
   if (item.data.children) {
     if (checkedFolders.value.includes(item.data.path)) {
-      const newModel = []
-      for (let i = props.value.length - 1; i > 0; i--) {
-        const v = props.value[i]
-        if (v.startsWith(item.data.path + '/')) continue
-        newModel.push(v)
-      }
-      model.value = newModel.reverse()
+      const newModel = props.value.filter(v => !v.startsWith(item.data.path + '/'))
+      model.value = newModel
     } else {
       const targets: string[] = []
 

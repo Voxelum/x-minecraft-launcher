@@ -171,7 +171,7 @@ const onIncr = (minor: boolean = false) => {
 </style>
 
 <style>
-.v-input--checkbox {
+.base-settings .v-input--checkbox {
   padding-bottom: 1rem !important;
 }
 </style>
