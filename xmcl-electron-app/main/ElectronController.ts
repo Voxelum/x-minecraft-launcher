@@ -53,6 +53,8 @@ export class ElectronController implements LauncherAppController {
 
   private migrated: { from: string; to: string } | undefined
 
+  maximized: boolean | undefined
+
   private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
     const url = new URL(detail.url)
     const features = detail.features.split(',')
@@ -426,6 +428,12 @@ export class ElectronController implements LauncherAppController {
     this.logger.log(`Load main window url ${url.toString()}`)
 
     this.mainWin = browser
+    browser.on('maximize', () => {
+      this.maximized = true
+    })
+    browser.on('unmaximize', () => {
+      this.maximized = false
+    })
 
     this.app.emit('app-booted', man)
   }

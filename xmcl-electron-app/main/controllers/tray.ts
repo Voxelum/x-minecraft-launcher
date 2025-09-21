@@ -93,6 +93,9 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         this.activate(this.activatedManifest)
       } else {
         window?.show()
+        if (this.maximized) {
+          window?.maximize()
+        }
       }
     }
     options.unshift({
@@ -135,8 +138,13 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
         const window = this.mainWin
         if (window) {
           if (window.isVisible()) {
-            window.hide()
-          } else window.show()
+            window.focus()
+          } else {
+            window.show()
+            if (this.maximized) {
+              window.maximize()
+            }
+          }
         }
       })
     }
