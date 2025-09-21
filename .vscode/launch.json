@@ -29,8 +29,8 @@
                 "<node_internals>/**",
                 "**/node_modules/diagnostic-channel-publishers/**",
                 "${workspaceFolder}/xmcl-runtime/app/DummyLogger.ts",
-                "${workspaceFolder}/xmcl-runtime/uncaughtError/pluginUncaughtError.ts",
-                "${workspaceFolder}/xmcl-runtime/logger/pluginLogConsumer.ts"
+                "${workspaceFolder}/xmcl-runtime/infra/plugins/uncaught_error.ts",
+                "${workspaceFolder}/xmcl-runtime/infra/plugins/log_consumer.ts"
             ],
             "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
             "env": {
