@@ -5,6 +5,8 @@ import { isSystemError } from '@xmcl/utils'
 export class ErrorDiagnose {
   #foundDiskFullError: boolean = false
   #sqlDiskIOError: boolean = false
+  #noPermissionCount = 0
+  #databaseLockedCount = 0
 
   constructor(private app: LauncherApp) {
   }
@@ -33,6 +35,14 @@ export class ErrorDiagnose {
       }
       this.#foundDiskFullError = true
       this.#markNoSpace()
+    }
+    if (isSystemError(e) && e.code === 'EPERM') {
+      this.#noPermissionCount++
+      return this.#noPermissionCount > 3
+    }
+    if (e.name === 'SQLite3Error' && e.message === 'database is locked') {
+      this.#databaseLockedCount++
+      return this.#databaseLockedCount > 3
     }
 
     return false
