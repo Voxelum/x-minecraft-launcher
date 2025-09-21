@@ -280,11 +280,13 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     return result
   }
 
-  function isInGroup(fileName: string) {
+  function isInGroup(fileName?: string) {
+    if (!fileName) return false
     return groupMap.value[normalizeFileName(fileName)] !== undefined
   }
 
-  function getGroupColor(fileName: string) {
+  function getGroupColor(fileName?: string) {
+    if (!fileName) return ''
     const groupName = groupMap.value[normalizeFileName(fileName)]
     if (!groupName) return ''
     const group = instanceModGroupping.value[groupName]
