@@ -275,7 +275,8 @@ export class ModpackService extends AbstractService implements IModpackService {
             curseforgeConfig?.files?.push({ projectID: fileLike.curseforge.projectId, fileID: fileLike.curseforge.fileId, required: true })
           }
           if (fileLike.modrinth) {
-            modrinthManifest?.files.push({ path: file.path, hashes: fileLike.hashes, downloads: fileLike.downloads || [], fileSize: fileLike.size })
+            const fileSize = fileLike.size || (await stat(filePath).catch(() => ({ size: 0 }))).size
+            modrinthManifest?.files.push({ path: file.path, hashes: fileLike.hashes, downloads: fileLike.downloads || [], fileSize })
             // modrinth not allowed to include curseforge source by regulation
             const urls = fileLike.downloads || []
             const availableDownloads = urls.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
