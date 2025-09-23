@@ -77,6 +77,9 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
     await this.onMigrateLegacy(instancePath)
     const resourceManager = await this.app.registry.get(ResourceManager)
+    if (!resourceManager || !resourceManager.context) {
+      throw new Error('ResourceManager is not properly initialized')
+    }
     const store = await this.app.registry.get(ServiceStateManager)
     return store.registerOrGet(key, async ({ doAsyncOperation }) => {
       const lock = this.mutex.of(LockKey.instance(instancePath))

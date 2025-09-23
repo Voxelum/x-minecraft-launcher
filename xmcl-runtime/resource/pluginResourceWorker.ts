@@ -112,13 +112,21 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     break
   }
 
+  // Ensure database was properly initialized before creating context
+  if (!db) {
+    const error = new AnyError('ResourceDatabaseInitializationFailed', 'Failed to initialize resource database after 3 attempts')
+    logger.error(error)
+    app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
+    throw error
+  }
+
   const imageStorage = await app.registry.get(ImageStorage)
   const getPath = await app.registry.get(kGameDataPath)
   const eventBus = new EventEmitter()
 
   const context: ResourceContext = {
     root: getPath(),
-    db: db!,
+    db: db,
     cacheImage: (b) => imageStorage.addImage(b),
     event: eventBus,
     parse: resourceWorker.parse,
