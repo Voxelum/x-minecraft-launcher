@@ -112,12 +112,10 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     break
   }
 
-  // Ensure database was properly initialized before creating context
+  // Set database ready status to false if initialization failed after all attempts
   if (!db) {
-    const error = new AnyError('ResourceDatabaseInitializationFailed', 'Failed to initialize resource database after 3 attempts')
-    logger.error(error)
     app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
-    throw error
+    logger.warn('Resource database initialization failed after 3 attempts. Some features may not work properly.')
   }
 
   const imageStorage = await app.registry.get(ImageStorage)
@@ -126,7 +124,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
 
   const context: ResourceContext = {
     root: getPath(),
-    db: db,
+    db: db!,
     cacheImage: (b) => imageStorage.addImage(b),
     event: eventBus,
     parse: resourceWorker.parse,
