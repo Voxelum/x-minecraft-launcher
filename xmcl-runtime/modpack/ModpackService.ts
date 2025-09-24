@@ -11,7 +11,7 @@ import { ZipManager, kTaskExecutor, type TaskFn } from '~/infra'
 import { InstanceService } from '~/instance'
 import { InstanceInstallService } from '~/instanceIO'
 import { kMarketProvider } from '~/market'
-import { kResourceWorker, type ResourceWorker } from '~/resource'
+import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { VersionService } from '~/version'
 import { requireObject } from '../util/object'
@@ -66,7 +66,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   private handlers: Record<string, ModpackHandler> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceManager) private resourceManager: ResourceManager,
+    @Inject(kResourceManager) private resourceManager: ResourceManager,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,

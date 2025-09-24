@@ -33,6 +33,7 @@ import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } 
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import { readlinkSafe } from './utils/readLinkSafe'
+import { kResourceManager } from '~/resource'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -41,7 +42,7 @@ import { readlinkSafe } from './utils/readLinkSafe'
 export class InstanceSavesService extends AbstractService implements IInstanceSavesService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(ResourceManager) resourceManager: ResourceManager,
+    @Inject(kResourceManager) resourceManager: ResourceManager,
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, async () => {

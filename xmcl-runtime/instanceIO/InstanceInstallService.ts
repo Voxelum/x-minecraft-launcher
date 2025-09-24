@@ -15,7 +15,7 @@ import { ZipManager, kTaskExecutor, type TaskFn } from '~/infra'
 import { InstanceService } from '~/instance/InstanceService'
 import { kDownloadOptions } from '~/network'
 import { kPeerFacade } from '~/peer'
-import { kResourceWorker, type ResourceWorker } from '~/resource'
+import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { createSafeIO } from '~/util/persistance'
 import { UnzipFileTask } from './UnzipFileTask'
@@ -29,7 +29,7 @@ import { ResolveInstanceFileTask } from './utils/ResolveInstanceFileTask'
 @ExposeServiceKey(InstanceInstallServiceKey)
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceManager) private resourceManager: ResourceManager,
+    @Inject(kResourceManager) private resourceManager: ResourceManager,
     @Inject(kTaskExecutor) private submit: TaskFn,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
@@ -183,6 +183,40 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const lock = this.mutex.of(LockKey.instance(instancePath))
     const logger = this
 
+    const updateResources = async () => {
+      try {
+        if (resourceToUpdate.length > 0) {
+          const options = await Promise.all(resourceToUpdate.map(async ({ hash, metadata, uris, destination }) => {
+            const actualSha1 = hash ?? await this.worker.checksum(destination, 'sha1').catch(() => undefined)
+            return {
+              hash: actualSha1,
+              metadata,
+              uris,
+            }
+          }))
+
+          const toQuery = options.filter(r => Object.keys(r.metadata).length === 0).map(r => r.hash)
+          if (toQuery.length > 0) {
+            const modrinthMetadata = await modrinthClient.getProjectVersionsByHash(toQuery, 'sha1')
+
+            for (const o of options) {
+              const modrinth = modrinthMetadata[o.hash]
+              if (modrinth) {
+                o.metadata.modrinth = {
+                  projectId: modrinth.project_id,
+                  versionId: modrinth.id,
+                }
+              }
+            }
+          }
+
+          await this.resourceManager.updateMetadata(options.filter(o => !!o.hash))
+        }
+      } catch (e) {
+        this.logger.error(e as any)
+      }
+    }
+
     const updateInstanceTask = task('installInstance', async function () {
       await lock.runExclusive(async () => {
         try {
@@ -218,7 +252,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
         await handler.backupAndRename()
 
-        // await handler.updateResourceMetadata(modrinthClient)
+        await updateResources()
       })
     }, { instance: instancePath, id })
 

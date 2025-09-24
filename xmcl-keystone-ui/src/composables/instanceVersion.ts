@@ -115,10 +115,10 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
         expectRt.labyMod !== rt.labyMod
       ) {
         console.warn(`The instance ${_path}'s runtime ${JSON.stringify(rt, (k, v) => !v ? undefined : v)} is mismatched with it's version ${version.id} ${JSON.stringify(expectRt, (k, v) => !v ? undefined : v)}.`)
-        editInstance({
-          instancePath: _path,
-          runtime: expectRt,
-        })
+        // editInstance({
+        //   instancePath: _path,
+        //   runtime: expectRt,
+        // })
       }
     }
 

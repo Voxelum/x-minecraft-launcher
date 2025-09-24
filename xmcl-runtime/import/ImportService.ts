@@ -4,13 +4,14 @@ import { Inject, LauncherAppKey } from '~/app'
 import { kTaskExecutor, type TaskFn } from '~/infra'
 import { AbstractService, ExposeServiceKey } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
+import { kResourceManager } from '~/resource'
 
 @ExposeServiceKey(ImportServiceKey)
 export class ImportService extends AbstractService implements IImportService {
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kTaskExecutor) private submit: TaskFn,
-    @Inject(ResourceManager) private resourceManager: ResourceManager,
+    @Inject(kResourceManager) private resourceManager: ResourceManager,
   ) {
     super(app)
   }
