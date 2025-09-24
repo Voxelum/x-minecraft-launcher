@@ -21,7 +21,7 @@ import { FSWatcher } from 'chokidar'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readdir, rename, rm, rmdir, stat, unlink, writeFile } from 'fs-extra'
-import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path'
+import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
@@ -183,10 +183,10 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
         depth: 2,
         ignored: (path, stat) => {
           if (resolve(path) === savesDir) return false
-          const depth = relative(savesDir, path).split('/').length
+          const depth = relative(savesDir, path).split(sep).length
           if (depth === 2) {
             const fileName = basename(path)
-            return fileName === 'level.dat'
+            return fileName !== 'level.dat'
           }
           if (depth > 2) {
             return true
