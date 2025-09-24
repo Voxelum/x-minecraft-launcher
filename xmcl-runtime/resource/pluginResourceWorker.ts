@@ -15,7 +15,7 @@ import { DatabaseWorker } from '~/sql/type'
 import { AnyError } from '@xmcl/utils'
 import createDbWorker from '../sql/sqlite.worker?worker'
 import { createLazyWorker } from '../worker'
-import { kResourceContext } from './index'
+import { kResourceContext, kResourceManager } from './index'
 import createResourceWorker from './resource.worker?worker'
 import { ResourceWorker, kResourceWorker } from './worker'
 
@@ -112,6 +112,12 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     break
   }
 
+  // Set database ready status to false if initialization failed after all attempts
+  if (!db) {
+    app.registry.get(kSettings).then((settings) => settings.databaseReadySet(false))
+    logger.warn('Resource database initialization failed after 3 attempts. Some features may not work properly.')
+  }
+
   const imageStorage = await app.registry.get(ImageStorage)
   const getPath = await app.registry.get(kGameDataPath)
   const eventBus = new EventEmitter()
@@ -134,7 +140,7 @@ export const pluginResourceWorker: LauncherAppPlugin = async (app) => {
     }
   }
   app.registry.register(kResourceContext, context)
-  app.registry.register(ResourceManager, new ResourceManager(context))
+  app.registry.register(kResourceManager, new ResourceManager(context))
 
   app.registryDisposer(async () => {
     await context.db.destroy()

@@ -1,6 +1,7 @@
 import { isNotNull } from '@xmcl/core/utils'
 import { DownloadTask } from '@xmcl/installer'
 import { ResourceDomain, ResourceManager, type Resource } from '@xmcl/resource'
+import { kResourceManager } from '~/resource'
 import { ModMetadataServiceKey, type ModMetadataService as IModMetadataService, type ModMetadata } from '@xmcl/runtime-api'
 import { createReadStream } from 'fs'
 import { Kysely } from 'kysely'
@@ -180,7 +181,7 @@ export class ModMetadataService extends AbstractService implements IModMetadataS
   async decorateResources(resources: Resource[]) {
     const sha1s = resources.map((r) => r.hash)
     const metadatas = await this.getMetadataFromSha1s(sha1s)
-    const resource = await this.app.registry.get(ResourceManager)
+    const resource = await this.app.registry.get(kResourceManager)
     const resourceDict = resources.reduce((acc, cur) => {
       acc[cur.hash] = cur
       return acc

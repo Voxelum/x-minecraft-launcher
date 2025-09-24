@@ -4,7 +4,7 @@ import { InstanceModsService as IInstanceModsService, InstanceModsServiceKey, Sh
 import { emptyDir, ensureDir, rename, stat } from 'fs-extra'
 import { dirname, join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
-import { kResourceWorker } from '~/resource'
+import { kResourceWorker, kResourceManager } from '~/resource'
 import { Resource, ResourceDomain, ResourceManager, ResourceState } from '@xmcl/resource'
 import { ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
@@ -17,7 +17,7 @@ import { AbstractInstanceDomainService } from './AbstractInstanceDomainService'
 @ExposeServiceKey(InstanceModsServiceKey)
 export class InstanceModsService extends AbstractInstanceDomainService implements IInstanceModsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceManager) private resourceManager: ResourceManager,
+    @Inject(kResourceManager) private resourceManager: ResourceManager,
   ) {
     super(app, ResourceDomain.Mods)
   }

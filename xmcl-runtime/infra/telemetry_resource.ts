@@ -1,4 +1,5 @@
 import { ResourceDomain, ResourceManager, type ResourceMetadata, type ResourceState, type UpdateResourcePayload } from '@xmcl/resource'
+import { kResourceManager } from '~/resource'
 import { getInstanceModStateKey, Settings } from '@xmcl/runtime-api'
 import { LauncherApp } from '~/app'
 import { kFlights } from '~/infra'
@@ -149,7 +150,7 @@ export async function setupResourceTelemetryClient(appInsight: typeof import('ap
   })
 
   // Collect resource metadata
-  app.registry.get(ResourceManager).then((manager) => {
+  app.registry.get(kResourceManager).then((manager) => {
     manager.context.event.on('resourceParsed', (sha1: string, domain: ResourceDomain, metadata: ResourceMetadata) => {
       if (settings.disableTelemetry) return
       client.trackTrace({

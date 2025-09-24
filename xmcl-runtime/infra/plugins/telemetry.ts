@@ -1,4 +1,5 @@
 import { ResourceManager, UpdateResourcePayload } from '@xmcl/resource'
+import { kResourceManager } from '~/resource'
 import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
 import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
@@ -131,7 +132,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.waitEngineReady().then(async () => {
     const settings = await app.registry.get(kSettings)
 
-    app.registry.get(ResourceManager).then((manager) => {
+    app.registry.get(kResourceManager).then((manager) => {
       manager.context.event.on('resourceUpdateMetadataError', (payload: UpdateResourcePayload, err: any) => {
         if (settings.disableTelemetry) return
         defaultClient.trackException({
