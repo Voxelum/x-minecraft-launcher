@@ -196,15 +196,18 @@ export class ModpackService extends AbstractService implements IModpackService {
       curseforgeConfig = getCurseforgeModpackFromInstance(instance)
       curseforgeConfig.author = author ?? curseforgeConfig.author
       curseforgeConfig.name = name ?? curseforgeConfig.name
+      curseforgeConfig.version = version ?? curseforgeConfig.version
     }
 
     if (emitModrinth) {
       modrinthManifest = getModrinthModpackFromInstance(instance)
+      modrinthManifest.versionId = version ?? modrinthManifest.versionId
     }
 
-    const curseforgeZip = emitCurseforge ? new ZipTask(join(destinationDirectory, `${name}-${version}.zip`)) : undefined
-    const modrinthZip = emitModrinth ? new ZipTask(join(destinationDirectory, `${name}-${version}.mrpack`)) : undefined
-    const offlineZip = emitOffline ? new ZipTask(join(destinationDirectory, `${name}-${version}-offline.zip`)) : undefined
+    const parentDir = destinationDirectory || this.app.host.getPath('downloads')
+    const curseforgeZip = emitCurseforge ? new ZipTask(join(parentDir, `${name}-${version}.zip`)) : undefined
+    const modrinthZip = emitModrinth ? new ZipTask(join(parentDir, `${name}-${version}.mrpack`)) : undefined
+    const offlineZip = emitOffline ? new ZipTask(join(parentDir, `${name}-${version}-offline.zip`)) : undefined
 
     curseforgeZip?.addEmptyDirectory('overrides')
     modrinthZip?.addEmptyDirectory('overrides')
