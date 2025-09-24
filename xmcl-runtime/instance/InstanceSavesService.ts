@@ -186,7 +186,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           const depth = relative(savesDir, path).split('/').length
           if (depth === 2) {
             const fileName = basename(path)
-            return fileName === 'level.dat'
+            return fileName !== 'level.dat'
           }
           if (depth > 2) {
             return true
@@ -226,6 +226,19 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
           }
         })
         .add(savesDir)
+
+      // Initial scan to populate existing saves
+      const initialSaves = await readdirIfPresent(savesDir).then(saves => saves.filter(s => !s.startsWith('.')))
+      await Promise.all(initialSaves.map(async (saveName) => {
+        const savePath = join(savesDir, saveName)
+        try {
+          const saveData = await readInstanceSaveMetadata(savePath, baseName)
+          state.instanceSaveUpdate(saveData)
+        } catch (e) {
+          this.warn(`Parse save in ${savePath} failed. Skip it.`)
+          this.warn(e)
+        }
+      }))
 
       const revalidate = async () => {
         // TODO: getWatched and revalidate
