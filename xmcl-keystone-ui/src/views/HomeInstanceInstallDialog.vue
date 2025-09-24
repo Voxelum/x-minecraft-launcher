@@ -129,7 +129,7 @@
         </div>
 
         <InstanceManifestFileTree
-          :value="selected"
+          v-model="selected"
           :selectable="selectable"
           :multiple="false"
           :scroll-element="scrollRef"
