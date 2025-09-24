@@ -670,6 +670,27 @@ importers:
         specifier: ^5.3.3
         version: 5.3.3
 
+  xmcl/packages/bore:
+    devDependencies:
+      '@types/node':
+        specifier: ~18.15.11
+        version: 18.15.13
+      '@xmcl/oxlint-config':
+        specifier: workspace:^*
+        version: link:../oxlint-config
+      esbuild:
+        specifier: ^0.17.16
+        version: 0.17.18
+      oxlint:
+        specifier: ^0.15.5
+        version: 0.15.5
+      tslib:
+        specifier: ^2.5.0
+        version: 2.6.3
+      typescript:
+        specifier: ^5.3.3
+        version: 5.4.5
+
   xmcl/packages/bytebuffer:
     devDependencies:
       '@types/node':
