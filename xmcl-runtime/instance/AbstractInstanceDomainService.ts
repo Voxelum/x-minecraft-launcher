@@ -4,7 +4,8 @@ import { basename, join } from 'path'
 import { LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
-import { ResourceDomain, ResourceManager } from '@xmcl/resource'
+import { ResourceDomain } from '@xmcl/resource'
+import { kResourceManager } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
 import { linkDirectory, linkWithTimeoutOrCopy } from '../util/fs'
@@ -76,7 +77,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const key = `instance-${this.domain}://${instancePath}`
 
     await this.onMigrateLegacy(instancePath)
-    const resourceManager = await this.app.registry.get(ResourceManager)
+    const resourceManager = await this.app.registry.get(kResourceManager)
     if (!resourceManager || !resourceManager.context) {
       throw new Error('ResourceManager is not properly initialized')
     }

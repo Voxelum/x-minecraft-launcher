@@ -11,7 +11,7 @@ import { LauncherAppPlugin } from '~/app'
 import { kTaskExecutor } from '~/infra'
 import { InstanceInstallService } from '~/instanceIO'
 import { kDownloadOptions } from '~/network'
-import { kResourceWorker } from '~/resource'
+import { kResourceWorker, kResourceManager } from '~/resource'
 import { hardLinkFiles } from '~/util/fs'
 import { InstallMarketDirectoryOptions, InstallMarketInstanceOptions, InstallResult, kMarketProvider } from './marketProvider'
 
@@ -25,7 +25,7 @@ export const pluginMarketProvider: LauncherAppPlugin = async (app) => {
 
   const installService = await app.registry.get(InstanceInstallService)
 
-  const resourceManager = await app.registry.get(ResourceManager)
+  const resourceManager = await app.registry.get(kResourceManager)
   const submit = await app.registry.get(kTaskExecutor)
   const hashWorker = await app.registry.get(kResourceWorker)
 

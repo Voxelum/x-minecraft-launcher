@@ -6,7 +6,7 @@ import { InstanceIOException, InstanceManifestServiceKey, type GetManifestOption
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance'
-import { kResourceWorker } from '~/resource'
+import { kResourceWorker, kResourceManager } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { ResolveInstanceFileTask } from './utils/ResolveInstanceFileTask'
@@ -60,7 +60,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     }
 
     const worker = await this.app.registry.get(kResourceWorker)
-    const manager = await this.app.registry.get(ResourceManager)
+    const manager = await this.app.registry.get(kResourceManager)
 
     const undecorated = new Set<InstanceFile>()
     const result = await generateInstanceManifest(options, instance, worker, manager, this, undecorated)
