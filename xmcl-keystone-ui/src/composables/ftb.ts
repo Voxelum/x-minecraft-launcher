@@ -125,10 +125,10 @@ export function useFeedTheBeastModpackInstall() {
     const options: CreateInstanceOption = {
       ...config,
       name,
-      // Inherit global memory settings if they are enabled
+      // Inherit global memory settings if they are enabled for manual assignment
       assignMemory: globalAssignMemory.value,
-      minMemory: globalAssignMemory.value ? globalMinMemory.value : undefined,
-      maxMemory: globalAssignMemory.value ? globalMaxMemory.value : undefined,
+      minMemory: globalAssignMemory.value === true ? globalMinMemory.value : undefined,
+      maxMemory: globalAssignMemory.value === true ? globalMaxMemory.value : undefined,
     }
     if (existed) {
       options.version = existed.id
