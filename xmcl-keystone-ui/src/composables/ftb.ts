@@ -12,6 +12,7 @@ import { kInstances } from './instances'
 import { kJavaContext } from './java'
 import { useService } from './service'
 import { kSWRVConfig } from './swrvConfig'
+import { useGlobalSettings, kSettingsState } from './setting'
 
 interface FeedTheBeastProps {
   keyword?: string
@@ -105,6 +106,7 @@ export function useFeedTheBeastModpackInstall() {
   const { currentRoute, push } = useRouter()
   const { getInstallInstruction, handleInstallInstruction, getInstanceLock } = injection(kInstanceVersionInstall)
   const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+  const { globalAssignMemory, globalMinMemory, globalMaxMemory } = useGlobalSettings(injection(kSettingsState))
 
   async function installModpack(versionManifest: FTBModpackVersionManifest, man: FTBModpackManifest) {
     const cached = {
@@ -123,6 +125,10 @@ export function useFeedTheBeastModpackInstall() {
     const options: CreateInstanceOption = {
       ...config,
       name,
+      // Inherit global memory settings if they are enabled
+      assignMemory: globalAssignMemory.value,
+      minMemory: globalAssignMemory.value ? globalMinMemory.value : undefined,
+      maxMemory: globalAssignMemory.value ? globalMaxMemory.value : undefined,
     }
     if (existed) {
       options.version = existed.id
