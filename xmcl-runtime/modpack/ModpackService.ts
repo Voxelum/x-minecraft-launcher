@@ -13,6 +13,7 @@ import { InstanceInstallService } from '~/instanceIO'
 import { kMarketProvider } from '~/market'
 import { kResourceManager, kResourceWorker, type ResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
+import { kSettings } from '~/settings'
 import { VersionService } from '~/version'
 import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
@@ -126,6 +127,13 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const hasShaderpacks = files.some(f => f.path.startsWith('shaderpacks/'))
     const hasResourcepacks = files.some(f => f.path.startsWith('resourcepacks/'))
+    
+    // Get global memory settings to inherit manual memory configuration
+    const settings = await this.app.registry.get(kSettings)
+    const globalAssignMemory = settings.globalAssignMemory
+    const globalMinMemory = settings.globalMinMemory
+    const globalMaxMemory = settings.globalMaxMemory
+    
     const options: CreateInstanceOption = {
       ...instance,
       name,
@@ -133,6 +141,10 @@ export class ModpackService extends AbstractService implements IModpackService {
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
       icon: iconUrl,
+      // Inherit global memory settings if manual memory assignment is enabled
+      assignMemory: globalAssignMemory,
+      minMemory: globalAssignMemory === true ? globalMinMemory : undefined,
+      maxMemory: globalAssignMemory === true ? globalMaxMemory : undefined,
     }
 
     if (upstream) {
