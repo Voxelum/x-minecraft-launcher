@@ -352,6 +352,9 @@ importers:
       '@azure/msal-node':
         specifier: ^2.12.0
         version: 2.12.0
+      '@xmcl/bore':
+        specifier: workspace:*
+        version: link:../xmcl/packages/bore
       '@xmcl/client':
         specifier: workspace:*
         version: link:../xmcl/packages/client

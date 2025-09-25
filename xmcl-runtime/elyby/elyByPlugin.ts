@@ -23,7 +23,7 @@ export const elyByPlugin: LauncherAppPlugin = (app) => {
           }
         }
       },
-      onAfterLaunch: async (result, input, payload, context) => {
+      onExit: async (result, input, payload, context) => {
         if (payload.side === 'server') return
         if (result.code === 0) return
         if (result.crashReport.includes('com.mojang.authlib.minecraft') || result.errorLog.includes('com.mojang.authlib.minecraft')) {

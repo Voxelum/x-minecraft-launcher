@@ -26,6 +26,9 @@
           <v-checkbox v-model="nogui" class="col-start-1" :label="t('server.nogui')" />
           <v-checkbox v-model="onlineMode" class="col-start-3" :label="t('server.onlineMode')" />
         </div>
+        <div class="flex items-center pt-2 px-2">
+          <v-checkbox v-model="exposeToBore" :label="t('server.exposeToBore')" />
+        </div>
         <v-subheader>{{ t('save.name') }}</v-subheader>
         <v-item-group v-model="selectedSave" mandatory class="pt-2 px-2">
           <div class="grid grid-cols-3 gap-2 max-h-40 overflow-auto">
@@ -139,17 +142,15 @@ import { kInstanceSave } from '@/composables/instanceSave'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { useInstanceVersionServerInstall } from '@/composables/instanceVersionServerInstall'
 import { useLaunchException } from '@/composables/launchException'
-import { getModrinthVersionModel } from '@/composables/modrinthVersions'
 import { useService } from '@/composables/service'
 import { BuiltinImages } from '@/constant'
 import { vFallbackImg } from '@/directives/fallbackImage'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { ModFile, getModSide } from '@/util/mod'
 import { Project } from '@xmcl/modrinth'
 import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import useSWRV from 'swrv'
 
 defineProps<{}>()
 
@@ -160,6 +161,7 @@ const onlineMode = ref(false)
 const isAcceptEula = ref(false)
 const nogui = ref(false)
 const linkedWorld = ref('')
+const exposeToBore = ref(false)
 const rawWorldExists = ref(false)
 const { getEULA, setEULA, getServerProperties, setServerProperties } = useService(InstanceOptionsServiceKey)
 const { linkSaveAsServerWorld, getLinkedSaveWorld } = useService(InstanceSavesServiceKey)
@@ -223,6 +225,7 @@ const { isShown } = useDialog('launch-server', () => {
   }).finally(() => {
     loadingSelectedMods.value = false
   })
+}, () => {
 })
 const { t } = useI18n()
 

@@ -1,6 +1,8 @@
-import { MinecraftFolder, type LaunchOption as ResolvedLaunchOptions, type ResolvedVersion, type ServerOptions, type ResolvedServerVersion, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer } from '@xmcl/core'
-import { AUTHORITY_DEV, type CreateLaunchShortcutOptions, type GameProcess, type LaunchService as ILaunchService, LaunchException, type LaunchOptions, LaunchServiceKey, type ReportOperationPayload } from '@xmcl/runtime-api'
+import { MinecraftFolder, createMinecraftProcessWatcher, generateArguments, generateArgumentsServer, launch, launchServer, type LaunchOption as ResolvedLaunchOptions, type ResolvedServerVersion, type ResolvedVersion, type ServerOptions } from '@xmcl/core'
+import { ensureDir } from '@xmcl/installer/utils'
+import { AUTHORITY_DEV, GenericEventEmitter, LaunchException, LaunchServiceEventMap, LaunchServiceKey, type CreateLaunchShortcutOptions, type GameProcess, type LaunchService as ILaunchService, type LaunchOptions, type ReportOperationPayload } from '@xmcl/runtime-api'
 import { offline } from '@xmcl/user'
+import { isSystemError } from '@xmcl/utils'
 import { ChildProcess, spawn } from 'child_process'
 import createDesktopShortcut, { type ShortcutOptions } from 'create-desktop-shortcuts'
 import vbTextContent from 'create-desktop-shortcuts/src/windows.vbs'
@@ -13,21 +15,19 @@ import { createICO } from 'png2icons'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
-import { Inject, LauncherAppKey, type PathResolver, kGameDataPath } from '~/app'
-import { type EncodingWorker, kEncodingWorker } from '~/encoding'
+import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
+import { kEncodingWorker, type EncodingWorker } from '~/encoding'
 import { AbstractService, ExposeServiceKey } from '~/service'
-import { type UserTokenStorage, kUserTokenStorage } from '~/user'
+import { kUserTokenStorage, type UserTokenStorage } from '~/user'
 import { kYggdrasilSeriveRegistry } from '~/user/YggdrasilSeriveRegistry'
-import { normalizeCommandLine } from './utils/cmd'
-import { isSystemError } from '@xmcl/utils'
 import { VersionService } from '~/version'
 import { LauncherApp } from '../app/LauncherApp'
 import { UTF8 } from '../util/encoding'
 import type { LaunchMiddleware } from './LaunchMiddleware'
-import { ensureDir } from '@xmcl/installer/utils'
+import { normalizeCommandLine } from './utils/cmd'
 
 @ExposeServiceKey(LaunchServiceKey)
-export class LaunchService extends AbstractService implements ILaunchService {
+export class LaunchService extends AbstractService<LaunchServiceEventMap> implements ILaunchService {
   private processes: Record<number, GameProcess & { process: ChildProcess }> = {}
 
   private middlewares: LaunchMiddleware[] = []
@@ -388,7 +388,9 @@ export class LaunchService extends AbstractService implements ILaunchService {
         launchOptions = op
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context), plugin.name, operationId)
+            if (plugin.onBeforeLaunch) {
+              await this.#track(plugin.onBeforeLaunch(options, { version, options: op, side: 'client' }, context), plugin.name, operationId)
+            }
           } catch (e) {
             this.warn('Fail to run plugin')
             this.error(e as any)
@@ -413,7 +415,9 @@ export class LaunchService extends AbstractService implements ILaunchService {
         launchOptions = await this.generateServerOptions(options, version)
         for (const plugin of this.middlewares) {
           try {
-            await this.#track(plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context), plugin.name, operationId)
+            if (plugin.onBeforeLaunch) {
+              await this.#track(plugin.onBeforeLaunch(options, { side: 'server', version, options: launchOptions }, context), plugin.name, operationId)
+            }
           } catch (e) {
             this.warn('Fail to run plugin', plugin)
             this.error(e as any)
@@ -521,7 +525,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
           const errorLog = errorLogs.join('\n');
           for (const plugin of this.middlewares) {
             try {
-              plugin.onAfterLaunch?.({ code, signal, crashReport, crashReportLocation, errorLog }, options, { version, options: launchOptions, side } as any, context)
+              plugin.onExit?.({ code, signal, crashReport, crashReportLocation, errorLog }, options, { version, options: launchOptions, side } as any, context)
             } catch (e) {
               this.warn('Fail to run plugin')
               this.error(e as any)

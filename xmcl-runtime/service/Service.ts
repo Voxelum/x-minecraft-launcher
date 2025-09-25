@@ -1,4 +1,4 @@
-import { createPromiseSignal, PromiseSignal, ServiceKey, SharedState, State } from '@xmcl/runtime-api'
+import { createPromiseSignal, GenericEventEmitter, PromiseSignal, ServiceKey, SharedState, State } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import { Logger } from '~/infra'
@@ -123,12 +123,12 @@ export function getServiceKey<T extends Function>(target: T): ServiceKey<T> & st
  *
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
-export abstract class AbstractService extends EventEmitter {
+export abstract class AbstractService<T = {}> implements GenericEventEmitter<T> {
   private initializeSignal: PromiseSignal<void> | undefined
   protected logger: Logger
+  protected emitter = new EventEmitter()
 
   constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
-    super()
     this.logger = app.getLogger(Object.getPrototypeOf(this).constructor.name)
     this.log = this.logger.log
     this.warn = this.logger.warn
@@ -139,9 +139,14 @@ export abstract class AbstractService extends EventEmitter {
 
   emit(event: string, ...args: any[]): boolean {
     this.app.controller.broadcast('service-event', { service: getServiceKey(Object.getPrototypeOf(this).constructor), event, args })
-    return super.emit(event, ...args)
+    return this.emitter.emit(event, ...args)
   }
 
+  on = this.emitter.on.bind(this.emitter) as any as GenericEventEmitter<T>['on']
+
+  once = this.emitter.once.bind(this.emitter) as any as GenericEventEmitter<T>['once']
+
+  removeListener = this.emitter.removeListener.bind(this.emitter) as any as GenericEventEmitter<T>['removeListener']
   /**
    * Return the path under the config root
    */

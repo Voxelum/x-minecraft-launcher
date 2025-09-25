@@ -15,8 +15,8 @@ export interface ClientRunContext {
 
 export interface LaunchMiddleware {
   name: string
-  onBeforeLaunch(input: LaunchOptions, payload: ServerRunContext | ClientRunContext, context: Record<string, any>): Promise<void>
-  onAfterLaunch?(result: {
+  onBeforeLaunch?(input: LaunchOptions, payload: ServerRunContext | ClientRunContext, context: Record<string, any>): Promise<void>
+  onExit?(result: {
     /**
      * The code of the process exit. This is the nodejs child process "exit" event arg.
      */

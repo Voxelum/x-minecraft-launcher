@@ -1,17 +1,17 @@
-import { readFile, readdir } from 'fs-extra';
-import { LauncherApp, LauncherAppPlugin } from '~/app';
-import { InstanceService } from '~/instance';
-import { UserService } from '~/user';
-import { LaunchService } from './LaunchService';
 import { findMatchedVersion, generateLaunchOptionsWithGlobal, getAutoOrManuallJava, getAutoSelectedJava } from '@xmcl/runtime-api';
-import { VersionService } from '~/version';
+import { AnyError } from '@xmcl/utils';
+import { randomUUID } from 'crypto';
+import { readdir } from 'fs-extra';
+import { join } from 'path';
+import { LauncherApp, LauncherAppPlugin } from '~/app';
+import { AuthlibInjectorService } from '~/authlibInjector';
+import { Logger } from '~/infra';
+import { InstanceService } from '~/instance';
 import { JavaService } from '~/java';
 import { kSettings } from '~/settings';
-import { AuthlibInjectorService } from '~/authlibInjector';
-import { join } from 'path';
-import { randomUUID } from 'crypto';
-import { Logger } from '~/infra';
-import { AnyError } from '@xmcl/utils';
+import { UserService } from '~/user';
+import { VersionService } from '~/version';
+import { LaunchService } from '../LaunchService';
 
 function getLaunchArguments(argv: string[]) {
   const indexOfLaunch = argv.indexOf('launch')

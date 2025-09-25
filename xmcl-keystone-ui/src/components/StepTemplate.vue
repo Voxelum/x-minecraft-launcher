@@ -65,7 +65,6 @@ import { kPeerShared } from '@/composables/peers'
 import { injection } from '@/util/inject'
 import { Ref } from 'vue'
 import { Template, useInstanceTemplates } from '../composables/instanceTemplates'
-import { useModpacks } from '@/composables/modpack'
 import InstanceItem from './InstanceItem.vue'
 
 const emit = defineEmits(['select'])
@@ -75,10 +74,9 @@ const { all } = injection(kJavaContext)
 const { connections } = injection(kPeerShared)
 const { getFeaturedModpacks } = useGetFeedTheBeastVersionsCache()
 const { getTemplates } = useInstanceTemplates(all)
-const { state } = useModpacks()
 const templates = computed(() => {
   const ftb = getFeaturedModpacks()
-  return getTemplates(state.value?.files || [], connections.value, ftb)
+  return getTemplates([], connections.value, ftb)
 })
 
 const selectedTemplatePath = inject('template', ref(''))

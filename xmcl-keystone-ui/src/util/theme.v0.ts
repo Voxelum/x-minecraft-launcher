@@ -1,7 +1,7 @@
 import { MediaData, ThemeData } from '@xmcl/runtime-api'
 import { BackgroundType, ParticleMode, UIThemeData, UIThemeDataV1 } from '../composables/theme'
 
-export function loadV1Theme(): UIThemeDataV1 {
+export function loadV1Theme(): UIThemeDataV1 | undefined {
   const name = localStorage.getItem('selectedThemeName')
   const themeDark = localStorage.getItem('darkTheme')
   const isDark = themeDark === 'dark'
@@ -11,7 +11,11 @@ export function loadV1Theme(): UIThemeDataV1 {
       : false
   const themes = localStorage.getItem('themes')
   const parsed = themes ? JSON.parse(themes) as Record<string, UIThemeData> : {}
-  const legacy = parsed[name ?? 'default'] as UIThemeData
+  const legacy = parsed[name ?? 'default'] as UIThemeData | undefined
+
+  if (!legacy) {
+    return undefined
+  }
 
   const transformed = getV1Theme(legacy, isDark)
   return transformed

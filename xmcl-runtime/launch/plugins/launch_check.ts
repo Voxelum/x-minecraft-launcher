@@ -1,14 +1,13 @@
 import { LaunchPrecheck, MinecraftFolder, diagnoseJar, diagnoseLibraries } from '@xmcl/core'
-import { LaunchException, protocolToMinecraft, resolveFabricLoaderVersion, resolveForgeVersion, resolveQuiltVersion } from '@xmcl/runtime-api'
+import { LaunchException, resolveFabricLoaderVersion, resolveForgeVersion, resolveQuiltVersion } from '@xmcl/runtime-api'
 import { ensureDir, move, readlink, stat, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherAppPlugin, kGameDataPath } from '~/app'
 import { InstallService } from '~/install'
 import { InstanceService } from '~/instance'
 import { JavaService, JavaValidation } from '~/java'
-import { LaunchService } from '~/launch'
-import { PeerService } from '~/peer'
 import { linkDirectory, missing } from '~/util/fs'
+import { LaunchService } from '../LaunchService'
 
 export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
   const launchService = await app.registry.get(LaunchService)
@@ -118,32 +117,6 @@ export const pluginLaunchPrecheck: LauncherAppPlugin = async (app) => {
       if (payload.side === 'server') return
       const resourceFolder = new MinecraftFolder(getPath())
       await LaunchPrecheck.checkNatives(resourceFolder, payload.version, payload.options)
-    },
-  })
-  launchService.registerMiddleware({
-    name: 'expose-server',
-    async onBeforeLaunch(input, payload, options) {
-      if (payload.side === 'client') return
-
-      const peer = await app.registry.getIfPresent(PeerService)
-      if (peer && payload.side === 'server') {
-        const ver = payload.version.minecraftVersion
-        const minecraftToProtocol: Record<string, number> = {}
-        for (const [protocol, vers] of Object.entries(protocolToMinecraft)) {
-          for (const v of vers) {
-            minecraftToProtocol[v] = parseInt(protocol)
-          }
-        }
-        peer.exposePort(25565, minecraftToProtocol[ver] ?? 765)
-      }
-    },
-    async onAfterLaunch(result, input, payload, context) {
-      if (payload.side === 'server') {
-        const peer = await app.registry.getIfPresent(PeerService)
-        if (peer) {
-          peer.unexposePort(25565)
-        }
-      }
     },
   })
 

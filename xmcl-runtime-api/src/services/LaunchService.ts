@@ -4,7 +4,7 @@ import { GenericEventEmitter } from '../events'
 import { AUTHORITY_DEV } from '../util/authority'
 import { ServiceKey } from './Service'
 
-interface LaunchServiceEventMap {
+export interface LaunchServiceEventMap {
   'minecraft-window-ready': { pid: number }
   'minecraft-start': {
     pid: number
@@ -130,6 +130,11 @@ export interface LaunchOptions {
    * Resolution settings for Minecraft
    */
   resolution?: { width?: number; height?: number; fullscreen?: boolean }
+  bore?: {
+    to?: string
+    controlPort?: number
+    secret?: string
+  }
 }
 
 export interface GameProcess {
@@ -137,6 +142,8 @@ export interface GameProcess {
   ready: boolean
   side: 'client' | 'server'
   options: LaunchOptions
+  port?: number
+  remote?: { ip: string; port: number }
 }
 
 export interface ReportOperationPayload {

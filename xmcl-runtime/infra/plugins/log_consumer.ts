@@ -11,9 +11,9 @@ import { ZipTask } from '~/util/zip'
 import { IS_DEV } from '~/constant'
 import { isSystemError } from '@xmcl/utils'
 
-export function formatLogMessage(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
+function formatLogMessage(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 
-export function getMessageFromError(e: Error): string {
+function getMessageFromError(e: Error): string {
   if (!e.message && e instanceof Exception) {
     e.message = JSON.stringify(e.exception)
   }

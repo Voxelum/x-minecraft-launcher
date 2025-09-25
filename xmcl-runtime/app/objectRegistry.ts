@@ -24,7 +24,7 @@ export class ObjectFactory {
 
   getIfPresent<T>(Type: Constructor<T> | InjectionKey<T>): Promise<T | undefined> {
     if (this.signals.has(Type)) {
-      return this.signals.get(Type)!.promise
+      return this.signals.get(Type)!.promise.catch(() => undefined)
     }
     return Promise.resolve(undefined)
   }

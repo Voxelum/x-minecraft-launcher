@@ -8,9 +8,8 @@ import { pluginCommonProtocol } from '@xmcl/runtime/app/pluginCommonProtocol'
 import { pluginMediaProtocol } from '@xmcl/runtime/app/pluginMediaProtocol'
 import { elyByPlugin } from '@xmcl/runtime/elyby/elyByPlugin'
 import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorker'
-import { pluginClientToken, pluginFlights, pluginGFW, pluginImageStorage, pluginLogConsumer, pluginTasks, pluginTelemetry, pluginUncaughtError } from '@xmcl/runtime/infra/plugins'
-import { pluginDirectLaunch } from '@xmcl/runtime/launch/pluginDirectLaunch'
-import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
+import * as infraPlugins from '@xmcl/runtime/infra/plugins'
+import * as launchPlugins from '@xmcl/runtime/launch/plugins'
 import { pluginMarketProvider } from '@xmcl/runtime/market/pluginMarketProvider'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
@@ -32,7 +31,8 @@ import { LauncherAppPlugin } from '~/app'
 import { definedServices } from './definedServices'
 
 export const definedPlugins: LauncherAppPlugin[] = [
-  pluginDirectLaunch,
+  ...Object.values(launchPlugins),
+  ...Object.values(infraPlugins),
   pluginAutoUpdate,
   pluginPowerMonitor,
   pluginIconProtocol,
@@ -40,9 +40,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginResourceWorker,
   pluginEncodingWorker,
   pluginSetup,
-  pluginLaunchPrecheck,
   pluginNvdiaGPULinux,
-  pluginUncaughtError,
   pluginNativeReplacer,
   elyByPlugin,
   pluginMarketProvider,
@@ -52,15 +50,8 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginResourcePackLink,
   pluginUserPlaytime,
   pluginYggdrasilHandler,
-  pluginClientToken,
   pluginServicesHandler(definedServices),
-  pluginTelemetry,
-  pluginLogConsumer,
   pluginSettings,
-  pluginGFW,
-  pluginTasks,
-  pluginImageStorage,
-  pluginFlights,
   pluginNetworkInterface,
   pluginOfficialUserApi,
   pluginOffineUser,
