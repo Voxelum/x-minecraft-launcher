@@ -854,7 +854,7 @@ modInstall:
   installHint: Telepíti a {file} fájlt a {dependencies} függőségekkel együtt
   installed: Telepítve
   noVersionSupported: A Mod csak a Minecraftot támogatja {supported}.
-  recommendation: Fedezze fel a {first} modokat a {modrinth} és a {Curseforge} -ben!
+  recommendation: Fedezze fel a {first} modokat a {modrinth} és a {curseforge} -ben!
   removeUnusedLibraries: Távolítsa el a fel nem használt könyvtárak modokat
   search: Keresési találat
   searchHint: Keresés és projekt kiválasztása
