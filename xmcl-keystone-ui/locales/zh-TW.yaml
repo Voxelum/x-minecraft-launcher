@@ -793,7 +793,7 @@ modInstall:
   installHint: 安裝 {file} 個檔案和 {dependencies} 個相依檔案
   installed: 已安裝
   noVersionSupported: 模組僅支援 Minecraft {supported}。
-  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模組！
+  recommendation: 在{modrinth}和{curseforge}中探索{first} mods！
   removeUnusedLibraries: 刪除未使用的函式庫模組
   search: 搜尋結果
   searchHint: 搜尋並選擇模組

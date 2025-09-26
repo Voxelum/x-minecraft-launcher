@@ -885,7 +885,7 @@ modInstall:
   installDependencies: Installer les dépendances manquantes
   installed: Installé
   noVersionSupported: Le mod prend uniquement en charge Minecraft {supported}.
-  recommendation: "Explorez les mods {first} ou {second} dans {modrinth} et {curseforge}\_!"
+  recommendation: "Explorez les mods {first} dans {modrinth} et {curseforge}\_!"
   removeUnusedLibraries: Supprimer les mods de bibliothèques inutilisées
   search: Résultats
   searchHint: Rechercher et sélectionner un projet

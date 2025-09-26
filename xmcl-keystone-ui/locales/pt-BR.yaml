@@ -890,7 +890,7 @@ modInstall:
   installHint: Instalará o arquivo {file} com as dependências {dependencies}
   installed: Instalado
   noVersionSupported: O mod só suporta Minecraft {supported}.
-  recommendation: Explore os mods {first} ou {second} no {modrinth} e {curseforge}!
+  recommendation: Explore os mods {first} em {modrinth} e {curseforge}!
   removeUnusedLibraries: Remova mods de bibliotecas não utilizadas
   search: Resultado da Busca
   searchHint: Busque e selecione o projeto

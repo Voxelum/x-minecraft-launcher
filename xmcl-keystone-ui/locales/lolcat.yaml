@@ -773,7 +773,7 @@ modInstall:
   installHint: Will INSTALL {file} FILE WIF {dependencies} DEPENDENCIEZ
   installed: INSTALLD
   noVersionSupported: MOD ONLY SUPPORTS MINECRAFT {supported}.
-  recommendation: EXPLORE TEH {first} OR {second} MODZ IN {modrinth} AN {curseforge}!
+  recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
   removeUnusedLibraries: Remove unused libraries mods
   search: SEARCH RESULT
   searchHint: SEARCH AN SELECT PROJECT

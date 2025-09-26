@@ -870,7 +870,7 @@ modInstall:
   installHint: Буде встановлено файл {file} з {dependencies} залежностями
   installed: Встановлено
   noVersionSupported: Мод підтримує лише Minecraft {supported}.
-  recommendation: Ознайомтеся з модами {first} або {second} на {modrinth} та {curseforge}!
+  recommendation: Вивчіть моди {перші} в {modrinth} та {curseforge}!
   removeUnusedLibraries: Видалити невикористані бібліотеки модів
   search: Результат пошуку
   searchHint: Шукати та вибрати проєкт

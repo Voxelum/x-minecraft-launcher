@@ -796,7 +796,7 @@ modInstall:
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   noVersionSupported: Mod 仅支持 Minecraft {supported}。
-  recommendation: 探索 {modrinth} 和 {curseforge} 中的 {first} 或 {second} 模组！
+  recommendation: 在{modrinth}和{curseforge}中探索{first} mods！
   removeUnusedLibraries: 删除未使用的库mods
   search: 搜索结果
   searchHint: 搜索并选择模组

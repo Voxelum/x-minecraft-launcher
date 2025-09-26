@@ -770,7 +770,7 @@ modInstall:
   installHint: '{file} を {dependencies} 個の依存関係とインストール'
   installed: インストール済み
   noVersionSupported: このModはMinecraft {supported} のみサポートしています。
-  recommendation: '{first} または {second} 個のModを {modrinth} と {curseforge} で探索する!'
+  recommendation: '{modrinth}と{curseforge}で{first} modsを探索してください！'
   removeUnusedLibraries: 未使用のライブラリMODを削除します
   search: 検索結果
   searchHint: プロジェクトを検索して選ぶ

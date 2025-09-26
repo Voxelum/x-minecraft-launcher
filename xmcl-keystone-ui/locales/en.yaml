@@ -842,7 +842,7 @@ modInstall:
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   noVersionSupported: Mod only supports Minecraft {supported}.
-  recommendation: Explore the {first} or {second} mods in {modrinth} and {curseforge}!
+  recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
   removeUnusedLibraries: Remove unused libraries mods
   search: Search Result
   searchHint: Search and select project

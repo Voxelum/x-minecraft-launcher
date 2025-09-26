@@ -854,7 +854,7 @@ modInstall:
   installHint: Zainstaluje się {file} plik z {dependencies} zależności
   installed: Zainstalowany
   noVersionSupported: Mod obsługuje tylko Minecrafta {supported}.
-  recommendation: Odkryj {first} lub {second} mod w {modrinth} i {curseforge}!
+  recommendation: Eksploruj mode {first} w {modrinth} i {curseforge}!
   removeUnusedLibraries: Usuń mody nieużywanych bibliotek
   search: Wynik wyszukiwania
   searchHint: SWyszukaj i wybierz projekt

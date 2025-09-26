@@ -5,14 +5,12 @@
   >
     <div class="flex flex-grow-0 gap-4">
       <v-icon
-        v-if="modrinth"
         size="90"
         color="green"
       >
         $vuetify.icons.modrinth
       </v-icon>
       <v-icon
-        v-if="curseforge"
         size="100"
         color="orange darken-2"
       >
@@ -24,24 +22,22 @@
       tag="p"
     >
       <template
-        v-if="modrinth"
         #first
       >
-        <ModrinthCategoryChip
-          class="text-yellow-400"
-          :tag="randomModrinthCats[0]"
-          @click="emit('modrinth', randomModrinthCats[0])"
-        />
-        <ModrinthCategoryChip
-          class="ml-1 text-green-400"
-          :tag="randomModrinthCats[1]"
-          @click="emit('modrinth', randomModrinthCats[1])"
-        />
-      </template>
-      <template
-        v-if="curseforge"
-        #second
-      >
+        <template
+          v-if="modrinth"
+        >
+          <ModrinthCategoryChip
+            class="text-yellow-400"
+            :tag="randomModrinthCats[0]"
+            @click="emit('modrinth', randomModrinthCats[0])"
+          />
+          <ModrinthCategoryChip
+            class="text-green-400"
+            :tag="randomModrinthCats[1]"
+            @click="emit('modrinth', randomModrinthCats[1])"
+          />
+        </template>
         <template v-if="curseforge">
           <CurseforgeCategoryChip
             class="text-blue-400"
@@ -49,7 +45,7 @@
             @click="emit('curseforge', randomCurseforgeCats[0])"
           />
           <CurseforgeCategoryChip
-            class="ml-1 text-orange-400"
+            class="text-orange-400"
             :value="randomCurseforgeCats[1]"
             @click="emit('curseforge', randomCurseforgeCats[1])"
           />
@@ -57,14 +53,12 @@
       </template>
       <template #curseforge>
         <span
-          v-if="curseforge"
           class="text-orange-500"
         >
           Curseforge
         </span>
       </template>
       <template
-        v-if="modrinth"
         #modrinth
       >
         <span class="text-green-500">

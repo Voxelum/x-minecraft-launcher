@@ -663,7 +663,7 @@ modInstall:
   installHint: Se instalará el archivo {file} con {dependencies} dependencias
   installed: Instalado
   noVersionSupported: Mod solo es compatible con Minecraft {compatible}.
-  recommendation: ¡Explora las modificaciones {first} o {second} en {modrinth} y {curseforge}!
+  recommendation: ¡Explora las modificaciones {first} en {modrinth} y {curseforge}!
   removeUnusedLibraries: Eliminar modificaciones de bibliotecas no utilizadas
   search: Resultado de la Búsqueda
   searchHint: Buscar y seleccionar proyecto

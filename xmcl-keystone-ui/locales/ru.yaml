@@ -886,7 +886,7 @@ modInstall:
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
-  recommendation: Исследуйте {first} или {second} в {modrinth} и {curseforge}!
+  recommendation: Исследуйте {first} моды в {modrinth} и ​​{curseforge}!
   removeUnusedLibraries: Удалить неиспользованные моды библиотеков
   search: Результаты поиска
   searchHint: Поиск и выбор проекта

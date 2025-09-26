@@ -396,7 +396,7 @@ modInstall:
   display: Visualización de mods
   installDependencies: Instalar dependencias que faltan
   noVersionSupported: Só os mods son compatibles con Minecraft {supported}.
-  recommendation: Explora as modificacións {first} ou {second} en {modrinth} e {curseforge}!
+  recommendation: Explora as modificacións {first} en {modrinth} e {curseforge}!
   removeUnusedLibraries: Elimina os mods das bibliotecas non utilizadas
   skipVersion: Salta os Mods con diferentes versións de Minecraft
 modUpgradePolicy:

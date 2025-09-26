@@ -956,7 +956,7 @@ modInstall:
   installHint: Die Datei wird installiert {file} mit Süchten {dependencies} Abhängigkeiten
   installed: Installiert
   noVersionSupported: Mod unterstützt nur Minecraft {supported}.
-  recommendation: Entdecken Sie die {first} oder {second} Mods in {modrinth} und {curseforge}!
+  recommendation: Entdecken Sie die {first} Mods in {modrinth} und {curseforge}!
   removeUnusedLibraries: Entfernen Sie unbenutzte Bibliotheken Mods
   search: Suchergebnis
   searchHint: Projektsuche und -auswahl
