@@ -1,5 +1,5 @@
 import { BaseServiceKey, type Environment, type BaseService as IBaseService, type InvalidDirectoryErrorCode, type MigrateOptions, MigrationException, type PoolStats, Settings, type SharedState } from '@xmcl/runtime-api'
-import { readdir } from 'fs-extra'
+import { readdir, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath } from '~/app'
@@ -165,7 +165,10 @@ export class BaseService extends AbstractService implements IBaseService {
     const files = await readdir(logsDir)
 
     for (const file of files) {
-      task.addFile(join(logsDir, file), join('logs', file))
+      const fStat = await stat(join(logsDir, file)).catch(() => undefined)
+      if (fStat?.isFile()) {
+        task.addFile(join(logsDir, file), join('logs', file))
+      }
     }
 
     const sessionId = await this.app.registry.get(kClientToken)

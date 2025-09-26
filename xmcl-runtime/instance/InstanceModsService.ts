@@ -33,15 +33,19 @@ export class InstanceModsService extends AbstractInstanceDomainService implement
 
       const onRefreshModrinth = async (all: Resource[]) => {
         try {
-          const versions = await modrinthClient.getProjectVersionsByHash(all.map(v => v.hash))
-          const options = Object.entries(versions).map(([hash, version]) => {
-            if (!hash) return undefined
-            const f = all.find(f => f.hash === hash)
-            if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
-            return undefined
-          }).filter((v): v is any => !!v)
-          if (options.length > 0) {
-            await this.resourceManager.updateMetadata(options)
+          const batchSize = 128
+          for (let i = 0; i < all.length; i += batchSize) {
+            const chunk = all.slice(i, i + batchSize)
+            const versions = await modrinthClient.getProjectVersionsByHash(chunk.map(v => v.hash))
+            const options = Object.entries(versions).map(([hash, version]) => {
+              if (!hash) return undefined
+              const f = chunk.find(f => f.hash === hash)
+              if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
+              return undefined
+            }).filter((v): v is any => !!v)
+            if (options.length > 0) {
+              await this.resourceManager.updateMetadata(options)
+            }
           }
         } catch (e) {
           this.error(e as any)

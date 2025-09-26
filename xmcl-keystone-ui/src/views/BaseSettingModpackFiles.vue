@@ -113,7 +113,7 @@ import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
-import { ExportFileDirective, InstanceManifestServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -149,8 +149,11 @@ const exportFiles = computed(() => {
 })
 
 // loading
+const { refreshMetadata } = useService(InstanceModsServiceKey)
 const { refresh, refreshing } = useRefreshable(async () => {
-  const manifest = await getInstanceManifest({ path: instance.value.path })
+  const path = instance.value.path
+  await refreshMetadata(path)
+  const manifest = await getInstanceManifest({ path })
   const files = manifest.files
   let selected = [] as string[]
   if (modpackMetadata.emittedFiles && modpackMetadata.emittedFiles.length > 0) {
@@ -206,7 +209,7 @@ function canExport(fileData: InstanceFileExportData) {
   }
   if (modpackMetadata.emitModrinth && fileData.downloads) {
     if (fileData.downloads.length === 0) return false
-    return fileData.downloads.some(v => isAllowInModrinthModpack(v, modpackMetadata.emitModrinthStrict) )
+    return fileData.downloads.some(v => isAllowInModrinthModpack(v, modpackMetadata.emitModrinthStrict))
   }
   return false
 }
@@ -225,8 +228,9 @@ function onSelectExportDirectory() {
 const disabledBuild = computed(() => !modpackMetadata.emitCurseforge && !modpackMetadata.emitModrinth && !modpackMetadata.emitOffline)
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   try {
+    const path = instance.value.path
     await exportModpack({
-      instancePath: instance.value.path,
+      instancePath: path,
       gameVersion: versionId.value || '',
       name: instance.value.name,
       files: exportFiles.value,
@@ -281,5 +285,4 @@ onUnmounted(() => {
 .dark .modpack-files {
   background-color: rgba(0, 0, 0, 0.2);
 }
-
 </style>
