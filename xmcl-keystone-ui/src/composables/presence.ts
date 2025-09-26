@@ -1,6 +1,7 @@
 import { PresenceServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useService } from './service'
+import { useEventListener } from '@vueuse/core'
 
 export function usePresence(activity: Ref<string> | string) {
   const { setActivity } = useService(PresenceServiceKey)
@@ -10,7 +11,7 @@ export function usePresence(activity: Ref<string> | string) {
       setActivity(a)
     }
   })
-  addEventListener('focus', () => {
+  useEventListener('focus', () => {
     const a = isRef(activity) ? activity.value : activity
     if (a) {
       setActivity(a)

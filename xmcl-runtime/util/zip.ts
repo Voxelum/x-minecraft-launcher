@@ -70,14 +70,9 @@ export class ZipTask extends AbortableTask<void> {
       this.writeStream?.on('close', resolve)
       this.writeStream?.on('error', reject)
     })
-    if (!(this.zipFile as any).ended) {
-      await new Promise<void>((resolve) => {
-        this.zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
-          this._total = args[0]
-          resolve()
-        })
-      })
-    }
+    this.zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
+      this._total = args[0]
+    })
     await Promise.all([fileClose, promise])
   }
 
