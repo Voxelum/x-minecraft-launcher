@@ -54,6 +54,12 @@
             <v-subheader class="">
               {{ t('mod.name') }}
             </v-subheader>
+            <v-btn v-if="serverModsLocked" small color="primary" @click="unlockServerMods()">
+              <v-icon left>
+                edit
+              </v-icon>
+              {{ t('edit') }}
+            </v-btn>
             <div class="flex-grow" />
             <v-btn v-shared-tooltip="_ => t('env.select.all')" text icon @click="selectAll">
               <v-icon>
@@ -74,16 +80,11 @@
             <v-text-field v-model="search" class="max-w-50 pl-1" dense outlined flat prepend-inner-icon="search"
               hide-details />
           </div>
+
           <div class="pt-2 px-2">
-            <v-data-table v-model="selectedMods" :disabled="loadingSelectedMods" item-key="path" show-select
+            <v-data-table v-model="selectedMods" :disabled="loadingSelectedMods || serverModsLocked" item-key="path" :show-select="!serverModsLocked"
               :search="search" :headers="headers" :items="enabled">
               <template #item.name="{ item }">
-                <!-- <v-chip
-                  :color="getColor(item.calories)"
-                  dark
-                >
-                  {{ item.calories }}
-                </v-chip> -->
                 <v-list-item-avatar :size="30">
                   <img :src="item.icon || BuiltinImages.unknownServer">
                 </v-list-item-avatar>
@@ -93,13 +94,6 @@
               <template #item.hash="{ item }">
                 {{ getSide(item) }}
               </template>
-              <!-- <template #top>
-                <v-switch
-                  v-model="singleSelect"
-                  label="Single select"
-                  class="pa-3"
-                />
-              </template> -->
             </v-data-table>
           </div>
         </template>
@@ -206,6 +200,7 @@ function refresh() {
 let lastPath = ''
 const { isShown } = useDialog('launch-server', () => {
   if (lastPath === path.value) {
+    serverModsLocked.value = serverModsDetected.value
     return
   }
   lastPath = path.value
@@ -213,12 +208,25 @@ const { isShown } = useDialog('launch-server', () => {
   refresh()
   loadingSelectedMods.value = true
   selectNone()
+  // Check the server mods folder. If multiple files exist, mark as detected and optionally lock the mods list.
   getServerInstanceMods(path.value).then((mods) => {
     const all = enabled.value
-    if (mods.length > 0) {
-      selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
+    serverModsDetected.value = mods.length > 0
+    if (mods.length > 1) {
+      // when multiple server mods exist, show them but keep UI locked until user unlocks
+      serverModsLocked.value = true
+      if (mods.length > 0) {
+        selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
+      } else {
+        selectedMods.value = getFitsMods()
+      }
     } else {
-      selectedMods.value = getFitsMods()
+      serverModsLocked.value = false
+      if (mods.length > 0) {
+        selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
+      } else {
+        selectedMods.value = getFitsMods()
+      }
     }
   }).finally(() => {
     loadingSelectedMods.value = false
@@ -293,7 +301,6 @@ const sides = computed(() => {
   return result
 })
 
-
 function getSide(mod: ModFile) {
   const side = sides.value[mod.hash]
   if (!side) return '?'
@@ -327,6 +334,26 @@ const headers = computed(() => [
 
 const loadingSelectedMods = ref(false)
 const selectedMods = shallowRef<ModFile[]>([])
+
+// New: when a server instance already contains multiple mod files, we don't auto-refresh the mod list.
+const serverModsLocked = ref(false)
+const serverModsDetected = ref(false)
+
+function unlockServerMods() {
+  loadingSelectedMods.value = true
+  // unlock editing, refresh mapping from server to selections
+  getServerInstanceMods(path.value).then((mods) => {
+    const all = enabled.value
+    if (mods.length > 0) {
+      selectedMods.value = all.filter(m => mods.some(a => a.ino === m.ino))
+    } else {
+      selectedMods.value = getFitsMods()
+    }
+    serverModsLocked.value = false
+  }).finally(() => {
+    loadingSelectedMods.value = false
+  })
+}
 
 const { installToServerInstance, getServerInstanceMods } = useService(InstanceModsServiceKey)
 
@@ -396,10 +423,15 @@ const { refresh: onPlay, refreshing: loading, error } = useRefreshable(async () 
     })
   }
   console.log('installToServerInstance')
-  await installToServerInstance({
-    path: instPath,
-    files: _mods.map(v => v.path),
-  })
+  // If server mods are locked (existing mods in server folder), do not deploy/overwrite server mods.
+  if (!serverModsLocked.value) {
+    await installToServerInstance({
+      path: instPath,
+      files: _mods.map(v => v.path),
+    })
+  } else {
+    console.log('server mods locked, skipping deploying mods to server instance')
+  }
   console.log('launch')
 
   await launch('server', { nogui: _nogui, version })
