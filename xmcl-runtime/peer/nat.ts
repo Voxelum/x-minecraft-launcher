@@ -1,5 +1,26 @@
-import { PeerState, createPromiseSignal } from '@xmcl/runtime-api'
+import { Multiplayer, PeerState, createPromiseSignal } from '@xmcl/runtime-api'
 import { UnblockedNatInfo, getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
+import { getDeviceInfo, isSupported } from './ssdpClient'
+import { IceServersProvider } from './IceServers'
+
+export function createNat(state: Promise<PeerState>, iceServers: IceServersProvider) {
+  async function refreshNat() {
+    const s = await state
+    await Promise.all([
+      s.natDeviceInfo
+        ? Promise.resolve()
+        : getDeviceInfo().then((i) => {
+          if (i) { s.natDeviceSet(i) }
+        }),
+      raceNatType(s, iceServers.get()[0]),
+    ])
+  }
+  return {
+    refreshNat,
+    getNatDeviceInfo: getDeviceInfo,
+    isNatSupported: isSupported,
+  }
+}
 
 export async function raceNatType(state: PeerState, iceServers: RTCIceServer[]) {
   console.log('Start to sample the nat type')

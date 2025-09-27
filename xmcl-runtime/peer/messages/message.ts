@@ -1,4 +1,4 @@
-import { PeerSession } from '../connection'
+import { PeerSession } from '../PeerSession'
 
 export interface MessageEntry<T> {
   type: MessageType<T>

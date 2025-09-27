@@ -334,15 +334,7 @@
               </v-list-item-subtitle>
             </v-list-item-action>
             <v-list-item-action
-              v-if="c.signalingState === 'have-local-offer'"
-              class="mr-5 self-center"
-            >
-              <v-list-item-subtitle>
-                {{ t('peerSignalingState.have-local-offer') }}
-              </v-list-item-subtitle>
-            </v-list-item-action>
-            <v-list-item-action
-              v-if="c.iceGatheringState !== 'complete'"
+              v-if="c.connectionState !== 'connected'"
               class="mr-5 self-center"
             >
               <v-list-item-subtitle>
@@ -352,7 +344,6 @@
                     :size="18"
                     :width="1"
                   />
-                  {{ t('peerIceGatheringState.gathering') }}
                 </div>
               </v-list-item-subtitle>
             </v-list-item-action>

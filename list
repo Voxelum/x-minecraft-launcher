@@ -1,0 +1,10 @@
+- Login: Login microsoft, login little skin.
+- Basic gamming: install Minecraft, need to point out how to install snapshot, demo it will install libraries/assets/java. Launch game.
+- Gaming with modloader: install fabric, also demo how to adjust options including hide launcher, change icon, show log.
+- Common instance options: demo how to change java, adjust memory, mention prepend command (for linux user) and add environment variables.
+- Basic mod installing: Demo install search and install mod operation using keyword/Chinese keyword and categories. Show the dependencies auto installation. Demo mods folder after install, and launch the game
+- Modpack basic: demo search/navigation in modpack market. Install one modpack. Demo drop modpack import.
+- Advanced mod handling: Disable mod. Show local search. Check missing dependencies. Checking mod upgrades. Removing unused libraries (mention this is not 100% accure). Also show the local mod filtering for each filter type.
+- Advanced user login. Show how to add third party auth system.
+- Demo change appearance: change color, font, background image/video and background music.
+- Demo peer to peer multiplayer. Demo peer to peer transfer file.

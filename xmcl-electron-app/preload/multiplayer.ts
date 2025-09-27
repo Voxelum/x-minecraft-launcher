@@ -1,5 +1,5 @@
-import { AUTHORITY_MICROSOFT, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
-import { createMultiplayer } from '@xmcl/runtime/peer/multiplayerImpl'
+import { AUTHORITY_MICROSOFT, Multiplayer, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { createMultiplayer } from '@xmcl/runtime/peer/multiplayer_core'
 import { listen } from '@xmcl/runtime/util/server'
 import { contextBridge, ipcRenderer } from 'electron/renderer'
 import './controller'
@@ -13,7 +13,7 @@ ipcRenderer.invoke('multiplayer-init').then((payload: { appDataPath: string; res
 })
 
 ipcRenderer.on('peer-instance-shared', (_, options) => {
-  shareInstance(options)
+  sharing.shareInstance(options)
 })
 
 let stateReady = false
@@ -27,35 +27,37 @@ const userServ = serviceChannels.open(UserServiceKey)
 userServ.call('getUserState').then((state) => state).then(state => {
   let updated = false
   if (Object.values(state.users).some(u => u.authority === AUTHORITY_MICROSOFT)) {
-    updateIceServers()
+    iceServers.update()
     updated = true
   }
   if (!updated) {
     state.subscribe('userProfile', (p) => {
       if (p.authority === AUTHORITY_MICROSOFT) {
-        updateIceServers()
+        iceServers.update()
         updated = true
       }
     })
   }
 })
 
-const { init, emitter, shareInstance, setState, host, updateIceServers, ...peer } = createMultiplayer()
+const { init, emitter, sharing, setState, host, iceServers, nat, group, userInfo, initiate, setRemoteDescription, drop } = createMultiplayer()
 
 listen(host, 25566, (p) => p + 2).then((s) => {
   ipcRenderer.invoke('multiplayer-port', s)
 })
 
-const multiplayer = {
-  ...peer,
-  refreshNat: peer.refreshNat,
-  isNatSupported: peer.isNatSupported,
+const multiplayer: Multiplayer = {
+  refreshNat: nat.refreshNat,
+  setUserInfo: userInfo.setUserInfo,
+  initiate,
+  setRemoteDescription,
+  drop,
+  joinGroup: group.joinGroup,
+  leaveGroup: group.leaveGroup,
   isReady: () => inited && stateReady,
-  on: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.on(eventName, listener),
-  once: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.once(eventName, listener),
-  off: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.off(eventName, listener),
-  addListener: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.addListener(eventName, listener),
-  removeListener: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.removeListener(eventName, listener),
+  on: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.on(eventName, listener) as any,
+  once: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.once(eventName, listener) as any,
+  removeListener: (eventName: string | symbol, listener: (...args: any[]) => void) => emitter.removeListener(eventName, listener) as any,
 }
 
 contextBridge.exposeInMainWorld('multiplayer', multiplayer)

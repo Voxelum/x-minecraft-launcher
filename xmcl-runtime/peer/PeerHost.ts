@@ -1,5 +1,5 @@
 import { createServer } from 'http'
-import { Peers } from './multiplayerImpl'
+import { Peers } from './Peers'
 import { basename } from 'path'
 import { Transform } from 'stream'
 

@@ -88,7 +88,7 @@ export async function loadIceServers(cachePath: string) {
 async function test(factory: PeerConnectionFactory, iceServer: RTCIceServer, portBegin?: number) {
   let start = Date.now()
   let ping = 0 as 'timeout' | number
-  const co = factory.createConnection(iceServer, portBegin)
+  const co = factory.createConnection([iceServer], portBegin)
   return new Promise<[string[], number | 'timeout']>((resolve) => {
     const ips = new Set<string>()
     co.onicegatheringstatechange = (s) => {
@@ -162,14 +162,19 @@ const isSameRTCServer = (a: RTCIceServer, b: RTCIceServer) => {
   return getKey(a) === getKey(b)
 }
 
-export type IceServersProvider = ReturnType<typeof createIceServersProvider>
+export interface IceServersProvider {
+  whenReady(): Promise<void>
+  init(cachePath: string): Promise<void>
+  update(): Promise<void>
+  get(preferredIceServers?: RTCIceServer[]): [RTCIceServer[], RTCIceServer[]]
+}
 
 export function createIceServersProvider(
   factory: PeerConnectionFactory,
   onValidIceServer: (server: RTCIceServer, ping?: number | 'timeout') => void,
   onIp: (ip: string) => void,
   onMeta: (meta: Record<string, string>) => void,
-) {
+): IceServersProvider {
   const passed: Record<string, RTCIceServer> = {}
   const blocked: Record<string, RTCIceServer> = {}
 

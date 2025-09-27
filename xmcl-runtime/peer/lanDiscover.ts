@@ -1,9 +1,8 @@
 import { LanServerInfo, MinecraftLanDiscover } from '@xmcl/client'
 import { createSocket } from 'dgram'
 import { MessageLan } from './messages/lan'
-import type { Peers } from './multiplayerImpl'
+import type { Peers } from './Peers'
 import { EventEmitter } from 'stream'
-import { PromiseSignal } from '@xmcl/runtime-api'
 
 function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: Peers) {
   discover.bind().then(() => {
@@ -17,9 +16,9 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
   })
 
   discover.on('discover', (info) => {
-    const peers = allPeers.entries.filter(c => c.connection.connectionState === 'connected')
+    const peers = allPeers.entries.filter(c => c.isDataChannelEstablished())
     for (const conn of peers) {
-      if (lanScope.has(conn.remoteId)) {
+      if (lanScope.has(conn.peerId)) {
         return
       }
 
@@ -39,7 +38,7 @@ function setup(discover: MinecraftLanDiscover, lanScope: Set<string>, allPeers: 
 export const LAN_MULTICAST_PORT = 4446
 export const LAN_MULTICAST_ADDR = '224.0.2.60'
 
-export function createLanDiscover(idSignal: PromiseSignal<string>, peers: Peers, emitter: EventEmitter) {
+export function createLanDiscover(idSignal: PromiseWithResolvers<string>, peers: Peers, emitter: EventEmitter) {
   const discover = new MinecraftLanDiscover()
   const discoverV6 = new MinecraftLanDiscover('udp6')
 
@@ -66,7 +65,7 @@ export function createLanDiscover(idSignal: PromiseSignal<string>, peers: Peers,
     ports = exposed || []
   }
 
-  idSignal.then((id) => {
+  idSignal.promise.then((id) => {
     setInterval(() => {
       sock.send(id, LAN_MULTICAST_PORT, LAN_MULTICAST_ADDR)
       if (ports && ports.length > 0) {

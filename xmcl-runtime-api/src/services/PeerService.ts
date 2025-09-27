@@ -97,16 +97,6 @@ export class PeerState {
     this.connections = this.connections.filter(c => c.id !== connectionId)
   }
 
-  connectionIceServerSet({ id, iceServer }: { id: string; iceServer: RTCIceServer }) {
-    const conn = this.connections.find(c => c.id === id)
-    if (conn) {
-      if (conn.iceServer) {
-        conn.triedIceServers.push(conn.iceServer)
-      }
-      conn.iceServer = iceServer
-    }
-  }
-
   connectionLocalDescription(update: { id: string; description: string }) {
     const conn = this.connections.find(c => c.id === update.id)
     if (conn) {
@@ -139,35 +129,6 @@ export class PeerState {
     const conn = this.connections.find(c => c.id === update.id)
     if (conn) {
       conn.ping = update.ping
-    }
-  }
-
-  connectionPreferredIceServers({ id, servers }: { id: string; servers: RTCIceServer[] }) {
-    const conn = this.connections.find(c => c.id === id)
-    if (conn) {
-      conn.preferredIceServers = servers
-    }
-  }
-
-  iceGatheringStateChange(update: { id: string; iceGatheringState: IceGatheringState }) {
-    const conn = this.connections.find(c => c.id === update.id)
-    if (conn) {
-      conn.iceGatheringState = update.iceGatheringState
-    }
-  }
-
-  signalingStateChange(update: { id: string; signalingState: SignalingState }) {
-    const conn = this.connections.find(c => c.id === update.id)
-    if (conn) {
-      conn.signalingState = update.signalingState
-    }
-  }
-
-  connectionIceServersSet({ id, iceServer }: { id: string; iceServer: RTCIceServer }) {
-    const conn = this.connections.find(c => c.id === id)
-    if (conn) {
-      conn.iceServer = iceServer
-      conn.triedIceServers = [...conn.triedIceServers, conn.iceServer]
     }
   }
 

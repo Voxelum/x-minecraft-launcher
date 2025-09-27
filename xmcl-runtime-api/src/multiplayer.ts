@@ -36,33 +36,28 @@ export interface ConnectionUserInfo extends GameProfileAndTexture {
  * A peer might have multiple connections.
  */
 export interface Peer {
+  /**
+   * Session id
+   */
   id: string
+  /**
+   * The peer id
+   */
   remoteId: string
   userInfo: ConnectionUserInfo
-  initiator: boolean
-  /**
-   * Current ice server
-   */
-  iceServer: RTCIceServer
-  /**
-   * The tried ice servers
-   */
-  triedIceServers: RTCIceServer[]
-  /**
-   * The ice servers that this peer prefers
-   */
-  preferredIceServers: RTCIceServer[]
+  connectionState: ConnectionState
+  localDescriptionSDP: string
+
+  pendingConnections: Array<{
+    
+  }>
 
   selectedCandidate?: {
     local: SelectedCandidateInfo
     remote: SelectedCandidateInfo
   }
 
-  localDescriptionSDP: string
   ping: number
-  connectionState: ConnectionState
-  iceGatheringState: IceGatheringState
-  signalingState: SignalingState
   /**
    * The instance that this peer is sharing
    */
@@ -75,22 +70,12 @@ interface MultiplayerEvents {
   lan: LanServerInfo & { session: string }
 }
 
-export interface TransferDescription {
-  /**
-   * The peer id
-   */
-  id: string
-  session: string
-  sdp: string
-  candidates: Array<{ candidate: string; mid: string }>
-}
-
 export interface SetRemoteDescriptionOptions {
   type: 'offer' | 'answer'
   /**
    * The remote description
    */
-  description: string | TransferDescription
+  description: string
 }
 
 export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
@@ -99,10 +84,8 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    */
   isReady(): boolean
   /**
-   * Get the peers
+   * Get a peer by id
    */
-  getPeers(): Peer[]
-
   refreshNat(): Promise<void>
   /**
    * Set your user info
@@ -123,7 +106,7 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
    * Drop the existed session
    * @param id The session to drop
    */
-  drop(id: string): Promise<void>
+  drop(id: string): void
   /**
    * Join the group.
    * The group will automatically create connection between group members.
@@ -134,5 +117,5 @@ export interface Multiplayer extends GenericEventEmitter<MultiplayerEvents> {
   /**
    * Leave the group
    */
-  leaveGroup(): Promise<void>
+  leaveGroup(): void
 }

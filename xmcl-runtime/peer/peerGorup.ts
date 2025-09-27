@@ -1,7 +1,7 @@
 import { ConnectionUserInfo, GameProfileAndTexture, PromiseSignal, createPromiseSignal } from '@xmcl/runtime-api'
 import { setTimeout } from 'timers/promises'
-import { PeerSession } from './connection'
-import type { InitiateOptions, Peers } from './multiplayerImpl'
+import type { Peers } from './Peers'
+import type { InitiateOptions } from './multiplayer_core'
 
 type DescriptionType = string
 
@@ -28,6 +28,12 @@ type RelayPeerMessage = {
   iceServer?: RTCIceServer
   iceServers?: RTCIceServer[]
 } | {
+  type: 'DESCRIPTOR_COMPRESSED'
+  receiver: string
+  sender: string
+  payload: string
+  id: number
+} | {
   type: 'WHO'
   receiver: string
   sender: string
@@ -46,11 +52,11 @@ function convertUUIDToUint8Array(id: string) {
 }
 
 export function createPeerGroup(
-  idSignal: PromiseSignal<string>,
+  idSignal: PromiseWithResolvers<string>,
   peers: Peers,
   getUserInfo: () => ConnectionUserInfo,
   initiate: (option: InitiateOptions) => void,
-  setRemoteDescription: (d: TransferDescription, type: 'offer' | 'answer', t?: RTCIceServer, all?: RTCIceServer[]) => string,
+  onRemoteDescription: (peerId: string, payload: string) => void,
   onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { },
   onerror = (e: unknown) => { },
   onjoin = (groupId: string) => { },
@@ -82,26 +88,10 @@ export function createPeerGroup(
       const peer = peers.get(sender)
       // Ask sender to connect to me :)
       if (!peer) {
-        if (_id.localeCompare(sender) > 0) {
-          console.log(`Not found the ${sender} during heartbeat. Initiate new connection`)
-          // Only if my id is greater than other's id, we try to initiate the connection.
-          // This will have a total order in the UUID random space
-
-          // Try to connect to the sender
-          initiate({ remoteId: sender, initiate: true })
-        } else {
-          initiate({ remoteId: sender, initiate: false })
-        }
+        initiate({ remoteId: sender, master: _id.localeCompare(sender) > 0 })
       }
     }
-    _group.ondescriptor = async (sender, sdp, type, candidates, iceServer, allIceServers) => {
-      setRemoteDescription({
-        id: sender,
-        session: '',
-        sdp,
-        candidates,
-      }, type as any, iceServer, allIceServers)
-    }
+    _group.ondescriptorV2 = onRemoteDescription
     _group.onuser = onuser
     _group.onstate = onstate
     _group.onerror = onerror
@@ -141,6 +131,7 @@ export class PeerGroup {
   onstate = (state: 'connecting' | 'connected' | 'closing' | 'closed') => { }
   onheartbeat = (sender: string) => { }
   ondescriptor = (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer?: RTCIceServer, allServers?: RTCIceServer[]) => { }
+  ondescriptorV2 = (sender: string, payload: string) => { }
   onerror: (error: unknown) => void = () => { }
   onuser = (sender: string, profile: ConnectionUserInfo) => { }
   onwebsocketping = (ping: number, timestamp: number) => { }
@@ -166,6 +157,7 @@ export class PeerGroup {
   #initiate() {
     const { groupId, socket } = this
     const id = this.#id
+    console.log('[groupId]', id)
 
     socket.onopen = () => {
       this.state = 'connected'
@@ -218,6 +210,14 @@ export class PeerGroup {
               id: payload.id,
             })
             this.ondescriptor?.(payload.sender, payload.sdp, payload.sdpType, payload.candidates, payload.iceServer, payload.iceServers)
+          } else if (payload.type === 'DESCRIPTOR_COMPRESSED') {
+            this.send({
+              type: 'DESCRIPTOR-ECHO',
+              receiver: payload.sender,
+              sender: id,
+              id: payload.id,
+            })
+            this.ondescriptorV2?.(payload.sender, payload.payload)
           } else if (payload.type === 'DESCRIPTOR-ECHO') {
             const signal = this.signals[payload.id]
             if (signal) {
@@ -278,6 +278,42 @@ export class PeerGroup {
   wait(messageId: number): Promise<void> {
     this.signals[messageId] = createPromiseSignal()
     return this.signals[messageId].promise
+  }
+
+  async sendLocalDescriptionV2(receiverId: string, payload: string, shouldRetry: () => boolean) {
+    const messageId = this.messageId++
+    const resolve = this.wait(messageId).then(() => true, () => false)
+    for (let i = 0; i < 30; ++i) {
+      try {
+        if (this.#closed) {
+          return
+        }
+        if ((Date.now() - this.#heartbeatLastSeen[receiverId]) > (5 * 60_000)) {
+          // If the receiver is not seen in 5 minutes, we stop sending
+          return 'NO_RESPONSE'
+        }
+        this.send({
+          type: 'DESCRIPTOR_COMPRESSED',
+          receiver: receiverId,
+          sender: this.#id,
+          payload,
+          id: messageId,
+        })
+        const responsed = await Promise.race([
+          resolve,
+          setTimeout(4_000).then(() => false), // wait 4 seconds for response
+        ])
+        if (responsed) {
+          return
+        }
+        if (!shouldRetry()) {
+          return
+        }
+      } catch (e) {
+        this.onerror?.(e)
+      }
+    }
+    return 'NO_RESPONSE_TIMEOUT'
   }
 
   async sendLocalDescription(receiverId: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>, iceServer: RTCIceServer, iceServers: RTCIceServer[], shouldRetry: () => boolean) {
