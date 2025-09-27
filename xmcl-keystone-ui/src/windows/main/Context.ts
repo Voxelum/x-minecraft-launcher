@@ -36,7 +36,7 @@ import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPack
 import { useTelemetryTrack } from '@/composables/telemetryTrack'
 import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
-import { kUILayout, useUILayout } from '@/composables/uiLayout'
+import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
@@ -126,7 +126,7 @@ export default defineComponent({
     const router = useRouter()
     useExternalRoute(router)
 
-    provide(kUILayout, useUILayout())
+    provide(kUIDefaultLayout, useUILayout())
     provide(kImageDialog, useImageDialog())
     provide(kFilterCombobox, useFilterComboboxData())
     provide(kSupportedAuthorityMetadata, useSupportedAuthority())

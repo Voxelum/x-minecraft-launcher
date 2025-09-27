@@ -482,7 +482,7 @@ import { kEnvironment } from '@/composables/environment'
 import { useService } from '@/composables/service'
 import { kSettingsState } from '@/composables/setting'
 import { BackgroundType, kTheme } from '@/composables/theme'
-import { kUILayout } from '@/composables/uiLayout'
+import { kUIDefaultLayout } from '@/composables/uiLayout'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
@@ -513,7 +513,7 @@ const darkModel = computed({
   },
 })
 
-const layout = injection(kUILayout)
+const layout = injection(kUIDefaultLayout)
 
 const themes = computed(() => [{
   text: t('setting.theme.dark'),

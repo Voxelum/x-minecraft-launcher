@@ -9,7 +9,7 @@ import { kPeerState, usePeerState } from '@/composables/peers'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
 import { kTheme, useTheme } from '@/composables/theme'
-import { kUILayout, useUILayout } from '@/composables/uiLayout'
+import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { vuetify } from '@/vuetify'
@@ -38,7 +38,7 @@ export default defineComponent({
     provide(kInstances, instances)
     provide(kInstance, useInstance(instances.selectedInstance, instances.instances))
 
-    provide(kUILayout, useUILayout())
+    provide(kUIDefaultLayout, useUILayout())
     provide(kImageDialog, useImageDialog())
     provide(kEnvironment, useEnvironment())
 

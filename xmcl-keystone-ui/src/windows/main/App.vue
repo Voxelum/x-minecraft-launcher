@@ -57,7 +57,7 @@ import { kCompact } from '@/composables/scrollTop'
 import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
-import { kInFocusMode, kUILayout } from '@/composables/uiLayout'
+import { kInFocusMode, kUIDefaultLayout } from '@/composables/uiLayout'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
@@ -86,7 +86,7 @@ const { state } = injection(kSettingsState)
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 
-const layout = injection(kUILayout)
+const layout = injection(kUIDefaultLayout)
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
 const { path } = injection(kInstance)
 const isLessThan490px = useMediaQuery('(max-height: 490px)')

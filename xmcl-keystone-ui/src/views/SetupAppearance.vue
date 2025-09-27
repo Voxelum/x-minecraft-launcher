@@ -106,7 +106,7 @@
 <script lang=ts setup>
 import SetupLayoutPreview from '@/components/SetupLayoutPreview.vue'
 import { kTheme } from '@/composables/theme'
-import { kUILayout } from '@/composables/uiLayout'
+import { kUIDefaultLayout } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 
 defineProps<{ value: string }>()
@@ -119,7 +119,7 @@ const layoutModel = computed({
   set(v) { if (v) { layout.value = 'focus' } else { layout.value = 'default' } },
 })
 
-const layout = injection(kUILayout)
+const layout = injection(kUIDefaultLayout)
 
 const themes = computed(() => [{
   text: t('setting.theme.dark'),
