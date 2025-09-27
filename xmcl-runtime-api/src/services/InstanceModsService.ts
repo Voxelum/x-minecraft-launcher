@@ -11,10 +11,6 @@ export function getInstanceModStateKey(path: string) {
  */
 export interface InstanceModsService extends InstanceResourcesService {
   /**
-   * Refresh the metadata of the instance mods
-   */
-  refreshMetadata(instancePath: string): Promise<void>
-  /**
    * Mark mods enabled
    */
   enable(options: UpdateInstanceResourcesOptions): Promise<void>

@@ -113,7 +113,7 @@ import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
-import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -149,10 +149,14 @@ const exportFiles = computed(() => {
 })
 
 // loading
-const { refreshMetadata } = useService(InstanceModsServiceKey)
+const { refreshMetadata: refreshMods } = useService(InstanceModsServiceKey)
+const { refreshMetadata: refreshResourcePacks } = useService(InstanceResourcePacksServiceKey)
+const { refreshMetadata: refreshShaderPacks } = useService(InstanceShaderPacksServiceKey)
 const { refresh, refreshing } = useRefreshable(async () => {
   const path = instance.value.path
-  await refreshMetadata(path)
+  await refreshMods(path)
+  await refreshResourcePacks(path)
+  await refreshShaderPacks(path)
   const manifest = await getInstanceManifest({ path })
   const files = manifest.files
   let selected = [] as string[]

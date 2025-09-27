@@ -40,5 +40,9 @@ export interface InstanceResourcesService {
    * @param instancePath The instance path
    */
   showDirectory(instancePath: string): Promise<void>
+  /**
+   * Refresh the metadata of the instance resources
+   */
+  refreshMetadata(instancePath: string): Promise<void>
 }
 

@@ -1,15 +1,17 @@
-import { InstallMarketOptionWithInstance, LockKey, UpdateInstanceResourcesOptions } from '@xmcl/runtime-api'
+import { InstallMarketOptionWithInstance, LockKey, ResourceState, SharedState, UpdateInstanceResourcesOptions, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { ensureDir, mkdir, stat, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { LauncherApp } from '~/app'
 import { InstanceService } from '~/instance'
 import { kMarketProvider } from '~/market'
-import { ResourceDomain } from '@xmcl/resource'
-import { kResourceManager } from '~/resource'
+import { Resource, ResourceDomain } from '@xmcl/resource'
+import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ServiceStateManager } from '~/service'
 import { isSystemError } from '@xmcl/utils'
 import { linkDirectory, linkWithTimeoutOrCopy } from '../util/fs'
 import { readlinkSafe } from './utils/readLinkSafe'
+import { ModrinthV2Client } from '@xmcl/modrinth'
+import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 
 function getMigrateLegacy(domain: ResourceDomain) {
   if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks) {
@@ -110,5 +112,101 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
   async showDirectory(path: string): Promise<void> {
     await this.app.shell.openDirectory(join(path, this.domain))
+  }
+
+  async refreshMetadata(instancePath: string): Promise<void> {
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const key = `instance-${this.domain}://${instancePath}`
+    const state = stateManager.get<SharedState<ResourceState>>(key)
+    const resourceManager = await this.app.registry.get(kResourceManager)
+    if (state) {
+      await state.revalidate()
+      const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
+      const curseforgeClient = await this.app.registry.getOrCreate(CurseforgeV1Client)
+      const worker = await this.app.registry.getOrCreate(kResourceWorker)
+
+      const onRefreshModrinth = async (all: Resource[]) => {
+        try {
+          const batchSize = 128
+          for (let i = 0; i < all.length; i += batchSize) {
+            const chunk = all.slice(i, i + batchSize)
+            const versions = await modrinthClient.getProjectVersionsByHash(chunk.map(v => v.hash))
+            const options = Object.entries(versions).map(([hash, version]) => {
+              if (!hash) return undefined
+              const f = chunk.find(f => f.hash === hash)
+              if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
+              return undefined
+            }).filter((v): v is any => !!v)
+            if (options.length > 0) {
+              await resourceManager.updateMetadata(options)
+            }
+          }
+        } catch (e) {
+          this.error(e as any)
+        }
+      }
+      const onRefreshCurseforge = async (all: Resource[]) => {
+        try {
+          const chunkSize = 8
+          const allChunks = [] as Resource[][]
+          all = all.filter(a => !!a.hash && !a.isDirectory)
+          for (let i = 0; i < all.length; i += chunkSize) {
+            allChunks.push(all.slice(i, i + chunkSize))
+          }
+
+          const allPrints: Record<number, Resource> = {}
+          for (const chunk of allChunks) {
+            const prints = (await Promise.all(chunk.map(async (v) => ({ fingerprint: await worker.fingerprint(v.path), file: v }))))
+            for (const { fingerprint, file } of prints) {
+              if (fingerprint in allPrints) {
+                this.warn(new Error(`Duplicated fingerprint ${fingerprint} for ${file.path} and ${allPrints[fingerprint].path}`))
+                continue
+              }
+              allPrints[fingerprint] = file
+            }
+          }
+          const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, Object.keys(allPrints).map(v => parseInt(v, 10))).catch((e) => {
+            if (e instanceof CurseforgeApiError && e.status >= 400 && e.status < 500 && e.status !== 404) {
+              this.error(e)
+            }
+            return { exactMatches: [] }
+          })
+          const options = [] as { hash: string; metadata: { curseforge: { projectId: number; fileId: number } } }[]
+          for (const f of result.exactMatches) {
+            const r = allPrints[f.file.fileFingerprint] || Object.values(allPrints).find(v => v.hash === f.file.hashes.find(a => a.algo === 1)?.value)
+            if (r) {
+              r.metadata.curseforge = { projectId: f.file.modId, fileId: f.file.id }
+              options.push({
+                hash: r.hash,
+                metadata: {
+                  curseforge: { projectId: f.file.modId, fileId: f.file.id },
+                },
+              })
+            }
+          }
+
+          if (options.length > 0) {
+            await resourceManager.updateMetadata(options)
+          }
+        } catch (e) {
+          this.error(e as any)
+        }
+      }
+
+      const refreshCurseforge: Resource[] = []
+      const refreshModrinth: Resource[] = []
+      for (const mod of state.files.filter(v => !v.metadata.curseforge || !v.metadata.modrinth)) {
+        if (!mod.metadata.curseforge) {
+          refreshCurseforge.push(mod)
+        }
+        if (!mod.metadata.modrinth) {
+          refreshModrinth.push(mod)
+        }
+      }
+      await Promise.allSettled([
+        refreshCurseforge.length > 0 ? onRefreshCurseforge(refreshCurseforge) : undefined,
+        refreshModrinth.length > 0 ? onRefreshModrinth(refreshModrinth) : undefined,
+      ])
+    }
   }
 }
