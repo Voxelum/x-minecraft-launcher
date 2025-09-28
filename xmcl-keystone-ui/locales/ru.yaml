@@ -1847,6 +1847,7 @@ userSkin:
   urlNotValid: URL-адрес скина неверный
   useSlim: Использовать тонкие руки
 version:
+  checkIntegrity: Проверьте целостность
   name: Версия | Версии
   notInstalled: Версия не установлена
 versionType:

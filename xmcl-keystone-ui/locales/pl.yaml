@@ -1790,6 +1790,7 @@ userSkin:
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
 version:
+  checkIntegrity: Sprawdź integralność
   name: Wersja | Wersje
   notInstalled: Wersja nie jest zainstalowana
 versionType:

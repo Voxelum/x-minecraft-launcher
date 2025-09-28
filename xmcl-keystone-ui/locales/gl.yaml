@@ -598,6 +598,8 @@ update:
   goOfficialWebDownload: Volve descargar no sitio web oficial
 user:
   profile: Profile
+version:
+  checkIntegrity: Comprobe a integridade
 versionType:
   alpha: Alpha
   beta: Beta

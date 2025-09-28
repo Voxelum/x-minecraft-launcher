@@ -1660,6 +1660,7 @@ userSkin:
   urlNotValid: 請輸入有效的皮膚 URL
   useSlim: 使用細胳膊模型
 version:
+  checkIntegrity: 檢查完整性
   name: 版本 | 版本
   notInstalled: 未安裝該版本
 versionType:

@@ -1818,6 +1818,7 @@ userSkin:
   urlNotValid: URL скіна недійсний
   useSlim: Використовувати тонку модель
 version:
+  checkIntegrity: Перевірте цілісність
   name: Версія | Версії
   notInstalled: Версія не встановлена
 versionType:

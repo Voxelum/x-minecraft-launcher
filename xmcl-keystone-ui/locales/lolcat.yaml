@@ -1660,6 +1660,7 @@ userSkin:
   urlNotValid: SKIN URL IZ INVALID
   useSlim: USE SLIM MODEL
 version:
+  checkIntegrity: Check Integrity
   name: VERSHUN | VERSHUNS
   notInstalled: VERSHUN IZ NOT INSTALLD
 versionType:

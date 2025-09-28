@@ -1799,6 +1799,7 @@ userSkin:
   urlNotValid: Kinézet URL érvénytelen
   useSlim: Vékony modell használata
 version:
+  checkIntegrity: Ellenőrizze az integritást
   name: Verzió | Verzió
   notInstalled: Verzió nincs telepítve
 versionType:

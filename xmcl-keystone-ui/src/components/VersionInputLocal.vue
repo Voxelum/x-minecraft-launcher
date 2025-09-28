@@ -6,6 +6,7 @@ import { BuiltinImages } from '../constant'
 const props = defineProps<{
   versions: VersionHeader[]
   value?: string
+  placeholder?: string
 }>()
 
 const localItems = computed(() => props.versions.map(ver => {
@@ -32,7 +33,7 @@ const emit = defineEmits<{
     :items="localItems"
     :clear-text="t('localVersion.auto')"
     :empty-text="t('localVersion.empty')"
-    :placeholder="t('localVersion.auto')"
+    :placeholder="placeholder || t('localVersion.auto')"
     :value="value"
     @input="emit('input', $event)"
   />

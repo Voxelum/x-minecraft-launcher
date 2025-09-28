@@ -1600,6 +1600,7 @@ userSkin:
   urlNotValid: 스킨 URL이 유효하지 않습니다
   useSlim: 슬림 모델 사용
 version:
+  checkIntegrity: 무결성을 확인하십시오
   name: 버전
   notInstalled: 버전이 설치되지 않음
 versionType:

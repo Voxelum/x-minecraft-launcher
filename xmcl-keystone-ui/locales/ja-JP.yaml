@@ -1607,6 +1607,7 @@ userSkin:
   urlNotValid: スキンのURLが無効です
   useSlim: スリムなスキンを使用
 version:
+  checkIntegrity: 整合性を確認してください
   name: バージョン | バージョン
   notInstalled: バージョンがインストールされていません
 versionType:

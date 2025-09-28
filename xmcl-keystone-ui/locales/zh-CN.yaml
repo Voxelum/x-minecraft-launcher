@@ -1666,6 +1666,7 @@ userSkin:
   urlNotValid: 请输入有效的皮肤 URL
   useSlim: 使用细胳膊模型
 version:
+  checkIntegrity: 检查完整性
   name: 版本 | 版本
   notInstalled: 未安装该版本
 versionType:

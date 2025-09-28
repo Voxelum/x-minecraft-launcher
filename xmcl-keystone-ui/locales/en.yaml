@@ -1763,6 +1763,7 @@ userSkin:
   urlNotValid: Skin URL is Invalid
   useSlim: Use Slim Model
 version:
+  checkIntegrity: Check Integrity
   name: Version | Versions
   notInstalled: Version is not installed
 versionType:

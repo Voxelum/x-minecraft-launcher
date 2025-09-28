@@ -1832,6 +1832,7 @@ userSkin:
   urlNotValid: L'URL du skin n'est pas valide
   useSlim: Utiliser le modèle mince
 version:
+  checkIntegrity: Vérifier l'intégrité
   name: |-
     Version | 
     Versions

@@ -1824,6 +1824,7 @@ userSkin:
   urlNotValid: A URL da Skin é Inválida
   useSlim: Usar Modelo Slim
 version:
+  checkIntegrity: Verifique a integridade
   name: Versão | Versões
   notInstalled: A versão não está instalada
 versionType:

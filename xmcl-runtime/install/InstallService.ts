@@ -1,7 +1,7 @@
 import { checksum, LibraryInfo, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import type { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, type InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, type LiteloaderVersion, type MinecraftVersion, type Options, PostProcessFailedError, type PostProcessor } from '@xmcl/installer'
-import { type InstallForgeOptions as _InstallForgeOptions, type Asset, type InstallService as IInstallService, type InstallableLibrary, type InstallFabricOptions, type InstallLabyModOptions, type InstallNeoForgedOptions, type InstallOptifineAsModOptions, type InstallOptifineOptions, type InstallProfileOptions, type InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, type OptifineVersion, Settings, type SharedState } from '@xmcl/runtime-api'
+import { type InstallForgeOptions as _InstallForgeOptions, type Asset, type InstallService as IInstallService, type InstallableLibrary, type InstallFabricOptions, type InstallLabyModOptions, type InstallNeoForgedOptions, type InstallOptifineAsModOptions, type InstallOptifineOptions, type InstallProfileOptions, type InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, type OptifineVersion, Settings, type SharedState, findNeoForgedVersion, isQuiltLibrary } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
@@ -336,21 +336,29 @@ export class InstallService extends AbstractService implements IInstallService {
   async reinstall(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
-    const local = await this.versionService.resolveLocalVersion(version)
-    if (!local) {
+    const resolvedVersion = await this.versionService.resolveLocalVersion(version)
+    if (!resolvedVersion) {
       throw new AnyError('ReinstallError', `Cannot reinstall ${version} as it's not found!`)
     }
-    await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion', { id: local.minecraftVersion }))
-    const forgeLib = local.libraries.find(isForgeLibrary)
+    await this.submit(installVersionTask({ id: resolvedVersion.minecraftVersion, url: '' }, location).setName('installVersion', { id: resolvedVersion.minecraftVersion }))
+    const forgeLib = resolvedVersion.libraries.find(isForgeLibrary)
     if (forgeLib) {
-      await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge', { id: version }))
+      await this.submit(installForgeTask({ version: forgeLib.version, mcversion: resolvedVersion.minecraftVersion }, location).setName('installForge', { id: version }))
     }
-    const fabLib = local.libraries.find(isFabricLoaderLibrary)
+    const fabLib = resolvedVersion.libraries.find(isFabricLoaderLibrary)
     if (fabLib) {
-      await this.installFabric({ minecraft: local.minecraftVersion, loader: fabLib.version })
+      await this.installFabric({ minecraft: resolvedVersion.minecraftVersion, loader: fabLib.version })
     }
-    await this.submit(installLibrariesTask(local, option).setName('installLibraries', { id: version }))
-    await this.submit(installAssetsTask(local, option).setName('installAssets', { id: version }))
+    const neoForge = findNeoForgedVersion(resolvedVersion.minecraftVersion, resolvedVersion)
+    if (neoForge) {
+      await this.installNeoForged({ minecraft: resolvedVersion.minecraftVersion, version: neoForge })
+    }
+    const quilt = resolvedVersion.libraries.find(isQuiltLibrary)
+    if (quilt) {
+      await this.installQuilt({ minecraftVersion: resolvedVersion.minecraftVersion, version: quilt.version })
+    }
+    await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: version }))
+    await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: version }))
   }
 
   @Lock(LockKey.assets)

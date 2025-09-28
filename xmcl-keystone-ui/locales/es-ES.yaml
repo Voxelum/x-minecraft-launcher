@@ -1407,3 +1407,5 @@ user:
   tokenValidUntil: Token Válido Hasta
 userSkin:
   reset: Restablecer
+version:
+  checkIntegrity: Verificar la integridad
