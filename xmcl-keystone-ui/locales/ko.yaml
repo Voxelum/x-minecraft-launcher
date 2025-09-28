@@ -80,11 +80,17 @@ ago:
   hour: '{duration} 시간 전 | {duration} 시간 전'
   minute: '{duration} 분 전 | {duration} 분 전'
   second: '{duration} 초 전 | {duration} 초 전'
+askAICrash:
+  copyPrompt: AI에게 물어볼 프롬프트 복사
+  description: >-
+    AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요!
+    아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
+  selectPlatform: AI 플랫폼을 열고, 방금 복사한 프롬프트를 붙여 넣으세요.
 authProfileAddedNotification: 인증 프로필 {name} 이 추가됐어요
 author: 작성자
 back: 뒤로
 baseSetting:
-  title: 기본 설정
+  title: 인스턴스 설정
 browse: 고르기
 browseApp:
   createShortcut: 바로가기 만들기
@@ -790,6 +796,8 @@ modpack:
   emitModrinthStrict: 엄격한 Modrinth 형식
   emitModrinthStrictDescription: Modrinth 문서에 기재된 4개 도메인의 URL만 허용됩니다
   export: 모드팩으로 내보내기
+  exportDirectory: 내보내기 디렉터리
+  exportDirectoryDescription: 모드팩은 기본적으로 다운로드 폴더에 내보내집니다.
   general: 일반 정보
   includeAssets: 에셋 포함
   includeLibraries: 라이브러리 포함
