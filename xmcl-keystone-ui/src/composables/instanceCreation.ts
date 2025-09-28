@@ -128,16 +128,22 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, instances: Re
     async create(onCreated?: (newPath: string) => void) {
       try {
         loading.value = true
-        const runtime = { ...data.runtime }
         if (!data.name) {
           data.name = placeHolderName.value
         }
         const pendingFiles = [...files.value]
-        const newPath = await create({
+        const payload = {
           ...data,
           resourcepacks: pendingFiles.some(f => f.path.startsWith('resourcepacks')),
           shaderpacks: pendingFiles.some(f => f.path.startsWith('shaderpacks')),
-        })
+        } as CreateInstanceOption
+        if (!payload.minMemory) payload.minMemory = undefined
+        if (!payload.maxMemory) payload.maxMemory = undefined
+        if (payload.vmOptions?.length === 0) payload.vmOptions = undefined
+        if (payload.mcOptions?.length === 0) payload.mcOptions = undefined
+        delete payload.hideLauncher
+        delete payload.showLog
+        const newPath = await create(payload)
         onCreated?.(newPath)
         reset()
         if (pendingFiles.length > 0) {
