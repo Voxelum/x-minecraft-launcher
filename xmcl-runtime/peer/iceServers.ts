@@ -138,6 +138,14 @@ async function testIceServers(
 ) {
   const ipSet = new Set<string>()
   await Promise.all(servers.map(async (server) => {
+    if (typeof server.urls === 'object' ? server.urls.some(v => v.includes('cloudflare.com')) : server.urls.includes('cloudflare.com')) {
+      console.log('bypass cloudflare url', server)
+      const key = getKey(server)
+      delete blocked[key]
+      passed[key] = server
+      onValidIceServer(server, 0)
+      return
+    }
     const [ips, ping] = await test(factory, server, portBegin).catch(() => [])
     console.log('Test ice server', server, ips)
     const key = getKey(server)

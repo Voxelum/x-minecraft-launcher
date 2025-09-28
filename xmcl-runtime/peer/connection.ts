@@ -108,6 +108,7 @@ export class PeerSession {
 
   setConnection(connection: RTCPeerConnection) {
     this.connection = connection
+    this.#candidates = []
     this.connection.addEventListener('icecandidate', (ev) => {
       const candidate = ev.candidate?.toJSON()
       if (candidate && candidate.candidate) {
