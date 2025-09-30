@@ -394,10 +394,7 @@ export function useTheme(framework: Framework, { addMedia, removeMedia, exportTh
   })
 
   async function readTheme(name: string) {
-    let theme = await getTheme(name).then(v => v ? deserializeV0(v) : undefined)
-    if (!theme) {
-      theme = loadV1Theme()
-    }
+    let theme = await getTheme(name).then(v => v ? deserializeV0(v) : loadV1Theme())
     if (!theme) {
       return undefined
     }
