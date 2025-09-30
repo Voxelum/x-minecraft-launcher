@@ -34,6 +34,8 @@ export interface Environment extends Platform {
   region: string
 
   gfw: boolean
+
+  gpu: boolean
 }
 
 export interface PoolStats {

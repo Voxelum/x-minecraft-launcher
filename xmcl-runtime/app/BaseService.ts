@@ -58,6 +58,7 @@ export class BaseService extends AbstractService implements IBaseService {
       build: this.app.build,
       region: this.app.systemLocale,
       gfw: (await this.app.registry.get(kGFW)).inside,
+      gpu: (await this.app.host.getGPUInfo('basic').then(info => info.gpuDevice?.some(g => g.vendorId === 4318 || g.vendorId === 4098 || g.vendorId === 4203) ?? false)),
     }
   }
 

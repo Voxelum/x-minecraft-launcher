@@ -118,7 +118,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   readonly session: ElectronSession
 
   constructor() {
-    super(app,
+    super(app as any,
       new ElectronShell(),
       new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, IS_DEV ? 'secret-dev' : 'secret')),
       (app) => new ElectronController(app as ElectronLauncherApp),

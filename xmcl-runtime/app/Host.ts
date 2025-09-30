@@ -95,4 +95,11 @@ export interface Host {
   whenReady(): Promise<void>
 
   relaunch(options?: { args?: string[] }): void
+
+  getGPUInfo(type: 'complete' | 'basic'): Promise<{
+    gpuDevice?: {
+      vendorId: number
+      deviceId: number
+    }[]
+  }>
 }

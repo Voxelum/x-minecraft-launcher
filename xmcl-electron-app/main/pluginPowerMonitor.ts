@@ -16,7 +16,7 @@ const enum PerformanceType {
 export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
   if (app.platform.os !== 'windows') return
 
-  const info = await elec.getGPUInfo('basic') as any
+  const info = await app.host.getGPUInfo('basic') as any
   const gpus = info?.gpuDevice?.filter((v: any) => v?.vendorId !== 5140)
     .map((v: any) => v.vendorId) || []
   const { log, warn, error } = app.getLogger('GPUOptifimizer')

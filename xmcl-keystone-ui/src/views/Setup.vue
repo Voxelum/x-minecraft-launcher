@@ -110,18 +110,18 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
+import { kSettingsState } from '@/composables/setting'
+import { BackgroundType, kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, Drive, InvalidDirectoryErrorCode } from '@xmcl/runtime-api'
+import SetupAccount from './SetupAccount.vue'
 import SetupAppearance from './SetupAppearance.vue'
 import SetDataRoot from './SetupDataRoot.vue'
 import SetupFooter from './SetupFooter.vue'
-import SetupAccount from './SetupAccount.vue'
 import SetLocale from './SetupLocale.vue'
-import { kSettingsState } from '@/composables/setting'
-import { getDefaultTheme, kTheme } from '@/composables/theme'
 
 const emit = defineEmits(['ready'])
-const { validateDataDictionary } = useService(BaseServiceKey)
+const { validateDataDictionary, getEnvironment } = useService(BaseServiceKey)
 
 const next = () => {
   data.step = Number(data.step) + 1
@@ -183,10 +183,7 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { isDark, currentTheme } = injection(kTheme)
-watch(isDark, (dark) => {
-  currentTheme.value = { ...getDefaultTheme(), dark }
-})
+const { isDark, backgroundType } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {
@@ -208,6 +205,11 @@ const { state } = injection(kSettingsState)
 
 async function setup() {
   await bootstrap.bootstrap(data.path)
+  getEnvironment().then((e) => {
+    if (e.gpu && isDark.value) {
+      backgroundType.value = BackgroundType.HALO
+    }
+  })
   emit('ready', data)
   const dismiss = watch(state, (s) => {
     if (s) {
