@@ -1,6 +1,6 @@
 <template>
   <v-list
-    class="base-settings z-1"
+    class="base-settings modpacks z-1"
     color="transparent"
   >
     <SettingItem :title="t('modpack.modpackVersion')" :description="t('modpack.modpackVersion')">
@@ -171,7 +171,7 @@ const onIncr = (minor: boolean = false) => {
 </style>
 
 <style>
-.base-settings .v-input--checkbox {
+.base-settings.modpacks .v-input--checkbox {
   padding-bottom: 1rem !important;
 }
 </style>

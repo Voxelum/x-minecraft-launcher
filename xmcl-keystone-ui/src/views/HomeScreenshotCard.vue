@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="w-full"
+    class="w-full items-center justify-center flex"
     :color="cardColor"
     outlined
     :style="{
@@ -26,7 +26,7 @@
       :show-arrows="urls.length > 0"
       cycle
       interval="5000"
-      class="h-full rounded"
+      class="rounded"
     >
       <template v-if="urls.length > 0">
         <v-carousel-item
@@ -47,7 +47,6 @@
               <v-icon>
                 folder
               </v-icon>
-              <!-- {{ t('screenshots.goto') }} -->
             </v-btn>
           </div>
         </v-carousel-item>

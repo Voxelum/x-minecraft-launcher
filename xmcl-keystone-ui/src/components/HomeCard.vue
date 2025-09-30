@@ -73,10 +73,9 @@
         </div>
       </template>
     </v-card-text>
-    <v-card-actions v-if="button || additionButton">
+    <v-card-actions class="justify-between" v-if="button || additionButton">
       <v-btn
         v-if="button"
-        class="flex-1 justify-start flex-grow"
         text
         ref="btnElem"
         @click="emit('navigate')"
@@ -90,7 +89,6 @@
       </v-btn>
       <v-spacer v-else />
       <v-btn
-        class="justify-start"
         v-if="additionButton"
         color="primary"
         text

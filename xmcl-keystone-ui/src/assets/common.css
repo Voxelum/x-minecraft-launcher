@@ -56,13 +56,10 @@ p {
     position: absolute;
 }
 
-/* .v-list-item v-list-item--link {
-
-} */
-
-/* .transition-list-move {
-    transition: transform 0.7s !important;
-} */
+.dark {
+  --icon-color: #d8d8d8;
+  --icon-color-hovered: #fff;
+}
 
 .v-list-item,
 .v-list-item:hover:before,

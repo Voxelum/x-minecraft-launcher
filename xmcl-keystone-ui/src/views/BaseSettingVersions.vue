@@ -9,7 +9,7 @@
       <div class="flex-grow" />
       <v-btn
         text
-        :disabled="!versionHeader"
+        :disabled="!versionHeader || isModified"
         @click="onFix"
       >
         <v-icon left>
@@ -116,6 +116,7 @@ const props = defineProps<{
 
 const {
   data,
+  isModified,
 } = injection(InstanceEditInjectionKey)
 const { versions } = injection(kLocalVersions)
 

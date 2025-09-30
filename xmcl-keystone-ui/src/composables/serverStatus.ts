@@ -90,7 +90,7 @@ export function useInstancesServerStatus() {
   }
   function refresh() {
     pinging.value = true
-    return Promise.all(instances.value.map(i => i.server).filter(<T>(v: T | null): v is T => !!v).map(refreshOne)).finally(() => { pinging.value = false })
+    return Promise.all(instances.value.map(i => i.server).filter(<T>(v: T | null | undefined): v is T => !!v).map(refreshOne)).finally(() => { pinging.value = false })
   }
   return {
     pinging,

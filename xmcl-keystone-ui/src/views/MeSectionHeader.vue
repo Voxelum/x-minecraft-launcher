@@ -43,19 +43,6 @@
       :class="{ 'mr-2' : !slots.extra }"
     />
     <slot name="extra" />
-    <!-- <v-menu>
-      <template #activator="{ on }">
-        <v-btn
-          icon
-          v-on="on"
-        >
-          <v-icon>
-            settings
-          </v-icon>
-        </v-btn>
-      </template>
-      <slot />
-    </v-menu> -->
   </div>
 </template>
 <script setup lang="ts">

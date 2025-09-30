@@ -89,14 +89,17 @@
       />
       <v-list-item-action>
         <v-btn
+          :disabled="!serverVersionId"
           icon
           @click="copyToClipboard('server')"
         >
-          <v-icon>content_copy</v-icon>
+          <v-icon v-if="!copiedServer">content_copy</v-icon>
+          <v-icon v-else color="primary">check</v-icon>
         </v-btn>
       </v-list-item-action>
       <v-list-item-action>
         <v-btn
+          :disabled="!serverVersionId"
           icon
           @click="showPreview('server')"
         >
@@ -111,14 +114,17 @@
       />
       <v-list-item-action>
         <v-btn
+          :disabled="!versionId"
           icon
           @click="copyToClipboard('client')"
         >
-          <v-icon>content_copy</v-icon>
+          <v-icon v-if="!copiedClient">content_copy</v-icon>
+          <v-icon v-else color="primary">check</v-icon>
         </v-btn>
       </v-list-item-action>
       <v-list-item-action class="mx-0">
         <v-btn
+          :disabled="!versionId"
           icon
           @click="showPreview('client')"
         >
@@ -191,12 +197,14 @@ import { useService } from '@/composables'
 import { useSimpleDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
 import { injection } from '@/util/inject'
-import { InstanceOptionsServiceKey, InstanceServerInfoServiceKey } from '@xmcl/runtime-api'
+import { InstanceOptionsServiceKey, InstanceServerInfoServiceKey, LaunchException, isException } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { useNotifier } from '../composables/notifier'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import { useLaunchException } from '@/composables/launchException'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 
 const { t } = useI18n()
 const { preview, refresh, command, error } = useLaunchPreview()
@@ -226,14 +234,52 @@ async function showPreview(side = 'client' as 'client' | 'server') {
   await refresh(side)
   if (!error.value) {
     isPreviewShown.value = true
+  } else {
+    if (isException(LaunchException, error.value)) {
+      onException(error.value.exception)
+    } else {
+      onError(error.value)
+    }
+    notify({ level: 'error', icon: 'error', title: title.value, body: description.value })
   }
 }
+
+const { versionId, serverVersionId } = injection(kInstanceVersion)
+const copiedClient = ref(false)
+const copiedServer = ref(false)
+const title = ref('')
+const description = ref('')
+const unexpected = ref(false)
+const extraText = ref('')
+const { onError, onException } = useLaunchException(
+  title,
+  description,
+  unexpected,
+  extraText
+)
 async function copyToClipboard(side = 'client' as 'client' | 'server') {
   await save()
   await refresh(side)
   if (!error.value) {
-    notify({ level: 'success', title: t('copyClipboard.success') })
     windowController.writeClipboard(command.value)
+    if (side ===  'client') {
+      copiedClient.value = true
+      setTimeout(() => {
+        copiedClient.value = false
+      }, 4000)
+    } else {
+      copiedServer.value = true
+      setTimeout(() => {
+        copiedServer.value = false
+      }, 4000)
+    }
+  } else {
+    if (isException(LaunchException, error.value)) {
+      onException(error.value.exception)
+    } else {
+      onError(error.value)
+    }
+    notify({ level: 'error', icon: 'error', title: title.value, body: description.value })
   }
 }
 const gotoSetting = () => {

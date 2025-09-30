@@ -8,17 +8,8 @@
       elevation="4"
       class="px-1"
     >
-      <v-btn
-        icon
-        :style="{ visibility: step === 1 ? 'hidden' : 'visible' }"
-        @click="back"
-      >
-        <v-icon>arrow_back</v-icon>
-      </v-btn>
+      <v-icon left>add</v-icon>
       <v-toolbar-title class="flex items-center">
-        <div v-if="steps[step - 1] === 'template'">
-          {{ t('instanceTemplate.title') }}
-        </div>
         <template v-if="steps[step - 1] === 'config'">
           {{ t('instances.add') }}
         </template>
@@ -63,11 +54,6 @@
             :manifests="manifests"
             @select="onManifestSelect"
           />
-          <StepTemplate
-            v-if="tStep === 'template'"
-            :is-shown="isShown"
-            @select="next()"
-          />
           <StepConfig
             v-if="tStep === 'config'"
             :loading="loading"
@@ -94,36 +80,17 @@
           v-if="type === 'template' || type === 'manual' || !type"
           class="flex justify-end"
         >
-          <v-menu
-            offset-y
-            open-on-hover
-            top
+          <v-btn
+            text
+            outlined
+            :loading="loading"
+            @click="onImportModpack"
           >
-            <template #activator="{ on }">
-              <v-btn
-                text
-                outlined
-                :loading="loading"
-                v-on="on"
-                @click="onImportModpack"
-              >
-                <v-icon left>
-                  note_add
-                </v-icon>
-                {{ t('importModpack.name') }}
-              </v-btn>
-            </template>
-            <v-btn
-              large
-              :loading="loading"
-              @click="onSelectTemplate"
-            >
-              <v-icon left>
-                list
-              </v-icon>
-              {{ t('instances.addTemplate') }}
-            </v-btn>
-          </v-menu>
+            <v-icon left>
+              note_add
+            </v-icon>
+            {{ t('importModpack.name') }}
+          </v-btn>
         </div>
         <div
           v-if="error"
@@ -162,7 +129,6 @@ import { kUserContext } from '@/composables/user'
 import { getFTBTemplateAndFile } from '@/util/ftb'
 import { injection } from '@/util/inject'
 import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
-import StepTemplate from '../components/StepTemplate.vue'
 import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'

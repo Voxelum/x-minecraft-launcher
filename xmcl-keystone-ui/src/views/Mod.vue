@@ -153,7 +153,7 @@
         @category="curseforgeCategory = $event"
       />
       <ModDetailOptifine
-      v-else-if="isOptifineProject(selectedItem)"
+        v-else-if="isOptifineProject(selectedItem)"
         :key="selectedItem.id"
         :mod="selectedItem"
         :runtime="runtime"
@@ -294,7 +294,7 @@ const localizedTexts = computed(() => markRaw({
     noModLoaderHint: t('mod.noModLoaderHint'),
     modloaderSelectHint: t('mod.modloaderSelectHint'),
     modloaderSelectNotSupported: t('mod.modloaderSelectNotSupported'),
-    duplicatedDetected: t('mod.duplicatedDetected', { count: Object.keys(conflicted).length }),
+    duplicatedDetected: t('mod.duplicatedDetected', { count: Object.keys(conflicted.value).length }),
     incompatibleHint: t('mod.incompatibleHint'),
     search: t('modInstall.search'),
     unsupported: t('modrinth.environments.unsupported'),

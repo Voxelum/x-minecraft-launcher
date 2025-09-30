@@ -38,14 +38,32 @@
 </template>
 
 <script lang="ts" setup>
+import { useService } from '@/composables'
 import { useDateString } from '@/composables/date'
 import { kImageDialog } from '@/composables/imageDialog'
 import { injection } from '@/util/inject'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 
 const { isShown, image, description, date } = injection(kImageDialog)
 const { getDateString } = useDateString()
+const { showItemInDirectory } = useService(BaseServiceKey)
 const onOpen = () => {
-  window.open(image.value, 'browser')
+  const value = image.value
+  try {
+    const url = new URL(value)
+    if (url.host === 'launcher') {
+      if (url.pathname.startsWith('/media')) {
+        const path = url.searchParams.get('path')
+        if (path) {
+          showItemInDirectory(path)
+          return
+        }
+      }
+    }
+  } catch {
+    return
+  }
+  window.open(value, 'browser')
 }
 </script>
 <style>

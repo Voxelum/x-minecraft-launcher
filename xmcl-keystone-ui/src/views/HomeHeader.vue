@@ -35,7 +35,7 @@
           name="slide-x-transition"
           mode="out-in"
         >
-          <router-view name="actions" />
+          <router-view class="flex-shrink-0" name="actions" />
         </transition>
       </div>
       <transition

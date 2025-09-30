@@ -144,17 +144,14 @@ function goMultiplayer() {
 </style>
 <style>
 
-.dark .sidebar .theme--dark.v-icon {
+.dark .sidebar .v-list-item .theme--dark.v-icon {
   color: var(--icon-color);
 }
 
-.dark .sidebar .v-list-item {
-  --icon-color: #d8d8d8;
+.dark .sidebar .v-list-item:hover .theme--dark.v-icon {
+  color: var(--icon-color-hovered);
 }
 
-.dark .sidebar .v-list-item:hover {
-  --icon-color: #fff;
-}
 
 .v-navigation-drawer__content {
   @apply flex flex-col flex-grow-0 h-full;

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full">
     <div class="relative mx-6 flex-grow flex gap-6 items-end">
-      <v-card flat class="rounded-lg tabs-card" color="transparent" @mouseenter="onMouseEnter" @mouseleave="onMouseLeaved">
+      <v-card flat class="rounded-lg overflow-hidden tabs-card" color="transparent" @mouseenter="onMouseEnter" @mouseleave="onMouseLeaved">
         <div class="flex absolute top-0 h-4 z-4 right-0 p-1 icons" :class="{ visibled: pinned || counter > 0 }">
           <div class="flex-grow" />
           <v-btn :class="{ 'v-btn--active': pinned }" icon small @click="onPin">
@@ -18,7 +18,7 @@
         <v-tabs-items
           ref="tabItems"
           v-model="tab"
-          class="bg-transparent! tabs-items"
+          class="bg-transparent! rounded-t-lg tabs-items"
           :class="{ visibled: pinned || counter > 0 }"
         >
           <v-tab-item>
@@ -34,12 +34,13 @@
             <HomeSavesCard class="rounded-t-lg" :row="1" :row-count="rowCount" />
           </v-tab-item>
           <v-tab-item>
-            <HomeScreenshotCard :height="screenshotHeight" :instance="instance" />
+            <HomeScreenshotCard class="rounded-t-lg h-full" :height="screenshotHeight" :instance="instance" />
           </v-tab-item>
           <v-tab-item
             v-if="headerData"
           >
             <HomeUpstreamHeader
+              class="h-full rounded-t-lg"
               :value="headerData"
               dense
             />
@@ -203,6 +204,14 @@ function onMouseEnter() {
 .tabs-card>.icons, .tabs-card>.tabs-items {
 transition: all 0.2s ease-in-out;
   opacity: 0;
+}
+
+.dark .tabs-card>.icons .v-icon {
+  color: var(--icon-color);
+}
+
+.dark .tabs-card>.icons .v-icon:hover {
+  color: var(--icon-color-hovered);
 }
 
 .visibled {

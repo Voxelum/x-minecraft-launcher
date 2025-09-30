@@ -113,19 +113,27 @@
         <MeSectionHeader
           id="my-stuff-header"
           :title="options.find((o) => o.value === currentDisplaied)?.text ?? ''"
-          :options="options"
           @select="currentDisplaied = $event"
-        />
+        >
+          <template #extra>
+            <v-text-field
+              v-model="filterKey"
+              outlined
+              small
+              dense
+              hide-details
+              class="flex-grow-0"
+              prepend-inner-icon="search"
+              :placeholder="t('filter')"
+            ></v-text-field>
+          </template>
+        </MeSectionHeader>
         <div class="mt-4">
           <InstancesCards
             v-if="currentDisplaied === ''"
             :instances="sorted"
             class="px-0"
             @select="onInstanceClick"
-          />
-          <ResourceManageModpack
-            v-else-if="currentDisplaied === 'modpack'"
-            class="mt-2"
           />
           <ResourceManageVersions
             v-else-if="currentDisplaied === 'version'"
@@ -152,11 +160,11 @@ import MeSectionHeader from "./MeSectionHeader.vue";
 
 import { useQuery } from "@/composables/query";
 import InstancesCards from "./InstancesCards.vue";
-import ResourceManageModpack from "./ResourceManageModpack.vue";
 import ResourceManageVersions from "./ResourceManageVersions.vue";
 import { useTutorial } from "@/composables/tutorial";
 import { DriveStep } from "driver.js";
 import { kTheme } from "@/composables/theme";
+import { useMagicKeys } from "@vueuse/core";
 
 const currentDisplaied = useQuery("view");
 
@@ -184,6 +192,19 @@ const allNews = computed((): LauncherNews[] => {
   return result.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 });
 
+const filterKey = ref("");
+const keys = useMagicKeys()
+const ctrlF = keys['Ctrl+F']
+watch(ctrlF, (v) => {
+  if (v) {
+    const input = container.value?.querySelector('input')
+    if (input) {
+      input.focus()
+      input.select()
+    }
+  }
+})
+
 const { getDateString } = useDateString();
 
 const options = computed(() => [
@@ -197,11 +218,6 @@ const options = computed(() => [
     value: "version",
     icon: "power",
   },
-  {
-    text: t("me.modpacks", 2),
-    value: "modpack",
-    icon: "inventory_2",
-  },
 ]);
 
 const displayNewsHeader = useLocalStorageCacheBool("displayNewsHeader", true);
@@ -210,7 +226,7 @@ const current = ref(0);
 const currentNews = computed(() => allNews.value[current.value]);
 const { instances } = injection(kInstances);
 const sorted = computed(() =>
-  [...instances.value].sort((a, b) => b.lastAccessDate - a.lastAccessDate)
+  [...instances.value].filter(v => v.name.toLocaleLowerCase().includes(filterKey.value.toLocaleLowerCase())).sort((a, b) => b.lastAccessDate - a.lastAccessDate)
 );
 
 watch(

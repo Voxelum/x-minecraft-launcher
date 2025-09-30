@@ -539,7 +539,7 @@ instanceUpdate:
   title: 更新实例
   update: 开始更新实例
 instances:
-  add: 创建游戏
+  add: 添加或创建游戏
   addCurseForgeDescription: |-
     从curseforge 数据文件夹导入。
     您需要选择curseforge的根数据文件夹
