@@ -92,6 +92,8 @@ export interface StoreProject {
   links: Array<{ url: string; name: string }>
   info: Array<{ name: string; value: string; url?: string; icon?: string }>
   htmlDescription?: string
+  localizedTitle?: string
+  localizedDescription?: string
   gallery: Array<{
     rawUrl?: string
     url: string

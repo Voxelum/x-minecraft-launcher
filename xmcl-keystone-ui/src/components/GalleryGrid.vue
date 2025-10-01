@@ -44,11 +44,11 @@
           />
           <div class="flex max-w-full flex-col overflow-auto">
             <v-card-title class="ml-1 max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap pt-3">
-              {{ g.title }}
+              {{ g.localizedTitle || g.title }}
             </v-card-title>
 
             <v-card-subtitle class="description  ml-1">
-              {{ g.description }}
+              {{ g.localizedDescription || g.description }}
             </v-card-subtitle>
             <div class="flex-grow" />
             <v-divider />
@@ -125,6 +125,8 @@ export interface GridGalleryItem {
   categories: string[]
   follows: number
   updatedAt: string
+  localizedTitle?: string
+  localizedDescription?: string
 }
 
 const { getDateString } = useDateString()

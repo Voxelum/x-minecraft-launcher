@@ -15,7 +15,10 @@ import { getCurseforgeFileGameVersions, getCursforgeFileModLoaders } from '@/uti
 import { injection } from '@/util/inject'
 import { getSWRV } from '@/util/swrvGet'
 import { FileRelationType } from '@xmcl/curseforge'
-import { TaskState } from '@xmcl/runtime-api'
+import { TaskState, ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
+import { useI18nSearchFlights } from '@/composables/flights'
+import { useAutoI18nCommunityContent } from '@/composables/i18n'
+import { useService } from '@/composables/service'
 
 const props = defineProps<{ id: number }>()
 
@@ -26,6 +29,31 @@ const { data: proj, isValidating, mutate, error } = useSWRVModel(getCurseforgePr
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
 const description = useSWRVModel(getCurseforgeProjectDescriptionModel(projectId))
+
+const { lookupByCurseforge } = useService(ProjectMappingServiceKey)
+const curseforgeProjectMapping = shallowRef(undefined as ProjectMapping | undefined)
+
+watch(projectId, async (id) => {
+  const result = await lookupByCurseforge(id).catch(() => undefined)
+  if (id === projectId.value) {
+    curseforgeProjectMapping.value = result
+  }
+}, { immediate: true })
+
+const i18nSearch = useI18nSearchFlights()
+const localizedBody = ref('')
+
+if (i18nSearch) {
+  const { getContent } = useAutoI18nCommunityContent(i18nSearch)
+  watch(projectId, async (id) => {
+    localizedBody.value = ''
+    const result = await getContent('curseforge', id)
+    if (id === projectId.value) {
+      localizedBody.value = result
+    }
+  }, { immediate: true })
+}
+
 const project = computed(() => {
   const p = proj.value
   if (!p) return undefined
@@ -96,7 +124,9 @@ const project = computed(() => {
     updateDate: p.dateModified,
     links,
     info,
-    htmlDescription: computed(() => description.data.value || ''),
+    htmlDescription: computed(() => localizedBody.value || description.data.value || ''),
+    localizedTitle: curseforgeProjectMapping.value?.name,
+    localizedDescription: curseforgeProjectMapping.value?.description,
     gallery: p.screenshots.map(g => ({
       rawUrl: g.url,
       url: g.thumbnailUrl,

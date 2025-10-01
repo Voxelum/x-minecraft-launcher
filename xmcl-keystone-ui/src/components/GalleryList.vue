@@ -50,7 +50,7 @@
               size="16"
             >
               {{ g.type === 'modrinth' ? '$vuetify.icons.modrinth': '$vuetify.icons.curseforge' }}
-            </v-icon> {{ g.title }}
+            </v-icon> {{ g.localizedTitle || g.title }}
           </v-card-subtitle>
 
           <v-divider />
@@ -123,6 +123,7 @@ export interface ListGalleryItem {
   title: string
   gameVersion: string
   categories: string[]
+  localizedTitle?: string
 }
 
 const size = computed(() => {

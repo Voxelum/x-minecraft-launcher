@@ -168,6 +168,7 @@ import { useSortByItems } from '@/composables/sortBy'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { useTutorial } from '@/composables/tutorial'
+import { useService } from '@/composables/service'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
@@ -177,6 +178,7 @@ import { getSWRV } from '@/util/swrvGet'
 import { useEventListener, useFocus } from '@vueuse/core'
 import { Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import { SearchResultHit } from '@xmcl/modrinth'
+import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
 import { DriveStep } from 'driver.js'
 import useSWRV from 'swrv'
 
@@ -205,6 +207,11 @@ const { t } = useI18n()
 const { getDateString } = useDateString()
 const tCategory = useCurseforgeCategoryI18n()
 
+const { lookupBatch } = useService(ProjectMappingServiceKey)
+
+// Shared mapping store for all sections
+const galleryMappings = ref<Record<string, { name: string; description: string }>>({})
+
 // Popular list
 const { data: modrinthResult, error, isValidating } = useSWRV('/modrinth/featured', async () => {
   const result = await clientModrinthV2.searchProjects({
@@ -218,9 +225,37 @@ const { data: curseforgeResult, error: curseforgeError, isValidating: curseforge
   const result = await clientCurseforgeV1.searchMods({ sortField: ModsSearchSortField.Featured, classId: 4471, pageSize: 5 })
   return result.data
 }, inject(kSWRVConfig))
+
+// Fetch mappings for popular items
+watch([modrinthResult, curseforgeResult], async ([modrinthItems, cfItems]) => {
+  const modrinthIds = (modrinthItems || []).map(p => p.project_id)
+  const curseforgeIds = (cfItems || []).map(p => p.id)
+  
+  const result = await lookupBatch(modrinthIds, curseforgeIds)
+  const newMappings: Record<string, { name: string; description: string }> = {}
+  
+  for (const mapping of result) {
+    if (mapping.modrinthId) {
+      newMappings[`modrinth:${mapping.modrinthId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+    if (mapping.curseforgeId) {
+      newMappings[`curseforge:${mapping.curseforgeId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+  }
+  
+  galleryMappings.value = { ...galleryMappings.value, ...newMappings }
+})
+
 const popularItems = computed(() => {
   function getGameGalleryFromModrinth(hits: SearchResultHit[]) {
     return hits.map((hit) => {
+      const mapping = galleryMappings.value[`modrinth:${hit.project_id}`]
       const images = hit.gallery.map(g => [g, g]) as [string, string][]
       if (hit.icon_url) {
         images.push([hit.icon_url, hit.icon_url])
@@ -233,12 +268,14 @@ const popularItems = computed(() => {
         developer: hit?.author ?? '',
         minecraft: hit?.versions ?? [],
         categories: hit.categories.map(c => t(`modrinth.categories.${c}`, c)),
+        localizedTitle: mapping?.name,
       }
       return game
     })
   }
   function getGameGalleryFromCurseforge(mods: Mod[]) {
     return mods.map((p) => {
+      const mapping = galleryMappings.value[`curseforge:${p.id}`]
       const images = p.screenshots.map(g => [g.thumbnailUrl, g.url]) as [string, string][]
       if (p.logo) {
         images.push([p.logo.thumbnailUrl, p.logo.url])
@@ -251,6 +288,7 @@ const popularItems = computed(() => {
         developer: p.authors[0].name,
         minecraft: p.latestFilesIndexes.map(f => f.gameVersion),
         categories: p.categories.map(c => tCategory(c.name)),
+        localizedTitle: mapping?.name,
       }
       return game
     })
@@ -279,33 +317,70 @@ const { data: curseforgeRecent } = useSWRV('/curseforge/recent_update', async ()
   })
   return result.data
 }, inject(kSWRVConfig))
+
+// Fetch mappings for recent updated items
+watch([modrinthRecent, curseforgeRecent], async ([modrinthItems, cfItems]) => {
+  const modrinthIds = (modrinthItems || []).map(p => p.project_id)
+  const curseforgeIds = (cfItems || []).map(p => p.id)
+  
+  const result = await lookupBatch(modrinthIds, curseforgeIds)
+  const newMappings: Record<string, { name: string; description: string }> = {}
+  
+  for (const mapping of result) {
+    if (mapping.modrinthId) {
+      newMappings[`modrinth:${mapping.modrinthId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+    if (mapping.curseforgeId) {
+      newMappings[`curseforge:${mapping.curseforgeId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+  }
+  
+  galleryMappings.value = { ...galleryMappings.value, ...newMappings }
+}, { immediate: true })
+
 const recentUpdatedItems = computed(() => {
   const recent = modrinthRecent.value || []
   const cfRecent = curseforgeRecent.value || []
 
   return mergeSorted(
-    recent.map((r) => ({
-      title: r.title,
-      id: r.project_id,
-      type: 'modrinth',
-      logo: r.icon_url,
-      description: r.description,
-      updatedAt: r.date_modified,
-      follows: r.follows,
-      downloads: r.downloads,
-      categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
-    })),
-    cfRecent.map((r) => ({
-      id: r.id.toString(),
-      type: 'curseforge',
-      title: r.name,
-      logo: r.logo.thumbnailUrl,
-      description: r.summary,
-      updatedAt: r.dateModified,
-      follows: r.downloadCount,
-      downloads: r.downloadCount,
-      categories: r.categories.map(c => tCategory(c.name)),
-    })),
+    recent.map((r) => {
+      const mapping = galleryMappings.value[`modrinth:${r.project_id}`]
+      return {
+        title: r.title,
+        id: r.project_id,
+        type: 'modrinth',
+        logo: r.icon_url,
+        description: r.description,
+        updatedAt: r.date_modified,
+        follows: r.follows,
+        downloads: r.downloads,
+        categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
+        localizedTitle: mapping?.name,
+        localizedDescription: mapping?.description,
+      }
+    }),
+    cfRecent.map((r) => {
+      const mapping = galleryMappings.value[`curseforge:${r.id}`]
+      return {
+        id: r.id.toString(),
+        type: 'curseforge',
+        title: r.name,
+        logo: r.logo.thumbnailUrl,
+        description: r.summary,
+        updatedAt: r.dateModified,
+        follows: r.downloadCount,
+        downloads: r.downloadCount,
+        categories: r.categories.map(c => tCategory(c.name)),
+        localizedTitle: mapping?.name,
+        localizedDescription: mapping?.description,
+      }
+    }),
   )
 })
 
@@ -323,27 +398,62 @@ const { data: curseforgeRecentMinecraft } = useSWRV('/curseforge/recent_version'
   const result = await clientCurseforgeV1.searchMods({ sortField: ModsSearchSortField.GameVersion, classId: 4471, pageSize: 30 })
   return result.data
 }, inject(kSWRVConfig))
+
+// Fetch mappings for latest minecraft items
+watch([modrinthRecentMinecraft, curseforgeRecentMinecraft], async ([modrinthItems, cfItems]) => {
+  const modrinthIds = (modrinthItems || []).map(p => p.project_id)
+  const curseforgeIds = (cfItems || []).map(p => p.id)
+  
+  const result = await lookupBatch(modrinthIds, curseforgeIds)
+  const newMappings: Record<string, { name: string; description: string }> = {}
+  
+  for (const mapping of result) {
+    if (mapping.modrinthId) {
+      newMappings[`modrinth:${mapping.modrinthId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+    if (mapping.curseforgeId) {
+      newMappings[`curseforge:${mapping.curseforgeId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+  }
+  
+  galleryMappings.value = { ...galleryMappings.value, ...newMappings }
+}, { immediate: true })
+
 const recentMinecraftItems = computed(() => {
   const modrinths = modrinthRecentMinecraft.value || []
   const curseforges = curseforgeRecentMinecraft.value || []
 
   return mergeSorted(
-    modrinths.map((r) => ({
-      title: r.title,
-      type: 'modrinth',
-      id: r.project_id,
-      image: r.icon_url || r.gallery[0],
-      gameVersion: latestModrinth.value,
-      categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
-    })),
-    curseforges.map((r) => ({
-      id: r.id.toString(),
-      type: 'curseforge',
-      title: r.name,
-      image: r.logo.thumbnailUrl,
-      gameVersion: r.latestFilesIndexes[0]?.gameVersion,
-      categories: r.categories.map(c => tCategory(c.name)),
-    })),
+    modrinths.map((r) => {
+      const mapping = galleryMappings.value[`modrinth:${r.project_id}`]
+      return {
+        title: r.title,
+        type: 'modrinth',
+        id: r.project_id,
+        image: r.icon_url || r.gallery[0],
+        gameVersion: latestModrinth.value,
+        categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
+        localizedTitle: mapping?.name,
+      }
+    }),
+    curseforges.map((r) => {
+      const mapping = galleryMappings.value[`curseforge:${r.id}`]
+      return {
+        id: r.id.toString(),
+        type: 'curseforge',
+        title: r.name,
+        image: r.logo.thumbnailUrl,
+        gameVersion: r.latestFilesIndexes[0]?.gameVersion,
+        categories: r.categories.map(c => tCategory(c.name)),
+        localizedTitle: mapping?.name,
+      }
+    }),
   )
 })
 
@@ -431,8 +541,37 @@ const { projects: curseforgeProjects, isValidating: isCurseforgeSearching } = us
   pageSize,
 )
 
+// Mappings for search results
+const mappings = ref<Record<string, { name: string; description: string }>>({})
+
+watch([projects, curseforgeProjects], async ([modrinthProjects, cfProjects]) => {
+  const modrinthIds = modrinthProjects.map(p => p.project_id)
+  const curseforgeIds = cfProjects.map(p => p.id)
+  
+  const result = await lookupBatch(modrinthIds, curseforgeIds)
+  const newMappings: Record<string, { name: string; description: string }> = {}
+  
+  for (const mapping of result) {
+    if (mapping.modrinthId) {
+      newMappings[`modrinth:${mapping.modrinthId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+    if (mapping.curseforgeId) {
+      newMappings[`curseforge:${mapping.curseforgeId}`] = {
+        name: mapping.name,
+        description: mapping.description,
+      }
+    }
+  }
+  
+  mappings.value = newMappings
+}, { immediate: true })
+
 const items = computed(() => {
   const modrinths = projects.value.map((p) => {
+    const mapping = mappings.value[`modrinth:${p.project_id}`]
     const mapped: ExploreProject = {
       id: p.project_id,
       type: 'modrinth',
@@ -448,10 +587,13 @@ const items = computed(() => {
       ],
       tags: p.categories.map(c => ({ icon: modrinthCategories.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c), id: '' })),
       gallery: p.gallery,
+      localizedTitle: mapping?.name,
+      localizedDescription: mapping?.description,
     }
     return mapped
   })
   const curseforges = curseforgeProjects.value.map((p) => {
+    const mapping = mappings.value[`curseforge:${p.id}`]
     const existed = new Set<number>()
     const tags = p.categories.map(c => {
       if (existed.has(c.id)) return undefined
@@ -473,6 +615,8 @@ const items = computed(() => {
       ],
       tags,
       gallery: p.screenshots.map(s => s.thumbnailUrl),
+      localizedTitle: mapping?.name,
+      localizedDescription: mapping?.description,
     }
     return mapped
   })

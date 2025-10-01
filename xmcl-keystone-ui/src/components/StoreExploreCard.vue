@@ -20,7 +20,7 @@
       <div class="ml-3 flex flex-col">
         <div class="flex align-baseline">
           <h2 class="pr-2 text-2xl font-bold">
-            {{ value.title }}
+            {{ value.localizedTitle || value.title }}
           </h2>
           <span class="secondary-text"> by {{ value.author }}</span>
           <div class="flex-grow" />
@@ -29,7 +29,7 @@
               value.type === 'ftb' ? '$vuetify.icons.ftb' : '$vuetify.icons.modrinth' }}
           </v-icon>
         </div>
-        {{ value.description }}
+        {{ value.localizedDescription || value.description }}
         <div class="secondary-text mt-1 flex gap-3 align-baseline">
           <span
             v-for="label of value.labels"
@@ -100,6 +100,8 @@ export interface ExploreProject {
   labels: CategoryChipProps[]
   tags: CategoryChipProps[]
   gallery: string[]
+  localizedTitle?: string
+  localizedDescription?: string
 }
 
 const emit = defineEmits(['filter', 'click', 'search', 'browse'])

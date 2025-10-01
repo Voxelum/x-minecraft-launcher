@@ -13,7 +13,7 @@
     />
     <div class="col-span-2 flex flex-col pb-2 pr-2">
       <span class="h-18 v-card__title max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap">
-        {{ gallery.title }}
+        {{ gallery.localizedTitle || gallery.title }}
       </span>
       <div class="grid grid-cols-1 gap-3 lg:grid-cols-2">
         <v-img
@@ -108,6 +108,7 @@ export interface GameGallery {
   categories: string[]
   minecraft: string[]
   type: 'curseforge' | 'modrinth'
+  localizedTitle?: string
 }
 const currentImageIndex = ref(0)
 </script>

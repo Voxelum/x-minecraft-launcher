@@ -15,10 +15,10 @@
               target="browser"
               :href="project.url"
             >
-              {{ project.title }}
+              {{ project.localizedTitle || project.title }}
             </a>
 
-            <span>{{ project.description }}</span>
+            <span>{{ project.localizedDescription || project.description }}</span>
           </div>
           <span class="flex select-none flex-wrap gap-3 xl:justify-center">
             <CategoryChip

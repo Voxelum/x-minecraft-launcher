@@ -14,8 +14,11 @@ import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useTasks } from '@/composables/task'
 import { clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { TaskState } from '@xmcl/runtime-api'
+import { TaskState, ProjectMapping, ProjectMappingServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
+import { useI18nSearchFlights } from '@/composables/flights'
+import { useAutoI18nCommunityContent } from '@/composables/i18n'
+import { useService } from '@/composables/service'
 
 const props = defineProps<{ id: string }>()
 
@@ -25,6 +28,31 @@ const projectId = computed(() => props.id)
 const { categories: modrinthCategories } = injection(kModrinthTags)
 const { project: proj, isValidating: refreshing } = useModrinthProject(projectId)
 const { render } = useMarkdown()
+
+const { lookupByModrinth } = useService(ProjectMappingServiceKey)
+const modrinthProjectMapping = shallowRef(undefined as ProjectMapping | undefined)
+
+watch(projectId, async (id) => {
+  const result = await lookupByModrinth(id).catch(() => undefined)
+  if (id === projectId.value) {
+    modrinthProjectMapping.value = result
+  }
+}, { immediate: true })
+
+const i18nSearch = useI18nSearchFlights()
+const localizedBody = ref('')
+
+if (i18nSearch) {
+  const { getContent } = useAutoI18nCommunityContent(i18nSearch)
+  watch(projectId, async (id) => {
+    localizedBody.value = ''
+    const result = await getContent('modrinth', id)
+    if (id === projectId.value) {
+      localizedBody.value = result
+    }
+  }, { immediate: true })
+}
+
 const project = computed(() => {
   const p = proj.value
   if (!p) return undefined
@@ -95,7 +123,9 @@ const project = computed(() => {
     updateDate: p.updated,
     links,
     info,
-    htmlDescription: render(p.body),
+    htmlDescription: localizedBody.value ? render(localizedBody.value) : render(p.body),
+    localizedTitle: modrinthProjectMapping.value?.name,
+    localizedDescription: modrinthProjectMapping.value?.description,
     gallery: p.gallery.map(g => ({
       rawUrl: g.raw_url,
       url: g.url,
