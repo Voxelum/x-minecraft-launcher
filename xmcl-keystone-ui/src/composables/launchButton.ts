@@ -1,10 +1,12 @@
 import { injection } from '@/util/inject'
+import { watchOnce } from '@vueuse/core'
 import { TaskState } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { useDialog } from './dialog'
 import { kInstance } from './instance'
 import { kInstanceFiles } from './instanceFiles'
 import { useInstanceFilesDiagnose } from './instanceFilesDiagnose'
+import { kInstanceJava } from './instanceJava'
 import { kInstanceJavaDiagnose } from './instanceJavaDiagnose'
 import { kInstanceLaunch } from './instanceLaunch'
 import { kInstanceVersion } from './instanceVersion'
@@ -13,9 +15,8 @@ import { kInstanceVersionInstall } from './instanceVersionInstall'
 import { kInstances } from './instances'
 import { LaunchStatusDialogKey } from './launch'
 import { kLaunchTask } from './launchTask'
-import { useUserDiagnose } from './userDiagnose'
-import { kInstanceJava } from './instanceJava'
 import { kUserContext } from './user'
+import { useUserDiagnose } from './userDiagnose'
 
 export interface LaunchMenuItem {
   title: string
@@ -193,6 +194,16 @@ export function useLaunchButton() {
    * 3. User need to install version and files
    */
   async function onClick() {
+    if (loading.value && !launching.value) {
+      await new Promise<void>(resolve => {
+        const unwatch = watch(loading, (v) => {
+          if (v) return
+          unwatch()
+          resolve()
+        })
+      })
+      return
+    }
     for (const listener of listeners) {
       await listener()
     }

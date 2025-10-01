@@ -17,7 +17,7 @@
         :x-large="!compact"
         :large="compact"
         class="px-12 text-lg transition-all btn-left"
-        @click="loading ? undefined : onClick()"
+        @click="onClick()"
         @mouseenter="emit('mouseenter')"
         @mouseleave="emit('mouseleave')"
       >
