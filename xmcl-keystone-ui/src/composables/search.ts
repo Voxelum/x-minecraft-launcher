@@ -64,6 +64,10 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
     useQueryOverride('source', source, 'local', searlizers.string)
     selectedCollection.value = undefined
+
+    watch(runtime, () => {
+      modLoader.value = getModloaders()
+    }, { deep: true })
   }
 
   return {

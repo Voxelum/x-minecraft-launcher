@@ -24,19 +24,11 @@ export function useModWizard() {
 
   const installModRuntime = useInstanceModLoaderDefault()
 
-  async function onInstallModRuntime(...args: Parameters<typeof installModRuntime>) {
-    if (noModloaders.value) {
-      return await showInstallModloadersWizard({
-        loaders: args[2],
-        instance: args[0],
-        runtime: args[1],
-      })
-    }
-    return true
-  }
-
   let signal: PromiseSignal<boolean> | undefined
   function showInstallModloadersWizard(o: WizardOptions) {
+    if (o.loaders.length === 1) {
+      return installModRuntime(o.instance, o.runtime, o.loaders).catch(() => false)
+    }
     signal = createPromiseSignal()
     _showInstallModloadersWizard(o)
     return signal.promise
@@ -105,6 +97,17 @@ export function useModWizard() {
       return undefined
     }).filter(notNullish)
   })
+
+  async function onInstallModRuntime(...args: Parameters<typeof installModRuntime>) {
+    if (noModloaders.value) {
+      return await showInstallModloadersWizard({
+        loaders: args[2],
+        instance: args[0],
+        runtime: args[1],
+      })
+    }
+    return true
+  }
 
   async function wizardHandleOnEnable(f: ProjectFile, _path?: string) {
     if (noModloaders.value) {

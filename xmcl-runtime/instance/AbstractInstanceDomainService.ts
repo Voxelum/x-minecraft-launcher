@@ -69,10 +69,18 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
   }
 
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
+    let hasError = false
     await Promise.all(files.map(async (f) => {
       const dest = join(path, this.domain, basename(f))
-      await unlink(dest).catch(() => { })
+      await unlink(dest).catch(() => { 
+        hasError = true
+      })
     }))
+    if (hasError) {
+      const key = `instance-${this.domain}://${path}`
+      const stateManager = await this.app.registry.get(ServiceStateManager)
+      stateManager.revalidate(key)
+    }
   }
 
   async watch(instancePath: string) {

@@ -16,7 +16,7 @@ import { kModrinthAuthenticatedAPI } from './modrinthAuthenticatedAPI'
 import { useModrinthSearch } from './modrinthSearch'
 import { ModLoaderFilter, SearchModel } from './search'
 import { useService } from './service'
-import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
+import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { InstanceData, RuntimeVersions } from '@xmcl/instance'
 import { Resource } from '@xmcl/resource'
 
@@ -135,8 +135,12 @@ function useLocalModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runtim
       }
     }
 
+    _all.forEach(markRaw)
+    _installed.forEach(markRaw)
+    _installedAll.forEach(markRaw)
+
     // all cached, installed filtered by keywords, installedAll is all installed mods
-    return markRaw([_all, _installed, _installedAll] as const)
+    return ([_all, _installed, _installedAll] as const)
   })
 
   const all = computed(() => result.value[0])

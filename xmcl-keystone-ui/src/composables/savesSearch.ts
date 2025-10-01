@@ -3,7 +3,7 @@ import { CurseforgeBuiltinClassId } from './curseforge'
 import { useCurseforgeSearch } from './curseforgeSearch'
 import { InstanceSaveFile } from './instanceSave'
 import { SearchModel } from './search'
-import { useMergedProjects, useProjectsSort } from './useAggregateProjects'
+import { useMergedProjects, useProjectsSort } from './useMergedProjects'
 import { useLocalStorageCacheStringValue } from './cache'
 import { LocalSort } from './sortBy'
 
