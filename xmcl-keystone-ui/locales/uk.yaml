@@ -694,6 +694,10 @@ launchFailed:
   failedToLaunch: Не вдалося запустити
   latestLog: Останні логи
   title: Гра завершилася з ненормальним кодом
+  elyByAuthlib:
+    title: "Проблема сумісності Ely.by Authlib"
+    description: "Для версії Minecraft {version} було використано заміну Authlib від Ely.by, але ця версія може бути не повністю сумісною."
+    suggestion: "Ви можете відключити заміну Authlib Ely.by в налаштуваннях інстансу, щоб уникнути цієї проблеми."
 launchPreExecuteCommandFailed:
   description: >-
     Команда pre-execute завершилася з помилкою: {error}. Будь ласка, перевірте
@@ -707,6 +711,7 @@ launchStatus:
   launchingSlow: Все ще запускається... Запуск графічного рушія може бути повільним...
   refreshingUser: Оновлення токена користувача
   spawningProcess: Створення процесу
+  elyByWarning: "Заміну Authlib Ely.by увімкнено. Деякі версії Minecraft можуть бути несумісні і викликати аварійне завершення. Ви можете відключити її в налаштуваннях інстансу, якщо виникнуть проблеми."
 launcherUpdate:
   alreadyLatest: Актуальна версія
   installAndQuit: Перезапустити для встановлення
@@ -936,7 +941,7 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    adventure: Пригоди
+    adventure: Пригода
     atmosphere: Атмосфера
     audio: Аудіо
     blocks: Блоки

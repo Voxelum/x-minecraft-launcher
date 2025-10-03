@@ -674,6 +674,12 @@ launchBlocked:
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
+  elyByAuthlib:
+    title: Ely.by Authlib Compatibility Issue
+    description: >-
+      The Ely.by authlib replacement was used for Minecraft version {version}, but this version may not be fully compatible.
+    suggestion: >-
+      You can disable Ely.by's authlib replacement in the instance settings to avoid this issue.
   failedToLaunch: Launch failed to launch
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
@@ -684,6 +690,8 @@ launchPreExecuteCommandFailed:
   title: Pre-Execute Command Failed
 launchStatus:
   assigningMemory: Assigning memory
+  elyByWarning: >-
+    Ely.by authlib replacement is enabled. Some Minecraft versions may not be compatible and could crash. You can disable it in instance settings if issues occur.
   exit: Exit Game?
   injectingAuthLib: Setting up Third-party AuthLib
   launching: Launching...

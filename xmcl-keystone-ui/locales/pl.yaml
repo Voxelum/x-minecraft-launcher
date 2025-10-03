@@ -680,6 +680,10 @@ launchFailed:
   failedToLaunch: Uruchomienie nie powiodło się
   latestLog: Najnowszy dziennik
   title: Gra zakończyła się z nieprawidłowym kodem
+  elyByAuthlib:
+    title: "Problem zgodności Ely.by Authlib"
+    description: "Zastąpienie Authlib przez Ely.by zostało użyte dla wersji Minecraft {version}, ale ta wersja może nie być w pełni kompatybilna."
+    suggestion: "Możesz wyłączyć zastąpienie Authlib Ely.by w ustawieniach instancji, aby uniknąć tego problemu."
 launchPreExecuteCommandFailed:
   description: >-
     Polecenie wstępnego wykonania nie powiodło się z błędem: {error}. Sprawdź
@@ -693,6 +697,7 @@ launchStatus:
   launchingSlow: Wciąż się uruchamia... Uruchamianie silnika graficznego może być powolne...
   refreshingUser: Odświeżanie tokena użytkownika
   spawningProcess: Proces odradzania się
+  elyByWarning: "Zastąpienie Authlib przez Ely.by jest włączone. Niektóre wersje Minecraft mogą być niekompatybilne i powodować awarie. Możesz je wyłączyć w ustawieniach instancji, jeśli wystąpią problemy."
 launcherUpdate:
   alreadyLatest: Aktualny
   installAndQuit: Uruchom ponownie, aby zainstalować
@@ -1789,13 +1794,3 @@ userSkin:
   urlNotEmpty: Adres URL skórki nie może być pusty
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
-version:
-  checkIntegrity: Sprawdź integralność
-  name: Wersja | Wersje
-  notInstalled: Wersja nie jest zainstalowana
-versionType:
-  alpha: Alpha
-  beta: Beta
-  name: Status
-  release: Release
-'yes': Tak

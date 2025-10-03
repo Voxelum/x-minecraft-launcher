@@ -16,13 +16,14 @@ export function useInstanceVersionDiagnose() {
       items.push(reactive({
         title: computed(() => t('diagnosis.missingVersion.name', { version: getExpectVersion(i.runtime) })),
         description: computed(() => t('diagnosis.missingVersion.message')),
+        noDisplay: true,
       }))
     }
     if (i.java) {
-      items.push({
+      items.push(reactive({
         title: t('diagnosis.missingJava.name'),
         description: t('diagnosis.missingJava.message'),
-      })
+      }))
     }
     if (i.profile) {
       items.push(reactive({

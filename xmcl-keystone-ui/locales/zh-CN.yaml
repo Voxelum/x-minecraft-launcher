@@ -636,6 +636,12 @@ launchBlocked:
 launchFailed:
   crash: 游戏崩溃了！
   description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
+  elyByAuthlib:
+    title: Ely.by Authlib 兼容性问题
+    description: >-
+      Minecraft 版本 {version} 使用了 Ely.by 的 authlib 替换，但此版本可能不完全兼容。
+    suggestion: >-
+      你可以在实例设置中禁用 Ely.by 的 authlib 替换来避免此问题。
   failedToLaunch: 启动器启动失败
   latestLog: 最新日志文件
   title: 游戏未正常退出
@@ -649,6 +655,8 @@ launchPreExecuteCommandFailed:
   title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
+  elyByWarning: >-
+    已启用 Ely.by authlib 替换。某些 Minecraft 版本可能不兼容并可能导致崩溃。如果出现问题，你可以在实例设置中禁用它。
   exit: 关闭游戏？
   injectingAuthLib: 配置第三方验证中
   launching: 启动中...

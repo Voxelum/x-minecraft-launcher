@@ -104,7 +104,11 @@ export const optifine: ControllerPlugin = async function (this: ElectronControll
     if (await shouldOverride) {
       return getDownloadUrl(version)
     }
-    return `https://bmclapi2.bangbang93.com/optifine/${version.mcversion}/${version.type}/${version.patch}`
+    let ver = version.mcversion
+    if (ver === '1.9' || ver === '1.8') {
+        ver += '.0'
+    }
+    return `https://bmclapi2.bangbang93.com/optifine/${ver}/${version.type}/${version.patch}`
   })
 
   this.app.protocol.registerHandler('https', async (ctx) => {

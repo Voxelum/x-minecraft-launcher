@@ -765,6 +765,10 @@ launchFailed:
   failedToLaunch: Der Startvorgang konnte nicht gestartet werden
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
+  elyByAuthlib:
+    title: "Ely.by Authlib-Kompatibilitätsproblem"
+    description: "Die Ely.by Authlib-Ersetzung wurde für Minecraft-Version {version} verwendet, aber diese Version ist möglicherweise nicht vollständig kompatibel."
+    suggestion: "Sie können die Ely.by Authlib-Ersetzung in den Instanz-Einstellungen deaktivieren, um dieses Problem zu vermeiden."
 launchPreExecuteCommandFailed:
   description: >-
     Der Pre-Execute-Befehl ist mit einem Fehler fehlgeschlagen: {error}. Bitte
@@ -778,6 +782,7 @@ launchStatus:
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
   refreshingUser: Aktualisierung des Benutzertokens
   spawningProcess: Start des Prozesses
+  elyByWarning: "Die Ely.by Authlib-Ersetzung ist aktiviert. Einige Minecraft-Versionen sind möglicherweise nicht kompatibel und können abstürzen. Sie können sie in den Instanz-Einstellungen deaktivieren, falls Probleme auftreten."
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
@@ -826,7 +831,7 @@ loginError:
     Internetproblem sein. Bitte versuchen Sie es erneut.
   badNetworkOrServer: >-
     Перевірте: Internetverbindung! Oder vielleicht funktioniert der
-    Autorisierungsserver nicht funktioniert!
+    Авторизуваннясервер nicht funktioniert!
   checkOwnershipFailed: >-
     Der Besitz des Spiels konnte nicht überprüft werden. Bitte versuchen Sie es
     erneut.
@@ -1740,6 +1745,7 @@ task:
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
   compatible: Das Format {format} ist kompatibel mit {version}
+
   connection:
     connected: In Verbindung gebracht
     free: Frei

@@ -13,6 +13,21 @@ export interface ClientRunContext {
   options: ResolvedLaunchOptions
 }
 
+export interface LaunchMetadata {
+  /**
+   * Whether Ely.by authlib was replaced
+   */
+  elyByAuthlibReplaced?: boolean
+  /**
+   * Whether the Ely.by authlib version is an exact match for the Minecraft version
+   */
+  elyByAuthlibExact?: boolean
+  /**
+   * The Minecraft version when Ely.by authlib was used
+   */
+  elyByMinecraftVersion?: string
+}
+
 export interface LaunchMiddleware {
   name: string
   onBeforeLaunch(input: LaunchOptions, payload: ServerRunContext | ClientRunContext, context: Record<string, any>): Promise<void>

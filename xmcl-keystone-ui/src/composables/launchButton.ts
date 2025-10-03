@@ -21,6 +21,7 @@ import { useUserDiagnose } from './userDiagnose'
 export interface LaunchMenuItem {
   title: string
   description: string
+  noDisplay?: boolean
   icon?: string
   rightIcon?: string
   color?: string
@@ -134,7 +135,7 @@ export function useLaunchButton() {
         icon: 'get_app',
         text: t('install'),
         color: 'blue',
-        menu: versionIssues.value,
+        menu: versionIssues.value.filter(i => !i.noDisplay),
         onClick: () => fixVersionIssues(),
       }
     } else {
