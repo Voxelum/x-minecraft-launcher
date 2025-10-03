@@ -62,10 +62,10 @@
             v-if="log"
             :logs="logs"
           />
-          <div v-else class="overflow-auto mx-5 mb-5 grid grid-cols-4 gap-6">
-            <pre class="col-span-3 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
+          <div v-else class="mx-5 mb-5 grid grid-cols-4 gap-6 overflow-hidden">
+            <pre class="col-span-3 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)] min-w-0">{{ content }}</pre>
             <AppCrashAIHint
-              class="col-span-1"
+              class="col-span-1 min-w-0"
               :useCNAI="useCNAI"
               :getPrompt="getPrompt"
             />
