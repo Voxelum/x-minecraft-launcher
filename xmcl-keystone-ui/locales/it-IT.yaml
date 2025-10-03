@@ -683,6 +683,10 @@ launchFailed:
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
+  elyByAuthlib:
+    title: "Problema di compatibilit\u00e0 di Ely.by Authlib"
+    description: "La sostituzione di Authlib di Ely.by è stata utilizzata per la versione di Minecraft {version}, ma questa versione potrebbe non essere completamente compatibile."
+    suggestion: "Puoi disattivare la sostituzione di Authlib di Ely.by nelle impostazioni dell'istanza per evitare questo problema."
 launchPreExecuteCommandFailed:
   description: >-
     Il comando di pre-esecuzione non è riuscito con un errore: {error}.
@@ -698,6 +702,7 @@ launchStatus:
     tempo...
   refreshingUser: Aggiornamento token utente
   spawningProcess: Avvio processo
+  elyByWarning: "La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano problemi."
 launcherUpdate:
   alreadyLatest: Aggiornato
   installAndQuit: Riavvia per installare
@@ -795,7 +800,7 @@ mod:
     volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
-  dropHint: Rilasca il file .jar/.litemod della mod qui per importarlo.
+  dropHint: Rilascia il file .jar/.litemod della mod qui per importarlo.
   duplicatedDetected: '{count} mod sono state duplicate'
   duplicatedDetectedDescription: |-
     Mod trovate con lo stesso ID mod ma file diversi. 

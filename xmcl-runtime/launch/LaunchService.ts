@@ -380,7 +380,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
       }
 
       let process: ChildProcess
-      const context = {}
+      const context: Record<string, any> = {}
       let launchOptions: (ResolvedLaunchOptions | ServerOptions)
       if ('inheritances' in version) {
         const accessToken = user ? await this.#track(this.userTokenStorage.get(user).catch(() => undefined), 'get-user-token', operationId) : undefined
@@ -538,6 +538,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
             crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
             errorLog,
             stdLog: stdLogs.join('\n'),
+            elyByAuthlibReplaced: context.elyByAuthlibReplaced,
+            elyByMinecraftVersion: context.elyByMinecraftVersion,
           })
         })
         delete this.processes[processData.pid]

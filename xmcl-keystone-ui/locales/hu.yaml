@@ -674,6 +674,10 @@ launchFailed:
   failedToLaunch: Az indítás sikertelen volt
   latestLog: Legújabb napló
   title: A játék abnormális kóddal lépett ki
+  elyByAuthlib:
+    title: "Ely.by Authlib kompatibilitási probléma"
+    description: "Az Ely.by Authlib pótlást a Minecraft {version} verzióhoz használtuk, de ez a verzió esetleg nem teljesen kompatibilis."
+    suggestion: "Az Ely.by Authlib pótlást letilthatod az instance beállításaiban, hogy elkerüld ezt a problémát."
 launchPreExecuteCommandFailed:
   description: >-
     A végrehajtás előtti parancs hiba miatt sikertelen volt: {error}. Kérjük,
@@ -687,6 +691,7 @@ launchStatus:
   launchingSlow: Még mindig indul... A grafikus motor indítása lassú lehet...
   refreshingUser: Felhasználói token frissítése
   spawningProcess: Spawnolási folyamat
+  elyByWarning: "Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le az instance beállításaiban."
 launcherUpdate:
   alreadyLatest: Naprakész
   installAndQuit: Újraindítás a telepítéshez
@@ -1323,7 +1328,7 @@ server:
   expectedVersions: Támogatott verziók
   export: Exportáló szerver
   exportNoFilesHint: >-
-    Nincs kiszolgálófájl. 
+    Nincs kiszolgáló fájl. 
 
     Egyszerre futtathatja a kiszolgálót a Local -on, hogy néhány fájlt
     generáljon.

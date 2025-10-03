@@ -546,6 +546,10 @@ launchBlocked:
     title: No se puede iniciar el proceso del juego
 launchFailed:
   failedToLaunch: Error al iniciar el arranque
+  elyByAuthlib:
+    title: "Problema de compatibilidad de Ely.by Authlib"
+    description: "Se usó la sustitución de Authlib de Ely.by para Minecraft versión {version}, pero esta versión puede no ser totalmente compatible."
+    suggestion: "Puede desactivar la sustitución de Authlib de Ely.by en la configuración de la instancia para evitar este problema."
 launchPreExecuteCommandFailed:
   description: >-
     El comando de pre-ejecución falló con un error: {error}. Por favor,
@@ -554,6 +558,7 @@ launchPreExecuteCommandFailed:
 launchStatus:
   refreshingUser: Actualizar token de usuario
   spawningProcess: Puesta en marcha del proceso
+  elyByWarning: "La sustitución de Authlib de Ely.by está habilitada. Algunas versiones de Minecraft pueden no ser compatibles y podrían provocar fallos. Puede desactivarla en la configuración de la instancia si surgen problemas."
 liteloader:
   name: LiteLoader
 loginError:

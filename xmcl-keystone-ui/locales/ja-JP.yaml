@@ -619,9 +619,10 @@ launchFailed:
   failedToLaunch: ランチャーの起動に失敗
   latestLog: 最新のログ
   title: ゲームが異常なコードで終了しました
-launchPreExecuteCommandFailed:
-  description: 実行前コマンドがエラーで失敗しました： {error}です。コマンドを確認して再試行してください。
-  title: 実行前コマンドの失敗
+  elyByAuthlib:
+    title: "Ely.by Authlib の互換性の問題"
+    description: "Minecraft バージョン {version} に対して Ely.by の Authlib 置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。"
+    suggestion: "この問題を回避するには、インスタンス設定で Ely.by の Authlib 置換を無効にできます。"
 launchStatus:
   assigningMemory: メモリを割り当て中
   exit: ゲームを終了しますか?
@@ -630,6 +631,7 @@ launchStatus:
   launchingSlow: まだ起動中です... グラフィックスエンジンの立ち上げは時間がかかるかもしれません...
   refreshingUser: ユーザートークンを更新中
   spawningProcess: プロセスを生成中
+  elyByWarning: "Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。"
 launcherUpdate:
   alreadyLatest: 最新の状態です
   installAndQuit: 再起動してインストールします

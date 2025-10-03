@@ -54,6 +54,18 @@
         </div>
       </AppLoadingCircular>
 
+      <v-alert
+        v-if="showElyByWarning && !javaIssue"
+        type="warning"
+        dense
+        outlined
+        class="mx-3 mb-3"
+      >
+        <div class="text-sm">
+          {{ t('launchStatus.elyByWarning') }}
+        </div>
+      </v-alert>
+
       <div
         class="flex p-3 gap-3"
       >
@@ -137,13 +149,24 @@ import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey } from '../composables/launch'
 import { kInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
+import { kUserContext } from '@/composables/user'
+import { kSettingsState } from '@/composables/setting'
 
 const { t } = useI18n()
 const { launching, windowReady, kill, launchingStatus, launch, skipRefresh, skipAuthLib } = injection(kInstanceLaunch)
 const { bypass } = injection(kInstanceJavaDiagnose)
+const { userProfile } = injection(kUserContext)
+const { state: settings } = injection(kSettingsState)
+const { instance } = injection(kInstance)
+
 const exiting = ref(false)
 const selected = ref(false)
 const javaIssue = ref<'invalid' | 'incompatible' | undefined>()
+
+const isElyBy = computed(() => userProfile.value.authority.indexOf('authserver.ely.by') !== -1)
+const disableElyByAuthlib = computed(() => instance.value.disableElybyAuthlib ?? settings.value?.globalDisableElyByAuthlib ?? false)
+const showElyByWarning = computed(() => isElyBy.value && !disableElyByAuthlib.value && launching.value)
+
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (param) => {
   exiting.value = !!param?.isKill
   javaIssue.value = param?.javaIssue
