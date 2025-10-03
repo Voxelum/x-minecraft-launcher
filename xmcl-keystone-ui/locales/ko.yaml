@@ -610,6 +610,10 @@ launchFailed:
   failedToLaunch: 실행에 실패했습니다
   latestLog: 최신 로그
   title: 비정상 코드로 게임이 종료됨
+  elyByAuthlib:
+    title: "Ely.by Authlib 호환성 문제"
+    description: "Minecraft 버전 {version}에 대해 Ely.by의 Authlib 대체가 사용되었지만, 이 버전은 완전히 호환되지 않을 수 있습니다."
+    suggestion: "이 문제를 피하려면 인스턴스 설정에서 Ely.by의 Authlib 대체를 비활성화할 수 있습니다."
 launchPreExecuteCommandFailed:
   description: '사전 실행 명령이 오류로 실패했습니다: {error}. 명령을 확인하고 다시 시도하세요.'
   title: 사전 실행 명령 실패
@@ -621,6 +625,7 @@ launchStatus:
   launchingSlow: 아직 실행 중... 그래픽 엔진 초기화가 느릴 수 있어요...
   refreshingUser: 사용자 토큰 새로고침 중
   spawningProcess: 프로세스 시작 중
+  elyByWarning: "Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가 발생하면 인스턴스 설정에서 비활성화하세요."
 launcherUpdate:
   alreadyLatest: 최신 상태
   installAndQuit: 재시작하여 설치
@@ -1380,7 +1385,7 @@ setup:
     exists: 선택한 디렉터리가 비어 있지 않습니다. 괜찮지만 데이터를 백업했는지 확인하세요.
     invalidChar: 경로에 유효하지 않은 문자가 포함되어 있습니다! 마인크래프트 시작에 실패할 수 있습니다! 영어 문자와 기호만 사용하세요!
     noPermission: 런처가 선택한 디렉터리에 접근할 권한이 없습니다! 다른 디렉터리를 시도하세요.
-    nonDictionary: 선택한 경로는 파일입니다! 디렉터리를 선택하세요!
+    nonDictionary: 선택한 경로는 파일입니다! 디렉터리를 선택하세요.
   focusLayoutDescription: 포커스 레이아웃은 마인크래프트 런처의 레거시 레이아웃입니다. 단일 인스턴스 또는 소수의 인스턴스와 함께 사용하도록 설계되었습니다.
   game:
     description: >-

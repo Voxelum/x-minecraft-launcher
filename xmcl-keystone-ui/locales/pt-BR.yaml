@@ -721,6 +721,10 @@ launchFailed:
   failedToLaunch: Falha ao iniciar o jogo
   latestLog: Log mais recente
   title: Jogo fechado com código anômalo
+  elyByAuthlib:
+    title: "Problema de compatibilidade do Ely.by Authlib"
+    description: "A substituição do Authlib do Ely.by foi usada para a versão do Minecraft {version}, mas essa versão pode não ser totalmente compatível."
+    suggestion: "Você pode desativar a substituição do Authlib do Ely.by nas configurações da instância para evitar esse problema."
 launchPreExecuteCommandFailed:
   title: Falha no comando de pré-execução
 launchStatus:
@@ -731,6 +735,7 @@ launchStatus:
   launchingSlow: Ainda iniciando... O início do motor gráfico pode ser demorado...
   refreshingUser: Atualizando token do usuário
   spawningProcess: Inicializando o processo
+  elyByWarning: "A substituição do Authlib do Ely.by está ativada. Algumas versões do Minecraft podem não ser compatíveis e podem travar. Você pode desativá-la nas configurações da instância se ocorrerem problemas."
 launcherUpdate:
   alreadyLatest: Atualizado
   installAndQuit: Reiniciar para instalar

@@ -29,6 +29,23 @@
       <v-card-text class="grid grid-cols-12 overflow-auto gap-4">
         <div class="col-span-9 flex flex-col overflow-auto mt-4">
           <div
+            v-if="data.elyByWarning"
+            class="mb-4 rounded bg-orange-100 dark:bg-orange-900 p-4 border-l-4 border-orange-500"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <v-icon color="orange">
+                warning
+              </v-icon>
+              <span class="font-bold">{{ t('launchFailed.elyByAuthlib.title') }}</span>
+            </div>
+            <div class="text-sm">
+              {{ t('launchFailed.elyByAuthlib.description', { version: data.elyByMinecraftVersion }) }}
+            </div>
+            <div class="text-sm mt-2">
+              {{ t('launchFailed.elyByAuthlib.suggestion') }}
+            </div>
+          </div>
+          <div
             v-if="data.errorLog"
           >
             {{ data.launcherError ? t('launchFailed.failedToLaunch') : data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
@@ -72,6 +89,8 @@ const data = reactive({
   launcherError: false,
   crashReportLocation: '',
   errorLog: '',
+  elyByWarning: false,
+  elyByMinecraftVersion: '',
 })
 watch(() => data.isShown, (isShown) => {
   if (!isShown) {
@@ -80,6 +99,8 @@ watch(() => data.isShown, (isShown) => {
     data.launcherError = false
     data.crashReportLocation = ''
     data.errorLog = ''
+    data.elyByWarning = false
+    data.elyByMinecraftVersion = ''
   }
 })
 const { t } = useI18n()
@@ -104,12 +125,19 @@ async function displayCrash(crashReport: string | undefined) {
   data.log = log
   data.isShown = true
 }
-on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog }) => {
+on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog, stdLog, elyByAuthlibReplaced, elyByMinecraftVersion }) => {
   if (!code && signal === 'SIGTERM') {
     return
   }
   if (code !== 0) {
     data.errorLog = (errorLog || '' + '\n' + (stdLog || '')).trim()
+    
+    // Check if Ely.by authlib was used
+    if (elyByAuthlibReplaced) {
+      data.elyByWarning = true
+      data.elyByMinecraftVersion = elyByMinecraftVersion || ''
+    }
+    
     if (crashReportLocation) {
       data.crashReportLocation = crashReportLocation
       data.isCrash = true

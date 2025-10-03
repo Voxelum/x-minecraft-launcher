@@ -704,6 +704,10 @@ launchFailed:
   description: |-
     Il n'y a pas de rapport de crash. 
     Ceci est le log d'erreurs et le log le plus récent.
+  elyByAuthlib:
+    title: "Problème de compatibilité Ely.by Authlib"
+    description: "Le remplacement d'Authlib d'Ely.by a été utilisé pour la version Minecraft {version}, mais cette version peut ne pas être totalement compatible."
+    suggestion: "Vous pouvez désactiver le remplacement d'Authlib d'Ely.by dans les paramètres de l'instance pour éviter ce problème."
   latestLog: Dernier log
   title: Jeu terminé avec un code anormal
 launchPreExecuteCommandFailed:
@@ -720,6 +724,7 @@ launchStatus:
     lent...
   refreshingUser: Actualisation du jeton utilisateur
   spawningProcess: Démarrage du processus
+  elyByWarning: "Le remplacement d'Authlib d'Ely.by est activé. Certaines versions de Minecraft peuvent être incompatibles et provoquer des plantages. Vous pouvez le désactiver dans les paramètres de l'instance si des problèmes surviennent."
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer

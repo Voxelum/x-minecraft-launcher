@@ -14,7 +14,7 @@ AppShareInstanceDialog:
   baseInfo: Configuración Básica
   cancelShare: Cancelar Compartir
   description: >-
-    Despois de compartir, outros compañeiros poderan descargar os archivos do
+    Despois de compartir, outros compañeiros poderan descargar os arquivos do
     xogo que compartiste a través do teu PC.
   downloadDescription: |-
     Verifique os ficheiros que che proporcionou o teu compañeiro. 
@@ -64,7 +64,7 @@ HomeJavaIssueDialog:
   recommendedVersionHint: A {version} recomenda usar Java co rango {range}。
   selectMatchedHint: >-
     Se encontraron versións locais de Java adecuadas. Pode escoller estos Javas
-    locales.
+    locais.
   selectSecondaryHint: >-
     Atopei algunhas versións locais de Java, pero é posíbel que non se axusten
     ós criterios. Todavía pode usalos para iniciar, pero este problema seguirá
@@ -190,7 +190,7 @@ dataMigration:
   directoryCriteriaHint: >-
     ¡Asegúrese de que a sua nova ubicación de directorio sexa un directorio
     VACÍO!
-  migrationDestinationIsFile: ¡O destino de migración é un archivo! ¡Seleccione un directorio vacío!
+  migrationDestinationIsFile: ¡O destino de migración é un arquivo! ¡Seleccione un directorio vacío!
   migrationDestinationIsNotEmptyDirectory: >-
     ¡O destino de migración non é un directorio vacío! ¡Asegúrese de seleccionar
     un directorio vacío!
@@ -342,6 +342,11 @@ launchBlocked:
       Comproba o teu java ou dálle máis permisos ao iniciador e téntao de novo. 
       Se isto aínda non funciona, póñase en contacto cos desenvolvedores.
     title: Non se puido iniciar o proceso de xogo
+launchFailed:
+  elyByAuthlib:
+    title: "Problema de compatibilidade de Ely.by Authlib"
+    description: "Usouse a substitución de Authlib de Ely.by para Minecraft versión {version}, pero esta versión pode non ser totalmente compatible."
+    suggestion: "Podes desactivar a substitución de Authlib de Ely.by nas configuracións da instancia para evitar este problema."
 loginError:
   loginXboxAgeRestricted: >-
     Non lograr a Xbox debido ao problema de idade. 
