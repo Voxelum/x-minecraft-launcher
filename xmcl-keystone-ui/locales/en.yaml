@@ -1279,6 +1279,7 @@ save:
   manage: Manage Saves
   name: Save | Saves
   search: Search Saves
+  seed: Seed
   selected: Local Saves
   shared: Instance use shared saves folder
   showDirectory: Show saves directory

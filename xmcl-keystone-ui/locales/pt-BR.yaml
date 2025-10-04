@@ -1328,6 +1328,7 @@ save:
   manage: Gerenciar Saves
   name: Save | Saves
   search: Buscar Saves
+  seed: Seed
   selected: Saves Locais
   shared: Instância usa pasta de saves compartilhada
   showDirectory: Mostrar diretório de saves

@@ -1199,6 +1199,7 @@ save:
   manage: MANAGE SAVEZ
   name: SAVE | SAVEZ
   search: SEARCH SAVEZ
+  seed: Seed
   selected: LOCAL SAVEZ
   shared: INSTANCE USE SHARD SAVEZ FOLDR
   showDirectory: SHOW SAVEZ DIRECTORY

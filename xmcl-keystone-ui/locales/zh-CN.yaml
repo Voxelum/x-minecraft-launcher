@@ -1207,6 +1207,7 @@ save:
   manage: 管理存档
   name: 地图存档 | 地图存档
   search: 搜索地图
+  seed: 种子
   selected: 本地存档
   shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录

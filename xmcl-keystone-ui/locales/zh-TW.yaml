@@ -1197,6 +1197,7 @@ save:
   manage: 管理存檔
   name: 地圖存檔 | 地圖存檔
   search: 搜尋地圖
+  seed: Seed
   selected: 本地存檔
   shared: 實例使用共享存檔資料夾
   showDirectory: 顯示儲存目錄

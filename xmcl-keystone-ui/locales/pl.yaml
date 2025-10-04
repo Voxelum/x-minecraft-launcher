@@ -1293,6 +1293,7 @@ save:
   manage: Zarządzanie oszczędnościami
   name: Save | Saves
   search: Wyszukaj zapisane
+  seed: Seed
   selected: archiwum lokalne
   shared: Instancja korzysta ze wspólnego folderu zapisów
   showDirectory: Pokaż katalog zapisu

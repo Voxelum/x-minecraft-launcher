@@ -1176,6 +1176,7 @@ save:
   manage: セーブデータを管理
   name: セーブデータ | セーブデータ
   search: セーブデータを検索
+  seed: Seed
   selected: ローカルのセーブデータ
   shared: 起動構成は共有されたセーブデータのフォルダを使用します
   showDirectory: セーブデータのディレクトリを開く

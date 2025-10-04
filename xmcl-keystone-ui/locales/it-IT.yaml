@@ -1300,6 +1300,7 @@ save:
   manage: Gestisci salvataggi
   name: Salva | Salva
   search: Cerca salvataggi
+  seed: Seed
   selected: archivio locale
   shared: L'istanza utilizza la cartella di salvataggio condivisa
   showDirectory: Mostra la directory di salvataggio

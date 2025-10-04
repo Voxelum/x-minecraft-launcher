@@ -55,6 +55,7 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
     time: Number(level.Time),
     lastPlayed: Number(level.LastPlayed),
     advancements,
+    seed: level.RandomSeed.toString(),
   }
 }
 

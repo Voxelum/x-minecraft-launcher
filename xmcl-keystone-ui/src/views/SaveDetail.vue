@@ -46,6 +46,10 @@ const model = computed(() => {
       value: f.levelName,
       icon: 'badge',
     }, {
+      name: t('save.seed'),
+      value: f.seed,
+      icon: 'apps',
+    }, {
       name: t('instance.lastPlayed'),
       value: getDateString(f.lastPlayed),
       icon: 'history',

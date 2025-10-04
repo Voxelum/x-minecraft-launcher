@@ -1013,6 +1013,7 @@ save:
   manage: Gestionar Partidas Guardadas
   name: Partida Guardada | Partidas Guardadas
   search: Buscar guardados
+  seed: Seed
   selected: archivo local
   shared: La instancia utiliza la carpeta guardada compartida
   showDirectory: Mostrar directorio de guardado

@@ -1316,6 +1316,7 @@ save:
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
   search: Rechercher des enregistrements
+  seed: Seed
   selected: archives locales
   shared: L'instance utilise le dossier de sauvegarde partagé
   showDirectory: Afficher le répertoire de sauvegarde

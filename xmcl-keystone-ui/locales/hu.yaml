@@ -1304,6 +1304,7 @@ save:
   manage: Mentések kezelése
   name: Mentés | Mentések
   search: Keresés Mentés
+  seed: Seed
   selected: helyi archívum
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
