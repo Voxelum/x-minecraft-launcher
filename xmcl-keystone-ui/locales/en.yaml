@@ -1287,11 +1287,16 @@ save:
   levelName: Level Name
   loadMap: Load Map
   manage: Manage Saves
+  mapError: Map Error
+  mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
   allowCheats: Allow Cheats
+  rendering: Rendering...
   search: Search Saves
+  useMouseRotate: 'Use mouse to rotate view'
+  useScrollZoom: 'Use scroll wheel to zoom'
   seed: Seed
   selected: Local Saves
   shared: Instance use shared saves folder
