@@ -14,6 +14,7 @@ import {
   type LaunchOptions,
   type LinkSaveAsServerWorldOptions,
   type ShareSaveOptions,
+  type UpdateSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { AnyError, isSystemError } from '@xmcl/utils'
@@ -26,7 +27,7 @@ import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
-import { getInstanceSaveHeader, readInstanceSaveMetadata } from '~/save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, updateSaveMetadata } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } from '../util/fs'
@@ -317,6 +318,33 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       // move the save to shared save with a new name
       destSharedSavePath = this.getPath('saves', `${saveName}-${Date.now()}`)
       await rename(savePath, destSharedSavePath)
+    }
+  }
+
+  async updateSave(options: UpdateSaveOptions): Promise<void> {
+    const { instancePath, saveName, metadata } = options
+
+    requireString(saveName)
+    requireObject(metadata)
+
+    const savePath = join(instancePath, 'saves', saveName)
+
+    if (await missing(savePath)) {
+      throw new AnyError('InstanceUpdateNoSave', `Cannot find save ${saveName}`, undefined, {
+        saveName,
+      })
+    }
+
+    this.log(`Update save ${saveName} in instance ${instancePath} with metadata`, metadata)
+
+    await updateSaveMetadata(savePath, metadata)
+
+    // Revalidate the save to update the state
+    const stateManager = await this.app.registry.get(ServiceStateManager)
+    const state = stateManager.get(getInstanceSaveKey(instancePath), Saves)
+    if (state) {
+      const updated = await readInstanceSaveMetadata(savePath, basename(instancePath))
+      state.instanceSaveUpdate(updated)
     }
   }
 

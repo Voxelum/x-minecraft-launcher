@@ -209,6 +209,11 @@ dependencies:
   required: 必需
 description: 简介
 detail: 细节
+difficulty:
+  easy: 简单
+  hard: 困难
+  normal: 普通
+  peaceful: 和平
 diagnosis:
   badInstall:
     message: 也许您应该尝试重新安装此版本
@@ -1194,7 +1199,11 @@ save:
   deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
   deleteTitle: 删除该存档
   detail: 显示更多信息
+  difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  edit:
+    confirm: 保存更改
+    title: 编辑世界设置
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档
@@ -1206,6 +1215,7 @@ save:
   levelName: 关卡名称
   manage: 管理存档
   name: 地图存档 | 地图存档
+  allowCheats: 允许作弊
   search: 搜索地图
   seed: 种子
   selected: 本地存档

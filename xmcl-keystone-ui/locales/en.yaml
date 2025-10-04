@@ -220,6 +220,11 @@ dependencies:
   required: Required
 description: Description
 detail: Detail
+difficulty:
+  easy: Easy
+  hard: Hard
+  normal: Normal
+  peaceful: Peaceful
 diagnosis:
   badInstall:
     message: Click to try to reinstall this version.
@@ -1266,7 +1271,11 @@ save:
     you sure you want to delete this save?
   deleteTitle: Delete the Save
   detail: More Info
+  difficulty: Difficulty
   dropHint: Drag save zip here to Import
+  edit:
+    confirm: Save Changes
+    title: Edit World Settings
   export: Export Save
   exportMessage: Export the Save as zip
   exportTitle: Export the Save
@@ -1278,6 +1287,7 @@ save:
   levelName: Level Name
   manage: Manage Saves
   name: Save | Saves
+  allowCheats: Allow Cheats
   search: Search Saves
   seed: Seed
   selected: Local Saves
