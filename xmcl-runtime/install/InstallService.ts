@@ -328,7 +328,7 @@ export class InstallService extends AbstractService implements IInstallService {
   async installLabyModVersion(options: InstallLabyModOptions) {
     const location = this.getPath()
     const task = installLabyMod4Task(options.manifest, options.minecraftVersion, location, { ...this.getInstallOptions(), fetch: this.app.fetch, inheritFrom: options.inheritFrom }).setName('installLabyMod', { version: options.manifest.labyModVersion })
-    const version = await this.submit(task)
+    const version = await this.submit(task) as string
     return version
   }
 
