@@ -1321,6 +1321,7 @@ save:
   showDirectory: Показати каталог збережень
   unselected: Спільні збереження
   useCurrent: Використовувати поточний світ
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: У вас немає знімків екрана

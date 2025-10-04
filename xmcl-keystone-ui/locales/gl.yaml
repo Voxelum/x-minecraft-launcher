@@ -489,6 +489,7 @@ save:
   showDirectory: Mostrar o directorio de gardar
   unselected: arquivo compartido
   useCurrent: Usa o mundo actual
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 search:
   favorate: Colección

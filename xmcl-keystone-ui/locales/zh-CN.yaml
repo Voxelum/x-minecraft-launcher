@@ -1213,6 +1213,7 @@ save:
   showDirectory: 显示保存目录
   unselected: 共享的存档
   useCurrent: 使用当前世界
+  viewSeedMap: 在 Chunkbase 查看种子地图
 saves: {}
 screenshots:
   empty: 您还没有截图

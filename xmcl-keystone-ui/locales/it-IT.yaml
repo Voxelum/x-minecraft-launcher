@@ -1306,6 +1306,7 @@ save:
   showDirectory: Mostra la directory di salvataggio
   unselected: archivio condiviso
   useCurrent: Usa il mondo attuale
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Non hai screenshot

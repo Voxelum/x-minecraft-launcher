@@ -1182,6 +1182,7 @@ save:
   showDirectory: セーブデータのディレクトリを開く
   unselected: 共有されたセーブデータ
   useCurrent: 現在のワールドを使用
+  viewSeedMap: View Seed Map on Chunkbase
 screenshots:
   empty: スクリーンショットがありません
   goto: フォルダーを開く

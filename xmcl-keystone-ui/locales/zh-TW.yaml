@@ -1203,6 +1203,7 @@ save:
   showDirectory: 顯示儲存目錄
   unselected: 共享的存檔
   useCurrent: 使用目前世界
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: 您還沒有截圖

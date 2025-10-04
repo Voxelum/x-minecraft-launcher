@@ -1334,6 +1334,7 @@ save:
   showDirectory: Mostrar diretório de saves
   unselected: Saves Compartilhados
   useCurrent: Usar o mundo atual
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Você não tem nenhuma captura de tela

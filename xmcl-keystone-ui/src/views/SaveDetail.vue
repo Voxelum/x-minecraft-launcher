@@ -19,6 +19,11 @@ const { t } = useI18n()
 const model = computed(() => {
   const v = props.save
   const f = v.files![0]
+  
+  // Get the Minecraft version for Chunkbase link (if available)
+  const mcVersion = f.gameVersion || '1_21_4'
+  const chunkbaseUrl = `https://www.chunkbase.com/apps/seed-map#seed=${f.seed}&platform=java_${mcVersion.replace(/\./g, '_')}&dimension=overworld&x=0&z=0&zoom=0.25`
+  
   const detail: ProjectDetail = {
     id: v.id,
     icon: v.icon,
@@ -31,7 +36,11 @@ const model = computed(() => {
     categories: [],
     modLoaders: [],
     htmlContent: '',
-    externals: [],
+    externals: [{
+      icon: 'public',
+      name: t('save.viewSeedMap'),
+      url: chunkbaseUrl,
+    }],
     galleries: [],
     info: [{
       name: t('save.gameMode'),

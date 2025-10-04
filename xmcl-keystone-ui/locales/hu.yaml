@@ -1310,6 +1310,7 @@ save:
   showDirectory: Mentés könyvtár megjelenítése
   unselected: megosztott archívum
   useCurrent: Használja a jelenlegi világot
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid

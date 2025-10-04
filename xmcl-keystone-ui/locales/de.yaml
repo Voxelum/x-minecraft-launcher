@@ -1418,6 +1418,7 @@ save:
   showDirectory: Speicherverzeichnis anzeigen
   unselected: gemeinsames Archiv
   useCurrent: Aktuelle Welt verwenden
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos

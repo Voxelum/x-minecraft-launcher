@@ -1177,6 +1177,7 @@ save:
   showDirectory: 저장된 월드 디렉터리 열기
   unselected: 공유 저장된 월드
   useCurrent: 현재 월드 사용
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: 스크린샷이 없습니다

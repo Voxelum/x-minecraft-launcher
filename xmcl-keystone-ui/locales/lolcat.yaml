@@ -1205,6 +1205,7 @@ save:
   showDirectory: SHOW SAVEZ DIRECTORY
   unselected: SHARD SAVEZ
   useCurrent: USE CURRENT WURLD
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: U DOAN HAS ANY SCREENSHOTS

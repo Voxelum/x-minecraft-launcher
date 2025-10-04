@@ -1285,6 +1285,7 @@ save:
   showDirectory: Show saves directory
   unselected: Shared Saves
   useCurrent: Use current world
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: You don't have any screenshots
