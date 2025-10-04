@@ -113,13 +113,9 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const matchedVersion = findMatchedVersion(versionService.state.local,
       '',
-      instance.runtime.minecraft,
-      instance.runtime.forge,
-      instance.runtime.neoForged,
-      instance.runtime.fabricLoader,
-      instance.runtime.optifine,
-      instance.runtime.quiltLoader,
-      instance.runtime.labyMod)
+      {
+        ...instance.runtime,
+      })
     if (matchedVersion) {
       this.log('Found matched version', matchedVersion, instance.runtime)
     }
@@ -481,7 +477,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         try {
           const b = await readEntry(zip.file, zip.entries['xmcl.json'])
           xmclCache = JSON.parse(b.toString()) as SelectedXMCLFields
-        } catch {}
+        } catch { }
       }
 
       state.config = {

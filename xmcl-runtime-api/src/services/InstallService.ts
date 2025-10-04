@@ -26,6 +26,8 @@ export interface InstallQuiltOptions {
   minecraftVersion: string
 
   side?: 'client' | 'server'
+
+  base?: string
 }
 
 export interface RefreshForgeOptions {
@@ -69,6 +71,8 @@ export interface InstallForgeOptions {
   side?: 'client' | 'server'
 
   root?: string
+
+  base?: string
 }
 
 export interface InstallProfileOptions {
@@ -96,6 +100,8 @@ export interface InstallNeoForgedOptions {
   java?: string
 
   side?: 'client' | 'server'
+
+  base?: string
 }
 
 export interface InstallFabricOptions {
@@ -113,6 +119,8 @@ export interface InstallFabricOptions {
   minecraft: string
 
   side?: 'client' | 'server'
+
+  base?: string
 }
 
 export type InstallableLibrary = Version.Library | ResolvedLibrary

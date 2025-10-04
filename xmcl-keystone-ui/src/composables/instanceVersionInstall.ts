@@ -3,7 +3,7 @@ import { AnyError } from '@/util/error'
 import { getSWRV } from '@/util/swrvGet'
 import type { AssetIndexIssue, AssetIssue, JavaVersion, LibraryIssue, MinecraftJarIssue, ResolvedVersion } from '@xmcl/core'
 import type { InstallProfileIssueReport } from '@xmcl/installer'
-import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, JavaRecord, JavaServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, parseOptifineVersion } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, InstallServiceKey, InstanceServiceKey, JavaRecord, JavaServiceKey, ServerVersionHeader, VersionHeader, VersionServiceKey, findMatchedVersion, parseOptifineVersion } from '@xmcl/runtime-api'
 import { Mutex } from 'async-mutex'
 import { InjectionKey, Ref, ShallowRef } from 'vue'
 import { InstanceResolveVersion } from './instanceVersion'
@@ -97,15 +97,35 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     const javaOrInstall = getJavaPathOrInstall(instances.value, javas.value, resolvedMcVersion, '')
     const javaPath = typeof javaOrInstall === 'string' ? javaOrInstall : await installJava(javaOrInstall).then((r) => r.path)
 
+    let labyModBase = ''
+    if (labyMod) {
+      const localLabyMod = findMatchedVersion(local, '', {
+        minecraft,
+        labyMod,
+      })
+      if (localLabyMod) {
+        await refreshVersion(localLabyMod.id)
+        labyModBase = localLabyMod.id
+      } else {
+        const manifest = await getSWRV(getLabyModManifestModel(), cfg)
+
+        labyModBase = await installLabyModVersion({ manifest, minecraftVersion: minecraft })
+      }
+    }
+
     let forgeVersion = undefined as undefined | string
     if (forge) {
-      const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
+      const localForge = findMatchedVersion(local, '', {
+        minecraft,
+        forge,
+        labyMod,
+      })
       if (!localForge) {
         const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
         const found = forgeVersions.find(v => v.version === forge)
         const forgeVersionId = found?.version ?? forge
 
-        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, java: javaPath }).catch(onInstallForgeError)
+        forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer, java: javaPath, base: labyModBase }).catch(onInstallForgeError)
       } else {
         forgeVersion = localForge.id
         await refreshVersion(localForge.id)
@@ -113,13 +133,17 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     }
 
     if (neoForged) {
-      const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft)
+      const localNeoForge = findMatchedVersion(local, '', {
+        minecraft,
+        neoForged,
+        labyMod
+      })
       if (!localNeoForge) {
         const neoForgedVersion = await getSWRV(getNeoForgedVersionModel(minecraft), cfg)
         const found = neoForgedVersion.find(v => v === neoForged)
         const id = found ?? neoForged
 
-        forgeVersion = await installNeoForged({ version: id, minecraft, java: javaPath }).catch(onInstallForgeError)
+        forgeVersion = await installNeoForged({ version: id, minecraft, java: javaPath, base: labyModBase }).catch(onInstallForgeError)
       } else {
         forgeVersion = localNeoForge.id
         await refreshVersion(localNeoForge.id)
@@ -131,7 +155,11 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       if (optifineVersion.startsWith(minecraft)) {
         optifineVersion = optifineVersion.substring(minecraft.length)
       }
-      const localOptifine = local.find(v => v.minecraft === minecraft && v.optifine === optifineVersion && v.forge === (forgeVersion || ''))
+      const localOptifine = findMatchedVersion(local, '', {
+        minecraft,
+        optifine: optifineVersion,
+        forge: forgeVersion || ''
+      })
       if (localOptifine) {
         await refreshVersion(localOptifine.id)
         return localOptifine.id
@@ -145,33 +173,29 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     }
 
     if (fabricLoader) {
-      const localFabric = local.find(v => v.fabric === fabricLoader && v.minecraft === runtime.minecraft)
+      const localFabric = findMatchedVersion(local, '', {
+        fabricLoader,
+        minecraft,
+        labyMod
+      })
       if (localFabric) {
         await refreshVersion(localFabric.id)
         return localFabric.id
       }
-      return await installFabric({ loader: fabricLoader, minecraft })
+      return await installFabric({ loader: fabricLoader, minecraft, base: labyModBase })
     }
 
     if (quiltLoader) {
-      const localQuilt = local.find(v => v.quilt === quiltLoader && v.minecraft === runtime.minecraft)
+      const localQuilt = findMatchedVersion(local, '', {
+        quiltLoader,
+        minecraft,
+        labyMod
+      })
       if (localQuilt) {
         await refreshVersion(localQuilt.id)
         return localQuilt.id
       }
-      return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft })
-    }
-
-    if (labyMod) {
-      const localLabyMod = local.find(v => v.labyMod === labyMod && v.minecraft === runtime.minecraft)
-      if (localLabyMod) {
-        await refreshVersion(localLabyMod.id)
-        return localLabyMod.id
-      }
-
-      const manifest = await getSWRV(getLabyModManifestModel(), cfg)
-
-      return await installLabyModVersion({ manifest, minecraftVersion: minecraft })
+      return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft, base: labyModBase })
     }
 
     return minecraft
@@ -496,6 +520,7 @@ export function useInstanceVersionInstallInstruction(path: Ref<string>, instance
         await installJava(java)
       }
       if (instruction.libraries) {
+        console.log('Installing libraries', instruction.runtime.minecraft)
         await installLibraries(instruction.libraries.map(v => v.library), instruction.runtime.minecraft, instruction.libraries.length > 15)
       }
       if (instruction.assetIndex) {

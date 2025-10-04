@@ -454,16 +454,11 @@ function isVersionMatched(version: VersionHeader,
   return true
 }
 
-export function findMatchedVersion(versions: VersionHeader[], id: string,
-  minecraft: string | undefined,
-  forge: string | undefined,
-  neoForged: string | undefined,
-  fabricLoader: string | undefined,
-  optifine: string | undefined,
-  quiltLoader: string | undefined,
-  labyMod: string | undefined,
+export function findMatchedVersion(versions: VersionHeader[],
+  id: string,
+  runtime: Partial<RuntimeVersions>,
 ): VersionHeader | undefined {
-  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, neoForged, fabricLoader, optifine, quiltLoader, labyMod))
+  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, runtime.minecraft, runtime.forge, runtime.neoForged, runtime.fabricLoader, runtime.optifine, runtime.quiltLoader, runtime.labyMod))
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {

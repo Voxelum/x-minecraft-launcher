@@ -27,13 +27,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     }
     return findMatchedVersion(local.value,
       instance.value.version,
-      instance.value.runtime.minecraft,
-      instance.value.runtime.forge,
-      instance.value.runtime.neoForged,
-      instance.value.runtime.fabricLoader,
-      instance.value.runtime.optifine,
-      instance.value.runtime.quiltLoader,
-      instance.value.runtime.labyMod)
+      {
+        ...instance.value.runtime,
+      })
   })
 
   const serverVersionHeader = computed(() => {
@@ -77,13 +73,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
 
     const header = findMatchedVersion(local.value,
       i.version,
-      i.runtime.minecraft,
-      i.runtime.forge,
-      i.runtime.neoForged,
-      i.runtime.fabricLoader,
-      i.runtime.optifine,
-      i.runtime.quiltLoader,
-      instance.value.runtime.labyMod)
+      {
+        ...instance.value.runtime,
+      })
 
     const _version = i.version
     const start = performance.now()
@@ -145,13 +137,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<VersionHe
     }
     return findMatchedVersion(local.value,
       version,
-      runtime.minecraft,
-      runtime.forge,
-      runtime.neoForged,
-      runtime.fabricLoader,
-      runtime.optifine,
-      runtime.quiltLoader,
-      runtime.labyMod)
+      {
+        ...runtime,
+      })
   }
 
   function getServerHeader(runtime: RuntimeVersions) {

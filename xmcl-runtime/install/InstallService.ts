@@ -1,28 +1,27 @@
 import { checksum, LibraryInfo, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import type { DownloadBaseOptions } from '@xmcl/file-transfer'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, type InstallForgeOptions, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, type LiteloaderVersion, type MinecraftVersion, type Options, PostProcessFailedError, type PostProcessor } from '@xmcl/installer'
-import { type InstallForgeOptions as _InstallForgeOptions, type Asset, type InstallService as IInstallService, type InstallableLibrary, type InstallFabricOptions, type InstallLabyModOptions, type InstallNeoForgedOptions, type InstallOptifineAsModOptions, type InstallOptifineOptions, type InstallProfileOptions, type InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, type OptifineVersion, Settings, type SharedState, findNeoForgedVersion, isQuiltLibrary } from '@xmcl/runtime-api'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, installAssetsTask, installByProfileTask, installFabric, installForgeTask, InstallJarTask, InstallJsonTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, PostProcessFailedError, type InstallForgeOptions, type LiteloaderVersion, type MinecraftVersion, type Options, type PostProcessor } from '@xmcl/installer'
+import { findNeoForgedVersion, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, isQuiltLibrary, LockKey, Settings, type InstallForgeOptions as _InstallForgeOptions, type Asset, type InstallService as IInstallService, type InstallableLibrary, type InstallFabricOptions, type InstallLabyModOptions, type InstallNeoForgedOptions, type InstallOptifineAsModOptions, type InstallOptifineOptions, type InstallProfileOptions, type InstallQuiltOptions, type OptifineVersion, type SharedState } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, readFile, stat, unlink, writeFile } from 'fs-extra'
-import { delimiter, dirname, join, sep } from 'path'
+import { delimiter, dirname, join } from 'path'
 import { Inject, kGameDataPath, LauncherApp, LauncherAppKey, type PathResolver } from '~/app'
-import { GFW, kGFW } from '~/infra'
+import { GFW, kGFW, kTaskExecutor, type TaskFn } from '~/infra'
 import { JavaService } from '~/java'
 import { kDownloadOptions } from '~/network'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from '~/service'
 import { getApiSets, kSettings, shouldOverrideApiSet } from '~/settings'
-import { kTaskExecutor, type TaskFn } from '~/infra'
 import { linkOrCopyFile } from '~/util/fs'
 import { joinUrl, replaceHost } from '~/util/url'
 import { VersionService } from '~/version'
-import { formatMinecraftSrg } from './utils/formatMinecraftSrg'
 import { kOptifineInstaller } from './optifine'
-// @ts-ignore
-import clazData from './utils/MultiJarLauncher.class'
+import { formatMinecraftSrg } from './utils/formatMinecraftSrg'
 import { waitProcess } from '@xmcl/installer/utils'
 import { AnyError } from '@xmcl/utils'
+// @ts-ignore
+import clazData from './utils/MultiJarLauncher.class'
 
 
 /**
@@ -470,7 +469,7 @@ export class InstallService extends AbstractService implements IInstallService {
         version = await this.submit(installNeoForgedTask(target, neoforgeVersion, mc, {
           ...installOptions,
           java: java.path,
-          inheritsFrom: options.minecraft,
+          inheritsFrom: options.base ?? options.minecraft,
           side: options.side,
         }).setName('installForge', { id: options.version }))
 
@@ -524,7 +523,7 @@ export class InstallService extends AbstractService implements IInstallService {
           ...installOptions,
           java: java.path,
           side,
-          inheritsFrom: options.mcversion,
+          inheritsFrom: options.base ?? options.mcversion,
           spawn: (cmd, args) => {
             const newArgs = args ? [...args] : []
             const proxy = setting.httpProxyEnabled ? setting.httpProxy : undefined
@@ -598,6 +597,7 @@ export class InstallService extends AbstractService implements IInstallService {
         minecraftVersion: options.minecraft,
         side: options.side,
         version: options.loader,
+        inheritsFrom: options.base,
         fetch: (i, init) => {
           const url = new URL(i)
           const apis = apiSets.map(a => a + '/fabric-meta')
@@ -640,6 +640,7 @@ export class InstallService extends AbstractService implements IInstallService {
       minecraft: mc,
       minecraftVersion: options.minecraftVersion,
       version: options.version,
+      inheritsFrom: options.base,
       side,
       fetch: (i, init) => {
         const url = new URL(i)

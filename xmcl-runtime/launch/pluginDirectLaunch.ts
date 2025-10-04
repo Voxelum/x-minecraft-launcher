@@ -69,13 +69,9 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
   const local = versionSerivce.state.local
   const versionHeader = findMatchedVersion(local,
     instance.version,
-    instance.runtime.minecraft,
-    instance.runtime.forge,
-    instance.runtime.neoForged,
-    instance.runtime.fabricLoader,
-    instance.runtime.optifine,
-    instance.runtime.quiltLoader,
-    instance.runtime.labyMod)
+    {
+      ...instance.runtime,
+    })
 
   if (!versionHeader) {
     throw new Error('Version not found')
