@@ -6,6 +6,7 @@ import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
 import SaveEditDialog from './SaveEditDialog.vue'
+import SaveMapRenderer from '@/components/SaveMapRenderer.vue'
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -147,6 +148,10 @@ const onEnable = (enable: boolean) => {
       @delete="emit('delete', save.installed[0])"
       @enable="onEnable"
     />
+    
+    <div class="mt-4">
+      <SaveMapRenderer :save-path="save.installed[0].path" />
+    </div>
     
     <SaveEditDialog
       :is-shown="showEditDialog"

@@ -1285,7 +1285,10 @@ save:
   importTitle: Import a Save
   independent: Instance use independent saves folder
   levelName: Level Name
+  loadMap: Load Map
   manage: Manage Saves
+  mapLoaded: Map Loaded
+  mapPreview: Map Preview
   name: Save | Saves
   allowCheats: Allow Cheats
   search: Search Saves
