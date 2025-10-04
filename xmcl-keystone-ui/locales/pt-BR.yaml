@@ -1328,11 +1328,13 @@ save:
   manage: Gerenciar Saves
   name: Save | Saves
   search: Buscar Saves
+  seed: Seed
   selected: Saves Locais
   shared: Instância usa pasta de saves compartilhada
   showDirectory: Mostrar diretório de saves
   unselected: Saves Compartilhados
   useCurrent: Usar o mundo atual
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Você não tem nenhuma captura de tela

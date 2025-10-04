@@ -1199,11 +1199,13 @@ save:
   manage: MANAGE SAVEZ
   name: SAVE | SAVEZ
   search: SEARCH SAVEZ
+  seed: Seed
   selected: LOCAL SAVEZ
   shared: INSTANCE USE SHARD SAVEZ FOLDR
   showDirectory: SHOW SAVEZ DIRECTORY
   unselected: SHARD SAVEZ
   useCurrent: USE CURRENT WURLD
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: U DOAN HAS ANY SCREENSHOTS

@@ -1304,11 +1304,13 @@ save:
   manage: Mentések kezelése
   name: Mentés | Mentések
   search: Keresés Mentés
+  seed: Seed
   selected: helyi archívum
   shared: Példány megosztott mentési mappa használata
   showDirectory: Mentés könyvtár megjelenítése
   unselected: megosztott archívum
   useCurrent: Használja a jelenlegi világot
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid

@@ -66,6 +66,22 @@ export interface ShareSaveOptions {
   saveName: string
   instancePath: string
 }
+
+export interface UpdateSaveOptions {
+  /**
+   * The instance path
+   */
+  instancePath: string
+  /**
+   * The save name
+   */
+  saveName: string
+  /**
+   * Metadata to update
+   */
+  metadata: Partial<Pick<SaveMetadata, 'seed' | 'difficulty' | 'cheat' | 'levelName'>>
+}
+
 export interface CloneSaveOptions {
   /**
    * The source instance path. If it is not presented, it will use selected instance.
@@ -124,6 +140,10 @@ export interface InstanceSavesService {
   cloneSave(options: CloneSaveOptions): Promise<void>
 
   shareSave(options: ShareSaveOptions): Promise<void>
+  /**
+   * Update save metadata (seed, difficulty, cheat, levelName)
+   */
+  updateSave(options: UpdateSaveOptions): Promise<void>
   /**
    * Delete a save in a specific instance.
    */

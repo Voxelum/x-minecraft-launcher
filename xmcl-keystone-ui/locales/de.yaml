@@ -1412,11 +1412,13 @@ save:
   manage: Verwaltung der Reservate
   name: Speichern | Speichern
   search: Suche nach Speichern
+  seed: Seed
   selected: lokales Archiv
   shared: Instanz verwendet freigegebenen Speicherordner
   showDirectory: Speicherverzeichnis anzeigen
   unselected: gemeinsames Archiv
   useCurrent: Aktuelle Welt verwenden
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Sie haben keine Bildschirmfotos

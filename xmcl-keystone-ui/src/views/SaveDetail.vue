@@ -5,6 +5,8 @@ import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
+import SaveEditDialog from './SaveEditDialog.vue'
+import SaveMapRenderer from '@/components/SaveMapRenderer.vue'
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -16,9 +18,26 @@ const emit = defineEmits<{
 
 const { getDateString } = useDateString()
 const { t } = useI18n()
+const showEditDialog = ref(false)
+
+const onEdit = () => {
+  showEditDialog.value = true
+}
+
+const onSaved = () => {
+  // Trigger a refresh of the save data
+  const { revalidate } = injection(kInstanceSave)
+  revalidate()
+}
+
 const model = computed(() => {
   const v = props.save
   const f = v.files![0]
+  
+  // Get the Minecraft version for Chunkbase link (if available)
+  const mcVersion = f.gameVersion || '1_21_4'
+  const chunkbaseUrl = `https://www.chunkbase.com/apps/seed-map#seed=${f.seed}&platform=java_${mcVersion.replace(/\./g, '_')}&dimension=overworld&x=0&z=0&zoom=0.25`
+  
   const detail: ProjectDetail = {
     id: v.id,
     icon: v.icon,
@@ -31,7 +50,11 @@ const model = computed(() => {
     categories: [],
     modLoaders: [],
     htmlContent: '',
-    externals: [],
+    externals: [{
+      icon: 'public',
+      name: t('save.viewSeedMap'),
+      url: chunkbaseUrl,
+    }],
     galleries: [],
     info: [{
       name: t('save.gameMode'),
@@ -45,6 +68,10 @@ const model = computed(() => {
       name: t('save.levelName'),
       value: f.levelName,
       icon: 'badge',
+    }, {
+      name: t('save.seed'),
+      value: f.seed,
+      icon: 'apps',
     }, {
       name: t('instance.lastPlayed'),
       value: getDateString(f.lastPlayed),
@@ -94,21 +121,43 @@ const onEnable = (enable: boolean) => {
 
 </script>
 <template>
-  <MarketProjectDetail
-    :detail="model"
-    :dependencies="[]"
-    :enabled="!save.disabled"
-    :has-installed-version="true"
-    :selected-installed="true"
-    :loading="false"
-    :versions="versions"
-    :updating="false"
-    :has-more="false"
-    :loading-versions="false"
-    :no-delete="!!save.installed[0].linkTo"
-    no-version
-    @install="onInstall"
-    @delete="emit('delete', save.installed[0])"
-    @enable="onEnable"
-  />
+  <div class="relative">
+    <div class="absolute right-4 top-4 z-10">
+      <v-btn
+        icon
+        @click="onEdit"
+      >
+        <v-icon>edit</v-icon>
+      </v-btn>
+    </div>
+    
+    <MarketProjectDetail
+      :detail="model"
+      :dependencies="[]"
+      :enabled="!save.disabled"
+      :has-installed-version="true"
+      :selected-installed="true"
+      :loading="false"
+      :versions="versions"
+      :updating="false"
+      :has-more="false"
+      :loading-versions="false"
+      :no-delete="!!save.installed[0].linkTo"
+      no-version
+      @install="onInstall"
+      @delete="emit('delete', save.installed[0])"
+      @enable="onEnable"
+    />
+    
+    <div class="mt-4">
+      <SaveMapRenderer :save-path="save.installed[0].path" />
+    </div>
+    
+    <SaveEditDialog
+      :is-shown="showEditDialog"
+      :save="save.installed[0]"
+      @update:isShown="showEditDialog = $event"
+      @saved="onSaved"
+    />
+  </div>
 </template>

@@ -19,6 +19,10 @@ export interface SaveMetadata {
   time: number
 
   advancements: number
+  /**
+   * The world seed
+   */
+  seed: string
 }
 
 export interface InstanceSaveHeader {
