@@ -126,6 +126,10 @@ export interface InstallLabyModOptions {
   manifest: LabyModManifest
   minecraftVersion: string
   environment?: string
+  /**
+   * The version to inherit from. Can be a forge or fabric version.
+   */
+  inheritFrom?: string
 }
 
 /**

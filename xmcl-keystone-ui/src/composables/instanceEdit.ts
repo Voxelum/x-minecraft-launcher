@@ -496,6 +496,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
         runtime.neoForged = ''
         runtime.forge = runtime.fabricLoader = ''
         runtime.optifine = ''
+        runtime.labyMod = ''
       }
     }
   }
@@ -507,6 +508,7 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
         data.version = ''
         runtime.quiltLoader = runtime.fabricLoader = ''
         runtime.neoForged = ''
+        runtime.labyMod = ''
       }
     }
   }
@@ -520,11 +522,9 @@ export function useInstanceEditVersions(data: Pick<InstanceData, 'runtime' | 've
       }
       if (version) {
         data.version = ''
-        // Select all other to empty
-        runtime.quiltLoader = runtime.fabricLoader = ''
-        runtime.neoForged = ''
+        // LabyMod is incompatible with Quilt and Optifine, but can work with Forge/Fabric
+        runtime.quiltLoader = ''
         runtime.optifine = ''
-        runtime.forge = ''
       }
     }
   }

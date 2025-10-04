@@ -99,7 +99,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
 
     let forgeVersion = undefined as undefined | string
     if (forge) {
-      const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
+      const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft && !labyMod)
       if (!localForge) {
         const forgeVersions = await getSWRV(getForgeVersionsModel(minecraft), cfg)
         const found = forgeVersions.find(v => v.version === forge)
@@ -113,7 +113,7 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
     }
 
     if (neoForged) {
-      const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft)
+      const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft && !labyMod)
       if (!localNeoForge) {
         const neoForgedVersion = await getSWRV(getNeoForgedVersionModel(minecraft), cfg)
         const found = neoForgedVersion.find(v => v === neoForged)
@@ -124,6 +124,37 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         forgeVersion = localNeoForge.id
         await refreshVersion(localNeoForge.id)
       }
+    }
+
+    let fabricVersion = undefined as undefined | string
+    if (fabricLoader) {
+      const localFabric = local.find(v => v.fabric === fabricLoader && v.minecraft === runtime.minecraft && !labyMod)
+      if (!localFabric) {
+        fabricVersion = await installFabric({ loader: fabricLoader, minecraft })
+      } else {
+        fabricVersion = localFabric.id
+        await refreshVersion(localFabric.id)
+      }
+    }
+
+    if (labyMod) {
+      // LabyMod can be installed on top of Forge, NeoForged, or Fabric
+      const inheritFrom = forgeVersion || fabricVersion
+      const localLabyMod = local.find(v => 
+        v.labyMod === labyMod && 
+        v.minecraft === runtime.minecraft &&
+        v.forge === (forge || '') &&
+        v.fabric === (fabricLoader || '') &&
+        v.neoForged === (neoForged || '')
+      )
+      if (localLabyMod) {
+        await refreshVersion(localLabyMod.id)
+        return localLabyMod.id
+      }
+
+      const manifest = await getSWRV(getLabyModManifestModel(), cfg)
+
+      return await installLabyModVersion({ manifest, minecraftVersion: minecraft, inheritFrom })
     }
 
     if (optifine) {
@@ -144,13 +175,8 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
       return forgeVersion
     }
 
-    if (fabricLoader) {
-      const localFabric = local.find(v => v.fabric === fabricLoader && v.minecraft === runtime.minecraft)
-      if (localFabric) {
-        await refreshVersion(localFabric.id)
-        return localFabric.id
-      }
-      return await installFabric({ loader: fabricLoader, minecraft })
+    if (fabricVersion) {
+      return fabricVersion
     }
 
     if (quiltLoader) {
@@ -160,18 +186,6 @@ function useInstanceVersionInstall(versions: Ref<VersionHeader[]>, servers: Ref<
         return localQuilt.id
       }
       return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft })
-    }
-
-    if (labyMod) {
-      const localLabyMod = local.find(v => v.labyMod === labyMod && v.minecraft === runtime.minecraft)
-      if (localLabyMod) {
-        await refreshVersion(localLabyMod.id)
-        return localLabyMod.id
-      }
-
-      const manifest = await getSWRV(getLabyModManifestModel(), cfg)
-
-      return await installLabyModVersion({ manifest, minecraftVersion: minecraft })
     }
 
     return minecraft
