@@ -23,6 +23,9 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
     if (type >= 6552 && type <= 6555) {
       return ResourceDomain.ShaderPacks
     }
+    if (type === 17) {
+      return ResourceDomain.DataPacks
+    }
   }
 
   return {

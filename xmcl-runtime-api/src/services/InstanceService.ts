@@ -19,6 +19,10 @@ export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate'
    * Create shaderpacks folder
    */
   shaderpacks?: boolean
+  /**
+   * Create datapacks folder
+   */
+  datapacks?: boolean
 }
 
 export /* @__PURE__ */ class /* @__PURE__ */ InstanceState {
