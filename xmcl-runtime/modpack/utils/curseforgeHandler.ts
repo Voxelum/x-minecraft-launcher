@@ -24,7 +24,7 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
       return ResourceDomain.ShaderPacks
     }
     if (type === 17) {
-      return ResourceDomain.DataPacks
+      return 'datapacks' as ResourceDomain
     }
   }
 

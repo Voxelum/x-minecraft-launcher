@@ -11,6 +11,6 @@ import { ResourceDomain } from '@xmcl/resource'
 @ExposeServiceKey(InstanceDataPacksServiceKey)
 export class InstanceDataPacksService extends AbstractInstanceDomainService implements IInstanceDataPacksService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, ResourceDomain.DataPacks)
+    super(app, 'datapacks' as ResourceDomain)
   }
 }
