@@ -438,6 +438,7 @@
           >
             <v-skeleton-loader type="heading, list-item, paragraph, card, sentences, image, paragraph, paragraph" />
           </v-card-text>
+          <slot v-if="$slots.content" name="content" />
           <div
             v-else-if="detail.htmlContent"
             data-description-div
@@ -715,6 +716,8 @@
             </template>
           </div>
         </div>
+
+        <slot name="properties" />
       </aside>
     </div>
   </div>

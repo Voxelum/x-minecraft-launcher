@@ -1177,11 +1177,13 @@ save:
   manage: 저장된 월드 관리
   name: 저장된 월드
   search: 저장된 월드 검색
+  seed: Seed
   selected: 로컬 저장된 월드
   shared: 인스턴스가 공유 저장된 월드 폴더를 사용함
   showDirectory: 저장된 월드 디렉터리 열기
   unselected: 공유 저장된 월드
   useCurrent: 현재 월드 사용
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: 스크린샷이 없습니다

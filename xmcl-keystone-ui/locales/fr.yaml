@@ -1329,11 +1329,13 @@ save:
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
   search: Rechercher des enregistrements
+  seed: Seed
   selected: archives locales
   shared: L'instance utilise le dossier de sauvegarde partagé
   showDirectory: Afficher le répertoire de sauvegarde
   unselected: archives partagées
   useCurrent: Utiliser le monde actuel
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: Vous n'avez pas de capture d'écran
