@@ -474,6 +474,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const launcherLogPath = join(options.gameDirectory, 'launcher_log.txt')
       const launcherLogStream = createWriteStream(launcherLogPath, { encoding: 'utf-8', flags: 'w' })
       this.log(`Writing launcher logs to: ${launcherLogPath}`)
+      
+      // Handle stream errors to prevent unhandled exceptions
+      launcherLogStream.on('error', (err) => {
+        this.warn(`Failed to write to launcher_log.txt: ${err.message}`)
+      })
 
       let encoding = undefined as string | undefined
       const processError = async (buf: Buffer) => {
