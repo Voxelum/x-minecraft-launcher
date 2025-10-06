@@ -61,7 +61,6 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       const profile = await client.lookup(p.id, true, signal)
       try {
         const transformed = transformGameProfileTexture(profile)
-        if (!transformed) continue
         userProfile.profiles[p.id] = transformed
       } catch (e) {
         this.logger.error(e as Error)
@@ -91,9 +90,6 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     const selectedProfile = { ...selectedProfileRaw, properties: Object.fromEntries(selectedProfileRaw.properties.map((p: any) => [p.name, p.value])) } as GameProfile
     const transformed = transformGameProfileTexture(selectedProfile)
-    if (!transformed) {
-      throw new UserException({ type: 'fetchMinecraftProfileFailed', errorType: 'BadProfile', error: 'BadProfile', errorMessage: `BadProfile@${authority}`, developerMessage: `BadProfile@${authority}` },)
-    }
     const profile = {
       id: normalizeUserId(result.uniqueId, authority),
       username: username,
@@ -283,21 +279,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     // Update the game profile
     const newGameProfile = await client.lookup(gameProfile.id, true, signal)
-    const textures = JSON.parse(Buffer.from(newGameProfile.properties.textures, 'base64').toString()) as YggdrasilTexturesInfo
-    const uploadable = newGameProfile.properties.uploadableTextures
-
-    if (textures?.textures.SKIN) {
-      this.logger.log(`Update the skin for profile ${newGameProfile.name}`)
-
-      userProfile.profiles[newGameProfile.id] = {
-        ...newGameProfile,
-        textures: {
-          ...textures.textures,
-          SKIN: textures?.textures.SKIN,
-        },
-        uploadable: uploadable ? uploadable.split(',') as any : undefined,
-      }
-    }
+    userProfile.profiles[newGameProfile.id] = transformGameProfileTexture(newGameProfile)
 
     return userProfile
   }

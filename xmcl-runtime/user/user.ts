@@ -112,23 +112,53 @@ export async function loadYggdrasilApiProfile(url: string, fetch = globalThis.fe
   return api
 }
 
-export function transformGameProfileTexture(profile: GameProfile) {
-  if (!profile.properties) return
+export function transformGameProfileTexture(profile: GameProfile): GameProfileAndTexture {
+  if (!profile.properties) {
+    return {
+      ...profile,
+      textures: {
+        SKIN: {
+          url: '',
+        },
+      },
+    }
+  }
   const texturesBase64 = profile.properties.textures
-  if (!texturesBase64) return
-  const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
-  const skin = textures?.textures.SKIN
-  const uploadable = profile.properties.uploadableTextures
+  if (!texturesBase64) {
+    return {
+      ...profile,
+      textures: {
+        SKIN: {
+          url: '',
+        },
+      },
+    }
+  }
+  try {
+    const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
+    const skin = textures?.textures.SKIN
+    const uploadable = profile.properties.uploadableTextures
 
-  // mark skin already refreshed
-  if (skin) {
+    // Always return the profile with textures, using default if no skin
     return {
       ...profile,
       textures: {
         ...textures.textures,
-        SKIN: skin,
+        SKIN: skin || {
+          url: '',
+        },
       },
       uploadable: uploadable ? uploadable.split(',') as any : undefined,
+    }
+  } catch (e) {
+    // If parsing fails, return with default textures
+    return {
+      ...profile,
+      textures: {
+        SKIN: {
+          url: '',
+        },
+      },
     }
   }
 }
