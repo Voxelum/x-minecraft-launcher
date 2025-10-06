@@ -14,6 +14,7 @@ import {
   type LaunchOptions,
   type LinkSaveAsServerWorldOptions,
   type ShareSaveOptions,
+  type UpdateSaveOptions,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { AnyError, isSystemError } from '@xmcl/utils'
@@ -26,7 +27,7 @@ import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { InstanceService } from '~/instance'
 import { LaunchService } from '~/launch'
 import { kMarketProvider } from '~/market'
-import { getInstanceSaveHeader, readInstanceSaveMetadata } from '~/save'
+import { getInstanceSaveHeader, readInstanceSaveMetadata, updateSaveMetadata, readWorldGenSettings } from '~/save'
 import { AbstractService, ExposeServiceKey, ServiceStateManager } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
 import { copyPassively, isDirectory, linkDirectory, missing, readdirIfPresent } from '../util/fs'
@@ -320,6 +321,25 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     }
   }
 
+  async updateSave(options: UpdateSaveOptions): Promise<void> {
+    const { instancePath, saveName, metadata } = options
+
+    requireString(saveName)
+    requireObject(metadata)
+
+    const savePath = join(instancePath, 'saves', saveName)
+
+    if (await missing(savePath)) {
+      throw new AnyError('InstanceUpdateNoSave', `Cannot find save ${saveName}`, undefined, {
+        saveName,
+      })
+    }
+
+    this.log(`Update save ${saveName} in instance ${instancePath} with metadata`, metadata)
+
+    await updateSaveMetadata(savePath, metadata)
+  }
+
   async importSave(options: ImportSaveOptions) {
     let { instancePath, saveName, path, curseforge } = options
 
@@ -521,5 +541,12 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       instancePath: options.instancePath,
     })
     return savePath
+  }
+
+  async getWorldGenSettings(savePath: string) {
+    requireString(savePath)
+    this.log(`Reading world generation settings from ${savePath}`)
+    
+    return await readWorldGenSettings(savePath)
   }
 }

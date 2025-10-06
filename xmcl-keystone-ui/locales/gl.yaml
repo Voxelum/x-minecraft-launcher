@@ -489,11 +489,13 @@ save:
   independent: A instancia utiliza un cartafol de gardados independentes
   levelName: Nome do nivel
   search: Busca Gardas
+  seed: Seed
   selected: arquivo local
   shared: A instancia utiliza o cartafol de gardados compartidos
   showDirectory: Mostrar o directorio de gardar
   unselected: arquivo compartido
   useCurrent: Usa o mundo actual
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 search:
   favorate: Colección

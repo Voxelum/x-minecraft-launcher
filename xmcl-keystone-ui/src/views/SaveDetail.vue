@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import MarketProjectDetail, { ProjectDetail } from '@/components/MarketProjectDetail.vue'
+import MarketProjectDetailSave from '@/components/MarketProjectDetailContentSave.vue'
 import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
+import SaveMapRenderer from '@/components/SaveMapRenderer.vue'
+import { useService } from '@/composables'
 import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { injection } from '@/util/inject'
@@ -34,18 +37,6 @@ const model = computed(() => {
     externals: [],
     galleries: [],
     info: [{
-      name: t('save.gameMode'),
-      value: getLevelMode(f.mode),
-      icon: 'shop',
-    }, {
-      name: t('save.cheat'),
-      value: f.cheat + '',
-      icon: 'mode',
-    }, {
-      name: t('save.levelName'),
-      value: f.levelName,
-      icon: 'badge',
-    }, {
       name: t('instance.lastPlayed'),
       value: getDateString(f.lastPlayed),
       icon: 'history',
@@ -54,18 +45,6 @@ const model = computed(() => {
 
   return detail
 })
-
-const getLevelMode = (mode: number) => {
-  switch (mode) {
-    case 0: return t('gameType.survival')
-    case 1: return t('gameType.creative')
-    case 2: return t('gameType.adventure')
-    case 3: return t('gameType.spectator')
-    case -1:
-    default:
-      return 'Non'
-  }
-}
 
 const versions = computed(() => {
   const v = props.save
@@ -110,5 +89,14 @@ const onEnable = (enable: boolean) => {
     @install="onInstall"
     @delete="emit('delete', save.installed[0])"
     @enable="onEnable"
-  />
+  >
+    <template #content>
+      <SaveMapRenderer :save-path="save.installed[0].path" />
+    </template>
+    <template #properties>
+      <MarketProjectDetailSave
+        :save-file="save.installed[0]"
+      />
+    </template>
+  </MarketProjectDetail>
 </template>

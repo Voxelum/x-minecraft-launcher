@@ -127,6 +127,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const key = `instance-${this.domain}://${instancePath}`
     const state = stateManager.get<SharedState<ResourceState>>(key)
     const resourceManager = await this.app.registry.get(kResourceManager)
+    this.logger.log(`Refresh metadata for instance ${this.domain} at ${instancePath}`)
     if (state) {
       await state.revalidate()
       const modrinthClient = await this.app.registry.getOrCreate(ModrinthV2Client)
@@ -146,7 +147,10 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
               return undefined
             }).filter((v): v is any => !!v)
             if (options.length > 0) {
+              this.log(`Update ${options.length} modrinth metadata for instance ${this.domain} at ${instancePath}`)
               await resourceManager.updateMetadata(options)
+            } else {
+              this.log(`No modrinth metadata to update for instance ${this.domain} at ${instancePath}`)
             }
           }
         } catch (e) {
@@ -195,6 +199,9 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
 
           if (options.length > 0) {
             await resourceManager.updateMetadata(options)
+            this.log(`Update ${options.length} curseforge metadata for instance ${this.domain} at ${instancePath}`)
+          } else {
+            this.log(`No curseforge metadata to update for instance ${this.domain} at ${instancePath}`)
           }
         } catch (e) {
           this.error(e as any)
@@ -211,6 +218,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
           refreshModrinth.push(mod)
         }
       }
+      this.log(`Found ${refreshCurseforge.length} mods to refresh curseforge metadata, ${refreshModrinth.length} mods to refresh modrinth metadata for instance ${this.domain} at ${instancePath}`)
       await Promise.allSettled([
         refreshCurseforge.length > 0 ? onRefreshCurseforge(refreshCurseforge) : undefined,
         refreshModrinth.length > 0 ? onRefreshModrinth(refreshModrinth) : undefined,

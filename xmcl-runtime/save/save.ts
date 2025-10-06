@@ -1,7 +1,8 @@
-import { WorldReader } from '@xmcl/game-data'
+import { LevelDataFrame, WorldReader } from '@xmcl/game-data'
+import { deserialize, serialize } from '@xmcl/nbt'
 import { InstanceSave, InstanceSaveHeader, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
-import { readdir, readFile, readlink } from 'fs-extra'
+import { readdir, readFile, readlink, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
 import { exists } from '../util/fs'
 
@@ -55,6 +56,7 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
     time: Number(level.Time),
     lastPlayed: Number(level.LastPlayed),
     advancements,
+    seed: level.RandomSeed?.toString() || level.WorldGenSettings?.seed?.toString(),
   }
 }
 
@@ -97,5 +99,84 @@ export async function readInstanceSaveMetadata(path: string, instanceName: strin
     ...await getInstanceSaveHeader(path, instanceName),
     ...(await readSaveMetadata(path)),
     curseforge: await readLinkedCurseforge(path),
+  }
+}
+
+/**
+ * Update save metadata by writing to level.dat
+ * @param path The path of the save directory
+ * @param metadata Partial metadata to update
+ */
+export async function updateSaveMetadata(path: string, metadata: Partial<Pick<SaveMetadata, 'seed' | 'difficulty' | 'cheat' | 'levelName'>>): Promise<void> {
+  const levelDatPath = join(path, 'level.dat')
+  
+  // Read existing level.dat
+  const buffer = await readFile(levelDatPath)
+  const levelData: { Data: LevelDataFrame } = await deserialize(buffer, { compressed: 'gzip' })
+  
+  // Update fields in the Data section
+  if (metadata.seed !== undefined) {
+    if (levelData.Data.RandomSeed) {
+      levelData.Data.RandomSeed = BigInt(metadata.seed)
+    } else if (levelData.Data.WorldGenSettings?.seed) {
+      levelData.Data.WorldGenSettings.seed = BigInt(metadata.seed)
+    }
+  }
+  if (metadata.difficulty !== undefined) {
+    levelData.Data.Difficulty = metadata.difficulty
+  }
+  if (metadata.cheat !== undefined) {
+    levelData.Data.allowCommands = metadata.cheat ? 1 : 0
+  }
+  if (metadata.levelName !== undefined) {
+    levelData.Data.LevelName = metadata.levelName
+  }
+  
+  // Write back to level.dat
+  const serialized = await serialize(levelData, { compressed: 'gzip' })
+  await writeFile(levelDatPath, serialized)
+}
+
+/**
+ * Read world generation settings from level.dat for map rendering
+ * @param path The path of the save directory
+ * @returns World generation settings including dimensions and biome sources
+ */
+export async function readWorldGenSettings(path: string): Promise<{
+  seed: bigint
+  dimensions: Record<string, {
+    type: string
+    generator: {
+      type: string
+      biome_source?: any
+      settings?: any
+    }
+  }>
+} | undefined> {
+  try {
+    const levelDatPath = join(path, 'level.dat')
+    
+    if (!await exists(levelDatPath)) {
+      return undefined
+    }
+    
+    // Read existing level.dat
+    const buffer = await readFile(levelDatPath)
+    const levelData: { Data: LevelDataFrame } = await deserialize(buffer, { compressed: 'gzip' })
+    
+    // Extract world generation settings
+    const worldGenSettings = levelData.Data.WorldGenSettings
+    if (!worldGenSettings) {
+      // Fallback for older worlds without WorldGenSettings
+      return undefined
+    }
+    
+    return {
+      seed: worldGenSettings.seed || levelData.Data.RandomSeed || BigInt(0),
+      dimensions: worldGenSettings.dimensions as any || {},
+    }
+  } catch (err) {
+    console.error('Failed to read world gen settings:', err)
+    return undefined
   }
 }

@@ -1,5 +1,5 @@
 import { useService } from '@/composables'
-import { InstanceSave, InstanceSavesServiceKey, Saves } from '@xmcl/runtime-api'
+import { InstanceSave, InstanceSavesServiceKey, SaveMetadata, Saves, UpdateSaveOptions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useState } from './syncableState'
 import { ProjectFile } from '@/util/search'
@@ -16,7 +16,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
   const { watch, getInstanceSaves, getSharedSaves, shareSave } = useService(InstanceSavesServiceKey)
   const { state, isValidating, error, revalidate } = useState(() => instancePath.value ? watch(instancePath.value) : undefined, Saves)
 
-  const { isSaveLinked, importSave, deleteSave } = useService(InstanceSavesServiceKey)
+  const { isSaveLinked, importSave, deleteSave, updateSave } = useService(InstanceSavesServiceKey)
   const { data: isInstanceLinked, isValidating: isInstanceLinkValidating } = useSWRV(instancePath, isSaveLinked)
   const { data: sharedSavesData, mutate: revalidateSharedSave } = useSWRV(computed(() => `${instancePath.value}:${isInstanceLinked.value}`), getSharedSaves)
 
@@ -79,6 +79,10 @@ export function useInstanceSaves(instancePath: Ref<string>) {
     }
   }
 
+  const _updateSave = async (save: InstanceSaveFile, metadata: UpdateSaveOptions['metadata']) => {
+    await updateSave({ instancePath: instancePath.value, saveName: save.name, metadata })
+  }
+
   return {
     revalidate,
     saves,
@@ -90,6 +94,7 @@ export function useInstanceSaves(instancePath: Ref<string>) {
 
     enableSave,
     disableSave,
+    updateSave: _updateSave,
     deleteSave: _deleteSave,
   }
 }
