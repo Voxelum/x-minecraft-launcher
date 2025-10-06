@@ -1221,6 +1221,7 @@ save:
   mapPreview: 地图预览
   name: 地图存档 | 地图存档
   allowCheats: 允许作弊
+  properties: 世界属性
   rendering: 渲染中...
   search: 搜索地图
   useMouseRotate: 使用鼠标旋转视图

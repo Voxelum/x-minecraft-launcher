@@ -1293,6 +1293,7 @@ save:
   mapPreview: Map Preview
   name: Save | Saves
   allowCheats: Allow Cheats
+  properties: World Properties
   rendering: Rendering...
   search: Search Saves
   useMouseRotate: 'Use mouse to rotate view'

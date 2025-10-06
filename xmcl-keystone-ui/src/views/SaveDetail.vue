@@ -5,8 +5,8 @@ import { useDateString } from '@/composables/date'
 import { InstanceSaveFile, kInstanceSave } from '@/composables/instanceSave'
 import { injection } from '@/util/inject'
 import { ProjectEntry } from '@/util/search'
-import SaveEditDialog from './SaveEditDialog.vue'
 import SaveMapRenderer from '@/components/SaveMapRenderer.vue'
+import MarketProjectDetailSave from '@/components/MarketProjectDetailSave.vue'
 
 const props = defineProps<{
   save: ProjectEntry<InstanceSaveFile>
@@ -18,11 +18,6 @@ const emit = defineEmits<{
 
 const { getDateString } = useDateString()
 const { t } = useI18n()
-const showEditDialog = ref(false)
-
-const onEdit = () => {
-  showEditDialog.value = true
-}
 
 const onSaved = () => {
   // Trigger a refresh of the save data
@@ -57,22 +52,6 @@ const model = computed(() => {
     }],
     galleries: [],
     info: [{
-      name: t('save.gameMode'),
-      value: getLevelMode(f.mode),
-      icon: 'shop',
-    }, {
-      name: t('save.cheat'),
-      value: f.cheat + '',
-      icon: 'mode',
-    }, {
-      name: t('save.levelName'),
-      value: f.levelName,
-      icon: 'badge',
-    }, {
-      name: t('save.seed'),
-      value: f.seed,
-      icon: 'apps',
-    }, {
       name: t('instance.lastPlayed'),
       value: getDateString(f.lastPlayed),
       icon: 'history',
@@ -81,18 +60,6 @@ const model = computed(() => {
 
   return detail
 })
-
-const getLevelMode = (mode: number) => {
-  switch (mode) {
-    case 0: return t('gameType.survival')
-    case 1: return t('gameType.creative')
-    case 2: return t('gameType.adventure')
-    case 3: return t('gameType.spectator')
-    case -1:
-    default:
-      return 'Non'
-  }
-}
 
 const versions = computed(() => {
   const v = props.save
@@ -122,15 +89,6 @@ const onEnable = (enable: boolean) => {
 </script>
 <template>
   <div class="relative">
-    <div class="absolute right-4 top-4 z-10">
-      <v-btn
-        icon
-        @click="onEdit"
-      >
-        <v-icon>edit</v-icon>
-      </v-btn>
-    </div>
-    
     <MarketProjectDetail
       :detail="model"
       :dependencies="[]"
@@ -147,17 +105,17 @@ const onEnable = (enable: boolean) => {
       @install="onInstall"
       @delete="emit('delete', save.installed[0])"
       @enable="onEnable"
-    />
+    >
+      <template #properties>
+        <MarketProjectDetailSave
+          :save-file="save.installed[0]"
+          @saved="onSaved"
+        />
+      </template>
+    </MarketProjectDetail>
     
     <div class="mt-4">
       <SaveMapRenderer :save-path="save.installed[0].path" />
     </div>
-    
-    <SaveEditDialog
-      :is-shown="showEditDialog"
-      :save="save.installed[0]"
-      @update:isShown="showEditDialog = $event"
-      @saved="onSaved"
-    />
   </div>
 </template>
