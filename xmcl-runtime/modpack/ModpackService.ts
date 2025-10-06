@@ -223,25 +223,26 @@ export class ModpackService extends AbstractService implements IModpackService {
         return undefined
       }
       const relativePath = relative(instancePath, filePath).replaceAll('\\', '/')
-      const lockedFile = lockHashLookup[relativePath]
+      const lockedFile = lockHashLookup[relativePath] as InstanceFile | undefined
       if (lockedFile) {
-        return lockedFile
+        // check if the file metadata is enough
+        const modrinthOk = !emitModrinth || (!!lockedFile.modrinth && !!lockedFile.hashes?.sha1 && !!lockedFile.hashes?.sha512)
+        const curseforgeOk = !emitCurseforge || (!!lockedFile.curseforge && !!lockedFile.hashes?.sha1)
+        if (modrinthOk && curseforgeOk) {
+          return lockedFile
+        }
       }
 
-      const snapshot = await this.resourceManager.getSnapshotByIno(fStat.ino)
-      let sha1: string | undefined
-      if (!snapshot) {
-        sha1 = await this.worker.checksum(filePath, 'sha1')
-      } else {
-        sha1 = snapshot.sha1
-      }
+      const sha1: string = lockedFile?.hashes?.sha1
+        ?? await this.resourceManager.getSnapshotByIno(fStat.ino).then(async (s) => s?.sha1 ?? await this.worker.checksum(filePath, 'sha1'))
       const metadata = await this.resourceManager.getMetadataByHash(sha1)
       const downloads = await this.resourceManager.getUriByHash(sha1).then(uris => uris.filter(u => u.startsWith('http')))
       return {
+        ...lockedFile,
         path: relativePath,
-        hashes: { sha1 },
+        hashes: { ...lockedFile?.hashes, sha1 },
         ...metadata,
-        downloads
+        downloads: [...(lockedFile?.downloads || []), ...downloads],
       }
     }
 

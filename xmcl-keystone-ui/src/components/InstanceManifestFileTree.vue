@@ -26,6 +26,7 @@
       <InstanceManifestFileItem
         :value="isSelected(flattened[virtualRow.index])"
         :open="isOpen(flattened[virtualRow.index])"
+        :indeterminate="isPartial(flattened[virtualRow.index])"
         :item="flattened[virtualRow.index]"
         :description="getDescription(flattened[virtualRow.index].data)"
         :selectable="selectable"
@@ -84,10 +85,13 @@ const isOpen = (item: TreeItem<InstanceFileNode<any>>) => {
   return result
 }
 
-const isSelected = (item: TreeItem<InstanceFileNode<any>>|undefined): boolean =>
+const isSelected = (item: TreeItem<InstanceFileNode<any>> | undefined): boolean =>
   !!item?.data &&
-  (checkedFolders.value.includes(item.data.path) ||
-    props.value.includes(item.data.path))
+  (checkedStates.value[(item.data.path)] === CheckedState.Checked)
+
+const isPartial = (item: TreeItem<InstanceFileNode<any>> | undefined): boolean =>
+  !!item?.data &&
+  (checkedStates.value[(item.data.path)] === CheckedState.Partial)
 
 const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
   if (!item.data.children) {
@@ -105,7 +109,7 @@ const toggleOpen = (item: TreeItem<InstanceFileNode<any>>) => {
 
 const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
   if (item.data.children) {
-    if (checkedFolders.value.includes(item.data.path)) {
+    if (checkedStates.value[item.data.path] === CheckedState.Checked) {
       const newModel = props.value.filter(v => !v.startsWith(item.data.path + '/'))
       model.value = newModel
     } else {
@@ -140,31 +144,34 @@ const toggleValue = (item: TreeItem<InstanceFileNode<any>>) => {
 
 const files = injection(FileNodesSymbol)
 const flattened = ref<TreeItem<InstanceFileNode<any>>[]>([])
-const checkedFilesSets = computed(() => new Set(props.value))
 
-const checkedFolders = computed(() => {
-  const result: string[] = []
-  const recurse = (items: InstanceFileNode<any>): boolean => {
-    let match = true
-
-    for (const item of items.children!) {
-      if (item.children) {
-        if (recurse(item)) result.push(item.path)
-        else match = false
-        continue
-      }
-
-      if (!checkedFilesSets.value.has(item.path)) {
-        match = false
-        continue
-      }
+const enum CheckedState {
+  Unchecked = 0,
+  Checked = 1,
+  Partial = 2
+}
+const checkedStates = computed(() => {
+  const checkedSet = props.value
+  const result: Record<string, CheckedState> = {}
+  const getState = (node: InstanceFileNode<any>): CheckedState => {
+    if (!node.children) {
+      return checkedSet.includes(node.path) ? CheckedState.Checked : CheckedState.Unchecked
     }
-    return match
+    let some = 0
+    let all = 1
+    for (const child of node.children) {
+      const state = getState(child)
+      result[child.path] = state
+      some |= state
+      all &= state
+    }
+    if (some === 0) return CheckedState.Unchecked
+    if (all === 1) return CheckedState.Checked
+    return CheckedState.Partial
   }
 
   for (const file of files.value) {
-    if (!file.children) continue
-    if (recurse(file)) result.push(file.path)
+    result[file.path] = getState(file)
   }
 
   return result

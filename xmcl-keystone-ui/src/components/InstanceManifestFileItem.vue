@@ -9,6 +9,7 @@
     <v-simple-checkbox
       v-if="selectable"
       :value="value"
+      :indeterminate="indeterminate"
       class="select-checkbox"
       color="success"
       @click.stop="$emit('toggleValue')"
@@ -88,6 +89,7 @@ const props = defineProps<{
   item: TreeItem<InstanceFileNode<any>>
   open: boolean
   value: boolean
+  indeterminate?: boolean
   description: string
   selectable?: boolean
 }>()
