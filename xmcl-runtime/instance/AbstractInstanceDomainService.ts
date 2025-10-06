@@ -13,10 +13,10 @@ import { readlinkSafe } from './utils/readLinkSafe'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 
-function getMigrateLegacy(domain: ResourceDomain | string) {
-  if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks || domain === 'datapacks') {
+function getMigrateLegacy(domain: ResourceDomain) {
+  if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks || domain === ResourceDomain.DataPacks) {
     return async (instancePath: string) => {
-      const destPath = join(instancePath, domain as string)
+      const destPath = join(instancePath, domain)
       const linkedPath = await readlinkSafe(destPath)
       if (linkedPath) {
         await unlink(destPath)
@@ -30,14 +30,14 @@ function getMigrateLegacy(domain: ResourceDomain | string) {
 export abstract class AbstractInstanceDomainService extends AbstractService {
   onMigrateLegacy: (instancePath: string) => Promise<void>
 
-  constructor(app: LauncherApp, protected domain: ResourceDomain | string) {
+  constructor(app: LauncherApp, protected domain: ResourceDomain) {
     super(app)
     this.onMigrateLegacy = getMigrateLegacy(domain)
   }
 
   async install({ files, path }: UpdateInstanceResourcesOptions) {
     this.log(`Install ${files.length} to ${path}/${this.domain}`)
-    const dir = join(path, this.domain as string)
+    const dir = join(path, this.domain)
     return await Promise.all(files.map(async (src) => {
       const dest = join(dir, basename(src))
       if (src === dest) {
@@ -71,7 +71,7 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
   async uninstall({ files, path }: UpdateInstanceResourcesOptions) {
     let hasError = false
     await Promise.all(files.map(async (f) => {
-      const dest = join(path, this.domain as string, basename(f))
+      const dest = join(path, this.domain, basename(f))
       await unlink(dest).catch(() => { 
         hasError = true
       })
@@ -94,10 +94,10 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const store = await this.app.registry.get(ServiceStateManager)
     return store.registerOrGet(key, async ({ doAsyncOperation }) => {
       const lock = this.mutex.of(LockKey.instance(instancePath))
-      const basePath = join(instancePath, this.domain as string)
+      const basePath = join(instancePath, this.domain)
 
       await ensureDir(basePath)
-      const { dispose, revalidate, state } = resourceManager.watch({ directory: basePath, domain: this.domain as ResourceDomain, processUpdate: (func) => doAsyncOperation(lock.waitForUnlock().then(func)) })
+      const { dispose, revalidate, state } = resourceManager.watch({ directory: basePath, domain: this.domain, processUpdate: (func) => doAsyncOperation(lock.waitForUnlock().then(func)) })
 
       const instanceService = await this.app.registry.get(InstanceService)
       instanceService.registerRemoveHandler(instancePath, dispose)
@@ -112,14 +112,14 @@ export abstract class AbstractInstanceDomainService extends AbstractService {
     const provider = await this.app.registry.get(kMarketProvider)
     const result = await provider.installInstanceFile({
       ...options,
-      domain: this.domain as ResourceDomain,
+      domain: this.domain,
       instancePath: options.instancePath,
     })
     return result.map((r) => r.path)
   }
 
   async showDirectory(path: string): Promise<void> {
-    await this.app.shell.openDirectory(join(path, this.domain as string))
+    await this.app.shell.openDirectory(join(path, this.domain))
   }
 
   async refreshMetadata(instancePath: string): Promise<void> {
