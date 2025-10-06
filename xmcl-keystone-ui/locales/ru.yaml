@@ -1329,11 +1329,13 @@ save:
   manage: Управление
   name: Мир | Миры
   search: Поиск сохранений
+  seed: Seed
   selected: местный архив
   shared: Экземпляр использует общую папку сохранений
   showDirectory: Открыть папку с мирами
   unselected: общий архив
   useCurrent: Использовать текущий мир
+  viewSeedMap: View Seed Map on Chunkbase
 screenshots:
   empty: У вас нет снимков экрана
   goto: Открыть папку со снимками экрана

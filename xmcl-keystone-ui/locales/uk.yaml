@@ -1315,11 +1315,13 @@ save:
   manage: Керувати збереженнями
   name: Збереження | Збереження
   search: Шукати збереження
+  seed: Seed
   selected: Локальні збереження
   shared: Екземпляр використовує спільну папку збережень
   showDirectory: Показати каталог збережень
   unselected: Спільні збереження
   useCurrent: Використовувати поточний світ
+  viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
   empty: У вас немає знімків екрана

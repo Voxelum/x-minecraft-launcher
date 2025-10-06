@@ -715,6 +715,8 @@
             </template>
           </div>
         </div>
+        
+        <slot name="properties" />
       </aside>
     </div>
   </div>

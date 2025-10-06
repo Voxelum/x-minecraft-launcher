@@ -209,6 +209,11 @@ dependencies:
   required: 必需
 description: 简介
 detail: 细节
+difficulty:
+  easy: 简单
+  hard: 困难
+  normal: 普通
+  peaceful: 和平
 diagnosis:
   badInstall:
     message: 也许您应该尝试重新安装此版本
@@ -1194,7 +1199,11 @@ save:
   deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
   deleteTitle: 删除该存档
   detail: 显示更多信息
+  difficulty: 难度
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
+  edit:
+    confirm: 保存更改
+    title: 编辑世界设置
   export: 导出地图
   exportMessage: 将存档导出为 Zip
   exportTitle: 导出存档
@@ -1204,14 +1213,26 @@ save:
   importTitle: 导入存档
   independent: 实例使用独立的存档文件夹
   levelName: 关卡名称
+  loadMap: 加载地图
   manage: 管理存档
+  mapError: 地图错误
+  mapInfo: 交互式3D世界预览：
+  mapLoaded: 地图已加载
+  mapPreview: 地图预览
   name: 地图存档 | 地图存档
+  allowCheats: 允许作弊
+  properties: 世界属性
+  rendering: 渲染中...
   search: 搜索地图
+  useMouseRotate: 使用鼠标旋转视图
+  useScrollZoom: 使用滚轮缩放
+  seed: 种子
   selected: 本地存档
   shared: 实例使用共享存档文件夹
   showDirectory: 显示保存目录
   unselected: 共享的存档
   useCurrent: 使用当前世界
+  viewSeedMap: 在 Chunkbase 查看种子地图
 saves: {}
 screenshots:
   empty: 您还没有截图

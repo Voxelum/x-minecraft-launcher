@@ -1,7 +1,8 @@
 import { WorldReader } from '@xmcl/game-data'
+import { deserialize, serialize } from '@xmcl/nbt'
 import { InstanceSave, InstanceSaveHeader, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
-import { readdir, readFile, readlink } from 'fs-extra'
+import { readdir, readFile, readlink, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
 import { exists } from '../util/fs'
 
@@ -55,6 +56,7 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
     time: Number(level.Time),
     lastPlayed: Number(level.LastPlayed),
     advancements,
+    seed: level.RandomSeed.toString(),
   }
 }
 
@@ -99,3 +101,35 @@ export async function readInstanceSaveMetadata(path: string, instanceName: strin
     curseforge: await readLinkedCurseforge(path),
   }
 }
+
+/**
+ * Update save metadata by writing to level.dat
+ * @param path The path of the save directory
+ * @param metadata Partial metadata to update
+ */
+export async function updateSaveMetadata(path: string, metadata: Partial<Pick<SaveMetadata, 'seed' | 'difficulty' | 'cheat' | 'levelName'>>): Promise<void> {
+  const levelDatPath = join(path, 'level.dat')
+  
+  // Read existing level.dat
+  const buffer = await readFile(levelDatPath)
+  const levelData: any = await deserialize(buffer, { compressed: 'gzip' })
+  
+  // Update fields in the Data section
+  if (metadata.seed !== undefined) {
+    levelData.Data.RandomSeed = BigInt(metadata.seed)
+  }
+  if (metadata.difficulty !== undefined) {
+    levelData.Data.Difficulty = metadata.difficulty
+  }
+  if (metadata.cheat !== undefined) {
+    levelData.Data.allowCommands = metadata.cheat ? 1 : 0
+  }
+  if (metadata.levelName !== undefined) {
+    levelData.Data.LevelName = metadata.levelName
+  }
+  
+  // Write back to level.dat
+  const serialized = await serialize(levelData, { compressed: 'gzip' })
+  await writeFile(levelDatPath, serialized)
+}
+
