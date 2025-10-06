@@ -14,7 +14,7 @@ import { ModrinthV2Client } from '@xmcl/modrinth'
 import { CurseforgeApiError, CurseforgeV1Client } from '@xmcl/curseforge'
 
 function getMigrateLegacy(domain: ResourceDomain) {
-  if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks) {
+  if (domain === ResourceDomain.ResourcePacks || domain === ResourceDomain.ShaderPacks || domain === ResourceDomain.DataPacks) {
     return async (instancePath: string) => {
       const destPath = join(instancePath, domain)
       const linkedPath = await readlinkSafe(destPath)

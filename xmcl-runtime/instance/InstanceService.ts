@@ -197,6 +197,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (forceFolder || payload.shaderpacks) {
       await ensureDir(join(instance.path, 'shaderpacks')).catch(() => undefined)
     }
+    if (forceFolder || payload.datapacks) {
+      await ensureDir(join(instance.path, 'datapacks')).catch(() => undefined)
+    }
 
     await this.instanceFile.write(join(instance.path, 'instance.json'), instance)
     this.state.instanceAdd(instance)

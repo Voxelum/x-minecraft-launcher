@@ -122,12 +122,14 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const hasShaderpacks = files.some(f => f.path.startsWith('shaderpacks/'))
     const hasResourcepacks = files.some(f => f.path.startsWith('resourcepacks/'))
+    const hasDatapacks = files.some(f => f.path.startsWith('datapacks/'))
     const options: CreateInstanceOption = {
       ...instance,
       name,
       version: matchedVersion?.id || instance.version,
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
+      datapacks: hasDatapacks,
       icon: iconUrl,
     }
 
@@ -260,7 +262,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       const filePath = join(instancePath, file.path)
       // Add offline anyway
       offlineZip?.addFile(filePath, file.path)
-      if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
+      if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/') || file.path.startsWith('datapacks/')) {
         if (file.override) {
           addAsOverride(filePath, file.path)
         } else {
