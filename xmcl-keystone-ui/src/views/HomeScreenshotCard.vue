@@ -30,24 +30,24 @@
     >
       <template v-if="urls.length > 0">
         <v-carousel-item
-          v-for="i of display"
+          v-for="(i, idx) of display"
           :key="i"
-          :src="i"
           class="cursor-pointer"
-          @click="show(i)"
+          @click="show(i, idx)"
         >
+          <img
+            :src="i"
+            draggable="true"
+            @dragstart.stop="onDragStart($event, i)"
+            class="w-full h-full object-cover"
+          />
+          
           <div
-            class="flex h-full items-end justify-center pb-4 opacity-0 transition-opacity hover:opacity-100"
+            class="absolute w-full bottom-2 flex justify-center items-center justify-center z-10"
           >
-            <v-btn
-              text
-              icon
-              @click.stop="onOpen(i)"
-            >
-              <v-icon>
-                folder
-              </v-icon>
-            </v-btn>
+            <div>
+              <AppImageControls :image="i" />
+            </div>
           </div>
         </v-carousel-item>
       </template>
@@ -71,11 +71,13 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import AppImageControls from '@/components/AppImageControls.vue'
 import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { Instance } from '@xmcl/instance'
 import { InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
@@ -84,7 +86,7 @@ const props = defineProps<{ instance: Instance; height: number }>()
 
 const { cardColor, blurCard } = injection(kTheme)
 
-const { getScreenshots, showScreenshot } = useService(InstanceScreenshotServiceKey)
+const { getScreenshots } = useService(InstanceScreenshotServiceKey)
 const { on } = useService(LaunchServiceKey)
 const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
 
@@ -104,9 +106,8 @@ on('minecraft-exit', () => refresh())
 
 const imageDialog = injection(kImageDialog)
 
-const show = (uri: string) => {
-  if (!uri) return
-  imageDialog.show(uri)
+const show = (uri: string, idx: number) => {
+  imageDialog.showAll(urls.value, idx)
 }
 
 onMounted(refresh)
@@ -115,8 +116,14 @@ watch(() => props.instance, () => {
   refresh()
 })
 
-const onOpen = (uri: string) => {
-  showScreenshot(uri)
+const onDragStart = async (event: DragEvent, url: string) => {
+  const response = await fetch(url)
+  const blob = await response.blob()
+  const parsedUrl = new URL(url)
+  const path = parsedUrl.searchParams.get('path') || ''
+  const filename = basename(path) || 'screenshot.png'
+  const file = new File([blob], filename, { type: blob.type })
+  event.dataTransfer!.items.add(file)
 }
 
 const { t } = useI18n()

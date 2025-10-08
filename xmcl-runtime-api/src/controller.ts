@@ -119,6 +119,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
 
   writeClipboard(text: string): void
 
+  writeClipboardImage(imageUrl: string): void
+
   findInPage(text: string, options?: {
     /**
      * Whether to search forward or backward, defaults to `true`.

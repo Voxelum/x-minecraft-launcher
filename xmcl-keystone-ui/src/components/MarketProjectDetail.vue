@@ -456,10 +456,10 @@
         <v-tab-item>
           <div class="grid grid-cols-2 gap-2 p-4">
             <v-card
-              v-for="g of detail.galleries"
+              v-for="(g, i) of detail.galleries"
               :key="g.url + g.title"
               hover
-              @click="onShowImage(g)"
+              @click="onShowImage(detail.galleries, i)"
             >
               <v-img
                 :src="g.url"
@@ -968,8 +968,8 @@ const onScroll = (e: Event) => {
 
 // Image
 const imageDialog = injection(kImageDialog)
-const onShowImage = (img: ModGallery) => {
-  imageDialog.show(img.rawUrl || img.url, { description: img.description, date: img.date })
+const onShowImage = (imgs: ModGallery[], index: number) => {
+  imageDialog.showAll(imgs.map(img => ({ src: img.rawUrl || img.url, description: img.description, date: img.date })), index)
 }
 
 // Content clicked
