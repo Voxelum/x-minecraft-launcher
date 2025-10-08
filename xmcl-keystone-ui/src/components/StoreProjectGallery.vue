@@ -11,7 +11,7 @@
       :key="i"
       class="cursor-pointer"
       :src="g.rawUrl || g.url"
-      @click="imageDialog.show(g.rawUrl || g.url, { description: g.description })"
+      @click="imageDialog.showAll(galleries.map(g => ({ src: g.rawUrl || g.url, description: g.description })), i)"
     />
   </v-carousel>
 </template>

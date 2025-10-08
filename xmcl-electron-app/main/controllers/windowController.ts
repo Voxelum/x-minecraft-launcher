@@ -1,5 +1,5 @@
 import { ElectronController } from '@/ElectronController'
-import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, systemPreferences } from 'electron'
+import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nativeImage, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 import { join } from 'path'
@@ -83,6 +83,15 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
         window.flashFrame(false)
       })
     }
+  })
+  ipcMain.handle('write-clipboard-image', async (event, imageUrl: string) => {
+    const img = await event.sender.session.fetch(imageUrl).then(res => res.arrayBuffer())
+    const url = new URL(imageUrl)
+    let fileName = ''
+    if (url.host === 'launcher' && url.pathname.startsWith('/media/')) {
+      fileName = url.pathname.replace('/media/', '')
+    }
+    clipboard.writeImage(nativeImage.createFromBuffer(Buffer.from(img)))
   })
   ipcMain.handle('query-audio-permission', async () => {
     if (currentPlatform === 'darwin') {

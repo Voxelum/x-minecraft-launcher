@@ -45,11 +45,16 @@ function createController(): WindowController {
       ? (text: string) => clipboard.writeText(text)
       : (text: string) => ipcRenderer.invoke('write-clipboard', text)
 
+  const writeClipboardImage = (imageUrl: string) => {
+    ipcRenderer.invoke('write-clipboard-image', imageUrl)
+  }
+
   return {
     on(channel, listener) {
       emitter.on(channel, listener)
       return this
     },
+    writeClipboardImage,
     writeClipboard,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),

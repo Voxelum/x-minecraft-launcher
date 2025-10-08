@@ -1,22 +1,40 @@
 <template>
   <v-dialog
     v-model="isShown"
-    content-class="image-dialog"
+    content-class="image-dialog relative min-h-100"
   >
     <div
-      class="relative"
+      class="flex items-center justify-center"
     >
-      <v-img
-        max-height="90vh"
-        contain
-        :src="image"
-      />
+      <transition name="image-fade" mode="out-in">
+        <img
+          :key="image"
+          style="max-height: 90vh; min-height: 10rem;"
+          contain
+          draggable="true"
+          :src="image"
+          @dragstart="onDragStart($event, image)"
+        />
+      </transition>
       <div class="absolute bottom-10 flex w-full flex-col items-center justify-center gap-2">
-        {{ description }}
+        <div v-if="hasMultipleImages" class="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+          {{ currentIndex }} / {{ totalImages }}
+        </div>
+        <div v-if="description" class="text-white text-sm bg-black bg-opacity-50 px-2 py-1 rounded">
+          {{ description }}
+        </div>
         <div v-if="date">
           {{ getDateString(date) }}
         </div>
-        <v-card class="hover:(scale-100 opacity-100) flex flex-grow-0 gap-2 rounded-xl px-2 py-1 opacity-60 transition">
+        <AppImageControls :image="image">
+          <v-btn
+            v-if="hasMultipleImages"
+            icon
+            small
+            @click.stop="prev"
+          >
+            <v-icon>chevron_left</v-icon>
+          </v-btn>
           <v-btn
             icon
             small
@@ -25,49 +43,76 @@
             <v-icon>close</v-icon>
           </v-btn>
           <v-btn
+            v-if="hasMultipleImages"
             icon
             small
-            @click="onOpen"
+            @click.stop="next"
           >
-            <v-icon>open_in_new</v-icon>
+            <v-icon>chevron_right</v-icon>
           </v-btn>
-        </v-card>
+        </AppImageControls>
       </div>
     </div>
   </v-dialog>
 </template>
 
 <script lang="ts" setup>
-import { useService } from '@/composables'
 import { useDateString } from '@/composables/date'
 import { kImageDialog } from '@/composables/imageDialog'
 import { injection } from '@/util/inject'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import AppImageControls from './AppImageControls.vue'
+import { onMounted, onUnmounted } from 'vue'
+import { basename } from '@/util/basename'
 
-const { isShown, image, description, date } = injection(kImageDialog)
+const { isShown, image, description, date, next, prev, hasMultipleImages, totalImages, currentIndex } = injection(kImageDialog)
 const { getDateString } = useDateString()
-const { showItemInDirectory } = useService(BaseServiceKey)
-const onOpen = () => {
-  const value = image.value
-  try {
-    const url = new URL(value)
-    if (url.host === 'launcher') {
-      if (url.pathname.startsWith('/media')) {
-        const path = url.searchParams.get('path')
-        if (path) {
-          showItemInDirectory(path)
-          return
-        }
-      }
-    }
-  } catch {
-    return
+
+const onKeydown = (event: KeyboardEvent) => {
+  if (!isShown.value) return
+  
+  if (event.key === 'ArrowLeft' && hasMultipleImages.value) {
+    event.preventDefault()
+    prev()
+  } else if (event.key === 'ArrowRight' && hasMultipleImages.value) {
+    event.preventDefault()
+    next()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    isShown.value = false
   }
-  window.open(value, 'browser')
 }
+
+const onDragStart = async (event: DragEvent, url: string) => {
+  const response = await fetch(url)
+  const blob = await response.blob()
+  const parsedUrl = new URL(url)
+  const path = parsedUrl.searchParams.get('path') || ''
+  const filename = basename(path) || basename(url, '/') || 'image.png'
+  const file = new File([blob], filename, { type: blob.type })
+  event.dataTransfer!.items.add(file)
+}
+
+
+onMounted(() => {
+  document.addEventListener('keydown', onKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeydown)
+})
 </script>
 <style>
 .image-dialog {
   box-shadow: none;
+}
+
+.image-fade-enter-active,
+.image-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.image-fade-enter-from,
+.image-fade-leave-to {
+  opacity: 0;
 }
 </style>
