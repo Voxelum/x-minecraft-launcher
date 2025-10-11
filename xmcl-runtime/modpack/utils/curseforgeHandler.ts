@@ -50,7 +50,14 @@ export function createCurseforgeHandler(app: LauncherApp): ModpackHandler<Cursef
         return JSON.parse(b.toString()) as CurseforgeModpackManifest
       }
     },
-    resolveInstanceOptions: getInstanceConfigFromCurseforgeModpack,
+    resolveInstanceOptions: (manifest: CurseforgeModpackManifest) => {
+      const config = getInstanceConfigFromCurseforgeModpack(manifest)
+      // Add modpackVersion from manifest.version
+      return {
+        ...config,
+        modpackVersion: manifest.version,
+      }
+    },
     resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
       // curseforge or mcbbs
       const curseforgeFiles = manifest.files

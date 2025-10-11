@@ -57,7 +57,14 @@ export function createModrinthHandler(app: LauncherApp): ModpackHandler<Modrinth
         }
       }
     },
-    resolveInstanceOptions: getInstanceConfigFromModrinthModpack,
+    resolveInstanceOptions: (manifest: ModrinthModpackManifest) => {
+      const config = getInstanceConfigFromModrinthModpack(manifest)
+      // Add modpackVersion from versionId (best we can do from manifest)
+      return {
+        ...config,
+        modpackVersion: manifest.versionId,
+      }
+    },
     resolveInstanceFiles: (manifest: ModrinthModpackManifest): Promise<InstanceFile[]> => {
       return Promise.resolve(manifest.files.map(meta => ({
         downloads: meta.downloads,
