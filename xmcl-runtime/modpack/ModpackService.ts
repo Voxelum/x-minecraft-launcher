@@ -122,6 +122,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const hasShaderpacks = files.some(f => f.path.startsWith('shaderpacks/'))
     const hasResourcepacks = files.some(f => f.path.startsWith('resourcepacks/'))
+    const modpackVersion = cached.versionNumber ?? instance.modpackVersion
     const options: CreateInstanceOption = {
       ...instance,
       name,
@@ -129,6 +130,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       shaderpacks: hasShaderpacks,
       resourcepacks: hasResourcepacks,
       icon: iconUrl,
+      modpackVersion,
     }
 
     if (upstream) {
@@ -404,6 +406,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         sha1,
         instance: metadata.instance ? transformInstance(metadata.instance) : undefined,
         upstream,
+        versionNumber: metadata.modrinth?.versionNumber,
       }
     }
 
@@ -481,9 +484,13 @@ export class ModpackService extends AbstractService implements IModpackService {
         } catch { }
       }
 
+      // Override modpackVersion with market metadata if available
+      const modpackVersion = cached.versionNumber ?? instance.modpackVersion
+
       state.config = {
         ...instance,
         ...xmclCache,
+        modpackVersion,
         upstream: cached.upstream,
       }
 

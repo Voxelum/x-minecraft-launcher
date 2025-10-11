@@ -19,6 +19,7 @@ export function createModrinthHandler(app: LauncherApp): ModpackHandler<Modrinth
           versionId: content.id,
           filename: file?.filename,
           url: file?.url,
+          versionNumber: content.version_number,
         },
       }
     },
