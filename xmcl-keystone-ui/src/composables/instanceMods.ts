@@ -71,7 +71,7 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   const enabledMods = computed(() => mods.value.filter(v => v.enabled))
 
   function reset() {
-    mods.value = []
+    modsRaw.value = []
     modsIconsMap.value = {}
     provideRuntime.value = {}
   }

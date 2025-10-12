@@ -53,8 +53,9 @@ export function useLaunchButton() {
   watch(path, () => {
     dirty.value = true
   })
-  const launchButtonFacade = computed(() => {
-    console.log('update button facade')
+  
+  // Reset dirty flag when loading completes
+  watch([loadingVersionIssues, refreshingFiles, isRefreshingVersion], () => {
     if (
       !loadingVersionIssues.value &&
       !refreshingFiles.value &&
@@ -62,6 +63,10 @@ export function useLaunchButton() {
     ) {
       dirty.value = false
     }
+  })
+  
+  const launchButtonFacade = computed(() => {
+    console.log('update button facade')
     if (status.value === TaskState.Running) {
       return {
         icon: 'pause',
