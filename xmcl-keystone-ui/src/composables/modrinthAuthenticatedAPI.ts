@@ -1,19 +1,17 @@
+
 import { clientModrinthV2 } from '@/util/clients';
 import { injection } from '@/util/inject';
 import { useSingleton } from '@/util/singleton';
-import { getSWRV } from '@/util/swrvGet';
 import { Collection, Project, User } from '@xmcl/modrinth';
 import { UserServiceKey } from '@xmcl/runtime-api';
 import { InjectionKey } from 'vue';
 import { useDialog } from './dialog';
 import { useService } from './service';
-import { kSWRVConfig } from './swrvConfig';
 
 export const kModrinthAuthenticatedAPI: InjectionKey<ReturnType<typeof useModrinthAuthenticatedAPI>> = Symbol('modrinth-authenticated-api')
 
 export function useModrinthAuthenticatedAPI() {
   const { loginModrinth, hasModrinthToken } = useService(UserServiceKey)
-  const config = inject(kSWRVConfig)
   const userData: Ref<User | undefined> = shallowRef(undefined)
   const collections: Ref<Collection[] | undefined> = shallowRef(undefined)
   const follows: Ref<Project[] | undefined> = shallowRef(undefined)
@@ -71,10 +69,7 @@ export function useModrinthAuthenticatedAPI() {
       isValidatingFollows.value = true
       try {
         const id = userData.value.id
-        follows.value = await getSWRV({
-          key: '/modrinth-follows',
-          fetcher: () => clientModrinthV2.getUserFollowedProjects(id)
-        }, config)
+        follows.value = await clientModrinthV2.getUserFollowedProjects(id)
       } catch (e) {
         error.value = e as Error
       }
@@ -86,10 +81,7 @@ export function useModrinthAuthenticatedAPI() {
       isValidatingCollections.value = true
       try {
         const id = userData.value.id
-        collections.value = await getSWRV({
-          key: '/modrinth-collections',
-          fetcher: () => clientModrinthV2.getCollections(id)
-        }, config)
+        collections.value = await clientModrinthV2.getCollections(id)
       } catch (e) {
         error.value = e as Error
         throw e
