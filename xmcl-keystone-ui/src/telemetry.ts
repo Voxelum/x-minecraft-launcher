@@ -14,7 +14,7 @@ appInsights.loadAppInsights()
 // Add telemetry initializer to filter exceptions
 appInsights.addTelemetryInitializer((envelope) => {
   if (envelope.baseType === 'ExceptionData') {
-    const exception = envelope.baseData
+    const exception = envelope.data
     if (exception && exception.message) {
       if (exception.message.includes('ResizeObserver loop')) {
         return false
