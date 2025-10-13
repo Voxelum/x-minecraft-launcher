@@ -24,14 +24,15 @@ async function writeMimeList(mimesAppsList: string) {
 
 /**
  * Ensures a stable symlink for AppImage that persists across updates
- * @param exePath The current AppImage path
+ * @param exePath The current executable path (not used for AppImage, but kept for consistency)
  * @param homePath The user's home directory
  * @returns The path to use in desktop file (either the symlink or original path)
  */
 async function ensureAppImageSymlink(exePath: string, homePath: string): Promise<string> {
   // Only create symlink for AppImage
-  const isAppImage = process.env.APPIMAGE && exePath === process.env.APPIMAGE
-  if (!isAppImage) {
+  // process.env.APPIMAGE contains the path to the actual AppImage file
+  const appImagePath = process.env.APPIMAGE
+  if (!appImagePath) {
     return exePath
   }
 
@@ -44,19 +45,19 @@ async function ensureAppImageSymlink(exePath: string, homePath: string): Promise
   if (existsSync(symlinkPath)) {
     try {
       const currentTarget = await readlink(symlinkPath)
-      if (currentTarget !== exePath) {
+      if (currentTarget !== appImagePath) {
         // Update symlink to point to new version
         await unlink(symlinkPath)
-        await symlink(exePath, symlinkPath)
+        await symlink(appImagePath, symlinkPath)
       }
     } catch (e) {
       // If it's not a symlink or there's an error, remove and recreate
       await unlink(symlinkPath).catch(() => {})
-      await symlink(exePath, symlinkPath)
+      await symlink(appImagePath, symlinkPath)
     }
   } else {
     // Create new symlink
-    await symlink(exePath, symlinkPath)
+    await symlink(appImagePath, symlinkPath)
   }
 
   return symlinkPath
