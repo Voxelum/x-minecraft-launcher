@@ -776,11 +776,15 @@ modInstall:
   recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
   removeUnusedLibraries: Remove unused libraries mods
   search: SEARCH RESULT
-  searchHint: SEARCH AN SELECT PROJECT
   skipVersion: SKIP TEH MODZ WIF DIFFERENT MINECRAFT VERSHUN
   source: MOD SOURCE
   switch: SWTICH VERSHUN
   upgrade: UPGRADE MODZ
+modSearch:
+  noLocalModsFound: NO LOCAL MODZ FOUND MATCHIN UR SEARCH.
+  noModsFound: NO MODZ FOUND.
+  noModsInstalled: U DON'T HAZ ANY MODZ INSTALLED.
+  searchInMarket: SEARCH {keyword} IN MARKET
 modSearchType: {}
 modUpgradePolicy:
   curseforge: Curseforge FURST

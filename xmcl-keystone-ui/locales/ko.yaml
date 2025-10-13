@@ -82,9 +82,7 @@ ago:
   second: '{duration} 초 전 | {duration} 초 전'
 askAICrash:
   copyPrompt: AI에게 물어볼 프롬프트 복사
-  description: >-
-    AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요!
-    아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
+  description: AI가 게임 충돌을 이해할 수 있도록 도와줄 거예요! 아래 안내를 따라 게임 충돌에 대해 AI에게 물어보세요
   selectPlatform: AI 플랫폼을 열고, 방금 복사한 프롬프트를 붙여 넣으세요.
 authProfileAddedNotification: 인증 프로필 {name} 이 추가됐어요
 author: 작성자
@@ -607,25 +605,29 @@ launchBlocked:
 launchFailed:
   crash: 게임이 크래시되었습니다!!
   description: 크래시 리포트가 없습니다. 아래는 에러 로그와 최신 로그입니다.
+  elyByAuthlib:
+    description: >-
+      Minecraft 버전 {version}에 대해 Ely.by의 Authlib 대체가 사용되었지만, 이 버전은 완전히 호환되지 않을 수
+      있습니다.
+    suggestion: 이 문제를 피하려면 인스턴스 설정에서 Ely.by의 Authlib 대체를 비활성화할 수 있습니다.
+    title: Ely.by Authlib 호환성 문제
   failedToLaunch: 실행에 실패했습니다
   latestLog: 최신 로그
   title: 비정상 코드로 게임이 종료됨
-  elyByAuthlib:
-    title: "Ely.by Authlib 호환성 문제"
-    description: "Minecraft 버전 {version}에 대해 Ely.by의 Authlib 대체가 사용되었지만, 이 버전은 완전히 호환되지 않을 수 있습니다."
-    suggestion: "이 문제를 피하려면 인스턴스 설정에서 Ely.by의 Authlib 대체를 비활성화할 수 있습니다."
 launchPreExecuteCommandFailed:
   description: '사전 실행 명령이 오류로 실패했습니다: {error}. 명령을 확인하고 다시 시도하세요.'
   title: 사전 실행 명령 실패
 launchStatus:
   assigningMemory: 메모리 할당 중
+  elyByWarning: >-
+    Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가
+    발생하면 인스턴스 설정에서 비활성화하세요.
   exit: 게임을 종료할까요?
   injectingAuthLib: 서드파티 AuthLib 설정 중
   launching: 실행 중...
   launchingSlow: 아직 실행 중... 그래픽 엔진 초기화가 느릴 수 있어요...
   refreshingUser: 사용자 토큰 새로고침 중
   spawningProcess: 프로세스 시작 중
-  elyByWarning: "Ely.by Authlib 대체가 활성화되어 있습니다. 일부 Minecraft 버전은 호환되지 않아 크래시가 발생할 수 있습니다. 문제가 발생하면 인스턴스 설정에서 비활성화하세요."
 launcherUpdate:
   alreadyLatest: 최신 상태
   installAndQuit: 재시작하여 설치
@@ -771,11 +773,15 @@ modInstall:
   recommendation: '{modrinth} 및 {curseforge}에서 {first} 모드를 탐색하십시오!'
   removeUnusedLibraries: 사용되지 않는 라이브러리 모드 제거
   search: 검색 결과
-  searchHint: 프로젝트 검색 및 선택
   skipVersion: 다른 마인크래프트 버전의 모드는 건너뛰기
   source: 모드 소스
   switch: 버전 전환
   upgrade: 모드 업그레이드
+modSearch:
+  noLocalModsFound: 검색과 일치하는 로컬 모드를 찾을 수 없습니다.
+  noModsFound: 모드를 찾을 수 없습니다.
+  noModsInstalled: 설치된 모드가 없습니다.
+  searchInMarket: '{keyword} 마켓에서 검색'
 modUpgradePolicy:
   curseforge: Curseforge 우선
   curseforgeOnly: Curseforge 전용

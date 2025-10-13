@@ -675,11 +675,13 @@ launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
   elyByAuthlib:
-    title: Ely.by Authlib Compatibility Issue
     description: >-
-      The Ely.by authlib replacement was used for Minecraft version {version}, but this version may not be fully compatible.
+      The Ely.by authlib replacement was used for Minecraft version {version},
+      but this version may not be fully compatible.
     suggestion: >-
-      You can disable Ely.by's authlib replacement in the instance settings to avoid this issue.
+      You can disable Ely.by's authlib replacement in the instance settings to
+      avoid this issue.
+    title: Ely.by Authlib Compatibility Issue
   failedToLaunch: Launch failed to launch
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
@@ -691,7 +693,9 @@ launchPreExecuteCommandFailed:
 launchStatus:
   assigningMemory: Assigning memory
   elyByWarning: >-
-    Ely.by authlib replacement is enabled. Some Minecraft versions may not be compatible and could crash. You can disable it in instance settings if issues occur.
+    Ely.by authlib replacement is enabled. Some Minecraft versions may not be
+    compatible and could crash. You can disable it in instance settings if
+    issues occur.
   exit: Exit Game?
   injectingAuthLib: Setting up Third-party AuthLib
   launching: Launching...
@@ -853,11 +857,15 @@ modInstall:
   recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
   removeUnusedLibraries: Remove unused libraries mods
   search: Search Result
-  searchHint: Search and select project
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Switch Version
   upgrade: Upgrade Mods
+modSearch:
+  noLocalModsFound: No local mods found matching your search.
+  noModsFound: No mods found.
+  noModsInstalled: You don't have any mods installed.
+  searchInMarket: Search {keyword} in Market
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Curseforge Only

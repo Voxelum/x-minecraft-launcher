@@ -691,13 +691,17 @@ launchBlocked:
 launchFailed:
   crash: Гра аварійно завершилася!!
   description: Звіту про збій немає. Це лог помилок та останній лог.
+  elyByAuthlib:
+    description: >-
+      Для версії Minecraft {version} було використано заміну Authlib від Ely.by,
+      але ця версія може бути не повністю сумісною.
+    suggestion: >-
+      Ви можете відключити заміну Authlib Ely.by в налаштуваннях інстансу, щоб
+      уникнути цієї проблеми.
+    title: Проблема сумісності Ely.by Authlib
   failedToLaunch: Не вдалося запустити
   latestLog: Останні логи
   title: Гра завершилася з ненормальним кодом
-  elyByAuthlib:
-    title: "Проблема сумісності Ely.by Authlib"
-    description: "Для версії Minecraft {version} було використано заміну Authlib від Ely.by, але ця версія може бути не повністю сумісною."
-    suggestion: "Ви можете відключити заміну Authlib Ely.by в налаштуваннях інстансу, щоб уникнути цієї проблеми."
 launchPreExecuteCommandFailed:
   description: >-
     Команда pre-execute завершилася з помилкою: {error}. Будь ласка, перевірте
@@ -705,13 +709,16 @@ launchPreExecuteCommandFailed:
   title: Не вдалося виконати команду попереднього виконання
 launchStatus:
   assigningMemory: Виділення пам'яті
+  elyByWarning: >-
+    Заміну Authlib Ely.by увімкнено. Деякі версії Minecraft можуть бути
+    несумісні і викликати аварійне завершення. Ви можете відключити її в
+    налаштуваннях інстансу, якщо виникнуть проблеми.
   exit: Вийти з гри?
   injectingAuthLib: Налаштування сторонньої AuthLib
   launching: Запуск...
   launchingSlow: Все ще запускається... Запуск графічного рушія може бути повільним...
   refreshingUser: Оновлення токена користувача
   spawningProcess: Створення процесу
-  elyByWarning: "Заміну Authlib Ely.by увімкнено. Деякі версії Minecraft можуть бути несумісні і викликати аварійне завершення. Ви можете відключити її в налаштуваннях інстансу, якщо виникнуть проблеми."
 launcherUpdate:
   alreadyLatest: Актуальна версія
   installAndQuit: Перезапустити для встановлення
@@ -878,11 +885,15 @@ modInstall:
   recommendation: Вивчіть моди {first} в {modrinth} та {curseforge}!
   removeUnusedLibraries: Видалити невикористані бібліотеки модів
   search: Результат пошуку
-  searchHint: Шукати та вибрати проєкт
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
+modSearch:
+  noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
+  noModsFound: Модів не знайдено.
+  noModsInstalled: У вас не встановлено жодного мода.
+  searchInMarket: Шукати {keyword} на ринку
 modUpgradePolicy:
   curseforge: Спочатку Curseforge
   curseforgeOnly: Лише Curseforge

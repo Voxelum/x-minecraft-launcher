@@ -637,11 +637,9 @@ launchFailed:
   crash: 游戏崩溃了！
   description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
   elyByAuthlib:
+    description: Minecraft 版本 {version} 使用了 Ely.by 的 authlib 替换，但此版本可能不完全兼容。
+    suggestion: 你可以在实例设置中禁用 Ely.by 的 authlib 替换来避免此问题。
     title: Ely.by Authlib 兼容性问题
-    description: >-
-      Minecraft 版本 {version} 使用了 Ely.by 的 authlib 替换，但此版本可能不完全兼容。
-    suggestion: >-
-      你可以在实例设置中禁用 Ely.by 的 authlib 替换来避免此问题。
   failedToLaunch: 启动器启动失败
   latestLog: 最新日志文件
   title: 游戏未正常退出
@@ -655,8 +653,7 @@ launchPreExecuteCommandFailed:
   title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
-  elyByWarning: >-
-    已启用 Ely.by authlib 替换。某些 Minecraft 版本可能不兼容并可能导致崩溃。如果出现问题，你可以在实例设置中禁用它。
+  elyByWarning: 已启用 Ely.by authlib 替换。某些 Minecraft 版本可能不兼容并可能导致崩溃。如果出现问题，你可以在实例设置中禁用它。
   exit: 关闭游戏？
   injectingAuthLib: 配置第三方验证中
   launching: 启动中...
@@ -807,11 +804,15 @@ modInstall:
   recommendation: 在{modrinth}和{curseforge}中探索{first} mods！
   removeUnusedLibraries: 删除未使用的库mods
   search: 搜索结果
-  searchHint: 搜索并选择模组
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模组来源
   switch: 切换版本
   upgrade: 更新模组
+modSearch:
+  noLocalModsFound: 未找到匹配搜索的本地模组。
+  noModsFound: 未找到模组。
+  noModsInstalled: 您尚未安装任何模组。
+  searchInMarket: 在市场中搜索 {keyword}
 modUpgradePolicy:
   curseforge: Curseforge 优先
   curseforgeOnly: 仅限 Curseforge

@@ -702,13 +702,17 @@ launchBlocked:
 launchFailed:
   crash: Игра вылетела!
   description: Отчет о сбое отсутствует. Это журнал ошибок и последний журнал.
+  elyByAuthlib:
+    description: >-
+      Заменитель Authlib от Ely.by был использован для версии Minecraft
+      {version}, но эта версия может быть не полностью совместима.
+    suggestion: >-
+      Вы можете отключить заменитель Authlib Ely.by в настройках инстанса, чтобы
+      избежать этой проблемы.
+    title: Проблема совместимости Ely.by Authlib
   failedToLaunch: Не удалось запустить запуск
   latestLog: 'Последние логи '
   title: Игра завершилась с аномальным кодом
-  elyByAuthlib:
-    title: "Проблема совместимости Ely.by Authlib"
-    description: "Заменитель Authlib от Ely.by был использован для версии Minecraft {version}, но эта версия может быть не полностью совместима."
-    suggestion: "Вы можете отключить заменитель Authlib Ely.by в настройках инстанса, чтобы избежать этой проблемы."
 launchPreExecuteCommandFailed:
   description: >-
     Команда предварительного выполнения завершилась с ошибкой: {error}.
@@ -716,6 +720,10 @@ launchPreExecuteCommandFailed:
   title: Команда предварительного выполнения не выполнена
 launchStatus:
   assigningMemory: Распределение памяти
+  elyByWarning: >-
+    Заменитель Authlib Ely.by включён. Некоторые версии Minecraft могут быть
+    несовместимы и вызывать падения. Вы можете отключить его в настройках
+    инстанса, если возникнут проблемы.
   exit: Выйти из игры?
   injectingAuthLib: Настройка сторонней библиотеки AuthLib
   launching: Запуск игры...
@@ -724,7 +732,6 @@ launchStatus:
     может потребоваться некоторое время...
   refreshingUser: Обновление токена пользователя
   spawningProcess: Запуск процесса
-  elyByWarning: "Заменитель Authlib Ely.by включён. Некоторые версии Minecraft могут быть несовместимы и вызывать падения. Вы можете отключить его в настройках инстанса, если возникнут проблемы."
 launcherUpdate:
   alreadyLatest: Последняя версия
   installAndQuit: Перезапустите, чтобы установить
@@ -894,11 +901,15 @@ modInstall:
   recommendation: Исследуйте {first} моды в {modrinth} и ​​{curseforge}!
   removeUnusedLibraries: Удалить неиспользованные моды библиотеков
   search: Результаты поиска
-  searchHint: Поиск и выбор проекта
   skipVersion: Пропустите моды с другой версией Minecraft
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
+modSearch:
+  noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
+  noModsFound: Моды не найдены.
+  noModsInstalled: У вас не установлено ни одного мода.
+  searchInMarket: Искать {keyword} на рынке
 modUpgradePolicy:
   curseforge: Curseforge First
   curseforgeOnly: Только в Кёрсфордже

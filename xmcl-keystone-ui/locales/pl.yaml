@@ -677,13 +677,17 @@ launchBlocked:
 launchFailed:
   crash: Gra się zawiesiła!!!
   description: Nie ma raportu o awarii. To jest dziennik błędów i najnowszy dziennik.
+  elyByAuthlib:
+    description: >-
+      Zastąpienie Authlib przez Ely.by zostało użyte dla wersji Minecraft
+      {version}, ale ta wersja może nie być w pełni kompatybilna.
+    suggestion: >-
+      Możesz wyłączyć zastąpienie Authlib Ely.by w ustawieniach instancji, aby
+      uniknąć tego problemu.
+    title: Problem zgodności Ely.by Authlib
   failedToLaunch: Uruchomienie nie powiodło się
   latestLog: Najnowszy dziennik
   title: Gra zakończyła się z nieprawidłowym kodem
-  elyByAuthlib:
-    title: "Problem zgodności Ely.by Authlib"
-    description: "Zastąpienie Authlib przez Ely.by zostało użyte dla wersji Minecraft {version}, ale ta wersja może nie być w pełni kompatybilna."
-    suggestion: "Możesz wyłączyć zastąpienie Authlib Ely.by w ustawieniach instancji, aby uniknąć tego problemu."
 launchPreExecuteCommandFailed:
   description: >-
     Polecenie wstępnego wykonania nie powiodło się z błędem: {error}. Sprawdź
@@ -691,13 +695,16 @@ launchPreExecuteCommandFailed:
   title: Nie powiodło się polecenie przed wykonaniem
 launchStatus:
   assigningMemory: Przypisywanie pamięci
+  elyByWarning: >-
+    Zastąpienie Authlib przez Ely.by jest włączone. Niektóre wersje Minecraft
+    mogą być niekompatybilne i powodować awarie. Możesz je wyłączyć w
+    ustawieniach instancji, jeśli wystąpią problemy.
   exit: Wyjście z gry?
   injectingAuthLib: Konfiguracja Thirdparty AuthLib
   launching: Uruchomienie...
   launchingSlow: Wciąż się uruchamia... Uruchamianie silnika graficznego może być powolne...
   refreshingUser: Odświeżanie tokena użytkownika
   spawningProcess: Proces odradzania się
-  elyByWarning: "Zastąpienie Authlib przez Ely.by jest włączone. Niektóre wersje Minecraft mogą być niekompatybilne i powodować awarie. Możesz je wyłączyć w ustawieniach instancji, jeśli wystąpią problemy."
 launcherUpdate:
   alreadyLatest: Aktualny
   installAndQuit: Uruchom ponownie, aby zainstalować
@@ -862,11 +869,15 @@ modInstall:
   recommendation: Eksploruj mode {first} w {modrinth} i {curseforge}!
   removeUnusedLibraries: Usuń mody nieużywanych bibliotek
   search: Wynik wyszukiwania
-  searchHint: SWyszukaj i wybierz projekt
   skipVersion: Pomiń mody z inną wersją Minecrafta
   source: Mod Source
   switch: Wersja Swtich
   upgrade: Ulepszenia modów
+modSearch:
+  noLocalModsFound: Nie znaleziono lokalnych modów pasujących do wyszukiwania.
+  noModsFound: Nie znaleziono modów.
+  noModsInstalled: Nie masz zainstalowanych żadnych modów.
+  searchInMarket: Szukaj {keyword} na rynku
 modUpgradePolicy:
   curseforge: Najpierw Curseforge
   curseforgeOnly: Tylko Curseforge

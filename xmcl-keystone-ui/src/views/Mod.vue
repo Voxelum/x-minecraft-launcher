@@ -104,10 +104,13 @@
       </v-subheader>
     </template>
     <template #placeholder>
-      <Hint
-        :text="t('modInstall.searchHint')"
-        icon="playlist_add"
-      />
+      <Hint v-if="isLocalView && !keyword.trim() && !hasActiveFilters" :text="t('modSearch.noModsInstalled')" icon="info" />
+      <Hint v-else-if="isLocalView && keyword.trim()" :text="t('modSearch.noLocalModsFound')" icon="search">
+        <div>
+          <v-btn color="primary" @click="switchToMarketWithKeyword">{{ t('modSearch.searchInMarket', { keyword: keyword.trim() || 'mods' }) }}</v-btn>
+        </div>
+      </Hint>
+      <Hint v-else :text="t('modSearch.noModsFound')" icon="search" />
     </template>
     <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
       <Hint
@@ -310,7 +313,7 @@ const localizedTexts = computed(() => markRaw({
 
 const { runtime, path } = injection(kInstance)
 
-const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, currentView } = injection(kSearchModel)
+const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, currentView, source } = injection(kSearchModel)
 
 // Ensure mod search effect is applied
 const {
@@ -334,6 +337,10 @@ const { unusedMods } = injection(kModLibCleaner)
 
 const isLocalView = computed(() => {
   return currentView.value === 'local'
+})
+
+const hasActiveFilters = computed(() => {
+  return !!localFilter.value
 })
 
 const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, isInGroup, getGroupColor, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
@@ -503,6 +510,10 @@ watch(computed(() => route.fullPath), () => {
 }, { immediate: true })
 
 const onLoad = loadMore
+
+const switchToMarketWithKeyword = () => {
+  source.value = 'remote'
+}
 
 // install / uninstall / enable / disable
 const { install, uninstall, enable, disable, installFromMarket } = useService(InstanceModsServiceKey)

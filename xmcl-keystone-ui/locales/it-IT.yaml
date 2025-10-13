@@ -680,13 +680,18 @@ launchFailed:
   description: >-
     Non è presente alcun report di arresto anomalo. Questo è il log degli errori
     e l'ultimo log.
+  elyByAuthlib:
+    description: >-
+      La sostituzione di Authlib di Ely.by è stata utilizzata per la versione di
+      Minecraft {version}, ma questa versione potrebbe non essere completamente
+      compatibile.
+    suggestion: >-
+      Puoi disattivare la sostituzione di Authlib di Ely.by nelle impostazioni
+      dell'istanza per evitare questo problema.
+    title: Problema di compatibilità di Ely.by Authlib
   failedToLaunch: Avvio non riuscito
   latestLog: Ultimo log
   title: Il gioco è uscito con un codice anomalo
-  elyByAuthlib:
-    title: "Problema di compatibilit\u00e0 di Ely.by Authlib"
-    description: "La sostituzione di Authlib di Ely.by è stata utilizzata per la versione di Minecraft {version}, ma questa versione potrebbe non essere completamente compatibile."
-    suggestion: "Puoi disattivare la sostituzione di Authlib di Ely.by nelle impostazioni dell'istanza per evitare questo problema."
 launchPreExecuteCommandFailed:
   description: >-
     Il comando di pre-esecuzione non è riuscito con un errore: {error}.
@@ -694,6 +699,11 @@ launchPreExecuteCommandFailed:
   title: Comando pre-esecuzione fallito
 launchStatus:
   assigningMemory: Assegnazione memoria
+  elyByWarning: >-
+    La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di
+    Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo
+    anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano
+    problemi.
   exit: Uscire dal gioco?
   injectingAuthLib: Configurazione AuthLib di terze parti
   launching: Avvio in corso...
@@ -702,7 +712,6 @@ launchStatus:
     tempo...
   refreshingUser: Aggiornamento token utente
   spawningProcess: Avvio processo
-  elyByWarning: "La sostituzione di Authlib di Ely.by è abilitata. Alcune versioni di Minecraft potrebbero non essere compatibili e potrebbero arrestarsi in modo anomalo. Puoi disattivarla nelle impostazioni dell'istanza se si verificano problemi."
 launcherUpdate:
   alreadyLatest: Aggiornato
   installAndQuit: Riavvia per installare
@@ -866,11 +875,15 @@ modInstall:
   recommendation: Esplora le mod {first} in {modrinth} e {curseforge}!
   removeUnusedLibraries: Rimuovi le mod librerie inutilizzate
   search: Risultato della ricerca
-  searchHint: Cerca e seleziona il progetto
   skipVersion: Salta le Mod con diverse versioni di Minecraft
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
+modSearch:
+  noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
+  noModsFound: Nessuna mod trovata.
+  noModsInstalled: Non hai installato nessuna mod.
+  searchInMarket: Cerca {keyword} nel mercato
 modUpgradePolicy:
   curseforge: Curseforge  Maledizione
   curseforgeOnly: Solo Forgiamaledizione

@@ -762,13 +762,18 @@ launchFailed:
   description: >-
     Es gibt keinen Absturzbericht. Dies sind Fehlerprotokolle und das letzte
     Protokoll.
+  elyByAuthlib:
+    description: >-
+      Die Ely.by Authlib-Ersetzung wurde für Minecraft-Version {version}
+      verwendet, aber diese Version ist möglicherweise nicht vollständig
+      kompatibel.
+    suggestion: >-
+      Sie können die Ely.by Authlib-Ersetzung in den Instanz-Einstellungen
+      deaktivieren, um dieses Problem zu vermeiden.
+    title: Ely.by Authlib-Kompatibilitätsproblem
   failedToLaunch: Der Startvorgang konnte nicht gestartet werden
   latestLog: Letzte Protokolle
   title: Das Spiel endete mit einem abnormalen Code
-  elyByAuthlib:
-    title: "Ely.by Authlib-Kompatibilitätsproblem"
-    description: "Die Ely.by Authlib-Ersetzung wurde für Minecraft-Version {version} verwendet, aber diese Version ist möglicherweise nicht vollständig kompatibel."
-    suggestion: "Sie können die Ely.by Authlib-Ersetzung in den Instanz-Einstellungen deaktivieren, um dieses Problem zu vermeiden."
 launchPreExecuteCommandFailed:
   description: >-
     Der Pre-Execute-Befehl ist mit einem Fehler fehlgeschlagen: {error}. Bitte
@@ -776,13 +781,16 @@ launchPreExecuteCommandFailed:
   title: Vor-Ausführungsbefehl fehlgeschlagen
 launchStatus:
   assigningMemory: Speicher zuweisen
+  elyByWarning: >-
+    Die Ely.by Authlib-Ersetzung ist aktiviert. Einige Minecraft-Versionen sind
+    möglicherweise nicht kompatibel und können abstürzen. Sie können sie in den
+    Instanz-Einstellungen deaktivieren, falls Probleme auftreten.
   exit: Das Spiel aufgeben?
   injectingAuthLib: Einrichten einer AuthLib eines Drittanbieters
   launching: Starten...
   launchingSlow: Fährt noch hoch... Die Grafik-Engine kann langsam starten.
   refreshingUser: Aktualisierung des Benutzertokens
   spawningProcess: Start des Prozesses
-  elyByWarning: "Die Ely.by Authlib-Ersetzung ist aktiviert. Einige Minecraft-Versionen sind möglicherweise nicht kompatibel und können abstürzen. Sie können sie in den Instanz-Einstellungen deaktivieren, falls Probleme auftreten."
 launcherUpdate:
   alreadyLatest: Die neueste Version
   installAndQuit: Neustart zur Installation
@@ -964,11 +972,15 @@ modInstall:
   recommendation: Entdecken Sie die {first} Mods in {modrinth} und {curseforge}!
   removeUnusedLibraries: Entfernen Sie unbenutzte Bibliotheken Mods
   search: Suchergebnis
-  searchHint: Projektsuche und -auswahl
   skipVersion: Überspringen Sie die Mods mit einer anderen Minecraft-Version
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
+modSearch:
+  noLocalModsFound: Keine lokalen Mods gefunden, die Ihrer Suche entsprechen.
+  noModsFound: Keine Mods gefunden.
+  noModsInstalled: Sie haben keine Mods installiert.
+  searchInMarket: Suche {keyword} im Markt
 modUpgradePolicy:
   curseforge: Zuerst Curseforge
   curseforgeOnly: Nur Curseforge
@@ -1745,7 +1757,6 @@ task:
   cancelled: Abgesagt
   clear: Erledigte Aufgaben löschen
   compatible: Das Format {format} ist kompatibel mit {version}
-
   connection:
     connected: In Verbindung gebracht
     free: Frei

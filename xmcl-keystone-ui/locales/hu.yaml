@@ -671,13 +671,17 @@ launchBlocked:
 launchFailed:
   crash: A játék összeomlott!!
   description: Nincs jelentést az összeomlásról. Ez a hibanapló és a legutóbbi napló.
+  elyByAuthlib:
+    description: >-
+      Az Ely.by Authlib pótlást a Minecraft {version} verzióhoz használtuk, de
+      ez a verzió esetleg nem teljesen kompatibilis.
+    suggestion: >-
+      Az Ely.by Authlib pótlást letilthatod az instance beállításaiban, hogy
+      elkerüld ezt a problémát.
+    title: Ely.by Authlib kompatibilitási probléma
   failedToLaunch: Az indítás sikertelen volt
   latestLog: Legújabb napló
   title: A játék abnormális kóddal lépett ki
-  elyByAuthlib:
-    title: "Ely.by Authlib kompatibilitási probléma"
-    description: "Az Ely.by Authlib pótlást a Minecraft {version} verzióhoz használtuk, de ez a verzió esetleg nem teljesen kompatibilis."
-    suggestion: "Az Ely.by Authlib pótlást letilthatod az instance beállításaiban, hogy elkerüld ezt a problémát."
 launchPreExecuteCommandFailed:
   description: >-
     A végrehajtás előtti parancs hiba miatt sikertelen volt: {error}. Kérjük,
@@ -685,13 +689,16 @@ launchPreExecuteCommandFailed:
   title: A végrehajtás előtti parancs sikertelen
 launchStatus:
   assigningMemory: Memória kiosztása
+  elyByWarning: >-
+    Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió
+    inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le
+    az instance beállításaiban.
   exit: Kilépés?
   injectingAuthLib: Harmadik fél AuthLib beállítása
   launching: Indítás...
   launchingSlow: Még mindig indul... A grafikus motor indítása lassú lehet...
   refreshingUser: Felhasználói token frissítése
   spawningProcess: Spawnolási folyamat
-  elyByWarning: "Az Ely.by Authlib pótlás engedélyezve van. Néhány Minecraft verzió inkompatibilis lehet és összeomolhat. Ha problémák merülnek fel, tiltsd le az instance beállításaiban."
 launcherUpdate:
   alreadyLatest: Naprakész
   installAndQuit: Újraindítás a telepítéshez
@@ -862,11 +869,15 @@ modInstall:
   recommendation: Fedezze fel a {first} modokat a {modrinth} és a {curseforge} -ben!
   removeUnusedLibraries: Távolítsa el a fel nem használt könyvtárak modokat
   search: Keresési találat
-  searchHint: Keresés és projekt kiválasztása
   skipVersion: Hagyd ki a modokat a különböző Minecraft verziókkal
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
+modSearch:
+  noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
+  noModsFound: Nem található mod.
+  noModsInstalled: Nincs telepített modod.
+  searchInMarket: Keresés {keyword} a piacon
 modUpgradePolicy:
   curseforge: Curseforge először
   curseforgeOnly: Csak Curseforge

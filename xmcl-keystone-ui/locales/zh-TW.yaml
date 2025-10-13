@@ -635,13 +635,13 @@ launchBlocked:
 launchFailed:
   crash: 遊戲當機了！
   description: 沒有找到當機報告，這裡是錯誤日誌和最新的日誌檔案
+  elyByAuthlib:
+    description: 針對 Minecraft 版本 {version} 使用了 Ely.by 的 Authlib 取代，但該版本可能不完全相容。
+    suggestion: 您可以在實例設定中停用 Ely.by 的 Authlib 取代以避免此問題。
+    title: Ely.by Authlib 相容性問題
   failedToLaunch: 啟動器啟動失敗
   latestLog: 最新日誌檔案
   title: 遊戲未正常退出
-  elyByAuthlib:
-    title: "Ely.by Authlib 相容性問題"
-    description: "針對 Minecraft 版本 {version} 使用了 Ely.by 的 Authlib 取代，但該版本可能不完全相容。"
-    suggestion: "您可以在實例設定中停用 Ely.by 的 Authlib 取代以避免此問題。"
 launchGeneralException: {}
 launchInvalidJavaPath: {}
 launchJavaNoPermission: {}
@@ -652,13 +652,13 @@ launchPreExecuteCommandFailed:
   title: 執行前指令失敗
 launchStatus:
   assigningMemory: 正在分配記憶體
+  elyByWarning: 已啟用 Ely.by Authlib 取代。某些 Minecraft 版本可能不相容且會導致當機。如發生問題，可在實例設定中停用它。
   exit: 關閉遊戲？
   injectingAuthLib: 正在設定第三方 AuthLib
   launching: 啟動中...
   launchingSlow: 還在啟動… Minecraft 的啟動會比較慢呢~
   refreshingUser: 重新整理使用者令牌
   spawningProcess: 正在啟動遊戲
-  elyByWarning: "已啟用 Ely.by Authlib 取代。某些 Minecraft 版本可能不相容且會導致當機。如發生問題，可在實例設定中停用它。"
 launchUserStatusRefreshFailed: {}
 launcherUpdate:
   alreadyLatest: 已是最新
@@ -801,11 +801,15 @@ modInstall:
   recommendation: 在{modrinth}和{curseforge}中探索{first} mods！
   removeUnusedLibraries: 刪除未使用的函式庫模組
   search: 搜尋結果
-  searchHint: 搜尋並選擇模組
   skipVersion: 忽略不同 Minecraft 版本的 Mod
   source: 模組來源
   switch: 切換版本
   upgrade: 更新模組
+modSearch:
+  noLocalModsFound: 未找到符合搜尋的本機模組。
+  noModsFound: 未找到模組。
+  noModsInstalled: 您尚未安裝任何模組。
+  searchInMarket: 在市場中搜尋 {keyword}
 modUpgradePolicy:
   curseforge: Curseforge 優先
   curseforgeOnly: 僅限 Curseforge

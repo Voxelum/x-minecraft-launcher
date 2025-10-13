@@ -718,24 +718,31 @@ launchBlocked:
 launchFailed:
   crash: Jogo travou!!
   description: Não há relatório de falha. Este é o log de erro e o log mais recente.
+  elyByAuthlib:
+    description: >-
+      A substituição do Authlib do Ely.by foi usada para a versão do Minecraft
+      {version}, mas essa versão pode não ser totalmente compatível.
+    suggestion: >-
+      Você pode desativar a substituição do Authlib do Ely.by nas configurações
+      da instância para evitar esse problema.
+    title: Problema de compatibilidade do Ely.by Authlib
   failedToLaunch: Falha ao iniciar o jogo
   latestLog: Log mais recente
   title: Jogo fechado com código anômalo
-  elyByAuthlib:
-    title: "Problema de compatibilidade do Ely.by Authlib"
-    description: "A substituição do Authlib do Ely.by foi usada para a versão do Minecraft {version}, mas essa versão pode não ser totalmente compatível."
-    suggestion: "Você pode desativar a substituição do Authlib do Ely.by nas configurações da instância para evitar esse problema."
 launchPreExecuteCommandFailed:
   title: Falha no comando de pré-execução
 launchStatus:
   assigningMemory: Atribuindo memória
+  elyByWarning: >-
+    A substituição do Authlib do Ely.by está ativada. Algumas versões do
+    Minecraft podem não ser compatíveis e podem travar. Você pode desativá-la
+    nas configurações da instância se ocorrerem problemas.
   exit: Sair do jogo?
   injectingAuthLib: Configurando AuthLib de terceiros
   launching: Iniciando...
   launchingSlow: Ainda iniciando... O início do motor gráfico pode ser demorado...
   refreshingUser: Atualizando token do usuário
   spawningProcess: Inicializando o processo
-  elyByWarning: "A substituição do Authlib do Ely.by está ativada. Algumas versões do Minecraft podem não ser compatíveis e podem travar. Você pode desativá-la nas configurações da instância se ocorrerem problemas."
 launcherUpdate:
   alreadyLatest: Atualizado
   installAndQuit: Reiniciar para instalar
@@ -898,11 +905,15 @@ modInstall:
   recommendation: Explore os mods {first} em {modrinth} e {curseforge}!
   removeUnusedLibraries: Remova mods de bibliotecas não utilizadas
   search: Resultado da Busca
-  searchHint: Busque e selecione o projeto
   skipVersion: Pular Mods com versão diferente do Minecraft
   source: Fonte do Mod
   switch: Trocar Versão
   upgrade: Atualizar Mods
+modSearch:
+  noLocalModsFound: Nenhum mod local encontrado correspondendo à sua pesquisa.
+  noModsFound: Nenhum mod encontrado.
+  noModsInstalled: Você não tem nenhum mod instalado.
+  searchInMarket: Pesquisar {keyword} no mercado
 modUpgradePolicy:
   curseforge: Curseforge Primeiro
   curseforgeOnly: Somente Curseforge

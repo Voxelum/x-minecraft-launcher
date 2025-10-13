@@ -443,6 +443,12 @@ modFilter:
 modInstall:
   display: Mods Display
   removeUnusedLibraries: Remove unused libraries mods
+  upgrade: Upgrade mods
+modSearch:
+  noLocalModsFound: No local mods found matching your search.
+  noModsFound: No mods found.
+  noModsInstalled: You don't have any mods installed.
+  searchInMarket: Search {keyword} in Market
 modUpgradePolicy:
   name: Upgrade Policy
 modpack:

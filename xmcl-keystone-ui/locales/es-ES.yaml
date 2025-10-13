@@ -545,20 +545,27 @@ launchBlocked:
       Si esto aún no funciona, comuníquese con los desarrolladores.
     title: No se puede iniciar el proceso del juego
 launchFailed:
-  failedToLaunch: Error al iniciar el arranque
   elyByAuthlib:
-    title: "Problema de compatibilidad de Ely.by Authlib"
-    description: "Se usó la sustitución de Authlib de Ely.by para Minecraft versión {version}, pero esta versión puede no ser totalmente compatible."
-    suggestion: "Puede desactivar la sustitución de Authlib de Ely.by en la configuración de la instancia para evitar este problema."
+    description: >-
+      Se usó la sustitución de Authlib de Ely.by para Minecraft versión
+      {version}, pero esta versión puede no ser totalmente compatible.
+    suggestion: >-
+      Puede desactivar la sustitución de Authlib de Ely.by en la configuración
+      de la instancia para evitar este problema.
+    title: Problema de compatibilidad de Ely.by Authlib
+  failedToLaunch: Error al iniciar el arranque
 launchPreExecuteCommandFailed:
   description: >-
     El comando de pre-ejecución falló con un error: {error}. Por favor,
     compruebe el comando e inténtelo de nuevo.
   title: Fallo del comando de preejecución
 launchStatus:
+  elyByWarning: >-
+    La sustitución de Authlib de Ely.by está habilitada. Algunas versiones de
+    Minecraft pueden no ser compatibles y podrían provocar fallos. Puede
+    desactivarla en la configuración de la instancia si surgen problemas.
   refreshingUser: Actualizar token de usuario
   spawningProcess: Puesta en marcha del proceso
-  elyByWarning: "La sustitución de Authlib de Ely.by está habilitada. Algunas versiones de Minecraft pueden no ser compatibles y podrían provocar fallos. Puede desactivarla en la configuración de la instancia si surgen problemas."
 liteloader:
   name: LiteLoader
 loginError:
@@ -671,11 +678,15 @@ modInstall:
   recommendation: ¡Explora las modificaciones {first} en {modrinth} y {curseforge}!
   removeUnusedLibraries: Eliminar modificaciones de bibliotecas no utilizadas
   search: Resultado de la Búsqueda
-  searchHint: Buscar y seleccionar proyecto
   skipVersion: Salta los Mods con diferentes versiones de Minecraft
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
+modSearch:
+  noLocalModsFound: No se encontraron mods locales que coincidan con tu búsqueda.
+  noModsFound: No se encontraron mods.
+  noModsInstalled: No tienes ningún mod instalado.
+  searchInMarket: Buscar {keyword} en el mercado
 modUpgradePolicy:
   curseforge: Forja maldita primero
   curseforgeOnly: Sólo forja maldita

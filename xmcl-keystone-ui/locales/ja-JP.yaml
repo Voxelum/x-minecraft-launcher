@@ -616,22 +616,26 @@ launchBlocked:
 launchFailed:
   crash: ゲームがクラッシュしました!!!!
   description: クラッシュレポートはありません。エラーログと最新のログです。
+  elyByAuthlib:
+    description: >-
+      Minecraft バージョン {version} に対して Ely.by の Authlib
+      置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。
+    suggestion: この問題を回避するには、インスタンス設定で Ely.by の Authlib 置換を無効にできます。
+    title: Ely.by Authlib の互換性の問題
   failedToLaunch: ランチャーの起動に失敗
   latestLog: 最新のログ
   title: ゲームが異常なコードで終了しました
-  elyByAuthlib:
-    title: "Ely.by Authlib の互換性の問題"
-    description: "Minecraft バージョン {version} に対して Ely.by の Authlib 置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。"
-    suggestion: "この問題を回避するには、インスタンス設定で Ely.by の Authlib 置換を無効にできます。"
 launchStatus:
   assigningMemory: メモリを割り当て中
+  elyByWarning: >-
+    Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft
+    バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。
   exit: ゲームを終了しますか?
   injectingAuthLib: サードパーティAuthLibを設定中
   launching: 起動中...
   launchingSlow: まだ起動中です... グラフィックスエンジンの立ち上げは時間がかかるかもしれません...
   refreshingUser: ユーザートークンを更新中
   spawningProcess: プロセスを生成中
-  elyByWarning: "Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。"
 launcherUpdate:
   alreadyLatest: 最新の状態です
   installAndQuit: 再起動してインストールします
@@ -775,11 +779,15 @@ modInstall:
   recommendation: '{modrinth}と{curseforge}で{first} modsを探索してください！'
   removeUnusedLibraries: 未使用のライブラリMODを削除します
   search: 検索結果
-  searchHint: プロジェクトを検索して選ぶ
   skipVersion: 異なる Minecraft バージョンの Mod をスキップする
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
+modSearch:
+  noLocalModsFound: 検索に一致するローカルModが見つかりません。
+  noModsFound: Modが見つかりません。
+  noModsInstalled: まだModがインストールされていません。
+  searchInMarket: '{keyword} をマーケットで検索'
 modUpgradePolicy:
   curseforge: カースフォージ・ファースト
   curseforgeOnly: Curseforgeのみ
