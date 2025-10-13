@@ -123,7 +123,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
   }
 
   async function checkModrinthUpgrade(modrinthTarget: ModFile[], runtimes: RuntimeVersions, skipVersion: boolean, result: Record<string, UpgradePlan>) {
-    const hashes = modrinthTarget.map(m => m.hash)
+    if (modrinthTarget.length === 0) {
+      return modrinthTarget
+    }
+
+    let hashes = modrinthTarget.map(m => m.hash)
     if (skipVersion) {
       const minecraft = runtimes.minecraft
       const vers = await clientModrinthV2.getProjectVersionsByHash(hashes)
@@ -134,6 +138,11 @@ export function useModUpgrade(path: Ref<string>, runtime: Ref<RuntimeVersions>, 
         }
       }
       modrinthTarget = modrinthTarget.filter(m => !shouldIgnored.has(m.modrinth!.projectId))
+      hashes = modrinthTarget.map(m => m.hash)
+    }
+
+    if (hashes.length === 0) {
+      return modrinthTarget
     }
 
     const loaders = getModrinthModLoaders(runtimes)
