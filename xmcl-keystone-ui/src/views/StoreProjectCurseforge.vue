@@ -114,7 +114,7 @@ const project = computed(() => {
   const result: IStoreProject = reactive({
     id: p.id.toString(),
     title: p.name,
-    iconUrl: p.logo.url,
+    iconUrl: p.logo?.url ?? '',
     url: p.links.websiteUrl,
     description: p.summary,
     categories,
@@ -129,7 +129,7 @@ const project = computed(() => {
     localizedDescription: curseforgeProjectMapping.value?.description,
     gallery: p.screenshots.map(g => ({
       rawUrl: g.url,
-      url: g.thumbnailUrl,
+      url: g?.thumbnailUrl ?? '',
       description: g.description,
     })),
   })

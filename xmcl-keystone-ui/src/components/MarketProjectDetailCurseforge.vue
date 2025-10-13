@@ -145,7 +145,7 @@ const model = computed(() => {
         title: image.title,
         description: image.description,
         rawUrl: image.url,
-        url: image.thumbnailUrl,
+        url: image?.thumbnailUrl ?? '',
       })
     }
   }

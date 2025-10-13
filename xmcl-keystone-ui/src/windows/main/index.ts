@@ -106,14 +106,14 @@ app.$mount('#app')
 
 Vue.config.warnHandler = (msg, vm, trace) => {
   const level = msg.indexOf('TypeError') !== -1 ? 4 : 3
-  appInsights.trackException({
-    exception: {
-      name: 'VueWarn',
-      message: msg,
-      stack: trace,
-    },
-    severityLevel: level,
-  })
+  // appInsights.trackException({
+  //   exception: {
+  //     name: 'VueWarn',
+  //     message: msg,
+  //     stack: trace,
+  //   },
+  //   severityLevel: level,
+  // })
   console.warn(msg)
 
   if (level === 4) {

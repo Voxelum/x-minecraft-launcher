@@ -16,7 +16,7 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
       throw new Exception({ type: 'workerDisposedError' }, 'The worker is disposed')
     }
     const worker = factory(options)
-    logger.log(`Awake the worker ${factory}`)
+    logger.log(`Awake the worker ${factory.name}`)
     worker.on('message', (message: 'idle' | WorkerResponse) => {
       if (message === 'idle') {
         if (destroyTimer) {
@@ -24,7 +24,7 @@ export const createLazyWorker = <T>(factory: (options?: WorkerOptions) => Worker
         }
         destroyTimer = setTimeout(() => {
           if (threadWorker) {
-            logger.log(`Dispose the worker ${factory}`)
+            logger.log(`Dispose the worker ${factory.name}`)
             threadWorker.terminate()
             threadWorker = undefined
             destroyTimer = undefined

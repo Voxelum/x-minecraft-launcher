@@ -39,17 +39,19 @@ export default function createWorkerPlugin(): Plugin {
           plugins: build.initialOptions.plugins,
         })
         const fileName = basename((Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js')))[0])
+        const functionName = basename(absoltePath).replace(/\W+/g, '_').replace(/^(\d)/, '_$1')
+        console.log(functionName)
         return {
           errors: result.errors,
           warnings: result.warnings,
           contents: build.initialOptions.plugins!.find(v => v.name === 'dev')
             ? `import { Worker } from 'worker_threads';
 export const path = ${JSON.stringify(join(outDir, fileName))};
-export default function (options) { return new Worker(path, options); }`
+export default function ${functionName} (options) { return new Worker(path, options); }`
             : `import { join, dirname } from 'path';
 import { Worker } from 'worker_threads';
 export const path = join(__dirname.replace("app.asar", "app.asar"), ${JSON.stringify(fileName)});
-export default function (options) { return new Worker(path, options); }`,
+export default function ${functionName} (options) { return new Worker(path, options); }`,
           resolveDir: outDir,
         }
       })

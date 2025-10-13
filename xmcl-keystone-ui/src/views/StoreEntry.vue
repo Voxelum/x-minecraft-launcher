@@ -276,9 +276,9 @@ const popularItems = computed(() => {
   function getGameGalleryFromCurseforge(mods: Mod[]) {
     return mods.map((p) => {
       const mapping = galleryMappings.value[`curseforge:${p.id}`]
-      const images = p.screenshots.map(g => [g.thumbnailUrl, g.url]) as [string, string][]
+      const images = p.screenshots.map(g => [g?.thumbnailUrl ?? '', g?.url ?? '']) as [string, string][]
       if (p.logo) {
-        images.push([p.logo.thumbnailUrl, p.logo.url])
+        images.push([p.logo?.thumbnailUrl ?? '', p.logo?.url ?? ''])
       }
       const game: GameGallery = {
         id: p.id.toString(),
@@ -371,7 +371,7 @@ const recentUpdatedItems = computed(() => {
         id: r.id.toString(),
         type: 'curseforge',
         title: r.name,
-        logo: r.logo.thumbnailUrl,
+        logo: r.logo?.thumbnailUrl ?? '',
         description: r.summary,
         updatedAt: r.dateModified,
         follows: r.downloadCount,
@@ -383,6 +383,8 @@ const recentUpdatedItems = computed(() => {
     }),
   )
 })
+
+const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
 
 // Latest minecraft
 const latestModrinth = computed(() => gameVersions.value.filter(v => v.major)[0].version)
@@ -448,7 +450,7 @@ const recentMinecraftItems = computed(() => {
         id: r.id.toString(),
         type: 'curseforge',
         title: r.name,
-        image: r.logo.thumbnailUrl,
+        image: r.logo?.thumbnailUrl ?? '',
         gameVersion: r.latestFilesIndexes[0]?.gameVersion,
         categories: r.categories.map(c => tCategory(c.name)),
         localizedTitle: mapping?.name,
@@ -506,7 +508,6 @@ const enter = (type: string, id: string) => {
 }
 
 const sortBy = useSortByItems()
-const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
 
 const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
@@ -604,7 +605,7 @@ const items = computed(() => {
       id: p.id.toString(),
       type: 'curseforge',
       title: p.name,
-      icon_url: p.logo.thumbnailUrl,
+      icon_url: p.logo?.thumbnailUrl ?? '',
       description: p.summary,
       author: p.authors[0].name,
       labels: [
@@ -614,7 +615,7 @@ const items = computed(() => {
         { icon: 'local_offer', text: p.latestFilesIndexes[0].gameVersion, id: `${p.id}_local_offer` },
       ],
       tags,
-      gallery: p.screenshots.map(s => s.thumbnailUrl),
+      gallery: p.screenshots.map(s => s?.thumbnailUrl || ''),
       localizedTitle: mapping?.name,
       localizedDescription: mapping?.description,
     }

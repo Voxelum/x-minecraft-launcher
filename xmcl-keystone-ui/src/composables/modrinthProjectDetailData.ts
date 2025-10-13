@@ -9,7 +9,7 @@ import { ProjectFile } from '@/util/search'
 import { Category, Project, ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { ProjectMapping } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { kFlights, useI18nSearchFlights } from './flights'
+import { useI18nSearchFlights } from './flights'
 import { useAutoI18nCommunityContent } from './i18n'
 
 export function useModrinthProjectDetailData(projectId: Ref<string>, project: Ref<Project | undefined>, search: Ref<SearchResultHit | undefined>, mapping: Ref<ProjectMapping | undefined>) {

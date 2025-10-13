@@ -53,8 +53,7 @@ export function useLaunchButton() {
   watch(path, () => {
     dirty.value = true
   })
-  const launchButtonFacade = computed(() => {
-    console.log('update button facade')
+  watch([loadingVersionIssues, refreshingFiles, isRefreshingVersion], () => {
     if (
       !loadingVersionIssues.value &&
       !refreshingFiles.value &&
@@ -62,6 +61,10 @@ export function useLaunchButton() {
     ) {
       dirty.value = false
     }
+  })
+
+  const launchButtonFacade = computed(() => {
+    console.log('update button facade')
     if (status.value === TaskState.Running) {
       return {
         icon: 'pause',
@@ -88,7 +91,7 @@ export function useLaunchButton() {
         },
       }
     } else if (count.value > 0) {
-      if (gameProcesses.value.every(p => p.options.user.id !== userProfile.value.id)) { 
+      if (gameProcesses.value.every(p => p.options.user.id !== userProfile.value.id)) {
         return {
           text: t('launch.launch'),
           color: !javaIssue.value ? 'primary' : 'primary darken-1',

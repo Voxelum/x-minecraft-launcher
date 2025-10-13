@@ -21,9 +21,9 @@
         <ul>
           <template v-if="useCNAI">
             <li><a href="https://chatglm.cn/share/kFiK3rVp" @click="onCopyRaw"> <img width="21" src="https://chatglm.cn/img/icons/favicon.svg" > GLM</a></li>
-            <li><a href="https://doubao.com/chat"> <img width="21" src="https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/logo-icon.png" > 豆包</a></li>
-            <li><a href="https://chat.deepseek.com/"><img width="21" src="https://chat.deepseek.com/favicon.svg" >Deepseek</a></li>
-            <li><a href="https://www.tongyi.com/"><img width="21" src="https://assets.alicdn.com/g/qwenweb/qwen-webui-fe/0.0.209/static/favicon.png" > Qwen </a></li>
+            <li><a href="https://doubao.com/bot/uic8dYCs" @click="onCopyRaw"> <img width="21" src="https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/web/logo-icon.png" > 豆包</a></li>
+            <li><a href="https://chat.deepseek.com/" @click="onCopyPrompt"><img width="21" src="https://chat.deepseek.com/favicon.svg" >Deepseek</a></li>
+            <li><a href="https://www.tongyi.com/" @click="onCopyPrompt"><img width="21" src="https://assets.alicdn.com/g/qwenweb/qwen-webui-fe/0.0.209/static/favicon.png" > Qwen </a></li>
           </template>
           <template v-else>
             <li><a href="https://chat.openai.com"> <img width="21" src="https://openai.com/favicon.svg" > ChatGPT</a></li>

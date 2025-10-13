@@ -243,6 +243,14 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   }
 }
 
+export function tryGt(a: string, b: string) {
+  try {
+    return gt(a, b)
+  } catch {
+    return false
+  }
+}
+
 export function useNeoForgedVersions(minecraft: Ref<string>) {
   const { data, isValidating, mutate, error } = useSWRVModel(getNeoForgedVersionModel(minecraft),
     inject(kSWRVConfig))
@@ -258,7 +266,7 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
   const versions = computed(() => {
     const vers = data.value
     if (!vers) return []
-    return vers.toSorted((a, b) => gt(a, b) ? -1 : 1)
+    return vers.toSorted((a, b) => tryGt(a, b) ? -1 : 1)
   })
 
   return {
@@ -272,7 +280,7 @@ export function useNeoForgedVersions(minecraft: Ref<string>) {
 }
 
 export function getLatestNeoforge(versions: string[]) {
-  return versions.toSorted((a, b) => gt(a, b) ? -1 : 1)[0]
+  return versions.toSorted((a, b) => tryGt(a, b) ? -1 : 1)[0]
 }
 
 export function getNeoForgedVersionModel(minecraft: MaybeRef<string>) {
