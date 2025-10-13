@@ -17,6 +17,7 @@ import { ModpackServiceKey } from '@xmcl/runtime-api'
 import HomeUpstreamBase from './HomeUpstreamBase.vue'
 import { ProjectVersionProps } from './HomeUpstreamVersion.vue'
 import { CurseforgeUpstream } from '@xmcl/instance'
+import { throttledRef } from '@vueuse/core'
 
 const props = defineProps<{
   id: number
@@ -28,6 +29,9 @@ const upstream = computed(() => instance.value?.upstream as CurseforgeUpstream)
 const { data: project } = useSWRVModel(getCurseforgeProjectModel(computed(() => props.id)))
 const { getDateString } = useDateString()
 const headerData = useCurseforgeUpstreamHeader(project)
+const changelogs = shallowRef({} as Record<string, string>)
+const changelogsThrottled = throttledRef(changelogs, 500)
+
 const { data: files, isValidating: loadingFiles } = useSWRVModel(getCurseforgeProjectFilesModel(computed(() => props.id), ref(undefined), ref(undefined)))
 const currentVersion = computed(() => {
   const val = upstream.value
@@ -43,12 +47,13 @@ const currentVersion = computed(() => {
     gameVersions: getCurseforgeFileGameVersions(ver),
     datePublished: (ver.fileDate),
     downloads: ver.downloadCount,
-    changelog: '',
+    changelog: changelogsThrottled.value[ver.id] ?? '',
   })
   return result
 })
 const limit = ref(10)
 const onlyCurrentVersion = useLocalStorageCacheBool(computed(() => `instanceUpstreamOnlyShowCurrentVersion/${instance.value.path}`), false)
+
 const items = computed(() => {
   const result = {} as Record<string, ProjectVersionProps[]>
 
@@ -71,7 +76,7 @@ const items = computed(() => {
       gameVersions: getCurseforgeFileGameVersions(d),
       datePublished: (d.fileDate),
       downloads: d.downloadCount,
-      changelog: '',
+      changelog: changelogsThrottled.value[d.id] || '',
     }))
   }
 
@@ -134,7 +139,10 @@ const config = inject(kSWRVConfig)
 const loadChangelog = async (v: ProjectVersionProps) => {
   const changelog = await getSWRV(getCurseforgeChangelogModel(ref(props.id), ref(Number(v.id))), { ...config, dedupingInterval: Infinity }).catch(() => '')
   if (changelog) {
-    v.changelog = changelog
+    changelogs.value = {
+      ...changelogs.value,
+      [v.id]: changelog
+    }
   }
 }
 
