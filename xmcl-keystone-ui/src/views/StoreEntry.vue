@@ -384,8 +384,64 @@ const recentUpdatedItems = computed(() => {
   )
 })
 
+// FTB
+const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
+const ftbItems = ref([] as ExploreProject[])
+const config = inject(kSWRVConfig)
+watch([ftbData, page], async ([packs, page]) => {
+  if (!packs) {
+    ftbItems.value = []
+    return
+  }
+  if (!('packs' in packs)) {
+    ftbItems.value = []
+    return
+  }
+
+  // each page show 5 items
+  const offset = (page - 1) * 5
+
+  const result = await Promise.all(packs.packs.slice(offset, offset + 5).map(async (p) => {
+    const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
+    const result: ExploreProject = {
+      id: p.toString(),
+      type: 'ftb',
+      title: data?.name ?? '',
+      icon_url: data?.art.find(v => v.type === 'square')?.url ?? '',
+      description: data?.synopsis || '',
+      author: data?.authors[0].name ?? '',
+      labels: [
+        { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, ''), id: `${data?.id}_download_icon` },
+        { icon: 'event', text: getDateString((data?.released ?? 0) * 1000), id: `${data?.id}_event_icon` },
+        { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000), id: `${data?.id}_edit_icon` },
+        { icon: 'local_offer', text: data?.plays.toString() ?? '0', id: `${data?.id}_local_offer` },
+      ],
+      tags: data?.tags.map(t => ({ text: t.name, id: t.id.toString() })) ?? [],
+      gallery: data?.art.map(a => a.url) ?? [],
+    }
+    return result
+  }))
+
+  console.log(result)
+
+  ftbItems.value = result
+}, { immediate: true })
+
+// Routing
+const enter = (type: string, id: string) => {
+  push(`/store/${type}/${id}`)
+}
+
+const sortBy = useSortByItems()
+const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
+
+const { modrinthSort, curseforgeSort } = useMarketSort(sort)
+
 // Latest minecraft
-const latestModrinth = computed(() => gameVersions.value.filter(v => v.major)[0].version)
+const latestModrinth = computed(() => {
+  const majorVersions = gameVersions.value.filter(v => v.major)
+  return majorVersions.length > 0 ? majorVersions[0].version : ''
+})
 const { data: modrinthRecentMinecraft } = useSWRV('/modrinth/recent_version', async () => {
   const result = await clientModrinthV2.searchProjects({
     index: 'newest',
@@ -456,59 +512,6 @@ const recentMinecraftItems = computed(() => {
     }),
   )
 })
-
-// FTB
-const { refreshing: ftbLoading, currentKeyword, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
-const ftbItems = ref([] as ExploreProject[])
-const config = inject(kSWRVConfig)
-watch([ftbData, page], async ([packs, page]) => {
-  if (!packs) {
-    ftbItems.value = []
-    return
-  }
-  if (!('packs' in packs)) {
-    ftbItems.value = []
-    return
-  }
-
-  // each page show 5 items
-  const offset = (page - 1) * 5
-
-  const result = await Promise.all(packs.packs.slice(offset, offset + 5).map(async (p) => {
-    const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
-    const result: ExploreProject = {
-      id: p.toString(),
-      type: 'ftb',
-      title: data?.name ?? '',
-      icon_url: data?.art.find(v => v.type === 'square')?.url ?? '',
-      description: data?.synopsis || '',
-      author: data?.authors[0].name ?? '',
-      labels: [
-        { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, ''), id: `${data?.id}_download_icon` },
-        { icon: 'event', text: getDateString((data?.released ?? 0) * 1000), id: `${data?.id}_event_icon` },
-        { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000), id: `${data?.id}_edit_icon` },
-        { icon: 'local_offer', text: data?.plays.toString() ?? '0', id: `${data?.id}_local_offer` },
-      ],
-      tags: data?.tags.map(t => ({ text: t.name, id: t.id.toString() })) ?? [],
-      gallery: data?.art.map(a => a.url) ?? [],
-    }
-    return result
-  }))
-
-  console.log(result)
-
-  ftbItems.value = result
-}, { immediate: true })
-
-// Routing
-const enter = (type: string, id: string) => {
-  push(`/store/${type}/${id}`)
-}
-
-const sortBy = useSortByItems()
-const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
-
-const { modrinthSort, curseforgeSort } = useMarketSort(sort)
 
 const _modrinthCategories = useQueryStringArray('modrinthCategories', ensureQuery)
 // Modrinth
