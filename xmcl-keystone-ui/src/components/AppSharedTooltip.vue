@@ -12,7 +12,7 @@
     :bottom="cached.bottom"
   >
     {{ cached.text }}
-    <div v-if="cached.items">
+    <div v-if="cached.items" class="select-none">
       <template v-for="r of cached.items">
         <v-avatar
           :key="r.icon + 'icon'"

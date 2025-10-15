@@ -9,12 +9,17 @@
       zIndex: 0,
     }"
   >
+    <v-skeleton-loader
+      v-if="loading"
+      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+    />
     <div
       v-for="virtualRow in virtualRows"
       :key="flattened[virtualRow.index].data.path"
       :ref="measureElement"
       :data-index="virtualRow.index"
       :style="{
+        display: loading ? 'none' : 'block',
         position: 'absolute',
         top: 0,
         left: 0,
@@ -59,6 +64,7 @@ const props = defineProps<{
   selectable?: boolean
   openAll?: boolean
   scrollElement?: HTMLElement | null
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{

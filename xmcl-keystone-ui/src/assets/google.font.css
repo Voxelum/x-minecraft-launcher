@@ -8,13 +8,13 @@
   font-family: 'Material Icons Outlined';
   font-style: normal;
   font-weight: 400;
-  src: url(gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2) format('woff2');
+  src: url(google-symbols.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Material Symbols Outlined';
   font-style: normal;
   font-weight: 400;
-  src: url(material-symbols-outlined.woff2) format('woff2');
+  src: url(google-symbols.woff2) format('woff2');
 }
 
 @font-face {

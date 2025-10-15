@@ -91,7 +91,7 @@ export function useLaunchButton() {
         },
       }
     } else if (count.value > 0) {
-      if (gameProcesses.value.every(p => p.options.user.id !== userProfile.value.id)) {
+      if (gameProcesses.value.every(p => p.options.user.selectedProfile !== userProfile.value.selectedProfile)) {
         return {
           text: t('launch.launch'),
           color: !javaIssue.value ? 'primary' : 'primary darken-1',

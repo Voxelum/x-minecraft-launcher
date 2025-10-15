@@ -23,26 +23,19 @@ export const FileNodesSymbol: InjectionKey<Ref<InstanceFileNode<any>[]>> = Symbo
 
 export type InstanceFileExportData = {
   forceOverride: boolean
-  client: string
-  server: string
   downloads?: string[]
-  curseforge: boolean
 }
 
 export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
   const { modsIconsMap } = injection(kInstanceModsContext)
   function getFileNode(f: InstanceFile): InstanceFileNode<InstanceFileExportData> {
-    return reactive({
+    return markRaw({
       name: basename(f.path),
       path: f.path,
       size: f.size ?? 0,
       data: {
-        client: '',
-        server: '',
         forceOverride: false,
         downloads: f.downloads,
-        curseforge: !!f.curseforge,
-        modrinth: !!f.modrinth,
       },
       children: undefined,
       curseforge: !!f.curseforge,
