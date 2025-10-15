@@ -211,12 +211,16 @@ async function setup() {
     }
   })
   emit('ready', data)
-  const dismiss = watch(state, (s) => {
-    if (s) {
-      s.localeSet(locale.value)
-      dismiss()
-    }
-  }, { immediate: true })
+  if (state.value) {
+    state.value.localeSet(locale.value)
+  } else {
+    const dismiss = watch(state, (s) => {
+      if (s) {
+        s.localeSet(locale.value)
+        dismiss()
+      }
+    })
+  }
   data.loading = true
 }
 </script>
