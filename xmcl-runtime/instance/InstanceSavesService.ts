@@ -47,23 +47,27 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
     @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, async () => {
-      const snapshopts = await resourceManager.getSnapshotsUnderDomainedPath('saves')
-      const valid = await Promise.all(snapshopts.map(v => resourceManager.validateSnapshotFile(v)))
-      for (const file of valid) {
-        if (!file) continue
-        // unlink if the file last access time is 3 days ago
-        if (file.atime < Date.now() - 1000 * 60 * 60 * 24 * 3) {
-          await unlink(file.path)
+      try {
+        const snapshopts = await resourceManager.getSnapshotsUnderDomainedPath('saves')
+        const valid = await Promise.all(snapshopts.map(v => resourceManager.validateSnapshotFile(v)))
+        for (const file of valid) {
+          if (!file) continue
+          // unlink if the file last access time is 3 days ago
+          if (file.atime < Date.now() - 1000 * 60 * 60 * 24 * 3) {
+            await unlink(file.path)
+          }
         }
-      }
-      await ensureDir(this.getPath('saves'))
-      if (existsSync(this.getPath('shared-saves'))) {
-        // move all shared saves to saves
-        const sharedSaves = await readdir(this.getPath('shared-saves'))
-        for (const save of sharedSaves) {
-          await rename(this.getPath('shared-saves', save), this.getPath('saves', save))
+        await ensureDir(this.getPath('saves'))
+        if (existsSync(this.getPath('shared-saves'))) {
+          // move all shared saves to saves
+          const sharedSaves = await readdir(this.getPath('shared-saves'))
+          for (const save of sharedSaves) {
+            await rename(this.getPath('shared-saves', save), this.getPath('saves', save))
+          }
+          await rmdir(this.getPath('shared-saves'))
         }
-        await rmdir(this.getPath('shared-saves'))
+      } catch (e) {
+        this.error(e as any)
       }
     })
   }
