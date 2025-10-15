@@ -113,6 +113,11 @@ export interface InstanceModpackMetadataSchema {
    * @default []
    */
   emittedFiles: string[]
+  /**
+   * The files environment assignments. Key is the file path.
+   * @default {}
+   */
+  filesEnvironments: Record<string, { client: string; server: string }>
 }
 
 // @ts-ignore

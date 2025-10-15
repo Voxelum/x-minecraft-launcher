@@ -16,6 +16,7 @@ export function useInstanceModpackMetadata() {
     emitModrinthStrict: true,
     emitOffline: false,
     emittedFiles: [],
+    filesEnvironments: {},
   })
 
   onMounted(() => {

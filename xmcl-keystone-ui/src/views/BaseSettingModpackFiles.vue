@@ -20,7 +20,19 @@
         </v-btn>
       </template>
     </SettingItem>
-    <SettingSubheader :title="t('modpack.includes', 1)">
+    <SettingSubheader :title="t('modpack.includes', 1)" class="mb-2">
+      <div class="mx-2">
+        <v-text-field
+          v-model="filterText"
+          :label="t('filter')"
+          dense
+          outlined
+          hide-details
+          clearable
+          prepend-inner-icon="search"
+          single-line
+        />
+      </div>
       <div class="flex flex-shrink flex-grow-0 items-center justify-center text-center text-sm dark:text-gray-500">
         ~{{ getExpectedSize(totalSize) }}
       </div>
@@ -34,65 +46,36 @@
       class="visible-scroll modpack-files"
       ref="scrollElement"
     >
-      <v-skeleton-loader
-        v-if="refreshing"
-        type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
-      />
       <InstanceManifestFileTree
         v-model="cache.selected"
+        :loading="refreshing"
         selectable
         :scroll-element="scrollElement"
         :multiple="false"
       >
         <template #default="{ item, selected }">
-          <template
-            v-if="item.data && canExport(item.data) && selected && modpackMetadata.emitModrinth"
+          <div
+            v-if="(item.curseforge || item.modrinth)"
+            class="inline-flex gap-2"
+            @click.stop
           >
-            <v-tooltip
-              left
-              color="green"
+            <div
+              class="v-item-group theme--dark v-btn-toggle v-btn-toggle--dense"
             >
-              <template #activator="{ on }">
-                <v-chip
-                  color="green"
-                  label
-                  outlined
-                  :close="!!item.data.client"
-                  v-on="on"
-                  @click:close="item.data.client = ''"
-                  @click="item.data.client = nextEnv(item.data.client)"
-                >
-                  <v-avatar left>
-                    C
-                  </v-avatar>
-                  {{ getEnvText(item.data.client) }}
-                </v-chip>
-              </template>
-              {{ t('modrinth.environments.client') }}
-            </v-tooltip>
-            <v-tooltip
-              top
-              color="blue"
-            >
-              <template #activator="{ on }">
-                <v-chip
-                  color="blue"
-                  label
-                  outlined
-                  :close="!!item.data.server"
-                  v-on="on"
-                  @click:close="item.data.server = ''"
-                  @click="item.data.server = nextEnv(item.data.server)"
-                >
-                  <v-avatar left>
-                    S
-                  </v-avatar>
-                  {{ getEnvText(item.data.server) }}
-                </v-chip>
-              </template>
-              {{ t('modrinth.environments.server') }}
-            </v-tooltip>
-          </template>
+              <v-btn v-shared-tooltip="_ => getEnvText(item, 'client')" text small @click="toggle(item, 'client')">
+                <v-icon small left>desktop_mac</v-icon>
+                <v-icon small color="green" v-if="getEnvValue(item, 'client') === 'required'"> check </v-icon>
+                <v-icon small color="red" v-else-if="getEnvValue(item, 'client') === 'unsupported'"> close </v-icon>
+                <v-icon small color="orange" v-else> question_mark </v-icon>
+              </v-btn>
+              <v-btn v-shared-tooltip="_ => getEnvText(item, 'server')" text small @click="toggle(item, 'server')">
+                <v-icon class="material-symbols-outlined" left small>hard_drive</v-icon>
+                <v-icon small color="green" v-if="getEnvValue(item, 'server') === 'required'"> check </v-icon>
+                <v-icon small color="red" v-else-if="getEnvValue(item, 'server') === 'unsupported'"> close </v-icon>
+                <v-icon small color="orange" v-else> question_mark </v-icon>
+              </v-btn>
+            </div>
+          </div>
         </template>
       </InstanceManifestFileTree>
     </div>
@@ -105,15 +88,17 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingSubheader from '@/components/SettingSubheader.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kModpackExport } from '@/composables/modpack'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
+import { getModSides } from '@/util/modSides'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
-import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModMetadataServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -132,20 +117,9 @@ const { instance } = injection(kInstance)
 const { versionId } = injection(kInstanceVersion)
 const scrollElement = ref<HTMLElement | null>(null)
 
-const exportFiles = computed(() => {
-  const selected = selectedPaths.value
-  const result: ExportFileDirective[] = leaves.value
-    .filter(n => selected.has(n.path))
-    .map(l => ({
-      path: l.path,
-      env: l.data
-        ? {
-          client: l.data.client,
-          server: l.data.server,
-        }
-        : undefined,
-    }) as ExportFileDirective)
-  return result
+const environments = shallowRef<Record<string, { client: string; server: string }>>({})
+watch(environments, (val) => {
+  modpackMetadata.filesEnvironments = val
 })
 
 // loading
@@ -179,7 +153,41 @@ const { refresh, refreshing } = useRefreshable(async () => {
   }
   nextTick().then(() => { cache.selected = selected })
   cache.files = files
+
+  const selectedFiles = files.filter(f => (f.path.startsWith('mods') || f.path.startsWith('resourcepacks') || f.path.startsWith('shaderpacks')) && f.hashes.sha1)
+
+  if (modpackMetadata.filesEnvironments && Object.keys(modpackMetadata.filesEnvironments).length > 0) {
+    const existed = Object.keys(modpackMetadata.filesEnvironments)
+
+    const newToAdd = selectedFiles.filter(f => !existed.includes(f.path))
+    const toDelete = existed.filter(f => !selectedFiles.find(file => file.path === f))
+    const newEnvs = { ...modpackMetadata.filesEnvironments }
+    for (const del of toDelete) {
+      delete newEnvs[del]
+    }
+    if (newToAdd.length > 0) {
+      await updateEnvironments(newToAdd, newEnvs)
+    }
+    environments.value = newEnvs
+  } else {
+    const newEnv = { ...environments.value }
+    await updateEnvironments(selectedFiles, newEnv)
+    environments.value = newEnv
+  }
 })
+
+async function updateEnvironments(files: InstanceFile[], envs: Record<string, { client: string; server: string }>) {
+  const withHash = files.filter(f => (f.path.startsWith('mods') || f.path.startsWith('resourcepacks') || f.path.startsWith('shaderpacks')) && f.hashes.sha1)
+  const hashToSide = await getModSides(withHash.map(f_1 => ({ hash: f_1.hashes.sha1, modrinth: f_1.modrinth })), true).catch(() => ({} as Record<string, { client: string; server: string }>))
+  for (const file of files) {
+    if (file.hashes.sha1) {
+      const found = hashToSide[file.hashes.sha1]
+      if (found) {
+        envs[file.path] = found
+      }
+    }
+  }
+}
 
 onMounted(() => {
   refresh()
@@ -188,34 +196,45 @@ onMounted(() => {
 const totalSize = computed(() => {
   const existed = selectedPaths.value
   return leaves.value.filter(n => existed.has(n.path))
-    .filter(n => (!n.data?.curseforge && !n.data?.downloads) || n.data.forceOverride /* || !canExport(n.data) */)
+    .filter(n => (!n?.curseforge && !n.data?.downloads) /* || !canExport(n.data) */)
     .map(l => l.size)
     .reduce((a, b) => a + b, 0)
 })
 
-function getEnvText(env: string) {
-  if (env === 'required') return t('modrinth.environments.required')
-  if (env === 'optional') return t('modrinth.environments.optional')
-  if (env === 'unsupported') return t('modrinth.environments.unsupported')
-  return t('modrinth.environments.default')
+function toggle(item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') {
+  const copy = { ...environments.value }
+
+  const env = copy[item.path] || { client: '', server: '' }
+  if (env[side] === 'required') {
+    env[side] = 'unsupported'
+  } else if (env[side] === 'unsupported') {
+    env[side] = 'optional'
+  } else if (env[side] === 'optional') {
+    env[side] = 'required'
+  } else {
+    env[side] = 'unsupported'
+  }
+  copy[item.path] = env
+
+  environments.value = copy
 }
 
-function nextEnv(env: string) {
-  if (env === 'required') return 'optional'
-  if (env === 'optional') return 'unsupported'
-  return 'required'
+function getEnvValue(item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') {
+  const env = environments.value[item.path] || { client: '', server: '' }
+  return env[side] || 'required'
 }
 
-function canExport(fileData: InstanceFileExportData) {
-  if (!fileData.curseforge && !fileData.downloads) return false
-  if (modpackMetadata.emitCurseforge) {
-    return !!fileData.curseforge
+const getEnvText = (item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') => {
+  const prefix = side === 'client' ? t('modrinth.environments.client') : t('modrinth.environments.server')
+  const val = getEnvValue(item, side)
+  if (val === 'required') {
+    return prefix + ': ' + t('modrinth.environments.required')
+  } else if (val === 'optional') {
+    return prefix + ': ' + t('modrinth.environments.optional')
+  } else if (val === 'unsupported') {
+    return prefix + ': ' + t('modrinth.environments.unsupported')
   }
-  if (modpackMetadata.emitModrinth && fileData.downloads) {
-    if (fileData.downloads.length === 0) return false
-    return fileData.downloads.some(v => isAllowInModrinthModpack(v, modpackMetadata.emitModrinthStrict))
-  }
-  return false
+  return prefix + ': ' + t('modrinth.environments.required')
 }
 
 function onSelectExportDirectory() {
@@ -232,12 +251,20 @@ function onSelectExportDirectory() {
 const disabledBuild = computed(() => !modpackMetadata.emitCurseforge && !modpackMetadata.emitModrinth && !modpackMetadata.emitOffline)
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   try {
+    const selected = selectedPaths.value
+    const exportFiles: ExportFileDirective[] = leaves.value
+      .filter(n => selected.has(n.path))
+      .map(l => ({
+        path: l.path,
+        env: environments.value[l.path] ? environments.value[l.path]
+          : undefined,
+      }) as ExportFileDirective)
     const path = instance.value.path
     await exportModpack({
       instancePath: path,
       gameVersion: versionId.value || '',
       name: instance.value.name,
-      files: exportFiles.value,
+      files: exportFiles,
       author: instance.value.author,
       version: modpackMetadata.modpackVersion,
       destinationDirectory: modpackMetadata.exportDirectory,

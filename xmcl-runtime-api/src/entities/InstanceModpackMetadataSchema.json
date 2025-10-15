@@ -43,6 +43,11 @@
             "items": {
                 "type": "string"
             }
+        },
+        "filesEnvironments": {
+            "$ref": "#/definitions/Record<string,{client:string;server:string;}>",
+            "description": "The files environment assignments. Key is the file path.",
+            "default": {}
         }
     },
     "required": [
@@ -52,9 +57,15 @@
         "emitOffline",
         "emittedFiles",
         "exportDirectory",
+        "filesEnvironments",
         "modpackVersion",
         "version"
     ],
+    "definitions": {
+        "Record<string,{client:string;server:string;}>": {
+            "type": "object"
+        }
+    },
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false
 }
