@@ -110,22 +110,39 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+# Credits & Acknowledgments
 
-[BANER](https://github.com/BANSAFAn), who helps me a lot on the RU/UK community.
+## 🌍 Community & Localization
 
-[GodLeaveMe](https://github.com/GodLeaveMe), [v1mkss](https://github.com/v1mkss), maintaining the AUR package registry.
+**[BANSAFAn](https://github.com/BANSAFAn)**
+Community support and moderation for RU/UK regions · Ukrainian translation
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+**[Marmur2020](https://github.com/Marmur2020)**
+Complete Ukrainian language translation
 
-[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely translated a Ukrainian language!
+**[vanja-san](https://github.com/vanja-san)**
+Russian language support
 
-[vanja-san](https://github.com/vanja-san), provided Russian language!
+## 📦 Package Maintainers
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+**[VolodiaKraplich](https://github.com/VolodiaKraplich)**
+AUR (Arch User Repository) package maintenance
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+**[0xc0000142](https://github.com/0xc0000142)**
+winget package maintenance
 
-Also, special thanks to
+## 🛠️ Development Contributors
 
-[Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
+**[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle)**
+Launcher core development
+
+**[laolarou726](https://github.com/laolarou726)**
+Launcher design and UI/UX
+
+## 💙 Special Thanks
+
+A heartfelt thank you to these individuals for their support and contributions:
+
+[Yricky](https://github.com/Yricky) · [Jin](https://github.com/Indexyz) · [LG](https://github.com/LasmGratel) · [Phoebe](https://github.com/PhoebezZ) · [Sumeng Wang](https://github.com/darkkingwsm) · [Luca](https://github.com/LucaIsGenius) · [Charles Tang](https://github.com/CharlesQT)
+
+---
