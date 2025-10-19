@@ -1,5 +1,4 @@
 .DS_Store
-.direnv
 */dist/**/*
 *.gen
 coverage
@@ -16,7 +15,11 @@ xmcl-electron-app/build/appx
 .env
 
 p2p.network
-flake.lock
 
 */build/output/*
 package-lock.json
+
+
+## CODE EDITORS
+!.vscode/
+!.zed/

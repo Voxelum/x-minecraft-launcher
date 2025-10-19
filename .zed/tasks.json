@@ -1,0 +1,112 @@
+[
+  {
+    "label": "build",
+    "command": "pnpm",
+    "args": ["run", "build"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "build:renderer",
+    "command": "pnpm",
+    "args": ["run", "build:renderer"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "dev:main",
+    "command": "pnpm",
+    "args": ["run", "dev:main"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "env": {
+      "LAUNCH_BY": "zed"
+    },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "dev:renderer",
+    "command": "pnpm",
+    "args": ["run", "dev:renderer"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "lint",
+    "command": "pnpm",
+    "args": ["run", "lint"],
+    "cwd": "${ZED_WORKTREE_ROOT}",
+    "use_new_terminal": false,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Electron: Main (Development)",
+    "command": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/node_modules/.bin/electron",
+    "args": [
+      "${ZED_WORKTREE_ROOT}/xmcl-electron-app/dist/index.js",
+      "--remote-debugging-port=9300",
+      "--trace-uncaught",
+      "--trace-deprecation"
+    ],
+    "cwd": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/dist",
+    "env": {
+      "NODE_ENV": "development"
+    },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Electron: Main (Production - Windows)",
+    "command": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/win-unpacked/X Minecraft Launcher.exe",
+    "args": [
+      "--remote-debugging-port=9300",
+      "--trace-uncaught",
+      "--trace-deprecation"
+    ],
+    "cwd": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/win-unpacked",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Electron: Main (Production - Linux)",
+    "command": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/linux-unpacked/xmcl",
+    "args": [
+      "--remote-debugging-port=9300",
+      "--trace-uncaught",
+      "--trace-deprecation"
+    ],
+    "cwd": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/linux-unpacked",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  },
+  {
+    "label": "Electron: Main (Production - macOS)",
+    "command": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher",
+    "args": [
+      "--remote-debugging-port=9300",
+      "--trace-uncaught",
+      "--trace-deprecation"
+    ],
+    "cwd": "${ZED_WORKTREE_ROOT}/xmcl-electron-app/build/output/mac",
+    "env": {
+      "NODE_ENV": "production"
+    },
+    "use_new_terminal": true,
+    "allow_concurrent_runs": false
+  }
+]
