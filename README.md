@@ -110,9 +110,9 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-# Credits & Acknowledgments
+## Credits & Acknowledgments
 
-## 🌍 Community & Localization
+### 🌍 Community & Localization
 
 **[BANSAFAn](https://github.com/BANSAFAn)**
 Community support and moderation for RU/UK regions · Ukrainian translation
@@ -131,7 +131,7 @@ AUR (Arch User Repository) package maintenance
 **[0xc0000142](https://github.com/0xc0000142)**
 winget package maintenance
 
-## 🛠️ Development Contributors
+### 🛠️ Development Contributors
 
 **[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle)**
 Launcher core development
@@ -139,7 +139,7 @@ Launcher core development
 **[laolarou726](https://github.com/laolarou726)**
 Launcher design and UI/UX
 
-## 💙 Special Thanks
+### 💙 Special Thanks
 
 A heartfelt thank you to these individuals for their support and contributions:
 
