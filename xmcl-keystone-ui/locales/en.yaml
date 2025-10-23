@@ -1579,6 +1579,7 @@ tag:
 task:
   available: Available
   cancelled: Cancelled
+  idle: Idle
   success: Success
   retry: Retry
   paused: Paused

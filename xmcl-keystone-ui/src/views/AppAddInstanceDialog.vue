@@ -1,48 +1,43 @@
 <template>
-  <v-dialog
-    v-model="isShown"
-    width="900"
-    :persistent="true"
-  >
-    <v-toolbar
-      elevation="4"
-      class="px-1"
-    >
-      <v-icon left>add</v-icon>
-      <v-toolbar-title class="flex items-center">
-        <template v-if="steps[step - 1] === 'config'">
-          {{ t('instances.add') }}
-        </template>
-        <template v-if="steps[step - 1] === 'choice'">
-          {{ t('AppAddInstanceDialog.choiceTitle') }}
-        </template>
-        <template v-if="steps[step - 1] === 'create'">
-          {{ t('AppAddInstanceDialog.createTitle') }}
-        </template>
-        <template v-if="steps[step - 1] === 'server'">
-          {{ t('AppAddInstanceDialog.serverTitle') }}
-        </template>
+  <v-dialog v-model="isShown" width="900" :persistent="true">
+    <v-toolbar elevation="2" class="px-4" style="border-radius: 4px 4px 0 0">
+      <div class="flex items-center gap-3">
+        <v-icon left size="28">add_circle_outline</v-icon>
+        <v-toolbar-title class="text-lg font-medium">
+          <template v-if="steps[step - 1] === 'config'">
+            {{ t("instances.add") }}
+          </template>
+          <template v-if="steps[step - 1] === 'choice'">
+            {{ t("AppAddInstanceDialog.choiceTitle") }}
+          </template>
+          <template v-if="steps[step - 1] === 'create'">
+            {{ t("AppAddInstanceDialog.createTitle") }}
+          </template>
+          <template v-if="steps[step - 1] === 'server'">
+            {{ t("AppAddInstanceDialog.serverTitle") }}
+          </template>
+        </v-toolbar-title>
+      </div>
 
-        <div class="flex-grow" />
-        <v-btn
-          outlined
-          color="primary"
-          @click="onMigrateFromOther"
-        >
-          <v-icon left>
-            local_shipping
-          </v-icon>
-          {{ t("setting.migrateFromOther") }}
-        </v-btn>
-      </v-toolbar-title>
+      <div class="flex-grow" />
+
+      <v-btn
+        outlined
+        color="primary"
+        class="rounded-lg"
+        @click="onMigrateFromOther"
+      >
+        <v-icon left size="20">local_shipping</v-icon>
+        {{ t("setting.migrateFromOther") }}
+      </v-btn>
     </v-toolbar>
 
-    <v-stepper v-model="step">
+    <v-stepper v-model="step" elevation="0" class="rounded-0">
       <v-stepper-items class="visible-scroll overflow-y-auto">
         <v-stepper-content
           v-for="(tStep, i) in steps"
           :key="tStep"
-          class="max-h-[70vh]"
+          class="max-h-[70vh] px-6 py-5"
           :step="i + 1"
         >
           <AppLoadingCircular
@@ -59,15 +54,14 @@
             :loading="loading"
             :valid.sync="valid"
           />
-          <StepServer
-            v-if="tStep === 'server'"
-            :valid.sync="valid"
-          />
+          <StepServer v-if="tStep === 'server'" :valid.sync="valid" />
         </v-stepper-content>
       </v-stepper-items>
-      <v-divider />
+
+      <v-divider class="mx-4" />
+
       <StepperFooter
-        class="px-6 pb-6 pt-4"
+        class="px-6 pb-5 pt-4"
         :disabled="!valid || loading"
         :creating="loading"
         :next="step !== steps.length"
@@ -84,25 +78,20 @@
             text
             outlined
             :loading="loading"
+            class="rounded-lg"
             @click="onImportModpack"
           >
-            <v-icon left>
-              note_add
-            </v-icon>
-            {{ t('importModpack.name') }}
+            <v-icon left size="20">note_add</v-icon>
+            {{ t("importModpack.name") }}
           </v-btn>
         </div>
         <div
           v-if="error"
           class="pointer-events-none absolute left-0 flex w-full justify-center"
         >
-          <v-alert
-            dense
-            class="w-[50%]"
-            type="error"
-          >
-            {{ errorText }}
-            <div>
+          <v-alert dense class="w-[60%] rounded-lg" type="error" elevation="2">
+            <div class="font-medium">{{ errorText }}</div>
+            <div class="text-sm mt-1 opacity-90">
               {{ error?.path }}
             </div>
           </v-alert>
@@ -112,247 +101,289 @@
   </v-dialog>
 </template>
 
-<script lang=ts setup>
-import AppLoadingCircular from '@/components/AppLoadingCircular.vue'
-import StepChoice from '@/components/StepChoice.vue'
-import StepConfig from '@/components/StepConfig.vue'
-import StepServer from '@/components/StepServer.vue'
-import StepperFooter from '@/components/StepperFooter.vue'
-import { useService } from '@/composables'
-import { kInstance } from '@/composables/instance'
-import { kInstanceVersionInstall } from '@/composables/instanceVersionInstall'
-import { kInstances } from '@/composables/instances'
-import { kJavaContext } from '@/composables/java'
-import { useNotifier } from '@/composables/notifier'
-import { kPeerShared } from '@/composables/peers'
-import { kUserContext } from '@/composables/user'
-import { getFTBTemplateAndFile } from '@/util/ftb'
-import { injection } from '@/util/inject'
-import { CachedFTBModpackVersionManifest, CreateInstanceManifest, InstanceIOServiceKey, InstanceManifest, ModpackServiceKey, PeerServiceKey, waitModpackFiles } from '@xmcl/runtime-api'
-import { useDialog } from '../composables/dialog'
-import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
-import { AddInstanceDialogKey } from '../composables/instanceTemplates'
+<script lang="ts" setup>
+import AppLoadingCircular from "@/components/AppLoadingCircular.vue";
+import StepChoice from "@/components/StepChoice.vue";
+import StepConfig from "@/components/StepConfig.vue";
+import StepServer from "@/components/StepServer.vue";
+import StepperFooter from "@/components/StepperFooter.vue";
+import { useService } from "@/composables";
+import { kInstance } from "@/composables/instance";
+import { kInstanceVersionInstall } from "@/composables/instanceVersionInstall";
+import { kInstances } from "@/composables/instances";
+import { kJavaContext } from "@/composables/java";
+import { useNotifier } from "@/composables/notifier";
+import { kPeerShared } from "@/composables/peers";
+import { kUserContext } from "@/composables/user";
+import { getFTBTemplateAndFile } from "@/util/ftb";
+import { injection } from "@/util/inject";
+import {
+  CachedFTBModpackVersionManifest,
+  CreateInstanceManifest,
+  InstanceIOServiceKey,
+  InstanceManifest,
+  ModpackServiceKey,
+  PeerServiceKey,
+  waitModpackFiles,
+} from "@xmcl/runtime-api";
+import { useDialog } from "../composables/dialog";
+import {
+  kInstanceCreation,
+  useInstanceCreation,
+} from "../composables/instanceCreation";
+import { AddInstanceDialogKey } from "../composables/instanceTemplates";
 
-const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
-const manifests = ref([] as CreateInstanceManifest[])
-const { parseInstanceFiles } = useService(InstanceIOServiceKey)
+const type = ref(
+  undefined as
+    | "modrinth"
+    | "mmc"
+    | "server"
+    | "vanilla"
+    | "manual"
+    | "template"
+    | undefined
+);
+const manifests = ref([] as CreateInstanceManifest[]);
+const { parseInstanceFiles } = useService(InstanceIOServiceKey);
 const onManifestSelect = async (man: CreateInstanceManifest) => {
   update(
     man.options,
-    man.isIsolated ? parseInstanceFiles(man.path, type.value as any) : Promise.resolve([]),
-  )
+    man.isIsolated
+      ? parseInstanceFiles(man.path, type.value as any)
+      : Promise.resolve([])
+  );
   nextTick().then(() => {
-    step.value += 1
-  })
-}
+    step.value += 1;
+  });
+};
 
 // Dialog model
-const { openModpack } = useService(ModpackServiceKey)
-const { all: javas } = injection(kJavaContext)
+const { openModpack } = useService(ModpackServiceKey);
+const { all: javas } = injection(kJavaContext);
 const onSelectModpack = async (modpack: string) => {
   try {
-    loading.value = true
-    const openedModpack = await openModpack(modpack)
-    await update(openedModpack.config, waitModpackFiles(openedModpack))
+    loading.value = true;
+    const openedModpack = await openModpack(modpack);
+    await update(openedModpack.config, waitModpackFiles(openedModpack));
   } catch (e) {
-    error.value = e
+    error.value = e;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 const onSelectFTB = async (ftb: CachedFTBModpackVersionManifest) => {
   try {
-    loading.value = true
-    const [config, files] = getFTBTemplateAndFile(ftb, javas.value)
-    if (!config) return
-    await update(config, Promise.resolve(files))
+    loading.value = true;
+    const [config, files] = getFTBTemplateAndFile(ftb, javas.value);
+    if (!config) return;
+    await update(config, Promise.resolve(files));
   } catch (e) {
-    error.value = e
+    error.value = e;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 const onSelectManifest = async (man: InstanceManifest) => {
   try {
-    loading.value = true
-    await update({
-      name: man.name ?? '',
-      description: man.description,
-      minMemory: man.minMemory,
-      maxMemory: man.maxMemory,
-      vmOptions: man.vmOptions,
-      mcOptions: man.mcOptions,
-      runtime: man.runtime,
-    }, Promise.resolve(man.files))
+    loading.value = true;
+    await update(
+      {
+        name: man.name ?? "",
+        description: man.description,
+        minMemory: man.minMemory,
+        maxMemory: man.maxMemory,
+        vmOptions: man.vmOptions,
+        mcOptions: man.mcOptions,
+        runtime: man.runtime,
+      },
+      Promise.resolve(man.files)
+    );
   } catch (e) {
-    error.value = e
+    error.value = e;
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-const { isShown, show, hide } = useDialog(AddInstanceDialogKey, (param) => {
-  if (loading.value) {
-    return
-  }
-
-  step.value = 2
-  type.value = 'template'
-  valid.value = true
-
-  windowController.focus()
-
-  if (!param) return
-
-  if (typeof param === 'object') {
-    const after = () => {
-      type.value = 'template'
-      nextTick(() => {
-        step.value = 2
-      })
+const { isShown, show, hide } = useDialog(
+  AddInstanceDialogKey,
+  (param) => {
+    if (loading.value) {
+      return;
     }
-    if (param.format === 'modpack') {
-      onSelectModpack(param.path).then(after)
-    } else if (param.format === 'ftb') {
-      onSelectFTB(param.manifest).then(after)
-    } else if (param.format === 'manifest') {
-      onSelectManifest(param.manifest).then(after)
+
+    step.value = 2;
+    type.value = "template";
+    valid.value = true;
+
+    windowController.focus();
+
+    if (!param) return;
+
+    if (typeof param === "object") {
+      const after = () => {
+        type.value = "template";
+        nextTick(() => {
+          step.value = 2;
+        });
+      };
+      if (param.format === "modpack") {
+        onSelectModpack(param.path).then(after);
+      } else if (param.format === "ftb") {
+        onSelectFTB(param.manifest).then(after);
+      } else if (param.format === "manifest") {
+        onSelectManifest(param.manifest).then(after);
+      }
     }
+  },
+  () => {
+    if (loading.value) {
+      return;
+    }
+    setTimeout(() => {
+      step.value = 2;
+      valid.value = true;
+      type.value = "template";
+      reset();
+    }, 500);
   }
-}, () => {
-  if (loading.value) {
-    return
-  }
-  setTimeout(() => {
-    step.value = 2
-    valid.value = true
-    type.value = 'template'
-    reset()
-  }, 500)
-})
+);
 watch(isShown, (v) => {
   if (v) {
-    windowController.focus()
+    windowController.focus();
   }
-})
+});
 function quit() {
-  if (loading.value) return
-  hide()
+  if (loading.value) return;
+  hide();
 }
-window.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    hide()
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    hide();
   }
-})
+});
 
-const { t } = useI18n()
+const { t } = useI18n();
 
 // Instance create data
-const { gameProfile } = injection(kUserContext)
-const { instances } = injection(kInstances)
-const { path } = injection(kInstance)
-const creation = useInstanceCreation(gameProfile, instances)
-const { create, reset, error, update, loading } = creation
-provide(kInstanceCreation, creation)
+const { gameProfile } = injection(kUserContext);
+const { instances } = injection(kInstances);
+const { path } = injection(kInstance);
+const creation = useInstanceCreation(gameProfile, instances);
+const { create, reset, error, update, loading } = creation;
+provide(kInstanceCreation, creation);
 
 // Install
-const router = useRouter()
-const { fix } = injection(kInstanceVersionInstall)
+const router = useRouter();
+const { fix } = injection(kInstanceVersionInstall);
 const onCreate = async () => {
   const newPath = await create((newPath) => {
-    path.value = newPath
-    if (router.currentRoute.path !== '/') router.push('/')
-    hide()
-  })
+    path.value = newPath;
+    if (router.currentRoute.path !== "/") router.push("/");
+    hide();
+  });
   if (newPath === path.value) {
-    await fix().catch(() => { })
+    await fix().catch(() => {});
   }
-}
+};
 
 // Stepper model
-const valid = ref(false)
-const step = ref(1)
-const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : '' }))
+const valid = ref(false);
+const step = ref(1);
+const errorText = computed(() =>
+  t("errors.BadInstanceType", {
+    type:
+      type.value === "mmc"
+        ? "MultiMC"
+        : type.value === "modrinth"
+        ? "Modrinth"
+        : "",
+  })
+);
 const steps = computed(() => {
-  if (type.value === 'template') {
-    return ['template', 'config']
+  if (type.value === "template") {
+    return ["template", "config"];
   }
 
-  if (type.value === 'server') {
-    return ['server', 'config']
+  if (type.value === "server") {
+    return ["server", "config"];
   }
 
-  return ['config']
-})
+  return ["config"];
+});
 function next() {
   if (step.value < steps.value.length) {
-    step.value += 1
+    step.value += 1;
   }
 }
 function back() {
   if (step.value > 1) {
-    step.value -= 1
+    step.value -= 1;
   }
 }
 
 function onSelectTemplate() {
-  type.value = 'template'
-  step.value = 2
+  type.value = "template";
+  step.value = 2;
 
   nextTick(() => {
-    step.value = 1
-  })
+    step.value = 1;
+  });
 }
 
 // Manuall import
 const onImportModpack = () => {
-  windowController.showOpenDialog({
-    properties: ['openFile'],
-    filters: [{ name: t('modpack.name', 2), extensions: ['zip', 'mrpack'] }],
-  }).then(async (res) => {
-    if (res.canceled) return
-    const file = res.filePaths[0]
-    try {
-      loading.value = true
-      await onSelectModpack(file)
-      type.value = 'template'
-      nextTick(() => {
-        step.value = 2
-      })
-    } catch (e) {
-      error.value = e
-    } finally {
-      loading.value = false
-    }
-  })
-}
+  windowController
+    .showOpenDialog({
+      properties: ["openFile"],
+      filters: [{ name: t("modpack.name", 2), extensions: ["zip", "mrpack"] }],
+    })
+    .then(async (res) => {
+      if (res.canceled) return;
+      const file = res.filePaths[0];
+      try {
+        loading.value = true;
+        await onSelectModpack(file);
+        type.value = "template";
+        nextTick(() => {
+          step.value = 2;
+        });
+      } catch (e) {
+        error.value = e;
+      } finally {
+        loading.value = false;
+      }
+    });
+};
 
 // Peer
-const { on: onPeerService } = useService(PeerServiceKey)
-const { notify } = useNotifier()
-const { connections } = injection(kPeerShared)
-onPeerService('share', (event) => {
+const { on: onPeerService } = useService(PeerServiceKey);
+const { notify } = useNotifier();
+const { connections } = injection(kPeerShared);
+onPeerService("share", (event) => {
   if (!event.manifest) {
-    return
+    return;
   }
-  const conn = connections.value.find(c => c.id === event.id)
+  const conn = connections.value.find((c) => c.id === event.id);
   if (conn) {
     notify({
-      level: 'info',
-      title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
+      level: "info",
+      title: t("AppShareInstanceDialog.instanceShare", {
+        user: conn.userInfo.name,
+      }),
       more() {
         if (!isShown.value && event.manifest) {
-          show({ format: 'manifest', manifest: event.manifest })
+          show({ format: "manifest", manifest: event.manifest });
         }
       },
-    })
+    });
   }
-})
+});
 
-const { show: onMigrateFromOther } = useDialog('migrate-wizard')
+const { show: onMigrateFromOther } = useDialog("migrate-wizard");
 </script>
 
-<style>
+<style scoped>
 .v-stepper__content {
   padding: 0;
   overflow-y: auto;
@@ -372,5 +403,28 @@ const { show: onMigrateFromOther } = useDialog('migrate-wizard')
 
 .v-stepper__step div {
   display: flex !important;
+}
+
+/* Улучшенные переходы */
+.v-stepper__content {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Плавное появление */
+.v-dialog {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Улучшенный вид кнопок */
+.v-btn {
+  text-transform: none;
+  letter-spacing: 0.3px;
+  font-weight: 500;
+}
+
+/* Улучшенные отступы для контента */
+.v-stepper-content {
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
 }
 </style>
