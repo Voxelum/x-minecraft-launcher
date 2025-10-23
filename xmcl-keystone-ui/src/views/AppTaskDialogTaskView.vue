@@ -297,7 +297,7 @@ import { BaseServiceKey, PoolStats, TaskState } from "@xmcl/runtime-api";
 import { Ref, computed, watch, ref, reactive } from "vue";
 import { useTaskName } from "../composables/task";
 import { markRaw } from "vue";
-import { useI18n } from "vue-i18n";
+// import { useI18n } from "vue-i18n"; // Removed import
 // import { windowController } from "@/composables/window"; // Removed import
 // import { taskMonitor } from "@/composables/taskMonitor"; // Removed import
 
@@ -309,7 +309,8 @@ interface TaskItemOrGroup extends TaskItem {
 const tab = ref(0);
 
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager);
-const { t } = useI18n();
+// const { t } = useI18n(); // Removed this line
+const t = (key: string, ...args: any[]) => (window as any).$t(key, ...args); // Access $t from global Vue instance
 const tTask = useTaskName();
 const { getNetworkStatus, destroyPool } = useService(BaseServiceKey);
 
