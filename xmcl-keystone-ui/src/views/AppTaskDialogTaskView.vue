@@ -298,7 +298,7 @@ import { Ref, computed, watch, ref, reactive } from "vue";
 import { useTaskName } from "../composables/task";
 import { markRaw } from "vue";
 import { useI18n } from "vue-i18n";
-import { windowController } from "@/composables/window";
+// import { windowController } from "@/composables/window"; // Removed import
 import { taskMonitor } from "@/composables/taskMonitor";
 
 interface TaskItemOrGroup extends TaskItem {
@@ -369,7 +369,9 @@ const visible = computed(() => {
 
 const onTaskClick = (event: MouseEvent, item: TaskItem) => {
   if (typeof item.message === "string") {
-    windowController.writeClipboard(item.message ?? "");
+    // windowController.writeClipboard(item.message ?? ""); // Removed this line
+    // Add alternative logic if needed, e.g., show message in UI or log
+    console.log("Task message:", item.message);
   }
 };
 
