@@ -21,7 +21,7 @@ AppShareInstanceDialog:
   downloadToLocal: Download to current instance
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
+  instanceShare: "{user} just shared the current instance to you"
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
@@ -41,7 +41,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
-  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  missingJavaHint: "The Launcher cannot detect any java in your computer. You can:"
   needDownloadHint: >-
     Cannot find proper Java version in your computer. Recommend to download a
     new one.
@@ -86,10 +86,10 @@ SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 add: Add
 ago:
-  day: '{duration} day ago | {duration} days ago'
-  hour: '{duration} hour ago | {duration} hours ago'
-  minute: '{duration} minute ago | {duration} minutes ago'
-  second: '{duration} second ago | {duration} seconds ago'
+  day: "{duration} day ago | {duration} days ago"
+  hour: "{duration} hour ago | {duration} hours ago"
+  minute: "{duration} minute ago | {duration} minutes ago"
+  second: "{duration} second ago | {duration} seconds ago"
 askAICrash:
   copyPrompt: Copy the prompt to ask AI
   description: >-
@@ -210,8 +210,8 @@ dataMigration:
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   name: Delete {name}
-  'no': 'No'
-  'yes': Delete
+  "no": "No"
+  "yes": Delete
 dependencies:
   embedded: Embedded
   incompatible: Incompatible
@@ -254,7 +254,7 @@ diagnosis:
     name: Invalid java location.
   missingAssets:
     message: Launcher will install assets for you
-    name: 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
+    name: "Missing asset: {name} | Missing asset: {name} | Missing %{count} assets."
   missingAssetsIndex:
     message: Launcher will download assets index for you
     name: Missing assets index file of {version}.
@@ -281,16 +281,16 @@ disk:
   available: Available
   used: Used
 download: Download
-downloadCount: '{count} downloads'
+downloadCount: "{count} downloads"
 downloadUpdate: Download Update
 duration:
-  day: '{duration} day | {duration} days'
-  hour: '{duration} hour | {duration} hours'
-  minute: '{duration} minute | {duration} minutes'
+  day: "{duration} day | {duration} days"
+  hour: "{duration} hour | {duration} hours"
+  minute: "{duration} minute | {duration} minutes"
   name: Delete {name}
-  'no': 'No'
-  second: '{duration} second | {duration} seconds'
-  'yes': Yes, sir.
+  "no": "No"
+  second: "{duration} second | {duration} seconds"
+  "yes": Yes, sir.
 edit: Edit
 enable: Enable
 env:
@@ -304,7 +304,7 @@ errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
-  BadInstanceType: 'Not a valid instance: {type}'
+  BadInstanceType: "Not a valid instance: {type}"
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
@@ -594,8 +594,8 @@ instances:
   loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
 items:
-  count: '{count} items'
-  total: '{total} total'
+  count: "{count} items"
+  total: "{total} total"
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
@@ -612,7 +612,7 @@ java:
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  systemMemory: 'System Free Memory: {free} / {total}'
+  systemMemory: "System Free Memory: {free} / {total}"
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -746,7 +746,7 @@ loginError:
     is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
   connectionReset: Fail to login since connection is reset by server
-  fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
+  fetchMinecraftProfileFailed: "Fail to fetch Minecraft profile: {reason}"
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
@@ -796,11 +796,11 @@ mod:
   deletionRestHint: And {rest} more Mods...
   denseView: Dense View
   dropHint: Drop mod's .jar/.litemod here to import.
-  duplicatedDetected: '{count} duplicated mods'
+  duplicatedDetected: "{count} duplicated mods"
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
-  enabled: '{count} Mods enabled'
+  enabled: "{count} Mods enabled"
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
@@ -815,7 +815,7 @@ mod:
   maybeCompatible: Maybe Compatible.
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
-  mods: '{count} Mods'
+  mods: "{count} Mods"
   name: Mod | Mods
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
@@ -829,7 +829,7 @@ mod:
   showInModrinth: Show {name} in Modrinth
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
-  toUpdate: '{count} updates'
+  toUpdate: "{count} updates"
   ungroup: Ungrouping
 modFilter:
   clear: Clear Filter
@@ -1053,7 +1053,7 @@ modrinth:
     name: Project Type
     resourcePack: Resource Pack
     shader: Shader
-  projects: '{count} projects'
+  projects: "{count} projects"
   quickSearch: Search {title}
   searchText: Search
   serverSide: Server Side
@@ -1096,7 +1096,7 @@ multiplayer:
     11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   currentIpTitle: Detected Public IP
-  currentNatTitle: 'Current network (NAT):'
+  currentNatTitle: "Current network (NAT):"
   difficultyLevelHint: The level of difficulty creating a connection
   disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
@@ -1174,7 +1174,7 @@ news:
   name: News
   readMore: Read More
 next: Next
-'no': 'No'
+"no": "No"
 ok: OK
 optifineVersion:
   disable: Disable Optifine
@@ -1202,7 +1202,7 @@ presence:
   curseforge: Viewing CurseForge
   curseforgeProject: Viewing {name} in curseforge
   instance: Idle in Instance {instance}
-  instanceSetting: 'Edit Instance Setting: {instance}'
+  instanceSetting: "Edit Instance Setting: {instance}"
   mod: Viewing Mods in {instance}
   modrinth: Viewing Modrinth
   modrinthProject: Viewing {name} in Modrinth
@@ -1231,7 +1231,7 @@ resourcepack:
       Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: '{count} resource packs enabled'
+  enable: "{count} resource packs enabled"
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
@@ -1241,7 +1241,7 @@ resourcepack:
   name: Resource Pack | Resource Packs
   searchHint: Search resource packs
   searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
   shared: Instance uses shared resource pack folder
@@ -1497,7 +1497,7 @@ setup:
     name: Add Game Account
     skip: Skip for now
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       The data root is not a common .minecraft directory. Since XMCL data
@@ -1538,7 +1538,7 @@ setup:
     language: Language
     name: Set Language
   path: Current Path
-  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
+  title: "Welcome to X Minecraft Launcher. Before start, we need you to "
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
@@ -1579,7 +1579,14 @@ tag:
 task:
   available: Available
   cancelled: Cancelled
+  success: Success
+  retry: Retry
+  paused: Paused
+  clear_tooltip: Clear too many tasks
   clear: Clear Finished Tasks
+  cancel: Cancel Task
+  running: Running Task
+  connection_destroy_pool: Destroy Connection Pool
   compatible: The {format} format is compatible with {version}
   connection:
     connected: Connected
@@ -1597,7 +1604,7 @@ task:
     title: Delete texturepack
   dropHint: Drag and drop the folder/zip textures here to import.
   empty: No Running Tasks
-  enable: 'Texturepacks included: {count}'
+  enable: "Texturepacks included: {count}"
   failed: Failed
   import: Import texturepack
   incompatible: >-
@@ -1605,11 +1612,11 @@ task:
     {actual}.
   manage: Texturepack
   manager: Task Manager
-  nTaskRunning: '{count} tasks are running'
+  nTaskRunning: "{count} tasks are running"
   name: Task | Tasks
   pause: Pause
   searchOnCurseforge: Search {name} on curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Favorite texturepacks
   showFile: Open the texturepack {file} in the folder
   showInCurseforge: Show {name} on curseforge
@@ -1668,7 +1675,7 @@ tutorial:
     searchTitle: Search Mods
   multiplayer:
     contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       You can create or join a group with other players. The launcher will try
       to create P2P connections between you and your friends according to the
@@ -1787,4 +1794,4 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-'yes': 'Yes'
+"yes": "Yes"

@@ -32,91 +32,177 @@
           <div v-if="visible.length === 0" class="text-center grey--text pa-8">
             {{ t("task.empty") }}
           </div>
-          <v-virtual-scroll
+          <v-treeview
             v-else
-            :items="flattenedTasks"
-            item-height="72"
-            height="360"
+            v-model="data.tree"
+            hoverable
+            transition
+            :open="data.opened"
+            :items="visible"
+            activatable
+            item-key="id"
+            item-children="children"
+            class="pa-2"
           >
-            <template #default="{ item, index }">
-              <!-- Оборачиваем в div для избежания проблем с корневым элементом и v-divider -->
-              <div :key="item.id" class="virtual-item-wrapper">
-                <div class="v-list-item py-2">
-                  <div class="v-list-item__content">
-                    <div class="v-list-item__title d-flex align-center">
-                      <span class="truncate mr-2">{{
-                        tTask(item.path, item.param)
-                      }}</span>
-                      <v-chip
-                        v-if="item.isGrouped"
-                        x-small
-                        color="info"
-                        text-color="white"
-                      >
-                        {{ item.groupedCount }} {{ t("task.collapsed") }}
-                      </v-chip>
-                    </div>
-                    <div class="v-list-item__subtitle mt-1">
-                      <div class="d-flex flex-wrap gap-2">
-                        <v-chip
-                          small
-                          label
-                          outlined
-                          :color="getStatusColor(item.state)"
-                        >
-                          {{ getStatusText(item.state) }}
-                        </v-chip>
-                        <span class="grey--text text--darken-1 caption">{{
-                          item.time.toLocaleString()
-                        }}</span>
-                      </div>
-                      <AppTaskDialogTaskViewMessage
-                        :value="
-                          item.message
-                            ? item.message
-                            : item.from || item.to || ''
-                        "
-                        class="mt-1"
-                      />
-                    </div>
-                    <!-- Прогресс-бар внутри элемента списка -->
+            <template #label="{ item }">
+              <div
+                class="d-flex align-center py-2 px-3"
+                @click="onTaskClick($event, item)"
+                @mouseenter.prevent="data.hovered[item.id] = true"
+                @mouseleave.prevent="data.hovered[item.id] = false"
+                style="cursor: pointer"
+              >
+                <!-- Task information -->
+                <div class="flex-grow-1">
+                  <div class="d-flex align-center">
+                    <span class="truncate mr-2">{{
+                      tTask(item.path, item.param)
+                    }}</span>
+                  </div>
+                  <div class="d-flex flex-wrap gap-2 mt-1">
+                    <v-chip
+                      small
+                      label
+                      outlined
+                      :color="getStatusColor(item.state)"
+                    >
+                      {{ getStatusText(item.state) }}
+                    </v-chip>
+                    <span class="grey--text text--darken-1 caption">{{
+                      item.time.toLocaleString()
+                    }}</span>
+                  </div>
+                  <!-- Main task progress bar -->
+                  <v-progress-linear
+                    v-if="
+                      item.progress !== undefined &&
+                      item.total !== undefined &&
+                      item.total > 0
+                    "
+                    :value="calculatePercentage(item.progress, item.total)"
+                    height="4"
+                    class="mt-2"
+                    :color="getProgressColor(item.state)"
+                  ></v-progress-linear>
+                  <div
+                    v-else-if="item.state === 0 || item.state === 3"
+                    class="mt-2 grey--text caption"
+                  >
                     <v-progress-linear
-                      v-if="
-                        item.progress !== undefined &&
-                        item.total !== undefined &&
-                        item.total > 0
-                      "
-                      :value="calculatePercentage(item.progress, item.total)"
+                      indeterminate
                       height="4"
-                      class="mt-2"
                       :color="getProgressColor(item.state)"
                     ></v-progress-linear>
-                    <div
-                      v-else-if="item.state === 0 || item.state === 3"
-                      class="mt-2 grey--text caption"
-                    >
-                      <v-progress-linear
-                        indeterminate
-                        height="4"
-                        :color="getProgressColor(item.state)"
-                      ></v-progress-linear>
-                    </div>
-                  </div>
-                  <div class="v-list-item__action d-flex flex-column align-end">
-                    <TaskDialogNodeStatus
-                      :item="item"
-                      :show-number="false"
-                      @pause="pause(item)"
-                      @resume="resume(item)"
-                      @cancel="cancel(item)"
-                    />
                   </div>
                 </div>
-                <!-- Добавляем v-divider как отдельный элемент, если не последний -->
-                <v-divider v-if="index < flattenedTasks.length - 1"></v-divider>
+
+                <!-- Action buttons -->
+                <div class="task-actions d-flex align-center gap-1 ml-2">
+                  <!-- Pause -->
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        x-small
+                        @click.stop="pause(item)"
+                        :disabled="item.state !== TaskState.Running"
+                      >
+                        <v-icon size="18">pause</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ t("task.pause") }}</span>
+                  </v-tooltip>
+
+                  <!-- Resume -->
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        x-small
+                        @click.stop="resume(item)"
+                        :disabled="item.state !== TaskState.Paused"
+                      >
+                        <v-icon size="18">play_arrow</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ t("task.resume") }}</span>
+                  </v-tooltip>
+
+                  <!-- Cancel -->
+                  <v-tooltip bottom>
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        x-small
+                        @click.stop="cancel(item)"
+                        :disabled="
+                          item.state !== TaskState.Running &&
+                          item.state !== TaskState.Paused
+                        "
+                      >
+                        <v-icon size="18" color="error">close</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ t("task.cancel") }}</span>
+                  </v-tooltip>
+
+                  <!-- Cancel button is now used for failed tasks to remove them -->
+                  <v-tooltip bottom v-if="item.state === TaskState.Failed">
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        v-bind="attrs"
+                        v-on="on"
+                        icon
+                        x-small
+                        @click.stop="cancel(item)"
+                        :disabled="item.state !== TaskState.Failed"
+                      >
+                        <v-icon size="18" color="error">close</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ t("task.remove") }}</span>
+                  </v-tooltip>
+                </div>
+
+                <!-- Status icon -->
+                <v-icon
+                  v-if="item.state === TaskState.Succeed"
+                  small
+                  color="success"
+                  class="ml-2"
+                >
+                  check_circle_outline
+                </v-icon>
+                <v-icon
+                  v-else-if="item.state === TaskState.Failed"
+                  small
+                  color="error"
+                  class="ml-2"
+                >
+                  error_outline
+                </v-icon>
+                <v-icon
+                  v-else-if="item.state === TaskState.Cancelled"
+                  small
+                  color="grey"
+                  class="ml-2"
+                >
+                  stop
+                </v-icon>
               </div>
             </template>
-          </v-virtual-scroll>
+
+            <!-- Additional content (for subtasks) -->
+            <template #append="{ item }">
+              <!-- You can add additional actions here if needed -->
+            </template>
+          </v-treeview>
         </v-tab-item>
 
         <v-tab-item key="connections">
@@ -165,7 +251,7 @@
                       <v-icon color="error">delete_forever</v-icon>
                     </v-btn>
                   </template>
-                  <span>{{ t("task.connection.destroy_pool") }}</span>
+                  <span>{{ t("task.connection_destroy_pool") }}</span>
                 </v-tooltip>
               </v-list-item-action>
             </v-list-item>
@@ -192,7 +278,7 @@
             {{ t("task.clear") }}
           </v-btn>
         </template>
-        <span>{{ t("task.clear.tooltip") }}</span>
+        <span>{{ t("task.clear_tooltip") }}</span>
       </v-tooltip>
     </v-card-actions>
   </v-card>
@@ -205,9 +291,8 @@ import { kTaskManager } from "@/composables/taskManager";
 import { TaskItem } from "@/entities/task";
 import { injection } from "@/util/inject";
 import { BaseServiceKey, PoolStats, TaskState } from "@xmcl/runtime-api";
-import { Ref, computed, watch } from "vue";
+import { Ref, computed, watch, ref, reactive } from "vue";
 import { useTaskName } from "../composables/task";
-import TaskDialogNodeStatus from "./AppTaskDialogNodeStatus.vue";
 import AppTaskDialogTaskViewMessage from "./AppTaskDialogTaskViewMessage";
 
 interface TaskItemOrGroup extends TaskItem {
@@ -217,6 +302,7 @@ interface TaskItemOrGroup extends TaskItem {
 
 const tab = ref(0);
 
+// Удалили retry из деструктуризации
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager);
 const { t } = useI18n();
 const tTask = useTaskName();
@@ -224,7 +310,7 @@ const { getNetworkStatus, destroyPool } = useService(BaseServiceKey);
 
 const stat: Ref<Record<string, PoolStats>> = ref({});
 
-// Вспомогательные функции для отображения статуса
+// Helper functions for displaying status
 const getStatusText = (state: TaskState) => {
   const statusMap: Record<TaskState, string> = {
     [TaskState.Running]: t("task.running"),
@@ -269,20 +355,28 @@ const calculatePercentage = (progress: number, total: number) => {
   return Math.min((progress / total) * 100, 100);
 };
 
-// Плоский список для виртуального скроллинга
-const flattenedTasks = computed(() => {
-  const flat: TaskItemOrGroup[] = [];
-  const addTask = (task: TaskItemOrGroup) => {
-    flat.push(task);
-    if (task.children && task.children.length) {
-      task.children.forEach(addTask);
-    }
-  };
-  visible.value.forEach(addTask);
-  return flat;
+// Tree state
+const data = reactive({
+  tree: [],
+  opened: [],
+  hovered: {} as Record<string, boolean>,
 });
 
-const visible: Ref<TaskItem[]> = ref([]);
+// Show all tasks
+const visible = computed(() => {
+  // For debugging: print all tasks to the console
+  console.log("All tasks:", all.value);
+  return all.value;
+});
+
+// Function to click on a task
+const onTaskClick = (event: MouseEvent, item: TaskItem) => {
+  if (typeof item.message === "string") {
+    windowController.writeClipboard(item.message ?? "");
+  }
+};
+
+// Other functions (onClear, onUpdate, etc.) remain unchanged
 
 const getReactiveItems = (items: TaskItem[]) => {
   if (items.length <= 6) {
@@ -341,7 +435,6 @@ watch(
     if (value) {
       taskMonitor.on("task-update", onUpdate);
       makeReactive();
-      visible.value = all.value;
       interval = setInterval(() => {
         getNetworkStatus().then((s) => {
           stat.value = s;
@@ -351,7 +444,6 @@ watch(
       clearInterval(interval);
       taskMonitor.removeListener("task-update", onUpdate);
       makeNonReactive();
-      visible.value = [];
     }
   },
   { immediate: true }
@@ -359,56 +451,36 @@ watch(
 
 function onClear() {
   clear();
-  visible.value = [...all.value];
-}
-
-function onTaskClick(event: MouseEvent, item: TaskItem) {
-  if (typeof item.message === "string") {
-    windowController.writeClipboard(item.message ?? "");
-  }
 }
 </script>
 
 <style scoped>
-/* Дополнительные стили для имитации v-list-item и улучшения визуального восприятия */
-.virtual-item-wrapper {
-  display: block;
+/* Styles for v-treeview */
+.v-treeview-node__root {
+  padding: 0 !important;
 }
-.v-list-item {
+
+.v-treeview-node__content {
+  padding: 0 !important;
+}
+
+.task-actions {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  gap: 4px;
 }
-.v-list-item__content {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.v-list-item__title {
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.4rem;
-  letter-spacing: 0.00938em;
-}
-.v-list-item__subtitle {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  letter-spacing: 0.01786em;
-  /* Используем встроенные классы Vuetify */
-  color: rgba(0, 0, 0, 0.6); /* grey--text text--darken-1 */
-}
-.theme--dark .v-list-item__subtitle {
-  color: rgba(255, 255, 255, 0.7);
-}
-.v-list-item__action {
-  display: flex;
-  align-items: flex-start;
-  margin: 0 4px;
+
+.cursor-pointer {
+  cursor: pointer;
 }
 
 .truncate {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.gap-1 {
+  gap: 0.25rem;
 }
 .gap-2 {
   gap: 0.5rem;
@@ -418,6 +490,9 @@ function onTaskClick(event: MouseEvent, item: TaskItem) {
 }
 .align-center {
   align-items: center;
+}
+.ml-2 {
+  margin-left: 0.5rem;
 }
 .mr-2 {
   margin-right: 0.5rem;
@@ -431,5 +506,9 @@ function onTaskClick(event: MouseEvent, item: TaskItem) {
 .py-2 {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
 }
 </style>
