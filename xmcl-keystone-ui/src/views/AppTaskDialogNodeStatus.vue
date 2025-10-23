@@ -1,114 +1,185 @@
 <template>
   <div
-    style="display: flex; align-items: center; justify-content: center; margin-right: 7px; gap: 5px;"
+    class="d-flex align-center justify-center"
+    style="gap: 4px"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
-    <div v-if="item.state === 5">
-      {{ t('task.failed') }}
-    </div>
-    <div v-else-if="item.state === 2">
-      {{ t('task.cancelled') }}
-    </div>
-    <v-icon
-      v-if="item.state === 1"
-      v-ripple
-      :size="20"
-      style="border-radius: 100%; padding: 3px;"
-      :color="color"
-      @click="onPause"
+    <!-- Текст статуса для Failed/Cancelled -->
+    <v-chip
+      v-if="item.state === TaskState.Failed"
+      x-small
+      color="error"
+      text-color="white"
+      label
     >
-      pause
-    </v-icon>
-    <v-icon
-      v-if="item.state !== 1 || hover"
-      v-ripple
-      :size="20"
-      style="border-radius: 100%; padding: 3px;"
-      :color="color"
-      @click="onClick"
+      {{ t("task.failed") }}
+    </v-chip>
+    <v-chip
+      v-else-if="item.state === TaskState.Cancelled"
+      x-small
+      color="grey"
+      text-color="white"
+      label
     >
-      {{ icon }}
-    </v-icon>
+      {{ t("task.cancelled") }}
+    </v-chip>
+
+    <!-- Иконка паузы -->
+    <v-tooltip v-if="item.state === TaskState.Running" bottom>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          v-bind="attrs"
+          v-on="on"
+          v-ripple
+          :size="20"
+          class="icon-button"
+          :color="color"
+          @click="onPause"
+        >
+          pause
+        </v-icon>
+      </template>
+      <span>{{ t("task.pause") }}</span>
+    </v-tooltip>
+
+    <!-- Основная иконка управления -->
+    <v-tooltip v-if="item.state !== TaskState.Running || hover" bottom>
+      <template #activator="{ on, attrs }">
+        <v-icon
+          v-bind="attrs"
+          v-on="on"
+          v-ripple
+          :size="20"
+          class="icon-button"
+          :color="color"
+          @click="onClick"
+        >
+          {{ icon }}
+        </v-icon>
+      </template>
+      <span>{{ tooltipText }}</span>
+    </v-tooltip>
+
+    <!-- Индикатор прогресса (когда не показывается число или индикатор) -->
     <v-progress-circular
       v-else-if="indeterminate || !showNumber"
-      style="margin-left: 6px; padding: 3px;"
-      class="mb-0"
       :color="isDark ? 'white' : undefined"
-      small
       :size="20"
+      :width="2"
       :value="percentage"
-      :width="3"
       :indeterminate="indeterminate"
     />
-    <span
-      v-else
-      style="margin-right: 7px"
-    >{{ percentage.toFixed(2) }} %</span>
   </div>
 </template>
 
-<script lang=ts setup>
-import { kTheme } from '@/composables/theme'
-import { TaskItem } from '@/entities/task'
-import { injection } from '@/util/inject'
-import { TaskState } from '@xmcl/runtime-api'
+<script lang="ts" setup>
+import { kTheme } from "@/composables/theme";
+import { TaskItem } from "@/entities/task";
+import { injection } from "@/util/inject";
+import { TaskState } from "@xmcl/runtime-api";
 
 const props = defineProps<{
-  item: TaskItem
-  showNumber?: boolean
-}>()
-const emit = defineEmits(['cancel', 'resume', 'pause'])
+  item: TaskItem;
+  showNumber?: boolean;
+}>();
 
-const hover = ref(false)
-const { t } = useI18n()
-const { isDark } = injection(kTheme)
+const emit = defineEmits(["cancel", "resume", "pause"]);
+
+const hover = ref(false);
+const { t } = useI18n();
+const { isDark } = injection(kTheme);
+
 const color = computed(() => {
   switch (props.item.state) {
     case TaskState.Succeed:
-      return 'green'
+      return "success";
     case TaskState.Cancelled:
     case TaskState.Running:
     case TaskState.Paused:
-      return isDark.value ? 'white' : ''
+    case TaskState.Queued:
+      return isDark.value ? "white" : "primary";
     case TaskState.Failed:
-      return 'error'
+      return "error";
     default:
-      return isDark.value ? 'white' : ''
+      return isDark.value ? "white" : "default";
   }
-})
-const indeterminate = computed(() => !props.item.total || props.item.total === -1)
+});
+
+const indeterminate = computed(
+  () => !props.item.total || props.item.total === -1
+);
+const percentage = computed(() => {
+  if (indeterminate.value) return 0;
+  return (props.item.progress! / props.item.total!) * 100;
+});
+
 const icon = computed(() => {
-  if (hover.value) {
-    if (props.item.state === TaskState.Running) {
-      return 'close'
-    }
+  if (hover.value && props.item.state === TaskState.Running) {
+    return "close"; // Показываем 'close' при наведении на запущенную задачу
   }
   switch (props.item.state) {
     case TaskState.Succeed:
-      return props.item.children && props.item.children.length > 0 ? 'done_all' : 'check'
+      return props.item.children && props.item.children.length > 0
+        ? "done_all"
+        : "check";
     case TaskState.Cancelled:
-      return 'stop'
+      return "stop";
     case TaskState.Failed:
-      return 'error_outline'
+      return "error_outline";
     case TaskState.Paused:
-      return 'play_arrow'
+      return "play_arrow";
+    case TaskState.Queued:
+      return "schedule";
     default:
-      return 'device_unknown'
+      return "device_unknown";
   }
-})
-const percentage = computed(() => props.item.progress! / props.item.total! * 100)
+});
+
+const tooltipText = computed(() => {
+  if (hover.value && props.item.state === TaskState.Running) {
+    return t("task.cancel"); // Подсказка "Отменить" при наведении на запущенную
+  }
+  switch (props.item.state) {
+    case TaskState.Succeed:
+      return t("task.view_result");
+    case TaskState.Cancelled:
+      return t("task.cancelled");
+    case TaskState.Failed:
+      return t("task.view_error");
+    case TaskState.Paused:
+      return t("task.resume");
+    case TaskState.Queued:
+      return t("task.queued");
+    default:
+      return t("task.unknown");
+  }
+});
+
 const onClick = () => {
   if (props.item.state === TaskState.Running) {
-    emit('cancel')
+    emit("cancel"); // Клик на иконку при наведении на запущенную задачу отменяет её
   } else if (props.item.state === TaskState.Paused) {
-    emit('resume')
+    emit("resume");
   }
-}
+};
+
 const onPause = () => {
-  emit('pause')
-}
+  emit("pause");
+};
 </script>
 
-<style>
+<style scoped>
+.icon-button {
+  border-radius: 50%;
+  padding: 2px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.icon-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Светлый режим */
+}
+.theme--dark .icon-button:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Темный режим */
+}
 </style>
