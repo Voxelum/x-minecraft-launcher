@@ -299,7 +299,7 @@ import { useTaskName } from "../composables/task";
 import { markRaw } from "vue";
 import { useI18n } from "vue-i18n";
 // import { windowController } from "@/composables/window"; // Removed import
-import { taskMonitor } from "@/composables/taskMonitor";
+// import { taskMonitor } from "@/composables/taskMonitor"; // Removed import
 
 interface TaskItemOrGroup extends TaskItem {
   isGrouped: boolean;
@@ -428,7 +428,7 @@ watch(
   isShown,
   (value) => {
     if (value) {
-      taskMonitor.on("task-update", onUpdate);
+      // taskMonitor.on("task-update", onUpdate); // Removed this line
       makeReactive();
       interval = setInterval(() => {
         getNetworkStatus().then((s) => {
@@ -437,7 +437,7 @@ watch(
       }, 1000);
     } else {
       clearInterval(interval);
-      taskMonitor.removeListener("task-update", onUpdate);
+      // taskMonitor.removeListener("task-update", onUpdate); // Removed this line
       makeNonReactive();
     }
   },
