@@ -79,7 +79,7 @@ import { TaskItem } from "@/entities/task";
 import { injection } from "@/util/inject";
 import { TaskState } from "@xmcl/runtime-api";
 import { computed, ref } from "vue";
-import { useI18n } from "vue-i18n";
+// import { useI18n } from "vue-i18n"; // Removed import
 
 const props = defineProps<{
   item: TaskItem;
@@ -89,7 +89,8 @@ const props = defineProps<{
 const emit = defineEmits(["cancel", "resume", "pause"]);
 
 const hover = ref(false);
-const { t } = useI18n();
+// const { t } = useI18n(); // Removed this line
+const t = (key: string, ...args: any[]) => (window as any).$t(key, ...args); // Access $t from global Vue instance
 const { isDark } = injection(kTheme);
 
 const color = computed(() => {
