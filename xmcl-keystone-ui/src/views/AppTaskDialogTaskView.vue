@@ -85,7 +85,10 @@
                     :color="getProgressColor(item.state)"
                   ></v-progress-linear>
                   <div
-                    v-else-if="item.state === 0 || item.state === 3"
+                    v-else-if="
+                      item.state === TaskState.Idle ||
+                      item.state === TaskState.Running
+                    "
                     class="mt-2 grey--text caption"
                   >
                     <v-progress-linear
@@ -293,7 +296,10 @@ import { injection } from "@/util/inject";
 import { BaseServiceKey, PoolStats, TaskState } from "@xmcl/runtime-api";
 import { Ref, computed, watch, ref, reactive } from "vue";
 import { useTaskName } from "../composables/task";
-import AppTaskDialogTaskViewMessage from "./AppTaskDialogTaskViewMessage";
+import { markRaw } from "vue";
+import { useI18n } from "vue-i18n";
+import { windowController } from "@/composables/window";
+import { taskMonitor } from "@/composables/taskMonitor";
 
 interface TaskItemOrGroup extends TaskItem {
   isGrouped: boolean;
@@ -302,7 +308,6 @@ interface TaskItemOrGroup extends TaskItem {
 
 const tab = ref(0);
 
-// Удалили retry из деструктуризации
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager);
 const { t } = useI18n();
 const tTask = useTaskName();
@@ -310,44 +315,40 @@ const { getNetworkStatus, destroyPool } = useService(BaseServiceKey);
 
 const stat: Ref<Record<string, PoolStats>> = ref({});
 
-// Helper functions for displaying status
 const getStatusText = (state: TaskState) => {
   const statusMap: Record<TaskState, string> = {
+    [TaskState.Idle]: t("task.idle"),
     [TaskState.Running]: t("task.running"),
     [TaskState.Succeed]: t("task.succeed"),
     [TaskState.Failed]: t("task.failed"),
     [TaskState.Paused]: t("task.paused"),
     [TaskState.Cancelled]: t("task.cancelled"),
-    [TaskState.Queued]: t("task.queued"),
-    [TaskState.Unknown]: t("task.unknown"),
   };
-  return statusMap[state] || t("task.unknown");
+  return statusMap[state] ?? t("task.unknown");
 };
 
 const getStatusColor = (state: TaskState) => {
   const colorMap: Record<TaskState, string> = {
+    [TaskState.Idle]: "default",
     [TaskState.Running]: "primary",
     [TaskState.Succeed]: "success",
     [TaskState.Failed]: "error",
     [TaskState.Paused]: "warning",
     [TaskState.Cancelled]: "grey",
-    [TaskState.Queued]: "info",
-    [TaskState.Unknown]: "default",
   };
-  return colorMap[state];
+  return colorMap[state] ?? "default";
 };
 
 const getProgressColor = (state: TaskState) => {
   const colorMap: Record<TaskState, string> = {
+    [TaskState.Idle]: "default",
     [TaskState.Running]: "primary",
-    [TaskState.Queued]: "info",
     [TaskState.Succeed]: "success",
     [TaskState.Failed]: "error",
     [TaskState.Paused]: "warning",
     [TaskState.Cancelled]: "grey",
-    [TaskState.Unknown]: "default",
   };
-  return colorMap[state];
+  return colorMap[state] ?? "default";
 };
 
 const calculatePercentage = (progress: number, total: number) => {
@@ -355,28 +356,22 @@ const calculatePercentage = (progress: number, total: number) => {
   return Math.min((progress / total) * 100, 100);
 };
 
-// Tree state
 const data = reactive({
   tree: [],
   opened: [],
   hovered: {} as Record<string, boolean>,
 });
 
-// Show all tasks
 const visible = computed(() => {
-  // For debugging: print all tasks to the console
   console.log("All tasks:", all.value);
   return all.value;
 });
 
-// Function to click on a task
 const onTaskClick = (event: MouseEvent, item: TaskItem) => {
   if (typeof item.message === "string") {
     windowController.writeClipboard(item.message ?? "");
   }
 };
-
-// Other functions (onClear, onUpdate, etc.) remain unchanged
 
 const getReactiveItems = (items: TaskItem[]) => {
   if (items.length <= 6) {
@@ -386,7 +381,7 @@ const getReactiveItems = (items: TaskItem[]) => {
   const failedTasks: TaskItem[] = [];
   const nonActiveTasks: TaskItem[] = [];
   for (const i of items) {
-    if (i.state === TaskState.Running || i.state === TaskState.Queued) {
+    if (i.state === TaskState.Running) {
       activeTasks.push(i);
     } else if (i.state === TaskState.Failed) {
       failedTasks.push(markRaw(i));
@@ -412,10 +407,8 @@ const onUpdate = () => {
 
 const makeReactive = () => {
   for (const t of all.value) {
-    if (t.rawChildren) {
-      t.children = getReactiveItems(t.rawChildren);
-      t.childrenDirty = false;
-    }
+    t.children = getReactiveItems(t.rawChildren ?? []);
+    t.childrenDirty = false;
   }
 };
 
