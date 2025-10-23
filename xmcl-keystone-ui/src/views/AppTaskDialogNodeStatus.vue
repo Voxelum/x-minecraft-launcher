@@ -78,6 +78,8 @@ import { kTheme } from "@/composables/theme";
 import { TaskItem } from "@/entities/task";
 import { injection } from "@/util/inject";
 import { TaskState } from "@xmcl/runtime-api";
+import { computed, ref } from "vue";
+import { useI18n } from "vue-i18n";
 
 const props = defineProps<{
   item: TaskItem;
@@ -97,7 +99,7 @@ const color = computed(() => {
     case TaskState.Cancelled:
     case TaskState.Running:
     case TaskState.Paused:
-    case TaskState.Queued:
+      // case TaskState.Queued: // Removed if Queued doesn't exist
       return isDark.value ? "white" : "primary";
     case TaskState.Failed:
       return "error";
@@ -116,7 +118,7 @@ const percentage = computed(() => {
 
 const icon = computed(() => {
   if (hover.value && props.item.state === TaskState.Running) {
-    return "close"; // Показываем 'close' при наведении на запущенную задачу
+    return "close";
   }
   switch (props.item.state) {
     case TaskState.Succeed:
@@ -129,8 +131,8 @@ const icon = computed(() => {
       return "error_outline";
     case TaskState.Paused:
       return "play_arrow";
-    case TaskState.Queued:
-      return "schedule";
+    // case TaskState.Queued: // Removed if Queued doesn't exist
+    //   return "schedule";
     default:
       return "device_unknown";
   }
@@ -138,7 +140,7 @@ const icon = computed(() => {
 
 const tooltipText = computed(() => {
   if (hover.value && props.item.state === TaskState.Running) {
-    return t("task.cancel"); // Подсказка "Отменить" при наведении на запущенную
+    return t("task.cancel");
   }
   switch (props.item.state) {
     case TaskState.Succeed:
@@ -149,8 +151,8 @@ const tooltipText = computed(() => {
       return t("task.view_error");
     case TaskState.Paused:
       return t("task.resume");
-    case TaskState.Queued:
-      return t("task.queued");
+    // case TaskState.Queued: // Removed if Queued doesn't exist
+    //   return t("task.queued");
     default:
       return t("task.unknown");
   }
@@ -158,7 +160,7 @@ const tooltipText = computed(() => {
 
 const onClick = () => {
   if (props.item.state === TaskState.Running) {
-    emit("cancel"); // Клик на иконку при наведении на запущенную задачу отменяет её
+    emit("cancel");
   } else if (props.item.state === TaskState.Paused) {
     emit("resume");
   }
@@ -177,9 +179,9 @@ const onPause = () => {
   transition: background-color 0.2s;
 }
 .icon-button:hover {
-  background-color: rgba(0, 0, 0, 0.1); /* Светлый режим */
+  background-color: rgba(0, 0, 0, 0.1);
 }
 .theme--dark .icon-button:hover {
-  background-color: rgba(255, 255, 255, 0.1); /* Темный режим */
+  background-color: rgba(255, 255, 255, 0.1);
 }
 </style>
