@@ -294,7 +294,7 @@ import { kTaskManager } from "@/composables/taskManager";
 import { TaskItem } from "@/entities/task";
 import { injection } from "@/util/inject";
 import { BaseServiceKey, PoolStats, TaskState } from "@xmcl/runtime-api";
-import { Ref, computed, watch, ref, reactive } from "vue";
+import { Ref, computed, watch, ref, reactive, getCurrentInstance } from "vue";
 import { useTaskName } from "../composables/task";
 import { markRaw } from "vue";
 // import { useI18n } from "vue-i18n"; // Removed import
@@ -310,7 +310,12 @@ const tab = ref(0);
 
 const { tasks: all, pause, resume, cancel, clear } = injection(kTaskManager);
 // const { t } = useI18n(); // Removed this line
-const t = (key: string, ...args: any[]) => (window as any).$t(key, ...args); // Access $t from global Vue instance
+const instance = getCurrentInstance();
+if (!instance) {
+  throw new Error("Could not get current instance");
+}
+const t = (key: string, ...args: any[]) =>
+  (instance.proxy as any).$t(key, ...args);
 const tTask = useTaskName();
 const { getNetworkStatus, destroyPool } = useService(BaseServiceKey);
 

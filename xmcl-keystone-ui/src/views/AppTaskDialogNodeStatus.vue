@@ -78,7 +78,7 @@ import { kTheme } from "@/composables/theme";
 import { TaskItem } from "@/entities/task";
 import { injection } from "@/util/inject";
 import { TaskState } from "@xmcl/runtime-api";
-import { computed, ref } from "vue";
+import { computed, ref, getCurrentInstance } from "vue";
 // import { useI18n } from "vue-i18n"; // Removed import
 
 const props = defineProps<{
@@ -90,7 +90,12 @@ const emit = defineEmits(["cancel", "resume", "pause"]);
 
 const hover = ref(false);
 // const { t } = useI18n(); // Removed this line
-const t = (key: string, ...args: any[]) => (window as any).$t(key, ...args); // Access $t from global Vue instance
+const instance = getCurrentInstance();
+if (!instance) {
+  throw new Error("Could not get current instance");
+}
+const t = (key: string, ...args: any[]) =>
+  (instance.proxy as any).$t(key, ...args);
 const { isDark } = injection(kTheme);
 
 const color = computed(() => {
