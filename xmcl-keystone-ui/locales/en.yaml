@@ -399,9 +399,12 @@ gameType:
   survival: Survival Mode
 help: Help
 home: Home
+import:
+  title: Import
 importModpack:
   failed: Import {modpack} failed
   name: Import Modpack
+  description: Import a modpack (.zip or .mrpack) and create instance
   success: Import {modpack} succeed
 importResource: Import Resource
 install: Install
@@ -1446,6 +1449,7 @@ setting:
     total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
   migrateFromOther: Import from other launcher
+  migrateFromOtherDescription: Import instances from other launchers
   name: Global Setting | Global Settings
   network: Network Settings
   officialWebsite: Official Website
@@ -1589,6 +1593,11 @@ task:
   running: Running Task
   connection_destroy_pool: Destroy Connection Pool
   compatible: The {format} format is compatible with {version}
+
+migrates:
+  selectLauncher: Select Launcher
+  selectData: Select Data
+  imports: Import
   connection:
     connected: Connected
     free: Free

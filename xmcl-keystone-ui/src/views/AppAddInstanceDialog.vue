@@ -21,15 +21,52 @@
 
       <div class="flex-grow" />
 
-      <v-btn
-        outlined
-        color="primary"
-        class="rounded-lg"
-        @click="onMigrateFromOther"
-      >
-        <v-icon left size="20">local_shipping</v-icon>
-        {{ t("setting.migrateFromOther") }}
-      </v-btn>
+      <v-menu offset-y>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            outlined
+            color="primary"
+            class="rounded-lg"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon left size="20">mdi-download</v-icon>
+            {{ t("import.title") }}
+            <v-icon right size="18">mdi-chevron-down</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item @click="onImportModpack">
+            <v-list-item-icon>
+              <v-icon>note_add</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                t("importModpack.name")
+              }}</v-list-item-title>
+              <v-list-item-subtitle class="text-caption">
+                {{ t("importModpack.description") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+
+          <v-divider class="my-1" />
+
+          <v-list-item @click="onMigrateFromOther">
+            <v-list-item-icon>
+              <v-icon>local_shipping</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{
+                t("setting.migrateFromOther")
+              }}</v-list-item-title>
+              <v-list-item-subtitle class="text-caption">
+                {{ t("setting.migrateFromOtherDescription") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-menu>
     </v-toolbar>
 
     <v-stepper v-model="step" elevation="0" class="rounded-0">
@@ -70,21 +107,6 @@
         @next="next"
         @quit="quit"
       >
-        <div
-          v-if="type === 'template' || type === 'manual' || !type"
-          class="flex justify-end"
-        >
-          <v-btn
-            text
-            outlined
-            :loading="loading"
-            class="rounded-lg"
-            @click="onImportModpack"
-          >
-            <v-icon left size="20">note_add</v-icon>
-            {{ t("importModpack.name") }}
-          </v-btn>
-        </div>
         <div
           v-if="error"
           class="pointer-events-none absolute left-0 flex w-full justify-center"
@@ -331,7 +353,7 @@ function onSelectTemplate() {
   });
 }
 
-// Manuall import
+// Manual import
 const onImportModpack = () => {
   windowController
     .showOpenDialog({
@@ -405,26 +427,31 @@ const { show: onMigrateFromOther } = useDialog("migrate-wizard");
   display: flex !important;
 }
 
-/* Улучшенные переходы */
 .v-stepper__content {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Плавное появление */
 .v-dialog {
   transition: all 0.3s ease-in-out;
 }
 
-/* Улучшенный вид кнопок */
 .v-btn {
   text-transform: none;
   letter-spacing: 0.3px;
   font-weight: 500;
 }
 
-/* Улучшенные отступы для контента */
 .v-stepper-content {
   padding-top: 20px !important;
   padding-bottom: 20px !important;
+}
+
+/* Улучшенное меню */
+.v-list-item {
+  min-height: 56px;
+}
+
+.v-list-item:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 </style>
