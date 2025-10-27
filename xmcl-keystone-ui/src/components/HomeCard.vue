@@ -1,28 +1,25 @@
 <template>
   <v-card
-    class="flex h-full flex-col transition-all duration-500 home-card"
-    :class="{ highlighted: highlighted }"
+    class="flex h-full flex-col transition-all duration-500 home-card rounded-card"
+    :class="{ highlighted: isHighlighted, 'card-hover': isHovered }"
     style="box-sizing: border-box"
     outlined
-    :style="{
-      borderColor: mouse > 0 ? 'white' : '',
-      'backdrop-filter': `blur(${blurCard}px)`,
-    }"
-    :color="highlighted ? 'yellow darken-2' : cardColor"
-    @dragover="emit('dragover', $event)"
-    @drop="emit('drop', $event); dragover = 0;"
-    @dragenter="dragover += 1"
-    @dragleave="dragover -= 1"
-    @mouseenter="mouse += 1"
-    @mouseleave="mouse -= 1"
+    :style="cardStyle"
+    :color="isHighlighted ? 'yellow darken-2' : cardColor"
+    @dragover="onDragOver"
+    @drop="onDrop"
+    @dragenter="onDragEnter"
+    @dragleave="onDragLeave"
+    @mouseenter="onMouseEnter"
+    @mouseleave="onMouseLeave"
   >
     <v-progress-linear
       v-if="refreshing"
       class="absolute left-0 bottom-0 z-20 m-0 p-0"
       indeterminate
     />
-    <v-card-title>
-      <v-icon left>
+    <v-card-title class="pb-2">
+      <v-icon left class="mr-2">
         {{ icon }}
       </v-icon>
       {{ title }}
@@ -35,55 +32,51 @@
         <slot />
       </template>
       <template v-else>
-        <span
-          v-if="!error"
-          class="text-content"
-        >
+        <span v-if="!error" class="text-content">
           {{ text }}
         </span>
-        <span
-          v-else
-          class="color-red"
-        >
-          <v-icon
-            color="red"
-            small
-          > warning </v-icon>
-          {{ (error.message || error) }}
+        <span v-else class="color-red">
+          <v-icon color="red" small> warning </v-icon>
+          {{ error.message || error }}
         </span>
         <div
           v-if="!globalDragover && icons.length > 0"
-          class="mt-4"
+          class="mt-4 flex flex-wrap gap-2"
         >
           <v-avatar
-            v-for="a of icons"
-            :key="a.name"
-            v-shared-tooltip="a.name"
-            :color="a.color ? a.color : !a.icon ? getColor(a.name) : undefined"
+            v-for="appIcon of icons"
+            :key="appIcon.name"
+            v-shared-tooltip="appIcon.name"
+            :color="getIconColor(appIcon)"
             size="30px"
+            class="flex-shrink-0"
           >
             <img
-              v-if="a.icon"
-              :src="a.icon"
+              v-if="appIcon.icon"
+              :src="appIcon.icon"
               v-fallback-img="BuiltinImages.unknownServer"
               draggable="false"
-            >
-            <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
+            />
+            <span v-else> {{ appIcon.name[0]?.toUpperCase() }} </span>
           </v-avatar>
         </div>
       </template>
     </v-card-text>
-    <v-card-actions class="justify-between" v-if="button || additionButton">
+    <v-card-actions
+      class="justify-between pt-3"
+      v-if="button || additionButton"
+    >
       <v-btn
         v-if="button"
         text
         ref="btnElem"
         @click="emit('navigate')"
+        class="rounded-btn px-4 py-2 btn-primary"
       >
         <v-icon v-if="button.icon" left>
           {{ button.icon }}
         </v-icon>
-        <span :style="{ color: isOverflowed ? 'transparent' : '' }">
+        <span :style="{ color: isButtonOverflowed ? 'transparent' : '' }">
           {{ button.text }}
         </span>
       </v-btn>
@@ -93,9 +86,10 @@
         color="primary"
         text
         @click="emit('navigate-addition')"
+        class="rounded-btn px-4 py-2 btn-secondary"
       >
         <v-icon class="material-icons-outlined" left>
-          {{ additionButton.icon || 'add' }}
+          {{ additionButton.icon || "add" }}
         </v-icon>
         <span>
           {{ additionButton.text }}
@@ -104,55 +98,115 @@
     </v-card-actions>
   </v-card>
 </template>
+
 <script lang="ts" setup>
-import { kDropHandler } from '@/composables/dropHandler'
-import { kTheme } from '@/composables/theme'
-import { BuiltinImages } from '@/constant'
-import { vFallbackImg } from '@/directives/fallbackImage'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
-import { getColor } from '@/util/color'
-import { injection } from '@/util/inject'
-import Vue from 'vue'
+// Imports
+import { kDropHandler } from "@/composables/dropHandler";
+import { kTheme } from "@/composables/theme";
+import { BuiltinImages } from "@/constant";
+import { vFallbackImg } from "@/directives/fallbackImage";
+import { vSharedTooltip } from "@/directives/sharedTooltip";
+import { getColor } from "@/util/color";
+import { injection } from "@/util/inject";
+import Vue from "vue";
 
-const btnElem = ref(null as Vue | null)
+// Refs
+const btnElem = ref(null as Vue | null);
+const isHovered = ref(false);
+const dragCounter = ref(0);
+const mouseCounter = ref(0);
 
-const isOverflowed = computed(() => {
-  const el = btnElem.value?.$el
-  if (!el) {
-    return
-  }
+// Computed properties
+const cardStyle = computed(() => ({
+  borderColor: mouseCounter.value > 0 ? "white" : "",
+  "backdrop-filter": `blur(${blurCard}px)`,
+  transform:
+    isHovered.value && !isHighlighted.value
+      ? "scale(1.02)"
+      : isHighlighted.value
+      ? "scale(1.05)"
+      : "scale(1)",
+}));
 
-  const isOverflowed = el.scrollWidth > el.clientWidth
-  return isOverflowed
-})
+const isHighlighted = computed(
+  () => globalDragover.value && dragCounter.value > 0
+);
 
-defineProps<{
-  icon?: string
-  title: string
-  subtitle?: string
-  text: string
-  button?: { text: string; icon?: string }
-  additionButton?: { text: string; icon?: string }
-  refreshing: boolean
-  error?: any
-  icons: Array<{ name: string; icon?: string; color?: string }>
-}>()
-const emit = defineEmits(['navigate', 'drop', 'dragover', 'dragenter', 'dragleave', 'navigate-addition'])
-const { cardColor, blurCard } = injection(kTheme)
+const isButtonOverflowed = computed(() => {
+  const el = btnElem.value?.$el;
+  if (!el) return false;
+  return el.scrollWidth > el.clientWidth;
+});
 
-const slots = useSlots()
+// Helper function for icon color
+const getIconColor = (iconItem: {
+  name: string;
+  icon?: string;
+  color?: string;
+}) => {
+  if (iconItem.color) return iconItem.color;
+  if (!iconItem.icon) return getColor(iconItem.name);
+  return undefined;
+};
 
-const dragover = ref(0)
-const { dragover: globalDragover } = injection(kDropHandler)
-const mouse = ref(0)
-const highlighted = computed(() => globalDragover.value && dragover.value > 0)
+// Props and Emits
+const props = defineProps<{
+  icon?: string;
+  title: string;
+  subtitle?: string;
+  text: string;
+  button?: { text: string; icon?: string };
+  additionButton?: { text: string; icon?: string };
+  refreshing: boolean;
+  error?: any;
+  icons: Array<{ name: string; icon?: string; color?: string }>;
+}>();
+
+const emit = defineEmits([
+  "navigate",
+  "drop",
+  "dragover",
+  "dragenter",
+  "dragleave",
+  "navigate-addition",
+]);
+
+// Injections
+const { cardColor, blurCard } = injection(kTheme);
+const slots = useSlots();
+const { dragover: globalDragover } = injection(kDropHandler);
+
+// Event handlers
+const onMouseEnter = () => {
+  mouseCounter.value += 1;
+  isHovered.value = true;
+};
+
+const onMouseLeave = () => {
+  mouseCounter.value -= 1;
+  isHovered.value = false;
+};
+
+const onDragEnter = () => {
+  dragCounter.value += 1;
+};
+
+const onDragLeave = () => {
+  dragCounter.value -= 1;
+};
+
+const onDrop = (event: DragEvent) => {
+  emit("drop", event);
+  dragCounter.value = 0; // Reset drag counter on drop
+};
+
+const onDragOver = (event: DragEvent) => {
+  emit("dragover", event);
+};
 </script>
 
 <style scoped>
-.highlighted {
-  transform: scale(1.05);
-}
-
+/* Text content styling */
 .text-content {
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -161,16 +215,90 @@ const highlighted = computed(() => globalDragover.value && dragover.value > 0)
   text-overflow: ellipsis;
 }
 
+/* Card base styling */
 .home-card {
-  /* blur behand */
   container-type: size;
   width: 100%;
+  transition: all 0.3s ease, transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+/* Hidden button placeholder */
 .btn {
   display: none;
 }
 
+/* Rounded card with shadow and border */
+.rounded-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Hover effect for card */
+.card-hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15), 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+/* Button styling */
+.rounded-btn {
+  border-radius: 24px;
+  text-transform: none;
+  font-weight: 500;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.25px;
+  min-width: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Button hover effects */
+.rounded-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0)
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.rounded-btn:hover::before {
+  opacity: 1;
+}
+
+/* Primary button styling */
+.btn-primary {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+}
+
+.btn-primary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Secondary button styling */
+.btn-secondary {
+  padding: 8px 16px;
+}
+
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Container query */
 @container (min-width: 300px) {
   .btn {
     display: block;
