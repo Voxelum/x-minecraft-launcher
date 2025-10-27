@@ -1596,7 +1596,12 @@ task:
   running: Running Task
   connection_destroy_pool: Destroy Connection Pool
   compatible: The {format} format is compatible with {version}
-  succeed: Success
+  connection_connected: Connected
+  connection_free: Free
+  connection_pending: Pending
+  connection_queued: Queued
+  connection_running: Running connection
+  connection_size: Size
   failed: Failed
   unknown: Unknown
   manager: Task Manager

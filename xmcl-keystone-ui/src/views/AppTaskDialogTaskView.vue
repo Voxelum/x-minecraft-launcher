@@ -221,22 +221,22 @@
                 </v-list-item-title>
                 <v-list-item-subtitle class="d-flex flex-wrap gap-2 mt-1">
                   <v-chip small label outlined color="success">
-                    {{ t("task.connection.connected") }}: {{ stats.connected }}
+                    {{ t("task.connection_connected") }}: {{ stats.connected }}
                   </v-chip>
                   <v-chip small label outlined color="primary">
-                    {{ t("task.connection.free") }}: {{ stats.free }}
+                    {{ t("task.connection_free") }}: {{ stats.free }}
                   </v-chip>
                   <v-chip small label outlined color="warning">
-                    {{ t("task.connection.pending") }}: {{ stats.pending }}
+                    {{ t("task.connection_pending") }}: {{ stats.pending }}
                   </v-chip>
                   <v-chip small label outlined color="info">
-                    {{ t("task.connection.queued") }}: {{ stats.queued }}
+                    {{ t("task.connection_queued") }}: {{ stats.queued }}
                   </v-chip>
                   <v-chip small label outlined color="accent">
-                    {{ t("task.connection.running") }}: {{ stats.running }}
+                    {{ t("task.connection_running") }}: {{ stats.running }}
                   </v-chip>
                   <v-chip small label outlined color="grey">
-                    {{ t("task.connection.size") }}: {{ stats.size }}
+                    {{ t("task.connection_size") }}: {{ stats.size }}
                   </v-chip>
                 </v-list-item-subtitle>
               </v-list-item-content>
