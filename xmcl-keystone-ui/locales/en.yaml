@@ -58,7 +58,7 @@ HomeJavaIssueDialog:
     disabled: There is no Java {version} found in database now!
     message: Use existed Java {version} in your PC
     name: Switch to {version}
-  recommendedVersionHint: The {version} recommend to use Java with range {range}。
+  recommendedVersionHint: The {version} recommend to use Java with range {range}.
   selectMatchedHint: Found proper local Java versions. You can choose these local Javas.
   selectSecondaryHint: >-
     Found some local Java versions, but they might not suitable to the criteria.
