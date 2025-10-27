@@ -1587,6 +1587,8 @@ task:
   success: Success
   retry: Retry
   paused: Paused
+  nTaskRunning: Running Tasks
+  nTaskFinished: Finished Tasks
   resume: Resume
   clear_tooltip: Clear too many tasks
   clear: Clear Finished Tasks
