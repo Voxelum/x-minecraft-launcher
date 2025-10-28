@@ -1,354 +1,374 @@
 AppAddInstanceDialog:
-  choiceTitle: 複数のランチャー構成が検出されました。インポートするものを一つ選択してください。
+  choiceTitle: 複数の起動プロファイルが検出されました。インポートするものを選択してください。
   configTitle: 設定
   createTitle: ゲームを作成
-  downloadedNotification: Modpack {name} がダウンロードされました。新しく起動構成を作成しますか?
-  serverTitle: サーバーアドレスを入力
+  downloadedNotification: モッドパック {name} をダウンロードしました。これにインスタンスを作成しますか？
+  serverTitle: サーバーアドレスを入力してください
 AppShareInstanceDialog:
-  alterDownloadDescription: 現在の起動構成をいじりたくなければ、ピアの構成から新しく起動構成を作ることができます。下のボタンをクリックすると起動構成を作成します。
-  baseInfo: 基本的な設定
-  cancelShare: 共有を取り消す
-  description: プロファイルを共有すると、他の場所からあなたのPCを通してファイルをダウンロードできるようになります。
-  downloadDescription: ピアから提供されたファイルを確認し、ダウンロードするファイルを選択してください。これは現在の起動構成 {name} に配置されます。
-  downloadNotifyTitle: '{user} から起動構成をダウンロード'
+  alterDownloadDescription: >-
+    現在のインスタンスを変更したくない場合は、ピアの設定から新しいインスタンスを作成することもできます。
+    下のボタンをクリックしてインスタンスを作成してください。
+  baseInfo: 基本設定
+  cancelShare: 共有をキャンセル
+  description: >-
+    プロファイルを共有すると、他の場所からPC経由でこれらのファイルをダウンロードできるようになります。
+  downloadDescription: >-
+    ピアから提供されたファイルを確認してください。ダウンロードしたいファイルを選択してください。
+    これは現在のインスタンス {name} に配置されます。
+  downloadNotifyTitle: "{user} からインスタンスをダウンロード"
   downloadTitle: 他のピアからファイルをダウンロード
-  downloadToLocal: 現在の起動構成にダウンロード
+  downloadToLocal: 現在のインスタンスにダウンロード
   filesToDownload: ダウンロードするファイルを選択
   filesToShare: 共有するファイルを選択
-  instanceShare: '{user} が現在の起動構成をあなたに共有しました。'
+  instanceShare: "{user} が現在のインスタンスを共有しました"
   share: 共有
-  shareNotifyTitle: 起動構成を共有
+  shareNotifyTitle: インスタンスを共有
   shareTitle: ゲームファイルを他のプレイヤーに共有
+BaseSetting: {}
 BaseSettingGeneral:
   title: 一般
 FeedTheBeast:
   search: FTBで検索
+FeedTheBeastCard: {}
 FeedTheBeastProject:
-  changelog: 変更履歴
+  changelog: 更新履歴
   details: 詳細
-  install: '{version} をインストール'
+  install: "{version} をインストール"
   overview: 概要
   versions: バージョン
 HomeJavaIssueDialog:
   incompatibleJava: 互換性のないJava
-  incompatibleJavaHint: 現在のJavaは選択されたMinecraftと互換性がない可能性があります!
+  incompatibleJavaHint: 選択されたJavaは、選択されたMinecraftと互換性がない可能性があります！
   missingJava: Javaが見つかりません
-  missingJavaHint: 'ランチャーはJavaを見つけることができませんでした。次のことを試すことができます:'
-  needDownloadHint: 適切なJavaバージョンをコンピューターから見つけることができませんでした。新しくダウンロードすることを推奨します。
+  missingJavaHint: "ランチャーがコンピューターにJavaを検出できません。以下ができます："
+  needDownloadHint: >-
+    コンピューターに適切なJavaバージョンが見つかりません。新しいものをダウンロードすることを推奨します。
   optionAutoDownload:
-    message: ランチャーはMojangのソースからJavaをダウンロードし、インストールします。
-    name: 自動的にダウンロード
+    message: ランチャーはMojangのソースからJavaをダウンロードしてインストールします。
+    name: 自動ダウンロード
+  optionManualDownload: {}
   optionSelectJava:
-    message: ランチャーはJavaを見つけられない可能性があります。ランチャーにJavaの場所を明示することもできます。
-    name: あなたのコンピューターの中からJavaを選択
+    message: >-
+      ランチャーがJavaを見つけられていない可能性があります。Javaの場所を教えてください。
+    name: コンピューター内のJavaを選択
   optionSwitch:
-    disabled: Java {version} がデータベースに見つかりません!
-    message: Java {version} を使用します
-    name: '{version} に切り替え'
-  recommendedVersionHint: '{version} は {range} の範囲内のJavaを使うことが推奨されます。'
-  selectMatchedHint: 適切なJavaバージョンを見つけました。これらのJavaを選択できます。
-  selectSecondaryHint: いくつかのJavaバージョンを見つけましたが、互換性がない可能性があります。これを使用することもできますが、問題が発生するかもしれません。
+    disabled: 現在データベースにJava {version} が見つかりません！
+    message: PCに存在するJava {version} を使用
+    name: "{version} に切り替える"
+  recommendedVersionHint: "{version} では、{range} の範囲のJavaを使用することを推奨します。"
+  selectMatchedHint: 適切なローカルJavaバージョンが見つかりました。これらのローカルJavaを選択できます。
+  selectSecondaryHint: >-
+    いくつかのローカルJavaバージョンが見つかりましたが、基準に合っていない可能性があります。
+    それでも起動に使用できますが、この問題は引き続き表示されます。
 HomeLaunchMultiInstanceDialog:
-  confirm: はい、起動します。
-  description: 複数の起動構成を起動しようとしています。続行しますか?
-  title: 複数の起動構成
+  confirm: はい、起動
+  description: 複数のMinecraftインスタンスを起動しようとしています。本当によろしいですか？
+  title: 複数インスタンス
+HomeSyncButton: {}
 HomeSyncDialog:
   pull: プル
   push: プッシュ
 HomeSyncDialogPull:
-  failText: アップデートの取得に失敗しました。 {url}
-  refresh: 最新の情報に更新
-  update: アップデート
+  failText: 更新の取得に失敗しました。 {url}
+  refresh: 更新
+  update: 更新
 HomeSyncDialogPush:
-  authError: ユーザー認証に失敗しました。サーバーにファイルをアップロードする権限があるか確認してください!
-  refresh: リフレッシュ
-  unknownError: 未知のエラーです。再度試してください。
-  upload: 起動構成をアップロード
+  authError: >-
+    ユーザー認証が不正です。サーバーのファイルをアップロードする権限があることを確認してください！
+  refresh: 更新
+  unknownError: 不明なサーバーエラー。再試行してください。
+  upload: インスタンスをアップロード
 SettingMigrationDialog:
   selectRootDirectory: ルートディレクトリを選択
 add: 追加
 ago:
-  day: '{duration} 日前'
-  hour: '{duration} 時間前'
-  minute: '{duration} 分前'
-  second: '{duration} 秒前'
+  day: "{duration}日前 | {duration}日前"
+  hour: "{duration}時間前 | {duration}時間前"
+  minute: "{duration}分前 | {duration}分前"
+  second: "{duration}秒前 | {duration}秒前"
 askAICrash:
-  copyPrompt: プロンプトをコピーしてAIに尋ねます
-  description: |-
-    AIがゲームのクラッシュを理解するのを手伝ってください！
-    以下の指示に従って、このゲームのクラッシュについてAIに尋ねてください！
-  selectPlatform: AIプラットフォームを開き、コピーしたプロンプトを貼り付けます。
+  copyPrompt: AIに尋ねるプロンプトをコピー
+  description: >-
+    AIがゲームのクラッシュを理解するのを助けます！この手順に従って、このゲームのクラッシュについてAIに尋ねてください！
+  selectPlatform: AIプラットフォームを開き、コピーしたプロンプトを貼り付けてください。
 authProfileAddedNotification: 認証プロファイル {name} が追加されました
-author: 著者
+author: 作者
 back: 戻る
 baseSetting:
-  title: 基本設定
-browse: ブラウズ
+  title: インスタンス設定
+browse: 閲覧
 browseApp:
   createShortcut: ショートカットを作成
   default: デフォルト
   delete: 削除
-  launch: 立ち上げてデフォルトに設定する
-browseApps: ランチャーのUIを表示する
+  launch: 起動してデフォルトに設定
+browseApps: ランチャーのユーザーインターフェースを表示
 cancel: キャンセル
 checkUpdate:
-  name: アップデートを確認
+  name: 更新を確認
 color: 色
-confirm: スタート
+confirm: 開始
 copyClipboard:
   success: クリップボードにコピー
 create: 作成
 curseforge:
-  authors: 作成者
+  authors: 作者
   category: カテゴリ
   createdDate: 作成日
   downloadOnly: ダウンロード
   file:
     gameVersion: ゲームバージョン
-    modLoader: Modローダー
+    modLoader: モッドローダー
   install: インストール
-  installTo: '{path} にインストール'
+  installTo: "{path} にインストール"
   installToStorage: ストレージにインストール
-  lastUpdate: 最終アップデート日
+  lastUpdate: 最終更新日
   project:
     description: 説明
     files: ファイル
     images: 画像
-  recentFiles: 以前のファイル
+  recentFiles: 最近のファイル
   releasedDate: リリース日
   search: 検索
   totalDownloads: 合計ダウンロード数
+curseforgeCard: {}
 curseforgeCategory:
   API and Library: APIとライブラリ
-  Addons: アドオン
+  Addons: 補助
   Adventure: アドベンチャー
-  Adventure and RPG: 冒険/RPG
+  Adventure and RPG: アドベンチャーとRPG
   Animated: アニメーション
   Armor, Tools, and Weapons: 防具、道具、武器
-  Armor， Tools， and Weapons: 防具、ツール、武器
-  Combat / PvP: 対戦/PvP
-  Cosmetic: 外見/装飾
+  Armor， Tools， and Weapons: 防具、道具、武器
+  Combat / PvP: 対戦/PVP
+  Cosmetic: 外観/装飾
   Creation: クリエイティブモード
   Data Packs: データパック
   Education: 教育
-  Exploration: 冒険
-  Extra Large: 超大型
-  FTB Official Pack: FTB公式パック
+  Exploration: 探索
+  Extra Large: 大きいサイズ
+  FTB Official Pack: 公式FTBパック
   Fabric: Fabric
   FancyMenu: FancyMenu
-  Font Packs: フォントパック
-  Food: 食料
+  Font Packs: フォント
+  Food: 食べ物
   Game Map: ゲームマップ
   Hardcore: ハードコア
   MCreator: MCreator
   Magic: 魔法
   Map Based: マップベース
-  Map and Information: 地図と情報
+  Map and Information: マップと情報
   Medieval: 中世
   Mini Game: ミニゲーム
   Miscellaneous: その他
-  Mod Support: Modサポート
-  Modded World: Modされた世界
-  Modern: 近代的
+  Mod Support: モッドサポート
+  Modded World: ワールド用モッド
+  Modern: モダン
   Multiplayer: マルチプレイヤー
   Parkour: パルクール
-  Photo Realistic: 写実的
+  Photo Realistic: リアリスティック写真
   Puzzle: パズル
   QoL: QoL
   Quests: クエスト
   Redstone: レッドストーン
   Sci-Fi: SF
-  Server Utility: サーバーユーティリティ
+  Server Utility: サーバーツール
   Skyblock: スカイブロック
-  Small / Light: 小さい/軽量
+  Small / Light: 少し
   Steampunk: スチームパンク
   Storage: ストレージ
   Survival: サバイバル
   Tech: 技術
   Technology: 技術
   Traditional: 伝統的
-  Twitch Integration: Twitchの統合
-  Utility & QoL: ユーティリティ/QoL
-  Vanilla+: Vanilla+
-  World Gen: ワールド生成
+  Twitch Integration: Twitch統合
+  Utility & QoL: ユーティリティとQoL
+  Vanilla+: バニラ+
+  World Gen: ワールドジェネレーター
 dataMigration:
   apply: 設定を適用
-  directoryCriteriaHint: 新しいディレクトリが空なことを確認してください!
-  migrationDestinationIsFile: 移行先のディレクトリがファイルです! 空のディレクトリを選択してください!
-  migrationDestinationIsNotEmptyDirectory: 移行先のディレクトリが空ではありません! 空のディレクトリを選択している事を確認してください!
-  migrationNoPermission: 古いディレクトリを新しいディレクトリに名前を変更する権限がありません! ランチャーが両方のディレクトリにアクセスできるか確認してください!
-  placeholder: ここをクリックしてディレクトリを選択
-  setRootCause: このプロセス中にランチャーを閉じると、データ(マップ、リソースパック、Mod)は失われます!
-  setRootDescription: このランチャーとMinecraftのルートフォルダーを変更します。
-  setRootTitle: ストレージ上の新しい場所に設定
-  unknownError: 未知のエラーが発生しました! 再度試すか、開発者に連絡してください!
-  waitReload: データを移行中です。ランチャーを閉じないでください。
+  directoryCriteriaHint: 新しいディレクトリの場所が空のディレクトリであることを確認してください！
+  migrationDestinationIsFile: 移行先がファイルです！空のディレクトリを選択してください！
+  migrationDestinationIsNotEmptyDirectory: >-
+    移行先が空のディレクトリではありません！空のディレクトリを選択してください！
+  migrationNoPermission: >-
+    古いディレクトリを新しいディレクトリに名前変更する権限がありません！ランチャーが両方の場所にアクセスできることを確認してください！
+  placeholder: ここをクリックしてディレクトリを選択してください
+  setRootCause: >-
+    このプロセス中にランチャーを閉じると、データ（マップ、リソースパック、モッド）を失います！
+  setRootDescription: これにより、このランチャーとMinecraftのルートデータフォルダが変更されます。
+  setRootTitle: 新しいストレージ場所に設定
+  unknownError: 不明なエラー！再試行するか、開発者に連絡してください！
+  waitReload: データを移行中です。ランチャーを閉じないでください。データが失われます。
 delete:
-  name: '{name} を削除'
-  'no': いいえ
-  'yes': はい
+  name: "{name} を削除"
+  "no": いいえ
+  "yes": 削除
 dependencies:
   embedded: 埋め込み
-  incompatible: 不適合
+  incompatible: 互換性なし
   name: 依存関係
   optional: オプション
-  required: 要求
-description: 概要
+  required: 必須
+description: 説明
 detail: 詳細
 diagnosis:
   badInstall:
-    message: クリックしてこのバージョンの再インストールを試行します。
-    name: '{version} のインストールに失敗しました。'
+    message: ここをクリックして、このバージョンの再インストールを試みてください。
+    name: "{version} の不良インストール"
   corruptedAssets:
     message: ランチャーがアセットをインストールします
-    name: 'アセットが不完全です: {name} | アセットが不完全です: {name} | {count} 個のアセットが壊れています'
-  corruptedAssetsIndex:
-    message: ランチャーはアセットのインデックスをダウンロードします。
-    name: アセットインデックス {version} が壊れています。
-  corruptedLibraries:
-    message: ランチャーがライブラリをインストールします。
-    name: '壊れたライブラリ: {name} | 壊れたライブラリ: {name} | {count} 個のライブラリが壊れています。'
-  corruptedVersionJar:
-    message: クリックするとこのバージョンをインストールします。
-    name: Minecraft %{version} のJarが壊れています。
-  corruptedVersionJson:
-    message: クリックしてこのバージョンをインストール
-    name: verion %{version} のjsonが壊れています。
-  incompatibleJava:
-    message: ランチャーでダウンロードできます。
-    name: Javaバージョン {javaVersion} は {version} に適合しません!
-  instanceFiles:
-    description: 起動構成は {counts} 個のファイルを含みます。
-    title: 終了していない起動構成のインストール
-  invalidJava:
-    message: クリックして他のJavaで起動します。
-    name: Javaの場所が無効です。
-  missingAssets:
-    message: ランチャーがアセットをダウンロードします。
-    name: '見つからないアセット: {name} | 見つからないアセット: {name} | %{count} 個のアセットが見つかりません。'
-  missingAssetsIndex:
-    message: ランチャーがアセットインデックスをダウンロードします。
-    name: '{version} 用のアセットインデックスファイルが見つかりません。'
-  missingJava:
-    message: クリックして問題を処理します。
-    name: Minecraftを立ち上げるためのJavaが見つかりません!
-  missingLibraries:
-    message: ランチャーがライブラリをインストールします。
     name: >-
-      見つからない {name} ライブラリ | 見つからない {name} ライブラリ | {count} 個のライブラリが見つかりません |
-      {count} 個のライブラリが見つかりません
+      破損したアセット: {name} | 破損したアセット {name} | {count} 個のアセットが破損
+  corruptedAssetsIndex:
+    message: ランチャーがアセットインデックスをダウンロードします
+    name: "{version} のアセットインデックスファイルが破損しています。"
+  corruptedLibraries:
+    message: ランチャーがライブラリをインストールします
+    name: >-
+      破損したライブラリ: {name} | 破損したライブラリ: {name} | {count} 個のライブラリが破損
+  corruptedVersionJar:
+    message: ここをクリックして、このバージョンをインストールしてください
+    name: Minecraft %{version} のバージョンjarが破損しています。
+  corruptedVersionJson:
+    message: ここをクリックして、このバージョンをインストールしてください
+    name: "%{version} バージョンのjsonが破損しています。"
+  incompatibleJava:
+    message: ランチャーにダウンロードさせるように依頼できます。
+    name: Javaバージョン {javaVersion} は {version} に適していません！
+  instanceFiles:
+    description: インスタンスのインストールには {counts} 個のファイルが含まれています。
+    title: インスタンスのインストールが不完全です
+  invalidJava:
+    message: 別のJavaを使用して起動するには、ここをクリックしてください。
+    name: 無効なJavaの場所。
+  missingAssets:
+    message: ランチャーがアセットをインストールします
+    name: "欠落しているアセット: {name} | 欠落しているアセット: {name} | %{count} 個のアセットが欠落しています。"
+  missingAssetsIndex:
+    message: ランチャーがアセットインデックスをダウンロードします
+    name: "{version} のアセットインデックスファイルがありません。"
+  missingAuthlibInjector: {}
+  missingJava:
+    message: この問題を解決するには、ここをクリックしてください
+    name: Minecraftを起動するためのJavaが見つかりません！
+  missingLibraries:
+    message: ランチャーがライブラリをインストールします
+    name: >-
+      欠落している {name} ライブラリ | 欠落している {name} ライブラリ | {count} 個のライブラリが欠落 | {count} 個のライブラリが欠落
   missingVersion:
-    message: クリックしてこのバージョンをインストールします。
-    name: バージョン {version} はインストールされていません!
+    message: ここをクリックして、このバージョンをインストールしてください
+    name: バージョン {version} がインストールされていません！
   missingVersionJar:
-    message: クリックしてこのバージョンをインストール
-    name: Minecraft %{version} 用のJarが見つかりません
+    message: ここをクリックして、このバージョンをインストールしてください
+    name: Minecraft %{version} のバージョンjarがありません
   unzipFileNotFound:
-    description: '{file}が見つかりません'
-    title: ModPackファイルが見つかりません
-disable: 無効化
+    description: "{file} が見つかりません"
+    title: モッドパックファイルが見つかりません
+disable: 無効
 disk:
   available: 利用可能
-  used: 使用済み
+  used: 使用中
 download: ダウンロード
-downloadCount: '{count} ダウンロード'
-downloadUpdate: アップデートをダウンロード
+downloadCount: "{count} 回ダウンロード"
+downloadUpdate: 更新をダウンロード
 duration:
-  day: '{duration} 日'
-  hour: '{duration} 時間'
-  minute: '{duration} 分'
-  name: '{name} を削除'
-  'no': いいえ
-  second: '{duration} 秒'
-  'yes': はい
-edit: エディター
-enable: 有効化
+  day: "{duration}日 | {duration}日"
+  hour: "{duration}時間 | {duration}時間"
+  minute: "{duration}分 | {duration}分"
+  name: "{name} を削除"
+  "no": いいえ
+  second: "{duration}秒 | {duration}秒"
+  "yes": はい、大丈夫です。
+edit: 編集
+enable: 有効
 env:
   select:
     all: すべて選択
-    fit: 選択
-    none: 選択しない
+    fit: 適合を選択
+    none: 選択なし
 error:
   name: エラー | エラー
 errors:
   BadForgeInstallerJarError: >-
-    Forge インストーラーのJarを解析できません。Forgeが新しいインストーラーのフォーマットを採用したのかもしれません?
-    この問題が続く場合は開発者に連絡してください。
-  BadInstanceType: '有効な起動構成ではありません: {type}'
-  BodyTimeoutError: HTTPがタイムアウトしました
-  ChecksumNotMatchError: 'チェックサムが一致しませんでした! 想定: {expect}. 結果 {actual}.'
-  ConnectTimeoutError: サーバーへの接続がタイムアウトしました。
-  DNSNotFoundError: DNS ルックアップエラー
+    Forgeインストーラーjarファイルを解析できません。Forgeの新しいインストーラーファイル形式かもしれませんか？この問題が続く場合は、開発者に連絡してください。
+  BadInstanceType: "有効なインスタンスではありません: {type}"
+  BodyTimeoutError: HTTPボディタイムアウト
+  ChecksumNotMatchError: チェックサムが一致しません！期待値 {expect}。実際 {actual}。
+  ConnectTimeoutError: サーバーへの接続タイムアウト。
+  DNSNotFoundError: DNSルックアップエラー
   DatabaseNotOpened: >-
-    データベースが開けませんでした! ランチャーは適切に動作できません!
-    ランチャーがアクセスできるデータディレクトリを選択するか、データのルートディレクトリを設定からリセットすることができます。
-  DiskIsFull: |-
-    あなたのディスクはいっぱいです！
-    ディスクに何も書くことはできません！
-    すべての機能が機能しない可能性があります！
-  DownloadAggregateError: ファイルのダウンロードに失敗。
-  DownloadFileSystemError: ファイルパスにダウンロードする際エラーが発生しました。ランチャーにフォルダへのアクセス権限があるか確認してください。
-  HeadersTimeoutError: HTTPのヘッダーがタイムアウト
-  NotFoundError: 404 Not Found
+    データベースが開いていません！ランチャーは正しく動作しません！ランチャーがアクセスできるデータディレクトリを選択してください。設定ページでデータルートをリセットしてみてください。
+  DiskIsFull: >-
+    ディスクがいっぱいです！ディスクに書き込みできません！すべての機能が動作しない可能性があります！
+  DownloadAggregateError: ファイルのダウンロードに失敗しました。
+  DownloadFileSystemError: >-
+    ダウンロードファイルパスへのアクセス中にエラーが発生しました。ランチャーが書き込み権限を持っていることを確認してください。
+  HeadersTimeoutError: HTTPヘッダータイムアウト
+  NotFoundError: 404 見つかりません
   SocketError: サーバーソケットエラー
 eula:
-  body: このチェックボックスを押すことで、Minecraftの {eula} に同意したことになります。
+  body: >-
+    チェックボックスをクリックすることで、Minecraftの {eula} に同意したことを示します。
 exception:
   http: >-
-    {url} へのHTTPリクエストに失敗しました。ステータスコードは {statusCode}
-    です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。
-existed: 存在した
+    {url} へのHTTPリクエストが失敗しました。ステータスコード {statusCode}。 {code}。再試行するか、ネットワークを確認してください。このエラーが続く場合は、開発者チームにレポートを送信してください。
+existed: 存在
 exportModpackTarget:
-  curseforge: Curseforge ファイル
-  github: Github ファイル
-  modrinth: Modrinth ファイル
-  override: (Raw) ファイルを上書き
+  curseforge: Curseforgeファイル
+  github: Githubファイル
+  modrinth: Modrinthファイル
+  override: 上書き（生）ファイル
 extensions:
-  mrpack: Modrinth Modpack
-  zip: Zip ファイル
+  mrpack: Modrinthモッドパック
+  zip: Zipファイル
 fabricVersion:
-  disable: Fabricを使用しない
-  empty: Minecraft {version} 用のFabricバージョンがありません
+  disable: Fabricを無効
+  empty: Minecraft {version} のFabricバージョンがありません
   showSnapshot: スナップショットを表示
   stable: 安定版
   unstable: 不安定版
 feedback:
   channel: チャンネル
-  description: バグを見つけました / 提案があります
+  description: バグを発見したか、提案があります
   discord: Discord
   discordDescription: Discordチャンネルに参加
   discordJoin: 参加
-  generateReport: レポートを作成
-  generateSaveAs: レポートの保存先
+  generateReport: レポートを生成
+  generateSaveAs: レポートを保存
   github: Github Issue
-  githubDescription: Github Issueを開き意見を共有
+  githubDescription: Issueを開いて意見を伝える
   githubOpenIssue: Github
-  hint: クリックしてレポートを作成し開発者に連絡します。レポートはあなたのデバイス情報(OS, バージョン, OSにおけるユーザー名)などを含みます。
+  hint: >-
+    ボタンをクリックしてレポートを作成し、開発者チームに連絡してください。レポートには、オペレーティングシステムの種類、バージョン、ユーザー名（OS内）などのデバイス情報が含まれます。
   kook: Kook
-  kookDescription: Kook は中国本土のユーザーのためのDiscordの代替アプリです
+  kookDescription: Kookは中国本土ユーザーのためのDiscordの代替アプリです
   name: フィードバック
   qq: QQグループ
-  qqDescription: 'フィードバック用QQグループに参加し著者に直接連絡を取る。 グループナンバー: {number}'
+  qqDescription: >-
+    フィードバックQQグループに参加し、著者と直接話してください。グループ番号: {number}
   qqEnterGroup: 参加
 fileDetail:
   fileSize: ファイルサイズ
   filesize: ファイルサイズ
-  hash: ハッシュ値
+  hash: ハッシュ
 filter: フィルター
-filterLocalOnly: インストールされているものだけを表示
-finish: 終了
+filterLocalOnly: インストール済みのみ表示
+finish: 完了
 forgeConfig:
-  hint: 一回この構成でゲームを立ち上げると、構成ファイルを検出できます!
+  hint: >-
+    このモッドを一度ゲームで起動してください。設定ファイルを検出できるようにするためです！
 forgeVersion:
   common: 一般
-  disable: Forgeを使用しない
-  empty: Minecraft {version} 用のForgeがありません
+  disable: Forgeを無効
+  empty: Minecraft {version} のリリースはありません
   latest: 最新
   name: Forge
   recommended: 推奨
-  showBuggy: Buggy版を表示する
-  showRecommendedAndLatestOnly: 推奨、最新版のみ
-  version: Forge バージョン
+  showBuggy: バグありを表示
+  showRecommendedAndLatestOnly: 推奨と最新のみ
+  version: Forgeバージョン
+gameSetting: {}
 gameType:
   adventure: アドベンチャーモード
   creative: クリエイティブモード
@@ -356,35 +376,38 @@ gameType:
   survival: サバイバルモード
 help: ヘルプ
 home: ホーム
+import:
+  title: インポート
 importModpack:
-  failed: '{modpack} のインポートに失敗'
-  name: Modpackをインポート
-  success: '{modpack} のインポートに成功しました'
-importResource: リソースのインポート
+  failed: "{modpack} のインポートに失敗しました"
+  name: モッドパックをインポート
+  description: モッドパック（.zipまたは.mrpack）をインポートしてインスタンスを作成
+  success: "{modpack} のインポートに成功しました"
+importResource: リソースをインポート
 install: インストール
 installAssets:
-  asset: '{count} 個のアセットをインストール'
+  asset: "{count} 個のアセットをインストール"
   assetIndex: アセットインデックスファイルを確認
   name: アセットファイルをインストール
 installAuthlibInjector: authlib-injectorをインストール
-installCurseforgeFile: Curseforge ファイルをインストール
+installCurseforgeFile: Curseforgeファイルをインストール
 installFabric:
-  name: Fabric をインストール
+  name: Fabricをインストール
 installForge:
   downloadInstaller: インストーラーをダウンロード
   library: ライブラリ {lib} をインストール
-  name: Forge をインストール
-  postProcessing: ポストプロセッシング
+  name: Forgeをインストール
+  postProcessing: 後処理
 installInstance:
-  file: 起動構成ファイル {file} をアップデート
-  link: '{count} 個のファイルをコピー、またはリンク'
-  name: 起動構成をアップデート
-  resolve: 起動構成を解決
-  unzip: '{count} 個のファイルを解凍'
+  file: インスタンスファイル {file} を更新
+  link: "{count} 個のファイルをコピーまたはリンク"
+  name: インスタンスを更新
+  resolve: インスタンス設定を解決
+  unzip: "{count} 個のファイルを解凍"
 installJre:
-  decompress: JREのファイルをフォルダーに解凍
-  download: 圧縮されたJREのファイルをダウンロード
-  name: Java Runtime Library (JRE) をインストール
+  decompress: JREファイルをフォルダに解凍
+  download: 圧縮されたJREファイルをダウンロード
+  name: Javaランタイムライブラリをインストール
 installLabyMod:
   asset: アセット {name} をインストール
   json: JSON {version} を生成
@@ -393,446 +416,447 @@ installLibraries:
   library: ライブラリをインストール
   name: ライブラリをインストール
 installModpack:
-  deploy: デプロイ
+  deploy: 展開
   download:
     file: ファイルをダウンロード
     name: ダウンロード
-  name: Modpackをインストール
-  unpack: Modpackを解凍
+  name: モッドパックをインストール
+  unpack: モッドパックを展開
 installModrinthFile:
   name: Modrinthをインストール
 installOptifine:
-  download: Optifine Universalをダウンロード
+  download: Optifineユニバーサルをダウンロード
   jar: Jarを生成
   json: Jsonを生成
-  name: Optifine をインストール
+  name: Optifineをインストール
 installResource:
-  fail: '{file} のインストールに失敗'
-  success: リソースファイル {file} のインストールに成功
+  fail: "{file} のインストールに失敗"
+  success: リソース {file} のインストールに成功
 installVersion:
-  jar: Jarファイルをインストール
-  json: Jsonファイルをインストール
-  name: Minecraft Client {version} をインストール
+  jar: バージョンJarをインストール
+  json: バージョンJsonをインストール
+  name: Minecraftクライアント {version} をインストール
 instance:
   addServer: サーバーを追加
   changeIcon: アイコンを変更
-  current: 現在の起動構成
+  current: 現在のインスタンス
   delete: ゲームを削除
-  deleteFailed: インスタンスの削除に失敗しました
+  deleteFailed: インスタンスの削除に失敗
   deleteFailedPermission: 他のプログラムがファイルを占有しています
-  deleteHint: 起動構成はディスクから永久に削除されます。続行しますか?
+  deleteHint: インスタンスデータはディスクから完全に削除されます。本当によろしいですか？
   duplicate: ゲームを複製
-  duplicatedName: 複製された名前
-  fileApi: ファイル同期サーバーのAPIのURL
-  fileApiHint: このURLはリモートの同期サーバーから起動構成ファイルを同期します。
-  fullscreen: 全画面表示
+  duplicatedName: 重複した名前
+  fileApi: 同期ファイルサーバーAPIのURL
+  fileApiHint: リモート設定サーバーからインスタンスファイルを同期するためのURL。
+  fullscreen: フルスクリーン
   gameVersion: ゲームバージョン
-  height: 身長
+  height: 高さ
   icon: プロファイルアイコン
-  iconHint: ファイルか画像のURLが使用できます。
-  iconUrl: アイコンのURL
-  includeVersion: 含まれたバージョン
-  installModpack: ModPackからインスタンスを更新します
-  lastPlayed: 最後にプレイ
-  launchArguments: 起動引数のプレビュー
-  launchServer: Localhostサーバーを立ち上げる
-  linkFileDesc: |-
-    これはローカルの{file}インスタンスをグローバルの{file}インスタンスで上書きします。
-    本当にマージしますか？
-  linkFileTitle: 本当に{file}をリンクしますか？
-  mcOptions: Minecraftのオプション
-  mcOptionsHint: 追加のMinecraft実行引数
-  name: 起動構成の名前
-  nameHint: Modpackの名前
-  nameNoCyrillic: キリル文字は使用できません
-  neverPlayed: 未プレイ
+  iconHint: アイコンはファイルまたはインターネットURLリンクです。
+  iconUrl: アイコンURL
+  includeVersion: バージョンを含める | バージョンを含める
+  installModpack: モッドパックからインスタンスを更新
+  lastPlayed: 最終プレイ日
+  launchArguments: 起動引数プレビュー
+  launchServer: ローカルホストサーバーを起動
+  linkFileDesc: >-
+    これにより、インスタンスのローカル {file} がグローバル {file} で上書きされます。リンクしてもよろしいですか？
+  linkFileTitle: "{file} をリンクしてもよろしいですか？"
+  mcOptions: Minecraftオプション
+  mcOptionsHint: 追加のMinecraft起動引数
+  name: プロファイル名
+  nameHint: モッドパックの名前
+  nameNoCyrillic: 名前にキリル文字を含めることはできません
+  neverPlayed: 一度もプレイしていません
   openCrashReportFolder: クラッシュレポートフォルダを開く
   openLogFolder: ログフォルダを開く
   playtime: プレイ時間
-  preExecCommand: プレスタート・コマンド
+  preExecCommand: 実行前コマンド
   preExecCommandHint: Minecraftを起動する前に実行するコマンド
-  prependCommand: 先頭にコマンドを追加
-  prependCommandHint: 全ての起動コマンドの先頭に追加されます
-  requireName: 名前は必須項目です
+  prependCommand: 先頭に追加するコマンド
+  prependCommandHint: これにより、すべての起動コマンドの前にこのコマンドを追加します
+  requireName: 名前が必要です
   resolution: 解像度
-  resolutionEnabled: カスタム認証を有効にする
+  resolutionEnabled: カスタム解像度を有効
   resolutionPreset: 解像度プリセット
-  showInstance: ゲームフォルダを開く
-  useSharedOptions: 一般的なゲーム設定を使用する
-  useSharedOptionsDesc: これでoptions.txtファイルがインスタンスの共有ファイルにリンクされる。
-  useSharedServersList: 共有サーバーのリストを使う
-  useSharedServersListDesc: これにより、server.datファイルがインスタンスの共有ファイルにリンクされる。
-  versionHint: この起動構成におけるMinecraftのバージョン
-  vmOptions: JVM実行引数
-  vmOptionsHint: JVMに渡される追加の引数
+  showInstance: ゲームフォルダを表示
+  useSharedOptions: 共有ゲーム設定を使用
+  useSharedOptionsDesc: これにより、options.txtをインスタンス間で共有されるファイルにリンクします
+  useSharedServersList: 共有サーバーリストを使用
+  useSharedServersListDesc: これにより、servers.datをインスタンス間で共有されるファイルにリンクします
+  versionHint: このゲームのMinecraftバージョン
+  vmOptions: JVMオプション
+  vmOptionsHint: JVMに渡す追加引数
   vmVar: 環境変数
-  vmVarHint: ボタンをクリックして環境変数を追加します
+  vmVarHint: +ボタンをクリックして環境変数を追加
   width: 幅
 instanceAge:
   older: 古い
-  threeDay: 三日以内
+  threeDay: 3日以内
   today: 今日
 instanceDiscover:
-  gameFolder: '{count} 個のゲーム フォルダーを発見する'
-  instanceFolder: '{count} 個のインスタンスが見つかりました'
+  gameFolder: "{count} 個のゲームフォルダを発見"
+  instanceFolder: "{count} 個のインスタンスが見つかりました"
 instanceFileOperation:
   add: 追加
-  backup-add: 置き換える (バックアップ)
-  backup-remove: 削除する (バックアップ)
-  keep: 保持する
+  backup-add: 置換（バックアップ）
+  backup-remove: 削除（バックアップ）
+  keep: 保持
   remove: 削除
 instanceInstallSkip:
-  ignore: 無視する
+  ignore: 無視
   skip: スキップ
-  title: 破損したファイルソースの可能性があります
-  warning: |-
-    一部のファイルは、チェックサムが一致しない状態で複数回ダウンロードされます。
-    これは、元のチェックサムが正しくないことが原因である可能性があります。
-    チェックしてください。
-    現在のファイルが有効であることを確認した場合は、検証チェックをスキップできます。
+  title: 潜在的な破損したファイルソース
+  warning: >-
+    いくつかのファイルはチェックサムが一致しない複数回ダウンロードされています。これは元のチェックサムが誤っている可能性があります。確認してください。現在のファイルが有効であることを確認した場合は、検証チェックをスキップできます。
 instanceSetting:
-  disableAuthlibInjector: authlib injectorを無効化する
-  disableAuthlibInjectorDescription: サードパーティのスキンシステムを使用しているのならば、authlib injectorはスキンの表示に役立ちます。
-  disableElyByAuthlib: ely.by のauthlibの置き換えを無効化
-  disableElyByAuthlibDescription: ely.by はユニークなauthlibの置き換えでどのサーバーでも互換性を保ちスキンを表示できます。
-  fastLaunch: 高速起動
-  fastLaunchHint: ユーザーステータスと問題を無視します
-  hideLauncher: ゲームの起動後ランチャーを隠す
+  disableAuthlibInjector: authlib injectorを無効
+  disableAuthlibInjectorDescription: >-
+    サードパーティのスキンシステムを使用している場合、authlib injectorはゲーム内でスキンを表示するのに役立ちます。
+  disableElyByAuthlib: ely.byのauthlib置換を無効
+  disableElyByAuthlibDescription: >-
+    Ely.byには、あらゆるサーバーでスキンを普遍的に表示するための独自のauthlib置換があります。
+  fastLaunch: 早回し起動
+  fastLaunchHint: ユーザーのステータスや既存の未修正の問題を無視
+  hideLauncher: 起動後にランチャーを非表示
   icon: 画像を選択
-  showLog: Minecraftのログを表示
-  showLogHint: ゲーム起動後にMinecraftのログを流すポップアップウィンドウを表示します
+  showLog: Minecraftログを表示
+  showLogHint: これにより、ゲーム開始後にMinecraftログをストリーミングするウィンドウがポップアップします
 instanceTemplate:
-  curseforge: Curseforge のModpackです
-  ftb: FTB のModpackです
-  importing: テンプレートをインポート
-  mcbbs: MCBBS のModpackです
-  modpack: 生のModpackです
-  modrinth: Modrinth のModpackです
-  preview: Modpackのプレビュー
-  title: テンプレートの設定
+  curseforge: これはCurseforgeモッドパックです
+  ftb: これはFTBモッドパックです
+  importing: テンプレートをインポート中
+  mcbbs: これはMCBBSモッドパックです
+  modpack: これは生のモッドパックです
+  modrinth: これはModrinthモッドパックです
+  preview: モッドパックプレビュー
+  title: テンプレート設定
 instanceUpdate:
-  basic: 設定の更新
-  files: ファイルのアップデート
+  basic: 設定更新
+  files: ファイル更新
   loaderChanged: >-
-    この起動構成のModloaderが変更されました。以前のModloaderは {modloader}, 現在のModloacerは
-    {newModLoader}です。
-  summary: |-
-    {add}ファイルを追加します。 
-    {remove}ファイルを削除します。 
-    {keep}ファイルを保持します。
-  title: 起動構成の更新
+    このインスタンスのモッドローダーが変更されました。以前のモッドローダーは {modloader} で、新しいモッドローダーは {newModloader} です。
+  summary: "{add} 個のファイルを追加。 {remove} 個のファイルを削除。 {keep} 個のファイルを保持。"
+  title: インスタンスを更新
   update: 更新を開始
 instances:
   add: ゲームを作成
-  addCurseForgeDescription: |-
-    Cursforge データ フォルダーからインポートします。 
-    Cursforgeのルートデータフォルダーを選択する必要があります
-  addDescription: 新しい起動構成を1から作る
-  addMMCDescription: |-
-    既存の MultiMC インスタンスをインポートします。 
-    MultiMC からデータ フォルダーを選択する必要があります。
+  addCurseForgeDescription: >-
+    Curseforgeデータフォルダからインポートします。Curseforgeのルートデータフォルダを選択する必要があります
+  addDescription: スクラッチから新しいインスタンスを作成
+  addMMCDescription: >-
+    既存のMultiMCインスタンスをインポートします。MultiMCからデータフォルダを選択する必要があります。
   addManually: 手動で作成
-  addModrinthDescription: |-
-    既存の Modrinth インスタンスをインポートします。 
-    Modrinth ルート データ フォルダーを選択する必要があります。
+  addModrinthDescription: >-
+    既存のModrinthインスタンスをインポートします。Modrinthのルートデータフォルダを選択する必要があります。
   addServer: サーバーから作成
-  addServerDescription: ゲームから直接立ち上げられるサーバーを作成します。
-  addTemplate: ダウンロードしたmodpackから作成
-  addTemplateDescription: ダウンロードされたModpackからインポート
-  addVanilla: Vanilla-LikeなMinecraftから作成
-  addVanillaDescription: 一般的な.minecraftフォルダからインポートします。これは元のプロファイルをXMCLに複製します。
+  addServerDescription: これにより、サーバーに直接起動するゲームが作成されます。
+  addTemplate: ダウンロードしたモッドパックから作成
+  addTemplateDescription: ダウンロードしたモッドパックからインポート
+  addVanilla: バニラ風のMinecraftから作成
+  addVanillaDescription: >-
+    一般的な .minecraft フォルダからインポートします。これにより、元のゲームプロファイルがXMCLに複製されます。
   choose: ゲームを選択
-  fix: 直す
-  folderSetting: フォルダーの設定
-  importFolder: フォルダーからインポート
+  fix: 修復
+  folderSetting: フォルダ設定
+  importFolder: フォルダからインポート
   importFolderDescription: Minecraftをランチャーにインポート
-  loadingFiles: Modpackファイルを読み込み中
+  loadingFiles: モッドパックファイルを読み込み中
   refreshServers: サーバーを更新
 items:
-  count: '{count} 個'
-  total: 合計 {total} 個
+  count: "{count} 個のアイテム"
+  total: "{total} 合計"
 java:
-  allocatedLong: システムのデフォルトのJavaを使用
-  allocatedShort: 自動割り当て
-  browse: Javaの実行可能ファイルを見る
-  importFromFile: Javaをファイルからインポート
-  invalid: Javaの場所が無効です
+  allocatedLong: システムのデフォルトJavaを使用
+  allocatedShort: 自動割当
+  browse: Java実行ファイルを参照
+  importFromFile: ファイルからJavaをインポート
+  invalid: 無効なJavaの場所
   location: Javaの場所
-  maxMemory: 最大メモリー割り当て
-  memory: Java メモリー
+  maxMemory: 最大メモリ
+  memory: Javaメモリ
   memoryAuto: 自動
   memoryManual: 手動
-  memoryUnassigned: 未割り当て
-  minMemory: 最低メモリー割り当て
-  modifyInstance: Javaのパスを編集
-  noMemory: メモリの使用を制限しない
-  refresh: ローカルのJavaをリフレッシュする
-  systemMemory: 'システム空きメモリ: {free} / {total}'
+  memoryUnassigned: 割り当て解除
+  minMemory: 最小メモリ
+  modifyInstance: Javaパスを変更
+  noMemory: メモリ使用量を制限しない
+  refresh: ローカルJavaを更新
+  systemMemory: "システム空きメモリ: {free} / {total}"
 labyMod:
-  disable: LabyMod を使用しない
-  empty: LabyMod は現在のMinecraftをサポートしていません
+  disable: LabyModを無効
+  empty: LabyModは現在のMinecraftをサポートしていません
 launch:
   cancel: キャンセル
-  createShortcut: ショートカットを作成します
+  createShortcut: ショートカットを作成
   kill: 停止
-  killServer: Localhost Serverを終了
+  killServer: ローカルホストサーバーを強制終了
   launch: 起動
-  launchAnyway: どちらでも走れる
+  launchAnyway: とにかく起動
 launchBlocked:
-  ignore: 強制的に起動
+  ignore: 強制起動
   launchBadVersion:
-    description: このバージョン {version} のjsonはこわれています。このバージョンを再インストールすると解決するかもしれません?
-    title: 破損したバージョンJSON
+    description: バージョン {version} jsonが破損しています。このバージョンを再インストールしてみてくださいか？
+    title: 不良バージョンJSON
   launchGeneralException:
-    description: いくつかのエラーが発生し、起動に失敗しました。
-    title: 起動に失敗
+    description: いくつかのエラーにより起動が失敗しました。
+    title: 起動失敗
   launchInvalidJavaPath:
     description: >-
-      選択されたJavaは存在しないか、無効です。他のJavaを選択してください。<span class="highlight"> {javaPath}
-      </span>
+      選択されたJavaが見つからないか無効です。新しいJavaを選択してください。<span
+      class="highlight"> {javaPath} </span>
     title: 無効なJavaパス
   launchJavaNoPermission:
     description: >-
-      ランチャーはJava <span class="highlight"> {javaPath} </span>
-      を実行する権限がありません。Javaのファイルの権限を変更するか、ランチャーの権限を昇格してください。
-    title: 起動する権限が不足
+      ランチャーにはJava <span
+      class="highlight"> {javaPath} </span> を実行する権限がありません。Javaファイルの権限を変更するか、ランチャーの権限を上げて再試行してください。それでも動作しない場合は、開発者に連絡してください。
+    title: 起動権限がありません
   launchNoProperJava:
-    description: ゲームを起動するための適切なJavaがありません。 ({javaPath}が無効かもしれません)
+    description: >-
+      ゲームを起動するための適切なJavaが選択できません。 ({javaPath} が無効？)
     title: 適切なJavaが見つかりません
   launchNoVersionInstalled:
-    description: バージョン <span class="highlight">{version}</span> を起動できません
+    description: <span class="highlight">{version}</span> を解決して起動できません。
     title: バージョンが選択されていません
   launchSpawnProcessFailed:
-    description: Javaを確認するか、ランチャーに多くの権限を与えて再度試してください。もし効果がなければ、開発者に連絡してください。
-    title: ゲームプロセスの起動に失敗
+    description: >-
+      Javaを確認するか、ランチャーにもっと権限を与えて再試行してください。それでも動作しない場合は、開発者に連絡してください。
+    title: ゲームプロセスの開始に失敗
   launchUserStatusRefreshFailed:
     description: 現在選択されているユーザーのステータスを更新できません。
-    title: ユーザーのステータスの認証に失敗
-  unexpectedText: これは予期されていません。問題を軽減するためランチャーを再起動することができます。もし再度起こったら著者に連絡してください。
-  userAcquireMicrosoftTokenFailed: Microsoftのトークンの取得に失敗しました。再度試すかアカウントを確認してください。
-  userCheckGameOwnershipFailed: Minecraftの所持の確認に失敗しました。再度試すかネットワーク接続を確認してください。
-  userExchangeXboxTokenFailed: MicrosoftトークンからのXboxトークンの取得に失敗しました。再度試すか、ネットワーク接続を確認してください。
-  userLoginMinecraftByXboxFailed: MinecraftへのXboxトークンでのログインに失敗しました。再度試すかネットワーク接続を確認してください。
+    title: ユーザーステータスの検証に失敗
+  unexpectedText: >-
+    これは予期しないことです。問題を軽減するためにランチャーを再起動できます。
+    この問題が再び発生する場合は、著者に連絡してください。
+  userAcquireMicrosoftTokenFailed: >-
+    Microsoftトークンの取得に失敗しました。再試行するか、Microsoftアカウントを確認してください。
+  userCheckGameOwnershipFailed: Minecraftの所有権の確認に失敗しました。再試行するか、ネットワークを確認してください。
+  userExchangeXboxTokenFailed: >-
+    MicrosoftトークンからXboxトークンの交換に失敗しました。再試行するか、ネットワークを確認してください。
+  userLoginMinecraftByXboxFailed: >-
+    XboxトークンでMinecraftにログインできませんでした。再試行するか、ネットワークを確認してください。
 launchFailed:
-  crash: ゲームがクラッシュしました!!!!
-  description: クラッシュレポートはありません。エラーログと最新のログです。
+  crash: ゲームがクラッシュしました！！
+  description: クラッシュレポートはありません。これはエラーログと最新のログです。
   elyByAuthlib:
     description: >-
-      Minecraft バージョン {version} に対して Ely.by の Authlib
-      置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。
-    suggestion: この問題を回避するには、インスタンス設定で Ely.by の Authlib 置換を無効にできます。
-    title: Ely.by Authlib の互換性の問題
-  failedToLaunch: ランチャーの起動に失敗
-  latestLog: 最新のログ
-  title: ゲームが異常なコードで終了しました
+      Minecraftバージョン {version} にEly.by authlib置換が使用されましたが、このバージョンは完全に互換性がない可能性があります。
+    suggestion: >-
+      この問題を回避するために、インスタンス設定でEly.byのauthlib置換を無効にできます。
+    title: Ely.by Authlib互換性の問題
+  failedToLaunch: 起動に失敗しました
+  latestLog: 最新ログ
+  title: 異常コードでゲームが終了しました
+launchPreExecuteCommandFailed:
+  description: >-
+    実行前コマンドがエラーで失敗しました: {error}。コマンドを確認して再試行してください。
+  title: 実行前コマンドが失敗しました
 launchStatus:
   assigningMemory: メモリを割り当て中
   elyByWarning: >-
-    Ely.by の Authlib 置換が有効になっています。いくつかの Minecraft
-    バージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合はインスタンス設定で無効にしてください。
-  exit: ゲームを終了しますか?
-  injectingAuthLib: サードパーティAuthLibを設定中
+    Ely.by authlib置換が有効です。一部のMinecraftバージョンは互換性がなく、クラッシュする可能性があります。問題が発生した場合は、インスタンス設定で無効にできます。
+  exit: ゲームを終了しますか？
+  injectingAuthLib: サードパーティのAuthLibを設定中
   launching: 起動中...
-  launchingSlow: まだ起動中です... グラフィックスエンジンの立ち上げは時間がかかるかもしれません...
+  launchingSlow: まだ起動中です...グラフィックエンジンの起動には時間がかかることがあります...
   refreshingUser: ユーザートークンを更新中
   spawningProcess: プロセスを生成中
 launcherUpdate:
-  alreadyLatest: 最新の状態です
-  installAndQuit: 再起動してインストールします
-  noUpdateAvailable: アップデートはありません
+  alreadyLatest: 最新です
+  installAndQuit: 再起動してインストール
+  noUpdateAvailable: 利用可能な更新はありません
   reinstall: 再インストール
   updateToThisVersion: ダウンロードしてインストール
 liteloader:
   name: LiteLoader
 localVersion:
-  auto: 自動で計算済み
+  auto: 自動計算
   delete: ローカルバージョンを削除
-  deleteDescription: この操作はローカルのjarとjsonを削除します。再度使うにはダウンロードし直す必要があります。
+  deleteDescription: >-
+    この操作により、ローカルバージョンのjsonおよびjarが削除されます。再度使用するには再ダウンロードが必要です。
   empty: バージョンがインストールされていません
-  hint: 特定のローカルバージョンを直接起動する
-  refresh: バージョンをリフレッシュ
-  reinstallDescription: もしこのバージョンのインストールに問題があるのなら、再インストールを試すことができます。
-  reinstallTitle: 再インストール {version}
-  title: ローカルバージョン
+  hint: 特定のローカルバージョンを直接起動
+  refresh: バージョンを更新
+  reinstallDescription: >-
+    このバージョンのインストールに問題があると思われる場合は、再インストールを試みてください。
+  reinstallTitle: "{version} を再インストール"
+  title: ローカルバージョン | ローカルバージョン
 logLevel:
   error: エラー
   info: 情報
   success: 成功
   warning: 警告
 login:
-  dropHint: ここに認証コードを含んだURLをドロップすることで手動でログインできます
-  forgetPassword: パスワードを忘れましたか?
+  dropHint: 手動ログイン用の認証コードをここにドロップ
+  forgetPassword: パスワードをお忘れですか？
   login: ログイン
-  manualLoginUrl: もしブラウザが表示されなかったら、このリンクをクリックして認証してください!
+  manualLoginUrl: ブラウザが表示されない場合は、このリンクをクリックして認証してください！
   signup: サインアップ
-  signupDescription: 初めてですか?
-  userRelogin: アカウントのトークンの期限が切れました。再ログインしてください!
+  signupDescription: 新規ユーザーですか？
+  userRelogin: ユーザーアクセストークンの有効期限が切れました。再ログインしてください！
 loginError:
-  acquireMicrosoftTokenFailed: Microsoftトークンの取得に失敗しました。おそらくネットワークに問題があります。再度試してください。
-  badNetworkOrServer: ネットワークの接続状態を確認してください! または認証サーバーがダウンしています!
-  checkOwnershipFailed: ゲームの所有権の確認に失敗しました。再度試してください。
-  connectionReset: サーバーからの接続のリセットによりログインに失敗しました
-  fetchMinecraftProfileFailed: Minecraftプロファイルの取得に失敗しました。 {reason}
-  illegalEmail: メールアドレスが無効です
-  invalidCredentials: 認証情報が無効です。ユーザー名またはパスワードが間違っています。
+  acquireMicrosoftTokenFailed: >-
+    Microsoftトークンの取得に失敗しました。これはネットワークの問題かもしれません。再試行してください。
+  badNetworkOrServer: >-
+    ネットワーク接続を確認してください！または認証サーバーがダウンしている可能性があります！
+  checkOwnershipFailed: ゲーム所有権の確認に失敗しました。再試行してください。
+  connectionReset: 接続がサーバーによってリセットされたため、ログインに失敗しました
+  fetchMinecraftProfileFailed: "Minecraftプロファイルの取得に失敗しました: {reason}"
+  illegalEmail: メールアドレスは有効でなければなりません
+  invalidCredentials: 認証情報が無効です。ユーザー名またはパスワードが無効です。
   loginMinecraftByXboxFailed: >-
-    XboxトークンのMinecraftトークンへの引き換えに失敗しました。XboxでMinecraftを所持しているか確認してください。再度試してください。
-  loginXboxAgeRestricted: |-
-    年齢の問題が原因でXboxのログインに失敗します。 
-    Microsoftアカウントの年齢が設定されており、年齢が18を超えていることを確認してください。
+    XboxトークンによるMinecraftトークンの交換に失敗しました。XboxにMinecraftがあることを確認するか、再試行してください。
+  loginXboxAgeRestricted: >-
+    年齢の問題によりXboxにログインできませんでした。Microsoftアカウントの年齢が設定されており、18歳以上であることを確認してください。
   loginXboxFailed: >-
-    MicrosoftトークンでのXboxへのログインに失敗しました。Microsoftアカウントへ接続された孤立していないXboxアカウントか確認してください。再度試してください。
-  noProfileForNewUser: |-
-    ゲームプロファイルは見つかりません！
-    新しいMinecraftユーザーの場合は、Minecraftの公式ランチャーで少なくとも1回ログインしてください。
-  requestFailed: ログインに失敗しました。理由は不明です。再度試してください。
+    MicrosoftトークンによるXboxへのログインに失敗しました。Microsoftアカウントに独立したXboxアカウントがあることを確認してください。再試行してください。
+  noProfileForNewUser: >-
+    ゲームプロファイルが見つかりません！Minecraftの新規ユーザーの場合は、Minecraft公式ランチャーで少なくとも一度ログインしてください。
+  requestFailed: ログインに失敗しました。正確な理由は不明です。再試行してください。
   requireEmail: メールアドレスが必要です
   requirePassword: パスワードが必要です
   requireUsername: ユーザー名が必要です
-  timeout: ログインがタイムアウトしました。再度試すかネットワークを確認してください。
+  timeout: ログイントイムアウト。再試行するか、ネットワークを確認してください。
 logsCrashes:
   crashes: クラッシュレポート
   logs: ログ
-  placeholder: ファイルが見つかりませんでした
-  title: ログ、またはクラッシュレポート
+  placeholder: ファイルが見つかりません
+  title: ログまたはクラッシュレポート
 me:
-  games: ゲーム
-  modpacks: 私のModpack
+  games: マイゲーム
+  modpacks: マイモッドパック
   news: ニュース
-  recentPlay: プレイの履歴
-  versions: インストール済みバージョン
+  recentPlay: 最近のプレイ
+  versions: インストールされたバージョン
 minecraftVersion:
-  empty: Minecraftバージョンが読み込めません
-  name: Minecraft バージョン
+  empty: Minecraftバージョンを読み込めません
+  name: Minecraftバージョン
   release: リリース
   showAlpha: スナップショットを表示
   snapshot: スナップショット
 mod:
-  acceptVersion: '{version} を受け入れる'
-  applyGroupRules: 保存されたグループ化ルールを適用します
-  compatible: 利用可能なModです。
+  acceptVersion: "{version} を受け入れる"
+  applyGroupRules: 保存されたグループ化ルールを適用
+  compatible: 互換性のあるモッド。
   currentVersion: 現在 {current}
-  deletion: Modを削除
-  deletionHint: あなたはこのModとそのメタデータを失います。削除しますか? | あなたはこれらのModとそのメタデータを失います。本当に続行しますか?
-  deletionRestHint: '{rest} 個のmod...'
-  denseView: コンパクトなビュー
-  dropHint: ここにModファイル(.jar/.litemod)をドロップしてインポートします。
-  duplicatedDetected: '{count} 個の重複した MOD'
-  duplicatedDetectedDescription: |-
-    同じ MOD ID で異なるファイルを持つ MOD が見つかりました。
-    これにより、Minecraft がクラッシュする可能性があります。
-    保存したいファイルを選択してください。
-  enabled: '{count} 個のModが有効'
-  filter: Modをフィルタ
-  group: グループアップ
-  groupInstalled: グループでインストールされたMod
-  hasUpdate: Modにアップデートがあります!
-  hideIncompatible: 適合しないModを隠す
-  incompatible: 適合しないModです。
-  incompatibleHint: MOD 互換性レポートを確認してください
-  incompatibleHintDescription: |-
-    一部の MOD の依存関係が欠落している可能性があります。
-    または、一部の依存関係のバージョンが一致しません。
+  deletion: モッドを削除
+  deletionHint: >-
+    このモッドとそのメタデータを永遠に失います。削除してもよろしいですか？ | これらのモッドとそのメタデータを永遠に失います。削除してもよろしいですか？
+  deletionRestHint: および他 {rest} 個のモッド...
+  denseView: 密集表示
+  dropHint: モッドの .jar/.litemod をここにドロップしてインポート。
+  duplicatedDetected: "{count} 個の重複モッド"
+  duplicatedDetectedDescription: >-
+    同じモッドIDを持つモッドがファイルは異なるものが見つかりました。これによりMinecraftがクラッシュする可能性があります。保持したいファイルを選択してください。
+  enabled: "{count} 個のモッドが有効"
+  filter: モッドをフィルター
+  group: グループ化
+  groupInstalled: インストールされたモッドをグループ化
+  hasUpdate: モッドに新しいバージョンがあります！
+  hideIncompatible: 互換性のないモッドを非表示
+  incompatible: 互換性のないモッド。
+  incompatibleHint: モッド互換性レポートを確認してください
+  incompatibleHintDescription: >-
+    いくつかのモッドの依存関係が欠落しているか、いくつかの依存関係のバージョンが一致していません。
   manage: 管理
-  maybeCompatible: おそらく適合しません。
-  modloaderSelectHint: |-
-    MOD は以下の MOD ローダーをサポートしています。
-    インストールするものを選択してください。
-  modloaderSelectNotSupported: Minecraft {minecraft} の {modloader} が見つかりません
-  mods: '{count} Mods'
-  name: Mod | Mods
-  noModLoaderHint: Modを使うためにModloaderを有効化するのを忘れないでください!
-  openLink: ModのURL {url} を開く
-  search: Modを検索
-  searchOnCurseforge: Curseforgeで {name} を検索
-  searchOnMcWiki: Mod {name} をMcWikiで見る
+  maybeCompatible: 多分互換性あり。
+  modloaderSelectHint: モッドは以下のモッドローダーをサポートしています。インストールするものを選択してください。
+  modloaderSelectNotSupported: Minecraft {minecraft} に {modloader} が見つかりません
+  mods: "{count} 個のモッド"
+  name: モッド | モッド
+  noModLoaderHint: モッドを使用するにはモッドローダーを有効にすることを忘れないでください！
+  openLink: モッドURL {url} を開く
+  search: モッドを検索
+  searchOnCurseforge: curseforgeで {name} を検索
+  searchOnMcWiki: MC百科事典で {name} を検索
   searchOnModrinth: Modrinthで {name} を検索
-  showDirectory: Modsディレクトリを見る
-  showFile: Modディレクトリ {file} を表示
-  showInCurseforge: CurseforgeでModを見る
-  showInModrinth: Modrinthで {name} を見る
-  switchDefaultSource: Modのデフォルトソースを切り替え
-  syncGroupRules: グループ化ルールの保存
-  toUpdate: '{count} 個のアップデート'
-  ungroup: グループ化
+  showDirectory: モッドディレクトリを表示
+  showFile: モッドパス {file} を表示
+  showInCurseforge: curseforgeでモッドを表示
+  showInModrinth: Modrinthで {name} を表示
+  switchDefaultSource: デフォルトモッドソース
+  syncGroupRules: グループ化ルールを保存
+  toUpdate: "{count} 個の更新"
+  ungroup: グループ解除
 modFilter:
-  clear: クリアフィルター
-  dependenciesInstallOnly: 見逃された依存関係のMODのみを表示します
-  disabledOnly: 障害のあるMODのみを表示します
-  hasUpdateOnly: ショーのみに更新modがあります
-  incompatibleOnly: 互換性のないmodのみを表示します
-  unusedOnly: 未使用のライブラリMODのみを表示します
+  clear: フィルターをクリア
+  dependenciesInstallOnly: 欠落している依存関係モッドのみ表示
+  disabledOnly: 無効なモッドのみ表示
+  hasUpdateOnly: 更新のあるモッドのみ表示
+  incompatibleOnly: 互換性がないか、依存関係が欠落しているモッドのみ表示
+  unusedOnly: 未使用のライブラリモッドのみ表示
 modInstall:
-  archived: '{name} はアーカイブされました。 作者がアーカイブを解除しない限り {name} はアップデートを受け取りません。'
+  archived: >-
+    {name} はアーカイブされました。{name} は著者がプロジェクトをアーカイブ解除しない限り、これ以上の更新を受けません。
   checkDependencies: 依存関係を確認
-  checkUpgrade: アップデートを確認
+  checkUpgrade: モッド更新を確認
   checkedDependencies: 依存関係を確認しました
-  checkedUpgrade: アップデートを確認しました
+  checkedUpgrade: アップグレードを確認しました
   currentVersion: 選択されたバージョン
-  dependencyHint: 他のバージョン {version} がインストールされています
-  display: modsディスプレイ
+  dependencyHint: 別のバージョン {version} がインストールされました
+  display: モッド表示
   install: インストール
-  installDependencies: 未インストールの依存関係をインストール
-  installHint: '{file} を {dependencies} 個の依存関係とインストール'
+  installDependencies: 欠落している依存関係をインストール
+  installHint: "{file} ファイルを {dependencies} 個の依存関係と共にインストールします"
   installed: インストール済み
-  noVersionSupported: このModはMinecraft {supported} のみサポートしています。
-  recommendation: '{modrinth}と{curseforge}で{first} modsを探索してください！'
-  removeUnusedLibraries: 未使用のライブラリMODを削除します
+  noVersionSupported: モッドはMinecraft {supported} のみをサポートしています。
+  recommendation: "{modrinth} と {curseforge} で最初の {first} 個のモッドを探索してください！"
+  removeUnusedLibraries: 未使用のライブラリモッドを削除
   search: 検索結果
-  skipVersion: 異なる Minecraft バージョンの Mod をスキップする
-  source: Modソース
+  skipVersion: Minecraftバージョンが異なるモッドをスキップ
+  source: モッドソース
   switch: バージョンを切り替え
-  upgrade: Modをアップグレード
+  upgrade: モッドをアップグレード
 modSearch:
-  noLocalModsFound: 検索に一致するローカルModが見つかりません。
-  noModsFound: Modが見つかりません。
-  noModsInstalled: まだModがインストールされていません。
-  searchInMarket: '{keyword} をマーケットで検索'
+  noLocalModsFound: 検索に一致するローカルモッドが見つかりません。
+  noModsFound: モッドが見つかりません。
+  noModsInstalled: モッドがインストールされていません。
+  searchInMarket: マーケットで {keyword} を検索
 modUpgradePolicy:
-  curseforge: カースフォージ・ファースト
+  curseforge: Curseforge優先
   curseforgeOnly: Curseforgeのみ
-  modrinth: モドリンスファースト
-  modrinthOnly: モドリンスのみ
-  name: ポリシーをアップグレードします
+  modrinth: Modrinth優先
+  modrinthOnly: Modrinthのみ
+  name: アップグレードポリシー
 modified:
   reset: リセット
   save: 保存
-  unsaved: 変更が保存されていません!
+  unsaved: 変更が保存されていません！
 modpack:
-  author: 著者名
-  authorHint: これらはエクスポートされたModpackに署名する際使われます (Curseforge)
+  author: 作者名
+  authorHint: これはエクスポートされたモッドパックに署名するために使用される場合があります (Curseforge)
   delete:
-    hint: Modpack {name} とメタデータを削除します。続行しますか?
-    title: Modpackを削除
+    hint: これにより、モッドパック {name} とそのメタデータが削除されます。本当によろしいですか？
+    title: モッドパックを削除
   description: 説明
-  descriptionHint: このModpackにおける全般的な説明です。Curseforge Modpackとしてエクスポートする際使われます。
-  dropHint: ここにModpackのzipをドロップしてインポートします。
-  emitCurseforge: Curseforge modpackをエクスポートします
-  emitMcbbs: MCBBS Modpackをエクスポートします
-  emitModrinth: Modrinth Modpackをエクスポートします
-  emitModrinthStrict: 厳密なModrinthフォーマット
-  emitModrinthStrictDescription: Modrinthのドキュメントに記載された4つのドメインのURLのみ許可します
-  export: Modpackとしてエクスポート
+  descriptionHint: >-
+    モッドパックの一般的な説明。Curseforgeモッドパックとしてエクスポートするために使用される場合があります。
+  dropHint: モッドパックzipをここにドロップしてインポート
+  emitCurseforge: Curseforgeモッドパックをエクスポート
+  emitMcbbs: MCBBSモッドパックをエクスポート
+  emitModrinth: Modrinthモッドパックをエクスポート
+  emitModrinthStrict: 厳格なModrinth形式
+  emitModrinthStrictDescription: Modrinthドキュメントにリストされている4つのドメインからのURLのみが許可されます
+  export: モッドパックとしてエクスポート
   exportDirectory: エクスポートディレクトリ
-  exportDirectoryDescription: ModPackはデフォルトでダウンロードフォルダーにエクスポートされます
-  general: 全般
-  includeAssets: アセットを含む
-  includeLibraries: ライブラリを含む
+  exportDirectoryDescription: モッドパックはデフォルトでダウンロードフォルダにエクスポートされます
+  general: 一般情報
+  includeAssets: アセットを含める
+  includeLibraries: ライブラリを含める
   includes: 含めるファイル
-  modpackVersion: Modpackのバージョン
-  name: Modpack | Modpacks
+  modpackVersion: モッドパックバージョン
+  name: モッドパック | モッドパック
   overrides: オーバーライド
-  showFile: ファイルを見る {file}
-  showInCurseforge: Curseforgeで {name} を見る
-  showInFtb: FTBで {name} を見る
-  showInModrinth: Modrinthで {name} を見る
+  showFile: ファイル {file} を表示
+  showInCurseforge: Curseforgeで {name} を表示
+  showInFtb: FTBで {name} を表示
+  showInModrinth: Modrinthで {name} を表示
   url: URL
-  urlHint: あなたのModpackのホームページのURL
+  urlHint: モッドパックのホームページURL
 modpackImportConfirm:
-  description: |-
-    ファイルをランチャーにドロップすることを検出します。 
-    modpackをインポートしようとしていますか？
-  title: modpackをインポートしようとしていますか？
+  description: >-
+    ファイルをランチャーにドロップしたことを検出しました。モッドパックをインポートしようとしていますか？
+  title: モッドパックをインポートしようとしていますか？
 modrinth:
   browseUrl: ブラウザで開く {url}
   categories:
@@ -844,20 +868,20 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    adventure: 冒険
+    adventure: アドベンチャー
     atmosphere: 雰囲気
-    audio: オーディオ
+    audio: 音声
     blocks: ブロック
-    bloom: Bloom
+    bloom: ブルーム
     bukkit: Bukkit
-    bungeecord: Bungeecord
+    bungeecord: BungeeCord
     canvas: Canvas
     cartoon: カートゥーン
-    categories: カテゴリー
-    challenging: 挑戦的
-    colored-lighting: 色付き照明
+    categories: カテゴリ
+    challenging: チャレンジング
+    colored-lighting: カラーライティング
     combat: 戦闘
-    core-shaders: シェーダー
+    core-shaders: コアシェーダー
     cursed: 呪われた
     datapack: データパック
     decoration: 装飾
@@ -869,18 +893,18 @@ modrinth:
     fantasy: ファンタジー
     features: 機能
     folia: Folia
-    foliage: Foliage
+    foliage: 葉
     fonts: フォント
-    food: 食料
+    food: 食べ物
     forge: Forge
     game-mechanics: ゲームメカニクス
     gui: GUI
     high: 高
     iris: Iris
     items: アイテム
-    kitchen-sink: キッチンシンク
+    kitchen-sink: ありとあらゆる
     library: ライブラリ
-    lightweight: 軽量化
+    lightweight: 軽量
     liteloader: LiteLoader
     locale: ロケール
     low: 低
@@ -890,39 +914,39 @@ modrinth:
     minecraft: Minecraft
     minigame: ミニゲーム
     misc: その他
-    mobs: Mobs
-    modded: Modded
+    mobs: モブ
+    modded: モッド
     models: モデル
-    modloader: Modローダー
+    modloader: モッドローダー
     multiplayer: マルチプレイヤー
-    name: カテゴリー
+    name: カテゴリ
     neoforge: NeoForge
-    optifine: Optifine
+    optifine: OptiFine
     optimization: 最適化
     paper: Paper
     path-tracing: パストレーシング
     pbr: PBR
-    performance impact: パフォーマンスインパクト
+    performance impact: パフォーマンスへの影響
     potato: じゃがいも
     purpur: Purpur
     quests: クエスト
     quilt: Quilt
-    realistic: 現実的
+    realistic: リアリスティック
     reflections: 反射
     resolutions: 解像度
     rift: Rift
     screenshot: スクリーンショット
-    semi-realistic: 半写実的
+    semi-realistic: セミリアリスティック
     shadows: 影
     simplistic: シンプル
     social: ソーシャル
     spigot: Spigot
     sponge: Sponge
     storage: ストレージ
-    technology: テクノロジー
+    technology: 技術
     themed: テーマ
-    transportation: 輸送
-    tweaks: 調整
+    transportation: 交通
+    tweaks: トゥイーク
     utility: ユーティリティ
     vanilla: バニラ
     vanilla-like: バニラ風
@@ -931,8 +955,8 @@ modrinth:
     worldgen: ワールド生成
   clientSide: クライアントサイド
   copyTitle: テキスト {title} をクリップボードにコピー
-  createAt: 作成済み
-  createCollection: コレクションを作成します
+  createAt: 作成日
+  createCollection: コレクションを作成
   description: 説明
   downloads: ダウンロード
   environments:
@@ -942,655 +966,707 @@ modrinth:
     optional: オプション
     required: 必須
     server: サーバー
-    unsupported: 未サポート
-  externalResources: 外部リンク
-  featuredVersions: 推奨バージョン
-  followedProjects: プロジェクトに従った
+    unsupported: サポートされていない
+  externalResources: 外部リソース
+  featuredVersions: 特集バージョン
+  followedProjects: フォロー中のプロジェクト
   followers: フォロワー
   gallery: ギャラリー
   gameVersions:
     name: ゲームバージョン
   headers:
-    status: 状態
+    status: ステータス
     support: サポート
     version: バージョン
-  issueUrl: Issue
+  issueUrl: 問題
   license: ライセンス
   licenses:
     name: ライセンス
-  loginHint: |-
-    操作には、実行するにはmodrinthが必要です。
-    ランチャーは、ブラウザウィンドウを開き、Modrinthをログインします。
-  loginTitle: Modrinthにログインします
+  loginHint: >-
+    この操作にはModrinthの実行が必要です。ランチャーはModrinthにログインするためのブラウザウィンドウを開きます。
+  loginTitle: Modrinthにログイン
   modLoaders:
-    name: Modローダー
-  perPage: ページ毎
+    name: モッドローダー
+  perPage: ページごと
   projectId: プロジェクトID
   projectMembers: プロジェクトメンバー
   projectType:
-    mod: Mod
-    modpack: Modpack
+    mod: モッド
+    modpack: モッドパック
     name: プロジェクトタイプ
     resourcePack: リソースパック
     shader: シェーダー
-  projects: '{count}プロジェクト'
-  quickSearch: 検索 {title}
+  projects: "{count} 個のプロジェクト"
+  quickSearch: "{title} を検索"
   searchText: 検索
   serverSide: サーバーサイド
   sort:
-    downloads: 合計ダウンロード数
-    follows: フォロー数
-    newest: 最近作成された
+    downloads: ダウンロード数
+    follows: フォローカウント
+    newest: 最近作成
     relevance: 関連性
-    title: ソート順
-    updated: 最近アップデートされた
+    title: 並び替え
+    updated: 最近更新
   sourceUrl: ソース
-  technicalInformation: 技術的な情報
-  updateAt: アップデート済み
+  technicalInformation: 技術情報
+  updateAt: 更新日
   versions: バージョン
-  wikiUrl: Wiki
+  wikiUrl: ウィキ
 modrinthCard:
   currentVersion: 現在のバージョン
   projectHint: >
-    この起動構成は Modrinth modpack <code class="rounded p-1" style="background:
-    rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>) で作成されました
+    このインスタンスはModrinthモッドパックから作成されました <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (プロジェクトID:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
-  allowTurn: リレーサーバーを有効化
-  allowTurnHint: フレンドに接続できない場合はリレーサーバーを有効にしてください。リレーサーバーは接続速度を低下させる可能性があります。注意して使用してください。
+  allowTurn: リレーサーバーを有効
+  allowTurnHint: >-
+    友達と接続できない場合はリレーサーバーを許可してください。ただし、リレーサーバーを使用すると接続が遅くなる可能性があります。注意して使用してください。
   complete: 完了
-  confirm: 続行
+  confirm: 確認
   connections: 接続
-  copied: コピー済み!
+  copied: コピーしました！
   copy: コピー
-  copyGroupToFriendHint: このIDでフレンドをグループに追加できます
-  copyLocalHint: >-
-    "ローカルSDPテキストをコピーして接続に参加してください <span>一つのトークンで接続できるピアは <span style="color:
-    red; font-weight: bold;">1つ</span>のみです! 同じトークンを複数のピアに送ることはできません!</span> <br>
-    <span class="hint-text" style="font-style: italic;">複数のピアに接続する必要がある場合、 <span
-    style="font-weight: bold; color: rgba(245, 158,
-    11)">複数の</span>接続を作ってください</span>"
+  copyGroupToFriendHint: 友達がグループに参加するためにこのIDを使用させます
+  copyLocalHint: >
+    "ローカルSDPテキストをコピーして、相手に送信し、相手がこのテキストを「接続に参加」セクションに入力するようにしてください <span>トークンは<span style="color: red; font-weight: bold;">1つのピア</span>に対してのみ使用できます！同じトークンを複数のピアに送信しないでください！</span> <br> <span class="hint-text"
+    style="font-style: italic;">複数のピアに接続する必要がある場合は、<span style="font-weight: bold; color: rgba(245, 158,
+    11)">複数の</span>接続を作成する必要があります。</span>"
   createLocalToken: ローカルトークンを作成
   currentIpTitle: 検出されたパブリックIP
-  currentNatTitle: '現在のネットワーク (NAT):'
-  difficultyLevelHint: 接続を作成する難易度
+  currentNatTitle: "現在のネットワーク (NAT):"
+  difficultyLevelHint: 接続作成の難易度
   disconnect: 切断
-  disconnectDescription: ユーザー {user}({id}) との接続を切断しますか?
-  disconnected: 切断済み
+  disconnectDescription: ユーザー {user}({id}) との接続を切断してもよろしいですか？
+  disconnected: 切断されました
   enterRemoteToken: リモートトークンを入力
-  enterRemoteTokenHint: あなたのピアがトークンを入力したら、あなたが相手側のトークンを下に入力する必要があります。続行を押して接続します。
-  exposedPortDescription: ピアに公開されるポート
-  exposedPorts: 開かれたポート
-  gatheringIce: |-
-    "ICEサーバーがあなたのネットワークについての情報を収集するまでお待ち下さい。 もしあなたが急いでいて十分な情報をお持ちであれば、
-    現在のSDPを相手に事前に伝えておいて次へをクリックしてください。 次に <span class="v-chip v-chip--label
-    v-size--small" style="text-font: bold" >ローカルトークン</span> をあなたのピアに送って、
-    相手のトークンを <span class="v-chip v-chip--label v-size--small" style="text-font:
-    bold"> 接続に参加 </span> を押してください。 <br> ICEサーバーが <span class="v-chip
-    v-chip--label v-size--small" style="text-font:
-    bold">ローカルトークン</span>を作成するのに十分な情報を集めることに時間がかかることがあります<br>
-    ICEステータスが完了になるまで待つ必要はありません。 以下のトークンが変更されていない場合、それをコピーし相手のピアに送信できます。"
+  enterRemoteTokenHint: >-
+    相手がトークンを入力したら、そのトークンを下のテキストエリアに入力してください。確認をクリックして接続してください。
+  exposedPortDescription: 他のピアに公開したポート
+  exposedPorts: ポートフォワーディング
+  gatheringIce: >
+    "ICEサーバーがネットワークに関する情報を十分に収集するのを待ってください。急いでいる場合は、情報が十分にある場合、現在のSDPを相手に事前に送信して「次へ」をクリックできます <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >ローカルトークン</span> を相手に送信し、相手が<span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 接続に参加 </span>セクションにトークンを入力するようにしてください。<br> ICEサーバーは<span class="v-chip v-chip--label v-size--small" style="text-font: bold">ローカルトークン</span>を作成するためにあなたの情報を収集するのに時間がかかる場合があります。<br> ICEステータスが完了するまで待つ必要はありません。下のトークンが変更されていない場合は、コピーして相手に送信できます。"
   groupId: グループID
-  illegalTokenDescription: 無効なトークンです。あなたのピアから受け取ったトークンが正しいか確認してください。
-  initiateConnection: 接続を初期化
+  illegalTokenDescription: 不正なトークンです。相手からのトークンが正しいことを確認してください
+  initiateConnection: 接続を開始
   inviteLink: 招待リンク
-  joinConnection: もしあなたのピアがすでに接続を初期化していた場合、接続に参加する必要があります。
+  joinConnection: >-
+    相手が既に接続を開始している場合は、「接続に参加」する必要があります。
   joinManual: 参加
-  joinOrCreateGroup: グループに参加/グループを作成
-  joinOrCreateGroupHint: あなたのグループIDを取得するかグループを作成してください
-  kernel: P2P カーネル
-  kernelDescription: ネイティブ WebRTCまたはNode-Datachannelを使用します。P2P接続によりランチャーがクラッシュする時のみ切り替えてください。
-  leaveGroup: グループを抜ける
+  joinOrCreateGroup: グループに参加/作成
+  joinOrCreateGroupHint: 友達からグループIDを取得するか、グループを作成してください
+  kernel: P2Pカーネル
+  kernelDescription: >-
+    ネイティブWebRTCまたはnode-datachannelのいずれかを使用します。P2P接続がランチャーのウィンドウをクラッシュさせる場合は、この設定を切り替えてください。
+  leaveGroup: グループを退出
   localToken: ローカルトークン
   manualConnect: 手動接続
-  name: LAN マルチプレイヤー
+  name: LAN上のマルチプレイヤー
   networkInfo: ネットワーク情報
   next: 次へ
-  otherExposedPortDescription: ポートは {user} によりフォワードされています
-  placeholder: 他のユーザーに接続しMinecraftでLANマルチプレイをしましょう!
-  previous: 戻る
-  receiveHint: 他のパーティーがあなたのトークンを入力した後、あなたの接続は自動で接続されます。ダイアログを閉じることができます
-  receiveRemoteTokenHint: あなたのピアから受け取ったトークンを入力してください
+  otherExposedPortDescription: "{user} によってフォワーディングされたポート"
+  placeholder: 他のユーザーと接続してMinecraftをLANプレイ！
+  previous: 前へ
+  receiveHint: >-
+    他方がトークンを入力すると、接続が自動的に作成されます。これでダイアログを閉じることができます。
+  receiveRemoteTokenHint: ここに相手からのトークンを入力してください。
   remoteToken: リモートトークン
   routerInfo: ルーター情報
-  sendTokenToRemote: リモートにトークンを送る
-  share: 起動構成を共有する
+  sendTokenToRemote: トークンをリモートに送信
+  share: インスタンス設定を共有
   sharing: ファイルを共有中...
-  sharingNotificationBody: '{name} から起動構成、共有された設定をダウンロード/作成できます'
-  sharingNotificationTitle: ピアはゲームの設定を共有しています
-  start: スタート
-  startNewP2PConnection: スタートボタンをクリックして新しいピアへの接続を作成します
-myStuff: 私の作品
+  sharingNotificationBody: "{name} が共有した設定からインスタンスをダウンロードまたは作成できます。"
+  sharingNotificationTitle: ピアがゲーム設定を共有しています
+  start: 開始
+  startNewP2PConnection: 新しいピア接続を作成するには「開始」ボタンをクリックしてください
+myStuff: マイストァフ
 name: 名前
 natType:
-  blocked: ブロックされた
-  fullCone: Full Cone
+  blocked: ブロック
+  fullCone: フルコーン
   openInternet: オープンインターネット
-  restrictNat: Ristrict NAT
-  restrictPortNat: Restrict Port NAT
-  symmetricNat: Symmetric NAT
-  symmetricUDPFirewall: Symmetric UDP Firewall
-  unknown: 未知
+  restrictNat: 制限NAT
+  restrictPortNat: 制限ポートNAT
+  symmetricNat: 対称NAT
+  symmetricUDPFirewall: 対称UDPファイアウォール
+  unknown: 不明
 neoForgedVersion:
-  disable: NeoForge を使用しない
-  empty: NeoForgeはMinecraft {version} をサポートしていません
-  name: NeoForge
+  disable: NeoForgedを無効
+  empty: NeoForgedは {version} をサポートしていません
+  name: NeoForged
 news:
   name: ニュース
-  readMore: さらに読む
+  readMore: 続きを読む
 next: 次へ
-'no': いいえ
-ok: はい
+"no": いいえ
+ok: OK
 optifineVersion:
-  disable: Optifine を使用しない
+  disable: Optifineを無効
   empty: OptifineはMinecraft {version} をサポートしていません
 optional: オプション
 peerConnectionState:
-  closed: クローズ
+  closed: 閉じた
   connected: 接続済み
   connecting: 接続中
-  disconnected: 切断済み
+  disconnected: 切断
   failed: 失敗
   name: 接続状態
   new: 新規
 peerGroupState:
-  closed: グループに未参加
-  closing: クローズ
-  connected: 参加済み
+  closed: グループにいません
+  closing: 閉じる
+  connected: グループに参加
   connecting: 接続中
 peerIceGatheringState:
-  gathering: ICEサーバーを取得中
+  gathering: ICEサーバーを収集中
 peerSignalingState:
-  have-local-offer: ピアの情報を待機中
-popular: 有名度
+  have-local-offer: ピアの説明を待っています
+popular: 人気
 presence:
-  curseforge: Curseforgeを閲覧中
-  curseforgeProject: Curseforgeで {name} を閲覧中
-  instance: 起動構成 {instance} でアイドル中
-  instanceSetting: '起動構成を編集: {instance}'
-  mod: '{instance} でModを閲覧中'
-  modrinth: Modrinthを閲覧中
-  modrinthProject: Modrinthで {name} を閲覧中
-  resourcePack: リソースパックを {instance} で閲覧中
-  save: セーブデータを {instance} で閲覧中
-  setting: 設定ページを閲覧中
-  shaderPack: '{instance} でシェーダーパックを閲覧中'
-  version: バージョンページを閲覧中
-previous: 以前の
+  curseforge: CurseForgeを表示中
+  curseforgeProject: curseforgeで {name} を表示中
+  instance: インスタンス {instance} でアイドル
+  instanceSetting: "インスタンス設定を編集: {instance}"
+  mod: "{instance} でモッドを表示中"
+  modrinth: Modrinthを表示中
+  modrinthProject: Modrinthで {name} を表示中
+  resourcePack: "{instance} でリソースパックを表示中"
+  save: "{instance} でセーブを表示中"
+  setting: 設定ページを表示中
+  shaderPack: "{instance} でシェーダーパックを表示中"
+  version: バージョンページを表示中
+previous: 前へ
 proxy:
   host: ホスト
   port: ポート
 quiltVersion:
-  disable: Quilt を使用しない
+  disable: Quiltを無効
   empty: QuiltはMinecraft {version} をサポートしていません
-refresh: 最新の情報に更新
-refreshResource: リソースをリフレッシュ
+refresh: 更新
+refreshResource: リソースを更新
 remove: 削除
 resourcepack:
-  available: 存在する
-  compatible: 適合するフォーマット {format} バージョン {version}
-  defaultDescription: デフォルトのMinecraftのルック＆フィール
+  available: 利用可能
+  compatible: "{version} との互換性のある形式 {format}"
+  defaultDescription: Minecraftのデフォルトの見た目と感触
   delete:
-    content: これはディスクからリソースパックを削除します。取り消すことはできません。続行しますか?
+    content: >-
+      これにより、リソースパックファイルがディスクから削除され、元に戻すことはできません。削除してもよろしいですか？
     title: リソースパックを削除
-  dropHint: リソースパックのフォルダ/Zipをドロップしてインポート
-  enable: '{count} 個のリソースパックが有効'
+  dropHint: リソースパックのフォルダ/zipをここにドロップしてインポート。
+  enable: "{count} 個のリソースパックが有効"
   import: リソースパックをインポート
-  incompatible: 適合しないリソースパックフォーマットです({format}). フィット {accept}, 現在{actual}
-  independent: 起動構成は独立したリソースパックフォルダを使用します
+  incompatible: >-
+    互換性のないリソースパック形式({format})。{accept} に適合。現在 {actual}。
+  independent: インスタンスが独立したリソースパックフォルダを使用
   manage: リソースパックを管理
   name: リソースパック | リソースパック
   searchHint: リソースパックを検索
-  searchOnCurseforge: Curseforgeで {name} を検索
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnCurseforge: curseforgeで {name} を検索
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: リソースパックを検索して選択
   selected: 選択されたリソースパック
-  shared: 起動構成は共有されたリソースパックのフォルダを使用します
-  showDirectory: リソースパックのディレクトリを表示
-  showFile: フォルダーの中からリソースパック {file} を見る
-  showInCurseforge: Curseforgeで {name} を見る
-  unselected: リソースパックの選択が解除されました
+  shared: インスタンスが共有リソースパックフォルダを使用
+  showDirectory: リソースパックディレクトリを表示
+  showFile: フォルダ {file} でリソースパックを表示
+  showInCurseforge: curseforgeで {name} を表示
+  unselected: 選択されていないリソースパック
 save:
-  cheat: チートを使用
+  cheat: チート
   copy:
-    cancel: キャンセル
+    cancel: コピーをキャンセル
     confirm: コピーを開始
-    description: セーブデータをコピーする起動構成を選択してください。
-    name: セーブデータをコピー
-    title: 他の起動構成にセーブデータをコピー
+    description: セーブを移動させたい宛先プロファイルを選択してください。
+    name: セーブをコピー
+    title: セーブを他のプロファイルにコピー
   copyFrom:
     cancel: キャンセル
     confirm: コピーを開始
-    description: この起動構成にセーブデータを他の起動構成や管理されたリソース(curseforge)からインポートできます
-    from: '{src} から'
-    fromProfile: 他の起動構成から
+    description: >-
+      他のインスタンスまたは管理されたリソース（curseforge）からこのインスタンスにセーブを展開できます
+    from: "{src} から"
+    fromProfile: 他のインスタンスから
     fromResource: 管理されたリソースから
-    title: 管理されたリソースからセーブデータをインポート
-  createNew: 新しいワールドを作る
-  createdWorlds: '{count} 個のワールドがあります'
-  deleteHint: セーブデータを削除します。この操作は取り消せません。続行しますか?
-  deleteTitle: このセーブデータを削除
-  detail: 他の情報
-  dropHint: zipをここにドラッグしてインポート
-  export: セーブデータをエクスポート
-  exportMessage: セーブデータをZipとしてエクスポート
-  exportTitle: セーブデータをエクスポート
+    title: 管理されたソースからセーブをインポート
+  createNew: 新しいワールドを作成
+  createdWorlds: "{count} 個のワールドがあります"
+  deleteHint: >-
+    この操作は元に戻せません。セーブデータを永遠に失います。削除してもよろしいですか？
+  deleteTitle: セーブを削除
+  detail: 詳細情報
+  dropHint: セーブzipをここにドラッグしてインポート
+  export: セーブをエクスポート
+  exportMessage: セーブをzipとしてエクスポート
+  exportTitle: セーブをエクスポート
   gameMode: ゲームモード
-  import: セーブデータをインポート
-  importMessage: セーブデータをZipからインポート
-  importTitle: セーブデータをインポート
-  independent: 起動構成は独立したセーブデータを使用します
+  import: セーブをインポート
+  importMessage: zipからセーブをインポート
+  importTitle: セーブをインポート
+  independent: インスタンスが独立したセーブフォルダを使用
   levelName: レベル名
-  manage: セーブデータを管理
-  name: セーブデータ | セーブデータ
-  search: セーブデータを検索
-  selected: ローカルのセーブデータ
-  shared: 起動構成は共有されたセーブデータのフォルダを使用します
-  showDirectory: セーブデータのディレクトリを開く
-  unselected: 共有されたセーブデータ
+  manage: セーブを管理
+  name: セーブ | セーブ
+  search: セーブを検索
+  selected: ローカルセーブ
+  shared: インスタンスが共有セーブフォルダを使用
+  showDirectory: セーブディレクトリを表示
+  unselected: 共有セーブ
   useCurrent: 現在のワールドを使用
+saves: {}
 screenshots:
   empty: スクリーンショットがありません
-  goto: フォルダーを開く
+  goto: フォルダを開く
   name: スクリーンショット
-  playRandom: シャッフル
-  playSequence: 順番に再生
+  playRandom: シャッフル再生
+  playSequence: 順序再生
 search:
   favorate: コレクション
-  local: 設置済み
+  local: インストール済み
   market: モッドマーケット
 server:
-  acceptingMinecraftVersion: Minecraftバージョンを使用中
-  creationHint: サーバーアドレスを入力し、pingしてください
-  expectedVersions: サポートされたバージョン
-  export: エクスポートサーバー
-  exportNoFilesHint: |-
-    サーバーファイルは見つかりません。
-    ローカルでサーバーを1回実行して、いくつかのファイルを生成できます。
+  acceptingMinecraftVersion: 受け入れるMinecraftバージョン
+  creationHint: サーバーアドレスを入力し、サーバーをpingしてください
+  delete: {}
+  error: {}
+  expectedVersions: サポートされているバージョン
+  export: サーバーをエクスポート
+  exportNoFilesHint: >-
+    サーバーファイルが見つかりません。一度ローカルでサーバーを実行してファイルを生成してください。
   exportOption: サーバーエクスポートオプション
-  exportSSHAuthenticationFailed: |-
-    すべての認証方法が失敗しました。
-    ユーザー名/パスワードまたは秘密鍵を確認してください。
+  exportSSHAuthenticationFailed: >-
+    すべての認証方法が失敗しました。ユーザー名/パスワードまたは秘密鍵を確認してください。
   exportSSHOptions: SSHオプション
-  exportSSHPrivateKeyPath: SSH秘密キーパス
+  exportSSHPrivateKeyPath: SSH秘密鍵パス
   exportSSHRemotePath: リモートサーバーパス
-  exportToFolder: フォルダーにエクスポートします
-  filterVersion: 対応したMinecraftバージョンのサーバーをフィルターします
+  exportToFolder: フォルダにエクスポート
+  filterVersion: サーバーが応答するMinecraftバージョンをフィルター
   host: ホスト
-  hostHint: サーバーのホスト(とポート)
+  hostHint: サーバーのホスト（ポート付き）
   hostRequired: サーバーIPアドレスを入力してください
-  ipAddress: IP アドレス
+  ipAddress: IPアドレス
   maxPlayers: 最大プレイヤー数
-  motd: サーバー MOTD
-  name: サーバー
-  nogui: サーバーのGUIなし
+  motd: サーバーMOTD
+  name: サーバー | サーバー
+  nogui: サーバーガイなし
   onlineMode: オンラインモード
   ping: Ping
-  pings: Ping
-  players: プレイヤー数
+  pings: Pings
+  players: プレイヤー
   port: ポート
-  recommendedMinecraftVersion: Minecraftのバージョン
-  status: サーバーの状態
-  unknown: 未知のサーバー
-  unknownDescription: 未知のサーバーです。情報を更新してください。
-  upload: サーバーをアップロードします
-  version: サーバーの要求するバージョン
-  versionHint: PingするMinecraftのバージョン
+  recommendedMinecraftVersion: Minecraftバージョン
+  status: サーバーステータス
+  unknown: 不明なサーバー
+  unknownDescription: 不明なサーバー。更新してください
+  upload: サーバーをアップロード
+  version: サーバーが要求するバージョン
+  versionHint: PingするMinecraftバージョン
 serverStatus:
-  nohost: §4ホストが見つかりません!
-  ping: Ping...
-  refuse: §4サーバーが拒否しました!
-  timeout: §4サーバーへの接続がタイムアウト!
+  nohost: §4ホストが見つかりません！
+  ping: Ping中...
+  refuse: §4サーバーが拒否しました！
+  timeout: §4サーバー接続タイムアウト！
 setting:
-  about: について
-  allowPrerelease: プレリリース版をダウンロード
-  allowPrereleaseDescription: プレリリース版は不安定かもしれません
+  about: 情報
+  allowPrerelease: プレリリースをダウンロード
+  allowPrereleaseDescription: プレリリースは不安定な可能性があります
   apiSets:
-    auto: 自動 (ネットワークにより判断)
-    official: 公式 (Mojang)
+    auto: 自動（ネットワークで判断）
+    official: 公式（Mojang）
   appearance: 外観
-  appxUpdateHint: ランチャーがインストーラーをダウンロードし実行します。もしポップアップしたインストーラーが失敗したら手動で実行してください。
+  appxUpdateHint: >-
+    ランチャーはインストーラーをダウンロードして実行します。ポップアップインストーラーが失敗した場合は、手動で実行してください。
   autoDownload: 自動ダウンロード
-  autoDownloadDescription: アップデートがあれば自動でダウンロードします
+  autoDownloadDescription: 利用可能な場合は自動的に更新をダウンロード
   autoInstallOnAppQuit: 自動インストール
-  autoInstallOnAppQuitDescription: アップデートを自動でインストールし、アプリを閉じる
-  backdropBlur: 背景のぼかし
-  backgroundColorAbove: 背景画像をオーバーレイとして表示
-  backgroundColorAboveDescription: 背景の画像、映像の上に背景色を適用できるようにします
+  autoInstallOnAppQuitDescription: アプリ終了時に更新を自動インストール
+  backdropBlur: 背景ぼかし
+  backgroundColorAbove: 背景色をオーバーレイとして表示
+  backgroundColorAboveDescription: これにより、背景画像またはビデオの上に背景色が表示されます。
   backgroundImage: 背景画像
-  backgroundImageBlur: ブラー
-  backgroundImageBlurDescription: ドラッグして効果の度合いを調整
+  backgroundImageBlur: 画像ぼかし
+  backgroundImageBlurDescription: ぼかしをドラッグして調整
   backgroundImageClear: クリア
-  backgroundImageDescription: 背景に使う画像を選択、またはクリア
+  backgroundImageDescription: 背景として画像を選択またはクリア
   backgroundImageFit:
-    contain: 含む
-    cover: 覆う
-    name: 合わせる
+    contain: 収める
+    cover: カバー
+    name: 画像フィット
   backgroundImageSelect: 選択
-  backgroundMusic: BGM
-  backgroundType: 背景の種類
-  backgroundTypeDescription: 背景に特殊効果を表示します (動作が重くなるかもしれあせん)
+  backgroundMusic: テーマ背景音楽
+  backgroundType: 背景タイプ
+  backgroundTypeDescription: 背景に特殊効果を表示（パフォーマンスに影響する可能性があります）
   backgroundTypes:
-    halo: ヘイロー
+    halo: ハロー
     image: 画像
     none: なし
     particle: パーティクル
     video: ビデオ
-  backgroundVideo: 背景のビデオ
-  backgroundVideoDescription: 映像を選ぶかクリアする
+  backgroundVideo: 背景ビデオ
+  backgroundVideoDescription: ビデオを選択またはクリア
   backgroundVideoSelect: 選択
   backgroundVideoVolume: 音量
-  backgroundVideoVolumeDescription: ドラッグして音量を調整
+  backgroundVideoVolumeDescription: 音量をドラッグして調整
   blurAppBar: アプリバーをぼかす
-  blurMainBody: メインをぼかす
-  blurMainBodyDescription: ランチャーの右ペインをぼかすか
+  blurMainBody: メインボディをぼかす
+  blurMainBodyDescription: ランチャーの右ペインをぼかすかどうか
   blurSidebar: サイドバーをぼかす
-  browseRoot: 見る
-  checkUpdate: アップデートを確認
+  browseRoot: 参照
+  checkUpdate: 更新を確認
   colorTheme:
-    appBarColor: アプリバー
+    appBarColor: アプリバー色
     backgroundColor: 背景色
-    cardColor: カードの色
-    description: このテーマで色を変える
-    errorColor: エラーの色
-    name: テーマカラー
-    primaryColor: プライマリカラー
-    secondaryColor: セカンダリカラー
-    sideBarColor: サイドバー
-    warningColor: 警告の色
+    cardColor: カード色
+    description: テーマの色を変更
+    errorColor: エラー色
+    name: テーマ色とぼかし
+    primaryColor: プライマリ色
+    secondaryColor: セカンダリ色
+    sideBarColor: サイドバー色
+    warningColor: 警告色
   darkTheme: テーマ
-  darkThemeDescription: ダークテーマかライトテーマを選択してください
+  darkThemeDescription: ダークまたはライトテーマを選択
   developerMode: 開発者モード
-  developerModeDescription: あなたの作成したModを簡単に試せます
-  disableTelemetry: テレメトリを無効化
-  disableTelemetryDescription: XMCLはゲームの立ち上げとユーザーイベントを収集します
-  enableDedicatedGPUOptimization: 外部GPUを使用
-  enableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当てます
-  enableDiscord: Discord RPCを有効化
-  enableDiscordDescription: XMCLでのリッチプレゼンス
+  developerModeDescription: 開発者モードは独自のモッドをテストするためのものです
+  disableTelemetry: テレメトリを無効
+  disableTelemetryDescription: XMCLはゲーム起動およびユーザーのログインイベントを収集します。
+  enableDedicatedGPUOptimization: 専用GPUを割り当てる
+  enableDedicatedGPUOptimizationDescription: これにより、Minecraftプロセスに専用GPUが割り当てられます。
+  enableDiscord: Discordプレゼンスを有効
+  enableDiscordDescription: これにより、Discordステータスがランチャーに更新されます
   general: 一般
-  githubRelease: Github リリース
-  globalSetting: グローバル設定
-  globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
-  hideNewsHeader: ニュースを隠す
+  githubRelease: Githubリリース
+  globalSetting: グローバルインスタンス設定
+  globalSettingHint: インスタンスはデフォルトでこれらの設定を使用します。
+  hideNewsHeader: ニュースショーケースを非表示
   language: 言語
-  languageDescription: 表示する言語
-  latestVersion: 最新版
+  languageDescription: 表示言語
+  latestVersion: 最新バージョン
   layout:
-    default: デフォルトのレイアウト
-    focus: レイアウトをフォーカス
+    default: デフォルトレイアウト
+    focus: フォーカスレイアウト
   layoutDescription: ランチャーUIのレイアウト
   layoutTitle: レイアウト
-  linuxEnableDedicatedGPUOptimization: 外部GPUを使用
-  linuxEnableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当て、外部GPUをDRI PRIME, Optimusなどで優先的に使用します
-  linuxTitlebar: システムのタイトルバー
-  linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
-  location: 保管場所
-  manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
-  maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
-  maxSockets: ホスト毎
-  maxSocketsDescription: ホスト毎の最大のソケット、または全ての最大のソケットを制限します。0で無制限。
-  maxSocketsTitle: 最大HTTPソケット数
-  migrateFromOther: 他のランチャーからインポートする
+  linuxEnableDedicatedGPUOptimization: 専用グラフィックプロセッサの割り当て
+  linuxEnableDedicatedGPUOptimizationDescription: これにより、Minecraftプロセスに専用GPUが割り当てられます。
+  linuxTitlebar: ネイティブタイトルバー
+  linuxTitlebarDescription: ランチャーにネイティブLinuxタイトルバーを使用
+  location: 保存場所
+  manualUpdateHint: >-
+    バージョンを自動的に更新できません。公式サイトからランチャーを再ダウンロードしてください！
+  maunalUpdateHint: >-
+    バージョンを自動更新できません。ウェブサイトからランチャーを再ダウンロードしてください！
+  maxSockets: ホストごと
+  maxSocketsDescription: >-
+    ホストごとの最大ソケット数、または合計で許可される最大ソケット数を制限します。0は制限なしを意味します。
+  maxSocketsTitle: 最大HTTPソケット
+  migrateFromOther: 他のランチャーからインポート
+  migrateFromOtherDescription: 他のランチャーからインスタンスをインポート
   name: グローバル設定 | グローバル設定
   network: ネットワーク設定
-  officialWebsite: 公式サイト
+  officialWebsite: 公式ウェブサイト
   particleMode:
     bubble: バブル
     name: パーティクルモード
     push: プッシュ
     remove: 削除
-    repulse: リパルス
-  particleModeDescription: パーティクルの挙動を選ぶ
-  replaceNative: ネイティブライブラリを置き換えます
-  replaceNativeDescription: ネイティブライブラリをあなたのコンピューターアーキテクチャに合わせて置き換えます
+    repulse: 反発
+  particleModeDescription: パーティクルクリックの動作を選択
+  replaceNative: ネイティブライブラリを置換
+  replaceNativeDescription: コンピューターのアーキテクチャに応じてネイティブライブラリを置換します。
   replaceNatives:
     all: すべて
-    legacy: 古いバーキョンのみ
+    legacy: レガシーバージョンのみ
   resetToDefault: デフォルトにリセット
-  showNewsHeader: ニュースを隠さない
-  showRoot: 見る
-  streamerMode: ストリーミングモード
-  streamerModeDescription: ランチャーでメールアドレスのような機密性の高い情報を隠します。
+  showNewsHeader: ニュースショーケースを表示
+  showRoot: 表示
+  streamerMode: 配信モード
+  streamerModeDescription: これにより、ランチャーでメールなどの個人情報を非表示にします。
   theme:
     dark: ダークテーマ
     light: ライトテーマ
-    system: システムのテーマを使う
+    system: システムテーマを使用
   themeExport: テーマをエクスポート
   themeFont: フォント
-  themeFontDescription: ランチャーのフォントを変更します。
+  themeFontDescription: ランチャーのフォントを変更。
   themeImport: テーマをインポート
   themeResetFont: フォントをリセット
   themeSelectFont: フォントを選択
   themeShare: テーマを共有
-  themeShareDescription: レーマをあなたのフレンドと共有できます。
-  update: アップデート
-  useBmclAPI: BMCL APIを使う
-  useBmclAPIDescription: 中国本土にいる場合 BMCLAPI を用いてMinecraftをダウンロードします (中国本土に居ない場合機能しません)
+  themeShareDescription: テーマを友達と共有できます。
+  update: 更新
+  useBmclAPI: BMCL APIを使用
+  useBmclAPIDescription: >-
+    中国本土にいる場合はMinecraftをダウンロードするためにBMCLAPIを使用します。（中国本土以外では影響しません）
   useProxy: HTTPプロキシ
-  useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
-  viewBackgroundMusic: BGMフォルダを見る
+  useProxyDescription: HTTPリクエストのプロキシサーバーアドレス
+  viewBackgroundMusic: 音楽を表示
 settingLabel:
   global: グローバル
-  globalHint: グローバル設定に従います
+  globalHint: この設定はグローバル設定に従います
   local: ローカル
-  localHint: 現在の起動構成にのみ適用されます
+  localHint: この設定は現在のインスタンスで変更されています
 setup:
   account:
-    description: ゲームアカウントでログインしてください。もしお持ちでないのなら、スキップできます。
+    description: ゲームアカウントにログインします。アカウントがない場合は、今はスキップできます。
     name: ゲームアカウントを追加
-    skip: 今はスキップする
+    skip: 今はスキップ
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
-      データのルートは一般的な.minecraftディレクトリではありません。XMCLのディレキトリ構造はバニラとは互換性がないので、.minecraftをデータのルートに設定することは推奨されません。
-    drives: 推奨の言語
+      データルートは一般的な .minecraft ディレクトリではありません。XMCLのデータディレクトリ構造はバニラと異なるため、一般的な .minecraft ディレクトリをデータルートとして使用することは推奨しません。
+    drives: 推奨場所
     name: データディレクトリを設定
   defaultLayoutDescription: >-
-    デフォルトのレイアウトは"インスタンス"コンセプトを強化しようとしています。Discordのような感じです。Steamなど他のランチャーからもインスパイアされています。
-  defaultPath: デフォルトのパス
+    デフォルトレイアウトは「インスタンス」の概念を強化しようとしています。Discordのようなアプリのようになっています。Steamなどの他のゲームランチャーアプリからもインスピレーションを受けています。
+  defaultPath: デフォルトパス
   error:
-    badDataRoot: ランチャーデータのためのディレクトリが無効です! 他のディレクトリを選択してください!
-    exists: 選択されたディレクトリは空ではありません。続行できますが、データのバックアップを忘れないでください。
-    invalidChar: |-
-      パスには無効な文字が含まれています！ 
-      Minecraftが開始に失敗する可能性があります！ 
-      Plaeseは英語のキャラクターとシンボルのみを使用します！
-    noPermission: ランチャーは選択されたディレクトリにアクセスする権限がありません! 他を選択してください。
-    nonDictionary: 選択されたパスはファイルです! ディレクトリを選択してください!
-  focusLayoutDescription: フォーカスレイアウトはMinecraftランチャーの昔のレイアウトです。これは単一インスタンスやいくつかのインスタンスのためにデザインされています
+    badDataRoot: ランチャーのデータに無効なディレクトリです！別のディレクトリを試してください！
+    exists: >-
+      選択されたディレクトリは空ではありません。大丈夫ですが、データをバックアップしていることを確認してください。
+    invalidChar: >-
+      パスに無効な文字が含まれています！Minecraftの起動が失敗する可能性があります！英語の文字と記号のみを使用してください！
+    noPermission: >-
+      ランチャーには選択されたディレクトリにアクセスする権限がありません！別のディレクトリを試してください。
+    nonDictionary: 選択されたパスはファイルです！ディレクトリを選択してください！
+  focusLayoutDescription: >-
+    フォーカスレイアウトはMinecraftランチャーのレガシーレイアウトです。単一のインスタンスまたは少数のインスタンスで使用するように設計されています。
   game:
-    description: すでに存在するゲームディレクトリ (.minecraft) から既存のリソースをインポートします。すぐにMod, リソースパックを識別できます
-    name: すでに存在するゲームをインポート
+    description: >-
+      既存のゲームディレクトリ（.minecraft）を選択して既存のリソースをインポートします。これにより、モッド、リソースパックなどを素早く識別できます。
+    name: 既存のゲームをインポート
   locale:
     description: >-
-      もしある場合はあなたの最も好ましい言語を選択してください!
-      もしネイティブの言語が無く足すケア必要な場合は、私達のGithubで翻訳についてプルリクエストをしてください!
+      望ましい言語を選択してください！母国語が表示されず、翻訳を手助けしたい場合は、Githubにアクセスしてプルリクエストを送信して翻訳できます！
     language: 言語
     name: 言語を設定
   path: 現在のパス
-  title: X Minecraft Launcherへようこそ。開始する前に、
+  title: "X Minecraftランチャーへようこそ。開始する前に、"
 shaderPack:
   deletion: シェーダーパックを削除
-  deletionHint: シェーダーパック {path} を削除します。この操作は取り消せません。
-  disabled: シェーダーパックが無効です
+  deletionHint: これにより、シェーダーパックファイル {path} が削除され、元に戻せません。
+  disabled: 無効なシェーダーパック
   dropHint: シェーダーパックをインポート
-  empty: シェーダーパックがありません
-  enable: '{name} を使用中'
-  enabled: シェーダーパックが有効
+  empty: シェーダーパックが割り当てられていません
+  enable: "{name} を使用中"
+  enabled: 有効なシェーダーパック
   manage: シェーダーパックを管理
   name: シェーダーパック
   noShaderMod: シェーダーモッドがインストールされていません
-  noShaderModHint: シェーダーMODがないとシェーダーは使えない
-  noShaderModInstallHint: シェーダー パックを読み込むには、次のいずれかの MOD をインストールする必要があります。
+  noShaderModHint: シェーダーを使用するにはシェーダーモッドが必要です
+  noShaderModInstallHint: シェーダーパックをロードするには、以下のモッドのいずれかをインストールする必要があります。
   searchHint: シェーダーパックを検索
-  selectSearchHint: シェーダーパックを検索して選ぶ
-  showDirectory: シェーダーパックのディレクトリを見る
-  showFile: このシェーダーパックをフォルダーで見る
+  selectSearchHint: シェーダーパックを検索して選択
+  showDirectory: シェーダーパックディレクトリを表示
+  showFile: フォルダでこのシェーダーパックを表示
 shared:
-  accept: 続行
-  keepSelected: 選択したままにする
-  skipForNow: 今すぐスキップする
+  accept: 受け入れる
+  keepSelected: 選択したものを保持
+  skipForNow: 今はスキップ
 sortBy:
-  alphabetAsc: アルファベットでソート（昇順）
-  alphabetDesc: アルファベットでソート（下降）
-  timeAsc: 変更時間ごとにソート（上昇）
-  timeDesc: 変更時間ごとにソート（下降）
+  alphabetAsc: アルファベット順（昇順）
+  alphabetDesc: アルファベット順（降順）
+  timeAsc: 修正時間順（昇順）
+  timeDesc: 修正時間順（降順）
 store:
-  explore: 探索する
+  explore: 探索
   latestMinecraft: 最新のMinecraftバージョン
-  name: Modpack マーケット
-  popular: 有名なModpack
-  recentUpdated: 最近アップデート
-summery: まとめ
+  name: モッドパックマーケット
+  popular: 人気のモッドパック
+  recentUpdated: 最近更新された
+summery: 概要
 tag:
   create: タグを作成
-  createSelected: 選択されたもので新しいタグを作る
+  createSelected: 選択した項目にタグを作成
   newTag: 新しいタグ
 task:
   available: 利用可能
-  cancelled: キャンセルされました
-  clear: 終了したタスクをクリア
-  compatible: '{format} 形式は {version} と互換性があります'
+  cancelled: キャンセル
+  idle: アイドル
+  success: 成功
+  retry: 再試行
+  paused: 一時停止
+  nTaskRunning: 実行中のタスク
+  nTaskFinished: 完了したタスク
+  resume: 再開
+  clear_tooltip: 多すぎるタスクをクリア
+  clear: 完了したタスクをクリア
+  cancel: タスクをキャンセル
+  running: 実行中のタスク
+  connection_destroy_pool: 接続プールを破棄
+  compatible: "{format} 形式は {version} と互換性があります"
+  connection_connected: 接続済み
+  connection_free: 空き
+  connection_pending: 保留中
+  connection_queued: キューに追加
+  connection_running: 接続実行中
+  connection_size: サイズ
+  failed: 失敗
+  unknown: 不明
+  manager: タスクマネージャー
+  name: タスク
+  connections: 接続
+  empty: 利用可能なタスクがありません
+  remove: 削除
+  connection:
+    size: サイズ
+  view_result: 結果を表示
+  view_error: エラーを表示
+  queued: キューに追加
+migrates:
+  selectLauncher: インポート元のランチャーを選択
+  selectData: インポートするデータを選択
+  imports: インスタンスをインポート
   connection:
     connected: 接続済み
-    free: 接続なし
+    free: 空き
     pending: 保留中
-    queued: キュー済み
-    running: 接続を実行中
-    size: 合計
+    queued: キューに追加
+    running: 接続実行中
+    size: 合計数
   connections: ネットワーク接続
   delete:
-    content: |-
-      そうするとディスクからtexturepackファイルが削除され、復元できなくなります。
-       本当に復元できますか？
-    title: テクスチャパックの削除
-  dropHint: フォルダ/zipテクスチャをここにドラッグ＆ドロップしてインポートします。
-  empty: 実行中のタスクなし
-  enable: テクスチャパックが含まれています： 数 {count}
+    content: >-
+      これにより、テクスチャパックファイルがディスクから削除され、元に戻せません。
+       本当に削除してもよろしいですか？
+    title: テクスチャパックを削除
+  dropHint: フォルダ/zipのテクスチャをここにドラッグしてインポート。
+  empty: 実行中のタスクはありません
+  enable: "テクスチャパック: {count} 個"
   failed: 失敗
-  import: テクスチャパックのインポート
-  incompatible: 互換性のないテキストスタック形式 ({format})。マッチング {accept}。現在の{actual}。
-  manage: テキストパック
+  import: テクスチャパックをインポート
+  incompatible: >-
+    互換性のないテクスチャパック形式 ({format})。{accept} に一致。現在 {actual}。
+  manage: テクスチャパック
   manager: タスクマネージャー
-  nTaskRunning: '{count} 個のタスクが実行中'
+  nTaskRunning: "{count} 個のタスクが実行中"
   name: タスク | タスク
   pause: 一時停止
-  searchOnCurseforge: Curseforgeで {name} を見る
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnCurseforge: curseforgeで {name} を検索
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: お気に入りのテクスチャパック
-  showFile: フォルダ内のtexturepack {file}を開きます。
-  showInCurseforge: Curseforgeで {name} を見る
-  unselected: 未選択のテクスチャパック
+  showFile: フォルダ {file} でテクスチャパックを開く
+  showInCurseforge: curseforgeで {name} を表示
+  unselected: 選択されていないテクスチャパック
 theme:
   selectImage: 画像を選択
   selectMusic: 音楽を選択
-  selectVideo: 映像を選択
-  title: X Minecraft Launcher
-title: X Minecraft Launcher
+  selectVideo: ビデオを選択
+  title: X Minecraftランチャー
+title: X Minecraftランチャー
 transportType:
   host: ホスト候補
-  prflx: ピアの反射の候補
+  prflx: ピアリフレックス候補
   relay: リレー候補
-  srflx: サーバー反射候補
+  srflx: サーバーリフレックス候補
 turnRegion:
   fr: フランス
-  guangzhou: 中国、広州
+  guangzhou: 中国広州
   hk: 香港
-  liaoning: 中国、遼寧省
+  liaoning: 中国遼寧
   po: ポーランド
 tutorial:
-  feedbackDescription: 問題に遭遇した場合は、このボタンを押してフィードバックを送ってください!
-  hideNewsHeaderDescription: ニュースを左で見れます。このボタンを押すことで隠せます
+  feedbackDescription: 問題が発生した場合は、このボタンをクリックしてフィードバックを送信してください！
+  hideNewsHeaderDescription: >-
+    左側にニュースショーケースが表示されます。このボタンをクリックすると、このショーケースを非表示にできます。
   instance:
-    iconDescription: クリックしてアイコンを変える
-    iconTitle: 起動構成のアイコン
-    javaDescription: Javaを選ぶか切り替える
-    javaImportDescription: Javaをローカルストレージからインポート
+    iconDescription: クリックしてアイコンを変更。
+    iconTitle: インスタンスアイコン
+    javaDescription: Javaバージョンを選択または切り替え。
+    javaImportDescription: ローカルストレージからJavaをインポート。
     javaImportTitle: Javaをインポート
-    javaTitle: Javaのリスト
-  instanceAddDescription: このボタンを押して既存の起動構成やModpackからインポートするか、新しく作れます。
-  instanceSelectDescription: このボタンをクリックしてニュースを見たりゲームを選んだりできます。
-  launchDescription: このボタンを押してゲームをインストールするか起動します
+    javaTitle: Javaリスト
+  instanceAddDescription: >-
+    このボタンをクリックして既存のMinecraftインスタンスをインポートするか、スクラッチまたはモッドパックから新しいインスタンスを作成します。
+  instanceSelectDescription: このボタンをクリックすると、ゲームを選択し、ニュースを読むページに移動します。
+  launchDescription: このボタンをクリックしてゲームをインストールまたは起動します。
   mod:
     defaultSourceDescription: >-
-      ここでModの詳細のソースを選択できます。もしModrinthとCurseforgeの両方に公開されているModがあり、これら2つのコンテンツプロバイダーを切り替える場合は、ここで値を変更できます。
-    defaultSourceTitle: Modのソースを選ぶ
-    detailDescription: 左でアイテムを選ぶと、Modの詳細を見ることができます。Modrinth、Curseforgeまたは他のModを見ることができます
-    detailTitle: Modの詳細
-    listDescription: 何も入力していない場合は、インストール済みのModが表示されます。キーワードを入力したりカテゴリを選ぶとModを検索できます。
-    listTitle: インストール、またはModを検索
-    searchDescription: Modrinth, CurseforgeからModを検索するか、ローカルのキャッシュで検索ボックスから探せます。
-    searchTitle: Modを検索
+      ここではモッドの詳細のソースを選択できます。ModrinthとCurseforgeの両方に公開されているモッドがあります。これらの2つのコンテンツプロバイダーを切り替えたい場合は、ここでの値を変更できます。
+    defaultSourceTitle: モッドコンテンツソースを選択
+    detailDescription: >-
+      左側の項目を選択すると、モッドの詳細が表示されます。コンテンツはModrinth、Curseforge、または解析されたモッドのコンテンツから来ます。
+    detailTitle: モッドの詳細
+    listDescription: >-
+      入力がない場合、インストールされたモッドを表示します。キーワードまたはカテゴリが選択されると、検索されたモッドが表示されます。
+    listTitle: インストールされたモッドまたは検索モッド
+    searchDescription: >-
+      この検索ボックスを使用して、Modrinth、Curseforge、またはローカルキャッシュからモッドを検索できます。
+    searchTitle: モッドを検索
   multiplayer:
-    contentDescription: あなたとあなたのピアとの接続がここにリストされています。
-    contentTitle: '@:multiplayer.connections'
+    contentDescription: あなたとピアの接続がここにリストされます。
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
-      あなたは他のプレイヤーとグループに参加/作成できます。ランチャーはあなたとあなたのフレンドをP2Pで接続を試みます。あなたはフレンドから渡されたグループ名を入力するか、あなたの独自の名前を入力できます。
+      他のプレイヤーとグループを作成または参加できます。ランチャーは、グループに応じてあなたと友達の間でP2P接続を作成しようとします。友達から与えられたグループ名を入力できます。または独自の名前を作成できます。
     groupTitle: グループに参加
-    joinDescription: グループ名を入力すると、このボタンでグループに参加/グループを作成できます。グループ名が空白だった場合、ランチャーは自動で名前を生成します。
+    joinDescription: >-
+      グループ名を入力すると、このボタンをクリックしてグループに参加または作成できます。グループ名が空の場合は、ランチャーが名前を生成します。
     manualDescription: >-
-      もしあなた、もしくはあなたのフレンドはグループに接続できない場合、手動で接続するためのトークンをここで取得できます。もしそれでも失敗したならば、おそらくネットワークの問題でしょう。
-  recentPlayDescription: あなたが作成したゲームはここで見ることができます。インストールされたバージョンやダウンロードされたModpackにビューを切り替えられます。
-  storePoupularModpackDescription: ここでCurseforgeやModrinthで最も有名なModpackを見ることができます。
-  storeSearchCategoryDescription: ここでカテゴリーやフィルターを変更できます
-  storeSearchDescription: このテキストボックスに入力することでModpackを検索できます。Enterで検索します。
-  storeSearchResultDescription: すべての検索履歴
-  userAccountDescription: このアイコンをクリックしてMinecraftアカウントを追加/管理できます
+      あなたまたは友達がグループに接続できない場合は、手動接続をクリックしてトークンを手動で交換してみてください。それでも失敗した場合は、インターネットの問題かもしれません。
+  recentPlayDescription: >-
+    作成されたゲームがここにリストされます。ここを切り替えて、インストールされたバージョンとダウンロードされたモッドパックも表示できます。
+  storePoupularModpackDescription: >-
+    このセクションでは、CurseforgeとModrinthの人気のあるモッドパックが表示されます。
+  storeSearchCategoryDescription: ここでもカテゴリやフィルターを切り替えることができます。
+  storeSearchDescription: >-
+    このテキストボックスに入力してモッドパックを検索できます。Enterキーを押して検索します。
+  storeSearchResultDescription: すべての検索結果がここにリストされます。
+  userAccountDescription: このアイコンをクリックしてMinecraftアカウントを追加または管理します。
 universalDrop:
-  enableModsAfterImport: インポート後Modを有効化
-  start: インポートが開始されました
+  enableModsAfterImport: インポート後にモッドを有効化
+  start: インポート開始
   title: ここにファイルをドロップしてインポート
-  unknownResource: 未知
+  unknownResource: 不明
 update:
   goOfficialWebDownload: 公式サイトで再ダウンロード
 upstream:
   downgrade: ダウングレード
-  missingModpackMetadata: |-
-    古いModpackのメタデータが見つかりません。
-    しかし引き続きアップグレードができます。ですが、違う結果になるかもしれません。起動構成をバックアップしておくことを推奨します。
+  missingModpackMetadata: >-
+    古いモッドパックメタデータが見つかりません。
+    アップグレードできますが、結果が間違っている可能性があります。インスタンスファイルをバックアップしてください。
   onlyShowCurrentVersion: 現在のMinecraftバージョンのみ表示
-  update: アップデート
+  update: 更新
 user:
   accessToken: アクセストークン
   authMode: 認証サービス
   authService: 認証サービス
-  birth: 登録された誕生日
-  challenges: これらの質問に答えてログインする資格を確認してください
+  birth: 登録日
+  challenges: 認証のため、以下の質問に回答してください
   email: メールアドレス
-  forgetChallenges: これらの質問を忘れました。変更したいです
+  forgetChallenges: これらの質問を忘れたので変更したい
   id: ユーザーID
   info: ユーザー情報
-  insecureClient: クライアントのセキュリティが万全ではありません! アカウントの情報を確認してスキンをアップロードしてください!
+  insecureClient: クライアントは安全ではありません！スキンをアップロードするには認証を検証してください！
   name: ユーザー名
-  nameHint: ゲーム内で表示される名前
+  nameHint: ゲーム内に表示される名前
   profile: プロファイル
   refreshAccount: アカウントを更新
   refreshSkin: スキンを更新
-  submitChallenges: 答えを送信
+  submitChallenges: 回答を送信
   tokenExpired: 期限切れ
-  tokenValidUntil: トークンはこの期間まで有効
+  tokenValidUntil: トークンの有効期限
 userAccount:
   add: アカウントを追加
-  removeDescription: これはアカウントに関するすべての情報を削除します。続行しますか?
+  removeDescription: これにより、このアカウントのすべての情報が削除されます。本当によろしいですか？
   removeTitle: アカウントを削除
 userCape:
-  changeTitle: あなたのケープを変更
-  description: 'ケープは特別な報酬でプレイヤーは様々なイベント、キャンペーン、そして他のうれしいハプニングで受領できます、現在所有しているものから選べます:'
-  noCape: ケープがありません
+  changeTitle: ケープを変更
+  description: >-
+    ケープは、イベントやキャンペーン、その他の楽しい出来事でプレイヤーがアンロックできる特別な報酬です。ここでは、現在所有しているケープの中から選択できます：
+  noCape: ケープなし
 userService:
-  add: 他のサービスを追加
-  authLibInjector: auth-lib injectorに提案に従う
-  baseUrlHint: あなたのカスタムサービスのベースURL
-  title: サードパーティのユーザーサービス
-  validateHint: ユーザーのトークンがまだ有効か確認するために使用します
+  add: サービスを追加
+  authLibInjector: auth-lib injectorの提案に従う
+  baseUrlHint: カスタムサービスのベースURL
+  title: サードパーティのユーザー サービス
+  validateHint: ユーザーのトークンがまだ有効かどうかを確認するために使用
 userServices:
   microsoft:
     account: Microsoft アカウント
     deviceCode: デバイスコード
-    deviceCodeHint: デバイスコードはログインをクリックした後に生成されます
-    fastLogin: 高速ログイン
+    deviceCodeHint: ログインをクリックするとデバイスコードが生成されます
+    fastLogin: クイックログイン
     name: Microsoft
     password: ブラウザでパスワードを入力
     useDeviceCode: デバイスコードでログイン
@@ -1601,23 +1677,23 @@ userServices:
   offline:
     account: ユーザー名
     name: オフライン
-    password: パスワードがありません
-    uuid: ユーザーUUID (オプション)
+    password: パスワードなし
+    uuid: ユーザーUUID（任意）
 userSkin:
-  import: インポート
+  import: スキンをインポート
   importFile: ファイルから開く
   importLink: リンクから開く
-  placeUrlHere: スキンURLをここに貼り付けてインポート
+  placeUrlHere: スキンURLをここに入力してインポート
   reset: リセット
   save: 保存
   saveTitle: スキンをディスクに保存
-  skinType: スキンの種類
+  skinType: スキントype
   upload: スキンをアップロード
-  urlNotEmpty: スキンのURLは空白にできません
-  urlNotValid: スキンのURLが無効です
-  useSlim: スリムなスキンを使用
+  urlNotEmpty: スキンURLは空にできません
+  urlNotValid: スキンURLが無効です
+  useSlim: スリムモデルを使用
 version:
-  checkIntegrity: 整合性を確認してください
+  checkIntegrity: 完全性を確認
   name: バージョン | バージョン
   notInstalled: バージョンがインストールされていません
 versionType:
@@ -1625,4 +1701,4 @@ versionType:
   beta: ベータ
   name: ステータス
   release: リリース
-'yes': はい
+"yes": "はい"

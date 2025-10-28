@@ -6,24 +6,24 @@ AppAddInstanceDialog:
   serverTitle: Add meg a kiszolgáló címét
 AppShareInstanceDialog:
   alterDownloadDescription: |-
-    Ha nem akarja elrontani az aktuális példányt. 
-    Létrehozhat egy új példányt a partner konfigurációjából is. 
+    Ha nem akarja elrontani az aktuális példányt.
+    Létrehozhat egy új példányt a partner konfigurációjából is.
     Példány létrehozásához kattintson az alábbi gombra.
   baseInfo: Alapvető beállítások
   cancelShare: Megosztás visszavonása
   description: >-
-    Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat 
+    Miután megosztottad a profilt, más helyről is letöltheted ezeket a fájlokat
     az alábbi módon a számítógépeden keresztül.
   downloadDescription: |-
-    Kérjük, ellenőrizze a társától kapott fájlokat. 
-    Válassza ki a letölteni kívánt fájlt. 
+    Kérjük, ellenőrizze a társától kapott fájlokat.
+    Válassza ki a letölteni kívánt fájlt.
     Az aktuális példányba kerül: {name}.
   downloadNotifyTitle: Példány letöltése {user}-től
   downloadTitle: Fájlok letöltése más társaidtól
   downloadToLocal: Letöltés az aktuális példányba
   filesToDownload: Letölteni kívánt fájlok kiválasztása
   filesToShare: Megosztani kívánt fájlok kiválasztása
-  instanceShare: '{user} épp most osztotta meg veled az aktuális példányt.'
+  instanceShare: "{user} épp most osztotta meg veled az aktuális példányt."
   share: Megosztás
   shareNotifyTitle: Példány megosztása
   shareTitle: Játék fájlok megosztása másokkal
@@ -43,7 +43,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Nem kompatibilis Java
   incompatibleJavaHint: A kiválaszottt Java valószínűleg nem lesz jó a Minecrafthoz!
   missingJava: Hiányzik a Java
-  missingJavaHint: 'A Launcher nem érzékel semmilyen java-t a számítógépen. Megteheted:'
+  missingJavaHint: "A Launcher nem érzékel semmilyen java-t a számítógépen. Megteheted:"
   needDownloadHint: >-
     Nem találja a megfelelő Java verziót a számítógépében. Javasoljuk, hogy
     töltsd le a újat.
@@ -91,14 +91,14 @@ SettingMigrationDialog:
   selectRootDirectory: Gyökérkönyvtár kiválasztása
 add: Új
 ago:
-  day: '{duration} napja | {duration} napja'
-  hour: '{duration} órája | {duration} órája'
-  minute: '{duration} perce | {duration} perce'
-  second: '{duration} másodperce | {duration} másodperce'
+  day: "{duration} napja | {duration} napja"
+  hour: "{duration} órája | {duration} órája"
+  minute: "{duration} perce | {duration} perce"
+  second: "{duration} másodperce | {duration} másodperce"
 askAICrash:
   copyPrompt: Másolja a felszólítást, hogy megkérdezze az AI -t
   description: >-
-    Hagyja, hogy az AI segítsen megérteni a játék összeomlását! 
+    Hagyja, hogy az AI segítsen megérteni a játék összeomlását!
 
     Kövesse az alábbi utasításokat, hogy megkérdezze az AI -t a játék
     összeomlásáról!
@@ -177,7 +177,7 @@ dataMigration:
   directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
   migrationDestinationIsFile: A célállomás egy fájl! Kérlek, válassz egy üres könyvtárat!
   migrationDestinationIsNotEmptyDirectory: >-
-    A célállomás nem egy üres könyvtár! Kérlek, győződj meg róla, hogy a üres 
+    A célállomás nem egy üres könyvtár! Kérlek, győződj meg róla, hogy a üres
     könyvtárat!
   migrationNoPermission: >-
     Nincs engedély a régi könyvtár átnevezésére az új könyvtárba! Kérlek győződj
@@ -194,8 +194,8 @@ dataMigration:
     adataidat.
 delete:
   name: Törlöd {name}
-  'no': Nem
-  'yes': Törlés
+  "no": Nem
+  "yes": Törlés
 dependencies:
   embedded: Beépített
   incompatible: Inkompatibilis
@@ -210,13 +210,13 @@ diagnosis:
     name: Rossz telepítés a {version}
   corruptedAssets:
     message: A Launcher telepíti az eszközöket a számodra
-    name: 'Sérült elem: {name} | Sérült elem {name} | {count} elem sérült'
+    name: "Sérült elem: {name} | Sérült elem {name} | {count} elem sérült"
   corruptedAssetsIndex:
     message: A launcher letölti a fájlok indexeit számodra
     name: A {verzsion} eszközindexű fájlja sérült.
   corruptedLibraries:
     message: A launcher telepíti a könyvtárakat
-    name: 'Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár'
+    name: "Sérült könyvtár: {name} | Sérült könyvtár {name} | {count} elem könyvtár"
   corruptedVersionJar:
     message: Kattints erre a verzióra a telepítéshez
     name: A Minecraft %{version} sérült jar verziója.
@@ -234,7 +234,7 @@ diagnosis:
     name: Érvénytelen java hely.
   missingAssets:
     message: A Launcher telepíti az elemeket
-    name: 'Hiányzó elem: {name} | Hiányzó elem {name} | {count} elem hiányzik'
+    name: "Hiányzó elem: {name} | Hiányzó elem {name} | {count} elem hiányzik"
   missingAssetsIndex:
     message: A Launcher letölti ezeket az elemeket
     name: Hiányzó eszközindex fájl a {version}.
@@ -261,14 +261,14 @@ disk:
   available: Elérhető
   used: Használva
 download: Letöltés
-downloadCount: '{count} letöltés'
+downloadCount: "{count} letöltés"
 duration:
-  day: '{duration} nap | {duration} nap'
-  hour: '{duration} óra | {duration} óra'
-  minute: '{duration} perc | {duration} perc'
-  'no': 'no'
-  second: '{duration} másodperc | {duration} másodperc'
-  'yes': Igen, uram.
+  day: "{duration} nap | {duration} nap"
+  hour: "{duration} óra | {duration} óra"
+  minute: "{duration} perc | {duration} perc"
+  "no": "no"
+  second: "{duration} másodperc | {duration} másodperc"
+  "yes": Igen, uram.
 edit: Szerkesztés
 enable: Engedélyezés
 env:
@@ -283,7 +283,7 @@ errors:
     Nem tudja elemezni a forge telepítő jar fájlt. Lehet, hogy a forge új
     kiterjesztéssel rendelkezik? Lépj kapcsolatba a fejlesztőkkel, ha ez a
     probléma továbbra is fennáll.
-  BadInstanceType: 'Nem érvényes példány: {type}'
+  BadInstanceType: "Nem érvényes példány: {type}"
   BodyTimeoutError: HTTP test időtúllépés
   ChecksumNotMatchError: Az ellenőrző összeg nem egyezik! Várható {expect}. Tényleges {actual}.
   ConnectTimeoutError: A szerverhez való kapcsolódás időtúllépése.
@@ -293,8 +293,8 @@ errors:
     válassz egy olyan adatkönyvtárat, amelyhez az Launcher hozzáférhet.
     Megpróbálhatod visszaállítani az adatgyökeret a beállítások oldalon.
   DiskIsFull: |-
-    A lemezed tele van! 
-    Nem írhat semmit a lemezre! 
+    A lemezed tele van!
+    Nem írhat semmit a lemezre!
     Lehet, hogy minden funkció nem funkcionális!
   DownloadAggregateError: A fájl letöltése sikertelen.
   DownloadFileSystemError: >-
@@ -371,9 +371,9 @@ gameType:
 help: Súgó
 home: Kezdőlap
 importModpack:
-  failed: '{modpack} importálása sikertelen'
+  failed: "{modpack} importálása sikertelen"
   name: Modpack importálása
-  success: '{modpack} importálása sikeres'
+  success: "{modpack} importálása sikeres"
 importResource: Forrás importálása
 install: Telepítés
 installAssets:
@@ -394,7 +394,7 @@ installInstance:
   link: Fájlok másolása vagy összekapcsolása {count}
   name: Példány frissítése
   resolve: Példány konfiguráció feloldása
-  unzip: '{count} fájlok kicsomagolása'
+  unzip: "{count} fájlok kicsomagolása"
 installJre:
   decompress: JRE fájlok dekompresszálása mappába
   download: Tömörített JRE fájl letöltése
@@ -455,7 +455,7 @@ instance:
   launchArguments: Indítási argumentumok Előnézet
   launchServer: Indítsa el a localhost szervert
   linkFileDesc: |-
-    Ez felülírja a helyi {file} példányt a globális {file} értékkel. 
+    Ez felülírja a helyi {file} példányt a globális {file} értékkel.
     Biztosan linkeled?
   linkFileTitle: Biztosan linkeli a(z) {file} fájlt?
   mcOptions: Minecraft beállítások
@@ -496,7 +496,7 @@ instanceAge:
   today: Ma
 instanceDiscover:
   gameFolder: Fedezzen fel {count} játékmappát
-  instanceFolder: '{count} példányt találtunk'
+  instanceFolder: "{count} példányt találtunk"
 instanceFileOperation:
   add: Új
   backup-add: Felülírás (Mentés)
@@ -508,11 +508,11 @@ instanceInstallSkip:
   skip: Kihagyás
   title: Lehetséges sérült fájlforrás
   warning: >-
-    Egyes fájlok többször is letöltődnek, ellenőrzőösszeg-egyeztetés nélkül. 
+    Egyes fájlok többször is letöltődnek, ellenőrzőösszeg-egyeztetés nélkül.
 
-    Ennek oka lehet, hogy az eredeti ellenőrző összeg hibás. 
+    Ennek oka lehet, hogy az eredeti ellenőrző összeg hibás.
 
-    Kérjük, ellenőrizze. 
+    Kérjük, ellenőrizze.
 
     Ha megerősíti, hogy az aktuális fájlok érvényesek, kihagyhatja az
     érvényesítési ellenőrzést.
@@ -548,26 +548,26 @@ instanceUpdate:
   basic: Beállítás frissítése
   files: Fájl frissítések
   loaderChanged: |-
-    Ennek a példánynak a modloadere megváltozott. 
+    Ennek a példánynak a modloadere megváltozott.
     A régi modloader {modloader}, az új modloader pedig {newModloader}.
   summary: |-
-    Hozzáadja a {add} fájlokat. 
-    Távolítsa el a {remove} fájlokat. 
+    Hozzáadja a {add} fájlokat.
+    Távolítsa el a {remove} fájlokat.
     Tartsa a {keep} fájlokat.
   title: Példány frissítése
   update: Frissítés indítása
 instances:
   add: Játék létrehozása
   addCurseForgeDescription: |-
-    Importálás a cursefor adatmappából. 
+    Importálás a cursefor adatmappából.
     Ki kell választania a curseforge gyökéradat-mappáját
   addDescription: Új példány létrehozása az alapoktól
   addMMCDescription: |-
-    Importálja a meglévő MultiMC példányt. 
+    Importálja a meglévő MultiMC példányt.
     Ki kell választania az adatmappát a MultiMC-ből.
   addManually: Manuális létrehozás
   addModrinthDescription: |-
-    Importálja a meglévő Modrinth példányt. 
+    Importálja a meglévő Modrinth példányt.
     Ki kell választania a Modrinth gyökér adatmappát.
   addServer: Létrehozás szerverről
   addServerDescription: Ez létrehoz egy játékot közvetlenül a szerverre.
@@ -585,8 +585,8 @@ instances:
   loadingFiles: Modcsomag fájlok betöltése
   refreshServers: Szerverek frissítése
 items:
-  count: '{count} elem'
-  total: '{total} összesen'
+  count: "{count} elem"
+  total: "{total} összesen"
 java:
   allocatedLong: Rendszer alapértelmezett java használata
   allocatedShort: Automatikusan hozzárendelt
@@ -603,7 +603,7 @@ java:
   modifyInstance: Java elérési útvonal módosítása
   noMemory: Ne korlátozza a memória használatát
   refresh: Helyi Java frissítése
-  systemMemory: 'Rendszermentes memória: {free} / {total}'
+  systemMemory: "Rendszermentes memória: {free} / {total}"
 labyMod:
   disable: LabyMod letiltása
   empty: A LabyMod nem támogatja a jelenlegi Minecraftot
@@ -743,14 +743,14 @@ loginError:
     szerver nem működik!
   checkOwnershipFailed: Nem tudtuk leellenőrizni a játék tulajdonjogát. Kérlek próbáld újra.
   connectionReset: Nem sikerül a bejelentkezés, mivel a szerver visszaállítja a kapcsolatot
-  fetchMinecraftProfileFailed: 'Nem sikerült lekérni a Minecraft-profilt: {reason}'
+  fetchMinecraftProfileFailed: "Nem sikerült lekérni a Minecraft-profilt: {reason}"
   illegalEmail: Az e-mailnek érvényesnek kell lennie
   invalidCredentials: Érvénytelen hitelesítő adatok. Érvénytelen felhasználónév vagy jelszó.
   loginMinecraftByXboxFailed: >-
     Nem sikerült a Minecraft tokent lekérni az Xboxtól. Kérlek ellenőrizd, hogy
     megvan-e a játék Xboxon és próbáld újra.
   loginXboxAgeRestricted: >-
-    Nem jelentkezik be az Xbox -ba az életkorkibocsátás miatt. 
+    Nem jelentkezik be az Xbox -ba az életkorkibocsátás miatt.
 
     Kérjük, ellenőrizze, hogy a Microsoft -fiókhoz be van -e állítva, és az
     életkor 18 felett van.
@@ -759,7 +759,7 @@ loginError:
     róla, hogy az xbox-fiókodat összekapcsoltad a Microsoft-fiókoddal. Kérlek,
     próbáld meg újra.
   noProfileForNewUser: >-
-    Nincs játékprofil! 
+    Nincs játékprofil!
 
     Ha Ön új Minecraft felhasználó, kérjük, jelentkezzen be legalább egyszer a
     Minecraft hivatalos indítójába.
@@ -802,12 +802,12 @@ mod:
   deletionRestHint: És további {rest} mod...
   denseView: Sűrű kilátás
   dropHint: A mod .jar/.litemod fájlt húzd ide az importáláshoz.
-  duplicatedDetected: '{count} duplikált mod'
+  duplicatedDetected: "{count} duplikált mod"
   duplicatedDetectedDescription: |-
-    Modokat találtam azonos mod azonosítóval, de különböző fájlokkal. 
-    Ez a Minecraft összeomlását okozhatja. 
+    Modokat találtam azonos mod azonosítóval, de különböző fájlokkal.
+    Ez a Minecraft összeomlását okozhatja.
     Kérjük, válassza ki a megtartani kívánt fájlt.
-  enabled: '{count} Modok engedélyezve'
+  enabled: "{count} Modok engedélyezve"
   filter: Modok szűrése
   group: Csoportosul
   groupInstalled: Csoportosan telepített modok
@@ -816,15 +816,15 @@ mod:
   incompatible: Inkompatibilis mod.
   incompatibleHint: Nézze meg a mod kompatibilitási jelentést
   incompatibleHintDescription: |-
-    Előfordulhat, hogy néhány mod-függőség hiányzik. 
+    Előfordulhat, hogy néhány mod-függőség hiányzik.
     Vagy egyes függőségi verziók nem egyeznek.
   manage: Modok kezelése
   maybeCompatible: Talán kompatibilis.
   modloaderSelectHint: |-
-    A mod támogatja a mod betöltőket. 
+    A mod támogatja a mod betöltőket.
     Kérjük, válasszon egyet a telepítéshez.
   modloaderSelectNotSupported: Nem található {modloader} a Minecraft {minecraft} számára
-  mods: '{count} Mod'
+  mods: "{count} Mod"
   name: Mod | Modok
   noModLoaderHint: Ne felejtsd el engedélyezni a modloadert a modok használatához!
   openLink: A mod url {url} megnyitása
@@ -834,10 +834,10 @@ mod:
   showDirectory: Modok mappájának megjelenítése
   showFile: A mod elérési útvonalának megjelenítése {file}
   showInCurseforge: A mod megjelenítése a curseforge-ban
-  showInModrinth: '{name} megjelenítése Modrinth-en'
+  showInModrinth: "{name} megjelenítése Modrinth-en"
   switchDefaultSource: Alapértelmezett mod forrás
   syncGroupRules: A csoportosítási szabályok mentése
-  toUpdate: '{count} frissítendő'
+  toUpdate: "{count} frissítendő"
   ungroup: Csoportosítás
 modFilter:
   clear: Átlátszó szűrő
@@ -850,7 +850,7 @@ modFilter:
   unusedOnly: Csak a fel nem használt könyvtárak modokat mutatják be
 modInstall:
   archived: >-
-    {name} archiválva. 
+    {name} archiválva.
 
     {name} nem kap további frissítéseket, kivéve, ha a szerző úgy dönt, hogy
     visszavonja a projekt archiválását.
@@ -917,14 +917,14 @@ modpack:
   name: Modcsomag | Modcsomagok
   overrides: Felülírás
   showFile: Fájl megjelenítése {file}
-  showInCurseforge: '{name} megnyitása Curseforge-on'
-  showInFtb: '{name} megnyitása FTB-ben'
-  showInModrinth: '{name} megnyitása Modrinth-en'
+  showInCurseforge: "{name} megnyitása Curseforge-on"
+  showInFtb: "{name} megnyitása FTB-ben"
+  showInModrinth: "{name} megnyitása Modrinth-en"
   url: URL
   urlHint: A modcsomag kezdőlapjának url-je
 modpackImportConfirm:
   description: |-
-    Detektálja, hogy egy fájlt dobjon be az indítóba. 
+    Detektálja, hogy egy fájlt dobjon be az indítóba.
     Modpackot próbál importálni?
   title: Modpackot próbál importálni?
 modrinth:
@@ -1024,7 +1024,7 @@ modrinth:
     waterfall: Waterfall
     worldgen: Világ generálás
   clientSide: Kliens oldali
-  copyTitle: '{title} címe másolása vágólapra'
+  copyTitle: "{title} címe másolása vágólapra"
   createAt: Létrehozva
   createCollection: Készítsen gyűjteményt
   description: Leírás
@@ -1053,7 +1053,7 @@ modrinth:
   licenses:
     name: Licencek
   loginHint: |-
-    A művelethez a modrint elvégzéséhez szükséges. 
+    A művelethez a modrint elvégzéséhez szükséges.
     Az indító megnyitja a böngészőablakot a Modrinth bejelentkezéséhez.
   loginTitle: Jelentkezzen be a Modrinthbe
   modLoaders:
@@ -1067,7 +1067,7 @@ modrinth:
     name: Projekt típusa
     resourcePack: Forráscsomag
     shader: Shader
-  projects: '{count} projektek'
+  projects: "{count} projektek"
   quickSearch: Keresés {title}
   searchText: Keresés
   serverSide: Szerver oldali
@@ -1094,7 +1094,7 @@ multiplayer:
   allowTurn: Relay szerver engedélyezése
   allowTurnHint: >-
     Engedélyezd a relé-kiszolgálót, ha nem tudsz csatlakozni a barátodhoz. A
-    relés szerver használata azonban lelassíthatja a kapcsolatot. Használd 
+    relés szerver használata azonban lelassíthatja a kapcsolatot. Használd
     óvatosan.
   complete: Kész
   confirm: Megerősítés
@@ -1114,7 +1114,7 @@ multiplayer:
     rgba(245, 158, 11)"> több</span> kapcsolatot.</span>"
   createLocalToken: Helyi token létrehozása
   currentIpTitle: Nyilvános IP érzékelése
-  currentNatTitle: 'Jelenlegi hálózat (NAT):'
+  currentNatTitle: "Jelenlegi hálózat (NAT):"
   difficultyLevelHint: A nehézségi szint, hogy létrehozzanak egy peer kapcsolatot más
   disconnect: Lecsatlakozás
   disconnectDescription: >-
@@ -1153,7 +1153,7 @@ multiplayer:
   joinOrCreateGroupHint: Csoport azonosító kérése barátaidtól vagy csoport létrehozása
   kernel: P2P kernel
   kernelDescription: >-
-    Használjon natív WebRTC-t vagy node-datachannel-t. 
+    Használjon natív WebRTC-t vagy node-datachannel-t.
 
     Csak akkor váltsa ezt, ha a p2p kapcsolata valamikor összeomlik az
     indítóablakban.
@@ -1163,7 +1163,7 @@ multiplayer:
   name: Többjátékos LAN-on
   networkInfo: Hálózati információk
   next: Következő
-  otherExposedPortDescription: 'A port előszava: {user}'
+  otherExposedPortDescription: "A port előszava: {user}"
   placeholder: Csatlakozz más felhasználókhoz, hogy Minecraftot játszhass LAN-on!
   previous: Előző
   receiveHint: >-
@@ -1200,7 +1200,7 @@ news:
   name: Hírek
   readMore: Bővebben
 next: Következő
-'no': Nem
+"no": Nem
 ok: Oké
 optifineVersion:
   disable: Optifine letiltása
@@ -1226,12 +1226,12 @@ peerSignalingState:
 popular: Népszerűség
 presence:
   curseforge: CurseForge megtekintése
-  curseforgeProject: '{name} megtekintése a Curseforge-ban'
+  curseforgeProject: "{name} megtekintése a Curseforge-ban"
   instance: Tétlen a példányban {instance}
-  instanceSetting: 'Példa beállításainak szerkesztése: {instance}'
+  instanceSetting: "Példa beállításainak szerkesztése: {instance}"
   mod: Modok megtekintése a {instance}-ban
   modrinth: Modrinth megtekintése
-  modrinthProject: '{name} megtekintése Modrinth-ban'
+  modrinthProject: "{name} megtekintése Modrinth-ban"
   resourcePack: Forráscsomagok megtekintése a {instance}-ben
   save: Mentés megtekintése a {instance}-ben
   setting: Beállítások megtekintése
@@ -1257,7 +1257,7 @@ resourcepack:
       visszacsinálni. Biztos vagy benne, hogy ezt akarod csinálni?
     title: Forráscsomag törlése
   dropHint: Húzd ide a forráscsomag zip-jét/mappá-ját az importáláshoz
-  enable: '{count} forráscsomag engedélyezve'
+  enable: "{count} forráscsomag engedélyezve"
   import: Forráscsomag importálása
   incompatible: >-
     Nem kompatibilis forráscsomag formátum({format}). Elfogadott {accept}.
@@ -1266,14 +1266,14 @@ resourcepack:
   manage: Forráscsomagok kezelése
   name: Forráscsomag | Forráscsomagok
   searchHint: Forráscsomag keresése
-  searchOnCurseforge: '{name} keresése curseforge-on'
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnCurseforge: "{name} keresése curseforge-on"
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: Keress és válassz forráscsomagot
   selected: Kiválasztott forráscsomagok
   shared: Példány használja a megosztott erőforráscsomag mappát
   showDirectory: Nyissa meg az erőforrás csomagokat tartalmazó mappát
-  showFile: '{file} megjelenítése fájlkezelőben'
-  showInCurseforge: '{name} megjelenítése curseforge-on'
+  showFile: "{file} megjelenítése fájlkezelőben"
+  showInCurseforge: "{name} megjelenítése curseforge-on"
   unselected: Nem kiválasztott forráscsomagok
 save:
   cheat: Csalás
@@ -1296,7 +1296,7 @@ save:
     fromResource: Kezelt forrásokból
     title: Mentés importálása kezelt forrásból
   createNew: Új világ létrehozása
-  createdWorlds: '{count} db világod van'
+  createdWorlds: "{count} db világod van"
   deleteHint: >-
     Ezt a műveletet nem lehet visszaállítani. A mentett adatokat örökre
     elveszted. Biztos, hogy törölni szeretnéd ezt a mentést?
@@ -1339,13 +1339,13 @@ server:
   expectedVersions: Támogatott verziók
   export: Exportáló szerver
   exportNoFilesHint: >-
-    Nincs kiszolgáló fájl. 
+    Nincs kiszolgáló fájl.
 
     Egyszerre futtathatja a kiszolgálót a Local -on, hogy néhány fájlt
     generáljon.
   exportOption: Szerver exportálási beállítások
   exportSSHAuthenticationFailed: |-
-    Az összes hitelesítési módszer sikertelen. 
+    Az összes hitelesítési módszer sikertelen.
     Kérjük, ellenőrizze a felhasználónevet/jelszót vagy a privát kulcsot.
   exportSSHOptions: SSH opciók
   exportSSHPrivateKeyPath: SSH privát kulcsút
@@ -1523,7 +1523,7 @@ settingLabel:
   localHint: Ezt a beállítást az aktuális példány módosítja
 setup:
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       Az adatgyökér nem egy közös .minecraft könyvtár. Mivel az XMCL adatok
@@ -1544,8 +1544,8 @@ setup:
       A kiválasztott könyvtár nem üres. Ez rendben van, de kérjük, készítsen
       biztonsági mentést az adatokról.
     invalidChar: |-
-      Az elérési út érvénytelen karaktereket tartalmaz! 
-      Ez okozhatja, hogy a Minecraft nem kezdődik! 
+      Az elérési út érvénytelen karaktereket tartalmaz!
+      Ez okozhatja, hogy a Minecraft nem kezdődik!
       A plakán csak angol karaktereket és szimbólumot használ!
     noPermission: >-
       Az launchernek nincs jogosultsága a kiválasztott könyvtárhoz! Kérlek,
@@ -1570,14 +1570,14 @@ setup:
   path: Jelenlegi útvonal
   title: >-
     Üdvözöljük az X Minecraft Launcherben. Mielőtt elkezdenéd, szükségünk van
-    arra, hogy 
+    arra, hogy
 shaderPack:
   deletion: Shader Pack törlése
   deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
   disabled: Shader pack kikapcsolása
   dropHint: Shader pack importálása
   empty: Nincs kijelölt shader csomag
-  enable: '{name} shader pack használata'
+  enable: "{name} shader pack használata"
   enabled: Engedélyezett Shader Pack
   manage: Shader packek kezelése
   name: Shader Pack
@@ -1635,11 +1635,11 @@ task:
     Jelenlegi {actual}.
   manage: Texturpak
   manager: Folyamatkezelő
-  nTaskRunning: '{count} folyamat fut'
+  nTaskRunning: "{count} folyamat fut"
   name: Folyamat | Folyamatok
   pause: Szüneteltetés
   searchOnCurseforge: Keresés {name} a curseforge-on
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Kedvenc texturepackek
   showFile: Nyisd meg a texturepack {file} mappát a
   showInCurseforge: Mutasd {name} a curseforge-on
@@ -1664,7 +1664,7 @@ tutorial:
     Ha bármilyen probléma merül fel, kérlek, kattints erre a gombra, hogy
     visszajelzést küldj!
   hideNewsHeaderDescription: |-
-    Bal oldalon a Hírek bemutatója látható. 
+    Bal oldalon a Hírek bemutatója látható.
     Erre a gombra kattintva elrejtheti ezt a kirakatot.
   instance:
     iconDescription: Kattints az ikon megváltoztatásához.`
@@ -1700,7 +1700,7 @@ tutorial:
     searchTitle: Modok keresése
   multiplayer:
     contentDescription: Az Ön és társai közötti kapcsolatok itt lesznek felsorolva.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       Létrehozhatsz egy csoportot, vagy csatlakozhatsz egy csoporthoz más
       játékosokkal. A launcher megpróbál P2P-kapcsolatokat létrehozni közted és
@@ -1716,14 +1716,14 @@ tutorial:
       manuálisan kicserélni a tokent a manuális csatlakozás gombra kattintva. Ha
       ez is sikertelen, akkor az internetprobléma lehet.
   recentPlayDescription: >-
-    A létrehozott játékok itt lesznek felsorolva. 
+    A létrehozott játékok itt lesznek felsorolva.
 
     Itt váltogathatja a nézeteket, hogy megtekinthesse a telepített verziókat és
     a letöltött modpackokat is.
   storePoupularModpackDescription: Ebben a részben láthatja a Curseforge és Modrinth legnépszerűbb modpackjait.
   storeSearchCategoryDescription: Itt is válthat a kategóriák és a szűrők között.
   storeSearchDescription: |-
-    Ebbe a szövegmezőbe beírva kereshet a Modpack között. 
+    Ebbe a szövegmezőbe beírva kereshet a Modpack között.
     Nyomja meg az Entert a kereséshez.
   storeSearchResultDescription: Itt látni fogja az összes keresési eredményt.
   userAccountDescription: Erre az ikonra kattintva adhatod hozzá vagy kezelheted Minecraft-fiókodat.
@@ -1823,4 +1823,4 @@ versionType:
   beta: Béta
   name: Státusz
   release: Kiadás
-'yes': Igen
+"yes": Igen
