@@ -1,12 +1,5 @@
 ### 기술 스택 및 간단한 배경
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](contributing/CONTRIBUTING.ua.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](contributing/CONTRIBUTING.ru.md)</kbd>
-<kbd>[<img title="Polish" alt="Polish" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/250px-Flag_of_Poland.svg.png" width="22">](contributing/CONTRIBUTING.pl)</kbd>
-<kbd>[<img title="Deutsch" alt="Deutsch" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2uEryZuDlXosocJnvXBB0kYWkrtTNNINFaaJQySlzoRRolztbc2Pgrw7u3WLxVqcpC4k&usqp=CAU" width="22">](contributing/CONTRIBUTING.de.md)</kbd>
-<kbd>[<img title="Korean" alt="Korean" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/640px-Flag_of_South_Korea.svg.png" width="22">](contributing/CONTRIBUTING.ko.md)</kbd>
-
-
 이 문서에서는 이 프로젝트에서 쓰는 툴체인과 런타임 개요를 설명해요.
 
 프로젝트 전반적으로 사용하는 것들:

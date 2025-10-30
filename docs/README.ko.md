@@ -75,9 +75,9 @@ brew install --cask --no-quarantine voxelum/xmcl
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Voxelum/x-minecraft-launcher)
 
-일반 개발 관련해서는 [기여하기](contributing/CONTRIBUTING.ko.md)를 참고해 주세요.
+일반 개발 관련해서는 [기여하기](../contributing/CONTRIBUTING.ko.md)를 참고해 주세요.
 
-번역(i18n) 작업을 하려면 [현지화를 시작하기](https://docs.xmcl.app/ko/guide/i18n)을 따라 진행해 주세요.
+번역(i18n) 작업을 하려면 [현지화를 시작하기](https://xmcl.app/ko/guide/i18n)을 따라 진행해 주세요.
 
 ## 라이선스
 
