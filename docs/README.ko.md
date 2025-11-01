@@ -88,7 +88,7 @@ brew install --cask --no-quarantine voxelum/xmcl
 | [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Windows용 무료 코드 서명(제공: [SignPath.io](https://signpath.io/), 인증서: [SignPath Foundation](https://signpath.org/)) |
 | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
 | [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL은 서버리스 자바스크립트 앱에 Deno Deploy를 활용하고 있어요. 제공: [Deno](https://deno.com/) |
-| [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Tencent EdgeOne](https://edgeone.ai/)이 아시아 CDN, 엣지, 보안 솔루션을 제공해요. CDN 가속 및 보안은 Tencent EdgeOne의 후원을 받고 있어요. |
+| [![](../assets/EdgeOne.png)](https://edgeone.ai/) | [Tencent EdgeOne](https://edgeone.ai/)이 아시아 CDN, 엣지, 보안 솔루션을 제공해요. CDN 가속 및 보안은 Tencent EdgeOne의 후원을 받고 있어요. |
 
 ### 스폰서 (AFDIAN)
 
