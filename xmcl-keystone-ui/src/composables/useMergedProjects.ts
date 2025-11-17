@@ -28,19 +28,27 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
 }
 
 /**
- * Sort the projects by the keyword. It will also filter the project if the networkOnly is true
+ * Sort the projects by keyword relevance when in local/favorite view.
+ * For remote view, returns items as-is since the search APIs already handle sorting.
  * @param keyword The keyword to search
  * @param items The project items
- * @param mode The mod of the filtering project. 'online' only show the connected (curseforge/modrinth) projects. 'local' only show the installed projects.
- * @returns The sorted and filtered project
+ * @param currentView The current view mode ('local', 'favorite', or 'remote')
+ * @returns The sorted (for local/favorite) or original (for remote) project items
  */
 export function useProjectsSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
+  currentView: Ref<'local' | 'favorite' | 'remote'>,
 ) {
   const filterSorted = computed(() => {
     const filtered = items.value
 
+    // For remote view, return items as-is since API already handles sorting
+    if (currentView.value === 'remote') {
+      return filtered
+    }
+
+    // For local/favorite views, apply keyword-based relevance sorting
     if (!keyword.value) return filtered
 
     const result = filtered

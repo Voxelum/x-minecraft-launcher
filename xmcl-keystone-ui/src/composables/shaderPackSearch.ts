@@ -136,6 +136,7 @@ export function useShaderPackSearch(shaderPacks: Ref<InstanceShaderFile[]>,
   const items = useProjectsSort(
     searchModel.keyword,
     merged,
+    currentView,
   )
 
   function loadMore() {

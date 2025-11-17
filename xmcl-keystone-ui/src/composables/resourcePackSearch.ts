@@ -126,6 +126,7 @@ export function useResourcePackSearch(_enabled: Ref<InstanceResourcePack[]>, _di
   const items = useProjectsSort(
     searchModel.keyword,
     merged,
+    currentView,
   )
 
   const error = computed(() => curseforgeError.value || modrinthError.value)
