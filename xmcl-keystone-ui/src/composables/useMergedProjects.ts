@@ -1,5 +1,4 @@
 import { ProjectEntry } from '@/util/search'
-import { getDiceCoefficient } from '@/util/sort'
 import { Ref } from 'vue'
 
 function assignProject(a: ProjectEntry, b: ProjectEntry) {
@@ -28,29 +27,20 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
 }
 
 /**
- * Sort the projects by the keyword. It will also filter the project if the networkOnly is true
- * @param keyword The keyword to search
+ * Returns the projects without additional sorting.
+ * Sorting is handled by the search APIs (Modrinth/Curseforge) which already
+ * apply the user-selected sort order (downloads, follows, etc.) along with keyword relevance.
+ * @param keyword The keyword to search (unused, kept for compatibility)
  * @param items The project items
- * @param mode The mod of the filtering project. 'online' only show the connected (curseforge/modrinth) projects. 'local' only show the installed projects.
- * @returns The sorted and filtered project
+ * @returns The project items as-is
  */
 export function useProjectsSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
 ) {
-  const filterSorted = computed(() => {
-    const filtered = items.value
-
-    if (!keyword.value) return filtered
-
-    const result = filtered
-      .map(p => [p, getDiceCoefficient(keyword.value, p.title)] as const)
-      .sort((a, b) => -a[1] + b[1])
-      .map(p => p[0])
-
-    return result
-  })
-  return filterSorted
+  // Return items as-is without re-sorting
+  // The search APIs already handle sorting by the user-selected criteria
+  return items
 }
 
 export function useMergedProjects<T extends ProjectEntry>(
