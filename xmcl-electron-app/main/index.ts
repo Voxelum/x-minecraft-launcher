@@ -10,6 +10,11 @@ import ElectronLauncherApp from './ElectronLauncherApp'
 // AppImage mounts to /tmp which cannot have proper setuid permissions
 if (process.env.APPIMAGE) {
   app.commandLine.appendSwitch('no-sandbox')
+  // Disable /dev/shm usage on Linux to avoid permission issues
+  // AppImage environments often have issues with /dev/shm access
+  if (process.platform === 'linux') {
+    app.commandLine.appendSwitch('disable-dev-shm-usage')
+  }
 }
 
 new ElectronLauncherApp().start()
