@@ -12,6 +12,7 @@ import { pluginEncodingWorker } from '@xmcl/runtime/encoding/pluginEncodingWorke
 import { pluginClientToken, pluginFlights, pluginGFW, pluginImageStorage, pluginLogConsumer, pluginTasks, pluginTelemetry, pluginUncaughtError } from '@xmcl/runtime/infra/plugins'
 import { pluginDirectLaunch } from '@xmcl/runtime/launch/pluginDirectLaunch'
 import { pluginLaunchPrecheck } from '@xmcl/runtime/launch/pluginLaunchPrecheck'
+import { pluginSodiumRTSS } from '@xmcl/runtime/launch/pluginSodiumRTSS'
 import { pluginMarketProvider } from '@xmcl/runtime/market/pluginMarketProvider'
 import { pluginNativeReplacer } from '@xmcl/runtime/nativeReplacer/pluginNativeReplacer'
 import { pluginNetworkInterface } from '@xmcl/runtime/network/pluginNetworkInterface'
@@ -43,6 +44,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginEncodingWorker,
   pluginSetup,
   pluginLaunchPrecheck,
+  pluginSodiumRTSS,
   pluginNvdiaGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,
