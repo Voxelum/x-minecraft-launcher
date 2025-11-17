@@ -84,6 +84,7 @@ export function useSavesSearch(saves: Ref<InstanceSaveFile[]>, sharedSaves: Ref<
   const items = useProjectsSort(
     keyword,
     result,
+    currentView,
   )
 
   function effect() {

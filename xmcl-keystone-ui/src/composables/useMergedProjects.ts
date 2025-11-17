@@ -1,4 +1,5 @@
 import { ProjectEntry } from '@/util/search'
+import { getDiceCoefficient } from '@/util/sort'
 import { Ref } from 'vue'
 
 function assignProject(a: ProjectEntry, b: ProjectEntry) {
@@ -27,20 +28,37 @@ function assignProject(a: ProjectEntry, b: ProjectEntry) {
 }
 
 /**
- * Returns the projects without additional sorting.
- * Sorting is handled by the search APIs (Modrinth/Curseforge) which already
- * apply the user-selected sort order (downloads, follows, etc.) along with keyword relevance.
- * @param keyword The keyword to search (unused, kept for compatibility)
+ * Sort the projects by keyword relevance when in local/favorite view.
+ * For remote view, returns items as-is since the search APIs already handle sorting.
+ * @param keyword The keyword to search
  * @param items The project items
- * @returns The project items as-is
+ * @param currentView The current view mode ('local', 'favorite', or 'remote')
+ * @returns The sorted (for local/favorite) or original (for remote) project items
  */
 export function useProjectsSort<T extends ProjectEntry>(
   keyword: Ref<string>,
   items: Ref<T[]>,
+  currentView: Ref<'local' | 'favorite' | 'remote'>,
 ) {
-  // Return items as-is without re-sorting
-  // The search APIs already handle sorting by the user-selected criteria
-  return items
+  const filterSorted = computed(() => {
+    const filtered = items.value
+
+    // For remote view, return items as-is since API already handles sorting
+    if (currentView.value === 'remote') {
+      return filtered
+    }
+
+    // For local/favorite views, apply keyword-based relevance sorting
+    if (!keyword.value) return filtered
+
+    const result = filtered
+      .map(p => [p, getDiceCoefficient(keyword.value, p.title)] as const)
+      .sort((a, b) => -a[1] + b[1])
+      .map(p => p[0])
+
+    return result
+  })
+  return filterSorted
 }
 
 export function useMergedProjects<T extends ProjectEntry>(
