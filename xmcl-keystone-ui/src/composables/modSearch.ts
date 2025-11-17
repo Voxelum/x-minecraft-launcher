@@ -250,6 +250,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const items = useProjectsSort(
     keyword,
     all,
+    currentView,
   )
 
   const { lookupBatch } = useService(ProjectMappingServiceKey)
