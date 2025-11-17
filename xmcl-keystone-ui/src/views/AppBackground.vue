@@ -11,6 +11,7 @@
       v-else-if="backgroundType === BackgroundType.HALO"
       class="absolute z-0 h-full w-full"
       :style="{ filter: `blur(${blur}px)` }"
+      @error="onHaloError"
     />
     <img
       v-else-if="backgroundImage?.type === 'image' && backgroundType === BackgroundType.IMAGE"
@@ -92,11 +93,28 @@ onMounted(() => {
   if (videoRef.value) {
     videoRef.value.volume = volume.value
   }
+
+  // Listen for GPU process crashes and automatically disable resource-intensive backgrounds
+  if (window.windowController) {
+    window.windowController.on('gpu-process-crashed', (details: any) => {
+      console.error('GPU process crashed, disabling halo background:', details)
+      if (backgroundType.value === BackgroundType.HALO) {
+        backgroundType.value = BackgroundType.NONE
+      }
+    })
+  }
 })
 
 watch(backgroundType, (t) => {
   console.log(t)
 })
+
+// Handle Halo initialization errors by falling back to a simpler background
+const onHaloError = (error: Error) => {
+  console.error('Halo background failed to initialize, falling back to none:', error)
+  // Automatically switch to a simpler background type to prevent GPU issues
+  backgroundType.value = BackgroundType.NONE
+}
 
 </script>
 <style scoped>

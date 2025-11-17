@@ -38,13 +38,31 @@ window.THREE = {
 import initHalo from './halo'
 
 export default defineComponent({
-  setup() {
+  emits: ['error'],
+  setup(props, { emit }) {
     const halo = ref(null as any)
     onMounted(() => {
-      initHalo({
-        el: halo.value,
-        THREE: window.THREE,
-      })
+      try {
+        const vantaEffect = initHalo({
+          el: halo.value,
+          THREE: window.THREE,
+        })
+        
+        // Check if WebGL context was successfully created
+        if (vantaEffect && vantaEffect.renderer) {
+          const gl = vantaEffect.renderer.getContext()
+          if (!gl || gl.isContextLost()) {
+            console.error('WebGL context lost or unavailable for Halo effect')
+            emit('error', new Error('WebGL context unavailable'))
+            if (vantaEffect.destroy) {
+              vantaEffect.destroy()
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to initialize Halo effect:', error)
+        emit('error', error)
+      }
     })
     return { halo }
   },
