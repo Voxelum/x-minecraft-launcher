@@ -95,14 +95,12 @@ onMounted(() => {
   }
 
   // Listen for GPU process crashes and automatically disable resource-intensive backgrounds
-  if (window.windowController) {
-    window.windowController.on('gpu-process-crashed', (details: any) => {
-      console.error('GPU process crashed, disabling halo background:', details)
-      if (backgroundType.value === BackgroundType.HALO) {
-        backgroundType.value = BackgroundType.NONE
-      }
-    })
-  }
+  windowController.on('gpu-process-crashed', (details) => {
+    console.error('GPU process crashed, disabling halo background:', details)
+    if (backgroundType.value === BackgroundType.HALO) {
+      backgroundType.value = BackgroundType.NONE
+    }
+  })
 })
 
 watch(backgroundType, (t) => {
