@@ -549,7 +549,6 @@ const items = computed(() => {
     return mapped
   })
 
-  // Фильтруем результаты по выбранным источникам
   let filteredModrinths = modrinths
   let filteredCurseforges = curseforges
   let filteredFtb = ftbItems.value
@@ -701,7 +700,6 @@ const selected = computed(() => {
   if (sort.value) {
     result.push(sort.value)
   }
-  // Добавляем выбранные источники
   result.push(...sources.value)
 
   return result
@@ -725,8 +723,7 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
         curseforgeCategory.value = cat.id
       }
     }
-  } else if (group === 'modFilter') {  // ИЗМЕНЕНО: было 'sources', стало 'modFilter'
-    // Обработка выбора источников
+  } else if (group === 'modFilter') {
     const index = sources.value.indexOf(category)
     if (index === -1) {
       sources.value = [...sources.value, category]
