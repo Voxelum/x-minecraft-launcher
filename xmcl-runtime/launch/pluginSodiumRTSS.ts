@@ -10,6 +10,9 @@ import { LaunchService } from './LaunchService'
  * (RTSS) is detected. This plugin detects if Sodium is installed and automatically adds the JVM
  * argument to bypass this check, allowing the game to launch normally.
  * 
+ * This ensures compatibility with systems that have RTSS/MSI Afterburner installed,
+ * matching the behavior of other launchers like Prism Launcher.
+ * 
  * @see https://github.com/CaffeineMC/sodium/wiki/Known-Issues
  */
 export const pluginSodiumRTSS: LauncherAppPlugin = async (app) => {
