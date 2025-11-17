@@ -1,0 +1,70 @@
+{
+  "auto_install_extensions": {
+    "vue": true
+  },
+
+  "tab_size": 2,
+  "preferred_line_length": 120,
+  "file_types": {
+    "JSON": ["json"]
+  },
+  "languages": {
+    "TypeScript": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "code_actions_on_format": {
+        "source.organizeImports": true
+      }
+    },
+    "JavaScript": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "language_server"
+    },
+    "Vue.js": {
+      "tab_size": 2,
+      "format_on_save": "on",
+      "formatter": "language_server"
+    },
+    "Markdown": {
+      "format_on_save": "off"
+    }
+  },
+  "lsp": {
+    "vtsls": {
+      "initialization_options": {
+        "typescript": {
+          "preferences": {
+            "quoteStyle": "single"
+          },
+          "tsdk": "xmcl-runtime/node_modules/typescript/lib"
+        }
+      }
+    }
+  },
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store"
+  ],
+  "terminal": {
+    "env": {
+      "npm_config_user_agent": "pnpm"
+    }
+  },
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "private_files": [
+    "**/.git/**",
+    "**/.svn/**",
+    "**/.hg/**",
+    "**/CVS/**",
+    "**/.DS_Store"
+  ],
+  "git": {
+    "git_gutter": "tracked_files"
+  }
+}
