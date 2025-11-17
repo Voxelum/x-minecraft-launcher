@@ -123,8 +123,6 @@ const gameVersion = useQuery('gameVersion', ensureQuery)
 const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
 const sort = useQuery('sort', (q) => { q.page = '1' })
 const page = useQueryNumber('page', 1)
-
-// Добавляем фильтр по источникам
 const sources = useQueryStringArray('sources', ensureQuery)
 
 const pageSize = 10
