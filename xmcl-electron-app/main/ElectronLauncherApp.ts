@@ -209,7 +209,13 @@ export default class ElectronLauncherApp extends LauncherApp {
     app.on('gpu-process-crashed', (event, killed) => {
       this.logger.error(`GPU process crashed (killed: ${killed})`)
       // Notify renderer processes about GPU issues
-      this.controller?.mainWin?.webContents.send('gpu-process-crashed', { killed })
+      try {
+        if (this.controller?.mainWin && !this.controller.mainWin.isDestroyed()) {
+          this.controller.mainWin.webContents.send('gpu-process-crashed', { killed })
+        }
+      } catch (error) {
+        this.logger.error('Failed to send GPU crash notification to renderer:', error)
+      }
     })
 
     // Monitor renderer process crashes
