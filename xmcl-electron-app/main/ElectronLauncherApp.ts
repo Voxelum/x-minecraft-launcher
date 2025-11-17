@@ -130,8 +130,8 @@ export default class ElectronLauncherApp extends LauncherApp {
     this.session = new ElectronSession(this)
     // Enable native Wayland support with automatic platform detection
     app.commandLine?.appendSwitch('ozone-platform-hint', 'auto')
-    // Enable Wayland window decorations for better native appearance
-    app.commandLine?.appendSwitch('enable-features', 'WaylandWindowDecorations')
+    // Enable Wayland-specific features for better native appearance
+    app.commandLine?.appendSwitch('enable-features', 'UseOzonePlatform,WaylandWindowDecorations')
   }
 
   get systemLocale(): string {
