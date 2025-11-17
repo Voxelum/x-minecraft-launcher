@@ -1,40 +1,15 @@
 <template>
-  <div
-    ref="container"
-    class="w-full overflow-auto"
-    :class="{ 'pinned': pinned }"
-  >
-    <v-progress-linear
-      class="absolute left-0 top-0 z-10 m-0 p-0"
-      :active="isModrinthSearching || ftbLoading || isCurseforgeSearching"
-      height="3"
-      :indeterminate="true"
-    />
-    <div
-      class="z-8 sticky top-1 mt-4 w-full px-4 grid"
-      style="grid-template-columns: 35% 25% 10% 30%;"
-    >
-      <v-text-field
-        id="search-text-field"
-        ref="searchTextField"
-        v-model="keyword"
-        color="green"
-        class="rounded-xl search-field pr-4"
-        append-icon="search"
-        solo
-        hide-details
-        clearable
-        :placeholder="t('modrinth.searchText')"
-        @click:clear="query = ''"
-        @keydown.enter="query = keyword"
-        @click:append="query = keyword"
-      />
+  <div ref="container" class="w-full overflow-auto" :class="{ 'pinned': pinned }">
+    <v-progress-linear class="absolute left-0 top-0 z-10 m-0 p-0"
+      :active="isModrinthSearching || ftbLoading || isCurseforgeSearching" height="3" :indeterminate="true" />
+    <div class="z-8 sticky top-1 mt-4 w-full px-4 grid" style="grid-template-columns: 35% 25% 10% 30%;">
+      <v-text-field id="search-text-field" ref="searchTextField" v-model="keyword" color="green"
+        class="rounded-xl search-field pr-4" append-icon="search" solo hide-details clearable
+        :placeholder="t('modrinth.searchText')" @click:clear="query = ''" @keydown.enter="query = keyword"
+        @click:append="query = keyword" />
     </div>
     <div class="main px-3">
-      <div
-        id="popular-modpacks"
-        class="section"
-      >
+      <div id="popular-modpacks" class="section">
         <v-subheader>
           <v-icon left>
             local_fire_department
@@ -42,40 +17,22 @@
           {{ t('store.popular') }}
         </v-subheader>
 
-        <v-carousel
-          :interval="7000"
-          class="min-h-[410px] max-w-[950px] flex-grow self-center"
-          :cycle="true"
-          :show-arrows="true"
-          hide-delimiter-background
-          height="410"
-        >
-          <v-carousel-item
-            v-for="(g, i) in popularItems"
-            :key="i"
-          >
-            <StoreGallery
-              :gallery="g"
-              @enter="enter(g.type, g.id)"
-            />
+        <v-carousel :interval="7000" class="min-h-[410px] max-w-[950px] flex-grow self-center" :cycle="true"
+          :show-arrows="true" hide-delimiter-background height="410">
+          <v-carousel-item v-for="(g, i) in popularItems" :key="i">
+            <StoreGallery :gallery="g" @enter="enter(g.type, g.id)" />
           </v-carousel-item>
         </v-carousel>
       </div>
       <div class="section">
         <v-subheader>
-          <v-icon
-            left
-            size="20"
-          >
+          <v-icon left size="20">
             update
           </v-icon>
           {{ t('store.recentUpdated') }}
         </v-subheader>
 
-        <GalleryGrid
-          :items="recentUpdatedItems"
-          @enter="enter($event.type, $event.id)"
-        />
+        <GalleryGrid :items="recentUpdatedItems" @enter="enter($event.type, $event.id)" />
       </div>
       <div class="section">
         <v-subheader>
@@ -85,10 +42,7 @@
           {{ t('store.latestMinecraft') }}
         </v-subheader>
 
-        <GalleryList
-          :items="recentMinecraftItems"
-          @enter="enter($event.type, $event.id)"
-        />
+        <GalleryList :items="recentMinecraftItems" @enter="enter($event.type, $event.id)" />
       </div>
 
       <v-subheader ref="exploreHeader">
@@ -99,53 +53,23 @@
       </v-subheader>
 
       <div class="content">
-        <div
-          v-if="!searchError && items.length > 0"
-          id="search-result"
-          class="relative flex flex-col gap-3 lg:px-2.5"
-        >
+        <div v-if="!searchError && items.length > 0" id="search-result" class="relative flex flex-col gap-3 lg:px-2.5">
           <div
-            class="hover:(scale-100 opacity-100) absolute bottom-3 z-10 w-full scale-90 transform opacity-60 transition"
-          >
-            <v-pagination
-              v-model="page"
-              :length="pageCount"
-              color="success"
-              :disabled="isModrinthSearching || isCurseforgeSearching"
-              :total-visible="12"
-            />
+            class="hover:(scale-100 opacity-100) absolute bottom-3 z-10 w-full scale-90 transform opacity-60 transition">
+            <v-pagination v-model="page" :length="pageCount" color="success"
+              :disabled="isModrinthSearching || isCurseforgeSearching" :total-visible="12" />
           </div>
-          <StoreExploreCard
-            v-for="mod in items"
-            :key="mod.id"
-            v-ripple
-            :disabled="false"
-            :value="mod"
-            class="cursor-pointer"
-            @mouseenter.native="onMouseEnter($event, mod)"
-            @mouseleave.native="onMouseLeave(mod)"
-            @click="enter(mod.type, mod.id)"
-          />
+          <StoreExploreCard v-for="mod in items" :key="mod.id" v-ripple :disabled="false" :value="mod"
+            class="cursor-pointer" @mouseenter.native="onMouseEnter($event, mod)" @mouseleave.native="onMouseLeave(mod)"
+            @click="enter(mod.type, mod.id)" />
 
           <div class="min-h-14 w-full p-1" />
         </div>
-        <Hint
-          v-if="items.length === 0"
-          icon="mood_bad"
-          :size="80"
-          :text="`No search result for ${query}`"
-        />
+        <Hint v-if="items.length === 0" icon="mood_bad" :size="80" :text="`No search result for ${query}`" />
       </div>
       <div class="category overflow-auto">
-        <StoreExploreCategories
-          id="search-category"
-          :display="hovered?.gallery"
-          :groups="groups"
-          :loading="refreshingTag"
-          :selected="selected"
-          :error="tagError"
-          @select="onSelect"
-        />
+        <StoreExploreCategories id="search-category" :display="hovered?.gallery" :groups="groups"
+          :loading="refreshingTag" :selected="selected" :error="tagError" @select="onSelect" />
       </div>
     </div>
   </div>
@@ -200,6 +124,9 @@ const modLoaders = useQueryStringArray('modLoaders', ensureQuery)
 const sort = useQuery('sort', (q) => { q.page = '1' })
 const page = useQueryNumber('page', 1)
 
+// Добавляем фильтр по источникам
+const sources = useQueryStringArray('sources', ensureQuery)
+
 const pageSize = 10
 
 const keyword = ref(query)
@@ -230,10 +157,10 @@ const { data: curseforgeResult, error: curseforgeError, isValidating: curseforge
 watch([modrinthResult, curseforgeResult], async ([modrinthItems, cfItems]) => {
   const modrinthIds = (modrinthItems || []).map(p => p.project_id)
   const curseforgeIds = (cfItems || []).map(p => p.id)
-  
+
   const result = await lookupBatch(modrinthIds, curseforgeIds)
   const newMappings: Record<string, { name: string; description: string }> = {}
-  
+
   for (const mapping of result) {
     if (mapping.modrinthId) {
       newMappings[`modrinth:${mapping.modrinthId}`] = {
@@ -248,7 +175,7 @@ watch([modrinthResult, curseforgeResult], async ([modrinthItems, cfItems]) => {
       }
     }
   }
-  
+
   galleryMappings.value = { ...galleryMappings.value, ...newMappings }
 })
 
@@ -322,10 +249,10 @@ const { data: curseforgeRecent } = useSWRV('/curseforge/recent_update', async ()
 watch([modrinthRecent, curseforgeRecent], async ([modrinthItems, cfItems]) => {
   const modrinthIds = (modrinthItems || []).map(p => p.project_id)
   const curseforgeIds = (cfItems || []).map(p => p.id)
-  
+
   const result = await lookupBatch(modrinthIds, curseforgeIds)
   const newMappings: Record<string, { name: string; description: string }> = {}
-  
+
   for (const mapping of result) {
     if (mapping.modrinthId) {
       newMappings[`modrinth:${mapping.modrinthId}`] = {
@@ -340,7 +267,7 @@ watch([modrinthRecent, curseforgeRecent], async ([modrinthItems, cfItems]) => {
       }
     }
   }
-  
+
   galleryMappings.value = { ...galleryMappings.value, ...newMappings }
 }, { immediate: true })
 
@@ -405,10 +332,10 @@ const { data: curseforgeRecentMinecraft } = useSWRV('/curseforge/recent_version'
 watch([modrinthRecentMinecraft, curseforgeRecentMinecraft], async ([modrinthItems, cfItems]) => {
   const modrinthIds = (modrinthItems || []).map(p => p.project_id)
   const curseforgeIds = (cfItems || []).map(p => p.id)
-  
+
   const result = await lookupBatch(modrinthIds, curseforgeIds)
   const newMappings: Record<string, { name: string; description: string }> = {}
-  
+
   for (const mapping of result) {
     if (mapping.modrinthId) {
       newMappings[`modrinth:${mapping.modrinthId}`] = {
@@ -423,7 +350,7 @@ watch([modrinthRecentMinecraft, curseforgeRecentMinecraft], async ([modrinthItem
       }
     }
   }
-  
+
   galleryMappings.value = { ...galleryMappings.value, ...newMappings }
 }, { immediate: true })
 
@@ -548,10 +475,10 @@ const mappings = ref<Record<string, { name: string; description: string }>>({})
 watch([projects, curseforgeProjects], async ([modrinthProjects, cfProjects]) => {
   const modrinthIds = modrinthProjects.map(p => p.project_id)
   const curseforgeIds = cfProjects.map(p => p.id)
-  
+
   const result = await lookupBatch(modrinthIds, curseforgeIds)
   const newMappings: Record<string, { name: string; description: string }> = {}
-  
+
   for (const mapping of result) {
     if (mapping.modrinthId) {
       newMappings[`modrinth:${mapping.modrinthId}`] = {
@@ -566,7 +493,7 @@ watch([projects, curseforgeProjects], async ([modrinthProjects, cfProjects]) => 
       }
     }
   }
-  
+
   mappings.value = newMappings
 }, { immediate: true })
 
@@ -622,14 +549,31 @@ const items = computed(() => {
     return mapped
   })
 
-  if (curseforgeCategory.value && _modrinthCategories.value.length === 0) {
-    return curseforges
-  }
-  if (_modrinthCategories.value.length > 0 && curseforgeCategory.value === undefined) {
-    return modrinths
+  // Фильтруем результаты по выбранным источникам
+  let filteredModrinths = modrinths
+  let filteredCurseforges = curseforges
+  let filteredFtb = ftbItems.value
+
+  if (sources.value.length > 0) {
+    if (!sources.value.includes('modrinth')) {
+      filteredModrinths = []
+    }
+    if (!sources.value.includes('curseforge')) {
+      filteredCurseforges = []
+    }
+    if (!sources.value.includes('ftb')) {
+      filteredFtb = []
+    }
   }
 
-  return mergeSorted(mergeSorted(modrinths, ftbItems.value), curseforges)
+  if (curseforgeCategory.value && _modrinthCategories.value.length === 0) {
+    return filteredCurseforges
+  }
+  if (_modrinthCategories.value.length > 0 && curseforgeCategory.value === undefined) {
+    return filteredModrinths
+  }
+
+  return mergeSorted(mergeSorted(filteredModrinths, filteredFtb), filteredCurseforges)
 })
 
 // Scroll to the search result
@@ -703,6 +647,15 @@ const groups = computed(() => {
       icon: s.icon,
     })),
   }, {
+    id: 'modFilter',
+    text: t('modFilter.source', 'Source'),
+    type: 'checkbox',
+    categories: [
+      { id: 'modrinth', text: 'Modrinth', icon: 'cloud' },
+      { id: 'curseforge', text: 'CurseForge', icon: 'public' },
+      { id: 'ftb', text: 'FTB', icon: 'apps' },
+    ],
+  }, {
     id: 'gameVersions',
     text: t('modrinth.gameVersions.name'),
     type: 'menu',
@@ -748,6 +701,8 @@ const selected = computed(() => {
   if (sort.value) {
     result.push(sort.value)
   }
+  // Добавляем выбранные источники
+  result.push(...sources.value)
 
   return result
 })
@@ -769,6 +724,14 @@ const onSelect = ({ group, category }: { group: string; category: string }) => {
       } else {
         curseforgeCategory.value = cat.id
       }
+    }
+  } else if (group === 'modFilter') {  // ИЗМЕНЕНО: было 'sources', стало 'modFilter'
+    // Обработка выбора источников
+    const index = sources.value.indexOf(category)
+    if (index === -1) {
+      sources.value = [...sources.value, category]
+    } else {
+      sources.value = sources.value.filter((_, i) => i !== index)
     }
   } else if (group === 'modloaders') {
     if (category) {
