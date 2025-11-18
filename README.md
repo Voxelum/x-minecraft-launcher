@@ -54,6 +54,7 @@ brew install --cask --no-quarantine voxelum/xmcl
 <kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](docs/README.pl.md)</kbd>
 <kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](docs/README.kz.md)</kbd>
 <kbd>[<img title="Spain" alt="Spain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="22">](docs/README.es.md)</kbd>
+<kbd>[<img title="Korean" alt="Korean" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/640px-Flag_of_South_Korea.svg.png" width="22">](docs/README.ko.md)</kbd>
 
 
 
