@@ -85,6 +85,7 @@ export interface SaveDialogOptions {
 interface WindowControllerEventMap {
   maximize: boolean
   minimize: boolean
+  'gpu-process-crashed': { killed: boolean }
 }
 
 export interface WindowController extends GenericEventEmitter<WindowControllerEventMap> {
