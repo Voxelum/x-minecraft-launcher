@@ -59,6 +59,7 @@ export type OICDLikeConfig = {
   scopes_supported: string[]
   token_endpoint: string
   userinfo_endpoint: string
+  shared_client_id?: string
 } & ({
   device_authorization_endpoint: string
 } | {
