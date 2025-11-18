@@ -41,6 +41,10 @@ export function createNodeSystemOptions(logger: Logger, fetch: typeof globalThis
           }
         }
 
+        if (url.startsWith('https://skin.mualliance.ltd/open/devicecode')) {
+          url = 'https://skin.mualliance.ltd/open/device/auth'
+        }
+
         return client.sendPostRequestAsync(url, options) as any
       },
     },

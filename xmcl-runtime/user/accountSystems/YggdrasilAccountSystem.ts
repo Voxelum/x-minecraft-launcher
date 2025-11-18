@@ -71,7 +71,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
   async #loginOCID(ocidConfig: OICDLikeConfig, authority: string, username: string, slientOnly: boolean, homeAccountId?: string, signal?: AbortSignal): Promise<UserProfile> {
     const client = this.ocidClient
-    const id = this.registry.getClientId(ocidConfig.issuer)
+    const id = this.registry.getClientId(ocidConfig.issuer) || ocidConfig.shared_client_id
 
     if (!id) {
       throw new UserException({ type: 'loginServiceNotSupported', authority }, `Service ${authority} is not supported`)
