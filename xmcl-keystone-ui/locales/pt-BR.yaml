@@ -476,6 +476,7 @@ installVersion:
 instance:
   addServer: Adicionar Servidor
   changeIcon: Alterar
+  contents: Contente
   current: Instância atual
   delete: Deletar jogo
   deleteFailed: Falha ao deletar instância
@@ -522,6 +523,7 @@ instance:
   resolutionEnabled: Ative sua própria resolução
   resolutionPreset: Resolução predefinida
   showInstance: Mostrar a pasta do jogo
+  updates: Atualizações
   useSharedOptions: Usar configurações compartilhadas do jogo
   useSharedOptionsDesc: >-
     Isso irá vincular o arquivo options.txt a um arquivo compartilhado entre as

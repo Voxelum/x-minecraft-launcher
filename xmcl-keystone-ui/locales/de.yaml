@@ -512,6 +512,7 @@ installVersion:
 instance:
   addServer: Server hinzufügen
   changeIcon: Icon ändern
+  contents: Inhalt
   current: Aktuelle Instanz
   delete: Deinstallieren Sie das Spiel
   deleteFailed: Instanz konnte nicht gelöscht werden
@@ -560,6 +561,7 @@ instance:
   resolutionEnabled: Benutzerdefinierte Autorisierung aktivieren
   resolutionPreset: Auflösung Voreinstellung
   showInstance: Spieleordner anzeigen
+  updates: Aktualisierungen
   useSharedOptions: Verwenden Sie gemeinsame Spieleinstellungen
   useSharedOptionsDesc: >-
     Dadurch wird die Datei „options.txt“ mit einer instanzübergreifenden Datei

@@ -429,6 +429,7 @@ installVersion:
 instance:
   addServer: 新增伺服器
   changeIcon: 更改圖示
+  contents: 內容
   current: 目前實例
   delete: 刪除遊戲
   deleteFailed: 刪除實例失敗
@@ -471,6 +472,7 @@ instance:
   resolutionEnabled: 開啟自己的決議
   resolutionPreset: 分辨率預設
   showInstance: 開啟資料夾
+  updates: 更新
   useSharedOptions: 共享 Minecraft 設定
   useSharedOptionsDesc: 這會將 options.txt 連結到跨實例的共用檔案
   useSharedServersList: 共享伺服器列表

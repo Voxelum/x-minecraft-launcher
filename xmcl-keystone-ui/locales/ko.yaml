@@ -418,6 +418,7 @@ installVersion:
 instance:
   addServer: 서버 추가
   changeIcon: 아이콘 변경
+  contents: 콘텐츠
   current: 현재 인스턴스
   delete: 게임 삭제
   deleteFailed: 인스턴스 삭제 실패
@@ -458,6 +459,7 @@ instance:
   resolutionEnabled: 사용자 지정 해상도 사용
   resolutionPreset: 해상도 프리셋
   showInstance: 게임 폴더 열기
+  updates: 업데이트
   useSharedOptions: 공유 게임 설정 사용
   useSharedOptionsDesc: 인스턴스 간에 공유되는 파일에 options.txt를 링크합니다
   useSharedServersList: 공유 서버 목록 사용

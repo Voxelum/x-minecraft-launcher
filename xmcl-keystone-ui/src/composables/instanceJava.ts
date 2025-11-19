@@ -28,7 +28,7 @@ export interface InstanceJavaStatus extends AutoDetectedJava {
 export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>) {
   const { resolveJava } = useService(JavaServiceKey)
 
-  const data: Ref<InstanceJavaStatus | undefined> = ref(undefined)
+  const data: Ref<InstanceJavaStatus | undefined> = shallowRef(undefined)
   const { refresh: mutate, refreshing: isValidating, error } = useRefreshable(async () => {
     const _version = version.value
     const inst = instance.value

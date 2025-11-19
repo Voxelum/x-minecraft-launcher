@@ -407,6 +407,7 @@ installVersion:
 instance:
   addServer: ADD SERVR
   changeIcon: CHANGE ICON
+  contents: Content
   current: CURRENT INSTANCE
   delete: DELETE GAME
   deleteFailed: FAIL 2 DELETE INSTANCE
@@ -446,6 +447,7 @@ instance:
   resolution: Window Resolution
   resolutionPreset: Resolution Preset
   showInstance: SHOW GAME FOLDR
+  updates: Updates
   useSharedOptions: USE SHARD GAME SETTINGS
   useSharedOptionsDesc: DIS WILL LINK TEH OPSHUNS.TXT 2 SHARD FILE ACROS INSTANCE
   useSharedServersList: USE SHARD SERVERS LIST

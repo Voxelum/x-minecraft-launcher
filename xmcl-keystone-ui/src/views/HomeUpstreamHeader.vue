@@ -2,7 +2,7 @@
   <v-card
     class="flex flex-col items-center justify-center gap-4 p-4"
     :color="cardColor"
-    :style="{ borderColor: '', 'backdrop-filter': `blur(${blurCard}px)` }"
+    :style="{ borderColor: '', 'backdrop-filter': `blur(${blurCard}px)`, height: dense ? '240px' : '' }"
     outlined
   >
     <v-img
@@ -14,9 +14,18 @@
       class="rounded-lg"
     />
     <a
+      v-if="!dense"
       class="text-2xl font-bold"
       target="browser"
       :href="value.url"
+    >
+      {{ value.title }}
+    </a>
+    <a
+      v-else
+      class="text-2xl font-bold"
+      target="browser"
+      @click="push(value.store)"
     >
       {{ value.title }}
     </a>
@@ -55,7 +64,9 @@
         />
       </div>
     </span>
-    <span>
+    <span
+      v-if="!dense"
+    >
       <v-btn
         text
         color="primary"
@@ -101,13 +112,23 @@ const { cardColor, blurCard } = injection(kTheme)
 </script>
 <style scoped>
 .infos {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .infos.dense {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
+
 /* when width > 1024px */
 @media (min-width: 1024px) {
+  .infos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .infos.dense {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1530px) {
   .infos {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
