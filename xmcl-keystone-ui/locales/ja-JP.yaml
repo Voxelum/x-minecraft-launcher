@@ -416,6 +416,7 @@ installVersion:
 instance:
   addServer: サーバーを追加
   changeIcon: アイコンを変更
+  contents: コンテンツ
   current: 現在の起動構成
   delete: ゲームを削除
   deleteFailed: インスタンスの削除に失敗しました
@@ -458,6 +459,7 @@ instance:
   resolutionEnabled: カスタム認証を有効にする
   resolutionPreset: 解像度プリセット
   showInstance: ゲームフォルダを開く
+  updates: アップデート
   useSharedOptions: 一般的なゲーム設定を使用する
   useSharedOptionsDesc: これでoptions.txtファイルがインスタンスの共有ファイルにリンクされる。
   useSharedServersList: 共有サーバーのリストを使う

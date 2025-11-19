@@ -469,6 +469,7 @@ installVersion:
 instance:
   addServer: Добавить сервер
   changeIcon: Изменить значок
+  contents: Содержание
   current: Текущий экземпляр
   delete: Удалить экземпляр
   deleteFailed: Не удалось удалить экземпляр
@@ -513,6 +514,7 @@ instance:
   resolutionEnabled: Включить пользовательское разрешение
   resolutionPreset: Резолюция предустановлена
   showInstance: Открыть папку экземпляра
+  updates: Обновления
   useSharedOptions: Использовать общие настройки игры
   useSharedOptionsDesc: Это свяжет файл options.txt с общим файлом в экземпляре.
   useSharedServersList: Использовать список общих серверов

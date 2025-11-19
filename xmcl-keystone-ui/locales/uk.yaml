@@ -468,6 +468,7 @@ installVersion:
 instance:
   addServer: Додати сервер
   changeIcon: Змінити іконку
+  contents: Зміст
   current: Поточний екземпляр
   delete: Видалити гру
   deleteFailed: Не вдалося видалити екземпляр
@@ -512,6 +513,7 @@ instance:
   resolutionEnabled: Увімкнути власну роздільну здатність
   resolutionPreset: Позначена роздільна здатність
   showInstance: Показати папку гри
+  updates: Оновлення
   useSharedOptions: Використовувати спільні налаштування гри
   useSharedOptionsDesc: Це зв'яже options.txt зі спільним файлом для всіх екземплярів
   useSharedServersList: Використовувати спільний список серверів

@@ -442,6 +442,7 @@ installVersion:
 instance:
   addServer: Aggiungi server
   changeIcon: Cambia icona
+  contents: Contenuto
   current: Istanza corrente
   delete: Elimina gioco
   deleteFailed: Impossibile eliminare l'istanza
@@ -488,6 +489,7 @@ instance:
   resolutionEnabled: Accendere la propria risoluzione
   resolutionPreset: Preimpostazione della risoluzione
   showInstance: Mostra la cartella del gioco
+  updates: Aggiornamenti
   useSharedOptions: Utilizza le impostazioni di gioco condivise
   useSharedOptionsDesc: Ciò collegherà options.txt a un file condiviso tra le istanze
   useSharedServersList: Utilizza l'elenco dei server condivisi

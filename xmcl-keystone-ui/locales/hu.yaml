@@ -430,6 +430,7 @@ installVersion:
 instance:
   addServer: Szerver hozzáadása
   changeIcon: Ikon módosítása
+  contents: Tartalom
   current: Jelenlegi példány
   delete: Játék törlése
   deleteFailed: Nem sikerült törölni a példányt
@@ -476,6 +477,7 @@ instance:
   resolutionEnabled: Kapcsolja be a saját felbontását
   resolutionPreset: Felbontás
   showInstance: Játék mappa megjelenítése
+  updates: Frissítések
   useSharedOptions: Használja a megosztott játékbeállításokat
   useSharedOptionsDesc: >-
     Ezzel összekapcsolja az options.txt fájlt egy több példányban megosztott

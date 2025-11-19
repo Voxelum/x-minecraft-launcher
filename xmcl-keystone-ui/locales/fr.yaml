@@ -468,6 +468,7 @@ installVersion:
 instance:
   addServer: Ajouter un Serveur
   changeIcon: Changer d'icône
+  contents: Contenu
   current: Instance actuelle
   delete: Supprimer le jeu
   deleteFailed: Échec de la suppression de l'instance
@@ -513,6 +514,7 @@ instance:
   resolutionEnabled: Mettez en œuvre votre propre résolution
   resolutionPreset: Résolution préréglé
   showInstance: Afficher le dossier du jeu
+  updates: Mises à jour
   useSharedOptions: Utiliser les paramètres de jeu partagés
   useSharedOptionsDesc: >-
     Cela reliera le fichier options.txt à un fichier partagé entre les

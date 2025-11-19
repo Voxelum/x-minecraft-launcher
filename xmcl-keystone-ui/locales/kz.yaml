@@ -396,11 +396,13 @@ forgeVersion:
   showRecommendedAndLatestOnly: Ұсынылған және тек соңғы нұсқа
   version: Forge нұсқасы
 instance:
+  contents: Content
   fullscreen: Fullscreen
   height: Height
   installModpack: Update instance from modpack
   resolution: Window Resolution
   resolutionPreset: Resolution Preset
+  updates: Updates
   vmVar: Environment Variables
   vmVarHint: Click   button to add environemnt variables
   width: Width
@@ -418,9 +420,13 @@ launch:
   createShortcut: Create shortcut
 launchFailed:
   elyByAuthlib:
-    title: "Ely.by Authlib үйлесімділік мәселесі"
-    description: "Minecraft нұсқасы {version} үшін Ely.by-дың Authlib алмастыруы қолданылды, бірақ бұл нұсқа толық үйлесімді болмауы мүмкін."
-    suggestion: "Бұл мәселені болдырмау үшін инстанс параметрлерінде Ely.by Authlib алмастыруын өшіре аласыз."
+    description: >-
+      Minecraft нұсқасы {version} үшін Ely.by-дың Authlib алмастыруы қолданылды,
+      бірақ бұл нұсқа толық үйлесімді болмауы мүмкін.
+    suggestion: >-
+      Бұл мәселені болдырмау үшін инстанс параметрлерінде Ely.by Authlib
+      алмастыруын өшіре аласыз.
+    title: Ely.by Authlib үйлесімділік мәселесі
 loginError:
   loginXboxAgeRestricted: >-
     Fail to login Xbox due the the age issue. Please make sure the age is set

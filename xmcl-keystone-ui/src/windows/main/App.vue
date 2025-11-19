@@ -89,7 +89,7 @@ provide(kLocalizedContent, useLocalizedContentControl())
 const layout = injection(kUIDefaultLayout)
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
 const { path } = injection(kInstance)
-const isLessThan490px = useMediaQuery('(max-height: 490px)')
+const isLessThan490px = useMediaQuery('(max-height: 570px)')
 provide(kInFocusMode, computed({
   get() {
     const less = isLessThan490px.value

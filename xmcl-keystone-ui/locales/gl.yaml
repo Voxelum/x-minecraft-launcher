@@ -273,6 +273,7 @@ importModpack:
   name: Importar Modpack
 instance:
   changeIcon: Cambiar icona
+  contents: Contido
   deleteFailed: Produciuse un erro ao eliminar a instancia
   deleteFailedPermission: Outro programa ocupou o ficheiro
   fullscreen: Pantalla completa
@@ -288,6 +289,7 @@ instance:
   prependCommandHint: Isto antepoñerá este comando antes de todos os comandos de inicio
   resolution: Resolución da xanela
   resolutionPreset: Resolución preestablecida
+  updates: Actualizacións
   useSharedOptions: Usa a configuración compartida do xogo
   useSharedOptionsDesc: Isto enlazará o options.txt a un ficheiro compartido na instancia
   useSharedServersList: Usa a lista de servidores compartidos
@@ -344,9 +346,13 @@ launchBlocked:
     title: Non se puido iniciar o proceso de xogo
 launchFailed:
   elyByAuthlib:
-    title: "Problema de compatibilidade de Ely.by Authlib"
-    description: "Usouse a substitución de Authlib de Ely.by para Minecraft versión {version}, pero esta versión pode non ser totalmente compatible."
-    suggestion: "Podes desactivar a substitución de Authlib de Ely.by nas configuracións da instancia para evitar este problema."
+    description: >-
+      Usouse a substitución de Authlib de Ely.by para Minecraft versión
+      {version}, pero esta versión pode non ser totalmente compatible.
+    suggestion: >-
+      Podes desactivar a substitución de Authlib de Ely.by nas configuracións da
+      instancia para evitar este problema.
+    title: Problema de compatibilidade de Ely.by Authlib
 loginError:
   loginXboxAgeRestricted: >-
     Non lograr a Xbox debido ao problema de idade. 

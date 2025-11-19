@@ -21,7 +21,7 @@
       class="absolute left-0 bottom-0 z-20 m-0 p-0"
       indeterminate
     />
-    <v-card-title>
+    <v-card-title v-if="title">
       <v-icon left>
         {{ icon }}
       </v-icon>
@@ -128,7 +128,7 @@ const isOverflowed = computed(() => {
 
 defineProps<{
   icon?: string
-  title: string
+  title?: string
   subtitle?: string
   text: string
   button?: { text: string; icon?: string }

@@ -57,8 +57,12 @@ p {
 }
 
 .dark {
-  --icon-color: #d8d8d8;
+  --icon-color: #cacaca;
   --icon-color-hovered: #fff;
+}
+
+html {
+    --highlight-color: #fbc02d;
 }
 
 .v-list-item,

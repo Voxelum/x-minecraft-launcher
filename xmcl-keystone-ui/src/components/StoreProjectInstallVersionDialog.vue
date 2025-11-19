@@ -16,10 +16,16 @@
         height="3"
         :indeterminate="true"
       />
+      <div v-if="loading">
+        <v-skeleton-loader
+          type="list-item-two-line, list-item-two-line"
+        />
+      </div>
       <div
-        v-if="selectedDetail"
+        v-else-if="selectedDetail"
       >
         <v-btn
+          v-if="!noBack"
           text
           large
           @click="selectedDetail = undefined"
@@ -126,7 +132,12 @@
               transform: `translateY(${row.start}px)`
             }"
           >
-            <template v-if="selectedDetail">
+            <template v-if="loading">
+              <v-skeleton-loader
+                type="list-item-two-line, list-item-two-line"
+              />
+            </template>
+            <template v-else-if="selectedDetail">
               <v-list-item
                 :href="selectedDetail.dependencies[row.index].href"
               >
@@ -192,6 +203,8 @@ const props = defineProps<{
   versions: StoreProjectVersion[]
   getVersionDetail: (version: StoreProjectVersion) => Promise<StoreProjectVersionDetail>
   value: boolean
+  initialSelectedDetail?: StoreProjectVersion
+  noBack?: boolean
 }>()
 
 const { t } = useI18n()
@@ -275,7 +288,14 @@ const all = computed(() => {
 
 // Select versions
 const loading = ref(false)
-const selectedDetail = ref<StoreProjectVersionDetail | undefined>(undefined)
+const selectedDetail = ref<StoreProjectVersionDetail | undefined>()
+watch(() => props.initialSelectedDetail, (v) => {
+  if (v) {
+    onVersionClicked(v)
+  } else {
+    selectedDetail.value = undefined
+  }
+}, { immediate: true })
 async function onVersionClicked(version: StoreProjectVersion) {
   try {
     loading.value = true

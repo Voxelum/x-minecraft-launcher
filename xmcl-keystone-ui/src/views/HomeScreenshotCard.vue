@@ -23,12 +23,12 @@
       hide-delimiters
       :height="height"
       show-arrows-on-hover
-      :show-arrows="urls.length > 0"
+      :show-arrows="display.length > 0"
       cycle
       interval="5000"
       class="rounded"
     >
-      <template v-if="urls.length > 0">
+      <template v-if="display.length > 0">
         <v-carousel-item
           v-for="(i, idx) of display"
           :key="i"
@@ -41,7 +41,6 @@
             @dragstart.stop="onDragStart($event, i)"
             class="w-full h-full object-cover"
           />
-          
           <div
             class="absolute w-full bottom-2 flex justify-center items-center justify-center z-10"
           >
@@ -67,54 +66,51 @@
         </v-carousel-item>
       </template>
     </v-carousel>
-    <!-- <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" /> -->
   </v-card>
 </template>
 <script lang="ts" setup>
 import AppImageControls from '@/components/AppImageControls.vue'
-import { useRefreshable, useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
+import { useInstanceScreenshots } from '@/composables/screenshot'
 import { Instance } from '@xmcl/instance'
-import { InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
-const props = defineProps<{ instance: Instance; height: number }>()
+const props = defineProps<{
+  instance: Instance;
+  height: number
+  galleries?: {
+    title: string
+    description?: string
+    url: string
+    rawUrl?: string
+  }[]
+}>()
 
 const { cardColor, blurCard } = injection(kTheme)
-
-const { getScreenshots } = useService(InstanceScreenshotServiceKey)
-const { on } = useService(LaunchServiceKey)
 const randomPlayScreenshot = useLocalStorageCacheBool('randomPlayScreenshot', false)
 
-const urls = shallowRef([] as string[])
-const shuffled = computed(() => urls.value.toSorted(() => Math.random() - 0.5))
-const display = computed(() => (randomPlayScreenshot.value ? shuffled.value : urls.value))
-const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await getScreenshots(props.instance.path)
-  if (result.length === 0) {
-    urls.value = []
-  } else {
-    urls.value = result
-  }
-})
+const { urls, refreshing } = useInstanceScreenshots(computed(() => props.instance.path))
 
-on('minecraft-exit', () => refresh())
+const display = computed(() => {
+  if (urls.value.length > 0) {
+    return randomPlayScreenshot.value ? urls.value.toSorted(() => Math.random() - 0.5) : urls.value
+  }
+  return props.galleries?.map(g => g.url) || []
+})
 
 const imageDialog = injection(kImageDialog)
 
 const show = (uri: string, idx: number) => {
-  imageDialog.showAll(urls.value, idx)
+  if (urls.value.length > 0) {
+    imageDialog.showAll(urls.value, idx)
+  } else {
+    imageDialog.showAll(props.galleries?.map(g => ({ src: g.rawUrl ?? g.url, description: g.title || g.description })) || [], idx)
+  }
 }
-
-onMounted(refresh)
-
-watch(() => props.instance, () => {
-  refresh()
-})
 
 const onDragStart = async (event: DragEvent, url: string) => {
   const response = await fetch(url)

@@ -434,6 +434,7 @@ installVersion:
 instance:
   addServer: Dodaj serwer
   changeIcon: Zmień ikonę
+  contents: Treść
   current: Bieżąca instancja
   delete: Usuń grę
   deleteFailed: Nie udało się usunąć instancji
@@ -482,6 +483,7 @@ instance:
   resolutionEnabled: Włącz własną rozdzielczość
   resolutionPreset: Postarowani rezolucji
   showInstance: Pokaż folder gry
+  updates: Aktualizacje
   useSharedOptions: Użyj udostępnionych ustawień gry
   useSharedOptionsDesc: >-
     Spowoduje to połączenie pliku Options.txt z plikiem udostępnionym w całej

@@ -169,13 +169,20 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
   }
 }
 
-export function getCurseforgeProjectFilesModel(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
+export function getCurseforgeProjectFilesModel(projectId: Ref<number | undefined>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
   return {
-    key: computed(() => formatKey(`/curseforge/${projectId.value}/files`, {
+    key: computed(() => formatKey(`/curseforge/${projectId.value || ''}/files`, {
       gameVersion,
       modLoaderType,
     })),
-    fetcher: () => clientCurseforgeV1.getModFiles({
+    fetcher: () => !projectId.value ? Promise.resolve({
+      data: [] as File[],
+      pagination: {
+        index: 0,
+        pageSize: 0,
+        totalCount: 0,
+      },
+    }) : clientCurseforgeV1.getModFiles({
       modId: projectId.value,
       gameVersion: gameVersion.value,
       modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
