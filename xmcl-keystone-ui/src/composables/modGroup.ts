@@ -76,10 +76,10 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
 
   const groupNames = computed(() => Object.keys(instanceModGroupping.value))
 
-  function group(fileNames: string[]) {
+  function group(fileNames: string[], customName?: string) {
     const newVal = { ...instanceModGroupping.value }
     const normalizedFileNames = fileNames.map(normalizeFileName)
-    const newGroupName = normalizedFileNames.join(',')
+    const newGroupName = customName || normalizedFileNames.join(',')
     newVal[newGroupName] = {
       files: normalizedFileNames,
       color: '',
@@ -223,7 +223,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
     }
   }
 
-  function getContextMenuItemsForGroup(proj: ProjectEntry<ModFile>) {
+  function getContextMenuItemsForGroup(proj: ProjectEntry<ModFile>, showDialog?: (fileNames: string[]) => void) {
     const fileName = proj.installed?.[0]?.fileName
     if (!fileName) return []
 
@@ -248,33 +248,48 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
         icon: 'label',
         text: t('mod.group'),
         onClick: () => {
-          group([fileName])
+          if (showDialog) {
+            showDialog([fileName])
+          } else {
+            group([fileName])
+          }
         },
       })
       return result
     }
 
-    result.push({
-      icon: 'label',
-      text: t('mod.group'),
-      onClick: () => {
-        group([normalizeFileName(fileName)])
-      },
-      children: groupNames.value.map((g) => ({
-        text: g,
-        icon: '',
+    // Use dialog if provided, otherwise use children submenu
+    if (showDialog) {
+      result.push({
+        icon: 'label',
+        text: t('mod.group'),
         onClick: () => {
-          const newVal = { ...instanceModGroupping.value }
-          const normalizedFileName = normalizeFileName(fileName)
-          for (const group of Object.values(newVal)) {
-            group.files = group.files.filter((f) => normalizeFileName(f) !== normalizedFileName)
-          }
-          const group = newVal[g]
-          group.files.push(normalizedFileName)
-          instanceModGroupping.value = newVal
+          showDialog([normalizeFileName(fileName)])
         },
-      })),
-    })
+      })
+    } else {
+      result.push({
+        icon: 'label',
+        text: t('mod.group'),
+        onClick: () => {
+          group([normalizeFileName(fileName)])
+        },
+        children: groupNames.value.map((g) => ({
+          text: g,
+          icon: '',
+          onClick: () => {
+            const newVal = { ...instanceModGroupping.value }
+            const normalizedFileName = normalizeFileName(fileName)
+            for (const group of Object.values(newVal)) {
+              group.files = group.files.filter((f) => normalizeFileName(f) !== normalizedFileName)
+            }
+            const group = newVal[g]
+            group.files.push(normalizedFileName)
+            instanceModGroupping.value = newVal
+          },
+        })),
+      })
+    }
 
     if (isInGroup(fileName)) {
       result.push({
