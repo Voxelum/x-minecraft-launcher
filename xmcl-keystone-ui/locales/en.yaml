@@ -813,6 +813,14 @@ mod:
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
+  selectOrCreateGroup: Select or Create Group
+  searchGroups: Search groups...
+  newFolder: New Folder
+  noGroupsYet: No groups yet. Create one!
+  noGroupsFound: No groups found
+  groupName: Group Name
+  groupNameRequired: Group name is required
+  createGroup: Create Group
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.

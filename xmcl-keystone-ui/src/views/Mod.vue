@@ -230,6 +230,7 @@
       </v-card>
     </v-dialog>
     <ModDuplicatedDialog />
+    <ModGroupSelectDialog />
     <ModIncompatibileDialog />
   </MarketBase>
 </template>
@@ -268,6 +269,7 @@ import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
+import ModGroupSelectDialog from './ModGroupSelectDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
@@ -547,13 +549,30 @@ const selections = ref({} as Record<string, boolean>)
 
 provide('selections', selections)
 
+const { show: showGroupSelectDialog } = useDialog('mod-group-select')
+
+function showGroupDialog(fileNames: string[]) {
+  showGroupSelectDialog({
+    groups: groups.value,
+    onSelect: (groupName: string | null, newName?: string) => {
+      if (groupName) {
+        // Add to existing group
+        addToGroup(fileNames, groupName)
+      } else if (newName) {
+        // Create new group with custom name
+        group(fileNames, newName)
+      }
+    },
+  })
+}
+
 const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
   const result = [] as ContextMenuItem[]
 
   const selectMultiple = Object.values(selections.value).filter(v => v).length > 1
 
   if (!selectMultiple) {
-    result.push(...getContextMenuItemsForGroup(proj))
+    result.push(...getContextMenuItemsForGroup(proj, showGroupDialog))
     return result
   }
   const selected = new Set(Object.keys(selections.value).filter((k) => selections.value[k]))
@@ -583,33 +602,13 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
     },
   })
   if (isLocalView.value) {
-    // Check if there are existing groups
-    if (groups.value.length === 0) {
-      // No existing groups - just create new group
-      result.push({
-        text: t('mod.group'),
-        icon: 'label',
-        onClick: () => {
-          group(files.map(v => v.fileName))
-        },
-      })
-    } else {
-      // Show existing groups as children
-      result.push({
-        text: t('mod.group'),
-        icon: 'label',
-        onClick: () => {
-          group(files.map(v => v.fileName))
-        },
-        children: groups.value.map((g) => ({
-          text: g,
-          icon: '',
-          onClick: () => {
-            addToGroup(files.map(v => v.fileName), g)
-          },
-        })),
-      })
-    }
+    result.push({
+      text: t('mod.group'),
+      icon: 'label',
+      onClick: () => {
+        showGroupDialog(files.map(v => v.fileName))
+      },
+    })
   }
   return result
 }
