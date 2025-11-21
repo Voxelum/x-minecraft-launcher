@@ -98,16 +98,22 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   function addToGroup(fileNames: string[], groupName: string) {
     const newVal = { ...instanceModGroupping.value }
     const normalizedFileNames = fileNames.map(normalizeFileName)
+    
+    // Check if target group exists
+    const targetGroup = newVal[groupName]
+    if (!targetGroup) {
+      console.warn(`Group "${groupName}" does not exist. Files will not be moved.`)
+      return
+    }
+    
     // Remove from all groups first
     for (const group of Object.values(newVal)) {
       group.files = group.files.filter((f) => !normalizedFileNames.includes(normalizeFileName(f)))
     }
+    
     // Add to selected group
-    const targetGroup = newVal[groupName]
-    if (targetGroup) {
-      targetGroup.files.push(...normalizedFileNames)
-      instanceModGroupping.value = newVal
-    }
+    targetGroup.files.push(...normalizedFileNames)
+    instanceModGroupping.value = newVal
   }
 
   function renameGroup(oldName: string, newName: string) {
