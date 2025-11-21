@@ -83,8 +83,8 @@
         @ungroup="ungroup(item.name)"
         @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
         @setting="renameGroup(item.name, $event.name)"
-        @enable-all="enable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed[0].path) })"
-        @disable-all="disable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed[0].path) })"
+        @enable-all="enable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
+        @disable-all="disable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
       />
       <v-subheader
         v-else-if="item === 'search'"
