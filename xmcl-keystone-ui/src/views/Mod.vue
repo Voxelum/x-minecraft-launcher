@@ -83,6 +83,8 @@
         @ungroup="ungroup(item.name)"
         @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
         @setting="renameGroup(item.name, $event.name)"
+        @enable-all="enable({ path: path, files: item.projects.map(p => p.installed[0].path) })"
+        @disable-all="disable({ path: path, files: item.projects.map(p => p.installed[0].path) })"
       />
       <v-subheader
         v-else-if="item === 'search'"
@@ -343,7 +345,7 @@ const hasActiveFilters = computed(() => {
   return !!localFilter.value
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, isInGroup, getGroupColor, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups } = useModGroups(isLocalView, path, items, sortBy)
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
   const modId = p.installed?.[0]?.modId
@@ -581,13 +583,33 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
     },
   })
   if (isLocalView.value) {
-    result.push({
-      text: t('mod.group'),
-      icon: 'label',
-      onClick: () => {
-        group(files.map(v => v.fileName))
-      },
-    })
+    // Check if there are existing groups
+    if (groups.value.length === 0) {
+      // No existing groups - just create new group
+      result.push({
+        text: t('mod.group'),
+        icon: 'label',
+        onClick: () => {
+          group(files.map(v => v.fileName))
+        },
+      })
+    } else {
+      // Show existing groups as children
+      result.push({
+        text: t('mod.group'),
+        icon: 'label',
+        onClick: () => {
+          group(files.map(v => v.fileName))
+        },
+        children: groups.value.map((g) => ({
+          text: g,
+          icon: '',
+          onClick: () => {
+            addToGroup(files.map(v => v.fileName), g)
+          },
+        })),
+      })
+    }
   }
   return result
 }

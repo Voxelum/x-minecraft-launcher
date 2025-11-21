@@ -808,6 +808,8 @@ mod:
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enabled: "{count} Mods enabled"
+  enableAll: Enable All
+  disableAll: Disable All
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
@@ -837,7 +839,7 @@ mod:
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
   toUpdate: "{count} updates"
-  ungroup: Ungrouping
+  ungroup: Ungroup
 modFilter:
   source: Source
   clear: Clear Filter
