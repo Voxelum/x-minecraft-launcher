@@ -83,6 +83,8 @@
         @ungroup="ungroup(item.name)"
         @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
         @setting="renameGroup(item.name, $event.name)"
+        @enable-all="enable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
+        @disable-all="disable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
       />
       <v-subheader
         v-else-if="item === 'search'"
@@ -228,6 +230,7 @@
       </v-card>
     </v-dialog>
     <ModDuplicatedDialog />
+    <ModGroupSelectDialog />
     <ModIncompatibileDialog />
   </MarketBase>
 </template>
@@ -266,6 +269,7 @@ import ModDetailOptifine from './ModDetailOptifine.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
+import ModGroupSelectDialog from './ModGroupSelectDialog.vue'
 import ModIncompatibileDialog from './ModIncompatibileDialog.vue'
 import ModItem from './ModItem.vue'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
@@ -343,7 +347,7 @@ const hasActiveFilters = computed(() => {
   return !!localFilter.value
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, isInGroup, getGroupColor, getContextMenuItemsForGroup } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups } = useModGroups(isLocalView, path, items, sortBy)
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
   const modId = p.installed?.[0]?.modId
@@ -545,13 +549,30 @@ const selections = ref({} as Record<string, boolean>)
 
 provide('selections', selections)
 
+const { show: showGroupSelectDialog } = useDialog('mod-group-select')
+
+function showGroupDialog(fileNames: string[]) {
+  showGroupSelectDialog({
+    groups: groups.value,
+    onSelect: (groupName: string | null, newName?: string) => {
+      if (groupName) {
+        // Add to existing group
+        addToGroup(fileNames, groupName)
+      } else if (newName) {
+        // Create new group with custom name
+        group(fileNames, newName)
+      }
+    },
+  })
+}
+
 const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
   const result = [] as ContextMenuItem[]
 
   const selectMultiple = Object.values(selections.value).filter(v => v).length > 1
 
   if (!selectMultiple) {
-    result.push(...getContextMenuItemsForGroup(proj))
+    result.push(...getContextMenuItemsForGroup(proj, showGroupDialog))
     return result
   }
   const selected = new Set(Object.keys(selections.value).filter((k) => selections.value[k]))
@@ -585,7 +606,7 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
       text: t('mod.group'),
       icon: 'label',
       onClick: () => {
-        group(files.map(v => v.fileName))
+        showGroupDialog(files.map(v => v.fileName))
       },
     })
   }
