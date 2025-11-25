@@ -1,19 +1,30 @@
 <template>
-  <div>
-    <v-alert
-      class="mx-4"
-      :border="border"
-      colored-border
+  <div class="feedback-card">
+    <v-card
+      class="mx-4 mb-4"
+      elevation="2"
       outlined
-      :type="icon ? 'info' : undefined"
     >
-      {{ t('feedback.hint') }}
-    </v-alert>
+      <v-card-text class="pa-4">
+        <div class="d-flex align-center mb-3">
+          <v-icon
+            v-if="icon"
+            color="primary"
+            class="mr-2"
+          >
+            info
+          </v-icon>
+          <span class="text-h6">{{ t('feedback.hint') }}</span>
+        </div>
+      </v-card-text>
+    </v-card>
 
-    <div class="flex w-full">
+    <div class="flex w-full px-4">
       <v-btn
-        class="mx-4 flex-grow"
-        shaped
+        class="flex-grow"
+        rounded
+        large
+        depressed
         color="primary"
         :loading="loading"
         @click="generateReport"
@@ -28,13 +39,14 @@
           v-else
           left
         >
-          done
+          check_circle
         </v-icon>
         {{ t('feedback.generateReport') }}
       </v-btn>
     </div>
   </div>
 </template>
+
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable, useService } from '@/composables'
@@ -55,5 +67,10 @@ const { refresh: generateReport, refreshing: loading } = useRefreshable(async ()
     done.value = true
   }
 })
-
 </script>
+
+<style scoped>
+.feedback-card {
+  margin-bottom: 16px;
+}
+</style>
