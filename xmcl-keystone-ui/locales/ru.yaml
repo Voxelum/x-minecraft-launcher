@@ -1432,8 +1432,11 @@ setting:
     contain: Вместить
     cover: Обрезать
     name: Подогнать
-  backgroundImageSelect: Изменить
+  backgroundImageUrl: URL-адрес изображения
+  backgroundImageUrlPlaceholder: Введите URL-адрес HTTP/HTTPS для изображения
   backgroundMusic: Фоновая музыка
+  backgroundMusicUrl: URL-адрес музыки
+  backgroundMusicUrlPlaceholder: Введите URL-адрес HTTP/HTTPS для музыки
   backgroundType: Фоновой эффект
   backgroundTypeDescription: >-
     Показывать специальный эффект на фоне (это может повлиять на
@@ -1446,7 +1449,8 @@ setting:
     video: Видео
   backgroundVideo: Фоновое видео
   backgroundVideoDescription: Изменить или очистить видео.
-  backgroundVideoSelect: Изменить
+  backgroundVideoUrl: URL-адрес видео
+  backgroundVideoUrlPlaceholder: Введите URL-адрес HTTP/HTTPS для видео
   backgroundVideoVolume: Громкость
   backgroundVideoVolumeDescription: Перетащите, чтобы отрегулировать громкость.
   blurAppBar: Размытие панели приложения
@@ -1478,11 +1482,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Эта опция назначит выделенный графический процессор процессу Minecraft.
   enableDiscord: Включить активность Discord
   enableDiscordDescription: Эта опция будет показывать статус лаунчера в Discord.
+  enterUrl: Введите URL
   general: Общее
   githubRelease: Релиз GitHub
   globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
   hideNewsHeader: Скрыть витрину новостей
+  instanceTheme:
+    activeDescription: |-
+      Этот экземпляр использует пользовательскую тему. 
+      Вы можете удалить его, чтобы использовать глобальную тему.
+    description: |-
+      Включите пользовательскую тему для этого экземпляра. 
+      Это создаст копию текущей глобальной темы.
+    name: Тема экземпляра
   language: Язык
   languageDescription: Отображаемый язык интерфейса.
   latestVersion: Последняя версия
@@ -1526,6 +1539,7 @@ setting:
     all: Все
     legacy: Только старые версии
   resetToDefault: Сбросить к значениям по умолчанию
+  select: Изменить
   showNewsHeader: Показать витрину новостей
   showRoot: Открыть папку
   streamerMode: Режим стримера
@@ -1539,6 +1553,8 @@ setting:
   themeExport: Экспортировать тему
   themeFont: Шрифт
   themeFontDescription: Изменить шрифт лаунчера.
+  themeFontUrl: URL-адрес шрифта
+  themeFontUrlPlaceholder: Введите URL-адрес HTTP/HTTPS для шрифта
   themeImport: Импортировать тему
   themeResetFont: Сбросить
   themeSelectFont: Изменить

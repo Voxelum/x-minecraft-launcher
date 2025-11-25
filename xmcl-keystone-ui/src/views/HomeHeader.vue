@@ -2,10 +2,8 @@
   <div
     class="header sticky max-w-full select-none transition-all px-2"
     :style="{
-      'backdrop-filter': !compact ? 'none' : `blur(${blurAppBar}px)`,
     }"
     :class="{
-      'backdrop-filter': !isInFocusMode,
       compact,
     }"
     @transitionstart="onTransitionStart"

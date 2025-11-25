@@ -1116,8 +1116,11 @@ setting:
   backgroundImageFit:
     contain: Contener
     cover: Cubrir
-  backgroundImageSelect: seleccionar
+  backgroundImageUrl: URL de la imagen
+  backgroundImageUrlPlaceholder: Ingrese la URL HTTP/HTTPS para la imagen
   backgroundMusic: Música de fondo del tema
+  backgroundMusicUrl: URL de música
+  backgroundMusicUrlPlaceholder: Ingrese la URL HTTP/HTTPS para música
   backgroundType: Tipo de Fondo
   backgroundTypeDescription: Muestra efectos especiales en el fondo (esto puede afectar el rendimiento)
   backgroundTypes:
@@ -1128,7 +1131,8 @@ setting:
     video: Video
   backgroundVideo: Video de Fondo
   backgroundVideoDescription: selecciona o borra el video
-  backgroundVideoSelect: seleccionar
+  backgroundVideoUrl: URL del vídeo
+  backgroundVideoUrlPlaceholder: Ingrese la URL HTTP/HTTPS para el video
   backgroundVideoVolume: Volumen
   backgroundVideoVolumeDescription: arrastra para ajustar el volumen
   blurAppBar: Desenfoque de la barra de aplicaciones
@@ -1160,11 +1164,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Esta opción asignará GPU dedicada al proceso de Minecraft.
   enableDiscord: Habilitar Presencia en Discord
   enableDiscordDescription: Esto mantendrá actualizado tu estado de lanzador en Discord
+  enterUrl: Ingrese la URL
   general: General
   githubRelease: Lanzamiento en GitHub
   globalSetting: Configuración Global de la Instancia
   globalSettingHint: La instancia utilizará estos ajustes por defecto.
   hideNewsHeader: Ocultar escaparate de noticias
+  instanceTheme:
+    activeDescription: |-
+      Esta instancia utiliza un tema personalizado. 
+      Puede eliminarlo para utilizar el tema global.
+    description: |-
+      Habilite un tema personalizado para esta instancia. 
+      Esto creará una copia del tema global actual.
+    name: Tema de instancia
   language: Idioma
   languageDescription: El idioma de la interfaz
   latestVersion: Última Versión
@@ -1207,6 +1220,7 @@ setting:
     all: Todo
     legacy: Solo versión heredada
   resetToDefault: Restablecer a los Valores Predeterminados
+  select: seleccionar
   showNewsHeader: Mostrar escaparate de noticias
   showRoot: Mostrar
   streamerMode: Modo de transmisión
@@ -1220,6 +1234,8 @@ setting:
   themeExport: Exportar un tema
   themeFont: Fuente
   themeFontDescription: Cambia la fuente del lanzador.
+  themeFontUrl: URL de fuente
+  themeFontUrlPlaceholder: Ingrese la URL HTTP/HTTPS para la fuente
   themeImport: Importar un tema
   themeResetFont: Restablecer fuente
   themeSelectFont: Seleccionar fuente

@@ -38,6 +38,7 @@
               label="Minecraft"
               readonly
               flat
+              outlined
               dense
               required
             >
@@ -53,6 +54,7 @@
               :value="getVersionString(oldRuntime.forge, runtime.forge)"
               persistent-hint
               label="Forge"
+              outlined
               readonly
               flat
               dense
@@ -66,9 +68,28 @@
               </template>
             </v-text-field>
             <v-text-field
+              v-if="runtime.neoForged"
+              :value="getVersionString(oldRuntime.neoForged, runtime.neoForged)"
+              persistent-hint
+              label="NeoForge"
+              outlined
+              readonly
+              flat
+              dense
+              required
+            >
+              <template #prepend-inner>
+                <img
+                  :src="BuiltinImages.neoForged"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
+            <v-text-field
               v-if="runtime.fabricLoader"
               :value="getVersionString(oldRuntime.fabricLoader, runtime.fabricLoader)"
               persistent-hint
+              outlined
               readonly
               label="Fabric"
               flat
@@ -82,39 +103,27 @@
                 >
               </template>
             </v-text-field>
+            <v-text-field
+              v-if="runtime.quiltLoader"
+              :value="getVersionString(oldRuntime.quiltLoader, runtime.quiltLoader)"
+              persistent-hint
+              outlined
+              readonly
+              label="Quilt"
+              flat
+              dense
+              required
+            >
+              <template #prepend-inner>
+                <img
+                  :src="BuiltinImages.quilt"
+                  width="32"
+                >
+              </template>
+            </v-text-field>
           </div>
 
-          <v-alert
-            v-if="loaderDifferences.old.length > 0 || loaderDifferences.new.length > 0"
-            colored-border
-            outlined
-            type="error"
-            color="error"
-          >
-            <i18n-t
-              tag="p"
-              keypath="instanceUpdate.loaderChanged"
-            >
-              <template #modloader>
-                <v-chip
-                  label
-                  small
-                  outlined
-                >
-                  {{ loaderDifferences.old.join(', ') }}
-                </v-chip>
-              </template>
-              <template #newModloader>
-                <v-chip
-                  label
-                  small
-                  outlined
-                >
-                  {{ loaderDifferences.new.join(', ') }}
-                </v-chip>
-              </template>
-            </i18n-t>
-          </v-alert>
+          <InstanceVersionShiftAlert :old-runtime="oldRuntime" :runtime="runtime" />
         </template>
 
         <div>
@@ -203,6 +212,7 @@ import { injection } from '@/util/inject'
 import { InstallInstanceOptions, InstanceFileUpdate, InstanceInstallServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { BuiltinImages } from '../constant'
+import InstanceVersionShiftAlert from '@/components/InstanceVersionShiftAlert.vue'
 
 const selected = ref([] as string[])
 const search = ref('')
@@ -381,27 +391,6 @@ const selectable = computed(() => {
   //   return false
   // }
   return true
-})
-
-const loaderDifferences = computed(() => {
-  const old = oldRuntime.value
-  const newR = runtime.value
-  const loaders = ['forge', 'fabricLoader', 'quiltLoader', 'neoForged']
-  const oldL = [] as string[]
-  const newL = [] as string[]
-  for (const l of loaders) {
-    if (!!old[l] !== !!newR[l]) {
-      if (old[l]) {
-        oldL.push(l)
-      } else {
-        newL.push(l)
-      }
-    }
-  }
-  return {
-    old: oldL,
-    new: newL,
-  }
 })
 
 const confirm = async () => {

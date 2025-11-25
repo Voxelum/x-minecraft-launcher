@@ -495,6 +495,23 @@ server:
 setting:
   about: About
   backdropBlur: Backdrop Blur
+  backgroundImageUrl: Image URL
+  backgroundImageUrlPlaceholder: Enter HTTP/HTTPS URL for image
+  backgroundMusicUrl: Music URL
+  backgroundMusicUrlPlaceholder: Enter HTTP/HTTPS URL for music
+  backgroundVideoUrl: Video URL
+  backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
+  enterUrl: Enter URL
+  instanceTheme:
+    activeDescription: >-
+      This instance is using a custom theme. You can delete it to use the global
+      theme.
+    description: >-
+      Enable a custom theme for this instance. This will create a copy of the
+      current global theme.
+    name: Instance Theme
+  themeFontUrl: Font URL
+  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
 setup:
   error:
     invalidChar: >-

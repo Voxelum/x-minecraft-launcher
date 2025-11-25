@@ -1290,8 +1290,11 @@ setting:
     contain: 包含
     cover: 覆蓋
     name: 放置方式
-  backgroundImageSelect: 選擇
+  backgroundImageUrl: 圖片網址
+  backgroundImageUrlPlaceholder: 輸入圖像的 HTTP/HTTPS URL
   backgroundMusic: 主題背景音樂
+  backgroundMusicUrl: 音樂網址
+  backgroundMusicUrlPlaceholder: 輸入音樂的 HTTP/HTTPS URL
   backgroundType: 背景效果
   backgroundTypeDescription: 是否顯示背景特效（如果覺得卡頓可以將其關閉）
   backgroundTypes:
@@ -1302,7 +1305,8 @@ setting:
     video: 影片
   backgroundVideo: 背景影片
   backgroundVideoDescription: 選擇一個背景影片或清空目前
-  backgroundVideoSelect: 選擇
+  backgroundVideoUrl: 視頻網址
+  backgroundVideoUrlPlaceholder: 輸入視頻的 HTTP/HTTPS URL
   backgroundVideoVolume: 影片音量
   backgroundVideoVolumeDescription: 拖動以調整音量
   blurAppBar: 頂端欄模糊
@@ -1332,11 +1336,16 @@ setting:
   enableDedicatedGPUOptimizationDescription: 此選項將為 Minecraft 程序分配專用 GPU。
   enableDiscord: 啟用 Discord Presence
   enableDiscordDescription: 根據 XMCL 實時更新 Discord 的狀態
+  enterUrl: 輸入網址
   general: 基本設定
   githubRelease: Github
   globalSetting: 全域性實例設定
   globalSettingHint: 實例預設情況下會使用這些全域性設定
   hideNewsHeader: 隱藏最新消息展示
+  instanceTheme:
+    activeDescription: 此實例使用自定義主題。您可以將其刪除以使用全局主題。
+    description: 為此實例啟用自定義主題。這將創建當前全局主題的副本。
+    name: 實例主題
   language: 語言
   languageDescription: 目前顯示的語言
   latestVersion: 最新版本
@@ -1374,6 +1383,7 @@ setting:
     all: 全部
     legacy: 僅舊版本
   resetToDefault: 重設到預設配色
+  select: 選擇
   showNewsHeader: 取消隱藏最新消息展示
   showRoot: 瀏覽
   streamerMode: 螢幕分享模式
@@ -1385,6 +1395,8 @@ setting:
   themeExport: 匯出主題
   themeFont: 字體
   themeFontDescription: 更改啟動器的字體。
+  themeFontUrl: 字體網址
+  themeFontUrlPlaceholder: 輸入字體的 HTTP/HTTPS URL
   themeImport: 匯入主題
   themeResetFont: 重設字體
   themeSelectFont: 選擇字體

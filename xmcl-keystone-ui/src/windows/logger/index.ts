@@ -18,7 +18,7 @@ const app = new Vue(defineComponent({
   vuetify,
   i18n,
   setup(props, context) {
-    provide(kTheme, useTheme(vuetify.framework, new ServiceFactoryImpl().getService(ThemeServiceKey)))
+    provide(kTheme, useTheme(ref(undefined), vuetify.framework, new ServiceFactoryImpl().getService(ThemeServiceKey)))
 
     baseService.call('getSettings').then(state => state).then(state => {
       i18n.locale = state.locale

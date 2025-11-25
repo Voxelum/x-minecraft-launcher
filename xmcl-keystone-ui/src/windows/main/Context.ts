@@ -1,6 +1,6 @@
 import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync } from '@/composables'
-import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
+import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kEnvironment, useEnvironment } from '@/composables/environment'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
@@ -15,6 +15,7 @@ import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOpti
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kInstanceSave, useInstanceSaves } from '@/composables/instanceSave'
 import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { kInstanceTheme, useInstanceTheme } from '@/composables/instanceTheme'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionInstall, useInstanceVersionInstallInstruction } from '@/composables/instanceVersionInstall'
 import { kInstances, useInstances } from '@/composables/instances'
@@ -24,6 +25,7 @@ import { kModDependenciesCheck, useModDependenciesCheck } from '@/composables/mo
 import { kModLibCleaner, useModLibCleaner } from '@/composables/modLibCleaner'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
+import { kModpackExport, useModpackExport } from '@/composables/modpack'
 import { kModrinthTags, useModrinthTags } from '@/composables/modrinth'
 import { kModrinthAuthenticatedAPI, useModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI'
 import { kPeerShared, usePeerConnections } from '@/composables/peers'
@@ -38,13 +40,12 @@ import { kTheme, useTheme } from '@/composables/theme'
 import { kTutorial, useTutorialModel } from '@/composables/tutorial'
 import { kUIDefaultLayout, useUILayout } from '@/composables/uiLayout'
 import { kUserContext, useUserContext } from '@/composables/user'
+import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
 import { provide } from 'vue'
-import { kLatestMinecraftVersion, useMinecraftLatestRelease } from '@/composables/version'
-import { kModpackExport, useModpackExport } from '@/composables/modpack'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -119,7 +120,11 @@ export default defineComponent({
     provide(kSaveSearch, useSavesSearch(saves.saves, saves.sharedSaves, searchModel))
     provide(kModUpgrade, modUpgrade)
     provide(kEnvironment, useEnvironment())
-    provide(kTheme, useTheme(vuetify.framework))
+
+    const instanceTheme = useInstanceTheme(instance.path)
+    provide(kInstanceTheme, instanceTheme)
+    provide(kTheme, useTheme(instanceTheme.instanceTheme, vuetify.framework))
+
 
     useI18nSync(vuetify.framework, settings.state)
 

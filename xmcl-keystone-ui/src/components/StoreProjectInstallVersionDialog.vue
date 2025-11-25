@@ -83,10 +83,12 @@
         <v-list-item-action>
           <v-btn
             color="primary"
+            :loading="installing"
             @click="emit('install', selectedDetail.version)"
           >
             <v-icon
               class="material-icons-outlined"
+              left
             >
               file_download
             </v-icon>
@@ -95,6 +97,7 @@
         </v-list-item-action>
       </StoreProjectInstallVersionDialogVersion>
 
+      <InstanceVersionShiftAlert v-if="!loading" :old-runtime="instance.runtime" :runtime="newRuntime" />
       <div
         ref="scrollElement"
         class="overflow-auto"
@@ -178,6 +181,9 @@ import { useVirtualizer, VirtualItem, VirtualizerOptions } from '@tanstack/vue-v
 import { VueInstance } from '@vueuse/core'
 import { getEl } from '@/util/el'
 import StoreProjectInstallVersionDialogVersion from './StoreProjectInstallVersionDialogVersion.vue'
+import InstanceVersionShiftAlert from './InstanceVersionShiftAlert.vue'
+import { injection } from '@/util/inject'
+import { kInstance } from '@/composables/instance'
 
 export interface StoreProjectVersion {
   id: string
@@ -205,6 +211,7 @@ const props = defineProps<{
   value: boolean
   initialSelectedDetail?: StoreProjectVersion
   noBack?: boolean
+  installing?: boolean
 }>()
 
 const { t } = useI18n()
@@ -306,6 +313,25 @@ async function onVersionClicked(version: StoreProjectVersion) {
   }
 }
 
+const { instance } = injection(kInstance)
+const newRuntime = computed(() => {
+  if (!selectedDetail.value) return {}
+  const v = selectedDetail.value
+  if (v.version.loaders.includes('fabric')) {
+    return { fabricLoader: 1 }
+  } 
+  if (v.version.loaders.includes('forge')) {
+    return { forge: 1 }
+  } 
+  if (v.version.loaders.includes('quilt')) {
+    return { quiltLoader: 1 }
+  } 
+  if (v.version.loaders.includes('neoforge')) {
+    return { neoForged: 1 }
+  }
+  return {}
+})
+
 function asAny(v: unknown): any {
   return v as any
 }
@@ -313,6 +339,10 @@ function asAny(v: unknown): any {
 watch(() => props.value, (newVal) => {
   if (!newVal) {
     selectedDetail.value = undefined
+  } else {
+    if (props.initialSelectedDetail) {
+      onVersionClicked(props.initialSelectedDetail)
+    }
   }
 })
 const { render } = useMarkdown()

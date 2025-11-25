@@ -1430,8 +1430,11 @@ setting:
     contain: Contém
     cover: Cobre
     name: Ajuste da Imagem
-  backgroundImageSelect: Selecionar
+  backgroundImageUrl: URL da imagem
+  backgroundImageUrlPlaceholder: Insira o URL HTTP/HTTPS da imagem
   backgroundMusic: Música de fundo do tema
+  backgroundMusicUrl: URL da música
+  backgroundMusicUrlPlaceholder: Insira o URL HTTP/HTTPS para música
   backgroundType: Tipo de fundo
   backgroundTypeDescription: Exibir efeito especial no fundo (Isso pode impactar o desempenho)
   backgroundTypes:
@@ -1442,7 +1445,8 @@ setting:
     video: Vídeo
   backgroundVideo: Vídeo de fundo
   backgroundVideoDescription: selecionar ou limpar vídeo
-  backgroundVideoSelect: Selecionar
+  backgroundVideoUrl: URL do vídeo
+  backgroundVideoUrlPlaceholder: Insira o URL HTTP/HTTPS do vídeo
   backgroundVideoVolume: Volume
   backgroundVideoVolumeDescription: Arraste para ajustar o volume
   blurAppBar: Desfoque da barra de aplicativos
@@ -1472,11 +1476,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Esta opção atribuirá a GPU dedicada ao processo do Minecraft.
   enableDiscord: Compartilhar jogo no Discord
   enableDiscordDescription: Isso atualizará o status no Discord para o launcher
+  enterUrl: Insira o URL
   general: Geral
   githubRelease: Lançamento no Github
   globalSetting: Configuração global da instância
   globalSettingHint: A instância usará essas configurações como padrão.
   hideNewsHeader: Ocultar o destaque de notícias
+  instanceTheme:
+    activeDescription: |-
+      Esta instância está usando um tema personalizado. 
+      Você pode excluí-lo para usar o tema global.
+    description: |-
+      Habilite um tema personalizado para esta instância. 
+      Isso criará uma cópia do tema global atual.
+    name: Tema da instância
   language: Idioma
   languageDescription: O idioma de exibição
   latestVersion: Última versão
@@ -1520,6 +1533,7 @@ setting:
     all: Todos
     legacy: Somente Versão Legada
   resetToDefault: Restaurar Padrão
+  select: Selecionar
   showNewsHeader: Exibir Novidades
   showRoot: Exibir
   streamerMode: Modo de Transmissão
@@ -1531,6 +1545,8 @@ setting:
   themeExport: Exportar tema
   themeFont: Fonte
   themeFontDescription: Alterar a fonte do launcher
+  themeFontUrl: URL da fonte
+  themeFontUrlPlaceholder: Insira o URL HTTP/HTTPS para fonte
   themeImport: Importar tema
   themeResetFont: Restaurar fonte
   themeSelectFont: Selecionar fonte

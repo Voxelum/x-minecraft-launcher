@@ -1425,8 +1425,11 @@ setting:
     contain: Contenir
     cover: Couvrir
     name: S'ajuster
-  backgroundImageSelect: sélectionner
+  backgroundImageUrl: URL de l'image
+  backgroundImageUrlPlaceholder: Saisissez l'URL HTTP/HTTPS pour l'image
   backgroundMusic: Thème Musique de fond
+  backgroundMusicUrl: URL de la musique
+  backgroundMusicUrlPlaceholder: Saisissez l'URL HTTP/HTTPS pour la musique
   backgroundType: Type d'arrière-plan
   backgroundTypeDescription: >-
     Afficher un effet spécial sur l'arrière-plan (cela peut avoir un impact sur
@@ -1439,7 +1442,8 @@ setting:
     video: Vidéo
   backgroundVideo: Vidéo de fond
   backgroundVideoDescription: sélectionner ou enlever la vidéo
-  backgroundVideoSelect: sélectionner
+  backgroundVideoUrl: URL de la vidéo
+  backgroundVideoUrlPlaceholder: Saisissez l'URL HTTP/HTTPS pour la vidéo
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: faites glisser pour régler le volume
   blurAppBar: Barre d'application floue
@@ -1471,11 +1475,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Cette option attribuera un GPU dédié au processus Minecraft.
   enableDiscord: Activer la présence riche Discord
   enableDiscordDescription: Cela affichera votre activité sur le launcher sur votre statut discord
+  enterUrl: Entrez l'URL
   general: Général
   githubRelease: Version Github
   globalSetting: Paramètres d'instances global
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
   hideNewsHeader: Masquer la vitrine des actualités
+  instanceTheme:
+    activeDescription: |-
+      Cette instance utilise un thème personnalisé. 
+      Vous pouvez le supprimer pour utiliser le thème global.
+    description: |-
+      Activez un thème personnalisé pour cette instance. 
+      Cela créera une copie du thème global actuel.
+    name: Thème d'instance
   language: Langue
   languageDescription: Langue d'affichage
   latestVersion: Dernière version
@@ -1521,6 +1534,7 @@ setting:
     all: Tous
     legacy: Version héritée uniquement
   resetToDefault: Réinitialiser
+  select: sélectionner
   showNewsHeader: Afficher la vitrine des actualités
   showRoot: Afficher
   streamerMode: Mode diffusion
@@ -1531,6 +1545,8 @@ setting:
     system: Utiliser le thème système
   themeFont: Police de caractère
   themeFontDescription: Changez la police du lanceur.
+  themeFontUrl: URL de la police
+  themeFontUrlPlaceholder: Saisissez l'URL HTTP/HTTPS pour la police
   themeResetFont: Réinitialiser la police
   themeSelectFont: Sélectionnez la police
   themeShare: Partager le thème

@@ -22,7 +22,7 @@ export default defineComponent({
     provide(kServerStatusCache, useServerStatusCache())
     provide(kNotificationQueue, useNotificationQueue())
 
-    provide(kTheme, useTheme(vuetify.framework))
+    provide(kTheme, useTheme(ref(undefined), vuetify.framework))
 
     const settings = useSettingsState()
     provide(kSettingsState, settings)

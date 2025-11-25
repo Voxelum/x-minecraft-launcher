@@ -48,7 +48,7 @@
       v-model="isShown"
       offset-y
       left
-      :top="isFocus"
+      :top="top"
       transition="scroll-y-transition"
     >
       <template #activator="{ on }">
@@ -74,11 +74,9 @@ import { kLaunchButton } from '@/composables/launchButton'
 import { injection } from '@/util/inject'
 import HomeLaunchButtonMenuList from './HomeLaunchButtonMenuList.vue'
 import { kInstances } from '@/composables/instances'
-import { useInFocusMode } from '@/composables/uiLayout'
 
-defineProps<{ compact?: boolean }>()
+defineProps<{ compact?: boolean; top?: boolean }>()
 
-const isFocus = useInFocusMode()
 const emit = defineEmits(['mouseenter', 'mouseleave'])
 const { isValidating } = injection(kInstances)
 
@@ -95,5 +93,11 @@ const isShown = ref(false)
 .btn-left {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+@media (max-width: 850px) {
+  .btn-left {
+    max-width: 196px;
+  }
 }
 </style>

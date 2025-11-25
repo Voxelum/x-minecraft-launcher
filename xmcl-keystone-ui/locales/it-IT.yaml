@@ -1406,8 +1406,11 @@ setting:
     contain: Contenuto
     cover: Copertura
     name: Adatta immagine
-  backgroundImageSelect: seleziona
+  backgroundImageUrl: URL dell'immagine
+  backgroundImageUrlPlaceholder: Inserisci l'URL HTTP/HTTPS per l'immagine
   backgroundMusic: Tema musica di sottofondo
+  backgroundMusicUrl: URL della musica
+  backgroundMusicUrlPlaceholder: Inserisci l'URL HTTP/HTTPS per la musica
   backgroundType: Tipo di sfondo
   backgroundTypeDescription: Mostra effetti speciali sullo sfondo (potrebbe influire sulle prestazioni)
   backgroundTypes:
@@ -1418,7 +1421,8 @@ setting:
     video: video
   backgroundVideo: Video di sfondo
   backgroundVideoDescription: seleziona o cancella il video
-  backgroundVideoSelect: seleziona
+  backgroundVideoUrl: URL del video
+  backgroundVideoUrlPlaceholder: Inserisci l'URL HTTP/HTTPS per il video
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: trascina per regolare il volume
   blurAppBar: Sfoca la barra dell'app
@@ -1448,11 +1452,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Questa opzione assegnerà una GPU dedicata al processo di Minecraft.
   enableDiscord: Abilita la presenza di Discord
   enableDiscordDescription: Questo aggiornerà il tuo stato del launcher su Discord
+  enterUrl: Inserisci l'URL
   general: Generale
   githubRelease: Rilascio Github
   globalSetting: Impostazioni globali
   globalSettingHint: L'istanza utilizzerà queste impostazioni per impostazione predefinita.
   hideNewsHeader: Nascondi showcase delle notizie
+  instanceTheme:
+    activeDescription: |-
+      Questa istanza utilizza un tema personalizzato. 
+      Puoi eliminarlo per utilizzare il tema globale.
+    description: |-
+      Abilita un tema personalizzato per questa istanza. 
+      Questo creerà una copia del tema globale corrente.
+    name: Tema dell'istanza
   language: Lingua
   languageDescription: La lingua visualizzata
   latestVersion: Ultima versione
@@ -1494,6 +1507,7 @@ setting:
     all: Tutti
     legacy: Solo versione legacy
   resetToDefault: Ripristina impostazioni predefinite
+  select: seleziona
   showNewsHeader: Mostra lo showcase delle notizie
   showRoot: Mostra
   streamerMode: Modalità streaming
@@ -1507,6 +1521,8 @@ setting:
   themeExport: Esporta tema
   themeFont: Font
   themeFontDescription: Cambia il font del launcher.
+  themeFontUrl: URL del carattere
+  themeFontUrlPlaceholder: Inserisci l'URL HTTP/HTTPS per il carattere
   themeImport: Importa tema
   themeResetFont: Ripristina font
   themeSelectFont: Seleziona font

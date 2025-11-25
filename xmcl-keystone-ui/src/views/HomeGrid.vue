@@ -52,6 +52,7 @@
         :width="item.w"
         :height="screenshotHeight"
         :instance="instance"
+        persistent
       />
     </GridItem>
   </GridLayout>

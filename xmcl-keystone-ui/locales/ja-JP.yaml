@@ -1270,8 +1270,11 @@ setting:
     contain: 含む
     cover: 覆う
     name: 合わせる
-  backgroundImageSelect: 選択
+  backgroundImageUrl: 画像URL
+  backgroundImageUrlPlaceholder: 画像のHTTP/HTTPS URLを入力してください
   backgroundMusic: BGM
+  backgroundMusicUrl: 音楽URL
+  backgroundMusicUrlPlaceholder: 音楽のHTTP/HTTPS URLを入力してください
   backgroundType: 背景の種類
   backgroundTypeDescription: 背景に特殊効果を表示します (動作が重くなるかもしれあせん)
   backgroundTypes:
@@ -1282,7 +1285,8 @@ setting:
     video: ビデオ
   backgroundVideo: 背景のビデオ
   backgroundVideoDescription: 映像を選ぶかクリアする
-  backgroundVideoSelect: 選択
+  backgroundVideoUrl: 動画のURL
+  backgroundVideoUrlPlaceholder: ビデオのHTTP/HTTPS URLを入力してください
   backgroundVideoVolume: 音量
   backgroundVideoVolumeDescription: ドラッグして音量を調整
   blurAppBar: アプリバーをぼかす
@@ -1312,11 +1316,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当てます
   enableDiscord: Discord RPCを有効化
   enableDiscordDescription: XMCLでのリッチプレゼンス
+  enterUrl: URLを入力してください
   general: 一般
   githubRelease: Github リリース
   globalSetting: グローバル設定
   globalSettingHint: 起動構成はこれらの設定をデフォルトとして設定します
   hideNewsHeader: ニュースを隠す
+  instanceTheme:
+    activeDescription: |-
+      このインスタンスはカスタム テーマを使用しています。
+      グローバル テーマを使用するには、これを削除します。
+    description: |-
+      このインスタンスのカスタム テーマを有効にします。
+      これにより、現在のグローバル テーマのコピーが作成されます。
+    name: インスタンスのテーマ
   language: 言語
   languageDescription: 表示する言語
   latestVersion: 最新版
@@ -1352,6 +1365,7 @@ setting:
     all: すべて
     legacy: 古いバーキョンのみ
   resetToDefault: デフォルトにリセット
+  select: 選択
   showNewsHeader: ニュースを隠さない
   showRoot: 見る
   streamerMode: ストリーミングモード
@@ -1363,6 +1377,8 @@ setting:
   themeExport: テーマをエクスポート
   themeFont: フォント
   themeFontDescription: ランチャーのフォントを変更します。
+  themeFontUrl: フォントURL
+  themeFontUrlPlaceholder: フォントのHTTP/HTTPS URLを入力してください
   themeImport: テーマをインポート
   themeResetFont: フォントをリセット
   themeSelectFont: フォントを選択

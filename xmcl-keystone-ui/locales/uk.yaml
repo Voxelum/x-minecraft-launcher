@@ -1417,8 +1417,11 @@ setting:
     contain: Вмістити
     cover: Покрити
     name: Підгонка зображення
-  backgroundImageSelect: вибрати
+  backgroundImageUrl: URL зображення
+  backgroundImageUrlPlaceholder: Введіть URL-адресу HTTP/HTTPS для зображення
   backgroundMusic: Фонова музика теми
+  backgroundMusicUrl: URL-адреса музики
+  backgroundMusicUrlPlaceholder: Введіть URL-адресу HTTP/HTTPS для музики
   backgroundType: Тип фону
   backgroundTypeDescription: Показати спеціальний ефект на фоні (це може вплинути на продуктивність)
   backgroundTypes:
@@ -1429,7 +1432,8 @@ setting:
     video: Відео
   backgroundVideo: Фонове відео
   backgroundVideoDescription: вибрати або очистити відео
-  backgroundVideoSelect: вибрати
+  backgroundVideoUrl: URL відео
+  backgroundVideoUrlPlaceholder: Введіть URL-адресу HTTP/HTTPS для відео
   backgroundVideoVolume: гучність
   backgroundVideoVolumeDescription: перетягніть для налаштування гучності
   blurAppBar: Розмиття панелі додатків
@@ -1459,11 +1463,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: Ця опція призначить дискретну відеокарту процесу Minecraft.
   enableDiscord: Увімкнути присутність Discord
   enableDiscordDescription: Це оновить статус Discord до лаунчера
+  enterUrl: Введіть URL
   general: Загальні
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   hideNewsHeader: Приховати вітрину новин
+  instanceTheme:
+    activeDescription: |-
+      Цей екземпляр використовує спеціальну тему. 
+      Ви можете видалити його, щоб використовувати глобальну тему.
+    description: |-
+      Увімкніть спеціальну тему для цього екземпляра. 
+      Це створить копію поточної глобальної теми.
+    name: Тема екземпляра
   language: Мова
   languageDescription: Мова відображення
   latestVersion: Остання версія
@@ -1505,6 +1518,7 @@ setting:
     all: Усі
     legacy: Лише застарілі версії
   resetToDefault: Скинути до типових
+  select: вибрати
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
   streamerMode: Режим стрімера
@@ -1516,6 +1530,8 @@ setting:
   themeExport: Експортувати тему
   themeFont: Шрифт
   themeFontDescription: Змінити шрифт лаунчера.
+  themeFontUrl: URL-адреса шрифту
+  themeFontUrlPlaceholder: Введіть URL-адресу HTTP/HTTPS для шрифту
   themeImport: Імпортувати тему
   themeResetFont: Скинути шрифт
   themeSelectFont: Вибрати шрифт

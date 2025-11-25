@@ -1400,8 +1400,11 @@ setting:
     contain: Contain
     cover: Cover
     name: Image Fit
-  backgroundImageSelect: select
+  backgroundImageUrl: Image URL
+  backgroundImageUrlPlaceholder: Enter HTTP/HTTPS URL for image
   backgroundMusic: Theme Background Music
+  backgroundMusicUrl: Music URL
+  backgroundMusicUrlPlaceholder: Enter HTTP/HTTPS URL for music
   backgroundType: Background Type
   backgroundTypeDescription: Show special effect on background (This may impact performance)
   backgroundTypes:
@@ -1409,10 +1412,11 @@ setting:
     image: Image
     none: None
     particle: Particle
-    video: video
+    video: Video
   backgroundVideo: Background Video
-  backgroundVideoDescription: select or clear video
-  backgroundVideoSelect: select
+  backgroundVideoDescription: Select or clear video
+  backgroundVideoUrl: Video URL
+  backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
   backgroundVideoVolume: volume
   backgroundVideoVolumeDescription: drag to adjust volume
   blurAppBar: Blur app bar
@@ -1447,6 +1451,12 @@ setting:
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
   hideNewsHeader: Hide News Showcase
+  instanceTheme:
+    description: >-
+      Enable a custom theme for this instance. This will create a copy of the
+      current global theme.
+    name: Instance Theme
+    activeDescription: This instance is using a custom theme. You can delete it to use the global theme.
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version
@@ -1499,11 +1509,15 @@ setting:
   themeExport: Export Theme
   themeFont: Font
   themeFontDescription: Change the font of the launcher.
+  themeFontUrl: Font URL
+  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
   themeImport: Import Theme
   themeResetFont: Reset Font
   themeSelectFont: Select Font
   themeShare: Share Theme
   themeShareDescription: You can share the theme with your friend.
+  select: Select
+  enterUrl: Enter URL
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-

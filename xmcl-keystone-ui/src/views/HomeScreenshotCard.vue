@@ -1,5 +1,6 @@
 <template>
   <v-card
+    v-if="display.length > 0 || persistent"
     class="w-full items-center justify-center flex"
     :color="cardColor"
     outlined
@@ -88,6 +89,7 @@ const props = defineProps<{
     url: string
     rawUrl?: string
   }[]
+  persistent?: boolean
 }>()
 
 const { cardColor, blurCard } = injection(kTheme)

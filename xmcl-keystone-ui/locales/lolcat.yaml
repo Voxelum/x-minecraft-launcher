@@ -1294,8 +1294,11 @@ setting:
     contain: CONTAIN
     cover: COVR
     name: IMAGE FIT
-  backgroundImageSelect: SELECT
+  backgroundImageUrl: Image URL
+  backgroundImageUrlPlaceholder: Enter HTTP/HTTPS URL for image
   backgroundMusic: THEME BAKGROUND MUSIC
+  backgroundMusicUrl: Music URL
+  backgroundMusicUrlPlaceholder: Enter HTTP/HTTPS URL for music
   backgroundType: BAKGROUND TYPE
   backgroundTypeDescription: SHOW SPESHUL EFFECT ON BAKGROUND (DIS CUD IMPACT PERFORMANCE)
   backgroundTypes:
@@ -1306,7 +1309,8 @@ setting:
     video: VIDEO
   backgroundVideo: BAKGROUND VIDEO
   backgroundVideoDescription: SELECT OR CLEAR VIDEO
-  backgroundVideoSelect: SELECT
+  backgroundVideoUrl: Video URL
+  backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
   backgroundVideoVolume: VOLUME
   backgroundVideoVolumeDescription: DRAG 2 ADJUST VOLUME
   blurAppBar: BLUR APP BAR
@@ -1336,11 +1340,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: DIS OPSHUN WILL ASSIGN DEDICATD GPU 2 MINECRAFT PROCES.PU
   enableDiscord: ENABLE DISCORD PRESENCE
   enableDiscordDescription: DIS WILL UPDATE DISCORD STATUS 2 TEH LAUNCHR
+  enterUrl: Enter URL
   general: GENERAL
   githubRelease: GITHUB RELEASE
   globalSetting: GLOBAL INSTANCE SETTIN
   globalSettingHint: INSTANCE WILL USE THEES SETTINGS BY DEFAULT.
   hideNewsHeader: HIDE NEWS SHOWCASE
+  instanceTheme:
+    activeDescription: >-
+      This instance is using a custom theme. You can delete it to use the global
+      theme.
+    description: >-
+      Enable a custom theme for this instance. This will create a copy of the
+      current global theme.
+    name: Instance Theme
   language: LANGUAGE
   languageDescription: TEH DISPLAY LANGUAGE
   latestVersion: LATEST VERSHUN
@@ -1380,6 +1393,7 @@ setting:
     all: ALL
     legacy: LEGACY VERSHUN ONLY
   resetToDefault: RESET 2 DEFAULT
+  select: SELECT
   showNewsHeader: UNHIDE NEWS SHOWCASE
   showRoot: SHOW
   streamerMode: STREAMIN MODE
@@ -1391,6 +1405,8 @@ setting:
   themeExport: EXPORT THEME
   themeFont: FONT
   themeFontDescription: CHANGE TEH FONT OV TEH LAUNCHR.
+  themeFontUrl: Font URL
+  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
   themeImport: IMPORT THEME
   themeResetFont: RESET FONT
   themeSelectFont: SELECT FONT

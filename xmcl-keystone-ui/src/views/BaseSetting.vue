@@ -20,6 +20,9 @@
     <template v-else-if="targetQuery === 'advanced'">
       <BaseSettingAdvanced />
     </template>
+    <template v-else-if="targetQuery === 'appearance'">
+      <BaseSettingAppearance />
+    </template>
     <v-snackbar
       :color="snackbarColor"
       :class="{ 'shake-animation': hasAnimation }"
@@ -75,6 +78,7 @@ import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'
+import BaseSettingAppearance from './BaseSettingAppearance.vue'
 
 const { isServer, name, instance } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)

@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="relative mx-6 flex-grow flex gap-6 items-end">
+    <div class="relative footer flex-grow flex items-end">
       <HomeFooterCard />
       <div
         key="launch-button-group"
@@ -19,8 +19,8 @@
           :active="active"
         />
         <HomeLaunchButton
-          class="ml-4"
           :status="status"
+          top
           @pause="pause"
           @resume="resume"
           @mouseenter="active = true"
@@ -46,5 +46,16 @@ const { total, progress, status, name: taskName, pause, resume } = injection(kLa
 .tabs>div[role="tablist"] {
   background: var(--color-sidebar-bg) !important;
   backdrop-filter: blur(var(--blur-card));
+}
+</style>
+<style scoped>
+.footer {
+  @apply mx-6;
+}
+
+@media (max-width: 850px) {
+  .footer {
+    @apply mr-2;
+  }
 }
 </style>
