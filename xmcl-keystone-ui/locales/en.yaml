@@ -347,6 +347,8 @@ fabricVersion:
   showSnapshot: Show Snapshot
   stable: Stable
   unstable: Unstable
+common:
+  add: add
 feedback:
   channel: Channels
   description: I found a Bug or I want to make a suggestion
@@ -383,6 +385,7 @@ forgeConfig:
     its config file!
 forgeVersion:
   common: Common
+  add: add
   disable: Disable Forge
   empty: Forge doesn't have any release for Minecraft {version}
   latest: Latest
@@ -597,6 +600,7 @@ items:
   count: "{count} items"
   total: "{total} total"
 java:
+  memoryAllocation: Memory Allocation
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
   browse: Browse Java executable
@@ -1202,6 +1206,7 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Waiting peer description
 popular: Popularity
+
 presence:
   curseforge: Viewing CurseForge
   curseforgeProject: Viewing {name} in curseforge
@@ -1352,6 +1357,18 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  applicationSettings: Application Settings
+  gameDirectory: Game Directory
+  languageSettings: Language Settings
+  apiSettings: API Settings
+  advancedSettings: Advanced Settings
+  updateStatus: Update Status
+  autoUpdateSettings: Auto Update Settings
+  proxySettings: Proxy Settings
+  connectionSettings: Connection Settings
+  commandOptions: Command Option
+  launchSettings: Launch Settings
+  authSettings: Authentication Settings
   about: About
   allowPrerelease: Download Prerelease
   allowPrereleaseDescription: Prerelease might be unstable
@@ -1451,6 +1468,9 @@ setting:
   maxSocketsTitle: Max HTTP sockets
   migrateFromOther: Import from other launcher
   name: Global Setting | Global Settings
+  setting:
+    launchSettings: Launch Settings
+    authSetting: Auth Setting
   network: Network Settings
   officialWebsite: Official Website
   particleMode:

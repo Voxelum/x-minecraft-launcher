@@ -1,10 +1,5 @@
 <template>
-  <v-list
-    two-line
-    subheader
-    color="transparent"
-    class="visible-scroll select-none overflow-auto setting pt-4 pb-4"
-  >
+  <v-list two-line subheader color="transparent" class="visible-scroll select-none overflow-auto setting pt-4 pb-4">
     <div class="px-4">
       <SettingGeneral />
       <SettingAppearance />
@@ -47,9 +42,8 @@ provide(kUpdateSettings, useUpdateSettings())
     grid-template-columns: 1fr 1fr;
   }
 
-  .setting > div {
+  .setting>div {
     max-width: calc(50vw - 60px);
   }
 }
-
 </style>
