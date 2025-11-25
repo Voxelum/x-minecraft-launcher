@@ -33,11 +33,22 @@ import SettingAbout from './SettingAbout.vue'
 import { usePresence } from '@/composables/presence'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 import SettingNetwork from './SettingNetwork.vue'
+import { injection } from '@/util/inject'
+import { kTheme } from '@/composables/theme'
 
 const { t } = useI18n()
 usePresence(computed(() => t('presence.setting')))
 
 provide(kUpdateSettings, useUpdateSettings())
+
+const { suppressed } = injection(kTheme)
+
+onMounted(() => {
+  suppressed.value = true
+})
+onUnmounted(() => {
+  suppressed.value = false
+})
 
 </script>
 <style scoped>

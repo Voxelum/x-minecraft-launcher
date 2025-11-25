@@ -2,7 +2,9 @@
   <div
     class="grid xl:gap-4 gap-1 home-actions"
     :style="{
-      'grid-template-columns': `repeat(3, minmax(0, 1fr))`,
+      'grid-template-columns': `repeat(${
+        instance && !instance.upstream ? 4 : 3
+      }, minmax(0, 1fr))`,
     }"
   >
     <v-btn

@@ -528,10 +528,25 @@ setting:
   backdropBlur: Blur de contexto
   backgroundColorAbove: Mostra a cor de fondo como superposición
   backgroundColorAboveDescription: Isto fará que se mostre a cor de fondo sobre a imaxe ou o vídeo de fondo.
+  backgroundImageUrl: URL da imaxe
+  backgroundImageUrlPlaceholder: Introduza o URL HTTP/HTTPS para a imaxe
   backgroundMusic: Tema Música de fondo
+  backgroundMusicUrl: URL da música
+  backgroundMusicUrlPlaceholder: Introduce o URL HTTP/HTTPS para a música
+  backgroundVideoUrl: URL do vídeo
+  backgroundVideoUrlPlaceholder: Introduza o URL HTTP/HTTPS para o vídeo
   enableDedicatedGPUOptimization: Asignar GPU dedicada
   enableDedicatedGPUOptimizationDescription: Esta opción asignará unha GPU dedicada ao proceso de Minecraft.
+  enterUrl: Introduza o URL
   hideNewsHeader: Ocultar a presentación de noticias
+  instanceTheme:
+    activeDescription: |-
+      Esta instancia está a usar un tema personalizado. 
+      Podes eliminalo para usar o tema global.
+    description: |-
+      Activa un tema personalizado para esta instancia. 
+      Isto creará unha copia do tema global actual.
+    name: Tema de instancia
   linuxEnableDedicatedGPUOptimization: Asignación de un procesador gráfico dedicado
   maunalUpdateHint: |-
     A versión non se pode actualizar automaticamente. 
@@ -549,6 +564,8 @@ setting:
     launcher.
   themeFont: Fonte
   themeFontDescription: Cambia o tipo de letra do iniciador.
+  themeFontUrl: URL da fonte
+  themeFontUrlPlaceholder: Introduza o URL HTTP/HTTPS para o tipo de letra
   themeResetFont: Restablecer fonte
   themeSelectFont: Seleccione Fonte
   themeShare: Compartir tema

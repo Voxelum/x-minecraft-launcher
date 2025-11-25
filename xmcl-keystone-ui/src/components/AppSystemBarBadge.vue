@@ -24,7 +24,7 @@ defineProps<{
 </script>
 <style scoped>
 
-@media (max-width: 880px) {
+@media (max-width: 1024px) {
   .badge-text {
     display: none;
   }

@@ -1522,8 +1522,11 @@ setting:
     contain: Enthält
     cover: Trimmen
     name: Fit
-  backgroundImageSelect: Wählen Sie
+  backgroundImageUrl: Bild-URL
+  backgroundImageUrlPlaceholder: Geben Sie die HTTP/HTTPS-URL für das Bild ein
   backgroundMusic: Thematische Hintergrundmusik
+  backgroundMusicUrl: Musik-URL
+  backgroundMusicUrlPlaceholder: Geben Sie die HTTP/HTTPS-URL für Musik ein
   backgroundType: Hintergrund Typ
   backgroundTypeDescription: >-
     Einen speziellen Effekt auf dem Hintergrund anzeigen (kann die Leistung
@@ -1536,7 +1539,8 @@ setting:
     video: Video.
   backgroundVideo: Hintergrund-Video
   backgroundVideoDescription: Ein Video auswählen oder löschen
-  backgroundVideoSelect: Wählen Sie
+  backgroundVideoUrl: Video-URL
+  backgroundVideoUrlPlaceholder: Geben Sie die HTTP/HTTPS-URL für das Video ein
   backgroundVideoVolume: Band
   backgroundVideoVolumeDescription: Ziehen, um die Lautstärke einzustellen
   blurAppBar: Verwischen der Anwendungsleiste
@@ -1570,11 +1574,20 @@ setting:
   enableDiscordDescription: >-
     Dies führt dazu, dass der Status Ihres Launcher nicht aktualisiert wird
     trotz
+  enterUrl: Geben Sie die URL ein
   general: Allgemein
   githubRelease: Github Release
   globalSetting: Globale Instanzkonfiguration
   globalSettingHint: Die Instanz wird diese Parameter standardmäßig verwenden.
   hideNewsHeader: News Showcase ausblenden
+  instanceTheme:
+    activeDescription: |-
+      Diese Instanz verwendet ein benutzerdefiniertes Design. 
+      Sie können es löschen, um das globale Design zu verwenden.
+    description: |-
+      Aktivieren Sie ein benutzerdefiniertes Design für diese Instanz. 
+      Dadurch wird eine Kopie des aktuellen globalen Themas erstellt.
+    name: Instanzthema
   language: Sprache.
   languageDescription: Sprache der Schnittstelle
   latestVersion: neueste Version
@@ -1619,6 +1632,7 @@ setting:
     all: Alle
     legacy: Nur Legacy-Version
   resetToDefault: Zurücksetzen auf den Standardwert
+  select: Wählen Sie
   showNewsHeader: Nachrichtenpräsentation einblenden
   showRoot: ВідображатиAnzeige
   streamerMode: Streaming-Modus
@@ -1632,6 +1646,8 @@ setting:
   themeExport: Ein Thema exportieren
   themeFont: Schriftart
   themeFontDescription: Ändern Sie die Schriftart des Launchers.
+  themeFontUrl: Schriftart-URL
+  themeFontUrlPlaceholder: Geben Sie die HTTP/HTTPS-URL für die Schriftart ein
   themeImport: Ein Thema importieren
   themeResetFont: Schriftart zurücksetzen
   themeSelectFont: Wählen Sie Schriftart aus

@@ -1408,8 +1408,11 @@ setting:
     contain: Tartalmazza
     cover: Elfedje
     name: Illeszkedjen
-  backgroundImageSelect: kiválasztás
+  backgroundImageUrl: Kép URL-je
+  backgroundImageUrlPlaceholder: Adja meg a kép HTTP/HTTPS URL-jét
   backgroundMusic: Téma Háttérzene
+  backgroundMusicUrl: Zenei URL
+  backgroundMusicUrlPlaceholder: Írja be a zenéhez tartozó HTTP/HTTPS URL-t
   backgroundType: Háttérkép típusa
   backgroundTypeDescription: >-
     Speciális hatás megjelenítése a háttérben (Ez befolyásolhatja a
@@ -1422,7 +1425,8 @@ setting:
     video: Videó
   backgroundVideo: Háttér videó
   backgroundVideoDescription: válassz vagy törölj videót
-  backgroundVideoSelect: kiválasztás
+  backgroundVideoUrl: Videó URL-je
+  backgroundVideoUrlPlaceholder: Adja meg a videó HTTP/HTTPS URL-címét
   backgroundVideoVolume: hangerő
   backgroundVideoVolumeDescription: húzd a hangerő beállításához
   blurAppBar: Alkalmazás sáv elmosása
@@ -1452,11 +1456,20 @@ setting:
     eseményeket.
   enableDiscord: Discord státusz engedélyezése
   enableDiscordDescription: Ez folyamatosan frissíti az launcher állapotát a discordra.
+  enterUrl: Írja be az URL-t
   general: Általános
   githubRelease: Github kiadás
   globalSetting: Globális példány beállítás
   globalSettingHint: Az példány alapértelmezés szerint ezeket a beállításokat fogja használni.
   hideNewsHeader: Hírek kirakat elrejtése
+  instanceTheme:
+    activeDescription: |-
+      Ez a példány egyéni témát használ. 
+      A globális téma használatához törölheti.
+    description: |-
+      Egyéni téma engedélyezése ehhez a példányhoz. 
+      Ezzel létrejön az aktuális globális téma másolata.
+    name: Példány téma
   language: Nyelv
   languageDescription: A megjelenített nyelv
   latestVersion: Legújabb verzió
@@ -1498,6 +1511,7 @@ setting:
     all: Összes
     legacy: Csak a Legacy verzió
   resetToDefault: Visszaállítás alapértelmezettre
+  select: kiválasztás
   showNewsHeader: Hírek kirakatának megjelenítése
   showRoot: Megjelenítés
   streamerMode: Közvetítés mód
@@ -1508,6 +1522,8 @@ setting:
     system: Rendszer téma használata
   themeFont: Betűtípus
   themeFontDescription: Módosítsa az indító betűtípusát.
+  themeFontUrl: Betűtípus URL-je
+  themeFontUrlPlaceholder: Írja be a HTTP/HTTPS URL-t a betűtípushoz
   themeResetFont: Betűtípus visszaállítása
   themeSelectFont: Válassza a Betűtípus lehetőséget
   themeShare: Téma megosztása

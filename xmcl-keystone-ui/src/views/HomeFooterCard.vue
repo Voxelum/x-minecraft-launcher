@@ -56,11 +56,11 @@
         </div>
       </v-card-text>
       <StoreProjectInstallVersionDialog
-        no-back
         :value="showVersionDialog"
         :versions="dialogVersions"
         :initial-selected-detail="selectedVersion"
         :get-version-detail="getVersionDetail"
+        :installing="updating"
         @input="showVersionDialog = $event"
         @install="onInstallVersion"
       />
@@ -89,7 +89,6 @@ import { useElementHover, useElementSize } from '@vueuse/core'
 import { InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeUpstreamHeader from './HomeUpstreamHeader.vue'
-import { getAgoOrDate } from '@/util/date'
 import { useDialog } from '@/composables/dialog'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useDateString } from '@/composables/date'
@@ -336,6 +335,7 @@ const { show: showInstallDialog } = useDialog(InstanceInstallDialog)
 const updating = ref(false)
 const { installModapckFromMarket } = useService(ModpackServiceKey)
 async function onInstallVersion(v: StoreProjectVersion) {
+  if (updating.value) return
   try {
     updating.value = true
     const instancePath = instance.value.path
@@ -346,6 +346,7 @@ async function onInstallVersion(v: StoreProjectVersion) {
       market: 0,
       version: { versionId: v.id, icon: headerData.value?.icon || '' }
     })
+    showVersionDialog.value = false
     showInstallDialog({
       type: 'upstream',
       modpack,

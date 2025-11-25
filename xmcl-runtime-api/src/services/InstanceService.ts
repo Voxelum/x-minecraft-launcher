@@ -4,6 +4,7 @@ import type { SharedState } from '../util/SharedState'
 import type { DeepPartial } from '../util/object'
 import type { InvalidDirectoryErrorCode } from './BaseService'
 import type { ServiceKey } from './Service'
+import type { ThemeData } from './ThemeService'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
@@ -201,6 +202,20 @@ export interface InstanceService {
   getInstanceModpackMetadata(path: string): Promise<InstanceModpackMetadataSchema | undefined>
 
   setInstanceModpackMetadata(path: string, metadata: InstanceModpackMetadataSchema | undefined): Promise<void>
+
+  /**
+   * Get the instance-specific theme data
+   * @param path The instance path
+   * @returns The theme data or undefined if no instance theme is set
+   */
+  getInstanceTheme(path: string): Promise<ThemeData | undefined>
+
+  /**
+   * Set the instance-specific theme data
+   * @param path The instance path
+   * @param theme The theme data or undefined to clear instance theme
+   */
+  setInstanceTheme(path: string, theme: ThemeData | undefined): Promise<void>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'

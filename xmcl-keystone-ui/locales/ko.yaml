@@ -1262,8 +1262,11 @@ setting:
     contain: 포함
     cover: 덮기
     name: 이미지 맞춤
-  backgroundImageSelect: 선택
+  backgroundImageUrl: 이미지 URL
+  backgroundImageUrlPlaceholder: 이미지의 HTTP/HTTPS URL을 입력하세요.
   backgroundMusic: 테마 배경 음악
+  backgroundMusicUrl: 음악 URL
+  backgroundMusicUrlPlaceholder: 음악에 대한 HTTP/HTTPS URL을 입력하세요.
   backgroundType: 배경 유형
   backgroundTypeDescription: 배경에 특수 효과 표시 (성능에 영향을 줄 수 있음)
   backgroundTypes:
@@ -1274,7 +1277,8 @@ setting:
     video: 비디오
   backgroundVideo: 배경 비디오
   backgroundVideoDescription: 비디오 선택 또는 지우기
-  backgroundVideoSelect: 선택
+  backgroundVideoUrl: 비디오 URL
+  backgroundVideoUrlPlaceholder: 동영상의 HTTP/HTTPS URL을 입력하세요.
   backgroundVideoVolume: 볼륨
   backgroundVideoVolumeDescription: 드래그하여 볼륨 조절
   blurAppBar: 앱 바 블러
@@ -1304,11 +1308,20 @@ setting:
   enableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   enableDiscord: Discord 상태 표시 활성화
   enableDiscordDescription: 런처의 Discord 상태를 업데이트합니다
+  enterUrl: URL을 입력하세요
   general: 일반
   githubRelease: Github 릴리스
   globalSetting: 전체 인스턴스 설정
   globalSettingHint: 인스턴스는 기본적으로 이 설정을 사용합니다.
   hideNewsHeader: 뉴스 쇼케이스 숨기기
+  instanceTheme:
+    activeDescription: |-
+      이 인스턴스는 맞춤 테마를 사용하고 있습니다. 
+      글로벌테마를 사용하시려면 삭제하시면 됩니다.
+    description: |-
+      이 인스턴스에 대한 맞춤 테마를 활성화합니다. 
+      그러면 현재 전역 테마의 복사본이 생성됩니다.
+    name: 인스턴스 테마
   language: 언어
   languageDescription: 표시 언어
   latestVersion: 최신 버전
@@ -1344,6 +1357,7 @@ setting:
     all: 모두
     legacy: 레거시 버전만
   resetToDefault: 기본값으로 재설정
+  select: 선택
   showNewsHeader: 뉴스 쇼케이스 표시
   showRoot: 표시
   streamerMode: 스트리밍 모드
@@ -1355,6 +1369,8 @@ setting:
   themeExport: 테마 내보내기
   themeFont: 폰트
   themeFontDescription: 런처의 폰트를 변경합니다.
+  themeFontUrl: 글꼴 URL
+  themeFontUrlPlaceholder: 글꼴에 대한 HTTP/HTTPS URL을 입력하세요.
   themeImport: 테마 가져오기
   themeResetFont: 폰트 재설정
   themeSelectFont: 폰트 선택
