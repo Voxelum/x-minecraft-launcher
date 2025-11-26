@@ -845,7 +845,6 @@ modFilter:
   disabledOnly: Only show disabled mods
   hasUpdateOnly: Only show mods with updates
   incompatibleOnly: Only show incompatible or missing dependencies missing mods
-  source: Source
   unusedOnly: Only show unused libraries mods
 modInstall:
   archived: >-
@@ -1056,8 +1055,6 @@ modrinth:
   loginTitle: Login to Modrinth
   modLoaders:
     name: Mod Loaders
-  modpackSource:
-    source: Source
   perPage: Per Page
   projectId: Project Id
   projectMembers: Project Members
