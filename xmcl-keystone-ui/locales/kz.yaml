@@ -437,8 +437,18 @@ loginError:
 mod:
   applyGroupRules: Apply saved grouping rules
   group: Group up
+  enableAll: Enable All
+  disableAll: Disable All
+  selectOrCreateGroup: Select or Create Group
+  searchGroups: Search groups...
+  newFolder: New Folder
+  noGroupsYet: No groups yet. Create one!
+  noGroupsFound: No groups found
+  groupName: Group Name
+  groupNameRequired: Group name is required
+  createGroup: Create Group
   syncGroupRules: Save grouping rules
-  ungroup: Ungrouping
+  ungroup: Ungroup
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods

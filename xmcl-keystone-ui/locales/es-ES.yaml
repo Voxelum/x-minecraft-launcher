@@ -620,8 +620,19 @@ mod:
 
     Seleccione el archivo que desea conservar.
   enabled: '{count} Mods habilitados'
+  enableAll: Habilitar todo
+  disableAll: Deshabilitar todo
   filter: Filtrar Mods
   group: Agrupar
+  groupInstalled: Agrupar Mods Instalados
+  selectOrCreateGroup: Seleccionar o crear grupo
+  searchGroups: Buscar grupos...
+  newFolder: Nueva carpeta
+  noGroupsYet: Aún no hay grupos. ¡Crea uno!
+  noGroupsFound: No se encontraron grupos
+  groupName: Nombre del grupo
+  groupNameRequired: El nombre del grupo es obligatorio
+  createGroup: Crear grupo
   hasUpdate: ¡El mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
   incompatible: Mod Incompatible.

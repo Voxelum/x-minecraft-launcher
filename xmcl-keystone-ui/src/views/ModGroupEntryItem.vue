@@ -62,7 +62,7 @@ const props = defineProps<{
 
 const avatars = computed(() => props.items.map(i => i.icon))
 
-const emit = defineEmits(['expand', 'setting', 'ungroup'])
+const emit = defineEmits(['expand', 'setting', 'ungroup', 'enableAll', 'disableAll'])
 
 const { t } = useI18n()
 
@@ -80,19 +80,46 @@ watch(mutableState, (state) => {
   emit('setting', state)
 }, { deep: true })
 function getContextMenu() {
+  const allEnabled = props.items.every(item => item.installed?.[0]?.enabled)
+  const allDisabled = props.items.every(item => !item.installed?.[0]?.enabled)
+  
   const items: ContextMenuItem[] = [{
     icon: 'settings',
     text: t('instances.folderSetting'),
     onClick: () => {
       show(mutableState)
     },
-  }, {
+  }]
+  
+  // Add enable/disable options if not all are in the same state
+  if (!allEnabled) {
+    items.push({
+      icon: 'flash_on',
+      text: t('mod.enableAll'),
+      onClick: () => {
+        emit('enableAll')
+      },
+    })
+  }
+  
+  if (!allDisabled) {
+    items.push({
+      icon: 'flash_off',
+      text: t('mod.disableAll'),
+      onClick: () => {
+        emit('disableAll')
+      },
+    })
+  }
+  
+  items.push({
     icon: 'label_off',
     text: t('mod.ungroup'),
     onClick: () => {
       emit('ungroup')
     },
-  }]
+  })
+  
   return items
 }
 </script>

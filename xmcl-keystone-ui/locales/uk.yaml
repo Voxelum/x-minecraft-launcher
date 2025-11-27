@@ -829,9 +829,19 @@ mod:
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
   enabled: '{count} модів увімкнено'
+  enableAll: Увімкнути все
+  disableAll: Вимкнути все
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
+  selectOrCreateGroup: Вибрати або створити групу
+  searchGroups: Пошук груп...
+  newFolder: Нова папка
+  noGroupsYet: Груп поки немає. Створіть одну!
+  noGroupsFound: Групи не знайдено
+  groupName: Назва групи
+  groupNameRequired: Назва групи обов'язкова
+  createGroup: Створити групу
   hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
