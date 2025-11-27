@@ -386,9 +386,19 @@ mod:
     Selecciona un para instalar.
   modloaderSelectNotSupported: Non se atopou {modloader} para Minecraft {minecraft}
   mods: '{count} Mods'
+  enableAll: Activar todo
+  disableAll: Desactivar todo
+  selectOrCreateGroup: Seleccionar ou crear grupo
+  searchGroups: Buscar grupos...
+  newFolder: Nova carpeta
+  noGroupsYet: Aínda non hai grupos. ¡Crea un!
+  noGroupsFound: Non se atoparon grupos
+  groupName: Nome do grupo
+  groupNameRequired: O nome do grupo é obrigatorio
+  createGroup: Crear grupo
   searchOnCurseforge: Busca {name} en curseforge
   syncGroupRules: Gardar regras de agrupación
-  ungroup: Desgroupe
+  ungroup: Desagrupar
 modFilter:
   clear: Filtro claro
   dependenciesInstallOnly: Só amosar mods de dependencias perdidas

@@ -725,9 +725,19 @@ mod:
     これにより、Minecraft がクラッシュする可能性があります。
     保存したいファイルを選択してください。
   enabled: '{count} 個のModが有効'
+  enableAll: すべて有効化
+  disableAll: すべて無効化
   filter: Modをフィルタ
   group: グループアップ
   groupInstalled: グループでインストールされたMod
+  selectOrCreateGroup: グループを選択または作成
+  searchGroups: グループを検索...
+  newFolder: 新しいフォルダ
+  noGroupsYet: まだグループがありません。作成してください！
+  noGroupsFound: グループが見つかりません
+  groupName: グループ名
+  groupNameRequired: グループ名は必須です
+  createGroup: グループを作成
   hasUpdate: Modにアップデートがあります!
   hideIncompatible: 適合しないModを隠す
   incompatible: 適合しないModです。

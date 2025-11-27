@@ -745,9 +745,19 @@ mod:
     這可能會導致 Minecraft 當機。
     請選擇您要保留的檔案。
   enabled: 一共啟用了 {count} 個模組
+  enableAll: 全部啟用
+  disableAll: 全部停用
   filter: 篩選模組
   group: 分組
   groupInstalled: 分開顯示已安裝模組
+  selectOrCreateGroup: 選擇或建立分組
+  searchGroups: 搜尋分組...
+  newFolder: 新增資料夾
+  noGroupsYet: 還沒有分組，建立一個吧！
+  noGroupsFound: 未找到分組
+  groupName: 分組名稱
+  groupNameRequired: 分組名稱是必填的
+  createGroup: 建立分組
   hasUpdate: 模組有新版本！
   hideIncompatible: 隱藏不相容模組
   incompatible: 可能不相容目前版本。

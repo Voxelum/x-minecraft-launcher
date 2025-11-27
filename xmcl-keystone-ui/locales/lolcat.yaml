@@ -723,9 +723,19 @@ mod:
     FINDZ MODZ WIF SAME MOD ID BUT DIFFERENT FILEZ. DIS MITE CAUSE MINECRAFT
     CRASH. PLZ SELECT TEH FILE U WANTS 2 KEEP.
   enabled: '{count} MODZ ENABLD'
+  enableAll: ENABLE ALL
+  disableAll: DISABLE ALL
   filter: FILTR MODZ
   group: Group up
   groupInstalled: GROUP INSTALLD MODZ
+  selectOrCreateGroup: SELECT OR CREATE GROUP
+  searchGroups: SEARCH GROUPS...
+  newFolder: NEW FOLDER
+  noGroupsYet: NO GROUPS YET. CREATE WAN!
+  noGroupsFound: NO GROUPS FINDZ
+  groupName: GROUP NAME
+  groupNameRequired: GROUP NAME IZ REQUIRD
+  createGroup: CREATE GROUP
   hasUpdate: MOD HAS NEW VERSHUN!
   hideIncompatible: HIDE INCOMPATIBLE MODZ
   incompatible: INCOMPATIBLE MOD.

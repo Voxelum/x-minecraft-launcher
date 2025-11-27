@@ -818,9 +818,19 @@ mod:
     Ciò potrebbe causare l'arresto anomalo di Minecraft. 
     Seleziona il file che desideri conservare.
   enabled: '{count} Mod abilitate'
+  enableAll: Abilita tutto
+  disableAll: Disabilita tutto
   filter: Filtra Mod
   group: Raggruppare
   groupInstalled: Raggruppa le mod installate
+  selectOrCreateGroup: Seleziona o crea gruppo
+  searchGroups: Cerca gruppi...
+  newFolder: Nuova cartella
+  noGroupsYet: Nessun gruppo ancora. Creane uno!
+  noGroupsFound: Nessun gruppo trovato
+  groupName: Nome del gruppo
+  groupNameRequired: Il nome del gruppo è obbligatorio
+  createGroup: Crea gruppo
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.

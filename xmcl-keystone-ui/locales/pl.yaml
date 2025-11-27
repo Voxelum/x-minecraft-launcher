@@ -812,9 +812,19 @@ mod:
     Może to spowodować awarię gry Minecraft. 
     Wybierz plik, który chcesz zachować.
   enabled: '{count} Modyfikacje włączone'
+  enableAll: Włącz wszystkie
+  disableAll: Wyłącz wszystkie
   filter: Modyfikacje filtra
   group: Grupa
   groupInstalled: Modyfikacje instalowane grupowo
+  selectOrCreateGroup: Wybierz lub utwórz grupę
+  searchGroups: Szukaj grup...
+  newFolder: Nowy folder
+  noGroupsYet: Brak grup. Utwórz jedną!
+  noGroupsFound: Nie znaleziono grup
+  groupName: Nazwa grupy
+  groupNameRequired: Nazwa grupy jest wymagana
+  createGroup: Utwórz grupę
   hasUpdate: Mod ma nową wersję!
   hideIncompatible: Ukryj niekompatybilne mody
   incompatible: Niekompatybilny mod.

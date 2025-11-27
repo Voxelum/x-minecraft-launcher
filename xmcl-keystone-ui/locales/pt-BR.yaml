@@ -849,9 +849,19 @@ mod:
     Encontrados mods com o mesmo ID, mas arquivos diferentes. Isso pode causar
     falha no Minecraft. Por favor, selecione o arquivo que você deseja manter.
   enabled: '{count} Mods ativados'
+  enableAll: Ativar tudo
+  disableAll: Desativar tudo
   filter: Filtrar Mods
   group: Agrupe -se
   groupInstalled: Grupo de Mods Instalados
+  selectOrCreateGroup: Selecionar ou criar grupo
+  searchGroups: Buscar grupos...
+  newFolder: Nova pasta
+  noGroupsYet: Ainda não há grupos. Crie um!
+  noGroupsFound: Nenhum grupo encontrado
+  groupName: Nome do grupo
+  groupNameRequired: Nome do grupo é obrigatório
+  createGroup: Criar grupo
   hasUpdate: O mod tem uma nova versão!
   hideIncompatible: Ocultar Mods Incompatíveis
   incompatible: Mod Incompatível

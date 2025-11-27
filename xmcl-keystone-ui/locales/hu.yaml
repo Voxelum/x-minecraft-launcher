@@ -810,9 +810,19 @@ mod:
     Ez a Minecraft összeomlását okozhatja. 
     Kérjük, válassza ki a megtartani kívánt fájlt.
   enabled: '{count} Modok engedélyezve'
+  enableAll: Összes engedélyezése
+  disableAll: Összes letiltása
   filter: Modok szűrése
   group: Csoportosul
   groupInstalled: Csoportosan telepített modok
+  selectOrCreateGroup: Csoport kiválasztása vagy létrehozása
+  searchGroups: Csoportok keresése...
+  newFolder: Új mappa
+  noGroupsYet: Még nincsenek csoportok. Hozz létre egyet!
+  noGroupsFound: Nem található csoport
+  groupName: Csoport neve
+  groupNameRequired: A csoport neve kötelező
+  createGroup: Csoport létrehozása
   hasUpdate: A modnak új verziója van!
   hideIncompatible: Inkompatibilis modok elrejtése
   incompatible: Inkompatibilis mod.

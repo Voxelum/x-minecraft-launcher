@@ -841,9 +841,19 @@ mod:
     Это может привести к сбою Minecraft. 
     Пожалуйста, выберите файл, который вы хотите сохранить.
   enabled: 'Всего модов включено: {count}'
+  enableAll: Включить все
+  disableAll: Отключить все
   filter: Фильтр модов
   group: Группа вверх
   groupInstalled: Группировать установленные моды
+  selectOrCreateGroup: Выбрать или создать группу
+  searchGroups: Поиск групп...
+  newFolder: Новая папка
+  noGroupsYet: Групп пока нет. Создайте одну!
+  noGroupsFound: Группы не найдены
+  groupName: Название группы
+  groupNameRequired: Название группы обязательно
+  createGroup: Создать группу
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
   incompatible: Несовместимый мод.

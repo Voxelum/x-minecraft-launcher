@@ -719,9 +719,19 @@ mod:
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enabled: '{count} 개 모드 활성화됨'
+  enableAll: 모두 활성화
+  disableAll: 모두 비활성화
   filter: 모드 필터
   group: 그룹화
   groupInstalled: 설치된 모드 그룹화
+  selectOrCreateGroup: 그룹 선택 또는 생성
+  searchGroups: 그룹 검색...
+  newFolder: 새 폴더
+  noGroupsYet: 아직 그룹이 없습니다. 하나 만드세요!
+  noGroupsFound: 그룹을 찾을 수 없음
+  groupName: 그룹 이름
+  groupNameRequired: 그룹 이름이 필요합니다
+  createGroup: 그룹 생성
   hasUpdate: 새 버전의 모드가 있습니다!
   hideIncompatible: 호환되지 않는 모드 숨기기
   incompatible: 호환되지 않는 모드입니다.
