@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="isShown" hide-overlay transition="dialog-bottom-transition" width="600" scrollable>
-    <v-card>
+    <v-card class="flex flex-col overflow-auto">
       <v-toolbar color="primary" dark flat>
         <v-toolbar-title class="d-flex align-center">
           <v-icon class="mr-2">feedback</v-icon>
@@ -56,13 +56,6 @@
           </v-row>
         </v-container>
       </v-card-text>
-
-      <v-card-actions class="pa-4">
-        <v-spacer></v-spacer>
-        <v-btn color="primary" text @click="hide">
-          Close
-        </v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
