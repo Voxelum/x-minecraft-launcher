@@ -194,11 +194,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
    */
   @Singleton((v) => v)
   async refreshUser(userId: string, options: RefreshUserOptions = {}) {
-    const user = this.state.users[userId]
+    const user = this.state.users[userId] as UserProfile | undefined
 
     if (!user) {
       this.log('Skip refresh user status as the user is empty.')
-      return
+      throw new AnyError('UserNotFound', `User ${userId} not found when refreshing user.`)
     }
 
     const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
@@ -216,6 +216,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         throw new UserException({ type: 'userAccessTokenExpired' })
       }
     }
+
+    return newUser
   }
 
   async selectUserGameProfile(userProfile: UserProfile, gameProfileId: string): Promise<void> {

@@ -52,11 +52,11 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
 
   // user
   const users = await userSerivce.getUserState()
-  const user = users.users[userId] || Object.values(users.users)[0]
+  let user = users.users[userId] || Object.values(users.users)[0]
   if (!user) {
     throw new AnyError('DirectLaunchError', `User ${userId} not found`)
   }
-  await userSerivce.refreshUser(user.id)
+  user = await userSerivce.refreshUser(user.id)
 
   // instance
   const instance = instanceService.state.all[instancePath]
