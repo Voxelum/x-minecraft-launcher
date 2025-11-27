@@ -158,7 +158,7 @@ export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
    *
    * @throw 'userAccessTokenExpired'
    */
-  refreshUser(userId: string, options?: RefreshUserOptions): Promise<void>
+  refreshUser(userId: string, options?: RefreshUserOptions): Promise<UserProfile>
   /**
    * Upload the skin to server. If the userId and profileId is not assigned,
    * it will use the selected user and selected profile.
