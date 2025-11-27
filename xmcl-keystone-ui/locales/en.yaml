@@ -808,9 +808,19 @@ mod:
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enabled: "{count} Mods enabled"
+  enableAll: Enable All
+  disableAll: Disable All
   filter: Filter Mods
   group: Group up
   groupInstalled: Group Installed Mods
+  selectOrCreateGroup: Select or Create Group
+  searchGroups: Search groups...
+  newFolder: New Folder
+  noGroupsYet: No groups yet. Create one!
+  noGroupsFound: No groups found
+  groupName: Group Name
+  groupNameRequired: Group name is required
+  createGroup: Create Group
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.
@@ -837,7 +847,7 @@ mod:
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
   toUpdate: "{count} updates"
-  ungroup: Ungrouping
+  ungroup: Ungroup
 modFilter:
   source: Source
   clear: Clear Filter

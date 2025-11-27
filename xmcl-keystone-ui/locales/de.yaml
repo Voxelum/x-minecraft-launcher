@@ -914,9 +914,19 @@ mod:
     Dies könnte zum Absturz von Minecraft führen. 
     Bitte wählen Sie die Datei aus, die Sie behalten möchten.
   enabled: 'Inklusive Mods: {count}'
+  enableAll: Alle aktivieren
+  disableAll: Alle deaktivieren
   filter: Mod-Filter
   group: Gruppe
   groupInstalled: Gruppensatz Mods
+  selectOrCreateGroup: Gruppe auswählen oder erstellen
+  searchGroups: Gruppen suchen...
+  newFolder: Neuer Ordner
+  noGroupsYet: Noch keine Gruppen. Erstellen Sie eine!
+  noGroupsFound: Keine Gruppen gefunden
+  groupName: Gruppenname
+  groupNameRequired: Gruppenname ist erforderlich
+  createGroup: Gruppe erstellen
   hasUpdate: Die Mod hat eine neue Version!
   hideIncompatible: Inkompatible Änderungen ausblenden
   incompatible: Inkompatible Mods.

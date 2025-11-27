@@ -853,9 +853,19 @@ mod:
     Cela pourrait provoquer un crash de Minecraft. 
     Veuillez sélectionner le fichier que vous souhaitez conserver.
   enabled: '{count} mods activés'
+  enableAll: Tout activer
+  disableAll: Tout désactiver
   filter: Mods de filtrage
   group: Se regrouper
   groupInstalled: Groupe de modules installés
+  selectOrCreateGroup: Sélectionner ou créer un groupe
+  searchGroups: Rechercher des groupes...
+  newFolder: Nouveau dossier
+  noGroupsYet: Pas encore de groupes. Créez-en un !
+  noGroupsFound: Aucun groupe trouvé
+  groupName: Nom du groupe
+  groupNameRequired: Le nom du groupe est requis
+  createGroup: Créer un groupe
   hideIncompatible: Masquer les mods incompatibles
   incompatible: Mod incompatible.
   incompatibleHint: Consultez votre rapport de compatibilité de mod
