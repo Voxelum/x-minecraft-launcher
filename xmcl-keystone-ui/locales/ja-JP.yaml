@@ -1352,6 +1352,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当て、外部GPUをDRI PRIME, Optimusなどで優先的に使用します
   linuxTitlebar: システムのタイトルバー
   linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
+  windowTranslucent: ウィンドウの透過効果
+  windowTranslucentDescription: 透過ウィンドウ効果を有効にします（Windows 11ではMica、Windows 10ではAcrylic、macOSではVibrancy）。再起動が必要です。
   location: 保管場所
   manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
   maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!

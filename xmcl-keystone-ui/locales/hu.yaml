@@ -1492,6 +1492,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft-folyamathoz.
   linuxTitlebar: Saját címsáv
   linuxTitlebarDescription: A natív linuxos címsor használata az launcherhez
+  windowTranslucent: Ablak átlátszóság
+  windowTranslucentDescription: Átlátszó ablakeffektus engedélyezése (Mica Windows 11-en, Acrylic Windows 10-en, Vibrancy macOS-en). Újraindítás szükséges.
   location: Áruház helye
   manualUpdateHint: >-
     A verzió nem frissíthető automatikusan. Kérjük, töltse le újra az

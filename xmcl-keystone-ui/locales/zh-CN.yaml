@@ -1398,6 +1398,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 此选项为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
+  windowTranslucent: 窗口透明效果
+  windowTranslucentDescription: 启用窗口透明效果（Windows 11 上为 Mica，Windows 10 上为 Acrylic，macOS 上为 Vibrancy）。需要重启启动器。
   location: 数据存储位置
   manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-

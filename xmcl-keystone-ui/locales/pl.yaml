@@ -1479,6 +1479,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ta opcja przypisuje dedykowany procesor graficzny do procesu Minecraft.
   linuxTitlebar: Natywny pasek tytułu
   linuxTitlebarDescription: Użyj natywnego linuksowego paska tytułu dla programu uruchamiającego
+  windowTranslucent: Przezroczystość okna
+  windowTranslucentDescription: Włącz efekt przezroczystego okna (Mica w Windows 11, Acrylic w Windows 10, Vibrancy w macOS). Wymaga ponownego uruchomienia.
   location: Lokalizacja sklepu
   manualUpdateHint: >-
     Wersja nie może zostać zaktualizowana automatycznie. Prosimy o ponowne

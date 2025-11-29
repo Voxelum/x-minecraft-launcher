@@ -146,6 +146,11 @@ export interface SettingSchema {
    */
   enableDedicatedGPUOptimization: boolean
   /**
+   * Enable window translucency effect (Mica on Windows 11, Acrylic on Windows 10, Vibrancy on macOS)
+   * @default false
+   */
+  windowTranslucent: boolean
+  /**
    * Global resolution settings for Minecraft
    * @default {}
    */

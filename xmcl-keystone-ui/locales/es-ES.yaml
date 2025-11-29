@@ -1203,6 +1203,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Esta opción asigna una GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
+  windowTranslucent: Transparencia de Ventana
+  windowTranslucentDescription: Habilitar efecto de ventana translúcida (Mica en Windows 11, Acrylic en Windows 10, Vibrancy en macOS). Requiere reiniciar.
   location: Ubicación del Almacenamiento
   manualUpdateHint: >-
     La versión no se puede actualizar automáticamente. Vuelve a descargar el
