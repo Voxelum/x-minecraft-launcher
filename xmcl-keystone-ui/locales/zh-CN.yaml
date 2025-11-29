@@ -1,29 +1,28 @@
-AppAddInstanceDialog:
+﻿AppAddInstanceDialog:
   choiceTitle: |-
-    我们发现多个启动配置文件。
-    请选择其中的一项进行导入。
+    检测到多个启动配置。
+    选择一项导入。
   configTitle: 实例配置
   createTitle: 创建游戏
-  downloadedNotification: '{name} 整合包下载完成，您想要现在创建吗？'
-  serverTitle: 输入您的服务器地址
+  downloadedNotification: '{name} 已下载。现在创建实例吗？'
+  serverTitle: 输入服务器地址
 AppShareInstanceDialog:
   alterDownloadDescription: |-
-    如果您不想搞乱当前实例。
-    您还可以从对等方的配置创建一个新实例。
-    单击下面的按钮创建实例。
-  baseInfo: 分享的基本配置
+    不想修改当前实例，可以从对方配置创建新实例。
+    点击下方按钮。
+  baseInfo: 分享设置
   cancelShare: 取消分享
-  description: 分享后，您的联机伙伴将可以下载您分享的游戏资源
-  downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
+  description: 分享后，其他玩家可以下载你的游戏资源
+  downloadDescription: 选择要下载的文件。文件将放到当前实例 {name}。
   downloadNotifyTitle: 从 {user} 下载实例
-  downloadTitle: 从其他玩家那获得游戏资源
-  downloadToLocal: 下载到当前实例中
-  filesToDownload: 选择您想下载的文件
-  filesToShare: 选择分享的文件
-  instanceShare: '{user} 给您分享了他的游戏配置'
+  downloadTitle: 从其他玩家获取资源
+  downloadToLocal: 下载到当前实例
+  filesToDownload: 选择要下载的文件
+  filesToShare: 选择要分享的文件
+  instanceShare: '{user} 向你分享了游戏配置'
   share: 分享
   shareNotifyTitle: 分享配置
-  shareTitle: 分享启动配置给其他玩家
+  shareTitle: 分享游戏配置给其他玩家
 BaseSetting: {}
 BaseSettingGeneral:
   title: 常规设置
@@ -37,28 +36,28 @@ FeedTheBeastProject:
   overview: 总览
   versions: 版本
 HomeJavaIssueDialog:
-  incompatibleJava: 当前 Java 版本可能无法正常启动 Minecraft
-  incompatibleJavaHint: Java {javaVersion} 可能无法运行已选择的 Minecraft 版本
-  missingJava: 没有找到 Java
-  missingJavaHint: 启动器在您的电脑上没有找到任何Java。您可以尝试：
-  needDownloadHint: 在您的电脑上没找到合适的 Java 版本，推荐下载新的 Java。
+  incompatibleJava: Java 版本不兼容
+  incompatibleJavaHint: Java {javaVersion} 可能无法运行选定的 Minecraft 版本
+  missingJava: 未找到 Java
+  missingJavaHint: 启动器未检测到 Java。你可以：
+  needDownloadHint: 未找到合适的 Java 版本。建议下载新的。
   optionAutoDownload:
     message: 启动器将从 Mojang 源下载并安装 Java {version}
     name: 自动下载
   optionManualDownload: {}
   optionSelectJava:
-    message: 也许只是启动器没找到您电脑上的 Java，您可以手动选择一下。
-    name: 手动选择 Java 的位置
+    message: 启动器未找到你电脑上的 Java。手动选择位置。
+    name: 手动选择 Java 位置
   optionSwitch:
-    disabled: 在电脑上没有检测到 Java {version}，无法切换！
-    message: 启动器将使用您现在安装的 {version}
-    name: 切换到已有的 Java {version}
-  recommendedVersionHint: 版本 {version} 推荐使用 Java 版本范围 {range}。
-  selectMatchedHint: 本地找到了符合的 Java 版本，您可以选择本地 Java。
-  selectSecondaryHint: 本地找到了几个 Java 版本，但都不是完全符合要求的 Java。您仍然可以选择这些 Java 来启动，但此提示还会再次出现。
+    disabled: 电脑上未检测到 Java {version}，无法切换。
+    message: 启动器将使用已安装的 {version}
+    name: 切换到 Java {version}
+  recommendedVersionHint: 版本 {version} 推荐 Java {range}。
+  selectMatchedHint: 找到符合的本地 Java。你可以选择。
+  selectSecondaryHint: 找到一些本地 Java，但可能不完全匹配。可以尝试使用，但此提示可能再次出现。
 HomeLaunchMultiInstanceDialog:
-  confirm: 是的，多实例启动
-  description: 正在尝试启动多个 Minecraft 实例，您确定么？
+  confirm: 是的，启动
+  description: 正在尝试启动多个 Minecraft 实例。确定吗？
   title: 多实例启动
 HomeSyncButton: {}
 HomeSyncDialog:
@@ -69,10 +68,10 @@ HomeSyncDialogPull:
   refresh: 刷新
   update: 更新
 HomeSyncDialogPush:
-  authError: 用户验证失败，请确定您是更新服务器的管理员！
+  authError: 用户验证失败，检查上传权限。
   refresh: 刷新
-  unknownError: 未知错误，请重试
-  upload: 上传更新
+  unknownError: 服务器错误，重试。
+  upload: 上传实例
 MultiplayerDialogInitiate:
   multiplayer: {}
 SettingMigrationDialog:
@@ -85,10 +84,10 @@ ago:
   second: '{duration} 秒前'
 askAICrash:
   copyPrompt: 复制提示询问AI
-  description: |-
-    让AI分析游戏崩溃！
-    请按照下面的说明向AI询问有关此游戏崩溃的信息！
-  selectPlatform: 打开一个AI平台，粘贴您刚刚复制的提示。
+  description: >-
+    让 AI 分析游戏崩溃
+    按照下面的说明向 AI 询问崩溃信息。
+  selectPlatform: 打开一个 AI 平台，粘贴你刚刚复制的提示。
 authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
 back: 返回
@@ -185,18 +184,18 @@ curseforgeCategory:
   World Gen: 世界生成
 dataMigration:
   apply: 开始迁移
-  directoryCriteriaHint: 请确保您选择的新文件夹<span class="font-bold text-lg mx-1">是空的！</span>
-  migrationDestinationIsFile: 文件迁移地址不是一个文件夹，请重新选择一个空文件夹！
-  migrationDestinationIsNotEmptyDirectory: 文件迁移地址下的文件夹里面有文件，请选择一个空文件夹！
+  directoryCriteriaHint: 目标目录必须为空
+  migrationDestinationIsFile: 迁移目标不是文件夹，请选择一个空文件夹。
+  migrationDestinationIsNotEmptyDirectory: 目标目录不为空，请选择一个空目录。
   migrationNoPermission: |-
     权限不足：无法更名原文件夹和新文件夹
     请确保启动器有权限访问这两个文件夹
   placeholder: 点击此处以选择新的根目录
-  setRootCause: 请确保启动器在此过程中不被中断，否则某些数据会遗失！
+  setRootCause: 迁移过程中请不要关闭启动器，否则可能丢失数据。
   setRootDescription: 启动器的根目录将会被改变
   setRootTitle: 迁移根目录到新的位置
   unknownError: 未知错误，请联系作者或重试。
-  waitReload: 迁移数据中。请不要关闭启动器，否则您可能会丢失一部分数据
+  waitReload: 迁移中，请勿关闭启动器，避免数据丢失
 delete:
   name: 删除 {name}
   'no': 取消
@@ -211,58 +210,54 @@ description: 简介
 detail: 细节
 diagnosis:
   badInstall:
-    message: 也许您应该尝试重新安装此版本
+    message: 尝试重新安装此版本
     name: '{version} 版本安装失败'
   corruptedAssets:
-    message: 启动器将重新下载游戏文件
-    name: 'Assets 文件不完整: {name} | Assets 文件不完整: {name} | {count} 个游戏资源不完整'
+    message: 启动器会重新下载损坏或缺失的资源
+    name: 'Assets 不完整: {name} | {count} 个资源不完整'
   corruptedAssetsIndex:
-    message: 启动器将重新下载游戏资源目录
-    name: '{version} 游戏资源目录损坏。'
+    message: 启动器会重新下载资源索引
+    name: '{version} 的资源索引损坏'
   corruptedLibraries:
-    message: 启动器将重新下载不完整的文件
-    name: >-
-      Libraries 文件不完整: {name} | Libraries 文件不完整: {name} | {count} 个 Libraries
-      文件不完整 | {count} 个 Libraries 文件不完整
+    message: 启动器会重新下载缺失的库
+    name: 'Libraries 不完整: {name} | {count} 个文件缺失'
   corruptedVersionJar:
-    message: 启动器将重新下载不完整的文件
-    name: Minecraft {version} 游戏 Jar 文件不完整。
+    message: 启动器会重新下载缺失的文件
+    name: 'Minecraft {version} Jar 文件损坏'
   corruptedVersionJson:
-    message: 启动器将重新下载不完整的文件
-    name: Minecraft {version} 版本 Json 文件不完整。
+    message: 启动器会重新下载缺失的文件
+    name: 'Minecraft {version} 版本 JSON 损坏'
   incompatibleJava:
-    message: 您可以选择让启动器帮您下载，或者手动下载
-    name: Java {javaVersion} 可能不符合 {version} 版本需求！
+    message: 可选择自动下载或手动安装
+    name: 'Java {javaVersion} 可能不符合 {version} 要求'
   instanceFiles:
-    description: 实例安装包括 {counts} 个文件。
+    description: 实例包含 {counts} 个文件
     title: 实例安装未完成
   invalidJava:
-    message: 请选择一个有效的 Java 路径。
-    name: 当前 Java 路径已经失效
+    message: 请选择有效的 Java 路径
+    name: 当前 Java 路径无效
   missingAssets:
-    message: 启动器将自动下载并安装游戏文件
-    name: 'Assets 文件缺失: {name} | Assets 文件缺失: {name} | 缺少 {count} 个游戏资源'
+    message: 启动器会自动下载缺失资源
+    name: '缺失资源: {name} | 缺少 {count} 个资源'
   missingAssetsIndex:
-    message: 启动器将自动下载并安装游戏资源目录
-    name: '{version} 缺少游戏资源目录'
+    message: 启动器会自动下载资源索引
+    name: '{version} 缺少资源索引'
   missingAuthlibInjector: {}
   missingJava:
-    message: 点击来解决这个问题
-    name: 没有找到合适的 Java 来启动
+    message: 点击解决
+    name: 未找到可用的 Java
   missingLibraries:
-    message: 启动器将自动下载并安装 Libraries 文件
-    name: >-
-      缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少 {count} 个 Libraries 文件 | 缺少 {count} 个
-      Libraries 文件
+    message: 启动器会自动下载缺失的库
+    name: '缺少 {name} | 缺少 {count} 个 Libraries'
   missingVersion:
-    message: 启动器将自动安装该版本
+    message: 点击安装此版本
     name: 未安装 {version}
   missingVersionJar:
-    message: 启动器将自动下载 Jar 文件
-    name: '{version} 版本 Jar 文件缺失'
+    message: 点击安装此版本的 Jar
+    name: '{version} Jar 文件缺失'
   unzipFileNotFound:
-    description: 找不到{file}
-    title: 找不到modpack文件
+    description: 找不到 {file}
+    title: 找不到 modpack 文件
 disable: 禁用
 disk:
   available: 可用
@@ -288,28 +283,27 @@ env:
 error:
   name: 错误 | 错误
 errors:
-  BadForgeInstallerJarError: 无法解析 Forge 安装包 Jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到此问题，请联系开发团队。
-  BadInstanceType: '不是一个合法的实例: {type}'
-  BodyTimeoutError: 等待 HTTP 数据超时
-  ChecksumNotMatchError: 文件校验失败！期望的哈希值是 {expect}，实际获取到的是 {actual}。
-  ConnectTimeoutError: 与服务器建立连接超时
-  DNSNotFoundError: DNS 查询错误
+  BadForgeInstallerJarError: 无法解析 Forge 安装包。可能 Forge 更新了格式，请联系开发者。
+  BadInstanceType: '非法实例类型: {type}'
+  BodyTimeoutError: HTTP 响应超时
+  ChecksumNotMatchError: 校验失败。期望 {expect}，实际 {actual}。
+  ConnectTimeoutError: 连接超时
+  DNSNotFoundError: DNS 查询失败
   DatabaseNotOpened: |-
-    数据库无法打开！
-    启动器将无法正常工作！
-    请选择启动器可以访问的数据目录。您可以在设置页面重新选择数据目录。
+    数据库无法打开，启动器将无法正常工作。
+    请在设置中选择可访问的数据目录。
   DiskIsFull: |-
-    您的磁盘已满！
-    启动器无法将任何内容写入磁盘。赶快换一个数据目录或者清一下你的磁盘吧。
+    磁盘已满，启动器无法写入。
+    换一个数据目录或清理磁盘。
   DownloadAggregateError: 下载文件失败。
-  DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
-  HeadersTimeoutError: 等待 HTTP 头信息超时
+  DownloadFileSystemError: 无权访问下载路径。检查启动器权限。
+  HeadersTimeoutError: HTTP 请求头超时
   NotFoundError: 404 未找到资源
-  SocketError: 服务器连接断开
+  SocketError: 连接断开
 eula:
-  body: 选中复选框按钮即表示您同意 Minecraft 的 {eula}。
+  body: 选中表示同意 Minecraft {eula}
 exception:
-  http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
+  http: 'HTTP 请求失败 {url}。状态码 {statusCode}。{code}。检查网络或重试。'
 existed: 已导入过的
 exportModpackTarget:
   curseforge: Curseforge 文件
@@ -326,22 +320,22 @@ fabricVersion:
   stable: 稳定版
   unstable: 预览版
 feedback:
-  channel: 联系渠道
-  description: 我找到了漏洞/我想反馈
+  channel: 反馈渠道
+  description: 报告问题或建议
   discord: Discord
-  discordDescription: 加入 Discord 频道
+  discordDescription: 加入 Discord
   discordJoin: 加入
   generateReport: 生成报告
   generateSaveAs: 将报告保存在
   github: Github Issue
-  githubDescription: 通过 Github Issue 来反馈您的想法
+  githubDescription: 在 GitHub Issue 提交反馈
   githubOpenIssue: Github
-  hint: 点击生成报告按钮并联系开发团队。这个报告会包含你的设备信息，如操作系统，版本，操作系统的用户名等。
+  hint: 生成报告并联系开发者。报告包含系统、版本和环境信息。
   kook: Kook
-  kookDescription: 加入 Kook (国外请选 Discord)
+  kookDescription: 加入 Kook（适合国内用户）
   name: 反馈
   qq: QQ 群
-  qqDescription: 加入反馈群直接和作者聊聊吧，群号 {number}
+  qqDescription: 加入反馈群与作者沟通，群号 {number}
   qqEnterGroup: 加群
 fileDetail:
   fileSize: 文件大小
@@ -434,9 +428,9 @@ instance:
   delete: 删除游戏
   deleteFailed: 删除实例失败
   deleteFailedPermission: 其他程序占用了该文件
-  deleteHint: 游戏数据将完全被移除。您确定继续此操作吗？
+  deleteHint: 游戏数据会被完全删除，你确定要继续吗？
   duplicate: 创建备份
-  duplicatedName: 名字冲突！
+  duplicatedName: 名称冲突
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
   fullscreen: 全屏
@@ -452,8 +446,8 @@ instance:
   launchServer: 启动本地服务端
   linkFileDesc: |-
     这将使用全局 {file} 覆盖实例本地 {file}。
-    您确定要链接吗？
-  linkFileTitle: 您确定要链接{file}吗？
+    你确定要链接吗？
+  linkFileTitle: 你确定要链接{file}吗？
   mcOptions: Minecraft 启动选项
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称
@@ -507,8 +501,8 @@ instanceInstallSkip:
 instanceSetting:
   disableAuthlibInjector: 禁用 authlib 注入器
   disableAuthlibInjectorDescription: |-
-    如果您使用的是第三方皮肤系统。 
-    authlib 注入器可以帮助您在游戏中显示皮肤。
+    如果你使用第三方皮肤系统。
+    authlib 注入器可以帮助你在游戏中显示皮肤。
   disableElyByAuthlib: 禁用 ely.by 的 authlib 替换
   disableElyByAuthlibDescription: Ely.by 有一个独特的 authlib 替代品，可以在任何服务器中普遍显示皮肤。
   fastLaunch: 快速启动
@@ -541,16 +535,16 @@ instanceUpdate:
 instances:
   add: 添加或创建游戏
   addCurseForgeDescription: |-
-    从curseforge 数据文件夹导入。
-    您需要选择curseforge的根数据文件夹
+    从 curseforge 数据文件夹导入。
+    你需要选择 curseforge 的根数据文件夹
   addDescription: 从头开始创建一个新实例
   addMMCDescription: |-
     导入现有的 MultiMC 实例。
-    您需要从 MultiMC 中选择数据文件夹。
+    你需要从 MultiMC 中选择数据文件夹。
   addManually: 手动创建
   addModrinthDescription: |-
     导入现有的 Modrinth 实例。
-    您需要选择 Modrinth 根数据文件夹。
+    你需要选择 Modrinth 根数据文件夹。
   addServer: 从服务器创建
   addServerDescription: 这将创建一个直接启动到服务器的游戏。
   addTemplate: 从下载的整合包创建
@@ -599,46 +593,48 @@ launch:
 launchBlocked:
   ignore: 强制启动
   launchBadVersion:
-    description: 版本 {version} 的 JSON 内有无法解析的库，也许您需要重新安装此版本？
-    title: 版本 JSON 可能损坏
+    description: 版本 {version} 的 JSON 无法解析。尝试重新安装？
+    title: 版本 JSON 损坏
   launchGeneralException:
-    description: 一些未知错误导致启动失败。
-    title: 无法启动
+    description: 某些错误导致启动失败。
+    title: 启动失败
   launchInvalidJavaPath:
     description: >-
-      当前 Java 路径可能无效，请检查 Java 可执行文件是否存在 <span class="highlight"> {javaPath}
-      </span>
+      Java 路径无效或不存在。<span class="highlight">{javaPath}</span>
+      请选择另一个 Java。
     title: Java 路径无效
   launchJavaNoPermission:
     description: >-
-      没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java
-      文件增加可执行权限，或者更换 Java。
+      无权限执行 <span class="highlight">{javaPath}</span>。
+      请尝试提升启动器权限、给 Java 文件添加执行权限，或更换 Java。
     title: 无权限使用 Java
   launchNoProperJava:
-    description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
+    description: 未找到合适的 Java 启动游戏。({javaPath} 可能无效？)
     title: 没有合适的 Java
   launchNoVersionInstalled:
-    description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
-    title: 无法找到安装的 Minecraft
+    description: 未找到 Minecraft <span class="highlight">{version}</span> 的安装。
+    title: 版本未安装
   launchSpawnProcessFailed:
     description: |-
-      请检查您的 Java，或向启动器授予更多权限，然后重试。
-      如果仍然无法解决问题，请联系开发人员。
+      检查 Java 或给启动器提升权限，然后重试。
+      若问题仍然存在，请联系开发者。
     title: 无法启动游戏进程
   launchUserStatusRefreshFailed:
-    description: 无法验证当前账户信息
-    title: 验证账户失败
-  unexpectedText: 这是意料之外的错误，您可以重启启动器来尝试缓解问题，请联系作者来修复。
-  userAcquireMicrosoftTokenFailed: 微软令牌获取失败。请重试或者检查您的微软账号。
-  userCheckGameOwnershipFailed: 检测 Minecraft 所有权失败。请重试或检查您的网络。
-  userExchangeXboxTokenFailed: 通过微软令牌交换 Xbox 令牌失败。请重试或检查您的网络。
-  userLoginMinecraftByXboxFailed: 使用 Xbox 令牌登录 Minecraft 失败。请重试或者检查您的网路。
+    description: 无法验证账户状态。
+    title: 账户验证失败
+  unexpectedText: >-
+    这是意外错误。重启启动器可能会缓解问题。
+    若问题再次出现，请联系开发者。
+  userAcquireMicrosoftTokenFailed: 微软令牌获取失败，重试或检查网络。
+  userCheckGameOwnershipFailed: 游戏所有权检查失败，重试或检查网络。
+  userExchangeXboxTokenFailed: Xbox 令牌交换失败，重试或检查网络。
+  userLoginMinecraftByXboxFailed: Xbox 登录失败，重试或检查网络。
 launchFailed:
-  crash: 游戏崩溃了！
-  description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
+  crash: 游戏崩溃
+  description: 未找到崩溃报告。这是游戏输出和最新日志。
   elyByAuthlib:
-    description: Minecraft 版本 {version} 使用了 Ely.by 的 authlib 替换，但此版本可能不完全兼容。
-    suggestion: 你可以在实例设置中禁用 Ely.by 的 authlib 替换来避免此问题。
+    description: 版本 {version} 使用 Ely.by 的 authlib，可能不兼容。
+    suggestion: 在实例设置中禁用 Ely.by authlib 可避免此问题。
     title: Ely.by Authlib 兼容性问题
   failedToLaunch: 启动器启动失败
   latestLog: 最新日志文件
@@ -649,11 +645,11 @@ launchJavaNoPermission: {}
 launchNoProperJava: {}
 launchNoVersionInstalled: {}
 launchPreExecuteCommandFailed:
-  description: 预执行命令失败，出现错误： {error}。请检查命令并重试。
+  description: 预执行命令失败：{error}，检查命令后重试。
   title: 预执行命令失败
 launchStatus:
   assigningMemory: 正在分配内存
-  elyByWarning: 已启用 Ely.by authlib 替换。某些 Minecraft 版本可能不兼容并可能导致崩溃。如果出现问题，你可以在实例设置中禁用它。
+  elyByWarning: Ely.by authlib 已启用，可能与部分 Minecraft 版本不兼容并导致崩溃。遇到问题可在实例设置禁用。
   exit: 关闭游戏？
   injectingAuthLib: 配置第三方验证中
   launching: 启动中...
@@ -676,7 +672,7 @@ localVersion:
   empty: 本地没有安装任何版本
   hint: 直接启动某个本地版本
   refresh: 刷新本地版本
-  reinstallDescription: 如果您觉得此版本安装的有问题，可以尝试重新安装该版本。
+  reinstallDescription: 如果你觉得该版本安装有问题，可以尝试重新安装。
   reinstallTitle: 重新安装 {version}
   title: 本地版本
 logLevel:
@@ -685,34 +681,34 @@ logLevel:
   success: 成功
   warning: 警告
 login:
-  dropHint: 将验证链接拖入此处手动验证
+  dropHint: 将验证链接拖入此处以手动验证
   forgetPassword: 忘记密码？
   login: 登录
-  manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证！
+  manualLoginUrl: 若浏览器未自动打开，请点击此链接验证。
   signup: 注册
   signupDescription: 没有账号?
-  userRelogin: 用户信息过期，请重新登录！
+  userRelogin: 用户信息已过期，请重新登录。
 loginError:
-  acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
-  badNetworkOrServer: 请检查您的网络连接！当然也可能是验证服务器挂了:/
-  checkOwnershipFailed: 在检查您是否拥有 Minecraft 时发生错误，请重试
-  connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
-  fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
-  illegalEmail: 当前的邮箱格式不合法
-  invalidCredentials: 无法验证。用户名或密码错误。
-  loginMinecraftByXboxFailed: 在通过 Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认您的 Xbox 账号拥有 Minecraft。您可以尝试重试登录
+  acquireMicrosoftTokenFailed: 获取 Microsoft 令牌失败，重试或检查网络。
+  badNetworkOrServer: 网络或验证服务器异常，请检查后重试。
+  checkOwnershipFailed: 在检查你是否拥有 Minecraft 时发生错误，请重试
+  connectionReset: 连接中断，重试或检查网络。
+  fetchMinecraftProfileFailed: '获取 Minecraft 信息失败：{reason}'
+  illegalEmail: 邮箱格式不合法
+  invalidCredentials: 用户名或密码错误。
+  loginMinecraftByXboxFailed: Xbox 令牌交换失败，确认账户拥有 Minecraft 后重试。
   loginXboxAgeRestricted: |-
-    由于年龄问题，无法登录Xbox。
-    请确保为您的Microsoft帐户设定年龄，并且年龄高于18岁。
-  loginXboxFailed: 请求 Xbox 通证失败，请确保您的微软账号已经绑定了一个 Xbox 账号！
+    Xbox 年龄验证失败。
+    请确保 Microsoft 账户已设置年龄且年龄 ≥18 岁。
+  loginXboxFailed: Xbox 登录失败，确认 Microsoft 账户已绑定 Xbox。
   noProfileForNewUser: |-
-    找不到游戏资料！
-    如果您是新的Minecraft用户，请在Minecraft官方启动器中至少登录一次。
-  requestFailed: 由于未知原因登录失败，请重试
-  requireEmail: 必须使用邮箱登录
-  requirePassword: 请输入密码
+    未找到档案。
+    新用户请先在官方启动器登录一次。
+  requestFailed: 登录失败。原因未知，请重试。
+  requireEmail: 邮箱不能为空
+  requirePassword: 密码不能为空
   requireUsername: 用户名不能为空
-  timeout: 登录超时，请重试或检查您的网络！
+  timeout: 登录超时，重试或检查网络。
 logsCrashes:
   crashes: 崩溃报告
   logs: 日志
@@ -731,28 +727,27 @@ minecraftVersion:
   showAlpha: 显示快照版
   snapshot: 快照版
 mod:
-  acceptVersion: 推荐 {version}
-  applyGroupRules: 应用已保存的分组规则
-  compatible: 可用于当前版本。
-  currentVersion: 当前是 {current}
+  acceptVersion: 接受 {version}
+  applyGroupRules: 应用分组规则
+  compatible: 兼容当前版本
+  currentVersion: 当前 {current}
   deletion: 删除模组
-  deletionHint: 您将移除这个模组的文件和信息。您确定吗？| 您将移除这些模组的文件和信息。您确定吗？
-  deletionRestHint: 等 {rest} 个模组……
-  denseView: 简略模式
-  dropHint: 将模组 Jar 文件拖入此处来导入
-  duplicatedDetected: 有 {count} 个模组重复了
+  deletionHint: 将永久删除此模组及其数据，确定吗？| 将永久删除这些模组及其数据，确定吗？
+  deletionRestHint: 还有 {rest} 个模组
+  denseView: 精简视图
+  dropHint: 将 .jar/.litemod 拖到这里导入
+  duplicatedDetected: '{count} 个模组重复'
   duplicatedDetectedDescription: |-
-    找到具有相同 mod id 但文件不同的 mod。
-    这可能会导致 Minecraft 崩溃。
-    请选择您要保留的文件。
-  enabled: 一共启用了 {count} 个模组
+    发现 Mod ID 相同但文件不同的模组。
+    可能导致游戏崩溃。选择要保留的文件。
+  enabled: '{count} 个模组已启用'
   filter: 筛选模组
   group: 分组
-  groupInstalled: 分开显示已安装模组
-  hasUpdate: mod有一个新版本！
+  groupInstalled: 按分组显示已安装模组
+  hasUpdate: 模组有新版本
   hideIncompatible: 隐藏不兼容模组
   incompatible: 可能不兼容当前版本。
-  incompatibleHint: 查看您的模组兼容性报告
+  incompatibleHint: 查看你的模组兼容性报告
   incompatibleHintDescription: |-
     某些模组依赖项可能会丢失。
     或者某些依赖项版本不匹配。
@@ -801,7 +796,7 @@ modInstall:
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   noVersionSupported: Mod 仅支持 Minecraft {supported}。
-  recommendation: 在{modrinth}和{curseforge}中探索{first} mods！
+  recommendation: 在 {modrinth} 和 {curseforge} 中探索 {first} 个模组
   removeUnusedLibraries: 删除未使用的库mods
   search: 搜索结果
   skipVersion: 忽略不同 Minecraft 版本的 Mod
@@ -811,7 +806,7 @@ modInstall:
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
-  noModsInstalled: 您尚未安装任何模组。
+  noModsInstalled: 你还没有安装任何模组。
   searchInMarket: 在市场中搜索 {keyword}
 modUpgradePolicy:
   curseforge: Curseforge 优先
@@ -822,12 +817,12 @@ modUpgradePolicy:
 modified:
   reset: 重置
   save: 保存
-  unsaved: 注意！您尚未保存更改！
+  unsaved: 你尚未保存更改
 modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人
   delete:
-    hint: 这将删除整合包 {name} 和它的基本资料。您确定么？
+    hint: 这将删除整合包 {name} 及其数据，确定吗？
     title: 删除整合包
   description: 游戏简介
   descriptionHint: 通用的整合包简介。在导出成 Curseforge 整合包或者其他格式时会使用
@@ -855,9 +850,9 @@ modpack:
   urlHint: 整合包的主页 URL 地址
 modpackImportConfirm:
   description: |-
-    检测您将文件放入启动器中。
+    检测到你将文件放入启动器中。
     这个文件是不是一个整合包(ModPack)？
-  title: 您是否要导入ModPack？
+  title: 你要导入 ModPack 吗？
 modrinth:
   browseUrl: 在浏览器中打开 {url}
   categories:
@@ -1022,48 +1017,41 @@ modrinthCard:
           <code class="rounded bg-[rgba(123,123,123,0.2)] p-1">{id}</code>) 创建的
 multiplayer:
   allowTurn: 允许转发服务
-  allowTurnHint: 当您和您的朋友连不上时可以尝试允许转发服务，但是转发服务可能会增加您的联机延迟。使用时请注意。
+  allowTurnHint: 当你和朋友连不上时可尝试允许转发服务，但可能会增加延迟，注意使用。
   complete: 完成
   confirm: 确定
   connections: 用户连接管理
-  copied: 已复制！
+  copied: 已复制
   copy: 复制
-  copyGroupToFriendHint: 让您的小伙伴使用此 ID 加入联机群组
+  copyGroupToFriendHint: 让你的小伙伴使用此 ID 加入联机群组
   copyLocalHint: >
-    <span>一段令牌只能用<span style="color: red;
-    font-weight:bold;">一次</span>！您不能将一个令牌发送给多个小伙伴！</span> <br> <span
-    class="hint-text" style="font-style: italic;">如果有多个小伙伴要加入您需要<span
-    style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立连接。</span>
+    <span>令牌仅能使用一次，不能发送给多人。</span> <br> <span
+    class="hint-text" style="font-style: italic;">若多人加入，请重复建立连接。</span>
   createLocalToken: 创建本地令牌
   currentIpTitle: 检测到公网 IP
   currentNatTitle: 当前网络 (NAT) 环境
   difficultyLevelHint: 与他人联机难度由低到高
   disconnect: 断开连接
-  disconnectDescription: 您确定您要断开与 {user}({id}) 的连接么
+  disconnectDescription: 你确定要断开与 {user}({id}) 的连接吗？
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
-  enterRemoteTokenHint: 当您的联机伙伴输入您的令牌后，您需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
-  exposedPortDescription: 您向其他伙伴公开的端口
+  enterRemoteTokenHint: 当你的联机伙伴输入你的令牌后，将对方令牌粘贴到下面并点击确定开始连接。
+  exposedPortDescription: 你向其他伙伴公开的端口
   exposedPorts: 转发端口
   gatheringIce: >
-    请将<span class="v-chip v-chip--label v-size--small" style="text-font:
-    bold">本地令牌</span>发送给您的联机伙伴，您的联机伙伴在 <span class="v-chip v-chip--label
-    v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE
-    服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 您不需要等 ICE
-    服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，您可以提前将令牌复制给对方。 </span>
+    将本地令牌复制给联机伙伴，对方在“加入连接”中粘贴。ICE 收集可能需要时间，令牌内容稳定后即可复制。
   groupId: 小组 ID
-  illegalTokenDescription: 非法的令牌，请确认对方给您的令牌是完整且正确的。
+  illegalTokenDescription: 非法令牌，请确认对方给你的令牌是完整且正确的。
   initiateConnection: 发起连接
   inviteLink: 邀请链接
-  joinConnection: 如果您的伙伴已经创建了连接，您需要选择加入链接。
+  joinConnection: 如果你的伙伴已经创建了连接，你需要选择加入链接。
   joinManual: 加入连接
   joinOrCreateGroup: 加入/创建群组
-  joinOrCreateGroupHint: 从您的小伙伴那获得群组 ID 或自己创建一个群组
+  joinOrCreateGroupHint: 从你的小伙伴那获得群组 ID 或自己创建一个群组
   kernel: P2P内核
   kernelDescription: |-
     使用本机 WebRTC 或节点数据通道。
-    仅当您的 p2p 连接有时导致启动器窗口崩溃时才切换此选项。
+    仅当你的 p2p 连接有时导致启动器窗口崩溃时才切换此选项。
   leaveGroup: 离开群组
   localToken: 本地令牌
   manualConnect: 手动连接
@@ -1071,19 +1059,19 @@ multiplayer:
   networkInfo: 当前网络状况
   next: 下一步
   otherExposedPortDescription: '{user} 暴露给你的端口'
-  placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
+  placeholder: 建立连接以跨局域网联机
   previous: 上一步
-  receiveHint: 在对方输入您的令牌后，您们之间的连接会自动创建。现在您已经可以点击完成了。
+  receiveHint: 对方输入令牌后连接会自动建立，点击完成即可。
   receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步。
   remoteToken: 对方的令牌
   routerInfo: 路由器信息
-  sendTokenToRemote: 将本地令牌给您的联机伙伴
+  sendTokenToRemote: 将本地令牌给你的联机伙伴
   share: 分享启动配置
   sharing: 正在共享游戏配置...
-  sharingNotificationBody: 您可以从 {name} 共享配置下载或创建实例。
+  sharingNotificationBody: 你可以从 {name} 共享配置下载或创建实例。
   sharingNotificationTitle: 同伴正在共享游戏配置
   start: 开始
-  startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
+  startNewP2PConnection: 点击开始创建 P2P 连接
 myStuff: 个人中心
 name: 名称
 natType:
@@ -1179,20 +1167,20 @@ save:
   copy:
     cancel: 取消复制
     confirm: 开始复制
-    description: 请勾选您想让存档复制到的启动配置（目标启动配置）
+    description: 请勾选你想让存档复制到的启动配置（目标启动配置）
     name: 复制存档
     title: 复制存档到其他启动配置
   copyFrom:
     cancel: 取消
     confirm: 开始导入
-    description: 您可以从其他启动配置中导入存档，或者从已有资源中导入 (如从 curseforge 下载的地图)
+    description: 你可以从其他启动配置中导入存档，或者从已有资源导入 (如从 curseforge 下载的地图)
     from: 来自 {src}
     fromProfile: 来自其他启动配置
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
   createNew: 新存档
   createdWorlds: 创建了 {count} 个世界
-  deleteHint: 该操作不可逆，您将永远失去这个存档的记录，您确定要删除此存档吗？
+  deleteHint: 该操作不可逆，你将永久失去这个存档，确定要删除吗？
   deleteTitle: 删除该存档
   detail: 显示更多信息
   dropHint: 将地图 Zip 或文件夹拖入此处来导入
@@ -1215,7 +1203,7 @@ save:
   useCurrent: 使用当前世界
 saves: {}
 screenshots:
-  empty: 您还没有截图
+  empty: 你还没有截图
   goto: 显示文件夹
   name: 截图
   playRandom: 随机播放
@@ -1233,7 +1221,7 @@ server:
   export: 导出服务器
   exportNoFilesHint: |-
     找不到服务器文件。
-    您可以一次在本地运行服务器来生成一些文件。
+    你可以一次在本地运行服务器来生成一些文件。
   exportOption: 服务器导出选项
   exportSSHAuthenticationFailed: |-
     所有身份验证方法都失败了。
@@ -1264,10 +1252,10 @@ server:
   version: 服务器推荐版本
   versionHint: Ping 使用的 Minecraft 版本
 serverStatus:
-  nohost: 找不到服务器！
+  nohost: 找不到服务器
   ping: 延迟
-  refuse: 服务器断开了连接！
-  timeout: 服务器响应超时！
+  refuse: 服务器断开连接
+  timeout: 服务器响应超时
 setting:
   about: 关于
   allowPrerelease: 是否下载抢先版
@@ -1276,7 +1264,7 @@ setting:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
   appearance: 外观
-  appxUpdateHint: 启动器将下载并执行安装包，如果安装包解析失败，请尝试自行打开安装文件更新。
+  appxUpdateHint: 启动器会下载并运行安装包；若失败，请手动运行安装文件。
   autoDownload: 自动下载
   autoDownloadDescription: 自动下载最新的版本
   autoInstallOnAppQuit: 自动安装
@@ -1286,9 +1274,9 @@ setting:
   backgroundColorAboveDescription: 这将使背景颜色显示在背景图像或视频上方。
   backgroundImage: 背景图片
   backgroundImageBlur: 背景模糊
-  backgroundImageBlurDescription: 拖动以模糊背景
+  backgroundImageBlurDescription: 拖动调整模糊
   backgroundImageClear: 清空
-  backgroundImageDescription: 选择一张背景图片或清空当前图片
+  backgroundImageDescription: 选择或清空背景图片
   backgroundImageFit:
     contain: 包含
     cover: 覆盖
@@ -1296,7 +1284,7 @@ setting:
   backgroundImageSelect: 选择
   backgroundMusic: 主题背景音乐
   backgroundType: 背景效果
-  backgroundTypeDescription: 背景是否显示特效（如果觉得卡就可以关掉）
+  backgroundTypeDescription: 是否显示背景特效（可能影响性能）
   backgroundTypes:
     halo: 光晕
     image: 图片
@@ -1304,13 +1292,13 @@ setting:
     particle: 粒子
     video: 视频
   backgroundVideo: 背景视频
-  backgroundVideoDescription: 选择一个背景视频或清空当前
+  backgroundVideoDescription: 选择或清空背景视频
   backgroundVideoSelect: 选择
   backgroundVideoVolume: 视频音量
-  backgroundVideoVolumeDescription: 拖动以调整音量
+  backgroundVideoVolumeDescription: 拖动调整音量
   blurAppBar: 顶端栏模糊
   blurMainBody: 模糊窗口主体
-  blurMainBodyDescription: 是否将启动器窗口右侧主体模糊
+  blurMainBodyDescription: 是否模糊右侧主体
   blurSidebar: 侧边栏模糊
   browseRoot: 更改
   checkUpdate: 检查更新
@@ -1328,17 +1316,17 @@ setting:
   darkTheme: 主题
   darkThemeDescription: 选择深色或浅色主题
   developerMode: 开发者模式
-  developerModeDescription: 开发者模式旨在帮助您测试自己写的模组
+  developerModeDescription: 开发者模式旨在帮助你测试自己写的模组
   disableTelemetry: 关闭遥测
-  disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
+  disableTelemetryDescription: 收集启动与登录事件
   enableDedicatedGPUOptimization: 分配专用 GPU
-  enableDedicatedGPUOptimizationDescription: 此选项将为 Minecraft 进程分配专用 GPU。
+  enableDedicatedGPUOptimizationDescription: 为 Minecraft 进程分配专用 GPU
   enableDiscord: 启用 Discord Presence
-  enableDiscordDescription: 根据 XMCL 实时更新 Discord 的状态
+  enableDiscordDescription: 同步 Discord 状态
   general: 基本设置
   githubRelease: Github
   globalSetting: 全局实例设置
-  globalSettingHint: 实例默认情况下会使用这些全局设置
+  globalSettingHint: 实例默认使用这些设置
   hideNewsHeader: 隐藏新闻展示
   language: 语言
   languageDescription: 当前显示的语言
@@ -1346,17 +1334,17 @@ setting:
   layout:
     default: 默认布局
     focus: 聚焦布局
-  layoutDescription: 不同的布局有不同的 UI 交互逻辑
+  layoutDescription: 布局决定界面交互
   layoutTitle: 布局
   linuxEnableDedicatedGPUOptimization: 分配专用图形处理器
   linuxEnableDedicatedGPUOptimizationDescription: 此选项为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
-  linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
+  linuxTitlebarDescription: 使用系统原生顶栏
   location: 数据存储位置
-  manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
+  manualUpdateHint: 无法自动更新，请从官网下载启动器。
   maunalUpdateHint: |-
     版本无法自动更新。
-    请从网站重新下载启动器！
+    请从网站重新下载启动器。
   maxSockets: (每个网站)最大连接数
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
   maxSocketsTitle: 最大 HTTP 连接数量
@@ -1370,9 +1358,9 @@ setting:
     push: 增加
     remove: 移除
     repulse: 击退
-  particleModeDescription: 选择当您点击粒子时的特效
+  particleModeDescription: 选择粒子点击效果
   replaceNative: 替换库为 Native (原生)
-  replaceNativeDescription: 根据您的计算机架构替换本机库。
+  replaceNativeDescription: 根据计算机架构替换本机库
   replaceNatives:
     all: 全部
     legacy: 仅旧版本
@@ -1380,7 +1368,7 @@ setting:
   showNewsHeader: 取消隐藏新闻展示
   showRoot: 浏览
   streamerMode: 屏幕共享屏蔽
-  streamerModeDescription: 此功能可以保护您的隐私。打开后，您的邮箱地址等隐私信息将会被隐藏。
+  streamerModeDescription: 保护隐私，隐藏邮箱等个人信息
   theme:
     dark: 暗色主题
     light: 亮色主题
@@ -1392,13 +1380,13 @@ setting:
   themeResetFont: 重置字体
   themeSelectFont: 选择字体
   themeShare: 分享主题
-  themeShareDescription: 您可以与您的朋友分享主题。
+  themeShareDescription: 与朋友分享主题
   update: 升级
   useBmclAPI: 使用 BMCLAPI 镜像
   useBmclAPIDescription: >
-    "BMCLAPI是由bangbang93创建的镜像服务。这个服务由bangbang93和OpenBMCLAPI社区共同提供。它通过提供国内下载服务器来改善从Mojang官方S3对象存储下载文件慢的问题。由于MCBBS源已停服，BMCLAPI会在下载高峰期时下载缓慢。有关OpenBMCLAPI服务器的服务状态，请访问OpenBMCLAPI榜单网站bd.bangbang93.com"
+    使用 BMCLAPI 镜像可改善国内下载速度。该服务由社区维护，高峰期可能变慢。
   useProxy: HTTP 代理服务器设置
-  useProxyDescription: 使用代理服务器可以某些服务的访问
+  useProxyDescription: 通过代理访问受限服务
   viewBackgroundMusic: 查看背景音乐
 settingLabel:
   global: 全局配置
@@ -1407,13 +1395,13 @@ settingLabel:
   localHint: 此配置已被当前实例修改
 setup:
   account:
-    description: 添加您常用的账号。如果您还没有账号，您可以跳过此步骤。
+    description: 添加你常用的账号。如果你还没有账号，你可以跳过此步骤。
     name: 添加游戏账号
     skip: 先不登录了
   appearance:
     name: '@:setting.appearance'
   dataRoot:
-    description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
+    description: XMCL 的数据目录与 .minecraft 不同，不建议直接使用常规 .minecraft 目录。
     drives: 推荐路径
     name: 设置数据存储目录
   defaultLayoutDescription: |-
@@ -1422,34 +1410,34 @@ setup:
     它还受到其他游戏启动器应用程序（如 Steam 等）的启发。
   defaultPath: 默认位置
   error:
-    badDataRoot: 启动器无法使用当前文件地址作为数据文件夹！请尝试其它文件夹！
+    badDataRoot: 当前目录不可作为数据目录，请选择其他文件夹。
     exists: |-
       所选目录里面已经有文件了。
-      您仍然可以选择它作为数据目录，但请确保已经备份数据。
+      你仍然可以选择它作为数据目录，但请确保已经备份数据。
     invalidChar: |-
-      数据目录包含无效的字符！
-      这可能导致Minecraft无法开始！路径中请只包含英文和常见符号！
+      数据目录包含无效字符。
+      可能导致 Minecraft 无法启动，路径请仅使用英文和常见符号。
     noPermission: |-
-      启动器没有访问所选目录的权限！
+      启动器无法访问所选目录。
       请尝试选择其他的文件夹。
-    nonDictionary: 已选择的文件路径是一个文件！请选择一个文件夹！
+    nonDictionary: 所选路径是文件，请选择目录。
   focusLayoutDescription: |-
     焦点布局是 Minecraft Launcher 最主流的布局。
     它设计用于单个实例或几个实例的情况。
   game:
-    description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的文件地址。同时让启动器能狗复用已有的版本文件、库、模组、资源包等。
+    description: 选择已有的 .minecraft 目录导入，可复用本地的版本、库、模组和资源包。
     name: 导入已有的游戏
   locale:
     description: >-
-      选择您的语言，如果您在这里没有看到想要的语言，并且您有兴趣帮助我们的话，您可以在我们的 GitHub 上打开 Pull Request
-      来添加新语言！
+      选择你的语言，如果这里没有想要的语言，且你愿意帮助我们，可以在我们的 GitHub 上打开 Pull Request
+      来添加新语言。
     language: 当前语言
     name: 设置语言
   path: 当前位置
-  title: 欢迎使用 X Minecraft Launcher。在开始前，需要您先
+  title: 欢迎使用 X Minecraft Launcher。在开始前，需要你先
 shaderPack:
   deletion: 删除光影包
-  deletionHint: 这将把光影包文件 {path} 永久删除。
+  deletionHint: 这将永久删除光影包文件 {path}。
   disabled: 未启用的光影
   dropHint: 导入光影包
   empty: 没有启用光影包
@@ -1459,7 +1447,7 @@ shaderPack:
   name: 光影包
   noShaderMod: 没有安装光影模组
   noShaderModHint: 不装光影模组光影包没法生效
-  noShaderModInstallHint: 您需要安装以下 mod 之一来加载着光影包。
+  noShaderModInstallHint: 你需要安装以下 mod 之一来加载光影包。
   searchHint: 搜索光影包
   selectSearchHint: 查看已选择的光影包
   showDirectory: 显示光影文件夹
@@ -1500,7 +1488,7 @@ task:
   delete:
     content: |-
       这将删除光盘中的纹理包文件，我们将无法恢复它。
-       您确定可以恢复吗？
+      你确定可以恢复吗？
     title: 删除纹理包
   dropHint: 将文件夹/压缩纹理拖放到此处进行导入。
   empty: 目前没有运行中的任务
@@ -1537,10 +1525,9 @@ turnRegion:
   liaoning: 辽宁
   po: 波兰
 tutorial:
-  feedbackDescription: 如果您遇到了问题，请点击这个按钮来联系开发团队。
+  feedbackDescription: 遇到问题，点击反馈
   hideNewsHeaderDescription: |-
-    您可以在左侧看到新闻展示柜。
-    单击此按钮可以隐藏该展示案例。
+    在左侧查看新闻。点击可隐藏展示。
   instance:
     iconDescription: 点击更改图标。
     iconTitle: 游戏图标
@@ -1548,54 +1535,39 @@ tutorial:
     javaImportDescription: 从本地导入 Java。
     javaImportTitle: 导入 Java
     javaTitle: 已有 Java 列表
-  instanceAddDescription: 单击此按钮可导入现有的 Minecraft，从整合包创建一个新的 Minecraft，或从头开始创建一个新的 Minecraft 实例
-  instanceSelectDescription: 单击此按钮将导航至选择游戏和阅读新闻的页面。
-  launchDescription: 点击此按钮安装或启动游戏。
+  instanceAddDescription: 点击导入游戏、从整合包创建实例或新建实例
+  instanceSelectDescription: 点击进入选择游戏与新闻页
+  launchDescription: 点击安装/启动游戏
   mod:
     defaultSourceDescription: |-
-      您可以在此处选择模组详细信息的来源。 
-      Modrinth 和 Curseforge 均发布了模组。
-      如果您想在这两个内容提供商之间切换。
-      您可以在此处更改该值。
+      选择模组详情来源（如 Modrinth 或 CurseForge）
     defaultSourceTitle: 选择模组详情来源
     detailDescription: |-
-      当您选择左侧的项目时。
-      您将看到该模组的详细信息。
-      内容可以来自 Modrinth、Curseforge 或解析的模组内容。
+      选择左侧项目查看模组详情；搜索时显示结果。
     detailTitle: 模组详情
     listDescription: |-
-      这里会显示已安装的模组。
-      当您输入关键字或选择类别后，这里会显示搜索到的模组。
+      显示已安装或搜索到的模组
     listTitle: 安装/搜索的模组
-    searchDescription: 您可以通过此搜索框从 Modrinth、Curseforge 或本地缓存中搜索模组。
+    searchDescription: 在此搜索 Modrinth、CurseForge 或本地缓存的模组
     searchTitle: 搜索、发现模组
   multiplayer:
-    contentDescription: 您和您的同伴之间的联系将在此处列出。
+    contentDescription: 显示你和队友的 P2P 连接
     contentTitle: '@:multiplayer.connections'
     groupDescription: |-
-      您可以与其他玩家创建或加入群组。
-      启动器会尝试根据群组在您和您的朋友之间创建 P2P 连接。
-      您可以输入好友提供的群组名称。
-      或者您可以自己创建一个独特的名称。
+    创建或加入群组以建立 P2P 连接。输入或创建群组名。
     groupTitle: 和其他玩家组队
     joinDescription: |-
-      输入组名称后。
-      您可以单击此按钮加入或创建群组。
-      如果组名称为空，启动器将为您生成一个名称。
+      输入群组名后点击加入/创建。留空将自动生成名称。
     manualDescription: |-
-      如果您或您的朋友无法连接到群组。
-      您可以尝试通过点击“手动连接”来手动交换令牌。
-      如果也失败，则可能是互联网问题。
+      无法连接时可选择手动交换令牌。若仍失败，可能为网络问题。
   recentPlayDescription: |-
-    创建的游戏将在此处列出。
-    您可以在此处切换视图以查看已安装的版本和下载的整合包。
-  storePoupularModpackDescription: 您将在这里看到 Curseforge 和 Modrinth 中最流行的整合包。
-  storeSearchCategoryDescription: 您还可以在此处切换类别或过滤器。
+    此处列出已创建的游戏，可切换查看已安装版本或整合包
+  storePoupularModpackDescription: 显示 CurseForge 与 Modrinth 热门整合包
+  storeSearchCategoryDescription: 切换类别或过滤器
   storeSearchDescription: |-
-    您可以通过在此文本框中输入来搜索整合包。
-    按 Enter 键搜索。
-  storeSearchResultDescription: 您将看到此处列出的所有搜索结果。
-  userAccountDescription: 单击此图标可添加或管理您的 Minecraft 帐户。
+    输入关键词搜索整合包，按 Enter 查询
+  storeSearchResultDescription: 显示搜索结果
+  userAccountDescription: 点击图标添加或管理 Minecraft 账号
 universalDrop:
   enableModsAfterImport: 当模组导入后自动启用
   start: 开始导入
@@ -1606,7 +1578,7 @@ update:
 upstream:
   downgrade: 降级
   missingModpackMetadata: >-
-    无法找到当前实例使用的整合包元数据。虽然您不会因此没法更新到最新的整合包版本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份您的文件。
+  找不到实例使用的整合包元数据。更新可能失败，建议备份数据并重新创建实例以确保正确更新。
   onlyShowCurrentVersion: 只显示适合当前 Minecraft 的版本
   update: 更新
 user:
@@ -1614,12 +1586,12 @@ user:
   authMode: 验证服务
   authService: 验证服务
   birth: 登记的生日
-  challenges: 请回答下列问题来验证您的身份
+  challenges: 请回答下列问题来验证你的身份
   email: 邮箱
   forgetChallenges: '我忘记了这些问题的答案，我想重新设置它们 '
   id: 用户 ID
   info: 账户信息
-  insecureClient: Minecraft 服务器无法验证您的身份，请回答密保问题！
+  insecureClient: Minecraft 服务器无法验证你的身份，请回答密保问题。
   name: 用户名
   nameHint: 游戏中显示的名字
   profile: 个人信息
@@ -1630,7 +1602,7 @@ user:
   tokenValidUntil: 有效期至
 userAccount:
   add: 添加账号
-  removeDescription: 这将抹去所有关于此账号的信息，您是否确定？
+  removeDescription: 这将抹去所有关于此账号的信息，你是否确定？
   removeTitle: 移除账号
 userCape:
   changeTitle: 披风设置
