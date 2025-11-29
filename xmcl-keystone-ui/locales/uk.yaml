@@ -1499,6 +1499,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
+  windowTranslucent: Прозорість вікна
+  windowTranslucentDescription: Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows 10, Vibrancy у macOS). Потрібен перезапуск.
   location: Місце зберігання
   manualUpdateHint: >-
     Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще

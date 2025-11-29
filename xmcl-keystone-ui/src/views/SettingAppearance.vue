@@ -14,6 +14,13 @@
       :description="t('setting.linuxTitlebarDescription')"
       @input="v => linuxTitlebar = v"
     />
+    <SettingItemCheckbox
+      v-if="env?.os === 'windows' || env?.os === 'osx'"
+      :value="windowTranslucent"
+      :title="t('setting.windowTranslucent')"
+      :description="t('setting.windowTranslucentDescription')"
+      @input="v => windowTranslucent = v"
+    />
     <AppearanceItems :theme="currentTheme" @save="onSave" />
   </div>
 </template>
@@ -40,6 +47,11 @@ const { setTheme } = useService(ThemeServiceKey)
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,
   set: v => state.value?.linuxTitlebarSet(v),
+})
+
+const windowTranslucent = computed({
+  get: () => state.value?.windowTranslucent ?? false,
+  set: v => state.value?.windowTranslucentSet(v),
 })
 
 const layout = injection(kUIDefaultLayout)

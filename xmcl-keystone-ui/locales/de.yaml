@@ -1610,6 +1610,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Diese Option weist dem Minecraft-Prozess einen eigenen Grafikprozessor zu.
   linuxTitlebar: Native Titelleiste
   linuxTitlebarDescription: Verwenden Sie die native Linux-Titelleiste für den Launcher
+  windowTranslucent: Fenstertransparenz
+  windowTranslucentDescription: Aktivieren Sie den transparenten Fenstereffekt (Mica unter Windows 11, Acrylic unter Windows 10, Vibrancy unter macOS). Erfordert Neustart.
   location: Speicherort
   manualUpdateHint: >-
     Die Version kann nicht automatisch aktualisiert werden. Bitte laden Sie den

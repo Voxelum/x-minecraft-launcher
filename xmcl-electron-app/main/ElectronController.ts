@@ -1,4 +1,4 @@
-import { AccentState, HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
+import { HAS_DEV_SERVER, HOST, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
 import migrationPreload from '@preload/migration'
@@ -63,11 +63,13 @@ export class ElectronController implements LauncherAppController {
     const minWidth = parseInt(features.find(f => f.startsWith('min-width'))?.split('=')[1] ?? '600', 10)
     const minHeight = parseInt(features.find(f => f.startsWith('min-height'))?.split('=')[1] ?? '600', 10)
     const man = this.activatedManifest!
+    // Determine if translucency should be enabled (from user settings or app manifest)
+    const enableTranslucency = this.settings?.windowTranslucent || man.vibrancy
     if (url.host === 'app' || detail.frameName === 'app' || (url.host.startsWith('localhost') && HAS_DEV_SERVER)) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
-          vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+          vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
           icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
           titleBarStyle: this.getTitlebarStyle(),
           trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
@@ -198,34 +200,22 @@ export class ElectronController implements LauncherAppController {
     })
   }
 
-  private setWindowBlurEffect(browser: BrowserWindow) {
+  private getBackgroundMaterial(enableTranslucency: boolean): 'none' | 'mica' | 'acrylic' | 'auto' | undefined {
+    if (!enableTranslucency) {
+      return undefined
+    }
     const isWin = this.app.platform.os === 'windows'
-    if (isWin && this.app.windowsUtils) {
-      const handle = browser.getNativeWindowHandle()
+    if (isWin) {
       const windowsVersion = this.windowsVersion
       if (windowsVersion) {
         if (windowsVersion.build >= WindowsBuild.Windows11) {
-          this.app.windowsUtils.setMica(handle.buffer, true)
-          this.logger.log(`Set window Mica ${handle.toString('hex')}`)
-        } else {
-          let blur: AccentState
-          if (windowsVersion.build >= WindowsBuild.Windows10Build1903) {
-            blur = AccentState.ACCENT_ENABLE_BLURBEHIND
-          } else if (windowsVersion.build >= WindowsBuild.Windows10Build1809) {
-            blur = AccentState.ACCENT_ENABLE_ACRYLICBLURBEHIND
-          } else if (windowsVersion.build >= WindowsBuild.Windows10) {
-            blur = AccentState.ACCENT_ENABLE_BLURBEHIND
-          } else {
-            blur = AccentState.ACCENT_ENABLE_TRANSPARENTGRADIENT
-          }
-          if (this.app.windowsUtils.setWindowBlur(handle.buffer, blur)) {
-            this.logger.log(`Set window Acrylic transparent ${handle.toString('hex')}`)
-          } else {
-            this.logger.warn(`Set window Acrylic failed ${handle.toString('hex')}`)
-          }
+          return 'mica'
+        } else if (windowsVersion.build >= WindowsBuild.Windows10) {
+          return 'acrylic'
         }
       }
     }
+    return undefined
   }
 
   async startMigrate() {
@@ -272,6 +262,9 @@ export class ElectronController implements LauncherAppController {
   }
 
   async createBrowseWindow() {
+    // Determine if translucency should be enabled
+    const enableTranslucency = this.settings?.windowTranslucent ?? false
+
     const browser = new BrowserWindow({
       title: 'XMCL Launcher Browser',
       frame: false,
@@ -280,7 +273,8 @@ export class ElectronController implements LauncherAppController {
       width: 860,
       height: 450,
       useContentSize: true,
-      vibrancy: 'sidebar', // or popover
+      vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
+      backgroundMaterial: this.getBackgroundMaterial(enableTranslucency), // Windows mica/acrylic
       icon: darkIcon,
       webPreferences: {
         preload: browsePreload,
@@ -288,9 +282,6 @@ export class ElectronController implements LauncherAppController {
     })
 
     browser.loadURL(browserWinUrl)
-    browser.on('ready-to-show', () => {
-      this.setWindowBlurEffect(browser)
-    })
 
     this.browserRef = browser
   }
@@ -356,10 +347,13 @@ export class ElectronController implements LauncherAppController {
     const defaultWidth = man.defaultWidth ?? 800
     const defaultHeight = man.defaultHeight ?? 600
 
-    // Ensure the settings is loaded
-    if (this.app.platform.os === 'linux' && !this.settings) {
+    // Ensure the settings is loaded for translucency and Linux titlebar options
+    if (!this.settings) {
       this.settings = await this.app.registry.get(kSettings)
     }
+
+    // Determine if translucency should be enabled (from user settings or app manifest)
+    const enableTranslucency = this.settings?.windowTranslucent || man.vibrancy
 
     const browser = new BrowserWindow({
       title: man.name,
@@ -370,8 +364,9 @@ export class ElectronController implements LauncherAppController {
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
-      backgroundColor: man.backgroundColor,
-      vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+      backgroundColor: enableTranslucency ? '#00000000' : man.backgroundColor, // Transparent when translucency is enabled
+      vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
+      backgroundMaterial: this.getBackgroundMaterial(enableTranslucency), // Windows mica/acrylic
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       titleBarStyle: this.getTitlebarStyle(),
       trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
@@ -389,10 +384,6 @@ export class ElectronController implements LauncherAppController {
 
     browser.on('ready-to-show', () => {
       this.logger.log('App Window is ready to show!')
-
-      if (man.vibrancy) {
-        this.setWindowBlurEffect(browser)
-      }
 
       if (config.maximized) {
         browser.maximize()
@@ -447,6 +438,8 @@ export class ElectronController implements LauncherAppController {
 
   async createMonitorWindow() {
     const tracker = createWindowTracker(this.app, 'monitor', this.activatedManifest!)
+    // Determine if translucency should be enabled
+    const enableTranslucency = this.settings?.windowTranslucent ?? false
 
     const config = await tracker.getConfig()
     const browser = new BrowserWindow({
@@ -462,6 +455,7 @@ export class ElectronController implements LauncherAppController {
       hasShadow: false,
       maximizable: false,
       icon: darkIcon,
+      backgroundMaterial: this.getBackgroundMaterial(enableTranslucency), // Windows mica/acrylic
       webPreferences: {
         preload: monitorPreload,
         session: this.app.session.getSession(this.activatedManifest!.url),
@@ -469,7 +463,6 @@ export class ElectronController implements LauncherAppController {
     })
 
     this.setupBrowserLogger(browser, 'logger')
-    this.setWindowBlurEffect(browser)
 
     browser.loadURL(loggerWinUrl)
     browser.show()
