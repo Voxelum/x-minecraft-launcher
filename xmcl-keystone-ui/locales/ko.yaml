@@ -1344,6 +1344,8 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   linuxTitlebar: 네이티브 제목 표시줄
   linuxTitlebarDescription: 런처에 네이티브 Linux 제목 표시줄 사용
+  windowTranslucent: 창 투명도
+  windowTranslucentDescription: 반투명 창 효과를 활성화합니다 (Windows 11의 Mica, Windows 10의 Acrylic, macOS의 Vibrancy). 재시작이 필요합니다.
   location: 저장 위치
   manualUpdateHint: 버전을 자동으로 업데이트할 수 없습니다. 공식 웹사이트에서 런처를 다시 다운로드하세요!
   maunalUpdateHint: 버전을 자동 업데이트할 수 없습니다. 웹사이트에서 런처를 다시 다운로드하세요!
