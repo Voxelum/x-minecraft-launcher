@@ -274,6 +274,9 @@ export class ElectronController implements LauncherAppController {
   }
 
   async createBrowseWindow() {
+    // Determine if translucency should be enabled
+    const enableTranslucency = this.settings?.windowTranslucent
+
     const browser = new BrowserWindow({
       title: 'XMCL Launcher Browser',
       frame: false,
@@ -282,7 +285,7 @@ export class ElectronController implements LauncherAppController {
       width: 860,
       height: 450,
       useContentSize: true,
-      vibrancy: 'sidebar', // or popover
+      vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
       icon: darkIcon,
       webPreferences: {
         preload: browsePreload,
@@ -291,7 +294,9 @@ export class ElectronController implements LauncherAppController {
 
     browser.loadURL(browserWinUrl)
     browser.on('ready-to-show', () => {
-      this.setWindowBlurEffect(browser)
+      if (enableTranslucency) {
+        this.setWindowBlurEffect(browser)
+      }
     })
 
     this.browserRef = browser
@@ -375,7 +380,7 @@ export class ElectronController implements LauncherAppController {
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
-      backgroundColor: enableTranslucency ? undefined : man.backgroundColor,
+      backgroundColor: enableTranslucency ? '#00000000' : man.backgroundColor, // Transparent when translucency is enabled
       vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       titleBarStyle: this.getTitlebarStyle(),
@@ -452,6 +457,8 @@ export class ElectronController implements LauncherAppController {
 
   async createMonitorWindow() {
     const tracker = createWindowTracker(this.app, 'monitor', this.activatedManifest!)
+    // Determine if translucency should be enabled
+    const enableTranslucency = this.settings?.windowTranslucent
 
     const config = await tracker.getConfig()
     const browser = new BrowserWindow({
@@ -474,7 +481,9 @@ export class ElectronController implements LauncherAppController {
     })
 
     this.setupBrowserLogger(browser, 'logger')
-    this.setWindowBlurEffect(browser)
+    if (enableTranslucency) {
+      this.setWindowBlurEffect(browser)
+    }
 
     browser.loadURL(loggerWinUrl)
     browser.show()
