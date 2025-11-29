@@ -26,6 +26,7 @@ export class Settings implements SettingSchema {
   developerMode = false
   disableTelemetry = false
   linuxTitlebar = false
+  windowTranslucent = false
 
   locale = ''
 
@@ -102,6 +103,7 @@ export class Settings implements SettingSchema {
     this.developerMode = config.developerMode
     this.disableTelemetry = config.disableTelemetry
     this.linuxTitlebar = config.linuxTitlebar
+    this.windowTranslucent = config.windowTranslucent
     this.enableDedicatedGPUOptimization = config.enableDedicatedGPUOptimization
     this.replaceNatives = config.replaceNatives
     this.globalResolution = config.globalResolution
@@ -198,6 +200,10 @@ export class Settings implements SettingSchema {
 
   linuxTitlebarSet(enabled: boolean) {
     this.linuxTitlebar = enabled
+  }
+
+  windowTranslucentSet(enabled: boolean) {
+    this.windowTranslucent = enabled
   }
 
   replaceNativesSet(replace: 'all' | 'legacy-only' | false) {

@@ -177,6 +177,11 @@
             "default": true,
             "type": "boolean"
         },
+        "windowTranslucent": {
+            "description": "Enable window translucency effect (Mica on Windows 11, Acrylic on Windows 10, Vibrancy on macOS)",
+            "default": false,
+            "type": "boolean"
+        },
         "globalResolution": {
             "description": "Global resolution settings for Minecraft",
             "default": {},
@@ -225,7 +230,8 @@
         "locale",
         "maxSockets",
         "replaceNatives",
-        "theme"
+        "theme",
+        "windowTranslucent"
     ],
     "definitions": {
         "Record<string,string>": {

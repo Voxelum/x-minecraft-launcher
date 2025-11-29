@@ -63,11 +63,13 @@ export class ElectronController implements LauncherAppController {
     const minWidth = parseInt(features.find(f => f.startsWith('min-width'))?.split('=')[1] ?? '600', 10)
     const minHeight = parseInt(features.find(f => f.startsWith('min-height'))?.split('=')[1] ?? '600', 10)
     const man = this.activatedManifest!
+    // Determine if translucency should be enabled (from user settings or app manifest)
+    const enableTranslucency = this.settings?.windowTranslucent || man.vibrancy
     if (url.host === 'app' || detail.frameName === 'app' || (url.host.startsWith('localhost') && HAS_DEV_SERVER)) {
       return {
         action: 'allow',
         overrideBrowserWindowOptions: {
-          vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+          vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
           icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
           titleBarStyle: this.getTitlebarStyle(),
           trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
@@ -356,10 +358,13 @@ export class ElectronController implements LauncherAppController {
     const defaultWidth = man.defaultWidth ?? 800
     const defaultHeight = man.defaultHeight ?? 600
 
-    // Ensure the settings is loaded
-    if (this.app.platform.os === 'linux' && !this.settings) {
+    // Ensure the settings is loaded for translucency and Linux titlebar options
+    if (!this.settings) {
       this.settings = await this.app.registry.get(kSettings)
     }
+
+    // Determine if translucency should be enabled (from user settings or app manifest)
+    const enableTranslucency = this.settings?.windowTranslucent || man.vibrancy
 
     const browser = new BrowserWindow({
       title: man.name,
@@ -370,8 +375,8 @@ export class ElectronController implements LauncherAppController {
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
-      backgroundColor: man.backgroundColor,
-      vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+      backgroundColor: enableTranslucency ? undefined : man.backgroundColor,
+      vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       titleBarStyle: this.getTitlebarStyle(),
       trafficLightPosition: this.app.platform.os === 'osx' ? { x: 14, y: 10 } : undefined,
@@ -390,7 +395,7 @@ export class ElectronController implements LauncherAppController {
     browser.on('ready-to-show', () => {
       this.logger.log('App Window is ready to show!')
 
-      if (man.vibrancy) {
+      if (enableTranslucency) {
         this.setWindowBlurEffect(browser)
       }
 
