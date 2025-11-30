@@ -50,8 +50,13 @@ export function useMarketCollectionSearch<T extends ProjectEntry<any>>(projectTy
       }
       const coll = collections.find((i) => i.id === id)
       if (coll) {
+        if (coll.projects.length === 0) {
+          return []
+        }
+        // Include sorted project IDs in cache key to invalidate cache when collection content changes
+        const projectsKey = [...coll.projects].sort().join(',')
         const result = await getSWRV({
-          key: `/collections/${coll.id}`,
+          key: `/collections/${coll.id}?projects=${projectsKey}`,
           fetcher: () => clientModrinthV2.getProjects(coll.projects),
         }, config)
         return result.filter(filter).map(mapProject)

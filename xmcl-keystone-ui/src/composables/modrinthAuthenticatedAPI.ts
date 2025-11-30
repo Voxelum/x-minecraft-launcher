@@ -178,6 +178,16 @@ export function useModrinthAuthenticatedAPI() {
     await mutateCollections()
   }
 
+  async function deleteCollection(collectionId: string) {
+    await awaitLogin()
+
+    if (!collections.value) {
+      await mutateCollections()
+    }
+    await clientModrinthV2.deleteCollection(collectionId)
+    await mutateCollections()
+  }
+
   return {
     interact,
     follows,
@@ -192,6 +202,7 @@ export function useModrinthAuthenticatedAPI() {
     isFollowed,
     addToCollection,
     removeFromCollection,
+    deleteCollection,
     collections,
     createCollection,
     isValidatingCollections,
