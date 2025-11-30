@@ -420,6 +420,7 @@ export function useModGroups(isLocalView: Ref<boolean>, path: Ref<string>, items
   return {
     isInGroup,
     groups: groupNames,
+    groupsRaw: instanceModGroupping,
     syncGroupRules,
     applySharedGroupRules,
     getGroupColor,

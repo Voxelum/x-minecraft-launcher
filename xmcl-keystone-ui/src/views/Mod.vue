@@ -83,8 +83,8 @@
         @ungroup="ungroup(item.name)"
         @expand="groupCollapsedState = { ...groupCollapsedState, [item.name]: $event }"
         @setting="renameGroup(item.name, $event.name)"
-        @enable-all="enable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
-        @disable-all="disable({ path: path, files: item.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean) as string[] })"
+        @enable-all="enableAll(item)"
+        @disable-all="disableAll(item)"
       />
       <v-subheader
         v-else-if="item === 'search'"
@@ -347,7 +347,17 @@ const hasActiveFilters = computed(() => {
   return !!localFilter.value
 })
 
-const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups } = useModGroups(isLocalView, path, items, sortBy)
+const { localGroupedItems, groupCollapsedState, renameGroup, ungroup, group, addToGroup, isInGroup, getGroupColor, getContextMenuItemsForGroup, groups, groupsRaw } = useModGroups(isLocalView, path, items, sortBy)
+
+function enableAll(group: ProjectGroup) {
+  const files = group.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean)
+  enable({ path: path.value, files })
+}
+
+function disableAll(group: ProjectGroup) {
+  const files = group.projects.filter(p => p.installed?.[0]).map(p => p.installed?.[0]?.path).filter(Boolean)
+  disable({ path: path.value, files })
+}
 
 function isIncompatible(p: ProjectEntry<ModFile>) {
   const modId = p.installed?.[0]?.modId
@@ -552,8 +562,9 @@ provide('selections', selections)
 const { show: showGroupSelectDialog } = useDialog('mod-group-select')
 
 function showGroupDialog(fileNames: string[]) {
+  console.log(groupsRaw.value)
   showGroupSelectDialog({
-    groups: groups.value,
+    groups: groupsRaw.value,
     onSelect: (groupName: string | null, newName?: string) => {
       if (groupName) {
         // Add to existing group

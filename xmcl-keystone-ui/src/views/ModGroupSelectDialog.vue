@@ -20,6 +20,7 @@
           prepend-inner-icon="search"
           clearable
           autofocus
+          hide-details
           dense
           outlined
           class="mb-2"
@@ -34,15 +35,15 @@
               outlined
               dense
               autofocus
-              :rules="[v => !!v || t('mod.groupNameRequired')]"
+              hide-details
+              :rules="rules"
               @keyup.enter="onConfirmNewGroup"
             />
           </div>
         </v-expand-transition>
         
-        <v-list v-if="!creatingNew">
+        <v-list dense v-if="!creatingNew">
           <v-list-item
-            class="mb-2"
             @click="onCreateNew"
           >
             <v-list-item-avatar>
@@ -66,21 +67,25 @@
             style="max-height: 300px"
           >
             <v-list-item
-              v-for="groupName in filteredGroups"
-              :key="groupName"
-              @click="onSelectGroup(groupName)"
+              v-for="g of filteredGroups"
+              :key="g[0]"
+              dense
+              @click="onSelectGroup(g[0])"
             >
               <v-list-item-avatar>
                 <v-icon>folder</v-icon>
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title>{{ groupName }}</v-list-item-title>
+                <v-list-item-title>{{ g[0] }}</v-list-item-title>
+                <v-list-item-subtitle>
+                  {{ t('mod.mods', { count: g[1].files.length }) }}
+                </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </div>
           
           <!-- No groups message -->
-          <v-list-item v-else-if="groups.length === 0">
+          <v-list-item v-else-if="Object.keys(groups).length === 0">
             <v-list-item-content>
               <v-list-item-subtitle class="text-center">
                 {{ t('mod.noGroupsYet') }}
@@ -125,29 +130,32 @@
 
 <script setup lang="ts">
 import { useDialog } from '@/composables/dialog'
+import { ModGroupData } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const searchQuery = ref('')
 const creatingNew = ref(false)
 const newGroupName = ref('')
 
+const rules = computed(() => [(v: string) => !!v || t('mod.groupNameRequired')])
+
 const { isShown, parameter } = useDialog<{
-  groups: string[]
+  groups: Record<string, ModGroupData>
   onSelect: (groupName: string | null, newName?: string) => void
 }>('mod-group-select')
 
-const groups = computed(() => parameter.value?.groups || [])
+const groups = computed(() => parameter.value?.groups || {})
 
 // Filter and sort groups alphabetically
 const filteredGroups = computed(() => {
   const query = searchQuery.value.toLowerCase().trim()
-  let filtered = groups.value
+  let filtered = Object.entries(groups.value)
   
   if (query) {
-    filtered = filtered.filter(g => g.toLowerCase().includes(query))
+    filtered = filtered.filter(([g]) => g.toLowerCase().includes(query))
   }
   
-  return filtered.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
+  return filtered.sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
 })
 
 function onSelectGroup(groupName: string) {

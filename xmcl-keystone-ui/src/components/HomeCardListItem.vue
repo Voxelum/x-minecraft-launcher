@@ -8,7 +8,7 @@
     @drop="onDrop"
   >
     <div class="inline-flex whitespace-nowrap overflow-hidden text-ellipsis">
-      <v-icon v-shared-tooltip="_ => tooltip" small left> {{ icon }} </v-icon>
+      <v-icon v-shared-tooltip="_ => tooltip || ''" small left> {{ icon }} </v-icon>
       <span
         class="transition-colors"
         :style="{
