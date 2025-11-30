@@ -91,7 +91,7 @@ const onEnable = (enable: boolean) => {
     @enable="onEnable"
   >
     <template #content>
-      <SaveMapRenderer :save-path="save.installed[0].path" />
+      <!-- <SaveMapRenderer :save-path="save.installed[0].path" /> -->
     </template>
     <template #properties>
       <MarketProjectDetailSave
