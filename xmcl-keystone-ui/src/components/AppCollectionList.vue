@@ -70,6 +70,8 @@ async function onDeleteCollection(collectionId: string) {
     if (props.select === collectionId) {
       emit('update:select', 'followed')
     }
+  } catch (error) {
+    console.error('Failed to delete collection:', error)
   } finally {
     deletingCollection.value = null
   }

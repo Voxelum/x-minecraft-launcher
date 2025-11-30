@@ -181,9 +181,6 @@ export function useModrinthAuthenticatedAPI() {
   async function deleteCollection(collectionId: string) {
     await awaitLogin()
 
-    if (!collections.value) {
-      await mutateCollections()
-    }
     await clientModrinthV2.deleteCollection(collectionId)
     await mutateCollections()
   }
