@@ -183,15 +183,15 @@ watch(() => data.path, (newPath) => {
   })
 })
 
-const { isDark, backgroundType } = injection(kTheme)
+const { isDark, backgroundType, currentTheme } = injection(kTheme)
 
 const updateTheme = (theme: 'dark' | 'system' | 'light') => {
   if (theme === 'system') {
-    isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+    currentTheme.value.dark = window.matchMedia('(prefers-color-scheme: dark)').matches
   } else if (theme === 'dark') {
-    isDark.value = true
+    currentTheme.value.dark = true
   } else {
-    isDark.value = false
+    currentTheme.value.dark = false
   }
 }
 
@@ -207,7 +207,7 @@ async function setup() {
   await bootstrap.bootstrap(data.path)
   getEnvironment().then((e) => {
     if (e.gpu && isDark.value) {
-      backgroundType.value = BackgroundType.HALO
+      currentTheme.value.backgroundType = BackgroundType.HALO
     }
   })
   emit('ready', data)

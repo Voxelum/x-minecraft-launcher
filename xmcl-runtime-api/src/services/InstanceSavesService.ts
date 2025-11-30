@@ -191,6 +191,18 @@ export interface InstanceSavesService {
    * Install a save from market.
    */
   installFromMarket(options: InstallMarketOptionWithInstance): Promise<string>
+
+  getWorldGenSettings(instancePath: string): Promise<{
+    seed: bigint
+    dimensions: Record<string, {
+      type: string
+      generator: {
+        type: string
+        biome_source?: any
+        settings?: any
+      }
+    }>
+  } | undefined>
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'

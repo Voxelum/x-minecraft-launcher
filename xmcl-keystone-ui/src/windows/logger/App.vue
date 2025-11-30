@@ -79,7 +79,7 @@ const logsRecord: Record<number, Log[]> = reactive({})
 const tab = ref(0)
 
 // window.location.search.
-const { isDark } = injection(kTheme)
+const { isDark, currentTheme } = injection(kTheme)
 
 const iconSets = {
   dark: 'dark_mode',
@@ -146,7 +146,7 @@ onMounted(() => {
   })
 })
 function changeTheme() {
-  isDark.value = !isDark.value
+  currentTheme.value.dark = !isDark.value
 }
 function close() {
   hide()
