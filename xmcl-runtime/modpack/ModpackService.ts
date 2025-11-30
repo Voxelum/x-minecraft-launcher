@@ -1,3 +1,4 @@
+import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { getCurseforgeModpackFromInstance, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, type CurseforgeModpackManifest, type Instance, type InstanceData, type InstanceFile, type McbbsModpackManifest, type ModpackInstallProfile, type ModrinthModpackManifest } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { ResourceManager, ResourceMetadata, UpdateResourcePayload } from '@xmcl/resource'
@@ -214,6 +215,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     offlineZip?.addBuffer(xmclJson, 'xmcl.json')
 
     const backfillModrinth: [ModrinthModpackManifest['files'][number], UpdateResourcePayload][] = []
+    const backfillCurseforge: { filePath: string; relativePath: string; sha1: string }[] = []
     const instanceLockContent: InstanceLockSchema | undefined = await readJson(join(instancePath, 'instance-lock.json')).catch(() => undefined)
     const lockHashLookup = Object.fromEntries(instanceLockContent?.files.map(f => [f.path, f]) || [])
 
@@ -273,8 +275,10 @@ export class ModpackService extends AbstractService implements IModpackService {
 
           if (fileLike.curseforge) {
             curseforgeConfig?.files?.push({ projectID: fileLike.curseforge.projectId, fileID: fileLike.curseforge.fileId, required: true })
-          } else {
-            curseforgeZip?.addFile(filePath, `overrides/${file.path}`)
+          } else if (emitCurseforge) {
+            // No curseforge metadata, add to backfill list to try fingerprint lookup
+            const sha1 = fileLike.hashes?.sha1 || await this.worker.checksum(filePath, 'sha1')
+            backfillCurseforge.push({ filePath, relativePath: file.path, sha1 })
           }
           if (fileLike.modrinth) {
             // modrinth not allowed to include curseforge source by regulation
@@ -344,6 +348,55 @@ export class ModpackService extends AbstractService implements IModpackService {
 
         const filePath = join(instancePath, file.path)
         modrinthZip?.addFile(filePath, `overrides/${file.path}`)
+      }
+    }
+
+    // Backfill CurseForge metadata using fingerprint matching
+    if (backfillCurseforge.length > 0) {
+      const curseforgeClient = await this.app.registry.get(CurseforgeV1Client)
+      const fingerprintMap: Record<number, { filePath: string; relativePath: string; sha1: string }> = {}
+
+      // Calculate fingerprints for all files
+      for (const item of backfillCurseforge) {
+        try {
+          const fingerprint = await this.worker.fingerprint(item.filePath)
+          fingerprintMap[fingerprint] = item
+        } catch (e) {
+          this.warn(`Failed to calculate fingerprint for ${item.filePath}, adding as override`)
+          curseforgeZip?.addFile(item.filePath, `overrides/${item.relativePath}`)
+        }
+      }
+
+      // Query CurseForge API with fingerprints
+      const fingerprints = Object.keys(fingerprintMap).map(v => parseInt(v, 10))
+      const result = await curseforgeClient.getFingerprintsMatchesByGameId(432, fingerprints).catch(() => ({ exactMatches: [] }))
+
+      const matchedFingerprints = new Set<number>()
+      for (const match of result.exactMatches) {
+        const item = fingerprintMap[match.file.fileFingerprint]
+        if (item) {
+          matchedFingerprints.add(match.file.fileFingerprint)
+          curseforgeConfig?.files?.push({ projectID: match.file.modId, fileID: match.file.id, required: true })
+          // Update metadata for future exports
+          this.resourceManager.updateMetadata([{
+            hash: item.sha1,
+            metadata: {
+              curseforge: {
+                projectId: match.file.modId,
+                fileId: match.file.id,
+              },
+            },
+          }]).catch((e) => {
+            this.warn(`Failed to update curseforge metadata for ${item.filePath}`)
+          })
+        }
+      }
+
+      // Add unmatched files as overrides
+      for (const [fingerprint, item] of Object.entries(fingerprintMap)) {
+        if (!matchedFingerprints.has(parseInt(fingerprint, 10))) {
+          curseforgeZip?.addFile(item.filePath, `overrides/${item.relativePath}`)
+        }
       }
     }
 
