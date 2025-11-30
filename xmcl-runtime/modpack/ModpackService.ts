@@ -358,8 +358,13 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       // Calculate fingerprints for all files
       for (const item of backfillCurseforge) {
-        const fingerprint = await this.worker.fingerprint(item.filePath)
-        fingerprintMap[fingerprint] = item
+        try {
+          const fingerprint = await this.worker.fingerprint(item.filePath)
+          fingerprintMap[fingerprint] = item
+        } catch (e) {
+          this.warn(`Failed to calculate fingerprint for ${item.filePath}, adding as override`)
+          curseforgeZip?.addFile(item.filePath, `overrides/${item.relativePath}`)
+        }
       }
 
       // Query CurseForge API with fingerprints
@@ -373,7 +378,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           matchedFingerprints.add(match.file.fileFingerprint)
           curseforgeConfig?.files?.push({ projectID: match.file.modId, fileID: match.file.id, required: true })
           // Update metadata for future exports
-          await this.resourceManager.updateMetadata([{
+          this.resourceManager.updateMetadata([{
             hash: item.sha1,
             metadata: {
               curseforge: {
@@ -381,7 +386,9 @@ export class ModpackService extends AbstractService implements IModpackService {
                 fileId: match.file.id,
               },
             },
-          }])
+          }]).catch((e) => {
+            this.warn(`Failed to update curseforge metadata for ${item.filePath}`)
+          })
         }
       }
 
