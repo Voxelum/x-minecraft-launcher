@@ -917,6 +917,13 @@ modInstall:
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
+  autoUpgrade:
+    title: Обновить моды?
+    description: >-
+      Вы изменили версию Minecraft. Хотите автоматически обновить
+      совместимые моды до версий, соответствующих Minecraft {version}?
+    yes: Обновить моды
+    no: Пропустить
 modSearch:
   noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
   noModsFound: Моды не найдены.

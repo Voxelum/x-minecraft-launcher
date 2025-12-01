@@ -46,21 +46,28 @@
           </v-btn>
           <v-btn
             color="primary"
-            @click="edit.save"
+            @click="onSave"
           >
             {{ t('modified.save') }}
           </v-btn>
         </div>
       </template>
     </v-snackbar>
+    <BaseSettingModUpgradeDialog
+      @upgrade="onUpgradeMods"
+      @skip="onSkipUpgrade"
+    />
   </div>
 </template>
 
 <script lang=ts setup>
 import { useAutoSaveLoad } from '@/composables'
 import { useBeforeLeave } from '@/composables/beforeLeave'
+import { useDialog } from '@/composables/dialog'
 import { kInstance } from '@/composables/instance'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstances } from '@/composables/instances'
+import { kModUpgrade } from '@/composables/modUpgrade'
 import { usePresence } from '@/composables/presence'
 import { useTutorial } from '@/composables/tutorial'
 import { injection } from '@/util/inject'
@@ -79,8 +86,10 @@ import BaseSettingAdvanced from './BaseSettingAdvanced.vue'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import BaseSettingModpackFiles from './BaseSettingModpackFiles.vue'
 import BaseSettingAppearance from './BaseSettingAppearance.vue'
+import BaseSettingModUpgradeDialog from './BaseSettingModUpgradeDialog.vue'
+import { BaseSettingModUpgradeDialogKey } from '@/composables/instanceUpdate'
 
-const { isServer, name, instance } = injection(kInstance)
+const { isServer, name, instance, runtime } = injection(kInstance)
 const { edit: _edit } = injection(kInstances)
 const edit = useInstanceEdit(instance, _edit)
 const { t } = useI18n()
@@ -90,6 +99,43 @@ const { isModified } = edit
 const root = ref<HTMLElement | null>(null)
 provide('root', root)
 provide('modpackMetadata', useInstanceModpackMetadata())
+
+// Mod upgrade feature
+const { mods } = injection(kInstanceModsContext)
+const { refresh: checkUpgrade, upgrade, upgradePolicy, skipVersion } = injection(kModUpgrade)
+const { show: showModUpgradeDialog } = useDialog(BaseSettingModUpgradeDialogKey)
+
+// Check if the instance is modded (has a mod loader)
+const isModdedInstance = computed(() => {
+  const r = runtime.value
+  return !!(r.forge || r.fabricLoader || r.quiltLoader || r.neoForged)
+})
+
+// Check if Minecraft version changed
+const isMinecraftVersionChanged = computed(() => {
+  return instance.value.runtime.minecraft !== edit.data.runtime.minecraft
+})
+
+async function onSave() {
+  // If Minecraft version changed and instance is modded with mods installed, show upgrade dialog
+  if (isMinecraftVersionChanged.value && isModdedInstance.value && mods.value.length > 0) {
+    showModUpgradeDialog({ minecraftVersion: edit.data.runtime.minecraft })
+  } else {
+    await edit.save()
+  }
+}
+
+async function onUpgradeMods() {
+  await edit.save()
+  // Trigger mod upgrade check with current runtime
+  const policy = upgradePolicy.value as 'modrinth' | 'curseforge' | 'modrinthOnly' | 'curseforgeOnly'
+  await checkUpgrade({ skipVersion: skipVersion.value, policy })
+  upgrade()
+}
+
+async function onSkipUpgrade() {
+  await edit.save()
+}
 
 const targetQuery = useQuery('target')
 

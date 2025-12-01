@@ -879,6 +879,13 @@ modInstall:
   source: Mod Source
   switch: Switch Version
   upgrade: Upgrade Mods
+  autoUpgrade:
+    title: Update Mods?
+    description: >-
+      You have changed the Minecraft version. Would you like to automatically
+      update compatible mods to versions that match Minecraft {version}?
+    yes: Update Mods
+    no: Skip
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found.

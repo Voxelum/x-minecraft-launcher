@@ -421,6 +421,13 @@ modInstall:
   removeUnusedLibraries: Elimina os mods das bibliotecas non utilizadas
   skipVersion: Salta os Mods con diferentes versións de Minecraft
   upgrade: Actualizar mods
+  autoUpgrade:
+    title: Actualizar mods?
+    description: >-
+      Cambiaches a versión de Minecraft. Queres actualizar automaticamente
+      os mods compatibles a versións que coincidan con Minecraft {version}?
+    yes: Actualizar mods
+    no: Omitir
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found.

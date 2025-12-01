@@ -891,6 +891,13 @@ modInstall:
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
+  autoUpgrade:
+    title: Aggiornare le Mod?
+    description: >-
+      Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente
+      le mod compatibili alle versioni che corrispondono a Minecraft {version}?
+    yes: Aggiorna le Mod
+    no: Salta
 modSearch:
   noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
   noModsFound: Nessuna mod trovata.

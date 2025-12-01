@@ -915,6 +915,13 @@ modInstall:
   search: Résultats
   skipVersion: Ignorez les mods avec une version différente de Minecraft
   upgrade: Mettre à jour les mods
+  autoUpgrade:
+    title: Mettre à jour les mods ?
+    description: >-
+      Vous avez changé la version de Minecraft. Souhaitez-vous mettre à jour
+      automatiquement les mods compatibles vers des versions correspondant à Minecraft {version} ?
+    yes: Mettre à jour les mods
+    no: Ignorer
 modSearch:
   noLocalModsFound: Aucun mod local trouvé correspondant à votre recherche.
   noModsFound: Aucun mod trouvé.

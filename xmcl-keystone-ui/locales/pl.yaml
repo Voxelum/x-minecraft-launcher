@@ -885,6 +885,13 @@ modInstall:
   source: Mod Source
   switch: Wersja Swtich
   upgrade: Ulepszenia modów
+  autoUpgrade:
+    title: Zaktualizować mody?
+    description: >-
+      Zmieniłeś wersję Minecraft. Czy chcesz automatycznie zaktualizować
+      kompatybilne mody do wersji odpowiadających Minecraft {version}?
+    yes: Zaktualizuj mody
+    no: Pomiń
 modSearch:
   noLocalModsFound: Nie znaleziono lokalnych modów pasujących do wyszukiwania.
   noModsFound: Nie znaleziono modów.

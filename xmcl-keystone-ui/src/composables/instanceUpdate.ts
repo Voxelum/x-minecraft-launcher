@@ -21,4 +21,5 @@ export type InstanceInstallOptions = {
 }
 
 export const InstanceInstallDialog: DialogKey<InstanceInstallOptions> = 'instance-install'
+export const BaseSettingModUpgradeDialogKey: DialogKey<{ minecraftVersion: string }> = 'base-setting-mod-upgrade'
 export const kUpstream: InjectionKey<Ref<{ upstream: InstanceData['upstream']; minecraft: string }>> = Symbol('Upstream')
