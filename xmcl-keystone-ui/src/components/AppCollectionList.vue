@@ -21,6 +21,16 @@
             {{ t('modrinth.projects', { count: c.count }) }}
           </v-list-item-subtitle>
         </v-list-item-content>
+        <v-list-item-action v-if="c.id !== 'followed'" @click.stop>
+          <v-btn
+            icon
+            small
+            :loading="deletingCollection === c.id"
+            @click.stop="onDeleteCollection(c.id)"
+          >
+            <v-icon small>delete</v-icon>
+          </v-btn>
+        </v-list-item-action>
       </v-list-item>
     </v-list-item-group>
     <v-list-item v-if="projectId" color="primary" @click="show(props.projectId)">
@@ -40,7 +50,7 @@ import { useDialog } from '@/composables/dialog';
 import { kModrinthAuthenticatedAPI } from '@/composables/modrinthAuthenticatedAPI';
 import { injection } from '@/util/inject';
 
-const { collections, follows } = injection(kModrinthAuthenticatedAPI)
+const { collections, follows, deleteCollection } = injection(kModrinthAuthenticatedAPI)
 
 const props = defineProps<{
   select?: string
@@ -49,6 +59,23 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['update:select'])
+
+const deletingCollection = ref<string | null>(null)
+
+async function onDeleteCollection(collectionId: string) {
+  deletingCollection.value = collectionId
+  try {
+    await deleteCollection(collectionId)
+    // If the deleted collection was selected, select the followed projects
+    if (props.select === collectionId) {
+      emit('update:select', 'followed')
+    }
+  } catch (error) {
+    console.error('Failed to delete collection:', error)
+  } finally {
+    deletingCollection.value = null
+  }
+}
 
 const selectedIndex = computed({
   get() {

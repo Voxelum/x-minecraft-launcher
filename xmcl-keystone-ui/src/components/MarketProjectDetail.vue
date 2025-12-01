@@ -90,7 +90,7 @@
               @click="emit('follow', !followed)"
             >
               <v-icon
-                class="material-icons-outlined"
+                :class="followed ? '' : 'material-icons-outlined'"
               >
                 {{ followed ? 'star' : 'star_rate' }}
               </v-icon>
