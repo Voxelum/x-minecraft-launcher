@@ -81,9 +81,12 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     return projects
   })
 
+  const modrinthTotal = computed(() => modrinth.value?.total ?? 0)
+
   return {
     modrinth: result,
     modrinthError: error,
+    modrinthTotal,
     hasMore,
     loadMoreModrinth: loadMore,
     effect,

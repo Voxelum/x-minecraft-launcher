@@ -12,8 +12,11 @@
     @load="onLoad"
   >
     <template #actions>
-      <v-subheader class="flex gap-1">
-        {{ t('mod.mods', { count: items.length }) }}
+      <v-subheader class="flex gap-1 items-center">
+        <div class="mods-count" :title="modsCountTitle">
+          <span class="mods-count-main">{{ t('mod.mods', { count: items.length }) }}</span>
+          <span v-if="!isLocalView && totalAvailable > 0" class="text-gray-400"> / {{ t('items.total', { total: totalAvailable }) }}</span>
+        </div>
         <v-spacer />
 
         <v-btn
@@ -330,6 +333,7 @@ const {
   groupInstalled,
   localFilter,
   loadMore,
+  totalAvailable,
 } = injection(kModsSearch)
 
 effect()
@@ -626,6 +630,14 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
 
 const { t } = useI18n()
 
+const modsCountTitle = computed(() => {
+  const main = t('mod.mods', { count: items.value.length })
+  if (!isLocalView.value && totalAvailable > 0) {
+    return `${main} / ${t('items.total', { total: totalAvailable })}`
+  }
+  return main
+})
+
 // Page compact
 const compact = injection(kCompact)
 onMounted(() => {
@@ -761,6 +773,20 @@ usePresence(computed(() => t('presence.mod')))
 .icon-large {
   margin-left: 0px !important;
   margin-right: 0px !important;
+}
+
+.mods-count {
+  min-width: 0;
+  max-width: 60%;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mods-count-main {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 @container (min-width: 300px) {
