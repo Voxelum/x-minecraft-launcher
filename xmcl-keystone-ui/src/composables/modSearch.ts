@@ -217,10 +217,12 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const {
     keyword,
     currentView,
+    isModrinthDisabled,
+    isCurseforgeDisabled,
   } = searchModel
 
-  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, effect: onModrinthEffect } = useModrinthSearch('mod', searchModel)
-  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(
+  const { loadMoreModrinth, loadingModrinth, modrinth, modrinthError, modrinthTotal, effect: onModrinthEffect } = useModrinthSearch('mod', searchModel)
+  const { loadMoreCurseforge, loadingCurseforge, curseforge, curseforgeError, curseforgeTotal, effect: onCurseforgeEffect } = useCurseforgeSearch<ProjectEntry<ModFile>>(
     CurseforgeBuiltinClassId.mod, searchModel)
   const { projects: i18nProjects, effect: onI18nEffect } = useI18nSearch(searchModel)
   const { cached: cachedMods, instances, instancesAll, loadingCached, effect: onLocalEffect } = useLocalModsSearch(path, runtime, instanceMods, searchModel)
@@ -337,6 +339,17 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
   const denseView = useLocalStorageCacheBool('mod-dense-view', false)
   const groupInstalled = useLocalStorageCacheBool('mod-group-installed', true)
 
+  const totalAvailable = computed(() => {
+    let total = 0
+    if (!isModrinthDisabled.value) {
+      total += modrinthTotal.value
+    }
+    if (!isCurseforgeDisabled.value) {
+      total += curseforgeTotal.value
+    }
+    return total
+  })
+
   return {
     localFilter,
     sortBy,
@@ -347,6 +360,7 @@ export function useModsSearch(path: Ref<string>, runtime: Ref<InstanceData['runt
     error,
     loading,
     items: localizedItems,
+    totalAvailable,
     effect,
   }
 }

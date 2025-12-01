@@ -14,6 +14,9 @@
     <template #actions>
       <v-subheader class="flex gap-1">
         {{ t('mod.mods', { count: items.length }) }}
+        <span v-if="!isLocalView && totalAvailable > 0" class="text-gray-400">
+          / {{ t('items.total', { total: totalAvailable }) }}
+        </span>
         <v-spacer />
 
         <v-btn
@@ -330,6 +333,7 @@ const {
   groupInstalled,
   localFilter,
   loadMore,
+  totalAvailable,
 } = injection(kModsSearch)
 
 effect()

@@ -76,9 +76,12 @@ export function useCurseforgeSearch<T extends ProjectEntry<any>>(
     return mods as T[]
   })
 
+  const curseforgeTotal = computed(() => result.value?.total ?? 0)
+
   return {
     curseforge: mods,
     curseforgeError: error,
+    curseforgeTotal,
     loadMoreCurseforge: loadMore,
     loadingCurseforge: loading,
     canCurseforgeLoadMore: hasMore,
