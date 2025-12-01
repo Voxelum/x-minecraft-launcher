@@ -38,6 +38,9 @@ function createController(): WindowController {
   ipcRenderer.on('minimize', (_, v) => {
     emitter.emit('minimize', v)
   })
+  ipcRenderer.on('gpu-process-crashed', (_, details) => {
+    emitter.emit('gpu-process-crashed', details)
+  })
   const emitter = new EventEmitter()
 
   const writeClipboard =
