@@ -19,9 +19,14 @@ export const pluginNvdiaGPULinux: LauncherAppPlugin = async (app) => {
           const gpus =
             info?.gpuDevice
               ?.filter((v) => v?.vendorId !== 5140) || []
-          if (gpus.some((g) => g.vendorId === 4318)) {
-            env.__NV_PRIME_RENDER_OFFLOAD = '1'
-            env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
+          if (gpus.length > 0) {
+            // DRI_PRIME=1 enables dedicated GPU usage for hybrid graphics systems
+            env.DRI_PRIME = '1'
+            if (gpus.some((g) => g.vendorId === 4318)) {
+              // NVIDIA-specific environment variables
+              env.__NV_PRIME_RENDER_OFFLOAD = '1'
+              env.__GLX_VENDOR_LIBRARY_NAME = 'nvidia'
+            }
             ops.extraExecOption = { ...ops.extraExecOption, env }
           }
         }
