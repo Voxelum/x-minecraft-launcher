@@ -44,6 +44,7 @@ export function useSearchPattern<T>(search: (offset: number) => Promise<{
   const loadMore = async () => {
     if (!result.value) return
     if (!hasMore.value) return
+    if (loading.value) return
     page.value += 1
     loading.value = true
     await doSearch(page.value * 20, true)
