@@ -180,4 +180,6 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
      */
     bookmark?: string
   }>
+
+  setTranslucent(enable: boolean): void
 }

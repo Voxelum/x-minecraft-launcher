@@ -46,7 +46,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="appBarColor"
+          v-model="appBarColor"
           :blur.sync="blurAppBar"
           has-blur
           :text="t('setting.colorTheme.appBarColor')"
@@ -57,7 +57,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="sideBarColor"
+          v-model="sideBarColor"
           :blur.sync="blurSidebar"
           has-blur
           :text="t('setting.colorTheme.sideBarColor')"
@@ -69,7 +69,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="primaryColor"
+          v-model="primaryColor"
           :text="t('setting.colorTheme.primaryColor')"
         />
       </v-list-item-action>
@@ -78,7 +78,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="cardColor"
+          v-model="cardColor"
           :blur.sync="blurCard"
           has-blur
           :text="t('setting.colorTheme.cardColor')"
@@ -89,7 +89,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="backgroundColor"
+          v-model="backgroundColor"
           :blur.sync="blur"
           has-blur
           :text="t('setting.colorTheme.backgroundColor')"
@@ -100,7 +100,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="warningColor"
+          v-model="warningColor"
           :text="t('setting.colorTheme.warningColor')"
         />
       </v-list-item-action>
@@ -109,7 +109,7 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          :value.sync="errorColor"
+          v-model="errorColor"
           :text="t('setting.colorTheme.errorColor')"
         />
       </v-list-item-action>

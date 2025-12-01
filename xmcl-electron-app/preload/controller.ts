@@ -58,6 +58,9 @@ function createController(): WindowController {
     writeClipboard,
     queryAudioPermission: () => ipcRenderer.invoke('query-audio-permission'),
     openMultiplayerWindow: () => ipcRenderer.invoke('open-multiplayer-window'),
+    setTranslucent(enable) {
+      ipcRenderer.invoke('set-translucent', enable)
+    },
     once(channel, listener) {
       emitter.once(channel, listener)
       return this

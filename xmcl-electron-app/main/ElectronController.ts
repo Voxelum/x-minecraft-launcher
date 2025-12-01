@@ -112,7 +112,9 @@ export class ElectronController implements LauncherAppController {
     plugins.forEach(p => p.call(this))
 
     if (app.platform.os === 'windows') {
-      this.windowsVersion = app.windowsUtils?.getWindowsVersion()
+      queueMicrotask(() => {
+        this.windowsVersion = app.windowsUtils?.getWindowsVersion()
+      })
     }
 
     this.handle('open-multiplayer-window', () => {
@@ -201,21 +203,21 @@ export class ElectronController implements LauncherAppController {
   }
 
   private getBackgroundMaterial(enableTranslucency: boolean): 'none' | 'mica' | 'acrylic' | 'auto' | undefined {
-    if (!enableTranslucency) {
-      return undefined
-    }
-    const isWin = this.app.platform.os === 'windows'
-    if (isWin) {
-      const windowsVersion = this.windowsVersion
-      if (windowsVersion) {
-        if (windowsVersion.build >= WindowsBuild.Windows11) {
-          return 'mica'
-        } else if (windowsVersion.build >= WindowsBuild.Windows10) {
-          return 'acrylic'
-        }
-      }
-    }
     return undefined
+    // const isWin = this.app.platform.os === 'windows'
+    // if (!isWin) {
+    //   return undefined
+    // }
+    // const windowsVersion = this.windowsVersion
+    // const win11 = windowsVersion && windowsVersion.build >= WindowsBuild.Windows11
+    // if (!enableTranslucency) {
+    //   return win11 ? 'mica' : 'auto'
+    // }
+    // const win10 = windowsVersion && windowsVersion.build >= WindowsBuild.Windows10
+    // if (!win10 && !win11) {
+    //   return 'auto'
+    // }
+    // return 'acrylic'
   }
 
   async startMigrate() {
@@ -336,6 +338,16 @@ export class ElectronController implements LauncherAppController {
     }
   }
 
+  setWindowTranslucent(enable: boolean) {
+    if (this.mainWin && !this.mainWin.isDestroyed()) {
+      if (this.app.platform.os === 'osx') {
+        this.mainWin.setVibrancy(enable ? 'sidebar' : null)
+      } else if (this.app.platform.os === 'windows') {
+        this.mainWin.setBackgroundMaterial(this.getBackgroundMaterial(enable) ?? 'auto')
+      }
+    }
+  }
+
   async createAppWindow(isBootstrap: boolean) {
     const man = this.activatedManifest!
     const tracker = createWindowTracker(this.app, 'app-manager', man)
@@ -364,7 +376,7 @@ export class ElectronController implements LauncherAppController {
       minWidth: man.minWidth,
       minHeight: man.minHeight,
       frame: this.getFrameOption(),
-      backgroundColor: enableTranslucency ? '#00000000' : man.backgroundColor, // Transparent when translucency is enabled
+      backgroundColor: enableTranslucency ? undefined : man.backgroundColor, // Transparent when translucency is enabled
       vibrancy: enableTranslucency && this.app.platform.os === 'osx' ? 'sidebar' : undefined, // macOS vibrancy
       backgroundMaterial: this.getBackgroundMaterial(enableTranslucency), // Windows mica/acrylic
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
@@ -419,6 +431,9 @@ export class ElectronController implements LauncherAppController {
     this.logger.log(`Load main window url ${url.toString()}`)
 
     this.mainWin = browser
+    browser.on('enter-full-screen', () => {
+      this.maximized = true
+    })
     browser.on('maximize', () => {
       this.maximized = true
     })

@@ -100,6 +100,9 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
     }
     return true
   })
+  ipcMain.handle('set-translucent', (_, enable: boolean) => {
+    this.setWindowTranslucent(enable)
+  })
   ipcMain.handle('control', (event, operation: Operation) => {
     const window = BrowserWindow.fromWebContents(event.sender)
     if (window) {

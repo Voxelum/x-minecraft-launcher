@@ -794,11 +794,22 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
     --color-sidebar-bg: ${sideBarColor.value};
     --color-appbar-bg: ${appBarColor.value};
     --color-card-bg: ${cardColor.value};
+    --color-bg: ${backgroundColor.value};
     --blur-card: ${blurCard.value}px;
   }
 
+  html, body {
+    background-color: var(--color-bg);
+  }
+
   .v-application {
-    background-color: ${backgroundColor.value};
+    background-color: transparent;
+  }
+  .v-application.dark {
+    background-color: transparent;
+  }
+  .theme--light.v-application{
+    background-color: transparent;
   }
   `))
 
