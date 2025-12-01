@@ -625,8 +625,10 @@
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useService } from '@/composables/service'
+import { kSettingsState } from '@/composables/setting'
 import { BackgroundType, UIThemeDataV1, useThemeWritter } from '@/composables/theme'
 import { basename } from '@/util/basename'
+import { injection } from '@/util/inject'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
 import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
 
@@ -635,6 +637,7 @@ const props = defineProps<{
 }>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
+const { state: settingsState } = injection(kSettingsState)
 
 const emit = defineEmits<{
   (e: 'save'): void
@@ -698,17 +701,53 @@ async function applyFontUrl() {
   }
 }
 
+// Theme preference stored in settings state ('dark' | 'light' | 'system')
 const darkModel = computed({
-  get: () => isDark.value ? 'dark' : 'light',
-  set: v => {
-    if (v === 'dark') {
-      isDark.value = true
-    } else if (v === 'light') {
-      isDark.value = false
-    } else {
-      isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
-    }
+  get: () => settingsState.value?.theme ?? 'dark',
+  set: (v: 'dark' | 'light' | 'system') => {
+    settingsState.value?.themeSet(v)
+    applyThemePreference(v)
   },
+})
+
+// Apply the actual dark/light mode based on preference
+function applyThemePreference(preference: 'dark' | 'light' | 'system') {
+  if (preference === 'dark') {
+    isDark.value = true
+  } else if (preference === 'light') {
+    isDark.value = false
+  } else {
+    // 'system' - follow system preference
+    isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
+}
+
+// Listen to system theme changes when 'system' preference is selected
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+const handleSystemThemeChange = (e: MediaQueryListEvent | MediaQueryList) => {
+  if (settingsState.value?.theme === 'system') {
+    isDark.value = e.matches
+  }
+}
+
+onMounted(() => {
+  // Apply initial theme preference
+  const currentPreference = settingsState.value?.theme ?? 'dark'
+  applyThemePreference(currentPreference)
+  
+  // Listen for system theme changes
+  mediaQuery.addEventListener('change', handleSystemThemeChange)
+})
+
+onUnmounted(() => {
+  mediaQuery.removeEventListener('change', handleSystemThemeChange)
+})
+
+// Watch for settings state theme changes (e.g., from other components)
+watch(() => settingsState.value?.theme, (newTheme) => {
+  if (newTheme) {
+    applyThemePreference(newTheme)
+  }
 })
 
 const themes = computed(() => [{

@@ -1317,7 +1317,7 @@ setting:
     sideBarColor: サイドバー
     warningColor: 警告の色
   darkTheme: テーマ
-  darkThemeDescription: ダークテーマかライトテーマを選択してください
+  darkThemeDescription: ダーク、ライトテーマまたはシステムに従う
   developerMode: 開発者モード
   developerModeDescription: あなたの作成したModを簡単に試せます
   disableTelemetry: テレメトリを無効化
