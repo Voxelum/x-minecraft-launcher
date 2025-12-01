@@ -988,6 +988,13 @@ modInstall:
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
+  autoUpgrade:
+    title: Mods aktualisieren?
+    description: >-
+      Sie haben die Minecraft-Version geändert. Möchten Sie kompatible Mods
+      automatisch auf Versionen aktualisieren, die zu Minecraft {version} passen?
+    yes: Mods aktualisieren
+    no: Überspringen
 modSearch:
   noLocalModsFound: Keine lokalen Mods gefunden, die Ihrer Suche entsprechen.
   noModsFound: Keine Mods gefunden.

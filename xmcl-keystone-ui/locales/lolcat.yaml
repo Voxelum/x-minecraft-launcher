@@ -792,6 +792,13 @@ modInstall:
   source: MOD SOURCE
   switch: SWTICH VERSHUN
   upgrade: UPGRADE MODZ
+  autoUpgrade:
+    title: UPDAET MODZ?
+    description: >-
+      U CHANGD TEH MINECRAFT VERSHUN. WULD U LIEK 2 AUTOMATIKLY UPDAET
+      COMPATIBEL MODZ 2 VERSHUNZ DAT MATCH MINECRAFT {version}?
+    yes: UPDAET MODZ
+    no: SKIP
 modSearch:
   noLocalModsFound: NO LOCAL MODZ FOUND MATCHIN UR SEARCH.
   noModsFound: NO MODZ FOUND.

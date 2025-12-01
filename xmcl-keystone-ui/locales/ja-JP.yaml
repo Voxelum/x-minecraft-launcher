@@ -795,6 +795,13 @@ modInstall:
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
+  autoUpgrade:
+    title: Modをアップデートしますか？
+    description: >-
+      Minecraftのバージョンを変更しました。互換性のあるModを自動的に
+      Minecraft {version} に対応するバージョンに更新しますか？
+    yes: Modをアップデート
+    no: スキップ
 modSearch:
   noLocalModsFound: 検索に一致するローカルModが見つかりません。
   noModsFound: Modが見つかりません。

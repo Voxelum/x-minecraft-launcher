@@ -885,6 +885,13 @@ modInstall:
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
+  autoUpgrade:
+    title: Modok frissítése?
+    description: >-
+      Megváltoztattad a Minecraft verziót. Szeretnéd automatikusan frissíteni
+      a kompatibilis modokat a Minecraft {version}-nak megfelelő verziókra?
+    yes: Modok frissítése
+    no: Kihagyás
 modSearch:
   noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
   noModsFound: Nem található mod.

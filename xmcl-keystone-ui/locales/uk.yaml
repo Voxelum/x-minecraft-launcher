@@ -901,6 +901,13 @@ modInstall:
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
+  autoUpgrade:
+    title: Оновити моди?
+    description: >-
+      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити
+      сумісні моди до версій, що відповідають Minecraft {version}?
+    yes: Оновити моди
+    no: Пропустити
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.

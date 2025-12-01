@@ -921,6 +921,13 @@ modInstall:
   source: Fonte do Mod
   switch: Trocar Versão
   upgrade: Atualizar Mods
+  autoUpgrade:
+    title: Atualizar Mods?
+    description: >-
+      Você alterou a versão do Minecraft. Gostaria de atualizar automaticamente
+      os mods compatíveis para versões que correspondam ao Minecraft {version}?
+    yes: Atualizar Mods
+    no: Pular
 modSearch:
   noLocalModsFound: Nenhum mod local encontrado correspondendo à sua pesquisa.
   noModsFound: Nenhum mod encontrado.

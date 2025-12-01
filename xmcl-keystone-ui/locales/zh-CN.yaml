@@ -825,6 +825,12 @@ modInstall:
   source: 模组来源
   switch: 切换版本
   upgrade: 更新模组
+  autoUpgrade:
+    title: 更新模组？
+    description: >-
+      您已更改 Minecraft 版本。是否要自动将兼容的模组更新到与 Minecraft {version} 匹配的版本？
+    yes: 更新模组
+    no: 跳过
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
