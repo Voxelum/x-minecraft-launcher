@@ -15,11 +15,11 @@ export enum Operation {
 
 export const windowController: ControllerPlugin = function (this: ElectronController) {
   const currentPlatform = platform()
-  // Check if running on native Wayland (not XWayland) on Linux
-  // On some Wayland compositors like Niri, calling window.minimize() can cause the app to freeze/crash
-  const isNativeWayland = currentPlatform === 'linux' &&
-    process.env.XDG_SESSION_TYPE === 'wayland' &&
-    !!process.env.WAYLAND_DISPLAY
+  // Check if running on Niri Wayland compositor
+  // Niri sets XDG_CURRENT_DESKTOP=niri when running as a session
+  // On Niri, calling window.minimize() can cause the app to freeze/crash
+  const isNiri = currentPlatform === 'linux' &&
+    process.env.XDG_CURRENT_DESKTOP?.toLowerCase() === 'niri'
 
   app.on('browser-window-created', (_, win: BrowserWindow) => {
     win.on('maximize', () => {
@@ -128,9 +128,9 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
           return false
         case Operation.Minimize:
           if (window.minimizable) {
-            // On native Wayland (not XWayland), minimize can cause freezes/crashes
-            // on some compositors like Niri. Skip the minimize action in this case.
-            if (isNativeWayland) {
+            // On Niri compositor, minimize can cause freezes/crashes.
+            // Skip the minimize action in this case.
+            if (isNiri) {
               return false
             }
             window.minimize()
