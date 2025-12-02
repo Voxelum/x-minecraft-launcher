@@ -4,6 +4,7 @@ import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 import { join } from 'path'
 import { writeFile } from 'fs-extra'
+import { execSync } from 'child_process'
 
 export enum Operation {
   Minimize = 0,
@@ -13,13 +14,36 @@ export enum Operation {
   Close = 4,
 }
 
+/**
+ * Detect if running on Niri Wayland compositor.
+ * Uses both environment variable and process detection for comprehensive coverage.
+ * Result is cached at module load time.
+ */
+function detectNiri(): boolean {
+  if (platform() !== 'linux') {
+    return false
+  }
+
+  // Check environment variable first (set by Niri session)
+  if (process.env.XDG_CURRENT_DESKTOP?.toLowerCase() === 'niri') {
+    return true
+  }
+
+  // Fallback: check if niri process is running
+  // This covers cases where XDG_CURRENT_DESKTOP is not set
+  try {
+    execSync('readlink -f /proc/$(pgrep -x niri)/exe | grep -q niri', { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Cache the Niri detection result at app start
+const isNiri = detectNiri()
+
 export const windowController: ControllerPlugin = function (this: ElectronController) {
   const currentPlatform = platform()
-  // Check if running on Niri Wayland compositor
-  // Niri sets XDG_CURRENT_DESKTOP=niri when running as a session
-  // On Niri, calling window.minimize() can cause the app to freeze/crash
-  const isNiri = currentPlatform === 'linux' &&
-    process.env.XDG_CURRENT_DESKTOP?.toLowerCase() === 'niri'
 
   app.on('browser-window-created', (_, win: BrowserWindow) => {
     win.on('maximize', () => {
