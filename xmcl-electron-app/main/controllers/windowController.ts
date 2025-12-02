@@ -2,7 +2,7 @@ import { ElectronController } from '@/ElectronController'
 import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nativeImage, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
-import { join } from 'path'
+import { join, basename } from 'path'
 import { writeFile, readlinkSync, readdirSync, readFileSync } from 'fs-extra'
 
 export enum Operation {
@@ -38,7 +38,7 @@ function detectNiri(): boolean {
         const comm = readFileSync(commPath, 'utf8').trim()
         if (comm === 'niri') {
           const exePath = readlinkSync(join('/proc', pid, 'exe'))
-          if (exePath.includes('niri')) {
+          if (basename(exePath) === 'niri') {
             return true
           }
         }
