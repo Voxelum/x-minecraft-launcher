@@ -3,8 +3,7 @@ import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nati
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 import { join } from 'path'
-import { writeFile } from 'fs-extra'
-import { execSync } from 'child_process'
+import { writeFile, readlinkSync, readdirSync, readFileSync } from 'fs-extra'
 
 export enum Operation {
   Minimize = 0,
@@ -29,14 +28,29 @@ function detectNiri(): boolean {
     return true
   }
 
-  // Fallback: check if niri process is running
+  // Fallback: check if niri process is running by scanning /proc
   // This covers cases where XDG_CURRENT_DESKTOP is not set
   try {
-    execSync('readlink -f /proc/$(pgrep -x niri)/exe | grep -q niri', { stdio: 'ignore' })
-    return true
+    const procDirs = readdirSync('/proc').filter(dir => /^\d+$/.test(dir))
+    for (const pid of procDirs) {
+      try {
+        const commPath = join('/proc', pid, 'comm')
+        const comm = readFileSync(commPath, 'utf8').trim()
+        if (comm === 'niri') {
+          const exePath = readlinkSync(join('/proc', pid, 'exe'))
+          if (exePath.includes('niri')) {
+            return true
+          }
+        }
+      } catch {
+        // Process may have exited, continue
+      }
+    }
   } catch {
-    return false
+    // /proc not accessible, skip process detection
   }
+
+  return false
 }
 
 // Cache the Niri detection result at app start
