@@ -153,7 +153,7 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
     icon: resource.iconUrl,
     name: resource.projectName,
     version: resource.name,
-    author: resource.authors[0].name,
+    author: resource.authors[0]?.name,
     tags: [],
     type: 'ftb',
   })
