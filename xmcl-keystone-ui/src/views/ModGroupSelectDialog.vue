@@ -133,7 +133,7 @@ import { useDialog } from '@/composables/dialog'
 import { ModGroupData } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
-const searchQuery = ref('')
+const searchQuery = ref('' as string | null)
 const creatingNew = ref(false)
 const newGroupName = ref('')
 
@@ -148,7 +148,7 @@ const groups = computed(() => parameter.value?.groups || {})
 
 // Filter and sort groups alphabetically
 const filteredGroups = computed(() => {
-  const query = searchQuery.value.toLowerCase().trim()
+  const query = searchQuery.value?.toLowerCase().trim()
   let filtered = Object.entries(groups.value)
   
   if (query) {

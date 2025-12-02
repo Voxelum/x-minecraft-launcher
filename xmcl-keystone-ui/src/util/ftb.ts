@@ -77,7 +77,7 @@ export function getFTBTemplateAndFile(man: CachedFTBModpackVersionManifest, java
 
   return [{
     name: `${man.projectName}-${man.name}`,
-    author: man.authors[0].name,
+    author: man.authors?.[0]?.name ?? '',
     java: getRuntime() ?? '',
     runtime,
     upstream: {

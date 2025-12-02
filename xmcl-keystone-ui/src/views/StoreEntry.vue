@@ -210,7 +210,7 @@ const popularItems = computed(() => {
         title: p.name,
         images,
         type: 'curseforge',
-        developer: p.authors[0].name,
+        developer: p.authors[0]?.name ?? '',
         minecraft: p.latestFilesIndexes.map(f => f.gameVersion),
         categories: p.categories.map(c => tCategory(c.name)),
         localizedTitle: mapping?.name,
@@ -409,7 +409,7 @@ watch([ftbData, page], async ([packs, page]) => {
       title: data?.name ?? '',
       icon_url: data?.art.find(v => v.type === 'square')?.url ?? '',
       description: data?.synopsis || '',
-      author: data?.authors[0].name ?? '',
+      author: data?.authors[0]?.name ?? '',
       labels: [
         { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, ''), id: `${data?.id}_download_icon` },
         { icon: 'event', text: getDateString((data?.released ?? 0) * 1000), id: `${data?.id}_event_icon` },
@@ -532,7 +532,7 @@ const items = computed(() => {
       title: p.name,
       icon_url: p.logo?.thumbnailUrl ?? '',
       description: p.summary,
-      author: p.authors[0].name,
+      author: p.authors[0]?.name ?? '',
       labels: [
         { icon: 'file_download', text: getExpectedSize(p.downloadCount, ''), id: `${p.id}_download_icon` },
         { icon: 'event', text: getDateString(p.dateModified), id: `${p.id}_event_icon` },

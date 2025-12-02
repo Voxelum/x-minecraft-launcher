@@ -69,7 +69,7 @@ export function useI18nSearch<T extends ProjectFile>({
         localizedTitle: m.name,
         description: m.description,
         localizedDescription: m.description,
-        author: curseforge?.authors[0].name ?? '',
+        author: curseforge?.authors[0]?.name ?? '',
 
         unsupported: unsupportedModrinth || unsupportedCurseforge,
 

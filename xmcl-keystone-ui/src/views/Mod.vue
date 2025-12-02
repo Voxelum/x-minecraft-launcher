@@ -64,6 +64,7 @@
       <ModItem
         v-if="(typeof item === 'object' && 'id' in item)"
         :item="item"
+        :key="`item-${item.id}`"
         :indent="!!isInGroup(item.installed?.[0]?.fileName)"
         :indent-color="getGroupColor(item.installed?.[0]?.fileName)"
         :item-height="itemHeight"
@@ -78,6 +79,7 @@
       />
       <ModGroupEntryItem
         v-else-if="(typeof item === 'object')"
+        :key="`folder-${item.name}-${item.projects.length}`"
         :items="item.projects"
         :height="itemHeight"
         :name="item.name"
@@ -91,31 +93,31 @@
       />
       <v-subheader
         v-else-if="item === 'search'"
+        key="search"
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
-        <!-- {{ t("modInstall.search") }} -->
         {{ localizedTexts.mod.search }}
         <v-divider class="ml-4" />
       </v-subheader>
       <v-subheader
         v-else-if="item === 'unsupported'"
+        key="unsupported"
         :style="{ height: `${itemHeight}px` }"
       >
         <v-divider class="mr-4" />
-        <!-- {{ t("modrinth.environments.unsupported") }} -->
         {{ localizedTexts.mod.unsupported }}
         <v-divider class="ml-4" />
       </v-subheader>
     </template>
     <template #placeholder>
-      <Hint v-if="isLocalView && !keyword.trim() && !hasActiveFilters" :text="t('modSearch.noModsInstalled')" icon="info" />
-      <Hint v-else-if="isLocalView && keyword.trim()" :text="t('modSearch.noLocalModsFound')" icon="search">
+      <Hint key="info" v-if="isLocalView && !keyword.trim() && !hasActiveFilters" :text="t('modSearch.noModsInstalled')" icon="info" />
+      <Hint key="search" v-else-if="isLocalView && keyword.trim()" :text="t('modSearch.noLocalModsFound')" icon="search">
         <div>
           <v-btn color="primary" @click="switchToMarketWithKeyword">{{ t('modSearch.searchInMarket', { keyword: keyword.trim() || 'mods' }) }}</v-btn>
         </div>
       </Hint>
-      <Hint v-else :text="t('modSearch.noModsFound')" icon="search" />
+      <Hint key="no-mods" v-else :text="t('modSearch.noModsFound')" icon="search" />
     </template>
     <template #content="{ selectedItem, selectedModrinthId, selectedCurseforgeId, updating }">
       <Hint
@@ -162,13 +164,13 @@
       />
       <ModDetailOptifine
         v-else-if="isOptifineProject(selectedItem)"
-        :key="selectedItem.id"
+        :key="`optifine-${selectedItem.id}`"
         :mod="selectedItem"
         :runtime="runtime"
       />
       <ModDetailResource
         v-else-if="isModProject(selectedItem)"
-        :key="selectedItem.id"
+        :key="`resource-${selectedItem.id}`"
         :mod="selectedItem"
         :files="selectedItem.files"
         :runtime="runtime"
