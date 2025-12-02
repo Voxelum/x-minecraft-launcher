@@ -1,5 +1,6 @@
 import { ApplicationInsights } from '@microsoft/applicationinsights-web'
 import { APP_INSIGHT_KEY } from '@xmcl/runtime-api'
+import { i18n } from './i18n'
 
 const appInsights = new ApplicationInsights({
   config: {
@@ -21,6 +22,12 @@ appInsights.addTelemetryInitializer((envelope) => {
       }
       if (exception.message.includes('onMounted is called when there')) {
         return false
+      }
+      if (exception.message.includes('Failed to fetch')) {
+        return false
+      }
+      if (exception.message.include('SyntaxError: {"code":24}')) {
+        exception.locale = i18n.locale
       }
     }
   }
