@@ -13,19 +13,19 @@
         :items="items"
       />
       <v-divider vertical />
-      <v-btn v-shared-tooltip="_ => t('BaseSettingGeneral.title')" text :class="{ 'v-btn--active': !targetQuery }" @click="replace({ query: {} })">
+      <v-btn v-shared-tooltip="_ => t('BaseSettingGeneral.title')" text :class="{ 'v-btn--active': !targetQuery }" @click="navigate('')">
         <v-icon :left="!targetQuery" class="material-icons-outlined">settings_heart</v-icon>
         <span :style="{ width: !targetQuery ?  '80px' : 0 }" class="overflow-hidden transition-all!">
           {{ t("BaseSettingGeneral.title") }}
         </span>
       </v-btn>
-      <v-btn v-shared-tooltip="_ => t('modpack.name', 1)" text :class="{ 'v-btn--active': targetQuery === 'modpack' }" @click="replace({ query: { target: 'modpack' } })">
+      <v-btn v-shared-tooltip="_ => t('modpack.name', 1)" text :class="{ 'v-btn--active': targetQuery === 'modpack' }" @click="navigate('modpack')">
         <v-icon :left="targetQuery === 'modpack'" class="material-icons-outlined">folder_zip</v-icon>
         <span :style="{ width: targetQuery === 'modpack' ?  '80px' : 0 }" class="overflow-hidden transition-all!">
           {{ t("modpack.name", 1) }}
         </span>
       </v-btn>
-      <v-btn v-shared-tooltip="_ => t('setting.appearance')" text :class="{ 'v-btn--active': targetQuery === 'appearance' }" @click="replace({ query: { target: 'appearance' } })">
+      <v-btn v-shared-tooltip="_ => t('setting.appearance')" text :class="{ 'v-btn--active': targetQuery === 'appearance' }" @click="navigate('appearance')">
         <v-icon :left="targetQuery === 'appearance'" class="material-icons-outlined">invert_colors</v-icon>
         <span :style="{ width: targetQuery === 'appearance' ?  'auto' : 0 }" class="overflow-hidden transition-all!">
           {{ t('setting.appearance') }}
@@ -87,7 +87,6 @@ import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeLaunchButtonStatus from './HomeLaunchButtonStatus.vue'
 import { useQuery } from '@/composables/query'
 import { kModpackExport } from '@/composables/modpack'
-import { useMediaQuery } from '@vueuse/core'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const { instance, runtime: version } = injection(kInstance)
@@ -102,8 +101,18 @@ const items = useExtensionItemsVersion(instance, versionHeader)
 
 const targetQuery = useQuery('target')
 
-const { replace } = useRouter()
-
 const { exportModpack, exporting, loading } = injection(kModpackExport)
+
+const router = useRouter()
+function navigate(target: '' | 'modpack' | 'appearance') {
+  if (router.currentRoute.query.target === target) {
+    return
+  }
+  if (target === '') {
+    router.replace({ query: {} })
+  } else {
+    router.replace({ query: { target } })
+  }
+}
 
 </script>

@@ -1,4 +1,4 @@
-import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync } from '@/composables'
+import { useExternalRoute, useI18nSync } from '@/composables'
 import { kCriticalStatus, useCriticalStatus } from '@/composables/criticalStatus'
 import { kCurseforgeCategories, useCurseforgeCategories } from '@/composables/curseforge'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
@@ -133,7 +133,6 @@ export default defineComponent({
 
     provide(kUIDefaultLayout, useUILayout())
     provide(kImageDialog, useImageDialog())
-    provide(kFilterCombobox, useFilterComboboxData())
     provide(kSupportedAuthorityMetadata, useSupportedAuthority())
     provide(kTutorial, useTutorialModel())
     provide(kModrinthTags, useModrinthTags())

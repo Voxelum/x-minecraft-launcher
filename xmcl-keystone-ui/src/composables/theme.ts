@@ -230,30 +230,30 @@ async function resolveMediaFromUrl(url: string, expectedType: 'audio' | 'video' 
       case 'image':
         mimeType = extension === 'png' ? 'image/png'
           : extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg'
-          : extension === 'gif' ? 'image/gif'
-          : extension === 'webp' ? 'image/webp'
-          : extension === 'svg' ? 'image/svg+xml'
-          : 'image/png'
+            : extension === 'gif' ? 'image/gif'
+              : extension === 'webp' ? 'image/webp'
+                : extension === 'svg' ? 'image/svg+xml'
+                  : 'image/png'
         break
       case 'video':
         mimeType = extension === 'mp4' ? 'video/mp4'
           : extension === 'webm' ? 'video/webm'
-          : extension === 'ogg' ? 'video/ogg'
-          : 'video/mp4'
+            : extension === 'ogg' ? 'video/ogg'
+              : 'video/mp4'
         break
       case 'audio':
         mimeType = extension === 'mp3' ? 'audio/mpeg'
           : extension === 'ogg' ? 'audio/ogg'
-          : extension === 'wav' ? 'audio/wav'
-          : extension === 'flac' ? 'audio/flac'
-          : 'audio/mpeg'
+            : extension === 'wav' ? 'audio/wav'
+              : extension === 'flac' ? 'audio/flac'
+                : 'audio/mpeg'
         break
       case 'font':
         mimeType = extension === 'ttf' ? 'font/ttf'
           : extension === 'otf' ? 'font/otf'
-          : extension === 'woff' ? 'font/woff'
-          : extension === 'woff2' ? 'font/woff2'
-          : 'font/ttf'
+            : extension === 'woff' ? 'font/woff'
+              : extension === 'woff2' ? 'font/woff2'
+                : 'font/ttf'
         break
     }
   }
@@ -713,7 +713,7 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
 
   const isDark = computed(() => targetTheme.value.dark)
   const backgroundType = computed(() => targetTheme.value.backgroundType ?? BackgroundType.NONE)
-  const blur = computed(() =>   targetTheme.value.blur?.background ?? 0)
+  const blur = computed(() => targetTheme.value.blur?.background ?? 0)
   const blurCard = computed(() => targetTheme.value.blur?.card ?? 22)
   const backgroundImage = computed(() => targetTheme.value.backgroundImage)
   const backgroundColorOverlay = computed(() => targetTheme.value.backgroundColorOverlay ?? false)
@@ -777,16 +777,15 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
   watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
   watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
 
-  useStyleTag(computed(() => `
-  @font-face {
+  const fontFace = computed(() => font.value?.url ? `@font-face {
     font-family: 'custom';
     src: url('${font.value?.url}');
-  }
-
+  }` : '')
+  useStyleTag(computed(() => `
+  ${fontFace.value}
   html {
     font-size: ${fontSize.value}px;
   }
-  
   .v-application {
     font-family: 'custom', 'Roboto', sans-serif;
   }
