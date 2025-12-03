@@ -116,53 +116,6 @@
           </v-btn-toggle>
 
           <template v-if="modrinthCategoryFilter">
-            <v-subheader class="flex">
-              {{ t('modrinth.environments.name') }}
-            </v-subheader>
-            <v-btn-toggle
-              background-color="transparent"
-              class="px-1"
-              dense
-              :value="modrinthEnvironment"
-              @change="emit('update:modrinthEnvironment', $event || '')"
-            >
-              <v-btn
-                v-shared-tooltip="t('modrinth.environments.all')"
-                outlined
-                text
-                small
-                value=""
-              >
-                <v-icon small>
-                  devices
-                </v-icon>
-              </v-btn>
-              <v-btn
-                v-shared-tooltip="t('modrinth.environments.client')"
-                outlined
-                text
-                small
-                value="client"
-              >
-                <v-icon small>
-                  computer
-                </v-icon>
-              </v-btn>
-              <v-btn
-                v-shared-tooltip="t('modrinth.environments.server')"
-                outlined
-                text
-                small
-                value="server"
-              >
-                <v-icon small>
-                  dns
-                </v-icon>
-              </v-btn>
-            </v-btn-toggle>
-          </template>
-
-          <template v-if="modrinthCategoryFilter">
             <v-subheader class="flex gap-1">
               Modrinth
               <div class="flex-grow" />
@@ -185,6 +138,54 @@
                 :disabled="!enableModrinth"
               />
             </v-chip-group>
+            <v-subheader class="flex">
+              {{ t('modrinth.environments.name') }}
+            </v-subheader>
+            <v-btn-toggle
+              background-color="transparent"
+              class="px-1"
+              dense
+              :value="modrinthEnvironment"
+              :disabled="!enableModrinth"
+              @change="emit('update:modrinthEnvironment', $event || '')"
+            >
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.all')"
+                outlined
+                text
+                small
+                value=""
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  devices
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.client')"
+                outlined
+                text
+                small
+                value="client"
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  computer
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.server')"
+                outlined
+                text
+                small
+                value="server"
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  dns
+                </v-icon>
+              </v-btn>
+            </v-btn-toggle>
           </template>
           <template v-if="curseforgeCategoryFilter">
             <v-subheader class="flex">
