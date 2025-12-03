@@ -29,13 +29,13 @@ import { kInstanceTheme } from '@/composables/instanceTheme'
 import { useService } from '@/composables/service'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import { ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
 const { instanceTheme, saveTheme, clearTheme } = injection(kInstanceTheme)
 const { currentTheme, update } = injection(kTheme)
-const { copyMediaToInstance } = useService(ThemeServiceKey)
+const { copyMediaFromGlobal } = useService(InstanceThemeServiceKey)
 
 async function toggleInstanceTheme(enabled: boolean) {
   if (enabled) {
@@ -44,7 +44,7 @@ async function toggleInstanceTheme(enabled: boolean) {
     // Copy media files to instance theme folder
     if (themeCopy.backgroundImage?.url?.startsWith('http://launcher/theme-media/')) {
       try {
-        const newMedia = await copyMediaToInstance(instancePath.value, themeCopy.backgroundImage.url)
+        const newMedia = await copyMediaFromGlobal(instancePath.value, themeCopy.backgroundImage.url)
         themeCopy.backgroundImage = newMedia
       } catch {
         themeCopy.backgroundImage = undefined
@@ -52,7 +52,7 @@ async function toggleInstanceTheme(enabled: boolean) {
     }
     if (themeCopy.font?.url?.startsWith('http://launcher/theme-media/')) {
       try {
-        const newMedia = await copyMediaToInstance(instancePath.value, themeCopy.font.url)
+        const newMedia = await copyMediaFromGlobal(instancePath.value, themeCopy.font.url)
         themeCopy.font = newMedia
       } catch {
         themeCopy.font = undefined
@@ -63,7 +63,7 @@ async function toggleInstanceTheme(enabled: boolean) {
       for (const music of themeCopy.backgroundMusic) {
         if (music?.url?.startsWith('http://launcher/theme-media/')) {
           try {
-            const newMedia = await copyMediaToInstance(instancePath.value, music.url)
+            const newMedia = await copyMediaFromGlobal(instancePath.value, music.url)
             newMusic.push(newMedia)
           } catch {
             // Skip failed copies

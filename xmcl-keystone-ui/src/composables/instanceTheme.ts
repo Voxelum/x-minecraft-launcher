@@ -1,5 +1,5 @@
 import { deserialize, serialize } from '@/util/theme.v1'
-import { InstanceServiceKey, ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { UIThemeDataV1 } from './theme'
@@ -10,8 +10,7 @@ export const kInstanceTheme: InjectionKey<ReturnType<typeof useInstanceTheme>> =
  * Use instance-level theme data
  */
 export function useInstanceTheme(instancePath: Ref<string>) {
-  const { getInstanceTheme, setInstanceTheme } = useService(InstanceServiceKey)
-  const { addMedia } = useService(ThemeServiceKey)
+  const { getInstanceTheme, setInstanceTheme } = useService(InstanceThemeServiceKey)
 
   const instanceTheme = ref<UIThemeDataV1 | undefined>(undefined)
   const loading = ref(false)

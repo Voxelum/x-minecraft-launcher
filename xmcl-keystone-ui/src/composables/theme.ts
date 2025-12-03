@@ -2,7 +2,7 @@ import { injection } from '@/util/inject'
 import { loadV1Theme } from '@/util/theme.v0'
 import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useStyleTag } from '@vueuse/core'
-import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, computed, set } from 'vue'
 import { Framework } from 'vuetify'
@@ -281,12 +281,13 @@ export interface ThemeWritterOptions {
 }
 
 export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void, options: ThemeWritterOptions = {}) {
-  const { addMedia, removeMedia, addInstanceMedia, removeInstanceMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const instanceThemeService = useService(InstanceThemeServiceKey)
   const { instancePath } = options
 
   // Use instance-specific methods when instancePath is provided
-  const _addMedia = (filePath: string) => instancePath ? addInstanceMedia(instancePath, filePath) : addMedia(filePath)
-  const _removeMedia = (url: string) => instancePath ? removeInstanceMedia(instancePath, url) : removeMedia(url)
+  const _addMedia = (filePath: string) => instancePath ? instanceThemeService.addMedia(instancePath, filePath) : addMedia(filePath)
+  const _removeMedia = (url: string) => instancePath ? instanceThemeService.removeMedia(instancePath, url) : removeMedia(url)
 
   const writeTheme = debounce(() => {
     save()

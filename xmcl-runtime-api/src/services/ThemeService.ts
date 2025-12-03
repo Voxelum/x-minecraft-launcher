@@ -43,27 +43,6 @@ export interface ThemeService {
    */
   removeMedia(url: string): Promise<void>
   /**
-   * Add a new media (music, picture) to an instance theme.
-   * Media will be stored under the instance's theme folder.
-   * @param instancePath The instance path
-   * @param filePath The file path to the media
-   * @returns The media url
-   */
-  addInstanceMedia(instancePath: string, filePath: string): Promise<MediaData>
-  /**
-   * Remove the media from an instance theme
-   * @param instancePath The instance path
-   * @param url The media url
-   */
-  removeInstanceMedia(instancePath: string, url: string): Promise<void>
-  /**
-   * Copy a global theme media file to an instance's theme folder
-   * @param instancePath The instance path
-   * @param url The global media url (http://launcher/theme-media/...)
-   * @returns The new instance media url
-   */
-  copyMediaToInstance(instancePath: string, url: string): Promise<MediaData>
-  /**
    * Export a theme to a .xtheme (zip) file
    * @param data The theme data
    * @param destinationFile The destination file
