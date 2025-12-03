@@ -114,9 +114,12 @@ import { kTheme } from '@/composables/theme'
 import { useScroll } from '@vueuse/core'
 import { VirtualItem, VirtualizerOptions, useVirtualizer } from '@tanstack/vue-virtual'
 import { filter as fuzzyFilter } from 'fuzzy'
+import debounce from 'lodash.debounce'
 
 interface DisplayLogRecord extends LogRecord {
   groupCount?: number
+  _contentParts?: string[]
+  _rawParts?: string[]
 }
 
 const props = defineProps<{ 
@@ -130,15 +133,22 @@ const scroller = ref<HTMLElement>()
 const searchText = ref('')
 const viewMode = ref<'default' | 'compact'>('default')
 
+// Debounced search text for filtering
+const debouncedSearchText = ref('')
+const updateDebouncedSearch = debounce((val: string) => {
+  debouncedSearchText.value = val
+}, 200)
+watch(searchText, updateDebouncedSearch)
+
 // Filter logs based on search text using fuzzy search
 const filteredLogs = computed(() => {
-  if (!searchText.value) {
+  if (!debouncedSearchText.value) {
     return props.logs
   }
-  const results = fuzzyFilter(searchText.value, props.logs, {
+  const results = fuzzyFilter(debouncedSearchText.value, props.logs, {
     extract: (log: LogRecord) => `${log.level} ${log.source} ${log.content}`
   })
-  return results.map(r => r.original!)
+  return results.filter(r => r.original != null).map(r => r.original!)
 })
 
 // Group consecutive logs with same metadata (level, date, source) in compact mode
@@ -158,8 +168,15 @@ const displayLogs = computed<DisplayLogRecord[]>(() => {
         currentGroup.source === log.source) {
       // Same metadata - add to current group
       currentGroup.groupCount = (currentGroup.groupCount || 1) + 1
-      currentGroup.content += '\n' + log.content
-      currentGroup.raw += '\n' + log.raw
+      // Use array collection for better performance with large datasets
+      if (!currentGroup._contentParts) {
+        currentGroup._contentParts = [currentGroup.content]
+        currentGroup._rawParts = [currentGroup.raw]
+      }
+      currentGroup._contentParts.push(log.content)
+      currentGroup._rawParts.push(log.raw)
+      currentGroup.content = currentGroup._contentParts.join('\n')
+      currentGroup.raw = currentGroup._rawParts.join('\n')
     } else {
       // Different metadata - start new group
       currentGroup = { ...log, groupCount: 1 }
