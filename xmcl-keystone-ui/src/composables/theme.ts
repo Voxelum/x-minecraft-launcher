@@ -272,8 +272,17 @@ async function resolveMediaFromUrl(url: string, expectedType: 'audio' | 'video' 
   }
 }
 
-export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void) {
+export interface ThemeWritterOptions {
+  /**
+   * If true, old media files will not be removed when setting new ones.
+   * This is useful for instance themes that may share media URLs with the global theme.
+   */
+  skipMediaRemoval?: boolean
+}
+
+export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void, options: ThemeWritterOptions = {}) {
   const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const { skipMediaRemoval = false } = options
   const writeTheme = debounce(() => {
     save()
   }, 800)
@@ -528,7 +537,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     const theme = currentTheme.value
     if (!theme) return
     const m = theme.backgroundMusic.splice(index, 1)
-    if (m) {
+    if (m && !skipMediaRemoval) {
       await removeMedia(m[0].url).catch(() => { })
     }
     writeTheme()
@@ -540,7 +549,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     const theme = currentTheme.value
     if (!theme) return
     const old = theme.backgroundImage
-    if (old && old.url.startsWith('http://launcher/')) {
+    if (old && old.url.startsWith('http://launcher/') && !skipMediaRemoval) {
       await removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
@@ -552,7 +561,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     const theme = currentTheme.value
     if (!theme) return
     const old = theme.backgroundImage
-    if (old && old.url.startsWith('http://launcher/')) {
+    if (old && old.url.startsWith('http://launcher/') && !skipMediaRemoval) {
       await removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
@@ -563,8 +572,8 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     const theme = currentTheme.value
     if (!theme) return
     if (theme.backgroundImage) {
-      // Only remove local media files
-      if (theme.backgroundImage.url.startsWith('http://launcher/')) {
+      // Only remove local media files if skipMediaRemoval is false
+      if (theme.backgroundImage.url.startsWith('http://launcher/') && !skipMediaRemoval) {
         await removeMedia(theme.backgroundImage.url).catch(() => { })
       }
       theme.backgroundImage = undefined
@@ -594,8 +603,8 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     const theme = currentTheme.value
     if (!theme) return
     if (theme.font) {
-      // Only remove local media files
-      if (theme.font.url.startsWith('http://launcher/')) {
+      // Only remove local media files if skipMediaRemoval is false
+      if (theme.font.url.startsWith('http://launcher/') && !skipMediaRemoval) {
         await removeMedia(theme.font.url).catch(() => { })
       }
       theme.font = undefined

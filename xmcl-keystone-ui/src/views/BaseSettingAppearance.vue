@@ -19,7 +19,7 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" @save="onSave" />
+    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" :is-instance-theme="true" @save="onSave" />
   </div>
 </template>
 <script lang="ts" setup>
