@@ -594,7 +594,9 @@ instances:
     Import from common .minecraft folder. This will duplciate the original game
     profile to XMCL.
   choose: Select Game
+  empty: No instances in this folder
   fix: Repair
+  folder: Folder
   folderSetting: Folder Settings
   importFolder: Import from folder
   importFolderDescription: Import Minecraft to Launcher
@@ -784,6 +786,8 @@ me:
   news: News
   recentPlay: Recent Play
   versions: Installed Versions
+  viewByDate: View by Date
+  viewByFolder: View by Folder
 minecraftVersion:
   empty: Cannot load Minecraft versions
   name: Minecraft Version

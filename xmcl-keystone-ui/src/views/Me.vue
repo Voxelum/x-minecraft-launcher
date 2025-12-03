@@ -116,6 +116,28 @@
           @select="currentDisplaied = $event"
         >
           <template #extra>
+            <v-btn-toggle
+              v-if="currentDisplaied === ''"
+              v-model="instanceViewMode"
+              mandatory
+              dense
+              class="mr-2"
+            >
+              <v-btn
+                v-shared-tooltip.bottom="() => t('me.viewByFolder')"
+                small
+                value="folder"
+              >
+                <v-icon small>folder</v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip.bottom="() => t('me.viewByDate')"
+                small
+                value="date"
+              >
+                <v-icon small>schedule</v-icon>
+              </v-btn>
+            </v-btn-toggle>
             <v-text-field
               v-model="filterKey"
               outlined
@@ -132,6 +154,7 @@
           <InstancesCards
             v-if="currentDisplaied === ''"
             :instances="sorted"
+            :view-mode="instanceViewMode"
             class="px-0"
             @select="onInstanceClick"
           />
@@ -193,6 +216,7 @@ const allNews = computed((): LauncherNews[] => {
 });
 
 const filterKey = ref("");
+const instanceViewMode = ref<'folder' | 'date'>('folder');
 const keys = useMagicKeys()
 const ctrlF = keys['Ctrl+F']
 watch(ctrlF, (v) => {
