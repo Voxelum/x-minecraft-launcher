@@ -353,6 +353,8 @@ launchFailed:
       Podes desactivar a substitución de Authlib de Ely.by nas configuracións da
       instancia para evitar este problema.
     title: Problema de compatibilidade de Ely.by Authlib
+logView:
+  searchPlaceholder: Buscar rexistros...
 loginError:
   loginXboxAgeRestricted: >-
     Non lograr a Xbox debido ao problema de idade. 

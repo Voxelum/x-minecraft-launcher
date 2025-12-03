@@ -772,6 +772,8 @@ logLevel:
   info: Informação
   success: Sucesso
   warning: Aviso
+logView:
+  searchPlaceholder: Pesquisar logs...
 login:
   dropHint: Coloque o link com o código de autenticação aqui para login manual
   forgetPassword: Esqueceu a senha?

@@ -654,6 +654,8 @@ logLevel:
   info: INFO
   success: SUCCES
   warning: WARNIN
+logView:
+  searchPlaceholder: SERCH LOGZ...
 login:
   dropHint: DROP TEH LINK WIF AUTHCODE HER 2 MANUALLY LOGIN
   forgetPassword: FORGET PASWORD?

@@ -581,6 +581,8 @@ loginError:
 
     Si es un nuevo usuario de Minecraft, inicie sesión al menos una vez en el
     lanzador oficial de Minecraft.
+logView:
+  searchPlaceholder: Buscar registros...
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros

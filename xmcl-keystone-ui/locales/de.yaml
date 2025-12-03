@@ -823,6 +823,8 @@ logLevel:
   info: Informationen.
   success: Erfolgreich
   warning: Warnungen
+logView:
+  searchPlaceholder: Logs durchsuchen...
 login:
   dropHint: >-
     Senden Sie hier den Link mit dem Autorisierungscode, um sich manuell

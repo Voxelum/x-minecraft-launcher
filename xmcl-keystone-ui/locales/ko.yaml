@@ -653,6 +653,8 @@ logLevel:
   info: 정보
   success: 성공
   warning: 경고
+logView:
+  searchPlaceholder: 로그 검색...
 login:
   dropHint: 인증 코드가 포함된 링크를 여기에 놓아 수동 로그인하세요
   forgetPassword: 비밀번호를 잊으셨나요?

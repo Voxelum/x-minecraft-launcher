@@ -427,6 +427,8 @@ launchFailed:
       Бұл мәселені болдырмау үшін инстанс параметрлерінде Ely.by Authlib
       алмастыруын өшіре аласыз.
     title: Ely.by Authlib үйлесімділік мәселесі
+logView:
+  searchPlaceholder: Журналдарды іздеу...
 loginError:
   loginXboxAgeRestricted: >-
     Fail to login Xbox due the the age issue. Please make sure the age is set

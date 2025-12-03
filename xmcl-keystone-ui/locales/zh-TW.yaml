@@ -687,6 +687,8 @@ logLevel:
   info: 資訊
   success: 成功
   warning: 警告
+logView:
+  searchPlaceholder: 搜尋日誌...
 login:
   dropHint: 將驗證連結拖入此處手動驗證
   forgetPassword: 忘記密碼？

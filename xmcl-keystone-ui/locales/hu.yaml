@@ -728,6 +728,8 @@ logLevel:
   info: Infó
   success: Siker
   warning: Figyelmeztetés
+logView:
+  searchPlaceholder: Naplók keresése...
 login:
   dropHint: Dobja ide a linket az authcode-mal a kézi bejelentkezéshez
   forgetPassword: Elfelejtett jelszó?
