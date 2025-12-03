@@ -3,7 +3,7 @@ import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { fromFile } from 'file-type'
 import { createWriteStream } from 'fs'
 import { copyFile, ensureDir, existsSync, readJSON, readdir, remove, unlink, writeJson } from 'fs-extra'
-import { basename, join } from 'path'
+import { basename, join, resolve } from 'path'
 import { pipeline } from 'stream/promises'
 import { Inject, LauncherAppKey } from '~/app'
 import { kTaskExecutor } from '~/infra'
@@ -73,18 +73,25 @@ export class ThemeService extends AbstractService implements IThemeService {
   async removeInstanceMedia(instancePath: string, url: string): Promise<void> {
     // Extract file name from URL (before the query string)
     const urlObj = new URL(url)
-    const fileName = urlObj.pathname.substring('/instance-theme-media/'.length)
-    const themeFolder = join(instancePath, 'theme')
-    const filePath = join(themeFolder, fileName)
-    // path should be under instance theme folder
+    const rawFileName = urlObj.pathname.substring('/instance-theme-media/'.length)
+    // Prevent path traversal by using only the basename
+    const fileName = basename(rawFileName)
+    if (!fileName || fileName === '.' || fileName === '..') {
+      return
+    }
+    const themeFolder = resolve(instancePath, 'theme')
+    const filePath = resolve(themeFolder, fileName)
+    // Validate the resolved path is under the theme folder
     if (!filePath.startsWith(themeFolder)) {
       return
     }
-    if (existsSync(filePath)) {
+    try {
       const fileType = await fromFile(filePath)
       if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {
         await unlink(filePath)
       }
+    } catch {
+      // File doesn't exist or can't be accessed, ignore
     }
   }
 
