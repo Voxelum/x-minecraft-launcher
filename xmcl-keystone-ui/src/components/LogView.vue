@@ -114,7 +114,7 @@ const filteredLogs = computed(() => {
   return results.filter(r => r.original != null).map(r => r.original as LogRecord)
 })
 
-// Group consecutive logs with same metadata (level, date, source)
+// Group consecutive logs with identical metadata (level, date, source) to reduce repetition
 const displayLogs = computed<DisplayLogRecord[]>(() => {
   const logs = filteredLogs.value
   if (logs.length === 0) {
