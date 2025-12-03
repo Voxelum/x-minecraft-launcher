@@ -691,6 +691,8 @@ logLevel:
   info: 信息
   success: 成功
   warning: 警告
+logView:
+  searchPlaceholder: 搜索日志...
 login:
   dropHint: 将验证链接拖入此处手动验证
   forgetPassword: 忘记密码？

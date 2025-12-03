@@ -762,6 +762,8 @@ logLevel:
   info: Info
   success: Succès
   warning: Avertissement
+logView:
+  searchPlaceholder: Rechercher les logs...
 login:
   dropHint: >-
     Déposez le lien avec le code d'authentification ici pour vous connecter
