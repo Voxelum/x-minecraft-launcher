@@ -12,6 +12,7 @@
           class="w-full"
         >
           <div
+            v-context-menu="() => getFolderContextMenuItems(groupItem)"
             class="flex items-center cursor-pointer select-none mb-2"
             @click="toggleGroup(groupItem.id)"
           >
@@ -97,6 +98,9 @@ import { Instance } from '@xmcl/instance';
 import InstanceCard from './InstancesCard.vue'
 import InstanceCardCompact from './InstancesCardCompact.vue'
 import { useInstanceGroup } from '@/composables/instanceGroup'
+import { vContextMenu } from '@/directives/contextMenu'
+import { ContextMenuItem } from '@/composables/contextMenu'
+import { useDialog } from '@/composables/dialog'
 import { Ref } from 'vue'
 
 interface GroupedItem {
@@ -114,6 +118,7 @@ const props = defineProps<{
 const emit = defineEmits(['select', 'dragstart', 'dragend', 'delete'])
 const { t } = useI18n()
 const { groups } = useInstanceGroup()
+const { show: showFolderSetting } = useDialog('folder-setting')
 
 // Track expanded state for each group using shallowRef for Vue2 compatibility
 const expandedGroups = shallowRef<Record<string, boolean>>({})
@@ -125,6 +130,21 @@ const isGroupExpanded = (id: string) => {
 const toggleGroup = (id: string) => {
   const current = expandedGroups.value[id] ?? true
   expandedGroups.value = { ...expandedGroups.value, [id]: !current }
+}
+
+// Get folder context menu items
+const getFolderContextMenuItems = (groupItem: GroupedItem): ContextMenuItem[] => {
+  // Find the original group data from groups
+  const originalGroup = groups.value.find(g => typeof g === 'object' && g.id === groupItem.id)
+  if (!originalGroup || typeof originalGroup === 'string') return []
+  
+  return [{
+    icon: 'settings',
+    text: t('instances.folderSetting'),
+    onClick: () => {
+      showFolderSetting(originalGroup)
+    },
+  }]
 }
 
 // Create a map from instance path to instance
