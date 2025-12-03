@@ -34,7 +34,7 @@
             type="avatar"
           />
           <div
-            v-else-if="!expanded"
+            v-else
             class="grid cols-2 rows-2 gap-[2px] p-[2px] rounded-xl"
           >
             <v-img
@@ -46,29 +46,16 @@
               @dragleave="onDragLeave"
             />
           </div>
-          <v-icon v-else>
-            folder
-          </v-icon>
         </Transition>
       </v-list-item-avatar>
-      <v-list-item-title>123</v-list-item-title>
+      <v-list-item-title>{{ group.name || t('instances.folder') }}</v-list-item-title>
     </v-list-item>
-    <template v-if="expanded">
-      <AppSideBarInstanceItem
-        v-for="(instance, index) in group.instances"
-        :key="instance + index"
-        :path="instance"
-        inside
-        @arrange="emit('arrange', { ...$event, toPath: instance })"
-      />
-    </template>
   </v-sheet>
 </template>
 <script lang="ts" setup>
 import { InstanceGroupData, useGroupDragDropState } from '@/composables/instanceGroup'
 import { kInstances } from '@/composables/instances'
 import { getInstanceIcon } from '@/util/favicon'
-import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 import { injection } from '@/util/inject'
 import AppSideBarGroupItemIndicator from './AppSideBarGroupItemIndicator.vue'
 import { notNullish } from '@vueuse/core'
@@ -86,14 +73,9 @@ const instances = computed(() => {
   const result = props.group.instances.map(path => allInstances.value.find(i => i.path === path)).filter(notNullish)
   return result
 })
-const expanded = ref(false)
 
 const onClick = () => {
-  if (expanded.value) {
-    expanded.value = false
-  } else {
-    expanded.value = true
-  }
+  showFolderGrid(props.group)
 }
 
 const onDragStart = (e: DragEvent) => {
@@ -105,14 +87,15 @@ const onDragStart = (e: DragEvent) => {
 
 const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit)
 
-const { show } = useDialog('folder-setting')
+const { show: showFolderSetting } = useDialog('folder-setting')
+const { show: showFolderGrid } = useDialog('folder-grid')
 const { t } = useI18n()
 const getItems = () => {
   const items: ContextMenuItem[] = [{
     icon: 'settings',
     text: t('instances.folderSetting'),
     onClick: () => {
-      show(props.group)
+      showFolderSetting(props.group)
     },
   }]
   return items
