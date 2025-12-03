@@ -148,7 +148,7 @@ const filteredLogs = computed(() => {
   const results = fuzzyFilter(debouncedSearchText.value, props.logs, {
     extract: (log: LogRecord) => `${log.level} ${log.source} ${log.content}`
   })
-  return results.filter(r => r.original != null).map(r => r.original!)
+  return results.filter(r => r.original != null).map(r => r.original as LogRecord)
 })
 
 // Group consecutive logs with same metadata (level, date, source) in compact mode
@@ -168,20 +168,29 @@ const displayLogs = computed<DisplayLogRecord[]>(() => {
         currentGroup.source === log.source) {
       // Same metadata - add to current group
       currentGroup.groupCount = (currentGroup.groupCount || 1) + 1
-      // Use array collection for better performance with large datasets
+      // Collect parts in arrays, join later
       if (!currentGroup._contentParts) {
         currentGroup._contentParts = [currentGroup.content]
         currentGroup._rawParts = [currentGroup.raw]
       }
       currentGroup._contentParts.push(log.content)
       currentGroup._rawParts.push(log.raw)
-      currentGroup.content = currentGroup._contentParts.join('\n')
-      currentGroup.raw = currentGroup._rawParts.join('\n')
     } else {
+      // Finalize previous group's concatenation if needed
+      if (currentGroup && currentGroup._contentParts) {
+        currentGroup.content = currentGroup._contentParts.join('\n')
+        currentGroup.raw = currentGroup._rawParts!.join('\n')
+      }
       // Different metadata - start new group
       currentGroup = { ...log, groupCount: 1 }
       result.push(currentGroup)
     }
+  }
+  
+  // Finalize last group
+  if (currentGroup && currentGroup._contentParts) {
+    currentGroup.content = currentGroup._contentParts.join('\n')
+    currentGroup.raw = currentGroup._rawParts!.join('\n')
   }
   
   return result
