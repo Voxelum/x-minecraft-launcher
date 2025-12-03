@@ -31,6 +31,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
   const source = ref('remote' as 'local' | 'remote' | 'favorite')
   const notRemote = computed(() => source.value !== 'remote')
   const selectedCollection = ref(undefined as string | undefined)
+  const modrinthEnvironment = ref('' as '' | 'client' | 'server')
 
   const currentView = computed(() => {
     const sourceValue = source.value
@@ -63,6 +64,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     useQueryOverride('curseforgeActive', isCurseforgeActive, true, searlizers.boolean)
     useQueryOverride('modrinthActive', isModrinthActive, true, searlizers.boolean)
     useQueryOverride('source', source, 'local', searlizers.string)
+    useQueryOverride('modrinthEnvironment', modrinthEnvironment, '', searlizers.string)
     selectedCollection.value = undefined
 
     watch(runtime, () => {
@@ -88,6 +90,7 @@ export function useSearchModel(runtime: Ref<RuntimeVersions>) {
     curseforgeSort,
     isModrinthDisabled,
     isCurseforgeDisabled,
+    modrinthEnvironment,
     effect,
   }
 }

@@ -138,6 +138,54 @@
                 :disabled="!enableModrinth"
               />
             </v-chip-group>
+            <v-subheader class="flex">
+              {{ t('modrinth.environments.name') }}
+            </v-subheader>
+            <v-btn-toggle
+              background-color="transparent"
+              class="px-1"
+              dense
+              :value="modrinthEnvironment"
+              :disabled="!enableModrinth"
+              @change="emit('update:modrinthEnvironment', $event || '')"
+            >
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.all')"
+                outlined
+                text
+                small
+                value=""
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  devices
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.client')"
+                outlined
+                text
+                small
+                value="client"
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  computer
+                </v-icon>
+              </v-btn>
+              <v-btn
+                v-shared-tooltip="t('modrinth.environments.server')"
+                outlined
+                text
+                small
+                value="server"
+                :disabled="!enableModrinth"
+              >
+                <v-icon small>
+                  dns
+                </v-icon>
+              </v-btn>
+            </v-btn-toggle>
           </template>
           <template v-if="curseforgeCategoryFilter">
             <v-subheader class="flex">
@@ -246,6 +294,8 @@ const props = defineProps<{
 
   modLoaders?: string[]
   modloader?: string
+
+  modrinthEnvironment?: '' | 'client' | 'server'
 }>()
 
 const emit = defineEmits<{
@@ -261,6 +311,7 @@ const emit = defineEmits<{
   (event: 'update:gameVersion', value: string): void
   (event: 'update:mode', value: 'local' | 'remote' | 'favorite'): void
   (event: 'update:collection', value: string): void
+  (event: 'update:modrinthEnvironment', value: '' | 'client' | 'server'): void
 }>()
 
 const { versions } = useMinecraftVersions()

@@ -1047,6 +1047,7 @@ modrinth:
   description: Description
   downloads: Downloads
   environments:
+    all: All
     client: Client
     default: Default
     name: Environment

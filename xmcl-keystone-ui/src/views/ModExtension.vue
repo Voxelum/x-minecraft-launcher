@@ -22,6 +22,7 @@
           :game-version.sync="gameVersion"
           :modloader.sync="modLoader"
           :mod-loaders="[ModLoaderFilter.forge, ModLoaderFilter.neoforge, ModLoaderFilter.fabric, ModLoaderFilter.quilt]"
+          :modrinth-environment.sync="modrinthEnvironment"
         >
           <template #local>
             <v-subheader class="flex">
@@ -80,7 +81,7 @@ import { ModLoaderFilter, kSearchModel } from '@/composables/search'
 
 const { runtime: version } = injection(kInstance)
 const { plans } = injection(kModUpgrade)
-const { curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader, selectedCollection, gameVersion, source } = injection(kSearchModel)
+const { curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader, selectedCollection, gameVersion, source, modrinthEnvironment } = injection(kSearchModel)
 const { denseView, groupInstalled, sortBy, localFilter } = injection(kModsSearch)
 const { mods: modFiles } = injection(kInstanceModsContext)
 const { t } = useI18n()
