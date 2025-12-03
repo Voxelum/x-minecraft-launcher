@@ -31,7 +31,7 @@
             @click="onSelectInstance(instance.path)"
           >
             <v-img
-              :src="getIcon(instance)"
+              :src="getInstanceIcon(instance, undefined)"
               width="64"
               height="64"
               class="rounded-lg"
@@ -64,7 +64,6 @@ import { kInstance } from '@/composables/instance'
 import { kInstances } from '@/composables/instances'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
-import { Instance } from '@xmcl/instance'
 import { notNullish } from '@vueuse/core'
 import { InstanceGroupData } from '@/composables/instanceGroup'
 
@@ -88,10 +87,6 @@ const groupInstances = computed(() => {
     .filter(notNullish)
   return result
 })
-
-const getIcon = (instance: Instance) => {
-  return getInstanceIcon(instance, undefined)
-}
 
 const onSelectInstance = (instancePath: string) => {
   if (router.currentRoute.path !== '/') {
