@@ -11,28 +11,6 @@
         prepend-inner-icon="search"
         class="max-w-xs"
       />
-      <v-btn-toggle
-        v-model="viewMode"
-        dense
-        mandatory
-      >
-        <v-btn
-          small
-          value="default"
-        >
-          <v-icon small>
-            view_agenda
-          </v-icon>
-        </v-btn>
-        <v-btn
-          small
-          value="compact"
-        >
-          <v-icon small>
-            view_list
-          </v-icon>
-        </v-btn>
-      </v-btn-toggle>
     </div>
     <div
       ref="scroller" 
@@ -62,20 +40,6 @@
           }"
         >
           <div
-            v-if="viewMode === 'compact'"
-            :class="levelClasses[displayLogs[virtualRow.index].level]"
-            class="log-record log-record-compact"
-          >
-            <span
-              class="level level-compact"
-            >{{ levelText[displayLogs[virtualRow.index].level] ? levelText[displayLogs[virtualRow.index].level] : displayLogs[virtualRow.index].level.toUpperCase() }}</span>
-            <span v-if="displayLogs[virtualRow.index].date" class="date date-compact">{{ displayLogs[virtualRow.index].date }}</span>
-            <span v-if="displayLogs[virtualRow.index].source" class="source source-compact">{{ displayLogs[virtualRow.index].source }}</span>
-            <span v-if="displayLogs[virtualRow.index].groupCount && displayLogs[virtualRow.index].groupCount > 1" class="group-count">×{{ displayLogs[virtualRow.index].groupCount }}</span>
-            <span class="content content-compact">{{ displayLogs[virtualRow.index].content }}</span>
-          </div>
-          <div
-            v-else
             :class="levelClasses[displayLogs[virtualRow.index].level]"
             class="log-record"
           >
@@ -131,7 +95,6 @@ const container = ref<HTMLElement>()
 const offsetTop = ref(0)
 const scroller = ref<HTMLElement>()
 const searchText = ref('')
-const viewMode = ref<'default' | 'compact'>('default')
 
 // Debounced search text for filtering
 const debouncedSearchText = ref('')
@@ -151,10 +114,10 @@ const filteredLogs = computed(() => {
   return results.filter(r => r.original != null).map(r => r.original as LogRecord)
 })
 
-// Group consecutive logs with same metadata (level, date, source) in compact mode
+// Group consecutive logs with same metadata (level, date, source)
 const displayLogs = computed<DisplayLogRecord[]>(() => {
   const logs = filteredLogs.value
-  if (viewMode.value !== 'compact' || logs.length === 0) {
+  if (logs.length === 0) {
     return logs
   }
   
@@ -204,7 +167,7 @@ watch(container, container => {
 const virtualizerOptions = computed(() => ({
   count: displayLogs.value.length,
   getScrollElement: () => scroller.value || null,
-  estimateSize: () => viewMode.value === 'compact' ? 32 : 56,
+  estimateSize: () => 56,
   overscan: 10,
   paddingStart: offsetTop.value,
 } satisfies Partial<VirtualizerOptions<HTMLElement, HTMLElement>>))
@@ -273,24 +236,12 @@ function scrollToBottom() {
   @apply select-none rounded border border-current border-solid p-1 mr-1;
 }
 
-.level-compact {
-  @apply p-0.5 text-xs;
-}
-
 .source {
   @apply text-yellow-400 rounded border border-current border-dotted p-1 select-none rounded mr-1;
 }
 
-.source-compact {
-  @apply p-0.5 text-xs;
-}
-
 .date {
   @apply p-1 text-gray-400 rounded border border-current border-dashed select-none rounded mr-1;
-}
-
-.date-compact {
-  @apply p-0.5 text-xs;
 }
 
 .group-count {
@@ -301,16 +252,8 @@ function scrollToBottom() {
   @apply whitespace-pre-wrap break-words;
 }
 
-.content-compact {
-  @apply ml-1;
-}
-
 .log-record {
   @apply px-2 leading-7 border-l-3 border-current;
-}
-
-.log-record-compact {
-  @apply flex items-start leading-6 py-0.5;
 }
 
 .log-record:hover {
