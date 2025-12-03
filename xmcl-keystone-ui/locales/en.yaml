@@ -736,6 +736,8 @@ logLevel:
   info: Info
   success: Success
   warning: Warning
+logView:
+  searchPlaceholder: Search logs...
 login:
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
