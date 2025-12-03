@@ -632,6 +632,11 @@ import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
 
 const props = defineProps<{
   theme: UIThemeDataV1
+  /**
+   * If provided, media files will be stored under the instance's theme folder.
+   * This keeps instance theme media separate from global theme media.
+   */
+  instancePath?: string
 }>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
@@ -647,7 +652,7 @@ const {
   blurAppBar, blurSidebar, blurCard, blur,
   backgroundColorOverlay, backgroundType, particleMode, backgroundImageFit, volume, fontSize,
   isDark,
-} = useThemeWritter(computed(() => props.theme), () => emit('save'))
+} = useThemeWritter(computed(() => props.theme), () => emit('save'), { instancePath: props.instancePath })
 
 // URL input refs
 const imageUrlInput = ref('')

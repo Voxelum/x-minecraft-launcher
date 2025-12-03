@@ -2,7 +2,7 @@ import { injection } from '@/util/inject'
 import { loadV1Theme } from '@/util/theme.v0'
 import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useStyleTag } from '@vueuse/core'
-import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, computed, set } from 'vue'
 import { Framework } from 'vuetify'
@@ -272,8 +272,23 @@ async function resolveMediaFromUrl(url: string, expectedType: 'audio' | 'video' 
   }
 }
 
-export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void) {
+export interface ThemeWritterOptions {
+  /**
+   * If provided, media files will be stored under the instance's theme folder.
+   * This keeps instance theme media separate from global theme media.
+   */
+  instancePath?: string
+}
+
+export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void, options: ThemeWritterOptions = {}) {
   const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const instanceThemeService = useService(InstanceThemeServiceKey)
+  const { instancePath } = options
+
+  // Use instance-specific methods when instancePath is provided
+  const _addMedia = (filePath: string) => instancePath ? instanceThemeService.addMedia(instancePath, filePath) : addMedia(filePath)
+  const _removeMedia = (url: string) => instancePath ? instanceThemeService.removeMedia(instancePath, url) : removeMedia(url)
+
   const writeTheme = debounce(() => {
     save()
   }, 800)
@@ -517,7 +532,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 
   async function addMusic(filePath: string) {
-    const media = await addMedia(filePath)
+    const media = await _addMedia(filePath)
     const theme = currentTheme.value
     if (!theme) return
     theme.backgroundMusic.push(media)
@@ -529,19 +544,19 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (!theme) return
     const m = theme.backgroundMusic.splice(index, 1)
     if (m) {
-      await removeMedia(m[0].url).catch(() => { })
+      await _removeMedia(m[0].url).catch(() => { })
     }
     writeTheme()
   }
 
   async function setBackgroundImage(path: string) {
-    const media = await addMedia(path)
+    const media = await _addMedia(path)
     if (media.type !== 'image' && media.type !== 'video') return
     const theme = currentTheme.value
     if (!theme) return
     const old = theme.backgroundImage
     if (old && old.url.startsWith('http://launcher/')) {
-      await removeMedia(old.url).catch(() => { })
+      await _removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
     writeTheme()
@@ -553,7 +568,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (!theme) return
     const old = theme.backgroundImage
     if (old && old.url.startsWith('http://launcher/')) {
-      await removeMedia(old.url).catch(() => { })
+      await _removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
     writeTheme()
@@ -565,7 +580,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (theme.backgroundImage) {
       // Only remove local media files
       if (theme.backgroundImage.url.startsWith('http://launcher/')) {
-        await removeMedia(theme.backgroundImage.url).catch(() => { })
+        await _removeMedia(theme.backgroundImage.url).catch(() => { })
       }
       theme.backgroundImage = undefined
       writeTheme()
@@ -573,7 +588,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 
   async function setFont(path: string) {
-    const media = await addMedia(path)
+    const media = await _addMedia(path)
     console.log(media)
     if (media.type !== 'font') return
     const theme = currentTheme.value
@@ -596,7 +611,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (theme.font) {
       // Only remove local media files
       if (theme.font.url.startsWith('http://launcher/')) {
-        await removeMedia(theme.font.url).catch(() => { })
+        await _removeMedia(theme.font.url).catch(() => { })
       }
       theme.font = undefined
       theme.fontSize = 16

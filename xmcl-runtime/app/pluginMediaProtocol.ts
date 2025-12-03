@@ -1,5 +1,5 @@
-import { createReadStream } from 'fs'
-import { join } from 'path'
+import { createReadStream, existsSync } from 'fs'
+import { basename, join, resolve } from 'path'
 import { LauncherAppPlugin } from '~/app'
 
 /**
@@ -48,6 +48,44 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
       }).catch(() => {
         response.status = 404
       })
+    }
+    // http://launcher/instance-theme-media/${instancePath}/${assetName}
+    if (request.url.host === 'launcher' && request.url.pathname.startsWith('/instance-theme-media')) {
+      const instancePath = request.url.searchParams.get('instancePath')
+      if (instancePath) {
+        const rawFileName = normalizePath(request.url.pathname.substring('/instance-theme-media'.length))
+        // Prevent path traversal by using only the basename
+        const fileName = basename(rawFileName)
+        if (!fileName || fileName === '.' || fileName === '..') {
+          response.status = 400
+          return
+        }
+        const themeFolder = resolve(instancePath, 'theme')
+        const pathname = resolve(themeFolder, fileName)
+        // Validate the resolved path is under the theme folder
+        if (!pathname.startsWith(themeFolder)) {
+          response.status = 403
+          return
+        }
+        if (!existsSync(pathname)) {
+          response.status = 404
+          return
+        }
+        const { fromFile } = await import('file-type')
+        await fromFile(pathname).then((type) => {
+          if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {
+            response.status = 200
+            response.headers = { 'content-type': type.mime }
+            response.body = createReadStream(pathname)
+          } else {
+            response.status = 404
+          }
+        }).catch(() => {
+          response.status = 404
+        })
+      } else {
+        response.status = 400
+      }
     }
   })
   app.protocol.registerHandler('data', ({ request, response }) => {

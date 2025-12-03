@@ -3,7 +3,7 @@ import { AuthlibInjectorService } from '@xmcl/runtime/authlibInjector'
 import { ElyByService } from '@xmcl/runtime/elyby'
 import { ImportService } from '@xmcl/runtime/import'
 import { DiagnoseService, InstallService, VersionMetadataService } from '@xmcl/runtime/install'
-import { InstanceLogService, InstanceModsService, InstanceOptionsService, InstanceSavesService, InstanceResourcePackService, InstanceScreenshotService, InstanceServerInfoService, InstanceService, InstanceShaderPacksService } from '@xmcl/runtime/instance'
+import { InstanceLogService, InstanceModsService, InstanceOptionsService, InstanceSavesService, InstanceResourcePackService, InstanceScreenshotService, InstanceServerInfoService, InstanceService, InstanceShaderPacksService, InstanceThemeService } from '@xmcl/runtime/instance'
 import { InstanceIOService, InstanceInstallService, InstanceManifestService } from '@xmcl/runtime/instanceIO'
 import { JavaService } from '@xmcl/runtime/java'
 import { LaunchService } from '@xmcl/runtime/launch'
@@ -53,4 +53,5 @@ export const definedServices = [
   ModMetadataService,
   PeerService,
   ThemeService,
+  InstanceThemeService,
 ]

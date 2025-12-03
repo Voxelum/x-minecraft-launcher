@@ -32,13 +32,13 @@ export interface ThemeData {
 
 export interface ThemeService {
   /**
-   * Add a new media (music, picture) to the theme.
+   * Add a new media (music, picture) to the global theme.
    * @param filePath The file path to the media
    * @returns The media url
    */
   addMedia(filePath: string): Promise<MediaData>
   /**
-   * Remove the media from the theme
+   * Remove the media from the global theme
    * @param url The media url
    */
   removeMedia(url: string): Promise<void>

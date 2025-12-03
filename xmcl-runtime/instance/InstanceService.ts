@@ -1,8 +1,8 @@
 import { DuplicateInstanceTask, computeInstanceEditChanges, createInstance, loadInstanceFromOptions, type EditInstanceOptions } from '@xmcl/instance'
-import { InstanceModpackMetadataSchema, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, ThemeData, type CreateInstanceOption, type InstanceService as IInstanceService, type SharedState } from '@xmcl/runtime-api'
+import { InstanceModpackMetadataSchema, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, LockKey, type CreateInstanceOption, type InstanceService as IInstanceService, type SharedState } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir, readJson, rename, rm, writeJSON } from 'fs-extra'
+import { ensureDir, rename, rm } from 'fs-extra'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { Inject, LauncherAppKey, kGameDataPath, type PathResolver } from '~/app'
 import { ImageStorage, kTaskExecutor } from '~/infra'
@@ -90,20 +90,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       return this.instanceModpackMetadataFile.write(metadataPath, metadata)
     } else {
       return rm(metadataPath, { force: true }).catch(() => undefined)
-    }
-  }
-
-  getInstanceTheme(path: string): Promise<ThemeData | undefined> {
-    const themePath = join(path, 'theme.json')
-    return readJson(themePath).catch(() => undefined) as Promise<ThemeData | undefined>
-  }
-
-  setInstanceTheme(path: string, theme: ThemeData | undefined): Promise<void> {
-    const themePath = join(path, 'theme.json')
-    if (theme) {
-      return writeJSON(themePath, theme)
-    } else {
-      return rm(themePath, { force: true }).catch(() => undefined)
     }
   }
 
