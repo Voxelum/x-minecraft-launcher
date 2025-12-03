@@ -630,16 +630,14 @@ import { basename } from '@/util/basename'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
 import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   theme: UIThemeDataV1
   /**
-   * If true, indicates this is an instance-specific theme.
-   * Media files will not be removed when changing them to avoid affecting the global theme.
+   * If provided, media files will be stored under the instance's theme folder.
+   * This keeps instance theme media separate from global theme media.
    */
-  isInstanceTheme?: boolean
-}>(), {
-  isInstanceTheme: false,
-})
+  instancePath?: string
+}>()
 const { showOpenDialog, showSaveDialog } = windowController
 const { t } = useI18n()
 
@@ -654,7 +652,7 @@ const {
   blurAppBar, blurSidebar, blurCard, blur,
   backgroundColorOverlay, backgroundType, particleMode, backgroundImageFit, volume, fontSize,
   isDark,
-} = useThemeWritter(computed(() => props.theme), () => emit('save'), { skipMediaRemoval: props.isInstanceTheme })
+} = useThemeWritter(computed(() => props.theme), () => emit('save'), { instancePath: props.instancePath })
 
 // URL input refs
 const imageUrlInput = ref('')

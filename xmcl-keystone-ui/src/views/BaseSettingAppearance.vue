@@ -19,23 +19,30 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" :is-instance-theme="true" @save="onSave" />
+    <AppearanceItems v-if="instanceTheme" :theme="instanceTheme" :instance-path="instancePath" @save="onSave" />
   </div>
 </template>
 <script lang="ts" setup>
 import AppearanceItems from '@/components/AppearanceItems.vue'
+import { kInstance } from '@/composables/instance'
 import { kInstanceTheme } from '@/composables/instanceTheme'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
 
 const { t } = useI18n()
+const { path: instancePath } = injection(kInstance)
 const { instanceTheme, saveTheme, clearTheme } = injection(kInstanceTheme)
 const { currentTheme, update } = injection(kTheme)
 
 async function toggleInstanceTheme(enabled: boolean) {
   if (enabled) {
-    // Create a deep copy of the current global theme
-    instanceTheme.value = JSON.parse(JSON.stringify(currentTheme.value))
+    // Create a deep copy of the current global theme, but clear media to avoid sharing
+    const themeCopy = JSON.parse(JSON.stringify(currentTheme.value))
+    // Clear media references since they point to global theme media
+    themeCopy.backgroundImage = undefined
+    themeCopy.backgroundMusic = []
+    themeCopy.font = undefined
+    instanceTheme.value = themeCopy
     await saveTheme()
   } else {
     await clearTheme()

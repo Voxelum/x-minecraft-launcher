@@ -53,6 +53,41 @@ export class ThemeService extends AbstractService implements IThemeService {
     }
   }
 
+  async addInstanceMedia(instancePath: string, filePath: string): Promise<MediaData> {
+    const fileType = await fromFile(filePath)
+    if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {
+      const themeFolder = join(instancePath, 'theme')
+      const targetPath = join(themeFolder, basename(filePath))
+      await ensureDir(themeFolder)
+      await copyFile(filePath, targetPath)
+      return {
+        url: 'http://launcher/instance-theme-media/' + basename(filePath) + '?instancePath=' + encodeURIComponent(instancePath),
+        type: fileType.mime.slice(0, fileType.mime.indexOf('/')) as 'audio' | 'video' | 'image' | 'font',
+        mimeType: fileType.mime,
+      }
+    } else {
+      throw new Error('Unsupported media type')
+    }
+  }
+
+  async removeInstanceMedia(instancePath: string, url: string): Promise<void> {
+    // Extract file name from URL (before the query string)
+    const urlObj = new URL(url)
+    const fileName = urlObj.pathname.substring('/instance-theme-media/'.length)
+    const themeFolder = join(instancePath, 'theme')
+    const filePath = join(themeFolder, fileName)
+    // path should be under instance theme folder
+    if (!filePath.startsWith(themeFolder)) {
+      return
+    }
+    if (existsSync(filePath)) {
+      const fileType = await fromFile(filePath)
+      if (fileType?.mime.startsWith('audio') || fileType?.mime.startsWith('video') || fileType?.mime.startsWith('image') || fileType?.mime.startsWith('font')) {
+        await unlink(filePath)
+      }
+    }
+  }
+
   async removeTheme(name: string): Promise<void> {
     const folder = this.getAppDataPath('themes', name)
 

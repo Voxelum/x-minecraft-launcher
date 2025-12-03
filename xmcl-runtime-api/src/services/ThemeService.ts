@@ -32,16 +32,30 @@ export interface ThemeData {
 
 export interface ThemeService {
   /**
-   * Add a new media (music, picture) to the theme.
+   * Add a new media (music, picture) to the global theme.
    * @param filePath The file path to the media
    * @returns The media url
    */
   addMedia(filePath: string): Promise<MediaData>
   /**
-   * Remove the media from the theme
+   * Remove the media from the global theme
    * @param url The media url
    */
   removeMedia(url: string): Promise<void>
+  /**
+   * Add a new media (music, picture) to an instance theme.
+   * Media will be stored under the instance's theme folder.
+   * @param instancePath The instance path
+   * @param filePath The file path to the media
+   * @returns The media url
+   */
+  addInstanceMedia(instancePath: string, filePath: string): Promise<MediaData>
+  /**
+   * Remove the media from an instance theme
+   * @param instancePath The instance path
+   * @param url The media url
+   */
+  removeInstanceMedia(instancePath: string, url: string): Promise<void>
   /**
    * Export a theme to a .xtheme (zip) file
    * @param data The theme data

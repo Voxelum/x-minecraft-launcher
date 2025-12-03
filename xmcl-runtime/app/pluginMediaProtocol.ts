@@ -49,6 +49,28 @@ export const pluginMediaProtocol: LauncherAppPlugin = (app) => {
         response.status = 404
       })
     }
+    // http://launcher/instance-theme-media/${instancePath}/${assetName}
+    if (request.url.host === 'launcher' && request.url.pathname.startsWith('/instance-theme-media')) {
+      const instancePath = request.url.searchParams.get('instancePath')
+      if (instancePath) {
+        const fileName = normalizePath(request.url.pathname.substring('/instance-theme-media'.length))
+        const pathname = join(instancePath, 'theme', fileName)
+        const { fromFile } = await import('file-type')
+        await fromFile(pathname).then((type) => {
+          if (type && (type.mime.startsWith('image/') || type.mime.startsWith('video/') || type.mime.startsWith('audio/') || type.mime.startsWith('font/'))) {
+            response.status = 200
+            response.headers = { 'content-type': type.mime }
+            response.body = createReadStream(pathname)
+          } else {
+            response.status = 404
+          }
+        }).catch(() => {
+          response.status = 404
+        })
+      } else {
+        response.status = 400
+      }
+    }
   })
   app.protocol.registerHandler('data', ({ request, response }) => {
     // Data uri
