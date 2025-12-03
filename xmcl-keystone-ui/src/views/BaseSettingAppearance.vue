@@ -26,22 +26,52 @@
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import { kInstance } from '@/composables/instance'
 import { kInstanceTheme } from '@/composables/instanceTheme'
+import { useService } from '@/composables/service'
 import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
+import { ThemeServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { path: instancePath } = injection(kInstance)
 const { instanceTheme, saveTheme, clearTheme } = injection(kInstanceTheme)
 const { currentTheme, update } = injection(kTheme)
+const { copyMediaToInstance } = useService(ThemeServiceKey)
 
 async function toggleInstanceTheme(enabled: boolean) {
   if (enabled) {
-    // Create a deep copy of the current global theme, but clear media to avoid sharing
+    // Create a deep copy of the current global theme
     const themeCopy = JSON.parse(JSON.stringify(currentTheme.value))
-    // Clear media references since they point to global theme media
-    themeCopy.backgroundImage = undefined
-    themeCopy.backgroundMusic = []
-    themeCopy.font = undefined
+    // Copy media files to instance theme folder
+    if (themeCopy.backgroundImage?.url?.startsWith('http://launcher/theme-media/')) {
+      try {
+        const newMedia = await copyMediaToInstance(instancePath.value, themeCopy.backgroundImage.url)
+        themeCopy.backgroundImage = newMedia
+      } catch {
+        themeCopy.backgroundImage = undefined
+      }
+    }
+    if (themeCopy.font?.url?.startsWith('http://launcher/theme-media/')) {
+      try {
+        const newMedia = await copyMediaToInstance(instancePath.value, themeCopy.font.url)
+        themeCopy.font = newMedia
+      } catch {
+        themeCopy.font = undefined
+      }
+    }
+    if (themeCopy.backgroundMusic?.length > 0) {
+      const newMusic = []
+      for (const music of themeCopy.backgroundMusic) {
+        if (music?.url?.startsWith('http://launcher/theme-media/')) {
+          try {
+            const newMedia = await copyMediaToInstance(instancePath.value, music.url)
+            newMusic.push(newMedia)
+          } catch {
+            // Skip failed copies
+          }
+        }
+      }
+      themeCopy.backgroundMusic = newMusic
+    }
     instanceTheme.value = themeCopy
     await saveTheme()
   } else {

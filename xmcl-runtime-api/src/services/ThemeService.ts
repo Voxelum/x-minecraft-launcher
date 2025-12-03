@@ -57,6 +57,13 @@ export interface ThemeService {
    */
   removeInstanceMedia(instancePath: string, url: string): Promise<void>
   /**
+   * Copy a global theme media file to an instance's theme folder
+   * @param instancePath The instance path
+   * @param url The global media url (http://launcher/theme-media/...)
+   * @returns The new instance media url
+   */
+  copyMediaToInstance(instancePath: string, url: string): Promise<MediaData>
+  /**
    * Export a theme to a .xtheme (zip) file
    * @param data The theme data
    * @param destinationFile The destination file

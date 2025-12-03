@@ -95,6 +95,31 @@ export class ThemeService extends AbstractService implements IThemeService {
     }
   }
 
+  async copyMediaToInstance(instancePath: string, url: string): Promise<MediaData> {
+    // Extract file name from global theme URL
+    const fileName = basename(url.substring('http://launcher/theme-media/'.length))
+    if (!fileName || fileName === '.' || fileName === '..') {
+      throw new Error('Invalid media URL')
+    }
+    const sourcePath = this.getAppDataPath('themes', fileName)
+    if (!existsSync(sourcePath)) {
+      throw new Error('Source media file not found')
+    }
+    const fileType = await fromFile(sourcePath)
+    if (!fileType?.mime.startsWith('audio') && !fileType?.mime.startsWith('video') && !fileType?.mime.startsWith('image') && !fileType?.mime.startsWith('font')) {
+      throw new Error('Unsupported media type')
+    }
+    const themeFolder = join(instancePath, 'theme')
+    const targetPath = join(themeFolder, fileName)
+    await ensureDir(themeFolder)
+    await copyFile(sourcePath, targetPath)
+    return {
+      url: 'http://launcher/instance-theme-media/' + fileName + '?instancePath=' + encodeURIComponent(instancePath),
+      type: fileType.mime.slice(0, fileType.mime.indexOf('/')) as 'audio' | 'video' | 'image' | 'font',
+      mimeType: fileType.mime,
+    }
+  }
+
   async removeTheme(name: string): Promise<void> {
     const folder = this.getAppDataPath('themes', name)
 
