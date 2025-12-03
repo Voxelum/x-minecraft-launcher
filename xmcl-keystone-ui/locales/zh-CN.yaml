@@ -733,6 +733,8 @@ me:
   news: 新闻
   recentPlay: 最近游玩
   versions: 已安装版本
+  viewByDate: 按日期查看
+  viewByFolder: 按文件夹查看
 minecraftVersion:
   empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本

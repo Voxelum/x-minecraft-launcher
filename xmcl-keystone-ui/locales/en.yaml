@@ -786,6 +786,8 @@ me:
   news: News
   recentPlay: Recent Play
   versions: Installed Versions
+  viewByDate: View by Date
+  viewByFolder: View by Folder
 minecraftVersion:
   empty: Cannot load Minecraft versions
   name: Minecraft Version

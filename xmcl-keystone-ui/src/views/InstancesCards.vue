@@ -2,62 +2,92 @@
   <div
     class="flex h-full w-full select-none flex-col items-start justify-start gap-4 overflow-auto"
   >
-    <!-- Folder groups -->
-    <template v-for="groupItem of groupedInstances">
-      <div
-        v-if="groupItem.type === 'group'"
-        :key="groupItem.id"
-        class="w-full"
-      >
+    <!-- Folder view mode -->
+    <template v-if="viewMode === 'folder'">
+      <!-- Folder groups -->
+      <template v-for="groupItem of groupedInstances">
         <div
-          class="flex items-center cursor-pointer select-none mb-2"
-          @click="toggleGroup(groupItem.id)"
+          v-if="groupItem.type === 'group'"
+          :key="groupItem.id"
+          class="w-full"
         >
-          <v-icon class="mr-2 transition-transform" :class="{ 'rotate-90': expandedGroups[groupItem.id] }">
-            chevron_right
-          </v-icon>
-          <span class="text-lg font-medium">{{ groupItem.name || t('instances.folder') }}</span>
-          <span class="ml-2 text-gray-500">({{ groupItem.instances.length }})</span>
-        </div>
-        <transition name="fade-transition">
           <div
-            v-if="expandedGroups[groupItem.id]"
-            class="flex flex-wrap gap-2 pl-6"
+            class="flex items-center cursor-pointer select-none mb-2"
+            @click="toggleGroup(groupItem.id)"
           >
-            <InstanceCardCompact
-              v-for="instance in groupItem.instances"
-              :key="instance.path"
-              :instance="instance"
-              @click.stop="emit('select', instance.path)"
-            />
+            <v-icon class="mr-2 transition-transform" :class="{ 'rotate-90': isGroupExpanded(groupItem.id) }">
+              chevron_right
+            </v-icon>
+            <span class="text-lg font-medium">{{ groupItem.name || t('instances.folder') }}</span>
+            <span class="ml-2 text-gray-500">({{ groupItem.instances.length }})</span>
           </div>
-        </transition>
-      </div>
+          <transition name="fade-transition">
+            <div
+              v-if="isGroupExpanded(groupItem.id)"
+              class="flex flex-wrap gap-2 pl-6"
+            >
+              <InstanceCardCompact
+                v-for="instance in groupItem.instances"
+                :key="instance.path"
+                :instance="instance"
+                @click.stop="emit('select', instance.path)"
+              />
+            </div>
+          </transition>
+        </div>
+      </template>
+
+      <!-- Ungrouped instances by time -->
+      <template v-for="(inst, i) of ungroupedByTime">
+        <div
+          :key="i + 'title'"
+          class="flex w-full flex-1 flex-grow-0 justify-center"
+          style="color: grey;"
+        >
+          {{ title[i] }}
+        </div>
+        <div
+          :key="i + 'instances'"
+          class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4"
+        >
+          <InstanceCard
+            v-for="instance in inst"
+            :key="instance.path"
+            :instance="instance"
+            @click.stop="emit('select', instance.path)"
+            @delete="emit('delete', instance)"
+            @dragstart="emit('dragstart', instance)"
+            @dragend="emit('dragend')"
+          />
+        </div>
+      </template>
     </template>
 
-    <!-- Ungrouped instances by time -->
-    <template v-for="(inst, i) of ungroupedByTime">
-      <div
-        :key="i + 'title'"
-        class="flex w-full flex-1 flex-grow-0 justify-center"
-        style="color: grey;"
-      >
-        {{ title[i] }}
-      </div>
-      <div
-        :key="i + 'instances'"
-        class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4"
-      >
-        <InstanceCard
-          v-for="instance in inst"
-          :key="instance.path"
-          :instance="instance"
-          @click.stop="emit('select', instance.path)"
-          @delete="emit('delete', instance)"
-          @dragstart="emit('dragstart', instance)"
-          @dragend="emit('dragend')"
-        />
-      </div>
+    <!-- Date view mode (legacy) -->
+    <template v-else>
+      <template v-for="(inst, i) of instancesByTime">
+        <div
+          :key="i + 'title'"
+          class="flex w-full flex-1 flex-grow-0 justify-center"
+          style="color: grey;"
+        >
+          {{ title[i] }}
+        </div>
+        <div
+          :key="i + 'instances'"
+          class="grid w-full grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-4"
+        >
+          <InstanceCard
+            v-for="instance in inst"
+            :key="instance.path"
+            :instance="instance"
+            @click.stop="emit('select', instance.path)"
+            @delete="emit('delete', instance)"
+            @dragstart="emit('dragstart', instance)"
+            @dragend="emit('dragend')"
+          />
+        </div>
+      </template>
     </template>
   </div>
 </template>
@@ -66,7 +96,7 @@
 import { Instance } from '@xmcl/instance';
 import InstanceCard from './InstancesCard.vue'
 import InstanceCardCompact from './InstancesCardCompact.vue'
-import { useInstanceGroup, InstanceGroupData } from '@/composables/instanceGroup'
+import { useInstanceGroup } from '@/composables/instanceGroup'
 import { Ref } from 'vue'
 
 interface GroupedItem {
@@ -77,16 +107,24 @@ interface GroupedItem {
   instances: Instance[]
 }
 
-const props = defineProps<{ instances: Instance[] }>()
+const props = defineProps<{
+  instances: Instance[]
+  viewMode?: 'folder' | 'date'
+}>()
 const emit = defineEmits(['select', 'dragstart', 'dragend', 'delete'])
 const { t } = useI18n()
 const { groups } = useInstanceGroup()
 
-// Track expanded state for each group
-const expandedGroups = reactive<Record<string, boolean>>({})
+// Track expanded state for each group using shallowRef for Vue2 compatibility
+const expandedGroups = shallowRef<Record<string, boolean>>({})
+
+const isGroupExpanded = (id: string) => {
+  return expandedGroups.value[id] ?? true
+}
 
 const toggleGroup = (id: string) => {
-  expandedGroups[id] = !expandedGroups[id]
+  const current = expandedGroups.value[id] ?? true
+  expandedGroups.value = { ...expandedGroups.value, [id]: !current }
 }
 
 // Create a map from instance path to instance
@@ -111,10 +149,6 @@ const groupedInstances = computed((): GroupedItem[] => {
         }
       }
       if (groupInstances.length > 0) {
-        // Initialize expanded state if not exists
-        if (expandedGroups[item.id] === undefined) {
-          expandedGroups[item.id] = true
-        }
         result.push({
           type: 'group',
           id: item.id,
@@ -155,11 +189,12 @@ const title = computed(() => [
   t('instanceAge.older'),
 ])
 
-const ungroupedByTime: Ref<Instance[][]> = computed(() => {
+// Helper function to group instances by time
+const groupByTime = (instances: Instance[]): Instance[][] => {
   const todayR: Instance[] = []
   const threeR: Instance[] = []
   const other: Instance[] = []
-  for (const p of ungroupedInstances.value) {
+  for (const p of instances) {
     const diff = now - p.lastAccessDate
     if (diff <= oneDay) {
       todayR.push(p)
@@ -174,5 +209,10 @@ const ungroupedByTime: Ref<Instance[][]> = computed(() => {
   if (threeR.length > 0) result.push(threeR)
   if (other.length > 0) result.push(other)
   return result
-})
+}
+
+const ungroupedByTime: Ref<Instance[][]> = computed(() => groupByTime(ungroupedInstances.value))
+
+// All instances by time (for date view mode)
+const instancesByTime: Ref<Instance[][]> = computed(() => groupByTime(props.instances))
 </script>
