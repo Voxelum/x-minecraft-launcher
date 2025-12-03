@@ -1,6 +1,6 @@
 <template>
   <div class="log-view-container flex flex-col h-full">
-    <div class="log-toolbar flex items-center gap-2 p-2 flex-shrink-0">
+    <div class="log-toolbar flex items-center gap-2 p-2 flex-shrink-0 flex-grow-0">
       <v-text-field
         v-model="searchText"
         :placeholder="t('logView.searchPlaceholder')"

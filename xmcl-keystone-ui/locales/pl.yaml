@@ -734,6 +734,8 @@ logLevel:
   info: Info
   success: Sukces
   warning: Ostrzeżenie
+logView:
+  searchPlaceholder: Szukaj w logach...
 login:
   dropHint: Upuść link z authcode tutaj, aby zalogować się ręcznie
   forgetPassword: Nie pamiętasz hasła?
