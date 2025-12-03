@@ -77,7 +77,7 @@ export class InstanceThemeService extends AbstractService implements IInstanceTh
     if (!fileName || fileName === '.' || fileName === '..') {
       throw new Error('Invalid media URL')
     }
-    const sourcePath = this.getPath('themes', fileName)
+    const sourcePath = this.getAppDataPath('themes', fileName)
     if (!existsSync(sourcePath)) {
       throw new Error('Source media file not found')
     }

@@ -147,7 +147,10 @@ const { refresh, refreshing } = useRefreshable(async () => {
           || file.path.startsWith('shaderpacks')
           || file.path.startsWith('options.txt')
           || file.path.startsWith('optionsof.txt')
-          || file.path.startsWith('servers.dat'))
+          || file.path.startsWith('servers.dat')
+          || file.path.startsWith('theme.json')
+          || file.path.startsWith('theme')
+        )
       .filter(file => !file.path.endsWith('.disabled'))
       .map(file => file.path)
   }
