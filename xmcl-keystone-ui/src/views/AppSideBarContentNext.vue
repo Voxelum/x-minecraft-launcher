@@ -64,7 +64,6 @@
       {{ copySavePayload?.saveName }}
     </SimpleDialog>
     <AppSideBarGroupSettingDialog :default-color="defaultColor" />
-    <AppSideBarGroupDialog />
   </div>
 </template>
 <script setup lang="ts">
@@ -79,7 +78,6 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import AppSideBarGroupItem from './AppSideBarGroupItem.vue'
-import AppSideBarGroupDialog from './AppSideBarGroupDialog.vue'
 import AppSideBarGroupSettingDialog from './AppSideBarGroupSettingDialog.vue'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 
