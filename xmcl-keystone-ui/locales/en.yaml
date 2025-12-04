@@ -522,6 +522,11 @@ instanceAge:
   older: Older
   threeDay: In Three Days
   today: Today
+instanceLauncher:
+  title: All Instances
+  search: Search instances...
+  createNew: Create New Instance
+  showAll: Show All Instances
 instanceDiscover:
   gameFolder: Discover {count} game folders
   instanceFolder: Found {count} instances
@@ -1385,6 +1390,7 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  title: Settings
   about: About
   allowPrerelease: Download Prerelease
   allowPrereleaseDescription: Prerelease might be unstable
@@ -1461,7 +1467,66 @@ setting:
   githubRelease: Github Release
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
+  sidebarSettings: Sidebar Settings
+  sidebarSettingsHint: Customize sidebar appearance and behavior
+  sidebarPosition: Sidebar Position
+  sidebarPositionHint: Choose where the sidebar appears
+  sidebarPositionHintClassic: Classic style supports Left and Right positions only
+  sidebarLeft: Left
+  sidebarRight: Right
+  sidebarTop: Top
+  sidebarBottom: Bottom
+  sidebarStyle: Sidebar Style
+  sidebarStyleHint: Choose between classic and modern notch design
+  sidebarClassic: Classic
+  sidebarNotch: Notch
+  sidebarAlign: Sidebar Alignment
+  sidebarAlignHint: Align the sidebar content
+  sidebarAlignStart: Start
+  sidebarAlignCenter: Center
+  sidebarAlignEnd: End
+  sidebarScale: Sidebar Scale
+  sidebarScaleHint: Adjust the size of the sidebar
+  instanceLauncher:
+    title: All Instances
+    search: Search instances...
+    createNew: Create New Instance
+    showAll: Show All Instances
+  setting:
+    title: Settings
+  newsPosition: Move News Section
   hideNewsHeader: Hide News Showcase
+  myStuffStyle: Home Page Style
+  myStuffStyleHint: Choose between classic My Stuff with news or modern instance launcher
+  myStuffStyleTitle: Page Design
+  myStuffStyleSubtitle: Select your preferred home page layout
+  myStuffStyleOld: My Stuff (Classic)
+  myStuffStyleOldDescription: Classic layout with news carousel and instance grid
+  myStuffStyleNew: Launcher (Modern)
+  myStuffStyleNewDescription: Full-screen instance launcher with search and quick access
+  advancedSettings: Advanced Settings
+  advancedSettingsHint: Danger zone - reset or manage launcher data
+  resetAllSettings: Reset All Settings
+  resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
+  resetAllSettingsConfirmTitle: Reset All Settings?
+  resetAllSettingsConfirmMessage: This will permanently delete all settings, accounts, instances, groups, and cached data. This action cannot be undone. Are you sure?
+  resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
+  exportSettings: Export Settings
+  exportSettingsHint: Save your current settings to a file
+  importSettings: Import Settings
+  importSettingsHint: Load settings from a previously exported file
+  settingsExported: Settings exported successfully
+  settingsImported: Settings imported successfully
+  settingsImportError: Failed to import settings. Please check the file format.
+  appearanceDescription: Customize the launcher appearance
+  layoutTitle: Interface Layout
+  layoutDescription: Choose your preferred interface style
+  themeSettings: Theme Settings
+  quickLaunchSettings: Quick Launch
+  authenticationSettings: Authentication
+  memoryAssignment: Memory Assignment
+  advancedJavaOptions: Advanced Java Options
+  minecraftOptions: Minecraft Options
   instanceTheme:
     description: >-
       Enable a custom theme for this instance. This will create a copy of the
@@ -1474,8 +1539,8 @@ setting:
   layout:
     default: Default Layout
     focus: Focus Layout
-  layoutDescription: The layout of the launcher UI
-  layoutTitle: Layout
+  viewModeScroll: Scroll View
+  viewModeTabs: Tab View
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar

@@ -1,69 +1,79 @@
 <template>
-  <div>
-    <SettingHeader>
-      <div class="flex">
-        🔑 {{ t('userService.title') }}
-
-        <v-spacer />
-        <v-btn
-          v-shared-tooltip.left="_ => t('userService.add')"
-          icon
-          @click="addNew"
-        >
-          <v-icon>add</v-icon>
-        </v-btn>
-      </div>
-    </SettingHeader>
-    <v-list
-      color="transparent"
-      hover
-    >
-      <v-list-item
-        v-for="(a, i) of items || []"
-        :key="i"
+  <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card-title class="text-subtitle-1 pb-2">
+      <v-icon left color="primary" small>vpn_key</v-icon>
+      {{ t('userService.title') }}
+      <v-spacer />
+      <v-btn
+        v-shared-tooltip.left="_ => t('userService.add')"
+        icon
+        small
+        @click="addNew"
       >
-        <v-list-item-content>
-          <v-text-field
-            v-model="a.url"
-            :readonly="!a.new"
-            filled
-            :rules="urlsRules"
-            dense
-            hide-details
-            :placeholder="t('userService.baseUrlHint')"
-          />
-        </v-list-item-content>
-        <v-list-item-action>
-          <v-btn
-            v-if="a.new"
-            icon
-            text
-            @click="save(a)"
+        <v-icon>add</v-icon>
+      </v-btn>
+    </v-card-title>
+    
+    <v-card-text class="pa-4">
+      <v-list class="transparent-list">
+        <v-slide-y-transition group>
+          <v-list-item
+            v-for="(a, i) of items || []"
+            :key="i"
+            class="mb-2 rounded-lg"
           >
-            <v-icon>save</v-icon>
-          </v-btn>
-          <v-btn
-            v-else
-            color="error"
-            icon
-            text
-            @click="remove(a)"
-          >
-            <v-icon>delete</v-icon>
-          </v-btn>
-        </v-list-item-action>
-      </v-list-item>
-    </v-list>
-  </div>
+            <v-list-item-content>
+              <v-text-field
+                v-model="a.url"
+                :readonly="!a.new"
+                filled
+                :rules="urlsRules"
+                dense
+                hide-details
+                :placeholder="t('userService.baseUrlHint')"
+                prepend-inner-icon="link"
+                class="rounded-lg"
+              />
+            </v-list-item-content>
+            <v-list-item-action>
+              <v-btn
+                v-if="a.new"
+                icon
+                text
+                color="primary"
+                @click="save(a)"
+              >
+                <v-icon>save</v-icon>
+              </v-btn>
+              <v-btn
+                v-else
+                color="error"
+                icon
+                text
+                @click="remove(a)"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </v-slide-y-transition>
+        
+        <div v-if="!items || items.length === 0" class="text-center grey--text py-4">
+          {{ t('userService.noServices') || 'No third-party services configured' }}
+        </div>
+      </v-list>
+    </v-card-text>
+  </v-card>
 </template>
+
 <script setup lang="ts">
-import SettingHeader from '@/components/SettingHeader.vue'
+import { ref, watch, Ref } from 'vue'
+import { useI18n } from 'vue-i18n-bridge'
 import { useService } from '@/composables'
 import { kSupportedAuthorityMetadata } from '@/composables/yggrasil'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { UserServiceKey } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
 
 type AuthorityItem = {
   new?: boolean
@@ -106,3 +116,18 @@ const remove = async (api: AuthorityItem) => {
   mutate()
 }
 </script>
+
+<style scoped>
+:deep(.transparent-list) {
+  background: transparent !important;
+}
+
+.v-card {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.v-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>

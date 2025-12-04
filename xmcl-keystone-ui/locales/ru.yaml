@@ -1497,10 +1497,68 @@ setting:
   githubRelease: Релиз GitHub
   globalSetting: Глобальные настройки экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
+  instanceLauncher:
+    title: Все экземпляры
+    search: Поиск экземпляров...
+    createNew: Создать новый экземпляр
+    showAll: Показать все экземпляры
+  sidebarSettings: Настройки боковой панели
+  sidebarSettingsHint: Настройка внешнего вида и поведения боковой панели
+  sidebarPosition: Позиция боковой панели
+  sidebarPositionHint: Выберите, где будет отображаться боковая панель
+  sidebarPositionHintClassic: Классический стиль поддерживает только левую и правую позиции
+  sidebarLeft: Слева
+  sidebarRight: Справа
+  sidebarTop: Сверху
+  sidebarBottom: Снизу
+  sidebarStyle: Стиль боковой панели
+  sidebarStyleHint: Выберите между классическим и современным дизайном
+  sidebarClassic: Классический
+  sidebarNotch: Notch
+  sidebarAlign: Выравнивание боковой панели
+  sidebarAlignHint: Выравнивание содержимого боковой панели
+  sidebarAlignStart: Начало
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Конец
+  sidebarScale: Масштаб боковой панели
+  sidebarScaleHint: Настройка размера боковой панели
+  myStuffStyle: Стиль домашней страницы
+  myStuffStyleHint: Выберите между классической страницей с новостями или современным лаунчером
+  myStuffStyleTitle: Дизайн страницы
+  myStuffStyleSubtitle: Выберите предпочитаемый макет домашней страницы
+  myStuffStyleOld: Мой контент (Классика)
+  myStuffStyleOldDescription: Классический макет с каруселью новостей и сеткой экземпляров
+  myStuffStyleNew: Лаунчер (Современный)
+  myStuffStyleNewDescription: Полноэкранный лаунчер экземпляров с поиском и быстрым доступом
+  advancedSettings: Расширенные настройки
+  advancedSettingsHint: Опасная зона - сброс или управление данными лаунчера
+  resetAllSettings: Сбросить все настройки
+  resetAllSettingsHint: Сбросить лаунчер к заводским настройкам (удаляет всё)
+  resetAllSettingsConfirmTitle: Сбросить все настройки?
+  resetAllSettingsConfirmMessage: Это навсегда удалит все настройки, аккаунты, экземпляры, группы и кэшированные данные. Это действие нельзя отменить. Вы уверены?
+  resetAllSettingsSuccess: Все настройки были сброшены. Лаунчер перезапустится.
+  exportSettings: Экспорт настроек
+  exportSettingsHint: Сохранить текущие настройки в файл
+  importSettings: Импорт настроек
+  importSettingsHint: Загрузить настройки из ранее экспортированного файла
+  settingsExported: Настройки успешно экспортированы
+  settingsImported: Настройки успешно импортированы
+  settingsImportError: Не удалось импортировать настройки. Проверьте формат файла.
+  appearanceDescription: Настройка внешнего вида лаунчера
+  layoutTitle: Макет интерфейса
+  layoutDescription: Выберите предпочитаемый стиль интерфейса
+  themeSettings: Настройки темы
+  quickLaunchSettings: Быстрый запуск
+  authenticationSettings: Аутентификация
+  memoryAssignment: Назначение памяти
+  advancedJavaOptions: Расширенные параметры Java
+  minecraftOptions: Параметры Minecraft
   hideNewsHeader: Скрыть витрину новостей
   instanceTheme:
     activeDescription: |-
       Этот экземпляр использует пользовательскую тему. 
+  viewModeScroll: Прокрутка
+  viewModeTabs: Вкладки 
       Вы можете удалить его, чтобы использовать глобальную тему.
     description: |-
       Включите пользовательскую тему для этого экземпляра. 
