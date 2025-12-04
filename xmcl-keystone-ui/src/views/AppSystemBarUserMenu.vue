@@ -10,15 +10,16 @@
       <div
         id="user-avatar"
         v-bind="attrs"
-        class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 transition-all hover:bg-[rgba(255,255,255,0.2)]"
+        class="non-moveable flex flex-grow-0 cursor-pointer items-center gap-2 rounded px-2 transition-all hover:bg-[rgba(255,255,255,0.2)] py-1"
+        :class="{ 'bg-[rgba(244,67,54,0.6)]': needLogin }"
         v-on="on"
       >
         <PlayerAvatar
           class="overflow-hidden rounded-full transition-all duration-300"
           :src="selectedUserGameProfile?.textures.SKIN.url"
-          :dimension="24"
+          :dimension="22"
         />
-        {{ selectedUserGameProfile?.name }}
+        {{ needLogin ? t('login.login') : selectedUserGameProfile?.name }}
       </div>
     </template>
 
@@ -37,8 +38,10 @@ import UserCard from '@/components/UserCard.vue'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import { injection } from '@/util/inject'
 
+const { t } = useI18n()
 const isShown = ref(false)
-const { gameProfile: selectedUserGameProfile } = injection(kUserContext)
+const { gameProfile: selectedUserGameProfile, users } = injection(kUserContext)
+const needLogin = computed(() => users.value.length === 0 || !selectedUserGameProfile.value?.name)
 
 provide(UserSkinRenderPaused, computed(() => !isShown.value))
 </script>

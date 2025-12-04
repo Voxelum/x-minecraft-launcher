@@ -544,7 +544,9 @@ instances:
   addVanilla: Vanilla-LikeなMinecraftから作成
   addVanillaDescription: 一般的な.minecraftフォルダからインポートします。これは元のプロファイルをXMCLに複製します。
   choose: ゲームを選択
+  empty: このフォルダーにはインスタンスがありません
   fix: 直す
+  folder: フォルダー
   folderSetting: フォルダーの設定
   importFolder: フォルダーからインポート
   importFolderDescription: Minecraftをランチャーにインポート
@@ -661,6 +663,8 @@ logLevel:
   info: 情報
   success: 成功
   warning: 警告
+logView:
+  searchPlaceholder: ログを検索...
 login:
   dropHint: ここに認証コードを含んだURLをドロップすることで手動でログインできます
   forgetPassword: パスワードを忘れましたか?
@@ -795,6 +799,13 @@ modInstall:
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
+  autoUpgrade:
+    title: Modをアップデートしますか？
+    description: >-
+      Minecraftのバージョンを変更しました。互換性のあるModを自動的に
+      Minecraft {version} に対応するバージョンに更新しますか？
+    yes: Modをアップデート
+    no: スキップ
 modSearch:
   noLocalModsFound: 検索に一致するローカルModが見つかりません。
   noModsFound: Modが見つかりません。
@@ -1615,6 +1626,14 @@ userService:
   add: 他のサービスを追加
   authLibInjector: auth-lib injectorに提案に従う
   baseUrlHint: あなたのカスタムサービスのベースURL
+  manageServices: サービスを管理
+  authlibInjectorMetadata: Authlib-Injector メタデータ
+  server: サーバー
+  implementation: 実装
+  version: バージョン
+  skinDomains: スキンドメイン
+  homepage: ホームページ
+  register: 登録
   title: サードパーティのユーザーサービス
   validateHint: ユーザーのトークンがまだ有効か確認するために使用します
 userServices:

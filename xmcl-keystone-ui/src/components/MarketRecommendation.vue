@@ -110,7 +110,7 @@ const randomCurseforgeCats = computed(() => {
   if (!all) return []
   while (result.length < 2) {
     const c = all[Math.floor(Math.random() * all.length)]
-    if (result.every(r => r.id !== c.id)) {
+    if (c && result.every(r => r.id !== c.id)) {
       result.push(c)
     }
   }

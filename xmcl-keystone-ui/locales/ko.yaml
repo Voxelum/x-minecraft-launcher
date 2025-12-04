@@ -653,6 +653,8 @@ logLevel:
   info: 정보
   success: 성공
   warning: 경고
+logView:
+  searchPlaceholder: 로그 검색...
 login:
   dropHint: 인증 코드가 포함된 링크를 여기에 놓아 수동 로그인하세요
   forgetPassword: 비밀번호를 잊으셨나요?
@@ -789,6 +791,13 @@ modInstall:
   source: 모드 소스
   switch: 버전 전환
   upgrade: 모드 업그레이드
+  autoUpgrade:
+    title: 모드를 업데이트하시겠습니까?
+    description: >-
+      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로
+      Minecraft {version}에 맞는 버전으로 업데이트하시겠습니까?
+    yes: 모드 업데이트
+    no: 건너뛰기
 modSearch:
   noLocalModsFound: 검색과 일치하는 로컬 모드를 찾을 수 없습니다.
   noModsFound: 모드를 찾을 수 없습니다.
@@ -1617,6 +1626,14 @@ userService:
   add: 더 많은 서비스 추가
   authLibInjector: auth-lib injector 제안을 따르세요
   baseUrlHint: 사용자 지정 서비스의 기본 URL
+  manageServices: 서비스 관리
+  authlibInjectorMetadata: Authlib-Injector 메타데이터
+  server: 서버
+  implementation: 구현
+  version: 버전
+  skinDomains: 스킨 도메인
+  homepage: 홈페이지
+  register: 등록
   title: 서드파티 사용자 서비스
   validateHint: 사용자의 토큰이 여전히 유효한지 확인하는 데 사용됩니다
 userServices:

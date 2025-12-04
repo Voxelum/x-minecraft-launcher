@@ -22,7 +22,7 @@
       >
         <v-img
           v-for="i in avatars.slice(0, 4)"
-          :key="i"
+          :key="`avatar-${i}`"
           :style="{ maxHeight: '20px', maxWidth: '20px' }"
           :src="i"
         />
@@ -60,7 +60,7 @@ const props = defineProps<{
   height?: number
 }>()
 
-const avatars = computed(() => props.items.map(i => i.icon))
+const avatars = computed(() => props.items.map(i => i.icon).filter(v => !!v))
 
 const emit = defineEmits(['expand', 'setting', 'ungroup', 'enableAll', 'disableAll'])
 

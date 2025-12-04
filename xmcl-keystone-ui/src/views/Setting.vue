@@ -81,7 +81,7 @@
           <section id="update" class="mb-8 scroll-target"><SettingUpdate /></section>
           <section id="network" class="mb-8 scroll-target">
             <SettingNetwork />
-            <SettingYggdrasilServices class="mt-4"/>
+            <SettingYggdrasilServices class="mt-4" />
           </section>
           <section id="about" class="mb-12 scroll-target"><SettingAbout /></section>
         </template>
@@ -96,7 +96,7 @@
               <SettingUpdate v-if="activeSectionIndex === 3" />
               <div v-if="activeSectionIndex === 4">
                 <SettingNetwork />
-                <SettingYggdrasilServices class="mt-4"/>
+                <SettingYggdrasilServices class="mt-4" />
               </div>
               <SettingAbout v-if="activeSectionIndex === 5" />
             </div>
@@ -158,102 +158,82 @@ const sections = [
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
   { id: 'update', title: 'setting.update', icon: 'system_update' },
-  { id: 'network', title: 'setting.network', icon: 'public' },
+  { id: 'network', title: 'setting.network', icon: 'wifi' },
   { id: 'about', title: 'setting.about', icon: 'info' },
 ]
 
-const scrollTo = (id: string) => {
-  if (viewMode.value === 'tabs') return // No scrolling in tabs mode
-
-  const element = document.getElementById(id)
-  const container = scrollContainer.value
-  if (element && container) {
-    container.scrollTo({
-      top: element.offsetTop - 24, // Offset for padding
-      behavior: 'smooth'
-    })
+function scrollTo(id: string) {
+  const el = document.getElementById(id)
+  if (el && scrollContainer.value) {
+    const offsetTop = el.offsetTop - 20
+    scrollContainer.value.scrollTo({ top: offsetTop, behavior: 'smooth' })
   }
 }
 
-const onScroll = () => {
-  if (viewMode.value === 'tabs') return
-
-  // Simple scroll spy logic
-  const container = scrollContainer.value
-  if (!container) return
-
-  const scrollPos = container.scrollTop + 100 // Offset
+function onScroll() {
+  if (viewMode.value !== 'scroll' || !scrollContainer.value) return
   
-  for (let i = 0; i < sections.length; i++) {
-    const section = document.getElementById(sections[i].id)
-    if (section) {
-      if (section.offsetTop <= scrollPos && section.offsetTop + section.offsetHeight > scrollPos) {
-        activeSectionIndex.value = i
-        break
-      }
+  const container = scrollContainer.value
+  const scrollTop = container.scrollTop + 100
+  
+  for (let i = sections.length - 1; i >= 0; i--) {
+    const el = document.getElementById(sections[i].id)
+    if (el && el.offsetTop <= scrollTop) {
+      activeSectionIndex.value = i
+      break
     }
   }
 }
-
-// Reset scroll when switching modes
-watch(viewMode, () => {
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollTop = 0
-  }
-})
-
 </script>
 
 <style scoped>
 .setting-page {
   background: transparent;
-  position: relative;
 }
 
 .setting-sidebar {
-  width: 260px;
+  width: 220px;
   flex-shrink: 0;
   position: sticky;
   top: 0;
-  height: 100vh;
+  height: fit-content;
+  max-height: 100vh;
+}
+
+.scroll-container {
+  scroll-behavior: smooth;
 }
 
 .content-wrapper {
   max-width: 900px;
-  transition: all 0.3s ease;
 }
 
 .content-wrapper.tabs-mode {
-  max-width: 800px; /* Slightly narrower for tabs mode focus */
+  max-width: 800px;
 }
 
-.scroll-target {
-  scroll-margin-top: 24px;
+.tab-content {
+  min-height: 400px;
 }
 
-/* View Mode Toggle Button Positioning */
-.view-mode-toggle.top-right {
+/* View Mode Toggle Positioning */
+.view-mode-toggle {
   position: absolute;
-  top: 16px;
-  right: 16px;
   z-index: 10;
+  transition: all 0.3s ease;
 }
 
-/* Custom Scrollbar */
-.visible-scroll::-webkit-scrollbar {
-  width: 8px;
+.view-mode-toggle.in-sidebar {
+  display: none;
 }
 
-.visible-scroll::-webkit-scrollbar-track {
-  background: transparent;
+.view-mode-toggle.top-right {
+  top: 16px;
+  right: 24px;
 }
 
-.visible-scroll::-webkit-scrollbar-thumb {
-  background: rgba(128, 128, 128, 0.2);
-  border-radius: 4px;
-}
-
-.visible-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(128, 128, 128, 0.4);
+/* Section spacing */
+.scroll-target {
+  scroll-margin-top: 20px;
 }
 </style>

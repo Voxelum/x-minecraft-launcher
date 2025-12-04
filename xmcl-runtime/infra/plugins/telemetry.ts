@@ -1,13 +1,13 @@
-import { ResourceManager, UpdateResourcePayload } from '@xmcl/resource'
-import { kResourceManager } from '~/resource'
-import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService } from '@xmcl/runtime-api'
-import type { Contracts } from 'applicationinsights'
+import { UpdateResourcePayload } from '@xmcl/resource'
+import { APP_INSIGHT_KEY, Exception, LaunchService as ILaunchService, Settings } from '@xmcl/runtime-api'
+import type { Contracts, TelemetryClient } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
 import { kClientToken, kIsNewClient } from '~/infra'
 import { LaunchService } from '~/launch'
 import { PeerService } from '~/peer'
+import { kResourceManager } from '~/resource'
 import { kSettings } from '~/settings'
 import { UserService } from '~/user'
 import { parseStack } from '../errors'
@@ -28,6 +28,37 @@ const getSdkVersion = () => {
   }
 
   return sdkVersion
+}
+
+const installLaunchStatusTracker = (settings: Settings, defaultClient: TelemetryClient, contract: Contracts.ContextTagKeys, service: ILaunchService) => {
+  let skip = false
+  service.on('launch-performance', ({ name, id, duration, success }) => {
+    if (settings.disableTelemetry) return
+    if (skip) return
+    if (name === 'launching' && success && !skip && duration < 9_200 /* 90% user take less thn 9.2s */) {
+      skip = true
+    }
+    defaultClient.trackEvent({
+      name,
+      measurements: {
+        duration,
+      },
+      tagOverrides: {
+        [contract.operationId]: id,
+        [contract.operationName]: name,
+      },
+    })
+  }).on('launch-performance-pre', ({ name, id }) => {
+    if (settings.disableTelemetry) return
+    if (skip) return
+    defaultClient.trackEvent({
+      name: name + '-pre',
+      tagOverrides: {
+        [contract.operationId]: id,
+        [contract.operationName]: name,
+      },
+    })
+  })
 }
 
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
@@ -60,6 +91,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   tags[contract.deviceModel] = app.platform.arch
   tags[contract.cloudRole] = app.env
   tags[contract.internalSdkVersion] = getSdkVersion()
+
 
   const createExceptionDetails = (msg?: string, name?: string, stack?: string) => {
     const d = new appInsight.Contracts.ExceptionDetails()
@@ -148,8 +180,9 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     setupResourceTelemetryClient(appInsight, app, settings, appInsight.defaultClient.context.tags)
 
     // Track game start and end
-    app.registry.get(LaunchService).then((service: LaunchService) => {
-      (service as ILaunchService).on('minecraft-start', (options) => {
+    app.registry.get(LaunchService).then((service: ILaunchService) => {
+      installLaunchStatusTracker(settings, defaultClient, contract, service)
+      service.on('minecraft-start', (options) => {
         if (settings.disableTelemetry) return
         defaultClient.trackEvent({
           name: 'minecraft-start',
@@ -180,27 +213,6 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
               },
             })
           }
-        }).on('launch-performance', ({ name, id, duration }) => {
-          if (settings.disableTelemetry) return
-          defaultClient.trackEvent({
-            name,
-            measurements: {
-              duration,
-            },
-            tagOverrides: {
-              [contract.operationId]: id,
-              [contract.operationName]: name,
-            },
-          })
-        }).on('launch-performance-pre', ({ name, id }) => {
-          if (settings.disableTelemetry) return
-          defaultClient.trackEvent({
-            name: name + '-pre',
-            tagOverrides: {
-              [contract.operationId]: id,
-              [contract.operationName]: name,
-            },
-          })
         })
     })
 

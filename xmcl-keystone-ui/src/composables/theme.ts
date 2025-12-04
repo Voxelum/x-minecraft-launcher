@@ -2,7 +2,7 @@ import { injection } from '@/util/inject'
 import { loadV1Theme } from '@/util/theme.v0'
 import { deserialize, deserialize as deserializeV0, serialize } from '@/util/theme.v1'
 import { useStyleTag } from '@vueuse/core'
-import { MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
+import { InstanceThemeServiceKey, MediaData, ThemeData, ThemeServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { InjectionKey, Ref, computed, set } from 'vue'
 import { Framework } from 'vuetify'
@@ -230,30 +230,30 @@ async function resolveMediaFromUrl(url: string, expectedType: 'audio' | 'video' 
       case 'image':
         mimeType = extension === 'png' ? 'image/png'
           : extension === 'jpg' || extension === 'jpeg' ? 'image/jpeg'
-          : extension === 'gif' ? 'image/gif'
-          : extension === 'webp' ? 'image/webp'
-          : extension === 'svg' ? 'image/svg+xml'
-          : 'image/png'
+            : extension === 'gif' ? 'image/gif'
+              : extension === 'webp' ? 'image/webp'
+                : extension === 'svg' ? 'image/svg+xml'
+                  : 'image/png'
         break
       case 'video':
         mimeType = extension === 'mp4' ? 'video/mp4'
           : extension === 'webm' ? 'video/webm'
-          : extension === 'ogg' ? 'video/ogg'
-          : 'video/mp4'
+            : extension === 'ogg' ? 'video/ogg'
+              : 'video/mp4'
         break
       case 'audio':
         mimeType = extension === 'mp3' ? 'audio/mpeg'
           : extension === 'ogg' ? 'audio/ogg'
-          : extension === 'wav' ? 'audio/wav'
-          : extension === 'flac' ? 'audio/flac'
-          : 'audio/mpeg'
+            : extension === 'wav' ? 'audio/wav'
+              : extension === 'flac' ? 'audio/flac'
+                : 'audio/mpeg'
         break
       case 'font':
         mimeType = extension === 'ttf' ? 'font/ttf'
           : extension === 'otf' ? 'font/otf'
-          : extension === 'woff' ? 'font/woff'
-          : extension === 'woff2' ? 'font/woff2'
-          : 'font/ttf'
+            : extension === 'woff' ? 'font/woff'
+              : extension === 'woff2' ? 'font/woff2'
+                : 'font/ttf'
         break
     }
   }
@@ -272,8 +272,23 @@ async function resolveMediaFromUrl(url: string, expectedType: 'audio' | 'video' 
   }
 }
 
-export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void) {
+export interface ThemeWritterOptions {
+  /**
+   * If provided, media files will be stored under the instance's theme folder.
+   * This keeps instance theme media separate from global theme media.
+   */
+  instancePath?: string
+}
+
+export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => void, options: ThemeWritterOptions = {}) {
   const { addMedia, removeMedia, exportTheme, importTheme } = useService(ThemeServiceKey)
+  const instanceThemeService = useService(InstanceThemeServiceKey)
+  const { instancePath } = options
+
+  // Use instance-specific methods when instancePath is provided
+  const _addMedia = (filePath: string) => instancePath ? instanceThemeService.addMedia(instancePath, filePath) : addMedia(filePath)
+  const _removeMedia = (url: string) => instancePath ? instanceThemeService.removeMedia(instancePath, url) : removeMedia(url)
+
   const writeTheme = debounce(() => {
     save()
   }, 800)
@@ -517,7 +532,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 
   async function addMusic(filePath: string) {
-    const media = await addMedia(filePath)
+    const media = await _addMedia(filePath)
     const theme = currentTheme.value
     if (!theme) return
     theme.backgroundMusic.push(media)
@@ -529,19 +544,19 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (!theme) return
     const m = theme.backgroundMusic.splice(index, 1)
     if (m) {
-      await removeMedia(m[0].url).catch(() => { })
+      await _removeMedia(m[0].url).catch(() => { })
     }
     writeTheme()
   }
 
   async function setBackgroundImage(path: string) {
-    const media = await addMedia(path)
+    const media = await _addMedia(path)
     if (media.type !== 'image' && media.type !== 'video') return
     const theme = currentTheme.value
     if (!theme) return
     const old = theme.backgroundImage
     if (old && old.url.startsWith('http://launcher/')) {
-      await removeMedia(old.url).catch(() => { })
+      await _removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
     writeTheme()
@@ -553,7 +568,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (!theme) return
     const old = theme.backgroundImage
     if (old && old.url.startsWith('http://launcher/')) {
-      await removeMedia(old.url).catch(() => { })
+      await _removeMedia(old.url).catch(() => { })
     }
     set(theme, 'backgroundImage', media)
     writeTheme()
@@ -565,7 +580,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (theme.backgroundImage) {
       // Only remove local media files
       if (theme.backgroundImage.url.startsWith('http://launcher/')) {
-        await removeMedia(theme.backgroundImage.url).catch(() => { })
+        await _removeMedia(theme.backgroundImage.url).catch(() => { })
       }
       theme.backgroundImage = undefined
       writeTheme()
@@ -573,7 +588,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 
   async function setFont(path: string) {
-    const media = await addMedia(path)
+    const media = await _addMedia(path)
     console.log(media)
     if (media.type !== 'font') return
     const theme = currentTheme.value
@@ -596,7 +611,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
     if (theme.font) {
       // Only remove local media files
       if (theme.font.url.startsWith('http://launcher/')) {
-        await removeMedia(theme.font.url).catch(() => { })
+        await _removeMedia(theme.font.url).catch(() => { })
       }
       theme.font = undefined
       theme.fontSize = 16
@@ -698,7 +713,7 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
 
   const isDark = computed(() => targetTheme.value.dark)
   const backgroundType = computed(() => targetTheme.value.backgroundType ?? BackgroundType.NONE)
-  const blur = computed(() =>   targetTheme.value.blur?.background ?? 0)
+  const blur = computed(() => targetTheme.value.blur?.background ?? 0)
   const blurCard = computed(() => targetTheme.value.blur?.card ?? 22)
   const backgroundImage = computed(() => targetTheme.value.backgroundImage)
   const backgroundColorOverlay = computed(() => targetTheme.value.backgroundColorOverlay ?? false)
@@ -762,16 +777,15 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
   watch(successColor, (newColor) => { framework.theme.currentTheme.success = newColor }, { immediate: true })
   watch(warningColor, (newColor) => { framework.theme.currentTheme.warning = newColor }, { immediate: true })
 
-  useStyleTag(computed(() => `
-  @font-face {
+  const fontFace = computed(() => font.value?.url ? `@font-face {
     font-family: 'custom';
     src: url('${font.value?.url}');
-  }
-
+  }` : '')
+  useStyleTag(computed(() => `
+  ${fontFace.value}
   html {
     font-size: ${fontSize.value}px;
   }
-  
   .v-application {
     font-family: 'custom', 'Roboto', sans-serif;
   }

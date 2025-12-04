@@ -748,6 +748,8 @@ logLevel:
   info: Інформація
   success: Успіх
   warning: Попередження
+logView:
+  searchPlaceholder: Пошук логів...
 login:
   dropHint: Перетягніть сюди посилання з кодом авторизації для ручного входу
   forgetPassword: Забули пароль?
@@ -901,6 +903,13 @@ modInstall:
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
+  autoUpgrade:
+    title: Оновити моди?
+    description: >-
+      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити
+      сумісні моди до версій, що відповідають Minecraft {version}?
+    yes: Оновити моди
+    no: Пропустити
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -1872,6 +1881,14 @@ userService:
   add: Додати більше служб
   authLibInjector: Дотримуйтесь рекомендацій інжектора auth-lib
   baseUrlHint: Базова URL-адреса вашої власної служби
+  manageServices: Керувати службами
+  authlibInjectorMetadata: Метадані Authlib-Injector
+  server: Сервер
+  implementation: Реалізація
+  version: Версія
+  skinDomains: Домени скіна
+  homepage: Домашня сторінка
+  register: Реєстрація
   title: Сторонні служби користувачів
   validateHint: Використовується для перевірки, чи токен користувача все ще дійсний
 userServices:

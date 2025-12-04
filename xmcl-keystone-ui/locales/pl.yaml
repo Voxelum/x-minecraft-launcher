@@ -734,6 +734,8 @@ logLevel:
   info: Info
   success: Sukces
   warning: Ostrzeżenie
+logView:
+  searchPlaceholder: Szukaj w logach...
 login:
   dropHint: Upuść link z authcode tutaj, aby zalogować się ręcznie
   forgetPassword: Nie pamiętasz hasła?
@@ -885,6 +887,13 @@ modInstall:
   source: Mod Source
   switch: Wersja Swtich
   upgrade: Ulepszenia modów
+  autoUpgrade:
+    title: Zaktualizować mody?
+    description: >-
+      Zmieniłeś wersję Minecraft. Czy chcesz automatycznie zaktualizować
+      kompatybilne mody do wersji odpowiadających Minecraft {version}?
+    yes: Zaktualizuj mody
+    no: Pomiń
 modSearch:
   noLocalModsFound: Nie znaleziono lokalnych modów pasujących do wyszukiwania.
   noModsFound: Nie znaleziono modów.
@@ -1804,6 +1813,14 @@ userService:
   add: Dodaj więcej usług
   authLibInjector: Postępuj zgodnie z sugestią auth-lib injector
   baseUrlHint: Podstawowy adres URL usługi niestandardowej
+  manageServices: Zarządzaj usługami
+  authlibInjectorMetadata: Metadane Authlib-Injector
+  server: Serwer
+  implementation: Implementacja
+  version: Wersja
+  skinDomains: Domeny skórek
+  homepage: Strona główna
+  register: Zarejestruj się
   title: Usługi użytkowników zewnętrznych
   validateHint: Służy do sprawdzania, czy token użytkownika jest nadal ważny
 userServices:
@@ -1837,3 +1854,4 @@ userSkin:
   urlNotEmpty: Adres URL skórki nie może być pusty
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
+  

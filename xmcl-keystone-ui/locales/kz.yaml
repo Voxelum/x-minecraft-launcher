@@ -427,6 +427,8 @@ launchFailed:
       Бұл мәселені болдырмау үшін инстанс параметрлерінде Ely.by Authlib
       алмастыруын өшіре аласыз.
     title: Ely.by Authlib үйлесімділік мәселесі
+logView:
+  searchPlaceholder: Журналдарды іздеу...
 loginError:
   loginXboxAgeRestricted: >-
     Fail to login Xbox due the the age issue. Please make sure the age is set
@@ -460,6 +462,13 @@ modInstall:
   display: Mods Display
   removeUnusedLibraries: Remove unused libraries mods
   upgrade: Upgrade mods
+  autoUpgrade:
+    title: Модтарды жаңарту керек пе?
+    description: >-
+      Сіз Minecraft нұсқасын өзгерттіңіз. Үйлесімді модтарды автоматты түрде
+      Minecraft {version} нұсқасына сәйкес жаңартқыңыз келе ме?
+    yes: Модтарды жаңарту
+    no: Өткізіп жіберу
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found.

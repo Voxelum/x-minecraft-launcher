@@ -665,7 +665,9 @@ instances:
     Importieren Sie aus dem gemeinsamen .minecraft-Ordner. 
     Dadurch wird das ursprüngliche Spielprofil in die XMCL kopiert.
   choose: Spiel auswählen
+  empty: Keine Instanzen in diesem Ordner
   fix: Repariere es
+  folder: Ordner
   folderSetting: Ordnereinstellungen
   importFolder: Importieren aus einem Ordner
   importFolderDescription: Minecraft in den Launcher importieren
@@ -821,6 +823,8 @@ logLevel:
   info: Informationen.
   success: Erfolgreich
   warning: Warnungen
+logView:
+  searchPlaceholder: Logs durchsuchen...
 login:
   dropHint: >-
     Senden Sie hier den Link mit dem Autorisierungscode, um sich manuell
@@ -988,6 +992,13 @@ modInstall:
   source: Quelle.
   switch: Version ändern
   upgrade: Aktualisierung der Änderungen
+  autoUpgrade:
+    title: Mods aktualisieren?
+    description: >-
+      Sie haben die Minecraft-Version geändert. Möchten Sie kompatible Mods
+      automatisch auf Versionen aktualisieren, die zu Minecraft {version} passen?
+    yes: Mods aktualisieren
+    no: Überspringen
 modSearch:
   noLocalModsFound: Keine lokalen Mods gefunden, die Ihrer Suche entsprechen.
   noModsFound: Keine Mods gefunden.
@@ -1994,6 +2005,14 @@ userService:
   add: Weitere Dienste hinzufügen
   authLibInjector: Befolgen Sie die Empfehlungen für den auth-lib-Injektor
   baseUrlHint: Der Basislink Ihres Benutzerdienstes
+  manageServices: Dienste verwalten
+  authlibInjectorMetadata: Authlib-Injector Metadaten
+  server: Server
+  implementation: Implementierung
+  version: Version
+  skinDomains: Skin-Domains
+  homepage: Homepage
+  register: Registrierung
   title: Benutzerdienste
   validateHint: Wird verwendet, um zu überprüfen, ob das Token des Benutzers noch gültig ist
 userServices:

@@ -1,32 +1,38 @@
 <template>
   <div class="absolute z-0 h-full w-full">
-    <Particles
-      v-if="backgroundType === BackgroundType.PARTICLE"
-      color="#dedede"
-      class="absolute z-0 h-full w-full"
-      :style="{ filter: `blur(${blur}px)` }"
-      :click-mode="particleMode"
-    />
-    <Halo
-      v-else-if="backgroundType === BackgroundType.HALO"
-      class="absolute z-0 h-full w-full"
-      :style="{ filter: `blur(${blur}px)` }"
-    />
-    <img
-      v-else-if="backgroundImage?.type === 'image' && backgroundType === BackgroundType.IMAGE"
-      :src="backgroundImage.url"
-      class="absolute z-0 h-full w-full"
-      :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
+    <transition
+      name="fade-transition"
     >
-    <video
-      v-else-if="backgroundImage?.type === 'video' && backgroundType === BackgroundType.VIDEO"
-      ref="videoRef"
-      class="absolute z-0 h-full w-full object-cover"
-      :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
-      :src="backgroundImage.url"
-      autoplay
-      loop
-    />
+      <Particles
+        v-if="backgroundType === BackgroundType.PARTICLE"
+        color="#dedede"
+        class="absolute z-0 h-full w-full"
+        :style="{ filter: `blur(${blur}px)` }"
+        :click-mode="particleMode"
+      />
+      <Halo
+        v-else-if="backgroundType === BackgroundType.HALO"
+        class="absolute z-0 h-full w-full"
+        :style="{ filter: `blur(${blur}px)` }"
+      />
+      <img
+        v-else-if="backgroundImage?.type === 'image' && backgroundType === BackgroundType.IMAGE"
+        :key="backgroundImage.url"
+        :src="backgroundImage.url"
+        class="absolute z-0 h-full w-full"
+        :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
+      >
+      <video
+        v-else-if="backgroundImage?.type === 'video' && backgroundType === BackgroundType.VIDEO"
+        ref="videoRef"
+        :key="`video-${backgroundImage.url}`"
+        class="absolute z-0 h-full w-full object-cover"
+        :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
+        :src="backgroundImage.url"
+        autoplay
+        loop
+      />
+    </transition>
     <template
       v-if="backgroundImageOverride"
     >

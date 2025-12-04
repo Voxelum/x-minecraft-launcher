@@ -567,7 +567,9 @@ instances:
     从通用 .minecraft 文件夹导入。
     这会将原始游戏配置文件复制到 XMCL。
   choose: 选择游戏
+  empty: 此文件夹中没有实例
   fix: 修复
+  folder: 文件夹
   folderSetting: 文件夹设置
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
@@ -691,6 +693,8 @@ logLevel:
   info: 信息
   success: 成功
   warning: 警告
+logView:
+  searchPlaceholder: 搜索日志...
 login:
   dropHint: 将验证链接拖入此处手动验证
   forgetPassword: 忘记密码？
@@ -731,6 +735,8 @@ me:
   news: 新闻
   recentPlay: 最近游玩
   versions: 已安装版本
+  viewByDate: 按日期查看
+  viewByFolder: 按文件夹查看
 minecraftVersion:
   empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本
@@ -825,6 +831,12 @@ modInstall:
   source: 模组来源
   switch: 切换版本
   upgrade: 更新模组
+  autoUpgrade:
+    title: 更新模组？
+    description: >-
+      您已更改 Minecraft 版本。是否要自动将兼容的模组更新到与 Minecraft {version} 匹配的版本？
+    yes: 更新模组
+    no: 跳过
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
@@ -1694,6 +1706,14 @@ userService:
   service: null
   title: 第三方玩家信息服务
   validateHint: 用来检验玩家凭证有效性
+  manageServices: 管理服务
+  authlibInjectorMetadata: Authlib-Injector 元数据
+  server: 服务器
+  implementation: 实现
+  version: 版本
+  skinDomains: 皮肤域名
+  homepage: 主页
+  register: 注册
 userServices:
   microsoft:
     account: 微软账号

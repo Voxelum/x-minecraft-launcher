@@ -741,6 +741,8 @@ logLevel:
   info: Info
   success: Successo
   warning: Avviso
+logView:
+  searchPlaceholder: Cerca nei log...
 login:
   dropHint: Lasciare il collegamento con authcode qui per accedere manualmente
   forgetPassword: Hai dimenticato la password?
@@ -891,6 +893,13 @@ modInstall:
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
+  autoUpgrade:
+    title: Aggiornare le Mod?
+    description: >-
+      Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente
+      le mod compatibili alle versioni che corrispondono a Minecraft {version}?
+    yes: Aggiorna le Mod
+    no: Salta
 modSearch:
   noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
   noModsFound: Nessuna mod trovata.
@@ -1822,6 +1831,14 @@ userService:
   add: Aggiungi più servizi
   authLibInjector: Segui il suggerimento dell'injector auth-lib
   baseUrlHint: L'URL di base del tuo servizio personalizzato
+  manageServices: Gestisci servizi
+  authlibInjectorMetadata: Metadati Authlib-Injector
+  server: Server
+  implementation: Implementazione
+  version: Versione
+  skinDomains: Domini skin
+  homepage: Home page
+  register: Registrati
   title: Servizi utente di terze parti
   validateHint: Utilizzato per verificare se il token dell'utente è ancora valido
 userServices:

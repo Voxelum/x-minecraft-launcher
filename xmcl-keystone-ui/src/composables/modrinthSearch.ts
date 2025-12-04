@@ -12,7 +12,8 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     modrinthSort: sort,
     gameVersion,
     isModrinthDisabled: disabled,
-    currentView
+    currentView,
+    modrinthEnvironment: environment,
   }: SearchModel
 ) {
   const search = useModrinthSearchFunc(
@@ -21,7 +22,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     '',
     categories,
     modLoaders,
-    '',
+    environment,
     sort,
     projectType,
     20,
@@ -61,6 +62,7 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     watch(sort, onSearch)
     watch(gameVersion, onSearch)
     watch(disabled, onSearch)
+    watch(environment, onSearch)
     onSearch()
   }
 
@@ -81,9 +83,12 @@ export function useModrinthSearch<T extends ProjectEntry<any>>(
     return projects
   })
 
+  const modrinthTotal = computed(() => modrinth.value?.total ?? 0)
+
   return {
     modrinth: result,
     modrinthError: error,
+    modrinthTotal,
     hasMore,
     loadMoreModrinth: loadMore,
     effect,

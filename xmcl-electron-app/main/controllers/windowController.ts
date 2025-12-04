@@ -2,8 +2,8 @@ import { ElectronController } from '@/ElectronController'
 import { app, BrowserWindow, clipboard, dialog, FindInPageOptions, ipcMain, nativeImage, systemPreferences } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
-import { join } from 'path'
 import { writeFile } from 'fs-extra'
+import { isNiri } from '@/utils/niri'
 
 export enum Operation {
   Minimize = 0,
@@ -123,6 +123,11 @@ export const windowController: ControllerPlugin = function (this: ElectronContro
           return false
         case Operation.Minimize:
           if (window.minimizable) {
+            // On Niri compositor, minimize can cause freezes/crashes.
+            // Skip the minimize action in this case.
+            if (isNiri) {
+              return false
+            }
             window.minimize()
             return true
           }

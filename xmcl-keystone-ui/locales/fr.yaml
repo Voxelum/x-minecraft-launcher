@@ -617,7 +617,9 @@ instances:
     Importer à partir du dossier commun .minecraft. 
     Cela dupliquera le profil de jeu original vers XMLL.
   choose: Sélectionnez un jeu
+  empty: Aucune instance dans ce dossier
   fix: Réparer
+  folder: Dossier
   folderSetting: Paramètres du dossier
   importFolder: Importer depuis un dossier
   importFolderDescription: Importer Minecraft au launcher
@@ -762,6 +764,8 @@ logLevel:
   info: Info
   success: Succès
   warning: Avertissement
+logView:
+  searchPlaceholder: Rechercher les logs...
 login:
   dropHint: >-
     Déposez le lien avec le code d'authentification ici pour vous connecter
@@ -915,6 +919,13 @@ modInstall:
   search: Résultats
   skipVersion: Ignorez les mods avec une version différente de Minecraft
   upgrade: Mettre à jour les mods
+  autoUpgrade:
+    title: Mettre à jour les mods ?
+    description: >-
+      Vous avez changé la version de Minecraft. Souhaitez-vous mettre à jour
+      automatiquement les mods compatibles vers des versions correspondant à Minecraft {version} ?
+    yes: Mettre à jour les mods
+    no: Ignorer
 modSearch:
   noLocalModsFound: Aucun mod local trouvé correspondant à votre recherche.
   noModsFound: Aucun mod trouvé.
@@ -1848,6 +1859,14 @@ userService:
   add: Ajouter plus de services
   authLibInjector: Suivez la suggestion de l'injecteur auth-lib
   baseUrlHint: L'URL de base de votre service personnalisé
+  manageServices: Gérer les services
+  authlibInjectorMetadata: Métadonnées Authlib-Injector
+  server: Serveur
+  implementation: Implémentation
+  version: Version
+  skinDomains: Domaines de skins
+  homepage: Page d'accueil
+  register: Inscription
   title: Services aux utilisateurs
   validateHint: Utilisé pour vérifier si le token de l'utilisateur est toujours valide
 userServices:

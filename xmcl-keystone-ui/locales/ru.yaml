@@ -610,7 +610,9 @@ instances:
     Импортировать из обычной папки (.minecraft). Это дублирует оригинальный
     профиль экземпляра в XMCL.
   choose: Выбрать экземпляр
+  empty: Нет экземпляров в этой папке
   fix: Исправить
+  folder: Папка
   folderSetting: Настройки папки
   importFolder: Импортировать из папки
   importFolderDescription: Импортировать Minecraft в лаунчер
@@ -761,6 +763,8 @@ logLevel:
   info: Информация
   success: Успех
   warning: Предупреждение
+logView:
+  searchPlaceholder: Поиск логов...
 login:
   dropHint: Перетащите сюда ссылку с кодом авторизации для ручного входа
   forgetPassword: Забыли пароль?
@@ -917,6 +921,13 @@ modInstall:
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
+  autoUpgrade:
+    title: Обновить моды?
+    description: >-
+      Вы изменили версию Minecraft. Хотите автоматически обновить
+      совместимые моды до версий, соответствующих Minecraft {version}?
+    yes: Обновить моды
+    no: Пропустить
 modSearch:
   noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
   noModsFound: Моды не найдены.
@@ -1921,6 +1932,14 @@ userService:
   baseUrlHint: Базовый URL-адрес вашего пользовательского сервиса
   title: Сторонние сервисы пользователя
   validateHint: Используется для проверки того, что токен пользователя все еще действителен
+  manageServices: Управлять сервисами
+  authlibInjectorMetadata: Метаданные Authlib-Injector
+  server: Сервер
+  implementation: Реализация
+  version: Версия
+  skinDomains: Домены скинов
+  homepage: Домашняя страница
+  register: Регистрация
 userServices:
   microsoft:
     account: Аккаунт Microsoft

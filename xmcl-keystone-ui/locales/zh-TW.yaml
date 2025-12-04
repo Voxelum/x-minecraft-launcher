@@ -561,7 +561,9 @@ instances:
     從通用 .minecraft 資料夾匯入。
     這會將原始遊戲設定檔案複製到 XMCL。
   choose: 選擇遊戲
+  empty: 此資料夾中沒有實例
   fix: 修復
+  folder: 資料夾
   folderSetting: 資料夾設定
   importFolder: 從資料夾匯入
   importFolderDescription: 匯入 Minecraft 到啟動器
@@ -685,6 +687,8 @@ logLevel:
   info: 資訊
   success: 成功
   warning: 警告
+logView:
+  searchPlaceholder: 搜尋日誌...
 login:
   dropHint: 將驗證連結拖入此處手動驗證
   forgetPassword: 忘記密碼？
@@ -723,6 +727,8 @@ me:
   news: 最新消息
   recentPlay: 最近遊玩
   versions: 已安裝版本
+  viewByDate: 按日期檢視
+  viewByFolder: 按資料夾檢視
 minecraftVersion:
   empty: 無法載入 Minecraft 版本列表
   name: Minecraft 版本
@@ -817,6 +823,12 @@ modInstall:
   source: 模組來源
   switch: 切換版本
   upgrade: 更新模組
+  autoUpgrade:
+    title: 更新模組？
+    description: >-
+      您已變更 Minecraft 版本。是否要自動將相容的模組更新至與 Minecraft {version} 相符的版本？
+    yes: 更新模組
+    no: 略過
 modSearch:
   noLocalModsFound: 未找到符合搜尋的本機模組。
   noModsFound: 未找到模組。
@@ -1662,6 +1674,14 @@ userService:
   add: 新增更多驗證或玩家資訊伺服器
   authLibInjector: 按照 authlib-injector 推薦流程建立
   baseUrlHint: 第三方伺服器的根 URL
+  manageServices: 管理服務
+  authlibInjectorMetadata: Authlib-Injector 元資料
+  server: 伺服器
+  implementation: 實現
+  version: 版本
+  skinDomains: 皮膚網域
+  homepage: 主頁
+  register: 註冊
   service: null
   title: 第三方玩家資訊服務
   validateHint: 用來檢驗玩家憑證有效性

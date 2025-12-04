@@ -581,6 +581,8 @@ loginError:
 
     Si es un nuevo usuario de Minecraft, inicie sesión al menos una vez en el
     lanzador oficial de Minecraft.
+logView:
+  searchPlaceholder: Buscar registros...
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros
@@ -695,6 +697,13 @@ modInstall:
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
+  autoUpgrade:
+    title: ¿Actualizar Mods?
+    description: >-
+      Has cambiado la versión de Minecraft. ¿Te gustaría actualizar
+      automáticamente los mods compatibles a versiones que coincidan con Minecraft {version}?
+    yes: Actualizar Mods
+    no: Omitir
 modSearch:
   noLocalModsFound: No se encontraron mods locales que coincidan con tu búsqueda.
   noModsFound: No se encontraron mods.

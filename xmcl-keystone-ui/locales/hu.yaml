@@ -728,6 +728,8 @@ logLevel:
   info: Infó
   success: Siker
   warning: Figyelmeztetés
+logView:
+  searchPlaceholder: Naplók keresése...
 login:
   dropHint: Dobja ide a linket az authcode-mal a kézi bejelentkezéshez
   forgetPassword: Elfelejtett jelszó?
@@ -885,6 +887,13 @@ modInstall:
   source: Mod forrása
   switch: Verzió váltás
   upgrade: Modok frissítése
+  autoUpgrade:
+    title: Modok frissítése?
+    description: >-
+      Megváltoztattad a Minecraft verziót. Szeretnéd automatikusan frissíteni
+      a kompatibilis modokat a Minecraft {version}-nak megfelelő verziókra?
+    yes: Modok frissítése
+    no: Kihagyás
 modSearch:
   noLocalModsFound: Nem található helyi mod, amely megfelel a keresésnek.
   noModsFound: Nem található mod.
@@ -1811,6 +1820,14 @@ userService:
   add: További szolgáltatás hozzáadása
   authLibInjector: Auth-lib injektor javaslat követése
   baseUrlHint: Az egyéni szolgáltatás alap URL címe
+  manageServices: Szolgáltatások kezelése
+  authlibInjectorMetadata: Authlib-Injector metaadatok
+  server: Szerver
+  implementation: Implementáció
+  version: Verzió
+  skinDomains: Skin domainek
+  homepage: Kezdőlap
+  register: Regisztráció
   title: Harmadik fél felhasználói szolgáltatásai
   validateHint: >-
     Annak ellenőrzésére szolgál, hogy a felhasználó tokenje még mindig

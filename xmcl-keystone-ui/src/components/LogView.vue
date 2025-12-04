@@ -1,82 +1,90 @@
 <template>
-  <div
-    ref="scroller" 
-    class="visible-scroll rounded p-2 text-sm"
-    @wheel="onWheel"
-  >
+  <div class="log-view-container flex flex-col h-full">
+    <div class="log-toolbar flex items-center gap-2 p-2 flex-shrink-0 flex-grow-0">
+      <v-text-field
+        v-model="searchText"
+        :placeholder="t('logView.searchPlaceholder')"
+        dense
+        hide-details
+        outlined
+        clearable
+        prepend-inner-icon="search"
+        class="max-w-xs"
+      />
+    </div>
     <div
-      ref="container"
-      :style="{
-        height: `${totalHeight}px`,
-        position: 'relative',
-        width: '100%',
-        marginTop: `${-offsetTop}px`,
-      }"  
+      ref="scroller" 
+      class="visible-scroll rounded p-2 text-sm flex-grow overflow-auto"
+      @wheel="onWheel"
     >
       <div
-        v-for="virtualRow in virtualRows"
-        :key="logs[virtualRow.index].raw + virtualRow.index"
-        :ref="measureElement"
-        :data-index="virtualRow.index"
+        ref="container"
         :style="{
-          position: 'absolute',
-          top: 0,
-          left: 0,
+          height: `${totalHeight}px`,
+          position: 'relative',
           width: '100%',
-          transform: `translateY(${virtualRow.start}px)`
-        }"
+          marginTop: `${-offsetTop}px`,
+        }"  
       >
         <div
-          :class="levelClasses[logs[virtualRow.index].level]"
-          class="log-record"
+          v-for="virtualRow in virtualRows"
+          :key="displayLogs[virtualRow.index].raw + virtualRow.index"
+          :ref="measureElement"
+          :data-index="virtualRow.index"
+          :style="{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            transform: `translateY(${virtualRow.start}px)`
+          }"
         >
-          <div class="">
-            <span
-              class="level"
-            >{{ levelText[logs[virtualRow.index].level] ? levelText[logs[virtualRow.index].level] : logs[virtualRow.index].level.toUpperCase() }}</span>
-            <span v-if="logs[virtualRow.index].date" class="date">{{ logs[virtualRow.index].date }}</span>
-            <span v-if="logs[virtualRow.index].source" class="source">{{ logs[virtualRow.index].source }}</span>
+          <div
+            :class="levelClasses[displayLogs[virtualRow.index].level]"
+            class="log-record"
+          >
+            <div class="">
+              <span
+                class="level"
+              >{{ levelText[displayLogs[virtualRow.index].level] ? levelText[displayLogs[virtualRow.index].level] : displayLogs[virtualRow.index].level.toUpperCase() }}</span>
+              <span v-if="displayLogs[virtualRow.index].date" class="date">{{ displayLogs[virtualRow.index].date }}</span>
+              <span v-if="displayLogs[virtualRow.index].source" class="source">{{ displayLogs[virtualRow.index].source }}</span>
+              <span v-if="displayLogs[virtualRow.index].groupCount && Number(displayLogs[virtualRow.index].groupCount) > 1" class="group-count">×{{ displayLogs[virtualRow.index].groupCount }}</span>
+            </div>
+            <span class="content">{{ displayLogs[virtualRow.index].content }}</span>
           </div>
-          <span class="content">{{ logs[virtualRow.index].content }}</span>
         </div>
       </div>
-      <!-- <div
-        v-for="(l, index) of logs"
-        :key="index"
-        :class="levelClasses[l.level]"
-        class="log-record"
-      >
-        <div class="">
-          <span
-            class="level"
-          >{{ levelText[l.level] ? levelText[l.level] : l.level.toUpperCase() }}</span>
-          <span class="date">{{ l.date }}</span>
-          <span class="source">{{ l.source }}</span>
-        </div>
-        <span class="content">{{ l.content }}</span>
-      </div> -->
-    </div>
 
-    <v-fab-transition>
-      <v-btn
-        v-if="locked"
-        class="z-10 absolute right-6 bottom-4"
-        elevation="2"
-        color="primary"
-        fab
-        @click="scrollToBottom"
-      >
-      <v-icon>arrow_downward</v-icon>
-    </v-btn>
-  </v-fab-transition>
+      <v-fab-transition>
+        <v-btn
+          v-if="locked"
+          class="z-10 absolute right-6 bottom-4"
+          elevation="2"
+          color="primary"
+          fab
+          @click="scrollToBottom"
+        >
+        <v-icon>arrow_downward</v-icon>
+      </v-btn>
+    </v-fab-transition>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
 import { injection } from '@/util/inject'
 import { LogRecord } from '../util/log'
 import { kTheme } from '@/composables/theme'
-import { useScroll } from '@vueuse/core';
-import { VirtualItem, VirtualizerOptions, useVirtualizer } from '@tanstack/vue-virtual';
+import { useScroll } from '@vueuse/core'
+import { VirtualItem, VirtualizerOptions, useVirtualizer } from '@tanstack/vue-virtual'
+import { filter as fuzzyFilter } from 'fuzzy'
+import debounce from 'lodash.debounce'
+
+interface DisplayLogRecord extends LogRecord {
+  groupCount?: number
+  _contentParts?: string[]
+  _rawParts?: string[]
+}
 
 const props = defineProps<{ 
   logs: LogRecord[]
@@ -86,6 +94,71 @@ const { isDark } = injection(kTheme)
 const container = ref<HTMLElement>()
 const offsetTop = ref(0)
 const scroller = ref<HTMLElement>()
+const searchText = ref('')
+
+// Debounced search text for filtering
+const debouncedSearchText = ref('')
+const updateDebouncedSearch = debounce((val: string) => {
+  debouncedSearchText.value = val
+}, 200)
+watch(searchText, updateDebouncedSearch)
+
+// Filter logs based on search text using fuzzy search
+const filteredLogs = computed(() => {
+  if (!debouncedSearchText.value) {
+    return props.logs
+  }
+  const results = fuzzyFilter(debouncedSearchText.value, props.logs, {
+    extract: (log: LogRecord) => `${log.level} ${log.source} ${log.content}`
+  })
+  return results.filter(r => r.original != null).map(r => r.original as LogRecord)
+})
+
+// Group consecutive logs with identical metadata (level, date, source) to reduce repetition
+const displayLogs = computed<DisplayLogRecord[]>(() => {
+  const logs = filteredLogs.value
+  if (logs.length === 0) {
+    return logs
+  }
+  
+  const result: DisplayLogRecord[] = []
+  let currentGroup: DisplayLogRecord | null = null
+  
+  for (const log of logs) {
+    if (currentGroup && 
+        currentGroup.level === log.level && 
+        currentGroup.date === log.date && 
+        currentGroup.source === log.source) {
+      // Same metadata - add to current group
+      currentGroup.groupCount = (currentGroup.groupCount || 1) + 1
+      // Collect parts in arrays, join later
+      if (!currentGroup._contentParts) {
+        currentGroup._contentParts = [currentGroup.content]
+        currentGroup._rawParts = [currentGroup.raw]
+      }
+      currentGroup._contentParts.push(log.content)
+      
+      currentGroup._rawParts!.push(log.raw)
+    } else {
+      // Finalize previous group's concatenation if needed
+      if (currentGroup && currentGroup._contentParts) {
+        currentGroup.content = currentGroup._contentParts.join('\n')
+        currentGroup.raw = currentGroup._rawParts!.join('\n')
+      }
+      // Different metadata - start new group
+      currentGroup = { ...log, groupCount: 1 }
+      result.push(currentGroup)
+    }
+  }
+  
+  // Finalize last group
+  if (currentGroup && currentGroup._contentParts) {
+    currentGroup.content = currentGroup._contentParts.join('\n')
+    currentGroup.raw = currentGroup._rawParts!.join('\n')
+  }
+  
+  return result
+})
 
 watch(container, container => {
   if (container) {
@@ -93,7 +166,7 @@ watch(container, container => {
   }
 })
 const virtualizerOptions = computed(() => ({
-  count: props.logs.length,
+  count: displayLogs.value.length,
   getScrollElement: () => scroller.value || null,
   estimateSize: () => 56,
   overscan: 10,
@@ -131,7 +204,7 @@ watch(computed(() => arrivedState.bottom), (bottom) => {
   }
 })
 
-watch(() => props.logs.length, () => {
+watch(() => displayLogs.value.length, () => {
   if (locked.value) {
     nextTick(() => {
       scrollToBottom()
@@ -146,12 +219,20 @@ function onWheel(e: WheelEvent) {
 }
 
 function scrollToBottom() {
-  virtualizer.value.scrollToIndex(props.logs.length - 1)
+  virtualizer.value.scrollToIndex(displayLogs.value.length - 1)
 }
 
 </script>
 
 <style scoped>
+.log-view-container {
+  @apply relative;
+}
+
+.log-toolbar {
+  @apply border-b border-gray-600;
+}
+
 .level {
   @apply select-none rounded border border-current border-solid p-1 mr-1;
 }
@@ -162,6 +243,10 @@ function scrollToBottom() {
 
 .date {
   @apply p-1 text-gray-400 rounded border border-current border-dashed select-none rounded mr-1;
+}
+
+.group-count {
+  @apply text-purple-400 font-bold mr-1 select-none;
 }
 
 .content {

@@ -116,7 +116,7 @@ function view(modId: string) {
               v-else
               :key="item.fileName + i"
               :style="{
-                textDecoration: omitted[item.modId] === item ? '' : 'line-through'
+                opacity: omitted[item.modId] === item ? 1 : 0.5
               }"
               @click="onSelect(item)"
             >

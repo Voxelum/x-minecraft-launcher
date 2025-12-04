@@ -149,7 +149,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     async function handlError(e: Error, retry?: () => Promise<any>) {
       const code = getErrorCode(e)
 
-      if (retry && (code === NetworkErrorCode.CONNECTION_CLOSED || code === NetworkErrorCode.CONNECTION_RESET || !code)) {
+      if (retry && (code === NetworkErrorCode.NAME_NOT_RESOLVED || code === NetworkErrorCode.CONNECTION_CLOSED || code === NetworkErrorCode.CONNECTION_RESET || !code)) {
         return await retry()
       }
 

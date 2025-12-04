@@ -353,6 +353,8 @@ launchFailed:
       Podes desactivar a substitución de Authlib de Ely.by nas configuracións da
       instancia para evitar este problema.
     title: Problema de compatibilidade de Ely.by Authlib
+logView:
+  searchPlaceholder: Buscar rexistros...
 loginError:
   loginXboxAgeRestricted: >-
     Non lograr a Xbox debido ao problema de idade. 
@@ -421,6 +423,13 @@ modInstall:
   removeUnusedLibraries: Elimina os mods das bibliotecas non utilizadas
   skipVersion: Salta os Mods con diferentes versións de Minecraft
   upgrade: Actualizar mods
+  autoUpgrade:
+    title: Actualizar mods?
+    description: >-
+      Cambiaches a versión de Minecraft. Queres actualizar automaticamente
+      os mods compatibles a versións que coincidan con Minecraft {version}?
+    yes: Actualizar mods
+    no: Omitir
 modSearch:
   noLocalModsFound: No local mods found matching your search.
   noModsFound: No mods found.

@@ -40,7 +40,10 @@ const visit = async (current: ResolvedDependency, visited: Set<string>, config: 
       const versions = await swrvGet(getModrinthVersionKey(child.project_id, undefined, loaders, version.game_versions),
         () => clientModrinthV2.getProjectVersions(child.project_id, { loaders, gameVersions: version.game_versions }),
         config.cache!, config.dedupingInterval!)
-      const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id)! : versions[0]
+      const recommendedVersion = child.version_id ? versions.find(v => v.id === child.version_id) ?? versions[0] : versions[0]
+      if (!recommendedVersion) {
+        throw new TypeError(`Missing ${child.project_id}:${child.version_id} during resolve modrinth deps of ${version.project_id}:${version.id}`)
+      }
       const result = await visit(markRaw({
         project,
         versions,
@@ -68,6 +71,9 @@ export function getModrinthDependenciesModel(version: Ref<ProjectVersion | undef
     key: computed(() => version.value && `/modrinth/version/${version.value.id}/dependencies?${get(modLoader)}`),
     fetcher: async () => {
       const visited = new Set<string>()
+      if (!version.value) {
+        throw new TypeError('Require version to getModrinthDependenciesModel')
+      }
       const tuples = await visit({ recommendedVersion: version.value } as any, visited, config, modLoader)
       tuples.shift()
       return tuples

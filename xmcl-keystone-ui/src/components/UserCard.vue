@@ -8,7 +8,13 @@
       name="fade-transition"
       mode="out-in"
     >
-      <template v-if="!login">
+      <template v-if="addService">
+        <UserCardAddYggdrasilService
+          :key="2"
+          @back="onBackFromAddService"
+        />
+      </template>
+      <template v-else-if="!login">
         <div :key="0">
           <v-list>
             <UserCardUserItem
@@ -86,6 +92,7 @@
               :inside="false"
               :options="options"
               @login="reset()"
+              @add-service="onAddService"
             />
           </div>
         </div>
@@ -109,6 +116,7 @@ import { useSimpleDialog } from '@/composables/dialog'
 import { kUserContext, useUserExpired } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { AUTHORITY_MICROSOFT, UserServiceKey } from '@xmcl/runtime-api'
+import UserCardAddYggdrasilService from './UserCardAddYggdrasilService.vue'
 import UserCardMicrosoft from './UserCardMicrosoft.vue'
 import UserCardUserItem from './UserCardUserItem.vue'
 import UserCardYggdrasil from './UserCardYggdrasil.vue'
@@ -136,6 +144,7 @@ const onSelectUser = (user: string) => {
   select(user)
 }
 const login = ref(users.value.length === 0)
+const addService = ref(false)
 const refreshing = ref(false)
 
 async function onRefresh(force = false) {
@@ -169,7 +178,24 @@ const options = ref(undefined as any)
 const reset = (o?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }) => {
   options.value = o
   login.value = false
+  addService.value = false
 }
+
+const onAddService = () => {
+  addService.value = true
+  login.value = false
+}
+
+const onBackFromAddService = () => {
+  addService.value = false
+  login.value = true
+}
+
+watch(() => props.show, (v) => {
+  if (v) return
+  login.value = false
+  addService.value = false
+})
 
 const usersToSwitch = computed(() => users.value.filter(v => selected.value ? (v.id !== selected.value.id) : true))
 </script>

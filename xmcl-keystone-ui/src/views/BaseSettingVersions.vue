@@ -109,11 +109,13 @@ import { kLocalVersions } from '@/composables/versionLocal'
 import { injection } from '@/util/inject'
 import { InstallServiceKey } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey, useInstanceEditVersions } from '../composables/instanceEdit'
+import { kInstance } from '@/composables/instance'
 
 const props = defineProps<{
   isExpanded: boolean
 }>()
 
+const { instance } = injection(kInstance)
 const {
   data,
   isModified,
@@ -121,12 +123,12 @@ const {
 const { versions } = injection(kLocalVersions)
 
 const showAll = ref(false)
-const showForge = computed(() => props.isExpanded || showAll.value || data.runtime.forge)
-const showNeoForged = computed(() => props.isExpanded || showAll.value || data.runtime.neoForged)
-const showFabric = computed(() => props.isExpanded || showAll.value || data.runtime.fabricLoader)
-const showQuilt = computed(() => props.isExpanded || showAll.value || data.runtime.quiltLoader)
-const showOptifine = computed(() => props.isExpanded || showAll.value || data.runtime.optifine)
-const showLabyMod = computed(() => props.isExpanded || showAll.value || data.runtime.labyMod)
+const showForge = computed(() => props.isExpanded || showAll.value || instance.value.runtime.forge)
+const showNeoForged = computed(() => props.isExpanded || showAll.value || instance.value.runtime.neoForged)
+const showFabric = computed(() => props.isExpanded || showAll.value || instance.value.runtime.fabricLoader)
+const showQuilt = computed(() => props.isExpanded || showAll.value || instance.value.runtime.quiltLoader)
+const showOptifine = computed(() => props.isExpanded || showAll.value || instance.value.runtime.optifine)
+const showLabyMod = computed(() => props.isExpanded || showAll.value || instance.value.runtime.labyMod)
 
 const {
   onSelectMinecraft,

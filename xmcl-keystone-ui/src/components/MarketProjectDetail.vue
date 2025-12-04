@@ -120,13 +120,8 @@
             />
           </template>
           <template v-else>
-            <template
-              v-for="(h, i) of detailsHeaders"
-            >
-              <div
-                :key="h.id"
-                class="flex flex-grow-0"
-              >
+            <template v-for="(h, i) of detailsHeaders">
+              <div :key="h.id" class="flex flex-grow-0">
                 <v-icon
                   v-if="h.icon"
                   :color="h.color"
@@ -135,7 +130,16 @@
                 >
                   {{ h.icon }}
                 </v-icon>
-                {{ h.text }}
+                <template v-if="h.id.endsWith('-author')">
+                  <a
+                    href="#"
+                    :key="h.text"
+                    @click.prevent="onAuthorClicked(h.text.trim())"
+                  >{{ h.text }}</a>
+                </template>
+                <template v-else>
+                  {{ h.text }}
+                </template>
               </div>
               <v-divider
                 v-if="i < detailsHeaders.length - 1"
@@ -731,6 +735,7 @@ import AppCopyChip from './AppCopyChip.vue'
 import { kImageDialog } from '@/composables/imageDialog'
 import { useDateString } from '@/composables/date'
 import { kTheme } from '@/composables/theme'
+import { kSearchModel } from '@/composables/search'
 import { clientCurseforgeV1 } from '@/util/clients'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { vFallbackImg } from '@/directives/fallbackImage'
@@ -918,6 +923,16 @@ const goModrinthProject = (id: string) => {
   replace({ query: { ...currentRoute.query, id: `modrinth:${id}` } })
 }
 const { isDark } = injection(kTheme)
+const searchModel = injection(kSearchModel)
+
+function onAuthorClicked(name: string) {
+  if (searchModel) {
+    // Put author directly into keyword as requested
+    searchModel.keyword.value = name
+    searchModel.source.value = 'remote'
+  }
+  replace({ query: { ...currentRoute.query, id: undefined } })
+}
 
 const selectedVersion = inject('selectedVersion', ref(props.versions.find(v => v.installed) || props.versions[0] as ProjectVersion | undefined))
 const onVersionClicked = (version: ProjectVersion) => {

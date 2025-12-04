@@ -68,6 +68,14 @@ export function useProjectInstall(runtime: Ref<RuntimeVersions>,
         return
       }
       const file = files.data[0]
+      if (!file) {
+        notify({
+          level: 'error',
+          title: 'Failed to get curseforge files',
+        })
+        // TODO: log this case
+        return
+      }
       const loaderType = getModLoaderTypesForFile(file)
       const deps = await getSWRV(getCurseforgeDependenciesModel(ref(file), ref(runtime.value.minecraft), ref([...loaderType][0]), config), config)
       await curseforgeInstaller.installWithDependencies(file.id, getCursforgeFileModLoaders(file), proj.logo.url, item.installed, deps || [])

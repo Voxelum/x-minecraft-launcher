@@ -654,6 +654,8 @@ logLevel:
   info: INFO
   success: SUCCES
   warning: WARNIN
+logView:
+  searchPlaceholder: SERCH LOGZ...
 login:
   dropHint: DROP TEH LINK WIF AUTHCODE HER 2 MANUALLY LOGIN
   forgetPassword: FORGET PASWORD?
@@ -792,6 +794,13 @@ modInstall:
   source: MOD SOURCE
   switch: SWTICH VERSHUN
   upgrade: UPGRADE MODZ
+  autoUpgrade:
+    title: UPDAET MODZ?
+    description: >-
+      U CHANGD TEH MINECRAFT VERSHUN. WULD U LIEK 2 AUTOMATIKLY UPDAET
+      COMPATIBEL MODZ 2 VERSHUNZ DAT MATCH MINECRAFT {version}?
+    yes: UPDAET MODZ
+    no: SKIP
 modSearch:
   noLocalModsFound: NO LOCAL MODZ FOUND MATCHIN UR SEARCH.
   noModsFound: NO MODZ FOUND.
@@ -1662,6 +1671,14 @@ userService:
   add: ADD MOAR SERVICEZ
   authLibInjector: FOLLOW TEH AUTH-LIB INJECTOR SUGGESHUN
   baseUrlHint: TEH BASE URL OV UR CUSTOM SERVICE
+  manageServices: MANAGE SERVICEZ
+  authlibInjectorMetadata: AUTHLIB-INJECTOR METADATA
+  server: SERVER
+  implementation: IMPLEMENTATION
+  version: VERSION
+  skinDomains: SKIN DOMAINS
+  homepage: HOMEPAGE
+  register: REGISTER
   title: THIRD-PARTY USR SERVICEZ
   validateHint: USD 2 CHECK IF USERS TOKEN IZ STILL VALID
 userServices:

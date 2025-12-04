@@ -105,14 +105,14 @@
 </template>
 
 <script lang=ts setup>
-import { InstallServiceKey, VersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
-import { useFilterCombobox, useRefreshable, useService } from '@/composables'
-import { usePresence } from '@/composables/presence'
-import { injection } from '@/util/inject'
-import { kLocalVersions } from '@/composables/versionLocal'
 import SimpleDialog from '@/components/SimpleDialog.vue'
+import { useRefreshable, useService } from '@/composables'
 import { useSimpleDialog } from '@/composables/dialog'
+import { usePresence } from '@/composables/presence'
+import { kLocalVersions } from '@/composables/versionLocal'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
+import { InstallServiceKey, versionCompare, VersionHeader, VersionServiceKey } from '@xmcl/runtime-api'
 
 const data = reactive({
   filteredMinecraft: '',

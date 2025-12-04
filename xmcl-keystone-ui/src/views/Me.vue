@@ -58,26 +58,13 @@ const filteredInstances = computed(() =>
 
 const { show: openAddInstanceDialog } = useDialog(AddInstanceDialogKey);
 
+const router = useRouter();
+
 function selectInstance(instancePath: string) {
   path.value = instancePath
   // Navigate to home to show the selected instance
   if (router.currentRoute.path !== '/') {
     router.push('/')
-  }
-}
-
-function handleCreateInstance() {
-  openAddInstanceDialog()
-}
-
-const router = useRouter();
-
-function onInstanceClick(instancePath: string) {
-  if (router.currentRoute.path === "/") {
-    path.value = instancePath;
-  } else {
-    path.value = instancePath;
-    router.push("/");
   }
 }
 
@@ -351,6 +338,7 @@ watch(launcherActive, (isActive) => {
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -362,6 +350,7 @@ watch(launcherActive, (isActive) => {
   margin: 0 0 16px 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
