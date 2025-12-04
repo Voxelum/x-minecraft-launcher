@@ -1626,6 +1626,14 @@ userService:
   add: 他のサービスを追加
   authLibInjector: auth-lib injectorに提案に従う
   baseUrlHint: あなたのカスタムサービスのベースURL
+  manageServices: サービスを管理
+  authlibInjectorMetadata: Authlib-Injector メタデータ
+  server: サーバー
+  implementation: 実装
+  version: バージョン
+  skinDomains: スキンドメイン
+  homepage: ホームページ
+  register: 登録
   title: サードパーティのユーザーサービス
   validateHint: ユーザーのトークンがまだ有効か確認するために使用します
 userServices:

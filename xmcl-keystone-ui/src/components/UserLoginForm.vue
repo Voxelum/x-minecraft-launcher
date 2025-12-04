@@ -6,11 +6,12 @@
   />
   <div
     v-else
-    class="min-w-100  m-20 text-center"
+    class="min-w-100 m-20 text-center"
   >
     <UserLoginAuthoritySelect
       v-model="authority"
       :items="items"
+      @add-service="$emit('add-service')"
     />
     <v-combobox
       v-if="!streamerMode"
@@ -116,7 +117,7 @@
       </a>
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4 flex flex-col gap-2 items-center text-sm">
       <a
         v-if="authority === AUTHORITY_MICROSOFT"
         style="padding-right: 10px; z-index: 20"
@@ -125,14 +126,24 @@
       >{{
         t("login.forgetPassword")
       }}</a>
-      <a
+      <div
         v-if="signUpLink"
-        target="browser"
-        :href="signUpLink"
+        class="flex items-center gap-2 flex-wrap justify-center"
       >
-        {{ t("login.signupDescription") }}
-        {{ t("login.signup") }}
-      </a>
+        <a
+          target="browser"
+          :href="signUpLink"
+        >
+          {{ t("login.signupDescription") }}
+          {{ t("login.signup") }}
+        </a>
+        <a
+          style="text-decoration: underline"
+          @click.stop="$emit('add-service')"
+        >
+          {{ manageAuthorityLabel }}
+        </a>
+      </div>
     </div>
   </div>
 </template>
@@ -154,7 +165,7 @@ const props = defineProps<{
   options?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }
 }>()
 
-const emit = defineEmits(['seed', 'login'])
+const emit = defineEmits(['seed', 'login', 'add-service'])
 const streamerMode = inject('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 
 const { t } = useI18n()
@@ -199,6 +210,8 @@ const signUpLink = computed(() => {
   const url = sys?.authlibInjector?.meta.links.register
   return url || ''
 })
+
+const manageAuthorityLabel = computed(() => t('userService.manageServices'))
 
 // Password data
 const allowDeviceCode = computed(() => {

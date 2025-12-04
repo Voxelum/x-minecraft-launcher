@@ -1820,6 +1820,14 @@ userService:
   add: További szolgáltatás hozzáadása
   authLibInjector: Auth-lib injektor javaslat követése
   baseUrlHint: Az egyéni szolgáltatás alap URL címe
+  manageServices: Szolgáltatások kezelése
+  authlibInjectorMetadata: Authlib-Injector metaadatok
+  server: Szerver
+  implementation: Implementáció
+  version: Verzió
+  skinDomains: Skin domainek
+  homepage: Kezdőlap
+  register: Regisztráció
   title: Harmadik fél felhasználói szolgáltatásai
   validateHint: >-
     Annak ellenőrzésére szolgál, hogy a felhasználó tokenje még mindig

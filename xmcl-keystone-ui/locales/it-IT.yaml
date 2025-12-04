@@ -1831,6 +1831,14 @@ userService:
   add: Aggiungi più servizi
   authLibInjector: Segui il suggerimento dell'injector auth-lib
   baseUrlHint: L'URL di base del tuo servizio personalizzato
+  manageServices: Gestisci servizi
+  authlibInjectorMetadata: Metadati Authlib-Injector
+  server: Server
+  implementation: Implementazione
+  version: Versione
+  skinDomains: Domini skin
+  homepage: Home page
+  register: Registrati
   title: Servizi utente di terze parti
   validateHint: Utilizzato per verificare se il token dell'utente è ancora valido
 userServices:

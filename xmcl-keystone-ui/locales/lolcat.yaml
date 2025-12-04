@@ -1671,6 +1671,14 @@ userService:
   add: ADD MOAR SERVICEZ
   authLibInjector: FOLLOW TEH AUTH-LIB INJECTOR SUGGESHUN
   baseUrlHint: TEH BASE URL OV UR CUSTOM SERVICE
+  manageServices: MANAGE SERVICEZ
+  authlibInjectorMetadata: AUTHLIB-INJECTOR METADATA
+  server: SERVER
+  implementation: IMPLEMENTATION
+  version: VERSION
+  skinDomains: SKIN DOMAINS
+  homepage: HOMEPAGE
+  register: REGISTER
   title: THIRD-PARTY USR SERVICEZ
   validateHint: USD 2 CHECK IF USERS TOKEN IZ STILL VALID
 userServices:

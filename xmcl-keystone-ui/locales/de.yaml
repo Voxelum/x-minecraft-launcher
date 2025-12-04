@@ -2005,6 +2005,14 @@ userService:
   add: Weitere Dienste hinzufügen
   authLibInjector: Befolgen Sie die Empfehlungen für den auth-lib-Injektor
   baseUrlHint: Der Basislink Ihres Benutzerdienstes
+  manageServices: Dienste verwalten
+  authlibInjectorMetadata: Authlib-Injector Metadaten
+  server: Server
+  implementation: Implementierung
+  version: Version
+  skinDomains: Skin-Domains
+  homepage: Homepage
+  register: Registrierung
   title: Benutzerdienste
   validateHint: Wird verwendet, um zu überprüfen, ob das Token des Benutzers noch gültig ist
 userServices:

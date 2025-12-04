@@ -1706,6 +1706,14 @@ userService:
   service: null
   title: 第三方玩家信息服务
   validateHint: 用来检验玩家凭证有效性
+  manageServices: 管理服务
+  authlibInjectorMetadata: Authlib-Injector 元数据
+  server: 服务器
+  implementation: 实现
+  version: 版本
+  skinDomains: 皮肤域名
+  homepage: 主页
+  register: 注册
 userServices:
   microsoft:
     account: 微软账号

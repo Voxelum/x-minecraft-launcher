@@ -1674,6 +1674,14 @@ userService:
   add: 新增更多驗證或玩家資訊伺服器
   authLibInjector: 按照 authlib-injector 推薦流程建立
   baseUrlHint: 第三方伺服器的根 URL
+  manageServices: 管理服務
+  authlibInjectorMetadata: Authlib-Injector 元資料
+  server: 伺服器
+  implementation: 實現
+  version: 版本
+  skinDomains: 皮膚網域
+  homepage: 主頁
+  register: 註冊
   service: null
   title: 第三方玩家資訊服務
   validateHint: 用來檢驗玩家憑證有效性

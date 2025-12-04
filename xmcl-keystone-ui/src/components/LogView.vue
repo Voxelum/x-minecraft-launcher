@@ -49,7 +49,7 @@
               >{{ levelText[displayLogs[virtualRow.index].level] ? levelText[displayLogs[virtualRow.index].level] : displayLogs[virtualRow.index].level.toUpperCase() }}</span>
               <span v-if="displayLogs[virtualRow.index].date" class="date">{{ displayLogs[virtualRow.index].date }}</span>
               <span v-if="displayLogs[virtualRow.index].source" class="source">{{ displayLogs[virtualRow.index].source }}</span>
-              <span v-if="displayLogs[virtualRow.index].groupCount && displayLogs[virtualRow.index].groupCount > 1" class="group-count">×{{ displayLogs[virtualRow.index].groupCount }}</span>
+              <span v-if="displayLogs[virtualRow.index].groupCount && Number(displayLogs[virtualRow.index].groupCount) > 1" class="group-count">×{{ displayLogs[virtualRow.index].groupCount }}</span>
             </div>
             <span class="content">{{ displayLogs[virtualRow.index].content }}</span>
           </div>
@@ -137,7 +137,8 @@ const displayLogs = computed<DisplayLogRecord[]>(() => {
         currentGroup._rawParts = [currentGroup.raw]
       }
       currentGroup._contentParts.push(log.content)
-      currentGroup._rawParts.push(log.raw)
+      
+      currentGroup._rawParts!.push(log.raw)
     } else {
       // Finalize previous group's concatenation if needed
       if (currentGroup && currentGroup._contentParts) {

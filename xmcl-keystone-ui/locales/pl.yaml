@@ -1813,6 +1813,14 @@ userService:
   add: Dodaj więcej usług
   authLibInjector: Postępuj zgodnie z sugestią auth-lib injector
   baseUrlHint: Podstawowy adres URL usługi niestandardowej
+  manageServices: Zarządzaj usługami
+  authlibInjectorMetadata: Metadane Authlib-Injector
+  server: Serwer
+  implementation: Implementacja
+  version: Wersja
+  skinDomains: Domeny skórek
+  homepage: Strona główna
+  register: Zarejestruj się
   title: Usługi użytkowników zewnętrznych
   validateHint: Służy do sprawdzania, czy token użytkownika jest nadal ważny
 userServices:
@@ -1846,3 +1854,4 @@ userSkin:
   urlNotEmpty: Adres URL skórki nie może być pusty
   urlNotValid: Adres URL skórki jest nieprawidłowy
   useSlim: Użyj modelu Slim
+  
