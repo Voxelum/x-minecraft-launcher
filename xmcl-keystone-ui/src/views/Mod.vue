@@ -13,7 +13,7 @@
   >
     <template #actions>
       <v-subheader class="flex gap-1 items-center">
-        <div class="mods-count" :title="modsCountTitle">
+        <div class="mods-count">
           <span class="mods-count-main">{{ t('mod.mods', { count: items.length }) }}</span>
           <span v-if="!isLocalView && totalAvailable > 0" class="text-gray-400"> / {{ t('items.total', { total: totalAvailable }) }}</span>
         </div>
@@ -379,7 +379,7 @@ function isIncompatible(p: ProjectEntry<ModFile>) {
       return true
     }
   }
-  
+
   return false
 }
 
@@ -631,14 +631,6 @@ const getContextMenuItems = (proj: ProjectEntry<ModFile>) => {
 }
 
 const { t } = useI18n()
-
-const modsCountTitle = computed(() => {
-  const main = t('mod.mods', { count: items.value.length })
-  if (!isLocalView.value && totalAvailable > 0) {
-    return `${main} / ${t('items.total', { total: totalAvailable })}`
-  }
-  return main
-})
 
 // Page compact
 const compact = injection(kCompact)
