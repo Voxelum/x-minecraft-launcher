@@ -163,6 +163,10 @@ onMounted(() => {
   keywordBuffer.value = route.query.keyword as string ?? ''
 })
 
+watch(() => route.query.keyword, (v) => {
+  keywordBuffer.value = v as string ?? ''
+})
+
 watch(keywordBuffer, (v, old) => {
   if (v !== old) {
     updateSearch()
