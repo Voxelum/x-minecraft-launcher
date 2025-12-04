@@ -24,10 +24,9 @@
         <v-list nav dense color="transparent" class="rounded-lg">
           <v-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1 d-flex align-center justify-space-between">
             {{ t('setting.title') }}
-            <!-- Toggle inside sidebar header -->
-             <v-btn icon x-small @click="toggleViewMode">
-                <v-icon x-small>swap_horiz</v-icon>
-             </v-btn>
+            <v-btn icon x-small @click="toggleViewMode">
+              <v-icon x-small>swap_horiz</v-icon>
+            </v-btn>
           </v-subheader>
           <v-list-item-group v-model="activeSectionIndex" color="primary">
             <v-list-item
@@ -216,7 +215,6 @@ function onScroll() {
   min-height: 400px;
 }
 
-/* View Mode Toggle Positioning */
 .view-mode-toggle {
   position: absolute;
   z-index: 10;
@@ -232,7 +230,6 @@ function onScroll() {
   right: 24px;
 }
 
-/* Section spacing */
 .scroll-target {
   scroll-margin-top: 20px;
 }

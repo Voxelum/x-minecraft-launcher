@@ -62,7 +62,6 @@ const router = useRouter();
 
 function selectInstance(instancePath: string) {
   path.value = instancePath
-  // Navigate to home to show the selected instance
   if (router.currentRoute.path !== '/') {
     router.push('/')
   }
@@ -87,7 +86,6 @@ watch(myStuffStyle, () => {
   handleNewStyle();
 });
 
-// Navigate back when launcher is closed in New Style
 watch(launcherActive, (isActive) => {
   if (!isActive && !isOldStyle.value) {
     const currentPath = router.currentRoute.path;
@@ -99,10 +97,7 @@ watch(launcherActive, (isActive) => {
 </script>
 
 <template>
-  <div
-    ref="container"
-    class="my-stuff-page h-full overflow-auto"
-  >
+  <div ref="container" class="my-stuff-page h-full overflow-auto">
     <!-- OLD STYLE: Classic My Stuff Page -->
     <div v-if="isOldStyle" class="classic-container">
       
@@ -232,7 +227,6 @@ watch(launcherActive, (isActive) => {
   gap: 32px;
 }
 
-/* Section Common Styles */
 .section-header {
   display: flex;
   align-items: center;
@@ -251,7 +245,6 @@ watch(launcherActive, (isActive) => {
   color: rgba(255, 255, 255, 0.9);
 }
 
-/* News Section */
 .news-section {
   width: 100%;
 }
@@ -359,7 +352,6 @@ watch(launcherActive, (isActive) => {
   align-self: flex-start;
 }
 
-/* Instances Section */
 .instances-section {
   width: 100%;
 }
@@ -421,7 +413,6 @@ watch(launcherActive, (isActive) => {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .classic-container {
     padding: 16px;
