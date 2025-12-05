@@ -1556,6 +1556,27 @@ setting:
   windowTranslucentDescription: >-
     Enable translucent window effect (Mica on Windows 11, Acrylic on Windows 10,
     Vibrancy on macOS). Requires restart.
+  sidebarSettings: Sidebar Settings
+  sidebarSettingsHint: Customize the appearance and behavior of the sidebar
+  sidebarPosition: Sidebar Position
+  sidebarPositionHint: Choose where to display the sidebar
+  sidebarLeft: Left
+  sidebarRight: Right
+  sidebarTop: Top
+  sidebarBottom: Bottom
+  sidebarStyle: Sidebar Style
+  sidebarStyleHint: Choose between classic and modern notch design
+  sidebarClassic: Classic
+  sidebarNotch: Notch
+  sidebarAlign: Sidebar Alignment
+  sidebarAlignHint: Align the sidebar content
+  sidebarAlignStart: Start
+  sidebarAlignCenter: Center
+  sidebarAlignEnd: End
+  sidebarScale: Sidebar Scale
+  sidebarScaleHint: Adjust the size of the sidebar
+  sidebarAutoHide: Auto-hide Sidebar
+  sidebarAutoHideHint: Hide sidebar automatically and show on hover
 settingLabel:
   global: Global
   globalHint: This setting will follow the global setting
