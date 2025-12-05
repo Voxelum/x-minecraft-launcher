@@ -6,7 +6,7 @@ import createDesktopShortcut, { type ShortcutOptions } from 'create-desktop-shor
 import vbTextContent from 'create-desktop-shortcuts/src/windows.vbs'
 import { randomUUID } from 'crypto'
 import { constants, existsSync } from 'fs'
-import { access, writeFile } from 'fs-extra'
+import { access, writeFile, createWriteStream } from 'fs-extra'
 import { EOL } from 'os'
 import { basename, dirname, join } from 'path'
 import { createICO } from 'png2icons'
@@ -470,6 +470,16 @@ export class LaunchService extends AbstractService implements ILaunchService {
         startTime,
       })
 
+      // Create launcher_log.txt file stream in the game directory
+      const launcherLogPath = join(options.gameDirectory, 'launcher_log.txt')
+      const launcherLogStream = createWriteStream(launcherLogPath, { encoding: 'utf-8', flags: 'w' })
+      this.log(`Writing launcher logs to: ${launcherLogPath}`)
+      
+      // Handle stream errors to prevent unhandled exceptions
+      launcherLogStream.on('error', (err) => {
+        this.warn(`Failed to write to launcher_log.txt: ${err.message}`)
+      })
+
       let encoding = undefined as string | undefined
       const processError = async (buf: Buffer) => {
         if (!encoding) {
@@ -480,6 +490,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
         const lines = result.split(EOL)
         errorLogs.push(...lines)
         this.warn(result)
+        // Write stderr to launcher_log.txt
+        launcherLogStream.write(result)
       }
       const processLog = async (buf: any) => {
         if (!encoding) {
@@ -490,6 +502,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
         if (!processData.ready) {
           stdLogs.push(...result.split(EOL))
         }
+        // Write stdout to launcher_log.txt
+        launcherLogStream.write(result)
       }
 
       const errPromises = [] as Promise<any>[]
@@ -504,6 +518,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
       })
 
       watcher.on('error', (err) => {
+        // Close the launcher log stream on error
+        launcherLogStream.end()
         this.emit('error', err)
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         const endTime = Date.now()
@@ -518,6 +534,8 @@ export class LaunchService extends AbstractService implements ILaunchService {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
         Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
+          // Close the launcher log stream
+          launcherLogStream.end()
           const errorLog = errorLogs.join('\n');
           for (const plugin of this.middlewares) {
             try {
