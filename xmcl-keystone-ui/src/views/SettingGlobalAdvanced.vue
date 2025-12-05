@@ -2,7 +2,7 @@
 <template>
   <div>
     <!-- Advanced / Dangerous Actions Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2 error--text">
         <v-icon left color="error" small>warning</v-icon>
         {{ t('setting.advancedSettings') }}

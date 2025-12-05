@@ -1,6 +1,6 @@
 <!-- src/components/SettingGlobalUI.vue -->
 <template>
-  <v-card class="mb-4" elevation="2" color="transparent">
+  <v-card class="mb-4" elevation="2">
     <v-card-title class="text-subtitle-1 pb-2">
       <v-icon left color="primary" small>brush</v-icon>
       {{ t('setting.appearance') }}
@@ -24,70 +24,66 @@
       <v-tabs-items v-model="activeTab" class="mt-4 transparent-bg">
         <!-- Home Page Style Tab -->
         <v-tab-item>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-card
-                :class="['style-option-card', { 'selected': myStuffStyleIndex === 0 }]"
-                @click="myStuffStyleIndex = 0"
-                outlined
-                hover
-                class="fill-height"
-              >
-                <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
-                  <div class="style-preview-container mb-4 elevation-1">
-                    <div class="style-preview-old">
-                      <div class="preview-header"></div>
-                      <div class="d-flex fill-height">
-                        <div class="preview-sidebar">
-                          <div class="preview-sidebar-item"></div>
-                          <div class="preview-sidebar-item"></div>
-                        </div>
-                        <div class="preview-content">
-                          <div class="preview-content-row"></div>
-                          <div class="preview-content-row"></div>
-                        </div>
+          <div class="grid grid-cols-2 pt-2 gap-1">
+            <v-card
+              :class="['style-option-card', { 'selected': myStuffStyleIndex === 0 }]"
+              @click="myStuffStyleIndex = 0"
+              outlined
+              hover
+              class="fill-height"
+            >
+              <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
+                <div class="style-preview-container mb-4 elevation-1">
+                  <div class="style-preview-old">
+                    <div class="preview-header"></div>
+                    <div class="d-flex fill-height">
+                      <div class="preview-sidebar">
+                        <div class="preview-sidebar-item"></div>
+                        <div class="preview-sidebar-item"></div>
+                      </div>
+                      <div class="preview-content">
+                        <div class="preview-content-row"></div>
+                        <div class="preview-content-row"></div>
                       </div>
                     </div>
                   </div>
-                  <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleOld') }}</div>
-                  <div class="text-caption grey--text">{{ t('setting.myStuffStyleOldDescription') }}</div>
-                  <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 0">check_circle</v-icon>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-card
-                :class="['style-option-card', { 'selected': myStuffStyleIndex === 1 }]"
-                @click="myStuffStyleIndex = 1"
-                outlined
-                hover
-                class="fill-height"
-              >
-                <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
-                  <div class="style-preview-container mb-4 elevation-1">
-                    <div class="style-preview-new">
-                      <div class="preview-header"></div>
-                      <div class="preview-grid">
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                      </div>
+                </div>
+                <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleOld') }}</div>
+                <div class="text-caption grey--text">{{ t('setting.myStuffStyleOldDescription') }}</div>
+                <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 0">check_circle</v-icon>
+              </v-card-text>
+            </v-card>
+            <v-card
+              :class="['style-option-card', { 'selected': myStuffStyleIndex === 1 }]"
+              @click="myStuffStyleIndex = 1"
+              outlined
+              hover
+              class="fill-height"
+            >
+              <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
+                <div class="style-preview-container mb-4 elevation-1">
+                  <div class="style-preview-new">
+                    <div class="preview-header"></div>
+                    <div class="preview-grid">
+                      <div class="preview-grid-item"></div>
+                      <div class="preview-grid-item"></div>
+                      <div class="preview-grid-item"></div>
+                      <div class="preview-grid-item"></div>
                     </div>
                   </div>
-                  <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleNew') }}</div>
-                  <div class="text-caption grey--text">{{ t('setting.myStuffStyleNewDescription') }}</div>
-                  <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 1">check_circle</v-icon>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
+                </div>
+                <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleNew') }}</div>
+                <div class="text-caption grey--text">{{ t('setting.myStuffStyleNewDescription') }}</div>
+                <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 1">check_circle</v-icon>
+              </v-card-text>
+            </v-card>
+          </div>
         </v-tab-item>
 
         <!-- Sidebar Settings Tab -->
         <v-tab-item>
-          <v-row class="mt-2">
-            <v-col cols="12" md="5" class="d-flex justify-center align-center">
+          <div class="mt-2 grid grid-cols-12">
+            <div class="col-span-12 md:col-span-5 d-flex justify-center align-center">
               <!-- Live Preview -->
               <div class="sidebar-preview-container elevation-1 rounded-lg">
                 <div class="sidebar-preview-wrapper">
@@ -115,9 +111,9 @@
                 </div>
                 <div class="text-caption text-center mt-2 grey--text">Live Preview</div>
               </div>
-            </v-col>
+            </div>
             
-            <v-col cols="12" md="7">
+            <div class="col-span-12 md:col-span-7">
               <v-list class="transparent-list">
                 <!-- Style -->
                 <v-list-item>
@@ -191,8 +187,8 @@
                   </v-list-item>
                 </template>
               </v-list>
-            </v-col>
-          </v-row>
+            </div>
+          </div>
         </v-tab-item>
       </v-tabs-items>
     </v-card-text>

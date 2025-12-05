@@ -48,6 +48,7 @@
       <v-list-item
         push
         class="non-moveable"
+        style="flex-basis: auto;"
         :class="{ 'justify-center': compact, 'px-0': compact }"
         v-shared-tooltip.right="_ => t('instances.add')"
         @click="showAddInstance()"

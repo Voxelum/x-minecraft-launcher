@@ -12,9 +12,6 @@
 
     <!-- Compact container for all global settings -->
     <div class="global-settings-container">
-      <!-- UI Customization -->
-      <SettingGlobalUI />
-
       <!-- Instance Launch Options -->
       <SettingGlobalLaunch />
 
@@ -27,7 +24,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n-bridge'
 import SettingHeader from '@/components/SettingHeader.vue'
-import SettingGlobalUI from './SettingGlobalUI.vue'
 import SettingGlobalLaunch from './SettingGlobalLaunch.vue'
 import SettingGlobalAdvanced from './SettingGlobalAdvanced.vue'
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mb-4" elevation="2" color="transparent" v-if="!disableUpdate">
+  <v-card class="mb-4" elevation="2" v-if="!disableUpdate">
     <v-card-title class="text-subtitle-1 pb-2">
       <v-icon left color="primary" small>rocket_launch</v-icon>
       {{ t("setting.update") }}

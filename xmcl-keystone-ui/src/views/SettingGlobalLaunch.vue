@@ -6,7 +6,7 @@
     <!-- =============================================================== -->
 
     <!-- Quick Launch Settings Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>flash_on</v-icon>
         {{ t('setting.quickLaunchSettings') || 'Быстрый запуск' }}
@@ -25,7 +25,7 @@
     </v-card>
 
     <!-- Authentication Settings Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>security</v-icon>
         {{ t('setting.authenticationSettings') || 'Аутентификация' }}
@@ -42,7 +42,7 @@
     </v-card>
 
     <!-- Java Memory Settings Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>memory</v-icon>
         {{ t("java.memory") }}
@@ -58,7 +58,7 @@
     </v-card>
 
     <!-- Advanced Java Options Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>code</v-icon>
         {{ t('setting.advancedJavaOptions') || 'Расширенные параметры Java' }}
@@ -86,7 +86,7 @@
     </v-card>
 
     <!-- Environment Variables Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>eco</v-icon>
         {{ t("instance.vmVar") }}
@@ -107,7 +107,7 @@
     </v-card>
 
     <!-- Minecraft Options Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>videogame_asset</v-icon>
         {{ t('setting.minecraftOptions') || 'Параметры Minecraft' }}
@@ -135,7 +135,7 @@
     </v-card>
 
     <!-- Game Window Resolution Card -->
-    <v-card class="mb-4" elevation="2" color="transparent">
+    <v-card class="mb-4" elevation="2">
       <v-card-title class="text-subtitle-1 pb-2">
         <v-icon left color="primary" small>aspect_ratio</v-icon>
         {{ t("instance.resolution") }}
