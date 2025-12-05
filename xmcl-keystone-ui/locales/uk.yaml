@@ -1487,6 +1487,46 @@ setting:
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
+  sidebarSettings: Налаштування бічної панелі
+  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
+  sidebarPosition: Позиція бічної панелі
+  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
+  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
+  sidebarLeft: Зліва
+  sidebarRight: Справа
+  sidebarTop: Зверху
+  sidebarBottom: Знизу
+  sidebarStyle: Стиль бічної панелі
+  sidebarStyleHint: Виберіть між класичним та сучасним дизайном
+  sidebarClassic: Класичний
+  sidebarNotch: Notch
+  sidebarAlign: Вирівнювання бічної панелі
+  sidebarAlignHint: Вирівнювання вмісту бічної панелі
+  sidebarAlignStart: Початок
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Кінець
+  sidebarScale: Масштаб бічної панелі
+  sidebarScaleHint: Налаштування розміру бічної панелі
+  myStuffStyle: Стиль домашньої сторінки
+  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
+  myStuffStyleTitle: Дизайн сторінки
+  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
+  myStuffStyleOld: Мої речі (Класика)
+  myStuffStyleNew: Лаунчер (Сучасний)
+  advancedSettings: Розширені налаштування
+  advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
+  resetAllSettings: Скинути всі налаштування
+  resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
+  resetAllSettingsConfirmTitle: Скинути всі налаштування?
+  resetAllSettingsConfirmMessage: Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
+  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
+  exportSettings: Експорт налаштувань
+  exportSettingsHint: Зберегти поточні налаштування у файл
+  importSettings: Імпорт налаштувань
+  importSettingsHint: Завантажити налаштування з раніше експортованого файлу
+  settingsExported: Налаштування успішно експортовано
+  settingsImported: Налаштування успішно імпортовано
+  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
   hideNewsHeader: Приховати вітрину новин
   instanceTheme:
     activeDescription: |-
