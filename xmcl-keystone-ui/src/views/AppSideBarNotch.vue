@@ -252,7 +252,14 @@ function goMultiplayer() {
   position: absolute;
   z-index: 101;
   pointer-events: auto; /* Re-enable pointer events for trigger */
+  background-color: rgba(255, 255, 255, 0.02); /* Barely visible highlight */
+  transition: background-color 0.3s ease;
 }
+
+.sidebar-trigger:hover {
+  background-color: rgba(255, 255, 255, 0.08); /* Slightly more visible on hover */
+}
+
 
 .trigger--left {
   left: 0;
