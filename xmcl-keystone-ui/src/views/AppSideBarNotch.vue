@@ -213,6 +213,7 @@ function goMultiplayer() {
   position: relative;
   display: flex;
   z-index: 10;
+  pointer-events: none; /* Let clicks pass through wrapper */
 }
 
 /* When auto-hide is on, use fixed positioning */
@@ -223,13 +224,13 @@ function goMultiplayer() {
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--left {
   left: 0;
-  top: 0;
+  top: 58px; /* Start below window title bar */
   bottom: 0;
 }
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--right {
   right: 0;
-  top: 0;
+  top: 58px; /* Start below window title bar */
   bottom: 0;
 }
 
@@ -237,6 +238,7 @@ function goMultiplayer() {
   top: 0;
   left: 0;
   right: 0;
+  z-index: 102; /* Ensure top sidebar is above window controls if it MUST be there, but might need offset too */
 }
 
 .sidebar-notch-wrapper.wrapper--auto-hide.wrapper--bottom {
@@ -249,26 +251,27 @@ function goMultiplayer() {
 .sidebar-trigger {
   position: absolute;
   z-index: 101;
+  pointer-events: auto; /* Re-enable pointer events for trigger */
 }
 
 .trigger--left {
   left: 0;
-  top: 0;
+  top: 58px; /* Match safe area */
   bottom: 0;
   width: 12px;
 }
 
 .trigger--right {
   right: 0;
-  top: 0;
+  top: 58px; /* Match safe area */
   bottom: 0;
   width: 12px;
 }
 
 .trigger--top {
   top: 0;
-  left: 0;
-  right: 0;
+  left: 80px; 
+  right: 120px; 
   height: 12px;
 }
 
@@ -286,6 +289,7 @@ function goMultiplayer() {
   align-items: center;
   padding: 8px;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+  pointer-events: none; /* Crucial: Do not block clicks on empty/padding areas */
 }
 
 /* Hidden state animations */
@@ -313,6 +317,7 @@ function goMultiplayer() {
   flex-direction: column;
   min-height: 100%;
   padding: 12px 8px;
+  /* padding-top removed in favor of top offset on wrapper */
 }
 
 .sidebar-notch--horizontal {
@@ -337,6 +342,7 @@ function goMultiplayer() {
   border-radius: 20px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: auto; /* Re-enable pointer events ONLY for the container */
 }
 
 .sidebar-notch--vertical .sidebar-notch__container {
@@ -459,6 +465,8 @@ function goMultiplayer() {
 .sidebar-notch__instances :deep(.v-list-item) {
   background: transparent !important;
   padding: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
   margin: 0 !important;
 }
 
@@ -469,6 +477,22 @@ function goMultiplayer() {
 
 .sidebar-notch__instances :deep(.sidebar-item) {
   background: transparent !important;
+}
+
+/* Remove default Vuetify padding from v-list-item */
+.sidebar-notch__instances :deep(.v-list-item) {
+  min-height: unset;
+  height: 40px;
+}
+
+/* Ensure icons are centered */
+.sidebar-notch__instances :deep(.v-list-item__icon) {
+  margin: 0 !important;
+}
+
+/* Fix for v-list inside sidebar */
+.sidebar-notch__instances :deep(.v-list-item__content) {
+  padding: 0;
 }
 </style>
 

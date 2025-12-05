@@ -1923,3 +1923,25 @@ versionType:
   name: Статус
   release: Релиз
 'yes': Да
+setting:
+  sidebarSettings: Настройки боковой панели
+  sidebarSettingsHint: Настройте внешний вид и поведение боковой панели
+  sidebarPosition: Положение боковой панели
+  sidebarPositionHint: Выберите, где отображать боковую панель
+  sidebarLeft: Слева
+  sidebarRight: Справа
+  sidebarTop: Сверху
+  sidebarBottom: Снизу
+  sidebarStyle: Стиль боковой панели
+  sidebarStyleHint: Выберите между классическим и современным дизайном Notch
+  sidebarClassic: Классический
+  sidebarNotch: Notch
+  sidebarAlign: Выравнивание боковой панели
+  sidebarAlignHint: Выровнять содержимое боковой панели
+  sidebarAlignStart: Начало
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Конец
+  sidebarScale: Масштаб боковой панели
+  sidebarScaleHint: Отрегулируйте размер боковой панели
+  sidebarAutoHide: Авто-скрытие боковой панели
+  sidebarAutoHideHint: Скрывать боковую панель автоматически и показывать при наведении
