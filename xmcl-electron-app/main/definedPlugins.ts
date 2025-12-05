@@ -1,3 +1,4 @@
+import { pluginAMDGPUWorkaround } from './pluginAMDGPUWorkaround'
 import { pluginAutoUpdate } from './pluginAutoUpdate'
 import { pluginIconProtocol } from './pluginIconProtocol'
 import { pluginNvdiaGPULinux } from './pluginNvdiaGPULinux'
@@ -34,6 +35,7 @@ import { definedServices } from './definedServices'
 export const definedPlugins: LauncherAppPlugin[] = [
   pluginDirectLaunch,
   pluginAutoUpdate,
+  pluginAMDGPUWorkaround,
   pluginPowerMonitor,
   pluginIconProtocol,
   pluginApiFallback,
