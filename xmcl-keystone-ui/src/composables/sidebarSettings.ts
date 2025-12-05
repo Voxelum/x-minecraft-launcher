@@ -35,4 +35,3 @@ export function useSidebarSettings(): SidebarSettings {
 export function useInjectSidebarSettings(): SidebarSettings {
   return injection(kSidebarSettings)
 }
-

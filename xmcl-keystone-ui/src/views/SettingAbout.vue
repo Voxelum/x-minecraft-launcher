@@ -1,5 +1,5 @@
 <template>
-  <section class="mb-5 mt-2 about mx-6">
+  <section class="mb-5 mt-2 about">
     <v-expansion-panels>
       <v-expansion-panel>
         <v-expansion-panel-header>

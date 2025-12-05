@@ -691,7 +691,7 @@ export function useThemeWritter(currentTheme: Ref<UIThemeDataV1>, save: () => vo
   }
 }
 
-export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Framework, { getThemes, getTheme } = useService(ThemeServiceKey)) {
+export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Framework, { getThemes, getTheme, setTheme } = useService(ThemeServiceKey)) {
   const selectedThemeName = useLocalStorageCacheStringValue('selectedThemeName', 'default' as string)
   const currentTheme = ref<UIThemeDataV1>(getDefaultTheme())
   const themes = ref<UIThemeDataV1[]>([])
@@ -861,5 +861,7 @@ export function useTheme(override: Ref<UIThemeDataV1 | undefined>, framework: Fr
     cardColor,
     font,
     fontSize,
+    setTheme,
+    serialize,
   }
 }
