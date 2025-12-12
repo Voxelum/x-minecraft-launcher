@@ -76,7 +76,6 @@
         <template v-if="viewMode === 'scroll'">
           <section id="general" class="mb-8 scroll-target"><SettingGeneral /></section>
           <section id="appearance" class="mb-8 scroll-target">
-            <SettingAppearance />
             <SettingGlobalUI />
           </section>
           <section id="global" class="mb-8 scroll-target"><SettingGlobal /></section>
@@ -92,8 +91,7 @@
           <v-fade-transition mode="out-in">
             <div :key="activeSectionIndex" class="tab-content">
               <SettingGeneral v-if="activeSectionIndex === 0" />
-              <SettingAppearance v-if="activeSectionIndex === 1" />
-              <!-- <SettingGlobalUI /> -->
+              <SettingGlobalUI v-if="activeSectionIndex === 1" />
               <SettingGlobal v-if="activeSectionIndex === 2" />
               <SettingUpdate v-if="activeSectionIndex === 3" />
               <div v-if="activeSectionIndex === 4">
@@ -115,7 +113,6 @@
 import { ref, computed, onMounted, onUnmounted, provide, watch, Ref } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import SettingUpdateInfoDialog from './SettingUpdateInfoDialog.vue'
-import SettingAppearance from './SettingAppearance.vue'
 import SettingUpdate from './SettingUpdate.vue'
 import SettingGeneral from './SettingGeneral.vue'
 import SettingMigrationDialog from './SettingMigrationDialog.vue'
