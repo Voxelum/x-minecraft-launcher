@@ -83,6 +83,7 @@ export class ElectronController implements LauncherAppController {
           webPreferences: {
             preload: indexPreload,
             devTools: IS_DEV,
+            backgroundThrottling: true,
           },
         },
       }
@@ -313,6 +314,7 @@ export class ElectronController implements LauncherAppController {
           sandbox: false,
           preload: multiplayerPreload,
           devTools: IS_DEV,
+          backgroundThrottling: true,
         },
       })
 
@@ -386,6 +388,7 @@ export class ElectronController implements LauncherAppController {
         preload: indexPreload,
         session: restoredSession,
         webviewTag: true,
+        backgroundThrottling: true,
       },
       show: false,
     })
