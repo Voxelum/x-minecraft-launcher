@@ -40,9 +40,18 @@
 
             <v-card-text class="contributors">
               <v-subheader> 🧑‍💻 Contributors </v-subheader>
-              <a href="https://github.com/voxelum/x-minecraft-launcher/graphs/contributors" class="overflow-hidden">
-                <img src="https://contrib.rocks/image?repo=voxelum/x-minecraft-launcher" />
-              </a>
+              <div class="flex flex-wrap gap-2 justify-center max-h-[400px] overflow-auto">
+                <v-tooltip v-for="c in contributors" :key="c.login" bottom>
+                  <template #activator="{ on, attrs }">
+                    <a :href="c.html_url" target="_blank" v-on="on" v-bind="attrs">
+                      <v-avatar size="40">
+                        <v-img :src="c.avatar_url"></v-img>
+                      </v-avatar>
+                    </a>
+                  </template>
+                  <span>{{ c.login }}</span>
+                </v-tooltip>
+              </div>
             </v-card-text>
 
             <v-card-text class="sponsors flex flex-col items-center gap-3">
@@ -100,6 +109,13 @@ const debugInfo = computed(() => {
 
 const { t } = useI18n()
 const version = computed(() => env.value?.version ?? '')
+
+const contributors = ref<{ login: string; avatar_url: string; html_url: string }[]>([])
+onMounted(() => {
+  fetch('https://api.github.com/repos/voxelum/x-minecraft-launcher/contributors')
+    .then(r => r.json())
+    .then(data => contributors.value = data as any)
+})
 </script>
 <style scoped>
 

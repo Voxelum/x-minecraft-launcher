@@ -13,7 +13,6 @@
         'overflow-x-auto': horizontal,
         'ml-1': !horizontal,
         'mt-1': horizontal,
-        'h-full': !horizontal,
         'w-full': horizontal
       }"
     >
@@ -46,19 +45,19 @@
       </template>
 
       <v-list-item
-        push
-        class="non-moveable"
+        class="non-moveable add-instance-item"
         style="flex-basis: auto;"
         :class="{ 'justify-center': compact, 'px-0': compact }"
-        v-shared-tooltip.right="_ => t('instances.add')"
-        @click="showAddInstance()"
       >
         <v-list-item-avatar
           id="create-instance-button"
           :size="compact ? 32 : 48"
-          class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
+          class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500 cursor-pointer"
           :class="{ 'mx-0': compact }"
           large
+          style="pointer-events: auto"
+          v-shared-tooltip.right="() => t('instances.add')"
+          @click="showAddInstance()"
         >
           <v-icon :class="{ 'text-3xl': !compact, 'text-xl': compact }">
             add
@@ -67,7 +66,6 @@
 
         <v-list-item-title v-if="!compact">{{ t('instances.add') }}</v-list-item-title>
       </v-list-item>
-      <v-spacer />
     </v-list>
     <SimpleDialog
       :width="500"
@@ -169,3 +167,15 @@ function doCopy() {
 }
 
 </script>
+
+<style scoped>
+.add-instance-item {
+  background-color: transparent !important;
+  pointer-events: none;
+}
+
+.add-instance-item::before,
+.add-instance-item::after {
+  display: none !important;
+}
+</style>

@@ -47,6 +47,29 @@
             </v-card-text>
           </v-card>
 
+          <!-- Market Design Card -->
+          <v-card class="style-option-card mb-4" outlined>
+            <v-card-text class="pa-4">
+              <div class="d-flex align-center mb-3">
+                <v-icon color="primary" class="mr-2">store</v-icon>
+                <div>
+                  <div class="font-weight-medium">ModPack Market Design</div>
+                  <div class="text-caption text--secondary">Choose between Classic or Modern AppStore style for the market</div>
+                </div>
+              </div>
+              <v-chip-group v-model="marketLayout" active-class="primary--text" mandatory>
+                <v-chip value="classic" filter outlined class="mr-2">
+                  <v-icon left small>view_list</v-icon>
+                  Classic
+                </v-chip>
+                <v-chip value="modern" filter outlined class="mr-2">
+                  <v-icon left small>apps</v-icon>
+                  Modern
+                </v-chip>
+              </v-chip-group>
+            </v-card-text>
+          </v-card>
+
           <!-- Linux Titlebar (Linux only) -->
           <v-card v-if="env?.os === 'linux'" class="style-option-card mb-4" outlined>
             <v-card-text class="pa-4">
@@ -272,6 +295,7 @@ import { computed, watch, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { useLocalStorageCacheStringValue } from '@/composables/cache'
+import { useMarketLayout } from '@/composables/marketLayout'
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import { kTheme } from '@/composables/theme'
 import { kUIDefaultLayout } from '@/composables/uiLayout'
@@ -285,6 +309,7 @@ const env = injection(kEnvironment)
 const { currentTheme, update, setTheme, serialize } = injection(kTheme)
 const layout = injection(kUIDefaultLayout)
 const { state } = injection(kSettingsState)
+const marketLayout = useMarketLayout()
 
 // --- Layout & Theme Logic ---
 const layouts = computed(() => [{
@@ -517,6 +542,25 @@ watch(sidebarStyle, (newStyle) => {
   display: flex;
   padding: 4px;
   gap: 4px;
+  background-color: transparent; /* Ensure visibility against main bg */
+}
+
+/* Horizontal alignment for Top/Bottom */
+.sidebar-preview.position-top .sidebar-preview-notch,
+.sidebar-preview.position-bottom .sidebar-preview-notch {
+  width: 100%;
+  flex-direction: row;
+  height: 24px;
+  align-items: center;
+}
+
+/* Vertical alignment for Left/Right */
+.sidebar-preview.position-left .sidebar-preview-notch,
+.sidebar-preview.position-right .sidebar-preview-notch {
+  height: 100%;
+  flex-direction: column;
+  width: 24px;
+  justify-content: center; /* Default vertical align */
 }
 
 .sidebar-preview-notch-item {
@@ -524,12 +568,24 @@ watch(sidebarStyle, (newStyle) => {
   height: 12px;
   background-color: #bdbdbd;
   border-radius: 3px;
+  flex-shrink: 0;
 }
 
-/* Notch Alignment */
-.sidebar-preview.align-start .sidebar-preview-notch { justify-content: flex-start; }
-.sidebar-preview.align-center .sidebar-preview-notch { justify-content: center; }
-.sidebar-preview.align-end .sidebar-preview-notch { justify-content: flex-end; }
+/* Notch Alignment - Horizontal (Top/Bottom) */
+.sidebar-preview.position-top.align-start .sidebar-preview-notch,
+.sidebar-preview.position-bottom.align-start .sidebar-preview-notch { justify-content: flex-start; }
+.sidebar-preview.position-top.align-center .sidebar-preview-notch,
+.sidebar-preview.position-bottom.align-center .sidebar-preview-notch { justify-content: center; }
+.sidebar-preview.position-top.align-end .sidebar-preview-notch,
+.sidebar-preview.position-bottom.align-end .sidebar-preview-notch { justify-content: flex-end; }
+
+/* Notch Alignment - Vertical (Left/Right) */
+.sidebar-preview.position-left.align-start .sidebar-preview-notch,
+.sidebar-preview.position-right.align-start .sidebar-preview-notch { justify-content: flex-start; }
+.sidebar-preview.position-left.align-center .sidebar-preview-notch,
+.sidebar-preview.position-right.align-center .sidebar-preview-notch { justify-content: center; }
+.sidebar-preview.position-left.align-end .sidebar-preview-notch,
+.sidebar-preview.position-right.align-end .sidebar-preview-notch { justify-content: flex-end; }
 
 .sidebar-preview-content {
   flex-grow: 1;

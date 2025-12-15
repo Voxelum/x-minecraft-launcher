@@ -25,7 +25,7 @@ AppShareInstanceDialog:
   downloadToLocal: Загрузить в текущий экземпляр
   filesToDownload: Выберите файлы для загрузки
   filesToShare: Выберите файлы для обмена
-  instanceShare: '{user} только что поделился текущим экземпляром с вами'
+  instanceShare: "{user} только что поделился текущим экземпляром с вами"
   share: Обмен
   shareNotifyTitle: Обмен экземпляром
   shareTitle: Обмен игровыми файлами с другими игроками
@@ -91,10 +91,10 @@ SettingMigrationDialog:
   selectRootDirectory: Выбрать корневой каталог
 add: Добавить
 ago:
-  day: '{duration} день назад | {duration} дней назад'
-  hour: '{duration} час назад | {duration} часов назад'
-  minute: '{duration} минуту назад | {duration} минут назад'
-  second: '{duration} секунду назад | {duration} секунд назад'
+  day: "{duration} день назад | {duration} дней назад"
+  hour: "{duration} час назад | {duration} часов назад"
+  minute: "{duration} минуту назад | {duration} минут назад"
+  second: "{duration} секунду назад | {duration} секунд назад"
 askAICrash:
   copyPrompt: Скопируйте подсказку, чтобы спросить AI
   description: |-
@@ -218,8 +218,8 @@ dataMigration:
     данные.
 delete:
   name: Удалить {name}
-  'no': Нет
-  'yes': Удалить
+  "no": Нет
+  "yes": Удалить
 dependencies:
   embedded: Встраиваемые
   incompatible: Несовместимые
@@ -290,16 +290,16 @@ disk:
   available: Доступно
   used: Использовано
 download: Скачать
-downloadCount: '{count} загрузок'
+downloadCount: "{count} загрузок"
 downloadUpdate: Скачать обновление
 duration:
-  day: '{duration} день | {duration} дней'
-  hour: '{duration} час | {duration} часов'
-  minute: '{duration} минута | {duration} минут'
+  day: "{duration} день | {duration} дней"
+  hour: "{duration} час | {duration} часов"
+  minute: "{duration} минута | {duration} минут"
   name: Удалить {name}
-  'no': Нет
-  second: '{duration} секунда | {duration} секунд'
-  'yes': Да, сэр.
+  "no": Нет
+  second: "{duration} секунда | {duration} секунд"
+  "yes": Да, сэр.
 edit: Изменить
 enable: Включить
 env:
@@ -314,7 +314,7 @@ errors:
     Не удаётся получить файл загрузчика forge. Возможно, у forge новый формат
     файла загрузчика? Обратитесь к разработчикам, если эта проблема будет
     повторяться.
-  BadInstanceType: 'Недопустимый экземпляр: {type}'
+  BadInstanceType: "Недопустимый экземпляр: {type}"
   BodyTimeoutError: Истекло время ожидания ответа сервера
   ChecksumNotMatchError: Контрольная сумма не совпадает! Ожидалась {expect}. Получена {actual}.
   ConnectTimeoutError: Истекло время ожидания соединения с сервером.
@@ -531,7 +531,7 @@ instanceAge:
   today: Сегодня
 instanceDiscover:
   gameFolder: Откройте {count} папок с играми
-  instanceFolder: 'Найдено экземпляров: {count}'
+  instanceFolder: "Найдено экземпляров: {count}"
 instanceFileOperation:
   add: Добавить
   backup-add: Заменить (создать резервную копию)
@@ -619,8 +619,8 @@ instances:
   loadingFiles: Загрузка файлов сборки модов
   refreshServers: Обновить серверы
 items:
-  count: '{count} элементов'
-  total: '{total} всего'
+  count: "{count} элементов"
+  total: "{total} всего"
 java:
   allocatedLong: Использовать системный Java по умолчанию
   allocatedShort: Автоматическое выделение
@@ -637,7 +637,7 @@ java:
   modifyInstance: Изменить путь к Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальный Java
-  systemMemory: 'Свободная память системы: {free} / {total}'
+  systemMemory: "Свободная память системы: {free} / {total}"
 labyMod:
   disable: LabyMod не выбран
   empty: LabyMod не поддерживает текущую версию Minecraft
@@ -715,7 +715,7 @@ launchFailed:
       избежать этой проблемы.
     title: Проблема совместимости Ely.by Authlib
   failedToLaunch: Не удалось запустить запуск
-  latestLog: 'Последние логи '
+  latestLog: "Последние логи "
   title: Игра завершилась с аномальным кодом
 launchPreExecuteCommandFailed:
   description: >-
@@ -782,7 +782,7 @@ loginError:
   badNetworkOrServer: Проверьте соединение с сетью! Возможно, сервер авторизации недоступен!
   checkOwnershipFailed: Не удалось подтвердить владение игрой. Пожалуйста, попробуйте ещё раз.
   connectionReset: Не удалось войти, так как соединение было сброшено сервером
-  fetchMinecraftProfileFailed: 'Не удалось получить профиль Minecraft: {reason}'
+  fetchMinecraftProfileFailed: "Не удалось получить профиль Minecraft: {reason}"
   illegalEmail: Необходим корректный адрес электронной почты
   invalidCredentials: Неверные учётные данные. Неверное имя пользователя или пароль.
   loginMinecraftByXboxFailed: >-
@@ -839,12 +839,12 @@ mod:
   deletionRestHint: И ещё {rest} модов...
   denseView: Компактное отображение модов
   dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
-  duplicatedDetected: '{count} дублированных модов'
+  duplicatedDetected: "{count} дублированных модов"
   duplicatedDetectedDescription: |-
     Найдены моды с одинаковым идентификатором, но с разными файлами. 
     Это может привести к сбою Minecraft. 
     Пожалуйста, выберите файл, который вы хотите сохранить.
-  enabled: 'Всего модов включено: {count}'
+  enabled: "Всего модов включено: {count}"
   enableAll: Включить все
   disableAll: Отключить все
   filter: Фильтр модов
@@ -871,7 +871,7 @@ mod:
     Мод поддерживает следующие загрузчики модов. 
     Пожалуйста, выберите один для установки.
   modloaderSelectNotSupported: Не найден {modloader} для Minecraft {minecraft}
-  mods: '{count} модов'
+  mods: "{count} модов"
   name: Мод | Моды
   noModLoaderHint: Не забудьте включить модлоадер для использования модов!
   openLink: Открыть URL мода {url}
@@ -885,7 +885,7 @@ mod:
   showInModrinth: Показать {name} на Modrinth
   switchDefaultSource: Источник контента модов по умолчанию
   syncGroupRules: Сохранить правила группировки
-  toUpdate: '{count} для обновления'
+  toUpdate: "{count} для обновления"
   ungroup: Негруппинг
 modFilter:
   clear: Чистый фильтр
@@ -1120,7 +1120,7 @@ modrinth:
     name: Тип проекта
     resourcePack: Комплект ресурсов
     shader: Шейдер
-  projects: '{count} проекты'
+  projects: "{count} проекты"
   quickSearch: Поиск {title}
   searchText: Поиск
   serverSide: Серверная часть
@@ -1166,7 +1166,7 @@ multiplayer:
     11)">несколько</span> соединений.</span>
   createLocalToken: Создать локальный токен
   currentIpTitle: Обнаруженный общедоступный IP
-  currentNatTitle: 'Текущая сеть (NAT):'
+  currentNatTitle: "Текущая сеть (NAT):"
   difficultyLevelHint: Уровень сложности для создания соединения с другими пользователями
   disconnect: Отключиться
   disconnectDescription: Вы уверены, что хотите прервать соединение с пользователем {user}({id})?
@@ -1250,7 +1250,7 @@ news:
   name: Новости
   readMore: Подробнее
 next: Далее
-'no': Нет
+"no": Нет
 ok: ОК
 optifineVersion:
   disable: Optifine не выбран
@@ -1278,7 +1278,7 @@ presence:
   curseforge: Просмотр CurseForge
   curseforgeProject: Просмотр {name} в Curseforge
   instance: Неактивен в экземпляре {instance}
-  instanceSetting: 'Редактирует настройки экземпляра: {instance}'
+  instanceSetting: "Редактирует настройки экземпляра: {instance}"
   mod: Просматривает моды в {instance}
   modrinth: Просмотр Modrinth
   modrinthProject: Просматривает {name} в Modrinth
@@ -1307,7 +1307,7 @@ resourcepack:
       восстановить. Вы уверены, что хотите это сделать?
     title: Удалить набор ресурсов
   dropHint: Перетащите сюда папку/zip-архив с набором ресурсов для импорта.
-  enable: 'Всего наборов ресурсов выбрано: {count}'
+  enable: "Всего наборов ресурсов выбрано: {count}"
   import: Импорт ресурс пака
   incompatible: >-
     Несовместимый формат набора ресурсов ({format}). Подходящий {accept}.
@@ -1317,7 +1317,7 @@ resourcepack:
   name: Набор ресурсов | Наборы ресурсов
   searchHint: Поиск набора ресурсов
   searchOnCurseforge: Поиск {name} на CurseForge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: Поиск и выбор пакета ресурсов
   selected: Выбранные наборы ресурсов
   shared: Экземпляр использует общую папку для наборов ресурсов
@@ -1344,7 +1344,7 @@ save:
     fromResource: Из управляемых ресурсов
     title: Импорт мира из управляемого источника
   createNew: Создать новый мир
-  createdWorlds: 'Всего миров: {count}'
+  createdWorlds: "Всего миров: {count}"
   deleteHint: >-
     Эта операция не может быть отменена. Вы навсегда потеряете данные этого
     мира. Вы уверены, что хотите удалить это мир?
@@ -1589,6 +1589,27 @@ setting:
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
+  sidebarSettings: Настройки боковой панели
+  sidebarSettingsHint: Настройте внешний вид и поведение боковой панели
+  sidebarPosition: Положение боковой панели
+  sidebarPositionHint: Выберите, где отображать боковую панель
+  sidebarLeft: Слева
+  sidebarRight: Справа
+  sidebarTop: Сверху
+  sidebarBottom: Снизу
+  sidebarStyle: Стиль боковой панели
+  sidebarStyleHint: Выберите между классическим и современным дизайном Notch
+  sidebarClassic: Классический
+  sidebarNotch: Notch
+  sidebarAlign: Выравнивание боковой панели
+  sidebarAlignHint: Выровнять содержимое боковой панели
+  sidebarAlignStart: Начало
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Конец
+  sidebarScale: Масштаб боковой панели
+  sidebarScaleHint: Отрегулируйте размер боковой панели
+  sidebarAutoHide: Авто-скрытие боковой панели
+  sidebarAutoHideHint: Скрывать боковую панель автоматически и показывать при наведении
 settingLabel:
   global: Глобальный
   globalHint: Это настройка будет следовать глобальной настройке.
@@ -1602,7 +1623,7 @@ setup:
     name: Добавить игровую учётную запись
     skip: Пока пропустить
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       Корневая папка не является обычной папкой (.minecraft). Поскольку
@@ -1650,7 +1671,7 @@ setup:
   path: Текущий путь
   title: >-
     Добро пожаловать в X Minecraft Launcher. Прежде чем начать, нам нужно, чтобы
-    вы 
+    вы
 shaderPack:
   deletion: Удалить набор шейдеров
   deletionHint: >-
@@ -1659,7 +1680,7 @@ shaderPack:
   disabled: Невыбранные наборы шейдеров
   dropHint: Перетащите сюда файл набора шейдеров (.zip)
   empty: Не выделен ни один набор шейдеров
-  enable: 'Используется набор шейдеров: {name}'
+  enable: "Используется набор шейдеров: {name}"
   enabled: Выбранные наборы шейдеров
   manage: Шейдера
   name: Набор шейдеров | Наборы шейдеров
@@ -1713,7 +1734,7 @@ task:
     title: Удалить текстурпак
   dropHint: Перетащите сюда папку/zip текстуру для импорта.
   empty: Нет запущенных задач
-  enable: 'Включено текстурпаков: {count}'
+  enable: "Включено текстурпаков: {count}"
   failed: Не удалось выполнить
   import: Импорт текстурпака
   incompatible: >-
@@ -1721,11 +1742,11 @@ task:
     {actual}.
   manage: Текстурпак
   manager: Менеджер задач
-  nTaskRunning: '{count} задач выполняется'
+  nTaskRunning: "{count} задач выполняется"
   name: Задача | Задачи
   pause: Приостановить
   searchOnCurseforge: Искать {name} на curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Избранные текстурпаки
   showFile: Открыть текстурпак {file} в папке
   showInCurseforge: Показать {name} на curseforge
@@ -1790,7 +1811,7 @@ tutorial:
     searchTitle: Поиск модов
   multiplayer:
     contentDescription: Соединения между вами и пользователями будут перечислены здесь.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       Вы можете создать или присоединиться к группе с другими пользователями.
       Лаунчер попытается создать P2P-соединения между вами и пользователями в
@@ -1922,26 +1943,4 @@ versionType:
   beta: Бета
   name: Статус
   release: Релиз
-'yes': Да
-setting:
-  sidebarSettings: Настройки боковой панели
-  sidebarSettingsHint: Настройте внешний вид и поведение боковой панели
-  sidebarPosition: Положение боковой панели
-  sidebarPositionHint: Выберите, где отображать боковую панель
-  sidebarLeft: Слева
-  sidebarRight: Справа
-  sidebarTop: Сверху
-  sidebarBottom: Снизу
-  sidebarStyle: Стиль боковой панели
-  sidebarStyleHint: Выберите между классическим и современным дизайном Notch
-  sidebarClassic: Классический
-  sidebarNotch: Notch
-  sidebarAlign: Выравнивание боковой панели
-  sidebarAlignHint: Выровнять содержимое боковой панели
-  sidebarAlignStart: Начало
-  sidebarAlignCenter: Центр
-  sidebarAlignEnd: Конец
-  sidebarScale: Масштаб боковой панели
-  sidebarScaleHint: Отрегулируйте размер боковой панели
-  sidebarAutoHide: Авто-скрытие боковой панели
-  sidebarAutoHideHint: Скрывать боковую панель автоматически и показывать при наведении
+"yes": Да
