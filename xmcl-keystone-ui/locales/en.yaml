@@ -943,8 +943,6 @@ modpack:
   noTranslationsAvailable: No translations available
   languagesSupported: '{count}+ Languages Supported'
   downloadTranslated: Download Translated
-  translationTeamName: Team {name}
-  translationLanguage: Language
 modpackImportConfirm:
   description: >-
     Detect you drop a file into the launcher. Are you trying to import a

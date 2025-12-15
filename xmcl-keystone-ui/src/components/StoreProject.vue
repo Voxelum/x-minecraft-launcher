@@ -109,12 +109,7 @@ export interface StoreProject {
     url: string
     description: string
   }>
-  translations?: Array<{
-    id: string
-    name: string
-    url: string
-    language: string
-  }>
+  translations?: Array<TranslationTeam>
 }
 
 const props = defineProps<{
