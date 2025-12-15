@@ -46,6 +46,8 @@ const project = computed(() => {
       url: g.url,
       description: g.type,
     })),
+    // Translation data - will be populated from backend/community source in production
+    translations: [],
   })
   return result
 })
@@ -99,6 +101,11 @@ const onInstall = (v: StoreProjectVersion) => {
   })
 }
 
+const onInstallTranslated = () => {
+  // TODO: Implement translation selection dialog
+  console.log('Install translated modpack requested')
+}
+
 const { instances, selectedInstance } = injection(kInstances)
 const existed = computed(() => instances.value.find(i => i.upstream?.type === 'ftb-modpack' && i.upstream?.id === props.id))
 const { push } = useRouter()
@@ -144,6 +151,7 @@ async function getVersionDetail(version: StoreProjectVersion) {
     :team-error="undefined"
     :get-version-detail="getVersionDetail"
     @install="onInstall"
+    @install-translated="onInstallTranslated"
     @open="onOpen"
   />
 </template>
