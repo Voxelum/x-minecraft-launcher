@@ -40,10 +40,11 @@ mangohud
 gamescope -W 1920 -H 1080 -f
 ```
 
-#### Multiple commands (chain with &&)
+#### Gamescope with Gamemode (combined wrapper)
 ```bash
-gamemode && mangohud
+gamescope -W 1920 -H 1080 -f -- gamemode
 ```
+Note: The `--` separator tells gamescope to wrap the command that follows. This runs Minecraft through both gamescope and gamemode.
 
 ### 2. Pre-Execute Command
 
@@ -100,6 +101,11 @@ systemctl start gamepad-service
    ```
    
    Then set Prepend Command to:
+   ```bash
+   gamescope -W 1920 -H 1080 -f
+   ```
+   
+   Or combine with gamemode (the `--` passes the remaining command to gamescope's wrapped execution):
    ```bash
    gamescope -W 1920 -H 1080 -f -- gamemode
    ```
