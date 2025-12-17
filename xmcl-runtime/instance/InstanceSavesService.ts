@@ -184,7 +184,7 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       const watcher = new FSWatcher({
         awaitWriteFinish: true,
         ignorePermissionErrors: true,
-        followSymlinks: false,
+        followSymlinks: true,
         cwd: path,
         depth: 2,
         ignored: (path, stat) => {
