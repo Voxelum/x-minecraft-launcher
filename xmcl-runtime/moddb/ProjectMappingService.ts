@@ -78,8 +78,6 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
       const urls = gfw.inside && hasLocaleDb
         ? [
-          `https://files.0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
-          `https://files-0x.halac.cn/Services/XMCL/project-mapping/${locale}.sqlite.gz`,
           original + '.gz',
         ]
         : [
@@ -135,9 +133,16 @@ export class ProjectMappingService extends AbstractService implements IProjectMa
 
     const db = new Kysely<Database>({
       dialect: new SqliteWASMDialect({
-        database: () => new SQLDatabase(filePath, {
-          readOnly: true,
-        }),
+        database: () => {
+          try {
+            return new SQLDatabase(filePath, {
+              readOnly: true,
+            })
+          } catch (e) {
+            this.#db = undefined
+            throw e
+          }
+        },
         onError: (e) => {
           // @ts-ignore
           e.source = 'ProjectMappingDatabase'

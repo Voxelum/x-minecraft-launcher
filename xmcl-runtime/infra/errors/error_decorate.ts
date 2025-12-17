@@ -39,5 +39,11 @@ export function shouldLog(e: unknown): e is Error {
     }
     return true
   }
+
+  if (e instanceof TypeError && e.message === ('fetch failed')
+    || (e instanceof Error && e.name === 'ClientAuthError' && e.message.includes('Network request failed'))
+  ) {
+    return false
+  }
   return false
 }
