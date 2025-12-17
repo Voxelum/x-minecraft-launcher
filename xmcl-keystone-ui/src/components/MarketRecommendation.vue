@@ -108,6 +108,7 @@ const randomCurseforgeCats = computed(() => {
   const parent = curseforgeCategories.value?.find(c => c.slug === props.curseforge)
   const all = curseforgeCategories.value?.filter(c => c.parentCategoryId === parent?.id)
   if (!all) return []
+  if (all.length < 2) return all
   while (result.length < 2) {
     const c = all[Math.floor(Math.random() * all.length)]
     if (c && result.every(r => r.id !== c.id)) {

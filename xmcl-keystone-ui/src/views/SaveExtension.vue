@@ -13,7 +13,6 @@
     </div>
     <v-spacer />
     <MarketTextFieldWithMenu
-      no-tab
      :placeholder="t('save.search')"
       :keyword.sync="keyword"
       :curseforge-category.sync="curseforgeCategory"
@@ -22,7 +21,7 @@
       :modrinth-category-filter="''"
       :enable-curseforge.sync="isCurseforgeActive"
       :sort.sync="sort"
-      :mode="'remote'"
+      :mode.sync="source"
       :game-version.sync="gameVersion"
     />
   </div>

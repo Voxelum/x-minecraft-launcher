@@ -178,7 +178,9 @@ export function useInstanceLaunch(
       if (!options.skipAssetsCheck && side === 'client') {
         console.log('refreshing user')
         try {
-          await track(token, refreshUser(user.id, { validate: true }).then((profile) => { user = profile }), 'refreshing-user', operationId)
+          if (user.id) {
+            await track(token, refreshUser(user.id, { validate: true }).then((profile) => { user = profile }), 'refreshing-user', operationId)
+          }
         } catch (e) {
           console.error(e)
         }
