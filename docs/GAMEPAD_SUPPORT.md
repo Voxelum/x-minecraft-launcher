@@ -1,14 +1,67 @@
-# Gamepad Support Guide
+# Gamepad Support and CLI Launch Guide
 
-This guide explains how to configure Xbox gamepad and other controller support in X Minecraft Launcher.
+This guide explains how to configure Xbox gamepad and other controller support in X Minecraft Launcher, as well as how to launch instances directly from the command line.
 
 ## Overview
 
-X Minecraft Launcher supports launching Minecraft with gamepad/controller support through **wrapper commands**. These commands are executed before the game launches, allowing you to use tools like gamemode, Steam Input, or other gamepad mapping software.
+X Minecraft Launcher supports launching Minecraft with gamepad/controller support in two ways:
 
-## Configuration
+1. **Command Line Interface (CLI)**: Launch instances directly without opening the launcher UI (similar to PrismLauncher)
+2. **Wrapper Commands**: Execute tools like gamemode, Steam Input, or gamepad mapping software when launching
 
-There are two main options for adding gamepad support:
+## Command Line Interface (CLI)
+
+You can launch Minecraft instances directly from the command line, similar to PrismLauncher's `-l` option. This is especially useful for:
+- Steam Big Picture mode integration
+- Desktop shortcuts
+- Automation scripts
+- Launching with gamepad-only navigation
+
+### Usage
+
+```bash
+# Windows
+xmcl.exe launch "<user-id>" "<instance-path>"
+
+# Linux
+xmcl launch "<user-id>" "<instance-path>"
+
+# macOS
+"/Applications/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher" launch "<user-id>" "<instance-path>"
+```
+
+### Parameters
+
+- **user-id**: Your user account ID (find in launcher settings)
+- **instance-path**: Full path to the instance folder
+
+### Examples
+
+```bash
+# Windows
+"C:\Program Files\X Minecraft Launcher\xmcl.exe" launch "your-user-id" "C:\Users\YourName\AppData\Roaming\xmcl\instances\MyInstance"
+
+# Linux
+/usr/bin/xmcl launch "your-user-id" "/home/username/.xmcl/instances/MyInstance"
+
+# macOS
+"/Applications/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher" launch "your-user-id" "/Users/username/Library/Application Support/xmcl/instances/MyInstance"
+```
+
+### Creating Launch Shortcuts
+
+The launcher can create desktop shortcuts for you:
+
+1. Click the dropdown menu on the launch button for your instance
+2. Select "Create Shortcut" 
+3. Choose the location for the shortcut
+4. The shortcut will launch the instance directly using the CLI command
+
+You can also add these shortcuts to Steam for controller navigation!
+
+## Configuration: Wrapper Commands
+
+There are two main options for adding gamepad support via wrapper commands:
 
 ### 1. Prepend Command (Recommended for Gamepads)
 
@@ -74,10 +127,18 @@ systemctl start gamepad-service
    - [MidnightControls](https://modrinth.com/mod/midnightcontrols)
    - [Controllable](https://www.curseforge.com/minecraft/mc-mods/controllable)
 
-2. **Steam Big Picture Mode**:
-   - Add X Minecraft Launcher to Steam as a non-Steam game
+2. **Steam Big Picture Mode / Steam Deck**:
+   
+   **Method 1: Launch directly via CLI**
+   - Create a desktop shortcut for your instance (right-click instance → Create Shortcut)
+   - Add the shortcut to Steam as a non-Steam game
+   - Steam will handle controller input for both launcher and game
+   
+   **Method 2: Add launcher to Steam**
+   - Add X Minecraft Launcher executable to Steam as a non-Steam game
+   - Set launch options: `launch "your-user-id" "path/to/instance"`
    - Configure controller mapping in Steam Input
-   - Launch through Steam with Big Picture mode
+   - Launch directly into your instance from Steam
 
 ### Linux
 
@@ -111,10 +172,13 @@ systemctl start gamepad-service
    ```
 
 3. **Steam Input** (best compatibility):
-   - Install Steam
-   - Add X Minecraft Launcher to Steam
+   - Create a desktop shortcut or use CLI launch command
+   - Add to Steam as a non-Steam game with launch options:
+     ```bash
+     launch "your-user-id" "/path/to/instance"
+     ```
    - Enable Steam Input for the game
-   - Set Prepend Command to: `steam-runtime`
+   - Optionally set Prepend Command to: `steam-runtime`
 
 ### macOS
 

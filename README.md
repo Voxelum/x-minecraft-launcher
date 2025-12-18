@@ -71,7 +71,7 @@ brew install --cask --no-quarantine voxelum/xmcl
 - 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
 - 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
 - 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
-- 🎮 **Gamepad/Controller support**. Configure wrapper commands for gamepad support through prepend commands. See [Gamepad Support Guide](docs/GAMEPAD_SUPPORT.md) for details.
+- 🎮 **Gamepad/Controller support**. Launch instances directly via CLI (like PrismLauncher) and configure wrapper commands for gamepad support. See [Gamepad Support Guide](docs/GAMEPAD_SUPPORT.md) for details.
 
 ## Contribute
 
