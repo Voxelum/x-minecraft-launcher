@@ -32,8 +32,15 @@ xmcl launch "<user-id>" "<instance-path>"
 
 ### Parameters
 
-- **user-id**: Your user account ID (find in launcher settings)
-- **instance-path**: Full path to the instance folder
+- **user-id**: Your user account ID (typically your Minecraft username or email)
+- **instance-path**: Full path to the instance folder (e.g., `C:\Users\YourName\AppData\Roaming\xmcl\instances\MyInstance`)
+
+**Finding your instance path:**
+1. In the launcher, right-click on an instance
+2. Select "Show in folder" or "Open folder"
+3. Copy the full path from your file explorer
+
+**Note:** The easiest way to launch is using the built-in shortcut creator (see below).
 
 ### Examples
 
@@ -50,14 +57,14 @@ xmcl launch "<user-id>" "<instance-path>"
 
 ### Creating Launch Shortcuts
 
-The launcher can create desktop shortcuts for you:
+The launcher includes a built-in shortcut creator:
 
-1. Click the dropdown menu on the launch button for your instance
-2. Select "Create Shortcut" 
-3. Choose the location for the shortcut
+1. Click the dropdown arrow on the Launch button for your instance
+2. Select "Create Shortcut" from the menu (available on Windows and Linux)
+3. Choose where to save the shortcut
 4. The shortcut will launch the instance directly using the CLI command
 
-You can also add these shortcuts to Steam for controller navigation!
+You can then add these shortcuts to Steam for gamepad-only navigation!
 
 ## Configuration: Wrapper Commands
 
@@ -136,7 +143,7 @@ systemctl start gamepad-service
    
    **Method 2: Add launcher to Steam**
    - Add X Minecraft Launcher executable to Steam as a non-Steam game
-   - Set launch options: `launch "your-user-id" "path/to/instance"`
+   - Set launch options: `launch "your-user-id" "/path/to/instance"`
    - Configure controller mapping in Steam Input
    - Launch directly into your instance from Steam
 
