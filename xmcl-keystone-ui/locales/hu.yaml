@@ -172,6 +172,31 @@ curseforgeCategory:
   Skyblock: SkyBlock
   Steampunk: Steampunk
   Vanilla+: Vanilla+
+  Adventure: Kaland
+  'Map and Information': Térképek és információk
+  Medieval: Középkor
+  'Mini Game': Mini-játékok
+  Miscellaneous: Vegyes
+  'Mod Support': Mod támogatás
+  'Modded World': Mod világokhoz
+  Modern: Modern
+  Multiplayer: Többjátékos
+  Parkour: Parkour
+  'Photo Realistic': Realisztikus fotó
+  Puzzle: Rejtvények
+  Quests: Küldetések
+  Redstone: Redstone
+  Sci-Fi: Sci-Fi
+  'Server Utility': Szerver eszköz
+  'Small / Light': Kis méretű
+  Storage: Tárolás
+  Survival: Túlélés
+  Tech: Technológia
+  Technology: Technológia
+  Traditional: Hagyományos
+  'Twitch Integration': Twitch integráció
+  'Utility & QoL': Segédprogram és QoL
+  'World Gen': Világgenerátor
 dataMigration:
   apply: Alkalmazás
   directoryCriteriaHint: Kérlek, győződj meg róla, hogy az új könyvtárhelyed egy ÜRES könyvtár!
@@ -204,6 +229,11 @@ dependencies:
   required: Szükséges
 description: Leírás
 detail: Részletek
+difficulty:
+  easy: Könnyű
+  hard: Nehéz
+  normal: Normál
+  peaceful: Békés
 diagnosis:
   badInstall:
     message: Kattints a gombra, hogy megpróbáld újratelepíteni ezt a verziót.
@@ -262,6 +292,7 @@ disk:
   used: Használva
 download: Letöltés
 downloadCount: '{count} letöltés'
+downloadUpdate: Frissítés letöltése
 duration:
   day: '{duration} nap | {duration} nap'
   hour: '{duration} óra | {duration} óra'
@@ -301,6 +332,7 @@ errors:
     Hiba a letöltési fájl elérési útvonalának megadásakor. Kérlek, győződj meg
     róla, hogy az Launchernej van írási jogosultsága.
   HeadersTimeoutError: HTTP Fejléc időtúllépés
+  NotFoundError: 404 Nem található
   SocketError: Kiszolgálói foglalathiba
 eula:
   body: A jelölőnégyzet bejelölésével jelzi, hogy beleegyezik a Minecraft {eula}-be.
@@ -341,6 +373,9 @@ feedback:
     Lépj be a visszajelző QQ-csoportba, és beszélgess közvetlenül a készítőkkel.
     Csoport száma: {number}
   qqEnterGroup: Csatlakozás
+  generateReport: Jelentés generálása
+  generateSaveAs: Jelentés mentése ide
+  hint: Kattints a gombra a jelentés létrehozásához és a fejlesztői csapat eléréséhez. A jelentés tartalmazza az eszközadatokat, beleértve az operációs rendszer típusát, verzióját, felhasználónevedet stb.
 fileDetail:
   fileSize: Fájl méret
   filesize: Fájl mérete
@@ -586,6 +621,8 @@ instances:
   importFolderDescription: Minecraft importálása a Launcherbe
   loadingFiles: Modcsomag fájlok betöltése
   refreshServers: Szerverek frissítése
+  empty: Nincsenek példányok ebben a mappában
+  folder: Mappa
 items:
   count: '{count} elem'
   total: '{total} összesen'
@@ -787,6 +824,8 @@ me:
   news: Hírek
   recentPlay: Legutóbbi játék
   versions: Telepített verziók
+  viewByDate: Megtekintés dátum szerint
+  viewByFolder: Megtekintés mappa szerint
 minecraftVersion:
   empty: Nem tudja betölteni a Minecraft verziókat
   name: Minecraft Verzió
@@ -845,6 +884,7 @@ mod:
   search: Modok keresése
   searchOnCurseforge: Keresés {name} a curseforge-on
   searchOnModrinth: Keresés {name} a Modrinth-on
+  searchOnMcWiki: '{name} keresése a MC enciklopédiában.'
   showDirectory: Modok mappájának megjelenítése
   showFile: A mod elérési útvonalának megjelenítése {file}
   showInCurseforge: A mod megjelenítése a curseforge-ban
@@ -862,6 +902,7 @@ modFilter:
     Csak az összeegyeztethetetlen vagy hiányzó függőségek hiányzó modokat
     mutatnak
   unusedOnly: Csak a fel nem használt könyvtárak modokat mutatják be
+  source: Forrás
 modInstall:
   archived: >-
     {name} archiválva. 
@@ -1051,6 +1092,7 @@ modrinth:
   description: Leírás
   downloads: Letöltések
   environments:
+    all: Összes
     client: Kliens
     default: Alapértelmezett
     name: Környezet
@@ -1104,6 +1146,8 @@ modrinth:
   updateAt: Frissítve
   versions: Verziók
   wikiUrl: Wiki
+  modpackSource:
+    source: Forrás
 modrinthCard:
   currentVersion: Jelenlegi verzió
   projectHint: >
@@ -1343,6 +1387,20 @@ save:
   unselected: megosztott archívum
   useCurrent: Használja a jelenlegi világot
   viewSeedMap: View Seed Map on Chunkbase
+  allowCheats: Csalások engedélyezése
+  difficulty: Nehézség
+  edit:
+    confirm: Változtatások mentése
+    title: Világ beállításainak szerkesztése
+  loadMap: Térkép betöltése
+  mapError: Térkép hiba
+  mapInfo: 'Interaktív 3D világ előnézet:'
+  mapLoaded: Térkép betöltve
+  mapPreview: Térkép előnézet
+  properties: Világ tulajdonságai
+  rendering: Renderelés...
+  useMouseRotate: Egér használata a nézet forgatásához
+  useScrollZoom: Görgetés a nagyításhoz
 saves: {}
 screenshots:
   empty: Nincsenek képernyőképeid
@@ -1557,6 +1615,10 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: A http-kérés proxy-kiszolgálójának címe
   viewBackgroundMusic: Zenék megtekintése
+  enableDedicatedGPUOptimization: Dedikált GPU hozzárendelése
+  enableDedicatedGPUOptimizationDescription: Ez az opció dedikált GPU-t rendel a Minecraft folyamathoz.
+  themeExport: Téma exportálása
+  themeImport: Téma importálása
 settingLabel:
   global: Globális
   globalHint: Ez a beállítás követi a globális beállítást
@@ -1611,7 +1673,11 @@ setup:
   path: Jelenlegi útvonal
   title: >-
     Üdvözöljük az X Minecraft Launcherben. Mielőtt elkezdenéd, szükségünk van
-    arra, hogy 
+    arra, hogy
+  account:
+    description: Jelentkezz be a játékfiókodba. Ha nincs, most kihagyhatod.
+    name: Játékfiók hozzáadása
+    skip: Most kihagyom
 shaderPack:
   deletion: Shader Pack törlése
   deletionHint: Ez törli a shader pack fájlt {path} és nem lehet visszaállítani.
@@ -1685,6 +1751,8 @@ task:
   showFile: Nyisd meg a texturepack {file} mappát a
   showInCurseforge: Mutasd {name} a curseforge-on
   unselected: Nem kiválasztott textúracsomagok
+  compatible: A {format} formátum kompatibilis a {version} verzióval
+  enable: 'Textúracsomagok: {count}'
 theme:
   selectImage: Válassza a Kép lehetőséget
   selectMusic: Válassza a Zene lehetőséget
@@ -1698,7 +1766,9 @@ transportType:
   srflx: Kiszolgáló Reflexív jelölt
 turnRegion:
   fr: Franciaország
+  guangzhou: 'Guangzhou, Kína'
   hk: Hong Kong
+  liaoning: 'Liaoning, Kína'
   po: Lengyelország
 tutorial:
   feedbackDescription: >-

@@ -9,7 +9,7 @@
     <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
   </a>
   <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
-    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
+    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="Licenc">
   </a>
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
@@ -31,68 +31,55 @@
 
 ![home](https://raw.githubusercontent.com/Voxelum/xmcl-page/master/.vitepress/theme/assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+Látogasd meg a [hivatalos honlapot](https://xmcl.app) az alkalmazás letöltéséhez!
 
-If you have winget, you can use winget to install
+Ha rendelkezel winget-tel, használhatod a telepítéshez:
 
 ```bash
 winget install CI010.XMinecraftLauncher
 ```
 
-HomeBrew installation also available via tap
+HomeBrew telepítés is elérhető tap-on keresztül:
 
 ```bash
 brew tap voxelum/xmcl
 brew install --cask --no-quarantine voxelum/xmcl
 ```
 
-<kbd>[<img title="Ukraine" alt="Ukraine" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/1280px-Flag_of_Ukraine.svg.png" width="22">](docs/README.uk.md)</kbd>
-<kbd>[<img title="Russia" alt="Russia" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Flag_of_Russia.svg/1280px-Flag_of_Russia.svg.png" width="22">](docs/README.ru.md)</kbd>
-<kbd>[<img title="Germany" alt="Germany" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png" width="22">](docs/README.de.md)</kbd>
-<kbd>[<img title="China" alt="China" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Flag_of_the_People%27s_Republic_of_China.svg" width="22">](docs/README.zh.md)</kbd>
-<kbd>[<img title="Japan" alt="Japan" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Flag_of_Japan.svg/2560px-Flag_of_Japan.svg.png" width="22">](docs/README.jp.md)</kbd>
-<kbd>[<img title="Poland" alt="Poland" src="https://upload.wikimedia.org/wikipedia/commons/1/12/Flag_of_Poland.svg" width="22">](docs/README.pl.md)</kbd>
-<kbd>[<img title="Kazakhstan" alt="Kazakhstan" src="https://upload.wikimedia.org/wikipedia/commons/d/d3/Flag_of_Kazakhstan.svg" width="26">](docs/README.kz.md)</kbd>
-<kbd>[<img title="Spain" alt="Spain" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/1280px-Flag_of_Spain.svg.png" width="22">](docs/README.es.md)</kbd>
-<kbd>[<img title="Korean" alt="Korean" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Flag_of_South_Korea.svg/640px-Flag_of_South_Korea.svg.png" width="22">](docs/README.ko.md)</kbd>
-<kbd>[<img title="Hungarian" alt="Hungarian" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/330px-Flag_of_Hungary.svg.png" width="22">](docs/README.hu.md)</kbd>
+## Funkciók
 
 
+- 📥 **Letöltés és automatikus kiegészítés**. Támogatja a `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` letöltését hivatalos vagy harmadik féltől származó tükörszerverekről.
+- ⚡️ **Gyors letöltés**. Socket újrafelhasználás HTTP/HTTPS ügynökökön keresztül, és a fájlok párhuzamos, részekre bontott letöltése.
+- 💻 **Platformfüggetlen**. A launcher Electron alapú, és támogatja a 🗔 Windows 10/11, 🍎 MacOS és 🐧 Linux rendszereket.
+- 📚 **Több példány**. A felhasználók több példányt hozhatnak létre a különböző verziók, modok és indítási beállítások elkülönítésére.
+- 🗂 **Összes erőforrás kezelése**. (Hard/symbolic) linkek használata az erőforrások példányokba telepítéséhez, optimális lemezhasználat fenntartása. Nincs több mod másolat mindenhol! 😆
+- 🔥 **Beépített CurseForge és Modrinth támogatás**. Erőforrásokat tölthetsz le közvetlenül a launcherben.
+- 📦 **Importálás/exportálás támogatása** CurseForge és Modrinth modcsomagokhoz, előírásoknak megfelelően!
+- 🔒 **Több fiókrendszer támogatása**. Beépített Microsoft bejelentkezés és Mojang Yggdrasil API. Támogatja az [ely.by](https://ely.by/) és [littleskin.cn](https://littleskin.cn) oldalakat is. Harmadik féltől származó hitelesítési szervereket is hozzáadhatsz!
+- 🔗 **Peer-to-peer kapcsolat felhasználók között**. Többjátékos módot játszhatsz LAN-on keresztül, még akkor is, ha nem vagytok ugyanabban a fizikai LAN-ban!
+- 🔑 **Kódaláírás és modern csomagolás**. Windows alatt használhatod az `appx` és `appinstaller` formátumokat az alkalmazás telepítéséhez. Nem fogsz többé blokkológató üzeneteket kapni a böngészőtől, és nem látsz SmartScreen hibákat sem! 😎
 
-## Features
-
-
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking messages from your browser or see SmartScreen errors anymore! 😎
-
-## Contribute
+## Közreműködés
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Voxelum/x-minecraft-launcher)
 
-For general developer, see [Contributing](./CONTRIBUTING.md)
+Általános fejlesztőknek lásd a [Közreműködés](./CONTRIBUTING.md) oldalt
 
-For i18n localization developer, please follow [Getting Started with Localization](https://docs.xmcl.app/en/guide/i18n)
+i18n lokalizációs fejlesztőknek kérjük kövessétek az [Első lépések a lokalizációban](https://docs.xmcl.app/en/guide/i18n) útmutatót
 
-## LICENSE
+## LICENC
 
 [MIT](LICENSE)
 
-## Sponsorship
+## Szponzoráció
 
-| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Free code signing on Windows provided by [SignPath.io](https://signpath.io/), certificate by [SignPath Foundation](https://signpath.org/) |
+| [![](https://github.com/DGP-Studio/Snap.Hutao/assets/10614984/73ae8b90-f3c7-4033-b2b7-f4126331ce66)](https://signpath.io/) | Ingyenes kódaláírás Windows-on a [SignPath.io](https://signpath.io/) biztosításával, tanúsítvány a [SignPath Foundation](https://signpath.org/)-től |
 | :----------------------------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------: |
-| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL leverage its hassle-free platform for serverless JavaScript applications. Provided by [Deno](https://deno.com/)   |
-| [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Best Asian CDN, Edge, and Secure Solutions - Tencent EdgeOne](https://edgeone.ai/),CDN acceleration and security protection for this project are sponsored by Tencent EdgeOne. |
+| [![](https://deno.com/images/deno_logo_4.gif)](https://deno.com/deploy) | [Deno Deploy](https://deno.com/deploy), XMCL a problémamentes platformját használja serverless JavaScript alkalmazásokhoz. A [Deno](https://deno.com/) biztosítja   |
+| [![](assets/EdgeOne.png)](https://edgeone.ai/) | [Legjobb Ázsiai CDN, Edge és Biztonsági Megoldások - Tencent EdgeOne](https://edgeone.ai/), a CDN gyorsítást és biztonsági védelmet ehhez a projekthez a Tencent EdgeOne szponzorálja. |
 
-### Sponsor (AFDIAN)
+### Szponzor (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -112,38 +99,38 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credits & Acknowledgments
+## Köszönetnyilvánítás és Elismerések
 
-### 🌍 Community & Localization
+### 🌍 Közösség és Lokalizáció
 
 **[BANSAFAn](https://github.com/BANSAFAn)**
-Community support and moderation for RU/UK regions · Ukrainian translation
+Közösségi támogatás és moderáció az RU/UK régiókban · Ukrán fordítás
 
 **[Marmur2020](https://github.com/Marmur2020)**
-Complete Ukrainian language translation
+Teljes ukrán nyelvű fordítás
 
 **[vanja-san](https://github.com/vanja-san)**
-Russian language support
+Orosz nyelvi támogatás
 
-## 📦 Package Maintainers
+## 📦 Csomagkarbantartók
 
 **[VolodiaKraplich](https://github.com/VolodiaKraplich)**
-AUR (Arch User Repository) package maintenance
+AUR (Arch User Repository) csomagkarbantartás
 
 **[0xc0000142](https://github.com/0xc0000142)**
-winget package maintenance
+winget csomagkarbantartás
 
-### 🛠️ Development Contributors
+### 🛠️ Fejlesztői Közreműködők
 
 **[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle)**
-Launcher core development
+Launcher mag fejlesztése
 
 **[laolarou726](https://github.com/laolarou726)**
-Launcher design and UI/UX
+Launcher design és UI/UX
 
-### 💙 Special Thanks
+### 💙 Külön Köszönet
 
-A heartfelt thank you to these individuals for their support and contributions:
+Szívből jövő köszönet ezeknek a személyeknek a támogatásukért és közreműködésükért:
 
 [Yricky](https://github.com/Yricky) · [Jin](https://github.com/Indexyz) · [LG](https://github.com/LasmGratel) · [Phoebe](https://github.com/PhoebezZ) · [Sumeng Wang](https://github.com/darkkingwsm) · [Luca](https://github.com/LucaIsGenius) · [Charles Tang](https://github.com/CharlesQT)
 
