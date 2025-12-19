@@ -53,6 +53,20 @@
         :text="t('resourcepack.dropHint')"
         class="h-full"
       />
+      <MarketProjectDetailModrinthModern
+        v-else-if="(selectedItem?.modrinth || selectedModrinthId) && marketLayout === 'modern'"
+        :modrinth="selectedItem?.modrinth"
+        :project-id="selectedModrinthId"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedItem?.modrinth?.project_id || selectedModrinthId)"
+        :game-version="gameVersion"
+        :categories="modrinthCategories"
+        :all-files="files"
+        :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onDisable"
+        @category="toggleCategory"
+      />
       <MarketProjectDetailModrinth
         v-else-if="selectedItem?.modrinth || selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
@@ -66,6 +80,20 @@
         @enable="onEnable"
         @disable="onDisable"
         @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforgeModern
+        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId) && marketLayout === 'modern'"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedItem?.curseforge?.id || selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedItem?.curseforge?.id || selectedCurseforgeId))"
+        :game-version="gameVersion"
+        :category="curseforgeCategory"
+        :all-files="files"
+        :modrinth="selectedItem?.modrinth?.project_id || selectedModrinthId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onDisable"
+        @category="curseforgeCategory = $event"
       />
       <MarketProjectDetailCurseforge
         v-else-if="selectedItem?.curseforge || selectedCurseforgeId"
@@ -87,6 +115,13 @@
         :installed="selectedItem.installed"
         :runtime="runtime"
       />
+      <MarketRecommendationModern
+        v-else-if="marketLayout === 'modern'"
+        curseforge="texture-packs"
+        modrinth="resourcepack"
+        @modrinth="modrinthCategories.push($event.name)"
+        @curseforge="curseforgeCategory = $event.id"
+      />
       <MarketRecommendation
         v-else
         curseforge="texture-packs"
@@ -105,8 +140,11 @@
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
+import MarketProjectDetailCurseforgeModern from '@/components/MarketProjectDetailCurseforgeModern.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketProjectDetailModrinthModern from '@/components/MarketProjectDetailModrinthModern.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import MarketRecommendationModern from '@/components/MarketRecommendationModern.vue'
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
@@ -120,6 +158,7 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { ResourcePackProject, kResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { useMarketLayout } from '@/composables/marketLayout'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ProjectEntry, ProjectFile } from '@/util/search'
@@ -130,6 +169,7 @@ import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
 const { runtime, path } = injection(kInstance)
+const marketLayout = useMarketLayout()
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
 const {
   keyword,

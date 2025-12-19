@@ -858,6 +858,8 @@ mod:
   groupName: Название группы
   groupNameRequired: Название группы обязательно
   createGroup: Создать группу
+  categories: Категории
+  links: Ссылки
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
   incompatible: Несовместимый мод.
@@ -871,11 +873,19 @@ mod:
     Мод поддерживает следующие загрузчики модов. 
     Пожалуйста, выберите один для установки.
   modloaderSelectNotSupported: Не найден {modloader} для Minecraft {minecraft}
-  mods: "{count} модов"
+  mods: "{count} Модов"
   name: Мод | Моды
-  noModLoaderHint: Не забудьте включить модлоадер для использования модов!
-  openLink: Открыть URL мода {url}
+  description: Описание
+  noModLoaderHint: Не забудьте включить загрузчик модов, чтобы использовать моды!
+  openLink: Открыть ссылку на мод {url}
   search: Поиск модов
+  sourceUrl: Источник
+  technical: Техническая информация
+  projectId: ID Проекта
+  license: Лицензия
+  updateAt: Обновлено
+  versions: Версии
+  wikiUrl: Вики
   searchOnCurseforge: Поиск {name} в curseforge
   searchOnMcWiki: Найдите {name} в энциклопедии MC.
   searchOnModrinth: Искать {name} в Модринфе
@@ -910,6 +920,7 @@ modInstall:
   dependencyHint: Установлена ​​другая версия {version}
   display: Дисплей модов
   install: Установить
+  reinstall: Переустановить
   installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен

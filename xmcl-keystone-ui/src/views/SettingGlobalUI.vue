@@ -53,7 +53,7 @@
               <div class="d-flex align-center mb-3">
                 <v-icon color="primary" class="mr-2">store</v-icon>
                 <div>
-                  <div class="font-weight-medium">ModPack Market Design</div>
+                  <div class="font-weight-medium">Market Design</div>
                   <div class="text-caption text--secondary">Choose between Classic or Modern AppStore style for the market</div>
                 </div>
               </div>

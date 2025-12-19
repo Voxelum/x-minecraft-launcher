@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Завантажити в поточний екземпляр
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
-  instanceShare: '{user} щойно поділився з вами поточним екземпляром'
+  instanceShare: "{user} щойно поділився з вами поточним екземпляром"
   share: Поділитися
   shareNotifyTitle: Поділитися екземпляром
   shareTitle: Поділитися файлами гри з іншим гравцем
@@ -42,7 +42,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
-  missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
+  missingJavaHint: "Лаунчер не може виявити жодної Java на вашому комп'ютері. Ви можете:"
   needDownloadHint: >-
     Не вдалося знайти відповідну версію Java на вашому комп'ютері.
     Рекомендується завантажити нову.
@@ -88,10 +88,10 @@ SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 add: Додати
 ago:
-  day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
-  hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
-  minute: '{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому'
-  second: '{duration} секунду тому | {duration} секунди тому | {duration} секунд тому'
+  day: "{duration} день тому | {duration} дні тому | {duration} днів тому"
+  hour: "{duration} годину тому | {duration} години тому | {duration} годин тому"
+  minute: "{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому"
+  second: "{duration} секунду тому | {duration} секунди тому | {duration} секунд тому"
 askAICrash:
   copyPrompt: Скопіюйте підказку, щоб запитати AI
   description: |-
@@ -216,8 +216,8 @@ dataMigration:
     дані.
 delete:
   name: Видалити {name}
-  'no': Ні
-  'yes': Видалити
+  "no": Ні
+  "yes": Видалити
 dependencies:
   embedded: Вбудовані
   incompatible: Несумісні
@@ -289,16 +289,16 @@ disk:
   available: Доступно
   used: Використано
 download: Завантажити
-downloadCount: '{count} завантажень'
+downloadCount: "{count} завантажень"
 downloadUpdate: Завантажити оновлення
 duration:
-  day: '{duration} день | {duration} дні | {duration} днів'
-  hour: '{duration} година | {duration} години | {duration} годин'
-  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
+  day: "{duration} день | {duration} дні | {duration} днів"
+  hour: "{duration} година | {duration} години | {duration} годин"
+  minute: "{duration} хвилина | {duration} хвилини | {duration} хвилин"
   name: Видалити {name}
-  'no': Ні
-  second: '{duration} секунда | {duration} секунди | {duration} секунд'
-  'yes': Так, сер.
+  "no": Ні
+  second: "{duration} секунда | {duration} секунди | {duration} секунд"
+  "yes": Так, сер.
 edit: Редагувати
 enable: Увімкнути
 env:
@@ -313,7 +313,7 @@ errors:
     Не вдалося розібрати jar-файл інсталятора Forge. Можливо, у Forge новий
     формат файлу інсталятора? Зв'яжіться з розробниками, якщо ця проблема не
     зникне.
-  BadInstanceType: 'Недійсний тип екземпляра: {type}'
+  BadInstanceType: "Недійсний тип екземпляра: {type}"
   BodyTimeoutError: Час очікування тіла HTTP-запиту вичерпано
   ChecksumNotMatchError: Контрольна сума не збігається! Очікувалося {expect}. Фактично {actual}.
   ConnectTimeoutError: Час очікування з'єднання з сервером вичерпано.
@@ -608,8 +608,8 @@ instances:
   loadingFiles: Завантаження файлів модпаку
   refreshServers: Оновити сервери
 items:
-  count: '{count} елементів'
-  total: '{total} всього'
+  count: "{count} елементів"
+  total: "{total} всього"
 java:
   allocatedLong: Використовувати системну Java за замовчуванням
   allocatedShort: Автоматично виділено
@@ -626,7 +626,7 @@ java:
   modifyInstance: Змінити шлях до Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
-  systemMemory: 'Вільна системна пам''ять: {free} / {total}'
+  systemMemory: "Вільна системна пам'ять: {free} / {total}"
 labyMod:
   disable: Вимкнути LabyMod
   empty: LabyMod не підтримує поточний Minecraft
@@ -771,7 +771,7 @@ loginError:
     автентифікації не працює!
   checkOwnershipFailed: Не вдалося перевірити право власності на гру. Будь ласка, спробуйте ще раз.
   connectionReset: Не вдалося увійти, оскільки з'єднання було скинуто сервером
-  fetchMinecraftProfileFailed: 'Не вдалося отримати профіль Minecraft: {reason}'
+  fetchMinecraftProfileFailed: "Не вдалося отримати профіль Minecraft: {reason}"
   illegalEmail: Електронна пошта має бути дійсною
   invalidCredentials: Недійсні облікові дані. Неправильне ім'я користувача або пароль.
   loginMinecraftByXboxFailed: >-
@@ -826,11 +826,11 @@ mod:
   deletionRestHint: Та ще {rest} модів...
   denseView: Компактний вигляд
   dropHint: Перетягніть сюди .jar/.litemod файли модів для імпорту.
-  duplicatedDetected: '{count} дубльованих модів'
+  duplicatedDetected: "{count} дубльованих модів"
   duplicatedDetectedDescription: >-
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
-  enabled: '{count} модів увімкнено'
+  enabled: "{count} модів увімкнено"
   enableAll: Увімкнути все
   disableAll: Вимкнути все
   filter: Фільтрувати моди
@@ -844,6 +844,8 @@ mod:
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
   createGroup: Створити групу
+  categories: Категорії
+  links: Посилання
   hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
@@ -857,11 +859,18 @@ mod:
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
     встановлення.
   modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
-  mods: '{count} модів'
+  mods: "{count} Модів"
   name: Мод | Моди
   noModLoaderHint: Не забудьте увімкнути завантажувач модів, щоб використовувати моди!
-  openLink: Відкрити URL мода {url}
-  search: Шукати моди
+  openLink: Відкрити посилання на мод {url}
+  search: Пошук модів
+  sourceUrl: Джерело
+  technical: Технічна інформація
+  projectId: ID Проєкту
+  license: Ліцензія
+  updateAt: Оновлено
+  versions: Версії
+  wikiUrl: Вікіи
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Шукати {name} на Modrinth
@@ -871,7 +880,7 @@ mod:
   showInModrinth: Показати {name} на Modrinth
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
-  toUpdate: '{count} оновлень'
+  toUpdate: "{count} оновлень"
   ungroup: Розгрупувати
 modFilter:
   clear: Очистити фільтр
@@ -892,6 +901,7 @@ modInstall:
   dependencyHint: Встановлено іншу версію {version}
   display: Відображення модів
   install: Встановити
+  reinstall: Перевстановити
   installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з {dependencies} залежностями
   installed: Встановлено
@@ -1102,7 +1112,7 @@ modrinth:
     name: Тип проєкту
     resourcePack: Пакет ресурсів
     shader: Шейдер
-  projects: '{count} проєктів'
+  projects: "{count} проєктів"
   quickSearch: Шукати {title}
   searchText: Пошук
   serverSide: Серверна сторона
@@ -1147,7 +1157,7 @@ multiplayer:
     з'єднань.</span>"
   createLocalToken: Створити локальний токен
   currentIpTitle: Виявлена публічна IP-адреса
-  currentNatTitle: 'Поточна мережа (NAT):'
+  currentNatTitle: "Поточна мережа (NAT):"
   difficultyLevelHint: Рівень складності створення з'єднання
   disconnect: Роз'єднати
   disconnectDescription: Ви впевнені, що хочете роз'єднатися з користувачем {user}({id})?
@@ -1232,7 +1242,7 @@ news:
   name: Новини
   readMore: Читати далі
 next: Далі
-'no': Ні
+"no": Ні
 ok: OK
 optifineVersion:
   disable: Вимкнути Optifine
@@ -1260,7 +1270,7 @@ presence:
   curseforge: Перегляд CurseForge
   curseforgeProject: Перегляд {name} на Curseforge
   instance: Бездіяльність в екземплярі {instance}
-  instanceSetting: 'Редагування налаштувань екземпляра: {instance}'
+  instanceSetting: "Редагування налаштувань екземпляра: {instance}"
   mod: Перегляд модів у {instance}
   modrinth: Перегляд Modrinth
   modrinthProject: Перегляд {name} на Modrinth
@@ -1289,7 +1299,7 @@ resourcepack:
       впевнені, що хочете це зробити?
     title: Видалити пакет ресурсів
   dropHint: Перетягніть сюди папку/zip-файл пакета ресурсів для імпорту.
-  enable: '{count} пакетів ресурсів увімкнено'
+  enable: "{count} пакетів ресурсів увімкнено"
   import: Імпортувати пакет ресурсів
   incompatible: >-
     Несумісний формат пакета ресурсів ({format}). Підходить {accept}. Поточний
@@ -1299,7 +1309,7 @@ resourcepack:
   name: Пакет ресурсів | Пакети ресурсів
   searchHint: Шукати пакети ресурсів
   searchOnCurseforge: Шукати {name} на Curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: Шукати та вибрати пакет ресурсів
   selected: Вибрані пакети ресурсів
   shared: Екземпляр використовує спільну папку пакетів ресурсів
@@ -1619,7 +1629,7 @@ setup:
     name: Додати ігровий обліковий запис
     skip: Пропустити зараз
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       Кореневий каталог даних - це не звичайний каталог .minecraft. Оскільки
@@ -1663,7 +1673,7 @@ setup:
   path: Поточний шлях
   title: >-
     Ласкаво просимо до X Minecraft Launcher. Перш ніж почати, нам потрібно, щоб
-    ви 
+    ви
 shaderPack:
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
@@ -1724,7 +1734,7 @@ task:
     title: Видалити текстурпак
   dropHint: Перетягніть сюди папку/zip текстури для імпорту.
   empty: Немає активних завдань
-  enable: 'Увімкнено текстурпаков: {count}'
+  enable: "Увімкнено текстурпаков: {count}"
   failed: Невдача
   import: Імпорт текстурпака
   incompatible: >-
@@ -1732,11 +1742,11 @@ task:
     {actual}.
   manage: Текстурпак
   manager: Менеджер завдань
-  nTaskRunning: '{count} завдань виконується'
+  nTaskRunning: "{count} завдань виконується"
   name: Завдання | Завдання
   pause: Пауза
   searchOnCurseforge: Шукати {name} на curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} у папці
   showInCurseforge: Показати {name} на curseforge
@@ -1800,7 +1810,7 @@ tutorial:
     searchTitle: Шукати моди
   multiplayer:
     contentDescription: Тут будуть перераховані з'єднання між вами та вашими колегами.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       Ви можете створити або приєднатися до групи з іншими гравцями. Лаунчер
       спробує створити P2P-з'єднання між вами та вашими друзями відповідно до
@@ -1931,4 +1941,4 @@ versionType:
   beta: Бета
   name: Статус
   release: Випуск
-'yes': Так
+"yes": Так

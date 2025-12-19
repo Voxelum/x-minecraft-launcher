@@ -49,8 +49,8 @@
         :text="t('shaderPack.dropHint')"
         class="h-full"
       />
-      <MarketProjectDetailModrinth
-        v-if="(selectedItem?.modrinth || selectedModrinthId)"
+      <MarketProjectDetailModrinthModern
+        v-if="(selectedItem?.modrinth || selectedModrinthId) && marketLayout === 'modern'"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
@@ -62,6 +62,34 @@
         @enable="onEnable"
         @disable="onUninstall([$event])"
         @category="toggleCategory"
+      />
+      <MarketProjectDetailModrinth
+        v-else-if="(selectedItem?.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem?.modrinth"
+        :project-id="selectedModrinthId"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
+        :game-version="gameVersion"
+        :categories="modrinthCategories"
+        :all-files="shaderPacks"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforgeModern
+        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId) && marketLayout === 'modern'"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :game-version="gameVersion"
+        :category="curseforgeCategory"
+        :all-files="shaderPacks"
+        :modrinth="selectedModrinthId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="curseforgeCategory = $event"
       />
       <MarketProjectDetailCurseforge
         v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
@@ -83,6 +111,11 @@
         :installed="selectedItem.files || []"
         :runtime="runtime"
         @enable="onEnable"
+      />
+      <MarketRecommendationModern
+        v-else-if="marketLayout === 'modern'"
+        modrinth="shader"
+        @modrinth="modrinthCategories.push($event.name)"
       />
       <MarketRecommendation
         v-else
@@ -236,8 +269,11 @@ import AvatarChip from '@/components/AvatarChip.vue'
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
+import MarketProjectDetailCurseforgeModern from '@/components/MarketProjectDetailCurseforgeModern.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketProjectDetailModrinthModern from '@/components/MarketProjectDetailModrinthModern.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import MarketRecommendationModern from '@/components/MarketRecommendationModern.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
@@ -252,6 +288,7 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { useMarketLayout } from '@/composables/marketLayout'
 import { BuiltinImages } from '@/constant'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
@@ -262,6 +299,7 @@ import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+const marketLayout = useMarketLayout()
 
 const {
   gameVersion,

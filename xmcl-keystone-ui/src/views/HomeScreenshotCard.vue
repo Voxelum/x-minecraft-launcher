@@ -20,6 +20,9 @@
         {{ randomPlayScreenshot ? 'shuffle' : 'repeat' }}
       </v-icon>
     </v-btn>
+    <div class="v-card__title absolute top-0 left-0 z-10 p-2 cursor-move rounded-br bg-black/20 hover:bg-black/40 transition-colors">
+      <v-icon small color="white">drag_indicator</v-icon>
+    </div>
     <v-carousel
       hide-delimiters
       :height="height"

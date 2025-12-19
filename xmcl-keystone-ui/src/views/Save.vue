@@ -68,6 +68,11 @@
         :save="selectedItem"
         @delete="onDelete"
       />
+      <MarketRecommendationModern
+        v-else-if="marketLayout === 'modern'"
+        curseforge="worlds"
+        @curseforge="curseforgeCategory = $event.id"
+      />
       <MarketRecommendation
         v-else
         curseforge="worlds"
@@ -94,6 +99,7 @@ import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import MarketRecommendationModern from '@/components/MarketRecommendationModern.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller } from '@/composables/curseforgeInstaller'
@@ -112,8 +118,10 @@ import SaveDetail from './SaveDetail.vue'
 import SaveItem from './SaveItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+import { useMarketLayout } from '@/composables/marketLayout'
 
 const { path } = injection(kInstance)
+const marketLayout = useMarketLayout()
 const { error, deleteSave } = injection(kInstanceSave)
 
 const { curseforgeCategory, gameVersion } = injection(kSearchModel)
