@@ -115,12 +115,12 @@
                 <v-checkbox 
                   v-for="loader in modrinthModloaders" 
                   :key="loader.name" 
-                  v-model="modLoaders" 
-                  :value="loader.name" 
+                  :input-value="modLoaders.includes(loader.name)" 
                   :label="loader.name" 
                   hide-details 
                   dense
                   class="mt-0 pt-0"
+                  @change="toggleModLoader(loader.name, $event ?? false)"
                 ></v-checkbox>
               </div>
             </v-expansion-panel-content>
@@ -467,6 +467,16 @@ const modrinthCategoriesDisplay = computed(() => {
     iconHTML: c.icon,
   }))
 })
+
+function toggleModLoader(name: string, added: boolean) {
+  if (added) {
+    if (!modLoaders.value.includes(name)) {
+      modLoaders.value = [...modLoaders.value, name]
+    }
+  } else {
+    modLoaders.value = modLoaders.value.filter(n => n !== name)
+  }
+}
 
 // CurseForge Categories Display
 const curseforgeCategoriesDisplay = computed(() => {
