@@ -55,7 +55,12 @@ function loadDatabaseConfig(app: LauncherApp, flights: any) {
   } else {
     config = {
       databasePath: dbPath,
-      database: () => new SQLDatabase(dbPath),
+      database: () => {
+        const db = new SQLDatabase(dbPath)
+        db.run("PRAGMA locking_mode = EXCLUSIVE");
+        db.run("PRAGMA journal_mode = WAL");
+        return db
+      },
       onError,
     }
   }

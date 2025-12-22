@@ -20,3 +20,6 @@ task:
 title: X Minecraft Launcher
 urlFailed: Ismeretlen url {url}. Kérlek ellenőrizd az url-t vagy lépj kapcsolatba a fejlesztővel!
 urlSuccess: Sikerült! Most már bezárhatod ezt az ablakot, és visszatérhetsz a launcherhez!
+autoCloseHint: Az oldal bezárul {time} másodperc múlva
+multiplayer: P2P Többjátékos
+makeDesktopShortcut: Asztali parancsikon létrehozása

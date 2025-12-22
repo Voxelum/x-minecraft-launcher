@@ -50,6 +50,7 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
     const shader = mods.value.find(m => {
       if (!m.enabled) return false
       const forge = m.forge
+      const neoforge = m.neoforge
       const fabric = m.fabric
       if (forge) {
         // optifine in forge
@@ -57,6 +58,8 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
           return true
         }
         return forge.modid.toLowerCase() === 'oculus'
+      } else if (neoforge) {
+        if (neoforge.modid.toLowerCase() === 'oculus' || neoforge.modid.toLowerCase() === 'iris') return true
       } else if (fabric) {
         if (fabric instanceof Array) {
           // optifine fabric or iris
@@ -98,6 +101,13 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
         id: shader.forge.modid,
         name: shader.forge.name,
         version: shader.forge.version,
+        icon: shader.icon,
+      }
+      : shader?.neoforge
+      ? {
+        id: shader.neoforge.modid,
+        name: shader.neoforge.displayName,
+        version: shader.neoforge.version,
         icon: shader.icon,
       }
       : shader?.fabric ? normalzieFabricResource(shader.fabric, shader.icon) : undefined
