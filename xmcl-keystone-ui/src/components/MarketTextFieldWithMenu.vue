@@ -287,7 +287,7 @@ const props = defineProps<{
   enableModrinth?: boolean
   keyword: string
   placeholder?: string
-  sort?: number
+  sort?: number | string
   modrinthSort?: 'relevance'| 'downloads' |'follows' |'newest' |'updated'
   curseforgeSort?: ModsSearchSortField
 
