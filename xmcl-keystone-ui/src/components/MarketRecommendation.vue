@@ -90,8 +90,10 @@ const emit = defineEmits<{
 const { categories } = injection(kModrinthTags)
 const randomModrinthCats = computed(() => {
   if (!props.modrinth) return []
+  if (!categories.value) return []
   const result = [] as Category[]
   const all = categories.value.filter(c => c.project_type === props.modrinth)
+  if (all.length < 2) return all
   while (result.length < 2) {
     const c = all[Math.floor(Math.random() * all.length)]
     if (result.every(r => r.name !== c.name)) {
@@ -104,9 +106,10 @@ const randomModrinthCats = computed(() => {
 const { categories: curseforgeCategories } = injection(kCurseforgeCategories)
 const randomCurseforgeCats = computed(() => {
   if (!props.curseforge) return []
+  if (!curseforgeCategories.value) return []
   const result = [] as ModCategory[]
-  const parent = curseforgeCategories.value?.find(c => c.slug === props.curseforge)
-  const all = curseforgeCategories.value?.filter(c => c.parentCategoryId === parent?.id)
+  const parent = curseforgeCategories.value.find(c => c.slug === props.curseforge)
+  const all = curseforgeCategories.value.filter(c => c.parentCategoryId === parent?.id)
   if (!all) return []
   if (all.length < 2) return all
   while (result.length < 2) {

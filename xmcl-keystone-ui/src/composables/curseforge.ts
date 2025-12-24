@@ -276,7 +276,7 @@ export function useCurseforgeUpstreamHeader(project: Ref<Mod | undefined>) {
 
 export function useCurseforgeCategories() {
   const { error, isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
-    const result = markRaw(await clientCurseforgeV1.getCategories()).map(markRaw)
+    const result = markRaw(await clientCurseforgeV1.getCategories()).map(markRaw).filter(c => !!c)
     return result
   }, inject(kSWRVConfig))
   return { categories, refreshing, refresh, error }
