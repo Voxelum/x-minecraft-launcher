@@ -1,7 +1,7 @@
 import { InstanceScreenshotService as IInstanceScreenshotService, InstanceScreenshotServiceKey } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir } from 'fs-extra'
-import { join } from 'path'
+import { readdir, stat } from 'fs-extra'
+import { join, extname } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
@@ -18,11 +18,34 @@ export class InstanceScreenshotService extends AbstractService implements IInsta
       return []
     }
     const files = await readdir(screenshotsPath)
-    const urls = files.map(file => {
-      const url = new URL('http://launcher/media')
-      url.searchParams.append('path', join(join(screenshotsPath, file)))
-      return url.toString()
-    })
+    
+    // Filter out directories and non-image files
+    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']
+    const imageFiles = await Promise.all(
+      files.map(async (file) => {
+        const fullPath = join(screenshotsPath, file)
+        try {
+          const fileStat = await stat(fullPath)
+          if (fileStat.isFile()) {
+            const ext = extname(file).toLowerCase()
+            if (imageExtensions.includes(ext)) {
+              return file
+            }
+          }
+        } catch (e) {
+          // Ignore files that can't be stat'd
+        }
+        return null
+      })
+    )
+    
+    const urls = imageFiles
+      .filter((file): file is string => file !== null)
+      .map(file => {
+        const url = new URL('http://launcher/media')
+        url.searchParams.append('path', join(screenshotsPath, file))
+        return url.toString()
+      })
     return urls
   }
 
