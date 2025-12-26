@@ -7,9 +7,13 @@
     }">
     </div>
     <AppSystemBar />
-    <div class="relative flex h-full overflow-auto">
-      <AppSideBar />
-      <main class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto">
+    <div 
+      class="relative flex h-full overflow-auto" 
+      :class="layoutClasses"
+    >
+      <AppSideBarClassic v-if="sidebarStyle === 'classic'" />
+      <AppSideBarNotch v-else />
+      <main class="relative flex max-h-full flex-1 flex-col overflow-auto" :class="mainClasses">
         <transition name="fade-transition" mode="out-in">
           <router-view class="z-2" />
         </transition>
@@ -32,6 +36,7 @@
     <AppMigrateWizardDialog />
     <AppExportServerDialog />
     <AppModrinthLoginDialog />
+    <InstanceLauncherPage />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -58,6 +63,7 @@ import { kSettingsState } from '@/composables/setting'
 import { kTheme } from '@/composables/theme'
 import { kTutorial } from '@/composables/tutorial'
 import { kInFocusMode, kUIDefaultLayout } from '@/composables/uiLayout'
+import { kSidebarSettings, useSidebarSettings } from '@/composables/sidebarSettings'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
@@ -74,17 +80,21 @@ import AppMigrateWizardDialog from '@/views/AppMigrateWizardDialog.vue'
 import AppModrinthLoginDialog from '@/views/AppModrinthLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
-import AppSideBar from '@/views/AppSideBar.vue'
+import AppSideBarClassic from '@/views/AppSideBarClassic.vue'
+import AppSideBarNotch from '@/views/AppSideBarNotch.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
+import InstanceLauncherPage from '@/views/InstanceLauncherPage.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery } from '@vueuse/core'
+import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
 
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
+provide(kInstanceLauncher, useInstanceLauncher())
 
 const layout = injection(kUIDefaultLayout)
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
@@ -109,6 +119,23 @@ provide(kInFocusMode, computed({
 }))
 
 provide(kLaunchButton, useLaunchButton())
+
+const sidebarSettings = useSidebarSettings()
+provide(kSidebarSettings, sidebarSettings)
+const sidebarPosition = computed(() => sidebarSettings.position.value)
+const sidebarStyle = computed(() => sidebarSettings.style.value)
+
+const layoutClasses = computed(() => ({
+  'flex-row': sidebarPosition.value === 'left' || sidebarPosition.value === 'right',
+  'flex-col': sidebarPosition.value === 'top' || sidebarPosition.value === 'bottom',
+  'flex-row-reverse': sidebarPosition.value === 'right',
+  'flex-col-reverse': sidebarPosition.value === 'bottom',
+}))
+
+const mainClasses = computed(() => ({
+  'inset-y-0': sidebarPosition.value === 'left' || sidebarPosition.value === 'right',
+  'inset-x-0': sidebarPosition.value === 'top' || sidebarPosition.value === 'bottom',
+}))
 
 const compact = ref(false)
 provide(kCompact, compact)

@@ -7,8 +7,8 @@
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-      :class="{ 'v-list-item--active': path === selectedInstance }"
+      class="non-moveable sidebar-item flex-1 flex-grow-0"
+      :class="{ 'v-list-item--active': path === selectedInstance, 'px-2': !compact, 'px-0': compact, 'justify-center': compact }"
       @click="navigate"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -19,14 +19,15 @@
       @drop="onDrop"
     >
       <v-list-item-avatar
-        size="48"
+        :size="compact ? 32 : 48"
         class="transition-all duration-300 hover:rounded"
+        :class="{ 'mx-0': compact }"
         large
       >
         <v-img
           v-if="!dragging"
-          width="54"
-          height="54"
+          :width="compact ? 32 : 54"
+          :height="compact ? 32 : 54"
           :src="favicon"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
@@ -36,7 +37,7 @@
           type="avatar"
         />
       </v-list-item-avatar>
-      <v-list-item-title>{{ name }}</v-list-item-title>
+      <v-list-item-title v-if="!compact">{{ name }}</v-list-item-title>
     </v-list-item>
   </div>
 </template>
@@ -56,6 +57,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 const props = defineProps<{
   path: string
   inside?: boolean
+  compact?: boolean
 }>()
 const emit = defineEmits(['arrange', 'drop-save', 'group'])
 
@@ -125,3 +127,19 @@ const onDragStart = (e: DragEvent) => {
 const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit, computed(() => props.inside))
 
 </script>
+
+<style scoped>
+/* Remove background from instance items in compact (Notch) mode */
+.sidebar-item.px-0::before,
+.sidebar-item.px-0::after {
+  display: none !important;
+}
+
+.sidebar-item.px-0 {
+  background: transparent !important;
+}
+
+.sidebar-item.px-0.v-list-item--active::before {
+  opacity: 0 !important;
+}
+</style>

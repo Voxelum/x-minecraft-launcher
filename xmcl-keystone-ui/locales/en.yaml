@@ -21,7 +21,7 @@ AppShareInstanceDialog:
   downloadToLocal: Download to current instance
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared the current instance to you'
+  instanceShare: "{user} just shared the current instance to you"
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
@@ -41,7 +41,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
-  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  missingJavaHint: "The Launcher cannot detect any java in your computer. You can:"
   needDownloadHint: >-
     Cannot find proper Java version in your computer. Recommend to download a
     new one.
@@ -86,10 +86,10 @@ SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 add: Add
 ago:
-  day: '{duration} day ago | {duration} days ago'
-  hour: '{duration} hour ago | {duration} hours ago'
-  minute: '{duration} minute ago | {duration} minutes ago'
-  second: '{duration} second ago | {duration} seconds ago'
+  day: "{duration} day ago | {duration} days ago"
+  hour: "{duration} hour ago | {duration} hours ago"
+  minute: "{duration} minute ago | {duration} minutes ago"
+  second: "{duration} second ago | {duration} seconds ago"
 askAICrash:
   copyPrompt: Copy the prompt to ask AI
   description: >-
@@ -123,6 +123,7 @@ curseforge:
   downloadOnly: Download
   file:
     gameVersion: Game Version
+    install: install
     modLoader: Mod Loader
   install: Install
   installTo: Install to {path}
@@ -210,8 +211,8 @@ dataMigration:
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   name: Delete {name}
-  'no': 'No'
-  'yes': Delete
+  "no": "No"
+  "yes": Delete
 dependencies:
   embedded: Embedded
   incompatible: Incompatible
@@ -254,7 +255,7 @@ diagnosis:
     name: Invalid java location.
   missingAssets:
     message: Launcher will install assets for you
-    name: 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
+    name: "Missing asset: {name} | Missing asset: {name} | Missing %{count} assets."
   missingAssetsIndex:
     message: Launcher will download assets index for you
     name: Missing assets index file of {version}.
@@ -286,16 +287,16 @@ disk:
   available: Available
   used: Used
 download: Download
-downloadCount: '{count} downloads'
+downloadCount: "{count} downloads"
 downloadUpdate: Download Update
 duration:
-  day: '{duration} day | {duration} days'
-  hour: '{duration} hour | {duration} hours'
-  minute: '{duration} minute | {duration} minutes'
+  day: "{duration} day | {duration} days"
+  hour: "{duration} hour | {duration} hours"
+  minute: "{duration} minute | {duration} minutes"
   name: Delete {name}
-  'no': 'No'
-  second: '{duration} second | {duration} seconds'
-  'yes': Yes, sir.
+  "no": "No"
+  second: "{duration} second | {duration} seconds"
+  "yes": Yes, sir.
 edit: Edit
 enable: Enable
 env:
@@ -309,7 +310,7 @@ errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
-  BadInstanceType: 'Not a valid instance: {type}'
+  BadInstanceType: "Not a valid instance: {type}"
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
@@ -539,6 +540,11 @@ instanceInstallSkip:
     Some files are downloaded multiple times with checksum unmatching. This may
     be due to the fact that the original checksum is incorrect. Please check. If
     you confirm the current files are valid, you can skip the validation check.
+instanceLauncher:
+  createNew: Create New Instance
+  search: Search instances...
+  showAll: Show All Instances
+  title: All Instances
 instanceSetting:
   disableAuthlibInjector: Disable authlib injector
   disableAuthlibInjectorDescription: >-
@@ -603,8 +609,8 @@ instances:
   loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
 items:
-  count: '{count} items'
-  total: '{total} total'
+  count: "{count} items"
+  total: "{total} total"
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
@@ -621,7 +627,7 @@ java:
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  systemMemory: 'System Free Memory: {free} / {total}'
+  systemMemory: "System Free Memory: {free} / {total}"
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -757,7 +763,7 @@ loginError:
     is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
   connectionReset: Fail to login since connection is reset by server
-  fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
+  fetchMinecraftProfileFailed: "Fail to fetch Minecraft profile: {reason}"
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
@@ -799,6 +805,7 @@ minecraftVersion:
 mod:
   acceptVersion: Accept {version}
   applyGroupRules: Apply saved grouping rules
+  categories: Categories
   compatible: Compatible Mod.
   createGroup: Create Group
   currentVersion: Current {current}
@@ -809,15 +816,17 @@ mod:
     you want to do that?
   deletionRestHint: And {rest} more Mods...
   denseView: Dense View
+  description: Description
   disableAll: Disable All
   dropHint: Drop mod's .jar/.litemod here to import.
-  duplicatedDetected: '{count} duplicated mods'
+  duplicatedDetected: "{count} duplicated mods"
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enableAll: Enable All
-  enabled: '{count} Mods enabled'
+  enabled: "{count} Mods enabled"
   filter: Filter Mods
+  filterDisabled: Filter Disabled
   group: Group up
   groupInstalled: Group Installed Mods
   groupName: Group Name
@@ -825,21 +834,27 @@ mod:
   hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   incompatible: Incompatible Mod.
-  incompatibleHint: Check out your mod compatibility report
+  incompatibleHint: Show Incompatible
   incompatibleHintDescription: >-
     Some mods dependencies might be missing. Or some dependencies versions do
     not matched.
+  installed: Installed
+  license: License
+  links: Links
   manage: Manage
+  manageHint: Select a mod from the list to view details, versions, and install options.
   maybeCompatible: Maybe Compatible.
+  modloader: Mod Loader
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
-  mods: '{count} Mods'
+  mods: "{count} Mods"
   name: Mod | Mods
   newFolder: New Folder
   noGroupsFound: No groups found
   noGroupsYet: No groups yet. Create one!
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
+  projectId: Project ID
   search: Search Mods
   searchGroups: Search groups...
   searchOnCurseforge: Search {name} in curseforge
@@ -850,10 +865,16 @@ mod:
   showFile: Show the mod path {file}
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
+  showUpdates: Show Updates
+  sourceUrl: Source
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
-  toUpdate: '{count} updates'
+  technical: Technical Information
+  toUpdate: "{count} updates"
   ungroup: Ungroup
+  updateAt: Updated
+  versions: Versions
+  wikiUrl: Wiki
 modFilter:
   clear: Clear Filter
   dependenciesInstallOnly: Only show missed dependencies mods
@@ -870,9 +891,9 @@ modInstall:
     description: >-
       You have changed the Minecraft version. Would you like to automatically
       update compatible mods to versions that match Minecraft {version}?
-    'no': Skip
+    "no": Skip
     title: Update Mods?
-    'yes': Update Mods
+    "yes": Update Mods
   checkDependencies: Check Dependencies
   checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
@@ -884,25 +905,30 @@ modInstall:
   installDependencies: Install Missing Dependencies
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
+  loadingVersions: Loading available versions...
   noVersionSupported: Mod only supports Minecraft {supported}.
+  noVersionsAvailable: No compatible versions available for this game version
   recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
-  removeUnusedLibraries: Remove unused libraries mods
-  search: Search Result
+  reinstall: Reinstall
+  removeUnusedLibraries: Remove Unused
+  search: Search Mods...
+  selectVersion: Please select a version to install
   skipVersion: Skip the Mods with different Minecraft version
   source: Mod Source
   switch: Switch Version
   upgrade: Upgrade Mods
 modSearch:
   noLocalModsFound: No local mods found matching your search.
-  noModsFound: No mods found.
+  noModsFound: No mods found
   noModsInstalled: You don't have any mods installed.
   searchInMarket: Search {keyword} in Market
 modUpgradePolicy:
-  curseforge: Curseforge First
-  curseforgeOnly: Curseforge Only
-  modrinth: Modrinth First
+  curseforge: CurseForge
+  curseforgeOnly: CurseForge Only
+  modrinth: Modrinth
   modrinthOnly: Modrinth Only
   name: Upgrade Policy
+  title: Upgrade Policy
 modified:
   reset: Reset
   save: Save
@@ -1087,7 +1113,7 @@ modrinth:
     name: Project Type
     resourcePack: Resource Pack
     shader: Shader
-  projects: '{count} projects'
+  projects: "{count} projects"
   quickSearch: Search {title}
   searchText: Search
   serverSide: Server Side
@@ -1130,7 +1156,7 @@ multiplayer:
     11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   currentIpTitle: Detected Public IP
-  currentNatTitle: 'Current network (NAT):'
+  currentNatTitle: "Current network (NAT):"
   difficultyLevelHint: The level of difficulty creating a connection
   disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
@@ -1208,7 +1234,7 @@ news:
   name: News
   readMore: Read More
 next: Next
-'no': 'No'
+"no": "No"
 ok: OK
 optifineVersion:
   disable: Disable Optifine
@@ -1236,7 +1262,7 @@ presence:
   curseforge: Viewing CurseForge
   curseforgeProject: Viewing {name} in curseforge
   instance: Idle in Instance {instance}
-  instanceSetting: 'Edit Instance Setting: {instance}'
+  instanceSetting: "Edit Instance Setting: {instance}"
   mod: Viewing Mods in {instance}
   modrinth: Viewing Modrinth
   modrinthProject: Viewing {name} in Modrinth
@@ -1265,17 +1291,19 @@ resourcepack:
       Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: '{count} resource packs enabled'
+  enable: "{count} resource packs enabled"
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
   independent: Instance use independent resource pack folder
+  loadMore: Load More Resource Packs
   manage: Manage Resource Packs
   name: Resource Pack | Resource Packs
-  searchHint: Search resource packs
+  noPacks: No resource packs found
+  searchHint: Search for resource packs on Modrinth and CurseForge
   searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
   shared: Instance uses shared resource pack folder
@@ -1324,15 +1352,24 @@ save:
   independent: Instance use independent saves folder
   levelName: Level Name
   loadMap: Load Map
+  loadMore: Load More Worlds
+  localOnly: Local Saves Only
+  localOnlyHint: >-
+    World saves are stored locally on your computer and are not available from
+    online markets. You can import, export, and manage your saves in the
+    Installed tab.
   manage: Manage Saves
   mapError: Map Error
-  mapInfo: 'Interactive 3D world preview:'
+  mapInfo: "Interactive 3D world preview:"
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
+  noSaves: No saves found
+  openFolder: Open Saves Folder
   properties: World Properties
   rendering: Rendering...
   search: Search Saves
+  searchHint: Search for worlds on CurseForge
   seed: Seed
   selected: Local Saves
   shared: Instance use shared saves folder
@@ -1341,14 +1378,20 @@ save:
   useCurrent: Use current world
   useMouseRotate: Use mouse to rotate view
   useScrollZoom: Use scroll wheel to zoom
+  viewInstalled: View Your Saves
   viewSeedMap: View Seed Map on Chunkbase
 saves: {}
 screenshots:
+  count: screenshots
   empty: You don't have any screenshots
+  gallery: Screenshot Gallery
   goto: Open Folder
+  hint: Take screenshots in game by pressing F2
   name: Screenshots
+  openFolder: Open Screenshots Folder
   playRandom: Shuffle
   playSequence: Play in order
+  viewAll: View All Screenshots
 search:
   favorate: Collection
   local: Installed
@@ -1399,15 +1442,20 @@ serverStatus:
   timeout: §4Connect server timeout!
 setting:
   about: About
+  advancedJavaOptions: Advanced Java Options
+  advancedSettings: Advanced Settings
+  advancedSettingsHint: Danger zone - reset or manage launcher data
   allowPrerelease: Download Prerelease
   allowPrereleaseDescription: Prerelease might be unstable
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)
   appearance: Appearance
+  appearanceDescription: Customize the launcher appearance
   appxUpdateHint: >-
     The launcher will download and execute installer. If popup installer failed,
     please run it manually.
+  authenticationSettings: Authentication
   autoDownload: Auto Download
   autoDownloadDescription: Auto Download Update if it's Available
   autoInstallOnAppQuit: Autoinstall
@@ -1471,11 +1519,20 @@ setting:
   enableDiscord: Enable Discord Presence
   enableDiscordDescription: This will update Discord status to the launcher
   enterUrl: Enter URL
+  exportSettings: Export Settings
+  exportSettingsHint: Save your current settings to a file
   general: General
   githubRelease: Github Release
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
   hideNewsHeader: Hide News Showcase
+  importSettings: Import Settings
+  importSettingsHint: Load settings from a previously exported file
+  instanceLauncher:
+    createNew: Create New Instance
+    search: Search instances...
+    showAll: Show All Instances
+    title: All Instances
   instanceTheme:
     activeDescription: >-
       This instance is using a custom theme. You can delete it to use the global
@@ -1490,16 +1547,26 @@ setting:
   layout:
     default: Default Layout
     focus: Focus Layout
-  layoutDescription: The layout of the launcher UI
-  layoutTitle: Layout
+  layoutDescription: Choose your preferred interface style
+  layoutTitle: Interface Layout
   linuxEnableDedicatedGPUOptimization: Assignment of a dedicated graphics processor
   linuxEnableDedicatedGPUOptimizationDescription: This option assigns a dedicated GPU to the Minecraft process.
   linuxTitlebar: Native title bar
   linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
+  manageLayout:
+    classic: Classic
+    description: Choose the layout for management interface
+    modern: Modern
+    name: Manage Style
   manualUpdateHint: >-
     The version cannot be updated automatically. Please download the launcher
     again from the official website!
+  marketLayout:
+    classic: Classic
+    description: Choose the layout for detail page
+    modern: Modern
+    name: Details Layout
   maunalUpdateHint: >-
     The version cannot be auto-updated. Please redownload the launcher from the
     website!
@@ -1508,9 +1575,20 @@ setting:
     Limit the maximum number of sockets to allow per host or for all hosts in
     total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
+  memoryAssignment: Memory Assignment
   migrateFromOther: Import from other launcher
+  minecraftOptions: Minecraft Options
+  myStuffStyle: Home Page Style
+  myStuffStyleHint: Choose between classic My Stuff with news or modern instance launcher
+  myStuffStyleNew: Launcher (Modern)
+  myStuffStyleNewDescription: Full-screen instance launcher with search and quick access
+  myStuffStyleOld: My Stuff (Classic)
+  myStuffStyleOldDescription: Classic layout with news carousel and instance grid
+  myStuffStyleSubtitle: Select your preferred home page layout
+  myStuffStyleTitle: Page Design
   name: Global Setting | Global Settings
   network: Network Settings
+  newsPosition: Move News Section
   officialWebsite: Official Website
   particleMode:
     bubble: Bubble
@@ -1519,15 +1597,50 @@ setting:
     remove: Remove
     repulse: Repulse
   particleModeDescription: Select the particle click behavior
+  quickLaunchSettings: Quick Launch
   replaceNative: Replace Native Libraries
   replaceNativeDescription: Replace native libraries according to your computer's arch.
   replaceNatives:
     all: All
     legacy: Legacy Version Only
+  resetAllSettings: Reset All Settings
+  resetAllSettingsConfirmMessage: >-
+    This will permanently delete all settings, accounts, instances, groups, and
+    cached data. This action cannot be undone. Are you sure?
+  resetAllSettingsConfirmTitle: Reset All Settings?
+  resetAllSettingsHint: Reset launcher to factory defaults (deletes everything)
+  resetAllSettingsSuccess: All settings have been reset. The launcher will restart.
   resetToDefault: Reset to Default
   select: Select
+  setting:
+    title: Settings
+  settingsExported: Settings exported successfully
+  settingsImportError: Failed to import settings. Please check the file format.
+  settingsImported: Settings imported successfully
   showNewsHeader: Unhide News showcase
   showRoot: Show
+  sidebarAlign: Sidebar Alignment
+  sidebarAlignCenter: Center
+  sidebarAlignEnd: End
+  sidebarAlignHint: Align the sidebar content
+  sidebarAlignStart: Start
+  sidebarAutoHide: Auto-hide Sidebar
+  sidebarAutoHideHint: Hide sidebar automatically and show on hover
+  sidebarBottom: Bottom
+  sidebarClassic: Classic
+  sidebarLeft: Left
+  sidebarNotch: Notch
+  sidebarPosition: Sidebar Position
+  sidebarPositionHint: Choose where the sidebar appears
+  sidebarPositionHintClassic: Classic style supports Left and Right positions only
+  sidebarRight: Right
+  sidebarScale: Sidebar Scale
+  sidebarScaleHint: Adjust the size of the sidebar
+  sidebarSettings: Sidebar Settings
+  sidebarSettingsHint: Customize sidebar appearance and behavior
+  sidebarStyle: Sidebar Style
+  sidebarStyleHint: Choose between classic and modern notch design
+  sidebarTop: Top
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   theme:
@@ -1542,8 +1655,10 @@ setting:
   themeImport: Import Theme
   themeResetFont: Reset Font
   themeSelectFont: Select Font
+  themeSettings: Theme Settings
   themeShare: Share Theme
   themeShareDescription: You can share the theme with your friend.
+  title: Settings
   update: Update
   useBmclAPI: Use BMCL API
   useBmclAPIDescription: >-
@@ -1552,6 +1667,8 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewBackgroundMusic: View Musics
+  viewModeScroll: Scroll View
+  viewModeTabs: Tab View
   windowTranslucent: Window Translucency
   windowTranslucentDescription: >-
     Enable translucent window effect (Mica on Windows 11, Acrylic on Windows 10,
@@ -1567,7 +1684,7 @@ setup:
     name: Add Game Account
     skip: Skip for now
   appearance:
-    name: '@:setting.appearance'
+    name: "@:setting.appearance"
   dataRoot:
     description: >-
       The data root is not a common .minecraft directory. Since XMCL data
@@ -1608,7 +1725,7 @@ setup:
     language: Language
     name: Set Language
   path: Current Path
-  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
+  title: "Welcome to X Minecraft Launcher. Before start, we need you to "
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
@@ -1617,12 +1734,14 @@ shaderPack:
   empty: No shader pack allocated
   enable: Using {name}
   enabled: Enabled Shader Packs
+  loadMore: Load More Shader Packs
   manage: Manage Shader Packs
   name: Shader Pack
+  noPacks: No shader packs installed
   noShaderMod: No Shader Mod Installed
   noShaderModHint: You cannot use shader without a shader mod
   noShaderModInstallHint: You need to install one of the following mod to load shader pack.
-  searchHint: Search Shader Pack
+  searchHint: Search for shader packs on Modrinth and CurseForge
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
@@ -1667,7 +1786,7 @@ task:
     title: Delete texturepack
   dropHint: Drag and drop the folder/zip textures here to import.
   empty: No Running Tasks
-  enable: 'Texturepacks included: {count}'
+  enable: "Texturepacks included: {count}"
   failed: Failed
   import: Import texturepack
   incompatible: >-
@@ -1675,11 +1794,11 @@ task:
     {actual}.
   manage: Texturepack
   manager: Task Manager
-  nTaskRunning: '{count} tasks are running'
+  nTaskRunning: "{count} tasks are running"
   name: Task | Tasks
   pause: Pause
   searchOnCurseforge: Search {name} on curseforge
-  searchOnModrinth: '@:mod.searchOnModrinth'
+  searchOnModrinth: "@:mod.searchOnModrinth"
   selected: Favorite texturepacks
   showFile: Open the texturepack {file} in the folder
   showInCurseforge: Show {name} on curseforge
@@ -1738,7 +1857,7 @@ tutorial:
     searchTitle: Search Mods
   multiplayer:
     contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: '@:multiplayer.connections'
+    contentTitle: "@:multiplayer.connections"
     groupDescription: >-
       You can create or join a group with other players. The launcher will try
       to create P2P connections between you and your friends according to the
@@ -1814,17 +1933,17 @@ userCape:
 userService:
   add: Add More Services
   authLibInjector: Follow the auth-lib injector suggestion
-  baseUrlHint: The base URL of your custom service
-  manageServices: Manage Auth Services
   authlibInjectorMetadata: Authlib-Injector metadata
-  server: Server
-  implementation: Implementation
-  version: Version
-  skinDomains: Skin Domains
+  baseUrlHint: The base URL of your custom service
   homepage: Homepage
+  implementation: Implementation
+  manageServices: Manage Auth Services
   register: Register
+  server: Server
+  skinDomains: Skin Domains
   title: Third-party User Services
   validateHint: Used to check if user's token is still valid
+  version: Version
 userServices:
   microsoft:
     account: Microsoft Account
@@ -1865,4 +1984,4 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-'yes': 'Yes'
+"yes": "Yes"

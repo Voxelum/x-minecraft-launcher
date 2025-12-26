@@ -1,5 +1,7 @@
 <template>
+  <ShaderPackModern v-if="manageLayout === 'modern'" />
   <MarketBase
+    v-else
     :items="all"
     :item-height="itemHeight"
     :plans="{}"
@@ -49,8 +51,8 @@
         :text="t('shaderPack.dropHint')"
         class="h-full"
       />
-      <MarketProjectDetailModrinth
-        v-if="(selectedItem?.modrinth || selectedModrinthId)"
+      <MarketProjectDetailModrinthModern
+        v-if="(selectedItem?.modrinth || selectedModrinthId) && marketLayout === 'modern'"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
@@ -62,6 +64,34 @@
         @enable="onEnable"
         @disable="onUninstall([$event])"
         @category="toggleCategory"
+      />
+      <MarketProjectDetailModrinth
+        v-else-if="(selectedItem?.modrinth || selectedModrinthId)"
+        :modrinth="selectedItem?.modrinth"
+        :project-id="selectedModrinthId"
+        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
+        :game-version="gameVersion"
+        :categories="modrinthCategories"
+        :all-files="shaderPacks"
+        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="toggleCategory"
+      />
+      <MarketProjectDetailCurseforgeModern
+        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId) && marketLayout === 'modern'"
+        :curseforge="selectedItem?.curseforge"
+        :curseforge-id="Number(selectedCurseforgeId)"
+        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :game-version="gameVersion"
+        :category="curseforgeCategory"
+        :all-files="shaderPacks"
+        :modrinth="selectedModrinthId"
+        @uninstall="onUninstall"
+        @enable="onEnable"
+        @disable="onUninstall([$event])"
+        @category="curseforgeCategory = $event"
       />
       <MarketProjectDetailCurseforge
         v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
@@ -83,6 +113,11 @@
         :installed="selectedItem.files || []"
         :runtime="runtime"
         @enable="onEnable"
+      />
+      <MarketRecommendationModern
+        v-else-if="marketLayout === 'modern'"
+        modrinth="shader"
+        @modrinth="modrinthCategories.push($event.name)"
       />
       <MarketRecommendation
         v-else
@@ -236,15 +271,20 @@ import AvatarChip from '@/components/AvatarChip.vue'
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
+import MarketProjectDetailCurseforgeModern from '@/components/MarketProjectDetailCurseforgeModern.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
+import MarketProjectDetailModrinthModern from '@/components/MarketProjectDetailModrinthModern.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
+import MarketRecommendationModern from '@/components/MarketRecommendationModern.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+
+import { useManageLayout } from '@/composables/manageLayout'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { InstanceShaderFile, kInstanceShaderPacks as kInstanceShaderPacksKey } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -252,6 +292,7 @@ import { kCompact } from '@/composables/scrollTop'
 import { useService } from '@/composables/service'
 import { ShaderPackProject, kShaderPackSearch } from '@/composables/shaderPackSearch'
 import { useToggleCategories } from '@/composables/toggleCategories'
+import { useMarketLayout } from '@/composables/marketLayout'
 import { BuiltinImages } from '@/constant'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
@@ -260,8 +301,10 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
+import ShaderPackModern from './ShaderPackModern.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
+const marketLayout = useMarketLayout()
 
 const {
   gameVersion,
@@ -281,6 +324,7 @@ const {
 
 const { runtime, path } = injection(kInstance)
 
+const manageLayout = useManageLayout()
 const { model, show: showInstallShaderWizard, confirm } = useSimpleDialog<(bypass: boolean) => void>((f) => {
   console.log('skip')
   f?.(true)
@@ -294,7 +338,7 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 
 effect()
 
-const { shaderPacks } = injection(kInstanceShaderPacks)
+const { shaderPacks } = injection(kInstanceShaderPacksKey)
 const getInstalledModrinth = (projectId: string) => {
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)
@@ -357,7 +401,7 @@ const { t } = useI18n()
 
 const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
-const { shaderPack } = injection(kInstanceShaderPacks)
+const { shaderPack } = injection(kInstanceShaderPacksKey)
 
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
@@ -404,7 +448,7 @@ onMounted(() => {
 })
 
 const installModloaders = useInstanceModLoaderDefault()
-const { shaderMod } = injection(kInstanceShaderPacks)
+const { shaderMod } = injection(kInstanceShaderPacksKey)
 
 const { push } = useRouter()
 function navigateToMod(type: string) {
