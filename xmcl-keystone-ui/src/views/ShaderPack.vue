@@ -1,5 +1,7 @@
 <template>
+  <ShaderPackModern v-if="manageLayout === 'modern'" />
   <MarketBase
+    v-else
     :items="all"
     :item-height="itemHeight"
     :plans="{}"
@@ -279,8 +281,10 @@ import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curs
 import { useSimpleDialog } from '@/composables/dialog'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+
+import { useManageLayout } from '@/composables/manageLayout'
 import { useInstanceModLoaderDefault } from '@/composables/instanceModLoaderDefault'
-import { InstanceShaderFile, kInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { InstanceShaderFile, kInstanceShaderPacks as kInstanceShaderPacksKey } from '@/composables/instanceShaderPack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
 import { useProjectInstall } from '@/composables/projectInstall'
@@ -297,6 +301,7 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 import ShaderPackDetailResource from './ShaderPackDetailResource.vue'
 import ShaderPackItem from './ShaderPackItem.vue'
+import ShaderPackModern from './ShaderPackModern.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 const marketLayout = useMarketLayout()
@@ -319,6 +324,7 @@ const {
 
 const { runtime, path } = injection(kInstance)
 
+const manageLayout = useManageLayout()
 const { model, show: showInstallShaderWizard, confirm } = useSimpleDialog<(bypass: boolean) => void>((f) => {
   console.log('skip')
   f?.(true)
@@ -332,7 +338,7 @@ const shouldDisableOptifine = computed(() => !!runtime.value.fabricLoader || !!r
 
 effect()
 
-const { shaderPacks } = injection(kInstanceShaderPacks)
+const { shaderPacks } = injection(kInstanceShaderPacksKey)
 const getInstalledModrinth = (projectId: string) => {
   const allPacks = shaderPacks.value
   return allPacks.filter((m) => m.modrinth?.projectId === projectId)
@@ -395,7 +401,7 @@ const { t } = useI18n()
 
 const isShaderPackProject = (p: ProjectEntry<ProjectFile> | undefined): p is ShaderPackProject => !!p
 
-const { shaderPack } = injection(kInstanceShaderPacks)
+const { shaderPack } = injection(kInstanceShaderPacksKey)
 
 const onUninstall = (files: ProjectFile[]) => {
   shaderPack.value = ''
@@ -442,7 +448,7 @@ onMounted(() => {
 })
 
 const installModloaders = useInstanceModLoaderDefault()
-const { shaderMod } = injection(kInstanceShaderPacks)
+const { shaderMod } = injection(kInstanceShaderPacksKey)
 
 const { push } = useRouter()
 function navigateToMod(type: string) {

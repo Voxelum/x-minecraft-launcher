@@ -1,6 +1,6 @@
 import { InstanceScreenshotService as IInstanceScreenshotService, InstanceScreenshotServiceKey } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir } from 'fs-extra'
+import { readdir, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
@@ -31,6 +31,28 @@ export class InstanceScreenshotService extends AbstractService implements IInsta
     const path = parsed.searchParams.get('path')
     if (path && existsSync(path)) {
       this.app.shell.showItemInFolder(path)
+    }
+  }
+
+  async deleteScreenshot(url: string): Promise<boolean> {
+    try {
+      const parsed = new URL(url)
+      const path = parsed.searchParams.get('path')
+      if (path && existsSync(path)) {
+        // Try to move to trash first
+        try {
+          await this.app.shell.trashItem(path)
+          return true
+        } catch {
+          // If trash fails, delete directly
+          await unlink(path)
+          return true
+        }
+      }
+      return false
+    } catch (e) {
+      this.error('Failed to delete screenshot:', e)
+      return false
     }
   }
 }

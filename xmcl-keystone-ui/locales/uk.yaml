@@ -22,7 +22,7 @@ AppShareInstanceDialog:
   downloadToLocal: Завантажити в поточний екземпляр
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
-  instanceShare: "{user} щойно поділився з вами поточним екземпляром"
+  instanceShare: '{user} щойно поділився з вами поточним екземпляром'
   share: Поділитися
   shareNotifyTitle: Поділитися екземпляром
   shareTitle: Поділитися файлами гри з іншим гравцем
@@ -42,7 +42,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
-  missingJavaHint: "Лаунчер не може виявити жодної Java на вашому комп'ютері. Ви можете:"
+  missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
   needDownloadHint: >-
     Не вдалося знайти відповідну версію Java на вашому комп'ютері.
     Рекомендується завантажити нову.
@@ -88,10 +88,10 @@ SettingMigrationDialog:
   selectRootDirectory: Вибрати кореневий каталог
 add: Додати
 ago:
-  day: "{duration} день тому | {duration} дні тому | {duration} днів тому"
-  hour: "{duration} годину тому | {duration} години тому | {duration} годин тому"
-  minute: "{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому"
-  second: "{duration} секунду тому | {duration} секунди тому | {duration} секунд тому"
+  day: '{duration} день тому | {duration} дні тому | {duration} днів тому'
+  hour: '{duration} годину тому | {duration} години тому | {duration} годин тому'
+  minute: '{duration} хвилину тому | {duration} хвилини тому | {duration} хвилин тому'
+  second: '{duration} секунду тому | {duration} секунди тому | {duration} секунд тому'
 askAICrash:
   copyPrompt: Скопіюйте підказку, щоб запитати AI
   description: |-
@@ -125,6 +125,7 @@ curseforge:
   downloadOnly: Завантажити
   file:
     gameVersion: Версія гри
+    install: встановити
     modLoader: Завантажувач модів
   install: Встановити
   installTo: Встановити в {path}
@@ -216,8 +217,8 @@ dataMigration:
     дані.
 delete:
   name: Видалити {name}
-  "no": Ні
-  "yes": Видалити
+  'no': Ні
+  'yes': Видалити
 dependencies:
   embedded: Вбудовані
   incompatible: Несумісні
@@ -289,16 +290,16 @@ disk:
   available: Доступно
   used: Використано
 download: Завантажити
-downloadCount: "{count} завантажень"
+downloadCount: '{count} завантажень'
 downloadUpdate: Завантажити оновлення
 duration:
-  day: "{duration} день | {duration} дні | {duration} днів"
-  hour: "{duration} година | {duration} години | {duration} годин"
-  minute: "{duration} хвилина | {duration} хвилини | {duration} хвилин"
+  day: '{duration} день | {duration} дні | {duration} днів'
+  hour: '{duration} година | {duration} години | {duration} годин'
+  minute: '{duration} хвилина | {duration} хвилини | {duration} хвилин'
   name: Видалити {name}
-  "no": Ні
-  second: "{duration} секунда | {duration} секунди | {duration} секунд"
-  "yes": Так, сер.
+  'no': Ні
+  second: '{duration} секунда | {duration} секунди | {duration} секунд'
+  'yes': Так, сер.
 edit: Редагувати
 enable: Увімкнути
 env:
@@ -313,7 +314,7 @@ errors:
     Не вдалося розібрати jar-файл інсталятора Forge. Можливо, у Forge новий
     формат файлу інсталятора? Зв'яжіться з розробниками, якщо ця проблема не
     зникне.
-  BadInstanceType: "Недійсний тип екземпляра: {type}"
+  BadInstanceType: 'Недійсний тип екземпляра: {type}'
   BodyTimeoutError: Час очікування тіла HTTP-запиту вичерпано
   ChecksumNotMatchError: Контрольна сума не збігається! Очікувалося {expect}. Фактично {actual}.
   ConnectTimeoutError: Час очікування з'єднання з сервером вичерпано.
@@ -608,8 +609,8 @@ instances:
   loadingFiles: Завантаження файлів модпаку
   refreshServers: Оновити сервери
 items:
-  count: "{count} елементів"
-  total: "{total} всього"
+  count: '{count} елементів'
+  total: '{total} всього'
 java:
   allocatedLong: Використовувати системну Java за замовчуванням
   allocatedShort: Автоматично виділено
@@ -626,7 +627,7 @@ java:
   modifyInstance: Змінити шлях до Java
   noMemory: Не обмежувати використання пам'яті
   refresh: Оновити локальні Java
-  systemMemory: "Вільна системна пам'ять: {free} / {total}"
+  systemMemory: 'Вільна системна пам''ять: {free} / {total}'
 labyMod:
   disable: Вимкнути LabyMod
   empty: LabyMod не підтримує поточний Minecraft
@@ -771,7 +772,7 @@ loginError:
     автентифікації не працює!
   checkOwnershipFailed: Не вдалося перевірити право власності на гру. Будь ласка, спробуйте ще раз.
   connectionReset: Не вдалося увійти, оскільки з'єднання було скинуто сервером
-  fetchMinecraftProfileFailed: "Не вдалося отримати профіль Minecraft: {reason}"
+  fetchMinecraftProfileFailed: 'Не вдалося отримати профіль Minecraft: {reason}'
   illegalEmail: Електронна пошта має бути дійсною
   invalidCredentials: Недійсні облікові дані. Неправильне ім'я користувача або пароль.
   loginMinecraftByXboxFailed: >-
@@ -816,7 +817,9 @@ minecraftVersion:
 mod:
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
+  categories: Категорії
   compatible: Сумісний мод.
+  createGroup: Створити групу
   currentVersion: Поточна {current}
   deletion: Видалити мод
   deletionHint: >-
@@ -825,27 +828,19 @@ mod:
     що хочете це зробити?
   deletionRestHint: Та ще {rest} модів...
   denseView: Компактний вигляд
+  disableAll: Вимкнути все
   dropHint: Перетягніть сюди .jar/.litemod файли модів для імпорту.
-  duplicatedDetected: "{count} дубльованих модів"
+  duplicatedDetected: '{count} дубльованих модів'
   duplicatedDetectedDescription: >-
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
-  enabled: "{count} модів увімкнено"
   enableAll: Увімкнути все
-  disableAll: Вимкнути все
+  enabled: '{count} модів увімкнено'
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
-  selectOrCreateGroup: Вибрати або створити групу
-  searchGroups: Пошук груп...
-  newFolder: Нова папка
-  noGroupsYet: Груп поки немає. Створіть одну!
-  noGroupsFound: Групи не знайдено
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
-  createGroup: Створити групу
-  categories: Категорії
-  links: Посилання
   hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
@@ -853,35 +848,41 @@ mod:
   incompatibleHintDescription: >-
     Деякі залежності модів можуть бути відсутні. Або деякі версії залежностей не
     збігаються.
+  license: Ліцензія
+  links: Посилання
   manage: Керувати модами
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: >-
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
     встановлення.
   modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
-  mods: "{count} Модів"
+  mods: '{count} Модів'
   name: Мод | Моди
+  newFolder: Нова папка
+  noGroupsFound: Групи не знайдено
+  noGroupsYet: Груп поки немає. Створіть одну!
   noModLoaderHint: Не забудьте увімкнути завантажувач модів, щоб використовувати моди!
   openLink: Відкрити посилання на мод {url}
-  search: Пошук модів
-  sourceUrl: Джерело
-  technical: Технічна інформація
   projectId: ID Проєкту
-  license: Ліцензія
-  updateAt: Оновлено
-  versions: Версії
-  wikiUrl: Вікіи
+  search: Пошук модів
+  searchGroups: Пошук груп...
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Шукати {name} на Modrinth
+  selectOrCreateGroup: Вибрати або створити групу
   showDirectory: Показати каталог модів
   showFile: Показати шлях до мода {file}
   showInCurseforge: Показати мод на Curseforge
   showInModrinth: Показати {name} на Modrinth
+  sourceUrl: Джерело
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
-  toUpdate: "{count} оновлень"
+  technical: Технічна інформація
+  toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
+  updateAt: Оновлено
+  versions: Версії
+  wikiUrl: Вікіи
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -893,6 +894,13 @@ modInstall:
   archived: >-
     {name} було заархівовано. {name} більше не отримуватиме оновлень, доки автор
     не вирішить розархівувати проєкт.
+  autoUpgrade:
+    description: >-
+      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити сумісні моди
+      до версій, що відповідають Minecraft {version}?
+    'no': Пропустити
+    title: Оновити моди?
+    'yes': Оновити моди
   checkDependencies: Перевірити залежності
   checkUpgrade: Перевірити оновлення модів
   checkedDependencies: Залежності перевірено
@@ -901,25 +909,18 @@ modInstall:
   dependencyHint: Встановлено іншу версію {version}
   display: Відображення модів
   install: Встановити
-  reinstall: Перевстановити
   installDependencies: Встановити відсутні залежності
   installHint: Буде встановлено файл {file} з {dependencies} залежностями
   installed: Встановлено
   noVersionSupported: Мод підтримує лише Minecraft {supported}.
   recommendation: Вивчіть моди {first} в {modrinth} та {curseforge}!
+  reinstall: Перевстановити
   removeUnusedLibraries: Видалити невикористані бібліотеки модів
   search: Результат пошуку
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
-  autoUpgrade:
-    title: Оновити моди?
-    description: >-
-      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити
-      сумісні моди до версій, що відповідають Minecraft {version}?
-    yes: Оновити моди
-    no: Пропустити
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -1112,7 +1113,7 @@ modrinth:
     name: Тип проєкту
     resourcePack: Пакет ресурсів
     shader: Шейдер
-  projects: "{count} проєктів"
+  projects: '{count} проєктів'
   quickSearch: Шукати {title}
   searchText: Пошук
   serverSide: Серверна сторона
@@ -1157,7 +1158,7 @@ multiplayer:
     з'єднань.</span>"
   createLocalToken: Створити локальний токен
   currentIpTitle: Виявлена публічна IP-адреса
-  currentNatTitle: "Поточна мережа (NAT):"
+  currentNatTitle: 'Поточна мережа (NAT):'
   difficultyLevelHint: Рівень складності створення з'єднання
   disconnect: Роз'єднати
   disconnectDescription: Ви впевнені, що хочете роз'єднатися з користувачем {user}({id})?
@@ -1242,7 +1243,7 @@ news:
   name: Новини
   readMore: Читати далі
 next: Далі
-"no": Ні
+'no': Ні
 ok: OK
 optifineVersion:
   disable: Вимкнути Optifine
@@ -1270,7 +1271,7 @@ presence:
   curseforge: Перегляд CurseForge
   curseforgeProject: Перегляд {name} на Curseforge
   instance: Бездіяльність в екземплярі {instance}
-  instanceSetting: "Редагування налаштувань екземпляра: {instance}"
+  instanceSetting: 'Редагування налаштувань екземпляра: {instance}'
   mod: Перегляд модів у {instance}
   modrinth: Перегляд Modrinth
   modrinthProject: Перегляд {name} на Modrinth
@@ -1299,7 +1300,7 @@ resourcepack:
       впевнені, що хочете це зробити?
     title: Видалити пакет ресурсів
   dropHint: Перетягніть сюди папку/zip-файл пакета ресурсів для імпорту.
-  enable: "{count} пакетів ресурсів увімкнено"
+  enable: '{count} пакетів ресурсів увімкнено'
   import: Імпортувати пакет ресурсів
   incompatible: >-
     Несумісний формат пакета ресурсів ({format}). Підходить {accept}. Поточний
@@ -1309,7 +1310,7 @@ resourcepack:
   name: Пакет ресурсів | Пакети ресурсів
   searchHint: Шукати пакети ресурсів
   searchOnCurseforge: Шукати {name} на Curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Шукати та вибрати пакет ресурсів
   selected: Вибрані пакети ресурсів
   shared: Екземпляр використовує спільну папку пакетів ресурсів
@@ -1421,6 +1422,8 @@ serverStatus:
   timeout: §4Час очікування з'єднання з сервером вичерпано!
 setting:
   about: Про
+  advancedSettings: Розширені налаштування
+  advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   allowPrerelease: Завантажувати попередні версії
   allowPrereleaseDescription: Попередні версії можуть бути нестабільними
   apiSets:
@@ -1493,51 +1496,15 @@ setting:
   enableDiscord: Увімкнути присутність Discord
   enableDiscordDescription: Це оновить статус Discord до лаунчера
   enterUrl: Введіть URL
+  exportSettings: Експорт налаштувань
+  exportSettingsHint: Зберегти поточні налаштування у файл
   general: Загальні
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
-  sidebarSettings: Налаштування бічної панелі
-  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
-  sidebarPosition: Позиція бічної панелі
-  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
-  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
-  sidebarLeft: Зліва
-  sidebarRight: Справа
-  sidebarTop: Зверху
-  sidebarBottom: Знизу
-  sidebarStyle: Стиль бічної панелі
-  sidebarStyleHint: Виберіть між класичним та сучасним дизайном
-  sidebarClassic: Класичний
-  sidebarNotch: Notch
-  sidebarAlign: Вирівнювання бічної панелі
-  sidebarAlignHint: Вирівнювання вмісту бічної панелі
-  sidebarAlignStart: Початок
-  sidebarAlignCenter: Центр
-  sidebarAlignEnd: Кінець
-  sidebarScale: Масштаб бічної панелі
-  sidebarScaleHint: Налаштування розміру бічної панелі
-  myStuffStyle: Стиль домашньої сторінки
-  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
-  myStuffStyleTitle: Дизайн сторінки
-  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
-  myStuffStyleOld: Мої речі (Класика)
-  myStuffStyleNew: Лаунчер (Сучасний)
-  advancedSettings: Розширені налаштування
-  advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
-  resetAllSettings: Скинути всі налаштування
-  resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
-  resetAllSettingsConfirmTitle: Скинути всі налаштування?
-  resetAllSettingsConfirmMessage: Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
-  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
-  exportSettings: Експорт налаштувань
-  exportSettingsHint: Зберегти поточні налаштування у файл
+  hideNewsHeader: Приховати вітрину новин
   importSettings: Імпорт налаштувань
   importSettingsHint: Завантажити налаштування з раніше експортованого файлу
-  settingsExported: Налаштування успішно експортовано
-  settingsImported: Налаштування успішно імпортовано
-  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
-  hideNewsHeader: Приховати вітрину новин
   instanceTheme:
     activeDescription: |-
       Цей екземпляр використовує спеціальну тему. 
@@ -1558,8 +1525,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
-  windowTranslucent: Прозорість вікна
-  windowTranslucentDescription: Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows 10, Vibrancy у macOS). Потрібен перезапуск.
   location: Місце зберігання
   manualUpdateHint: >-
     Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще
@@ -1573,6 +1538,12 @@ setting:
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
   migrateFromOther: Імпортувати з іншого лаунчера
+  myStuffStyle: Стиль домашньої сторінки
+  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
+  myStuffStyleNew: Лаунчер (Сучасний)
+  myStuffStyleOld: Мої речі (Класика)
+  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
+  myStuffStyleTitle: Дизайн сторінки
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
   officialWebsite: Офіційний вебсайт
@@ -1588,10 +1559,40 @@ setting:
   replaceNatives:
     all: Усі
     legacy: Лише застарілі версії
+  resetAllSettings: Скинути всі налаштування
+  resetAllSettingsConfirmMessage: >-
+    Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та
+    кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
+  resetAllSettingsConfirmTitle: Скинути всі налаштування?
+  resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
+  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
   resetToDefault: Скинути до типових
   select: вибрати
+  settingsExported: Налаштування успішно експортовано
+  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
+  settingsImported: Налаштування успішно імпортовано
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
+  sidebarAlign: Вирівнювання бічної панелі
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Кінець
+  sidebarAlignHint: Вирівнювання вмісту бічної панелі
+  sidebarAlignStart: Початок
+  sidebarBottom: Знизу
+  sidebarClassic: Класичний
+  sidebarLeft: Зліва
+  sidebarNotch: Notch
+  sidebarPosition: Позиція бічної панелі
+  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
+  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
+  sidebarRight: Справа
+  sidebarScale: Масштаб бічної панелі
+  sidebarScaleHint: Налаштування розміру бічної панелі
+  sidebarSettings: Налаштування бічної панелі
+  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
+  sidebarStyle: Стиль бічної панелі
+  sidebarStyleHint: Виберіть між класичним та сучасним дизайном
+  sidebarTop: Зверху
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
   theme:
@@ -1616,6 +1617,10 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
+  windowTranslucent: Прозорість вікна
+  windowTranslucentDescription: >-
+    Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows
+    10, Vibrancy у macOS). Потрібен перезапуск.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1629,7 +1634,7 @@ setup:
     name: Додати ігровий обліковий запис
     skip: Пропустити зараз
   appearance:
-    name: "@:setting.appearance"
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       Кореневий каталог даних - це не звичайний каталог .minecraft. Оскільки
@@ -1734,7 +1739,7 @@ task:
     title: Видалити текстурпак
   dropHint: Перетягніть сюди папку/zip текстури для імпорту.
   empty: Немає активних завдань
-  enable: "Увімкнено текстурпаков: {count}"
+  enable: 'Увімкнено текстурпаков: {count}'
   failed: Невдача
   import: Імпорт текстурпака
   incompatible: >-
@@ -1742,11 +1747,11 @@ task:
     {actual}.
   manage: Текстурпак
   manager: Менеджер завдань
-  nTaskRunning: "{count} завдань виконується"
+  nTaskRunning: '{count} завдань виконується'
   name: Завдання | Завдання
   pause: Пауза
   searchOnCurseforge: Шукати {name} на curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} у папці
   showInCurseforge: Показати {name} на curseforge
@@ -1810,7 +1815,7 @@ tutorial:
     searchTitle: Шукати моди
   multiplayer:
     contentDescription: Тут будуть перераховані з'єднання між вами та вашими колегами.
-    contentTitle: "@:multiplayer.connections"
+    contentTitle: '@:multiplayer.connections'
     groupDescription: >-
       Ви можете створити або приєднатися до групи з іншими гравцями. Лаунчер
       спробує створити P2P-з'єднання між вами та вашими друзями відповідно до
@@ -1890,17 +1895,17 @@ userCape:
 userService:
   add: Додати більше служб
   authLibInjector: Дотримуйтесь рекомендацій інжектора auth-lib
-  baseUrlHint: Базова URL-адреса вашої власної служби
-  manageServices: Керувати службами
   authlibInjectorMetadata: Метадані Authlib-Injector
-  server: Сервер
-  implementation: Реалізація
-  version: Версія
-  skinDomains: Домени скіна
+  baseUrlHint: Базова URL-адреса вашої власної служби
   homepage: Домашня сторінка
+  implementation: Реалізація
+  manageServices: Керувати службами
   register: Реєстрація
+  server: Сервер
+  skinDomains: Домени скіна
   title: Сторонні служби користувачів
   validateHint: Використовується для перевірки, чи токен користувача все ще дійсний
+  version: Версія
 userServices:
   microsoft:
     account: Обліковий запис Microsoft
@@ -1941,4 +1946,4 @@ versionType:
   beta: Бета
   name: Статус
   release: Випуск
-"yes": Так
+'yes': Так

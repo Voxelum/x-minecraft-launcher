@@ -1,5 +1,7 @@
 <template>
+  <ModModern v-if="manageLayout === 'modern'" />
   <MarketBase
+    v-else
     :plans="plans"
     :items="groupedItems"
     :selection-mode="true"
@@ -298,6 +300,7 @@ import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { useTutorial } from '@/composables/tutorial'
 import { useMarketLayout } from '@/composables/marketLayout'
+import { useManageLayout } from '@/composables/manageLayout'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -305,6 +308,7 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import ModDetailOptifine from './ModDetailOptifine.vue'
+import ModModern from './ModModern.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
@@ -356,6 +360,7 @@ const localizedTexts = computed(() => markRaw({
 
 const { runtime, path } = injection(kInstance)
 const marketLayout = useMarketLayout()
+const manageLayout = useManageLayout()
 
 const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, currentView, source } = injection(kSearchModel)
 

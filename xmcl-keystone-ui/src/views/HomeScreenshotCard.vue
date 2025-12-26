@@ -8,6 +8,7 @@
       borderColor: refreshing ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
     }"
+    @dblclick="openGallery"
   >
     <v-btn
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
@@ -48,9 +49,19 @@
           <div
             class="absolute w-full bottom-2 flex justify-center items-center justify-center z-10"
           >
-            <div>
+            <div class="flex items-center gap-1">
               <AppImageControls :image="i" />
+              <v-btn
+                icon
+                x-small
+                class="bg-black/50 hover:bg-black/70"
+                @click.stop="openGallery"
+                v-shared-tooltip="t('screenshots.viewAll')"
+              >
+                <v-icon small>grid_view</v-icon>
+              </v-btn>
             </div>
+          </div>
           </div>
         </v-carousel-item>
       </template>
@@ -82,6 +93,7 @@ import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { useInstanceScreenshots } from '@/composables/screenshot'
 import { Instance } from '@xmcl/instance'
+import { useDialog } from '@/composables/dialog'
 
 const props = defineProps<{
   instance: Instance;
@@ -128,4 +140,16 @@ const onDragStart = async (event: DragEvent, url: string) => {
 }
 
 const { t } = useI18n()
+
+// Screenshot gallery dialog
+const { show: showGallery } = useDialog('screenshot-gallery')
+
+const openGallery = () => {
+  showGallery({
+    instancePath: props.instance.path,
+    onOpenFolder: () => {
+      // Could add folder opening logic here if needed
+    },
+  })
+}
 </script>

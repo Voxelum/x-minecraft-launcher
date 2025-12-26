@@ -1,0 +1,25 @@
+browseApps: Özelleştirilmiş Başlatıcı Arayüzüne Göz At
+checkUpdate: Güncellemeyi Kontrol Et
+openUrl:
+  cancel: іptal
+  message: >-
+    Başlatıcı, {url} adresini varsayılan tarayıcınızda açmak istiyor. Bu işleme izin veriyor musunuz?
+    başlık: Tarayıcıda Aç
+  title: Tarayıcıda Aç
+  trust: Bu URL'yi güvenilir olarak işaretle
+  yes: Evet
+quit: Çıkış
+relaunch: Tanıyı Göster
+showDiagnosis: Show Diagnose
+showLauncher: Show Launcher
+showLogsFolder: Show Logs Folder
+task:
+  continue: View in Launcher
+  fail: One Task Failed
+  success: One Task Success
+title: X Minecraft Launcher
+urlFailed: Unknown url {url}. Please check your url or contact developer!
+urlSuccess: Success! Now you can close this window and return to the launcher!
+autoCloseHint: This window will close in {time} seconds
+multiplayer: P2P Multiplayer
+makeDesktopShortcut: Make Desktop Shortcut

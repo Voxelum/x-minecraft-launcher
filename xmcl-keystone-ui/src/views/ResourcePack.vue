@@ -1,5 +1,7 @@
 <template>
+  <ResourcePackModern v-if="manageLayout === 'modern'" />
   <MarketBase
+    v-else
     :items="items"
     :item-height="itemHeight"
     :plans="{}"
@@ -151,6 +153,7 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
 import { useGlobalDrop } from '@/composables/dropHandler'
 import { kInstance } from '@/composables/instance'
+import { useManageLayout } from '@/composables/manageLayout'
 import { InstanceResourcePack, kInstanceResourcePacks } from '@/composables/instanceResourcePack'
 import { kModrinthInstaller, useModrinthInstaller } from '@/composables/modrinthInstaller'
 import { usePresence } from '@/composables/presence'
@@ -168,8 +171,11 @@ import ResourcePackItem from './ResourcePackItem.vue'
 import { kSearchModel } from '@/composables/search'
 import { sort } from '@/composables/sortBy'
 
+import ResourcePackModern from './ResourcePackModern.vue'
+
 const { runtime, path } = injection(kInstance)
 const marketLayout = useMarketLayout()
+const manageLayout = useManageLayout()
 const { files, enable, disable, insert } = injection(kInstanceResourcePacks)
 const {
   keyword,
