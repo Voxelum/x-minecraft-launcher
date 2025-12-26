@@ -499,9 +499,9 @@ instance:
   openLogFolder: Open Log Folder
   playtime: Playtime
   preExecCommand: Pre-Execute Command
-  preExecCommandHint: Command to execute before launching Minecraft
+  preExecCommandHint: Command to execute before launching Minecraft (e.g., for setup scripts)
   prependCommand: Prepend Command
-  prependCommandHint: This will prepend this command before all the launch commands
+  prependCommandHint: Prepend a wrapper command before the game launch (e.g., 'gamemode' for gamepad support, 'gamescope' for compositor, or 'mangohud' for performance overlay)
   requireName: The name is required
   resolution: Resolution
   resolutionEnabled: Enable custom resolution
