@@ -6,7 +6,7 @@ import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
 
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp'] as const
+const IMAGE_EXTENSIONS: readonly string[] = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']
 
 @ExposeServiceKey(InstanceScreenshotServiceKey)
 export class InstanceScreenshotService extends AbstractService implements IInstanceScreenshotService {
