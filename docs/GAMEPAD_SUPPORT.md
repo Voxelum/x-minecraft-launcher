@@ -11,58 +11,94 @@ X Minecraft Launcher supports launching Minecraft with gamepad/controller suppor
 
 ## Command Line Interface (CLI)
 
-You can launch Minecraft instances directly from the command line, similar to PrismLauncher's `-l` option. This is especially useful for:
-- Steam Big Picture mode integration
-- Desktop shortcuts
-- Automation scripts
-- Launching with gamepad-only navigation
+X Minecraft Launcher now supports command-line options similar to PrismLauncher, making it easy to launch instances from terminals, scripts, or gamepad-friendly interfaces like Steam Big Picture mode.
+
+### Supported Options
+
+- `-l, --launch <instance>` - Launch instance by name or folder name
+- `-s, --server <address>` - Connect to server after launch (format: `host` or `host:port`)
+- `-a, --account <profile>` - Use specific account (by username or ID)
+- `--show <instance>` - Show instance in launcher (brings launcher window to focus)
 
 ### Usage
 
 ```bash
 # Windows
-xmcl.exe launch "<user-id>" "<instance-path>"
+xmcl.exe -l "My Instance"
+xmcl.exe -l "My Instance" -s play.example.com
+xmcl.exe -l "My Instance" -a "Steve" -s play.example.com:25565
 
 # Linux
-xmcl launch "<user-id>" "<instance-path>"
+xmcl -l "My Instance"
+xmcl -l "My Instance" -s play.example.com
+xmcl -l "My Instance" -a "Steve" -s play.example.com:25565
 
 # macOS
-"/Applications/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher" launch "<user-id>" "<instance-path>"
+"/Applications/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher" -l "My Instance"
 ```
 
-### Parameters
+### Instance Names
 
-- **user-id**: Your user account ID (typically your Minecraft username or email)
-- **instance-path**: Full path to the instance folder (e.g., `C:\Users\YourName\AppData\Roaming\xmcl\instances\MyInstance`)
-
-**Finding your instance path:**
-1. In the launcher, right-click on an instance
-2. Select "Show in folder" or "Open folder"
-3. Copy the full path from your file explorer
-
-**Note:** The easiest way to launch is using the built-in shortcut creator (see below).
+You can specify instances by:
+- **Display name**: The name shown in the launcher (e.g., "My Modded Server")
+- **Folder name**: The instance folder name (e.g., "minecraft-1-20-modded")
+- **Full path**: Complete path to the instance folder (legacy format)
 
 ### Examples
 
 ```bash
-# Windows
-"C:\Program Files\X Minecraft Launcher\xmcl.exe" launch "your-user-id" "C:\Users\YourName\AppData\Roaming\xmcl\instances\MyInstance"
+# Launch by instance display name
+xmcl -l "Vanilla 1.20"
 
-# Linux
-/usr/bin/xmcl launch "your-user-id" "/home/username/.xmcl/instances/MyInstance"
+# Launch and connect to server
+xmcl -l "Pixelmon" -s play.pixelmon.com
 
-# macOS
-"/Applications/X Minecraft Launcher.app/Contents/MacOS/X Minecraft Launcher" launch "your-user-id" "/Users/username/Library/Application Support/xmcl/instances/MyInstance"
+# Launch with specific account
+xmcl -l "Hypixel" -a "MyMinecraftAccount"
+
+# Launch with all options
+xmcl -l "Modded Server" -a "Steve" -s mc.server.com:25565
+
+# Show instance in launcher without launching
+xmcl --show "My Instance"
 ```
 
-### Creating Launch Shortcuts
+### Legacy Format (Still Supported)
 
-The launcher includes a built-in shortcut creator:
+The old desktop shortcut format is still supported for backwards compatibility:
 
+```bash
+xmcl launch "<user-id>" "<instance-full-path>"
+```
+
+### Creating Desktop Shortcuts
+
+For easier access, you can create desktop shortcuts that use the CLI:
+
+**Via Launcher UI:**
 1. Click the dropdown arrow on the Launch button for your instance
 2. Select "Create Shortcut" from the menu (available on Windows and Linux)
 3. Choose where to save the shortcut
-4. The shortcut will launch the instance directly using the CLI command
+4. The shortcut will use the legacy CLI format for maximum compatibility
+
+**Manual Creation:**
+You can also create shortcuts manually using the new CLI format for better readability:
+
+**Windows (.bat file):**
+```batch
+@echo off
+"C:\Program Files\X Minecraft Launcher\xmcl.exe" -l "My Instance" -s play.example.com
+```
+
+**Linux (.desktop file):**
+```ini
+[Desktop Entry]
+Type=Application
+Name=Launch My Instance
+Exec=/usr/bin/xmcl -l "My Instance"
+Icon=minecraft
+Terminal=false
+```
 
 You can then add these shortcuts to Steam for gamepad-only navigation!
 
@@ -136,16 +172,23 @@ systemctl start gamepad-service
 
 2. **Steam Big Picture Mode / Steam Deck**:
    
-   **Method 1: Launch directly via CLI**
-   - Create a desktop shortcut for your instance (right-click instance → Create Shortcut)
-   - Add the shortcut to Steam as a non-Steam game
+   **Method 1: Use CLI launch options**
+   - Add X Minecraft Launcher executable to Steam as a non-Steam game
+   - In Properties → Launch Options, enter: `-l "Your Instance Name"`
+   - Optional: Add server connection: `-l "Your Instance" -s play.server.com`
    - Steam will handle controller input for both launcher and game
    
-   **Method 2: Add launcher to Steam**
-   - Add X Minecraft Launcher executable to Steam as a non-Steam game
-   - Set launch options: `launch "your-user-id" "/path/to/instance"`
-   - Configure controller mapping in Steam Input
-   - Launch directly into your instance from Steam
+   **Method 2: Add desktop shortcut to Steam**
+   - Create a desktop shortcut for your instance using the built-in shortcut creator
+   - Add the shortcut file to Steam as a non-Steam game
+   - Steam will launch the instance directly
+
+   **Example Launch Options:**
+   ```
+   -l "Vanilla 1.20"
+   -l "Modded Pack" -s mc.server.com:25565
+   -l "Hypixel" -a "MyAccount"
+   ```
 
 ### Linux
 
@@ -179,11 +222,9 @@ systemctl start gamepad-service
    ```
 
 3. **Steam Input** (best compatibility):
-   - Create a desktop shortcut or use CLI launch command
-   - Add to Steam as a non-Steam game with launch options:
-     ```bash
-     launch "your-user-id" "/path/to/instance"
-     ```
+   - Add X Minecraft Launcher to Steam as a non-Steam game
+   - Set launch options: `-l "Your Instance Name"`
+   - Optional: Add server with `-s server.com`
    - Enable Steam Input for the game
    - Optionally set Prepend Command to: `steam-runtime`
 

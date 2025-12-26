@@ -8,10 +8,11 @@ import { VersionService } from '~/version';
 import { JavaService } from '~/java';
 import { kSettings } from '~/settings';
 import { AuthlibInjectorService } from '~/authlibInjector';
-import { join } from 'path';
+import { join, basename } from 'path';
 import { randomUUID } from 'crypto';
 import { Logger } from '~/infra';
 import { AnyError } from '@xmcl/utils';
+import { parseCLIArguments, hasCLICommands, getLegacyLaunchArguments } from './CLIArgumentParser';
 
 function getLaunchArguments(argv: string[]) {
   const indexOfLaunch = argv.indexOf('launch')
@@ -27,22 +28,90 @@ function getLaunchArguments(argv: string[]) {
 
 async function handleDirectLaunch(app: LauncherApp, logger: Logger, argv: string[]) {
   logger.log('Checking for direct launch arguments:', argv)
-  if (argv.length > 2) {
-    const indexOfLaunch = argv.indexOf('launch')
-    if (indexOfLaunch > 0) {
-      logger.log('Direct launch detected')
-      const userId = argv[indexOfLaunch + 1]
-      const instancePath = argv[indexOfLaunch + 2]
-      if (!userId || !instancePath) {
-        return
-      }
-      logger.log(`Direct launch with userId: ${userId}, instancePath: ${instancePath}`)
-      await directLaunch(app, userId, instancePath)
-    }
+  
+  // Try new CLI format first (e.g., -l <instance>)
+  const cliArgs = parseCLIArguments(argv)
+  
+  if (cliArgs.launch) {
+    logger.log('CLI launch detected:', cliArgs)
+    await directLaunchByName(app, logger, cliArgs.launch, cliArgs.account, cliArgs.server)
+    return
+  }
+  
+  if (cliArgs.show) {
+    logger.log('Show instance requested:', cliArgs.show)
+    // Just bring launcher window to focus - it will show the instance
+    return
+  }
+  
+  // Fallback to legacy format (launch "<user-id>" "<instance-path>")
+  const legacy = getLegacyLaunchArguments(argv)
+  if (legacy) {
+    const [userId, instancePath] = legacy
+    logger.log(`Legacy launch format detected: userId=${userId}, instancePath=${instancePath}`)
+    await directLaunch(app, userId, instancePath)
   }
 }
 
-async function directLaunch(app: LauncherApp, userId: string, instancePath: string) {
+/**
+ * Launch instance by friendly name (not full path)
+ */
+async function directLaunchByName(app: LauncherApp, logger: Logger, instanceNameOrPath: string, accountName?: string, serverAddress?: string) {
+  const instanceService = await app.registry.getOrCreate(InstanceService)
+  
+  // Find instance by name or path
+  let instance = instanceService.state.all[instanceNameOrPath]
+  
+  // If not found by path, try finding by name or folder name
+  if (!instance) {
+    const instances = Object.values(instanceService.state.all)
+    instance = instances.find(inst => 
+      inst.name === instanceNameOrPath || 
+      basename(inst.path) === instanceNameOrPath
+    )
+  }
+  
+  if (!instance) {
+    throw new AnyError('DirectLaunchError', `Instance '${instanceNameOrPath}' not found`)
+  }
+  
+  logger.log(`Found instance: ${instance.name} at ${instance.path}`)
+  
+  // Get user
+  const userService = await app.registry.getOrCreate(UserService)
+  const users = await userService.getUserState()
+  
+  let user
+  if (accountName) {
+    // Find user by username or id
+    user = Object.values(users.users).find(u => 
+      u.username === accountName || 
+      u.id === accountName ||
+      u.profileName === accountName
+    )
+    if (!user) {
+      logger.warn(`Account '${accountName}' not found, using default`)
+    }
+  }
+  
+  // Use first available user if no specific account requested or not found
+  if (!user) {
+    user = Object.values(users.users)[0]
+  }
+  
+  if (!user) {
+    throw new AnyError('DirectLaunchError', 'No user account found')
+  }
+  
+  user = await userService.refreshUser(user.id)
+  logger.log(`Using account: ${user.username}`)
+  
+  // Launch with optional server
+  await directLaunch(app, user.id, instance.path, serverAddress)
+}
+
+
+async function directLaunch(app: LauncherApp, userId: string, instancePath: string, serverAddress?: string) {
   const userSerivce = await app.registry.getOrCreate(UserService)
   const instanceService = await app.registry.getOrCreate(InstanceService)
   const versionSerivce = await app.registry.getOrCreate(VersionService)
@@ -108,6 +177,16 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
   // mods
   const modCount = await readdir(join(instance.path, 'mods')).then((mods) => mods.length, () => 0)
 
+  // Parse server address if provided
+  let serverOverride
+  if (serverAddress) {
+    const [host, portStr] = serverAddress.split(':')
+    serverOverride = {
+      host,
+      port: portStr ? parseInt(portStr, 10) : undefined,
+    }
+  }
+
   // launch
   const launchOptions = await generateLaunchOptionsWithGlobal(
     instance,
@@ -134,6 +213,7 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
       track: async (_, p) => p,
       modCount,
       getOrInstallAuthlibInjector: () => authLibService.getOrInstallAuthlibInjector(),
+      overrides: serverOverride ? { server: serverOverride } : undefined,
     }
   )
 
@@ -143,9 +223,10 @@ async function directLaunch(app: LauncherApp, userId: string, instancePath: stri
 export const pluginDirectLaunch: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('DirectLaunch')
 
-  const validArgs = getLaunchArguments(process.argv)
-  if (validArgs.length > 0) {
+  // Check if CLI commands are present
+  if (hasCLICommands(process.argv)) {
     app.deferredWindowOpen = true
+    logger.log('CLI commands detected, deferring window open')
   }
 
   app.waitEngineReady().then(() => {
