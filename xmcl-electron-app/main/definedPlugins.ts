@@ -1,6 +1,6 @@
 import { pluginAutoUpdate } from './pluginAutoUpdate'
 import { pluginIconProtocol } from './pluginIconProtocol'
-import { pluginNvdiaGPULinux } from './pluginNvdiaGPULinux'
+import { pluginDiscreteGPULinux } from './pluginDiscreteGPULinux'
 import { pluginPowerMonitor } from './pluginPowerMonitor'
 
 import { pluginApiFallback } from '@xmcl/runtime/app/pluginApiFallback'
@@ -41,7 +41,7 @@ export const definedPlugins: LauncherAppPlugin[] = [
   pluginEncodingWorker,
   pluginSetup,
   pluginLaunchPrecheck,
-  pluginNvdiaGPULinux,
+  pluginDiscreteGPULinux,
   pluginUncaughtError,
   pluginNativeReplacer,
   elyByPlugin,

@@ -312,7 +312,7 @@ const recentUpdatedItems = computed(() => {
 const { refreshing: refreshingTag, categories: modrinthCategories, modLoaders: modrinthModloaders, gameVersions, error: tagError } = injection(kModrinthTags)
 
 // Latest minecraft
-const latestModrinth = computed(() => gameVersions.value.filter(v => v.major)[0].version)
+const latestModrinth = computed(() => gameVersions.value.filter(v => v.major)[0]?.version ?? '')
 const { data: modrinthRecentMinecraft } = useSWRV('/modrinth/recent_version', async () => {
   const result = await clientModrinthV2.searchProjects({
     index: 'newest',
