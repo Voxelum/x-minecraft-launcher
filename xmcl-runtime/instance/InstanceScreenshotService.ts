@@ -1,10 +1,12 @@
 import { InstanceScreenshotService as IInstanceScreenshotService, InstanceScreenshotServiceKey } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { readdir, stat } from 'fs-extra'
+import { readdir } from 'fs-extra'
 import { join, extname } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey, Inject } from '~/app'
 import { AbstractService, ExposeServiceKey } from '~/service'
+
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']
 
 @ExposeServiceKey(InstanceScreenshotServiceKey)
 export class InstanceScreenshotService extends AbstractService implements IInstanceScreenshotService {
@@ -17,35 +19,24 @@ export class InstanceScreenshotService extends AbstractService implements IInsta
     if (!existsSync(screenshotsPath)) {
       return []
     }
-    const files = await readdir(screenshotsPath)
+    const entries = await readdir(screenshotsPath, { withFileTypes: true })
     
     // Filter out directories and non-image files
-    const imageExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.bmp', '.webp']
-    const imageFiles = await Promise.all(
-      files.map(async (file) => {
-        const fullPath = join(screenshotsPath, file)
-        try {
-          const fileStat = await stat(fullPath)
-          if (fileStat.isFile()) {
-            const ext = extname(file).toLowerCase()
-            if (imageExtensions.includes(ext)) {
-              return file
-            }
-          }
-        } catch (e) {
-          // Ignore files that can't be stat'd
+    const imageFiles = entries
+      .filter(entry => {
+        if (!entry.isFile()) {
+          return false
         }
-        return null
+        const ext = extname(entry.name).toLowerCase()
+        return IMAGE_EXTENSIONS.includes(ext)
       })
-    )
+      .map(entry => entry.name)
     
-    const urls = imageFiles
-      .filter((file): file is string => file !== null)
-      .map(file => {
-        const url = new URL('http://launcher/media')
-        url.searchParams.append('path', join(screenshotsPath, file))
-        return url.toString()
-      })
+    const urls = imageFiles.map(file => {
+      const url = new URL('http://launcher/media')
+      url.searchParams.append('path', join(screenshotsPath, file))
+      return url.toString()
+    })
     return urls
   }
 
