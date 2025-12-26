@@ -4,7 +4,7 @@ import {
 } from "@xmcl/runtime-api";
 import { existsSync } from "fs";
 import { readdir, unlink } from "fs-extra";
-import { extname, join } from "path"; // Импортирован extname
+import { extname, join } from "path";
 import { Inject, LauncherAppKey } from "~/app";
 import { AbstractService, ExposeServiceKey } from "~/service";
 import { LauncherApp } from "../app/LauncherApp";
@@ -34,13 +34,12 @@ export class InstanceScreenshotService
     }
     const entries = await readdir(screenshotsPath, { withFileTypes: true });
 
-    // Filter out directories and non-image files
     const imageFiles = entries
       .filter((entry) => {
         if (!entry.isFile()) {
           return false;
         }
-        const ext = extname(entry.name).toLowerCase(); // Теперь extname доступна
+        const ext = extname(entry.name).toLowerCase();
         return IMAGE_EXTENSIONS.includes(ext);
       })
       .map((entry) => entry.name);
@@ -66,21 +65,18 @@ export class InstanceScreenshotService
       const parsed = new URL(url);
       const path = parsed.searchParams.get("path");
       if (path && existsSync(path)) {
-        // Try to move to trash first
         try {
-          // Исправлен вызов метода для перемещения в корзину
-          await this.app.shell.moveItemToTrash(path);
+          await this.app.shell.trashItem(path)[[1]];
           return true;
         } catch {
-          // If trash fails, delete directly
           await unlink(path);
           return true;
         }
       }
       return false;
     } catch (e) {
-      // Исправлен вызов this.error - передаем только объект ошибки
-      this.error(e);
+      const errorForLog = e instanceof Error ? e : new Error(String(e));
+      this.error(errorForLog);
       return false;
     }
   }
