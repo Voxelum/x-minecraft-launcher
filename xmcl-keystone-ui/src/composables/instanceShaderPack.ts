@@ -54,12 +54,12 @@ export function useInstanceShaderPacks(instancePath: Ref<string>, runtime: Ref<R
       const fabric = m.fabric
       if (forge) {
         // optifine in forge
-        if (forge.modid.toLowerCase() === 'optifine') {
+        if (forge.modid?.toLowerCase() === 'optifine') {
           return true
         }
-        return forge.modid.toLowerCase() === 'oculus'
+        return forge.modid?.toLowerCase() === 'oculus'
       } else if (neoforge) {
-        if (neoforge.modid.toLowerCase() === 'oculus' || neoforge.modid.toLowerCase() === 'iris') return true
+        if (neoforge.modid?.toLowerCase() === 'oculus' || neoforge.modid?.toLowerCase() === 'iris') return true
       } else if (fabric) {
         if (fabric instanceof Array) {
           // optifine fabric or iris

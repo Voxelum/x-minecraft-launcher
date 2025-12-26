@@ -76,6 +76,7 @@ export const config = {
   },
   win: {
     certificateFile: undefined as string | undefined,
+    publisherName: 'CI010',
     icon: 'icons/dark.ico',
     target: [
       {

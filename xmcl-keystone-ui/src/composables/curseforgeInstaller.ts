@@ -44,7 +44,7 @@ export function useCurseforgeInstaller(
       .filter(v => _allFiles.every(m => m.curseforge?.fileId !== v.project.id))
       .map((v) => ({
         fileId: v.file.id,
-        icon: v.project.logo.url as string | undefined,
+        icon: v.project.logo?.url as string | undefined,
       }))
 
     files.push({ fileId, icon })
