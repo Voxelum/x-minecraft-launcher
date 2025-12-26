@@ -65,13 +65,8 @@ export class InstanceScreenshotService
       const parsed = new URL(url);
       const path = parsed.searchParams.get("path");
       if (path && existsSync(path)) {
-        try {
-          await this.app.shell.trashItem(path)[[1]];
-          return true;
-        } catch {
-          await unlink(path);
-          return true;
-        }
+        await unlink(path);
+        return true;
       }
       return false;
     } catch (e) {
