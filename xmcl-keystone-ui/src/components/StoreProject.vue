@@ -36,6 +36,7 @@
         :installed="installed"
         @open="onOpen"
         @install="onInstall"
+        @install-translated="emit('install-translated')"
       />
     </v-card>
     <div class="xl:(grid grid-cols-3) flex flex-col gap-4">
@@ -46,6 +47,14 @@
           :members="members"
           :loading="loadingMembers"
           :error="teamError"
+        />
+        <v-divider
+          v-if="project.translations && project.translations.length > 0"
+          class="my-2 w-full"
+        />
+        <StoreProjectTranslations
+          v-if="project.translations && project.translations.length > 0"
+          :translations="project.translations"
         />
         <v-divider class="my-2 w-full" />
         <StoreProjectTags :project="project" />
@@ -75,6 +84,7 @@ import StoreProjectGallery from './StoreProjectGallery.vue'
 import StoreProjectHeader from './StoreProjectHeader.vue'
 import StoreProjectInstallVersionDialog, { StoreProjectVersion, StoreProjectVersionDetail } from './StoreProjectInstallVersionDialog.vue'
 import StoreProjectMembers, { TeamMember } from './StoreProjectMembers.vue'
+import StoreProjectTranslations, { TranslationTeam } from './StoreProjectTranslations.vue'
 import StoreProjectTags from './StoreProjectTags.vue'
 import { CategoryChipProps } from './CategoryChip.vue'
 
@@ -99,6 +109,7 @@ export interface StoreProject {
     url: string
     description: string
   }>
+  translations?: Array<TranslationTeam>
 }
 
 const props = defineProps<{
@@ -120,6 +131,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (event: 'install', version: StoreProjectVersion): void
+  (event: 'install-translated'): void
   (event: 'open'): void
   (event: 'load'): void
 }>()

@@ -131,6 +131,8 @@ const project = computed(() => {
       url: g.url,
       description: g.description,
     })),
+    // Translation data - will be populated from backend/community source in production
+    translations: [],
   }
   return result
 })
@@ -145,6 +147,16 @@ const onInstall = (v: StoreProjectVersion) => {
   }).finally(() => {
     _installing.value = false
   })
+}
+
+const onInstallTranslated = () => {
+  // TODO: Implement translation selection dialog
+  // For now, this is a placeholder that will show the version install dialog
+  // In a full implementation, this would:
+  // 1. Show a dialog to select translation team/language
+  // 2. Download the translated resource pack/language files
+  // 3. Install the modpack with the translations
+  console.log('Install translated modpack requested')
 }
 
 const { instances, selectedInstance } = injection(kInstances)
@@ -221,6 +233,7 @@ usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.
     :team-error="teamError"
     :get-version-detail="getVersionDetail"
     @install="onInstall"
+    @install-translated="onInstallTranslated"
     @open="onOpen"
   />
 </template>

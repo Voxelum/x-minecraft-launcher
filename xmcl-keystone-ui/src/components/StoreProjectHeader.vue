@@ -26,10 +26,39 @@
               :key="item.id"
               :item="item"
             />
+            <v-chip
+              v-if="project.translations && project.translations.length > 0"
+              small
+              color="success"
+              outlined
+            >
+              <v-icon
+                left
+                small
+              >
+                translate
+              </v-icon>
+              {{ t('modpack.languagesSupported', { count: project.translations.length }) }}
+            </v-chip>
           </span>
         </div>
 
         <div class="flex flex-grow-0 items-center justify-center gap-2 xl:flex-row">
+          <v-btn
+            v-if="project.translations && project.translations.length > 0"
+            color="success"
+            outlined
+            :loading="installing"
+            @click="$emit('install-translated')"
+          >
+            <v-icon
+              left
+              class="material-icons-outlined"
+            >
+              translate
+            </v-icon>
+            {{ t('modpack.downloadTranslated') }}
+          </v-btn>
           <v-btn
             color="primary"
             :loading="installing"
@@ -93,7 +122,7 @@ const props = defineProps<{
   installed?: boolean
 }>()
 
-const emit = defineEmits(['install', 'open'])
+const emit = defineEmits(['install', 'install-translated', 'open'])
 const { t } = useI18n()
 
 const { getDateString } = useDateString()
