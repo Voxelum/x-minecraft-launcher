@@ -38,7 +38,7 @@
                 ? 'bg-[#4caf50] text-white shadow-md'
                 : 'text-gray-400 hover:text-white'
             "
-            @click="activeTab = state as any"
+            @click="selectTab(state)"
           >
             {{
               state === "market"
@@ -615,6 +615,10 @@ const modrinthModCategories = computed(() => {
 const activeTab = ref("market" as "market" | "installed" | "collection");
 const keywordBuffer = ref("");
 const selectedItem = ref(undefined as ProjectEntry | undefined);
+
+const selectTab = (state: string) => {
+  activeTab.value = state as any;
+};
 
 // Folder/Group Logic
 const isLocalView = computed(() => activeTab.value === "installed");
