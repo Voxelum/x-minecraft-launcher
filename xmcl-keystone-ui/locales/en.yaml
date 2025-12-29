@@ -26,6 +26,13 @@ AppShareInstanceDialog:
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSetting: {}
+all: All
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)
+  name: Sort By
 BaseSettingGeneral:
   title: General
 FeedTheBeast:
@@ -117,6 +124,7 @@ copyClipboard:
   success: Copy to clipboard
 create: Create
 curseforge:
+  name: CurseForge
   authors: Authors
   category: Category
   createdDate: Created Date
@@ -883,6 +891,8 @@ modFilter:
   incompatibleOnly: Only show incompatible or missing dependencies missing mods
   source: Source
   unusedOnly: Only show unused libraries mods
+modrinth:
+  name: Modrinth
 modInstall:
   archived: >-
     {name} has been archived. {name} will not receive any further updates unless
@@ -1299,6 +1309,7 @@ resourcepack:
   independent: Instance use independent resource pack folder
   loadMore: Load More Resource Packs
   manage: Manage Resource Packs
+  market: Resource Market
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
   searchHint: Search for resource packs on Modrinth and CurseForge
@@ -1727,6 +1738,7 @@ setup:
   path: Current Path
   title: "Welcome to X Minecraft Launcher. Before start, we need you to "
 shaderPack:
+  market: Shader Market
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Packs
@@ -1749,11 +1761,6 @@ shared:
   accept: Accept
   keepSelected: Keep Selected
   skipForNow: Skip for now
-sortBy:
-  alphabetAsc: Sort by alphabet (ascending)
-  alphabetDesc: Sort by alphabet (descending)
-  timeAsc: Sort by modification time (ascending)
-  timeDesc: Sort by modification time (descending)
 store:
   explore: Explore
   latestMinecraft: Latest Minecraft Version

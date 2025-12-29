@@ -40,7 +40,7 @@
             "
             @click="activeTab = state"
           >
-            {{ state === "market" ? "Resource Market" : t("mod.installed") }}
+            {{ state === "market" ? t("resourcepack.market") : t("mod.installed") }}
           </div>
         </div>
 
@@ -50,7 +50,7 @@
           <div>
             <span
               class="text-[0.65rem] font-bold text-gray-500 mb-1 block uppercase tracking-wider"
-              >Sort By</span
+              >{{ t("sortBy.name") }}</span
             >
             <div class="flex gap-1 bg-[#212121] p-1 rounded">
               <v-btn
@@ -83,7 +83,7 @@
               <div class="flex items-center gap-2">
                 <v-icon small color="#1bd96a">$vuetify.icons.modrinth</v-icon>
                 <span class="text-sm font-semibold text-gray-200"
-                  >Modrinth</span
+                  >{{ t("modrinth.name") }}</span
                 >
               </div>
               <v-switch
@@ -136,7 +136,7 @@
               <div class="flex items-center gap-2">
                 <v-icon small color="#f57c00">$vuetify.icons.curseforge</v-icon>
                 <span class="text-sm font-semibold text-gray-200"
-                  >CurseForge</span
+                  >{{ t("curseforge.name") }}</span
                 >
               </div>
               <v-switch
@@ -168,7 +168,7 @@
                   "
                   @click="curseforgeCategory = undefined"
                 >
-                  All
+                  {{ t("all") }}
                 </v-chip>
                 <v-chip
                   v-for="cat in curseforgeModCategories"
