@@ -79,7 +79,7 @@
               <div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
                 <span class="flex items-center gap-1">
                   <v-icon x-small>file_download</v-icon>
-                  {{ (item.downloadCount / 1000).toFixed(1) }}k
+                  {{ ((item.downloadCount || 0) / 1000).toFixed(1) }}k
                 </span>
                 <span
                   v-if="item.installed?.length"
@@ -261,7 +261,7 @@ const { t } = useI18n();
 const { items, loading, loadMore, sortBy, effect } = injection(kSaveSearch);
 const { keyword, source, curseforgeCategory, gameVersion } =
   injection(kSearchModel);
-const { path, showInstanceFolder } = injection(kInstance);
+const { path } = injection(kInstance);
 const { deleteSave } = injection(kInstanceSave);
 
 // Initialize search effect

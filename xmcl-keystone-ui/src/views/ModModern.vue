@@ -38,7 +38,7 @@
                 ? 'bg-[#4caf50] text-white shadow-md'
                 : 'text-gray-400 hover:text-white'
             "
-            @click="activeTab = state"
+            @click="activeTab = state as any"
           >
             {{
               state === "market"
@@ -399,7 +399,7 @@
               <!-- Single Item -->
               <div
                 v-else
-                :key="(item.id || item.name) + '-item'"
+                :key="(item.id) + '-item'"
                 class="flex gap-3 p-2 border-b border-white/5 cursor-pointer transition-colors rounded hover:bg-white/5"
                 :class="selectedItem?.id === item.id ? 'bg-[#4caf50]/20' : ''"
                 @click="selectItem(item)"

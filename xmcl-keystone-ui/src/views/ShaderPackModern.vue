@@ -182,7 +182,7 @@
               <div class="flex items-center gap-2 mt-1 text-xs text-gray-500">
                 <span class="flex items-center gap-1">
                   <v-icon x-small>file_download</v-icon>
-                  {{ (item.downloadCount / 1000).toFixed(1) }}k
+                  {{ ((item.downloadCount || 0) / 1000).toFixed(1) }}k
                 </span>
                 <span
                   v-if="item.installed?.length"
@@ -281,7 +281,7 @@
               <!-- Single Item -->
               <div
                 v-else
-                :key="(item.id || item.name) + '-item'"
+                :key="(item.id) + '-item'"
                 class="flex gap-3 p-2 border-b border-white/5 cursor-pointer transition-colors rounded hover:bg-white/5"
                 :class="selectedItem?.id === item.id ? 'bg-[#4caf50]/20' : ''"
                 @click="selectItem(item)"
@@ -427,7 +427,7 @@ const {
   isModrinthActive,
   sort,
 } = injection(kSearchModel);
-const { path, showInstanceFolder } = injection(kInstance);
+const { path } = injection(kInstance);
 const { shaderPacks, shaderPack } = injection(kInstanceShaderPacks);
 const { uninstall } = useService(InstanceShaderPacksServiceKey);
 const defaultSource = injection(kInstanceDefaultSource);
