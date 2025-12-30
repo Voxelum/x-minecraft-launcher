@@ -132,6 +132,8 @@ const project = computed(() => {
       url: g?.thumbnailUrl ?? '',
       description: g.description,
     })),
+    // Translation data - will be populated from backend/community source in production
+    translations: [],
   })
   return result
 })
@@ -174,6 +176,16 @@ const onInstall = (v: StoreProjectVersion) => {
   installModpack({ modId: proj.value!.id, fileId: Number(v.id), icon: project.value?.iconUrl, market: 1 }).finally(() => {
     _installing.value = false
   })
+}
+
+const onInstallTranslated = () => {
+  // TODO: Implement translation selection dialog
+  // For now, this is a placeholder that will show the version install dialog
+  // In a full implementation, this would:
+  // 1. Show a dialog to select translation team/language
+  // 2. Download the translated resource pack/language files
+  // 3. Install the modpack with the translations
+  console.log('Install translated modpack requested')
 }
 
 const { instances, selectedInstance } = injection(kInstances)
@@ -243,6 +255,7 @@ async function getVersionDetail(version: StoreProjectVersion) {
     :team-error="undefined"
     :get-version-detail="getVersionDetail"
     @install="onInstall"
+    @install-translated="onInstallTranslated"
     @open="onOpen"
   />
 </template>
