@@ -1309,6 +1309,7 @@ resourcepack:
   loadMore: Load More Resource Packs
   manage: Manage Resource Packs
   market: Resource Market
+  search: Search Resource Packs...
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
   searchHint: Search for resource packs on Modrinth and CurseForge
@@ -1322,6 +1323,7 @@ resourcepack:
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
+  search: Search Maps...
   allowCheats: Allow Cheats
   cheat: Cheating
   copy:
@@ -1378,7 +1380,7 @@ save:
   openFolder: Open Saves Folder
   properties: World Properties
   rendering: Rendering...
-  search: Search Saves
+  searchSaves: Search Saves
   searchHint: Search for worlds on CurseForge
   seed: Seed
   selected: Local Saves
@@ -1737,6 +1739,7 @@ setup:
   path: Current Path
   title: "Welcome to X Minecraft Launcher. Before start, we need you to "
 shaderPack:
+  search: Search Shader Packs...
   market: Shader Market
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.

@@ -1,97 +1,38 @@
 <template>
-  <MarketBase
-    :plans="{}"
-    :items="groupedItems"
-    :selection-mode="true"
-    :item-height="itemHeight"
-    :loading="loading"
-    :error="error || searchError"
-    :class="{
+  <MarketBase :plans="{}" :items="groupedItems" :selection-mode="true" :item-height="itemHeight" :loading="loading"
+    :error="error || searchError" :class="{
       dragover,
-    }"
-    @load="loadMore"
-  >
-    <template
-      #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }"
-    >
-      <v-subheader
-        v-if="typeof item === 'string'"
-        class="flex"
-        :style="{ height: itemHeight + 'px' }"
-      >
+    }" @load="loadMore">
+    <template #item="{ item, hasUpdate, checked, selectionMode, selected, on, index }">
+      <v-subheader v-if="typeof item === 'string'" class="flex" :style="{ height: itemHeight + 'px' }">
         {{
           item === "installed"
             ? t("save.selected")
             : item === "shared"
-            ? t("save.unselected")
-            : t("modInstall.search")
+              ? t("save.unselected")
+              : t("save.search")
         }}
         <div class="flex-grow" />
-        <v-btn
-          v-if="index === 0"
-          v-shared-tooltip="() => t('mod.denseView')"
-          icon
-          @click="denseView = !denseView"
-        >
+        <v-btn v-if="index === 0" v-shared-tooltip="() => t('mod.denseView')" icon @click="denseView = !denseView">
           <v-icon> {{ denseView ? "reorder" : "list" }} </v-icon>
         </v-btn>
       </v-subheader>
-      <SaveItem
-        v-else
-        :item="item"
-        :item-height="itemHeight"
-        :has-update="hasUpdate"
-        :checked="checked"
-        :selection-mode="selectionMode"
-        :selected="selected"
-        :dense="denseView"
-        @click="on.click"
-        @delete="onDelete"
-      />
+      <SaveItem v-else :item="item" :item-height="itemHeight" :has-update="hasUpdate" :checked="checked"
+        :selection-mode="selectionMode" :selected="selected" :dense="denseView" @click="on.click" @delete="onDelete" />
     </template>
     <template #content="{ selectedItem, selectedCurseforgeId, updating }">
-      <Hint
-        v-if="dragover"
-        icon="save_alt"
-        :text="t('save.dropHint')"
-        class="h-full"
-      />
-      <MarketProjectDetailCurseforge
-        v-else-if="
-          selectedItem && (selectedItem.curseforge || selectedCurseforgeId)
-        "
-        :curseforge="selectedItem.curseforge"
-        :curseforge-id="Number(selectedCurseforgeId)"
-        :installed="selectedItem.installed"
-        :game-version="gameVersion"
-        :all-files="[]"
-        :category="curseforgeCategory"
-        :updating="updating"
-        @category="curseforgeCategory = $event"
-      />
-      <SaveDetail
-        v-else-if="isSaveProject(selectedItem)"
-        :save="selectedItem"
-        @delete="onDelete"
-      />
-      <MarketRecommendationModern
-        v-else-if="marketLayout === 'modern'"
-        curseforge="worlds"
-        @curseforge="curseforgeCategory = $event.id"
-      />
-      <MarketRecommendation
-        v-else
-        curseforge="worlds"
-        @curseforge="curseforgeCategory = $event.id"
-      />
+      <Hint v-if="dragover" icon="save_alt" :text="t('save.dropHint')" class="h-full" />
+      <MarketProjectDetailCurseforge v-else-if="
+        selectedItem && (selectedItem.curseforge || selectedCurseforgeId)
+      " :curseforge="selectedItem.curseforge" :curseforge-id="Number(selectedCurseforgeId)"
+        :installed="selectedItem.installed" :game-version="gameVersion" :all-files="[]" :category="curseforgeCategory"
+        :updating="updating" @category="curseforgeCategory = $event" />
+      <SaveDetail v-else-if="isSaveProject(selectedItem)" :save="selectedItem" @delete="onDelete" />
+      <MarketRecommendationModern v-else-if="marketLayout === 'modern'" curseforge="worlds"
+        @curseforge="curseforgeCategory = $event.id" />
+      <MarketRecommendation v-else curseforge="worlds" @curseforge="curseforgeCategory = $event.id" />
     </template>
-    <SimpleDialog
-      v-model="model"
-      :title="t('save.deleteTitle')"
-      :width="500"
-      persistent
-      @confirm="doDelete()"
-    >
+    <SimpleDialog v-model="model" :title="t('save.deleteTitle')" :width="500" persistent @confirm="doDelete()">
       {{ t("save.deleteHint") }}
       <div style="color: grey">
         {{ deleting?.path }}
