@@ -891,8 +891,6 @@ modFilter:
   incompatibleOnly: Only show incompatible or missing dependencies missing mods
   source: Source
   unusedOnly: Only show unused libraries mods
-modrinth:
-  name: Modrinth
 modInstall:
   archived: >-
     {name} has been archived. {name} will not receive any further updates unless
@@ -981,6 +979,7 @@ modpackImportConfirm:
     modpack?
   title: Are you trying to import a modpack?
 modrinth:
+  name: Modrinth
   browseUrl: Open In Browser {url}
   categories:
     128x: 128x
