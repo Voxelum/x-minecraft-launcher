@@ -61,7 +61,7 @@
         "vue-i18n": "^8.28.2",
         "vue-i18n-bridge": "9.13.1",
         "vue-router": "^3.6.5",
-        "vuetify": "^2.6.13"
+        "vuetify": "^3.0.0"
     },
     "devDependencies": {
         "@intlify/unplugin-vue-i18n": "^0.13.0",
