@@ -45,7 +45,7 @@ import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kSupportedAuthorityMetadata, useSupportedAuthority } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
 import 'virtual:uno.css'
-import { provide } from 'vue'
+import { onMounted, onUnmounted, provide, watch } from 'vue'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -123,7 +123,44 @@ export default defineComponent({
 
     const instanceTheme = useInstanceTheme(instance.path)
     provide(kInstanceTheme, instanceTheme)
-    provide(kTheme, useTheme(instanceTheme.instanceTheme, vuetify.framework))
+    const theme = useTheme(instanceTheme.instanceTheme, vuetify.framework)
+    provide(kTheme, theme)
+
+    // Listen for system theme changes and apply when 'system' preference is selected
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleSystemThemeChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (settings.state.value?.theme === 'system') {
+        theme.currentTheme.value.dark = e.matches
+      }
+    }
+    
+    // Apply initial theme based on settings preference
+    const applyThemeFromSettings = () => {
+      const preference = settings.state.value?.theme
+      if (preference === 'dark') {
+        theme.currentTheme.value.dark = true
+      } else if (preference === 'light') {
+        theme.currentTheme.value.dark = false
+      } else if (preference === 'system') {
+        theme.currentTheme.value.dark = mediaQuery.matches
+      }
+    }
+    
+    // Watch for settings theme changes
+    watch(() => settings.state.value?.theme, (newTheme) => {
+      if (newTheme) {
+        applyThemeFromSettings()
+      }
+    })
+    
+    onMounted(() => {
+      applyThemeFromSettings()
+      mediaQuery.addEventListener('change', handleSystemThemeChange)
+    })
+    
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', handleSystemThemeChange)
+    })
 
 
     useI18nSync(vuetify.framework, settings.state)
