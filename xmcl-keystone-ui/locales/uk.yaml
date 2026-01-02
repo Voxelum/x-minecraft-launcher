@@ -125,6 +125,7 @@ curseforge:
   downloadOnly: Завантажити
   file:
     gameVersion: Версія гри
+    install: встановити
     modLoader: Завантажувач модів
   install: Встановити
   installTo: Встановити в {path}
@@ -816,7 +817,9 @@ minecraftVersion:
 mod:
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
+  categories: Категорії
   compatible: Сумісний мод.
+  createGroup: Створити групу
   currentVersion: Поточна {current}
   deletion: Видалити мод
   deletionHint: >-
@@ -825,25 +828,19 @@ mod:
     що хочете це зробити?
   deletionRestHint: Та ще {rest} модів...
   denseView: Компактний вигляд
+  disableAll: Вимкнути все
   dropHint: Перетягніть сюди .jar/.litemod файли модів для імпорту.
   duplicatedDetected: '{count} дубльованих модів'
   duplicatedDetectedDescription: >-
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
-  enabled: '{count} модів увімкнено'
   enableAll: Увімкнути все
-  disableAll: Вимкнути все
+  enabled: '{count} модів увімкнено'
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
-  selectOrCreateGroup: Вибрати або створити групу
-  searchGroups: Пошук груп...
-  newFolder: Нова папка
-  noGroupsYet: Груп поки немає. Створіть одну!
-  noGroupsFound: Групи не знайдено
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
-  createGroup: Створити групу
   hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
@@ -851,28 +848,41 @@ mod:
   incompatibleHintDescription: >-
     Деякі залежності модів можуть бути відсутні. Або деякі версії залежностей не
     збігаються.
+  license: Ліцензія
+  links: Посилання
   manage: Керувати модами
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: >-
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
     встановлення.
   modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
-  mods: '{count} модів'
+  mods: '{count} Модів'
   name: Мод | Моди
+  newFolder: Нова папка
+  noGroupsFound: Групи не знайдено
+  noGroupsYet: Груп поки немає. Створіть одну!
   noModLoaderHint: Не забудьте увімкнути завантажувач модів, щоб використовувати моди!
-  openLink: Відкрити URL мода {url}
-  search: Шукати моди
+  openLink: Відкрити посилання на мод {url}
+  projectId: ID Проєкту
+  search: Пошук модів
+  searchGroups: Пошук груп...
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Шукати {name} на Modrinth
+  selectOrCreateGroup: Вибрати або створити групу
   showDirectory: Показати каталог модів
   showFile: Показати шлях до мода {file}
   showInCurseforge: Показати мод на Curseforge
   showInModrinth: Показати {name} на Modrinth
+  sourceUrl: Джерело
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
+  technical: Технічна інформація
   toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
+  updateAt: Оновлено
+  versions: Версії
+  wikiUrl: Вікіи
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -884,6 +894,13 @@ modInstall:
   archived: >-
     {name} було заархівовано. {name} більше не отримуватиме оновлень, доки автор
     не вирішить розархівувати проєкт.
+  autoUpgrade:
+    description: >-
+      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити сумісні моди
+      до версій, що відповідають Minecraft {version}?
+    'no': Пропустити
+    title: Оновити моди?
+    'yes': Оновити моди
   checkDependencies: Перевірити залежності
   checkUpgrade: Перевірити оновлення модів
   checkedDependencies: Залежності перевірено
@@ -897,19 +914,13 @@ modInstall:
   installed: Встановлено
   noVersionSupported: Мод підтримує лише Minecraft {supported}.
   recommendation: Вивчіть моди {first} в {modrinth} та {curseforge}!
+  reinstall: Перевстановити
   removeUnusedLibraries: Видалити невикористані бібліотеки модів
   search: Результат пошуку
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
-  autoUpgrade:
-    title: Оновити моди?
-    description: >-
-      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити
-      сумісні моди до версій, що відповідають Minecraft {version}?
-    yes: Оновити моди
-    no: Пропустити
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -1411,6 +1422,8 @@ serverStatus:
   timeout: §4Час очікування з'єднання з сервером вичерпано!
 setting:
   about: Про
+  advancedSettings: Розширені налаштування
+  advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   allowPrerelease: Завантажувати попередні версії
   allowPrereleaseDescription: Попередні версії можуть бути нестабільними
   apiSets:
@@ -1483,11 +1496,15 @@ setting:
   enableDiscord: Увімкнути присутність Discord
   enableDiscordDescription: Це оновить статус Discord до лаунчера
   enterUrl: Введіть URL
+  exportSettings: Експорт налаштувань
+  exportSettingsHint: Зберегти поточні налаштування у файл
   general: Загальні
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   hideNewsHeader: Приховати вітрину новин
+  importSettings: Імпорт налаштувань
+  importSettingsHint: Завантажити налаштування з раніше експортованого файлу
   instanceTheme:
     activeDescription: |-
       Цей екземпляр використовує спеціальну тему. 
@@ -1508,8 +1525,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
-  windowTranslucent: Прозорість вікна
-  windowTranslucentDescription: Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows 10, Vibrancy у macOS). Потрібен перезапуск.
   location: Місце зберігання
   manualUpdateHint: >-
     Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще
@@ -1523,6 +1538,12 @@ setting:
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
   migrateFromOther: Імпортувати з іншого лаунчера
+  myStuffStyle: Стиль домашньої сторінки
+  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
+  myStuffStyleNew: Лаунчер (Сучасний)
+  myStuffStyleOld: Мої речі (Класика)
+  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
+  myStuffStyleTitle: Дизайн сторінки
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
   officialWebsite: Офіційний вебсайт
@@ -1538,10 +1559,40 @@ setting:
   replaceNatives:
     all: Усі
     legacy: Лише застарілі версії
+  resetAllSettings: Скинути всі налаштування
+  resetAllSettingsConfirmMessage: >-
+    Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та
+    кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
+  resetAllSettingsConfirmTitle: Скинути всі налаштування?
+  resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
+  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
   resetToDefault: Скинути до типових
   select: вибрати
+  settingsExported: Налаштування успішно експортовано
+  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
+  settingsImported: Налаштування успішно імпортовано
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
+  sidebarAlign: Вирівнювання бічної панелі
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Кінець
+  sidebarAlignHint: Вирівнювання вмісту бічної панелі
+  sidebarAlignStart: Початок
+  sidebarBottom: Знизу
+  sidebarClassic: Класичний
+  sidebarLeft: Зліва
+  sidebarNotch: Notch
+  sidebarPosition: Позиція бічної панелі
+  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
+  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
+  sidebarRight: Справа
+  sidebarScale: Масштаб бічної панелі
+  sidebarScaleHint: Налаштування розміру бічної панелі
+  sidebarSettings: Налаштування бічної панелі
+  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
+  sidebarStyle: Стиль бічної панелі
+  sidebarStyleHint: Виберіть між класичним та сучасним дизайном
+  sidebarTop: Зверху
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
   theme:
@@ -1566,6 +1617,10 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
+  windowTranslucent: Прозорість вікна
+  windowTranslucentDescription: >-
+    Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows
+    10, Vibrancy у macOS). Потрібен перезапуск.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1623,7 +1678,7 @@ setup:
   path: Поточний шлях
   title: >-
     Ласкаво просимо до X Minecraft Launcher. Перш ніж почати, нам потрібно, щоб
-    ви 
+    ви
 shaderPack:
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
@@ -1840,17 +1895,17 @@ userCape:
 userService:
   add: Додати більше служб
   authLibInjector: Дотримуйтесь рекомендацій інжектора auth-lib
-  baseUrlHint: Базова URL-адреса вашої власної служби
-  manageServices: Керувати службами
   authlibInjectorMetadata: Метадані Authlib-Injector
-  server: Сервер
-  implementation: Реалізація
-  version: Версія
-  skinDomains: Домени скіна
+  baseUrlHint: Базова URL-адреса вашої власної служби
   homepage: Домашня сторінка
+  implementation: Реалізація
+  manageServices: Керувати службами
   register: Реєстрація
+  server: Сервер
+  skinDomains: Домени скіна
   title: Сторонні служби користувачів
   validateHint: Використовується для перевірки, чи токен користувача все ще дійсний
+  version: Версія
 userServices:
   microsoft:
     account: Обліковий запис Microsoft

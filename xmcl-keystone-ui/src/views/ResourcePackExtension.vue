@@ -9,21 +9,7 @@
         <AvatarItemList :items="extensionItems" />
       </div>
       <div class="flex-grow" />
-      <MarketTextFieldWithMenu
-        :keyword.sync="keyword"
-        :placeholder="t('resourcepack.searchHint')"
-        :modrinth-categories.sync="modrinthCategories"
-        modrinth-category-filter="resourcepack"
-        :local-sort.sync="sortBy"
-        :curseforge-category.sync="curseforgeCategory"
-        curseforge-category-filter="texture-packs"
-        :enable-curseforge.sync="isCurseforgeActive"
-        :enable-modrinth.sync="isModrinthActive"
-        :sort.sync="sort"
-        :game-version.sync="gameVersion"
-        :mode.sync="filterMode"
-        :collection.sync="selectedCollection"
-      />
+      <div class="flex-grow" />
     </div>
     <MarketExtensions
     />

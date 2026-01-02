@@ -1,5 +1,6 @@
 <template>
   <v-navigation-drawer
+    v-if="!isHorizontal"
     :value="true"
     permanent
     :mini-variant="true"
@@ -107,6 +108,74 @@
       </v-list-item>
     </v-list>
   </v-navigation-drawer>
+
+  <div
+    v-else
+    class="sidebar-horizontal moveable z-10 rounded-[0.75rem] flex flex-row items-center px-2 h-12 mx-2 my-2 elevation-4"
+    :style="{ 'backdrop-filter': `blur(${blurSidebar}px)`, backgroundColor: sideBarColor }"
+  >
+    <div class="flex flex-row items-center flex-grow-0">
+      <v-btn icon class="non-moveable mr-1" @click="goBack">
+        <v-icon>arrow_back</v-icon>
+      </v-btn>
+
+      <v-btn
+        id="my-stuff-button"
+        icon
+        to="/me"
+        class="non-moveable mr-1"
+        v-shared-tooltip.bottom="t('myStuff')"
+      >
+        <v-icon>widgets</v-icon>
+      </v-btn>
+
+      <v-btn
+        icon
+        to="/store"
+        class="non-moveable mr-1"
+        v-shared-tooltip.bottom="t('store.name', 2)"
+      >
+        <v-icon :size="28">store</v-icon>
+      </v-btn>
+      
+      <v-divider vertical class="mx-2 h-6" />
+    </div>
+
+    <div class="flex-grow-1 overflow-hidden h-full flex items-center relative" style="min-width: 0;">
+      <AppSideBarContentNext :horizontal="true" />
+    </div>
+
+    <div class="flex flex-row items-center flex-grow-0">
+      <v-divider vertical class="mx-2 h-6" />
+
+      <v-btn
+        icon
+        class="non-moveable mr-1"
+        @click="goMultiplayer"
+        v-shared-tooltip.bottom="t('multiplayer.name')"
+      >
+        <v-icon :size="23">hub</v-icon>
+      </v-btn>
+
+      <v-btn
+        icon
+        to="/setting"
+        class="non-moveable"
+        v-shared-tooltip.bottom="t('setting.name', 2)"
+      >
+        <v-badge
+          right
+          overlap
+          :value="state?.updateStatus !== 'none'"
+        >
+          <template #badge>
+            <span>{{ 1 }}</span>
+          </template>
+          <v-icon>settings</v-icon>
+        </v-badge>
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script lang=ts setup>
@@ -115,9 +184,13 @@ import { injection } from '@/util/inject'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { kTheme } from '@/composables/theme'
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 
 const { blurSidebar } = injection(kTheme)
 const { state } = injection(kSettingsState)
+const { position } = useInjectSidebarSettings()
+
+const isHorizontal = computed(() => position.value === 'top' || position.value === 'bottom')
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)

@@ -40,3 +40,19 @@ const emit = defineEmits<{
 
 const model = useVModel(props, 'value', emit)
 </script>
+
+<style scoped>
+/* Remove gray-black rectangle backgrounds */
+.v-list-item {
+  background: transparent !important;
+}
+
+.v-list-item::before,
+.v-list-item::after {
+  opacity: 0 !important;
+}
+
+.v-list-item:hover::before {
+  opacity: 0.04 !important;
+}
+</style>

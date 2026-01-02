@@ -1,61 +1,64 @@
 <template>
-  <GridLayout
-    class="z-1"
-    :layout.sync="layout"
-    :responsive-layouts="layouts"
-    :is-draggable="true"
-    :cols="cols"
-    :col-num="12"
-    :row-height="32"
-    :is-resizable="true"
-    :responsive="true"
-    :vertical-compact="true"
-    :use-css-transforms="true"
-    @breakpoint-changed="onBreakpoint"
-  >
-    <GridItem
-      v-for="item in layout"
-      :key="item.i"
-      :x="item.x"
-      :y="item.y"
-      :w="item.w"
-      :h="item.h"
-      :min-w="item.minW"
-      :min-h="item.minH"
-      :i="item.i"
-      drag-allow-from=".v-card__title"
-      drag-ignore-from=".no-drag"
-      :class="{ 'screenshot-item': Number(item.i) === CardType.Screenshots }"
-      @container-resized="onResized"
-      @resized="onResized"
+  <div>
+    <GridLayout
+      class="z-1"
+      :layout.sync="layout"
+      :responsive-layouts="layouts"
+      :is-draggable="true"
+      :cols="cols"
+      :col-num="12"
+      :row-height="32"
+      :is-resizable="true"
+      :responsive="true"
+      :vertical-compact="true"
+      :use-css-transforms="true"
+      @breakpoint-changed="onBreakpoint"
     >
-      <HomeModCard
-        v-if="isType(item.i, CardType.Mod)"
-        :row-count="modRowCount"
-        :row="item.h - 4"
-      />
-      <HomeResourcePacksCard
-        v-else-if="isType(item.i, CardType.ResourcePack)"
-        :row-count="resourcePackRowCount"
-        :row="item.h - 4"
-      />
-      <HomeShaderPackCard
-        v-else-if="isType(item.i, CardType.ShaderPack)"
-      />
-      <HomeSavesCard
-        v-else-if="isType(item.i, CardType.Save)"
-        :row-count="saveRowCount"
-        :row="item.h - 4"
-      />
-      <HomeScreenshotCard
-        v-else-if="isType(item.i, CardType.Screenshots)"
-        :width="item.w"
-        :height="screenshotHeight"
-        :instance="instance"
-        persistent
-      />
-    </GridItem>
-  </GridLayout>
+      <GridItem
+        v-for="item in layout"
+        :key="item.i"
+        :x="item.x"
+        :y="item.y"
+        :w="item.w"
+        :h="item.h"
+        :min-w="item.minW"
+        :min-h="item.minH"
+        :i="item.i"
+        drag-allow-from=".v-card__title"
+        drag-ignore-from=".no-drag"
+        :class="{ 'screenshot-item': Number(item.i) === CardType.Screenshots }"
+        @container-resized="onResized"
+        @resized="onResized"
+      >
+        <HomeModCard
+          v-if="isType(item.i, CardType.Mod)"
+          :row-count="modRowCount"
+          :row="item.h - 4"
+        />
+        <HomeResourcePacksCard
+          v-else-if="isType(item.i, CardType.ResourcePack)"
+          :row-count="resourcePackRowCount"
+          :row="item.h - 4"
+        />
+        <HomeShaderPackCard
+          v-else-if="isType(item.i, CardType.ShaderPack)"
+        />
+        <HomeSavesCard
+          v-else-if="isType(item.i, CardType.Save)"
+          :row-count="saveRowCount"
+          :row="item.h - 4"
+        />
+        <HomeScreenshotCard
+          v-else-if="isType(item.i, CardType.Screenshots)"
+          :width="item.w"
+          :height="screenshotHeight"
+          :instance="instance"
+          persistent
+        />
+      </GridItem>
+    </GridLayout>
+    <ScreenshotGalleryDialog />
+  </div>
 </template>
 <script lang="ts" setup>
 import { useLocalStorageCache } from '@/composables/cache'
@@ -69,6 +72,7 @@ import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
+import ScreenshotGalleryDialog from '@/components/ScreenshotGalleryDialog.vue'
 
 const { instance } = injection(kInstance)
 

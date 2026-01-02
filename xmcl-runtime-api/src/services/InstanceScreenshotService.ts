@@ -7,6 +7,11 @@ export interface InstanceScreenshotService {
   getScreenshots(instancePath: string): Promise<string[]>
 
   showScreenshot(url: string): Promise<void>
+
+  /**
+   * Delete a screenshot by its URL
+   */
+  deleteScreenshot(url: string): Promise<boolean>
 }
 
 export const InstanceScreenshotServiceKey: ServiceKey<InstanceScreenshotService> = 'InstanceScreenshotService'
