@@ -3,7 +3,6 @@
   "zh-TW": "繁體中文",
   "en": "English",
   "ru": "Русский язык",
-  "kk-KZ": "Қазақ тілі",
   "es-ES": "Español",
   "fr": "Français",
   "it-IT": "italiano",
@@ -16,6 +15,7 @@
   "ja-JP": "日本語",
   "lolcat": "LOLCAT",
   "pt-BR": "Português-BR",
-  "ko": "한국어"
+  "ko": "한국어",
+  "kk-KZ": "Қазақ тілі",
 }
 
