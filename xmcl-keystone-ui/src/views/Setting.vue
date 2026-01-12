@@ -1,32 +1,11 @@
 <template>
   <div class="d-flex fill-height setting-page">
-    <!-- View Mode Toggle (Absolute Positioned or in Sidebar) -->
-    <div class="view-mode-toggle" :class="{ 'in-sidebar': viewMode === 'scroll', 'top-right': viewMode === 'tabs' }">
-      <v-tooltip bottom>
-        <template #activator="{ on, attrs }">
-          <v-btn
-            icon
-            small
-            @click="toggleViewMode"
-            v-bind="attrs"
-            v-on="on"
-          >
-            <v-icon>{{ viewMode === 'scroll' ? 'view_stream' : 'tab' }}</v-icon>
-          </v-btn>
-        </template>
-        <span>{{ viewMode === 'scroll' ? t('setting.viewModeScroll') : t('setting.viewModeTabs') }}</span>
-      </v-tooltip>
-    </div>
-
-    <!-- Navigation Sidebar (Only in Scroll Mode) -->
-    <div v-if="viewMode === 'scroll'" class="setting-sidebar pt-6 pl-4 pr-2 hidden-sm-and-down">
+    <!-- Navigation Sidebar (Only in Wide/Scroll Mode) -->
+    <div v-if="!isNarrowView" class="setting-sidebar pt-6 pl-4 pr-2">
       <v-card class="rounded-lg" elevation="0" color="transparent">
         <v-list nav dense color="transparent" class="rounded-lg">
-          <v-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1 d-flex align-center justify-space-between">
+          <v-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1">
             {{ t('setting.title') }}
-            <v-btn icon x-small @click="toggleViewMode">
-              <v-icon x-small>swap_horiz</v-icon>
-            </v-btn>
           </v-subheader>
           <v-list-item-group v-model="activeSectionIndex" color="primary">
             <v-list-item
@@ -49,12 +28,13 @@
 
     <!-- Content Area -->
     <div 
-      class="flex-grow-1 overflow-y-auto fill-height pa-4 pa-md-6 scroll-container visible-scroll" 
+      class="flex-grow-1 overflow-y-auto fill-height scroll-container visible-scroll" 
+      :class="{ 'has-sticky-tabs': isNarrowView }"
       ref="scrollContainer"
       @scroll="onScroll"
     >
-      <!-- Tabs Header (Only in Tabs Mode) -->
-      <div v-if="viewMode === 'tabs'" class="d-flex justify-center mb-6">
+      <!-- Sticky Tabs Header (Only in Narrow/Tabs Mode) -->
+      <div v-if="isNarrowView" class="sticky-tabs-wrapper">
         <v-tabs
           v-model="activeSectionIndex"
           centered
@@ -62,7 +42,7 @@
           color="primary"
           show-arrows
           class="rounded-lg"
-          style="max-width: 900px;"
+          @change="onTabChange"
         >
           <v-tab v-for="item in sections" :key="item.id">
             <v-icon left small>{{ item.icon }}</v-icon>
@@ -71,36 +51,18 @@
         </v-tabs>
       </div>
 
-      <div class="content-wrapper mx-auto" :class="{ 'tabs-mode': viewMode === 'tabs' }">
-        <!-- Scroll View: Render all sections -->
-        <template v-if="viewMode === 'scroll'">
-          <section id="general" class="mb-8 scroll-target"><SettingGeneral /></section>
-          <section id="appearance" class="mb-8 scroll-target">
-            <SettingGlobalUI />
-          </section>
-          <section id="global" class="mb-8 scroll-target"><SettingGlobal /></section>
-          <section id="update" class="mb-8 scroll-target"><SettingUpdate /></section>
-          <section id="network" class="mb-8 scroll-target">
-            <SettingNetwork />
-          </section>
-          <section id="about" class="mb-12 scroll-target"><SettingAbout /></section>
-        </template>
-
-        <!-- Tabs View: Render only active section -->
-        <template v-else>
-          <v-fade-transition mode="out-in">
-            <div :key="activeSectionIndex" class="tab-content">
-              <SettingGeneral v-if="activeSectionIndex === 0" />
-              <SettingGlobalUI v-if="activeSectionIndex === 1" />
-              <SettingGlobal v-if="activeSectionIndex === 2" />
-              <SettingUpdate v-if="activeSectionIndex === 3" />
-              <div v-if="activeSectionIndex === 4">
-                <SettingNetwork />
-              </div>
-              <SettingAbout v-if="activeSectionIndex === 5" />
-            </div>
-          </v-fade-transition>
-        </template>
+      <div class="content-wrapper mx-auto pa-4 pa-md-6" :class="{ 'tabs-mode': isNarrowView }">
+        <!-- All sections rendered vertically in both modes -->
+        <section id="general" class="mb-8 scroll-target"><SettingGeneral /></section>
+        <section id="appearance" class="mb-8 scroll-target">
+          <SettingGlobalUI />
+        </section>
+        <section id="global" class="mb-8 scroll-target"><SettingGlobal /></section>
+        <section id="update" class="mb-8 scroll-target"><SettingUpdate /></section>
+        <section id="network" class="mb-8 scroll-target">
+          <SettingNetwork />
+        </section>
+        <section id="about" class="mb-12 scroll-target"><SettingAbout /></section>
       </div>
 
       <SettingUpdateInfoDialog />
@@ -110,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, onMounted, onUnmounted, provide, watch, Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, provide } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import SettingUpdateInfoDialog from './SettingUpdateInfoDialog.vue'
 import SettingUpdate from './SettingUpdate.vue'
@@ -123,7 +85,6 @@ import { usePresence } from '@/composables/presence'
 import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 import { injection } from '@/util/inject'
 import { kTheme } from '@/composables/theme'
-import { useLocalStorageCacheStringValue } from '@/composables/cache'
 import SettingGlobalUI from './SettingGlobalUI.vue'
 
 const { t } = useI18n()
@@ -135,21 +96,29 @@ const { suppressed } = injection(kTheme)
 
 onMounted(() => {
   suppressed.value = true
+  window.addEventListener('resize', updateWindowWidth)
+  updateWindowWidth()
 })
 onUnmounted(() => {
   suppressed.value = false
+  window.removeEventListener('resize', updateWindowWidth)
 })
 
-// View Mode State
-const viewMode = useLocalStorageCacheStringValue('settingsViewMode', 'scroll') as Ref<'scroll' | 'tabs'>
+// Window width tracking for responsive view
+const windowWidth = ref(window.innerWidth)
+const NARROW_BREAKPOINT = 960 // Switch to tabs view when window is narrower than this
 
-const toggleViewMode = () => {
-  viewMode.value = viewMode.value === 'scroll' ? 'tabs' : 'scroll'
+function updateWindowWidth() {
+  windowWidth.value = window.innerWidth
 }
+
+const isNarrowView = computed(() => windowWidth.value < NARROW_BREAKPOINT)
 
 // Navigation Logic
 const activeSectionIndex = ref(0)
 const scrollContainer = ref<HTMLElement | null>(null)
+const isUserScrolling = ref(false)
+let scrollTimeout: ReturnType<typeof setTimeout> | null = null
 
 const sections = [
   { id: 'general', title: 'setting.general', icon: 'tune' },
@@ -163,16 +132,34 @@ const sections = [
 function scrollTo(id: string) {
   const el = document.getElementById(id)
   if (el && scrollContainer.value) {
-    const offsetTop = el.offsetTop - 20
+    isUserScrolling.value = true
+    // Account for sticky tabs height in narrow view
+    const stickyOffset = isNarrowView.value ? 60 : 20
+    const offsetTop = el.offsetTop - stickyOffset
     scrollContainer.value.scrollTo({ top: offsetTop, behavior: 'smooth' })
+    
+    // Reset user scrolling flag after animation completes
+    if (scrollTimeout) clearTimeout(scrollTimeout)
+    scrollTimeout = setTimeout(() => {
+      isUserScrolling.value = false
+    }, 500)
+  }
+}
+
+function onTabChange(index: number) {
+  const section = sections[index]
+  if (section) {
+    scrollTo(section.id)
   }
 }
 
 function onScroll() {
-  if (viewMode.value !== 'scroll' || !scrollContainer.value) return
+  if (!scrollContainer.value || isUserScrolling.value) return
   
   const container = scrollContainer.value
-  const scrollTop = container.scrollTop + 100
+  // Account for sticky tabs height in narrow view
+  const stickyOffset = isNarrowView.value ? 80 : 100
+  const scrollTop = container.scrollTop + stickyOffset
   
   for (let i = sections.length - 1; i >= 0; i--) {
     const el = document.getElementById(sections[i].id)
@@ -200,6 +187,21 @@ function onScroll() {
 
 .scroll-container {
   scroll-behavior: smooth;
+  position: relative;
+}
+
+.scroll-container.has-sticky-tabs {
+  padding-top: 0;
+}
+
+.sticky-tabs-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(var(--v-theme-surface), 0.95);
+  backdrop-filter: blur(8px);
+  padding: 8px 0;
+  margin-bottom: 16px;
 }
 
 .content-wrapper {
@@ -210,26 +212,7 @@ function onScroll() {
   max-width: 800px;
 }
 
-.tab-content {
-  min-height: 400px;
-}
-
-.view-mode-toggle {
-  position: absolute;
-  z-index: 10;
-  transition: all 0.3s ease;
-}
-
-.view-mode-toggle.in-sidebar {
-  display: none;
-}
-
-.view-mode-toggle.top-right {
-  top: 16px;
-  right: 24px;
-}
-
 .scroll-target {
-  scroll-margin-top: 20px;
+  scroll-margin-top: 80px;
 }
 </style>
