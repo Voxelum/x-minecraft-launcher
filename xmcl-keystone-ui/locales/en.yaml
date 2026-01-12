@@ -479,6 +479,7 @@ instance:
   deleteFailed: Fail to delete instance
   deleteFailedPermission: Other program occupied the file
   deleteHint: The instance data will be removed from the disk forever. Are you sure?
+  deleteFile: Delete Instance Files
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
