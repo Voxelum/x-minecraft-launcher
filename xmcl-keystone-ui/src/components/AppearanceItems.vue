@@ -115,12 +115,6 @@
       </v-list-item-action>
     </v-list-item>
     <SettingItemSelect
-      :select.sync="manageLayout"
-      :title="t('setting.manageLayout.name')"
-      :description="t('setting.manageLayout.description')"
-      :items="manageLayouts"
-    />
-    <SettingItemSelect
       :select.sync="backgroundType"
       :title="t('setting.backgroundType')"
       :description="t('setting.backgroundTypeDescription')"
@@ -632,8 +626,6 @@ import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingItemSelect from '@/components/SettingItemSelect.vue'
 import { useService } from '@/composables/service'
 import { BackgroundType, UIThemeDataV1, useThemeWritter } from '@/composables/theme'
-import { useManageLayout } from '@/composables/manageLayout'
-import { useMarketLayout } from '@/composables/marketLayout'
 import { basename } from '@/util/basename'
 import { ThemeServiceKey } from '@xmcl/runtime-api'
 import SettingAppearanceColor from '../views/SettingAppearanceColor.vue'
@@ -751,26 +743,6 @@ const backgroundTypes = computed(() => [
   { value: BackgroundType.PARTICLE, text: t('setting.backgroundTypes.particle') },
   { value: BackgroundType.HALO, text: t('setting.backgroundTypes.halo') },
   { value: BackgroundType.VIDEO, text: t('setting.backgroundTypes.video') },
-])
-
-
-const manageLayoutRef = useManageLayout()
-const manageLayout = computed({
-  get: () => manageLayoutRef.value,
-  set: (v) => { manageLayoutRef.value = v },
-})
-const manageLayouts = computed(() => [
-  { value: 'modern', text: t('setting.manageLayout.modern') },
-  { value: 'classic', text: t('setting.manageLayout.classic') },
-])
-const marketLayoutRef = useMarketLayout()
-const marketLayout = computed({
-  get: () => marketLayoutRef.value,
-  set: (v) => { marketLayoutRef.value = v },
-})
-const marketLayouts = computed(() => [
-  { value: 'modern', text: t('setting.marketLayout.modern') },
-  { value: 'classic', text: t('setting.marketLayout.classic') },
 ])
 function selectImage() {
   showOpenDialog({

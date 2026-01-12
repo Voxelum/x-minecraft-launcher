@@ -80,10 +80,10 @@ export function useInstances() {
   async function edit(options: EditInstanceOptions & { instancePath: string }) {
     await editInstance(options)
   }
-  async function remove(instancePath: string) {
+  async function remove(instancePath: string, deleteData = true) {
     const index = instances.value.findIndex(i => i.path === instancePath)
     const lastSelected = path.value
-    await deleteInstance(instancePath)
+    await deleteInstance(instancePath, deleteData)
     if (instancePath === lastSelected) {
       path.value = instances.value[Math.max(index - 1, 0)]?.path ?? ''
       if (!path.value) {

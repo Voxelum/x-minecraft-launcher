@@ -45,7 +45,7 @@
 
           <div class="flex-grow" />
           <v-btn
-            v-shared-tooltip.left="_ => t('multiplayer.share')"
+            v-shared-tooltip.left="() => t('multiplayer.share')"
             text
             icon
             @click="showShareInstance()"
@@ -62,7 +62,7 @@
             <template #activator="{ on }">
               <v-btn
                 id="manual-connect-button"
-                v-shared-tooltip.left="_ => t('multiplayer.manualConnect')"
+                v-shared-tooltip.left="() => t('multiplayer.manualConnect')"
                 text
                 icon
                 v-on="on"
@@ -105,7 +105,7 @@
           />
           <v-btn
             id="join-group-button"
-            v-shared-tooltip="_ => !group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup')"
+            v-shared-tooltip="() => !group ? t('multiplayer.joinOrCreateGroup') : t('multiplayer.leaveGroup')"
             text
             icon
             @click="onJoin()"
@@ -122,7 +122,7 @@
             </template>
           </v-btn>
           <v-btn
-            v-shared-tooltip.left="_ => copied ? t('multiplayer.copied') : t('multiplayer.copy')"
+            v-shared-tooltip.left="() => copied ? t('multiplayer.copied') : t('multiplayer.copy')"
             :disabled="!group"
             text
             icon
@@ -139,6 +139,36 @@
             </v-icon>
           </v-btn>
         </div>
+        <!-- Error Banner -->
+        <v-alert
+          v-if="groupError"
+          type="error"
+          dense
+          dismissible
+          class="mt-2 mb-0"
+        >
+          <div class="flex items-center gap-2">
+            <v-icon small>error</v-icon>
+            <span>{{ t('multiplayer.connectionError') }}: {{ groupError }}</span>
+          </div>
+          <template #close="{ toggle }">
+            <v-btn icon x-small @click="toggle">
+              <v-icon small>close</v-icon>
+            </v-btn>
+          </template>
+        </v-alert>
+        <!-- NAT Warning for Symmetric NAT -->
+        <v-alert
+          v-if="natType === 'Symmetric NAT' || natType === 'Blocked'"
+          type="warning"
+          dense
+          class="mt-2 mb-0"
+        >
+          <div class="flex items-center gap-2">
+            <v-icon small>warning</v-icon>
+            <span>{{ t('multiplayer.natWarning') }}</span>
+          </div>
+        </v-alert>
       </v-card>
 
       <v-list
@@ -251,6 +281,7 @@
               </v-btn>
             </v-list-item-action>
           </v-list-item>
+          </v-list-item>
 
           <v-subheader class>
             {{ t("multiplayer.connections") }}
@@ -290,7 +321,28 @@
                 {{ c.userInfo.name || c.id }}
               </v-list-item-title>
               <v-list-item-subtitle class="flex items-center gap-2">
+                <v-tooltip
+                  v-if="c.connectionState === 'failed'"
+                  bottom
+                  max-width="300"
+                >
+                  <template #activator="{ on }">
+                    <v-chip
+                      label
+                      small
+                      :color="stateToColor[c.connectionState]"
+                      v-on="on"
+                    >
+                      <v-icon left>
+                        error_outline
+                      </v-icon>
+                      {{ tConnectionStates[c.connectionState] }}
+                    </v-chip>
+                  </template>
+                  <span>{{ t('multiplayer.connectionFailedHint') }}</span>
+                </v-tooltip>
                 <v-chip
+                  v-else
                   label
                   small
                   :color="stateToColor[c.connectionState]"
@@ -360,7 +412,7 @@
             <v-list-item-action class="flex flex-grow-0 flex-row gap-2 self-center">
               <template v-if="c.sharing">
                 <v-btn
-                  v-shared-tooltip="_ => t('multiplayer.sharing')"
+                  v-shared-tooltip="() => t('multiplayer.sharing')"
                   icon
                   @click="showShareInstance(c.sharing)"
                 >
@@ -370,7 +422,7 @@
                 </v-btn>
                 <v-btn
                   v-if="c.sharing"
-                  v-shared-tooltip="_ => t('multiplayer.sharing')"
+                  v-shared-tooltip="() => t('multiplayer.sharing')"
                   color="primary"
                   icon
                   @click="c.sharing ? showAddInstasnce({
@@ -393,7 +445,7 @@
               </v-btn>
             </v-list-item-action>
             <v-btn
-              v-shared-tooltip.left="_ => t('multiplayer.disconnect')"
+              v-shared-tooltip.left="() => t('multiplayer.disconnect')"
               color="error"
               icon
               @click="showDelete(c.id)"
@@ -413,7 +465,7 @@
               <v-list-item-title>
                 {{ t("multiplayer.kernel") }}
               </v-list-item-title>
-              <v-list-item-subtitle v-shared-tooltip="_ => t('multiplayer.kernelDescription')">
+              <v-list-item-subtitle v-shared-tooltip="() => t('multiplayer.kernelDescription')">
                 {{ t("multiplayer.kernelDescription") }}
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -442,7 +494,7 @@
                 {{ t("multiplayer.allowTurn") }}
               </v-list-item-title>
               <v-list-item-subtitle
-                v-shared-tooltip="_ => t('multiplayer.allowTurnHint')"
+                v-shared-tooltip="() => t('multiplayer.allowTurnHint')"
                 class="flex items-center gap-2"
               >
                 {{ t("multiplayer.allowTurnHint") }}
@@ -591,6 +643,7 @@ const { show: showReceive } = useDialog('peer-receive')
 const navigation = ref('connections' as 'connections' | 'settings')
 
 const hideIp = ref(true)
+const showNetworkInfo = useLocalStorageCacheBool('peerShowNetworkInfo', true)
 
 const open = (...args: any[]) => window.open(...args)
 
@@ -599,7 +652,7 @@ const { show: showDelete, target: deleting, confirm: doDelete, model } = useSimp
   console.log(`drop connection ${v}`)
   drop(v)
 })
-const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, icePings, groupPing, groupLastTimestamp, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType } = injection(kPeerState)
+const { exposedPorts, exposePort, unexposePort, otherExposedPorts, connections, turnservers, group, groupState, icePings, groupPing, groupLastTimestamp, joinGroup, leaveGroup, drop, ips, device, natType, refreshingNatType, refreshNatType, error: groupError } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { users } = injection(kUserContext)

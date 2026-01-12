@@ -32,6 +32,12 @@ export const vuetify = new Vuetify({
       curseforge: {
         component: CurseforgeIcon,
       },
+      prism: {
+        component: ImageIcon,
+        props: {
+          src: BuiltinImages.prism,
+        },
+      },
       minecraft: {
         component: ImageIcon,
         props: {

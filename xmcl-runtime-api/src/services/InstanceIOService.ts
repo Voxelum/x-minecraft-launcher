@@ -60,7 +60,7 @@ export interface CreateInstanceManifest {
   path: string
 }
 
-export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge'
+export type InstanceType = 'mmc' | 'vanilla' | 'modrinth' | 'curseforge' | 'prism'
 
 
 export type SSHCredentials = {

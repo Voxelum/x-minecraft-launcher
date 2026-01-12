@@ -2,7 +2,7 @@
   <div class="flex h-full w-full overflow-hidden bg-[rgba(0,0,0,0.2)]">
     <!-- Left Pane: List -->
     <div
-      class="flex flex-col w-[350px] min-w-[300px] border-r border-[#4caf50]/20 bg-[#121212]/50 backdrop-blur-sm"
+      class="mod-left-pane flex flex-col border-r border-[#4caf50]/20 bg-[#121212]/50 backdrop-blur-sm"
     >
       <!-- Search & Filters Header -->
       <div class="p-4 flex flex-col gap-3 shrink-0">
@@ -844,5 +844,38 @@ onMounted(() => {
 }
 .dark-select.v-input--is-focused :deep(.v-input__control) {
   border-color: #4caf50 !important;
+}
+
+/* Responsive left pane */
+.mod-left-pane {
+  width: 350px;
+  min-width: 280px;
+  max-width: 400px;
+  transition: width 0.3s ease;
+}
+
+/* Medium screens (tablets) */
+@media (max-width: 1024px) {
+  .mod-left-pane {
+    width: 280px;
+    min-width: 250px;
+  }
+}
+
+/* Small screens */
+@media (max-width: 768px) {
+  .mod-left-pane {
+    width: 240px;
+    min-width: 200px;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 600px) {
+  .mod-left-pane {
+    width: 100%;
+    min-width: unset;
+    max-width: unset;
+  }
 }
 </style>

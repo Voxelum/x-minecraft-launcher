@@ -7,7 +7,6 @@
       <div class="flex-grow" />
       <div class="invisible-scroll flex justify-end gap-4 overflow-x-auto">
         <MarketTextFieldWithMenu
-          v-if="manageLayout === 'classic'"
           :placeholder="t('mod.search')"
           :keyword.sync="keywordBuffer"
           :curseforge-category.sync="curseforgeCategory"
@@ -79,11 +78,9 @@ import { kModUpgrade } from '@/composables/modUpgrade'
 import { kModDependenciesCheck } from '@/composables/modDependenciesCheck'
 import { kModLibCleaner } from '@/composables/modLibCleaner'
 import { ModLoaderFilter, kSearchModel } from '@/composables/search'
-import { useManageLayout } from '@/composables/manageLayout'
 
 const { runtime: version } = injection(kInstance)
 const { plans } = injection(kModUpgrade)
-const manageLayout = useManageLayout()
 const { curseforgeCategory, modrinthCategories, isCurseforgeActive, isModrinthActive, sort, modLoader, selectedCollection, gameVersion, source, modrinthEnvironment } = injection(kSearchModel)
 const { denseView, groupInstalled, sortBy, localFilter } = injection(kModsSearch)
 const { mods: modFiles } = injection(kInstanceModsContext)

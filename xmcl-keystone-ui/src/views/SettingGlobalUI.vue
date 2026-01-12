@@ -281,6 +281,18 @@
                     </v-list-item-action>
                   </v-list-item>
                 </template>
+
+                <v-divider class="my-2" />
+                <!-- Show Only Pinned Instances -->
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarShowOnlyPinned') }}</v-list-item-title>
+                    <v-list-item-subtitle>{{ t('setting.sidebarShowOnlyPinnedHint') }}</v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-switch v-model="sidebarShowOnlyPinned" color="primary" hide-details dense />
+                  </v-list-item-action>
+                </v-list-item>
               </v-list>
             </v-col>
           </v-row>
@@ -338,6 +350,7 @@ const sidebarStyle = sidebarSettings.style
 const sidebarAlign = sidebarSettings.align
 const sidebarScale = sidebarSettings.scale
 const sidebarAutoHide = sidebarSettings.autoHide
+const sidebarShowOnlyPinned = sidebarSettings.showOnlyPinned
 const myStuffStyle = useLocalStorageCacheStringValue('myStuffStyle', 'new') as Ref<'old' | 'new'>
 
 // --- Computed Properties for UI Controls ---

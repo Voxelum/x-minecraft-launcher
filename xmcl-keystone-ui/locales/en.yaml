@@ -595,6 +595,7 @@ instances:
   addMMCDescription: >-
     Import existing MultiMC instance. You need to select the data folder from
     MultiMC.
+  addPrismDescription: Import existing PrismLauncher instance.
   addManually: Manually Create
   addModrinthDescription: >-
     Import existing Modrinth instance. You need to select the Modrinth root data
@@ -1206,7 +1207,6 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
-  networkInfo: Network Info
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
   placeholder: Connect with other users to play Minecraft on LAN!
@@ -1223,7 +1223,13 @@ multiplayer:
   sharingNotificationBody: You can download or create an instance from {name} shared config.
   sharingNotificationTitle: A peer is sharing their game config
   start: Start
+  connectionError: Connection Error
+  natWarning: Your NAT type may prevent direct connections. Try enabling relay server in settings or ask your friend to host instead.
+  connectionFailed: Connection failed
+  connectionFailedHint: Unable to establish connection. Check if both peers have compatible NAT types.
   startNewP2PConnection: Click the Start button to create a new peer connection
+  natFirewallBlocked: "Your connection might be blocked by Firewall! Please check your Firewall settings or try to disable it temporarily."
+  networkInfo: Network Info (Click to toggle)
 myStuff: My Stuff
 name: Name
 natType:
@@ -1408,6 +1414,9 @@ search:
   favorate: Collection
   local: Installed
   market: Mod Market
+sidebar:
+  pin: Pin to Sidebar
+  unpin: Unpin from Sidebar
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   creationHint: Please Fill the server address and ping the server
@@ -1653,6 +1662,8 @@ setting:
   sidebarStyle: Sidebar Style
   sidebarStyleHint: Choose between classic and modern notch design
   sidebarTop: Top
+  sidebarShowOnlyPinned: Show Only Pinned Instances
+  sidebarShowOnlyPinnedHint: Only display pinned instances in the sidebar
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   theme:

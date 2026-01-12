@@ -240,7 +240,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * Delete the managed instance from the disk
    * @param path The instance path
    */
-  async deleteInstance(path: string) {
+  /**
+   * Delete the managed instance from the disk
+   * @param path The instance path
+   */
+  async deleteInstance(path: string, deleteData = true) {
     await this.initialize()
     requireString(path)
 
@@ -254,17 +258,24 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         for (const handlerRef of oldHandlers || []) {
           handlerRef.deref()?.()
         }
-        try {
-          await rm(path, { recursive: true, force: true, maxRetries: 1 })
-        } catch (e) {
-          if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
-            this.warn(`Fail to remove instance ${path}`)
-          } else {
-            if ((e as any).name === 'Error') {
-              (e as any).name = 'InstanceDeleteError'
+        if (deleteData) {
+          try {
+            await rm(path, { recursive: true, force: true, maxRetries: 1 })
+          } catch (e) {
+            if (isSystemError(e) && (e.code === ENOENT_ERROR || e.code === 'EPERM')) {
+              this.warn(`Fail to remove instance ${path}`)
+            } else {
+              if ((e as any).name === 'Error') {
+                (e as any).name = 'InstanceDeleteError'
+              }
+              throw e
             }
-            throw e
           }
+        } else {
+          // Rename to hidden
+          const name = basename(path)
+          const newPath = join(dirname(path), '.' + name)
+          await rename(path, newPath).catch(() => undefined)
         }
 
         this.#removeHandlers[path] = []

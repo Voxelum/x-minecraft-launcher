@@ -20,7 +20,7 @@
     >
       <v-list-item-avatar
         :size="compact ? 32 : 48"
-        class="transition-all duration-300 hover:rounded"
+        class="transition-all duration-300 hover:rounded relative"
         :class="{ 'mx-0': compact }"
         large
       >
@@ -36,6 +36,13 @@
           v-else
           type="avatar"
         />
+        <!-- Pin indicator -->
+        <div
+          v-if="pinned"
+          class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md"
+        >
+          <v-icon x-small color="white" style="font-size: 10px;">push_pin</v-icon>
+        </div>
       </v-list-item-avatar>
       <v-list-item-title v-if="!compact">{{ name }}</v-list-item-title>
     </v-list-item>
@@ -58,9 +65,11 @@ const props = defineProps<{
   path: string
   inside?: boolean
   compact?: boolean
+  pinned?: boolean
 }>()
-const emit = defineEmits(['arrange', 'drop-save', 'group'])
+const emit = defineEmits(['arrange', 'drop-save', 'group', 'toggle-pin'])
 
+const { t } = useI18n()
 const { instances, selectedInstance } = injection(kInstances)
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
 const name = computed(() => {
@@ -94,7 +103,19 @@ const favicon = computed(() => {
   return getInstanceIcon(inst, inst.server ? status.value : undefined)
 })
 
-const getItems = useInstanceContextMenuItems(instance)
+const baseItems = useInstanceContextMenuItems(instance)
+
+// Extended context menu with pin option
+const getItems = () => {
+  const items = baseItems()
+  // Add pin/unpin option at the start
+  items.unshift({
+    text: props.pinned ? t('sidebar.unpin') : t('sidebar.pin'),
+    icon: 'push_pin',
+    onClick: () => emit('toggle-pin'),
+  })
+  return items
+}
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {

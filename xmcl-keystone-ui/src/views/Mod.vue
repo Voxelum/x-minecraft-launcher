@@ -1,7 +1,5 @@
 <template>
-  <ModModern v-if="manageLayout === 'modern'" />
   <MarketBase
-    v-else
     :plans="plans"
     :items="groupedItems"
     :selection-mode="true"
@@ -130,60 +128,38 @@
         :size="100"
         class="h-full"
       />
-      <MarketProjectDetailModrinthModern
-        v-if="(selectedItem?.modrinth || selectedModrinthId) && marketLayout === 'modern'"
-        :modrinth="selectedItem?.modrinth"
-        :project-id="selectedModrinthId"
-        :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
-        :game-version="gameVersion"
-        :categories="modrinthCategories"
-        :all-files="mods"
-        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
-        @uninstall="onUninstall"
-        @enable="onEnable"
-        @disable="onUninstall([$event])"
-        @category="toggleCategory"
-      />
       <MarketProjectDetailModrinth
-        v-else-if="(selectedItem?.modrinth || selectedModrinthId)"
+        v-else-if="shouldShowModrinth(selectedItem, selectedModrinthId, selectedCurseforgeId)"
+        :key="selectedModrinthId"
         :modrinth="selectedItem?.modrinth"
         :project-id="selectedModrinthId"
         :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
-        :game-version="gameVersion"
+        :loader="modLoader"
         :categories="modrinthCategories"
         :all-files="mods"
-        :curseforge="selectedItem?.curseforge?.id || selectedItem?.curseforgeProjectId"
-        @uninstall="onUninstall"
-        @enable="onEnable"
-        @disable="onUninstall([$event])"
-        @category="toggleCategory"
-      />
-      <MarketProjectDetailCurseforgeModern
-        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId) && marketLayout === 'modern'"
-        :curseforge="selectedItem?.curseforge"
-        :curseforge-id="Number(selectedCurseforgeId)"
-        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :updating="updating"
         :game-version="gameVersion"
-        :category="curseforgeCategory"
-        :all-files="mods"
-        :modrinth="selectedModrinthId"
+        :curseforge="selectedItem?.curseforge?.id || selectedCurseforgeId"
         @uninstall="onUninstall"
         @enable="onEnable"
-        @disable="onUninstall([$event])"
-        @category="curseforgeCategory = $event"
+        @disable="onDisable"
+        @category="toggleCategory"
       />
       <MarketProjectDetailCurseforge
-        v-else-if="(selectedItem?.curseforge || selectedCurseforgeId)"
+        v-else-if="shouldShowCurseforge(selectedItem, selectedModrinthId, selectedCurseforgeId)"
+        :key="selectedCurseforgeId"
         :curseforge="selectedItem?.curseforge"
         :curseforge-id="Number(selectedCurseforgeId)"
-        :installed="selectedItem?.installed || getInstalledCurseforge(Number(selectedCurseforgeId))"
+        :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
         :game-version="gameVersion"
+        :loader="modLoader"
         :category="curseforgeCategory"
         :all-files="mods"
+        :updating="updating"
         :modrinth="selectedModrinthId"
         @uninstall="onUninstall"
         @enable="onEnable"
-        @disable="onUninstall([$event])"
+        @disable="onDisable"
         @category="curseforgeCategory = $event"
       />
       <ModDetailOptifine
@@ -199,14 +175,6 @@
         :files="selectedItem.files"
         :runtime="runtime"
         :installed="selectedItem.installed"
-      />
-      <MarketRecommendationModern
-        v-else-if="marketLayout === 'modern'"
-        key="recommendation-modern"
-        curseforge="mc-mods"
-        modrinth="mod"
-        @modrinth="modrinthCategories.push($event.name)"
-        @curseforge="curseforgeCategory = $event.id"
       />
       <MarketRecommendation
         v-else
@@ -276,11 +244,8 @@
 import Hint from '@/components/Hint.vue'
 import MarketBase from '@/components/MarketBase.vue'
 import MarketProjectDetailCurseforge from '@/components/MarketProjectDetailCurseforge.vue'
-import MarketProjectDetailCurseforgeModern from '@/components/MarketProjectDetailCurseforgeModern.vue'
 import MarketProjectDetailModrinth from '@/components/MarketProjectDetailModrinth.vue'
-import MarketProjectDetailModrinthModern from '@/components/MarketProjectDetailModrinthModern.vue'
 import MarketRecommendation from '@/components/MarketRecommendation.vue'
-import MarketRecommendationModern from '@/components/MarketRecommendationModern.vue'
 import { useService } from '@/composables'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { kCurseforgeInstaller, useCurseforgeInstaller } from '@/composables/curseforgeInstaller'
@@ -299,8 +264,6 @@ import { useProjectInstall } from '@/composables/projectInstall'
 import { kCompact } from '@/composables/scrollTop'
 import { useToggleCategories } from '@/composables/toggleCategories'
 import { useTutorial } from '@/composables/tutorial'
-import { useMarketLayout } from '@/composables/marketLayout'
-import { useManageLayout } from '@/composables/manageLayout'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -308,7 +271,6 @@ import { ProjectEntry, ProjectFile } from '@/util/search'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import ModDetailOptifine from './ModDetailOptifine.vue'
-import ModModern from './ModModern.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModDuplicatedDialog from './ModDuplicatedDialog.vue'
 import ModGroupEntryItem from './ModGroupEntryItem.vue'
@@ -359,8 +321,6 @@ const localizedTexts = computed(() => markRaw({
 }))
 
 const { runtime, path } = injection(kInstance)
-const marketLayout = useMarketLayout()
-const manageLayout = useManageLayout()
 
 const { keyword, modrinthCategories, curseforgeCategory, modLoader, gameVersion, currentView, source } = injection(kSearchModel)
 

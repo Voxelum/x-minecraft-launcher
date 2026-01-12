@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'h-full overflow-y-auto': !horizontal, 'w-full overflow-x-auto': horizontal }">
+  <div :class="{ 'flex-1 h-full overflow-y-auto': !horizontal, 'w-full overflow-x-auto': horizontal }">
     <v-list
       nav
       dense
@@ -24,14 +24,16 @@
           type="avatar"
         />
       </template>
-      <template v-for="(i, index) of displayedGroups">
+      <template v-for="(i, index) of filteredGroups">
         <AppSideBarInstanceItem
           v-if="typeof i === 'string'"
           :key="i + index"
           :path="i"
           :compact="compact"
+          :pinned="isPinned(i)"
           @arrange="move($event.targetPath, i, $event.previous)"
           @group="group($event, i)"
+          @toggle-pin="togglePin(i)"
         />
         <AppSideBarGroupItem
           v-else-if="typeof i === 'object'"
@@ -85,11 +87,12 @@
 import SimpleDialog from '@/components/SimpleDialog.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
-import { useInstanceGroup, useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
+import { useInstanceGroup, useInstanceGroupDefaultColor, InstanceGroupData } from '@/composables/instanceGroup'
 import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
 import { useNotifier } from '@/composables/notifier'
 import { useInjectInstanceLauncher } from '@/composables/instanceLauncher'
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
@@ -112,26 +115,57 @@ const { show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const { open: openLauncher } = useInjectInstanceLauncher()
 
 const { groups, move, group } = useInstanceGroup()
+const { showOnlyPinned, pinnedInstances } = useInjectSidebarSettings()
 
-// Limit instances if maxInstances is set
-const displayedGroups = computed(() => {
-  if (!props.maxInstances) return groups.value
+// Check if instance is pinned
+const isPinned = (path: string) => pinnedInstances.value.includes(path)
+
+// Toggle pin state for an instance
+const togglePin = (path: string) => {
+  const idx = pinnedInstances.value.indexOf(path)
+  if (idx >= 0) {
+    pinnedInstances.value.splice(idx, 1)
+  } else {
+    pinnedInstances.value.push(path)
+  }
+}
+
+// Filter groups based on showOnlyPinned setting
+const filteredGroups = computed(() => {
+  let items = groups.value
   
-  let instanceCount = 0
-  const limited = []
-  
-  for (const item of groups.value) {
-    if (typeof item === 'string') {
-      if (instanceCount < props.maxInstances) {
-        limited.push(item)
-        instanceCount++
+  // Apply pinned filter
+  if (showOnlyPinned.value) {
+    items = items.filter(item => {
+      if (typeof item === 'string') {
+        return isPinned(item)
+      } else {
+        // For groups, check if any instance in the group is pinned
+        return item.instances.some(inst => isPinned(inst))
       }
-    } else {
-      limited.push(item)
-    }
+    })
   }
   
-  return limited
+  // Apply maxInstances limit
+  if (props.maxInstances) {
+    let instanceCount = 0
+    const limited = []
+    
+    for (const item of items) {
+      if (typeof item === 'string') {
+        if (instanceCount < props.maxInstances) {
+          limited.push(item)
+          instanceCount++
+        }
+      } else {
+        limited.push(item)
+      }
+    }
+    
+    return limited
+  }
+  
+  return items
 })
 
 const hasMoreInstances = computed(() => {
