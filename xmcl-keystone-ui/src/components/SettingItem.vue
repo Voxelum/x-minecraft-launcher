@@ -19,7 +19,13 @@
         </template>
       </v-list-item-title>
       <v-list-item-subtitle>
-        {{ description }}
+        <slot
+          v-if="slots.subtitle"
+          name="subtitle"
+        />
+        <template v-else>
+          {{ description }}
+        </template>
       </v-list-item-subtitle>
     </v-list-item-content>
     <v-list-item-action :style="longAction ? 'width: 50%' : ''">

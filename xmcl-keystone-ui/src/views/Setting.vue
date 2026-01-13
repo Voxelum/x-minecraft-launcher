@@ -5,7 +5,7 @@
       <v-card class="rounded-lg" elevation="0" color="transparent">
         <v-list nav dense color="transparent" class="rounded-lg">
           <v-subheader class="text-uppercase font-weight-bold grey--text text--darken-1 text-caption pl-4 mb-1">
-            {{ t('setting.title') }}
+            {{ t('setting.name') }}
           </v-subheader>
           <v-list-item-group v-model="activeSectionIndex" color="primary">
             <v-list-item
@@ -88,7 +88,7 @@
             :title="t('setting.about')"
             icon="info"
           />
-          <SettingUpdate />
+          <SettingUpdate class="mb-4" />
           <SettingAbout />
         </section>
       </div>
@@ -225,11 +225,7 @@ function onScroll() {
 }
 
 .content-wrapper {
-  max-width: 900px;
-}
-
-.content-wrapper.tabs-mode {
-  max-width: 800px;
+  max-width: 80rem;
 }
 
 .scroll-target {

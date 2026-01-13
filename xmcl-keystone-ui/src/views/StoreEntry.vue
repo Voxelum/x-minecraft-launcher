@@ -11,6 +11,7 @@ import StoreEntryClassic from './StoreEntryClassic.vue'
 import StoreEntryModern from './StoreEntryModern.vue'
 
 const layout = useMarketLayout()
+provide('layout', layout)
 const component = computed(() => {
   return layout.value === 'modern' ? StoreEntryModern : StoreEntryClassic
 })

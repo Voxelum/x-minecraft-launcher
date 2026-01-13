@@ -23,7 +23,6 @@
       :sort.sync="sort"
       :mode.sync="source"
       :game-version.sync="gameVersion"
-      
     />
   </div>
 </template>

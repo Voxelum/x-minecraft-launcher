@@ -24,21 +24,21 @@
       height="3"
       :indeterminate="true"
     />
-    <v-card class="flex flex-col gap-1 xl:flex-row">
-      <StoreProjectGallery
-        class="h-full flex-grow"
-        :project="project"
-      />
-      <StoreProjectHeader
-        class="flex-shrink flex-grow-0"
-        :project="project"
-        :installing="installing || !!installDialog"
-        :installed="installed"
-        @open="onOpen"
-        @install="onInstall"
-      />
-    </v-card>
-    <div class="xl:(grid grid-cols-3) flex flex-col gap-4">
+    <div class="w-full xl:(grid grid-cols-3 gap-4 max-w-360)">
+      <v-card class="col-span-2 flex flex-col gap-1">
+        <StoreProjectGallery
+          class="h-full flex-grow"
+          :project="project"
+        />
+        <StoreProjectHeader
+          class="flex-shrink flex-grow-0"
+          :project="project"
+          :installing="installing || !!installDialog"
+          :installed="installed"
+          @open="onOpen"
+          @install="onInstall"
+        />
+      </v-card>
       <v-card class="flex flex-col p-4">
         <StoreProjectExternal :project="project" />
         <v-divider class="my-2 w-full" />
@@ -50,13 +50,13 @@
         <v-divider class="my-2 w-full" />
         <StoreProjectTags :project="project" />
       </v-card>
-      <div class="col-span-2 flex max-w-full flex-col">
-        <div
-          v-if="project.htmlDescription"
-          class="markdown-body p-4"
-          v-html="project.htmlDescription"
-        />
-      </div>
+    </div>
+    <div class="flex flex-col max-w-360">
+      <div
+        v-if="project.htmlDescription"
+        class="markdown-body p-4"
+        v-html="project.htmlDescription"
+      />
     </div>
     <StoreProjectInstallVersionDialog
       :value="installDialog"
