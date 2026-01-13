@@ -1,165 +1,106 @@
 <!-- src/components/SettingGlobalLaunch.vue -->
 <template>
-  <div>
-    <!-- =============================================================== -->
-    <!-- Instance Launch Options                                           -->
-    <!-- =============================================================== -->
-
+  <div class="flex flex-col gap-4">
     <!-- Quick Launch Settings Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>flash_on</v-icon>
-        {{ t('setting.quickLaunchSettings') || 'Быстрый запуск' }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <v-list class="transparent-list">
-          <SettingItemCheckbox v-model="fastLaunch" :title="t('instanceSetting.fastLaunch')"
-            :description="t('instanceSetting.fastLaunchHint')" />
-          <v-divider class="my-2" />
-          <SettingItemCheckbox v-model="hideLauncher" :title="t('instanceSetting.hideLauncher')" />
-          <v-divider class="my-2" />
-          <SettingItemCheckbox v-model="showLog" :title="t('instanceSetting.showLog')"
-            :description="t('instanceSetting.showLogHint')" />
-        </v-list>
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('setting.quickLaunchSettings')" icon="flash_on">
+      <SettingItemCheckbox :value="fastLaunch" @input="fastLaunch = $event" :title="t('instanceSetting.fastLaunch')"
+        :description="t('instanceSetting.fastLaunchHint')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="hideLauncher" @input="hideLauncher = $event" :title="t('instanceSetting.hideLauncher')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="showLog" @input="showLog = $event" :title="t('instanceSetting.showLog')"
+        :description="t('instanceSetting.showLogHint')" />
+    </SettingCard>
 
-    <!-- Authentication Settings Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>security</v-icon>
-        {{ t('setting.authenticationSettings') || 'Аутентификация' }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <v-list class="transparent-list">
-          <SettingItemCheckbox v-model="disableAuthlibInjector" :title="t('instanceSetting.disableAuthlibInjector')"
-            :description="t('instanceSetting.disableAuthlibInjectorDescription')" />
-          <v-divider class="my-2" />
-          <SettingItemCheckbox v-model="disableElyByAuthlib" :title="t('instanceSetting.disableElyByAuthlib')"
-            :description="t('instanceSetting.disableElyByAuthlibDescription')" />
-        </v-list>
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('setting.authenticationSettings')" icon="security">
+      <SettingItemCheckbox :value="disableAuthlibInjector" @input="disableAuthlibInjector = $event" :title="t('instanceSetting.disableAuthlibInjector')"
+        :description="t('instanceSetting.disableAuthlibInjectorDescription')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="disableElyByAuthlib" @input="disableElyByAuthlib = $event" :title="t('instanceSetting.disableElyByAuthlib')"
+        :description="t('instanceSetting.disableElyByAuthlibDescription')" />
+    </SettingCard>
 
     <!-- Java Memory Settings Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>memory</v-icon>
-        {{ t("java.memory") }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <div class="d-flex align-center mb-3">
-          <span class="font-weight-medium mr-3">{{ t('setting.memoryAssignment') || 'Назначение памяти' }}</span>
-          <v-spacer />
-          <SettingJavaMemoryAssign v-model="assignMemory" />
-        </div>
-        <SettingJavaMemory :assign-memory="assignMemory" :min.sync="minMem" :max.sync="maxMem" />
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('java.memory')" icon="memory">
+      <div class="d-flex align-center mb-3">
+        <span class="font-weight-medium mr-3">{{ t('setting.memoryAssignment') || 'Назначение памяти' }}</span>
+        <v-spacer />
+        <SettingJavaMemoryAssign :value="assignMemory" @input="assignMemory = $event" />
+      </div>
+      <SettingJavaMemory :assign-memory="assignMemory" :min.sync="minMem" :max.sync="maxMem" />
+    </SettingCard>
 
     <!-- Advanced Java Options Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>code</v-icon>
-        {{ t('setting.advancedJavaOptions') || 'Расширенные параметры Java' }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <v-row>
-          <v-col cols="12" md="6">
-            <div class="font-weight-medium mb-2">
-              <v-icon left small>terminal</v-icon>
-              {{ t("instance.prependCommand") }}
-            </div>
-            <v-text-field v-model="prependCommand" outlined dense filled hide-details
-              :placeholder="t('instance.prependCommandHint')" />
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="font-weight-medium mb-2">
-              <v-icon left small>settings_applications</v-icon>
-              {{ t("instance.vmOptions") }}
-            </div>
-            <v-text-field v-model="vmOptions" outlined dense filled hide-details
-              :placeholder="t('instance.vmOptionsHint')" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('setting.advancedJavaOptions')" icon="code">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>terminal</v-icon>
+            {{ t("instance.prependCommand") }}
+          </div>
+          <v-text-field v-model="prependCommand" outlined dense filled hide-details
+            :placeholder="t('instance.prependCommandHint')" />
+        </div>
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>settings_applications</v-icon>
+            {{ t("instance.vmOptions") }}
+          </div>
+          <v-text-field v-model="vmOptions" outlined dense filled hide-details
+            :placeholder="t('instance.vmOptionsHint')" />
+        </div>
+      </div>
+    </SettingCard>
 
     <!-- Environment Variables Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>eco</v-icon>
-        {{ t("instance.vmVar") }}
-      </v-card-title>
-      <v-card-subtitle class="pb-0">
-        {{ t("instance.vmVarHint") }}
-      </v-card-subtitle>
-      <v-card-text class="pa-4">
-        <div class="d-flex justify-end mb-3">
-          <v-btn small color="primary" outlined @click="onAddEnvVar">
-            <v-icon left small>add</v-icon>
-            {{ t('add') || 'Добавить' }}
-          </v-btn>
+    <SettingCard :title="t('instance.vmVar')" icon="eco">
+      <div class="flex justify-between items-center mb-3">
+        <div class="text-subtitle-2">
+          {{ t("instance.vmVarHint") }}
         </div>
-        <EnvVarTableItem :env="env" @delete="onEnvVarDeleted" />
-        <EnvVarAddItem v-if="adding" @clear="onEnvVarCleared" @add="onEnvVarAdded" />
-      </v-card-text>
-    </v-card>
+        <v-btn small color="primary" outlined @click="onAddEnvVar">
+          <v-icon left small>add</v-icon>
+          {{ t('add') || 'Добавить' }}
+        </v-btn>
+      </div>
+      <EnvVarTableItem :env="env" @delete="onEnvVarDeleted" />
+      <EnvVarAddItem v-if="adding" @clear="onEnvVarCleared" @add="onEnvVarAdded" />
+    </SettingCard>
 
     <!-- Minecraft Options Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>videogame_asset</v-icon>
-        {{ t('setting.minecraftOptions') || 'Параметры Minecraft' }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <v-row>
-          <v-col cols="12" md="6">
-            <div class="font-weight-medium mb-2">
-              <v-icon left small>play_arrow</v-icon>
-              {{ t("instance.preExecCommand") }}
-            </div>
-            <v-text-field v-model="preExecuteCommand" outlined dense filled hide-details
-              :placeholder="t('instance.preExecCommandHint')" />
-          </v-col>
-          <v-col cols="12" md="6">
-            <div class="font-weight-medium mb-2">
-              <v-icon left small>tune</v-icon>
-              {{ t("instance.mcOptions") }}
-            </div>
-            <v-text-field v-model="mcOptions" outlined dense filled hide-details
-              :placeholder="t('instance.mcOptionsHint')" />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('setting.minecraftOptions')" icon="videogame_asset">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>play_arrow</v-icon>
+            {{ t("instance.preExecCommand") }}
+          </div>
+          <v-text-field v-model="preExecuteCommand" outlined dense filled hide-details
+            :placeholder="t('instance.preExecCommandHint')" />
+        </div>
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>tune</v-icon>
+            {{ t("instance.mcOptions") }}
+          </div>
+          <v-text-field v-model="mcOptions" outlined dense filled hide-details
+            :placeholder="t('instance.mcOptionsHint')" />
+        </div>
+      </div>
+    </SettingCard>
 
     <!-- Game Window Resolution Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2">
-        <v-icon left color="primary" small>aspect_ratio</v-icon>
-        {{ t("instance.resolution") }}
-      </v-card-title>
-      <v-card-text class="pa-4">
-        <v-row align="center">
-          <v-col cols="12" sm="3">
-            <v-text-field v-model="resolutionWidth" :label="t('instance.width')" type="number" outlined dense filled
-              hide-details />
-          </v-col>
-          <v-col cols="12" sm="3">
-            <v-text-field v-model="resolutionHeight" :label="t('instance.height')" type="number" outlined dense filled
-              hide-details />
-          </v-col>
-          <v-col cols="12" sm="3">
-            <v-switch v-model="resolutionFullscreen" :label="t('instance.fullscreen')" color="primary" hide-details />
-          </v-col>
-          <v-col cols="12" sm="3">
-            <v-select v-model="selectedResolutionPreset" :items="resolutionPresets" item-text="text" item-value="value"
-              :label="t('instance.resolutionPreset')" outlined filled hide-details dense />
-          </v-col>
-        </v-row>
-      </v-card-text>
-    </v-card>
+    <SettingCard :title="t('instance.resolution')" icon="aspect_ratio">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+        <v-text-field v-model="resolutionWidth" :label="t('instance.width')" type="number" outlined dense filled
+          hide-details />
+        <v-text-field v-model="resolutionHeight" :label="t('instance.height')" type="number" outlined dense filled
+          hide-details />
+        <v-switch v-model="resolutionFullscreen" :label="t('instance.fullscreen')" class="mt-0" color="primary" hide-details />
+        <v-select v-model="selectedResolutionPreset" :items="resolutionPresets" item-text="text" item-value="value"
+          :label="t('instance.resolutionPreset')" outlined filled hide-details dense />
+      </div>
+    </SettingCard>
   </div>
 </template>
 
@@ -167,7 +108,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import { useEventListener } from '@vueuse/core'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { useGlobalSettings } from '@/composables/setting'
 import { useResolutionPresets } from '@/composables/resolutionPresets'
 import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
@@ -175,6 +115,7 @@ import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
+import SettingCard from '@/components/SettingCard.vue'
 
 const { t } = useI18n()
 const {

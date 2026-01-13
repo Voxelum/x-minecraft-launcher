@@ -1,202 +1,140 @@
 <template>
-  <div>
-    <!-- General Settings Card -->
-    <v-card class="mb-6 mt-4" elevation="0" color="transparent" flat>
-      <v-card-title class="text-h6 pb-2 px-0">
-        <v-icon left color="primary">settings</v-icon>
-        {{ t("setting.general") }}
-      </v-card-title>
-      <v-card-text class="px-0">
-        <v-card class="settings-card" elevation="2">
-          <v-card-text class="pa-4">
-            <v-list class="transparent-list">
-              <!-- Language Selection -->
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">language</v-icon>
-                    {{ t('setting.language') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.languageDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action class="ml-4">
-                  <v-select
-                    v-model="selectedLocale"
-                    :items="locales"
-                    outlined
-                    dense
-                    hide-details
-                    class="language-select"
-                  >
-                    <template #selection="{ item }">
-                      <span class="font-weight-medium">{{ item.text }}</span>
-                    </template>
-                  </v-select>
-                </v-list-item-action>
-              </v-list-item>
+  <SettingCard>
+    <!-- Language Selection -->
+    <SettingItem :description="t('setting.languageDescription')">
+      <template #title>
+        <v-icon left small color="primary">language</v-icon>
+        {{ t('setting.language') }}
+      </template>
+      <template #action>
+        <v-select
+          v-model="selectedLocale"
+          :items="locales"
+          outlined
+          dense
+          hide-details
+          class="language-select"
+        >
+          <template #selection="{ item }">
+            <span class="font-weight-medium">{{ item.text }}</span>
+          </template>
+        </v-select>
+      </template>
+    </SettingItem>
 
-              <v-divider class="my-3" />
+    <v-divider class="my-3" />
 
-              <!-- Data Directory -->
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium" :class="{ 'error--text': errorText }">
-                    <v-icon left small :color="errorText ? 'error' : 'primary'">folder</v-icon>
-                    {{ t("setting.location") }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-if="errorText" class="error--text">
-                    {{ errorText }}
-                  </v-list-item-subtitle>
-                  <v-list-item-subtitle v-else class="text-truncate" style="max-width: 400px">
-                    {{ root }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action class="flex-row gap-2">
-                  <v-btn small outlined color="primary" @click="onMigrateFromOther">
-                    <v-icon left small>local_shipping</v-icon>
-                    {{ t("setting.migrateFromOther") }}
-                  </v-btn>
-                  <v-btn small outlined color="primary" @click="browseRootDir">
-                    <v-icon left small>edit</v-icon>
-                    {{ t("setting.browseRoot") }}
-                  </v-btn>
-                  <v-btn small outlined color="primary" @click="showGameDirectory()">
-                    <v-icon left small>folder_open</v-icon>
-                    {{ t("setting.showRoot") }}
-                  </v-btn>
-                </v-list-item-action>
-              </v-list-item>
+    <!-- Data Directory -->
+    <SettingItem :description="errorText || root" :title-class="`${errorText ? 'error--text' : ''}`" long-action>
+      <template #title>
+        <v-icon left small :color="errorText ? 'error' : 'primary'">folder</v-icon>
+        {{ t("setting.location") }}
+      </template>
+      <template #action>
+        <div class="flex gap-2 justify-end">
+          <v-btn small outlined color="primary" @click="onMigrateFromOther">
+            <v-icon left small>local_shipping</v-icon>
+            {{ t("setting.migrateFromOther") }}
+          </v-btn>
+          <v-btn small outlined color="primary" @click="browseRootDir">
+            <v-icon left small>edit</v-icon>
+            {{ t("setting.browseRoot") }}
+          </v-btn>
+          <v-btn small outlined color="primary" @click="showGameDirectory()">
+            <v-icon left small>folder_open</v-icon>
+            {{ t("setting.showRoot") }}
+          </v-btn>
+        </div>
+      </template>
+    </SettingItem>
 
-              <v-divider class="my-3" />
+    <v-divider class="my-3" />
 
-              <!-- Privacy & Telemetry -->
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">privacy_tip</v-icon>
-                    {{ t('setting.disableTelemetry') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.disableTelemetryDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch v-model="disableTelemetry" color="primary" hide-details />
-                </v-list-item-action>
-              </v-list-item>
+    <!-- Privacy & Telemetry -->
+    <SettingItemSwitcher
+      :value="disableTelemetry"
+      @input="disableTelemetry = $event"
+      :title="t('setting.disableTelemetry')"
+      :description="t('setting.disableTelemetryDescription')"
+      icon="privacy_tip"
+    />
 
-              <!-- GPU Optimization (Windows/Linux only) -->
-              <template v-if="env?.os === 'linux' || env?.os === 'windows'">
-                <v-divider class="my-3" />
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title class="font-weight-medium">
-                      <v-icon left small color="primary">memory</v-icon>
-                      {{ t('setting.enableDedicatedGPUOptimization') }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{ t('setting.enableDedicatedGPUOptimizationDescription') }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-switch v-model="enableDedicatedGPUOptimization" color="primary" hide-details />
-                  </v-list-item-action>
-                </v-list-item>
-              </template>
+    <!-- GPU Optimization (Windows/Linux only) -->
+    <template v-if="env?.os === 'linux' || env?.os === 'windows'">
+      <v-divider class="my-3" />
+      <SettingItemSwitcher
+        :value="enableDedicatedGPUOptimization"
+        @input="enableDedicatedGPUOptimization = $event"
+        :title="t('setting.enableDedicatedGPUOptimization')"
+        :description="t('setting.enableDedicatedGPUOptimizationDescription')"
+        icon="memory"
+      />
+    </template>
 
-              <!-- Discord Presence -->
-              <v-divider class="my-3" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">discord</v-icon>
-                    {{ t('setting.enableDiscord') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.enableDiscordDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch v-model="enableDiscord" color="primary" hide-details />
-                </v-list-item-action>
-              </v-list-item>
+    <!-- Discord Presence -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="enableDiscord"
+      @input="enableDiscord = $event"
+      :title="t('setting.enableDiscord')"
+      :description="t('setting.enableDiscordDescription')"
+      icon="discord"
+    />
 
-              <!-- Developer Mode -->
-              <v-divider class="my-3" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="warning">code</v-icon>
-                    {{ t('setting.developerMode') }}
-                    <v-chip v-if="developerMode" x-small color="warning" class="ml-2">DEV</v-chip>
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.developerModeDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch v-model="developerMode" color="warning" hide-details />
-                </v-list-item-action>
-              </v-list-item>
+    <!-- Developer Mode -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="developerMode"
+      @input="developerMode = $event"
+      :title="t('setting.developerMode')"
+      :description="t('setting.developerModeDescription')"
+      icon="code"
+    >
+      <v-chip v-if="developerMode" x-small color="warning" class="ml-2">DEV</v-chip>
+    </SettingItemSwitcher>
 
-              <!-- Streamer Mode -->
-              <v-divider class="my-3" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">videocam</v-icon>
-                    {{ t('setting.streamerMode') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.streamerModeDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
-                  <v-switch v-model="streamerMode" color="primary" hide-details />
-                </v-list-item-action>
-              </v-list-item>
+    <!-- Streamer Mode -->
+    <v-divider class="my-3" />
+    <SettingItemSwitcher
+      :value="streamerMode"
+      @input="streamerMode = $event"
+      :title="t('setting.streamerMode')"
+      :description="t('setting.streamerModeDescription')"
+      icon="videocam"
+    />
 
-              <!-- Replace Native Libraries -->
-              <v-divider class="my-3" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">swap_horiz</v-icon>
-                    {{ t('setting.replaceNative') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.replaceNativeDescription') }}
-                  </v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action class="ml-4">
-                  <v-select
-                    :value="replaceNative === false ? '' : replaceNative"
-                    :items="replaceNativeItems"
-                    outlined
-                    dense
-                    hide-details
-                    class="native-select"
-                    @change="replaceNative = !$event ? false : $event"
-                  />
-                </v-list-item-action>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-card-text>
-    </v-card>
-  </div>
+    <v-divider class="my-3" />
+    
+    <SettingItem :description="t('setting.replaceNativeDescription')">
+      <template #title>
+        <v-icon left small color="primary">swap_horiz</v-icon>
+        {{ t('setting.replaceNative') }}
+      </template>
+      <template #action>
+        <v-select
+          :value="replaceNative === false ? '' : replaceNative"
+          :items="replaceNativeItems"
+          outlined
+          dense
+          hide-details
+          class="native-select"
+          @change="replaceNative = !$event ? false : $event"
+        />
+      </template>
+    </SettingItem>
+  </SettingCard>
 </template>
 
 <script lang="ts" setup>
+import SettingCard from '@/components/SettingCard.vue'
+import SettingItem from '@/components/SettingItem.vue'
+import { kCriticalStatus } from '@/composables/criticalStatus'
+import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
 import { kEnvironment } from '@/composables/environment'
 import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { useGameDirectory, useSettings } from '../composables/setting'
-import { kCriticalStatus } from '@/composables/criticalStatus'
-import { useGetDataDirErrorText } from '@/composables/dataRootErrors'
+import SettingItemSwitcher from '@/components/SettingItemSwitcher.vue'
 
 const { isNoEmptySpace, invalidGameDataPath } = injection(kCriticalStatus)
 const getDirErroText = useGetDataDirErrorText()

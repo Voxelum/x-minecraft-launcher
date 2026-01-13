@@ -1,305 +1,140 @@
 <template>
-  <v-card class="mb-4" elevation="2" color="transparent">
-    <v-card-title class="text-subtitle-1 pb-2">
-      <v-icon left color="primary" small>brush</v-icon>
-      {{ t('setting.appearance') }}
-    </v-card-title>
-    <v-card-subtitle>
-      {{ t('setting.appearanceDescription') }}
-    </v-card-subtitle>
-
-    <v-card-text class="pa-4">
-      <v-tabs v-model="activeTab" background-color="transparent" color="primary" show-arrows grow>
-        <v-tab>
-          <v-icon left small>style</v-icon>
-          {{ t('setting.themeSettings') }}
-        </v-tab>
-        <v-tab>
-          <v-icon left small>home</v-icon>
-          {{ t('setting.myStuffStyle') }}
-        </v-tab>
-        <v-tab>
-          <v-icon left small>dashboard</v-icon>
-          {{ t('setting.sidebarSettings') }}
-        </v-tab>
-      </v-tabs>
-
-      <v-tabs-items v-model="activeTab" class="mt-4 transparent-bg">
-        
-        <!-- Theme & Layout Tab -->
-        <v-tab-item>
-          <!-- Layout Selection Card -->
-          <v-card class="style-option-card mb-4" outlined>
-            <v-card-text class="pa-4">
-              <div class="d-flex align-center mb-3">
-                <v-icon color="primary" class="mr-2">view_quilt</v-icon>
-                <div>
-                  <div class="font-weight-medium">{{ t('setting.layoutTitle') || 'Interface Layout' }}</div>
-                  <div class="text-caption text--secondary">{{ t('setting.layoutDescription') || 'Choose your preferred interface style' }}</div>
+  <div >
+    <SettingCard class="mb-4" :title="t('setting.sidebarStyle')" icon="dashboard">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-5 flex justify-center items-center">
+          <!-- Live Preview -->
+          <div class="sidebar-preview-container elevation-1 rounded-lg">
+            <div class="sidebar-preview-wrapper">
+              <div
+                :class="['sidebar-preview', `position-${sidebarPosition}`, `style-${sidebarStyle}`, `align-${sidebarAlign}`]"
+                :style="{ transform: `scale(${sidebarScale / 100})` }"
+              >
+                <div class="sidebar-preview-main">
+                  <div v-if="sidebarStyle === 'classic'" class="sidebar-preview-classic">
+                    <div class="preview-sidebar-item"></div>
+                    <div class="preview-sidebar-item"></div>
+                    <div class="preview-sidebar-item"></div>
+                  </div>
+                  <div v-else class="sidebar-preview-notch">
+                    <div class="sidebar-preview-notch-item"></div>
+                    <div class="sidebar-preview-notch-item"></div>
+                    <div class="sidebar-preview-notch-item"></div>
+                  </div>
+                  <div class="sidebar-preview-content">
+                    <div class="sidebar-preview-content-header"></div>
+                    <div class="sidebar-preview-content-body"></div>
+                  </div>
                 </div>
               </div>
-              <v-chip-group v-model="layout" active-class="primary--text" mandatory>
-                <v-chip v-for="item in layouts" :key="item.value" :value="item.value" filter outlined class="mr-2">
-                  <v-icon left small>{{ item.value === 'focus' ? 'fullscreen' : 'dashboard' }}</v-icon>
-                  {{ item.text }}
-                </v-chip>
-              </v-chip-group>
-            </v-card-text>
-          </v-card>
+            </div>
+            <div class="text-caption text-center mt-2 grey--text">Live Preview</div>
+          </div>
+        </div>
+        <div class="md:col-span-7">
+          <v-list class="transparent-list">
+            <!-- Style -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarStyle') }}</v-list-item-title>
+                <v-list-item-subtitle>{{ t('setting.sidebarStyleHint') }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn-toggle v-model="sidebarStyleIndex" mandatory dense color="primary" rounded>
+                  <v-btn small>
+                    <v-icon left small>view_sidebar</v-icon>
+                    {{ t('setting.sidebarClassic') }}
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon left small>dashboard</v-icon>
+                    {{ t('setting.sidebarNotch') }}
+                  </v-btn>
+                </v-btn-toggle>
+              </v-list-item-action>
+            </v-list-item>
 
-          <!-- Market Design Card -->
-          <v-card class="style-option-card mb-4" outlined>
-            <v-card-text class="pa-4">
-              <div class="d-flex align-center mb-3">
-                <v-icon color="primary" class="mr-2">store</v-icon>
-                <div>
-                  <div class="font-weight-medium">Market Design</div>
-                  <div class="text-caption text--secondary">Choose between Classic or Modern AppStore style for the market</div>
-                </div>
-              </div>
-              <v-chip-group v-model="marketLayout" active-class="primary--text" mandatory>
-                <v-chip value="classic" filter outlined class="mr-2">
-                  <v-icon left small>view_list</v-icon>
-                  Classic
-                </v-chip>
-                <v-chip value="modern" filter outlined class="mr-2">
-                  <v-icon left small>apps</v-icon>
-                  Modern
-                </v-chip>
-              </v-chip-group>
-            </v-card-text>
-          </v-card>
+            <v-divider class="my-2" />
 
-          <!-- Linux Titlebar (Linux only) -->
-          <v-card v-if="env?.os === 'linux'" class="style-option-card mb-4" outlined>
-            <v-card-text class="pa-4">
-              <v-list-item class="px-0">
+            <!-- Position -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarPosition') }}</v-list-item-title>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-btn-toggle v-model="sidebarPositionIndex" mandatory dense color="primary" rounded>
+                  <v-btn small>
+                    <v-icon small>arrow_back</v-icon>
+                  </v-btn>
+                  <v-btn small>
+                    <v-icon small>arrow_forward</v-icon>
+                  </v-btn>
+                  <v-btn small v-if="sidebarStyle === 'notch'">
+                    <v-icon small>arrow_upward</v-icon>
+                  </v-btn>
+                  <v-btn small v-if="sidebarStyle === 'notch'">
+                    <v-icon small>arrow_downward</v-icon>
+                  </v-btn>
+                </v-btn-toggle>
+              </v-list-item-action>
+            </v-list-item>
+
+            <!-- Notch Specific -->
+            <template v-if="sidebarStyle === 'notch'">
+              <v-divider class="my-2" />
+              <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">
-                    <v-icon left small color="primary">window</v-icon>
-                    {{ t('setting.linuxTitlebar') }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>
-                    {{ t('setting.linuxTitlebarDescription') }}
-                  </v-list-item-subtitle>
+                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAlign') }}</v-list-item-title>
                 </v-list-item-content>
                 <v-list-item-action>
-                  <v-switch v-model="linuxTitlebar" color="primary" hide-details />
+                  <v-btn-toggle v-model="sidebarAlignIndex" mandatory dense color="primary" rounded>
+                    <v-btn small><v-icon small>format_align_left</v-icon></v-btn>
+                    <v-btn small><v-icon small>format_align_center</v-icon></v-btn>
+                    <v-btn small><v-icon small>format_align_right</v-icon></v-btn>
+                  </v-btn-toggle>
                 </v-list-item-action>
               </v-list-item>
-            </v-card-text>
-          </v-card>
 
-          <!-- Theme Settings Card -->
-          <v-card class="style-option-card" outlined>
-            <v-card-title class="pb-2 text-body-1 font-weight-bold">
-              <v-icon left color="primary" small>style</v-icon>
-              {{ t('setting.themeSettings') }}
-            </v-card-title>
-            <v-card-text>
-              <AppearanceItems :theme="currentTheme" @save="onSave" />
-            </v-card-text>
-          </v-card>
-        </v-tab-item>
+              <v-divider class="my-2" />
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAutoHide') }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ t('setting.sidebarAutoHideHint') }}</v-list-item-subtitle>
+                </v-list-item-content>
+                <v-list-item-action>
+                  <v-switch v-model="sidebarAutoHide" color="primary" hide-details dense />
+                </v-list-item-action>
+              </v-list-item>
 
-        <!-- Home Page Style Tab -->
-        <v-tab-item>
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-card
-                :class="['style-option-card', { 'selected': myStuffStyleIndex === 0 }]"
-                @click="myStuffStyleIndex = 0"
-                outlined
-                hover
-                class="fill-height"
-              >
-                <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
-                  <div class="style-preview-container mb-4 elevation-1">
-                    <div class="style-preview-old">
-                      <div class="preview-header"></div>
-                      <div class="d-flex fill-height">
-                        <div class="preview-sidebar">
-                          <div class="preview-sidebar-item"></div>
-                          <div class="preview-sidebar-item"></div>
-                        </div>
-                        <div class="preview-content">
-                          <div class="preview-content-row"></div>
-                          <div class="preview-content-row"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleOld') }}</div>
-                  <div class="text-caption grey--text">{{ t('setting.myStuffStyleOldDescription') }}</div>
-                  <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 0">check_circle</v-icon>
-                </v-card-text>
-              </v-card>
-            </v-col>
-            <v-col cols="12" md="6">
-              <v-card
-                :class="['style-option-card', { 'selected': myStuffStyleIndex === 1 }]"
-                @click="myStuffStyleIndex = 1"
-                outlined
-                hover
-                class="fill-height"
-              >
-                <v-card-text class="pa-4 d-flex flex-column align-center text-center fill-height">
-                  <div class="style-preview-container mb-4 elevation-1">
-                    <div class="style-preview-new">
-                      <div class="preview-header"></div>
-                      <div class="preview-grid">
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                        <div class="preview-grid-item"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-h6 font-weight-bold mb-1">{{ t('setting.myStuffStyleNew') }}</div>
-                  <div class="text-caption grey--text">{{ t('setting.myStuffStyleNewDescription') }}</div>
-                  <v-icon color="primary" class="check-icon" v-if="myStuffStyleIndex === 1">check_circle</v-icon>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-tab-item>
+              <v-divider class="my-2" />
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarScale') }} ({{ sidebarScale }}%)</v-list-item-title>
+                </v-list-item-content>
+                <v-list-item-action class="w-32">
+                  <v-slider v-model="sidebarScale" :min="50" :max="150" :step="5" hide-details thumb-label color="primary" dense></v-slider>
+                </v-list-item-action>
+              </v-list-item>
+            </template>
 
-        <!-- Sidebar Settings Tab -->
-        <v-tab-item>
-          <v-row class="mt-2">
-            <v-col cols="12" md="5" class="d-flex justify-center align-center">
-              <!-- Live Preview -->
-              <div class="sidebar-preview-container elevation-1 rounded-lg">
-                <div class="sidebar-preview-wrapper">
-                  <div
-                    :class="['sidebar-preview', `position-${sidebarPosition}`, `style-${sidebarStyle}`, `align-${sidebarAlign}`]"
-                    :style="{ transform: `scale(${sidebarScale / 100})` }"
-                  >
-                    <div class="sidebar-preview-main">
-                      <div v-if="sidebarStyle === 'classic'" class="sidebar-preview-classic">
-                        <div class="preview-sidebar-item"></div>
-                        <div class="preview-sidebar-item"></div>
-                        <div class="preview-sidebar-item"></div>
-                      </div>
-                      <div v-else class="sidebar-preview-notch">
-                        <div class="sidebar-preview-notch-item"></div>
-                        <div class="sidebar-preview-notch-item"></div>
-                        <div class="sidebar-preview-notch-item"></div>
-                      </div>
-                      <div class="sidebar-preview-content">
-                        <div class="sidebar-preview-content-header"></div>
-                        <div class="sidebar-preview-content-body"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="text-caption text-center mt-2 grey--text">Live Preview</div>
-              </div>
-            </v-col>
-            
-            <v-col cols="12" md="7">
-              <v-list class="transparent-list">
-                <!-- Style -->
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarStyle') }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ t('setting.sidebarStyleHint') }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn-toggle v-model="sidebarStyleIndex" mandatory dense color="primary" rounded>
-                      <v-btn small>
-                        <v-icon left small>view_sidebar</v-icon>
-                        {{ t('setting.sidebarClassic') }}
-                      </v-btn>
-                      <v-btn small>
-                        <v-icon left small>dashboard</v-icon>
-                        {{ t('setting.sidebarNotch') }}
-                      </v-btn>
-                    </v-btn-toggle>
-                  </v-list-item-action>
-                </v-list-item>
-
-                <v-divider class="my-2" />
-
-                <!-- Position -->
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarPosition') }}</v-list-item-title>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn-toggle v-model="sidebarPositionIndex" mandatory dense color="primary" rounded>
-                      <v-btn small>
-                        <v-icon small>arrow_back</v-icon>
-                      </v-btn>
-                      <v-btn small>
-                        <v-icon small>arrow_forward</v-icon>
-                      </v-btn>
-                      <v-btn small v-if="sidebarStyle === 'notch'">
-                        <v-icon small>arrow_upward</v-icon>
-                      </v-btn>
-                      <v-btn small v-if="sidebarStyle === 'notch'">
-                        <v-icon small>arrow_downward</v-icon>
-                      </v-btn>
-                    </v-btn-toggle>
-                  </v-list-item-action>
-                </v-list-item>
-
-                <!-- Notch Specific -->
-                <template v-if="sidebarStyle === 'notch'">
-                  <v-divider class="my-2" />
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAlign') }}</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-btn-toggle v-model="sidebarAlignIndex" mandatory dense color="primary" rounded>
-                        <v-btn small><v-icon small>format_align_left</v-icon></v-btn>
-                        <v-btn small><v-icon small>format_align_center</v-icon></v-btn>
-                        <v-btn small><v-icon small>format_align_right</v-icon></v-btn>
-                      </v-btn-toggle>
-                    </v-list-item-action>
-                  </v-list-item>
-
-                  <v-divider class="my-2" />
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAutoHide') }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ t('setting.sidebarAutoHideHint') }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                    <v-list-item-action>
-                      <v-switch v-model="sidebarAutoHide" color="primary" hide-details dense />
-                    </v-list-item-action>
-                  </v-list-item>
-
-                  <v-divider class="my-2" />
-                  <v-list-item>
-                    <v-list-item-content>
-                      <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarScale') }} ({{ sidebarScale }}%)</v-list-item-title>
-                    </v-list-item-content>
-                    <v-list-item-action class="w-32">
-                      <v-slider v-model="sidebarScale" :min="50" :max="150" :step="5" hide-details thumb-label color="primary" dense></v-slider>
-                    </v-list-item-action>
-                  </v-list-item>
-                </template>
-
-                <v-divider class="my-2" />
-                <!-- Show Only Pinned Instances -->
-                <v-list-item>
-                  <v-list-item-content>
-                    <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarShowOnlyPinned') }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ t('setting.sidebarShowOnlyPinnedHint') }}</v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-switch v-model="sidebarShowOnlyPinned" color="primary" hide-details dense />
-                  </v-list-item-action>
-                </v-list-item>
-              </v-list>
-            </v-col>
-          </v-row>
-        </v-tab-item>
-      </v-tabs-items>
-    </v-card-text>
-  </v-card>
+            <v-divider class="my-2" />
+            <!-- Show Only Pinned Instances -->
+            <v-list-item>
+              <v-list-item-content>
+                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarShowOnlyPinned') }}</v-list-item-title>
+                <v-list-item-subtitle>{{ t('setting.sidebarShowOnlyPinnedHint') }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
+                <v-switch v-model="sidebarShowOnlyPinned" color="primary" hide-details dense />
+              </v-list-item-action>
+            </v-list-item>
+          </v-list>
+        </div>
+      </div>
+    </SettingCard>
+    <SettingCard class="mb-4" :title="t('setting.darkTheme')" icon="style">
+      <AppearanceItems :theme="currentTheme" @save="onSave" />
+    </SettingCard>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -314,6 +149,8 @@ import { kUIDefaultLayout } from '@/composables/uiLayout'
 import { kEnvironment } from '@/composables/environment'
 import { kSettingsState } from '@/composables/setting'
 import { injection } from '@/util/inject'
+import SettingHeader from '@/components/SettingHeader.vue'
+import SettingCard from '@/components/SettingCard.vue'
 
 const { t } = useI18n()
 const activeTab = ref(0)
@@ -416,7 +253,6 @@ watch(sidebarStyle, (newStyle) => {
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border-radius: 12px;
-  border: 2px solid transparent;
   position: relative;
 }
 

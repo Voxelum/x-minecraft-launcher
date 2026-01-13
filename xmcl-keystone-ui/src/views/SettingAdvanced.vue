@@ -1,61 +1,47 @@
 <!-- src/components/SettingGlobalAdvanced.vue -->
 <template>
   <div>
-    <!-- Advanced / Dangerous Actions Card -->
-    <v-card class="mb-4" elevation="2">
-      <v-card-title class="text-subtitle-1 pb-2 error--text">
-        <v-icon left color="error" small>warning</v-icon>
-        {{ t('setting.advancedSettings') }}
-      </v-card-title>
-      <v-card-subtitle class="pb-0">
-        {{ t('setting.advancedSettingsHint') }}
-      </v-card-subtitle>
-      <v-card-text class="pa-4">
-        <v-list class="transparent-list">
-          <!-- Reset All Settings -->
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="font-weight-medium error--text">
-                {{ t('setting.resetAllSettings') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('setting.resetAllSettingsHint') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn color="error" outlined small @click="showResetDialog = true">
-                <v-icon left small>restore</v-icon>
-                {{ t('setting.resetAllSettings') }}
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
+    <SettingCard
+      :title="t('setting.advancedSettings')"
+      :subtitle="t('setting.advancedSettingsHint')"
+      color="red"
+      icon="warning"
+    >
+      <SettingItem
+        :title="t('setting.resetAllSettings')"
+        :title-class="'error--text'"
+        :description="t('setting.resetAllSettingsHint')"
+      >
+        <template #action>
+          <v-btn color="error" outlined small @click="showResetDialog = true">
+            <v-icon left small>restore</v-icon>
+            {{ t('setting.resetAllSettings') }}
+          </v-btn>
+        </template>
+      </SettingItem>
 
-          <v-divider class="my-2" />
+      <v-divider class="my-2" />
 
-          <!-- Export/Import Settings -->
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title class="font-weight-medium">
-                {{ t('setting.exportSettings') }} / {{ t('setting.importSettings') }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ t('setting.exportSettingsHint') }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action class="flex-row gap-2">
-              <v-btn color="primary" outlined small @click="handleExportSettings">
-                <v-icon left small>file_download</v-icon>
-                {{ t('setting.exportSettings') }}
-              </v-btn>
-              <v-btn color="primary" outlined small @click="handleImportSettings">
-                <v-icon left small>file_upload</v-icon>
-                {{ t('setting.importSettings') }}
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
-      </v-card-text>
-    </v-card>
+      <!-- Export/Import Settings -->
+      <SettingItem
+        :title="t('setting.exportSettings') + ' / ' + t('setting.importSettings')"
+        :description="t('setting.exportSettingsHint')"
+        icon="import_export"
+      >
+        <template #action>
+          <div class="flex gap-2">
+            <v-btn color="primary" outlined small @click="handleExportSettings">
+              <v-icon left small>file_download</v-icon>
+              {{ t('setting.exportSettings') }}
+            </v-btn>
+            <v-btn color="primary" outlined small @click="handleImportSettings">
+              <v-icon left small>file_upload</v-icon>
+              {{ t('setting.importSettings') }}
+            </v-btn>
+          </div>
+        </template>
+      </SettingItem>
+    </SettingCard>
 
     <!-- Reset Confirmation Dialog -->
     <v-dialog v-model="showResetDialog" max-width="500" persistent>
@@ -86,6 +72,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import SettingCard from '@/components/SettingCard.vue'
+import SettingItem from '@/components/SettingItem.vue'
 
 const { t } = useI18n()
 const { quit } = useService(BaseServiceKey)

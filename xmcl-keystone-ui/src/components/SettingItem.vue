@@ -1,5 +1,5 @@
 <template>
-  <v-list-item>
+  <v-list-item class="select-none">
     <v-list-item-action
       class="self-center"
       v-if="slots.preaction"
@@ -9,7 +9,7 @@
       />
     </v-list-item-action>
     <v-list-item-content>
-      <v-list-item-title>
+      <v-list-item-title :class="titleClass" class="flex font-weight-medium">
         <slot
           v-if="slots.title"
           name="title"
@@ -32,6 +32,7 @@
 const props = defineProps<{
   title?: string
   description?: string
+  titleClass?: string
   longAction?: boolean
 }>()
 

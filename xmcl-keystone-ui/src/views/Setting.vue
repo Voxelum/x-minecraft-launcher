@@ -53,16 +53,44 @@
 
       <div class="content-wrapper mx-auto pa-4 pa-md-6" :class="{ 'tabs-mode': isNarrowView }">
         <!-- All sections rendered vertically in both modes -->
-        <section id="general" class="mb-8 scroll-target"><SettingGeneral /></section>
+        <section id="general" class="mb-8 scroll-target">
+          <SettingHeader
+            :title="t('setting.general')"
+            icon="settings"
+          />
+          <SettingGeneral class="mb-4" />
+          <SettingAdvanced />
+        </section>
         <section id="appearance" class="mb-8 scroll-target">
+          <SettingHeader
+            icon="brush"
+            :title="t('setting.appearance')"
+            :subtitle="t('setting.appearanceDescription')"
+          />
           <SettingGlobalUI />
         </section>
-        <section id="global" class="mb-8 scroll-target"><SettingGlobal /></section>
-        <section id="update" class="mb-8 scroll-target"><SettingUpdate /></section>
+        <section id="global" class="mb-8 scroll-target">
+          <SettingHeader
+            :title="'🌍 ' + t('setting.globalSetting')"
+            :subtitle="t('setting.globalSettingHint')"
+          />
+          <SettingGlobal />
+        </section>
         <section id="network" class="mb-8 scroll-target">
+          <SettingHeader
+            :title="t('setting.network')"
+            icon="public"
+          />
           <SettingNetwork />
         </section>
-        <section id="about" class="mb-12 scroll-target"><SettingAbout /></section>
+        <section id="about" class="mb-12 scroll-target">
+          <SettingHeader
+            :title="t('setting.about')"
+            icon="info"
+          />
+          <SettingUpdate />
+          <SettingAbout />
+        </section>
       </div>
 
       <SettingUpdateInfoDialog />
@@ -86,6 +114,9 @@ import { kUpdateSettings, useUpdateSettings } from '@/composables/setting'
 import { injection } from '@/util/inject'
 import { kTheme } from '@/composables/theme'
 import SettingGlobalUI from './SettingGlobalUI.vue'
+import { useMediaQuery } from '@vueuse/core'
+import SettingAdvanced from './SettingAdvanced.vue'
+import SettingHeader from '@/components/SettingHeader.vue'
 
 const { t } = useI18n()
 usePresence(computed(() => t('presence.setting')))
@@ -96,23 +127,13 @@ const { suppressed } = injection(kTheme)
 
 onMounted(() => {
   suppressed.value = true
-  window.addEventListener('resize', updateWindowWidth)
-  updateWindowWidth()
 })
 onUnmounted(() => {
   suppressed.value = false
-  window.removeEventListener('resize', updateWindowWidth)
 })
 
-// Window width tracking for responsive view
-const windowWidth = ref(window.innerWidth)
 const NARROW_BREAKPOINT = 960 // Switch to tabs view when window is narrower than this
-
-function updateWindowWidth() {
-  windowWidth.value = window.innerWidth
-}
-
-const isNarrowView = computed(() => windowWidth.value < NARROW_BREAKPOINT)
+const isNarrowView = useMediaQuery(`(max-width: ${NARROW_BREAKPOINT - 1}px)`)
 
 // Navigation Logic
 const activeSectionIndex = ref(0)
@@ -124,7 +145,6 @@ const sections = [
   { id: 'general', title: 'setting.general', icon: 'tune' },
   { id: 'appearance', title: 'setting.appearance', icon: 'palette' },
   { id: 'global', title: 'setting.globalSetting', icon: 'videogame_asset' },
-  { id: 'update', title: 'setting.update', icon: 'system_update' },
   { id: 'network', title: 'setting.network', icon: 'wifi' },
   { id: 'about', title: 'setting.about', icon: 'info' },
 ]
