@@ -15,7 +15,7 @@
     />
     <a
       v-if="!dense"
-      class="text-2xl font-bold"
+      class="text-2xl font-bold whitespace-nowrap"
       target="browser"
       :href="value.url"
     >
@@ -23,7 +23,7 @@
     </a>
     <a
       v-else
-      class="text-2xl font-bold"
+      class="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis max-w-100"
       target="browser"
       @click="push(value.store)"
     >

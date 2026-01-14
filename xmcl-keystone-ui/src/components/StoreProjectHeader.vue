@@ -2,12 +2,12 @@
   <div
     class="flex flex-col p-4"
   >
-    <div class="flex flex-grow-0 items-center gap-4 xl:flex-col">
+    <div class="flex flex-grow-0 items-center gap-4">
       <v-img
         max-width="150"
         :src="project.iconUrl"
       />
-      <div class="flex  gap-4 xl:flex-col">
+      <div class="flex gap-4">
         <div class="flex flex-col gap-4">
           <div class="flex flex-col gap-2">
             <a
@@ -20,7 +20,7 @@
 
             <span>{{ project.localizedDescription || project.description }}</span>
           </div>
-          <span class="flex select-none flex-wrap gap-3 xl:justify-center">
+          <span class="flex select-none flex-wrap gap-3">
             <CategoryChip
               v-for="item of project.categories"
               :key="item.id"
@@ -29,7 +29,7 @@
           </span>
         </div>
 
-        <div class="flex flex-grow-0 items-center justify-center gap-2 xl:flex-row">
+        <div class="flex flex-grow-0 items-center justify-center gap-2">
           <v-btn
             color="primary"
             :loading="installing"
@@ -59,7 +59,7 @@
         </div>
       </div>
     </div>
-    <div class="my-2 w-full flex-grow xl:my-0" />
+    <div class="my-2 w-full flex-grow" />
     <div
       class="flex select-none items-center gap-6 text-gray-400"
       style="width: max-content;"

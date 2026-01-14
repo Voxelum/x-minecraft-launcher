@@ -20,6 +20,10 @@
         <div style="color: grey">
           {{ path }}
         </div>
+        <v-checkbox
+          v-model="deleteFiles"
+          :label="t('instance.deleteFile')"
+        />
       </v-card-text>
 
       <v-divider />
@@ -53,6 +57,7 @@ import { useNotifier } from '@/composables/notifier'
 const { t } = useI18n()
 const name = ref('')
 const path = ref('')
+const deleteFiles = ref(true)
 const { parameter, isShown } = useDialog('delete-instance')
 watch(isShown, (shown) => {
   if (shown) {
@@ -65,7 +70,7 @@ const { remove, selectedInstance } = injection(kInstances)
 const { notify } = useNotifier()
 const doDelete = () => {
   const val = parameter.value
-  remove((val as any).path).catch(e => {
+  remove((val as any).path, deleteFiles.value).catch(e => {
     if ('code' in e) {
       if (e.code === 'EBUSY') {
         notify({

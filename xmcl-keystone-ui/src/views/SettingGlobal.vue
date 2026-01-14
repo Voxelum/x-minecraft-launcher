@@ -1,223 +1,121 @@
+<!-- src/components/SettingGlobal.vue -->
 <template>
-  <div>
-    <SettingHeader>
-      <div class="flex flex-col">
-        🌍 {{ t('setting.globalSetting') }}
+  <div class="flex flex-col gap-4">
+    <!-- Quick Launch Settings Card -->
+    <SettingCard :title="t('setting.quickLaunchSettings')" icon="flash_on">
+      <SettingItemCheckbox :value="fastLaunch" @input="fastLaunch = $event" :title="t('instanceSetting.fastLaunch')"
+        :description="t('instanceSetting.fastLaunchHint')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="hideLauncher" @input="hideLauncher = $event" :title="t('instanceSetting.hideLauncher')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="showLog" @input="showLog = $event" :title="t('instanceSetting.showLog')"
+        :description="t('instanceSetting.showLogHint')" />
+    </SettingCard>
 
-        <v-subheader class="my-0 h-[unset] px-0">
-          {{ t('setting.globalSettingHint') }}
-        </v-subheader>
+    <SettingCard :title="t('setting.authenticationSettings')" icon="security">
+      <SettingItemCheckbox :value="disableAuthlibInjector" @input="disableAuthlibInjector = $event" :title="t('instanceSetting.disableAuthlibInjector')"
+        :description="t('instanceSetting.disableAuthlibInjectorDescription')" />
+      <v-divider class="my-2" />
+      <SettingItemCheckbox :value="disableElyByAuthlib" @input="disableElyByAuthlib = $event" :title="t('instanceSetting.disableElyByAuthlib')"
+        :description="t('instanceSetting.disableElyByAuthlibDescription')" />
+    </SettingCard>
+
+    <!-- Java Memory Settings Card -->
+    <SettingCard :title="t('java.memory')" icon="memory">
+      <div class="d-flex align-center mb-3">
+        <span class="font-weight-medium mr-3">{{ t('setting.memoryAssignment') || 'Назначение памяти' }}</span>
+        <v-spacer />
+        <SettingJavaMemoryAssign :value="assignMemory" @input="assignMemory = $event" />
       </div>
-    </SettingHeader>
-    <SettingItemCheckbox
-      v-model="fastLaunch"
-      :title="t('instanceSetting.fastLaunch')"
-      :description="t('instanceSetting.fastLaunchHint')"
-    />
-    <SettingItemCheckbox
-      v-model="hideLauncher"
-      :title="t('instanceSetting.hideLauncher')"
-    />
-    <SettingItemCheckbox
-      v-model="showLog"
-      :title="t('instanceSetting.showLog')"
-      :description="t('instanceSetting.showLogHint')"
-    />
-    <SettingItemCheckbox
-      v-model="disableAuthlibInjector"
-      :title="t('instanceSetting.disableAuthlibInjector')"
-      :description="t('instanceSetting.disableAuthlibInjectorDescription')"
-    />
-    <SettingItemCheckbox
-      v-model="disableElyByAuthlib"
-      :title="t('instanceSetting.disableElyByAuthlib')"
-      :description="t('instanceSetting.disableElyByAuthlibDescription')"
-    />
+      <SettingJavaMemory :assign-memory="assignMemory" :min.sync="minMem" :max.sync="maxMem" />
+    </SettingCard>
 
-    <v-list-item>
-      <div class="mt-2 flex flex-col gap-2 px-[16px] py-[8px]">
-        <div class="flex flex-row items-center">
-          {{ t("java.memory") }}
-          <div class="flex-grow" />
-          <SettingJavaMemoryAssign v-model="assignMemory" />
+    <!-- Advanced Java Options Card -->
+    <SettingCard :title="t('setting.advancedJavaOptions')" icon="code">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>terminal</v-icon>
+            {{ t("instance.prependCommand") }}
+          </div>
+          <v-text-field v-model="prependCommand" outlined dense filled hide-details
+            :placeholder="t('instance.prependCommandHint')" />
         </div>
-        <SettingJavaMemory
-          :assign-memory="assignMemory"
-          :min.sync="minMem"
-          :max.sync="maxMem"
-        />
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>settings_applications</v-icon>
+            {{ t("instance.vmOptions") }}
+          </div>
+          <v-text-field v-model="vmOptions" outlined dense filled hide-details
+            :placeholder="t('instance.vmOptionsHint')" />
+        </div>
       </div>
-    </v-list-item>
-    <v-list-item
-      style="margin-top: 5px"
-    >
-      <v-list-item-content class="max-w-70 mr-4">
-        <v-list-item-title>
-          {{ t("instance.prependCommand") }}
-        </v-list-item-title>
-        <v-list-item-subtitle
-          v-shared-tooltip="_ => t('instance.prependCommandHint')"
-        >
-          <v-text-field
-            v-model="prependCommand"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.prependCommandHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instance.vmOptions") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="vmOptions"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.vmOptionsHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
+    </SettingCard>
 
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ t("instance.vmVar") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
+    <!-- Environment Variables Card -->
+    <SettingCard :title="t('instance.vmVar')" icon="eco">
+      <div class="flex justify-between items-center mb-3">
+        <div class="text-subtitle-2">
           {{ t("instance.vmVarHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-btn
-          icon
-          @click="onAddEnvVar"
-        >
-          <v-icon>add</v-icon>
-        </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-
-    <EnvVarTableItem
-      :env="env"
-      @delete="onEnvVarDeleted"
-    />
-
-    <EnvVarAddItem
-      v-if="adding"
-      @clear="onEnvVarCleared"
-      @add="onEnvVarAdded"
-    />
-
-    <v-list-item>
-      <v-list-item-content class="max-w-70 mr-4">
-        <v-list-item-title>
-          {{ t("instance.preExecCommand") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="preExecuteCommand"
-            class="m-1 mt-2"
-            hide-details
-            required
-            dense
-            outlined
-            filled
-            :placeholder="t('instance.preExecCommandHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-
-      <v-list-item-content style="flex: 1">
-        <v-list-item-title>
-          {{ t("instance.mcOptions") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          <v-text-field
-            v-model="mcOptions"
-            dense
-            outlined
-            filled
-            class="m-1 mt-2"
-            hide-details
-            required
-            :placeholder="t('instance.mcOptionsHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-    
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>{{ t("instance.resolution") }}</v-list-item-title>
-        <div class="mt-2 flex flex-row items-center gap-2">
-          <v-text-field
-            v-model="resolutionWidth"
-            :label="t('instance.width')"
-            type="number"
-            outlined
-            dense
-            filled
-            hide-details
-            class="mr-2 max-w-[150px]"
-          ></v-text-field>
-          <v-text-field
-            v-model="resolutionHeight"
-            :label="t('instance.height')"
-            type="number"
-            outlined
-            dense
-            filled
-            hide-details
-            class="ml-2 max-w-[150px]"
-          ></v-text-field>
-          <v-switch
-            v-model="resolutionFullscreen"
-            :label="t('instance.fullscreen')"
-            class="ma-0 pa-0"
-            hide-details
-          />
-          <v-spacer />
-          <v-select
-            v-model="selectedResolutionPreset"
-            :items="resolutionPresets"
-            item-text="text"
-            item-value="value"
-            :label="t('instance.resolutionPreset')"
-            outlined
-            filled
-            hide-details
-            dense
-            class="max-w-[300px]"
-          />
         </div>
-      </v-list-item-content>
-    </v-list-item>
+        <v-btn small color="primary" outlined @click="onAddEnvVar">
+          <v-icon left small>add</v-icon>
+          {{ t('add') || 'Добавить' }}
+        </v-btn>
+      </div>
+      <EnvVarTableItem :env="env" @delete="onEnvVarDeleted" />
+      <EnvVarAddItem v-if="adding" @clear="onEnvVarCleared" @add="onEnvVarAdded" />
+    </SettingCard>
+
+    <!-- Minecraft Options Card -->
+    <SettingCard :title="t('setting.minecraftOptions')" icon="videogame_asset">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>play_arrow</v-icon>
+            {{ t("instance.preExecCommand") }}
+          </div>
+          <v-text-field v-model="preExecuteCommand" outlined dense filled hide-details
+            :placeholder="t('instance.preExecCommandHint')" />
+        </div>
+        <div>
+          <div class="font-weight-medium mb-2">
+            <v-icon left small>tune</v-icon>
+            {{ t("instance.mcOptions") }}
+          </div>
+          <v-text-field v-model="mcOptions" outlined dense filled hide-details
+            :placeholder="t('instance.mcOptionsHint')" />
+        </div>
+      </div>
+    </SettingCard>
+
+    <!-- Game Window Resolution Card -->
+    <SettingCard :title="t('instance.resolution')" icon="aspect_ratio">
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-center">
+        <v-text-field v-model="resolutionWidth" :label="t('instance.width')" type="number" outlined dense filled
+          hide-details />
+        <v-text-field v-model="resolutionHeight" :label="t('instance.height')" type="number" outlined dense filled
+          hide-details />
+        <v-switch v-model="resolutionFullscreen" :label="t('instance.fullscreen')" class="mt-0" color="primary" hide-details />
+        <v-select v-model="selectedResolutionPreset" :items="resolutionPresets" item-text="text" item-value="value"
+          :label="t('instance.resolutionPreset')" outlined filled hide-details dense />
+      </div>
+    </SettingCard>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n-bridge'
+import { useEventListener } from '@vueuse/core'
 import { useGlobalSettings } from '@/composables/setting'
+import { useResolutionPresets } from '@/composables/resolutionPresets'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
-import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
-import SettingHeader from '@/components/SettingHeader.vue'
-import { useEventListener } from '@vueuse/core'
-import { vSharedTooltip } from '@/directives/sharedTooltip'
 import EnvVarTableItem from '@/components/EnvVarTableItem.vue'
 import EnvVarAddItem from '@/components/EnvVarAddItem.vue'
-import { computed } from 'vue'
-import { useResolutionPresets } from '@/composables/resolutionPresets'
+import SettingCard from '@/components/SettingCard.vue'
 
 const { t } = useI18n()
 const {
@@ -238,6 +136,7 @@ const {
   setGlobalSettings,
 } = useGlobalSettings()
 
+// --- Reactive State (Form Data) ---
 const assignMemory = ref(globalAssignMemory.value)
 const minMem = ref(globalMinMemory.value)
 const maxMem = ref(globalMaxMemory.value)
@@ -251,13 +150,15 @@ const showLog = ref(globalShowLog.value)
 const disableAuthlibInjector = ref(globalDisableAuthlibInjector.value)
 const disableElyByAuthlib = ref(globalDisableElyByAuthlib.value)
 const env = ref(globalEnv.value)
+const adding = ref(false) // For adding environment variables
 
+// Resolution Settings
 const resolutionFullscreen = ref(globalResolution.value?.fullscreen)
 const resolutionWidth = ref(globalResolution.value?.width)
 const resolutionHeight = ref(globalResolution.value?.height)
-
 const resolutionPresets = useResolutionPresets()
 
+// --- Computed Properties ---
 const selectedResolutionPreset = computed({
   get: () => {
     const width = resolutionWidth.value
@@ -271,6 +172,7 @@ const selectedResolutionPreset = computed({
   }
 })
 
+// --- Lifecycle Hooks ---
 onMounted(() => {
   assignMemory.value = globalAssignMemory.value
   minMem.value = globalMinMemory.value
@@ -284,7 +186,6 @@ onMounted(() => {
   disableElyByAuthlib.value = globalDisableElyByAuthlib.value
   prependCommand.value = globalPrependCommand.value
   preExecuteCommand.value = globalPreExecuteCommand.value
-  
   if (globalResolution.value) {
     resolutionFullscreen.value = globalResolution.value.fullscreen
     resolutionWidth.value = globalResolution.value.width
@@ -292,7 +193,8 @@ onMounted(() => {
   }
 })
 
-const save = () => {
+// --- Methods ---
+function save() {
   setGlobalSettings({
     globalAssignMemory: assignMemory.value,
     globalMaxMemory: maxMem.value,
@@ -315,7 +217,7 @@ const save = () => {
   })
 }
 
-const adding = ref(false)
+// --- Environment Variable Management ---
 function onAddEnvVar() {
   adding.value = true
 }
@@ -332,8 +234,23 @@ function onEnvVarDeleted(key: string) {
   env.value = rest
 }
 
+// Save settings when the component is unmounted or the user leaves the page
+onUnmounted(save)
 useEventListener('beforeunload', save)
 
-onUnmounted(save)
-
 </script>
+
+<style scoped>
+:deep(.transparent-list) {
+  background: transparent !important;
+}
+
+.v-card {
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.v-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+</style>

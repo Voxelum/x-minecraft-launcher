@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: Виявлено кілька профілів запуску. Будь ласка, виберіть один для імпорту.
-  configTitle: Конфігурація
   createTitle: Створити гру
-  downloadedNotification: Модпак {name} завантажено. Бажаєте створити для нього екземпляр?
   serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -19,7 +17,6 @@ AppShareInstanceDialog:
     хочете завантажити. Вони будуть розміщені в поточному екземплярі {name}.
   downloadNotifyTitle: Завантажити екземпляр від {user}
   downloadTitle: Завантажити файли від інших користувачів
-  downloadToLocal: Завантажити в поточний екземпляр
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
   instanceShare: '{user} щойно поділився з вами поточним екземпляром'
@@ -32,39 +29,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: Шукати в FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Список змін
-  details: Деталі
-  install: Встановити {version}
-  overview: Огляд
-  versions: Версії
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
   missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
-  needDownloadHint: >-
-    Не вдалося знайти відповідну версію Java на вашому комп'ютері.
-    Рекомендується завантажити нову.
-  optionAutoDownload:
-    message: Лаунчер завантажить та встановить Java з джерела Mojang для вас.
-    name: Автоматично завантажити
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Можливо, лаунчер не знайшов вашу Java. Ви можете вказати лаунчеру, де вона
-      знаходиться.
-    name: Вибрати Java на вашому комп'ютері
+  optionSelectJava: {}
   optionSwitch:
-    disabled: Наразі в базі даних не знайдено Java {version}!
-    message: Використовувати наявну Java {version} на вашому ПК
     name: Перемкнутися на {version}
-  recommendedVersionHint: Для {version} рекомендується використовувати Java версії {range}。
-  selectMatchedHint: Знайдено відповідні локальні версії Java. Ви можете обрати ці локальні Java.
-  selectSecondaryHint: >-
-    Знайдено деякі локальні версії Java, але вони можуть не відповідати
-    критеріям. Ви все ще можете використовувати їх для запуску, але ця проблема
-    буде з'являтися.
 HomeLaunchMultiInstanceDialog:
   confirm: Так, запустити
   description: Ви запускаєте кілька екземплярів Minecraft. Ви впевнені?
@@ -125,19 +100,13 @@ curseforge:
   downloadOnly: Завантажити
   file:
     gameVersion: Версія гри
+    install: встановити
     modLoader: Завантажувач модів
-  install: Встановити
   installTo: Встановити в {path}
   installToStorage: Встановити в сховище
   lastUpdate: Дата останнього оновлення
-  project:
-    description: Опис
-    files: Файли
-    images: Зображення
-  recentFiles: Останні файли
+  project: {}
   releasedDate: Дата випуску
-  search: Пошук
-  totalDownloads: Усього завантажень
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API та бібліотеки
@@ -340,11 +309,7 @@ exception:
     спробуйте ще раз або перевірте ваше мережеве з'єднання. Якщо ця помилка не
     зникає, будь ласка, надішліть звіт команді розробників.
 existed: Існує
-exportModpackTarget:
-  curseforge: Файл Curseforge
-  github: Файл Github
-  modrinth: Файл Modrinth
-  override: Файл перевизначення (Raw)
+exportModpackTarget: {}
 extensions:
   mrpack: Модпак Modrinth
   zip: Zip-файл
@@ -409,10 +374,7 @@ gameType:
 help: Допомога
 home: Головна
 importModpack:
-  failed: Не вдалося імпортувати {modpack}
   name: Імпортувати модпак
-  success: Імпорт {modpack} успішний
-importResource: Імпортувати ресурс
 install: Встановити
 installAssets:
   asset: Встановити {count} ресурсів
@@ -562,14 +524,8 @@ instanceSetting:
   showLog: Показати лог Minecraft
   showLogHint: Це відкриє вікно для потокової передачі логу Minecraft після запуску гри
 instanceTemplate:
-  curseforge: Це модпак Curseforge
   ftb: Це модпак FTB
-  importing: Імпорт шаблону
-  mcbbs: Це модпак MCBBS
-  modpack: Це необроблений модпак
-  modrinth: Це модпак Modrinth
   preview: Попередній перегляд модпаку
-  title: Налаштування шаблону
 instanceUpdate:
   basic: Оновлення налаштувань
   files: Оновлення файлів
@@ -638,7 +594,6 @@ launch:
   launch: Запустити
   launchAnyway: Запустити все одно
 launchBlocked:
-  ignore: Примусово запустити
   launchBadVersion:
     description: Файл JSON версії {version} пошкоджено. Можливо, перевстановити цю версію?
     title: Пошкоджений JSON версії
@@ -808,7 +763,6 @@ me:
   recentPlay: Нещодавно грав
   versions: Встановлені версії
 minecraftVersion:
-  empty: Не вдалося завантажити версії Minecraft
   name: Версія Minecraft
   release: Випуск
   showAlpha: Показати знімки стану (Snapshot)
@@ -816,7 +770,9 @@ minecraftVersion:
 mod:
   acceptVersion: Прийняти {version}
   applyGroupRules: Застосувати збережені правила групування
+  categories: Категорії
   compatible: Сумісний мод.
+  createGroup: Створити групу
   currentVersion: Поточна {current}
   deletion: Видалити мод
   deletionHint: >-
@@ -825,25 +781,19 @@ mod:
     що хочете це зробити?
   deletionRestHint: Та ще {rest} модів...
   denseView: Компактний вигляд
+  disableAll: Вимкнути все
   dropHint: Перетягніть сюди .jar/.litemod файли модів для імпорту.
   duplicatedDetected: '{count} дубльованих модів'
   duplicatedDetectedDescription: >-
     Знайдено моди з однаковим ID, але різними файлами. Це може спричинити збій
     Minecraft. Будь ласка, виберіть файл, який ви хочете залишити.
-  enabled: '{count} модів увімкнено'
   enableAll: Увімкнути все
-  disableAll: Вимкнути все
+  enabled: '{count} модів увімкнено'
   filter: Фільтрувати моди
   group: Згрупувати
   groupInstalled: Згрупувати встановлені моди
-  selectOrCreateGroup: Вибрати або створити групу
-  searchGroups: Пошук груп...
-  newFolder: Нова папка
-  noGroupsYet: Груп поки немає. Створіть одну!
-  noGroupsFound: Групи не знайдено
   groupName: Назва групи
   groupNameRequired: Назва групи обов'язкова
-  createGroup: Створити групу
   hasUpdate: Мод має нову версію!
   hideIncompatible: Приховати несумісні моди
   incompatible: Несумісний мод.
@@ -851,28 +801,41 @@ mod:
   incompatibleHintDescription: >-
     Деякі залежності модів можуть бути відсутні. Або деякі версії залежностей не
     збігаються.
+  license: Ліцензія
+  links: Посилання
   manage: Керувати модами
   maybeCompatible: Можливо сумісний.
   modloaderSelectHint: >-
     Мод підтримує наступні завантажувачі модів. Будь ласка, виберіть один для
     встановлення.
   modloaderSelectNotSupported: Не знайдено {modloader} для Minecraft {minecraft}
-  mods: '{count} модів'
+  mods: '{count} Модів'
   name: Мод | Моди
+  newFolder: Нова папка
+  noGroupsFound: Групи не знайдено
+  noGroupsYet: Груп поки немає. Створіть одну!
   noModLoaderHint: Не забудьте увімкнути завантажувач модів, щоб використовувати моди!
-  openLink: Відкрити URL мода {url}
-  search: Шукати моди
+  openLink: Відкрити посилання на мод {url}
+  projectId: ID Проєкту
+  search: Пошук модів
+  searchGroups: Пошук груп...
   searchOnCurseforge: Шукати {name} на Curseforge
   searchOnMcWiki: Знайдіть {name} в енциклопедії MC.
   searchOnModrinth: Шукати {name} на Modrinth
+  selectOrCreateGroup: Вибрати або створити групу
   showDirectory: Показати каталог модів
   showFile: Показати шлях до мода {file}
   showInCurseforge: Показати мод на Curseforge
   showInModrinth: Показати {name} на Modrinth
+  sourceUrl: Джерело
   switchDefaultSource: Типове джерело модів
   syncGroupRules: Зберегти правила групування
+  technical: Технічна інформація
   toUpdate: '{count} оновлень'
   ungroup: Розгрупувати
+  updateAt: Оновлено
+  versions: Версії
+  wikiUrl: Вікіи
 modFilter:
   clear: Очистити фільтр
   dependenciesInstallOnly: Показувати лише відсутні залежності модів
@@ -884,6 +847,13 @@ modInstall:
   archived: >-
     {name} було заархівовано. {name} більше не отримуватиме оновлень, доки автор
     не вирішить розархівувати проєкт.
+  autoUpgrade:
+    description: >-
+      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити сумісні моди
+      до версій, що відповідають Minecraft {version}?
+    'no': Пропустити
+    title: Оновити моди?
+    'yes': Оновити моди
   checkDependencies: Перевірити залежності
   checkUpgrade: Перевірити оновлення модів
   checkedDependencies: Залежності перевірено
@@ -897,19 +867,13 @@ modInstall:
   installed: Встановлено
   noVersionSupported: Мод підтримує лише Minecraft {supported}.
   recommendation: Вивчіть моди {first} в {modrinth} та {curseforge}!
+  reinstall: Перевстановити
   removeUnusedLibraries: Видалити невикористані бібліотеки модів
   search: Результат пошуку
   skipVersion: Пропустити моди з іншою версією Minecraft
   source: Джерело модів
   switch: Змінити версію
   upgrade: Оновити моди
-  autoUpgrade:
-    title: Оновити моди?
-    description: >-
-      Ви змінили версію Minecraft. Чи бажаєте автоматично оновити
-      сумісні моди до версій, що відповідають Minecraft {version}?
-    yes: Оновити моди
-    no: Пропустити
 modSearch:
   noLocalModsFound: Не знайдено локальних модів, що відповідають вашому пошуку.
   noModsFound: Модів не знайдено.
@@ -1120,10 +1084,6 @@ modrinth:
   wikiUrl: Вікі
 modrinthCard:
   currentVersion: Поточна версія
-  projectHint: >
-    Цей екземпляр створено з модпаку Modrinth <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (ID проєкту:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Увімкнути ретрансляційний сервер
   allowTurnHint: >-
@@ -1227,7 +1187,6 @@ natType:
 neoForgedVersion:
   disable: Вимкнути NeoForged
   empty: NeoForged не підтримує {version}
-  name: NeoForged
 news:
   name: Новини
   readMore: Читати далі
@@ -1411,8 +1370,8 @@ serverStatus:
   timeout: §4Час очікування з'єднання з сервером вичерпано!
 setting:
   about: Про
-  allowPrerelease: Завантажувати попередні версії
-  allowPrereleaseDescription: Попередні версії можуть бути нестабільними
+  advancedSettings: Розширені налаштування
+  advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
   apiSets:
     auto: Автоматично (визначається мережею)
     official: Офіційний (Mojang)
@@ -1420,10 +1379,6 @@ setting:
   appxUpdateHint: >-
     Лаунчер завантажить та виконає інсталятор. Якщо спливаюче вікно інсталятора
     не вдалося, будь ласка, запустіть його вручну.
-  autoDownload: Автоматичне завантаження
-  autoDownloadDescription: Автоматично завантажувати оновлення, якщо воно доступне
-  autoInstallOnAppQuit: Автоматичне встановлення
-  autoInstallOnAppQuitDescription: Автоматично встановлювати оновлення при виході з програми
   backdropBlur: Розмиття фонів
   backgroundColorAbove: Показувати колір фону як накладення
   backgroundColorAboveDescription: Це зробить колір фону видимим поверх фонового зображення або відео.
@@ -1483,11 +1438,15 @@ setting:
   enableDiscord: Увімкнути присутність Discord
   enableDiscordDescription: Це оновить статус Discord до лаунчера
   enterUrl: Введіть URL
+  exportSettings: Експорт налаштувань
+  exportSettingsHint: Зберегти поточні налаштування у файл
   general: Загальні
   githubRelease: Реліз на Github
   globalSetting: Глобальні налаштування екземпляра
   globalSettingHint: Екземпляр використовуватиме ці налаштування за замовчуванням.
   hideNewsHeader: Приховати вітрину новин
+  importSettings: Імпорт налаштувань
+  importSettingsHint: Завантажити налаштування з раніше експортованого файлу
   instanceTheme:
     activeDescription: |-
       Цей екземпляр використовує спеціальну тему. 
@@ -1508,8 +1467,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Ця опція призначає виділений GPU для процесу Minecraft.
   linuxTitlebar: Нативний заголовок вікна
   linuxTitlebarDescription: Використовувати нативний заголовок вікна Linux для лаунчера
-  windowTranslucent: Прозорість вікна
-  windowTranslucentDescription: Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows 10, Vibrancy у macOS). Потрібен перезапуск.
   location: Місце зберігання
   manualUpdateHint: >-
     Версія не може бути оновлена автоматично. Будь ласка, завантажте лаунчер ще
@@ -1523,6 +1480,12 @@ setting:
     0 означає без обмежень.
   maxSocketsTitle: Макс. HTTP-сокетів
   migrateFromOther: Імпортувати з іншого лаунчера
+  myStuffStyle: Стиль домашньої сторінки
+  myStuffStyleHint: Виберіть між класичною сторінкою з новинами або сучасним лаунчером
+  myStuffStyleNew: Лаунчер (Сучасний)
+  myStuffStyleOld: Мої речі (Класика)
+  myStuffStyleSubtitle: Виберіть бажаний макет домашньої сторінки
+  myStuffStyleTitle: Дизайн сторінки
   name: Глобальне налаштування | Глобальні налаштування
   network: Мережеві налаштування
   officialWebsite: Офіційний вебсайт
@@ -1538,10 +1501,40 @@ setting:
   replaceNatives:
     all: Усі
     legacy: Лише застарілі версії
+  resetAllSettings: Скинути всі налаштування
+  resetAllSettingsConfirmMessage: >-
+    Це назавжди видалить всі налаштування, облікові записи, екземпляри, групи та
+    кешовані дані. Цю дію неможливо скасувати. Ви впевнені?
+  resetAllSettingsConfirmTitle: Скинути всі налаштування?
+  resetAllSettingsHint: Скинути лаунчер до заводських налаштувань (видаляє все)
+  resetAllSettingsSuccess: Всі налаштування було скинуто. Лаунчер перезапуститься.
   resetToDefault: Скинути до типових
   select: вибрати
+  settingsExported: Налаштування успішно експортовано
+  settingsImportError: Не вдалося імпортувати налаштування. Перевірте формат файлу.
+  settingsImported: Налаштування успішно імпортовано
   showNewsHeader: Показати вітрину новин
   showRoot: Показати
+  sidebarAlign: Вирівнювання бічної панелі
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Кінець
+  sidebarAlignHint: Вирівнювання вмісту бічної панелі
+  sidebarAlignStart: Початок
+  sidebarBottom: Знизу
+  sidebarClassic: Класичний
+  sidebarLeft: Зліва
+  sidebarNotch: Notch
+  sidebarPosition: Позиція бічної панелі
+  sidebarPositionHint: Виберіть, де буде відображатися бічна панель
+  sidebarPositionHintClassic: Класичний стиль підтримує лише ліву та праву позиції
+  sidebarRight: Справа
+  sidebarScale: Масштаб бічної панелі
+  sidebarScaleHint: Налаштування розміру бічної панелі
+  sidebarSettings: Налаштування бічної панелі
+  sidebarSettingsHint: Налаштування зовнішнього вигляду та поведінки бічної панелі
+  sidebarStyle: Стиль бічної панелі
+  sidebarStyleHint: Виберіть між класичним та сучасним дизайном
+  sidebarTop: Зверху
   streamerMode: Режим стрімера
   streamerModeDescription: Це приховає вашу приватну інформацію, таку як електронна пошта, в лаунчері.
   theme:
@@ -1566,6 +1559,10 @@ setting:
   useProxy: HTTP-проксі
   useProxyDescription: Адреса проксі-сервера для HTTP-запитів
   viewBackgroundMusic: Переглянути музику
+  windowTranslucent: Прозорість вікна
+  windowTranslucentDescription: >-
+    Увімкнути ефект напівпрозорого вікна (Mica у Windows 11, Acrylic у Windows
+    10, Vibrancy у macOS). Потрібен перезапуск.
 settingLabel:
   global: Глобальний
   globalHint: Це налаштування буде слідувати глобальним налаштуванням
@@ -1623,7 +1620,7 @@ setup:
   path: Поточний шлях
   title: >-
     Ласкаво просимо до X Minecraft Launcher. Перш ніж почати, нам потрібно, щоб
-    ви 
+    ви
 shaderPack:
   deletion: Видалити пакет шейдерів
   deletionHint: Це видалить файл пакета шейдерів {path} і не може бути скасовано.
@@ -1664,10 +1661,8 @@ tag:
   createSelected: Створити тег для вибраного
   newTag: Новий тег
 task:
-  available: Доступно
   cancelled: Скасовано
   clear: Очистити завершені завдання
-  compatible: Формат {format} сумісний з {version}
   connection:
     connected: Підключено
     free: Вільно
@@ -1676,17 +1671,9 @@ task:
     running: Активне з'єднання
     size: загальна кількість
   connections: Мережеві з'єднання
-  delete:
-    content: >-
-      Це призведе до видалення файлу текстурпака з диска, і ми не зможемо його
-      відновити.
-       Ви впевнені, що можете його відновити?
-    title: Видалити текстурпак
-  dropHint: Перетягніть сюди папку/zip текстури для імпорту.
+  delete: {}
   empty: Немає активних завдань
-  enable: 'Увімкнено текстурпаков: {count}'
   failed: Невдача
-  import: Імпорт текстурпака
   incompatible: >-
     Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
     {actual}.
@@ -1697,7 +1684,6 @@ task:
   pause: Пауза
   searchOnCurseforge: Шукати {name} на curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} у папці
   showInCurseforge: Показати {name} на curseforge
   unselected: Невибрані текстурпаки
@@ -1840,17 +1826,17 @@ userCape:
 userService:
   add: Додати більше служб
   authLibInjector: Дотримуйтесь рекомендацій інжектора auth-lib
-  baseUrlHint: Базова URL-адреса вашої власної служби
-  manageServices: Керувати службами
   authlibInjectorMetadata: Метадані Authlib-Injector
-  server: Сервер
-  implementation: Реалізація
-  version: Версія
-  skinDomains: Домени скіна
+  baseUrlHint: Базова URL-адреса вашої власної служби
   homepage: Домашня сторінка
+  implementation: Реалізація
+  manageServices: Керувати службами
   register: Реєстрація
+  server: Сервер
+  skinDomains: Домени скіна
   title: Сторонні служби користувачів
   validateHint: Використовується для перевірки, чи токен користувача все ще дійсний
+  version: Версія
 userServices:
   microsoft:
     account: Обліковий запис Microsoft

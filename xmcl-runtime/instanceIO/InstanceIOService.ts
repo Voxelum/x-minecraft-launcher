@@ -80,7 +80,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
   async parseLauncherData(path: string, type?: InstanceType): Promise<ThirdPartyLauncherManifest> {
     try {
-      const result = await parseLauncherData(path, type)
+      const result = await parseLauncherData(path, (type === 'prism' ? 'mmc' : type) as any)
       return result
     } catch (e) {
       if (isSystemError(e)) {

@@ -7,8 +7,8 @@
       push
       link
       draggable
-      class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
-      :class="{ 'v-list-item--active': path === selectedInstance }"
+      class="non-moveable sidebar-item flex-1 flex-grow-0"
+      :class="{ 'v-list-item--active': isActive, 'px-2': !compact, 'px-0': compact, 'justify-center': compact }"
       @click="navigate"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -19,14 +19,15 @@
       @drop="onDrop"
     >
       <v-list-item-avatar
-        size="48"
-        class="transition-all duration-300 hover:rounded"
+        :size="compact ? 32 : 48"
+        class="transition-all duration-300 hover:rounded relative"
+        :class="{ 'mx-0': compact }"
         large
       >
         <v-img
           v-if="!dragging"
-          width="54"
-          height="54"
+          :width="compact ? 32 : 54"
+          :height="compact ? 32 : 54"
           :src="favicon"
           @dragenter="onDragEnter"
           @dragleave="onDragLeave"
@@ -36,8 +37,15 @@
           type="avatar"
         />
       </v-list-item-avatar>
-      <v-list-item-title>{{ name }}</v-list-item-title>
+      <v-list-item-title v-if="!compact">{{ name }}</v-list-item-title>
     </v-list-item>
+    <!-- Pin indicator -->
+    <div
+      v-if="pinned"
+      class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md"
+    >
+      <v-icon x-small color="white" style="font-size: 10px;">push_pin</v-icon>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -56,9 +64,12 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 const props = defineProps<{
   path: string
   inside?: boolean
+  compact?: boolean
+  pinned?: boolean
 }>()
-const emit = defineEmits(['arrange', 'drop-save', 'group'])
+const emit = defineEmits(['arrange', 'drop-save', 'group', 'toggle-pin'])
 
+const { t } = useI18n()
 const { instances, selectedInstance } = injection(kInstances)
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
 const name = computed(() => {
@@ -92,7 +103,22 @@ const favicon = computed(() => {
   return getInstanceIcon(inst, inst.server ? status.value : undefined)
 })
 
-const getItems = useInstanceContextMenuItems(instance)
+const baseItems = useInstanceContextMenuItems(instance)
+
+const route = useRoute()
+const isActive = computed(() => props.path === selectedInstance.value && route.path === '/')
+
+// Extended context menu with pin option
+const getItems = () => {
+  const items = baseItems()
+  // Add pin/unpin option at the start
+  items.unshift({
+    text: props.pinned ? t('sidebar.unpin') : t('sidebar.pin'),
+    icon: 'push_pin',
+    onClick: () => emit('toggle-pin'),
+  })
+  return items
+}
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
@@ -125,3 +151,19 @@ const onDragStart = (e: DragEvent) => {
 const { dragging, overState, onDragEnd, onDragEnter, onDragLeave, onDragOver, onDrop } = useGroupDragDropState(emit, computed(() => props.inside))
 
 </script>
+
+<style scoped>
+/* Remove background from instance items in compact (Notch) mode */
+.sidebar-item.px-0::before,
+.sidebar-item.px-0::after {
+  display: none !important;
+}
+
+.sidebar-item.px-0 {
+  background: transparent !important;
+}
+
+.sidebar-item.px-0.v-list-item--active::before {
+  opacity: 0 !important;
+}
+</style>

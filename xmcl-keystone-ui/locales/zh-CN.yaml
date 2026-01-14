@@ -2,9 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: |-
     我们发现多个启动配置文件。
     请选择其中的一项进行导入。
-  configTitle: 实例配置
   createTitle: 创建游戏
-  downloadedNotification: '{name} 整合包下载完成，您想要现在创建吗？'
   serverTitle: 输入您的服务器地址
 AppShareInstanceDialog:
   alterDownloadDescription: |-
@@ -17,7 +15,6 @@ AppShareInstanceDialog:
   downloadDescription: 请选择从您的小伙伴那下载的文件。文件将下载到当前实例 {name} 中。
   downloadNotifyTitle: 从 {user} 下载实例
   downloadTitle: 从其他玩家那获得游戏资源
-  downloadToLocal: 下载到当前实例中
   filesToDownload: 选择您想下载的文件
   filesToShare: 选择分享的文件
   instanceShare: '{user} 给您分享了他的游戏配置'
@@ -30,32 +27,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: 在 FTB 中搜索
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: 更新日志
-  details: 具体信息
-  install: 安装 {version}
-  overview: 总览
-  versions: 版本
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: 当前 Java 版本可能无法正常启动 Minecraft
   incompatibleJavaHint: Java {javaVersion} 可能无法运行已选择的 Minecraft 版本
   missingJava: 没有找到 Java
   missingJavaHint: 启动器在您的电脑上没有找到任何Java。您可以尝试：
-  needDownloadHint: 在您的电脑上没找到合适的 Java 版本，推荐下载新的 Java。
-  optionAutoDownload:
-    message: 启动器将从 Mojang 源下载并安装 Java {version}
-    name: 自动下载
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: 也许只是启动器没找到您电脑上的 Java，您可以手动选择一下。
-    name: 手动选择 Java 的位置
+  optionSelectJava: {}
   optionSwitch:
-    disabled: 在电脑上没有检测到 Java {version}，无法切换！
-    message: 启动器将使用您现在安装的 {version}
     name: 切换到已有的 Java {version}
-  recommendedVersionHint: 版本 {version} 推荐使用 Java 版本范围 {range}。
-  selectMatchedHint: 本地找到了符合的 Java 版本，您可以选择本地 Java。
-  selectSecondaryHint: 本地找到了几个 Java 版本，但都不是完全符合要求的 Java。您仍然可以选择这些 Java 来启动，但此提示还会再次出现。
 HomeLaunchMultiInstanceDialog:
   confirm: 是的，多实例启动
   description: 正在尝试启动多个 Minecraft 实例，您确定么？
@@ -117,18 +99,11 @@ curseforge:
   file:
     gameVersion: 游戏版本
     modLoader: 模组加载器类型
-  install: 安装
   installTo: 安装到 {path}
   installToStorage: 安装到库
   lastUpdate: 上次更新日期
-  project:
-    description: 简介
-    files: 文件
-    images: 图片
-  recentFiles: 近期文件
+  project: {}
   releasedDate: 发布日期
-  search: 搜索
-  totalDownloads: 总下载量
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API 和库
@@ -316,11 +291,7 @@ eula:
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查您的网络。如果此问题持续出现，请联系开发团队。'
 existed: 已导入过的
-exportModpackTarget:
-  curseforge: Curseforge 文件
-  github: Github
-  modrinth: Modrinth 文件
-  override: Override 文件 (打包)
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth 整合包
   zip: Zip 压缩包
@@ -376,10 +347,7 @@ gameType:
 help: 帮助
 home: 主页
 importModpack:
-  failed: 创建 {modpack} 整合包失败
   name: 导入整合包
-  success: 成功导入 {modpack} 整合包
-importResource: 导入资源
 install: 安装
 installAssets:
   asset: 下载 {count} 个资源文件
@@ -525,14 +493,8 @@ instanceSetting:
   showLog: Minecraft 启动后显示日志
   showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
 instanceTemplate:
-  curseforge: 这是一个 Curseforge 整合包
   ftb: 这是一个 FTB 的整合包配置
-  importing: 模板导入
-  mcbbs: 这是一个 MCBBS 整合包
-  modpack: 这是一个整合包配置
-  modrinth: 这是一个 Modrinth 的整合包
   preview: 预览
-  title: 模板设置
 instanceUpdate:
   basic: 设置更新
   files: 文件更新
@@ -606,7 +568,6 @@ launch:
   launch: 启动
   launchAnyway: 直接启动
 launchBlocked:
-  ignore: 强制启动
   launchBadVersion:
     description: 版本 {version} 的 JSON 内有无法解析的库，也许您需要重新安装此版本？
     title: 版本 JSON 可能损坏
@@ -738,7 +699,6 @@ me:
   viewByDate: 按日期查看
   viewByFolder: 按文件夹查看
 minecraftVersion:
-  empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本
   release: 正式版
   showAlpha: 显示快照版
@@ -747,31 +707,26 @@ mod:
   acceptVersion: 推荐 {version}
   applyGroupRules: 应用已保存的分组规则
   compatible: 可用于当前版本。
+  createGroup: 创建分组
   currentVersion: 当前是 {current}
   deletion: 删除模组
   deletionHint: 您将移除这个模组的文件和信息。您确定吗？| 您将移除这些模组的文件和信息。您确定吗？
   deletionRestHint: 等 {rest} 个模组……
   denseView: 简略模式
+  disableAll: 全部禁用
   dropHint: 将模组 Jar 文件拖入此处来导入
   duplicatedDetected: 有 {count} 个模组重复了
   duplicatedDetectedDescription: |-
     找到具有相同 mod id 但文件不同的 mod。
     这可能会导致 Minecraft 崩溃。
     请选择您要保留的文件。
-  enabled: 一共启用了 {count} 个模组
   enableAll: 全部启用
-  disableAll: 全部禁用
+  enabled: 一共启用了 {count} 个模组
   filter: 筛选模组
   group: 分组
   groupInstalled: 分开显示已安装模组
-  selectOrCreateGroup: 选择或创建分组
-  searchGroups: 搜索分组...
-  newFolder: 新建文件夹
-  noGroupsYet: 还没有分组，创建一个吧！
-  noGroupsFound: 未找到分组
   groupName: 分组名称
   groupNameRequired: 分组名称是必需的
-  createGroup: 创建分组
   hasUpdate: mod有一个新版本！
   hideIncompatible: 隐藏不兼容模组
   incompatible: 可能不兼容当前版本。
@@ -787,12 +742,17 @@ mod:
   modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
   mods: '{count} 个模组'
   name: 模组 | 模组
+  newFolder: 新建文件夹
+  noGroupsFound: 未找到分组
+  noGroupsYet: 还没有分组，创建一个吧！
   noModLoaderHint: 请不要忘记选择模组加载器来加载模组
   openLink: 打开模组链接 {url}
   search: 搜索模组
+  searchGroups: 搜索分组...
   searchOnCurseforge: 在 Curseforge 上搜索 {name}
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜索 {name}
+  selectOrCreateGroup: 选择或创建分组
   showDirectory: 显示模组文件夹
   showFile: 打开模组所在位置 {file}
   showInCurseforge: 在 Curseforge 上显示该模组
@@ -812,6 +772,11 @@ modInstall:
   archived: |-
     {name} 已存档。
     除非作者决定取消存档该项目，否则 {name} 将不会收到任何进一步的更新。
+  autoUpgrade:
+    description: 您已更改 Minecraft 版本。是否要自动将兼容的模组更新到与 Minecraft {version} 匹配的版本？
+    'no': 跳过
+    title: 更新模组？
+    'yes': 更新模组
   checkDependencies: 检查依赖关系
   checkUpgrade: 检查模组更新
   checkedDependencies: 已检查依赖关系
@@ -831,12 +796,6 @@ modInstall:
   source: 模组来源
   switch: 切换版本
   upgrade: 更新模组
-  autoUpgrade:
-    title: 更新模组？
-    description: >-
-      您已更改 Minecraft 版本。是否要自动将兼容的模组更新到与 Minecraft {version} 匹配的版本？
-    yes: 更新模组
-    no: 跳过
 modSearch:
   noLocalModsFound: 未找到匹配搜索的本地模组。
   noModsFound: 未找到模组。
@@ -1045,10 +1004,6 @@ modrinth:
   wikiUrl: 百科链接
 modrinthCard:
   currentVersion: 当前版本
-  projectHint: >
-    这个实例是从 Modrinth 整合包 <code class="rounded bg-[rgba(123,123,123,0.2)] p-1">{
-    title}</code> (项目 ID:
-          <code class="rounded bg-[rgba(123,123,123,0.2)] p-1">{id}</code>) 创建的
 multiplayer:
   allowTurn: 允许转发服务
   allowTurnHint: 当您和您的朋友连不上时可以尝试允许转发服务，但是转发服务可能会增加您的联机延迟。使用时请注意。
@@ -1127,7 +1082,6 @@ natType:
 neoForgedVersion:
   disable: 不使用 NeoForge
   empty: Minecraft {version} 不支持 NeoForge
-  name: NeoForge
 news:
   name: 新闻
   readMore: 阅读更多
@@ -1315,17 +1269,11 @@ serverStatus:
   timeout: 服务器响应超时！
 setting:
   about: 关于
-  allowPrerelease: 是否下载抢先版
-  allowPrereleaseDescription: 抢先版可能不是那么稳定
   apiSets:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
   appearance: 外观
   appxUpdateHint: 启动器将下载并执行安装包，如果安装包解析失败，请尝试自行打开安装文件更新。
-  autoDownload: 自动下载
-  autoDownloadDescription: 自动下载最新的版本
-  autoInstallOnAppQuit: 自动安装
-  autoInstallOnAppQuitDescription: 每次 App 退出后自动安装更新
   backdropBlur: 背景模糊
   backgroundColorAbove: 将背景颜色显示为叠加层
   backgroundColorAboveDescription: 这将使背景颜色显示在背景图像或视频上方。
@@ -1410,8 +1358,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 此选项为 Minecraft 进程分配专用 GPU。
   linuxTitlebar: 原生顶端栏
   linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
-  windowTranslucent: 窗口透明效果
-  windowTranslucentDescription: 启用窗口透明效果（Windows 11 上为 Mica，Windows 10 上为 Acrylic，macOS 上为 Vibrancy）。需要重启启动器。
   location: 数据存储位置
   manualUpdateHint: 版本无法自动更新。请从官方网站重新下载启动器！
   maunalUpdateHint: |-
@@ -1463,6 +1409,10 @@ setting:
   useProxy: HTTP 代理服务器设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
   viewBackgroundMusic: 查看背景音乐
+  windowTranslucent: 窗口透明效果
+  windowTranslucentDescription: >-
+    启用窗口透明效果（Windows 11 上为 Mica，Windows 10 上为 Acrylic，macOS 上为
+    Vibrancy）。需要重启启动器。
 settingLabel:
   global: 全局配置
   globalHint: 此配置已使用全局配置
@@ -1548,10 +1498,8 @@ tag:
   createSelected: 为所有选中的创建标签
   newTag: 新标签
 task:
-  available: 可用
   cancelled: 已取消
   clear: 清除已完成的任务
-  compatible: 格式 {format} 与 {version} 兼容
   connection:
     connected: 已连接
     free: 空闲
@@ -1560,16 +1508,9 @@ task:
     running: 连接中
     size: 总数
   connections: 网络连接
-  delete:
-    content: |-
-      这将删除光盘中的纹理包文件，我们将无法恢复它。
-       您确定可以恢复吗？
-    title: 删除纹理包
-  dropHint: 将文件夹/压缩纹理拖放到此处进行导入。
+  delete: {}
   empty: 目前没有运行中的任务
-  enable: 已启用的纹理包： {count}
   failed: 失败
-  import: 导入纹理包
   incompatible: 文本堆栈格式（{format}）不兼容。匹配 {accept}。当前的 {actual}。
   manage: Texturpak
   manager: 任务管理器
@@ -1578,7 +1519,6 @@ task:
   pause: 暂停
   searchOnCurseforge: 在 curseforge 上搜索 {name}
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: 最喜欢的纹理包
   showFile: 打开文件夹中的纹理包 {file}
   showInCurseforge: 在 curseforge 上显示 {name}
   unselected: 未选择的纹理包
@@ -1702,18 +1642,18 @@ userCape:
 userService:
   add: 添加更多验证或玩家信息服务器
   authLibInjector: 按照 authlib-injector 推荐流程创建
+  authlibInjectorMetadata: Authlib-Injector 元数据
   baseUrlHint: 第三方服务器的根 URL
+  homepage: 主页
+  implementation: 实现
+  manageServices: 管理服务
+  register: 注册
+  server: 服务器
   service: null
+  skinDomains: 皮肤域名
   title: 第三方玩家信息服务
   validateHint: 用来检验玩家凭证有效性
-  manageServices: 管理服务
-  authlibInjectorMetadata: Authlib-Injector 元数据
-  server: 服务器
-  implementation: 实现
   version: 版本
-  skinDomains: 皮肤域名
-  homepage: 主页
-  register: 注册
 userServices:
   microsoft:
     account: 微软账号

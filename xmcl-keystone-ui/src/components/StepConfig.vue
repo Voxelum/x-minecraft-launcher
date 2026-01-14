@@ -9,51 +9,43 @@
       :value="valid"
       @input="onUpdate"
     >
-      <v-list
-        three-line
-        subheader
-        color="transparent"
-        style="width: 100%"
-      >
-        <v-list-item>
-          <div class="mt-4 grid grid-cols-4 gap-4">
-            <v-text-field
-              v-model="content.name"
-              outlined
-              autofocus
-              :loading="loading"
-              :disabled="loading"
-              persistent-hint
-              persistent-placeholder
-              :hint="t('instance.nameHint')"
-              :placeholder="placeHolderName"
-              :label="t('name')"
-              :rules="nameRules"
-              required
-            />
-            <v-text-field
-              v-model="content.author"
-              :loading="loading"
-              :disabled="loading"
-              outlined
-              persistent-hint
-              :hint="t('modpack.authorHint')"
-              :label="t('author')"
-              required
-            />
-            <v-text-field
-              v-model="content.description"
-              :loading="loading"
-              :disabled="loading"
-              class="col-span-2"
-              outlined
-              persistent-hint
-              :hint="t('modpack.descriptionHint')"
-              :label="t('description')"
-            />
-          </div>
-        </v-list-item>
-      </v-list>
+      <div class="grid grid-cols-4 gap-4 mb-4">
+        <v-text-field
+          v-model="content.name"
+          outlined
+          autofocus
+          class="col-span-2"
+          :loading="loading"
+          :disabled="loading"
+          persistent-hint
+          persistent-placeholder
+          :hint="t('instance.nameHint')"
+          :placeholder="placeHolderName"
+          :label="t('name')"
+          :rules="nameRules"
+          required
+        />
+        <v-text-field
+          v-model="content.author"
+          :loading="loading"
+          :disabled="loading"
+          outlined
+          class="col-span-2"
+          persistent-hint
+          :hint="t('modpack.authorHint')"
+          :label="t('author')"
+        />
+        <v-text-field
+          v-model="content.description"
+          :loading="loading"
+          :disabled="loading"
+          class="col-span-4"
+          outlined
+          persistent-hint
+          :hint="t('modpack.descriptionHint')"
+          :label="t('description')"
+        />
+      </div>
     </v-form>
     <StepperAdvanceContent :valid.sync="valid" />
     <v-subheader v-if="loading || error || files.length > 0">

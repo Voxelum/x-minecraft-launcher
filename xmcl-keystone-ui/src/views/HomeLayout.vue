@@ -44,11 +44,15 @@ import HomeDropModpackDialog from './HomeDropModpackDialog.vue'
 
 const router = useRouter()
 
-router.afterEach((r) => {
+const removeAfterEach = router.afterEach((r) => {
   document.title = `XMCL KeyStone - ${r.fullPath}`
   if (containerRef.value) {
     containerRef.value.scrollTop = 0
   }
+})
+
+onUnmounted(() => {
+  removeAfterEach()
 })
 
 const headerEl = ref(null as null | HTMLDivElement)

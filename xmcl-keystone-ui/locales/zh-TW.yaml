@@ -2,9 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: |-
     我們發現多個啟動設定檔案。
     請選擇其中的一項進行匯入。
-  configTitle: 實例設定
   createTitle: 建立遊戲
-  downloadedNotification: '{name} 模組包下載完成，您想要現在建立嗎？'
   serverTitle: 輸入您的伺服器位址
 AppShareInstanceDialog:
   alterDownloadDescription: |-
@@ -17,7 +15,6 @@ AppShareInstanceDialog:
   downloadDescription: 請確認您的聯機夥伴提供的檔案，並選擇您要下載的項目。檔案將下載到目前實例 {name} 中。
   downloadNotifyTitle: 從 {user} 下載實例
   downloadTitle: 從其他玩家那獲得遊戲資源
-  downloadToLocal: 下載到目前實例中
   filesToDownload: 選擇您想下載的檔案
   filesToShare: 選擇分享的檔案
   instanceShare: '{user} 給您分享了他的遊戲設定'
@@ -30,32 +27,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: 在 FTB 中搜尋
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: 更新日誌
-  details: 具體資訊
-  install: 安裝 {version}
-  overview: 總覽
-  versions: 版本
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Java 版本可能不相容
   incompatibleJavaHint: Java {javaVersion} 可能無法執行已選擇的 Minecraft 版本
   missingJava: 沒有找到 Java
   missingJavaHint: 啟動器在您的電腦上沒有找到任何Java。您可以嘗試：
-  needDownloadHint: 在您的電腦上沒找到合適的 Java 版本，推薦下載新的 Java。
-  optionAutoDownload:
-    message: 啟動器將從 Mojang 來源下載並安裝 Java {version}
-    name: 自動下載
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: 也許只是啟動器沒找到您電腦上的 Java，您可以手動選擇一下。
-    name: 手動選擇 Java 的位置
+  optionSelectJava: {}
   optionSwitch:
-    disabled: 在電腦上沒有檢測到 Java {version}，無法切換！
-    message: 啟動器將使用您現在安裝的 {version}
     name: 切換到已有的 Java {version}
-  recommendedVersionHint: 版本 {version} 推薦使用 Java 版本範圍 {range}。
-  selectMatchedHint: 已找到符合的本地 Java 版本，您可以選擇這些本地 Java。
-  selectSecondaryHint: 已找到一些本地 Java 版本，但可能不完全符合需求。您仍可用這些版本啟動遊戲，但此問題提示仍會顯示。
 HomeLaunchMultiInstanceDialog:
   confirm: 是的，多實例啟動
   description: 正在嘗試啟動多個 Minecraft 實例，您確定嗎？
@@ -115,18 +97,11 @@ curseforge:
   file:
     gameVersion: 遊戲版本
     modLoader: 模組載入器類型
-  install: 安裝
   installTo: 安裝到 {path}
   installToStorage: 安裝到儲存庫
   lastUpdate: 上次更新日期
-  project:
-    description: 簡介
-    files: 檔案
-    images: 圖片
-  recentFiles: 近期檔案
+  project: {}
   releasedDate: 釋出日期
-  search: 搜尋
-  totalDownloads: 總下載量
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API 和函式庫
@@ -310,11 +285,7 @@ eula:
 exception:
   http: '{url} 的 HTTP 請求失敗。狀態碼 {statusCode}。{code}。請重試或檢查您的網路。如果此問題持續出現，請回報給開發團隊。'
 existed: 已匯入過的
-exportModpackTarget:
-  curseforge: Curseforge 檔案
-  github: Github
-  modrinth: Modrinth 檔案
-  override: Override 檔案 (打包)
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth 模組包
   zip: Zip 壓縮檔
@@ -370,10 +341,7 @@ gameType:
 help: 幫助
 home: 主頁
 importModpack:
-  failed: 建立 {modpack} 模組包失敗
   name: 匯入模組包
-  success: 成功匯入 {modpack} 模組包
-importResource: 匯入資源
 install: 安裝
 installAssets:
   asset: 下載 {count} 個資源檔案
@@ -519,14 +487,8 @@ instanceSetting:
   showLog: Minecraft 啟動後顯示日誌
   showLogHint: 遊戲開啟後將彈出一個顯示 Minecraft 日誌的視窗
 instanceTemplate:
-  curseforge: 這是一個 Curseforge 模組包
   ftb: 這是一個 FTB 的模組包設定
-  importing: 模板匯入
-  mcbbs: 這是一個 MCBBS 模組包
-  modpack: 這是一個模組包設定
-  modrinth: 這是一個 Modrinth 的模組包
   preview: 預覽
-  title: 模板設定
 instanceUpdate:
   basic: 設定更新
   files: 檔案更新
@@ -600,7 +562,6 @@ launch:
   launch: 啟動
   launchAnyway: 直接啟動
 launchBlocked:
-  ignore: 強制啟動
   launchBadVersion:
     description: 版本 {version} 的 JSON 內有無法解析的庫，也許您需要重新安裝此版本？
     title: 版本 JSON 可能損壞
@@ -730,7 +691,6 @@ me:
   viewByDate: 按日期檢視
   viewByFolder: 按資料夾檢視
 minecraftVersion:
-  empty: 無法載入 Minecraft 版本列表
   name: Minecraft 版本
   release: 正式版
   showAlpha: 顯示快照版
@@ -739,31 +699,26 @@ mod:
   acceptVersion: 推薦 {version}
   applyGroupRules: 套用已儲存的分組規則
   compatible: 可用於目前版本。
+  createGroup: 建立分組
   currentVersion: 目前是 {current}
   deletion: 刪除模組
   deletionHint: 您將移除這個模組的檔案和資訊。您確定嗎？| 您將移除這些模組的檔案和資訊。您確定嗎？
   deletionRestHint: 等 {rest} 個模組……
   denseView: 密集檢視
+  disableAll: 全部停用
   dropHint: 將模組 Jar 檔案拖入此處來匯入
   duplicatedDetected: 有 {count} 個模組重複了
   duplicatedDetectedDescription: |-
     找到具有相同 mod id 但檔案不同的 mod。
     這可能會導致 Minecraft 當機。
     請選擇您要保留的檔案。
-  enabled: 一共啟用了 {count} 個模組
   enableAll: 全部啟用
-  disableAll: 全部停用
+  enabled: 一共啟用了 {count} 個模組
   filter: 篩選模組
   group: 分組
   groupInstalled: 分開顯示已安裝模組
-  selectOrCreateGroup: 選擇或建立分組
-  searchGroups: 搜尋分組...
-  newFolder: 新增資料夾
-  noGroupsYet: 還沒有分組，建立一個吧！
-  noGroupsFound: 未找到分組
   groupName: 分組名稱
   groupNameRequired: 分組名稱是必填的
-  createGroup: 建立分組
   hasUpdate: 模組有新版本！
   hideIncompatible: 隱藏不相容模組
   incompatible: 可能不相容目前版本。
@@ -779,12 +734,17 @@ mod:
   modloaderSelectNotSupported: 找不到 Minecraft {minecraft} 的 {modloader}
   mods: '{count} 個模組'
   name: 模組 | 模組
+  newFolder: 新增資料夾
+  noGroupsFound: 未找到分組
+  noGroupsYet: 還沒有分組，建立一個吧！
   noModLoaderHint: 請不要忘記選擇模組載入器來載入模組
   openLink: 開啟模組連結 {url}
   search: 搜尋模組
+  searchGroups: 搜尋分組...
   searchOnCurseforge: 在 Curseforge 上搜尋 {name}
   searchOnMcWiki: 在 MC 百科中查詢 {name}
   searchOnModrinth: 在 Modrinth 中搜尋 {name}
+  selectOrCreateGroup: 選擇或建立分組
   showDirectory: 顯示模組資料夾
   showFile: 開啟模組所在位置 {file}
   showInCurseforge: 在 Curseforge 上顯示該模組
@@ -804,6 +764,11 @@ modInstall:
   archived: |-
     {name} 已存檔。
     除非作者決定取消存檔該項目，否則 {name} 將不會收到任何進一步的更新。
+  autoUpgrade:
+    description: 您已變更 Minecraft 版本。是否要自動將相容的模組更新至與 Minecraft {version} 相符的版本？
+    'no': 略過
+    title: 更新模組？
+    'yes': 更新模組
   checkDependencies: 檢查相依性
   checkUpgrade: 檢查模組更新
   checkedDependencies: 已檢查相依性
@@ -823,12 +788,6 @@ modInstall:
   source: 模組來源
   switch: 切換版本
   upgrade: 更新模組
-  autoUpgrade:
-    title: 更新模組？
-    description: >-
-      您已變更 Minecraft 版本。是否要自動將相容的模組更新至與 Minecraft {version} 相符的版本？
-    yes: 更新模組
-    no: 略過
 modSearch:
   noLocalModsFound: 未找到符合搜尋的本機模組。
   noModsFound: 未找到模組。
@@ -1033,10 +992,6 @@ modrinth:
   wikiUrl: 百科連結
 modrinthCard:
   currentVersion: 目前版本
-  projectHint: >
-    這個實例是從 Modrinth 模組包 <code class="rounded bg-[rgba(123，123，123，0.2)] p-1">{
-    title}</code> (專案 ID:
-          <code class="rounded bg-[rgba(123，123，123，0.2)] p-1">{id}</code>) 建立的
 multiplayer:
   allowTurn: 啟用中繼伺服器
   allowTurnHint: 當您和您的朋友連不上時可以嘗試啟用中繼伺服器，但是使用中繼伺服器可能會增加您的聯機延遲。使用時請注意。
@@ -1115,7 +1070,6 @@ natType:
 neoForgedVersion:
   disable: 不使用 NeoForge
   empty: Minecraft {version} 不支援 NeoForge
-  name: NeoForge
 news:
   name: 最新消息
   readMore: 閱讀更多
@@ -1289,17 +1243,11 @@ serverStatus:
   timeout: 伺服器響應超時！
 setting:
   about: 關於
-  allowPrerelease: 是否下載搶先版
-  allowPrereleaseDescription: 搶先版可能不是那麼穩定
   apiSets:
     auto: 自動 (根據網路決定)
     official: 官方 (Mojang)
   appearance: 外觀
   appxUpdateHint: 啟動器將下載並執行安裝包，如果安裝包解析失敗，請嘗試自行開啟安裝檔案更新。
-  autoDownload: 自動下載
-  autoDownloadDescription: 自動下載最新的版本
-  autoInstallOnAppQuit: 自動安裝
-  autoInstallOnAppQuitDescription: 每次 App 退出後自動安裝更新
   backdropBlur: 背景模糊
   backgroundColorAbove: 將背景顏色顯示為疊加層
   backgroundColorAboveDescription: 這將使背景顏色顯示在背景影象或影片上方。
@@ -1380,8 +1328,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 此選項為 Minecraft 程序指定專用 GPU。
   linuxTitlebar: 原生頂端欄
   linuxTitlebarDescription: 使用 Linux 系統原生的頂端欄
-  windowTranslucent: 視窗透明效果
-  windowTranslucentDescription: 啟用視窗透明效果（Windows 11 上為 Mica，Windows 10 上為 Acrylic，macOS 上為 Vibrancy）。需要重新啟動啟動器。
   location: 資料儲存位置
   manualUpdateHint: 版本無法自動更新。請從官方網站重新下載啟動器！
   maunalUpdateHint: |-
@@ -1436,6 +1382,10 @@ setting:
   useProxy: HTTP 代理伺服器設定
   useProxyDescription: HTTP 請求的代理伺服器位址
   viewBackgroundMusic: 檢視背景音樂
+  windowTranslucent: 視窗透明效果
+  windowTranslucentDescription: >-
+    啟用視窗透明效果（Windows 11 上為 Mica，Windows 10 上為 Acrylic，macOS 上為
+    Vibrancy）。需要重新啟動啟動器。
 settingLabel:
   global: 全域性設定
   globalHint: 此設定已使用全域性設定
@@ -1519,10 +1469,8 @@ tag:
   createSelected: 為所有選中的建立標籤
   newTag: 新標籤
 task:
-  available: 可用
   cancelled: 已取消
   clear: 清除已完成的任務
-  compatible: '{format} 格式與 {version} 相容。'
   connection:
     connected: 已連線
     free: 空閒
@@ -1531,16 +1479,9 @@ task:
     running: 連線中
     size: 總數
   connections: 網路連線
-  delete:
-    content: |-
-      這將會刪除光碟中的 texturepack 檔案，我們將無法復原它。
-       您確定可以復原嗎？
-    title: 刪除 texturepack
-  dropHint: 將資料夾/壓縮材質拖放至此即可匯入。
+  delete: {}
   empty: 目前沒有執行中的任務
-  enable: '已啟用的材質包: {count}'
   failed: 失敗
-  import: 匯入 texturepack
   incompatible: 不相容的文字堆疊格式 ({format})。匹配 {accept}. 目前的 {actual}.
   manage: Texturpak
   manager: 工作管理員
@@ -1549,7 +1490,6 @@ task:
   pause: 暫停
   searchOnCurseforge: 在 curseforge 上搜尋 {name}
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: 最喜歡的材質包
   showFile: 開啟資料夾中的 texturepack {file}
   showInCurseforge: 在 curseforge 上顯示 {name}
   unselected: 未選擇的材質包
@@ -1673,18 +1613,18 @@ userCape:
 userService:
   add: 新增更多驗證或玩家資訊伺服器
   authLibInjector: 按照 authlib-injector 推薦流程建立
-  baseUrlHint: 第三方伺服器的根 URL
-  manageServices: 管理服務
   authlibInjectorMetadata: Authlib-Injector 元資料
-  server: 伺服器
-  implementation: 實現
-  version: 版本
-  skinDomains: 皮膚網域
+  baseUrlHint: 第三方伺服器的根 URL
   homepage: 主頁
+  implementation: 實現
+  manageServices: 管理服務
   register: 註冊
+  server: 伺服器
   service: null
+  skinDomains: 皮膚網域
   title: 第三方玩家資訊服務
   validateHint: 用來檢驗玩家憑證有效性
+  version: 版本
 userServices:
   microsoft:
     account: 微軟帳號

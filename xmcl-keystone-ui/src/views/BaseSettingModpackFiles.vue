@@ -88,7 +88,7 @@ import SettingItem from '@/components/SettingItem.vue'
 import SettingSubheader from '@/components/SettingSubheader.vue'
 import { useRefreshable, useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
-import { InstanceFileExportData, InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { InstanceFileNode, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
 import { useInstanceModpackMetadata } from '@/composables/instanceModpackMetadata'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kModpackExport } from '@/composables/modpack'
@@ -98,7 +98,7 @@ import { getModSides } from '@/util/modSides'
 import { getExpectedSize } from '@/util/size'
 import { syncRef } from '@vueuse/core'
 import type { InstanceFile } from '@xmcl/instance'
-import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModMetadataServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
+import { ExportFileDirective, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceResourcePacksServiceKey, InstanceShaderPacksServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 
 const { t } = useI18n()
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)

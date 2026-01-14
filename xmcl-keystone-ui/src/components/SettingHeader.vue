@@ -1,24 +1,35 @@
 <template>
   <div
-    class="v-heading w-full"
+    class="v-heading w-full select-none"
   >
-    <h3 class="xtext-h5 my-4">
-      <slot />
+    <h3 class="xtext-h5">
+      <v-icon color="primary" left v-if="icon">{{ icon }}</v-icon>
+      {{ title }}
     </h3>
-    <v-divider />
+    <v-subheader v-if="subtitle" class="p-0 h-[1.25rem]">
+      {{ subtitle }}
+    </v-subheader>
   </div>
 </template>
+<script setup lang="ts">
+defineProps<{
+  title: string
+  icon?: string
+  subtitle?: string
+}>()
+</script>
 <style scoped>
   .v-heading {
     display: inline-block;
     top: 0;
-    padding: 0 16px;
+    padding: 0 .25rem .5rem 0.1rem;
     z-index: 3;
   }
   .xtext-h5 {
-    font-size: 1.4rem !important;
-    font-weight: 400;
-    line-height: 1.8rem;
+    font-size: 1.25rem !important;
+    display: flex;
+    /* font-weight: 400;
+    line-height: 1.8rem; */
     letter-spacing: normal !important;
     text-transform: none !important;
   }

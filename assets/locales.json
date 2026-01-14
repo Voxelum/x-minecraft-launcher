@@ -1,19 +1,21 @@
 {
-  "zh-CN": "简体中文",
-  "zh-TW": "繁體中文",
   "en": "English",
-  "ru": "Русский язык",
   "es-ES": "Español",
   "fr": "Français",
   "it-IT": "italiano",
-  "uk": "Українська мова",
   "pl": "Język polski",
   "nl": "Nederlands",
   "gl": "Galego",
+  "tr": "Türkçe",
   "de": "Deutsch",
   "hu": "Magyar",
-  "ja-JP": "日本語",
   "lolcat": "LOLCAT",
   "pt-BR": "Português-BR",
-  "ko": "한국어"
+  "zh-CN": "简体中文",
+  "zh-TW": "繁體中文",
+  "ja-JP": "日本語",
+  "ko": "한국어",
+  "kz": "Қазақша",
+  "ru": "Русский язык",
+  "uk": "Українська мова"
 }

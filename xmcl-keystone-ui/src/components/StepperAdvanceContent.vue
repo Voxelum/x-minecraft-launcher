@@ -1,7 +1,5 @@
 <template>
-  <v-list
-    two-line
-    subheader
+  <div
     style="background: transparent; width: 100%"
   >
     <div class="mx-4 grid grid-cols-4 gap-4">
@@ -90,7 +88,7 @@
       :versions="versions"
       @input="onSelectLocalVersion"
     />
-  </v-list>
+  </div>
 </template>
 
 <script lang=ts setup>

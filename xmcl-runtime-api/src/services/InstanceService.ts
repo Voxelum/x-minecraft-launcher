@@ -179,7 +179,7 @@ export interface InstanceService {
    * Delete the managed instance from the disk
    * @param path The instance path
    */
-  deleteInstance(path?: string): Promise<void>
+  deleteInstance(path?: string, deleteData?: boolean): Promise<void>
   /**
    * Duplicate the instance.
    */

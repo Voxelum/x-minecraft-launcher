@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative flex h-full select-none flex-col overflow-auto pb-0 market-base"
+    class="relative flex h-full select-none flex-col overflow-auto pb-0 market-base modern"
     style="box-sizing: border-box"
     @wheel.stop
   >

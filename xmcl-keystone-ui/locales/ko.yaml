@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: 여러 개의 실행 프로필이 감지되었습니다. 하나를 선택하여 가져오세요.
-  configTitle: 구성
   createTitle: 게임 생성
-  downloadedNotification: 모드 {name} 가 다운로드 되었습니다. 설치한 모드를 위한 새로운 인스턴스를 생성할까요?
   serverTitle: 서버 주소를 입력하세요.
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -14,7 +12,6 @@ AppShareInstanceDialog:
   downloadDescription: 상대방이 제공한 파일을 확인해주세요. 다운로드할 파일을 선택하면 현재 인스턴스 {name} 에 저장됩니다.
   downloadNotifyTitle: '{user} 에게서 인스턴트 다운로드'
   downloadTitle: 다른 사용자에게서 파일 다운로드
-  downloadToLocal: 현재 인스턴트에 다운로드
   filesToDownload: 다우놀드 받을 파일들을 선택해주세요.
   filesToShare: 공유할 파일들을 선택해주세요.
   instanceShare: '{user} 가 당신에게 현재 인스턴트를 공유했어요.'
@@ -27,34 +24,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: FTB에서 검색
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: 변경 사항
-  details: 자세리
-  install: '{version} 설치'
-  overview: 개요
-  versions: 버전들
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: 호한되지 않는 자바
   incompatibleJavaHint: 현재 자바는 선택된 마인크래프트와 호환되지 않을 거예요.
   missingJava: 자바 없음
   missingJavaHint: '런처가 사용자의 컴퓨터에서 자바를 감지하지 못했어요 시도해보세요:'
-  needDownloadHint: 컴퓨터에서 맞는 자바 버전을 찾을수 없어요. 새로운 것을 다운로드 하세요.
-  optionAutoDownload:
-    message: 런처가 Mojang의 소스에서 자바를 다운로드하여 설치 할게요.
-    name: 자동 다운로드
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: 런처가 사용자의 자바를 찾지 못했을 수 있어요. 자바가 어디있는지 직접 알려줄 수 있어요.
-    name: 사용자의 컴퓨터에서 자바를 선택해주세요.
+  optionSelectJava: {}
   optionSwitch:
-    disabled: 데이터베이스에서 자바 {version} 를 찾을수 없어요!
-    message: 컴퓨터에 있는 자바 {version} 사용하기
     name: '{version} 로 변경했어요.'
-  recommendedVersionHint: '{version}에서는 자바 {range} 버전을 사용하는 것이 권장됩니다.'
-  selectMatchedHint: 컴퓨터에서 적절한 자바 버전을 찾았어요. 여기서 원하는 버전을 선택해주세요.
-  selectSecondaryHint: >-
-    컴퓨터에서 몇 가지 자바 버전을 찾았지만, 기준에 맞지 않을 수 있어요. 그래도 실행하는 데는 쓸 수 있지만, 문제는 계속 뜰 수
-    있습니다.
 HomeLaunchMultiInstanceDialog:
   confirm: 예, 실행
   description: Minecraft 인스턴스를 여러 개 실행하려고 해요. 계속하시겠습니까?
@@ -112,18 +92,11 @@ curseforge:
   file:
     gameVersion: 게임 버전
     modLoader: 모드 로더
-  install: 설치
   installTo: '{path} 에 설치'
   installToStorage: 저장공간에 설치
   lastUpdate: 마지막 업데이트 날자
-  project:
-    description: 설명
-    files: 파일
-    images: 이미지
-  recentFiles: 최근 파일
+  project: {}
   releasedDate: 출시 날자
-  search: 검색
-  totalDownloads: 총합 다운로드 횟수
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API와 라이브러리
@@ -299,11 +272,7 @@ exception:
     {url} 로의 HTTP 요청이 실패했습니다. 상태 코드 {statusCode}. {code}. 다시 시도하거나 네트워크를 확인하세요.
     오류가 지속되면 개발팀에 보고서를 보내주세요.
 existed: 이미 존재함
-exportModpackTarget:
-  curseforge: Curseforge 파일
-  github: Github 파일
-  modrinth: Modrinth 파일
-  override: Override(원본) 파일
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth 모드팩
   zip: Zip 파일
@@ -359,10 +328,7 @@ gameType:
 help: 도움말
 home: 홈
 importModpack:
-  failed: '{modpack} 가져오기에 실패했습니다'
   name: 모드팩 가져오기
-  success: '{modpack} 가져오기에 성공했습니다'
-importResource: 리소스 가져오기
 install: 설치
 installAssets:
   asset: 에셋 {count} 개 설치
@@ -502,14 +468,8 @@ instanceSetting:
   showLog: 마인크래프트 로그 표시
   showLogHint: 게임 시작 후 마인크래프트 로그를 스트리밍하는 창이 팝업됩니다
 instanceTemplate:
-  curseforge: 이것은 Curseforge 모드팩입니다
   ftb: 이것은 FTB 모드팩입니다
-  importing: 템플릿 가져오는 중
-  mcbbs: 이것은 MCBBS 모드팩입니다
-  modpack: 이것은 원시 모드팩입니다
-  modrinth: 이것은 Modrinth 모드팩입니다
   preview: 모드팩 미리보기
-  title: 템플릿 설정
 instanceUpdate:
   basic: 설정 업데이트
   files: 파일 업데이트
@@ -570,7 +530,6 @@ launch:
   launch: 실행
   launchAnyway: 무시하고 실행
 launchBlocked:
-  ignore: 강제 실행
   launchBadVersion:
     description: 버전 {version}의 JSON에 문제가 있습니다. 재설치를 시도해 보세요.
     title: 잘못된 버전 JSON
@@ -698,7 +657,6 @@ me:
   recentPlay: 최근 플레이
   versions: 설치된 버전
 minecraftVersion:
-  empty: 마인크래프트 버전을 불러올 수 없습니다
   name: 마인크래프트 버전
   release: 정식
   showAlpha: 스냅샷 표시
@@ -707,6 +665,7 @@ mod:
   acceptVersion: '{version} 적용'
   applyGroupRules: 저장된 그룹 규칙 적용
   compatible: 호환되는 모드입니다.
+  createGroup: 그룹 생성
   currentVersion: 현재 {current}
   deletion: 모드 삭제
   deletionHint: >-
@@ -715,25 +674,19 @@ mod:
     you want to do that?
   deletionRestHint: 그리고 모드 {rest}개 더...
   denseView: 밀집 보기
+  disableAll: 모두 비활성화
   dropHint: 모드의 .jar/.litemod를 여기로 드래그하여 가져오세요.
   duplicatedDetected: 중복된 모드 {count}개 발견
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
-  enabled: '{count} 개 모드 활성화됨'
   enableAll: 모두 활성화
-  disableAll: 모두 비활성화
+  enabled: '{count} 개 모드 활성화됨'
   filter: 모드 필터
   group: 그룹화
   groupInstalled: 설치된 모드 그룹화
-  selectOrCreateGroup: 그룹 선택 또는 생성
-  searchGroups: 그룹 검색...
-  newFolder: 새 폴더
-  noGroupsYet: 아직 그룹이 없습니다. 하나 만드세요!
-  noGroupsFound: 그룹을 찾을 수 없음
   groupName: 그룹 이름
   groupNameRequired: 그룹 이름이 필요합니다
-  createGroup: 그룹 생성
   hasUpdate: 새 버전의 모드가 있습니다!
   hideIncompatible: 호환되지 않는 모드 숨기기
   incompatible: 호환되지 않는 모드입니다.
@@ -747,12 +700,17 @@ mod:
   modloaderSelectNotSupported: 마인크래프트 {minecraft}에 대한 {modloader}를 찾을 수 없습니다
   mods: 모드 {count} 개
   name: 모드
+  newFolder: 새 폴더
+  noGroupsFound: 그룹을 찾을 수 없음
+  noGroupsYet: 아직 그룹이 없습니다. 하나 만드세요!
   noModLoaderHint: 모드를 사용하려면 모드 로더를 활성화하는 것을 잊지 마세요!
   openLink: 모드 URL 열기 {url}
   search: 모드 검색
+  searchGroups: 그룹 검색...
   searchOnCurseforge: '{name} 을(를) Curseforge에서 검색'
   searchOnMcWiki: '{name} 을(를) MC 백과사전에서 찾기'
   searchOnModrinth: '{name} 을(를) Modrinth에서 검색'
+  selectOrCreateGroup: 그룹 선택 또는 생성
   showDirectory: 모드 디렉터리 열기
   showFile: 모드 경로 열기 {file}
   showInCurseforge: Curseforge에서 모드 보기
@@ -772,6 +730,13 @@ modInstall:
   archived: >-
     {name}이(가) 보관되었습니다. 제작자가 프로젝트를 보관 해제하기로 결정하지 않는 한 {name}은(는) 더 이상 업데이트를 받지
     않습니다.
+  autoUpgrade:
+    description: >-
+      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로 Minecraft {version}에 맞는 버전으로
+      업데이트하시겠습니까?
+    'no': 건너뛰기
+    title: 모드를 업데이트하시겠습니까?
+    'yes': 모드 업데이트
   checkDependencies: 의존성 확인
   checkUpgrade: 모드 업데이트 확인
   checkedDependencies: 확인된 의존성
@@ -791,13 +756,6 @@ modInstall:
   source: 모드 소스
   switch: 버전 전환
   upgrade: 모드 업그레이드
-  autoUpgrade:
-    title: 모드를 업데이트하시겠습니까?
-    description: >-
-      Minecraft 버전을 변경했습니다. 호환되는 모드를 자동으로
-      Minecraft {version}에 맞는 버전으로 업데이트하시겠습니까?
-    yes: 모드 업데이트
-    no: 건너뛰기
 modSearch:
   noLocalModsFound: 검색과 일치하는 로컬 모드를 찾을 수 없습니다.
   noModsFound: 모드를 찾을 수 없습니다.
@@ -1002,10 +960,6 @@ modrinth:
   wikiUrl: 위키
 modrinthCard:
   currentVersion: 현재 버전
-  projectHint: >
-    이 인스턴스는 Modrinth 모드팩 <code class="rounded p-1" style="background:
-    rgba(123,123,123,0.2)">{title}</code>에서 생성되었습니다 (프로젝트 ID:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: 릴레이 서버 사용
   allowTurnHint: >-
@@ -1088,7 +1042,6 @@ natType:
 neoForgedVersion:
   disable: NeoForged 비활성화
   empty: NeoForged는 {version}을(를) 지원하지 않습니다
-  name: NeoForged
 news:
   name: 뉴스
   readMore: 더 읽기
@@ -1258,17 +1211,11 @@ serverStatus:
   timeout: §4서버 연결 시간 초과!
 setting:
   about: 정보
-  allowPrerelease: 프리릴리즈 다운로드
-  allowPrereleaseDescription: 프리릴리즈는 불안정할 수 있습니다
   apiSets:
     auto: 자동 (네트워크에 따라 결정)
     official: 공식 (Mojang)
   appearance: 외관
   appxUpdateHint: 런처가 인스톨러를 다운로드하고 실행합니다. 팝업 인스톨러가 실패하면 수동으로 실행하세요.
-  autoDownload: 자동 다운로드
-  autoDownloadDescription: 사용 가능한 경우 자동으로 업데이트 다운로드
-  autoInstallOnAppQuit: 자동 설치
-  autoInstallOnAppQuitDescription: 앱 종료 시 업데이트 자동 설치
   backdropBlur: 배경 블러
   backgroundColorAbove: 배경색을 오버레이로 표시
   backgroundColorAboveDescription: 배경 이미지나 비디오 위에 배경색을 표시합니다.
@@ -1353,8 +1300,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: 이 옵션은 마인크래프트 프로세스에 전용 GPU를 할당합니다.
   linuxTitlebar: 네이티브 제목 표시줄
   linuxTitlebarDescription: 런처에 네이티브 Linux 제목 표시줄 사용
-  windowTranslucent: 창 투명도
-  windowTranslucentDescription: 반투명 창 효과를 활성화합니다 (Windows 11의 Mica, Windows 10의 Acrylic, macOS의 Vibrancy). 재시작이 필요합니다.
   location: 저장 위치
   manualUpdateHint: 버전을 자동으로 업데이트할 수 없습니다. 공식 웹사이트에서 런처를 다시 다운로드하세요!
   maunalUpdateHint: 버전을 자동 업데이트할 수 없습니다. 웹사이트에서 런처를 다시 다운로드하세요!
@@ -1403,6 +1348,10 @@ setting:
   useProxy: HTTP 프록시
   useProxyDescription: HTTP 요청을 위한 프록시 서버 주소
   viewBackgroundMusic: 음악 보기
+  windowTranslucent: 창 투명도
+  windowTranslucentDescription: >-
+    반투명 창 효과를 활성화합니다 (Windows 11의 Mica, Windows 10의 Acrylic, macOS의 Vibrancy).
+    재시작이 필요합니다.
 settingLabel:
   global: 전체
   globalHint: 이 설정은 모든 인스턴스에 적용됩니다
@@ -1485,10 +1434,8 @@ tag:
   createSelected: 선택된 항목에 태그 생성
   newTag: 새 태그
 task:
-  available: 사용 가능
   cancelled: 취소됨
   clear: 완료된 작업 지우기
-  compatible: '{format} 형식은 {version} 과(와) 호환됩니다'
   connection:
     connected: 연결됨
     free: 여유
@@ -1497,14 +1444,9 @@ task:
     running: 연결 실행 중
     size: 총 개수
   connections: 네트워크 연결
-  delete:
-    content: 텍스처팩 파일을 디스크에서 삭제하며, 복구할 수 없습니다. 정말로 복구할 수 있나요?
-    title: 텍스처팩 삭제
-  dropHint: 텍스처 폴더/zip을 여기로 드래그하여 가져오세요.
+  delete: {}
   empty: 실행 중인 작업 없음
-  enable: '포함된 텍스처팩: {count} 개'
   failed: 실패
-  import: 텍스처팩 가져오기
   incompatible: 호환되지 않는 텍스처팩 형식( {format} ). {accept} 에 맞음. 현재 {actual}.
   manage: 텍스처팩
   manager: 작업 관리자
@@ -1513,7 +1455,6 @@ task:
   pause: 일시정지
   searchOnCurseforge: Curseforge에서 {name} 검색
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: 즐겨찾는 텍스처팩
   showFile: 폴더에서 텍스처팩 {file} 열기
   showInCurseforge: Curseforge에서 {name} 보기
   unselected: 선택되지 않은 텍스처팩
@@ -1625,17 +1566,17 @@ userCape:
 userService:
   add: 더 많은 서비스 추가
   authLibInjector: auth-lib injector 제안을 따르세요
-  baseUrlHint: 사용자 지정 서비스의 기본 URL
-  manageServices: 서비스 관리
   authlibInjectorMetadata: Authlib-Injector 메타데이터
-  server: 서버
-  implementation: 구현
-  version: 버전
-  skinDomains: 스킨 도메인
+  baseUrlHint: 사용자 지정 서비스의 기본 URL
   homepage: 홈페이지
+  implementation: 구현
+  manageServices: 서비스 관리
   register: 등록
+  server: 서버
+  skinDomains: 스킨 도메인
   title: 서드파티 사용자 서비스
   validateHint: 사용자의 토큰이 여전히 유효한지 확인하는 데 사용됩니다
+  version: 버전
 userServices:
   microsoft:
     account: Microsoft 계정

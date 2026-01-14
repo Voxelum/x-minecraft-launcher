@@ -1,872 +1,918 @@
 AppAddInstanceDialog:
-  choiceTitle: MULTIPLE LAUNCH PROFILEZ DETECTD. PLZ SELECT WAN 2 IMPORT.
-  configTitle: CONFIGURASHUN
-  createTitle: CREATE GAME
-  downloadedNotification: TEH MODPACK {name} DOWNLOADD. DO U WANTS 2 CREATE INSTANCE 4 IT?
-  serverTitle: INPUT UR SERVR ADDRES
+  choiceTitle: MANY LAUNCH PROFILEZ DETECTED! PLZ PICK ONE TO IMPORT.
+  createTitle: MAKE GAME
+  serverTitle: TYP IN DA SERVR ADDWESS
 AppShareInstanceDialog:
   alterDownloadDescription: >-
-    IF U DOAN WANTS 2 MES UP CURRENT INSTANCE. U CAN ALSO CREATE NEW INSTANCE
-    FRUM UR PEERS CONFIG. CLICK TEH BUTN BELOW 2 CREATE INSTANCE.
-  baseInfo: BASIC SETTIN
-  cancelShare: CANCEL SHARE
-  description: AFTR U SHARE TEH PROFILE, OTHR PLACE CAN DOWNLOAD THEES FILEZ THRU UR PC.
+    IF U NO WANT BREAK CURREN INSTANCE. U CAN ALSO MAKE NEW INSTANCE FROM UR
+    FREN'S CONFIG. CLICK DA BUTTON BELOW TO MAKE INSTANCE.
+  baseInfo: BASIC SETTINGZ
+  cancelShare: CANCEL SHAREZ
+  description: >-
+    AFTR U SHARE DA PROFILE, OTHR PLACE CAN DOWNLOD THESE FILEZ THRU UR
+    COMPUTAH.
   downloadDescription: >-
-    PLZ VERIFY TEH FILEZ UR PER PROVIDD 2 U. SELECT TEH FILE U WANTS 2 DOWNLOAD.
-    IT WILL BE PLACD 2 CURRENT INSTANCE {name}.
-  downloadNotifyTitle: DOWNLOAD INSTANCE FRUM {user}
-  downloadTitle: DOWNLOAD FILEZ FRUM OTHR PEERS
-  downloadToLocal: DOWNLOAD 2 CURRENT INSTANCE
-  filesToDownload: CHOOSE FILEZ 2 DOWNLOAD
-  filesToShare: CHOOSE FILEZ 2 SHARE
-  instanceShare: '{user} JUS SHARD TEH CURRENT INSTANCE 2 U'
-  share: SHARE
+    PLZ CHECK DA FILEZ UR FREN GAVE U. PICK DA FILE U WANT TO DOWNLOD. IT WILL
+    GO TO CURREN INSTANCE {name}.
+  downloadNotifyTitle: DOWNLOD INSTANCE FROM {user}
+  downloadTitle: DOWNLOD FILEZ FROM OTHR FRENS
+  filesToDownload: PICK FILEZ TO DOWNLOD
+  filesToShare: PICK FILEZ TO SHARE
+  instanceShare: '{user} JUS SHARED DA CURREN INSTANCE TO U!'
+  share: SHAREZ
   shareNotifyTitle: SHARE INSTANCE
-  shareTitle: SHARE GAME FILEZ 2 OTHR PLAYR
+  shareTitle: SHARE GAME FILEZ TO OTHR PLAYR
 BaseSetting: {}
 BaseSettingGeneral:
   title: GENERAL
 FeedTheBeast:
   search: SEARCH IN FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: CHANGELOG
-  details: DETAILS
-  install: INSTALL {version}
-  overview: OVERVIEW
-  versions: VERSHUNS
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
-  incompatibleJava: INCOMPATIBLE JAVA
-  incompatibleJavaHint: CURRENT JAVA MITE BE INCOMPATIBLE WIF SELECTD MINECRAFT!
-  missingJava: MISIN JAVA
-  missingJavaHint: 'TEH LAUNCHR CANT DETECT ANY JAVA IN UR COMPUTR. U CAN:'
-  needDownloadHint: CANT FIND PROPR JAVA VERSHUN IN UR COMPUTR. RECOMMEND 2 DOWNLOAD NEW WAN.
-  optionAutoDownload:
-    message: LAUNCHR WILL DOWNLOAD AN INSTALL JAVA FRUM MOJANGS SOURCE 4 U.
-    name: AUTOMATICALLY DOWNLOAD
+  incompatibleJava: BAD JAVA!
+  incompatibleJavaHint: CURREN JAVA MITE BE BAD FOR SELECTED MINECWAFT!
+  missingJava: WHERE IZ JAVA?
+  missingJavaHint: 'TEH LAUNCHER CANNOT FIND ANY JAVA IN UR COMPUTAH. U CAN:'
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: MAYBE TEH LAUNCHR DOESNT FIND UR JAVA. U CAN TELL TEH LAUNCHR WER IT IZ.
-    name: SELECT JAVA IN UR COMPUTR
+  optionSelectJava: {}
   optionSwitch:
-    disabled: THAR IZ NO JAVA {version} FINDZ IN DATABASE NAO!
-    message: USE EXISTD JAVA {version} IN UR PC
-    name: SWITCH 2 {version}
-  recommendedVersionHint: TEH {version} RECOMMEND 2 USE JAVA WIF RANGE {range}。
-  selectMatchedHint: FINDZ PROPR LOCAL JAVA VERSHUNS. U CAN CHOOSE THEES LOCAL JAVAS.
-  selectSecondaryHint: >-
-    FINDZ SUM LOCAL JAVA VERSHUNS, BUT THEY MITE NOT SUITABLE 2 TEH CRITERIA.
-    You can still use them to launch, but this issue will still appear.
+    name: SWITCH TO {version}
 HomeLaunchMultiInstanceDialog:
-  confirm: YEZ, LAUNCH
-  description: U R LAUNCHIN MULTIPLE INSTANCEZ OV MINECRAFT. R U SURE?
-  title: MULTIPLE INSTANCEZ
+  confirm: YAS, LAUNCH!
+  description: U R LAUNCHING MANY INSTANCES OF MINECWAFT. U SURE?
+  title: MANY INSTANCES
 HomeSyncButton: {}
 HomeSyncDialog:
   pull: PULL
   push: PUSH
 HomeSyncDialogPull:
-  failText: FAIL 2 FETCH UPDATE. {url}
+  failText: FAIL TO FETCH UPDATE. {url}
   refresh: REFRESH
-  update: UPDATE
+  update: UPDAT
 HomeSyncDialogPush:
   authError: >-
-    BAD USR AUTHENTICASHUN. PLZ MAK SURE U HAS PRIVILEGE 2 UPLOAD FILEZ OV TEH
-    SERVR!
+    BAD USER AUTHENTICASHUN. PLZ MAKE SURE U HAZ PRIVILEG TO UPLOAD FILEZ OF DA
+    SERVER!
   refresh: REFRESH
-  unknownError: UNKNOWN SERVR ERROR. PLZ RETRY.
+  unknownError: UNKNOWN SERVER OOPSIE. PLZ RETRY.
   upload: UPLOAD INSTANCE
 SettingMigrationDialog:
-  selectRootDirectory: SELECT ROOT DIRECTORY
+  selectRootDirectory: PICK ROOT DIRECTORY
 add: ADD
 ago:
-  day: '{duration} DAI AGO | {duration} DAIS AGO'
-  hour: '{duration} HOUR AGO | {duration} HOURS AGO'
-  minute: '{duration} MINIT AGO | {duration} MINUTEZ AGO'
-  second: '{duration} SECOND AGO | {duration} SECONDZ AGO'
+  day: '{duration} DAY AGO | {duration} DAYZ AGO'
+  hour: '{duration} HOUR AGO | {duration} HOURZ AGO'
+  minute: '{duration} MINIT AGO | {duration} MINITZ AGO'
+  second: '{duration} SEC AGO | {duration} SECZ AGO'
 askAICrash:
-  copyPrompt: Copy the prompt to ask AI
+  copyPrompt: COPY DA PROMPT TO ASK AI
   description: >-
-    Let AI help you to understand the game crash! Follow the instructions below
-    to ask AI about this game crash!
-  selectPlatform: Open an AI platform and paste the prompt you just copied.
-authProfileAddedNotification: AUTH PROFILE {name} ADDD
+    LET AI HALP U TO UNDERSTAND DA GAME CRASH! FOLLOW DA INSTRUKSHUNS BELOW TO
+    ASK AI ABOUT THIS GAME CRASH!
+  selectPlatform: OPEN AN AI PLATFORM AN PASTE DA PROMPT U JUS COPIED.
+authProfileAddedNotification: AUTH PROFILE {name} ADDED
 author: AUTHOR
-back: BAK
+back: BACK
 baseSetting:
-  title: BASE SETTINGS
+  title: INSTANCE SETTINGZ
 browse: BROWSE
 browseApp:
-  createShortcut: CREATE SHORTCUT
+  createShortcut: MAKE SHORTCUT
   default: DEFAULT
-  delete: DELETE
+  delete: DELET
   launch: LAUNCH AN SET AS DEFAULT
-browseApps: VIEWIN TEH LAUNCHR USR INTERFACE
+browseApps: VIEWING DA LAUNCHER USER INTERFAC
 cancel: CANCEL
 checkUpdate:
-  name: CHECK UPDATE
+  name: CHECK UPDAT
 color: COLOR
 confirm: START
 copyClipboard:
-  success: COPY 2 CLIPBORD
-create: CREATE
+  success: COPY TO CLIPBORD
+create: MAKE
 curseforge:
-  authors: AUTHORS
-  category: KATEGORY
-  createdDate: CREATD DATE
-  downloadOnly: DOWNLOAD
+  authors: AUTHORZ
+  category: CATEGORY
+  createdDate: CREATED DATE
+  downloadOnly: DOWNLOD
   file:
     gameVersion: GAME VERSHUN
-    modLoader: MOD LOADR
-  install: INSTALL
-  installTo: INSTALL 2 {path}
-  installToStorage: INSTALL 2 STORAGE
-  lastUpdate: LAST UPDATE DATE
-  project:
-    description: DESCRIPSHUN
-    files: FILEZ
-    images: IMAGEZ
-  recentFiles: RESENT FILEZ
-  releasedDate: RELEASD DATE
-  search: SEARCH
-  totalDownloads: TOTAL DOWNLOADZ
+    install: INSTALL
+    modLoader: MOD LOADER
+  lastUpdate: LAST UPDAT DATE
+  project: {}
+  releasedDate: RELEASED DATE
 curseforgeCard: {}
 curseforgeCategory:
-  API and Library: API ANDS LIBRARIS
-  Animated: ANIMATIOZ
+  API and Library: APIS AN LIBRAWRIES
+  Addons: ADDONZ
+  Adventure: ADVENTUR
+  Adventure and RPG: ADVENTUR AN RPG
+  Animated: ANIMASHUN
+  Armor, Tools, and Weapons: ARMOR, TOOLZ AN WEAPONZ
+  Armor， Tools， and Weapons: ARMOR, TOOLZ AN WEAPONZ
+  Combat / PvP: FITEZ/PVP
+  Cosmetic: PRETTIES
+  Creation: CREATIV MODE
+  Data Packs: DATA PAKZ
+  Education: SKOOL
+  Exploration: EXPLORIN
+  Extra Large: BIG BOI SIZE
+  FTB Official Pack: TEH OFFISHUL FTB PAK
   Fabric: FABRIC
-  FancyMenu: FancyMenu
-  Food: FUD
-  Hardcore: HARDICORE
-  MCreator: MCreator
-  Magic: MAGIK
+  FancyMenu: FANCYMENU
+  Font Packs: FONTZ
+  Food: NOM NOMS
+  Game Map: GAME CARDZ
+  Hardcore: HARDCORE
+  MCreator: MCREATOR
+  Magic: MAJIKS
+  Map Based: BASED ON DA MAP
+  Map and Information: MAPS AN INFORMASHUN
+  Medieval: YE OLDE TIMES
+  Mini Game: SMOL GAMES
+  Miscellaneous: RANDOM STUFF
+  Mod Support: MOD HALP
+  Modded World: A MOD FUR WORLDZ
+  Modern: MODERN
+  Multiplayer: MULTIPLAYR
+  Parkour: PARKOUR
+  Photo Realistic: REAL LIFE?!
+  Puzzle: PUZZLES
   QoL: QOL
-  Skyblock: SKYBLOKS
-  Steampunk: STEAMPANKS
-  Storage: STORAGEZ
-  Vanilla+: VANILLA+++
+  Quests: QUESTZ
+  Redstone: REDSTON
+  Sci-Fi: SCI-FI
+  Server Utility: SERVER TOOLZ
+  Skyblock: SKYBLOCK
+  Small / Light: JUS A LIL BIT
+  Steampunk: STEAMPUNK
+  Storage: STORAG
+  Survival: SURVIVUL
+  Tech: TEK
+  Technology: TEKNOLOGY
+  Traditional: TRADISHUNAL
+  Twitch Integration: TWITCH INTEGRASHUN
+  Utility & QoL: UTIL AN QOL
+  Vanilla+: VANILLA+
+  World Gen: WORLD MAKR
 dataMigration:
-  apply: APPLY SETTIN
-  directoryCriteriaHint: PLZ MAK SURE UR NEW DIRECTORY LOCASHUN IZ AN EMPTY DIRECTORY!
-  migrationDestinationIsFile: MIGRASHUN DESTINASHUN IZ FILE! PLZ SELECT AN EMPTY DIRECTORY!
+  apply: APPLY SETTING
+  directoryCriteriaHint: PLZ MAKE SURE UR NEW DIRECTORY LOCASHUN IS AN EMPTY DIRECTORY!
+  migrationDestinationIsFile: MIGRASHUN DESTINASHUN IS A FILE! PLZ PICK AN EMPTY DIRECTORY!
   migrationDestinationIsNotEmptyDirectory: >-
-    MIGRASHUN DESTINASHUN IZ NOT AN EMPTY DIRECTORY! PLZ MAK SURE U SELECT AN
+    MIGRASHUN DESTINASHUN IS NOT AN EMPTY DIRECTORY! PLZ MAKE SURE U PICK AN
     EMPTY DIRECTORY!
   migrationNoPermission: >-
-    NO PERMISHUN 2 RENAME TEH OLD DIRECTORY 2 NEW DIRECTORY! PLZ MAK SURE TEH
-    LAUNCHR HAS ACCES 2 BOTH PLACEZ!
-  placeholder: PLZ CLICK HER 2 SELECT DIRECTORY
+    NO PERMISHUN TO RENAME DA OLD DIRECTORY TO NEW DIRECTORY! PLZ MAKE SURE DA
+    LAUNCHER HAZ ACCESS TO BOTH PLACES!
+  placeholder: PLZ CLICK HERE TO PICK DIRECTORY
   setRootCause: >-
-    U WILL LOSE UR DATA (MAPS, RESOURCE PACKZ, MODZ) IF U CLOSE TEH LAUNCHR AT
-    DIS PROCES!
-  setRootDescription: DIS WILL CHANGE TEH ROOT DATA FOLDR OV DIS LAUNCHR AN MINECRAFT.
-  setRootTitle: SET 2 NEW STORAGE LOCASHUN
-  unknownError: UNKNOWN ERROR! PLZ RETRY OR CONTACT TEH DEVELOPR!
-  waitReload: MIGRATIN DATA. PLZ DOAN CLOSE TEH LAUNCHR OR U WILL LOSE UR DATA.
+    U WILL LOSE UR DATA (MAPS, RESOURCE PAKS, MODZ) IF U CLOSE DA LAWNCHER AT
+    THIS PROCESS!
+  setRootDescription: THIS WILL CHANGE DA ROOT DATA FOLDR OF THIS LAUNCHER AN MINECWAFT.
+  setRootTitle: SET TO A NEW STORAGE LOCASHUN
+  unknownError: UNKNOWN OOPSIE! PLZ RETRY OR CONTACT DA DEVELOPR!
+  waitReload: MIGRATING DATA. PLZ DONT CLOSE DA LAWNCHER OR U LOSE UR DATA.
 delete:
-  name: DELETE {name}
+  name: DELET {name}
   'no': 'NO'
-  'yes': YEZ
+  'yes': DELET
 dependencies:
-  embedded: EMBEDDD
-  incompatible: INCOMPATIBLE
+  embedded: EMBEDDED
+  incompatible: BAD MATCH
   name: DEPENDENCIEZ
   optional: OPSHUNAL
-  required: REQUIRD
+  required: NEED DIS
 description: DESCRIPSHUN
-detail: DETAIL
+detail: DEETAIL
 diagnosis:
   badInstall:
-    message: CLICK 2 TRY 2 REINSTALL DIS VERSHUN.
+    message: CLICK TO TRY TO REINSTALL THIS VERSHUN.
     name: BAD INSTALLASHUN ON {version}
   corruptedAssets:
-    message: LAUNCHR WILL INSTALL ASSETS 4 U
-    name: 'CORRUPTD ASSET: {name} | CORRUPTD ASSET {name} | {count} ASSETS CORRUPTD'
+    message: LAWNCHER WILL INSTALL ASSETZ FUR U
+    name: 'BAD ASSET: {name} | BAD ASSET {name} | {count} ASSETZ BROKEN'
   corruptedAssetsIndex:
-    message: LAUNCHR WILL DOWNLOAD ASSETS INDEX 4 U
-    name: CORRUPTD ASSETS INDEX FILE OV {version}.
+    message: LAWNCHER WILL DOWNLOD ASSETZ INDEX FUR U
+    name: BAD ASSETZ INDEX FILE OF {version}.
   corruptedLibraries:
-    message: LAUNCHR WILL INSTALL LIBRARIEZ 4 U
-    name: >-
-      CORRUPTD LIBRARY: {name} | CORRUPTD LIBRARY: {name} | {count} liBRARIEZ
-      CORRUPTD
+    message: LAWNCHER WILL INSTALL LIBRAWRIES FUR U
+    name: 'BAD LIBRAWRY: {name} | BAD LIBRAWRY: {name} | {count} LIBRAWRIES BROKEN'
   corruptedVersionJar:
-    message: CLICK 2 INSTALL DIS VERSHUN
-    name: CORRUPTD VERSHUN JaAR 4 MINECRAFT %{version}.
+    message: CLICK TO INSTALL THIS VERSHUN
+    name: BAD VERSHUN JAR FUR MINECWAFT %{version}.
   corruptedVersionJson:
-    message: CLICK 2 INSTALL DIS VERSHUN
-    name: CORRUPTD VERSHUN %{version} JSON.
+    message: CLICK TO INSTALL THIS VERSHUN
+    name: BAD VERSHUN %{version} JSON.
   incompatibleJava:
-    message: U CAN ASK LAUNCHR 2 DOWNLOAD IT 4 U.
-    name: TEH JAVA VERSHUN {javaVersion} IZ NOT SUITABLE 4 {version}!
+    message: U CAN ASK LAWNCHER TO DOWNLOD IT FUR U.
+    name: TEH JAVA VERSHUN {javaVersion} IS NOT GOOD FOR {version}!
   instanceFiles:
-    description: TEH INSTANCE INSTALLASHUN INCLUDEZ {counts} FILEZ.
-    title: INCOMPLETD INSTANCE INSTALLASHUN
+    description: TEH INSTANCE INSTALLASHUN INCLUDES {counts} FILEZ.
+    title: INCOMPLETED INSTANCE INSTALLASHUN
   invalidJava:
-    message: CLICK 2 USE ANOTHR JAVA 2 LAUNCH.
-    name: INVALID JAVA LOCASHUN.
+    message: CLICK TO USE ANOTHR JAVA TO LAUNCH.
+    name: BAD JAVA LOCASHUN.
   missingAssets:
-    message: LAUNCHR WILL INSTALL ASSETS 4 U
-    name: 'MISIN ASSET: {name} | MISIN ASSET: {name} | MISIN %{count} ASSETS.'
+    message: LAWNCHER WILL INSTALL ASSETZ FUR U
+    name: 'MISSING ASSET: {name} | MISSING ASSET: {name} | MISSING %{count} ASSETZ.'
   missingAssetsIndex:
-    message: LAUNCHR WILL DOWNLOAD ASSETS INDEX 4 U
-    name: MISIN ASSETS INDEX FILE OV {version}.
+    message: LAWNCHER WILL DOWNLOD ASSETZ INDEX FUR U
+    name: MISSING ASSETZ INDEX FILE OF {version}.
   missingAuthlibInjector: {}
   missingJava:
-    message: CLICK 2 RESOLVE DIS PROBLEM
-    name: CANT FIND JAVA 2 LAUNCH MINECRAFT!
+    message: CLICK TO FIX DIS PROBLEM
+    name: CANNOT FIND JAVA TO LAUNCH MINECWAFT!
   missingLibraries:
-    message: LAUNCHR WILL INSTALL LIBRARIEZ 4 U
+    message: LAWNCHER WILL INSTALL LIBRAWRIES FUR U
     name: >-
-      MISIN {name} LIBRARY | MISIN {name} LIBRARY | MISIN {count} LIBRARIEZ |
-      MISIN {count} LIBRARIEZ
+      MISSING {name} LIBRAWRY | MISSING {name} LIBRAWRY | MISSING {count}
+      LIBRAWRIES | MISSING {count} LIBRAWRIES
   missingVersion:
-    message: CLICK 2 INSTALL DIS VERSHUN
-    name: TEH VERSHUN {version} IZ NOT INSTALLD!
+    message: CLICK TO INSTALL THIS VERSHUN
+    name: TEH VERSHUN {version} IS NOT INSTALLED!
   missingVersionJar:
-    message: CLICK 2 INSTALL DIS VERSHUN
-    name: MISIN VERSHUN JAR 4 MINECRAFT %{version}
+    message: CLICK TO INSTALL THIS VERSHUN
+    name: MISSING VERSHUN JAR FUR MINECWAFT %{version}
   unzipFileNotFound:
-    description: Cannot find {file}
-    title: Modpack file not found
-disable: DISABLE
+    description: CANNOT FIND {file}
+    title: MODPACK FILE NOT FOUND
+difficulty:
+  easy: EZPZ
+  hard: HARD
+  normal: NORMAL
+  peaceful: PEACE
+disable: DISABL
 disk:
-  available: AVAILABLE
-  used: USD
-download: DOWNLOAD
-downloadCount: '{count} DOWNLOADZ'
-downloadUpdate: DOWNLOAD UPDATE
+  available: FREE SPACE
+  used: USED
+download: DOWNLOD
+downloadCount: '{count} DOWNLODS'
+downloadUpdate: DOWNLOD UPDAT
 duration:
   day: '{duration} DAY | {duration} DAYZ'
   hour: '{duration} HOUR | {duration} HOURZ'
   minute: '{duration} MINIT | {duration} MINITZ'
-  name: DELETE {name}
-  'no': NOOO
-  second: '{duration} SECOND | {duration} SECONDZ'
-  'yes': YEZ, SIR.
+  name: DELET {name}
+  'no': 'NO'
+  second: '{duration} SEC | {duration} SECZ'
+  'yes': YAS, SIR.
 edit: EDIT
-enable: ENABLE
+enable: ENABL
 env:
   select:
-    all: SELECT ALL
-    fit: SELECT FIT
-    none: SELECT NONE
+    all: PICK ALL
+    fit: PICK FIT
+    none: PICK NONE
 error:
-  name: ERROR | ERRORS
+  name: OOPSIE | OOPSIEZ
 errors:
   BadForgeInstallerJarError: >-
-    CANT PARSE FORGE INSTALLR JAR FILE. MAYBE TEH FORGE HAS NEW INSTALLR FILE
-    FORMAT? CONTACT DEVELOPERS IF DIS ISSUE PERSISTS.
-  BadInstanceType: 'NOT VALID INSTANCE: {type}'
-  BodyTimeoutError: HTTP BODY TIEMOUT
-  ChecksumNotMatchError: CHECKSUM NOT MATCHD! EXPECTD {expect}. AKSHUL {actual}.
-  ConnectTimeoutError: CONNECSHUN TIEMOUT 2 SERVR.
-  DNSNotFoundError: DNS LOOKUP ERROR
+    CANNOT PARSE FORGE INSTALLER JAR FILE. MAYBE DA FORGE HAZ NEW INSTALLER FILE
+    FORMAT? CONTACT DEVS IF THIS ISSUE PERSISTS.
+  BadInstanceType: 'NOT A VALID INSTANCE: {type}'
+  BodyTimeoutError: HTTP BODY TIMEOUT
+  ChecksumNotMatchError: CHECKSUM NOT MATCHED! EXPECTED {expect}. ACTUAL {actual}.
+  ConnectTimeoutError: CONNEKSHUN TIMEOUT TO SERVER.
+  DNSNotFoundError: DNS LOOKUP OOPSIE
   DatabaseNotOpened: >-
-    DATABASE IZ NOT OPEND! TEH LAUNCHR WONT WERK PROPERLY! PLZ SELECT A DATA
-    DIRECTORY TEH LAUNCHR CAN ACCES. U CAN TRY 2 RESET TEH DATA ROOT IN SETTIN
-    PAEG.
+    DATABASE IS NOT OPENED! TEH LAWNCHER WONT WORK PROPERLY! PLZ PICK A DATA
+    DIRECTORY DA LAWNCHER CAN ACCESS. U CAN TRY TO RESET DA DATA ROOT IN SETTING
+    PAGE.
   DiskIsFull: >-
-    Your disk is full! Cannot write anything to disk! All features might not be
-    functional!
-  DownloadAggregateError: FAILD 2 DOWNLOAD FILE.
+    UR DISK IS FULL! CANNOT WRITE ANYFING TO DISK! ALL FEATUREZ MITE NOT BE
+    FUNCTIONAL!
+  DownloadAggregateError: FAILD TO DOWNLOD FILE.
   DownloadFileSystemError: >-
-    Error during accessing the DOWNLOAD file path. Please ensure the launcher
-    has permission to write on it.
-  HeadersTimeoutError: HTTP HEADR TIEMOUT
-  NotFoundError: 404 NOT FINDZ
-  SocketError: SERVR SOCKET ERROR
+    OOPSIE DURING ACCESSING DA DOWNLOD FILE PATH. PLZ ENSURE DA LAWNCHER HAZ
+    PERMISHUN TO WRITE ON IT.
+  HeadersTimeoutError: HTTP HEADER TIMEOUT
+  NotFoundError: 404 NOT FOUND (SAD CAT)
+  SocketError: SERVER SOCKET OOPSIE
 eula:
   body: >-
-    BY CHECKIN TEH CHECKBOX BUTN, U R INDICATIN UR AGREEMENT 2 MINECRAFTS
+    BY CHECKING DA CHECKBOX BUTTON, U R INDICATING UR AGREEMENT TO MINECWAFT'S
     {eula}.
 exception:
   http: >-
-    HTTP REQUEST 2 {url} FAILD. STATUS CODE {statusCode}. {code}. PLZ RETRY OR
-    CHECK UR NETWORK. IF DIS ERROR PERSISTS, PLZ SEND REPORT 2 DEVELOPR TEAM.
-existed: EXISTD
-exportModpackTarget:
-  curseforge: CURSEFORGE FILE
-  github: GITHUB FILE
-  modrinth: MODRINTH FILE
-  override: OVERRIDE (RAW) FILE
+    HTTP REQUEST TO {url} FAILED. STATUS CODE {statusCode}. {code}. PLZ RETRY OR
+    CHECK UR NETWORK. IF THIS ERROR PERSISTS, PLZ SEND A REPORT TO DEV TEAM.
+existed: EXISTED
+exportModpackTarget: {}
 extensions:
   mrpack: MODRINTH MODPACK
   zip: ZIP FILE
 fabricVersion:
-  disable: DISABLE FABRIC
-  empty: NO FABRIC VERSHUN 4 MINECRAFT {version}
+  disable: DISABL FABRIC
+  empty: NO FABRIC VERSHUN FUR MINECWAFT {version}
   showSnapshot: SHOW SNAPSHOT
   stable: STABLE
-  unstable: UNSTABLE
+  unstable: WOBBLY
 feedback:
-  channel: CHANNELS
-  description: I FINDZ BUG OR I WANTS 2 MAK SUGGESHUN
+  channel: CHANNELZ
+  description: I FOUND A BUG OR I WANT TO MAKE A SUGGESTSHUN
   discord: DISCORD
   discordDescription: JOIN DISCORD CHANNEL
   discordJoin: JOIN
   generateReport: GENERATE REPORT
-  generateSaveAs: SAVE TEH REPORT 2
+  generateSaveAs: SAVE DA REPORT TO
   github: GITHUB ISSUE
-  githubDescription: OPEN AN GITHUB ISSUE 2 TELL UR THOT
+  githubDescription: OPEN AN GITHUB ISSUE TO TELL UR THOT
   githubOpenIssue: GITHUB
   hint: >-
-    CLICK TEH BUTN 2 CREATE TEH REPORT AN CONTACT TEH DEVELOPR TEAM. TEH REPORT
-    WILL CONTAIN UR DEVICE INFO INCLUDIN OPERATIN SISTEM TYPE, VERSHUN, USR NAYM
-    (IN UR OS), ETC.
+    CLICK DA BUTTON TO MAKE DA REPORT AN CONTACT DA DEVELOPR TEAM. TEH REPORT
+    WILL CONTAIN UR DEVICE INFO INCLUDING OPERATIN SYSTEM TYP, VERSHUN, USER
+    NAME (IN UR OS), ETC.
   kook: KOOK
-  kookDescription: KOOK IZ AN ALTERNATE APP 4 DISCORD 4 CHINEES MAINLAND USERS
+  kookDescription: KOOK IS AN ALTERNATE APP FUR DISCORD FUR CHINESE MAINLAND USERS
   name: FEEDBACK
   qq: QQ GROUP
-  qqDescription: 'ENTR TEH FEEDBACK QQ GROUP AN DIRECT TALK WIF AUTHORS. GROUP NUMBR: {number}'
+  qqDescription: >-
+    ENTER DA FEEDBACK QQ GROUP AN DIRECT TALK WITH AUTHORZ. GROUP NUMBR:
+    {number}
   qqEnterGroup: JOIN
 fileDetail:
+  fileSize: FILE SIZE
   filesize: FILE SIZE
   hash: HASH
 filter: FILTR
-finish: FINISH
+filterLocalOnly: ONLY SHOW INSTALLED
+finish: DONE!
 forgeConfig:
   hint: >-
-    PLZ AT LEAST LAUNCH TEH GAME WIF DIS MOD ONCE, SO DAT WE CAN DETECT ITZ
+    PLZ AT LEAST LAUNCH DA GAME WITH THIS MOD ONCE, SO THAT WE CAN DETECT ITS
     CONFIG FILE!
 forgeVersion:
   common: COMMON
-  disable: DISABLE FORGE
-  empty: FORGE DOESNT HAS ANY RELEASE 4 MINECRAFT {version}
+  disable: DISABL FORGE
+  empty: FORGE DOESNT HAZ ANY RELEASE FUR MINECWAFT {version}
   latest: LATEST
   name: FORGE
-  recommended: RECOMMENDD
+  recommended: RECOMMENDED
   showBuggy: SHOW BUGGY
-  showRecommendedAndLatestOnly: RECOMMENDD AN LATEST ONLY
+  showRecommendedAndLatestOnly: RECOMMENDED AN LATEST ONLY
   version: FORGE VERSHUN
 gameSetting: {}
 gameType:
-  adventure: ADVENCHUR MODE
+  adventure: ADVENTUR MODE
   creative: CREATIV MODE
   spectator: SPECTATOR MODE
-  survival: SURVIVAL MODE
+  survival: SURVIVUL MODE
 help: HALP
 home: HOME
 importModpack:
-  failed: IMPORT {modpack} FAILD
-  name: IMPORT Modpack
-  success: IMPORT {modpack} succeed
-importResource: IMPORT Resource
+  name: IMPORT MODPACK
 install: INSTALL
 installAssets:
-  asset: INSTALL {count} ASSETS
-  assetIndex: CHECK ASSETS INDEX FILE
+  asset: INSTALL {count} ASSETZ
+  assetIndex: CHECK ASSETZ INDEX FILE
   name: INSTALL ASSET FILEZ
 installAuthlibInjector: INSTALL AUTHLIB-INJECTOR
 installCurseforgeFile: INSTALL CURSEFORGE FILE
 installFabric:
   name: INSTALL FABRIC
 installForge:
-  downloadInstaller: DOWNLOAD INSTALLR
-  library: INSTALL LIBRARY {lib}
+  downloadInstaller: DOWNLOD INSTALLR
+  library: INSTALL LIBRAWRY {lib}
   name: INSTALL FORGE
-  postProcessing: POST PROCESIN
+  postProcessing: POST PROCESSING
 installInstance:
-  file: UPDATE INSTANCE FILE {file}
+  file: UPDAT INSTANCE FILE {file}
   link: COPY OR LINK {count} FILEZ
-  name: UPDATE INSTANCE
+  name: UPDAT INSTANCE
   resolve: RESOLVE INSTANCE CONFIG
   unzip: UNZIP {count} FILEZ
 installJre:
-  decompress: DECOMPRES JRE FILEZ 2 FOLDR
-  download: DOWNLOAD compressed JRE file
-  name: INSTALL Java Runtime Library
+  decompress: DECOMPRESS JRE FILEZ TO FOLDR
+  download: DOWNLOD COMPRESSED JRE FILE
+  name: INSTALL JAVA RUNTIME LIBRAWRY
 installLabyMod:
-  asset: INSTALL Asset {name}
-  json: Generate JSON {version}
-  name: INSTALL LabyMod
+  asset: INSTALL ASSET {name}
+  json: GENERATE JSON {version}
+  name: INSTALL LABYMOD
 installLibraries:
-  library: INSTALL Library
-  name: INSTALL Libraries
+  library: INSTALL LIBRAWRY
+  name: INSTALL LIBRAWRIES
 installModpack:
-  deploy: Deploy
+  deploy: DEPLOY
   download:
-    file: DOWNLOAD FILE
-    name: Download
-  name: INSTALL Modpack
-  unpack: Unpack Modpack
+    file: DOWNLOD FILE
+    name: DOWNLOD
+  name: INSTALL MODPACK
+  unpack: UNPACK MODPACK
 installModrinthFile:
-  name: INSTALL Modrinth
+  name: INSTALL MODRINTH
 installOptifine:
-  download: DOWNLOAD Optifine Universal
+  download: DOWNLOD OPTIFINE UNIVERSAL
   jar: GENERATE JAR
   json: GENERATE JSON
   name: INSTALL OPTIFINE
 installResource:
-  fail: Fail to INSTALL {file}
-  success: INSTALL resource {file} succeeded
+  fail: FAIL TO INSTALL {file}
+  success: INSTALL RESOURC {file} SUCCEEDED
 installVersion:
   jar: INSTALL VERSHUN JAR
-  json: INSTALL Version Json
-  name: INSTALL Minecraft Client {version}
+  json: INSTALL VERSHUN JSON
+  name: INSTALL MINECWAFT CLIENT {version}
 instance:
   addServer: ADD SERVR
   changeIcon: CHANGE ICON
-  contents: Content
-  current: CURRENT INSTANCE
-  delete: DELETE GAME
-  deleteFailed: FAIL 2 DELETE INSTANCE
-  deleteFailedPermission: OTHR PROGRAM OCCUPID TEH FILE
-  deleteHint: TEH INSTANCE DATA WILL BE REMOVD FRUM TEH DISK FOREVR. R U SURE?
+  contents: CONTENT
+  current: CURREN INSTANCE
+  delete: DELET GAME
+  deleteFailed: FAIL TO DELET INSTANCE
+  deleteFailedPermission: OTHR PROGRAM OCCUPIED DA FILE
+  deleteHint: TEH INSTANCE DATA WILL BE REMOVED FROM DA DISK FOREVR. U SURE?
   duplicate: DUPLICATE GAME
-  duplicatedName: DUPLICATD NAYM
-  fileApi: TEH SYNCHRONIZE FILE SERVR API URL
-  fileApiHint: TEH URL 2 SYNCHRONIZE INSTANCE FILEZ FRUM REMOTE CONFIG SERVR.
-  fullscreen: Fullscreen
+  duplicatedName: DUPLICATED NAME
+  fileApi: TEH SYNCHRONIZE FILE SERVER API URL
+  fileApiHint: TEH URL TO SYNCHRONIZE INSTANCE FILEZ FROM A REMOTE CONFIG SERVER.
+  fullscreen: FULLSCREEN
   gameVersion: GAME VERSHUN
-  height: Height
+  height: HEIGHT
   icon: PROFILE ICON
-  iconHint: TEH ICON CUD BE FILE OR INTERNET URL LINK.
+  iconHint: TEH ICON CUD BE A FILE OR INTERNET URL LINK.
   iconUrl: ICON URL
   includeVersion: INCLUDE VERSHUN | INCLUDE VERSHUNS
-  installModpack: Update instance from modpack
-  lastPlayed: LAST PLAYD
-  launchArguments: LAUNCH ARGUMENTS PREVIEW
+  installModpack: UPDAT INSTANCE FROM MODPACK
+  lastPlayed: LAST PLAYED
+  launchArguments: LAUNCH ARGUMENTS PREVUE
   launchServer: LAUNCH LOCALHOST SERVR
   linkFileDesc: >-
-    DIS WILL OVERWRITE INSTANCE LOCAL {file} WIF TEH GLOBAL {file}. R U SURE 2
-    LINK IT?
-  linkFileTitle: R U SURE 2 LINK {file}?
-  mcOptions: MINECRAFT OPSHUNS
-  mcOptionsHint: ADDISHUNAL MINECRAFT LAUNCH ARGUMENTS
-  name: PROFILE NAYM
-  nameHint: TEH NAYM OV TEH MODPACK
-  nameNoCyrillic: NO CYRILLIC CHARACTERZ ALLOWD
-  neverPlayed: NEVR PLAYD
+    THIS WILL OVERWRITE INSTANCE LOCAL {file} WITH DA GLOBAL {file}. ARE U SURE
+    TO LINK IT?
+  linkFileTitle: ARE U SURE TO LINK {file}?
+  mcOptions: MINECWAFT OPSHUNS
+  mcOptionsHint: ADDITIONAL MINECWAFT LAUNCH ARGUMENTS
+  name: PROFILE NAME
+  nameHint: TEH NAME OF DA MODPACK
+  nameNoCyrillic: TEH NAME CANNOT CONTAIN CYRILLIC CHARACTRZ
+  neverPlayed: NEVR PLAYED
   openCrashReportFolder: OPEN CRASH REPORT FOLDR
   openLogFolder: OPEN LOG FOLDR
   playtime: PLAYTIME
+  preExecCommand: PRE-EXECUTE COMMAND
+  preExecCommandHint: COMMAND TO EXECUTE BEFORE LAUNCHING MINECWAFT
   prependCommand: PREPEND COMMAND
-  prependCommandHint: DIS WILL PREPEND DIS COMMAND BEFORE ALL TEH LAUNCH COMMANDZ
-  requireName: TEH NAYM IZ REQUIRD
-  resolution: Window Resolution
-  resolutionPreset: Resolution Preset
+  prependCommandHint: THIS WILL PREPEND THIS COMMAND BEFORE ALL DA LAUNCH COMMANDS
+  requireName: TEH NAME IS REQUIRED
+  resolution: RESOLUSHUN
+  resolutionEnabled: ENABL CUSTOM RESOLUSHUN
+  resolutionPreset: RESOLUSHUN PRESET
   showInstance: SHOW GAME FOLDR
-  updates: Updates
-  useSharedOptions: USE SHARD GAME SETTINGS
-  useSharedOptionsDesc: DIS WILL LINK TEH OPSHUNS.TXT 2 SHARD FILE ACROS INSTANCE
-  useSharedServersList: USE SHARD SERVERS LIST
-  useSharedServersListDesc: DIS WILL LINK TEH SERVERS.DAT 2 SHARD FILE ACROS INSTANCE
-  versionHint: TEH MINECRAFT VERSHUN OV DIS GAME
+  updates: UPDATS
+  useSharedOptions: USE SHARED GAME SETTINGZ
+  useSharedOptionsDesc: THIS WILL LINK DA OPTIONS.TXT TO A SHARED FILE ACROSS INSTANCE
+  useSharedServersList: USE SHARED SERVERZ LIST
+  useSharedServersListDesc: THIS WILL LINK DA SERVERS.DAT TO A SHARED FILE ACROSS INSTANCE
+  versionHint: TEH MINECWAFT VERSHUN OF THIS GAME
   vmOptions: JVM OPSHUNS
-  vmOptionsHint: EXTRA ARGUMENTS 2 PAS 2 TEH JVM
-  width: Width
+  vmOptionsHint: EXTRA ARGUMENTS TO PASS TO DA JVM
+  vmVar: ENVIRONMENT VARIABLEZ
+  vmVarHint: CLICK + BUTTON TO ADD ENVIRONEMNT VARIABLEZ
+  width: WIDTH
 instanceAge:
   older: OLDR
-  threeDay: IN 3 DAIS
-  today: TODAI
+  threeDay: IN THREE DAYZ
+  today: TODAY
 instanceDiscover:
-  gameFolder: DISCOVR {count} GAME FOLDERS
-  instanceFolder: FINDZ {count} INSTANCEZ
+  gameFolder: DISCOVER {count} GAME FOLDRZ
+  instanceFolder: FOUND {count} INSTANCES
 instanceFileOperation:
   add: ADD
-  backup-add: REPLACE (Backup)
-  backup-remove: REMOOV (Backup)
+  backup-add: REPLACE (BACKUP)
+  backup-remove: REMOVE (BACKUP)
   keep: KEEP
-  remove: REMOOV
+  remove: REMOVE
 instanceInstallSkip:
-  ignore: Ignore
-  skip: Skip
-  title: Potential corrupted file source
+  ignore: IGNORE
+  skip: SKIP
+  title: POTENTIAL BAD FILE SOURC
   warning: >-
-    Some files are downloaded multiple times with checksum unmatching. This may
-    be due to the fact that the original checksum is incorrect. Please check. If
-    you confirm the current files are valid, you can skip the validation check.
+    SOME FILEZ ARE DOWNLODED MULTIPLE TIMES WITH CHECKSUM UNMATCHING. THIS MAY
+    BE DUE TO DA FACT THAT DA ORIGINAL CHECKSUM IS INCORRECT. PLZ CHECK. IF U
+    CONFIRM DA CURREN FILEZ ARE VALID, U CAN SKIP DA VALIDASHUN CHECK.
+instanceLauncher:
+  createNew: MAKE NEW INSTANCE
+  search: SEARCH INSTANCES...
+  showAll: SHOW ALL INSTANCES
+  title: ALL INSTANCES
 instanceSetting:
-  disableAuthlibInjector: DISABLE AUTHLIB INJECTOR
+  disableAuthlibInjector: DISABL AUTHLIB INJECTOR
   disableAuthlibInjectorDescription: >-
-    IF U R USIN THIRD-PARTY SKIN SISTEM. TEH AUTHLIB INJECTOR CAN HALP U 2
+    IF U R USING THIRD-PARTY SKIN SYSTEM. TEH AUTHLIB INJECTOR CAN HALP U TO
     DISPLAY SKIN IN GAME.
-  disableElyByAuthlib: DISABLE ELY.BYS AUTHLIB REPLACEMENT
+  disableElyByAuthlib: DISABL ELY.BY'S AUTHLIB REPLACEMENT
   disableElyByAuthlibDescription: >-
-    ELY.BY HAS UNIQUE AUTHLIB REPLACEMENT 2 DISPLAY SKIN UNIVERSALLY IN ANY
+    ELY.BY HAZ A UNIQUE AUTHLIB REPLACEMENT TO DISPLAY SKIN UNIVERSALLY IN ANY
     SERVR.
-  fastLaunch: TURBO LAUNCH
-  fastLaunchHint: IGNORE TEH USR STATUS AN EXISTIN UNFIXD PROBLEMS
-  hideLauncher: HIDE TEH LAUNCHR AFTR LAUNCH
-  icon: PICK AN IMAGE
-  showLog: SHOW MINECRAFT LOG
-  showLogHint: DIS WILL POPUP WINDOW 2 STREAM MINECRAFT LOG AFTR GAME STARTD
+  fastLaunch: TURBO LAUNCH!
+  fastLaunchHint: IGNORE DA USER STATUS AN EXISTING UNFIXED PROBLEMZ
+  hideLauncher: HIDE DA LAUNCHER AFTER LAUNCH
+  icon: PICK AN IMAG
+  showLog: SHOW MINECWAFT LOG
+  showLogHint: THIS WILL POPUP A WINDOW TO STREAM MINECWAFT LOG AFTER GAME STARTED
 instanceTemplate:
-  curseforge: DIS AR TEH CURSEFORGE MODPACK
-  ftb: DIS AR TEH FTB MODPACK
-  importing: TEMPLATE IMPORTIN
-  mcbbs: DIS AR TEH MCBBS MODPACK
-  modpack: DIS AR TEH RAW MODPACK
-  modrinth: DIS AR TEH MODRINTH MODPACK
-  preview: MODPACK PREVIEW
-  title: TEMPLATE SETTIN
+  ftb: THIS IS A FTB MODPACK
+  preview: MODPACK PREVUE
 instanceUpdate:
-  basic: SETTIN UPDATE
-  files: FILE UPDATEZ
+  basic: SETTING UPDAT
+  files: FILE UPDATS
   loaderChanged: >-
-    TEH MODLOADR OV DIS INSTANCE HAS BEEN CHANGD. TEH OLD MODLOADR IZ
-    {modloader}, AN TEH NEW MODLOADR IZ {newModloader}.
-  summary: Add {add} files. Remove {remove} files. Keep {keep} files.
-  title: UPDATE INSTANCE
-  update: START UPDATE
+    TEH MODLOADER OF THIS INSTANCE HAZ BEEN CHANGED. TEH OLD MODLOADER IS
+    {modloader}, AN DA NEW MODLOADER IS {newModloader}.
+  summary: ADD {add} FILEZ. REMOVE {remove} FILEZ. KEEP {keep} FILEZ.
+  title: UPDAT INSTANCE
+  update: START UPDAT
 instances:
-  add: CREATE GAME
+  add: MAKE GAME
   addCurseForgeDescription: >-
-    IMPORT FRUM CURSEFORGE DATA FOLDR. U NED 2 SELECT CURSEFORGEZ ROOT DATA
+    IMPORT FROM CURSEFORGE DATA FOLDR. U NEED TO PICK CURSEFORGE'S ROOT DATA
     FOLDR
-  addDescription: CREATE NEW INSTANCE FRUM SCRATCH
-  addMMCDescription: IMPORT EXISTIN MULTIMC INSTANCE. U NED 2 SELECT TEH DATA FOLDR FRUM MULTIMC.
-  addManually: MANUALLY CREATE
+  addDescription: MAKE A NEW INSTANCE FROM SCRATCH
+  addMMCDescription: IMPORT EXISTING MULTIMC INSTANCE. U NEED TO PICK DA DATA FOLDR FROM MULTIMC.
+  addManually: MANUALLY MAKE
   addModrinthDescription: >-
-    IMPORT EXISTIN MODRINTH INSTANCE. U NED 2 SELECT TEH MODRINTH ROOT DATA
+    IMPORT EXISTING MODRINTH INSTANCE. U NEED TO PICK DA MODRINTH ROOT DATA
     FOLDR.
-  addServer: CREATE FRUM SERVR
-  addServerDescription: DIS WILL CREATE GAME DIRECTLY LAUNCH 2 TEH SERVR.
-  addTemplate: CREATE FRUM DOWNLOADD MODPACK
-  addTemplateDescription: IMPORT FRUM DOWNLOADD MODPACK
-  addVanilla: CREATE FRUM VANILLA-LIEK MINECRAFT
+  addServer: MAKE FROM SERVR
+  addServerDescription: THIS WILL MAKE A GAME DIRECTLY LAUNCH TO DA SERVR.
+  addTemplate: MAKE FROM DOWNLODED MODPACK
+  addTemplateDescription: IMPORT FROM DOWNLODED MODPACK
+  addVanilla: MAKE FROM VANILLA-LIKE MINECWAFT
   addVanillaDescription: >-
-    IMPORT FRUM COMMON .MINECRAFT FOLDR. DIS WILL DUPLCIATE TEH ORIGINAL GAME
-    PROFILE 2 XMCL.
-  choose: SELECT GAME
+    IMPORT FROM COMMON .MINECRAFT FOLDR. THIS WILL DUPLCIATE DA ORIGINAL GAME
+    PROFILE TO XMCL.
+  choose: PICK GAME
+  empty: NO INSTANCES IN THIS FOLDR
   fix: REPAIR
-  folderSetting: FOLDR SETTINGS
-  importFolder: IMPORT FRUM FOLDR
-  importFolderDescription: IMPORT MINECRAFT 2 LAUNCHR
-  loadingFiles: LOADIN MODPACK FILEZ.
-  refreshServers: REFRESH SERVERS
+  folder: FOLDR
+  folderSetting: FOLDR SETTINGZ
+  importFolder: IMPORT FROM FOLDR
+  importFolderDescription: IMPORT MINECWAFT TO LAUNCHER
+  loadingFiles: LOADING MODPACK FILEZ
+  refreshServers: REFRESH SERVERZ
 items:
-  count: '{count} ITEMS'
+  count: '{count} ITEMZ'
   total: '{total} TOTAL'
 java:
-  allocatedLong: USE SISTEM DEFAULT JAVA
-  allocatedShort: AUTO ALLOCATD
+  allocatedLong: USE SYSTEM DEFAULT JAVA
+  allocatedShort: AUTO ALLOCATED
   browse: BROWSE JAVA EXECUTABLE
-  importFromFile: IMPORT JAVA FRUM FILE
-  invalid: INVALID JAVA LOCASHUN
+  importFromFile: IMPORT JAVA FROM FILE
+  invalid: BAD JAVA LOCASHUN
   location: JAVA LOCASHUN
-  maxMemory: MAX MEMS
-  memory: JAVA MEMS
+  maxMemory: MAX MEMRY
+  memory: JAVA MEMRY
   memoryAuto: AUTO
   memoryManual: MANUAL
-  memoryUnassigned: UNASIGN
-  minMemory: MIN MEMS
+  memoryUnassigned: UNASSIGN
+  minMemory: MIN MEMRY
   modifyInstance: MODIFY JAVA PATH
-  noMemory: DO NOT LIMIT MEMS USAGE
+  noMemory: DO NOT LIMIT MEMRY USAG
   refresh: REFRESH LOCAL JAVA
-  systemMemory: CURRENT SISTEM MEMS
+  systemMemory: 'SYSTEM FREE MEMRY: {free} / {total}'
 labyMod:
-  disable: DISABLE LABYMOD
-  empty: LABYMOD DOEZ NOT SUPPORT CURRENT MINECRAFT
+  disable: DISABL LABYMOD
+  empty: LABYMOD DOES NOT SUPPORT CURREN MINECWAFT
 launch:
   cancel: CANCEL
-  createShortcut: Create shortcut
-  kill: STOP
+  createShortcut: MAKE SHORTCUT
+  kill: STAHP
   killServer: KILL LOCALHOST SERVR
   launch: LAUNCH
   launchAnyway: LAUNCH ANYWAY
 launchBlocked:
-  ignore: FORCE LAUNCH
   launchBadVersion:
-    description: TEH VERSHUN {version} JSON IZ BREAKIN. MAYBE RE-INSTALL DIS VERSHUN?
+    description: TEH VERSHUN {version} JSON IS BREAKING. MAYBE RE-INSTALL THIS VERSHUN?
     title: BAD VERSHUN JSON
   launchGeneralException:
-    description: SUM ERRORS CAUSE TEH LAUNCH FAILD.
-    title: LAUNCH FAILD
+    description: SOME OOPSIES CAUSE DA LAUNCH FAILED.
+    title: LAUNCH FAILED
   launchInvalidJavaPath:
     description: >-
-      TEH SELECTD JAVA IZ MISIN OR INVALID. PLZ SELECT NEW WAN. <span
-      class="highlight"> {javaPath} </span>
+      TEH SELECTED JAVA IS MISSING OR INVALID. PLZ PICK A NEW ONE. <SPAN
+      CLASS="HIGHLIGHT"> {javaPath} </SPAN>
     title: INVALID JAVA PATH
   launchJavaNoPermission:
     description: >-
-      TEH LAUNCHR DOESNT HAS PERMISHUN 2 EXECUTE TEH JAVa <span
-      class="highlight"> {javaPath} </span>. EITHR CHANGE TEH PERMISHUN OV TEH
-      JAVA FILE OR RAIZE TEH PERMISHUN OV LAUNCHR.
-    title: NO PERMISHUN 2 LAUNCH
+      TEH LAWNCHER DOESNT HAZ PERMISHUN TO EXECUTE DA JAVA <SPAN
+      CLASS="HIGHLIGHT"> {javaPath} </SPAN>. EITHR CHANGE DA PERMISHUN OF DA
+      JAVA FILE OR RAISE DA PERMISHUN OF LAWNCHER.
+    title: NO PERMISHUN TO LAUNCH
   launchNoProperJava:
-    description: NO PROPR JAVA CAN BE SELECTD 2 LAUNCH TEH GAME. ({javaPath} IZ INVALID?)
-    title: NO PROPR JAVA FINDZ
+    description: NO PROPER JAVA CAN BE SELECTED TO LAUNCH DA GAME. ({javaPath} IS INVALID?)
+    title: NO PROPER JAVA FOUND
   launchNoVersionInstalled:
-    description: CANT RESOLVE VERSHUN <span class="highlight">{version}</span> 2 LAUNCH.
-    title: NO VERSHUN SELECTD
+    description: CANNOT RESOLVE VERSHUN <SPAN CLASS="HIGHLIGHT">{version}</SPAN> TO LAUNCH.
+    title: NO VERSHUN SELECTED
   launchSpawnProcessFailed:
     description: >-
-      PLZ CHECK UR JAVA, OR GIV MOAR PERMISHUNS 2 TEH LAUNCHR AN RETRY. IF DIS
-      STILL DOESNT WERK, PLZ CONTACT TEH DEVELOPERS.
-    title: FAIL 2 START GAME PROCES
+      PLZ CHECK UR JAVA, OR GIVE MORE PERMISSIONS TO DA LAWNCHER AN RETRY. IF
+      THIS STILL DOESNT WORK, PLZ CONTACT DA DEVS.
+    title: FAIL TO START GAME PROCESS
   launchUserStatusRefreshFailed:
-    description: CANT REFRESH CURRENT SELECTD USR STATUS.
-    title: FAIL 2 VALIDATE USR STATUS
+    description: CANNOT REFRESH CURREN SELECTED USER STATUS.
+    title: FAIL TO VALIDATE USER STATUS
   unexpectedText: >-
-    DIS AR TEH UNEXPECTD. U CAN RESTART TEH LAUNCHR 2 MITIGATE TEH ISSUE. PLZ
-    CONTACT AUTHOR IF DIS ISSUE HAPPENS AGAIN.
-  userAcquireMicrosoftTokenFailed: ACQUIRE MICROSOFT TOKEN FAILD. PLZ CHECK RETRY OR CHECK UR MICROSOFT AKOWNT.
-  userCheckGameOwnershipFailed: FAILD 2 CHECK MINECRAFT OWNERSHIP. PLZ RETRY OR CHECK UR NETWORK.
+    THIS IS UNEXPECTED. U CAN RESTART DA LAWNCHER TO MITIGATE DA ISSUE. PLZ
+    CONTACT AUTHOR IF THIS ISSUE HAPPENS AGAIN.
+  userAcquireMicrosoftTokenFailed: >-
+    ACQUIRE MICROSOFT TOKEN FAILED. PLZ CHECK RETRY OR CHECK UR MICROSOFT
+    ACCOUNT.
+  userCheckGameOwnershipFailed: FAILED TO CHECK MINECWAFT OWNERSHIP. PLZ RETRY OR CHECK UR NETWORK.
   userExchangeXboxTokenFailed: >-
-    FAILD 2 EXCHANGE XBOX TOKEN FRUM MICROSOFT TOKEN. PLZ RETRY OR CHECK UR
+    FAILED TO EXCHANGE XBOX TOKEN FROM MICROSOFT TOKEN. PLZ RETRY OR CHECK UR
     NETWORK.
-  userLoginMinecraftByXboxFailed: FAILD 2 LOGIN MINECRAFT WIF XBOX TOKEN. PLZ RETRY OR CHECK UR NETWORK.
+  userLoginMinecraftByXboxFailed: FAILED TO LOGIN MINECWAFT WITH XBOX TOKEN. PLZ RETRY OR CHECK UR NETWORK.
 launchFailed:
-  crash: GAME CRASHD!!
-  description: THAR IZ NO CRASH REPORT. DIS DIS TEH ERROR LOG AN LATEST LOG.
-  failedToLaunch: LAUNCH FAILD 2 LAUNCH
+  crash: GAME CRASHED!! (SAD CAT)
+  description: THERE IS NO CRASH REPORT. THIS THIS DA ERROR LOG AN LATEST LOG.
+  elyByAuthlib:
+    description: >-
+      TEH ELY.BY AUTHLIB REPLACEMENT WAS USED FUR MINECWAFT VERSHUN {version},
+      BUT THIS VERSHUN MAY NOT BE FULLY COMPATIBLE.
+    suggestion: >-
+      U CAN DISABL ELY.BY'S AUTHLIB REPLACEMENT IN DA INSTANCE SETTINGZ TO AVOID
+      THIS ISSUE.
+    title: ELY.BY AUTHLIB COMPATIBILITY ISSUE
+  failedToLaunch: LAUNCH FAILED TO LAUNCH
   latestLog: LATEST LOG
-  title: GAME EXITD WIF ABNORMAL CODE
+  title: GAME EXITED WITH ABNORMAL CODE
 launchPreExecuteCommandFailed:
   description: >-
-    TEH PRE-EXECUTE COMMAND FAILD WIF AN ERROR: {error}. PLZ CHECK TEH COMMAND
+    TEH PRE-EXECUTE COMMAND FAILED WITH AN OOPSIE: {error}. PLZ CHECK DA COMMAND
     AN TRY AGAIN.
-  title: PRE-EXECUTE COMMAND FAILD
+  title: PRE-EXECUTE COMMAND FAILED
 launchStatus:
-  assigningMemory: ASSIGNIN MEMS
+  assigningMemory: ASSIGNING MEMRY
+  elyByWarning: >-
+    ELY.BY AUTHLIB REPLACEMENT IS ENABLED. SOME MINECWAFT VERSHUNS MAY NOT BE
+    COMPATIBLE AN CUD CRASH. U CAN DISABL IT IN INSTANCE SETTINGZ IF ISSUES
+    OCCUR.
   exit: EXIT GAME?
-  injectingAuthLib: SETTIN UP THIRD-PARTY AUTHLIB
-  launching: LAUNCHIN...
-  launchingSlow: STILL LAUNCHIN... STARTIN GRAFICS ENGINE CAN BE SLOW...
-  refreshingUser: REFRESHIN USR TOKEN
-  spawningProcess: SPAWNIN PROCES
+  injectingAuthLib: SETTING UP THIRD-PARTY AUTHLIB
+  launching: LAUNCHING...
+  launchingSlow: STILL LAUNCHING... STARTING GRAPHICS ENGINE CAN BE SLOW...
+  refreshingUser: REFRESHING USER TOKEN
+  spawningProcess: SPAWNING PROCESS
 launcherUpdate:
-  alreadyLatest: UP 2 DATE
-  installAndQuit: RESTART 2 INSTALL
-  noUpdateAvailable: NO UPDATE AVAILABLE
+  alreadyLatest: UP TO DATE
+  installAndQuit: RESTART TO INSTALL
+  noUpdateAvailable: NO UPDAT AVAILABLE
   reinstall: REINSTALL
-  updateToThisVersion: DOWNLOAD AN INSTALL
+  updateToThisVersion: DOWNLOD AN INSTALL
 liteloader:
-  name: LITELOADR
+  name: LITELOADER
 localVersion:
-  auto: AUTO COMPUTD
-  delete: DELETE LOCAL VERSHUN
+  auto: AUTO COMPUTED
+  delete: DELET LOCAL VERSHUN
   deleteDescription: >-
-    DIS OPERASHUN WILL DELETE TEH LOCAL VERSHUN JSON & JAR. U HAS 2 REDOWNLOAD
-    IT IF U WANTS 2 USE IT AGAIN.
-  empty: NO VERSHUN INSTALLD
-  hint: LAUNCH SPECIFIC LOCAL VERSHUN DIRECTLY
+    THIS OPERASHUN WILL DELET DA LOCAL VERSHUN JSON & JAR. U HAZ TO REDOWNLOD IT
+    IF U WANT TO USE IT AGAIN.
+  empty: NO VERSHUN INSTALLED
+  hint: LAUNCH A SPECIFIC LOCAL VERSHUN DIRECTLY
   refresh: REFRESH VERSHUNS
   reinstallDescription: >-
-    IF U FINKZ DIS VERSHUN INSTALLASHUN HAS SUM PROBLEMS, U CAN TRY 2 REINSTALL
-    IT.
+    IF U THINK THIS VERSHUN INSTALLASHUN HAZ SOME PROBLEMZ, U CAN TRY TO
+    REINSTALL IT.
   reinstallTitle: REINSTALL {version}
   title: LOCAL VERSHUN | LOCAL VERSHUNS
 logLevel:
-  error: ERROR
+  error: OOPSIE
   info: INFO
-  success: SUCCES
-  warning: WARNIN
+  success: SUCCESS
+  warning: WARNING
 logView:
-  searchPlaceholder: SERCH LOGZ...
+  searchPlaceholder: SEARCH LOGZ...
 login:
-  dropHint: DROP TEH LINK WIF AUTHCODE HER 2 MANUALLY LOGIN
-  forgetPassword: FORGET PASWORD?
+  dropHint: DROP DA LINK WITH AUTHCODE HERE TO MANUALLY LOGIN
+  forgetPassword: FORGET PASSWORD?
   login: LOGIN
-  manualLoginUrl: IF TEH BROWSR DOESNT SHOW UP, PLZ CLICK DIS LINK 2 AUTH!
+  manualLoginUrl: IF DA BROWSR DOESNT SHOW UP, PLZ CLICK THIS LINK TO AUTH!
   signup: SIGN UP
-  signupDescription: NEW 2 US?
-  userRelogin: USR ACCES TOKEN IZ EXPIRD. PLZ RE-LOGIN!
+  signupDescription: NEW TO US?
+  userRelogin: USER ACCESS TOKEN IS EXPIRED. PLZ RE-LOGIN!
 loginError:
-  acquireMicrosoftTokenFailed: FAIL 2 ACQUIRE MICROSOFT TOKEN. DIS MITE BE NETWORK ISSUE. PLZ RETRY.
-  badNetworkOrServer: >-
-    PLZ CHECK UR NETWORK CONNECTIVITY! OR MAYBE TEH AUTHENTICASHUN SERVR IZ
-    DOWN!
-  checkOwnershipFailed: FAIL 2 CHECK GAME OWNERSHIP. PLZ TRY AGAIN.
-  connectionReset: FAIL 2 LOGIN SINCE CONNECSHUN IZ RESET BY SERVR
-  fetchMinecraftProfileFailed: 'FAIL 2 FETCH MINECRAFT PROFILE: {reason}'
+  acquireMicrosoftTokenFailed: FAIL TO ACQUIRE MICROSOFT TOKEN. THIS MITE BE A NETWORK ISSUE. PLZ RETRY.
+  badNetworkOrServer: PLZ CHECK UR NETWORK CONNECTIVITY! OR MAYBE DA AUTHENTICASHUN SERVR IS DOWN!
+  checkOwnershipFailed: FAIL TO CHECK GAME OWNERSHIP. PLZ TRY AGAIN.
+  connectionReset: FAIL TO LOGIN SINCE CONNEKSHUN IS RESET BY SERVR
+  fetchMinecraftProfileFailed: 'FAIL TO FETCH MINECWAFT PROFILE: {reason}'
   illegalEmail: E-MAIL MUST BE VALID
-  invalidCredentials: INVALID CREDENTIALS. INVALID USERNAME OR PASWORD.
+  invalidCredentials: INVALID CREDENTIALS. BAD USERNAME OR PASSWORD.
   loginMinecraftByXboxFailed: >-
-    FAIL 2 EXCHANGE MINECRAFT TOKEN BY XBOX TOKEN. PLZ MAK SURE U HAS MINECRAFT
-    IN XBOX, OR RETRY.
+    FAIL TO EXCHANGE MINECWAFT TOKEN BY XBOX TOKEN. PLZ MAKE SURE U HAZ
+    MINECWAFT IN XBOX, OR RETRY.
   loginXboxAgeRestricted: >-
-    Fail to login Xbox due the the age issue. Please make sure the age is set
-    for your Microsoft account and the age is above 18.
+    FAIL TO LOGIN XBOX DUE DA DA AGE ISSUE. PLZ MAKE SURE DA AGE IS SET FUR UR
+    MICROSOFT ACCOUNT AN DA AGE IS ABOVE 18.
   loginXboxFailed: >-
-    FAIL 2 LOGIN XBOX BY MICROSOFT TOKEN. PLZ MAK SURE U HAS AN INDEPENDENT XBOX
-    AKOWNT 2 UR MICROSOFT AKOWNT. PLZ TRY AGAIN.
+    FAIL TO LOGIN XBOX BY MICROSOFT TOKEN. PLZ MAKE SURE U HAZ AN INDEPENDENT
+    XBOX ACCOUNT TO UR MICROSOFT ACCOUNT. PLZ TRY AGAIN.
   noProfileForNewUser: >-
-    No game profile found! If you are a new Minecraft user, please login at
-    least one time in Minecraft official launcher.
-  requestFailed: LOGIN FAILD, WE DO NOT KNOE TEH EGSAKT REASON. PLZ RETRY.
-  requireEmail: E-MAIL IZ REQUIRD
-  requirePassword: PASWORD IZ REQUIRD
-  requireUsername: USERNAME IZ REQUIRD
-  timeout: LOGIN TIEMOUT. PLZ RETRY OR CHECK UR NETWORK.
+    NO GAME PROFILE FOUND! IF U R A NEW MINECWAFT USER, PLZ LOGIN AT LEAST ONE
+    TIME IN MINECWAFT OFFISHUL LAUNCHER.
+  requestFailed: LOGIN FAILED, WE DO NOT KNOW DA EXACT REASON. PLZ RETRY.
+  requireEmail: E-MAIL IS REQUIRED
+  requirePassword: PASSWORD IS REQUIRED
+  requireUsername: USERNAME IS REQUIRED
+  timeout: LOGIN TIMEOUT. PLZ RETRY OR CHECK UR NETWORK.
 logsCrashes:
   crashes: CRASH REPORTS
   logs: LOGS
-  placeholder: NO FILEZ FINDZ
-  title: LOGS OR CRASH REPORTS
+  placeholder: NO FILEZ FOUND
+  title: LOGZ OR CRASH REPORTS
 me:
   games: MAH GAMEZ
-  modpacks: MAH MODPACKZ
-  news: NEWS
-  recentPlay: RESENT PULAY
-  versions: INSTALLD VERSHUNS
+  modpacks: MAH MODPACKS
+  news: NEWZ
+  recentPlay: RECENT PLAY
+  versions: INSTALLED VERSHUNS
+  viewByDate: VUE BY DATE
+  viewByFolder: VUE BY FOLDR
 minecraftVersion:
-  empty: CANT LOAD MINECRAFT VERSHUNS
-  name: MINECRAFT VERSHUN
+  name: MINECWAFT VERSHUN
   release: RELEASE
   showAlpha: SHOW SNAPSHOT
   snapshot: SNAPSHOT
 mod:
   acceptVersion: ACCEPT {version}
-  applyGroupRules: Apply saved grouping rules
+  applyGroupRules: APPLY SAVED GROUPING RULEZ
+  categories: CATEGORIES
   compatible: COMPATIBLE MOD.
-  currentVersion: CURRENT {current}
-  deletion: DELETE MOD
+  createGroup: MAKE GROUP
+  currentVersion: CURREN {current}
+  deletion: DELET MOD
   deletionHint: >-
-    U WILL LOSE DIS MOD & ITZ METADATA FOREVR. R U SURE U WANTS 2 DELETE IT? | U
-    WILL LOSE THEES MODZ & THEIR METADATA FOREVR. R U SURE U WANTS 2 DO DAT?
-  deletionRestHint: AN {rest} MOAR MODZ...
-  denseView: DENSE VIEW
-  dropHint: DROP MODZ .JAR/.LITEMOD HER 2 IMPORT.
-  duplicatedDetected: '{count} DUPLICATD MODZ'
+    U WILL LOSE THIS MOD & ITS METADATA FOREVR. ARE U SURE U WANT TO DELET IT? |
+    U WILL LOSE THESE MODZ & THEIR METADATA FOREVR. ARE U SURE U WANT TO DO
+    THAT?
+  deletionRestHint: AN {rest} MORE MODZ...
+  denseView: DENSE VUE
+  description: DESCRIPSHUN
+  disableAll: DISABL ALL
+  dropHint: DROP MOD'S .JAR/.LITEMOD HERE TO IMPORT.
+  duplicatedDetected: '{count} DUPLICATED MODZ'
   duplicatedDetectedDescription: >-
-    FINDZ MODZ WIF SAME MOD ID BUT DIFFERENT FILEZ. DIS MITE CAUSE MINECRAFT
-    CRASH. PLZ SELECT TEH FILE U WANTS 2 KEEP.
-  enabled: '{count} MODZ ENABLD'
-  enableAll: ENABLE ALL
-  disableAll: DISABLE ALL
+    FOUND MODZ WITH SAME MOD ID BUT DIFFERENT FILEZ. THIS MITE CAUSE MINECWAFT
+    CRASH. PLZ PICK DA FILE U WANT TO KEEP.
+  enableAll: ENABL ALL
+  enabled: '{count} MODZ ENABLED'
   filter: FILTR MODZ
-  group: Group up
-  groupInstalled: GROUP INSTALLD MODZ
-  selectOrCreateGroup: SELECT OR CREATE GROUP
-  searchGroups: SEARCH GROUPS...
-  newFolder: NEW FOLDER
-  noGroupsYet: NO GROUPS YET. CREATE WAN!
-  noGroupsFound: NO GROUPS FINDZ
+  filterDisabled: FILTR DISABLED
+  group: GROUP UP
+  groupInstalled: GROUP INSTALLED MODZ
   groupName: GROUP NAME
-  groupNameRequired: GROUP NAME IZ REQUIRD
-  createGroup: CREATE GROUP
-  hasUpdate: MOD HAS NEW VERSHUN!
+  groupNameRequired: GROUP NAME IS REQUIRED
+  hasUpdate: MOD HAZ A NEW VERSHUN!
   hideIncompatible: HIDE INCOMPATIBLE MODZ
   incompatible: INCOMPATIBLE MOD.
-  incompatibleHint: CHECK OUT UR MOD COMPATIBILITY REPORT
+  incompatibleHint: SHOW INCOMPATIBLE
   incompatibleHintDescription: >-
-    SUM MODZ DEPENDENCIEZ MITE BE MISIN. OR SUM DEPENDENCIEZ VERSHUNS DO NOT
-    MATCHD.
-  manage: MANAGE MODZ
+    SOME MODZ DEPENDENCIEZ MITE BE MISSING. OR SOME DEPENDENCIEZ VERSHUNS DO NOT
+    MATCHED.
+  installed: INSTALLED
+  license: LICENSE
+  links: LINKZ
+  manage: MANAG
   maybeCompatible: MAYBE COMPATIBLE.
-  modloaderSelectHint: TEH MOD SUPPORT FOLLOWIN MOD LOADERS. PLZ SELECT WAN 2 INSTALL.
-  modloaderSelectNotSupported: NOT FINDZ {modloader} 4 MINECRAFT {minecraft}
+  modloaderSelectHint: TEH MOD SUPPORT FOLLOWING MOD LOADERZ. PLZ PICK ONE TO INSTALL.
+  modloaderSelectNotSupported: NOT FOUND {modloader} FUR MINECWAFT {minecraft}
   mods: '{count} MODZ'
   name: MOD | MODZ
-  noModLoaderHint: DOAN FORGET 2 ENABLE MODLOADR 2 USE MODZ!
-  openLink: OPEN TEH MOD URL {url}
+  newFolder: NEW FOLDR
+  noGroupsFound: NO GROUPS FOUND
+  noGroupsYet: NO GROUPS YET. MAKE ONE!
+  noModLoaderHint: DONT FORGET TO ENABL A MODLOADER TO USE MODZ!
+  openLink: OPEN DA MOD URL {url}
+  projectId: PROJECT ID
   search: SEARCH MODZ
+  searchGroups: SEARCH GROUPS...
   searchOnCurseforge: SEARCH {name} IN CURSEFORGE
+  searchOnMcWiki: LOOK UP {name} IN DA MC ENCYCLOPEDIA.
   searchOnModrinth: SEARCH {name} IN MODRINTH
+  selectOrCreateGroup: PICK OR MAKE GROUP
   showDirectory: SHOW MODZ DIRECTORY
-  showFile: SHOW TEH MOD PATH {file}
-  showInCurseforge: SHOW TEH MOD IN CURSEFORGE
-  showInModrinth: Show {name} IN MODRINTH
-  switchDefaultSource: DEFAULT MOD SOURCE
-  syncGroupRules: Save grouping rules
-  toUpdate: '{count} UPDATEZ'
-  ungroup: Ungrouping
+  showFile: SHOW DA MOD PATH {file}
+  showInCurseforge: SHOW DA MOD IN CURSEFORGE
+  showInModrinth: SHOW {name} IN MODRINTH
+  showUpdates: SHOW UPDATS
+  sourceUrl: SOURC
+  switchDefaultSource: DEFAULT MOD SOURC
+  syncGroupRules: SAVE GROUPING RULEZ
+  technical: TECHNICAL INFORMASHUN
+  toUpdate: '{count} UPDATS'
+  ungroup: UNGROUP
+  updateAt: UPDATED
+  versions: VERSHUNS
+  wikiUrl: WIKI
 modFilter:
-  clear: Clear Filter
-  dependenciesInstallOnly: Only show missed dependencies mods
-  disabledOnly: Only show disabled mods
-  hasUpdateOnly: Only show has update mods
-  incompatibleOnly: Only show incompatible mods
-  unusedOnly: Only show unused libraries mods
+  clear: CLEAR FILTR
+  dependenciesInstallOnly: ONLY SHOW MISSED DEPENDENCIEZ MODZ
+  disabledOnly: ONLY SHOW DISABLED MODZ
+  hasUpdateOnly: ONLY SHOW MODZ WITH UPDATS
+  incompatibleOnly: ONLY SHOW INCOMPATIBLE OR MISSING DEPENDENCIEZ MISSING MODZ
+  source: SOURC
+  unusedOnly: ONLY SHOW UNUSED LIBRAWRIES MODZ
 modInstall:
   archived: >-
-    {name} HAS BEEN ARCHIVD. {name} WILL NOT RECEIV ANY FURTHR UPDATEZ UNLES TEH
-    AUTHOR DECIDEZ 2 UNARCHIV TEH PROJECT.
-  checkDependencies: CHECK DEPENDENCIEZ
-  checkUpgrade: CHECK MODZ UPDATE
-  checkedDependencies: CHECKD DEPENDENCIEZ
-  checkedUpgrade: UPGRADE CHECKD
-  currentVersion: SELECTD VERSHUN
-  dependencyHint: INSTALLD ANOTHR VERSHUN {version}
-  display: Mods Display
-  install: INSTALL
-  installDependencies: INSTALL MISIN DEPENDENCIEZ
-  installHint: Will INSTALL {file} FILE WIF {dependencies} DEPENDENCIEZ
-  installed: INSTALLD
-  noVersionSupported: MOD ONLY SUPPORTS MINECRAFT {supported}.
-  recommendation: Explore the {first} mods in {modrinth} and {curseforge}!
-  removeUnusedLibraries: Remove unused libraries mods
-  search: SEARCH RESULT
-  skipVersion: SKIP TEH MODZ WIF DIFFERENT MINECRAFT VERSHUN
-  source: MOD SOURCE
-  switch: SWTICH VERSHUN
-  upgrade: UPGRADE MODZ
+    {name} HAZ BEEN ARCHIVED. {name} WILL NOT RECEIV ANY FURTHER UPDATS UNLESS
+    DA AUTHOR DECIDES TO UNARCHIVE DA PROJECT.
   autoUpgrade:
-    title: UPDAET MODZ?
     description: >-
-      U CHANGD TEH MINECRAFT VERSHUN. WULD U LIEK 2 AUTOMATIKLY UPDAET
-      COMPATIBEL MODZ 2 VERSHUNZ DAT MATCH MINECRAFT {version}?
-    yes: UPDAET MODZ
-    no: SKIP
+      U HAZ CHANGED DA MINECWAFT VERSHUN. WOULD U LIKE TO AUTOMATICALLY UPDAT
+      COMPATIBLE MODZ TO VERSHUNS THAT MATCH MINECWAFT {version}?
+    'no': SKIP
+    title: UPDAT MODZ?
+    'yes': UPDAT MODZ
+  checkDependencies: CHECK DEPENDENCIEZ
+  checkUpgrade: CHECK MODZ UPDAT
+  checkedDependencies: CHECKED DEPENDENCIEZ
+  checkedUpgrade: UPGRADE CHECKED
+  currentVersion: SELECTED VERSHUN
+  dependencyHint: INSTALLED ANOTHR VERSHUN {version}
+  display: MODZ DISPLAY
+  install: INSTALL
+  installDependencies: INSTALL MISSING DEPENDENCIEZ
+  installHint: WILL INSTALL {file} FILE WITH {dependencies} DEPENDENCIEZ
+  installed: INSTALLED
+  noVersionSupported: MOD ONLY SUPPORTS MINECWAFT {supported}.
+  recommendation: EXPLORE DA {first} MODZ IN {modrinth} AN {curseforge}!
+  reinstall: REINSTALL
+  removeUnusedLibraries: REMOVE UNUSED
+  search: SEARCH MODZ...
+  skipVersion: SKIP DA MODZ WITH DIFFERENT MINECWAFT VERSHUN
+  source: MOD SOURC
+  switch: SWITCH VERSHUN
+  upgrade: UPGRADE MODZ
 modSearch:
-  noLocalModsFound: NO LOCAL MODZ FOUND MATCHIN UR SEARCH.
-  noModsFound: NO MODZ FOUND.
-  noModsInstalled: U DON'T HAZ ANY MODZ INSTALLED.
+  noLocalModsFound: NO LOCAL MODZ FOUND MATCHING UR SEARCH.
+  noModsFound: NO MODZ FOUND
+  noModsInstalled: U DONT HAZ ANY MODZ INSTALLED.
   searchInMarket: SEARCH {keyword} IN MARKET
-modSearchType: {}
 modUpgradePolicy:
-  curseforge: Curseforge FURST
-  curseforgeOnly: Curseforge ONLY
-  modrinth: Modrinth FURST
-  modrinthOnly: Modrinth ONLY
-  name: Upgrade Policy
+  curseforge: CURSEFORGE
+  curseforgeOnly: CURSEFORGE ONLY
+  modrinth: MODRINTH
+  modrinthOnly: MODRINTH ONLY
+  name: UPGRADE POLICY
+  title: UPGRADE POLICY
 modified:
   reset: RESET
   save: SAVE
-  unsaved: UR MODIFICASHUN IZ UNSAVD!
+  unsaved: UR MODIFICASHUN IS UNSAVED!
 modpack:
-  author: AUTHOR NAYM
-  authorHint: DIS MITE BE USD 2 SIGN AN EXPORTD MODPACK (CURSEFORGE)
+  author: AUTHOR NAME
+  authorHint: THIS MITE BE USED TO SIGN AN EXPORTED MODPACK (CURSEFORGE)
   delete:
-    hint: DIS WILL DELETE TEH MODPACK {name} WIF ITZ METADATA. R U SURE?
-    title: DELETE TEH MODPACK
+    hint: THIS WILL DELET DA MODPACK {name} WITH ITS METADATA. U SURE?
+    title: DELET DA MODPACK
   description: DESCRIPSHUN
   descriptionHint: >-
-    GENERAL DESCRIPSHUN 4 U MODPACK. MITE BE USD 4 EXPORTIN AS CURSEFORGE
+    GENERAL DESCRIPSHUN FUR U MODPACK. MITE BE USED FUR EXPORTING AS CURSEFORGE
     MODPACK.
-  dropHint: DROP MODPACK ZIP 2 HER 2 IMPORT
+  dropHint: DROP MODPACK ZIP TO HERE TO IMPORT
   emitCurseforge: EXPORT CURSEFORGE MODPACK
   emitMcbbs: EXPORT MCBBS MODPACK
   emitModrinth: EXPORT MODRINTH MODPACK
-  emitModrinthStrict: STRICT MODRINTH FORMATNTH MODPACK
-  emitModrinthStrictDescription: ONLY TEH URLS FRUM 4 DOMAINS LISTD IN MODRINTH DOCUMENT R ALLOWD
+  emitModrinthStrict: STRICT MODRINTH FORMAT
+  emitModrinthStrictDescription: ONLY DA URLS FROM 4 DOMAINS LISTED IN MODRINTH DOCUMENT ARE ALLOWED
   export: EXPORT AS MODPACK
-  exportDirectory: Export Directory
-  exportDirectoryDescription: The modpack will be exported to Downloads folder by default
+  exportDirectory: EXPORT DIRECTORY
+  exportDirectoryDescription: TEH MODPACK WILL BE EXPORTED TO DOWNLODS FOLDR BY DEFAULT
   general: GENERAL INFORMASHUN
-  includeAssets: INCLUDE ASSETS
-  includeLibraries: INCLUDE LIBRARIEZ
-  includes: FILEZ 2 INCLUDE
+  includeAssets: INCLUDE ASSETZ
+  includeLibraries: INCLUDE LIBRAWRIES
+  includes: FILEZ TO INCLUDE
   modpackVersion: MODPACK VERSHUN
   name: MODPACK | MODPACKZ
-  overrides: OVERRIDEZ
+  overrides: OVERRIDES
   showFile: SHOW FILE {file}
   showInCurseforge: SHOW {name} IN CURSEFORGE
   showInFtb: SHOW {name} IN FTB
   showInModrinth: SHOW {name} IN MODRINTH
   url: URL
-  urlHint: TEH HOME PAEG URL OV UR MODPACK
+  urlHint: TEH HOME PAGE URL OF UR MODPACK
 modpackImportConfirm:
-  description: >-
-    Detect you drop a file into the launcher. Are you trying to import a
-    modpack?
-  title: Are you trying to import a modpack?
+  description: DETECT U DROP A FILE INTO DA LAWNCHER. ARE U TRYING TO IMPORT A MODPACK?
+  title: ARE U TRYING TO IMPORT A MODPACK?
 modrinth:
   browseUrl: OPEN IN BROWSR {url}
   categories:
-    128x: 128x
-    16x: 16x
-    256x: 256x
-    32x: 32x
-    48x: 48x
-    512x+: 512x+
-    64x: 64x
-    8x-: 8x-
-    adventure: ADVENCHUR
-    atmosphere: ATMOSFERE
+    128x: 128X
+    16x: 16X
+    256x: 256X
+    32x: 32X
+    48x: 48X
+    512x+: 512X+
+    64x: 64X
+    8x-: 8X-
+    adventure: ADVENTUR
+    atmosphere: ATMOSPHERE
     audio: AUDIO
     blocks: BLOCKZ
     bloom: BLOOM
@@ -874,16 +920,16 @@ modrinth:
     bungeecord: BUNGEECORD
     canvas: CANVAS
     cartoon: CARTOON
-    categories: KATEGORIEZ
-    challenging: CHALLENGIN
-    colored-lighting: COLORD LIGHTIN
-    combat: COMBAT
+    categories: CATEGORIES
+    challenging: CHALLENGING
+    colored-lighting: COLORED LIGHTING
+    combat: FITE
     core-shaders: CORE SHADERS
-    cursed: CURSD
-    datapack: DATA PACK
+    cursed: CURSED
+    datapack: DATA PAK
     decoration: DECORASHUN
     economy: ECONOMY
-    entities: ENTITIEZ
+    entities: ENTITIES
     environment: ENVIRONMENT
     equipment: EQUIPMENT
     fabric: FABRIC
@@ -891,211 +937,211 @@ modrinth:
     features: FEATUREZ
     folia: FOLIA
     foliage: FOLIAGE
-    fonts: FONTS
-    food: FUD
+    fonts: FONTZ
+    food: NOM NOMS
     forge: FORGE
-    game-mechanics: GAME MECHANICS
+    game-mechanics: GAME MECHANIC
     gui: GUI
     high: HIGH
     iris: IRIS
-    items: ITIMS
+    items: ITEMZ
     kitchen-sink: KITCHEN SINK
-    library: LIBRARY
-    lightweight: LIGHTWEIGHT
-    liteloader: LITELOADR
+    library: LIBRAWRY
+    lightweight: LIGHTWATE
+    liteloader: LITELOADER
     locale: LOCALE
     low: LOW
-    magic: MAGIC
-    management: MANAGEMENT
+    magic: MAJIK
+    management: MANAGMENT
     medium: MEDIUM
-    minecraft: MINECRAFT
+    minecraft: MINECWAFT
     minigame: MINI GAMEZ
     misc: MISC
-    mobs: MOBS
-    modded: MODDD
-    models: MODELS
+    mobs: MOBZ
+    modded: MODDED
+    models: MODELZ
     modloader: MOD LOADR
     multiplayer: MULTIPLAYR
+    name: CATEGORIES
     neoforge: NEOFORGE
     optifine: OPTIFINE
     optimization: OPTIMIZASHUNS
-    paper: PAPR
-    path-tracing: PATH TRACIN
+    paper: PAPER
+    path-tracing: PATH TRACING
     pbr: PBR
-    performance impact: PERFORMANCE IMPACT
-    potato: Potato
+    performance impact: PERFORMANC IMPACT
+    potato: POTATO
     purpur: PURPUR
-    quests: QUESTS
+    quests: QUESTZ
     quilt: QUILT
     realistic: REALISTIC
-    reflections: REFLECSHUNS
+    reflections: REFLEKSHUNS
     resolutions: RESOLUSHUNS
     rift: RIFT
     screenshot: SCREENSHOT
     semi-realistic: SEMI REALISTIC
-    shadows: SHADOWS
+    shadows: SHADOZ
     simplistic: SIMPLISTIC
-    social: SOSHUL
+    social: SOCIAL
     spigot: SPIGOT
     sponge: SPONGE
-    storage: STORAGE
-    technology: TECHNOLOGY
-    themed: THEMD
-    transportation: TRANZPORTASHUN
+    storage: STORAG
+    technology: TEKNOLOGY
+    themed: THEMED
+    transportation: TRANSPORTASHUN
     tweaks: TWEAKZ
-    utility: UTILITY
+    utility: UTIL
     vanilla: VANILLA
-    vanilla-like: VANILLA-LIEK
+    vanilla-like: VANILLA-LIKE
     velocity: VELOCITY
     waterfall: WATERFALL
-    worldgen: WURLD GEN
+    worldgen: WORLD GEN
   clientSide: CLIENT SIDE
-  copyTitle: COPY TEXT {title} 2 CLIPBORD
-  createAt: CREATD
-  createCollection: Create Collection
+  copyTitle: COPY TEXT {title} TO CLIPBORD
+  createAt: CREATED
+  createCollection: MAKE COLLEKSHUN
   description: DESCRIPSHUN
-  downloads: DOWNLOADZ
+  downloads: DOWNLODS
   environments:
+    all: ALL
     client: CLIENT
     default: DEFAULT
     name: ENVIRONMENT
     optional: OPSHUNAL
-    required: REQUIRD
+    required: REQUIRED
     server: SERVR
-    unsupported: UNSUPPORTD
-  externalResources: EXTERNAL RESOURCEZ
-  featuredVersions: FEATURD VERSHUNS
-  followedProjects: Followed Projects
+    unsupported: UNSUPPORTED
+  externalResources: EXTERNAL RESOURC
+  featuredVersions: FEATURED VERSHUNS
+  followedProjects: FOLLOWED PROJECTZ
   followers: FOLLOWERS
-  gallery: GALLERY
+  gallery: GALLRY
   gameVersions:
     name: GAME VERSHUNS
   headers:
     status: STATS
-    support: SUPPORTS
+    support: SUPPORTZ
     version: VERSHUN
-  issueUrl: VERSHUN
+  issueUrl: ISSUE
   license: LICENSE
   licenses:
-    name: LICENSEZ
+    name: LICENSES
   loginHint: >-
-    The operation requires modrinth to perform. The launcher will open a browser
-    window to login modrinth.
-  loginTitle: Login to Modrinth
+    TEH OPERASHUN REQUIRES MODRINTH TO PERFORM. TEH LAWNCHER WILL OPEN A BROWSR
+    WINDOW TO LOGIN MODRINTH.
+  loginTitle: LOGIN TO MODRINTH
   modLoaders:
     name: MOD LOADERS
-  perPage: PER PAEG
+  modpackSource:
+    source: SOURC
+  perPage: PER PAGE
   projectId: PROJECT ID
-  projectMembers: PROJECT MEMBERS
+  projectMembers: PROJECT MEMBERZ
   projectType:
     mod: MOD
     modpack: MODPACK
-    name: PROJECT TYPE
-    resourcePack: RESOURCE PACK
-    shader: SHADR
-  projects: '{count} projects'
+    name: PROJECT TYP
+    resourcePack: RESOURC PAK
+    shader: SHADER
+  projects: '{count} PROJECTS'
   quickSearch: SEARCH {title}
   searchText: SEARCH
-  serverSide: SERVR SIDE
+  serverSide: SERVER SIDE
   sort:
-    downloads: DOWNLOAD COUNTS
+    downloads: DOWNLOD COUNTS
     follows: FOLLOW COUNT
-    newest: RESENTLY CREATD
+    newest: RECENTLY CREATED
     relevance: RELEVANCE
     title: SORT BY
-    updated: RESENTLY UPDATD
-  sourceUrl: SOURCE
+    updated: RECENTLY UPDATED
+  sourceUrl: SOURC
   technicalInformation: TECHNICAL INFORMASHUN
-  updateAt: UPDATD
+  updateAt: UPDATED
   versions: VERSHUNS
   wikiUrl: WIKI
 modrinthCard:
-  currentVersion: CURRENT VERSHUN
-  projectHint: >
-    DIS INSTANCE IZ CREATD BY MODRINTH MODPACK FRUM <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+  currentVersion: CURREN VERSHUN
 multiplayer:
-  allowTurn: ENABLE RELAY SERVR
+  allowTurn: ENABL RELAY SERVR
   allowTurnHint: >-
-    ALLOW RELAY SERVR IF U CANT CONNECT WIF UR FREND. HOWEVR, USIN RELAY SERVR
-    CUD SLOW DOWN UR CONNECSHUN. USE IT WIF CAUSHUN.
+    ALLOW RELAY SERVR IF U CANNOT CONNECT WITH UR FREN. HOWEVER, USING RELAY
+    SERVR MAY SLOW DOWN UR CONNEKSHUN. USE IT WITH CAUSHUN.
   complete: COMPLETE
   confirm: CONFIRM
-  connections: CONNECSHUNS
-  copied: COPID!
+  connections: CONNEKSHUNS
+  copied: COPIED!
   copy: COPY
-  copyGroupToFriendHint: LET UR FRENZ JOIN TEH GROUP WIF DIS ID
+  copyGroupToFriendHint: LET UR FRENS JOIN DA GROUP WITH THIS ID
   copyLocalHint: >
-    "PLZ COPY TEH LOCAL SDP TEXT AN SEND IT 2 UR OBJECT 2 HAS UR OBJECT ENTR DIS
-    TEXT IN DA JOIN CONNECSHUN <span>A TOKEN CAN BE ONLY USD 4 <span
-    style="color: red; font-weight: bold;">WAN PER</span>! U CANT SEND TEH SAME
-    TOKEN 2 MULTIPLE PEERS!</span> <br> <span class="hint-text"
-    style="font-style: italic;">IF U NED 2 CONNECT MULTIPLE PEERS, U NED 2
-    CREATE <span style="font-weight: bold; color: rgba(245, 158,
-    11)">multiple</span> CONNECSHUNS.</span>"
-  createLocalToken: CREATE LOCAL TOKEN
-  currentIpTitle: DETECTD PUBLIC IP
-  currentNatTitle: 'CURRENT NETWORK (NAT):'
-  difficultyLevelHint: TEH LEVEL OV DIFFICULTY CREATIN CONNECSHUN
+    "PLZ COPY DA LOCAL SDP TEXT AN SEND IT TO UR OBJECT TO HAZ UR OBJECT ENTER
+    THIS TEXT IN DA JOIN CONNEKSHUN <SPAN>A TOKEN CAN BE ONLY USED FUR <SPAN
+    STYLE="COLOR: RED; FONT-WEIGHT: BOLD;">ONE PEER</SPAN>! U CANNOT SEND DA
+    SAME TOKEN TO MULTIPLE PEERS!</SPAN> <BR> <SPAN CLASS="HINT-TEXT"
+    STYLE="FONT-STYLE: ITALIC;">IF U NEED TO CONNECT MULTIPLE PEERS, U NEED TO
+    MAKE <SPAN STYLE="FONT-WEIGHT: BOLD; COLOR: RGBA(245, 158,
+    11)">MULTIPLE</SPAN> CONNEKSHUNS.</SPAN>"
+  createLocalToken: MAKE LOCAL TOKEN
+  currentIpTitle: DETECTED PUBLIC IP
+  currentNatTitle: 'CURREN NETWORK (NAT):'
+  difficultyLevelHint: TEH LEVEL OF DIFFICULTY CREATING A CONNEKSHUN
   disconnect: DISCONNECT
-  disconnectDescription: R U SURE U WANTS 2 DISCONNECT WIF USR {user}({id})?
-  disconnected: DISCONNECTD
-  enterRemoteToken: ENTR REMOTE TOKEN
+  disconnectDescription: ARE U SURE U WANT TO DISCONNECT WITH USER {user}({id})?
+  disconnected: DISCONNECTED
+  enterRemoteToken: ENTER REMOTE TOKEN
   enterRemoteTokenHint: >-
-    ONCE UR PER ENTERS UR TOKEN, U NED 2 ENTR HIS TOKEN 2 TEH TEXT AREA BELOW.
-    CLICK CONFIRM 2 CONNECT.
-  exposedPortDescription: TEH PORT U EXPOSD 2 OTHR PEERS
-  exposedPorts: FORWARDD PORTS
+    ONCE UR PEER ENTERS UR TOKEN, U NEED TO ENTER HIS TOKEN TO DA TEXT AREA
+    BELOW. CLICK CONFIRM TO CONNECT.
+  exposedPortDescription: TEH PORT U EXPOSED TO OTHR PEERS
+  exposedPorts: FORWARDED PORTZ
   gatheringIce: >
-    "PLZ WAIT 4 DA ICE SERVR 2 COLLECT ENOUGH INFORMASHUN BOUT UR NETWORK. IF U
-    R IMPATIENT AN THAR IZ ENOUGH INFORMASHUN, U CAN GIV TEH CURRENT SDP 2 TEH
-    OTHR PARTY IN ADVANCE AN CLICK NEXT PLZ SEND TEH <span class="v-chip
-    v-chip--label v-size--small" style="text-font: bold" >Local Token</span> 2
-    UR PER, U PER ENTR UR TOKEN IN <span class="v-chip v-chip--label
-    v-size--small" style="text-font: bold"> JOIN CONNECSHUN </span> section.
-    <br> TEH ICE SERVR MITE NED SUM TIEM 2 COLLECT UR INFO 2 CREATE <span
-    class="v-chip v-chip--label v-size--small" style="text-font: bold">Local
-    token</span>.<br> U DO NOT NED 2 WAIT TIL TEH ICE STATUS IZ COMPLETE. IF TEH
-    TOKEN BELOW REMAINS UNCHANGD, U CAN COPY IT AN SEND IT 2 UR PER."
+    "PLZ WAIT FUR DA ICE SERVR TO COLLECT ENOUGH INFORMASHUN ABOUT UR NETWORK.
+    IF U R IMPATIENT AN THERE IS ENOUGH INFORMASHUN, U CAN GIVE DA CURREN SDP TO
+    DA OTHR PARTY IN ADVANCE AN CLICK NEXT PLZ SEND DA <SPAN CLASS="V-CHIP
+    V-CHIP--LABEL V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD" >LOCAL TOKEN</SPAN> TO
+    UR PEER, U PEER ENTER UR TOKEN IN <SPAN CLASS="V-CHIP V-CHIP--LABEL
+    V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD"> JOIN CONNEKSHUN </SPAN> SECSHUN.
+    <BR> TEH ICE SERVR MITE NEED SOME TIME TO COLLECT UR INFO TO MAKE <SPAN
+    CLASS="V-CHIP V-CHIP--LABEL V-SIZE--SMALL" STYLE="TEXT-FONT: BOLD">LOCAL
+    TOKEN</SPAN>.<BR> U DO NOT NEED TO WAIT UNTIL DA ICE STATUS IS COMPLETE. IF
+    DA TOKEN BELOW REMAINS UNCHANGED, U CAN COPY IT AN SEND IT TO UR PEER."
   groupId: GROUP ID
-  illegalTokenDescription: ILLEGAL TOKEN, PLZ MAK SURE TEH TOKEN FRUM UR PER IZ CORRECT
-  initiateConnection: INITIATE CONNECSHUN
+  illegalTokenDescription: BAD TOKEN, PLZ MAKE SURE DA TOKEN FROM UR PEER IS CORRECT
+  initiateConnection: INITIATE CONNEKSHUN
   inviteLink: INVITE LINK
-  joinConnection: IF UR PER HAS ALREADY INITIATD CONNECSHUN, U NED 2 JOIN CONNECSHUN.
+  joinConnection: IF UR PEER HAZ ALREADY INITIATED A CONNEKSHUN, U NEED TO JOIN CONNEKSHUN.
   joinManual: JOIN
-  joinOrCreateGroup: JOIN/CREATE GROUP
-  joinOrCreateGroupHint: GIT GROUP ID FRUM UR FRENZ OR CREATE GROUP
+  joinOrCreateGroup: JOIN/MAKE GROUP
+  joinOrCreateGroupHint: GET GROUP ID FROM UR FRENS OR MAKE A GROUP
   kernel: P2P KERNEL
   kernelDescription: >-
-    USE EITHR NATIV WEBRTC OR NODE-DATACHANNEL. ONLY SWITCH DIS WHEN UR P2P
-    CONNECSHUN SOMETIME CRASHEZ TEH LAUNCHR WINDOW.
-  leaveGroup: LEEF GROUP
+    USE EITHR NATIVE WEBRTC OR NODE-DATACHANNEL. ONLY SWITCH THIS WHEN UR P2P
+    CONNEKSHUN SOMETIME CRASHES DA LAWNCHER WINDOW.
+  leaveGroup: LEAVE GROUP
   localToken: LOCAL TOKEN
   manualConnect: MANUALLY CONNECT
   name: MULTIPLAYR ON LAN
   networkInfo: NETWORK INFO
   next: NEXT
-  otherExposedPortDescription: TEH PORT FORWARDD BY {user}
-  placeholder: CONNECT WIF OTHR USERS 2 PULAY MINECRAFT ON LAN!
+  otherExposedPortDescription: TEH PORT FORWARDED BY {user}
+  placeholder: CONNECT WITH OTHR USERS TO PLAY MINECWAFT ON LAN!
   previous: PREVIOUS
   receiveHint: >-
-    AFTR TEH OTHR PARTY ENTERS UR TOKEN, UR CONNECSHUN WILL BE CREATD
-    AUTOMATICALLY. NAO U CAN CLOSE TEH DIALOG.
-  receiveRemoteTokenHint: PLZ ENTR TEH TOKEN FRUM UR PER HER.
+    AFTR DA OTHR PARTY ENTERS UR TOKEN, UR CONNEKSHUN WILL BE CREATED
+    AUTOMATICALLY. NAO U CAN CLOSE DA DIALOG.
+  receiveRemoteTokenHint: PLZ ENTER DA TOKEN FROM UR PEER HERE.
   remoteToken: REMOTE TOKEN
   routerInfo: ROUTR INFO
-  sendTokenToRemote: SEND TOKEN 2 REMOTE
+  sendTokenToRemote: SEND TOKEN TO REMOTE
   share: SHARE INSTANCE CONFIG
-  sharing: SHARIN FILEZ...
-  sharingNotificationBody: U CAN DOWNLOAD OR CREATE AN INSTANCE FRUM {name} SHARD CONFIG.
-  sharingNotificationTitle: A PER IZ SHARIN THEIR GAME CONFIG
+  sharing: SHARING FILEZ...
+  sharingNotificationBody: U CAN DOWNLOD OR MAKE AN INSTANCE FROM {name} SHARED CONFIG.
+  sharingNotificationTitle: A PEER IS SHARING THEIR GAME CONFIG
   start: START
-  startNewP2PConnection: CLICK TEH START BUTN 2 CREATE NEW PER CONNECSHUN
+  startNewP2PConnection: CLICK DA START BUTTON TO MAKE A NEW PEER CONNEKSHUN
 myStuff: MAH STUFF
-name: NAYM
+name: NAME
 natType:
-  blocked: BLOCKD
+  blocked: BLOCKED
   fullCone: FULL CONE
   openInternet: OPEN INTERNET
   restrictNat: RESTRICT NAT
@@ -1104,621 +1150,709 @@ natType:
   symmetricUDPFirewall: SYMMETRIC UDP FIREWALL
   unknown: UNKNOWN
 neoForgedVersion:
-  disable: DISABLE NEOFORGD
-  empty: NEOFORGD DOEZ NOT SUPPORT {version}
-  name: NEOFORGD
+  disable: DISABL NEOFORGED
+  empty: NEOFORGED DOES NOT SUPPORT {version}
 news:
-  name: NEWS
-  readMore: READ MOAR
+  name: NEWZ
+  readMore: READ MORE
 next: NEXT
 'no': 'NO'
 ok: OK
 optifineVersion:
-  disable: DISABLE OPTIFINE
-  empty: OPTIFINE DOEZ NOT SUPPORT MINECRAFT {version}
+  disable: DISABL OPTIFINE
+  empty: OPTIFINE DOES NOT SUPPORT MINECWAFT {version}
 optional: OPSHUNAL
 peerConnectionState:
-  closed: CLOSD
-  connected: CONNECTD
-  connecting: CONNECTIN
-  disconnected: DISCONNECTD
-  failed: FAILD
-  name: CONNECSHUN STATE
+  closed: CLOSED
+  connected: CONNECTED
+  connecting: CONNECTING
+  disconnected: DISCONNECTED
+  failed: FAILED
+  name: CONNEKSHUN STATE
   new: NEW
 peerGroupState:
   closed: NOT IN GROUP
-  closing: CLOSD
-  connected: GROUP JOIND
-  connecting: Connecting
+  closing: CLOSED
+  connected: GROUP JOINED
+  connecting: CONNECTING
 peerIceGatheringState:
-  gathering: GATHERIN ICE SERVR
+  gathering: GATHERING ICE SERVR
 peerSignalingState:
-  have-local-offer: WAITIN PER DESCRIPSHUN
+  have-local-offer: WAITING PEER DESCRIPSHUN
 popular: POPULARITY
 presence:
-  curseforge: VIEWIN CURSEFORGE
-  curseforgeProject: VIEWIN {name} IN CURSEFORGE
-  instance: Idle in Instance {instance}
-  instanceSetting: 'EDIT INSTANCE SETTIN: {instance}'
-  mod: VIEWIN MODZ IN {instance}
-  modrinth: VIEWIN MODRINTH
-  modrinthProject: VIEWIN {name} IN MODRINTH
-  resourcePack: VIEWIN RESOURCE PACKZ IN {instance}
-  save: VIEWIN SAVEZ IN {instance}
-  setting: VIEWIN SETTIN PAEG
-  shaderPack: VIEWIN SHADR PACKZ INGE {instance}
-  version: VIEWIN VERSHUNS PAEG
+  curseforge: VIEWING CURSEFORGE
+  curseforgeProject: VIEWING {name} IN CURSEFORGE
+  instance: IDLE IN INSTANCE {instance}
+  instanceSetting: 'EDIT INSTANCE SETTING: {instance}'
+  mod: VIEWING MODZ IN {instance}
+  modrinth: VIEWING MODRINTH
+  modrinthProject: VIEWING {name} IN MODRINTH
+  resourcePack: VIEWING RESOURC PAKS IN {instance}
+  save: VIEWING SAVES IN {instance}
+  setting: VIEWING SETTING PAGE
+  shaderPack: VIEWING SHADER PAKS IN {instance}
+  version: VIEWING VERSHUNS PAGE
 previous: PREVIOUS
 proxy:
   host: HOST
   port: PORT
 quiltVersion:
-  disable: DISABLE QUILT
-  empty: QUILT DOEZ NOT SUPPORT MINECRAFT {version}
+  disable: DISABL QUILT
+  empty: QUILT DOES NOT SUPPORT MINECWAFT {version}
 refresh: REFRESH
-refreshResource: REFRESH RESOURCEZ
-remove: REMOOV
+refreshResource: REFRESH RESOURCES
+remove: REMOVE
 resourcepack:
   available: AVAILABLE
-  compatible: COMPATIBLE FORMAT {format} WIF {version}
-  defaultDescription: TEH DEFAULT LOOK AN FEELZ OV MINECRAFT
+  compatible: COMPATIBLE FORMAT {format} WITH {version}
+  defaultDescription: TEH DEFAULT LOOK AN FEEL OF MINECWAFT
   delete:
     content: >-
-      DIS WILL REMOOV TEH RESOURCE PACK FILE FRUM DISK, AN WE CANT UNDO IT. R U
-      SURE U WANTS 2 DO DIS?
-    title: DELETE TEH RESOURCE PACK
-  dropHint: DROP RESOURCE PACKZ FOLDR/ZIP HER 2 IMPORT.
-  enable: '{count} RESOURCE PACKZ ENABLD'
-  import: IMPORT RESOURCE PACK
-  incompatible: >-
-    INCOMPATIBLE RESOURCE PACK FORMAT({format}). FITIN {accept}. CURRENT
-    {actual}.
-  independent: INSTANCE USE INDEPENDENT RESOURCE PACK FOLDR
-  manage: MANAGE RESOURCE PACKZ
-  name: RESOURCE PACK | RESOURCE PACKZ
-  searchHint: SEARCH RESOURCE PACKZ
+      THIS WILL REMOVE DA RESOURC PAK FILE FROM DISK, AN WE CANNOT UNDO IT. ARE
+      U SURE U WANT TO DO THIS?
+    title: DELET DA RESOURC PAK
+  dropHint: DROP RESOURC PAK'S FOLDR/ZIP HERE TO IMPORT.
+  enable: '{count} RESOURC PAKS ENABLED'
+  import: IMPORT RESOURC PAK
+  incompatible: INCOMPATIBLE RESOURC PAK FORMAT({format}). FITIN {accept}. CURREN {actual}.
+  independent: INSTANCE USE INDEPENDENT RESOURC PAK FOLDR
+  manage: MANAG RESOURC PAKS
+  name: RESOURC PAK | RESOURC PAKS
+  searchHint: SEARCH RESOURC PAKS
   searchOnCurseforge: SEARCH {name} IN CURSEFORGE
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selectSearchHint: SEARCH AN SELECT RESOURCE PACK
-  selected: SELECTD RESOURCE PACKZ
-  shared: INSTANCE USEZ SHARD RESOURCE PACK FOLDR
-  showDirectory: SHOW RESOURCE PACK DIRECTORY
-  showFile: SHOW RESOURCE PACK IN FOLDR {file}
+  selectSearchHint: SEARCH AN PICK RESOURC PAK
+  selected: SELECTED RESOURC PAKS
+  shared: INSTANCE USES SHARED RESOURC PAK FOLDR
+  showDirectory: SHOW RESOURC PAK DIRECTORY
+  showFile: SHOW RESOURC PAK IN FOLDR {file}
   showInCurseforge: SHOW {name} IN CURSEFORGE
-  unselected: UNSELECTD RESOURCE PACKZ
+  unselected: UNSELECTED RESOURC PAKS
 save:
-  cheat: CHEATIN
+  allowCheats: ALLOW CHEATS
+  cheat: CHEATING
   copy:
     cancel: CANCEL COPY
     confirm: START COPY
-    description: PLZ SELECT DESTINASHUN PROFILE(S) U WANTS TEH SAVE 2 GO.
+    description: PLZ PICK DESTINASHUN PROFILE(S) U WANT DA SAVE TO GO.
     name: COPY SAVE
-    title: COPY SAVE 2 OTHR PROFILE
+    title: COPY SAVE TO OTHR PROFILE
   copyFrom:
     cancel: CANCEL
     confirm: START COPY
     description: >-
-      U CAN DEPLOY SAVE 2 DIS INSTANCE FRUM OTHR INSTANCEZ, OR FRUM MANAGD
-      RESOURCEZ (CURSEFORGE)
-    from: FRUM {src}
-    fromProfile: FRUM OTHR INSTANCEZ
-    fromResource: FRUM MANAGD RESOURCEZ
-    title: IMPORT SAVE FRUM MANAGD SOURCE
-  createNew: CREATE NEW WURLD
-  createdWorlds: U HAS {count} WORLDZ
+      U CAN DEPLOY SAVE TO THIS INSTANCE FROM OTHR INSTANCES, OR FROM MANAGED
+      RESOURCS (CURSEFORGE)
+    from: FROM {src}
+    fromProfile: FROM OTHR INSTANCES
+    fromResource: FROM MANAGED RESOURCES
+    title: IMPORT SAVE FROM MANAGED SOURC
+  createNew: MAKE NEW WORLD
+  createdWorlds: U HAZ {count} WORLDZ
   deleteHint: >-
-    DIS OPERASHUN CANT BE REVERTD. U WILL LOSE TEH SAVE DATA FOREVR. R U SURE U
-    WANTS 2 DELETE DIS SAVE?
-  deleteTitle: DELETE TEH SAVE
-  detail: MOAR INFO
-  dropHint: DRAG SAVE ZIP HER 2 IMPORT
+    THIS OPERASHUN CANNOT BE REVERTED. U WILL LOSE DA SAVE DATA FOREVR. ARE U
+    SURE U WANT TO DELET THIS SAVE?
+  deleteTitle: DELET DA SAVE
+  detail: MORE INFO
+  difficulty: DIFFICULTY
+  dropHint: DRAG SAVE ZIP HERE TO IMPORT
+  edit:
+    confirm: SAVE CHANGES
+    title: EDIT WORLD SETTINGZ
   export: EXPORT SAVE
-  exportMessage: EXPORT TEH SAVE AS ZIP
-  exportTitle: EXPORT TEH SAVE
+  exportMessage: EXPORT DA SAVE AS ZIP
+  exportTitle: EXPORT DA SAVE
   gameMode: GAME MODE
   import: IMPORT SAVE
-  importMessage: IMPORT SAVE FRUM ZIP
-  importTitle: IMPORT SAVE
-  independent: INSTANCE USE INDEPENDENT SAVEZ FOLDR
-  levelName: LEVEL NAYM
-  manage: MANAGE SAVEZ
-  name: SAVE | SAVEZ
-  search: SEARCH SAVEZ
-  seed: Seed
-  selected: LOCAL SAVEZ
-  shared: INSTANCE USE SHARD SAVEZ FOLDR
-  showDirectory: SHOW SAVEZ DIRECTORY
-  unselected: SHARD SAVEZ
-  useCurrent: USE CURRENT WURLD
-  viewSeedMap: View Seed Map on Chunkbase
+  importMessage: IMPORT A SAVE FROM ZIP
+  importTitle: IMPORT A SAVE
+  independent: INSTANCE USE INDEPENDENT SAVES FOLDR
+  levelName: LEVEL NAME
+  loadMap: LOAD MAP
+  manage: MANAG SAVES
+  mapError: MAP OOPSIE
+  mapInfo: 'INTERACTIVE 3D WORLD PREVUE:'
+  mapLoaded: MAP LOADED
+  mapPreview: MAP PREVUE
+  name: SAVE | SAVES
+  properties: WORLD PROPERTIES
+  rendering: RENDERING...
+  search: SEARCH SAVES
+  seed: SEED
+  selected: LOCAL SAVES
+  shared: INSTANCE USE SHARED SAVES FOLDR
+  showDirectory: SHOW SAVES DIRECTORY
+  unselected: SHARED SAVES
+  useCurrent: USE CURREN WORLD
+  useMouseRotate: USE MOUSE TO ROTATE VUE
+  useScrollZoom: USE SCROLL WHEEL TO ZOOM
+  viewSeedMap: VUE SEED MAP ON CHUNKBASE
 saves: {}
 screenshots:
-  empty: U DOAN HAS ANY SCREENSHOTS
+  empty: U DONT HAZ ANY SCREENSHOTS
   goto: OPEN FOLDR
   name: SCREENSHOTS
   playRandom: SHUFFLE
-  playSequence: PULAY IN ORDR
+  playSequence: PLAY IN ORDER
 search:
-  favorate: Collection
-  local: INSTALLD
-  market: MOD MARKIT
+  favorate: COLLEKSHUN
+  local: INSTALLED
+  market: MOD MARKET
 server:
-  acceptingMinecraftVersion: ACCEPTIN MINECRAFT VERSHUN
-  creationHint: PLZ FILL TEH SERVR ADDRES AN PING TEH SERVR
+  acceptingMinecraftVersion: ACCEPTING MINECWAFT VERSHUN
+  creationHint: PLZ FILL DA SERVR ADDWESS AN PING DA SERVR
   delete: {}
   error: {}
-  expectedVersions: SUPPORTD VERSHUNS
-  export: Export Server
-  exportNoFilesHint: >-
-    No server files found. You can run server on local once to generate some
-    files.
-  exportOption: Server Export Options
+  expectedVersions: SUPPORTED VERSHUNS
+  export: EXPORT SERVR
+  exportNoFilesHint: NO SERVR FILEZ FOUND. U CAN RUN SERVR ON LOCAL ONCE TO GENERATE SOME FILEZ.
+  exportOption: SERVER EXPORT OPSHUNS
   exportSSHAuthenticationFailed: >-
-    All authentication methods failed. Please check username/password or private
-    key.
-  exportSSHOptions: SSH Options
-  exportSSHPrivateKeyPath: SSH Private Key Path
-  exportSSHRemotePath: Remote Server Path
-  exportToFolder: Export To Folder
-  filterVersion: FILTR SERVR RESPONDD MINECRAFT VERSHUN
+    ALL AUTHENTICASHUN METHODS FAILED. PLZ CHECK USERNAME/PASSWORD OR PRIVATE
+    KEY.
+  exportSSHOptions: SSH OPSHUNS
+  exportSSHPrivateKeyPath: SSH PRIVATE KEY PATH
+  exportSSHRemotePath: REMOTE SERVR PATH
+  exportToFolder: EXPORT TO FOLDR
+  filterVersion: FILTR SERVR RESPONDED MINECWAFT VERSHUN
   host: HOST
-  hostHint: TEH HOST (WIF PORT) OV TEH SERVR
-  hostRequired: Please enter the server ip address
-  ipAddress: IP ADDRES
-  maxPlayers: MAX PLAYERS
-  motd: SERVR MOTD
-  name: SERVR | SERVERS
-  nogui: NO SERVR GUI
+  hostHint: TEH HOST (WITH PORT) OF DA SERVR
+  hostRequired: PLZ ENTER DA SERVR IP ADDWESS
+  ipAddress: IP ADDWESS
+  maxPlayers: MAX PLAYRZ
+  motd: SERVER MOTD
+  name: SERVR | SERVERZ
+  nogui: NO SERVER GUI
   onlineMode: ONLINE MODE
   ping: PING
-  pings: PINGZ
-  players: PLAYERS
+  pings: PINGS
+  players: PLAYRZ
   port: PORT
-  recommendedMinecraftVersion: MINECRAFT VERSHUN
-  status: SERVR STATUS
+  recommendedMinecraftVersion: MINECWAFT VERSHUN
+  status: SERVER STATUS
   unknown: UNKNOWN SERVR
   unknownDescription: UNKNOWN SERVR. PLZ REFRESH
-  upload: Upload Server
-  version: SERVR REQUIREZ VERSHUN
-  versionHint: TEH MINECRAFT VERSHUN 2 PING
+  upload: UPLOAD SERVR
+  version: SERVER REQUIRES VERSHUN
+  versionHint: TEH MINECWAFT VERSHUN TO PING
 serverStatus:
-  nohost: §4CANT FIND HOST!
+  nohost: §4CANNOT FIND HOST!
   ping: PING...
-  refuse: §4SERVR REFUSD!
-  timeout: §4CONNECT SERVR TIEMOUT!
+  refuse: §4SERVER REFUSED!
+  timeout: §4CONNECT SERVR TIMEOUT!
 setting:
-  about: About
-  allowPrerelease: DOWNLOAD PRERELEASE
-  allowPrereleaseDescription: PRERELEASE MITE BE UNSTABLE
+  about: ABOUT
+  advancedJavaOptions: ADVANCED JAVA OPSHUNS
+  advancedSettings: ADVANCED SETTINGZ
+  advancedSettingsHint: DANGR ZONE - RESET OR MANAG LAUNCHER DATA
   apiSets:
     auto: AUTO (DETERMINE BY NETWORK)
     official: OFFISHUL (MOJANG)
   appearance: APPEARANCE
+  appearanceDescription: CUSTOMIZE DA LAUNCHER APPEARANCE
   appxUpdateHint: >-
-    TEH LAUNCHR WILL DOWNLOAD AN EXECUTE INSTALLR. IF POPUP INSTALLR FAILD, PLZ
+    TEH LAWNCHER WILL DOWNLOD AN EXECUTE INSTALLR. IF POPUP INSTALLR FAILED, PLZ
     RUN IT MANUALLY.
-  autoDownload: AUTO DOWNLOAD
-  autoDownloadDescription: AUTO DOWNLOAD UPDATE IF IZ AVAILABLE
-  autoInstallOnAppQuit: AUTOINSTALL
-  autoInstallOnAppQuitDescription: AUTOINSTALL TEH UPDATE ON APP QUIT
-  backdropBlur: Backdrop Blur
-  backgroundColorAbove: SHOW BAKGROUND COLOR AS OVERLAY
-  backgroundColorAboveDescription: DIS WILL MAK BAKGROUND COLOR DISPLAY ABOOV TEH BAKGROUND IMAGE OR VIDEO.
-  backgroundImage: BAKGROUND IMAGE
+  authenticationSettings: AUTHENTICASHUN
+  backdropBlur: BACKDROP BLUR
+  backgroundColorAbove: SHOW BACKGROUND COLOR AS OVERLAY
+  backgroundColorAboveDescription: THIS WILL MAKE BACKGROUND COLOR DISPLAY ABOVE DA BACKGROUND IMAG OR VIDEO.
+  backgroundImage: BACKGROUND IMAG
   backgroundImageBlur: IMAGE BLUR
-  backgroundImageBlurDescription: DRAG 2 BLUR, EASY
+  backgroundImageBlurDescription: DRAG TO BLUR, EZ PZ
   backgroundImageClear: CLEAR
-  backgroundImageDescription: SELECT AN IMAGE AS BAKGROUND OR CLEAR
+  backgroundImageDescription: PICK AN IMAG AS BACKGROUND OR CLEAR
   backgroundImageFit:
     contain: CONTAIN
-    cover: COVR
+    cover: COVER
     name: IMAGE FIT
-  backgroundImageUrl: Image URL
-  backgroundImageUrlPlaceholder: Enter HTTP/HTTPS URL for image
-  backgroundMusic: THEME BAKGROUND MUSIC
-  backgroundMusicUrl: Music URL
-  backgroundMusicUrlPlaceholder: Enter HTTP/HTTPS URL for music
-  backgroundType: BAKGROUND TYPE
-  backgroundTypeDescription: SHOW SPESHUL EFFECT ON BAKGROUND (DIS CUD IMPACT PERFORMANCE)
+  backgroundImageUrl: IMAGE URL
+  backgroundImageUrlPlaceholder: ENTER HTTP/HTTPS URL FUR IMAG
+  backgroundMusic: THEME BACKGROUND MUSIC
+  backgroundMusicUrl: MUSIC URL
+  backgroundMusicUrlPlaceholder: ENTER HTTP/HTTPS URL FUR MUSIC
+  backgroundType: BACKGROUND TYP
+  backgroundTypeDescription: SHOW SPECIAL EFFECT ON BACKGROUND (THIS MAY IMPACT PERFORMANC)
   backgroundTypes:
     halo: HALO
-    image: IMAGE
+    image: IMAG
     none: NONE
     particle: PARTICLE
     video: VIDEO
-  backgroundVideo: BAKGROUND VIDEO
-  backgroundVideoDescription: SELECT OR CLEAR VIDEO
-  backgroundVideoUrl: Video URL
-  backgroundVideoUrlPlaceholder: Enter HTTP/HTTPS URL for video
+  backgroundVideo: BACKGROUND VIDEO
+  backgroundVideoDescription: PICK OR CLEAR VIDEO
+  backgroundVideoUrl: VIDEO URL
+  backgroundVideoUrlPlaceholder: ENTER HTTP/HTTPS URL FUR VIDEO
   backgroundVideoVolume: VOLUME
-  backgroundVideoVolumeDescription: DRAG 2 ADJUST VOLUME
+  backgroundVideoVolumeDescription: DRAG TO ADJUST VOLUME
   blurAppBar: BLUR APP BAR
   blurMainBody: BLUR MAIN BODY
-  blurMainBodyDescription: SHUD TEH LAUNCHR RITE PANE BE BLURRD
+  blurMainBodyDescription: SHOULD DA LAWNCHER RITE PANE BE BLURRED
   blurSidebar: BLUR SIDEBAR
   browseRoot: BROWSE
-  checkUpdate: CHECK UPDATE
+  checkUpdate: CHECK UPDAT
   colorTheme:
     appBarColor: APP BAR
-    backgroundColor: BAKGROUND COLOR
+    backgroundColor: BACKGROUND COLOR
     cardColor: CARD COLOR
-    description: CHANGE TEH COLORS IN DA THEME
-    errorColor: ERROR COLOR
-    name: Theme Color and Blur
+    description: CHANGE DA COLORZ IN DA THEEM
+    errorColor: OOPSIE COLOR
+    name: THEEM COLOR AN BLUR
     primaryColor: PRIMARY COLOR
     secondaryColor: SECONDARY COLOR
     sideBarColor: SIDE BAR
-    warningColor: WARNIN COLOR
-  darkTheme: THEME
-  darkThemeDescription: CHOOSE TWEEN DARK OR LIGHT THEME
+    warningColor: WARNING COLOR
+  darkTheme: THEEM
+  darkThemeDescription: PICK BETWEEN DARK OR LIGHT THEEM
   developerMode: DEVELOPR MODE
-  developerModeDescription: DEVELOPR MODE IZ 4 TESTIN UR OWN MODZ
-  disableTelemetry: DISABLE TELEMETRY
-  disableTelemetryDescription: XMCL WILL COLLECT TEH GAME LAUNCH AN USR LOGIN EVENTS.
-  enableDedicatedGPUOptimization: ASSIGN DEDICATD GPU
-  enableDedicatedGPUOptimizationDescription: DIS OPSHUN WILL ASSIGN DEDICATD GPU 2 MINECRAFT PROCES.PU
-  enableDiscord: ENABLE DISCORD PRESENCE
-  enableDiscordDescription: DIS WILL UPDATE DISCORD STATUS 2 TEH LAUNCHR
-  enterUrl: Enter URL
+  developerModeDescription: DEVELOPR MODE IS FUR TESTING UR OWN MODZ
+  disableTelemetry: DISABL TELEMETRY
+  disableTelemetryDescription: XMCL WILL COLLECT DA GAME LAUNCH AN USER LOGIN EVENTS.
+  enableDedicatedGPUOptimization: ASSIGN DEDICATED GPU
+  enableDedicatedGPUOptimizationDescription: THIS OPSHUN WILL ASSIGN DEDICATED GPU TO MINECWAFT PROCESS.
+  enableDiscord: ENABL DISCORD PRESENCE
+  enableDiscordDescription: THIS WILL UPDAT DISCORD STATUS TO DA LAWNCHER
+  enterUrl: ENTER URL
+  exportSettings: EXPORT SETTINGZ
+  exportSettingsHint: SAVE UR CURREN SETTINGZ TO A FILE
   general: GENERAL
   githubRelease: GITHUB RELEASE
-  globalSetting: GLOBAL INSTANCE SETTIN
-  globalSettingHint: INSTANCE WILL USE THEES SETTINGS BY DEFAULT.
-  hideNewsHeader: HIDE NEWS SHOWCASE
+  globalSetting: GLOBAL INSTANCE SETTING
+  globalSettingHint: INSTANCE WILL USE THESE SETTINGZ BY DEFAULT.
+  hideNewsHeader: HIDE NEWZ SHOWCASE
+  importSettings: IMPORT SETTINGZ
+  importSettingsHint: LOAD SETTINGZ FROM A PREVIOUSLY EXPORTED FILE
+  instanceLauncher:
+    createNew: MAKE NEW INSTANCE
+    search: SEARCH INSTANCES...
+    showAll: SHOW ALL INSTANCES
+    title: ALL INSTANCES
   instanceTheme:
     activeDescription: >-
-      This instance is using a custom theme. You can delete it to use the global
-      theme.
+      THIS INSTANCE IS USING A CUSTOM THEEM. U CAN DELET IT TO USE DA GLOBAL
+      THEEM.
     description: >-
-      Enable a custom theme for this instance. This will create a copy of the
-      current global theme.
-    name: Instance Theme
-  language: LANGUAGE
-  languageDescription: TEH DISPLAY LANGUAGE
+      ENABL A CUSTOM THEEM FUR THIS INSTANCE. THIS WILL MAKE A COPY OF DA CURREN
+      GLOBAL THEEM.
+    name: INSTANCE THEEM
+  language: LANGUAG
+  languageDescription: TEH DISPLAY LANGUAG
   latestVersion: LATEST VERSHUN
   layout:
     default: DEFAULT LAYOUT
     focus: FOCUS LAYOUT
-  layoutDescription: TEH LAYOUT OV TEH LAUNCHR UI
-  layoutTitle: LAYOUT
-  linuxTitlebar: NATIV TITLE BAR
-  linuxTitlebarDescription: USE NATIV LINUX TITLE BAR 4 LAUNCHR
-  windowTranslucent: WINDOE TRANSPARENCEE
-  windowTranslucentDescription: ENABEL TRANSLUCENT WINDOE EFFECT (MICA ON WINDOWS 11, ACRYLIC ON WINDOWS 10, VIBRANCY ON MACOS). REQUIERS RESTART.
+  layoutDescription: PICK UR PREFERRED INTERFAC STYLE
+  layoutTitle: INTERFAC LAYOUT
+  linuxEnableDedicatedGPUOptimization: ASSIGNMENT OF A DEDICATED GRAPHICS PROCESSR
+  linuxEnableDedicatedGPUOptimizationDescription: THIS OPSHUN ASSIGNS A DEDICATED GPU TO DA MINECWAFT PROCESS.
+  linuxTitlebar: NATIVE TITLE BAR
+  linuxTitlebarDescription: USE NATIVE LINUX TITLE BAR FUR LAUNCHER
   location: STORE LOCASHUN
+  manageLayout:
+    classic: CLASSIC
+    description: PICK DA LAYOUT FUR MANAGMENT INTERFAC
+    modern: MODERN
+    name: MANAG STYLE
   manualUpdateHint: >-
-    TEH VERSHUN CANT BE UPDATD AUTOMATICALLY. PLZ DOWNLOAD TEH LAUNCHR AGAIN
-    FRUM TEH OFFISHUL WEBSIET!
+    TEH VERSHUN CANNOT BE UPDATED AUTOMATICALLY. PLZ DOWNLOD DA LAUNCHER AGAIN
+    FROM DA OFFISHUL WEBSITE!
+  marketLayout:
+    classic: CLASSIC
+    description: PICK DA LAYOUT FUR DETAIL PAGE
+    modern: MODERN
+    name: DEETAILZ LAYOUT
   maunalUpdateHint: >-
-    TEH VERSHUN CANT BE AUTO-UPDATD. PLZ REDOWNLOAD TEH LAUNCHR FRUM TEH
-    WEBSIET!
+    TEH VERSHUN CANNOT BE AUTO-UPDATED. PLZ REDOWNLOD DA LAUNCHER FROM DA
+    WEBSITE!
   maxSockets: PER HOST
   maxSocketsDescription: >-
-    LIMIT TEH MAXIMUM NUMBR OV SOCKETS 2 ALLOW PER HOST OR 4 ALL HOSTS IN TOTAL.
-    0 MEANZ NO LIMIT.
+    LIMIT DA MAXIMUM NUMBR OF SOCKETS TO ALLOW PER HOST OR FUR ALL HOSTS IN
+    TOTAL. 0 MEANS NO LIMIT.
   maxSocketsTitle: MAX HTTP SOCKETS
-  migrateFromOther: IMPORT FRUM OTHR LAUNCHR
-  name: GLOBAL SETTIN | GLOBAL SETTINGS
-  network: NETWORK SETTINGS
-  officialWebsite: OFFISHUL WEBSIET
+  memoryAssignment: MEMRY ASSIGNMENT
+  migrateFromOther: IMPORT FROM OTHR LAUNCHER
+  minecraftOptions: MINECWAFT OPSHUNS
+  myStuffStyle: HOME PAGE STYLE
+  myStuffStyleHint: PICK BETWEEN CLASSIC MAH STUFF WITH NEWZ OR MODERN INSTANCE LAUNCHER
+  myStuffStyleNew: LAUNCHER (MODERN)
+  myStuffStyleNewDescription: FULL-SCREEN INSTANCE LAUNCHER WITH SEARCH AN QUICK ACCESS
+  myStuffStyleOld: MAH STUFF (CLASSIC)
+  myStuffStyleOldDescription: CLASSIC LAYOUT WITH NEWZ CAROUSEL AN INSTANCE GRID
+  myStuffStyleSubtitle: PICK UR PREFERRED HOME PAGE LAYOUT
+  myStuffStyleTitle: PAGE DESIGN
+  name: GLOBAL SETTING | GLOBAL SETTINGZ
+  network: NETWORK SETTINGZ
+  newsPosition: MOVE NEWZ SECSHUN
+  officialWebsite: OFFISHUL WEBSITE
   particleMode:
     bubble: BUBBLE
     name: PARTICLE MODE
     push: PUSH
-    remove: REMOOV
+    remove: REMOVE
     repulse: REPULSE
-  particleModeDescription: SELECT TEH PARTICLE CLICK BEHAVIOR
-  replaceNative: REPLACE NATIV LIBRARIEZ
-  replaceNativeDescription: REPLACE NATIV LIBRARIEZ ACCORDIN 2 UR COMPUTERS ARCH.
+  particleModeDescription: PICK DA PARTICLE CLICK BEHAVIOR
+  quickLaunchSettings: QUICK LAUNCH
+  replaceNative: REPLACE NATIVE LIBRAWRIES
+  replaceNativeDescription: REPLACE NATIVE LIBRAWRIES ACCORDING TO UR COMPUTER'S ARCH.
   replaceNatives:
     all: ALL
     legacy: LEGACY VERSHUN ONLY
-  resetToDefault: RESET 2 DEFAULT
-  select: SELECT
-  showNewsHeader: UNHIDE NEWS SHOWCASE
+  resetAllSettings: RESET ALL SETTINGZ
+  resetAllSettingsConfirmMessage: >-
+    THIS WILL PERMANENTLY DELET ALL SETTINGZ, ACCOUNTS, INSTANCES, GROUPS, AN
+    CACHED DATA. THIS ACSHUN CANNOT BE UNDONE. U SURE?
+  resetAllSettingsConfirmTitle: RESET ALL SETTINGZ?
+  resetAllSettingsHint: RESET LAUNCHER TO FACTORY DEFAULTS (DELETES EVRYTHING)
+  resetAllSettingsSuccess: ALL SETTINGZ HAZ BEEN RESET. TEH LAUNCHER WILL RESTART.
+  resetToDefault: RESET TO DEFAULT
+  select: PICK
+  setting:
+    title: SETTINGZ
+  settingsExported: SETTINGZ EXPORTED SUCCESSFULLY
+  settingsImportError: FAILED TO IMPORT SETTINGZ. PLZ CHECK DA FILE FORMAT.
+  settingsImported: SETTINGZ IMPORTED SUCCESSFULLY
+  showNewsHeader: UNHIDE NEWZ SHOWCASE
   showRoot: SHOW
-  streamerMode: STREAMIN MODE
-  streamerModeDescription: DIS WILL HIDE UR PRIVATE INFORMASHUN LIEK EMAIL IN LAUNCHR.
+  sidebarAlign: SIDEBAR ALIGNMENT
+  sidebarAlignCenter: CENTER
+  sidebarAlignEnd: END
+  sidebarAlignHint: ALIGN DA SIDEBAR CONTENT
+  sidebarAlignStart: START
+  sidebarAutoHide: AUTO-HIDE SIDEBAR
+  sidebarAutoHideHint: HIDE SIDEBAR AUTOMATICALLY AN SHOW ON HOVER
+  sidebarBottom: BOTTOM
+  sidebarClassic: CLASSIC
+  sidebarLeft: LEFT
+  sidebarNotch: NOTCH
+  sidebarPosition: SIDEBAR POSISHUN
+  sidebarPositionHint: PICK WHERE DA SIDEBAR APPEARS
+  sidebarPositionHintClassic: CLASSIC STYLE SUPPORTS LEFT AN RITE POSISHUNS ONLY
+  sidebarRight: RIGHT
+  sidebarScale: SIDEBAR SCALE
+  sidebarScaleHint: ADJUST DA SIZE OF DA SIDEBAR
+  sidebarSettings: SIDEBAR SETTINGZ
+  sidebarSettingsHint: CUSTOMIZE SIDEBAR APPEARANCE AN BEHAVIOR
+  sidebarStyle: SIDEBAR STYLE
+  sidebarStyleHint: PICK BETWEEN CLASSIC AN MODERN NOTCH DESIGN
+  sidebarTop: TOP
+  streamerMode: STREAMING MODE
+  streamerModeDescription: THIS WILL HIDE UR PRIVATE INFORMASHUN LIKE EMAIL IN LAUNCHER.
   theme:
-    dark: DARK THEME
-    light: LIGHT THEME
-    system: USE SISTEM THEME
-  themeExport: EXPORT THEME
+    dark: DARK THEEM
+    light: LIGHT THEEM
+    system: USE SYSTEM THEEM
+  themeExport: EXPORT THEEM
   themeFont: FONT
-  themeFontDescription: CHANGE TEH FONT OV TEH LAUNCHR.
-  themeFontUrl: Font URL
-  themeFontUrlPlaceholder: Enter HTTP/HTTPS URL for font
-  themeImport: IMPORT THEME
+  themeFontDescription: CHANGE DA FONT OF DA LAUNCHER.
+  themeFontUrl: FONT URL
+  themeFontUrlPlaceholder: ENTER HTTP/HTTPS URL FUR FONT
+  themeImport: IMPORT THEEM
   themeResetFont: RESET FONT
-  themeSelectFont: SELECT FONT
-  themeShare: SHARE THEME
-  themeShareDescription: U CAN SHARE TEH THEME WIF UR FREND.
-  update: UPDATE
+  themeSelectFont: PICK FONT
+  themeSettings: THEEM SETTINGZ
+  themeShare: SHARE THEEM
+  themeShareDescription: U CAN SHARE DA THEEM WITH UR FREN.
+  title: SETTINGZ
+  update: UPDAT
   useBmclAPI: USE BMCL API
   useBmclAPIDescription: >-
-    USE BMCLAPI 2 DOWNLOAD MINECRAFT WHEN U R IN CHINEES MAINLAND. (DIS WONT
-    AFFECT U IF URE NOT IN CHINEES MAINLAND)
+    USE BMCLAPI TO DOWNLOD MINECWAFT WHEN U R IN CHINESE MAINLAND. (THIS WONT
+    AFFECT U IF U R NOT IN CHINESE MAINLAND)
   useProxy: HTTP PROXY
-  useProxyDescription: TEH PROXY SERVR ADDRES 4 DA HTTP REQUEST
-  viewBackgroundMusic: VIEW MUSICS
+  useProxyDescription: TEH PROXY SERVR ADDWESS FUR DA HTTP REQUEST
+  viewBackgroundMusic: VUE MUSICS
+  viewModeScroll: SCROLL VUE
+  viewModeTabs: TAB VUE
+  windowTranslucent: WINDOW TRANSLUCENCY
+  windowTranslucentDescription: >-
+    ENABL TRANSLUCENT WINDOW EFFECT (MICA ON WINDOWZ 11, ACRYLIC ON WINDOWZ 10,
+    VIBRANCY ON MACOS). REQUIRES RESTART.
 settingLabel:
   global: GLOBAL
-  globalHint: DIS SETTIN WILL FOLLOW TEH GLOBAL SETTIN
+  globalHint: THIS SETTING WILL FOLLOW DA GLOBAL SETTING
   local: LOCAL
-  localHint: DIS SETTIN IZ MODIFID BY CURRENT INSTANCE
-settings: {}
+  localHint: THIS SETTING IS MODIFIED BY CURREN INSTANCE
 setup:
   account:
-    description: LOGIN UR GAME AKOWNT. IF U DOAN HAS WAN, U CAN SKIP IT 4 NAO.
-    name: ADD GAME AKOWNT
-    skip: SKIP 4 NAO
+    description: LOGIN UR GAME ACCOUNT. IF U DONT HAZ ONE, U CAN SKIP IT FUR NAO.
+    name: ADD GAME ACCOUNT
+    skip: SKIP FUR NAO
   appearance:
     name: '@:setting.appearance'
   dataRoot:
     description: >-
-      TEH DATA ROOT IZ NOT COMMON .MINECRAFT DIRECTORY. SINCE XMCL DATA
-      DIRECTORY STRUCCHUR IZ DIFFERENT FRUM VANILLA, WE DO NOT RECOMMEND 2 USE
-      TEH COMMON .MINECRAFT DIRECTORY AS DATA ROOT.
+      TEH DATA ROOT IS NOT A COMMON .MINECRAFT DIRECTORY. SINCE XMCL DATA
+      DIRECTORY STRUCTURE IS DIFFERENT FROM VANILLA, WE DO NOT RECOMMEND TO USE
+      DA COMMON .MINECRAFT DIRECTORY AS A DATA ROOT.
     drives: RECOMMEND LOCASHUNS
     name: SET DATA DIRECTORY
   defaultLayoutDescription: >-
-    TEH DEFAULT LAYOUT IZ TRYIN 2 ENHANCE TEH GAME "INSTANCE" CONCEPT. IT LOOKZ
-    LIEK APPS LIEK DISCORD. IZ ALSO INSPIRD BY OTHR GAME LAUNCHR APPS LIEK
+    TEH DEFAULT LAYOUT IS TRYING TO ENHANCE DA GAME "INSTANCE" CONCEPT. IT LOOKS
+    LIKE APPS LIKE DISCORD. ITS ALSO INSPIRED BY OTHR GAME LAUNCHER APPS LIKE
     STEAM, ETC.
   defaultPath: DEFAULT PATH
   error:
-    badDataRoot: INVALID DIRECTORY 4 LAUNCHR DATA! PLZ TRY ANOTHR DIRECTORY!
-    exists: SELECTD DIRECTORY IZ NOT EMPTY. IZ K BUT PLZ MAK SURE U BAKUP UR DATA.
-    invalidChar: Path contains invalid characters! It could cause Minecraft fail to start!
+    badDataRoot: INVALID DIRECTORY FUR LAUNCHER DATA! PLZ TRY ANOTHR DIRECTORY!
+    exists: >-
+      SELECTED DIRECTORY IS NOT EMPTY. ITS OKAY BUT PLZ MAKE SURE U BACKUP UR
+      DATA.
+    invalidChar: >-
+      PATH CONTAINS INVALID CHARACTRZ! IT CUD CAUSE MINECWAFT FAIL TO START!
+      PLAESE ONLY USE ENGLISH CHARACTRZ AN SYMBOL!
     noPermission: >-
-      LAUNCHR DOEZ NOT HAS PERMISHUN 2 ACCES SELECTD DIRECTORY! PLZ TRY ANOTHR
-      WAN.
-    nonDictionary: SELECTD PATH IZ FILE! PLZ SELECT DIRECTORY!
+      LAUNCHER DOES NOT HAZ PERMISHUN TO ACCESS SELECTED DIRECTORY! PLZ TRY
+      ANOTHR ONE.
+    nonDictionary: SELECTED PATH IS A FILE! PLZ PICK A DIRECTORY!
   focusLayoutDescription: >-
-    TEH FOCUS LAYOUT IZ TEH LEGACY LAYOUT OV TEH MINECRAFT LAUNCHR. IT IZ
-    DESIGND 2 BE USD WIF SINGLE INSTANCE OR FEW INSTANCEZ.
+    TEH FOCUS LAYOUT IS DA LEGACY LAYOUT OF DA MINECWAFT LAUNCHER. IT IS
+    DESIGNED TO BE USED WITH A SINGLE INSTANCE OR FEW INSTANCES.
   game:
     description: >-
-      CHOOSE EXISTIN GAME DIRECTORY (.MINECRAFT) 2 IMPORT EXISTIN RESOURCEZ. SO
-      U CAN QUICKLY IDENTIFY TEH MODZ, RESOURCE PACKZ, ETC.
-    name: IMPORT Existing Game
+      PICK EXISTING GAME DIRECTORY (.MINECRAFT) TO IMPORT EXISTING RESOURCS. SO
+      U CAN QUICKLY IDENTIFY DA MODZ, RESOURC PAKS, ETC.
+    name: IMPORT EXISTING GAME
   locale:
     description: >-
-      SELECT UR PREFERRD LANGUAGE IF WE HAS IT! IF U DOAN C UR NATIV LANGUAGE AN
-      U WANTS 2 HALP, U CAN VISIT R GITHUB 2 SUBMIT PULL REQUESTS 2 TRANZLATE!
-    language: LANGUAGE
-    name: SET LANGUAGE
-  path: CURRENT PATH
-  title: 'WELCOM 2 X MINECRAFT LAUNCHR. BEFORE START, WE NED U 2 '
+      PICK UR PREFERRED LANGUAG IF WE HAZ IT! IF U DONT SEE UR NATIVE LANGUAG AN
+      U WANT TO HALP, U CAN VISIT OUR GITHUB TO SUBMIT PULL REQUESTS TO
+      TRANSLATE!
+    language: LANGUAG
+    name: SET LANGUAG
+  path: CURREN PATH
+  title: 'WELCOME TO X MINECWAFT LAUNCHER. BEFORE START, WE NEED U TO '
 shaderPack:
-  deletion: DELETE SHADR PACK
-  deletionHint: DIS WILL DELETE TEH SHADR PACK FILE {path} AN CANT BE REVERTD.
-  disabled: DISABLD SHADR PACKZ
-  dropHint: IMPORT SHADR PACK
-  empty: NO SHADR PACK ALLOCATD
-  enable: USIN {name}
-  enabled: ENABLD SHADR PACKZ
-  manage: MANAGE SHADR PACKZ
-  name: SHADR PACK
-  noShaderMod: NO SHADR MOD INSTALLD
-  noShaderModHint: U CANT USE SHADR WITHOUT SHADR MOD
-  noShaderModInstallHint: U NED 2 INSTALL WAN OV TEH FOLLOWIN MOD 2 LOAD SHADR PACK.
-  searchHint: SEARCH SHADR PACK
-  selectSearchHint: SEARCH AN SELECT SHADR PACK
-  showDirectory: SHOW SHADR PACK DIRECTORY
-  showFile: SHOW DIS SHADR PACK IN FOLDR
+  deletion: DELET SHADER PAK
+  deletionHint: THIS WILL DELET DA SHADER PAK FILE {path} AN CANNOT BE REVERTED.
+  disabled: DISABLED SHADER PAKS
+  dropHint: IMPORT SHADER PAK
+  empty: NO SHADER PAK ALLOCATED
+  enable: USING {name}
+  enabled: ENABLED SHADER PAKS
+  manage: MANAG SHADER PAKS
+  name: SHADER PAK
+  noShaderMod: NO SHADER MOD INSTALLED
+  noShaderModHint: U CANNOT USE SHADER WITHOUT A SHADER MOD
+  noShaderModInstallHint: U NEED TO INSTALL ONE OF DA FOLLOWING MOD TO LOAD SHADER PAK.
+  searchHint: SEARCH SHADER PAK
+  selectSearchHint: SEARCH AN PICK SHADER PAK
+  showDirectory: SHOW SHADER PAK DIRECTORY
+  showFile: SHOW THIS SHADER PAK IN FOLDR
 shared:
   accept: ACCEPT
-  keepSelected: KEEP SELECTD
-  skipForNow: SKIP 4 NAO
+  keepSelected: KEEP SELECTED
+  skipForNow: SKIP FUR NAO
 sortBy:
-  alphabetAsc: Sort by alphabet (ascending)
-  alphabetDesc: Sort by alphabet (descending)
-  timeAsc: Sort by modification time (ascending)
-  timeDesc: Sort by modification time (descending)
+  alphabetAsc: SORT BY ALPHABET (ASCENDING)
+  alphabetDesc: SORT BY ALPHABET (DESCENDING)
+  timeAsc: SORT BY MODIFICASHUN TIME (ASCENDING)
+  timeDesc: SORT BY MODIFICASHUN TIME (DESCENDING)
 store:
   explore: EXPLORE
-  latestMinecraft: LATEST MINECRAFT VERSHUN
-  name: MODPACK MARKIT
-  popular: POPULAR MODPACKZ
-  recentUpdated: RESENT UPDATD
+  latestMinecraft: LATEST MINECWAFT VERSHUN
+  name: MODPACK MARKET
+  popular: POPULAR MODPACKS
+  recentUpdated: RECENT UPDATED
 summery: SUMMERY
 tag:
-  create: CREATE TAG
-  createSelected: CREATE TAG 4 SELECTD
+  create: MAKE TAG
+  createSelected: MAKE TAG FUR SELECTED
   newTag: NEW TAG
 task:
-  cancelled: CANCELLD
-  clear: CLEAR FINISHD TASKZ
-  compatible: THE {format} FORMATS IS CAMPATIBLE WIZ {version}
+  cancelled: CANCELLED
+  clear: CLEAR FINISHED TASKZ
   connection:
-    connected: CONNECTD
+    connected: CONNECTED
     free: FREE
-    pending: PENDIN
-    queued: QUEUD
-    running: RUNNIN CONNECSHUN
+    pending: PENDING
+    queued: QUEUED
+    running: RUNNING CONNEKSHUN
     size: TOTAL COUNT
-  connections: NETWORK CONNECSHUNS
-  dropHint: DRAG AND DROPIK THE FALDER/ZIP TEXTUREZ HERE TO IMPORT.
-  empty: NO RUNNIN TASKZ
-  failed: FAILD
+  connections: NETWORK CONNEKSHUNS
+  delete: {}
+  empty: NO RUNNING TASKZ
+  failed: FAILED
+  incompatible: >-
+    INCOMPATIBLE TEXTSTACK FORMAT ({format}). MATCHING {accept}. CURREN
+    {actual}.
+  manage: TEXTUREPACK
   manager: TASK MANAGR
-  nTaskRunning: '{count} TASKZ R RUNNIN'
+  nTaskRunning: '{count} TASKZ ARE RUNNING'
   name: TASK | TASKZ
   pause: PAUSE
+  searchOnCurseforge: SEARCH {name} ON CURSEFORGE
   searchOnModrinth: '@:mod.searchOnModrinth'
+  showFile: OPEN DA TEXTUREPACK {file} IN DA FOLDR
+  showInCurseforge: SHOW {name} ON CURSEFORGE
+  unselected: UNSELECTED TEXTUREPACKS
 theme:
-  selectImage: SELECT IMAGE
-  selectMusic: SELECT MUSIC
-  selectVideo: SELECT VIDEO
-  title: X Minecraft Launcher
-title: X MINECRAFT LAUNCHR
+  selectImage: PICK IMAG
+  selectMusic: PICK MUSIC
+  selectVideo: PICK VIDEO
+  title: X MINECWAFT LAUNCHER
+title: X MINECWAFT LAUNCHER
 transportType:
   host: HOST CANDIDATE
-  prflx: PER REFLEXIV CANDIDATE
+  prflx: PEER REFLEXIVE CANDIDATE
   relay: RELAY CANDIDATE
-  srflx: SERVR REFLEXIV CANDIDATE
+  srflx: SERVER REFLEXIVE CANDIDATE
 turnRegion:
   fr: FRENCE
   guangzhou: GUANGZHOU, CHINA
   hk: HONG KONG
-  liaoning: LIAONIN, CHINA
+  liaoning: LIAONING, CHINA
   po: POLAND
 tutorial:
-  feedbackDescription: IF U ENCOUNTR ANY PROBLEMS, PLZ CLICK DIS BUTN 2 SEND FEEDBACK!
+  feedbackDescription: IF U ENCOUNTER ANY PROBLEMZ, PLZ CLICK THIS BUTTON TO SEND FEEDBACK!
   hideNewsHeaderDescription: >-
-    U CAN C TEH NEWS SHOWCASE ON TEH LEFT. CLICKIN DIS BUTN CAN HIDE DIS
+    U CAN SEE DA NEWZ SHOWCASE ON DA LEFT. CLICKING THIS BUTTON CAN HIDE THIS
     SHOWCASE.
   instance:
-    iconDescription: CLICK 2 CHANGE ICON.
+    iconDescription: CLICK TO CHANGE ICON.
     iconTitle: INSTANCE ICON
-    javaDescription: CHOOSE OR SWITCH JAVA VERSHUN.
-    javaImportDescription: IMPORT JAVA FRUM LOCAL STORAGE.
+    javaDescription: PICK OR SWITCH JAVA VERSHUN.
+    javaImportDescription: IMPORT JAVA FROM LOCAL STORAGE.
     javaImportTitle: IMPORT JAVA
     javaTitle: JAVA LIST
   instanceAddDescription: >-
-    CLICK DIS BUTN 2 IMPORT EXISTIN MINECRAFT INSTANCE OR CREATE NEW WAN FRUM
-    SCRATCH OR MODPACK.
-  instanceSelectDescription: CLICKIN DIS BUTN WILL NAVIGATE 2 TEH PAEG 2 SELECT GAME AN READ NEWS.
-  launchDescription: CLICK DIS BUTN 2 INSTALL OR LAUNCH TEH GAME.
+    CLICK THIS BUTTON TO IMPORT EXISTING MINECWAFT INSTANCE OR MAKE A NEW ONE
+    FROM SCRATCH OR MODPACK.
+  instanceSelectDescription: CLICKING THIS BUTTON WILL NAVIGATE TO DA PAGE TO PICK GAME AN READ NEWZ.
+  launchDescription: CLICK THIS BUTTON TO INSTALL OR LAUNCH DA GAME.
   mod:
     defaultSourceDescription: >-
-      U CAN CHOOSE TEH SOURCE OV MODZ DETAILS HER. THAR R TEH MODZ PUBLISHD 2
-      BOTH MODRINTH AN CURSEFORGE. IF U WANTS 2 SWITCH TWEEN THEES 2 CONTENT
-      PROVIDERS, U CAN CHANGE TEH VALUE HER.
-    defaultSourceTitle: SELECT MOD CONTENT SOURCE
+      U CAN PICK DA SOURCE OF MODZ DETAILS HERE. THERE ARE DA MODZ PUBLISHED TO
+      BOTH MODRINTH AN CURSEFORGE. IF U WANT TO SWITCH BETWEEN THESE TWO CONTENT
+      PROVIDERS, U CAN CHANGE DA VALUE HERE.
+    defaultSourceTitle: PICK MOD CONTENT SOURC
     detailDescription: >-
-      WHEN U SELECT AN ITEM ON TEH LEFT. U WILL C TEH DETAILS OV TEH MOD. TEH
-      CONTENT CAN COME FRUM MODRINTH, CURSEFORGE OR PARSD MODZ CONTENT.
-    detailTitle: MOD DETAIL
+      WHEN U PICK AN ITEM ON DA LEFT. U WILL SEE DA DETAILS OF DA MOD. TEH
+      CONTENT CAN COME FROM MODRINTH, CURSEFORGE OR PARSED MOD'S CONTENT.
+    detailTitle: MOD DEETAIL
     listDescription: >-
-      WE WILL DISPLAY INSTALLD MODZ WHEN U DOAN HAS ANY INPUT. U WILL C TEH
-      SEARCHD MODZ ONCE UR INPUT HAS KEYWORD OR KATEGORY SELECTD.
-    listTitle: INSTALLD OR SEARCH MOD
+      WE WILL DISPLAY INSTALLED MODZ WHEN U DONT HAZ ANY INPUT. U WILL SEE DA
+      SEARCHED MODZ ONCE UR INPUT HAZ A KEYWORD OR CATEGORY SELECTED.
+    listTitle: INSTALLED OR SEARCH MOD
     searchDescription: >-
-      U CUD SEARCH MODZ FRUM MODRINTH, CURSEFORGE OR UR LOCAL CACHE WIF DIS
+      U CUD SEARCH MODZ FROM MODRINTH, CURSEFORGE OR UR LOCAL CACHE WITH THIS
       SEARCH BOX.
     searchTitle: SEARCH MODZ
   multiplayer:
-    contentDescription: CONNECSHUNS TWEEN U AN UR PEERS WILL BE LISTD HER.
+    contentDescription: CONNEKSHUNS BETWEEN U AN UR PEERS WILL BE LISTED HERE.
     contentTitle: '@:multiplayer.connections'
     groupDescription: >-
-      U CAN CREATE OR JOIN GROUP WIF OTHR PLAYERS. TEH LAUNCHR WILL TRY 2 CREATE
-      P2P CONNECSHUNS TWEEN U AN UR FRENZ ACCORDIN 2 TEH GROUP. U CAN INPUT TEH
-      GROUP NAYM GIVEN BY UR FRENZ. OR U CAN CREATE AN UNIQUE NAYM.
-    groupTitle: JOIN GROUP
+      U CAN MAKE OR JOIN A GROUP WITH OTHR PLAYRZ. TEH LAWNCHER WILL TRY TO MAKE
+      P2P CONNEKSHUNS BETWEEN U AN UR FRENS ACCORDING TO DA GROUP. U CAN INPUT
+      DA GROUP NAME GIVEN BY UR FRENS. OR U CAN MAKE AN UNIQUE NAME.
+    groupTitle: JOIN A GROUP
     joinDescription: >-
-      ONCE U INPUT GROUP NAYM, U CAN CLICK DIS BUTN 2 JOIN OR CREATE TEH GROUP.
-      IF TEH GROUP NAYM IZ EMPTY, TEH LAUNCHR WILL GENERATE NAYM 4 U.
+      ONCE U INPUT A GROUP NAME, U CAN CLICK THIS BUTTON TO JOIN OR MAKE DA
+      GROUP. IF DA GROUP NAME IS EMPTY, DA LAWNCHER WILL GENERATE A NAME FUR U.
     manualDescription: >-
-      IF U OR UR FREND CANT CONNECT 2 TEH GROUP, U CAN TRY 2 MANUALLY EXCHANGE
-      TEH TOKEN BY CLICKIN MANUALLY CONNECT. IF DAT ALSO FAILD, IT MITE BE AN
+      IF U OR UR FREN CANNOT CONNECT TO DA GROUP, U CAN TRY TO MANUALLY EXCHANGE
+      DA TOKEN BY CLICKING MANUALLY CONNECT. IF THAT ALSO FAILED, IT MITE BE AN
       INTERNET ISSUE.
-  recentPlayDescription: >-
-    TEH CREATD GAMEZ WILL BE LISTD HER. U CAN SWITCH TEH VIEWS HER 2 ALSO C TEH
-    INSTALLD VERSHUNS AN DOWNLOADD MODPACKZ.
-  storePoupularModpackDescription: U WILL C TEH MOST POPULAR MODPACKZ IN CURSEFORGE AN MODRINTH IN DIS SECSHUN.
-  storeSearchCategoryDescription: U CAN ALSO TOGGLE TEH KATEGORIEZ OR FILTERS HER.
-  storeSearchDescription: U CAN SEARCH MODPACKZ BY INPUTTIN IN DIS TEXT BOX. PRES ENTR 2 SEARCH.
-  storeSearchResultDescription: U WILL C ALL SEARCH RESULTS LISTD HER.
-  userAccountDescription: CLICK DIS ICON 2 ADD OR MANAGE UR MINECRAFT AKOWNT.
+    storeSearchDescription: >-
+      U CAN SEARCH MODPACKS BY INPUTTING IN THIS TEXT BOX. PRESS ENTER TO
+      SEARCH.
 universalDrop:
-  enableModsAfterImport: ENABLE MODZ AFTR IMPORT
+  enableModsAfterImport: ENABL MODZ AFTR IMPORT
   start: IMPORT STARTED
-  title: DROP FILE(S) HER 2 IMPORT AS
+  title: DROP FILE(S) HERE TO IMPORT AS
   unknownResource: UNKNOWN
 update:
-  goOfficialWebDownload: RE-DOWNLOAD ON OFFISHUL WEBSIET
+  goOfficialWebDownload: RE-DOWNLOD ON OFFISHUL WEBSITE
 upstream:
   downgrade: DOWNGRADE
   missingModpackMetadata: >-
-    TEH OLD MODPACK METADATA NOT FINDZ.
+    TEH OLD MODPACK METADATA NOT FOUND.
 
-    U CAN STILL UPGRADE, BUT TEH RESULT MITE BE WRONG. PLZ BAKUP UR INSTANCE
+    U CAN STILL UPGRADE, BUT DA RESULT MITE BE WRONG. PLZ BACKUP UR INSTANCE
     FILEZ.
-  update: UPDATE
+  onlyShowCurrentVersion: ONLY SHOW CURREN MINECWAFT VERSHUN
+  update: UPDAT
 user:
-  accessToken: ACCES TOKEN
-  authMode: AUTH SERVICE
-  authService: AUTHORIZE SERVICE
-  birth: REGISTERD BIRFDAI
-  challenges: ANZWR QUESHUNS BELOW 2 VERIFY UR IDENTITY
-  email: EMAIL ADDRES
-  forgetChallenges: I HAS FORGOT THEES QUESHUNS AN I WANTS 2 CHANGE THEM
-  id: USR ID
-  info: USR INFORMASHUN
-  insecureClient: TEH CLIENT IZ INSECURE! PLZ VALIDATE UR IDENTITY 2 UPLOAD SKIN!
+  accessToken: ACCESS TOKEN
+  authMode: AUTH SERVIC
+  authService: AUTHORIZE SERVIC
+  birth: REGISTERED BIRTHDAY
+  challenges: ANSWER QUESHTUNS BELOW TO VERIFY UR IDENTITY
+  email: EMAIL ADDWESS
+  forgetChallenges: I HAZ FORGOT THESE QUESHTUNS AN I WANT TO CHANGE THEM
+  id: USER ID
+  info: USER INFORMASHUN
+  insecureClient: TEH CLIENT IS INSECURE! PLZ VALIDATE UR IDENTITY TO UPLOAD SKIN!
   name: USERNAME
-  nameHint: TEH NAYM DISPLAY IN GAME
+  nameHint: TEH NAME DISPLAY IN GAME
   profile: PROFILE
-  refreshAccount: REFRESH AKOWNT
+  refreshAccount: REFRESH ACCOUNT
   refreshSkin: REFRESH SKIN
-  submitChallenges: SUBMIT ANZWERS
-  tokenExpired: EXPIRD
-  tokenValidUntil: TOKEN VALID TIL
+  submitChallenges: SUBMIT ANSWERZ
+  tokenExpired: EXPIRED
+  tokenValidUntil: TOKEN VALID UNTIL
 userAccount:
-  add: ADD AKOWNT
-  removeDescription: DIS WILL REMOOV ALL INFO 4 DIS AKOWNT. R U SURE?
-  removeTitle: REMOOV AKOWNT
+  add: ADD ACCOUNT
+  removeDescription: THIS WILL REMOVE ALL INFO FUR THIS ACCOUNT. ARE U SURE?
+  removeTitle: REMOVE ACCOUNT
 userCape:
   changeTitle: CHANGE UR CAPE
   description: >-
-    CHANGE YOCAPEZ R SPESHUL REWARDZ PLAYERS CAN UNLOCK THRU DIFFERENT EVENTS,
-    CAMPAIGNS, AN OTHR HAPPEH HAPPENINGS. HER U CAN CHOOSE TWEEN TEH CAPEZ U
-    CURRENTLY OWN:UR CAPE
+    CAPES ARE SPECIAL REWARDZ PLAYRZ CAN UNLOCK THROUGH DIFFERENT EVENTZ,
+    CAMPAIGNS, AN OTHR HAPPY HAPPENINGS. HERE U CAN PICK BETWEEN DA CAPES U
+    CURRENTLY OWN:
   noCape: NO CAPE
 userService:
-  add: ADD MOAR SERVICEZ
-  authLibInjector: FOLLOW TEH AUTH-LIB INJECTOR SUGGESHUN
-  baseUrlHint: TEH BASE URL OV UR CUSTOM SERVICE
-  manageServices: MANAGE SERVICEZ
+  add: ADD MORE SERVICEZ
+  authLibInjector: FOLLOW DA AUTH-LIB INJECTOR SUGGESTSHUN
   authlibInjectorMetadata: AUTHLIB-INJECTOR METADATA
-  server: SERVER
-  implementation: IMPLEMENTATION
-  version: VERSION
-  skinDomains: SKIN DOMAINS
-  homepage: HOMEPAGE
-  register: REGISTER
-  title: THIRD-PARTY USR SERVICEZ
-  validateHint: USD 2 CHECK IF USERS TOKEN IZ STILL VALID
+  baseUrlHint: TEH BASE URL OF UR CUSTOM SERVIC
+  homepage: HOMEPAG
+  implementation: IMPLEMENTASHUN
+  manageServices: MANAG AUTH SERVICEZ
+  register: REGISTR
+  server: SERVR
+  skinDomains: SKIN DOMAINZ
+  title: THIRD-PARTY USER SERVICEZ
+  validateHint: USED TO CHECK IF USER'S TOKEN IS STILL VALID
+  version: VERSHUN
 userServices:
   microsoft:
-    account: MICROSOFT AKOWNT
+    account: MICROSOFT ACCOUNT
     deviceCode: DEVICE CODE
-    deviceCodeHint: DEVICE CODE WILL BE GENERATD AFTR U CLICK LOGIN
+    deviceCodeHint: DEVICE CODE WILL BE GENERATED AFTR U CLICK LOGIN
     fastLogin: FAST LOGIN
     name: MICROSOFT
-    password: ENTR PASWORD IN BROWSR
+    password: ENTER PASSWORD IN BROWSR
     useDeviceCode: LOGIN BY DEVICE CODE
   mojang:
-    account: EMAIL ADDRES
+    account: EMAIL ADDWESS
     name: MOJANG
-    password: PASWORD
+    password: PASSWORD
   offline:
     account: USERNAME
     name: OFFLINE
-    password: NO PASWORD
-    uuid: USR UUID (OPSHUNAL)
+    password: NO PASSWORD
+    uuid: USER UUID (OPSHUNAL)
 userSkin:
   import: IMPORT SKIN
-  importFile: OPEN FRUM FILE
-  importLink: OPEN FRUM LINK
-  placeUrlHere: PLACE SKIN URL HER 2 IMPORTOPEN FRUM LINK
+  importFile: OPEN FROM FILE
+  importLink: OPEN FROM LINK
+  placeUrlHere: PLACE SKIN URL HERE TO IMPORT
   reset: RESET
   save: SAVE
-  saveTitle: SAVE SKIN 2 DISK
-  skinType: SKIN TYPE
+  saveTitle: SAVE SKIN TO DISK
+  skinType: SKIN TYP
   upload: UPLOAD SKIN
-  urlNotEmpty: SKIN URL CANT BE EMPTY
-  urlNotValid: SKIN URL IZ INVALID
+  urlNotEmpty: SKIN URL CANNOT BE EMPTY
+  urlNotValid: SKIN URL IS INVALID
   useSlim: USE SLIM MODEL
 version:
-  checkIntegrity: Check Integrity
+  checkIntegrity: CHECK INTEGRITY
   name: VERSHUN | VERSHUNS
-  notInstalled: VERSHUN IZ NOT INSTALLD
+  notInstalled: VERSHUN IS NOT INSTALLED
 versionType:
-  alpha: ALFA
+  alpha: ALPHA
   beta: BETA
   name: STATUS
   release: RELEASE
-'yes': 'Yes'
+'yes': YAS

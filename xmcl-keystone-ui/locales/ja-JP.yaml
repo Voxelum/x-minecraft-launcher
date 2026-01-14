@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: 複数のランチャー構成が検出されました。インポートするものを一つ選択してください。
-  configTitle: 設定
   createTitle: ゲームを作成
-  downloadedNotification: Modpack {name} がダウンロードされました。新しく起動構成を作成しますか?
   serverTitle: サーバーアドレスを入力
 AppShareInstanceDialog:
   alterDownloadDescription: 現在の起動構成をいじりたくなければ、ピアの構成から新しく起動構成を作ることができます。下のボタンをクリックすると起動構成を作成します。
@@ -12,7 +10,6 @@ AppShareInstanceDialog:
   downloadDescription: ピアから提供されたファイルを確認し、ダウンロードするファイルを選択してください。これは現在の起動構成 {name} に配置されます。
   downloadNotifyTitle: '{user} から起動構成をダウンロード'
   downloadTitle: 他のピアからファイルをダウンロード
-  downloadToLocal: 現在の起動構成にダウンロード
   filesToDownload: ダウンロードするファイルを選択
   filesToShare: 共有するファイルを選択
   instanceShare: '{user} が現在の起動構成をあなたに共有しました。'
@@ -23,31 +20,16 @@ BaseSettingGeneral:
   title: 一般
 FeedTheBeast:
   search: FTBで検索
-FeedTheBeastProject:
-  changelog: 変更履歴
-  details: 詳細
-  install: '{version} をインストール'
-  overview: 概要
-  versions: バージョン
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: 互換性のないJava
   incompatibleJavaHint: 現在のJavaは選択されたMinecraftと互換性がない可能性があります!
   missingJava: Javaが見つかりません
   missingJavaHint: 'ランチャーはJavaを見つけることができませんでした。次のことを試すことができます:'
-  needDownloadHint: 適切なJavaバージョンをコンピューターから見つけることができませんでした。新しくダウンロードすることを推奨します。
-  optionAutoDownload:
-    message: ランチャーはMojangのソースからJavaをダウンロードし、インストールします。
-    name: 自動的にダウンロード
-  optionSelectJava:
-    message: ランチャーはJavaを見つけられない可能性があります。ランチャーにJavaの場所を明示することもできます。
-    name: あなたのコンピューターの中からJavaを選択
+  optionAutoDownload: {}
+  optionSelectJava: {}
   optionSwitch:
-    disabled: Java {version} がデータベースに見つかりません!
-    message: Java {version} を使用します
     name: '{version} に切り替え'
-  recommendedVersionHint: '{version} は {range} の範囲内のJavaを使うことが推奨されます。'
-  selectMatchedHint: 適切なJavaバージョンを見つけました。これらのJavaを選択できます。
-  selectSecondaryHint: いくつかのJavaバージョンを見つけましたが、互換性がない可能性があります。これを使用することもできますが、問題が発生するかもしれません。
 HomeLaunchMultiInstanceDialog:
   confirm: はい、起動します。
   description: 複数の起動構成を起動しようとしています。続行しますか?
@@ -106,18 +88,11 @@ curseforge:
   file:
     gameVersion: ゲームバージョン
     modLoader: Modローダー
-  install: インストール
   installTo: '{path} にインストール'
   installToStorage: ストレージにインストール
   lastUpdate: 最終アップデート日
-  project:
-    description: 説明
-    files: ファイル
-    images: 画像
-  recentFiles: 以前のファイル
+  project: {}
   releasedDate: リリース日
-  search: 検索
-  totalDownloads: 合計ダウンロード数
 curseforgeCategory:
   API and Library: APIとライブラリ
   Addons: アドオン
@@ -298,11 +273,7 @@ exception:
     {url} へのHTTPリクエストに失敗しました。ステータスコードは {statusCode}
     です。再度試すか、ネットワーク接続を確認してください。エラーが続く場合は、レポートを開発者に送ってください。
 existed: 存在した
-exportModpackTarget:
-  curseforge: Curseforge ファイル
-  github: Github ファイル
-  modrinth: Modrinth ファイル
-  override: (Raw) ファイルを上書き
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip ファイル
@@ -357,10 +328,7 @@ gameType:
 help: ヘルプ
 home: ホーム
 importModpack:
-  failed: '{modpack} のインポートに失敗'
   name: Modpackをインポート
-  success: '{modpack} のインポートに成功しました'
-importResource: リソースのインポート
 install: インストール
 installAssets:
   asset: '{count} 個のアセットをインストール'
@@ -504,14 +472,8 @@ instanceSetting:
   showLog: Minecraftのログを表示
   showLogHint: ゲーム起動後にMinecraftのログを流すポップアップウィンドウを表示します
 instanceTemplate:
-  curseforge: Curseforge のModpackです
   ftb: FTB のModpackです
-  importing: テンプレートをインポート
-  mcbbs: MCBBS のModpackです
-  modpack: 生のModpackです
-  modrinth: Modrinth のModpackです
   preview: Modpackのプレビュー
-  title: テンプレートの設定
 instanceUpdate:
   basic: 設定の更新
   files: ファイルのアップデート
@@ -583,7 +545,6 @@ launch:
   launch: 起動
   launchAnyway: どちらでも走れる
 launchBlocked:
-  ignore: 強制的に起動
   launchBadVersion:
     description: このバージョン {version} のjsonはこわれています。このバージョンを再インストールすると解決するかもしれません?
     title: 破損したバージョンJSON
@@ -708,7 +669,6 @@ me:
   recentPlay: プレイの履歴
   versions: インストール済みバージョン
 minecraftVersion:
-  empty: Minecraftバージョンが読み込めません
   name: Minecraft バージョン
   release: リリース
   showAlpha: スナップショットを表示
@@ -717,31 +677,26 @@ mod:
   acceptVersion: '{version} を受け入れる'
   applyGroupRules: 保存されたグループ化ルールを適用します
   compatible: 利用可能なModです。
+  createGroup: グループを作成
   currentVersion: 現在 {current}
   deletion: Modを削除
   deletionHint: あなたはこのModとそのメタデータを失います。削除しますか? | あなたはこれらのModとそのメタデータを失います。本当に続行しますか?
   deletionRestHint: '{rest} 個のmod...'
   denseView: コンパクトなビュー
+  disableAll: すべて無効化
   dropHint: ここにModファイル(.jar/.litemod)をドロップしてインポートします。
   duplicatedDetected: '{count} 個の重複した MOD'
   duplicatedDetectedDescription: |-
     同じ MOD ID で異なるファイルを持つ MOD が見つかりました。
     これにより、Minecraft がクラッシュする可能性があります。
     保存したいファイルを選択してください。
-  enabled: '{count} 個のModが有効'
   enableAll: すべて有効化
-  disableAll: すべて無効化
+  enabled: '{count} 個のModが有効'
   filter: Modをフィルタ
   group: グループアップ
   groupInstalled: グループでインストールされたMod
-  selectOrCreateGroup: グループを選択または作成
-  searchGroups: グループを検索...
-  newFolder: 新しいフォルダ
-  noGroupsYet: まだグループがありません。作成してください！
-  noGroupsFound: グループが見つかりません
   groupName: グループ名
   groupNameRequired: グループ名は必須です
-  createGroup: グループを作成
   hasUpdate: Modにアップデートがあります!
   hideIncompatible: 適合しないModを隠す
   incompatible: 適合しないModです。
@@ -757,12 +712,17 @@ mod:
   modloaderSelectNotSupported: Minecraft {minecraft} の {modloader} が見つかりません
   mods: '{count} Mods'
   name: Mod | Mods
+  newFolder: 新しいフォルダ
+  noGroupsFound: グループが見つかりません
+  noGroupsYet: まだグループがありません。作成してください！
   noModLoaderHint: Modを使うためにModloaderを有効化するのを忘れないでください!
   openLink: ModのURL {url} を開く
   search: Modを検索
+  searchGroups: グループを検索...
   searchOnCurseforge: Curseforgeで {name} を検索
   searchOnMcWiki: Mod {name} をMcWikiで見る
   searchOnModrinth: Modrinthで {name} を検索
+  selectOrCreateGroup: グループを選択または作成
   showDirectory: Modsディレクトリを見る
   showFile: Modディレクトリ {file} を表示
   showInCurseforge: CurseforgeでModを見る
@@ -780,6 +740,13 @@ modFilter:
   unusedOnly: 未使用のライブラリMODのみを表示します
 modInstall:
   archived: '{name} はアーカイブされました。 作者がアーカイブを解除しない限り {name} はアップデートを受け取りません。'
+  autoUpgrade:
+    description: >-
+      Minecraftのバージョンを変更しました。互換性のあるModを自動的に Minecraft {version}
+      に対応するバージョンに更新しますか？
+    'no': スキップ
+    title: Modをアップデートしますか？
+    'yes': Modをアップデート
   checkDependencies: 依存関係を確認
   checkUpgrade: アップデートを確認
   checkedDependencies: 依存関係を確認しました
@@ -799,13 +766,6 @@ modInstall:
   source: Modソース
   switch: バージョンを切り替え
   upgrade: Modをアップグレード
-  autoUpgrade:
-    title: Modをアップデートしますか？
-    description: >-
-      Minecraftのバージョンを変更しました。互換性のあるModを自動的に
-      Minecraft {version} に対応するバージョンに更新しますか？
-    yes: Modをアップデート
-    no: スキップ
 modSearch:
   noLocalModsFound: 検索に一致するローカルModが見つかりません。
   noModsFound: Modが見つかりません。
@@ -1014,10 +974,6 @@ modrinth:
   wikiUrl: Wiki
 modrinthCard:
   currentVersion: 現在のバージョン
-  projectHint: >
-    この起動構成は Modrinth modpack <code class="rounded p-1" style="background:
-    rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>) で作成されました
 multiplayer:
   allowTurn: リレーサーバーを有効化
   allowTurnHint: フレンドに接続できない場合はリレーサーバーを有効にしてください。リレーサーバーは接続速度を低下させる可能性があります。注意して使用してください。
@@ -1097,7 +1053,6 @@ natType:
 neoForgedVersion:
   disable: NeoForge を使用しない
   empty: NeoForgeはMinecraft {version} をサポートしていません
-  name: NeoForge
 news:
   name: ニュース
   readMore: さらに読む
@@ -1268,17 +1223,11 @@ serverStatus:
   timeout: §4サーバーへの接続がタイムアウト!
 setting:
   about: について
-  allowPrerelease: プレリリース版をダウンロード
-  allowPrereleaseDescription: プレリリース版は不安定かもしれません
   apiSets:
     auto: 自動 (ネットワークにより判断)
     official: 公式 (Mojang)
   appearance: 外観
   appxUpdateHint: ランチャーがインストーラーをダウンロードし実行します。もしポップアップしたインストーラーが失敗したら手動で実行してください。
-  autoDownload: 自動ダウンロード
-  autoDownloadDescription: アップデートがあれば自動でダウンロードします
-  autoInstallOnAppQuit: 自動インストール
-  autoInstallOnAppQuitDescription: アップデートを自動でインストールし、アプリを閉じる
   backdropBlur: 背景のぼかし
   backgroundColorAbove: 背景画像をオーバーレイとして表示
   backgroundColorAboveDescription: 背景の画像、映像の上に背景色を適用できるようにします
@@ -1363,8 +1312,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Minecraftのプロセスに外部GPUを割り当て、外部GPUをDRI PRIME, Optimusなどで優先的に使用します
   linuxTitlebar: システムのタイトルバー
   linuxTitlebarDescription: ランチャーでシステム標準のタイトルバーを使用します
-  windowTranslucent: ウィンドウの透過効果
-  windowTranslucentDescription: 透過ウィンドウ効果を有効にします（Windows 11ではMica、Windows 10ではAcrylic、macOSではVibrancy）。再起動が必要です。
   location: 保管場所
   manualUpdateHint: バージョンの自動更新ができません。公式サイトから再度ランチャーをダウンロードしてください！
   maunalUpdateHint: このバージョンを自動アップデートできません。ウェブサイトからランチャーを再ダウンロードしてください!
@@ -1413,6 +1360,10 @@ setting:
   useProxy: HTTPプロキシ
   useProxyDescription: HTTPリクエストのためのプロキシサーバーのアドレス
   viewBackgroundMusic: BGMフォルダを見る
+  windowTranslucent: ウィンドウの透過効果
+  windowTranslucentDescription: >-
+    透過ウィンドウ効果を有効にします（Windows 11ではMica、Windows
+    10ではAcrylic、macOSではVibrancy）。再起動が必要です。
 settingLabel:
   global: グローバル
   globalHint: グローバル設定に従います
@@ -1492,10 +1443,8 @@ tag:
   createSelected: 選択されたもので新しいタグを作る
   newTag: 新しいタグ
 task:
-  available: 利用可能
   cancelled: キャンセルされました
   clear: 終了したタスクをクリア
-  compatible: '{format} 形式は {version} と互換性があります'
   connection:
     connected: 接続済み
     free: 接続なし
@@ -1504,16 +1453,9 @@ task:
     running: 接続を実行中
     size: 合計
   connections: ネットワーク接続
-  delete:
-    content: |-
-      そうするとディスクからtexturepackファイルが削除され、復元できなくなります。
-       本当に復元できますか？
-    title: テクスチャパックの削除
-  dropHint: フォルダ/zipテクスチャをここにドラッグ＆ドロップしてインポートします。
+  delete: {}
   empty: 実行中のタスクなし
-  enable: テクスチャパックが含まれています： 数 {count}
   failed: 失敗
-  import: テクスチャパックのインポート
   incompatible: 互換性のないテキストスタック形式 ({format})。マッチング {accept}。現在の{actual}。
   manage: テキストパック
   manager: タスクマネージャー
@@ -1522,7 +1464,6 @@ task:
   pause: 一時停止
   searchOnCurseforge: Curseforgeで {name} を見る
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: お気に入りのテクスチャパック
   showFile: フォルダ内のtexturepack {file}を開きます。
   showInCurseforge: Curseforgeで {name} を見る
   unselected: 未選択のテクスチャパック
@@ -1625,17 +1566,17 @@ userCape:
 userService:
   add: 他のサービスを追加
   authLibInjector: auth-lib injectorに提案に従う
-  baseUrlHint: あなたのカスタムサービスのベースURL
-  manageServices: サービスを管理
   authlibInjectorMetadata: Authlib-Injector メタデータ
-  server: サーバー
-  implementation: 実装
-  version: バージョン
-  skinDomains: スキンドメイン
+  baseUrlHint: あなたのカスタムサービスのベースURL
   homepage: ホームページ
+  implementation: 実装
+  manageServices: サービスを管理
   register: 登録
+  server: サーバー
+  skinDomains: スキンドメイン
   title: サードパーティのユーザーサービス
   validateHint: ユーザーのトークンがまだ有効か確認するために使用します
+  version: バージョン
 userServices:
   microsoft:
     account: Microsoft アカウント

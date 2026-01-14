@@ -157,5 +157,6 @@ export function usePeerState(gameProfile: Ref<GameProfileAndTexture>) {
     drop,
     leaveGroup,
     joinGroup,
+    error,
   }
 }

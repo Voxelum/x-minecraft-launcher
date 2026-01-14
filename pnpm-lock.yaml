@@ -680,7 +680,7 @@ importers:
         version: 2.5.0
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/bore:
     devDependencies:
@@ -725,7 +725,7 @@ importers:
         version: 2.5.0
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/client:
     dependencies:
@@ -756,7 +756,7 @@ importers:
         version: 2.5.0
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/core:
     dependencies:
@@ -778,7 +778,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/curseforge:
     dependencies:
@@ -804,7 +804,7 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ~18
-        version: 18.16.5
+        version: 18.15.13
       '@xmcl/oxlint-config':
         specifier: workspace:^*
         version: link:../oxlint-config
@@ -816,10 +816,10 @@ importers:
         version: 0.15.5
       tsx:
         specifier: ^3.12.1
-        version: 3.12.7
+        version: 3.14.0
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/file-transfer:
     dependencies:
@@ -847,7 +847,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/forge-site-parser:
     dependencies:
@@ -869,7 +869,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/game-data:
     dependencies:
@@ -897,7 +897,7 @@ importers:
         version: 2.5.0
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/gamesetting:
     devDependencies:
@@ -915,7 +915,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/installer:
     dependencies:
@@ -973,7 +973,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/instance:
     dependencies:
@@ -1032,7 +1032,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/model:
     dependencies:
@@ -1060,7 +1060,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/modrinth:
     dependencies:
@@ -1089,13 +1089,13 @@ importers:
     devDependencies:
       '@types/node':
         specifier: ^18.15.11
-        version: 18.16.5
+        version: 18.15.13
       esbuild:
         specifier: ^0.17.16
         version: 0.17.18
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/nbt:
     dependencies:
@@ -1123,7 +1123,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/nbt/zlib:
     dependencies:
@@ -1243,7 +1243,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/task:
     devDependencies:
@@ -1261,7 +1261,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/text-component:
     devDependencies:
@@ -1279,7 +1279,7 @@ importers:
         version: 0.15.5
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/undici-shim: {}
 
@@ -1300,7 +1300,7 @@ importers:
         version: 0.17.18
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
 
   xmcl/packages/user:
     dependencies:
@@ -1319,7 +1319,7 @@ importers:
         version: 0.17.18
       typescript:
         specifier: ^5.3.3
-        version: 5.3.3
+        version: 5.4.5
       undici-shim:
         specifier: workspace:^*
         version: link:../undici-shim
@@ -2634,9 +2634,6 @@ packages:
 
   '@types/node@18.15.13':
     resolution: {integrity: sha512-N+0kuo9KgrUQ1Sn/ifDXsvg0TTleP7rIy4zOBGECxAljqvqfqpTfzx0Q1NUedOixRMBfe2Whhb056a42cWs26Q==}
-
-  '@types/node@18.16.5':
-    resolution: {integrity: sha512-seOA34WMo9KB+UA78qaJoCO20RJzZGVXQ5Sh6FWu0g/hfT44nKXnej3/tCQl7FL97idFpBhisLYCTB50S0EirA==}
 
   '@types/node@20.12.7':
     resolution: {integrity: sha512-wq0cICSkRLVaf3UGLMGItu/PtdY7oaXaI/RVU+xliKVOtRna3PRY57ZDfztpDL0n11vfymMUnXv8QwYCO7L1wg==}
@@ -5266,11 +5263,6 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
-  typescript@5.3.3:
-    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
   typescript@5.4.5:
     resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
@@ -6784,8 +6776,6 @@ snapshots:
   '@types/ms@0.7.31': {}
 
   '@types/node@18.15.13': {}
-
-  '@types/node@18.16.5': {}
 
   '@types/node@20.12.7':
     dependencies:
@@ -9749,8 +9739,6 @@ snapshots:
       - '@swc/wasm'
 
   typescript@4.6.4: {}
-
-  typescript@5.3.3: {}
 
   typescript@5.4.5: {}
 

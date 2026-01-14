@@ -133,7 +133,7 @@ import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 
-const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | undefined)
+const type = ref(undefined as 'modrinth' | 'mmc' | 'server' | 'vanilla' | 'manual' | 'template' | 'prism' | undefined)
 const manifests = ref([] as CreateInstanceManifest[])
 const { parseInstanceFiles } = useService(InstanceIOServiceKey)
 const onManifestSelect = async (man: CreateInstanceManifest) => {
@@ -272,7 +272,7 @@ const onCreate = async () => {
 // Stepper model
 const valid = ref(false)
 const step = ref(1)
-const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : '' }))
+const errorText = computed(() => t('errors.BadInstanceType', { type: type.value === 'mmc' ? 'MultiMC' : type.value === 'modrinth' ? 'Modrinth' : type.value === 'prism' ? 'PrismLauncher' : '' }))
 const steps = computed(() => {
   if (type.value === 'template') {
     return ['template', 'config']

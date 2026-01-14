@@ -56,6 +56,12 @@ const items = computed(() => {
     icon: '$vuetify.icons.mmc',
     value: 'mmc',
   }, {
+    title: 'PrismLauncher',
+    subtitle: t('instances.addPrismDescription'),
+    icon: '$vuetify.icons.prism',
+    color: 'purple',
+    value: 'prism',
+  }, {
     title: 'Modrinth',
     subtitle: t('instances.addModrinthDescription'),
     icon: '$vuetify.icons.modrinth',
