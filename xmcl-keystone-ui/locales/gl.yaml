@@ -1,26 +1,26 @@
 AppAddInstanceDialog:
   choiceTitle: Meerdere opstartprofielen gedetecteerd. Selecteer er een om te importeren.
-  configTitle: Configuratie
   createTitle: Game aanmaken
-  downloadedNotification: Het modpack {name} is gedownload. Wil je hier een instantie voor aanmaken?
   serverTitle: Voer je serveradres in
 AppShareInstanceDialog:
   alterDownloadDescription: >-
-    Als je de huidige instantie niet wilt aanpassen, kun je ook een nieuwe instantie
-    maken van de configuratie van de ander. Klik op de knop hieronder om een instantie te maken.
+    Als je de huidige instantie niet wilt aanpassen, kun je ook een nieuwe
+    instantie maken van de configuratie van de ander. Klik op de knop hieronder
+    om een instantie te maken.
   baseInfo: Basisinstelling
   cancelShare: Delen annuleren
   description: >-
-    Nadat je het profiel hebt gedeeld, kunnen anderen deze bestanden via jouw PC downloaden.
+    Nadat je het profiel hebt gedeeld, kunnen anderen deze bestanden via jouw PC
+    downloaden.
   downloadDescription: >-
-    Verifieer de bestanden die de ander je heeft aangeboden. Selecteer het bestand dat je wilt
-    downloaden. Het wordt in de huidige instantie {name} geplaatst.
+    Verifieer de bestanden die de ander je heeft aangeboden. Selecteer het
+    bestand dat je wilt downloaden. Het wordt in de huidige instantie {name}
+    geplaatst.
   downloadNotifyTitle: Instantie downloaden van {user}
   downloadTitle: Bestanden downloaden van anderen
-  downloadToLocal: Downloaden naar huidige instantie
   filesToDownload: Kies bestanden om te downloaden
   filesToShare: Kies bestanden om te delen
-  instanceShare: "{user} heeft zojuist de huidige instantie met je gedeeld"
+  instanceShare: '{user} heeft zojuist de huidige instantie met je gedeeld'
   share: Delen
   shareNotifyTitle: Instantie delen
   shareTitle: Deel gamebestanden met andere speler
@@ -30,38 +30,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: Zoeken in FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Wijzigingslog
-  details: Details
-  install: Installeer {version}
-  overview: Overzicht
-  versions: Versies
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Incompatibele Java
   incompatibleJavaHint: De huidige Java is mogelijk niet compatibel met de geselecteerde Minecraft!
   missingJava: Java ontbreekt
-  missingJavaHint: "De Launcher kan geen Java vinden op je computer. Je kunt:"
-  needDownloadHint: >-
-    Kan geen geschikte Java-versie vinden op je computer. Het wordt aanbevolen een
-    nieuwe te downloaden.
-  optionAutoDownload:
-    message: De Launcher downloadt en installeert Java van Mojang's bron voor je.
-    name: Automatisch downloaden
+  missingJavaHint: 'De Launcher kan geen Java vinden op je computer. Je kunt:'
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Misschien vindt de launcher je Java niet. Je kunt de launcher vertellen waar
-      het staat.
-    name: Selecteer Java op je computer
+  optionSelectJava: {}
   optionSwitch:
-    disabled: Er is momenteel geen Java {version} gevonden in de database!
-    message: Gebruik bestaande Java {version} op je PC
     name: Schakel over naar {version}
-  recommendedVersionHint: Voor {version} wordt aangeraden Java te gebruiken binnen bereik {range}.
-  selectMatchedHint: Geschikte lokale Java-versies gevonden. Je kunt deze kiezen.
-  selectSecondaryHint: >-
-    Enkele lokale Java-versies gevonden, maar deze voldoen mogelijk niet aan de criteria.
-    Je kunt ze nog steeds gebruiken om te starten, maar dit probleem blijft verschijnen.
 HomeLaunchMultiInstanceDialog:
   confirm: Ja, starten
   description: Je start meerdere instanties van Minecraft. Weet je het zeker?
@@ -85,10 +64,10 @@ SettingMigrationDialog:
   selectRootDirectory: Selecteer hoofdmap
 add: Toevoegen
 ago:
-  day: "{duration} dag geleden | {duration} dagen geleden"
-  hour: "{duration} uur geleden | {duration} uur geleden"
-  minute: "{duration} minuut geleden | {duration} minuten geleden"
-  second: "{duration} seconde geleden | {duration} seconden geleden"
+  day: '{duration} dag geleden | {duration} dagen geleden'
+  hour: '{duration} uur geleden | {duration} uur geleden'
+  minute: '{duration} minuut geleden | {duration} minuten geleden'
+  second: '{duration} seconde geleden | {duration} seconden geleden'
 askAICrash:
   copyPrompt: Kopieer de prompt om aan AI te vragen
   description: >-
@@ -124,18 +103,11 @@ curseforge:
     gameVersion: Gameversie
     install: installeren
     modLoader: Mod Loader
-  install: Installeren
   installTo: Installeren in {path}
   installToStorage: Installeren naar opslag
   lastUpdate: Datum laatste update
-  project:
-    description: Beschrijving
-    files: Bestanden
-    images: Afbeeldingen
-  recentFiles: Recente bestanden
+  project: {}
   releasedDate: Uitgavedatum
-  search: Zoeken
-  totalDownloads: Totaal aantal downloads
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API's en bibliotheken
@@ -195,22 +167,23 @@ dataMigration:
   directoryCriteriaHint: Zorg ervoor dat je nieuwe maplocatie een LEGE map is!
   migrationDestinationIsFile: Migratiebestemming is een bestand! Selecteer een lege map!
   migrationDestinationIsNotEmptyDirectory: >-
-    Migratiebestemming is geen lege map! Zorg ervoor dat je een lege map selecteert!
+    Migratiebestemming is geen lege map! Zorg ervoor dat je een lege map
+    selecteert!
   migrationNoPermission: >-
-    Geen toestemming om de oude map te hernoemen naar de nieuwe map! Zorg ervoor dat
-    de launcher toegang heeft tot beide locaties!
+    Geen toestemming om de oude map te hernoemen naar de nieuwe map! Zorg ervoor
+    dat de launcher toegang heeft tot beide locaties!
   placeholder: Klik hier om een map te selecteren
   setRootCause: >-
-    Je verliest je gegevens (Mappen, Resourcepacks, Mods) als je de Launcher sluit
-    tijdens dit proces!
+    Je verliest je gegevens (Mappen, Resourcepacks, Mods) als je de Launcher
+    sluit tijdens dit proces!
   setRootDescription: Dit verandert de hoofdgegevensmap van deze launcher en minecraft.
   setRootTitle: Instellen op een nieuwe opslaglocatie
   unknownError: Onbekende fout! Probeer het opnieuw of neem contact op met de ontwikkelaar!
   waitReload: Gegevens migreren. Sluit de Launcher niet, anders verlies je gegevens.
 delete:
   name: Verwijder {name}
-  "no": "Nee"
-  "yes": Verwijderen
+  'no': Nee
+  'yes': Verwijderen
 dependencies:
   embedded: Ingesloten
   incompatible: Incompatibel
@@ -234,8 +207,8 @@ diagnosis:
   corruptedLibraries:
     message: Launcher zal bibliotheken (libraries) voor je installeren
     name: >-
-      Beschadigde bibliotheek: {name} | Beschadigde bibliotheek: {name} | {count} bibliotheken
-      beschadigd
+      Beschadigde bibliotheek: {name} | Beschadigde bibliotheek: {name} |
+      {count} bibliotheken beschadigd
   corruptedVersionJar:
     message: Klik om deze versie te installeren
     name: Beschadigde versie jar voor Minecraft %{version}.
@@ -253,7 +226,9 @@ diagnosis:
     name: Ongeldige java-locatie.
   missingAssets:
     message: Launcher zal assets voor je installeren
-    name: "Ontbrekende asset: {name} | Ontbrekende asset: {name} | Er ontbreken %{count} assets."
+    name: >-
+      Ontbrekende asset: {name} | Ontbrekende asset: {name} | Er ontbreken
+      %{count} assets.
   missingAssetsIndex:
     message: Launcher zal assets-index voor je downloaden
     name: Ontbrekend assets-indexbestand van {version}.
@@ -264,8 +239,8 @@ diagnosis:
   missingLibraries:
     message: Launcher zal bibliotheken voor je installeren
     name: >-
-      Ontbrekende {name} Bibliotheek | Ontbrekende {name} Bibliotheek | Er ontbreken {count}
-      Bibliotheken | Er ontbreken {count} Bibliotheken
+      Ontbrekende {name} Bibliotheek | Ontbrekende {name} Bibliotheek | Er
+      ontbreken {count} Bibliotheken | Er ontbreken {count} Bibliotheken
   missingVersion:
     message: Klik om deze versie te installeren
     name: De versie {version} is niet geïnstalleerd!
@@ -285,16 +260,16 @@ disk:
   available: Beschikbaar
   used: Gebruikt
 download: Downloaden
-downloadCount: "{count} downloads"
+downloadCount: '{count} downloads'
 downloadUpdate: Update downloaden
 duration:
-  day: "{duration} dag | {duration} dagen"
-  hour: "{duration} uur | {duration} uur"
-  minute: "{duration} minuut | {duration} minuten"
+  day: '{duration} dag | {duration} dagen'
+  hour: '{duration} uur | {duration} uur'
+  minute: '{duration} minuut | {duration} minuten'
   name: Verwijder {name}
-  "no": "Nee"
-  second: "{duration} seconde | {duration} seconden"
-  "yes": Ja, meneer.
+  'no': Nee
+  second: '{duration} seconde | {duration} seconden'
+  'yes': Ja, meneer.
 edit: Bewerken
 enable: Inschakelen
 env:
@@ -306,24 +281,25 @@ error:
   name: Fout | Fouten
 errors:
   BadForgeInstallerJarError: >-
-    Kan forge installer jar-bestand niet parsen. Heeft Forge misschien een nieuw installer
-    bestandsformaat? Neem contact op met ontwikkelaars als dit probleem aanhoudt.
-  BadInstanceType: "Geen geldige instantie: {type}"
+    Kan forge installer jar-bestand niet parsen. Heeft Forge misschien een nieuw
+    installer bestandsformaat? Neem contact op met ontwikkelaars als dit
+    probleem aanhoudt.
+  BadInstanceType: 'Geen geldige instantie: {type}'
   BodyTimeoutError: HTTP Body time-out
   ChecksumNotMatchError: Checksum komt niet overeen! Verwacht {expect}. Werkelijk {actual}.
   ConnectTimeoutError: Verbindingstime-out naar server.
   DNSNotFoundError: DNS-opzoekfout
   DatabaseNotOpened: >-
     Database is niet geopend! De launcher zal niet goed werken! Selecteer een
-    gegevensmap die de launcher kan benaderen. Je kunt proberen de data root te resetten
-    in de instellingenpagina.
+    gegevensmap die de launcher kan benaderen. Je kunt proberen de data root te
+    resetten in de instellingenpagina.
   DiskIsFull: >-
     Je schijf is vol! Kan niets naar schijf schrijven! Functies werken mogelijk
     niet!
   DownloadAggregateError: Downloaden van bestand mislukt.
   DownloadFileSystemError: >-
-    Fout tijdens toegang tot het downloadbestandspad. Zorg ervoor dat de launcher
-    toestemming heeft om hierop te schrijven.
+    Fout tijdens toegang tot het downloadbestandspad. Zorg ervoor dat de
+    launcher toestemming heeft om hierop te schrijven.
   HeadersTimeoutError: HTTP Header time-out
   NotFoundError: 404 Niet Gevonden
   SocketError: Server socket fout
@@ -333,15 +309,11 @@ eula:
     Minecraft's {eula}.
 exception:
   http: >-
-    HTTP-verzoek naar {url} mislukt. Statuscode {statusCode}. {code}. Probeer het opnieuw
-    of controleer je netwerk. Als deze fout aanhoudt, stuur dan een rapport naar
-    het ontwikkelaarsteam.
+    HTTP-verzoek naar {url} mislukt. Statuscode {statusCode}. {code}. Probeer
+    het opnieuw of controleer je netwerk. Als deze fout aanhoudt, stuur dan een
+    rapport naar het ontwikkelaarsteam.
 existed: Bestaand
-exportModpackTarget:
-  curseforge: Curseforge Bestand
-  github: Github Bestand
-  modrinth: Modrinth Bestand
-  override: Overschrijf (Raw) Bestand
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip-bestand
@@ -363,11 +335,13 @@ feedback:
   githubDescription: Open een Github Issue om je gedachten te delen
   githubOpenIssue: Github
   hint: >-
-    Klik op de knop om het rapport te maken en contact op te nemen met het team. Het
-    rapport bevat je apparaatinfo inclusief besturingssysteemtype,
-    versie, gebruikersnaam (in je os), enz.
+    Klik op de knop om het rapport te maken en contact op te nemen met het team.
+    Het rapport bevat je apparaatinfo inclusief besturingssysteemtype, versie,
+    gebruikersnaam (in je os), enz.
   kook: Kook
-  kookDescription: Kook is een alternatieve app voor discord voor gebruikers op het Chinese vasteland
+  kookDescription: >-
+    Kook is een alternatieve app voor discord voor gebruikers op het Chinese
+    vasteland
   name: Feedback
   qq: QQ Groep
   qqDescription: >-
@@ -404,10 +378,7 @@ gameType:
 help: Help
 home: Home
 importModpack:
-  failed: Importeren {modpack} mislukt
   name: Modpack importeren
-  success: Importeren {modpack} geslaagd
-importResource: Resource importeren
 install: Installeren
 installAssets:
   asset: Installeer {count} Assets
@@ -468,11 +439,15 @@ instance:
   delete: Game verwijderen
   deleteFailed: Verwijderen van instantie mislukt
   deleteFailedPermission: Ander programma gebruikt het bestand
-  deleteHint: De instantiegegevens worden voorgoed van de schijf verwijderd. Weet je het zeker?
+  deleteHint: >-
+    De instantiegegevens worden voorgoed van de schijf verwijderd. Weet je het
+    zeker?
   duplicate: Game dupliceren
   duplicatedName: Gedupliceerde naam
   fileApi: De synchronisatie bestandsserver API url
-  fileApiHint: De url om instantiebestanden te synchroniseren vanaf een externe configuratieserver.
+  fileApiHint: >-
+    De url om instantiebestanden te synchroniseren vanaf een externe
+    configuratieserver.
   fullscreen: Volledig scherm
   gameVersion: Gameversie
   height: Hoogte
@@ -485,8 +460,8 @@ instance:
   launchArguments: Startargumenten voorbeeld
   launchServer: Start localhost server
   linkFileDesc: >-
-    Dit overschrijft het lokale instantiebestand {file} met het globale {file}. Weet je
-    zeker dat je het wilt linken?
+    Dit overschrijft het lokale instantiebestand {file} met het globale {file}.
+    Weet je zeker dat je het wilt linken?
   linkFileTitle: Weet je zeker dat je {file} wilt linken?
   mcOptions: Minecraft Opties
   mcOptionsHint: Extra Minecraft startargumenten
@@ -534,9 +509,10 @@ instanceInstallSkip:
   skip: Overslaan
   title: Potentieel beschadigde bestandsbron
   warning: >-
-    Sommige bestanden zijn meerdere keren gedownload met niet-overeenkomende checksum. Dit kan
-    komen doordat de originele checksum onjuist is. Controleer dit aub. Als
-    je bevestigt dat de huidige bestanden geldig zijn, kun je de validatiecheck overslaan.
+    Sommige bestanden zijn meerdere keren gedownload met niet-overeenkomende
+    checksum. Dit kan komen doordat de originele checksum onjuist is. Controleer
+    dit aub. Als je bevestigt dat de huidige bestanden geldig zijn, kun je de
+    validatiecheck overslaan.
 instanceLauncher:
   createNew: Nieuwe instantie maken
   search: Zoek instanties...
@@ -545,8 +521,8 @@ instanceLauncher:
 instanceSetting:
   disableAuthlibInjector: Schakel authlib injector uit
   disableAuthlibInjectorDescription: >-
-    Als je een skinsysteem van derden gebruikt. De authlib injector kan je helpen
-    om de skin in de game weer te geven.
+    Als je een skinsysteem van derden gebruikt. De authlib injector kan je
+    helpen om de skin in de game weer te geven.
   disableElyByAuthlib: Schakel ely.by's authlib vervanging uit
   disableElyByAuthlibDescription: >-
     Ely.by heeft een unieke authlib vervanging om skins universeel in elke
@@ -558,32 +534,28 @@ instanceSetting:
   showLog: Toon Minecraft Log
   showLogHint: Dit opent een venster om Minecraft-log te streamen nadat de game is gestart
 instanceTemplate:
-  curseforge: Dit is een Curseforge modpack
   ftb: Dit is een FTB modpack
-  importing: Sjabloon importeren
-  mcbbs: Dit is een MCBBS modpack
-  modpack: Dit is een ruw modpack
-  modrinth: Dit is een Modrinth modpack
   preview: Modpack voorbeeld
-  title: Sjablooninstelling
 instanceUpdate:
   basic: Instelling update
   files: Bestand updates
   loaderChanged: >-
     De modloader van deze instantie is gewijzigd. De oude modloader is
     {modloader}, en de nieuwe modloader is {newModloader}.
-  summary: Voeg {add} bestanden toe. Verwijder {remove} bestanden. Behoud {keep} bestanden.
+  summary: >-
+    Voeg {add} bestanden toe. Verwijder {remove} bestanden. Behoud {keep}
+    bestanden.
   title: Instantie bijwerken
   update: Start Update
 instances:
   add: Game aanmaken
   addCurseForgeDescription: >-
-    Importeren uit curseforge datamap. Je moet de curseforge root
-    datamap selecteren.
+    Importeren uit curseforge datamap. Je moet de curseforge root datamap
+    selecteren.
   addDescription: Maak een nieuwe instantie vanaf nul
   addMMCDescription: >-
-    Importeer bestaande MultiMC instantie. Je moet de datamap van
-    MultiMC selecteren.
+    Importeer bestaande MultiMC instantie. Je moet de datamap van MultiMC
+    selecteren.
   addManually: Handmatig aanmaken
   addModrinthDescription: >-
     Importeer bestaande Modrinth instantie. Je moet de Modrinth root datamap
@@ -606,8 +578,8 @@ instances:
   loadingFiles: Modpack-bestanden laden
   refreshServers: Servers verversen
 items:
-  count: "{count} items"
-  total: "{total} totaal"
+  count: '{count} items'
+  total: '{total} totaal'
 java:
   allocatedLong: Gebruik systeemstandaard java
   allocatedShort: Auto Toegewezen
@@ -624,7 +596,7 @@ java:
   modifyInstance: Wijzig Java Pad
   noMemory: Geheugengebruik niet beperken
   refresh: Ververs Lokale Java
-  systemMemory: "Systeem Vrij Geheugen: {free} / {total}"
+  systemMemory: 'Systeem Vrij Geheugen: {free} / {total}'
 labyMod:
   disable: Schakel LabyMod uit
   empty: LabyMod ondersteunt huidige Minecraft niet
@@ -636,50 +608,57 @@ launch:
   launch: Starten
   launchAnyway: Toch starten
 launchBlocked:
-  ignore: Geforceerd starten
   launchBadVersion:
-    description: De versie {version} json is kapot. Misschien deze versie opnieuw installeren?
+    description: >-
+      De versie {version} json is kapot. Misschien deze versie opnieuw
+      installeren?
     title: Slechte Versie JSON
   launchGeneralException:
     description: Enkele fouten zorgden ervoor dat het starten mislukte.
     title: Starten mislukt
   launchInvalidJavaPath:
     description: >-
-      De geselecteerde java ontbreekt of is ongeldig. Selecteer een nieuwe. <span
-      class="highlight"> {javaPath} </span>
+      De geselecteerde java ontbreekt of is ongeldig. Selecteer een nieuwe.
+      <span class="highlight"> {javaPath} </span>
     title: Ongeldig Java Pad
   launchJavaNoPermission:
     description: >-
-      De launcher heeft geen toestemming om de java <span
-      class="highlight"> {javaPath} </span> uit te voeren. Wijzig de rechten van het
-      java-bestand of verhoog de rechten van de launcher.
+      De launcher heeft geen toestemming om de java <span class="highlight">
+      {javaPath} </span> uit te voeren. Wijzig de rechten van het java-bestand
+      of verhoog de rechten van de launcher.
     title: Geen toestemming om te starten
   launchNoProperJava:
     description: >-
-      Er kan geen geschikte java worden geselecteerd om de game te starten. ({javaPath} is
-      ongeldig?)
+      Er kan geen geschikte java worden geselecteerd om de game te starten.
+      ({javaPath} is ongeldig?)
     title: Geen geschikte java gevonden
   launchNoVersionInstalled:
-    description: Kan versie <span class="highlight">{version}</span> niet oplossen om te starten.
+    description: >-
+      Kan versie <span class="highlight">{version}</span> niet oplossen om te
+      starten.
     title: Geen versie geselecteerd
   launchSpawnProcessFailed:
     description: >-
-      Controleer je java, of geef meer rechten aan de launcher en
-      probeer opnieuw. Als dit nog steeds niet werkt, neem contact op met de ontwikkelaars.
+      Controleer je java, of geef meer rechten aan de launcher en probeer
+      opnieuw. Als dit nog steeds niet werkt, neem contact op met de
+      ontwikkelaars.
     title: Starten van gameproces mislukt
   launchUserStatusRefreshFailed:
     description: Kan huidige geselecteerde gebruikerstatus niet verversen.
     title: Gebruikerstatus valideren mislukt
   unexpectedText: >-
-    Dit is onverwacht. Je kunt de launcher herstarten om het probleem te verminderen.
-    Neem contact op met de auteur als dit probleem zich opnieuw voordoet.
+    Dit is onverwacht. Je kunt de launcher herstarten om het probleem te
+    verminderen. Neem contact op met de auteur als dit probleem zich opnieuw
+    voordoet.
   userAcquireMicrosoftTokenFailed: >-
-    Microsoft token verkrijgen mislukt. Probeer opnieuw of controleer je Microsoft
-    account.
-  userCheckGameOwnershipFailed: Controleren van Minecraft-eigendom mislukt. Probeer opnieuw of controleer je netwerk.
+    Microsoft token verkrijgen mislukt. Probeer opnieuw of controleer je
+    Microsoft account.
+  userCheckGameOwnershipFailed: >-
+    Controleren van Minecraft-eigendom mislukt. Probeer opnieuw of controleer je
+    netwerk.
   userExchangeXboxTokenFailed: >-
-    Xbox token inwisselen van Microsoft token mislukt. Probeer opnieuw of controleer
-    je netwerk.
+    Xbox token inwisselen van Microsoft token mislukt. Probeer opnieuw of
+    controleer je netwerk.
   userLoginMinecraftByXboxFailed: >-
     Inloggen Minecraft met xbox token mislukt. Probeer opnieuw of controleer je
     netwerk.
@@ -688,11 +667,11 @@ launchFailed:
   description: Er is geen crashrapport. Dit is de foutlog en het laatste logboek.
   elyByAuthlib:
     description: >-
-      De Ely.by authlib vervanging werd gebruikt voor Minecraft versie {version},
-      maar deze versie is mogelijk niet volledig compatibel.
+      De Ely.by authlib vervanging werd gebruikt voor Minecraft versie
+      {version}, maar deze versie is mogelijk niet volledig compatibel.
     suggestion: >-
-      Je kunt Ely.by's authlib vervanging uitschakelen in de instantie-instellingen om
-      dit probleem te voorkomen.
+      Je kunt Ely.by's authlib vervanging uitschakelen in de
+      instantie-instellingen om dit probleem te voorkomen.
     title: Ely.by Authlib Compatibiliteitsprobleem
   failedToLaunch: Starten mislukt
   latestLog: Laatste Log
@@ -705,9 +684,9 @@ launchPreExecuteCommandFailed:
 launchStatus:
   assigningMemory: Geheugen toewijzen
   elyByWarning: >-
-    Ely.by authlib vervanging is ingeschakeld. Sommige Minecraft-versies zijn mogelijk niet
-    compatibel en kunnen crashen. Je kunt het uitschakelen in instantie-instellingen als
-    er problemen optreden.
+    Ely.by authlib vervanging is ingeschakeld. Sommige Minecraft-versies zijn
+    mogelijk niet compatibel en kunnen crashen. Je kunt het uitschakelen in
+    instantie-instellingen als er problemen optreden.
   exit: Game afsluiten?
   injectingAuthLib: AuthLib van derden opzetten
   launching: Starten...
@@ -726,8 +705,8 @@ localVersion:
   auto: Automatisch berekend
   delete: Verwijder Lokale Versie
   deleteDescription: >-
-    Deze operatie verwijdert de lokale versie json & jar. Je moet het
-    opnieuw downloaden als je het weer wilt gebruiken.
+    Deze operatie verwijdert de lokale versie json & jar. Je moet het opnieuw
+    downloaden als je het weer wilt gebruiken.
   empty: Geen versie geïnstalleerd
   hint: Start direct een specifieke lokale versie
   refresh: Versies verversen
@@ -753,28 +732,29 @@ login:
   userRelogin: Gebruikerstoegangstoken is verlopen. Log opnieuw in!
 loginError:
   acquireMicrosoftTokenFailed: >-
-    Microsoft token verkrijgen mislukt. Dit kan een netwerkprobleem zijn. Probeer
-    het opnieuw.
+    Microsoft token verkrijgen mislukt. Dit kan een netwerkprobleem zijn.
+    Probeer het opnieuw.
   badNetworkOrServer: >-
     Controleer je netwerkverbinding! Of misschien is de authenticatieserver
     down!
   checkOwnershipFailed: Game-eigendom controleren mislukt. Probeer het opnieuw.
   connectionReset: Inloggen mislukt omdat verbinding is gereset door server
-  fetchMinecraftProfileFailed: "Minecraft-profiel ophalen mislukt: {reason}"
+  fetchMinecraftProfileFailed: 'Minecraft-profiel ophalen mislukt: {reason}'
   illegalEmail: E-mail moet geldig zijn
   invalidCredentials: Ongeldige inloggegevens. Ongeldige gebruikersnaam of wachtwoord.
   loginMinecraftByXboxFailed: >-
     Minecraft token inwisselen via Xbox token mislukt. Zorg ervoor dat je
     Minecraft in Xbox hebt, of probeer opnieuw.
   loginXboxAgeRestricted: >-
-    Inloggen Xbox mislukt vanwege leeftijdskwestie. Zorg ervoor dat de leeftijd is ingesteld
-    voor je Microsoft-account en dat de leeftijd boven de 18 is.
+    Inloggen Xbox mislukt vanwege leeftijdskwestie. Zorg ervoor dat de leeftijd
+    is ingesteld voor je Microsoft-account en dat de leeftijd boven de 18 is.
   loginXboxFailed: >-
     Inloggen Xbox via Microsoft token mislukt. Zorg ervoor dat je een
-    onafhankelijk Xbox-account hebt bij je Microsoft-account. Probeer het opnieuw.
+    onafhankelijk Xbox-account hebt bij je Microsoft-account. Probeer het
+    opnieuw.
   noProfileForNewUser: >-
-    Geen gameprofiel gevonden! Als je een nieuwe Minecraft-gebruiker bent, log dan ten minste
-    één keer in op de officiële Minecraft-launcher.
+    Geen gameprofiel gevonden! Als je een nieuwe Minecraft-gebruiker bent, log
+    dan ten minste één keer in op de officiële Minecraft-launcher.
   requestFailed: Inloggen mislukt, we weten de exacte reden niet. Probeer opnieuw.
   requireEmail: E-mail is verplicht
   requirePassword: Wachtwoord is verplicht
@@ -794,7 +774,6 @@ me:
   viewByDate: Bekijk op datum
   viewByFolder: Bekijk op map
 minecraftVersion:
-  empty: Kan Minecraft-versies niet laden
   name: Minecraft-versie
   release: Release
   showAlpha: Toon Snapshot
@@ -816,12 +795,12 @@ mod:
   description: Beschrijving
   disableAll: Alles uitschakelen
   dropHint: Sleep mod's .jar/.litemod hierheen om te importeren.
-  duplicatedDetected: "{count} gedupliceerde mods"
+  duplicatedDetected: '{count} gedupliceerde mods'
   duplicatedDetectedDescription: >-
-    Mods gevonden met dezelfde mod id maar verschillende bestanden. Dit kan Minecraft
-    laten crashen. Selecteer het bestand dat je wilt behouden.
+    Mods gevonden met dezelfde mod id maar verschillende bestanden. Dit kan
+    Minecraft laten crashen. Selecteer het bestand dat je wilt behouden.
   enableAll: Alles inschakelen
-  enabled: "{count} Mods ingeschakeld"
+  enabled: '{count} Mods ingeschakeld'
   filter: Filter Mods
   filterDisabled: Filter Uitgeschakeld
   group: Groeperen
@@ -833,18 +812,21 @@ mod:
   incompatible: Incompatibele Mod.
   incompatibleHint: Toon Incompatibel
   incompatibleHintDescription: >-
-    Sommige mod-afhankelijkheden ontbreken mogelijk. Of sommige afhankelijkheidsversies
-    komen niet overeen.
+    Sommige mod-afhankelijkheden ontbreken mogelijk. Of sommige
+    afhankelijkheidsversies komen niet overeen.
   installed: Geïnstalleerd
   license: Licentie
   links: Links
   manage: Beheren
-  manageHint: Selecteer een mod uit de lijst om details, versies en installatieopties te bekijken.
+  manageHint: >-
+    Selecteer een mod uit de lijst om details, versies en installatieopties te
+    bekijken.
   maybeCompatible: Misschien Compatibel.
-  modloader: Mod Loader
-  modloaderSelectHint: De mod ondersteunt de volgende mod loaders. Selecteer er een om te installeren.
+  modloaderSelectHint: >-
+    De mod ondersteunt de volgende mod loaders. Selecteer er een om te
+    installeren.
   modloaderSelectNotSupported: Niet gevonden {modloader} voor Minecraft {minecraft}
-  mods: "{count} Mods"
+  mods: '{count} Mods'
   name: Mod | Mods
   newFolder: Nieuwe Map
   noGroupsFound: Geen groepen gevonden
@@ -867,7 +849,7 @@ mod:
   switchDefaultSource: Standaard Mod Bron
   syncGroupRules: Sla groepsregels op
   technical: Technische Informatie
-  toUpdate: "{count} updates"
+  toUpdate: '{count} updates'
   ungroup: Degroeperen
   updateAt: Bijgewerkt
   versions: Versies
@@ -882,15 +864,15 @@ modFilter:
   unusedOnly: Toon alleen mods met ongebruikte bibliotheken
 modInstall:
   archived: >-
-    {name} is gearchiveerd. {name} ontvangt geen verdere updates tenzij
-    de auteur besluit het project uit het archief te halen.
+    {name} is gearchiveerd. {name} ontvangt geen verdere updates tenzij de
+    auteur besluit het project uit het archief te halen.
   autoUpgrade:
     description: >-
       Je hebt de Minecraft-versie gewijzigd. Wil je compatibele mods automatisch
       updaten naar versies die overeenkomen met Minecraft {version}?
-    "no": Overslaan
+    'no': Overslaan
     title: Mods updaten?
-    "yes": Mods updaten
+    'yes': Mods updaten
   checkDependencies: Controleer Afhankelijkheden
   checkUpgrade: Controleer Mods Update
   checkedDependencies: Gecontroleerde Afhankelijkheden
@@ -932,14 +914,16 @@ modified:
   unsaved: Je wijziging is niet opgeslagen!
 modpack:
   author: Aueurnaam
-  authorHint: Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen (Curseforge)
+  authorHint: >-
+    Dit kan worden gebruikt om een geëxporteerd modpack te ondertekenen
+    (Curseforge)
   delete:
     hint: Dit verwijdert het modpack {name} met zijn metadata. Weet je het zeker?
     title: Verwijder het Modpack
   description: Beschrijving
   descriptionHint: >-
-    Algemene beschrijving voor je modpack. Kan worden gebruikt voor exporteren als
-    curseforge modpack.
+    Algemene beschrijving voor je modpack. Kan worden gebruikt voor exporteren
+    als curseforge modpack.
   dropHint: Sleep modpack zip hierheen om te importeren
   emitCurseforge: Exporteer Curseforge Modpack
   emitMcbbs: Exporteer MCBBS Modpack
@@ -1110,7 +1094,7 @@ modrinth:
     name: Projecttype
     resourcePack: Resource Pack
     shader: Shader
-  projects: "{count} projecten"
+  projects: '{count} projecten'
   quickSearch: Zoek {title}
   searchText: Zoeken
   serverSide: Server Side
@@ -1128,15 +1112,12 @@ modrinth:
   wikiUrl: Wiki
 modrinthCard:
   currentVersion: Huidige Versie
-  projectHint: >
-    Deze instantie is gemaakt door Modrinth modpack van <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Schakel relay-server in
   allowTurnHint: >-
-    Sta relay-server toe als je geen verbinding kunt maken met je vriend. Echter, gebruik van
-    relay-server kan je verbinding vertragen. Gebruik het met voorzichtigheid.
+    Sta relay-server toe als je geen verbinding kunt maken met je vriend.
+    Echter, gebruik van relay-server kan je verbinding vertragen. Gebruik het
+    met voorzichtigheid.
   complete: Voltooid
   confirm: Bevestigen
   connections: Verbindingen
@@ -1145,50 +1126,53 @@ multiplayer:
   copyGroupToFriendHint: Laat je vrienden lid worden van de groep met deze id
   copyLocalHint: >
     "Kopieer de lokale SDP-tekst en stuur deze naar je partner en laat je
-    partner deze tekst invoeren in de join verbinding <span>Een token kan slechts
-    voor <span style="color: red; font-weight: bold;">één peer</span> gebruikt worden! Je kunt
-    niet hetzelfde token naar meerdere peers sturen!</span> <br> <span class="hint-text"
-    style="font-style: italic;">Als je meerdere peers moet verbinden, moet je
-    <span style="font-weight: bold; color: rgba(245, 158,
-    11)">meerdere</span> verbindingen maken.</span>"
+    partner deze tekst invoeren in de join verbinding <span>Een token kan
+    slechts voor <span style="color: red; font-weight: bold;">één peer</span>
+    gebruikt worden! Je kunt niet hetzelfde token naar meerdere peers
+    sturen!</span> <br> <span class="hint-text" style="font-style: italic;">Als
+    je meerdere peers moet verbinden, moet je <span style="font-weight: bold;
+    color: rgba(245, 158, 11)">meerdere</span> verbindingen maken.</span>"
   createLocalToken: Maak Lokaal Token
   currentIpTitle: Gedetecteerd Openbaar IP
-  currentNatTitle: "Huidig netwerk (NAT):"
+  currentNatTitle: 'Huidig netwerk (NAT):'
   difficultyLevelHint: De moeilijkheidsgraad om een verbinding te maken
   disconnect: Verbinding verbreken
-  disconnectDescription: Weet je zeker dat je de verbinding met gebruiker {user}({id}) wilt verbreken?
+  disconnectDescription: >-
+    Weet je zeker dat je de verbinding met gebruiker {user}({id}) wilt
+    verbreken?
   disconnected: verbonden verbroken
   enterRemoteToken: Voer Remote Token In
   enterRemoteTokenHint: >-
-    Zodra je partner jouw token invoert, moet jij zijn token invoeren in het tekstvak
-    hieronder. Klik op bevestigen om te verbinden.
+    Zodra je partner jouw token invoert, moet jij zijn token invoeren in het
+    tekstvak hieronder. Klik op bevestigen om te verbinden.
   exposedPortDescription: De poort die je openstelt voor andere peers
   exposedPorts: Doorgestuurde Poorten
   gatheringIce: >
-    "Wacht tot de ICE-server genoeg informatie heeft verzameld over je
-    netwerk. Als je ongeduldig bent en er is genoeg informatie, kun je de
-    huidige SDP alvast aan de andere partij geven en op Volgende klikken Stuur het
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
-    >Lokaal Token</span> naar je partner, je partner voert jouw token in bij de <span
+    "Wacht tot de ICE-server genoeg informatie heeft verzameld over je netwerk.
+    Als je ongeduldig bent en er is genoeg informatie, kun je de huidige SDP
+    alvast aan de andere partij geven en op Volgende klikken Stuur het <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold" >Lokaal
+    Token</span> naar je partner, je partner voert jouw token in bij de <span
     class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
     Verbinding </span> sectie. <br> De ICE-server heeft mogelijk even nodig om
-    je info te verzamelen om een <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">Lokaal token</span> te maken.<br> Je hoeft niet te wachten
-    tot de ICE-status voltooid is. Als het token hieronder ongewijzigd blijft, kun je
-    het kopiëren en naar je partner sturen."
+    je info te verzamelen om een <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold">Lokaal token</span> te maken.<br> Je
+    hoeft niet te wachten tot de ICE-status voltooid is. Als het token hieronder
+    ongewijzigd blijft, kun je het kopiëren en naar je partner sturen."
   groupId: Groep Id
   illegalTokenDescription: Illegaal token, zorg ervoor dat het token van je partner correct is
   initiateConnection: Verbinding Initiëren
   inviteLink: Uitnodigingslink
   joinConnection: >-
-    Als je partner al een verbinding heeft geïnitieerd, moet jij Verbinden (Join Connection).
+    Als je partner al een verbinding heeft geïnitieerd, moet jij Verbinden (Join
+    Connection).
   joinManual: Deelnemen
   joinOrCreateGroup: Deelnemen/Maak Groep
   joinOrCreateGroupHint: Krijg groep id van je vrienden of maak een groep
   kernel: P2P Kernel
   kernelDescription: >-
-    Gebruik ofwel native WebRTC of node-datachannel. Schakel dit alleen om als je p2p
-    verbinding soms het launcher-venster laat crashen.
+    Gebruik ofwel native WebRTC of node-datachannel. Schakel dit alleen om als
+    je p2p verbinding soms het launcher-venster laat crashen.
   leaveGroup: Groep verlaten
   localToken: Lokaal Token
   manualConnect: Handmatig Verbinden
@@ -1225,12 +1209,11 @@ natType:
 neoForgedVersion:
   disable: NeoForged uitschakelen
   empty: NeoForged ondersteunt {version} niet
-  name: NeoForged
 news:
   name: Nieuws
   readMore: Lees Meer
 next: Volgende
-"no": "Nee"
+'no': Nee
 ok: OK
 optifineVersion:
   disable: Optifine uitschakelen
@@ -1258,7 +1241,7 @@ presence:
   curseforge: CurseForge bekijken
   curseforgeProject: Bekijkt {name} in curseforge
   instance: Idle in Instantie {instance}
-  instanceSetting: "Instantie-instelling bewerken: {instance}"
+  instanceSetting: 'Instantie-instelling bewerken: {instance}'
   mod: Mods bekijken in {instance}
   modrinth: Modrinth bekijken
   modrinthProject: Bekijkt {name} in Modrinth
@@ -1283,11 +1266,11 @@ resourcepack:
   defaultDescription: De standaard look en feel van Minecraft
   delete:
     content: >-
-      Dit verwijdert het resourcepack-bestand van de schijf, en we kunnen dit niet ongedaan maken.
-      Weet je zeker dat je dit wilt doen?
+      Dit verwijdert het resourcepack-bestand van de schijf, en we kunnen dit
+      niet ongedaan maken. Weet je zeker dat je dit wilt doen?
     title: Verwijder het resourcepack
   dropHint: Sleep Resourcepack map/zip hierheen om te importeren.
-  enable: "{count} resourcepacks ingeschakeld"
+  enable: '{count} resourcepacks ingeschakeld'
   import: Importeer Resourcepack
   incompatible: >-
     Incompatibel Resourcepack formaat({format}). Past in {accept}. Huidig
@@ -1299,7 +1282,7 @@ resourcepack:
   noPacks: Geen resourcepacks gevonden
   searchHint: Zoek naar resourcepacks op Modrinth en CurseForge
   searchOnCurseforge: Zoek {name} in curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Zoek en selecteer resourcepack
   selected: Geselecteerde Resourcepacks
   shared: Instantie gebruikt gedeelde resourcepack-map
@@ -1320,8 +1303,8 @@ save:
     cancel: Annuleren
     confirm: Start Kopiëren
     description: >-
-      Je kunt een save naar deze instantie uitrollen vanuit andere instanties, of vanuit beheerde
-      bronnen (curseforge)
+      Je kunt een save naar deze instantie uitrollen vanuit andere instanties,
+      of vanuit beheerde bronnen (curseforge)
     from: Van {src}
     fromProfile: Van Andere Instanties
     fromResource: Van Beheerde Bronnen
@@ -1329,8 +1312,8 @@ save:
   createNew: Maak Nieuwe Wereld
   createdWorlds: Je hebt {count} werelden
   deleteHint: >-
-    Deze operatie kan niet ongedaan worden gemaakt. Je verliest de save-gegevens voorgoed. Weet
-    je zeker dat je deze save wilt verwijderen?
+    Deze operatie kan niet ongedaan worden gemaakt. Je verliest de save-gegevens
+    voorgoed. Weet je zeker dat je deze save wilt verwijderen?
   deleteTitle: Verwijder de Save
   detail: Meer Info
   difficulty: Moeilijkheidsgraad
@@ -1351,12 +1334,12 @@ save:
   loadMore: Laad Meer Werelden
   localOnly: Alleen Lokale Saves
   localOnlyHint: >-
-    Wereld-saves worden lokaal op je computer opgeslagen en zijn niet beschikbaar via
-    online markten. Je kunt je saves importeren, exporteren en beheren in het
-    Geïnstalleerd tabblad.
+    Wereld-saves worden lokaal op je computer opgeslagen en zijn niet
+    beschikbaar via online markten. Je kunt je saves importeren, exporteren en
+    beheren in het Geïnstalleerd tabblad.
   manage: Beheer Saves
   mapError: Kaartfout
-  mapInfo: "Interactieve 3D wereldvoorbeeld:"
+  mapInfo: 'Interactieve 3D wereldvoorbeeld:'
   mapLoaded: Kaart Geladen
   mapPreview: Kaartvoorbeeld
   name: Save | Saves
@@ -1399,7 +1382,8 @@ server:
     bestanden te genereren.
   exportOption: Server Exportopties
   exportSSHAuthenticationFailed: >-
-    Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of privésleutel.
+    Alle authenticatiemethoden mislukt. Controleer gebruikersnaam/wachtwoord of
+    privésleutel.
   exportSSHOptions: SSH Opties
   exportSSHPrivateKeyPath: SSH Privésleutel Pad
   exportSSHRemotePath: Remote Server Pad
@@ -1435,21 +1419,15 @@ setting:
   advancedJavaOptions: Geavanceerde Java Opties
   advancedSettings: Geavanceerde Instellingen
   advancedSettingsHint: Gevarenzone - reset of beheer launcherdata
-  allowPrerelease: Download Prerelease
-  allowPrereleaseDescription: Prerelease kan instabiel zijn
   apiSets:
     auto: Auto (Bepaal door netwerk)
     official: Officieel (Mojang)
   appearance: Uiterlijk
   appearanceDescription: Pas het uiterlijk van de launcher aan
   appxUpdateHint: >-
-    De launcher zal installer downloaden en uitvoeren. Als popup installer mislukte,
-    voer het handmatig uit.
+    De launcher zal installer downloaden en uitvoeren. Als popup installer
+    mislukte, voer het handmatig uit.
   authenticationSettings: Authenticatie
-  autoDownload: Automatisch Downloaden
-  autoDownloadDescription: Automatisch Update Downloaden indien Beschikbaar
-  autoInstallOnAppQuit: Auto-installeren
-  autoInstallOnAppQuitDescription: Auto-installeer de Update bij Afsluiten App
   backdropBlur: Achtergrondvervaging
   backgroundColorAbove: Toon achtergrondkleur als overlay
   backgroundColorAboveDescription: Dit laat de achtergrondkleur boven de achtergrondafbeelding of video zien.
@@ -1525,11 +1503,11 @@ setting:
     title: Alle Instanties
   instanceTheme:
     activeDescription: >-
-      Deze instantie gebruikt een aangepast thema. Je kunt het verwijderen om het globale
-      thema te gebruiken.
+      Deze instantie gebruikt een aangepast thema. Je kunt het verwijderen om
+      het globale thema te gebruiken.
     description: >-
-      Schakel een aangepast thema in voor deze instantie. Dit maakt een kopie van het
-      huidige globale thema.
+      Schakel een aangepast thema in voor deze instantie. Dit maakt een kopie
+      van het huidige globale thema.
     name: Instantie Thema
   language: Taal
   languageDescription: De weergavetaal
@@ -1558,8 +1536,8 @@ setting:
     modern: Modern
     name: Details Lay-out
   maunalUpdateHint: >-
-    De versie kan niet automatisch worden bijgewerkt. Download de launcher opnieuw van de
-    website!
+    De versie kan niet automatisch worden bijgewerkt. Download de launcher
+    opnieuw van de website!
   maxSockets: Per Host
   maxSocketsDescription: >-
     Beperk het maximale aantal sockets toegestaan per host of voor alle hosts in
@@ -1596,7 +1574,8 @@ setting:
   resetAllSettings: Reset Alle Instellingen
   resetAllSettingsConfirmMessage: >-
     Dit verwijdert permanent alle instellingen, accounts, instanties, groepen en
-    gecachete gegevens. Deze actie kan niet ongedaan worden gemaakt. Weet je het zeker?
+    gecachete gegevens. Deze actie kan niet ongedaan worden gemaakt. Weet je het
+    zeker?
   resetAllSettingsConfirmTitle: Alle Instellingen Resetten?
   resetAllSettingsHint: Reset launcher naar fabrieksinstellingen (verwijdert alles)
   resetAllSettingsSuccess: Alle instellingen zijn gereset. De launcher zal herstarten.
@@ -1652,8 +1631,9 @@ setting:
   update: Update
   useBmclAPI: Gebruik BMCL API
   useBmclAPIDescription: >-
-    Gebruik BMCLAPI om Minecraft te downloaden wanneer je in het Chinese vasteland bent. (Dit
-    heeft geen invloed als je niet in het Chinese vasteland bent)
+    Gebruik BMCLAPI om Minecraft te downloaden wanneer je in het Chinese
+    vasteland bent. (Dit heeft geen invloed als je niet in het Chinese vasteland
+    bent)
   useProxy: HTTP Proxy
   useProxyDescription: Het proxy serveradres voor het http-verzoek
   viewBackgroundMusic: Bekijk Muziek
@@ -1661,8 +1641,8 @@ setting:
   viewModeTabs: Tabblad Weergave
   windowTranslucent: Venster Doorschijnendheid
   windowTranslucentDescription: >-
-    Schakel doorschijnend venstereffect in (Mica op Windows 11, Acrylic op Windows 10,
-    Vibrancy op macOS). Vereist herstart.
+    Schakel doorschijnend venstereffect in (Mica op Windows 11, Acrylic op
+    Windows 10, Vibrancy op macOS). Vereist herstart.
 settingLabel:
   global: Globaal
   globalHint: Deze instelling volgt de globale instelling
@@ -1670,55 +1650,60 @@ settingLabel:
   localHint: Deze instelling is gewijzigd door huidige instantie
 setup:
   account:
-    description: Log in met je game-account. Als je er geen hebt, kun je het voor nu overslaan.
+    description: >-
+      Log in met je game-account. Als je er geen hebt, kun je het voor nu
+      overslaan.
     name: Voeg Game-account Toe
     skip: Sla voor nu over
   appearance:
-    name: "@:setting.appearance"
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
-      De data root is geen gewone .minecraft map. Omdat XMCL data
-      mapstructuur anders is dan vanilla, raden we niet aan om
-      de gewone .minecraft map als data root te gebruiken.
+      De data root is geen gewone .minecraft map. Omdat XMCL data mapstructuur
+      anders is dan vanilla, raden we niet aan om de gewone .minecraft map als
+      data root te gebruiken.
     drives: Aanbevolen Locaties
     name: Stel Gegevensmap In
   defaultLayoutDescription: >-
-    De standaard lay-out probeert het game "instantie" concept te verbeteren. Het
-    lijkt op apps zoals Discord. Het is ook geïnspireerd door andere game launcher apps
-    zoals Steam, enz.
+    De standaard lay-out probeert het game "instantie" concept te verbeteren.
+    Het lijkt op apps zoals Discord. Het is ook geïnspireerd door andere game
+    launcher apps zoals Steam, enz.
   defaultPath: Standaard Pad
   error:
     badDataRoot: Ongeldige map voor launcherdata! Probeer een andere map!
     exists: >-
-      Geselecteerde map is niet leeg. Het is oké maar zorg ervoor dat je een backup maakt van
-      je data.
+      Geselecteerde map is niet leeg. Het is oké maar zorg ervoor dat je een
+      backup maakt van je data.
     invalidChar: >-
-      Pad bevat ongeldige tekens! Het kan ervoor zorgen dat Minecraft niet start!
-      Gebruik alleen Engelse tekens en symbolen!
+      Pad bevat ongeldige tekens! Het kan ervoor zorgen dat Minecraft niet
+      start! Gebruik alleen Engelse tekens en symbolen!
     noPermission: >-
       Launcher heeft geen toestemming om geselecteerde map te openen! Probeer
       een andere.
     nonDictionary: Geselecteerd pad is een bestand! Selecteer een map!
   focusLayoutDescription: >-
     De focus lay-out is de legacy lay-out van de Minecraft Launcher. Het is
-    ontworpen om te worden gebruikt met een enkele instantie of weinig instanties.
+    ontworpen om te worden gebruikt met een enkele instantie of weinig
+    instanties.
   game:
     description: >-
-      Kies bestaande gamemap (.minecraft) om bestaande bronnen te importeren.
-      Zo kun je snel de mods, resourcepacks, enz. identificeren.
+      Kies bestaande gamemap (.minecraft) om bestaande bronnen te importeren. Zo
+      kun je snel de mods, resourcepacks, enz. identificeren.
     name: Importeer Bestaande Game
   locale:
     description: >-
-      Selecteer je voorkeurstaal als we die hebben! Als je je moedertaal niet ziet
-      en je wilt helpen, kun je onze Github bezoeken om pull requests
-      in te dienen om te vertalen!
+      Selecteer je voorkeurstaal als we die hebben! Als je je moedertaal niet
+      ziet en je wilt helpen, kun je onze Github bezoeken om pull requests in te
+      dienen om te vertalen!
     language: Taal
     name: Stel Taal In
   path: Huidig Pad
-  title: "Welkom bij X Minecraft Launcher. Voordat we beginnen, hebben we je nodig om "
+  title: 'Welkom bij X Minecraft Launcher. Voordat we beginnen, hebben we je nodig om '
 shaderPack:
   deletion: Verwijder Shader Pack
-  deletionHint: Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden gemaakt.
+  deletionHint: >-
+    Dit verwijdert het shaderpack-bestand {path} en kan niet ongedaan worden
+    gemaakt.
   disabled: Uitgeschakelde Shader Packs
   dropHint: Importeer Shader Pack
   empty: Geen shader pack toegewezen
@@ -1756,10 +1741,8 @@ tag:
   createSelected: Maak Tag voor Geselecteerde
   newTag: Nieuwe Tag
 task:
-  available: Beschikbaar
   cancelled: Geannuleerd
   clear: Wis Voltooide Taken
-  compatible: Het {format} formaat is compatibel met {version}
   connection:
     connected: Verbonden
     free: Vrij
@@ -1768,28 +1751,19 @@ task:
     running: Lopende verbinding
     size: totaal aantal
   connections: Netwerkverbindingen
-  delete:
-    content: >-
-      Dit verwijdert het texturepack-bestand van de schijf, en we kunnen het niet
-      herstellen.
-       Weet je zeker dat je het kunt herstellen?
-    title: Verwijder texturepack
-  dropHint: Sleep de map/zip texturen hierheen om te importeren.
+  delete: {}
   empty: Geen Lopende Taken
-  enable: "Texturepacks inbegrepen: {count}"
   failed: Mislukt
-  import: Importeer texturepack
   incompatible: >-
     Incompatibel textstack formaat ({format}). Komt overeen met {accept}. Huidig
     {actual}.
   manage: Texturepack
   manager: Taakbeheer
-  nTaskRunning: "{count} taken zijn actief"
+  nTaskRunning: '{count} taken zijn actief'
   name: Taak | Taken
   pause: Pauze
   searchOnCurseforge: Zoek {name} op curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
-  selected: Favoriete texturepacks
+  searchOnModrinth: '@:mod.searchOnModrinth'
   showFile: Open het texturepack {file} in de map
   showInCurseforge: Toon {name} op curseforge
   unselected: Niet-geselecteerde texturepacks
@@ -1823,55 +1797,57 @@ tutorial:
     javaImportTitle: Importeer java
     javaTitle: Java lijst
   instanceAddDescription: >-
-    Klik op deze knop om bestaande Minecraft instantie te importeren of een nieuwe
-    te maken vanaf nul of modpack.
-  instanceSelectDescription: Klikken op deze knop navigeert naar de pagina om game te selecteren en nieuws te lezen.
+    Klik op deze knop om bestaande Minecraft instantie te importeren of een
+    nieuwe te maken vanaf nul of modpack.
+  instanceSelectDescription: >-
+    Klikken op deze knop navigeert naar de pagina om game te selecteren en
+    nieuws te lezen.
   launchDescription: Klik op deze knop om de game te installeren of te starten.
   mod:
     defaultSourceDescription: >-
-      Je kunt hier de bron van mods details kiezen. Er zijn mods
-      gepubliceerd op zowel Modrinth als Curseforge. Als je wilt wisselen tussen
-      deze twee content providers, kun je de waarde hier wijzigen.
+      Je kunt hier de bron van mods details kiezen. Er zijn mods gepubliceerd op
+      zowel Modrinth als Curseforge. Als je wilt wisselen tussen deze twee
+      content providers, kun je de waarde hier wijzigen.
     defaultSourceTitle: Selecteer Mod Content Bron
     detailDescription: >-
-      Wanneer je een item aan de linkerkant selecteert. Zie je de details van de mod.
-      De inhoud kan komen van Modrinth, Curseforge of geparseerde mod's inhoud.
+      Wanneer je een item aan de linkerkant selecteert. Zie je de details van de
+      mod. De inhoud kan komen van Modrinth, Curseforge of geparseerde mod's
+      inhoud.
     detailTitle: Mod Detail
     listDescription: >-
-      We tonen geïnstalleerde mods wanneer je geen invoer hebt. Je ziet
-      de gezochte mods zodra je invoer een trefwoord of categorie geselecteerd heeft.
+      We tonen geïnstalleerde mods wanneer je geen invoer hebt. Je ziet de
+      gezochte mods zodra je invoer een trefwoord of categorie geselecteerd
+      heeft.
     listTitle: Geïnstalleerde of Zoek Mod
     searchDescription: >-
-      Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met
-      dit zoekvak.
+      Je kunt mods zoeken van Modrinth, Curseforge of je lokale cache met dit
+      zoekvak.
     searchTitle: Zoek Mods
   multiplayer:
     contentDescription: Verbindingen tussen jou en je peers worden hier vermeld.
-    contentTitle: "@:multiplayer.connections"
+    contentTitle: '@:multiplayer.connections'
     groupDescription: >-
-      Je kunt een groep maken of lid worden met andere spelers. De launcher zal proberen
-      P2P verbindingen te maken tussen jou en je vrienden volgens de
-      groep. Je kunt de groepsnaam invoeren die je vrienden hebben gegeven. Of je kunt
-      een unieke naam maken.
+      Je kunt een groep maken of lid worden met andere spelers. De launcher zal
+      proberen P2P verbindingen te maken tussen jou en je vrienden volgens de
+      groep. Je kunt de groepsnaam invoeren die je vrienden hebben gegeven. Of
+      je kunt een unieke naam maken.
     groupTitle: Word lid van een groep
     joinDescription: >-
-      Zodra je een groepsnaam invoert, kun je op deze knop klikken om lid te worden of
-      de groep te maken. Als de groepsnaam leeg is, genereert de launcher een naam
-      voor je.
+      Zodra je een groepsnaam invoert, kun je op deze knop klikken om lid te
+      worden of de groep te maken. Als de groepsnaam leeg is, genereert de
+      launcher een naam voor je.
     manualDescription: >-
-      Als jij of je vriend niet kunnen verbinden met de groep, kun je proberen handmatig
-      het token uit te wisselen door op handmatig verbinden te klikken. Als dat ook mislukte,
-      is het misschien een internetprobleem.
+      Als jij of je vriend niet kunnen verbinden met de groep, kun je proberen
+      handmatig het token uit te wisselen door op handmatig verbinden te
+      klikken. Als dat ook mislukte, is het misschien een internetprobleem.
   recentPlayDescription: >-
-    De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om ook
-    de geïnstalleerde versies en gedownloade modpacks te zien.
-  storePoupularModpackDescription: >-
-    Je ziet de populairste modpacks in Curseforge en Modrinth in deze
-    sectie.
+    De gemaakte games worden hier vermeld. Je kunt de weergaven hier wisselen om
+    ook de geïnstalleerde versies en gedownloade modpacks te zien.
+  storePoupularModpackDescription: Je ziet de populairste modpacks in Curseforge en Modrinth in deze sectie.
   storeSearchCategoryDescription: Je kunt hier ook de categorieën of filters schakelen.
   storeSearchDescription: >-
-    Je kunt Modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om te
-    zoeken.
+    Je kunt Modpacks zoeken door in dit tekstvak in te voeren. Druk op Enter om
+    te zoeken.
   storeSearchResultDescription: Je ziet alle zoekresultaten hier vermeld.
   userAccountDescription: Klik op dit icoon om je Minecraft-account toe te voegen of te beheren.
 universalDrop:
@@ -1886,8 +1862,8 @@ upstream:
   missingModpackMetadata: >-
     De oude modpack metadata niet gevonden.
 
-    Je kunt nog steeds upgraden, maar het resultaat kan fout zijn. Maak aub een backup van je
-    instantiebestanden.
+    Je kunt nog steeds upgraden, maar het resultaat kan fout zijn. Maak aub een
+    backup van je instantiebestanden.
   onlyShowCurrentVersion: Toon Alleen Huidige Minecraft Versie
   update: Update
 user:
@@ -1916,9 +1892,9 @@ userAccount:
 userCape:
   changeTitle: Verander je cape
   description: >-
-    Capes zijn speciale beloningen die spelers kunnen ontgrendelen via verschillende evenementen,
-    campagnes en andere blije gebeurtenissen. Hier kun je kiezen tussen de capes
-    die je momenteel bezit:
+    Capes zijn speciale beloningen die spelers kunnen ontgrendelen via
+    verschillende evenementen, campagnes en andere blije gebeurtenissen. Hier
+    kun je kiezen tussen de capes die je momenteel bezit:
   noCape: Geen Cape
 userService:
   add: Voeg Meer Services Toe
@@ -1974,4 +1950,4 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-"yes": "Ja"
+'yes': Ja

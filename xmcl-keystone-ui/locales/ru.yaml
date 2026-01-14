@@ -2,9 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: >-
     Обнаружено несколько профилей запуска. Пожалуйста, выберите один для
     импорта.
-  configTitle: Конфигурация
   createTitle: Создать экземпляр
-  downloadedNotification: Загружен модпак {name}. Хотите ли вы создать экземпляр для него?
   serverTitle: Введите адрес вашего сервера
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -22,10 +20,9 @@ AppShareInstanceDialog:
     {name}.
   downloadNotifyTitle: Скачивание экземпляра от {user}
   downloadTitle: Скачивание файлов от других пользователей
-  downloadToLocal: Загрузить в текущий экземпляр
   filesToDownload: Выберите файлы для загрузки
   filesToShare: Выберите файлы для обмена
-  instanceShare: "{user} только что поделился текущим экземпляром с вами"
+  instanceShare: '{user} только что поделился текущим экземпляром с вами'
   share: Обмен
   shareNotifyTitle: Обмен экземпляром
   shareTitle: Обмен игровыми файлами с другими игроками
@@ -33,12 +30,7 @@ BaseSettingGeneral:
   title: Общие
 FeedTheBeast:
   search: Поиск в FTB
-FeedTheBeastProject:
-  changelog: Список изменений
-  details: Детали
-  install: Установить {version}
-  overview: Просмотр
-  versions: Версия
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Несовместимая версия Java
   incompatibleJavaHint: Текущая версия Java может быть несовместима с выбранной версией Minecraft!
@@ -46,29 +38,10 @@ HomeJavaIssueDialog:
   missingJavaHint: >-
     Лаунчер не может обнаружить ни одной версии Java на вашем компьютере. Вы
     можете:
-  needDownloadHint: >-
-    Не удаётся найти подходящую версию Java на вашем компьютере. Рекомендуется
-    скачать новую.
-  optionAutoDownload:
-    message: Лаунчер скачает и установит Java из источника Mojang для вас.
-    name: Автоматическая загрузка
-  optionSelectJava:
-    message: >-
-      Возможно, лаунчер не нашёл вашу версию Java. Вы можете указать лаунчеру,
-      где она находится
-    name: Выбрать Java на вашем компьютере
+  optionAutoDownload: {}
+  optionSelectJava: {}
   optionSwitch:
-    disabled: В базе данных не найдена Java {version}!
-    message: Использовать существующую версию Java {version} на вашем компьютере
     name: Переключиться на {version}
-  recommendedVersionHint: Для {version} рекомендуется использовать Java с диапазоном {range}.
-  selectMatchedHint: >-
-    Найдено несколько подходящих локальных версий Java. Вы можете выбрать эти
-    локальные версии.
-  selectSecondaryHint: >-
-    Найдено несколько локальных версий Java, но они могут не подходить для
-    запуска. Вы всё ещё можете использовать их для запуска, но это
-    предупреждение всё ещё будет отображаться.
 HomeLaunchMultiInstanceDialog:
   confirm: Да, запустить
   description: Вы запускаете несколько экземпляров Minecraft. Вы уверены?
@@ -91,10 +64,10 @@ SettingMigrationDialog:
   selectRootDirectory: Выбрать корневой каталог
 add: Добавить
 ago:
-  day: "{duration} день назад | {duration} дней назад"
-  hour: "{duration} час назад | {duration} часов назад"
-  minute: "{duration} минуту назад | {duration} минут назад"
-  second: "{duration} секунду назад | {duration} секунд назад"
+  day: '{duration} день назад | {duration} дней назад'
+  hour: '{duration} час назад | {duration} часов назад'
+  minute: '{duration} минуту назад | {duration} минут назад'
+  second: '{duration} секунду назад | {duration} секунд назад'
 askAICrash:
   copyPrompt: Скопируйте подсказку, чтобы спросить AI
   description: |-
@@ -129,18 +102,11 @@ curseforge:
   file:
     gameVersion: Версия игры
     modLoader: Мод Loader
-  install: Установить
   installTo: Установить в {path}
   installToStorage: Установить в хранилище
   lastUpdate: Дата последнего обновления
-  project:
-    description: Описание
-    files: Файлы
-    images: Изображение
-  recentFiles: Последние файлы
+  project: {}
   releasedDate: Дата релиза
-  search: Поиск
-  totalDownloads: Всего скачиваний
 curseforgeCategory:
   API and Library: API и библиотеки
   Addons: Дополнения
@@ -218,8 +184,8 @@ dataMigration:
     данные.
 delete:
   name: Удалить {name}
-  "no": Нет
-  "yes": Удалить
+  'no': Нет
+  'yes': Удалить
 dependencies:
   embedded: Встраиваемые
   incompatible: Несовместимые
@@ -290,16 +256,16 @@ disk:
   available: Доступно
   used: Использовано
 download: Скачать
-downloadCount: "{count} загрузок"
+downloadCount: '{count} загрузок'
 downloadUpdate: Скачать обновление
 duration:
-  day: "{duration} день | {duration} дней"
-  hour: "{duration} час | {duration} часов"
-  minute: "{duration} минута | {duration} минут"
+  day: '{duration} день | {duration} дней'
+  hour: '{duration} час | {duration} часов'
+  minute: '{duration} минута | {duration} минут'
   name: Удалить {name}
-  "no": Нет
-  second: "{duration} секунда | {duration} секунд"
-  "yes": Да, сэр.
+  'no': Нет
+  second: '{duration} секунда | {duration} секунд'
+  'yes': Да, сэр.
 edit: Изменить
 enable: Включить
 env:
@@ -314,7 +280,7 @@ errors:
     Не удаётся получить файл загрузчика forge. Возможно, у forge новый формат
     файла загрузчика? Обратитесь к разработчикам, если эта проблема будет
     повторяться.
-  BadInstanceType: "Недопустимый экземпляр: {type}"
+  BadInstanceType: 'Недопустимый экземпляр: {type}'
   BodyTimeoutError: Истекло время ожидания ответа сервера
   ChecksumNotMatchError: Контрольная сумма не совпадает! Ожидалась {expect}. Получена {actual}.
   ConnectTimeoutError: Истекло время ожидания соединения с сервером.
@@ -343,11 +309,7 @@ exception:
     Повторите попытку или проверьте свой интернет. Если эта ошибка сохраняется,
     отправьте отчет команда разработчиков.
 existed: Существует
-exportModpackTarget:
-  curseforge: Файл CurseForge
-  github: Файлы GitHub
-  modrinth: Файл Modrinth
-  override: Файл переопределения (Raw)
+exportModpackTarget: {}
 extensions:
   mrpack: Сборка модов Modrinth
   zip: Zip-файл
@@ -410,10 +372,7 @@ gameType:
 help: Справка
 home: Главная
 importModpack:
-  failed: Импорт {modpack} не удался
   name: Импортировать сборку модов
-  success: Импорт {modpack} удался
-importResource: Импортный ресурс
 install: Установить
 installAssets:
   asset: Установить {count} ресурсов
@@ -531,7 +490,7 @@ instanceAge:
   today: Сегодня
 instanceDiscover:
   gameFolder: Откройте {count} папок с играми
-  instanceFolder: "Найдено экземпляров: {count}"
+  instanceFolder: 'Найдено экземпляров: {count}'
 instanceFileOperation:
   add: Добавить
   backup-add: Заменить (создать резервную копию)
@@ -568,14 +527,8 @@ instanceSetting:
   showLog: Показывать журнал Minecraft
   showLogHint: Это откроет окно журнала Minecraft после запуска экземпляра
 instanceTemplate:
-  curseforge: Это сборка модов CurseForge
   ftb: Это сборка модов FTB
-  importing: Импорт шаблонов
-  mcbbs: Это сборка модов MCBBS
-  modpack: Это сырая сборка модов (Raw)
-  modrinth: Это сборка модов Modrinth
   preview: Предварительный просмотр сборки модов
-  title: Настройки шаблона
 instanceUpdate:
   basic: Обновление настроек
   files: Обновление файлов
@@ -619,8 +572,8 @@ instances:
   loadingFiles: Загрузка файлов сборки модов
   refreshServers: Обновить серверы
 items:
-  count: "{count} элементов"
-  total: "{total} всего"
+  count: '{count} элементов'
+  total: '{total} всего'
 java:
   allocatedLong: Использовать системный Java по умолчанию
   allocatedShort: Автоматическое выделение
@@ -637,7 +590,7 @@ java:
   modifyInstance: Изменить путь к Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальный Java
-  systemMemory: "Свободная память системы: {free} / {total}"
+  systemMemory: 'Свободная память системы: {free} / {total}'
 labyMod:
   disable: LabyMod не выбран
   empty: LabyMod не поддерживает текущую версию Minecraft
@@ -649,7 +602,6 @@ launch:
   launch: Запустить
   launchAnyway: Запустить в любом случае
 launchBlocked:
-  ignore: Насильный запуск
   launchBadVersion:
     description: >-
       Файл версии {version} повреждён или отсутствует. Возможно, вам нужно
@@ -715,7 +667,7 @@ launchFailed:
       избежать этой проблемы.
     title: Проблема совместимости Ely.by Authlib
   failedToLaunch: Не удалось запустить запуск
-  latestLog: "Последние логи "
+  latestLog: 'Последние логи '
   title: Игра завершилась с аномальным кодом
 launchPreExecuteCommandFailed:
   description: >-
@@ -782,7 +734,7 @@ loginError:
   badNetworkOrServer: Проверьте соединение с сетью! Возможно, сервер авторизации недоступен!
   checkOwnershipFailed: Не удалось подтвердить владение игрой. Пожалуйста, попробуйте ещё раз.
   connectionReset: Не удалось войти, так как соединение было сброшено сервером
-  fetchMinecraftProfileFailed: "Не удалось получить профиль Minecraft: {reason}"
+  fetchMinecraftProfileFailed: 'Не удалось получить профиль Minecraft: {reason}'
   illegalEmail: Необходим корректный адрес электронной почты
   invalidCredentials: Неверные учётные данные. Неверное имя пользователя или пароль.
   loginMinecraftByXboxFailed: >-
@@ -821,7 +773,6 @@ me:
   recentPlay: Последние игры
   versions: Установленные версии
 minecraftVersion:
-  empty: Невозможно загрузить версии Minecraft
   name: Версия Minecraft
   release: Релиз
   showAlpha: Показать snapshot
@@ -829,7 +780,9 @@ minecraftVersion:
 mod:
   acceptVersion: Принимает {version}
   applyGroupRules: Применить сохраненные правила группировки
+  categories: Категории
   compatible: Совместимый мод.
+  createGroup: Создать группу
   currentVersion: Текущая {current}
   deletion: Удалить мод
   deletionHint: >-
@@ -838,28 +791,21 @@ mod:
     что хотите это сделать?
   deletionRestHint: И ещё {rest} модов...
   denseView: Компактное отображение модов
+  description: Описание
+  disableAll: Отключить все
   dropHint: Перетащите сюда файл мода (.jar/.litemod), чтобы импортировать его.
-  duplicatedDetected: "{count} дублированных модов"
+  duplicatedDetected: '{count} дублированных модов'
   duplicatedDetectedDescription: |-
     Найдены моды с одинаковым идентификатором, но с разными файлами. 
     Это может привести к сбою Minecraft. 
     Пожалуйста, выберите файл, который вы хотите сохранить.
-  enabled: "Всего модов включено: {count}"
   enableAll: Включить все
-  disableAll: Отключить все
+  enabled: 'Всего модов включено: {count}'
   filter: Фильтр модов
   group: Группа вверх
   groupInstalled: Группировать установленные моды
-  selectOrCreateGroup: Выбрать или создать группу
-  searchGroups: Поиск групп...
-  newFolder: Новая папка
-  noGroupsYet: Групп пока нет. Создайте одну!
-  noGroupsFound: Группы не найдены
   groupName: Название группы
   groupNameRequired: Название группы обязательно
-  createGroup: Создать группу
-  categories: Категории
-  links: Ссылки
   hasUpdate: У мода есть новая версия!
   hideIncompatible: Скрыть несовместимые моды
   incompatible: Несовместимый мод.
@@ -867,36 +813,41 @@ mod:
   incompatibleHintDescription: |-
     Некоторые зависимости модов могут отсутствовать. 
     Или некоторые версии зависимостей не совпадают.
+  license: Лицензия
+  links: Ссылки
   manage: Управление
   maybeCompatible: Возможно, совместим.
   modloaderSelectHint: |-
     Мод поддерживает следующие загрузчики модов. 
     Пожалуйста, выберите один для установки.
   modloaderSelectNotSupported: Не найден {modloader} для Minecraft {minecraft}
-  mods: "{count} Модов"
+  mods: '{count} Модов'
   name: Мод | Моды
-  description: Описание
+  newFolder: Новая папка
+  noGroupsFound: Группы не найдены
+  noGroupsYet: Групп пока нет. Создайте одну!
   noModLoaderHint: Не забудьте включить загрузчик модов, чтобы использовать моды!
   openLink: Открыть ссылку на мод {url}
-  search: Поиск модов
-  sourceUrl: Источник
-  technical: Техническая информация
   projectId: ID Проекта
-  license: Лицензия
-  updateAt: Обновлено
-  versions: Версии
-  wikiUrl: Вики
+  search: Поиск модов
+  searchGroups: Поиск групп...
   searchOnCurseforge: Поиск {name} в curseforge
   searchOnMcWiki: Найдите {name} в энциклопедии MC.
   searchOnModrinth: Искать {name} в Модринфе
+  selectOrCreateGroup: Выбрать или создать группу
   showDirectory: Открыть папку с модами
   showFile: Показать путь к файлу мода {file}
   showInCurseforge: Показать мод в curseforge
   showInModrinth: Показать {name} на Modrinth
+  sourceUrl: Источник
   switchDefaultSource: Источник контента модов по умолчанию
   syncGroupRules: Сохранить правила группировки
-  toUpdate: "{count} для обновления"
+  technical: Техническая информация
+  toUpdate: '{count} для обновления'
   ungroup: Негруппинг
+  updateAt: Обновлено
+  versions: Версии
+  wikiUrl: Вики
 modFilter:
   clear: Чистый фильтр
   dependenciesInstallOnly: Только показывать пропущенные моды зависимости
@@ -912,6 +863,13 @@ modInstall:
 
     {name} не будет получать никаких дальнейших обновлений, если автор не решит
     разархивировать проект.
+  autoUpgrade:
+    description: >-
+      Вы изменили версию Minecraft. Хотите автоматически обновить совместимые
+      моды до версий, соответствующих Minecraft {version}?
+    'no': Пропустить
+    title: Обновить моды?
+    'yes': Обновить моды
   checkDependencies: Проверить недостающие зависимости
   checkUpgrade: Проверить обновления для модов
   checkedDependencies: Недостающие зависимости проверены
@@ -920,25 +878,18 @@ modInstall:
   dependencyHint: Установлена ​​другая версия {version}
   display: Дисплей модов
   install: Установить
-  reinstall: Переустановить
   installDependencies: Установить недостающие зависимости
   installHint: Будет установлен файл {file} с зависимостями {dependents}
   installed: Установлен
   noVersionSupported: Мод поддерживает только Minecraft {supported}.
   recommendation: Исследуйте {first} моды в {modrinth} и ​​{curseforge}!
+  reinstall: Переустановить
   removeUnusedLibraries: Удалить неиспользованные моды библиотеков
   search: Результаты поиска
   skipVersion: Пропустите моды с другой версией Minecraft
   source: Источник контента мода
   switch: Переключить версию
   upgrade: Обновить моды
-  autoUpgrade:
-    title: Обновить моды?
-    description: >-
-      Вы изменили версию Minecraft. Хотите автоматически обновить
-      совместимые моды до версий, соответствующих Minecraft {version}?
-    yes: Обновить моды
-    no: Пропустить
 modSearch:
   noLocalModsFound: Локальные моды, соответствующие вашему поиску, не найдены.
   noModsFound: Моды не найдены.
@@ -1131,7 +1082,7 @@ modrinth:
     name: Тип проекта
     resourcePack: Комплект ресурсов
     shader: Шейдер
-  projects: "{count} проекты"
+  projects: '{count} проекты'
   quickSearch: Поиск {title}
   searchText: Поиск
   serverSide: Серверная часть
@@ -1149,11 +1100,6 @@ modrinth:
   wikiUrl: Вики
 modrinthCard:
   currentVersion: Текущая версия
-  projectHint: >-
-    Цей екземпляр створено за допомогою модпакету Modrinth з <code
-    class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{title}</code>
-    (project id:
-          <code class=“rounded p-1” style=“background: rgba(123,123,123,0.2)”>{id}</code>)
 multiplayer:
   allowTurn: Разрешить сервер-ретранслятор
   allowTurnHint: >-
@@ -1177,7 +1123,7 @@ multiplayer:
     11)">несколько</span> соединений.</span>
   createLocalToken: Создать локальный токен
   currentIpTitle: Обнаруженный общедоступный IP
-  currentNatTitle: "Текущая сеть (NAT):"
+  currentNatTitle: 'Текущая сеть (NAT):'
   difficultyLevelHint: Уровень сложности для создания соединения с другими пользователями
   disconnect: Отключиться
   disconnectDescription: Вы уверены, что хотите прервать соединение с пользователем {user}({id})?
@@ -1256,12 +1202,11 @@ natType:
 neoForgedVersion:
   disable: NeoForged не выбран
   empty: NeoForged не поддерживает {version}
-  name: NeoForged
 news:
   name: Новости
   readMore: Подробнее
 next: Далее
-"no": Нет
+'no': Нет
 ok: ОК
 optifineVersion:
   disable: Optifine не выбран
@@ -1289,7 +1234,7 @@ presence:
   curseforge: Просмотр CurseForge
   curseforgeProject: Просмотр {name} в Curseforge
   instance: Неактивен в экземпляре {instance}
-  instanceSetting: "Редактирует настройки экземпляра: {instance}"
+  instanceSetting: 'Редактирует настройки экземпляра: {instance}'
   mod: Просматривает моды в {instance}
   modrinth: Просмотр Modrinth
   modrinthProject: Просматривает {name} в Modrinth
@@ -1318,7 +1263,7 @@ resourcepack:
       восстановить. Вы уверены, что хотите это сделать?
     title: Удалить набор ресурсов
   dropHint: Перетащите сюда папку/zip-архив с набором ресурсов для импорта.
-  enable: "Всего наборов ресурсов выбрано: {count}"
+  enable: 'Всего наборов ресурсов выбрано: {count}'
   import: Импорт ресурс пака
   incompatible: >-
     Несовместимый формат набора ресурсов ({format}). Подходящий {accept}.
@@ -1328,7 +1273,7 @@ resourcepack:
   name: Набор ресурсов | Наборы ресурсов
   searchHint: Поиск набора ресурсов
   searchOnCurseforge: Поиск {name} на CurseForge
-  searchOnModrinth: "@:mod.searchOnModrinth"
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Поиск и выбор пакета ресурсов
   selected: Выбранные наборы ресурсов
   shared: Экземпляр использует общую папку для наборов ресурсов
@@ -1355,7 +1300,7 @@ save:
     fromResource: Из управляемых ресурсов
     title: Импорт мира из управляемого источника
   createNew: Создать новый мир
-  createdWorlds: "Всего миров: {count}"
+  createdWorlds: 'Всего миров: {count}'
   deleteHint: >-
     Эта операция не может быть отменена. Вы навсегда потеряете данные этого
     мира. Вы уверены, что хотите удалить это мир?
@@ -1437,8 +1382,6 @@ serverStatus:
   timeout: §4Вышло время подключения к серверу!
 setting:
   about: О
-  allowPrerelease: Скачать предварительную версию
-  allowPrereleaseDescription: Предварительная версия может быть нестабильной.
   apiSets:
     auto: Автоматически (определяется сетью)
     official: Официальный (Mojang)
@@ -1446,10 +1389,6 @@ setting:
   appxUpdateHint: >-
     Лаунчер скачает и запустит установщик. Если всплывающее окно установщика не
     откроется автоматически, пожалуйста, запустите его вручную.
-  autoDownload: Автоматическая загрузка
-  autoDownloadDescription: Автоматическая загрузка обновлений, если они доступны.
-  autoInstallOnAppQuit: Автоустановка
-  autoInstallOnAppQuitDescription: Автоматическая установка обновлений при выходе из приложения.
   backdropBlur: Фон размытие
   backgroundColorAbove: Показать цвет фона как наложение
   backgroundColorAboveDescription: Это позволит отобразить цвет фона над фоновым эффектом.
@@ -1542,8 +1481,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Эта опция назначает выделенный GPU для процесса Minecraft.
   linuxTitlebar: Нативный заголовок окна
   linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера.
-  windowTranslucent: Прозрачность окна
-  windowTranslucentDescription: Включить эффект полупрозрачного окна (Mica в Windows 11, Acrylic в Windows 10, Vibrancy в macOS). Требуется перезапуск.
   location: Место для хранения файлов лаунчера
   manualUpdateHint: >-
     Версия не может быть обновлена автоматически. Пожалуйста, скачайте пусковую
@@ -1576,6 +1513,27 @@ setting:
   select: Изменить
   showNewsHeader: Показать витрину новостей
   showRoot: Открыть папку
+  sidebarAlign: Выравнивание боковой панели
+  sidebarAlignCenter: Центр
+  sidebarAlignEnd: Конец
+  sidebarAlignHint: Выровнять содержимое боковой панели
+  sidebarAlignStart: Начало
+  sidebarAutoHide: Авто-скрытие боковой панели
+  sidebarAutoHideHint: Скрывать боковую панель автоматически и показывать при наведении
+  sidebarBottom: Снизу
+  sidebarClassic: Классический
+  sidebarLeft: Слева
+  sidebarNotch: Notch
+  sidebarPosition: Положение боковой панели
+  sidebarPositionHint: Выберите, где отображать боковую панель
+  sidebarRight: Справа
+  sidebarScale: Масштаб боковой панели
+  sidebarScaleHint: Отрегулируйте размер боковой панели
+  sidebarSettings: Настройки боковой панели
+  sidebarSettingsHint: Настройте внешний вид и поведение боковой панели
+  sidebarStyle: Стиль боковой панели
+  sidebarStyleHint: Выберите между классическим и современным дизайном Notch
+  sidebarTop: Сверху
   streamerMode: Режим стримера
   streamerModeDescription: >-
     Эта опция скроет вашу личную информацию, такую как электронная почта, в
@@ -1600,27 +1558,10 @@ setting:
   useProxy: HTTP-прокси
   useProxyDescription: Адрес прокси-сервера для http-запроса
   viewBackgroundMusic: Просмотр музыки
-  sidebarSettings: Настройки боковой панели
-  sidebarSettingsHint: Настройте внешний вид и поведение боковой панели
-  sidebarPosition: Положение боковой панели
-  sidebarPositionHint: Выберите, где отображать боковую панель
-  sidebarLeft: Слева
-  sidebarRight: Справа
-  sidebarTop: Сверху
-  sidebarBottom: Снизу
-  sidebarStyle: Стиль боковой панели
-  sidebarStyleHint: Выберите между классическим и современным дизайном Notch
-  sidebarClassic: Классический
-  sidebarNotch: Notch
-  sidebarAlign: Выравнивание боковой панели
-  sidebarAlignHint: Выровнять содержимое боковой панели
-  sidebarAlignStart: Начало
-  sidebarAlignCenter: Центр
-  sidebarAlignEnd: Конец
-  sidebarScale: Масштаб боковой панели
-  sidebarScaleHint: Отрегулируйте размер боковой панели
-  sidebarAutoHide: Авто-скрытие боковой панели
-  sidebarAutoHideHint: Скрывать боковую панель автоматически и показывать при наведении
+  windowTranslucent: Прозрачность окна
+  windowTranslucentDescription: >-
+    Включить эффект полупрозрачного окна (Mica в Windows 11, Acrylic в Windows
+    10, Vibrancy в macOS). Требуется перезапуск.
 settingLabel:
   global: Глобальный
   globalHint: Это настройка будет следовать глобальной настройке.
@@ -1634,7 +1575,7 @@ setup:
     name: Добавить игровую учётную запись
     skip: Пока пропустить
   appearance:
-    name: "@:setting.appearance"
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       Корневая папка не является обычной папкой (.minecraft). Поскольку
@@ -1691,7 +1632,7 @@ shaderPack:
   disabled: Невыбранные наборы шейдеров
   dropHint: Перетащите сюда файл набора шейдеров (.zip)
   empty: Не выделен ни один набор шейдеров
-  enable: "Используется набор шейдеров: {name}"
+  enable: 'Используется набор шейдеров: {name}'
   enabled: Выбранные наборы шейдеров
   manage: Шейдера
   name: Набор шейдеров | Наборы шейдеров
@@ -1725,10 +1666,8 @@ tag:
   createSelected: Создать тег для выбранного
   newTag: Новый тег
 task:
-  available: Доступно
   cancelled: Отменено
   clear: Очистить выполненные задачи
-  compatible: Формат {format} совместим с {version}
   connection:
     connected: Подключён
     free: Бесплатно
@@ -1737,28 +1676,19 @@ task:
     running: Текущее соединение
     size: Общее количество
   connections: Сетевые подключения
-  delete:
-    content: >-
-      Это приведет к удалению файла текстурпака с диска, и мы не сможем его
-      восстановить.
-       Вы уверены, что можете его восстановить?
-    title: Удалить текстурпак
-  dropHint: Перетащите сюда папку/zip текстуру для импорта.
+  delete: {}
   empty: Нет запущенных задач
-  enable: "Включено текстурпаков: {count}"
   failed: Не удалось выполнить
-  import: Импорт текстурпака
   incompatible: >-
     Несовместимый формат текступак ({format}). Соответствующий {accept}. Текущий
     {actual}.
   manage: Текстурпак
   manager: Менеджер задач
-  nTaskRunning: "{count} задач выполняется"
+  nTaskRunning: '{count} задач выполняется'
   name: Задача | Задачи
   pause: Приостановить
   searchOnCurseforge: Искать {name} на curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
-  selected: Избранные текстурпаки
+  searchOnModrinth: '@:mod.searchOnModrinth'
   showFile: Открыть текстурпак {file} в папке
   showInCurseforge: Показать {name} на curseforge
   unselected: Невыбранные текстурпаки
@@ -1822,7 +1752,7 @@ tutorial:
     searchTitle: Поиск модов
   multiplayer:
     contentDescription: Соединения между вами и пользователями будут перечислены здесь.
-    contentTitle: "@:multiplayer.connections"
+    contentTitle: '@:multiplayer.connections'
     groupDescription: >-
       Вы можете создать или присоединиться к группе с другими пользователями.
       Лаунчер попытается создать P2P-соединения между вами и пользователями в
@@ -1903,17 +1833,17 @@ userCape:
 userService:
   add: Добавить ещё один сервис
   authLibInjector: Следуйте рекомендациям инжектора auth-lib
+  authlibInjectorMetadata: Метаданные Authlib-Injector
   baseUrlHint: Базовый URL-адрес вашего пользовательского сервиса
+  homepage: Домашняя страница
+  implementation: Реализация
+  manageServices: Управлять сервисами
+  register: Регистрация
+  server: Сервер
+  skinDomains: Домены скинов
   title: Сторонние сервисы пользователя
   validateHint: Используется для проверки того, что токен пользователя все еще действителен
-  manageServices: Управлять сервисами
-  authlibInjectorMetadata: Метаданные Authlib-Injector
-  server: Сервер
-  implementation: Реализация
   version: Версия
-  skinDomains: Домены скинов
-  homepage: Домашняя страница
-  register: Регистрация
 userServices:
   microsoft:
     account: Аккаунт Microsoft
@@ -1954,4 +1884,4 @@ versionType:
   beta: Бета
   name: Статус
   release: Релиз
-"yes": Да
+'yes': Да

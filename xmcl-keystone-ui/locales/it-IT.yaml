@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: Rilevati più profili di lancio. Selezionane uno da importare.
-  configTitle: Configurazione
   createTitle: Crea gioco
-  downloadedNotification: Il modpack {name} è stato scaricato. Vuoi creare un'istanza per esso?
   serverTitle: Inserisci l'indirizzo del server
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -19,7 +17,6 @@ AppShareInstanceDialog:
     che desideri scaricare.  Verrà inserito nell'istanza corrente {nome}.
   downloadNotifyTitle: Scarica l'istanza da {user}
   downloadTitle: Scarica i file da altri peer
-  downloadToLocal: Scarica nell'istanza corrente
   filesToDownload: Scegli i file da scaricare
   filesToShare: Scegli i file da condividere
   instanceShare: '{user} ha appena condiviso l''istanza corrente con te'
@@ -32,40 +29,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: Cerca in FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Registro delle modifiche
-  details: Dettagli
-  install: Installa {version}
-  overview: Panoramica
-  versions: Versioni
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Java incompatibile
   incompatibleJavaHint: Java corrente potrebbe essere incompatibile con Minecraft selezionato!
   missingJava: Java mancante
   missingJavaHint: 'Il launcher non riesce a rilevare alcun Java nel computer. Puoi:'
-  needDownloadHint: >-
-    Impossibile trovare la versione Java corretta nel computer. Si consiglia di
-    scaricarne una nuova.
-  optionAutoDownload:
-    message: Il launcher scaricherà e installerà Java dalla sorgente Mojang.
-    name: Scarica automaticamente
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Forse il launcher non ha trovato Java. Puoi indicare al launcher dove si
-      trova.
-    name: Seleziona Java nel tuo computer
+  optionSelectJava: {}
   optionSwitch:
-    disabled: Non è stata trovata alcuna versione Java {version} nel database!
-    message: Usa Java {version} esistente nel tuo PC
     name: Passa a {version}
-  recommendedVersionHint: La {version} consiglia di utilizzare Java con range {range}.
-  selectMatchedHint: >-
-    Trovate versioni Java locali corrette. È possibile scegliere queste versioni
-    Java locali.
-  selectSecondaryHint: >-
-    Trovate alcune versioni Java locali, ma potrebbero non essere adatte ai
-    criteri. Puoi comunque usarli per lanciare, ma questo problema persisterà.
 HomeLaunchMultiInstanceDialog:
   confirm: Sì, lancia
   description: Stai lanciando più istanze di Minecraft. Sei sicuro?
@@ -131,18 +105,11 @@ curseforge:
   file:
     gameVersion: Versione gioco
     modLoader: Mod Loader
-  install: Installa
   installTo: Installa in {path}
   installToStorage: Installa in memoria
   lastUpdate: Data ultimo aggiornamento
-  project:
-    description: Descrizione
-    files: File
-    images: Immagini
-  recentFiles: File recenti
+  project: {}
   releasedDate: Data di rilascio
-  search: Cerca
-  totalDownloads: Download totali
 curseforgeCategory:
   API and Library: API e librerie
   Addons: Integratori
@@ -321,11 +288,7 @@ exception:
       Riprova o controlla la tua rete. Se il problema persiste, invia un report
       allo sviluppatore team.
 existed: Esistito
-exportModpackTarget:
-  curseforge: File Curseforge
-  github: File Github
-  modrinth: File Modrinth
-  override: File di override (Raw)
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth Modpack
   zip: File Zip
@@ -383,10 +346,7 @@ gameType:
 help: Aiuto
 home: Casa
 importModpack:
-  failed: Importa {modpack} non riuscito
   name: Importa Modpack
-  success: Importa {modpack} riuscito
-importResource: Importa risorsa
 install: Installa
 installAssets:
   asset: Installa {count} risorse
@@ -545,14 +505,8 @@ instanceSetting:
     Verrà visualizzata una finestra per trasmettere il registro di Minecraft
     dopo l'avvio del gioco
 instanceTemplate:
-  curseforge: Questo è un modpack Curseforge
   ftb: Questo è un modpack FTB
-  importing: Importazione modello
-  mcbbs: Questo è un modpack MCBBS
-  modpack: Questo è un modpack raw
-  modrinth: Questo è un modpack Modrinth
   preview: Anteprima modpack
-  title: Impostazioni template
 instanceUpdate:
   basic: Aggiornamento impostazioni
   files: Aggiornamento file
@@ -624,7 +578,6 @@ launch:
   launch: Avvia
   launchAnyway: Avvia comunque
 launchBlocked:
-  ignore: Forza avvio
   launchBadVersion:
     description: >-
       Il file json della versione {version} è danneggiato. Forse reinstallare
@@ -796,7 +749,6 @@ me:
   recentPlay: Giocato di recente
   versions: Versioni installate
 minecraftVersion:
-  empty: Impossibile caricare le versioni di Minecraft
   name: Versione Minecraft
   release: Release
   showAlpha: Mostra snapshot
@@ -805,6 +757,7 @@ mod:
   acceptVersion: Accetta {version}
   applyGroupRules: Applicare le regole di raggruppamento salvate
   compatible: Mod compatibile.
+  createGroup: Crea gruppo
   currentVersion: Versione corrente {current}
   deletion: Elimina mod
   deletionHint: >-
@@ -813,26 +766,20 @@ mod:
     volerlo fare?
   deletionRestHint: E {rest} altre Mods...
   denseView: Vista densa
+  disableAll: Disabilita tutto
   dropHint: Rilascia il file .jar/.litemod della mod qui per importarlo.
   duplicatedDetected: '{count} mod sono state duplicate'
   duplicatedDetectedDescription: |-
     Mod trovate con lo stesso ID mod ma file diversi. 
     Ciò potrebbe causare l'arresto anomalo di Minecraft. 
     Seleziona il file che desideri conservare.
-  enabled: '{count} Mod abilitate'
   enableAll: Abilita tutto
-  disableAll: Disabilita tutto
+  enabled: '{count} Mod abilitate'
   filter: Filtra Mod
   group: Raggruppare
   groupInstalled: Raggruppa le mod installate
-  selectOrCreateGroup: Seleziona o crea gruppo
-  searchGroups: Cerca gruppi...
-  newFolder: Nuova cartella
-  noGroupsYet: Nessun gruppo ancora. Creane uno!
-  noGroupsFound: Nessun gruppo trovato
   groupName: Nome del gruppo
   groupNameRequired: Il nome del gruppo è obbligatorio
-  createGroup: Crea gruppo
   hasUpdate: la Mod ha una nuova versione!
   hideIncompatible: Nascondi Mod Incompatibili
   incompatible: Mod Incompatibile.
@@ -848,11 +795,16 @@ mod:
   modloaderSelectNotSupported: Non trovato {modloader} per Minecraft {minecraft}
   mods: '{count} Mods'
   name: Mod | Mods
+  newFolder: Nuova cartella
+  noGroupsFound: Nessun gruppo trovato
+  noGroupsYet: Nessun gruppo ancora. Creane uno!
   noModLoaderHint: Non dimenticare di abilitare un modloader per utilizzare le mod!
   openLink: Apri l'url della mod {url}
   search: Cerca Mod
+  searchGroups: Cerca gruppi...
   searchOnCurseforge: Cerca {name} in curseforge
   searchOnModrinth: Cerca {name} in Modrinth
+  selectOrCreateGroup: Seleziona o crea gruppo
   showDirectory: Mostra la directory delle mod
   showFile: Mostra il percorso della mod {file}
   showInCurseforge: Mostra la mod in curseforge
@@ -874,6 +826,13 @@ modInstall:
 
     {name} non riceverà ulteriori aggiornamenti a meno che l'autore non decida
     di annullare l'archiviazione del progetto.
+  autoUpgrade:
+    description: >-
+      Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente le
+      mod compatibili alle versioni che corrispondono a Minecraft {version}?
+    'no': Salta
+    title: Aggiornare le Mod?
+    'yes': Aggiorna le Mod
   checkDependencies: Controlla le dipendenze
   checkUpgrade: Controlla Aggiornamento delle Mod
   checkedDependencies: Dipendenze controllate
@@ -893,13 +852,6 @@ modInstall:
   source: Sorgente Mod
   switch: Cambia versione
   upgrade: Aggiorna le Mod
-  autoUpgrade:
-    title: Aggiornare le Mod?
-    description: >-
-      Hai cambiato la versione di Minecraft. Vuoi aggiornare automaticamente
-      le mod compatibili alle versioni che corrispondono a Minecraft {version}?
-    yes: Aggiorna le Mod
-    no: Salta
 modSearch:
   noLocalModsFound: Nessuna mod locale trovata corrispondente alla tua ricerca.
   noModsFound: Nessuna mod trovata.
@@ -1114,10 +1066,6 @@ modrinth:
   wikiUrl: Wiki
 modrinthCard:
   currentVersion: Versione corrente
-  projectHint: >
-    Questa istanza è stata creata da Modrinth modpack da <code class="rounded
-    p-1" style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Abilita il server di relay
   allowTurnHint: >-
@@ -1215,7 +1163,6 @@ natType:
 neoForgedVersion:
   disable: Disabilita NeoForged
   empty: NeoForged non supporto {version}
-  name: NeoForged
 news:
   name: Notizie
   readMore: Leggi di più
@@ -1398,8 +1345,6 @@ serverStatus:
   timeout: §4Tmeout della conessione del server!
 setting:
   about: Di
-  allowPrerelease: Scarica la pre-release
-  allowPrereleaseDescription: La pre-release potrebbe essere instabile
   apiSets:
     auto: Auto (Determina dalla rete)
     official: Ufficiale (Mojang)
@@ -1407,10 +1352,6 @@ setting:
   appxUpdateHint: >-
     Il launcher scaricherà ed eseguirà l'installer. Se l'installer popup non
     funziona, eseguilo manualmente.
-  autoDownload: Aggiornamento automatico
-  autoDownloadDescription: Aggiornamento automatico se disponibile
-  autoInstallOnAppQuit: Installazione automatica
-  autoInstallOnAppQuitDescription: Installa automaticamente l'aggiornamento alla chiusura dell'app
   backdropBlur: Sfocatura
   backgroundColorAbove: Mostra il colore di sfondo come overlay
   backgroundColorAboveDescription: >-
@@ -1497,8 +1438,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Questa opzione assegna una GPU dedicata al processo di Minecraft.
   linuxTitlebar: Barra del titolo nativa Linux
   linuxTitlebarDescription: Usa la barra del titolo nativa di Linux per il launcher
-  windowTranslucent: Trasparenza della finestra
-  windowTranslucentDescription: Abilita l'effetto finestra traslucida (Mica su Windows 11, Acrylic su Windows 10, Vibrancy su macOS). Richiede il riavvio.
   location: Posizione di archiviazione
   manualUpdateHint: >-
     La versione non può essere aggiornata automaticamente. Scaricate nuovamente
@@ -1557,6 +1496,10 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'indirizzo del server proxy per la richiesta http
   viewBackgroundMusic: Visualizza musiche
+  windowTranslucent: Trasparenza della finestra
+  windowTranslucentDescription: >-
+    Abilita l'effetto finestra traslucida (Mica su Windows 11, Acrylic su
+    Windows 10, Vibrancy su macOS). Richiede il riavvio.
 settingLabel:
   global: Globale
   globalHint: Questa impostazione seguirà le impostazioni globali
@@ -1658,7 +1601,6 @@ tag:
   createSelected: Crea tag per selezionato
   newTag: Nuovo tag
 task:
-  available: Disponibile
   cancelled: Annullato
   clear: Cancella attività completate
   connection:
@@ -1669,16 +1611,9 @@ task:
     running: Connessione attiva
     size: Totale
   connections: Consessioni di rete
-  delete:
-    content: >-
-      Questo eliminerà il file texturepack dal disco e non sarà possibile
-      recuperarlo.
-       Sei sicuro di poterlo recuperare?
-    title: Elimina texturepack
-  dropHint: Trascinare e rilasciare la cartella/zip texture qui per importare.
+  delete: {}
   empty: Nessuna attività in esecuzione
   failed: Falitto
-  import: Importazione di texturepack
   incompatible: >-
     Formato di textstack incompatibile ({format}). Corrispondenza {accept}.
     Corrente {actual}.
@@ -1689,7 +1624,6 @@ task:
   pause: Pausa
   searchOnCurseforge: Cerca {name} su curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: Texturepack preferiti
   showFile: Aprite il texturepack {file} nella cartella
   showInCurseforge: Mostra {name} su curseforge
 theme:
@@ -1830,17 +1764,17 @@ userCape:
 userService:
   add: Aggiungi più servizi
   authLibInjector: Segui il suggerimento dell'injector auth-lib
-  baseUrlHint: L'URL di base del tuo servizio personalizzato
-  manageServices: Gestisci servizi
   authlibInjectorMetadata: Metadati Authlib-Injector
-  server: Server
-  implementation: Implementazione
-  version: Versione
-  skinDomains: Domini skin
+  baseUrlHint: L'URL di base del tuo servizio personalizzato
   homepage: Home page
+  implementation: Implementazione
+  manageServices: Gestisci servizi
   register: Registrati
+  server: Server
+  skinDomains: Domini skin
   title: Servizi utente di terze parti
   validateHint: Utilizzato per verificare se il token dell'utente è ancora valido
+  version: Versione
 userServices:
   microsoft:
     account: Account Microsoft

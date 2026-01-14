@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: Виявлено кілька профілів запуску. Будь ласка, виберіть один для імпорту.
-  configTitle: Конфігурація
   createTitle: Створити гру
-  downloadedNotification: Модпак {name} завантажено. Бажаєте створити для нього екземпляр?
   serverTitle: Введіть адресу вашого сервера
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -19,7 +17,6 @@ AppShareInstanceDialog:
     хочете завантажити. Вони будуть розміщені в поточному екземплярі {name}.
   downloadNotifyTitle: Завантажити екземпляр від {user}
   downloadTitle: Завантажити файли від інших користувачів
-  downloadToLocal: Завантажити в поточний екземпляр
   filesToDownload: Виберіть файли для завантаження
   filesToShare: Виберіть файли для спільного доступу
   instanceShare: '{user} щойно поділився з вами поточним екземпляром'
@@ -32,39 +29,17 @@ BaseSettingGeneral:
 FeedTheBeast:
   search: Шукати в FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Список змін
-  details: Деталі
-  install: Встановити {version}
-  overview: Огляд
-  versions: Версії
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Несумісна Java
   incompatibleJavaHint: Поточна Java може бути несумісною з обраним Minecraft!
   missingJava: Java відсутня
   missingJavaHint: 'Лаунчер не може виявити жодної Java на вашому комп''ютері. Ви можете:'
-  needDownloadHint: >-
-    Не вдалося знайти відповідну версію Java на вашому комп'ютері.
-    Рекомендується завантажити нову.
-  optionAutoDownload:
-    message: Лаунчер завантажить та встановить Java з джерела Mojang для вас.
-    name: Автоматично завантажити
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Можливо, лаунчер не знайшов вашу Java. Ви можете вказати лаунчеру, де вона
-      знаходиться.
-    name: Вибрати Java на вашому комп'ютері
+  optionSelectJava: {}
   optionSwitch:
-    disabled: Наразі в базі даних не знайдено Java {version}!
-    message: Використовувати наявну Java {version} на вашому ПК
     name: Перемкнутися на {version}
-  recommendedVersionHint: Для {version} рекомендується використовувати Java версії {range}。
-  selectMatchedHint: Знайдено відповідні локальні версії Java. Ви можете обрати ці локальні Java.
-  selectSecondaryHint: >-
-    Знайдено деякі локальні версії Java, але вони можуть не відповідати
-    критеріям. Ви все ще можете використовувати їх для запуску, але ця проблема
-    буде з'являтися.
 HomeLaunchMultiInstanceDialog:
   confirm: Так, запустити
   description: Ви запускаєте кілька екземплярів Minecraft. Ви впевнені?
@@ -127,18 +102,11 @@ curseforge:
     gameVersion: Версія гри
     install: встановити
     modLoader: Завантажувач модів
-  install: Встановити
   installTo: Встановити в {path}
   installToStorage: Встановити в сховище
   lastUpdate: Дата останнього оновлення
-  project:
-    description: Опис
-    files: Файли
-    images: Зображення
-  recentFiles: Останні файли
+  project: {}
   releasedDate: Дата випуску
-  search: Пошук
-  totalDownloads: Усього завантажень
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: API та бібліотеки
@@ -341,11 +309,7 @@ exception:
     спробуйте ще раз або перевірте ваше мережеве з'єднання. Якщо ця помилка не
     зникає, будь ласка, надішліть звіт команді розробників.
 existed: Існує
-exportModpackTarget:
-  curseforge: Файл Curseforge
-  github: Файл Github
-  modrinth: Файл Modrinth
-  override: Файл перевизначення (Raw)
+exportModpackTarget: {}
 extensions:
   mrpack: Модпак Modrinth
   zip: Zip-файл
@@ -410,10 +374,7 @@ gameType:
 help: Допомога
 home: Головна
 importModpack:
-  failed: Не вдалося імпортувати {modpack}
   name: Імпортувати модпак
-  success: Імпорт {modpack} успішний
-importResource: Імпортувати ресурс
 install: Встановити
 installAssets:
   asset: Встановити {count} ресурсів
@@ -563,14 +524,8 @@ instanceSetting:
   showLog: Показати лог Minecraft
   showLogHint: Це відкриє вікно для потокової передачі логу Minecraft після запуску гри
 instanceTemplate:
-  curseforge: Це модпак Curseforge
   ftb: Це модпак FTB
-  importing: Імпорт шаблону
-  mcbbs: Це модпак MCBBS
-  modpack: Це необроблений модпак
-  modrinth: Це модпак Modrinth
   preview: Попередній перегляд модпаку
-  title: Налаштування шаблону
 instanceUpdate:
   basic: Оновлення налаштувань
   files: Оновлення файлів
@@ -639,7 +594,6 @@ launch:
   launch: Запустити
   launchAnyway: Запустити все одно
 launchBlocked:
-  ignore: Примусово запустити
   launchBadVersion:
     description: Файл JSON версії {version} пошкоджено. Можливо, перевстановити цю версію?
     title: Пошкоджений JSON версії
@@ -809,7 +763,6 @@ me:
   recentPlay: Нещодавно грав
   versions: Встановлені версії
 minecraftVersion:
-  empty: Не вдалося завантажити версії Minecraft
   name: Версія Minecraft
   release: Випуск
   showAlpha: Показати знімки стану (Snapshot)
@@ -1131,10 +1084,6 @@ modrinth:
   wikiUrl: Вікі
 modrinthCard:
   currentVersion: Поточна версія
-  projectHint: >
-    Цей екземпляр створено з модпаку Modrinth <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (ID проєкту:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Увімкнути ретрансляційний сервер
   allowTurnHint: >-
@@ -1238,7 +1187,6 @@ natType:
 neoForgedVersion:
   disable: Вимкнути NeoForged
   empty: NeoForged не підтримує {version}
-  name: NeoForged
 news:
   name: Новини
   readMore: Читати далі
@@ -1424,8 +1372,6 @@ setting:
   about: Про
   advancedSettings: Розширені налаштування
   advancedSettingsHint: Небезпечна зона - скидання або керування даними лаунчера
-  allowPrerelease: Завантажувати попередні версії
-  allowPrereleaseDescription: Попередні версії можуть бути нестабільними
   apiSets:
     auto: Автоматично (визначається мережею)
     official: Офіційний (Mojang)
@@ -1433,10 +1379,6 @@ setting:
   appxUpdateHint: >-
     Лаунчер завантажить та виконає інсталятор. Якщо спливаюче вікно інсталятора
     не вдалося, будь ласка, запустіть його вручну.
-  autoDownload: Автоматичне завантаження
-  autoDownloadDescription: Автоматично завантажувати оновлення, якщо воно доступне
-  autoInstallOnAppQuit: Автоматичне встановлення
-  autoInstallOnAppQuitDescription: Автоматично встановлювати оновлення при виході з програми
   backdropBlur: Розмиття фонів
   backgroundColorAbove: Показувати колір фону як накладення
   backgroundColorAboveDescription: Це зробить колір фону видимим поверх фонового зображення або відео.
@@ -1719,10 +1661,8 @@ tag:
   createSelected: Створити тег для вибраного
   newTag: Новий тег
 task:
-  available: Доступно
   cancelled: Скасовано
   clear: Очистити завершені завдання
-  compatible: Формат {format} сумісний з {version}
   connection:
     connected: Підключено
     free: Вільно
@@ -1731,17 +1671,9 @@ task:
     running: Активне з'єднання
     size: загальна кількість
   connections: Мережеві з'єднання
-  delete:
-    content: >-
-      Це призведе до видалення файлу текстурпака з диска, і ми не зможемо його
-      відновити.
-       Ви впевнені, що можете його відновити?
-    title: Видалити текстурпак
-  dropHint: Перетягніть сюди папку/zip текстури для імпорту.
+  delete: {}
   empty: Немає активних завдань
-  enable: 'Увімкнено текстурпаков: {count}'
   failed: Невдача
-  import: Імпорт текстурпака
   incompatible: >-
     Несумісний формат текступак ({format}). Відповідний {accept}. Поточний
     {actual}.
@@ -1752,7 +1684,6 @@ task:
   pause: Пауза
   searchOnCurseforge: Шукати {name} на curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} у папці
   showInCurseforge: Показати {name} на curseforge
   unselected: Невибрані текстурпаки

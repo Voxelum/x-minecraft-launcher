@@ -1,8 +1,6 @@
 AppAddInstanceDialog:
   choiceTitle: Multiple launch profiles detected. Please select one to import.
-  configTitle: Configuration
   createTitle: Create Game
-  downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
   serverTitle: Input your server address
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -18,58 +16,29 @@ AppShareInstanceDialog:
     to download. It will be placed to current instance {name}.
   downloadNotifyTitle: Download Instance from {user}
   downloadTitle: Download files from other peers
-  downloadToLocal: Download to current instance
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: "{user} just shared the current instance to you"
+  instanceShare: '{user} just shared the current instance to you'
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
 BaseSetting: {}
-all: All
-sortBy:
-  alphabetAsc: Sort by alphabet (ascending)
-  alphabetDesc: Sort by alphabet (descending)
-  timeAsc: Sort by modification time (ascending)
-  timeDesc: Sort by modification time (descending)
-  name: Sort By
 BaseSettingGeneral:
   title: General
 FeedTheBeast:
   search: Search In FTB
 FeedTheBeastCard: {}
-FeedTheBeastProject:
-  changelog: Changelog
-  details: Details
-  install: Install {version}
-  overview: Overview
-  versions: Versions
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Incompatible Java
   incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
   missingJava: Missing Java
-  missingJavaHint: "The Launcher cannot detect any java in your computer. You can:"
-  needDownloadHint: >-
-    Cannot find proper Java version in your computer. Recommend to download a
-    new one.
-  optionAutoDownload:
-    message: Launcher will download and install Java from Mojang's source for you.
-    name: Automatically Download
+  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Maybe the launcher doesn't find your Java. You can tell the launcher where
-      it is.
-    name: Select Java in your computer
+  optionSelectJava: {}
   optionSwitch:
-    disabled: There is no Java {version} found in database now!
-    message: Use existed Java {version} in your PC
     name: Switch to {version}
-  recommendedVersionHint: The {version} recommend to use Java with range {range}。
-  selectMatchedHint: Found proper local Java versions. You can choose these local Javas.
-  selectSecondaryHint: >-
-    Found some local Java versions, but they might not suitable to the criteria.
-    You can still use them to launch, but this issue will still appear.
 HomeLaunchMultiInstanceDialog:
   confirm: Yes, Launch
   description: You are launching multiple instances of Minecraft. Are you sure?
@@ -93,10 +62,11 @@ SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 add: Add
 ago:
-  day: "{duration} day ago | {duration} days ago"
-  hour: "{duration} hour ago | {duration} hours ago"
-  minute: "{duration} minute ago | {duration} minutes ago"
-  second: "{duration} second ago | {duration} seconds ago"
+  day: '{duration} day ago | {duration} days ago'
+  hour: '{duration} hour ago | {duration} hours ago'
+  minute: '{duration} minute ago | {duration} minutes ago'
+  second: '{duration} second ago | {duration} seconds ago'
+all: All
 askAICrash:
   copyPrompt: Copy the prompt to ask AI
   description: >-
@@ -124,7 +94,6 @@ copyClipboard:
   success: Copy to clipboard
 create: Create
 curseforge:
-  name: CurseForge
   authors: Authors
   category: Category
   createdDate: Created Date
@@ -133,18 +102,12 @@ curseforge:
     gameVersion: Game Version
     install: install
     modLoader: Mod Loader
-  install: Install
   installTo: Install to {path}
   installToStorage: Install to Storage
   lastUpdate: Last Update Date
-  project:
-    description: Description
-    files: Files
-    images: Images
-  recentFiles: Recent Files
+  name: CurseForge
+  project: {}
   releasedDate: Released Date
-  search: Search
-  totalDownloads: Total Downloads
 curseforgeCard: {}
 curseforgeCategory:
   API and Library: APIs and libraries
@@ -219,8 +182,8 @@ dataMigration:
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   name: Delete {name}
-  "no": "No"
-  "yes": Delete
+  'no': 'No'
+  'yes': Delete
 dependencies:
   embedded: Embedded
   incompatible: Incompatible
@@ -263,7 +226,7 @@ diagnosis:
     name: Invalid java location.
   missingAssets:
     message: Launcher will install assets for you
-    name: "Missing asset: {name} | Missing asset: {name} | Missing %{count} assets."
+    name: 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
   missingAssetsIndex:
     message: Launcher will download assets index for you
     name: Missing assets index file of {version}.
@@ -295,16 +258,16 @@ disk:
   available: Available
   used: Used
 download: Download
-downloadCount: "{count} downloads"
+downloadCount: '{count} downloads'
 downloadUpdate: Download Update
 duration:
-  day: "{duration} day | {duration} days"
-  hour: "{duration} hour | {duration} hours"
-  minute: "{duration} minute | {duration} minutes"
+  day: '{duration} day | {duration} days'
+  hour: '{duration} hour | {duration} hours'
+  minute: '{duration} minute | {duration} minutes'
   name: Delete {name}
-  "no": "No"
-  second: "{duration} second | {duration} seconds"
-  "yes": Yes, sir.
+  'no': 'No'
+  second: '{duration} second | {duration} seconds'
+  'yes': Yes, sir.
 edit: Edit
 enable: Enable
 env:
@@ -318,7 +281,7 @@ errors:
   BadForgeInstallerJarError: >-
     Cannot parse forge installer jar file. Maybe the forge has new installer
     file format? Contact developers if this issue persists.
-  BadInstanceType: "Not a valid instance: {type}"
+  BadInstanceType: 'Not a valid instance: {type}'
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expected {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
@@ -347,11 +310,7 @@ exception:
     or check your network. If this error persists, please send a report to
     developer team.
 existed: Existed
-exportModpackTarget:
-  curseforge: Curseforge File
-  github: Github File
-  modrinth: Modrinth File
-  override: Override (Raw) File
+exportModpackTarget: {}
 extensions:
   mrpack: Modrinth Modpack
   zip: Zip File
@@ -414,10 +373,7 @@ gameType:
 help: Help
 home: Home
 importModpack:
-  failed: Import {modpack} failed
   name: Import Modpack
-  success: Import {modpack} succeed
-importResource: Import Resource
 install: Install
 installAssets:
   asset: Install {count} Assets
@@ -478,8 +434,8 @@ instance:
   delete: Delete Game
   deleteFailed: Fail to delete instance
   deleteFailedPermission: Other program occupied the file
-  deleteHint: The instance data will be removed from the disk forever. Are you sure?
   deleteFile: Delete Instance Files
+  deleteHint: The instance data will be removed from the disk forever. Are you sure?
   duplicate: Duplicate Game
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
@@ -570,14 +526,8 @@ instanceSetting:
   showLog: Show Minecraft Log
   showLogHint: This will popup a window to stream Minecraft log after game started
 instanceTemplate:
-  curseforge: This is a Curseforge modpack
   ftb: This is a FTB modpack
-  importing: Template Importing
-  mcbbs: This is a MCBBS modpack
-  modpack: This is a raw modpack
-  modrinth: This is a Modrinth modpack
   preview: Modpack Preview
-  title: Template Setting
 instanceUpdate:
   basic: Setting Update
   files: File Updates
@@ -596,11 +546,11 @@ instances:
   addMMCDescription: >-
     Import existing MultiMC instance. You need to select the data folder from
     MultiMC.
-  addPrismDescription: Import existing PrismLauncher instance.
   addManually: Manually Create
   addModrinthDescription: >-
     Import existing Modrinth instance. You need to select the Modrinth root data
     folder.
+  addPrismDescription: Import existing PrismLauncher instance.
   addServer: Create from server
   addServerDescription: This will create a game directly launch to the server.
   addTemplate: Create from downloaded modpack
@@ -619,8 +569,8 @@ instances:
   loadingFiles: Loading Modpack Files
   refreshServers: Refresh Servers
 items:
-  count: "{count} items"
-  total: "{total} total"
+  count: '{count} items'
+  total: '{total} total'
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
@@ -637,7 +587,7 @@ java:
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
-  systemMemory: "System Free Memory: {free} / {total}"
+  systemMemory: 'System Free Memory: {free} / {total}'
 labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
@@ -649,7 +599,6 @@ launch:
   launch: Launch
   launchAnyway: Launch Anyway
 launchBlocked:
-  ignore: Force Launch
   launchBadVersion:
     description: The version {version} json is breaking. Maybe re-install this version?
     title: Bad Version JSON
@@ -773,7 +722,7 @@ loginError:
     is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
   connectionReset: Fail to login since connection is reset by server
-  fetchMinecraftProfileFailed: "Fail to fetch Minecraft profile: {reason}"
+  fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
   loginMinecraftByXboxFailed: >-
@@ -807,7 +756,6 @@ me:
   viewByDate: View by Date
   viewByFolder: View by Folder
 minecraftVersion:
-  empty: Cannot load Minecraft versions
   name: Minecraft Version
   release: Release
   showAlpha: Show Snapshot
@@ -829,12 +777,12 @@ mod:
   description: Description
   disableAll: Disable All
   dropHint: Drop mod's .jar/.litemod here to import.
-  duplicatedDetected: "{count} duplicated mods"
+  duplicatedDetected: '{count} duplicated mods'
   duplicatedDetectedDescription: >-
     Found mods with same mod id but different files. This might cause Minecraft
     crash. Please select the file you want to keep.
   enableAll: Enable All
-  enabled: "{count} Mods enabled"
+  enabled: '{count} Mods enabled'
   filter: Filter Mods
   filterDisabled: Filter Disabled
   group: Group up
@@ -854,10 +802,9 @@ mod:
   manage: Manage
   manageHint: Select a mod from the list to view details, versions, and install options.
   maybeCompatible: Maybe Compatible.
-  modloader: Mod Loader
   modloaderSelectHint: The mod support following mod loaders. Please select one to install.
   modloaderSelectNotSupported: Not found {modloader} for Minecraft {minecraft}
-  mods: "{count} Mods"
+  mods: '{count} Mods'
   name: Mod | Mods
   newFolder: New Folder
   noGroupsFound: No groups found
@@ -880,7 +827,7 @@ mod:
   switchDefaultSource: Default Mod Source
   syncGroupRules: Save grouping rules
   technical: Technical Information
-  toUpdate: "{count} updates"
+  toUpdate: '{count} updates'
   ungroup: Ungroup
   updateAt: Updated
   versions: Versions
@@ -901,9 +848,9 @@ modInstall:
     description: >-
       You have changed the Minecraft version. Would you like to automatically
       update compatible mods to versions that match Minecraft {version}?
-    "no": Skip
+    'no': Skip
     title: Update Mods?
-    "yes": Update Mods
+    'yes': Update Mods
   checkDependencies: Check Dependencies
   checkUpgrade: Check Mods Update
   checkedDependencies: Checked Dependencies
@@ -981,7 +928,6 @@ modpackImportConfirm:
     modpack?
   title: Are you trying to import a modpack?
 modrinth:
-  name: Modrinth
   browseUrl: Open In Browser {url}
   categories:
     128x: 128x
@@ -1115,6 +1061,7 @@ modrinth:
     name: Mod Loaders
   modpackSource:
     source: Source
+  name: Modrinth
   perPage: Per Page
   projectId: Project Id
   projectMembers: Project Members
@@ -1124,7 +1071,7 @@ modrinth:
     name: Project Type
     resourcePack: Resource Pack
     shader: Shader
-  projects: "{count} projects"
+  projects: '{count} projects'
   quickSearch: Search {title}
   searchText: Search
   serverSide: Server Side
@@ -1142,10 +1089,6 @@ modrinth:
   wikiUrl: Wiki
 modrinthCard:
   currentVersion: Current Version
-  projectHint: >
-    This instance is created by Modrinth modpack from <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   allowTurn: Enable relay server
   allowTurnHint: >-
@@ -1153,6 +1096,11 @@ multiplayer:
     relay server may slow down your connection. Use it with caution.
   complete: Complete
   confirm: Confirm
+  connectionError: Connection Error
+  connectionFailed: Connection failed
+  connectionFailedHint: >-
+    Unable to establish connection. Check if both peers have compatible NAT
+    types.
   connections: Connections
   copied: Copied!
   copy: Copy
@@ -1167,7 +1115,7 @@ multiplayer:
     11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   currentIpTitle: Detected Public IP
-  currentNatTitle: "Current network (NAT):"
+  currentNatTitle: 'Current network (NAT):'
   difficultyLevelHint: The level of difficulty creating a connection
   disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
@@ -1208,6 +1156,13 @@ multiplayer:
   localToken: Local Token
   manualConnect: Manually Connect
   name: Multiplayer on LAN
+  natFirewallBlocked: >-
+    Your connection might be blocked by Firewall! Please check your Firewall
+    settings or try to disable it temporarily.
+  natWarning: >-
+    Your NAT type may prevent direct connections. Try enabling relay server in
+    settings or ask your friend to host instead.
+  networkInfo: Network Info (Click to toggle)
   next: Next
   otherExposedPortDescription: The port forwarded by {user}
   placeholder: Connect with other users to play Minecraft on LAN!
@@ -1224,13 +1179,7 @@ multiplayer:
   sharingNotificationBody: You can download or create an instance from {name} shared config.
   sharingNotificationTitle: A peer is sharing their game config
   start: Start
-  connectionError: Connection Error
-  natWarning: Your NAT type may prevent direct connections. Try enabling relay server in settings or ask your friend to host instead.
-  connectionFailed: Connection failed
-  connectionFailedHint: Unable to establish connection. Check if both peers have compatible NAT types.
   startNewP2PConnection: Click the Start button to create a new peer connection
-  natFirewallBlocked: "Your connection might be blocked by Firewall! Please check your Firewall settings or try to disable it temporarily."
-  networkInfo: Network Info (Click to toggle)
 myStuff: My Stuff
 name: Name
 natType:
@@ -1245,12 +1194,11 @@ natType:
 neoForgedVersion:
   disable: Disable NeoForged
   empty: NeoForged does not support {version}
-  name: NeoForged
 news:
   name: News
   readMore: Read More
 next: Next
-"no": "No"
+'no': 'No'
 ok: OK
 optifineVersion:
   disable: Disable Optifine
@@ -1278,7 +1226,7 @@ presence:
   curseforge: Viewing CurseForge
   curseforgeProject: Viewing {name} in curseforge
   instance: Idle in Instance {instance}
-  instanceSetting: "Edit Instance Setting: {instance}"
+  instanceSetting: 'Edit Instance Setting: {instance}'
   mod: Viewing Mods in {instance}
   modrinth: Viewing Modrinth
   modrinthProject: Viewing {name} in Modrinth
@@ -1307,7 +1255,7 @@ resourcepack:
       Are you sure you want to do this?
     title: Delete the resource pack
   dropHint: Drop Resource Pack's folder/zip here to import.
-  enable: "{count} resource packs enabled"
+  enable: '{count} resource packs enabled'
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
@@ -1316,12 +1264,12 @@ resourcepack:
   loadMore: Load More Resource Packs
   manage: Manage Resource Packs
   market: Resource Market
-  search: Search Resource Packs...
   name: Resource Pack | Resource Packs
   noPacks: No resource packs found
+  search: Search Resource Packs...
   searchHint: Search for resource packs on Modrinth and CurseForge
   searchOnCurseforge: Search {name} in curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selectSearchHint: Search and select resource pack
   selected: Selected Resource Packs
   shared: Instance uses shared resource pack folder
@@ -1330,7 +1278,6 @@ resourcepack:
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
-  search: Search Maps...
   allowCheats: Allow Cheats
   cheat: Cheating
   copy:
@@ -1379,7 +1326,7 @@ save:
     Installed tab.
   manage: Manage Saves
   mapError: Map Error
-  mapInfo: "Interactive 3D world preview:"
+  mapInfo: 'Interactive 3D world preview:'
   mapLoaded: Map Loaded
   mapPreview: Map Preview
   name: Save | Saves
@@ -1387,8 +1334,9 @@ save:
   openFolder: Open Saves Folder
   properties: World Properties
   rendering: Rendering...
-  searchSaves: Search Saves
+  search: Search Maps...
   searchHint: Search for worlds on CurseForge
+  searchSaves: Search Saves
   seed: Seed
   selected: Local Saves
   shared: Instance use shared saves folder
@@ -1415,9 +1363,6 @@ search:
   favorate: Collection
   local: Installed
   market: Mod Market
-sidebar:
-  pin: Pin to Sidebar
-  unpin: Unpin from Sidebar
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   creationHint: Please Fill the server address and ping the server
@@ -1467,8 +1412,6 @@ setting:
   advancedJavaOptions: Advanced Java Options
   advancedSettings: Advanced Settings
   advancedSettingsHint: Danger zone - reset or manage launcher data
-  allowPrerelease: Download Prerelease
-  allowPrereleaseDescription: Prerelease might be unstable
   apiSets:
     auto: Auto (Determine by network)
     official: Official (Mojang)
@@ -1478,10 +1421,6 @@ setting:
     The launcher will download and execute installer. If popup installer failed,
     please run it manually.
   authenticationSettings: Authentication
-  autoDownload: Auto Download
-  autoDownloadDescription: Auto Download Update if it's Available
-  autoInstallOnAppQuit: Autoinstall
-  autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
   backdropBlur: Backdrop Blur
   backgroundColorAbove: Show background color as overlay
   backgroundColorAboveDescription: This will make background color display above the background image or video.
@@ -1660,11 +1599,11 @@ setting:
   sidebarScaleHint: Adjust the size of the sidebar
   sidebarSettings: Sidebar Settings
   sidebarSettingsHint: Customize sidebar appearance and behavior
+  sidebarShowOnlyPinned: Show Only Pinned Instances
+  sidebarShowOnlyPinnedHint: Only display pinned instances in the sidebar
   sidebarStyle: Sidebar Style
   sidebarStyleHint: Choose between classic and modern notch design
   sidebarTop: Top
-  sidebarShowOnlyPinned: Show Only Pinned Instances
-  sidebarShowOnlyPinnedHint: Only display pinned instances in the sidebar
   streamerMode: Streaming Mode
   streamerModeDescription: This will hide your private information like email in launcher.
   theme:
@@ -1708,7 +1647,7 @@ setup:
     name: Add Game Account
     skip: Skip for now
   appearance:
-    name: "@:setting.appearance"
+    name: '@:setting.appearance'
   dataRoot:
     description: >-
       The data root is not a common .minecraft directory. Since XMCL data
@@ -1749,10 +1688,8 @@ setup:
     language: Language
     name: Set Language
   path: Current Path
-  title: "Welcome to X Minecraft Launcher. Before start, we need you to "
+  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
 shaderPack:
-  search: Search Shader Packs...
-  market: Shader Market
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot be reverted.
   disabled: Disabled Shader Packs
@@ -1762,11 +1699,13 @@ shaderPack:
   enabled: Enabled Shader Packs
   loadMore: Load More Shader Packs
   manage: Manage Shader Packs
+  market: Shader Market
   name: Shader Pack
   noPacks: No shader packs installed
   noShaderMod: No Shader Mod Installed
   noShaderModHint: You cannot use shader without a shader mod
   noShaderModInstallHint: You need to install one of the following mod to load shader pack.
+  search: Search Shader Packs...
   searchHint: Search for shader packs on Modrinth and CurseForge
   selectSearchHint: Search and select Shader Pack
   showDirectory: Show shader pack directory
@@ -1775,6 +1714,15 @@ shared:
   accept: Accept
   keepSelected: Keep Selected
   skipForNow: Skip for now
+sidebar:
+  pin: Pin to Sidebar
+  unpin: Unpin from Sidebar
+sortBy:
+  alphabetAsc: Sort by alphabet (ascending)
+  alphabetDesc: Sort by alphabet (descending)
+  name: Sort By
+  timeAsc: Sort by modification time (ascending)
+  timeDesc: Sort by modification time (descending)
 store:
   explore: Explore
   latestMinecraft: Latest Minecraft Version
@@ -1787,10 +1735,8 @@ tag:
   createSelected: Create Tag for Selected
   newTag: New Tag
 task:
-  available: Available
   cancelled: Cancelled
   clear: Clear Finished Tasks
-  compatible: The {format} format is compatible with {version}
   connection:
     connected: Connected
     free: Free
@@ -1799,28 +1745,19 @@ task:
     running: Running connection
     size: total count
   connections: Network Connections
-  delete:
-    content: >-
-      This will delete the texturepack file from the disk, and we won't be able
-      to recover it.
-       Are you sure you can recover it?
-    title: Delete texturepack
-  dropHint: Drag and drop the folder/zip textures here to import.
+  delete: {}
   empty: No Running Tasks
-  enable: "Texturepacks included: {count}"
   failed: Failed
-  import: Import texturepack
   incompatible: >-
     Incompatible textstack format ({format}). Matching {accept}. Current
     {actual}.
   manage: Texturepack
   manager: Task Manager
-  nTaskRunning: "{count} tasks are running"
+  nTaskRunning: '{count} tasks are running'
   name: Task | Tasks
   pause: Pause
   searchOnCurseforge: Search {name} on curseforge
-  searchOnModrinth: "@:mod.searchOnModrinth"
-  selected: Favorite texturepacks
+  searchOnModrinth: '@:mod.searchOnModrinth'
   showFile: Open the texturepack {file} in the folder
   showInCurseforge: Show {name} on curseforge
   unselected: Unselected texturepacks
@@ -1878,7 +1815,7 @@ tutorial:
     searchTitle: Search Mods
   multiplayer:
     contentDescription: Connections between you and your peers will be listed here.
-    contentTitle: "@:multiplayer.connections"
+    contentTitle: '@:multiplayer.connections'
     groupDescription: >-
       You can create or join a group with other players. The launcher will try
       to create P2P connections between you and your friends according to the
@@ -2005,4 +1942,4 @@ versionType:
   beta: Beta
   name: Status
   release: Release
-"yes": "Yes"
+'yes': 'Yes'

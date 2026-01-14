@@ -2,11 +2,7 @@ AppAddInstanceDialog:
   choiceTitle: |-
     Plusieurs profils de lancement détectés. 
     Veuillez en sélectionner un à importer.
-  configTitle: Configuration
   createTitle: Créer une instance
-  downloadedNotification: |-
-    Le modpack {name} a été téléchargé. 
-    Voulez-vous créer une instance pour cela ?
   serverTitle: Saisissez l'adresse de votre serveur
 AppShareInstanceDialog:
   alterDownloadDescription: >-
@@ -27,7 +23,6 @@ AppShareInstanceDialog:
     Il sera placé dans l'instance actuelle {name}.
   downloadNotifyTitle: Télécharger l'instance de {user}
   downloadTitle: Télécharger des fichiers externes
-  downloadToLocal: Télécharger dans l'instance actuelle
   filesToDownload: Choisissez les fichiers à télécharger
   filesToShare: Choisissez les fichiers à partager
   instanceShare: '{user} vient de vous partager la instance actuelle'
@@ -39,12 +34,7 @@ BaseSettingGeneral:
   title: Général
 FeedTheBeast:
   search: Rechercher dans FTB
-FeedTheBeastProject:
-  changelog: Journal des modifications
-  details: Détails
-  install: Installer {version}
-  overview: Aperçu
-  versions: Versions
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Java incompatible
   incompatibleJavaHint: >-
@@ -54,36 +44,11 @@ HomeJavaIssueDialog:
   missingJavaHint: |-
     Le launcher ne détecte aucune installation Java sur votre ordinateur. 
     Vous pouvez:
-  needDownloadHint: |-
-    Impossible de trouver la bonne version de Java sur votre ordinateur. 
-    Essayez peut-être d'en télécharger une nouvelle ?
-  optionAutoDownload:
-    message: >-
-      Le launcher téléchargera et installera Java à partir de la source de
-      Mojang pour vous.
-    name: Télécharger automatiquement
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: |-
-      Peut-être que le launcher n'a pas trouvé votre installation Java. 
-      Vous pouvez dire au launcher où elle se trouve.
-    name: Sélectionnez Java sur votre ordinateur
+  optionSelectJava: {}
   optionSwitch:
-    disabled: >-
-      Aucune installation Java {version} n'a été trouvée dans la base de données
-      !
-    message: Utilisez Java {version} existante sur votre PC
     name: Passer à {version}
-  recommendedVersionHint: La {version} recommande d'utiliser Java avec la plage {range}.
-  selectMatchedHint: |-
-    Trouvé les versions Java locales appropriées. 
-    Vous pouvez choisir ces installations Java locales.
-  selectSecondaryHint: >-
-    Certaines versions Java locales ont été trouvées, mais elles peuvent ne pas
-    convenir aux critères. 
-
-    Vous pouvez toujours les utiliser pour lancer, mais ce problème apparaîtra
-    toujours.
 HomeLaunchMultiInstanceDialog:
   confirm: Oui, lancer
   description: |-
@@ -155,18 +120,11 @@ curseforge:
   file:
     gameVersion: Version du jeu
     modLoader: Modloader
-  install: Installer
   installTo: Installer dans {path}
   installToStorage: Installer sur le stockage
   lastUpdate: Date de la dernière mise à jour
-  project:
-    description: Description
-    files: Fichiers
-    images: Images
-  recentFiles: Fichiers récents
+  project: {}
   releasedDate: Date de parution
-  search: Rechercher
-  totalDownloads: Téléchargements Totaux
 curseforgeCategory:
   API and Library: API et bibliothèques
   Addons: Suppléments
@@ -354,11 +312,7 @@ exception:
     réessayer ou vérifier votre réseau. Si cette erreur persiste, veuillez
     envoyer un rapport à l'équipe de développeurs.
 existed: Existait
-exportModpackTarget:
-  curseforge: Fichier Curseforge
-  github: Fichier Github
-  modrinth: Fichier Modrinth
-  override: Remplacer le fichier (brut)
+exportModpackTarget: {}
 extensions:
   mrpack: Pack Modrinth
   zip: Fichier zip
@@ -413,10 +367,7 @@ gameType:
 help: Aider
 home: Accueil
 importModpack:
-  failed: Échec de l'importation de {modpack}
   name: Importer un pack de modules
-  success: L'importation de {modpack} a réussi
-importResource: Importer une ressource
 install: Installer
 installAssets:
   asset: "Installer {count}\_éléments"
@@ -573,14 +524,8 @@ instanceSetting:
     Cela ouvrira une fenêtre pour afficher les logs Minecraft après le lancement
     du jeu
 instanceTemplate:
-  curseforge: Ceci est un modpack Curseforge
   ftb: Ceci est un modpack FTB
-  importing: Importation de Templates
-  mcbbs: Ceci est un modpack MCBBS
-  modpack: Ceci est un modpack brut
-  modrinth: Ceci est un modpack Modrinth
   preview: Aperçu du Modpack
-  title: Paramètre du Template
 instanceUpdate:
   basic: Mise à jour des Paramètres
   files: Mise à jour des Fichiers
@@ -651,7 +596,6 @@ launch:
   launch: Jouer
   launchAnyway: Lancer quand même
 launchBlocked:
-  ignore: Forcer le Lancement
   launchGeneralException:
     description: Certaines erreurs font échouer le lancement.
     title: Échec du lancement
@@ -833,7 +777,6 @@ me:
   recentPlay: Joué Récemment
   versions: Versions installées
 minecraftVersion:
-  empty: Impossible de charger les versions de Minecraft
   name: Version Minecraft
   release: Sortie
   showAlpha: Afficher les Snapshots
@@ -842,6 +785,7 @@ mod:
   acceptVersion: Accepter {version}
   applyGroupRules: Appliquer les règles de regroupement enregistrés
   compatible: Mod compatible.
+  createGroup: Créer un groupe
   currentVersion: Actuel {current}
   deletion: Suppression du Mod
   deletionHint: >-
@@ -850,26 +794,20 @@ mod:
     toujours. Êtes-vous sûr de vouloir faire ça?
   deletionRestHint: Et {rest} plus de Mods...
   denseView: Vue dense
+  disableAll: Tout désactiver
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
   duplicatedDetected: "{count}\_mods dupliqués"
   duplicatedDetectedDescription: |-
     Mods trouvés avec le même identifiant de mod mais des fichiers différents. 
     Cela pourrait provoquer un crash de Minecraft. 
     Veuillez sélectionner le fichier que vous souhaitez conserver.
-  enabled: '{count} mods activés'
   enableAll: Tout activer
-  disableAll: Tout désactiver
+  enabled: '{count} mods activés'
   filter: Mods de filtrage
   group: Se regrouper
   groupInstalled: Groupe de modules installés
-  selectOrCreateGroup: Sélectionner ou créer un groupe
-  searchGroups: Rechercher des groupes...
-  newFolder: Nouveau dossier
-  noGroupsYet: Pas encore de groupes. Créez-en un !
-  noGroupsFound: Aucun groupe trouvé
   groupName: Nom du groupe
   groupNameRequired: Le nom du groupe est requis
-  createGroup: Créer un groupe
   hideIncompatible: Masquer les mods incompatibles
   incompatible: Mod incompatible.
   incompatibleHint: Consultez votre rapport de compatibilité de mod
@@ -884,10 +822,15 @@ mod:
   modloaderSelectNotSupported: Introuvable {modloader} pour Minecraft {minecraft}
   mods: "{count}\_mods"
   name: Mod | Mods
+  newFolder: Nouveau dossier
+  noGroupsFound: Aucun groupe trouvé
+  noGroupsYet: Pas encore de groupes. Créez-en un !
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
   openLink: Ouvrir l'url du mod {url}
+  searchGroups: Rechercher des groupes...
   searchOnCurseforge: Rechercher sur Curseforge {name}
   searchOnModrinth: Rechercher {name} sur Modrinth
+  selectOrCreateGroup: Sélectionner ou créer un groupe
   showDirectory: Dossier de mods
   showFile: Afficher le chemin du mod {file}
   showInCurseforge: Afficher le mod dans Curseforge
@@ -907,6 +850,14 @@ modInstall:
 
     {name} ne recevra plus de mises à jour à moins que l'auteur ne décide de
     désarchiver le projet.
+  autoUpgrade:
+    description: >-
+      Vous avez changé la version de Minecraft. Souhaitez-vous mettre à jour
+      automatiquement les mods compatibles vers des versions correspondant à
+      Minecraft {version} ?
+    'no': Ignorer
+    title: Mettre à jour les mods ?
+    'yes': Mettre à jour les mods
   checkDependencies: Vérifier les dépendances
   checkedDependencies: Dépendances vérifiées
   display: Affichage des mods
@@ -919,13 +870,6 @@ modInstall:
   search: Résultats
   skipVersion: Ignorez les mods avec une version différente de Minecraft
   upgrade: Mettre à jour les mods
-  autoUpgrade:
-    title: Mettre à jour les mods ?
-    description: >-
-      Vous avez changé la version de Minecraft. Souhaitez-vous mettre à jour
-      automatiquement les mods compatibles vers des versions correspondant à Minecraft {version} ?
-    yes: Mettre à jour les mods
-    no: Ignorer
 modSearch:
   noLocalModsFound: Aucun mod local trouvé correspondant à votre recherche.
   noModsFound: Aucun mod trouvé.
@@ -1137,10 +1081,6 @@ modrinth:
   versions: Versions
 modrinthCard:
   currentVersion: Version actuelle
-  projectHint: >
-    Cette instance est créée par le modpack Modrinth de <code class="rounded
-    p-1" style="background: rgba(123,123,123,0.2)">{title}</code> (id projet:
-          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
 multiplayer:
   complete: Compléter
   confirm: Confirmer
@@ -1233,8 +1173,7 @@ natType:
   symmetricNat: NAT symétrique
   symmetricUDPFirewall: Pare-feu UDP symétrique
   unknown: Inconnu
-neoForgedVersion:
-  name: NeoForged
+neoForgedVersion: {}
 next: Suivant
 'no': Non
 ok: OK
@@ -1418,8 +1357,6 @@ serverStatus:
   timeout: §4Timeout de la connexion !
 setting:
   about: À propos
-  allowPrerelease: Télécharger les bêtas
-  allowPrereleaseDescription: La bêta peut être instable
   apiSets:
     auto: Auto (Déterminer par réseau)
     official: Officiel (Mojang)
@@ -1428,10 +1365,6 @@ setting:
     Le launcher téléchargera et exécutera le programme d'installation.  Si le
     programme d'installation contextuel a échoué, veuillez l'exécuter
     manuellement.
-  autoDownload: Téléchargement automatique
-  autoDownloadDescription: Mise à jour du téléchargement automatique si elle est disponible
-  autoInstallOnAppQuit: Installation automatique
-  autoInstallOnAppQuitDescription: Installer automatiquement la mise à jour à la fermeture de l'application
   backdropBlur: Flou
   backgroundColorAbove: Afficher la couleur d'arrière-plan en superposition
   backgroundColorAboveDescription: >-
@@ -1524,8 +1457,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Cette option affecte un GPU dédié au processus Minecraft.
   linuxTitlebar: Barre de titre native
   linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
-  windowTranslucent: Transparence de la fenêtre
-  windowTranslucentDescription: Activer l'effet de fenêtre translucide (Mica sur Windows 11, Acrylic sur Windows 10, Vibrancy sur macOS). Nécessite un redémarrage.
   location: Emplacement du magasin
   manualUpdateHint: >-
     La version ne peut pas être mise à jour automatiquement. Veuillez
@@ -1583,6 +1514,10 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: L'adresse du serveur proxy pour la requête http
   viewBackgroundMusic: Voir les musiques
+  windowTranslucent: Transparence de la fenêtre
+  windowTranslucentDescription: >-
+    Activer l'effet de fenêtre translucide (Mica sur Windows 11, Acrylic sur
+    Windows 10, Vibrancy sur macOS). Nécessite un redémarrage.
 settingLabel:
   global: Global
   globalHint: Ce réglage sera global
@@ -1673,7 +1608,6 @@ tag:
   createSelected: Créer un tag pour la sélection
   newTag: Nouveau tag
 task:
-  available: Disponible
   cancelled: Annulé
   clear: Effacer les tâches terminées
   connection:
@@ -1684,19 +1618,9 @@ task:
     running: Connexion en cours
     size: le compte total
   connections: Les connexions de réseau
-  delete:
-    content: >-
-      Cela supprimera le fichier texturepack du disque et nous ne pourrons pas
-      le récupérer.
-       Êtes-vous sûr de pouvoir le récupérer ?
-    title: Supprimer le paquet de texture
-  dropHint: >-
-    Faites glisser et déposez le dossier/les textures zippées ici pour les
-    importer.
+  delete: {}
   empty: Aucune tâche en cours d'exécution
-  enable: 'Paquets de textures activés : {count}'
   failed: Échec
-  import: Importer le paquet de texture
   incompatible: >-
     Format de pile de texte incompatible ({format}). Correspondance {accept}.
     Actuel {actual}.
@@ -1709,7 +1633,6 @@ task:
   pause: Pause
   searchOnCurseforge: Recherche de {name} sur curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: Paquets de texture préférés
   showFile: Ouvrir le paquet de texture {file} dans le dossier
   showInCurseforge: Afficher {name} sur curseforge
   unselected: Paquets de texture non sélectionnés
@@ -1858,17 +1781,17 @@ userCape:
 userService:
   add: Ajouter plus de services
   authLibInjector: Suivez la suggestion de l'injecteur auth-lib
-  baseUrlHint: L'URL de base de votre service personnalisé
-  manageServices: Gérer les services
   authlibInjectorMetadata: Métadonnées Authlib-Injector
-  server: Serveur
-  implementation: Implémentation
-  version: Version
-  skinDomains: Domaines de skins
+  baseUrlHint: L'URL de base de votre service personnalisé
   homepage: Page d'accueil
+  implementation: Implémentation
+  manageServices: Gérer les services
   register: Inscription
+  server: Serveur
+  skinDomains: Domaines de skins
   title: Services aux utilisateurs
   validateHint: Utilisé pour vérifier si le token de l'utilisateur est toujours valide
+  version: Version
 userServices:
   microsoft:
     account: Compte microsoft

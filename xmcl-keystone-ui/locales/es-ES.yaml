@@ -1,7 +1,5 @@
 AppAddInstanceDialog:
-  configTitle: Basado en el mapa
   createTitle: Crear una instancia
-  downloadedNotification: El modpack {name} se ha descargado. ¿Quieres crear una instancia para ello?
   serverTitle: Ingrese la dirección de su servidor
 AppShareInstanceDialog:
   alterDownloadDescription: |-
@@ -19,7 +17,6 @@ AppShareInstanceDialog:
     Se colocará en la instancia actual {name}.
   downloadNotifyTitle: Descargar instancia de {user}
   downloadTitle: Descargar archivos de otros compañeros
-  downloadToLocal: Descargar a la instancia actual
   filesToDownload: Elija archivos para descargar
   filesToShare: Elija archivos para compartir
   instanceShare: '{user} acaba de compartir archivos del juego contigo'
@@ -31,41 +28,17 @@ BaseSettingGeneral:
   title: General
 FeedTheBeast:
   search: Buscar en FTB
-FeedTheBeastProject:
-  changelog: Registro de cambios
-  details: Detalles
-  install: Instalar {version}
-  overview: Visión general
-  versions: Versiones
+FeedTheBeastProject: {}
 HomeJavaIssueDialog:
   incompatibleJava: Java Incompatible
   incompatibleJavaHint: ¡El Java actual puede ser incompatible con Minecraft seleccionado!
   missingJava: Falta Java
   missingJavaHint: 'El Launcher no puede detectar ningún java en su computadora. Puedes:'
-  needDownloadHint: >-
-    No se puede encontrar la versión de Java adecuada en tu computadora. Se
-    recomienda descargar uno nuevo.
-  optionAutoDownload:
-    message: Launcher descargará e instalará Java desde la fuente de Mojang's para ti.
-    name: Descargar Automáticamente
+  optionAutoDownload: {}
   optionManualDownload: {}
-  optionSelectJava:
-    message: >-
-      Tal vez el launcher no encuentro Java en tu computadora. Puedes decirle al
-      launcher dónde está.
-    name: Seleccione Java en tu computadora
+  optionSelectJava: {}
   optionSwitch:
-    disabled: ¡No se ha encontrado ninguna {version} de Java en la base de datos ahora!
-    message: Use la {version} de Java existente en su PC
     name: Cambiar a {version}
-  recommendedVersionHint: La {version} recomienda usar Java con el rango {range}。
-  selectMatchedHint: >-
-    Se encontraron versiones locales de Java adecuadas. Puede elegir estos Javas
-    locales.
-  selectSecondaryHint: >-
-    Encontré algunas versiones locales de Java, pero es posible que no se
-    ajusten a los criterios. Todavía puede usarlos para iniciar, pero este
-    problema seguirá apareciendo.
 HomeLaunchMultiInstanceDialog:
   confirm: Sí, Lanzar
   description: Estás lanzando varias instancias de Minecraft. ¿Está seguro?
@@ -120,17 +93,10 @@ curseforge:
   file:
     gameVersion: Versión del Juego
     modLoader: Mod Loader
-  install: Instalar
   installTo: Instalar en {path}
   installToStorage: Instalar en Almacenamiento
   lastUpdate: Última Fecha de Actualización
-  project:
-    description: Descripción
-    files: Archivos
-    images: Imágenes
-  recentFiles: Archivos Recientes
-  search: Buscar
-  totalDownloads: Descargas Totales
+  project: {}
 curseforgeCategory:
   API and Library: API y Bibliotecas
   Addons: Addons
@@ -330,10 +296,7 @@ gameType:
 help: Ayuda
 home: Inicio
 importModpack:
-  failed: Error al importar {modpack}
   name: Importar paquete de modificaciones
-  success: Importación de {modpack} exitosa
-importResource: Importar Recurso
 install: Instalar
 installAssets:
   asset: Instalar {count} recursos
@@ -485,14 +448,8 @@ instanceSetting:
     Esto abrirá una ventana para mostrar el registro de Minecraft después de
     iniciar el juego
 instanceTemplate:
-  curseforge: Este es un modpack de Curseforge
   ftb: Este es un modpack de FTB
-  importing: Importación de Plantilla
-  mcbbs: Este es un modpack de MCBBS
-  modpack: Este es un modpack sin procesar
-  modrinth: Este es un modpack de Modrinth
   preview: Vista Previa del Modpack
-  title: Configuración de Plantilla
 instanceUpdate:
   basic: Actualización de Ajustes
   files: Actualización de Archivos
@@ -570,6 +527,8 @@ launchStatus:
   spawningProcess: Puesta en marcha del proceso
 liteloader:
   name: LiteLoader
+logView:
+  searchPlaceholder: Buscar registros...
 loginError:
   loginXboxAgeRestricted: >-
     No inicie sesión Xbox debido al problema de edad. 
@@ -581,8 +540,6 @@ loginError:
 
     Si es un nuevo usuario de Minecraft, inicie sesión al menos una vez en el
     lanzador oficial de Minecraft.
-logView:
-  searchPlaceholder: Buscar registros...
 logsCrashes:
   crashes: Informes de Errores
   logs: Registros
@@ -595,7 +552,6 @@ me:
   recentPlay: Juego Reciente
   versions: Versiones instaladas
 minecraftVersion:
-  empty: No se pueden cargar las versiones de Minecraft
   name: Versión de Minecraft
   release: Versión Estable
   showAlpha: Mostrar Versiones Snapshot
@@ -604,6 +560,7 @@ mod:
   acceptVersion: Aceptar {version}
   applyGroupRules: Aplicar reglas de agrupación guardadas
   compatible: Mod Compatible.
+  createGroup: Crear grupo
   currentVersion: 'Versión Actual: {current}'
   deletion: Eliminar Mod
   deletionHint: >-
@@ -612,6 +569,7 @@ mod:
     seguro de que deseas hacerlo?
   deletionRestHint: Y otros {rest} mods...
   denseView: Vista densa
+  disableAll: Deshabilitar todo
   dropHint: Arrastra el archivo .jar/.litemod del mod aquí para importarlo.
   duplicatedDetected: '{count} modificaciones duplicadas'
   duplicatedDetectedDescription: >-
@@ -621,20 +579,13 @@ mod:
     Esto podría causar que Minecraft falle. 
 
     Seleccione el archivo que desea conservar.
-  enabled: '{count} Mods habilitados'
   enableAll: Habilitar todo
-  disableAll: Deshabilitar todo
+  enabled: '{count} Mods habilitados'
   filter: Filtrar Mods
   group: Agrupar
   groupInstalled: Agrupar Mods Instalados
-  selectOrCreateGroup: Seleccionar o crear grupo
-  searchGroups: Buscar grupos...
-  newFolder: Nueva carpeta
-  noGroupsYet: Aún no hay grupos. ¡Crea uno!
-  noGroupsFound: No se encontraron grupos
   groupName: Nombre del grupo
   groupNameRequired: El nombre del grupo es obligatorio
-  createGroup: Crear grupo
   hasUpdate: ¡El mod tiene una nueva versión!
   hideIncompatible: Ocultar Mods Incompatibles
   incompatible: Mod Incompatible.
@@ -650,11 +601,16 @@ mod:
   modloaderSelectNotSupported: No encontrado {modloader} para Minecraft {minecraft}
   mods: '{count} modificaciones'
   name: Mod | Mods
+  newFolder: Nueva carpeta
+  noGroupsFound: No se encontraron grupos
+  noGroupsYet: Aún no hay grupos. ¡Crea uno!
   noModLoaderHint: ¡No olvides habilitar un modloader para usar mods!
   openLink: Abrir la URL del mod {url}
   search: Buscar Mods
+  searchGroups: Buscar grupos...
   searchOnCurseforge: Buscar {name} en Curseforge
   searchOnModrinth: Buscar {name} en Modrinth
+  selectOrCreateGroup: Seleccionar o crear grupo
   showDirectory: Mostrar directorio de mods
   showFile: Mostrar la ruta del mod {file}
   showInCurseforge: Mostrar el mod en Curseforge
@@ -678,6 +634,14 @@ modInstall:
 
     {name} no recibirá más actualizaciones a menos que el autor decida
     desarchivar el proyecto.
+  autoUpgrade:
+    description: >-
+      Has cambiado la versión de Minecraft. ¿Te gustaría actualizar
+      automáticamente los mods compatibles a versiones que coincidan con
+      Minecraft {version}?
+    'no': Omitir
+    title: ¿Actualizar Mods?
+    'yes': Actualizar Mods
   checkDependencies: Verificar dependencias
   checkUpgrade: Verificar Actualizaciones de Mods
   checkedDependencies: Dependencias comprobadas
@@ -697,13 +661,6 @@ modInstall:
   source: Fuente de Mods
   switch: Cambiar Versión
   upgrade: Actualizar Mods
-  autoUpgrade:
-    title: ¿Actualizar Mods?
-    description: >-
-      Has cambiado la versión de Minecraft. ¿Te gustaría actualizar
-      automáticamente los mods compatibles a versiones que coincidan con Minecraft {version}?
-    yes: Actualizar Mods
-    no: Omitir
 modSearch:
   noLocalModsFound: No se encontraron mods locales que coincidan con tu búsqueda.
   noModsFound: No se encontraron mods.
@@ -930,8 +887,7 @@ multiplayer:
     Puede descargar o crear una instancia desde la configuración compartida de
     {nombre}.
   sharingNotificationTitle: Un compañero está compartiendo la configuración del juego.
-neoForgedVersion:
-  name: NeoForged
+neoForgedVersion: {}
 next: Siguiente
 'no': 'No'
 ok: Aceptar
@@ -1110,8 +1066,6 @@ serverStatus:
   timeout: §4¡Conexión al servidor agotada!
 setting:
   about: Acerca de
-  allowPrerelease: Descargar Pre-lanzamientos
-  allowPrereleaseDescription: Los pre-lanzamientos pueden no ser estables
   apiSets:
     auto: Automático (Determinado por la red)
     official: Oficial (Mojang)
@@ -1119,10 +1073,6 @@ setting:
   appxUpdateHint: >-
     El lanzador descargará y ejecutará el instalador. Si la ventana emergente
     del instalador falla, ejecútala manualmente.
-  autoDownload: Descarga Automática
-  autoDownloadDescription: Descargar actualizaciones automáticamente si están disponibles
-  autoInstallOnAppQuit: Autoinstalar
-  autoInstallOnAppQuitDescription: Autoinstalar la actualización al salir de la aplicación
   backdropBlur: Flojo de telón de fondo
   backgroundColorAbove: Mostrar color de fondo como superposición
   backgroundColorAboveDescription: >-
@@ -1212,8 +1162,6 @@ setting:
   linuxEnableDedicatedGPUOptimizationDescription: Esta opción asigna una GPU dedicada al proceso de Minecraft.
   linuxTitlebar: Barra de Título Nativa en Linux
   linuxTitlebarDescription: Usar la barra de título nativa de Linux para el lanzador
-  windowTranslucent: Transparencia de Ventana
-  windowTranslucentDescription: Habilitar efecto de ventana translúcida (Mica en Windows 11, Acrylic en Windows 10, Vibrancy en macOS). Requiere reiniciar.
   location: Ubicación del Almacenamiento
   manualUpdateHint: >-
     La versión no se puede actualizar automáticamente. Vuelve a descargar el
@@ -1271,6 +1219,10 @@ setting:
   useProxy: Proxy HTTP
   useProxyDescription: La dirección del servidor proxy para las solicitudes HTTP
   viewBackgroundMusic: Ver músicas
+  windowTranslucent: Transparencia de Ventana
+  windowTranslucentDescription: >-
+    Habilitar efecto de ventana translúcida (Mica en Windows 11, Acrylic en
+    Windows 10, Vibrancy en macOS). Requiere reiniciar.
 settingLabel:
   global: Global
   globalHint: Esta configuración seguirá la configuración global
@@ -1351,7 +1303,6 @@ tag:
   createSelected: Crear Etiqueta para la Selección
   newTag: Nueva Etiqueta
 task:
-  available: Disponible
   cancelled: Cancelada
   clear: Borrar tareas terminadas
   connection:
@@ -1362,16 +1313,9 @@ task:
     running: Conexión en ejecución
     size: cuenta total
   connections: Conexiones de red
-  delete:
-    content: |-
-      Esto borrará el archivo texturepack del disco y no podremos recuperarlo.
-       ¿Estás seguro de que puedes recuperarlo?
-    title: Borrar texturepack
-  dropHint: Arrastra y suelta la carpeta/zip de texturas aquí para importar.
+  delete: {}
   empty: No hay Tareas en Ejecución
-  enable: 'Paquetes de texturas activados: {count}'
   failed: Fallida
-  import: Importar paquete de texturas
   incompatible: >-
     Formato de pila de texto incompatible ({format}). Coincidencia {accept}.
     Actual {actual}.
@@ -1382,7 +1326,6 @@ task:
   pause: Pausar
   searchOnCurseforge: Buscar {name} en curseforge
   searchOnModrinth: '@:mod.searchOnModrinth'
-  selected: Paquetes de texturas favoritos
   showFile: Abra el texturepack {file} en la carpeta
   showInCurseforge: Mostrar {name} en curseforge
   unselected: Paquetes de texturas no seleccionados
