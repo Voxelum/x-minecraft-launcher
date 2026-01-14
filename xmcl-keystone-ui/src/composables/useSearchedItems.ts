@@ -1,10 +1,9 @@
-import { CategoryChipProps } from '@/components/CategoryChip.vue'
-import { ExploreProject } from '@/components/StoreExploreCard.vue'
+import { ExploreProjectModern } from '@/components/StoreExploreCardModern.vue'
 import { CurseforgeBuiltinClassId, useCurseforge } from '@/composables/curseforge'
 import { useDateString } from '@/composables/date'
 import { getFeedTheBeastProjectModel, useFeedTheBeast } from '@/composables/ftb'
 import { useMarketSort } from '@/composables/marketSort'
-import { kModrinthTags, useModrinth } from '@/composables/modrinth'
+import { useModrinth } from '@/composables/modrinth'
 import { useService } from '@/composables/service'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { injection } from '@/util/inject'
@@ -21,7 +20,7 @@ interface UseSearchedItemsOptions {
   modLoaders: Ref<string[]>
   sort: Ref<string>
   page: Ref<number>
-  sources: Ref<string[]>
+  omitSources: Ref<string[]>
   modrinthCategories: Ref<Array<any>>
   curseforgeCategory: Ref<number | undefined>
   pageSize: number
@@ -35,25 +34,23 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     modLoaders,
     sort,
     page,
-    sources,
+    omitSources,
     modrinthCategories,
     curseforgeCategory,
     pageSize,
     tCategory,
   } = options
 
-  const { t } = useI18n()
   const { getDateString } = useDateString()
   const { lookupBatch } = useService(ProjectMappingServiceKey)
   const { modrinthSort, curseforgeSort } = useMarketSort(sort)
   const config = injection(kSWRVConfig)
-  const { categories: modrinthCategoriesMap } = injection(kModrinthTags)
 
   // FTB
   const { refreshing: ftbLoading, data: ftbData } = useFeedTheBeast(reactive({ keyword: query }))
 
   // FTB
-  const ftbItems = shallowRef([] as ExploreProject[])
+  const ftbItems = shallowRef([] as ExploreProjectModern[])
   watch([ftbData, page], async ([packs, pageNum]) => {
     if (!packs) {
       ftbItems.value = []
@@ -69,20 +66,16 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
 
     const result = await Promise.all(packs.packs.slice(offset, offset + 5).map(async (p: any) => {
       const data = await getSWRV(getFeedTheBeastProjectModel(ref(p)), config)
-      const result: ExploreProject = {
+      const result: ExploreProjectModern = {
         id: p.toString(),
         type: 'ftb',
         title: data?.name ?? '',
-        icon_url: data?.art.find((v: any) => v.type === 'square')?.url ?? '',
+        iconUrl: data?.art.find((v: any) => v.type === 'square')?.url ?? '',
         description: data?.synopsis || '',
         author: data?.authors[0]?.name ?? '',
-        labels: [
-          { icon: 'file_download', text: getExpectedSize(data?.installs ?? 0, ''), id: `${data?.id}_download_icon` },
-          { icon: 'event', text: getDateString((data?.released ?? 0) * 1000), id: `${data?.id}_event_icon` },
-          { icon: 'edit', text: getDateString((data?.refreshed ?? 0) * 1000), id: `${data?.id}_edit_icon` },
-          { icon: 'local_offer', text: data?.plays.toString() ?? '0', id: `${data?.id}_local_offer` },
-        ],
-        tags: data?.tags.map((t: any) => ({ text: t.name, id: t.id.toString() })) ?? [],
+        downloadCount: getExpectedSize(data?.installs ?? 0, ''),
+        updatedAt: getDateString((data?.released ?? 0) * 1000),
+        version: data?.plays.toString() ?? '0',
         gallery: data?.art.map((a: any) => a.url) ?? [],
       }
       return result
@@ -153,20 +146,16 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
   const items = computed(() => {
     const modrinths = projects.value.map((p) => {
       const mapping = mappings.value[`modrinth:${p.project_id}`]
-      const mapped: ExploreProject = {
+      const mapped: ExploreProjectModern = {
         id: p.project_id,
         type: 'modrinth',
         title: p.title,
-        icon_url: p.icon_url,
+        iconUrl: p.icon_url,
         description: p.description,
         author: p.author,
-        labels: [
-          { icon: 'file_download', text: getExpectedSize(p.downloads, ''), id: `${p.project_id}_download_icon` },
-          { icon: 'event', text: getDateString(p.date_created), id: `${p.project_id}_created_icon` },
-          { icon: 'edit', text: getDateString(p.date_modified), id: `${p.project_id}_modified_icon` },
-          { icon: 'local_offer', text: p.versions[p.versions.length - 1], id: `${p.project_id}_local_offer` },
-        ],
-        tags: p.categories.map(c => ({ icon: modrinthCategoriesMap.value.find(cat => cat.name === c)?.icon, text: t(`modrinth.categories.${c}`, c), id: '' })),
+        downloadCount: getExpectedSize(p.downloads, ''),
+        updatedAt: getDateString(p.date_modified),
+        version: p.versions[p.versions.length - 1],
         gallery: p.gallery,
         localizedTitle: mapping?.name,
         localizedDescription: mapping?.description,
@@ -175,26 +164,16 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     })
     const curseforges = curseforgeProjects.value.map((p) => {
       const mapping = mappings.value[`curseforge:${p.id}`]
-      const existed = new Set<number>()
-      const tags = p.categories.map(c => {
-        if (existed.has(c.id)) return undefined
-        existed.add(c.id)
-        return { icon: c.iconUrl, text: tCategory(c.name), id: c.id.toString() } as CategoryChipProps
-      }).filter((v): v is CategoryChipProps => v !== undefined)
-      const mapped: ExploreProject = {
+      const mapped: ExploreProjectModern = {
         id: p.id.toString(),
         type: 'curseforge',
         title: p.name,
-        icon_url: p.logo?.thumbnailUrl ?? '',
+        iconUrl: p.logo?.thumbnailUrl ?? '',
         description: p.summary,
         author: p.authors[0]?.name ?? '',
-        labels: [
-          { icon: 'file_download', text: getExpectedSize(p.downloadCount, ''), id: `${p.id}_download_icon` },
-          { icon: 'event', text: getDateString(p.dateModified), id: `${p.id}_event_icon` },
-          { icon: 'edit', text: getDateString(p.dateModified), id: `${p.id}_edit_icon` },
-          { icon: 'local_offer', text: p.latestFilesIndexes[0].gameVersion, id: `${p.id}_local_offer` },
-        ],
-        tags,
+        downloadCount: getExpectedSize(p.downloadCount, ''),
+        updatedAt: getDateString(p.dateModified),
+        version: p.latestFilesIndexes[0]?.gameVersion,
         gallery: p.screenshots.map(s => s?.thumbnailUrl || ''),
         localizedTitle: mapping?.name,
         localizedDescription: mapping?.description,
@@ -206,14 +185,14 @@ export function useSearchedItems(options: UseSearchedItemsOptions) {
     let filteredCurseforges = curseforges
     let filteredFtb = ftbItems.value
 
-    if (sources.value.length > 0) {
-      if (!sources.value.includes('modrinth')) {
+    if (omitSources.value.length > 0) {
+      if (omitSources.value.includes('modrinth')) {
         filteredModrinths = []
       }
-      if (!sources.value.includes('curseforge')) {
+      if (omitSources.value.includes('curseforge')) {
         filteredCurseforges = []
       }
-      if (!sources.value.includes('ftb')) {
+      if (omitSources.value.includes('ftb')) {
         filteredFtb = []
       }
     }

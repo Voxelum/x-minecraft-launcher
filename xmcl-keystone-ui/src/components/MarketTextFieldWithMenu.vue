@@ -22,8 +22,7 @@
       />
     </template>
     <v-card
-      class="overflow-auto max-h-[80vh] flex flex-col"
-      :class="{ 'modern-filter-card': marketLayout === 'modern', 'rounded-xl': marketLayout === 'modern' }"
+      class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card rounded-xl"
       @mousedown.prevent
     >
       <v-tabs v-if="!noTab" v-model="tab" centered fixed-tabs>
@@ -245,7 +244,7 @@
               </v-icon>
             </v-btn>
           </v-btn-toggle>
-          
+
 
           <slot name="local" />
         </v-tab-item>
@@ -266,7 +265,6 @@ import { kInstance } from '@/composables/instance'
 import { kModrinthTags } from '@/composables/modrinth'
 import { useSortByItems } from '@/composables/sortBy'
 import { useMinecraftVersions } from '@/composables/version'
-import { useMarketLayout } from '@/composables/marketLayout'
 import { BuiltinImages } from '@/constant'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
@@ -319,7 +317,6 @@ const emit = defineEmits<{
   (event: 'update:modrinthEnvironment', value: '' | 'client' | 'server'): void
 }>()
 
-const marketLayout = useMarketLayout()
 const { versions } = useMinecraftVersions()
 const tab = computed({
   get() {

@@ -21,7 +21,7 @@ const { open: openLauncher, isOpen: launcherActive } = useInjectInstanceLauncher
 
 // My Stuff Style Setting
 const myStuffStyle = useLocalStorageCacheStringValue<'old' | 'new'>('myStuffStyle', 'new');
-const isOldStyle = computed(() => myStuffStyle.value === 'old');
+const isOldStyle = computed(() => true);
 
 // Handler to open launcher in new style
 function handleOpenLauncher() {
@@ -100,14 +100,14 @@ watch(launcherActive, (isActive) => {
   <div ref="container" class="my-stuff-page h-full overflow-auto">
     <!-- OLD STYLE: Classic My Stuff Page -->
     <div v-if="isOldStyle" class="classic-container">
-      
+
       <!-- News Section (Hero Style) -->
       <section v-if="displayNewsHeader && allNews.length > 0" class="news-section">
         <div class="section-header">
           <v-icon class="section-icon" color="primary">article</v-icon>
           <h2 class="section-title">{{ t("news.name") }}</h2>
         </div>
-        
+
         <div class="news-carousel-wrapper">
           <v-carousel
             height="280"
@@ -117,8 +117,8 @@ watch(launcherActive, (isActive) => {
             :interval="6000"
             class="news-carousel"
           >
-            <v-carousel-item 
-              v-for="(item, index) in allNews.slice(0, 8)" 
+            <v-carousel-item
+              v-for="(item, index) in allNews.slice(0, 8)"
               :key="index"
             >
               <div class="news-slide" @click="openInBrowser(item.link)">

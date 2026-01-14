@@ -1,7 +1,6 @@
 <template>
   <div
-    class="relative flex h-full select-none flex-col overflow-auto pb-0 market-base"
-    :class="{ 'modern': marketLayout === 'modern' }"
+    class="relative flex h-full select-none flex-col overflow-auto pb-0 market-base modern"
     style="box-sizing: border-box"
     @wheel.stop
   >
@@ -89,7 +88,6 @@
 <script lang=ts setup>
 import SplitPane from '@/components/SplitPane.vue'
 import { kDialogModel } from '@/composables/dialog'
-import { useMarketLayout } from '@/composables/marketLayout'
 import { ProjectGroup } from '@/composables/modGroup'
 import { UpgradePlan } from '@/composables/modUpgrade'
 import { useQuery } from '@/composables/query'
@@ -110,8 +108,6 @@ const emit = defineEmits<{
   (event: 'drop', e: DragEvent): void
   (event: 'update:selectionMode', v: boolean): void
 }>()
-
-const marketLayout = useMarketLayout()
 
 const selectedId = useQuery('id')
 const selectedItem = computed(() => {

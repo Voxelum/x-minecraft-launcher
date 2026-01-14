@@ -68,24 +68,34 @@ export function useRecentMinecraftItems(galleryMappings: Ref<Record<string, { na
         const mapping = galleryMappings.value[`modrinth:${r.project_id}`]
         return {
           title: r.title,
-          type: 'modrinth',
+          type: 'modrinth' as const,
           id: r.project_id,
           image: r.icon_url || r.gallery[0],
+          description: r.description,
+          author: r.author,
+          downloads: r.downloads,
+          updatedAt: r.date_modified,
           gameVersion: latestModrinth.value,
           categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
           localizedTitle: mapping?.name,
+          localizedDescription: mapping?.description,
         }
       }),
       curseforges.map((r) => {
         const mapping = galleryMappings.value[`curseforge:${r.id}`]
         return {
           id: r.id.toString(),
-          type: 'curseforge',
+          type: 'curseforge' as const,
           title: r.name,
           image: r.logo?.thumbnailUrl ?? '',
+          description: r.summary,
+          author: r.authors[0]?.name ?? '',
+          downloads: r.downloadCount,
+          updatedAt: r.dateModified,
           gameVersion: r.latestFilesIndexes[0]?.gameVersion,
           categories: r.categories.map(c => tCategory(c.name)),
           localizedTitle: mapping?.name,
+          localizedDescription: mapping?.description,
         }
       }),
     )

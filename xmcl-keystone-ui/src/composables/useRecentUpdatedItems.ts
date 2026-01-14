@@ -69,9 +69,10 @@ export function useRecentUpdatedItems(galleryMappings: Ref<Record<string, { name
         return {
           title: r.title,
           id: r.project_id,
-          type: 'modrinth',
+          type: 'modrinth' as const,
           logo: r.icon_url,
           description: r.description,
+          author: r.author,
           updatedAt: r.date_modified,
           follows: r.follows,
           downloads: r.downloads,
@@ -84,10 +85,11 @@ export function useRecentUpdatedItems(galleryMappings: Ref<Record<string, { name
         const mapping = galleryMappings.value[`curseforge:${r.id}`]
         return {
           id: r.id.toString(),
-          type: 'curseforge',
+          type: 'curseforge' as const,
           title: r.name,
           logo: r.logo?.thumbnailUrl ?? '',
           description: r.summary,
+          author: r.authors[0]?.name ?? '',
           updatedAt: r.dateModified,
           follows: r.downloadCount,
           downloads: r.downloadCount,

@@ -6,7 +6,7 @@
     <!-- Image Area -->
     <div class="aspect-[16/9] relative rounded-2xl overflow-hidden bg-black/20 z-1">
       <img
-        :src="value.gallery[0] || value.icon_url"
+        :src="value.gallery?.[0] || value.iconUrl"
         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 z-0"
         loading="lazy"
       />
@@ -26,29 +26,29 @@
     <!-- Content Area -->
     <div class="p-4 flex flex-col flex-1 gap-2">
       <div class="flex items-start gap-3">
-        <img :src="value.icon_url" class="w-10 h-10 rounded-lg object-cover bg-surface-variant shadow-sm border border-white/10" />
+        <img :src="value.iconUrl" class="w-10 h-10 rounded-lg object-cover bg-surface-variant shadow-sm border border-white/10" />
         <div class="overflow-hidden">
-          <h3 class="font-bold text-base leading-tight truncate text-gray-900 dark:text-white group-hover:text-primary transition-colors" v-shared-tooltip="value.title">
-            {{ value.title }}
+          <h3 class="font-bold text-base leading-tight truncate text-gray-900 dark:text-white group-hover:text-primary transition-colors" v-shared-tooltip="value.localizedTitle || value.title">
+            {{ value.localizedTitle || value.title }}
           </h3>
           <p class="text-xs text-gray-600 dark:text-gray-500 mt-0.5 truncate">{{ value.author }}</p>
         </div>
       </div>
 
-      <p class="text-xs text-gray-700 dark:text-gray-400 line-clamp-2 h-9 leading-relaxed">{{ value.description }}</p>
+      <p class="text-xs text-gray-700 dark:text-gray-400 line-clamp-2 h-9 leading-relaxed">{{ value.localizedDescription || value.description }}</p>
 
       <div class="mt-auto pt-2 border-t border-white/5 flex items-center justify-between text-3 text-gray-600 dark:text-gray-500 font-medium">
-        <div class="flex items-center gap-1.5" >
+        <div class="flex items-center gap-1.5">
           <v-icon x-small color="grey">file_download</v-icon>
-          {{ value.labels.find(l => l.icon === 'file_download')?.text }}
+          {{ value.downloadCount }}
         </div>
-        <div class="flex items-center gap-1.5" >
+        <div class="flex items-center gap-1.5">
           <v-icon x-small color="grey">event</v-icon>
-          {{ value.labels.find(l => l.icon === 'event')?.text }}
+          {{ value.updatedAt }}
         </div>
-        <div v-if="value.labels.find(l => l.icon === 'local_offer')" class="flex items-center gap-1.5">
+        <div v-if="value.version" class="flex items-center gap-1.5">
           <v-chip x-small outlined color="grey" class="px-1.5">
-            {{ value.labels.find(l => l.icon === 'local_offer')?.text }}
+            {{ value.version }}
           </v-chip>
         </div>
       </div>
@@ -57,7 +57,22 @@
 </template>
 
 <script setup lang="ts">
-import { ExploreProject } from '@/components/StoreExploreCard.vue'
-import { vSharedTooltip } from '@/directives/sharedTooltip';
-defineProps<{ value: ExploreProject }>()
+import { vSharedTooltip } from '@/directives/sharedTooltip'
+
+export interface ExploreProjectModern {
+  id: string
+  type: 'modrinth' | 'curseforge' | 'ftb'
+  title: string
+  iconUrl: string
+  description: string
+  author: string
+  downloadCount: string
+  updatedAt: string
+  version?: string
+  gallery?: string[]
+  localizedTitle?: string
+  localizedDescription?: string
+}
+
+defineProps<{ value: ExploreProjectModern }>()
 </script>

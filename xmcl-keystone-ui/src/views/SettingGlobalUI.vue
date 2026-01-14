@@ -142,7 +142,6 @@ import { computed, watch, Ref, ref } from 'vue'
 import { useI18n } from 'vue-i18n-bridge'
 import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { useLocalStorageCacheStringValue } from '@/composables/cache'
-import { useMarketLayout } from '@/composables/marketLayout'
 import AppearanceItems from '@/components/AppearanceItems.vue'
 import { kTheme } from '@/composables/theme'
 import { kUIDefaultLayout } from '@/composables/uiLayout'
@@ -158,7 +157,6 @@ const env = injection(kEnvironment)
 const { currentTheme, update, setTheme, serialize } = injection(kTheme)
 const layout = injection(kUIDefaultLayout)
 const { state } = injection(kSettingsState)
-const marketLayout = useMarketLayout()
 
 // --- Layout & Theme Logic ---
 const layouts = computed(() => [{
