@@ -411,7 +411,7 @@ const hasFilters = computed(() => selectedCount.value > 0 || !!keyword.value)
 }
 
 .filter-title {
-  @apply font-bold mb-3 text-xs uppercase text-gray-300 tracking-wider ml-1;
+  @apply font-bold mb-3 text-xs uppercase text-gray-700 dark:text-gray-300 tracking-wider ml-1;
 }
 
 .filter-group {

@@ -242,6 +242,10 @@ watch(launcherActive, (isActive) => {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+.dark .section-title {
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -287,6 +291,10 @@ watch(launcherActive, (isActive) => {
   right: 0;
   bottom: 0;
   width: 100px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.9));
+}
+
+.dark .news-gradient {
   background: linear-gradient(to right, transparent, rgba(30, 30, 30, 1));
 }
 
@@ -296,6 +304,10 @@ watch(launcherActive, (isActive) => {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.dark .news-info {
   background: rgba(30, 30, 30, 0.95);
 }
 
@@ -315,18 +327,26 @@ watch(launcherActive, (isActive) => {
 }
 
 .news-dot {
+  color: rgba(0, 0, 0, 0.3);
+}
+
+.dark .news-dot {
   color: rgba(255, 255, 255, 0.3);
 }
 
 .news-date {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   font-size: 0.75rem;
+}
+
+.dark .news-date {
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .news-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: white;
+  color: rgba(0, 0, 0, 1);
   margin: 0 0 12px 0;
   line-height: 1.3;
   display: -webkit-box;
@@ -336,8 +356,12 @@ watch(launcherActive, (isActive) => {
   overflow: hidden;
 }
 
+.dark .news-title {
+  color: white;
+}
+
 .news-description {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(0, 0, 0, 0.7);
   font-size: 0.9rem;
   line-height: 1.5;
   margin: 0 0 16px 0;
@@ -346,6 +370,10 @@ watch(launcherActive, (isActive) => {
   line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.dark .news-description {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .news-read-more {
@@ -372,17 +400,27 @@ watch(launcherActive, (isActive) => {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+.dark .instance-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .instance-item:hover {
+  background: rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.dark .instance-item:hover {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px);
 }
 
 .instance-item--active {
@@ -402,14 +440,22 @@ watch(launcherActive, (isActive) => {
 .instance-name {
   font-weight: 600;
   font-size: 0.95rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.dark .instance-name {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .instance-version {
   font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .instance-version {
   color: rgba(255, 255, 255, 0.5);
 }
 
