@@ -8,7 +8,6 @@
       borderColor: refreshing ? 'white' : '',
       'backdrop-filter': `blur(${blurCard}px)`,
     }"
-    @dblclick="openGallery"
   >
     <v-btn
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
@@ -22,16 +21,6 @@
         {{ randomPlayScreenshot ? 'shuffle' : 'repeat' }}
       </v-icon>
     </v-btn>
-    <!-- <v-btn
-      v-shared-tooltip="t('screenshots.viewAll')"
-      text
-      icon
-      color="white"
-      class="z-6 absolute bottom-2 right-12"
-      @click.stop="openGallery"
-    >
-      <v-icon>grid_view</v-icon>
-    </v-btn> -->
     <div v-if="persistent" class="v-card__title absolute top-0 left-0 z-10 p-2 cursor-move rounded-br bg-black/20 hover:bg-black/40 transition-colors">
       <v-icon small color="white">drag_indicator</v-icon>
     </div>
@@ -88,13 +77,12 @@
 import AppImageControls from '@/components/AppImageControls.vue'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { kImageDialog } from '@/composables/imageDialog'
+import { useInstanceScreenshots } from '@/composables/screenshot'
 import { kTheme } from '@/composables/theme'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
-import { useInstanceScreenshots } from '@/composables/screenshot'
 import { Instance } from '@xmcl/instance'
-import { useDialog } from '@/composables/dialog'
 
 const props = defineProps<{
   instance: Instance;
@@ -141,16 +129,4 @@ const onDragStart = async (event: DragEvent, url: string) => {
 }
 
 const { t } = useI18n()
-
-// Screenshot gallery dialog
-const { show: showGallery } = useDialog('screenshot-gallery')
-
-const openGallery = () => {
-  showGallery({
-    instancePath: props.instance.path,
-    onOpenFolder: () => {
-      // Could add folder opening logic here if needed
-    },
-  })
-}
 </script>
