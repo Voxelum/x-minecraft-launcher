@@ -7,11 +7,14 @@ import { useMojangNews } from "@/composables/mojangNews";
 import { LauncherNews, useLauncherNews } from "@/composables/launcherNews";
 import { injection } from "@/util/inject";
 import { getInstanceIcon } from "@/util/favicon";
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted, watch, Ref } from "vue";
 import { useDialog } from "@/composables/dialog";
 import { AddInstanceDialogKey } from "@/composables/instanceTemplates";
 import { useInjectInstanceLauncher } from "@/composables/instanceLauncher";
 import { useRouter } from "vue-router/composables";
+import { useInstanceGroup } from "@/composables/instanceGroup";
+import { Instance } from "@xmcl/instance";
+import { useLocalStorage } from '@vueuse/core';
 
 const { t } = useI18n();
 const { news } = useMojangNews();
@@ -51,10 +54,171 @@ const filterKey = ref("");
 const displayNewsHeader = useLocalStorageCacheBool("displayNewsHeader", true);
 const { instances } = injection(kInstances);
 const { path } = injection(kInstance);
+const { groups } = useInstanceGroup();
+
+// View mode: folder, date, or plain
+const instanceViewMode = useLocalStorage('instanceViewMode', 'plain' as 'folder' | 'date' | 'plain');
 
 const filteredInstances = computed(() =>
   [...instances.value].filter(v => v.name.toLocaleLowerCase().includes(filterKey.value.toLocaleLowerCase())).sort((a, b) => b.lastAccessDate - a.lastAccessDate)
 );
+
+// Create a map from instance path to instance
+const instanceMap = computed(() => {
+  const map = new Map<string, Instance>();
+  for (const inst of filteredInstances.value) {
+    map.set(inst.path, inst);
+  }
+  return map;
+});
+
+interface GroupedItem {
+  type: 'group'
+  id: string
+  name: string
+  color: string
+  instances: Instance[]
+}
+
+// Get grouped instances
+const groupedInstances = computed((): GroupedItem[] => {
+  const result: GroupedItem[] = [];
+  for (const item of groups.value) {
+    if (typeof item === 'object') {
+      const groupInstances: Instance[] = [];
+      for (const instancePath of item.instances) {
+        const inst = instanceMap.value.get(instancePath);
+        if (inst) {
+          groupInstances.push(inst);
+        }
+      }
+      if (groupInstances.length > 0) {
+        result.push({
+          type: 'group',
+          id: item.id,
+          name: item.name,
+          color: item.color,
+          instances: groupInstances,
+        });
+      }
+    }
+  }
+  return result;
+});
+
+// Get ungrouped instance paths
+const groupedPaths = computed(() => {
+  const paths = new Set<string>();
+  for (const item of groups.value) {
+    if (typeof item === 'object') {
+      for (const instancePath of item.instances) {
+        paths.add(instancePath);
+      }
+    }
+  }
+  return paths;
+});
+
+// Filter to only ungrouped instances
+const ungroupedInstances = computed(() => {
+  return filteredInstances.value.filter(inst => !groupedPaths.value.has(inst.path));
+});
+
+// Time-based grouping constants
+const now = Date.now();
+const oneDay = 1000 * 60 * 60 * 24;
+const threeDays = oneDay * 3;
+
+const timeGroupTitles = computed(() => [
+  t('instanceAge.today'),
+  t('instanceAge.threeDay'),
+  t('instanceAge.older'),
+]);
+
+// Helper function to group instances by time
+const groupByTime = (instances: Instance[]): Instance[][] => {
+  const todayR: Instance[] = [];
+  const threeR: Instance[] = [];
+  const other: Instance[] = [];
+  for (const p of instances) {
+    const diff = now - p.lastAccessDate;
+    if (diff <= oneDay) {
+      todayR.push(p);
+    } else if (diff <= threeDays) {
+      threeR.push(p);
+    } else {
+      other.push(p);
+    }
+  }
+  const result: Instance[][] = [];
+  if (todayR.length > 0) result.push(todayR);
+  if (threeR.length > 0) result.push(threeR);
+  if (other.length > 0) result.push(other);
+  return result;
+};
+
+const ungroupedByTime: Ref<Instance[][]> = computed(() => groupByTime(ungroupedInstances.value));
+const instancesByTime: Ref<Instance[][]> = computed(() => groupByTime(filteredInstances.value));
+
+// Unified data structure for both view modes
+interface InstanceSection {
+  id: string
+  title: string
+  icon: string
+  instances: Instance[]
+}
+
+const instanceSections = computed((): InstanceSection[] => {
+  if (instanceViewMode.value === 'folder') {
+    const sections: InstanceSection[] = [];
+    
+    // Add manual groups
+    for (const group of groupedInstances.value) {
+      sections.push({
+        id: `group-${group.id}`,
+        title: group.name || t('instances.folder'),
+        icon: 'folder',
+        instances: group.instances,
+      });
+    }
+    
+    // Add ungrouped instances directly
+    if (ungroupedInstances.value.length > 0) {
+      sections.push({
+        id: 'ungrouped',
+        title: ' ',
+        icon: 'view_list',
+        instances: ungroupedInstances.value,
+      });
+    }
+
+    return sections;
+  } else if (instanceViewMode.value === 'date') {
+    // Date view mode - all instances by time
+    const sections: InstanceSection[] = [];
+    const timeGroups = instancesByTime.value;
+    timeGroups.forEach((timeGroup, i) => {
+      if (timeGroup.length > 0) {
+        sections.push({
+          id: `time-${i}`,
+          title: timeGroupTitles.value[i],
+          icon: 'schedule',
+          instances: timeGroup,
+        });
+      }
+    });
+    
+    return sections;
+  } else {
+    // Plain view mode - all instances in one list
+    return [{
+      id: 'plain',
+      title: '',
+      icon: 'view_list',
+      instances: filteredInstances.value,
+    }];
+  }
+});
 
 const { show: openAddInstanceDialog } = useDialog(AddInstanceDialogKey);
 
@@ -163,10 +327,28 @@ watch(launcherActive, (isActive) => {
             <v-icon class="section-icon" color="primary">apps</v-icon>
             <h2 class="section-title">{{ t("instance.name", 2) }}</h2>
           </div>
-          <v-btn color="primary" @click="openAddInstanceDialog" small depressed>
-            <v-icon left small>add</v-icon>
-            {{ t("instanceLauncher.createNew") }}
-          </v-btn>
+          <div class="d-flex align-center gap-2">
+            <v-btn-toggle
+              v-model="instanceViewMode"
+              mandatory
+              dense
+              class="mr-2"
+            >
+              <v-btn small value="folder">
+                <v-icon small>folder</v-icon>
+              </v-btn>
+              <v-btn small value="date">
+                <v-icon small>schedule</v-icon>
+              </v-btn>
+              <v-btn small value="plain">
+                <v-icon small>view_list</v-icon>
+              </v-btn>
+            </v-btn-toggle>
+            <v-btn color="primary" @click="openAddInstanceDialog" small depressed>
+              <v-icon left small>add</v-icon>
+              {{ t("instanceLauncher.createNew") }}
+            </v-btn>
+          </div>
         </div>
 
         <v-text-field
@@ -179,20 +361,28 @@ watch(launcherActive, (isActive) => {
           class="search-field mb-4"
         />
 
-        <div class="instances-grid">
-          <div
-            v-for="instance in filteredInstances"
-            :key="instance.path"
-            class="instance-item"
-            :class="{ 'instance-item--active': instance.path === path }"
-            @click="selectInstance(instance.path)"
-          >
-            <v-avatar size="44" class="instance-avatar">
-              <v-img :src="getInstanceIcon(instance, undefined)" />
-            </v-avatar>
-            <div class="instance-info">
-              <div class="instance-name">{{ instance.name }}</div>
-              <div class="instance-version">{{ instance.runtime.minecraft }}</div>
+        <!-- Unified Instance Sections -->
+        <div v-for="section in instanceSections" :key="section.id" class="mb-6">
+          <div v-if="section.title" class="section-header-item mb-3">
+            <v-icon small class="mr-2">{{ section.icon }}</v-icon>
+            <span class="section-title-item">{{ section.title }}</span>
+            <span class="section-count">({{ section.instances.length }})</span>
+          </div>
+          <div class="instances-grid">
+            <div
+              v-for="instance in section.instances"
+              :key="instance.path"
+              class="instance-item"
+              :class="{ 'instance-item--active': instance.path === path }"
+              @click="selectInstance(instance.path)"
+            >
+              <v-avatar size="44" class="instance-avatar">
+                <v-img :src="getInstanceIcon(instance, undefined)" />
+              </v-avatar>
+              <div class="instance-info">
+                <div class="instance-name">{{ instance.name }}</div>
+                <div class="instance-version">{{ instance.runtime.minecraft }}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -389,6 +579,35 @@ watch(launcherActive, (isActive) => {
   border-radius: 8px;
 }
 
+.group-header,
+.time-header {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.dark .group-header,
+.dark .time-header {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.group-title,
+.time-title {
+  font-size: 1rem;
+}
+
+.group-count {
+  margin-left: 8px;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .group-count {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .instances-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -423,30 +642,33 @@ watch(launcherActive, (isActive) => {
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-.instance-item--active {
-  background: rgba(76, 175, 80, 0.15);
-  border-color: var(--v-primary-base);
-}
-
-.instance-avatar {
-  flex-shrink: 0;
-}
-
-.instance-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.instance-name {
+.section-header-item {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
   font-weight: 600;
-  font-size: 0.95rem;
-  color: rgba(0, 0, 0, 0.9);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: rgba(0, 0, 0, 0.7);
 }
 
-.dark .instance-name {
+.dark .section-header-item {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.section-title-item {
+  font-size: 1rem;
+}
+
+.section-count {
+  margin-left: 8px;
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.dark .section-count {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dark .sectionnce-name {
   color: rgba(255, 255, 255, 0.9);
 }
 

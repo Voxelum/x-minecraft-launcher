@@ -33,7 +33,7 @@
           <!-- Sources -->
           <div class="filter-group">
             <h3 class="filter-title">
-              Sources
+              {{ t('mod.sourceUrl' )}}
             </h3>
             <div class="flex gap-2">
               <div
@@ -139,35 +139,6 @@
                 <StoreGallery :gallery="g" @enter="enter(g.type, g.id)" />
              </v-carousel-item>
            </v-carousel>
-        </div>
-
-        <!-- Recent Updated Section -->
-        <div v-if="!keyword && selectedCount === 0" class="mb-12">
-           <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-             <v-icon color="blue" large>update</v-icon> {{ t('store.recentUpdated') }}
-             <v-btn icon small class="ml-2" @click="refreshRecentUpdated">
-               <v-icon>refresh</v-icon>
-             </v-btn>
-           </h2>
-           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-             <StoreExploreCardModern
-               v-for="item in recentUpdatedItems"
-               :key="`updated-${item.id}`"
-               :value="{
-                 id: item.id,
-                 type: item.type,
-                 title: item.title,
-                 iconUrl: item.logo,
-                 description: item.description,
-                 author: item.author,
-                 downloadCount: getExpectedSize(item.downloads, ''),
-                 updatedAt: getDateString(item.updatedAt),
-                 localizedTitle: item.localizedTitle,
-                 localizedDescription: item.localizedDescription,
-               }"
-               @click="enter(item.type, item.id)"
-             />
-           </div>
         </div>
 
         <!-- Latest Minecraft Section -->
@@ -331,26 +302,11 @@ const {
 } = usePopularItems(galleryMappings)
 
 const {
-  recentUpdatedItems: allRecentUpdatedItems,
-  isValidating: isValidatingRecentUpdated
-} = useRecentUpdatedItems(galleryMappings)
-
-const {
   recentMinecraftItems: allRecentMinecraftItems
 } = useRecentMinecraftItems(galleryMappings)
 
 // Display only 8 items, with rotation support
-const recentUpdatedOffset = ref(0)
 const recentMinecraftOffset = ref(0)
-
-const recentUpdatedItems = computed(() => {
-  const items = allRecentUpdatedItems.value
-  if (items.length === 0) return []
-  const offset = recentUpdatedOffset.value % items.length
-  // Rotate items starting from offset and take 8
-  const rotated = [...items.slice(offset), ...items.slice(0, offset)]
-  return rotated.slice(0, 8)
-})
 
 const recentMinecraftItems = computed(() => {
   const items = allRecentMinecraftItems.value
@@ -360,10 +316,6 @@ const recentMinecraftItems = computed(() => {
   const rotated = [...items.slice(offset), ...items.slice(0, offset)]
   return rotated.slice(0, 8)
 })
-
-const refreshRecentUpdated = () => {
-  recentUpdatedOffset.value += 8
-}
 
 const refreshRecentMinecraft = () => {
   recentMinecraftOffset.value += 8

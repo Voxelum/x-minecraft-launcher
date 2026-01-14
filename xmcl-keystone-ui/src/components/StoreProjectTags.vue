@@ -3,7 +3,7 @@
     <v-subheader>
       {{ t('modrinth.technicalInformation') }}
     </v-subheader>
-    <div class="xl:(flex flex-col) grid grid-cols-2 gap-1 px-2">
+    <div class="lg:(flex flex-col) grid grid-cols-2 gap-1 px-2">
       <div
         v-for="item of project.info"
         :key="item.name"

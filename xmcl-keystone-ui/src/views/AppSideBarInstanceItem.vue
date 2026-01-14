@@ -8,7 +8,7 @@
       link
       draggable
       class="non-moveable sidebar-item flex-1 flex-grow-0"
-      :class="{ 'v-list-item--active': path === selectedInstance, 'px-2': !compact, 'px-0': compact, 'justify-center': compact }"
+      :class="{ 'v-list-item--active': isActive, 'px-2': !compact, 'px-0': compact, 'justify-center': compact }"
       @click="navigate"
       @dragover.prevent
       @dragstart="onDragStart"
@@ -36,16 +36,16 @@
           v-else
           type="avatar"
         />
-        <!-- Pin indicator -->
-        <div
-          v-if="pinned"
-          class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md"
-        >
-          <v-icon x-small color="white" style="font-size: 10px;">push_pin</v-icon>
-        </div>
       </v-list-item-avatar>
       <v-list-item-title v-if="!compact">{{ name }}</v-list-item-title>
     </v-list-item>
+    <!-- Pin indicator -->
+    <div
+      v-if="pinned"
+      class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center shadow-md"
+    >
+      <v-icon x-small color="white" style="font-size: 10px;">push_pin</v-icon>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
@@ -104,6 +104,9 @@ const favicon = computed(() => {
 })
 
 const baseItems = useInstanceContextMenuItems(instance)
+
+const route = useRoute()
+const isActive = computed(() => props.path === selectedInstance.value && route.path === '/')
 
 // Extended context menu with pin option
 const getItems = () => {
