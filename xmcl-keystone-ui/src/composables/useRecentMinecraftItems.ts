@@ -9,13 +9,16 @@ import { ProjectMappingServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref, computed, inject, watch } from 'vue'
 import { injection } from '@/util/inject'
+import { ExploreProjectModern } from '@/components/StoreExploreCardModern.vue'
+import { getExpectedSize } from '@/util/size'
+import { useDateString } from './date'
 
 export function useRecentMinecraftItems(galleryMappings: Ref<Record<string, { name: string; description: string }>>) {
   const { t } = useI18n()
   const tCategory = useCurseforgeCategoryI18n()
+  const { getDateString } = useDateString()
 
   const { lookupBatch } = useService(ProjectMappingServiceKey)
-
   const { gameVersions } = injection(kModrinthTags)
 
   // Latest minecraft
@@ -63,19 +66,20 @@ export function useRecentMinecraftItems(galleryMappings: Ref<Record<string, { na
     const modrinths = modrinthRecentMinecraft.value || []
     const curseforges = curseforgeRecentMinecraft.value || []
 
-    return mergeSorted(
+    return mergeSorted<ExploreProjectModern>(
       modrinths.map((r) => {
         const mapping = galleryMappings.value[`modrinth:${r.project_id}`]
         return {
-          title: r.title,
-          type: 'modrinth' as const,
           id: r.project_id,
-          image: r.icon_url || r.gallery[0],
+          type: 'modrinth',
+          title: r.title,
+          iconUrl: r.icon_url || r.gallery[0],
           description: r.description,
           author: r.author,
-          downloads: r.downloads,
-          updatedAt: r.date_modified,
-          gameVersion: latestModrinth.value,
+          downloadCount: getExpectedSize(r.downloads),
+          updatedAt: getDateString(r.date_modified),
+          gallery: r.gallery,
+          version: latestModrinth.value,
           categories: r.categories.map(c => t(`modrinth.categories.${c}`, c)),
           localizedTitle: mapping?.name,
           localizedDescription: mapping?.description,
@@ -85,14 +89,15 @@ export function useRecentMinecraftItems(galleryMappings: Ref<Record<string, { na
         const mapping = galleryMappings.value[`curseforge:${r.id}`]
         return {
           id: r.id.toString(),
-          type: 'curseforge' as const,
+          type: 'curseforge',
           title: r.name,
-          image: r.logo?.thumbnailUrl ?? '',
+          iconUrl: r.logo?.thumbnailUrl ?? '',
           description: r.summary,
           author: r.authors[0]?.name ?? '',
-          downloads: r.downloadCount,
-          updatedAt: r.dateModified,
-          gameVersion: r.latestFilesIndexes[0]?.gameVersion,
+          downloadCount: getExpectedSize(r.downloadCount),
+          updatedAt: getDateString(r.dateModified),
+          gallery: r.screenshots.map(s => s.thumbnailUrl),
+          version: r.latestFilesIndexes[0]?.gameVersion,
           categories: r.categories.map(c => tCategory(c.name)),
           localizedTitle: mapping?.name,
           localizedDescription: mapping?.description,

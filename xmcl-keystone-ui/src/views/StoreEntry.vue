@@ -153,19 +153,7 @@
              <StoreExploreCardModern
                v-for="item in recentMinecraftItems"
                :key="`minecraft-${item.id}`"
-               :value="{
-                 id: item.id,
-                 type: item.type,
-                 title: item.title,
-                 iconUrl: item.image,
-                 description: item.description,
-                 author: item.author,
-                 downloadCount: getExpectedSize(item.downloads, ''),
-                 updatedAt: getDateString(item.updatedAt),
-                 version: item.gameVersion,
-                 localizedTitle: item.localizedTitle,
-                 localizedDescription: item.localizedDescription,
-               }"
+               :value="item"
                @click="enter(item.type, item.id)"
              />
            </div>
@@ -245,10 +233,8 @@ import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/que
 import { useSortByItems } from '@/composables/sortBy'
 import { usePopularItems } from '@/composables/usePopularItems'
 import { useRecentMinecraftItems } from '@/composables/useRecentMinecraftItems'
-import { useRecentUpdatedItems } from '@/composables/useRecentUpdatedItems'
 import { useSearchedItems } from '@/composables/useSearchedItems'
 import { injection } from '@/util/inject'
-import { getExpectedSize } from '@/util/size'
 
 const { push } = useRouter()
 const { t } = useI18n()
