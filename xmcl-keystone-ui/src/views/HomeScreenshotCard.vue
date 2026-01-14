@@ -14,6 +14,7 @@
       v-shared-tooltip="_ => randomPlayScreenshot ? t('screenshots.playRandom') : t('screenshots.playSequence')"
       text
       icon
+      color="white"
       class="z-6 absolute bottom-2 right-2"
       @click="randomPlayScreenshot = !randomPlayScreenshot"
     >
@@ -21,7 +22,17 @@
         {{ randomPlayScreenshot ? 'shuffle' : 'repeat' }}
       </v-icon>
     </v-btn>
-    <div class="v-card__title absolute top-0 left-0 z-10 p-2 cursor-move rounded-br bg-black/20 hover:bg-black/40 transition-colors">
+    <!-- <v-btn
+      v-shared-tooltip="t('screenshots.viewAll')"
+      text
+      icon
+      color="white"
+      class="z-6 absolute bottom-2 right-12"
+      @click.stop="openGallery"
+    >
+      <v-icon>grid_view</v-icon>
+    </v-btn> -->
+    <div v-if="persistent" class="v-card__title absolute top-0 left-0 z-10 p-2 cursor-move rounded-br bg-black/20 hover:bg-black/40 transition-colors">
       <v-icon small color="white">drag_indicator</v-icon>
     </div>
     <v-carousel
@@ -49,19 +60,9 @@
           <div
             class="absolute w-full bottom-2 flex justify-center items-center justify-center z-10"
           >
-            <div class="flex items-center gap-1">
+            <div>
               <AppImageControls :image="i" />
-              <v-btn
-                icon
-                x-small
-                class="bg-black/50 hover:bg-black/70"
-                @click.stop="openGallery"
-                v-shared-tooltip="t('screenshots.viewAll')"
-              >
-                <v-icon small>grid_view</v-icon>
-              </v-btn>
             </div>
-          </div>
           </div>
         </v-carousel-item>
       </template>

@@ -17,7 +17,7 @@
       <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-60 group-hover:opacity-0 transition-opacity"></div>
 
       <div class="absolute top-3 right-3 flex gap-2">
-        <v-chip x-small class="bg-black/60 dark:bg-white/60 text-white dark:text-black backdrop-blur-md font-bold uppercase tracking-wider text-3">
+        <v-chip x-small class="bg-black/60 dark:bg-white/60 text-white backdrop-blur-md font-bold uppercase tracking-wider text-3">
           {{ value.type }}
         </v-chip>
       </div>

@@ -57,7 +57,6 @@
         />
       </GridItem>
     </GridLayout>
-    <ScreenshotGalleryDialog />
   </div>
 </template>
 <script lang="ts" setup>
@@ -72,7 +71,6 @@ import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import ScreenshotGalleryDialog from '@/components/ScreenshotGalleryDialog.vue'
 
 const { instance } = injection(kInstance)
 

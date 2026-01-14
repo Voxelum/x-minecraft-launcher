@@ -22,7 +22,7 @@
       />
     </template>
     <v-card
-      class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card rounded-xl"
+      class="overflow-auto max-h-[80vh] flex flex-col modern-filter-card"
       @mousedown.prevent
     >
       <v-tabs v-if="!noTab" v-model="tab" centered fixed-tabs>

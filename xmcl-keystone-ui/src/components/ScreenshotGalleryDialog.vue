@@ -5,13 +5,13 @@
     max-height="85vh"
     scrollable
   >
-    <v-card class="bg-[#1a1a1a] rounded-xl overflow-hidden" style="max-height: 85vh;">
+    <v-card class="bg-white dark:bg-[#1a1a1a] rounded-xl overflow-hidden" style="max-height: 85vh;">
       <!-- Compact Header Bar -->
-      <v-card-title class="py-2 px-4 bg-[#212121] border-b border-white/10 flex items-center justify-between">
+      <v-card-title class="py-2 px-4 bg-gray-100 dark:bg-[#212121] border-b border-gray-300 dark:border-white/10 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <v-icon color="success" size="18">collections</v-icon>
           <span class="text-sm font-medium">{{ t('screenshots.gallery') }}</span>
-          <span class="text-gray-500 text-xs">({{ screenshots.length }})</span>
+          <span class="text-gray-700 dark:text-gray-500 text-xs">({{ screenshots.length }})</span>
         </div>
         <div class="flex items-center gap-1">
           <v-btn text x-small @click="onOpenFolder">
@@ -26,17 +26,17 @@
 
       <!-- Screenshots Grid -->
       <v-card-text class="p-3 overflow-y-auto" style="max-height: calc(85vh - 48px);">
-        <div v-if="screenshots.length === 0" class="flex flex-col items-center justify-center py-12 text-gray-500">
+        <div v-if="screenshots.length === 0" class="flex flex-col items-center justify-center py-12 text-gray-700 dark:text-gray-500">
           <v-icon size="48" class="mb-3 opacity-30">photo_camera</v-icon>
           <p class="text-sm">{{ t('screenshots.empty') }}</p>
-          <p class="text-xs text-gray-600">{{ t('screenshots.hint') }}</p>
+          <p class="text-xs text-gray-600 dark:text-gray-600">{{ t('screenshots.hint') }}</p>
         </div>
         
         <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           <div
             v-for="(url, idx) in screenshots"
             :key="url"
-            class="group relative rounded-lg overflow-hidden bg-black cursor-pointer transition-all hover:ring-2 ring-[#4caf50] hover:shadow-xl"
+            class="group relative rounded-lg overflow-hidden bg-gray-200 dark:bg-black cursor-pointer transition-all hover:ring-2 ring-green-500 dark:ring-[#4caf50] hover:shadow-xl"
             @click="onViewImage(idx)"
           >
             <div class="aspect-video">
