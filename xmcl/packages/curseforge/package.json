@@ -1,0 +1,48 @@
+{
+  "name": "@xmcl/curseforge",
+  "version": "2.2.0",
+  "main": "./index.ts",
+  "module": "./index.ts",
+  "sideEffects": false,
+  "description": "An implementation of curseforge (official) API in https://docs.curseforge.com/",
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --external:undici --platform=node --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --external:undici --platform=node --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts",
+    "build:browser": "esbuild --target=es2020 --sourcemap --alias:undici=undici-shim --format=esm --bundle --outfile=dist/index.browser.mjs index.ts"
+  },
+  "engines": {
+    "node": ">=16.4"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "browser": "./dist/index.browser.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "electron",
+    "curseforge"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "undici": "7.18.2"
+  },
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "esbuild": "^0.17.16",
+    "undici-shim": "workspace:^*"
+  }
+}

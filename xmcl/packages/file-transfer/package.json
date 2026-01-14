@@ -1,0 +1,49 @@
+{
+  "name": "@xmcl/file-transfer",
+  "version": "2.0.2",
+  "main": "./index.ts",
+  "description": "A high performance downloader based on undici",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --platform=node --external:http-cache-semantics --external:undici --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --platform=node --external:http-cache-semantics --external:undici --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
+  },
+  "dependencies": {
+    "@types/http-cache-semantics": "^4.0.1",
+    "http-cache-semantics": "^4.1.1",
+    "undici": "7.18.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "sideEffects": false,
+  "author": "cijhn@hotmail.com",
+  "keywords": [
+    "minecraft",
+    "typescript",
+    "minecraft-launcher",
+    "nodejs",
+    "electron"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "devDependencies": {
+    "@types/node": "~18.15.11",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.17.16",
+    "oxlint": "^0.15.5",
+    "typescript": "^5.3.3"
+  }
+}

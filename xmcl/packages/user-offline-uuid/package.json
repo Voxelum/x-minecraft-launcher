@@ -1,0 +1,11 @@
+{
+  "name": "user-offline-uuid",
+  "version": "0.1.0",
+  "private": true,
+  "module": "index.ts",
+  "browser": "index.browser.ts",
+  "dependencies": {
+    "undici": "7.18.2",
+    "@types/node": "~18.15.11"
+  }
+}

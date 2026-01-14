@@ -1,0 +1,51 @@
+{
+  "name": "@xmcl/discord-rpc",
+  "version": "1.1.2",
+  "description": "a fork of discordjs/RPC",
+  "main": "./index.ts",
+  "author": "xhayper",
+  "license": "ISC",
+  "scripts": {
+    "build:type": "tsc",
+    "build:cjs": "esbuild --target=node16 --external:undici --platform=node --sourcemap --format=cjs --bundle --outfile=dist/index.js index.ts",
+    "build:esm": "esbuild --target=node16 --external:undici --platform=node --sourcemap --format=esm --bundle --outfile=dist/index.mjs index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs"
+  },
+  "keywords": [
+    "typescript",
+    "discord",
+    "ipc",
+    "rpc",
+    "rich-presence",
+    "discord-rpc",
+    "discord-ipc"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Voxelum/minecraft-launcher-core-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Voxelum/minecraft-launcher-core-node/issues"
+  },
+  "homepage": "https://github.com/Voxelum/minecraft-launcher-core-node#readme",
+  "sideEffects": false,
+  "dependencies": {
+    "discord-api-types": "^0.37.39",
+    "undici": "7.18.2"
+  },
+  "devDependencies": {
+    "@types/node": "~18",
+    "oxlint": "^0.15.5",
+    "@xmcl/oxlint-config": "workspace:^*",
+    "esbuild": "^0.17.16",
+    "typescript": "^5.3.3",
+    "tsx": "^3.12.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
