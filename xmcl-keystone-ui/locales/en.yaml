@@ -1470,7 +1470,7 @@ setting:
     sideBarColor: Side Bar
     warningColor: Warning Color
   darkTheme: Theme
-  darkThemeDescription: Choose between dark or light theme
+  darkThemeDescription: Choose dark, light theme or follow system
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is for testing your own mods
   disableTelemetry: Disable Telemetry

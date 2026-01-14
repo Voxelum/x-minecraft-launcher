@@ -1265,7 +1265,7 @@ setting:
     sideBarColor: 사이드바
     warningColor: 경고 색상
   darkTheme: 테마
-  darkThemeDescription: 다크 또는 라이트 테마 중 선택
+  darkThemeDescription: 다크, 라이트 테마 또는 시스템 따르기 중 선택
   developerMode: 개발자 모드
   developerModeDescription: 개발자 모드는 자신의 모드를 테스트하기 위한 것입니다
   disableTelemetry: 원격 분석 비활성화

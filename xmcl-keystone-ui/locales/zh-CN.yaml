@@ -1323,7 +1323,7 @@ setting:
     sideBarColor: 侧边栏
     warningColor: 警告颜色
   darkTheme: 主题
-  darkThemeDescription: 选择深色或浅色主题
+  darkThemeDescription: 选择深色、浅色主题或跟随系统
   developerMode: 开发者模式
   developerModeDescription: 开发者模式旨在帮助您测试自己写的模组
   disableTelemetry: 关闭遥测

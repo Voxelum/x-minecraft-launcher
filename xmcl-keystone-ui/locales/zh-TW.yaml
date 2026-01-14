@@ -1297,7 +1297,7 @@ setting:
     sideBarColor: 側邊欄
     warningColor: 警告顏色
   darkTheme: 主題
-  darkThemeDescription: 選擇深色或淺色主題
+  darkThemeDescription: 選擇深色、淺色主題或跟隨系統
   developerMode: 開發者模式
   developerModeDescription: 開發者模式旨在協助您測試自己寫的模組
   disableTelemetry: 停用遙測
