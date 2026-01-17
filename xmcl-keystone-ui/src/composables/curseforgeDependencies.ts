@@ -1,13 +1,12 @@
+import { getModLoaderTypesForFile } from '@/util/curseforge'
 import { injection } from '@/util/inject'
 import { getSWRV } from '@/util/swrvGet'
 import { File, FileModLoaderType, FileRelationType, Mod } from '@xmcl/curseforge'
-import { TaskState } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { getCurseforgeProjectFilesModel, getCurseforgeProjectModel } from './curseforge'
 import { kSWRVConfig } from './swrvConfig'
-import { kTaskManager } from './taskManager'
-import { getModLoaderTypesForFile } from '@/util/curseforge'
+import { useTask } from './task'
 
 type ProjectDependency = {
   /**
@@ -95,8 +94,5 @@ export function useCurseforgeDependencies(fileRef: Ref<File | undefined>, gameVe
 }
 
 export function useCurseforgeTask(id: Ref<number>) {
-  const { tasks } = injection(kTaskManager)
-  return computed(() => {
-    return tasks.value.find(t => t.state === TaskState.Running && t.path === 'installCurseforgeFile' && t.param.fileId === id.value)
-  })
+  return useTask((t) => t.type === 'installCurseforgeFile' && t.fileId === id.value)
 }

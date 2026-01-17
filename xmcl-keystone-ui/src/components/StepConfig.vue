@@ -21,7 +21,7 @@
           persistent-placeholder
           :hint="t('instance.nameHint')"
           :placeholder="placeHolderName"
-          :label="t('name')"
+          :label="t('shared.name')"
           :rules="nameRules"
           required
         />
@@ -33,7 +33,7 @@
           class="col-span-2"
           persistent-hint
           :hint="t('modpack.authorHint')"
-          :label="t('author')"
+          :label="t('shared.author')"
         />
         <v-text-field
           v-model="content.description"
@@ -43,7 +43,7 @@
           outlined
           persistent-hint
           :hint="t('modpack.descriptionHint')"
-          :label="t('description')"
+          :label="t('shared.description')"
         />
       </div>
     </v-form>

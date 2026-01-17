@@ -13,7 +13,7 @@
       >
         <v-img
           v-for="d of display.slice(0, 4)"
-          :key="d"
+          :key="'explore-category-img-' + d"
           class="min-h-40"
           :src="d"
         />
@@ -37,13 +37,13 @@
         v-for="g of groups"
       >
         <span
-          :key="g.text"
+          :key="'explore-category-title-' + g.text"
           class="list-title"
         >{{ g.text }}</span>
         <template v-if="g.type === 'checkbox'">
           <span
             v-for="cat in g.categories"
-            :key="g.text + cat.text"
+            :key="'explore-category-text-' + g.text + cat.text"
             class="item"
             @click="emit('select', { category: cat.id, group: g.id })"
           >
@@ -69,7 +69,7 @@
         </template>
         <div
           v-else-if="g.type === 'buttons'"
-          :key="g.text + 'toggle'"
+          :key="'explore-category-title-' + g.text + '-toggle'"
           class="py-2"
         >
           <v-btn-toggle
@@ -80,7 +80,7 @@
           >
             <v-btn
               v-for="tag in g.categories"
-              :key="tag.id"
+              :key="'explore-category-btn-' + tag.id"
               v-shared-tooltip="tag.text"
               small
               outlined

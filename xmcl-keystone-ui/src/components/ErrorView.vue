@@ -25,7 +25,7 @@
       color="error"
       @click="emit('refresh')"
     >
-      {{ t('refresh') }}
+      {{ t('shared.refresh') }}
     </v-btn>
   </div>
 </template>

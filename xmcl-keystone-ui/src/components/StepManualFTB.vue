@@ -18,7 +18,7 @@
               outlined
               persistent-hint
               :hint="t('instance.nameHint')"
-              :label="t('name')"
+              :label="t('shared.name')"
               :rules="nameRules"
               required
             />
@@ -27,7 +27,7 @@
               outlined
               persistent-hint
               :hint="t('modpack.authorHint')"
-              :label="t('author')"
+              :label="t('shared.author')"
               required
             />
             <v-text-field
@@ -36,7 +36,7 @@
               outlined
               persistent-hint
               :hint="t('modpack.descriptionHint')"
-              :label="t('description')"
+              :label="t('shared.description')"
             />
           </div>
         </v-list-item>

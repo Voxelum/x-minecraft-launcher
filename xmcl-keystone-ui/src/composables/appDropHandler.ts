@@ -1,12 +1,10 @@
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { ImportServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { Resource } from '@xmcl/resource'
 import { useDialog } from './dialog'
 import { kDropHandler } from './dropHandler'
 import { kInstance } from './instance'
 import { AddInstanceDialogKey } from './instanceTemplates'
-import { useService } from './service'
-import { Resource } from '@xmcl/resource'
 
 export interface DropItem {
   id: string
@@ -76,8 +74,6 @@ export function useAppDropHandler() {
       if (items.value.length === 0) cancel()
     },
   })
-  const { addYggdrasilService } = useService(UserServiceKey)
-  const { previewUrl } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {
     mods: '$vuetify.icons.package',

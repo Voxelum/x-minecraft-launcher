@@ -318,7 +318,7 @@ const dependencies = computed(() => !curseforgeFile.value
       parent: resolvedDep.parent?.name ?? '',
       installedVersion: computed(() => file.value?.version),
       installedDifferentVersion: computed(() => otherFile.value?.version),
-      progress: computed(() => task.value ? task.value.progress / task.value.total : -1),
+      progress: computed(() => task.progress.value / task.total.value),
     })
     return dep
   }) ?? [])
@@ -377,36 +377,14 @@ const { isFollowed, following, onFollow } = useModrinthFollow(modrinthId)
 const { collectionId, onAddOrRemove, loadingCollections } = useInCollection(modrinthId)
 </script>
 <template>
-  <MarketProjectDetail
-    :detail="model"
-    :enabled="enabled"
-    :selected-installed="installed"
-    :dependencies="dependencies"
+  <MarketProjectDetail :detail="model" :enabled="enabled" :selected-installed="installed" :dependencies="dependencies"
     :supported-versions="curseforgeProject?.latestFilesIndexes.map(v => v.gameVersion) ?? []"
-    :has-installed-version="hasInstalledVersion"
-    :loading="loading"
-    :has-more="files.length < totalCount"
-    :loading-versions="loadingVersions"
-    :updating="innerUpdating || updating || installing"
-    :versions="modVersions"
-    :curseforge="curseforgeId"
-    :modrinth="modrinthId"
-    :loading-dependencies="loadingDependencies"
-    current-target="curseforge"
-    :followed="isFollowed"
-    :collection="collectionId"
-    :following="following"
-    :loading-collections="loadingCollections"
-    @load-changelog="loadChangelog"
-    @collection="onAddOrRemove"
-    @delete="onDelete"
-    @enable="enabled = $event"
-    @load-more="onLoadMore"
-    @open-dependency="onOpenDependency"
-    @install="onInstall"
-    @install-dependency="installDependency"
-    @select:category="emit('category', Number($event))"
-    @refresh="onRefresh"
-    @follow="onFollow"
-  />
+    :has-installed-version="hasInstalledVersion" :loading="loading" :has-more="files.length < totalCount"
+    :loading-versions="loadingVersions" :updating="innerUpdating || updating || installing" :versions="modVersions"
+    :curseforge="curseforgeId" :modrinth="modrinthId" :loading-dependencies="loadingDependencies"
+    current-target="curseforge" :followed="isFollowed" :collection="collectionId" :following="following"
+    :loading-collections="loadingCollections" @load-changelog="loadChangelog" @collection="onAddOrRemove"
+    @delete="onDelete" @enable="enabled = $event" @load-more="onLoadMore" @open-dependency="onOpenDependency"
+    @install="onInstall" @install-dependency="installDependency" @select:category="emit('category', Number($event))"
+    @refresh="onRefresh" @follow="onFollow" />
 </template>

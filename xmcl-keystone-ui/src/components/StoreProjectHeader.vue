@@ -41,7 +41,7 @@
             >
               file_download
             </v-icon>
-            {{ t('install') }}
+            {{ t('shared.install') }}
           </v-btn>
           <v-btn
             v-if="installed"

@@ -18,10 +18,8 @@ const EMPTY_INSTANCE: Instance = {
   version: '',
   url: '',
   icon: '',
-  modpackVersion: '',
   fileApi: '',
   server: null,
-  tags: [],
 }
 /**
  * Use the general info of the instance

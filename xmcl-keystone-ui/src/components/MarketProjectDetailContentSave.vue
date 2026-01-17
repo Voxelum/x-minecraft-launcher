@@ -98,7 +98,7 @@
           />
           <AppCopyChip
             v-else
-            :value="saveFile.cheat ? t('yes') : t('no')"
+            :value="saveFile.cheat ? t('shared.yes') : t('shared.no')"
             outlined
           />
         </div>

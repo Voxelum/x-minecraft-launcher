@@ -1,4 +1,3 @@
-import { TaskItem } from '@/entities/task'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCurseforgeModLoaderTypeFromRuntime, getInstanceFileFromCurseforgeFile } from '@/util/curseforge'
 import { ModFile } from '@/util/mod'
@@ -7,7 +6,7 @@ import { getSWRV } from '@/util/swrvGet'
 import { notNullish } from '@vueuse/core'
 import { FileRelationType } from '@xmcl/curseforge'
 import { InstanceFile, RuntimeVersions } from '@xmcl/instance'
-import { TaskState } from '@xmcl/runtime-api'
+import { InstallInstanceTask, TaskState, Tasks } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { InstanceInstallDialog } from './instanceUpdate'
@@ -173,9 +172,9 @@ export function useModDependenciesCheck(path: Ref<string>, runtime: Ref<RuntimeV
     })
   }
 
-  function isCurrentTask(task: TaskItem) {
-    return task.path === 'installInstance' && task.param.operationId === operationId &&
-      task.param.instance === operationPath
+  function isCurrentTask(task: Tasks): task is InstallInstanceTask {
+    if (task.type !== 'installInstance') return false
+    return task.taskId === operationId && task.instancePath === operationPath
   }
 
   const { task } = useTask((i) => {

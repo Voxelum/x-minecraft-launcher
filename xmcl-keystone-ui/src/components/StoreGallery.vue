@@ -60,7 +60,7 @@
         </v-icon>
         <v-chip
           v-for="cat of gallery.categories.slice(0, 3)"
-          :key="cat"
+          :key="'store-gallery-' + cat"
           small
           label
           outlined
