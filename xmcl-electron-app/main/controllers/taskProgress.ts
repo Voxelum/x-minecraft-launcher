@@ -31,33 +31,33 @@ export const taskProgressPlugin: ControllerPlugin = function (this: ElectronCont
     }
   }
   this.app.registry.get(kTasks).then((tasks) => {
-    tasks.emitter.on('update', (uid, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          const progress = task.progress / task.total
-          if (Number.isNaN(progress) || progress > 1) {
-            this.activeWindow.setProgressBar(-1)
-          } else {
-            this.activeWindow.setProgressBar(progress)
-          }
-        }
-      }
-    })
-    tasks.emitter.on('success', (_, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(-1)
-        }
-        notify('finish')
-      }
-    })
-    tasks.emitter.on('fail', (_, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(-1)
-        }
-        notify('fail')
-      }
-    })
+    // tasks.emitter.on('update', (uid, task) => {
+    //   if (tasks.getActiveTask() === task) {
+    //     if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+    //       const progress = task.progress / task.total
+    //       if (Number.isNaN(progress) || progress > 1) {
+    //         this.activeWindow.setProgressBar(-1)
+    //       } else {
+    //         this.activeWindow.setProgressBar(progress)
+    //       }
+    //     }
+    //   }
+    // })
+    // tasks.emitter.on('success', (_, task) => {
+    //   if (tasks.getActiveTask() === task) {
+    //     if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+    //       this.activeWindow.setProgressBar(-1)
+    //     }
+    //     notify('finish')
+    //   }
+    // })
+    // tasks.emitter.on('fail', (_, task) => {
+    //   if (tasks.getActiveTask() === task) {
+    //     if (this.activeWindow && !this.activeWindow.isDestroyed()) {
+    //       this.activeWindow.setProgressBar(-1)
+    //     }
+    //     notify('fail')
+    //   }
+    // })
   })
 }
