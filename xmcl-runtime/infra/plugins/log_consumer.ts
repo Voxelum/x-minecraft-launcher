@@ -1,15 +1,16 @@
 import { Exception } from '@xmcl/runtime-api'
+import { isSystemError } from '@xmcl/utils'
 import filenamify from 'filenamify'
 import { WriteStream, createWriteStream, ensureDir, readFile, readdir, stat, unlink } from 'fs-extra'
 import { basename, join, resolve } from 'path'
 import { PassThrough, Transform } from 'stream'
 import { errors } from 'undici'
 import { format } from 'util'
-import { InjectionKey, LauncherAppPlugin } from '~/app'
-import { kLogRoot } from '../log_consumer'
-import { ZipTask } from '~/util/zip'
+import { ZipFile } from 'yazl'
+import { LauncherAppPlugin } from '~/app'
 import { IS_DEV } from '~/constant'
-import { isSystemError } from '@xmcl/utils'
+import { writeZipFile } from '~/util/zip'
+import { kLogRoot } from '../log_consumer'
 
 export function formatLogMessage(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 
@@ -179,11 +180,11 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
   app.registryDisposer(async () => {
     try {
       if (hasError) {
-        const zip = new ZipTask(join(logRoot, filenamify(new Date().toJSON()) + '.zip'))
+        const zipFile = new ZipFile()
         for (const sink of Object.values(sinks)) {
-          zip.addBuffer(await readFile(sink.path!), `logs/${basename(sink.name)}.log`)
+          zipFile.addBuffer(await readFile(sink.path!), `logs/${basename(sink.name)}.log`)
         }
-        await zip.startAndWait()
+        await writeZipFile(zipFile, join(logRoot, filenamify(new Date().toJSON()) + '.zip'))
       }
     } finally {
       for (const destination of Object.values(sinks)) {
