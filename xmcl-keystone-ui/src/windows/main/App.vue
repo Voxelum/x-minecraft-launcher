@@ -37,6 +37,7 @@
     <AppExportServerDialog />
     <AppModrinthLoginDialog />
     <InstanceLauncherPage />
+    <AppSideBarGroupSettingDialog :default-color="defaultColor" />
   </v-app>
   <v-app v-else class="h-full max-h-screen overflow-auto overflow-x-hidden" :class="{ 'dark': isDark }">
     <AppSystemBar no-user no-task />
@@ -88,6 +89,8 @@ import InstanceLauncherPage from '@/views/InstanceLauncherPage.vue'
 import Setup from '@/views/Setup.vue'
 import { useLocalStorage, useMediaQuery } from '@vueuse/core'
 import { kInstanceLauncher, useInstanceLauncher } from '@/composables/instanceLauncher'
+import AppSideBarGroupSettingDialog from '@/views/AppSideBarGroupSettingDialog.vue'
+import { useInstanceGroupDefaultColor } from '@/composables/instanceGroup'
 
 const showSetup = ref(location.search.indexOf('bootstrap') !== -1)
 const { state } = injection(kSettingsState)
@@ -96,6 +99,8 @@ const { state } = injection(kSettingsState)
 provide('streamerMode', useLocalStorageCacheBool('streamerMode', false))
 provide(kLocalizedContent, useLocalizedContentControl())
 provide(kInstanceLauncher, useInstanceLauncher())
+
+const defaultColor = useInstanceGroupDefaultColor()
 
 const layout = injection(kUIDefaultLayout)
 const modes = useLocalStorage('instanceEnabledDashboard', {} as Record<string, boolean>)
