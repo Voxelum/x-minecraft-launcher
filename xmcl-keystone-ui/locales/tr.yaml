@@ -1458,6 +1458,9 @@ shared:
   server: Sunucu
   skipForNow: Şimdilik atla
   'yes': Evet
+sidebar:
+  pin: Sabitle
+  unpin: Sabitlemeyi kaldır
 sortBy:
   alphabetAsc: Alfabeye göre sırala (artan)
   alphabetDesc: Alfabeye göre sırala (azalan)

@@ -2,6 +2,7 @@
 import { kInstance } from '@/composables/instance'
 import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
 import { kInstances } from '@/composables/instances'
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
 import { useInstanceServerStatus } from '../composables/serverStatus'
@@ -15,7 +16,10 @@ const props = defineProps<{
 }>()
 
 const { instances, selectedInstance } = injection(kInstances)
+const { pinnedInstances } = useInjectSidebarSettings()
+
 const instance = computed(() => instances.value.find((i) => i.path === props.path))
+const isPinned = computed(() => pinnedInstances.value.includes(props.path))
 const name = computed(() => {
   if (!instance.value) return ''
   if (instance.value.name) return instance.value.name
@@ -64,11 +68,41 @@ const navigate = () => {
 
 </script>
 <template>
-  <AppSideBarNotchItem
-    :image="favicon"
-    :tooltip="() => ({ text: name, items: runtimes, direction: props.direction })"
-    :active="isActive"
-    :context-menu="getContextMenu"
-    @click="navigate"
-  />
+  <div class="notch-instance-wrapper">
+    <AppSideBarNotchItem
+      :image="favicon"
+      :tooltip="() => ({ text: name, items: runtimes, direction: props.direction })"
+      :active="isActive"
+      :context-menu="getContextMenu"
+      @click="navigate"
+    />
+    <!-- Pin indicator -->
+    <div
+      v-if="isPinned"
+      class="pin-badge"
+    >
+      <v-icon x-small color="white" style="font-size: 8px;">push_pin</v-icon>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.notch-instance-wrapper {
+  position: relative;
+}
+
+.pin-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background-color: #EAB308;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+}
+</style>

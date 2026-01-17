@@ -1322,6 +1322,9 @@ shared:
   server: サーバー
   skipForNow: 今すぐスキップする
   'yes': はい
+sidebar:
+  pin: ピン留めする
+  unpin: 固定を解除する
 sortBy:
   alphabetAsc: アルファベットでソート（昇順）
   alphabetDesc: アルファベットでソート（下降）

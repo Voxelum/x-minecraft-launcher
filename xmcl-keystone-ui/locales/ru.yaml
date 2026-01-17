@@ -1492,6 +1492,9 @@ shared:
   server: Сервер
   skipForNow: Пропустить сейчас
   'yes': Да
+sidebar:
+  pin: Закрепить
+  unpin: Открепить
 sortBy:
   alphabetAsc: Сортировка по алфавиту (восходящее)
   alphabetDesc: Сортировка по алфавиту (спуск)

@@ -1458,6 +1458,9 @@ shared:
   server: Server
   skipForNow: Salta per ora
   'yes': Si
+sidebar:
+  pin: Fissa
+  unpin: Sblocca
 sortBy:
   alphabetAsc: Ordina per alfabeto (ascendente)
   alphabetDesc: Ordina per alfabeto (discendente)

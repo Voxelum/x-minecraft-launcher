@@ -1197,6 +1197,9 @@ shared:
   search: Buscar
   server: Servidor
   skipForNow: Saltar por ahora
+sidebar:
+  pin: Fijar
+  unpin: Desfijar
 sortBy:
   alphabetAsc: Ordenar por alfabeto (ascendente)
   alphabetDesc: Ordenar por alfabeto (descendente)

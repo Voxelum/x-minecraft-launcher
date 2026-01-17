@@ -1432,6 +1432,9 @@ shared:
   search: Szukaj
   server: Serwer
   skipForNow: Pomiń na razie
+sidebar:
+  pin: Przypnij
+  unpin: Odepnij
 sortBy:
   alphabetAsc: Sortuj według alfabetu (rosnące)
   alphabetDesc: Sortuj według alfabetu (zejście)

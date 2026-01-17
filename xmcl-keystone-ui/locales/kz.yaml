@@ -1459,6 +1459,9 @@ shared:
   server: Сервер
   skipForNow: Қазір өткізіп жіберу
   'yes': Иә
+sidebar:
+  pin: Бекіту
+  unpin: Бекітуді алып тастау
 sortBy:
   alphabetAsc: Әліпби бойынша (өсу)
   alphabetDesc: Әліпби бойынша (кему)

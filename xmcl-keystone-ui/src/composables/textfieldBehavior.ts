@@ -1,7 +1,10 @@
+import { useEventListener, useFocus } from '@vueuse/core'
 import { Ref } from 'vue'
 
-export function useTextFieldBehavior(searchTextField: Ref<any>, searchTextFieldFocused: Ref<boolean>) {
-  return (e: KeyboardEvent) => {
+export function useTextFieldBehavior(searchTextField: Ref<any>) {
+  const el = computed(() => searchTextField.value?.$el)
+  const { focused: searchTextFieldFocused } = useFocus(el)
+  useEventListener(el, 'keydown', (e: KeyboardEvent) => {
     // ctrl+f
     if (e.ctrlKey && e.key === 'f') {
       e.preventDefault()
@@ -20,5 +23,5 @@ export function useTextFieldBehavior(searchTextField: Ref<any>, searchTextFieldF
       e.stopPropagation()
       searchTextField.value?.blur()
     }
-  }
+  })
 }

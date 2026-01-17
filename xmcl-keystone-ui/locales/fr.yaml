@@ -1470,6 +1470,9 @@ shared:
   server: Serveur
   skipForNow: Passer pour l'instant
   'yes': Oui
+sidebar:
+  pin: Épingler
+  unpin: Désépingler
 sortBy:
   alphabetAsc: Trier par alphabet (ascendant)
   alphabetDesc: Trier par Alphabet (descendant)

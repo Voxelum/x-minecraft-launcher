@@ -1472,6 +1472,9 @@ shared:
   server: Servidor
   skipForNow: Pular por agora
   'yes': Sim
+sidebar:
+  pin: Fixar
+  unpin: Desafixar
 sortBy:
   alphabetAsc: Classificar por alfabeto (ascendente)
   alphabetDesc: Classificar por alfabeto (descendente)

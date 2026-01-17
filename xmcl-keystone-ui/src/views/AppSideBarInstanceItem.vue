@@ -101,22 +101,10 @@ const favicon = computed(() => {
   return getInstanceIcon(inst, inst.server ? status.value : undefined)
 })
 
-const baseItems = useInstanceContextMenuItems(instance)
+const getItems = useInstanceContextMenuItems(instance)
 
 const route = useRoute()
 const isActive = computed(() => props.path === selectedInstance.value && route.path === '/')
-
-// Extended context menu with pin option
-const getItems = () => {
-  const items = baseItems()
-  // Add pin/unpin option at the start
-  items.unshift({
-    text: props.pinned ? t('sidebar.unpin') : t('sidebar.pin'),
-    icon: 'push_pin',
-    onClick: () => emit('toggle-pin'),
-  })
-  return items
-}
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {

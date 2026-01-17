@@ -1420,6 +1420,9 @@ shared:
   server: SERVR
   skipForNow: SKIP FUR NAO
   'yes': YAS
+sidebar:
+  pin: STIK IT
+  unpin: UNSTIK IT
 sortBy:
   alphabetAsc: SORT BY ALPHABET (ASCENDING)
   alphabetDesc: SORT BY ALPHABET (DESCENDING)
