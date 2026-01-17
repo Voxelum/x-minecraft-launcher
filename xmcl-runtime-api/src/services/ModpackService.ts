@@ -5,6 +5,19 @@ import type { InstallMarketOptions } from '../entities/market'
 import type { SharedState } from '../util/SharedState'
 import type { CreateInstanceOption } from './InstanceService'
 import type { ServiceKey } from './Service'
+import type { Task, SubState } from '../task'
+import type { WithProgress } from '@xmcl/installer'
+
+export interface ExportModpackTrackerEvents {
+  'zip.progress': WithProgress<{ destination: string }>
+}
+
+export interface ExportModpackTask extends Task {
+  type: 'exportModpack'
+  instancePath: string
+  name: string
+  substate: SubState<ExportModpackTrackerEvents, 'zip.progress'>
+}
 
 export interface ExportFileDirective {
   path: string
