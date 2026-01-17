@@ -48,7 +48,7 @@ export function useModItemContextMenuItems(entry: Ref<ProjectEntry<ModFile>>, on
       if (file.modId.toLowerCase() !== 'optifine') {
         items.push({
           onClick: onDisable,
-          text: file.enabled ? t('disable') + ' ' + file.fileName : t('enable') + ' ' + file.fileName,
+          text: file.enabled ? t('shared.disable') + ' ' + file.fileName : t('shared.enable') + ' ' + file.fileName,
           color: 'grey',
           icon: file.enabled ? 'flash_off' : 'flash_on',
         })

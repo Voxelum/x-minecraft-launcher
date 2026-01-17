@@ -22,7 +22,7 @@
     <div class="flex-grow" />
     <v-btn :loading="loading" class="controls" v-if="!dragover" :color="isHovered ? 'primary' : 'default'" text small @click.stop="emit('install')">
       <span class="transition-all transition-duration-300" :style="{ opacity: isHovered ? 1 : 0 }">
-        {{ t('install') }}
+        {{ t('shared.install') }}
       </span>
       <v-icon :color="isHovered ? 'primary' : 'default'" class="material-symbols-outlined" right>
         file_download

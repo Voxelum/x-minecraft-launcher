@@ -179,7 +179,7 @@
               <v-icon left>
                 {{ enabled ? 'flash_off' : 'flash_on' }}
               </v-icon>
-              {{ !enabled ? t('enable') : t('disable') }}
+              {{ !enabled ? t('shared.enable') : t('shared.disable') }}
             </v-btn>
             <v-btn
               v-if="!selectedInstalled"
@@ -195,7 +195,7 @@
               >
                 file_download
               </v-icon>
-              {{ !hasInstalledVersion ? t('modInstall.install') : t('modInstall.switch') }}
+              {{ !hasInstalledVersion ? t('shared.install') : t('modInstall.switch') }}
             </v-btn>
             <div
               v-if="!selectedInstalled"
@@ -398,7 +398,7 @@
                             vertical
                           />
                           <div v-if="dep.installedVersion">
-                            {{ t('modInstall.installed') }}
+                            {{ t('shared.installed') }}
                           </div>
                           <v-divider
                             v-if="dep.installedDifferentVersion"
@@ -491,7 +491,7 @@
             <v-subheader
               v-if="installed"
             >
-              {{ t('modInstall.installed') }}
+              {{ t('shared.installed') }}
             </v-subheader>
             <ModDetailVersion
               v-if="installed"

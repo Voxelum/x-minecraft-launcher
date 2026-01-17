@@ -164,7 +164,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="t('modrinth.environments.client')"
+                v-shared-tooltip="t('shared.client')"
                 outlined
                 text
                 small
@@ -176,8 +176,7 @@
                 </v-icon>
               </v-btn>
               <v-btn
-                v-shared-tooltip="t('modrinth.environments.server')"
-                outlined
+                v-shared-tooltip="t('shared.server')"
                 text
                 small
                 value="server"

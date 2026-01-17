@@ -93,7 +93,7 @@ const dependencies = computed(() => {
       }
       return undefined
     })
-    const task = useModrinthTask(computed(() => recommendedVersion.id))
+    const { progress, total } = useModrinthTask(computed(() => recommendedVersion.id))
     const dep: ProjectDependency = reactive({
       id: project.id,
       icon: project.icon_url,
@@ -104,7 +104,7 @@ const dependencies = computed(() => {
       parent: parent?.title ?? '',
       installedVersion: computed(() => file.value?.version),
       installedDifferentVersion: computed(() => otherFile.value?.version),
-      progress: computed(() => task.value ? task.value.progress / task.value.total : -1),
+      progress: computed(() => progress.value / total.value),
     })
     return dep
   }) ?? []
@@ -187,14 +187,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <Hint
-    v-if="isNotFound"
-    icon="warning"
-    color="red"
-    class="px-10"
-    :size="100"
-    :text="t('errors.NotFoundError')"
-  >
+  <Hint v-if="isNotFound" icon="warning" color="red" class="px-10" :size="100" :text="t('errors.NotFoundError')">
     <div>
       <v-btn color="primary" text v-if="curseforgeId" @click="goCurseforgeProject(curseforgeId)">
         <v-icon left>$vuetify.icons.curseforge</v-icon>
@@ -202,36 +195,13 @@ const { t } = useI18n()
       </v-btn>
     </div>
   </Hint>
-  <MarketProjectDetail
-    v-else
-    :detail="model"
-    :has-more="false"
-    :enabled="enabled"
-    :error="error"
-    :supported-versions="supportedVersions"
-    :selected-installed="installed"
-    :has-installed-version="hasInstalledVersion"
-    :versions="modVersions"
-    :updating="innerUpdating || installing || updating"
-    :loading-dependencies="isValidating"
-    :dependencies="dependencies"
-    :loading="loading"
-    :loading-versions="loadingVersions"
-    :modrinth="projectId"
-    :curseforge="curseforgeId"
-    :followed="isFollowed"
-    :following="following"
-    :collection="collectionId"
-    :loading-collections="loadingCollections"
-    @collection="onAddOrRemove"
-    current-target="modrinth"
-    @open-dependency="onOpenDependency"
-    @install="onInstall"
-    @enable="enabled = $event"
-    @delete="onDelete"
-    @install-dependency="onInstallDependency"
-    @select:category="emit('category', $event)"
-    @refresh="refresh()"
-    @follow="onFollow"
-  />
+  <MarketProjectDetail v-else :detail="model" :has-more="false" :enabled="enabled" :error="error"
+    :supported-versions="supportedVersions" :selected-installed="installed" :has-installed-version="hasInstalledVersion"
+    :versions="modVersions" :updating="innerUpdating || installing || updating" :loading-dependencies="isValidating"
+    :dependencies="dependencies" :loading="loading" :loading-versions="loadingVersions" :modrinth="projectId"
+    :curseforge="curseforgeId" :followed="isFollowed" :following="following" :collection="collectionId"
+    :loading-collections="loadingCollections" @collection="onAddOrRemove" current-target="modrinth"
+    @open-dependency="onOpenDependency" @install="onInstall" @enable="enabled = $event" @delete="onDelete"
+    @install-dependency="onInstallDependency" @select:category="emit('category', $event)" @refresh="refresh()"
+    @follow="onFollow" />
 </template>

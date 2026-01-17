@@ -106,7 +106,7 @@
                   <v-icon left>
                     wifi
                   </v-icon>
-                  {{ t('refresh') }}
+                  {{ t('shared.refresh') }}
                 </v-btn>
               </div>
             </div>

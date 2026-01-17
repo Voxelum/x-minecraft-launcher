@@ -25,7 +25,7 @@
       transition="fade-transition"
     >
       <div
-        :key="index"
+        :key="'gallery-grid-' + index"
         class="grid select-none gap-4 overflow-auto"
         :class="{
           'grid-cols-3': !shrink,
@@ -34,7 +34,7 @@
       >
         <v-card
           v-for="g of currentGroup"
-          :key="g.id"
+          :key="'gallery-grid-card-' + g.id"
           class="flex h-40 max-h-40 max-w-full overflow-auto overflow-x-hidden"
           @click="$emit('enter', g)"
         >
@@ -75,7 +75,7 @@
               </v-icon>
               <v-chip
                 v-for="c of g.categories.slice(0, 2)"
-                :key="c"
+                :key="'gallery-grid-chip-' + c"
                 v-shared-tooltip="c"
                 class="hidden lg:block"
                 :ripple="false"

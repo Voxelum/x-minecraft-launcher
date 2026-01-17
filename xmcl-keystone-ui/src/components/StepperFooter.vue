@@ -5,7 +5,7 @@
       :disabled="creating"
       @click="emit('quit')"
     >
-      {{ t('cancel') }}
+      {{ t('shared.cancel') }}
     </v-btn>
     <v-spacer />
     <slot />
@@ -16,7 +16,7 @@
       :disabled="disabled"
       @click="emit('next')"
     >
-      {{ t('next') }}
+      {{ t('shared.next') }}
     </v-btn>
     <v-btn
       v-if="create"

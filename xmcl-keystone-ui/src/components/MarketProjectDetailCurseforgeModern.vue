@@ -389,7 +389,7 @@ const dependencies = computed(() =>
   !curseforgeFile.value
     ? []
     : deps.value?.map((resolvedDep) => {
-        const task = useCurseforgeTask(computed(() => resolvedDep.file.id));
+        const { task, progress, total } = useCurseforgeTask(computed(() => resolvedDep.file.id));
         const file = computed(() => {
           for (const file of props.allFiles) {
             if (file.curseforge?.fileId === resolvedDep.file.id) {
@@ -420,7 +420,7 @@ const dependencies = computed(() =>
           installedVersion: computed(() => file.value?.version),
           installedDifferentVersion: computed(() => otherFile.value?.version),
           progress: computed(() =>
-            task.value ? task.value.progress / task.value.total : -1
+            task.value ? progress.value / total.value : -1
           ),
         });
         return dep;
@@ -443,7 +443,7 @@ const onInstall = async (mod: ProjectVersion) => {
       props.installed,
       deps.value ?? []
     );
-    notify({ title: t("modInstall.installed"), level: "success" });
+    notify({ title: t("shared.installed"), level: "success" });
   } finally {
     installing.value = false;
   }
@@ -652,7 +652,7 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
               {{
                 props.installed.length > 0
                   ? t("modInstall.reinstall")
-                  : t("modInstall.install")
+                  : t("shared.install")
               }}
             </v-btn>
             <span
@@ -761,7 +761,7 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
                         class="font-medium"
                       >
                         <v-icon x-small left>check_circle</v-icon>
-                        {{ t("modInstall.installed") }}
+                        {{ t("shared.installed") }}
                       </v-chip>
                     </div>
                     <div
@@ -802,8 +802,8 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
                     }}</v-icon>
                     {{
                       ver.installed
-                        ? t("modInstall.installed")
-                        : t("modInstall.install")
+                        ? t("shared.installed")
+                        : t("shared.install")
                     }}
                   </v-btn>
                 </div>

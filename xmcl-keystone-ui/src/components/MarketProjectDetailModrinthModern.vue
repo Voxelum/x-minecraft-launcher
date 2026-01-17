@@ -143,7 +143,7 @@ const dependencies = computed(() => {
           }
           return undefined;
         });
-        const task = useModrinthTask(computed(() => recommendedVersion.id));
+        const { progress, total, task } = useModrinthTask(computed(() => recommendedVersion.id));
         const dep: ProjectDependency = reactive({
           id: project.id,
           icon: project.icon_url,
@@ -155,7 +155,7 @@ const dependencies = computed(() => {
           installedVersion: computed(() => file.value?.version),
           installedDifferentVersion: computed(() => otherFile.value?.version),
           progress: computed(() =>
-            task.value ? task.value.progress / task.value.total : -1
+            task.value ? progress.value / total.value : -1
           ),
         });
         return dep;
@@ -196,7 +196,7 @@ const onInstall = async (v: ProjectDetailVersion) => {
       props.installed,
       deps.value ?? []
     );
-    notify({ title: t("modInstall.installed"), level: "success" });
+    notify({ title: t("shared.installed"), level: "success" });
   } finally {
     installing.value = false;
   }
@@ -444,7 +444,7 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
                 {{
                   installed.length > 0
                     ? t("modInstall.reinstall")
-                    : t("modInstall.install")
+                    : t("shared.install")
                 }}
               </v-btn>
               <span
@@ -572,7 +572,7 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
                         class="font-medium"
                       >
                         <v-icon x-small left>check_circle</v-icon>
-                        {{ t("modInstall.installed") }}
+                        {{ t("shared.installed") }}
                       </v-chip>
                     </div>
                     <div
@@ -613,8 +613,8 @@ const isInstallDisabled = computed(() => !selectedVersion.value);
                     }}</v-icon>
                     {{
                       ver.installed
-                        ? t("modInstall.installed")
-                        : t("modInstall.install")
+                        ? t("shared.installed")
+                        : t("shared.install")
                     }}
                   </v-btn>
                 </div>

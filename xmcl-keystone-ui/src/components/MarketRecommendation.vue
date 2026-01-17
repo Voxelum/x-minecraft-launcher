@@ -40,11 +40,13 @@
         </template>
         <template v-if="curseforge">
           <CurseforgeCategoryChip
+            v-if="randomCurseforgeCats[0]"
             class="text-blue-400"
             :value="randomCurseforgeCats[0]"
             @click="emit('curseforge', randomCurseforgeCats[0])"
           />
           <CurseforgeCategoryChip
+            v-if="randomCurseforgeCats[1]"
             class="text-orange-400"
             :value="randomCurseforgeCats[1]"
             @click="emit('curseforge', randomCurseforgeCats[1])"

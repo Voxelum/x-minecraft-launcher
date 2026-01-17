@@ -289,7 +289,7 @@ export function getNeoForgedVersionModel(minecraft: MaybeRef<string>) {
     fetcher: async () => {
       const content = await Promise.any([
         getJson<{ versions: string[] }>('https://maven.neoforged.net/api/maven/versions/releases/net/neoforged/neoforge')
-          .then((v) => v.versions.filter(v => v.startsWith(get(minecraft).substring(2)))),
+          .then((v) => v.versions.filter(v => v.startsWith(get(minecraft).substring(2) + '.'))),
         getJson<{ version: string }[]>(`https://bmclapi2.bangbang93.com/neoforge/list/${get(minecraft)}`)
           .then(v => v.map(v => v.version)),
       ])
