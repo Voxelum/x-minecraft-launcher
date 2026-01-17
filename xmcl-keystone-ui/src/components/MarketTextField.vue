@@ -110,7 +110,8 @@ watch(transitioning, (v) => {
     }
   }
 }, { immediate: true })
-useEventListener(document, 'keydown', useTextFieldBehavior(searchTextField, searchTextFieldFocused), { capture: true })
+
+useTextFieldBehavior(searchTextField, searchTextFieldFocused)
 defineExpose({
   focus() {
     if (!searchTextFieldFocused.value) {

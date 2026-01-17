@@ -31,7 +31,7 @@ const props = defineProps<{
   icon?: string
   iconSize?: number
   image?: string
-  tooltip?: () => string | VSharedTooltipParam
+  tooltip?: () => VSharedTooltipParam
   to?: string
   id?: string
   clickable?: boolean

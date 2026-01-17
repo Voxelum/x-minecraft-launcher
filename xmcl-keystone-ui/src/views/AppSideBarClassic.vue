@@ -177,7 +177,6 @@
         </v-badge>
       </v-btn>
     </div>
-    <AppSideBarGroupSettingDialog :default-color="defaultColor" />
   </div>
 </template>
 
@@ -200,7 +199,6 @@ const isHorizontal = computed(() => position.value === 'top' || position.value =
 const { t } = useI18n()
 const { sideBarColor } = injection(kTheme)
 const { back } = useRouter()
-const defaultColor = useInstanceGroupDefaultColor()
 
 function goBack() {
   back()

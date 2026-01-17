@@ -9,7 +9,7 @@ export type VSharedTooltipParam = {
   direction?: 'top' | 'bottom' | 'left' | 'right'
 } | string
 
-export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam> = (el, bindings, node, prevNode) => {
+export const vSharedTooltip: FunctionDirective<HTMLElement, ((v?: any) => VSharedTooltipParam) | VSharedTooltipParam | undefined> = (el, bindings, node, prevNode) => {
   if (prevNode.tag) return
   const { blocked, isShown, stack, setValue } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {

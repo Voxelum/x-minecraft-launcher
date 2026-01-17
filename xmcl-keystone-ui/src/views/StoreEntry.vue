@@ -8,6 +8,7 @@
       <div class="col-span-5 max-w-2xl relative group">
          <v-text-field
            v-model="keyword"
+           ref="filter"
            solo
            flat
            hide-details
@@ -232,10 +233,12 @@ import { useDateString } from '@/composables/date'
 import { kModrinthTags } from '@/composables/modrinth'
 import { useQuery, useQueryNumber, useQueryStringArray } from '@/composables/query'
 import { useSortByItems } from '@/composables/sortBy'
+import { useTextFieldBehavior } from '@/composables/textfieldBehavior'
 import { usePopularItems } from '@/composables/usePopularItems'
 import { useRecentMinecraftItems } from '@/composables/useRecentMinecraftItems'
 import { useSearchedItems } from '@/composables/useSearchedItems'
 import { injection } from '@/util/inject'
+import { useFocus } from '@vueuse/core'
 
 const { push } = useRouter()
 const { t } = useI18n()
@@ -418,6 +421,10 @@ function clearAllFilters() {
 }
 
 const hasFilters = computed(() => selectedCount.value > 0 || !!keyword.value)
+
+const filter = ref<HTMLElement | null>(null)
+const { focused } = useFocus(filter)
+useTextFieldBehavior(filter, focused)
 </script>
 
 <style scoped>

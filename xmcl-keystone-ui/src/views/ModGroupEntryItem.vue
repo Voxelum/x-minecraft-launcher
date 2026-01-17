@@ -62,7 +62,7 @@ const props = defineProps<{
 
 const avatars = computed(() => props.items.map(i => i.icon).filter(v => !!v))
 
-const emit = defineEmits(['expand', 'setting', 'ungroup', 'enableAll', 'disableAll'])
+const emit = defineEmits(['expand', 'setting', 'ungroup', 'enable-all', 'disable-all'])
 
 const { t } = useI18n()
 
@@ -97,7 +97,7 @@ function getContextMenu() {
       icon: 'flash_on',
       text: t('mod.enableAll'),
       onClick: () => {
-        emit('enableAll')
+        emit('enable-all')
       },
     })
   }
@@ -107,7 +107,7 @@ function getContextMenu() {
       icon: 'flash_off',
       text: t('mod.disableAll'),
       onClick: () => {
-        emit('disableAll')
+        emit('disable-all')
       },
     })
   }

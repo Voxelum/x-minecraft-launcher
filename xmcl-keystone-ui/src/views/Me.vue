@@ -227,8 +227,9 @@ function selectInstance(instancePath: string) {
 
 const getInstanceContextMenu = useInstanceContextMenuFunc()
 
-const filter = ref<HTMLElement | null>(null);
-useTextFieldBehavior(filter)
+const filter = ref<HTMLElement | null>(null)
+const { focused } = useFocus(filter)
+useTextFieldBehavior(filter, focused)
 
 function openInBrowser(url: string) {
   window.open(url, "_blank", "noopener,noreferrer");
