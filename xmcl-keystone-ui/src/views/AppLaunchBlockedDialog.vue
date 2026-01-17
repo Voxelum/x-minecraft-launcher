@@ -46,7 +46,7 @@
             text
             @click="hide"
           >
-            {{ t('ok') }}
+            {{ t('shared.ok') }}
           </v-btn>
         </v-card-actions>
       </v-card>
