@@ -4,7 +4,7 @@ import { InstanceService } from '~/instance';
 import { UserService } from '~/user';
 import { LaunchService } from './LaunchService';
 import { findMatchedVersion, generateLaunchOptionsWithGlobal, getAutoOrManuallJava, getAutoSelectedJava } from '@xmcl/runtime-api';
-import { VersionService } from '~/version';
+import { VersionService } from './VersionService';
 import { JavaService } from '~/java';
 import { kSettings } from '~/settings';
 import { AuthlibInjectorService } from '~/authlibInjector';
