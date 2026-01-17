@@ -1,15 +1,14 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { generateInstanceManifest, getInstanceFiles, type InstanceFile } from '@xmcl/instance'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { ResourceManager } from '@xmcl/resource'
 import { InstanceIOException, InstanceManifestServiceKey, type GetManifestOptions, type InstanceManifestService as IInstanceManifestService, type InstanceManifest } from '@xmcl/runtime-api'
 import { join } from 'path'
 import { Inject, LauncherAppKey } from '~/app'
 import { InstanceService } from '~/instance'
-import { kResourceWorker, kResourceManager } from '~/resource'
+import { kResourceManager, kResourceWorker } from '~/resource'
 import { AbstractService, ExposeServiceKey, Singleton } from '~/service'
 import { LauncherApp } from '../app/LauncherApp'
-import { ResolveInstanceFileTask } from './utils/ResolveInstanceFileTask'
+import { resolveInstanceFiles } from './utils/resolveInstanceFiles'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -65,12 +64,11 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     const undecorated = new Set<InstanceFile>()
     const result = await generateInstanceManifest(options, instance, worker, manager, this, undecorated)
 
-    const resolveTask = new ResolveInstanceFileTask(
+    await resolveInstanceFiles(
       undecorated,
       await this.app.registry.get(CurseforgeV1Client),
       await this.app.registry.get(ModrinthV2Client),
     )
-    await resolveTask.startAndWait()
 
     return result
   }

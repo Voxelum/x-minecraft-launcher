@@ -13,7 +13,8 @@ import { UserService } from '~/user'
 import { LauncherApp } from '../app/LauncherApp'
 import { missing } from '../util/fs'
 import { isValidUrl, joinUrl } from '../util/url'
-import { ZipTask } from '../util/zip'
+import { writeZipFile } from '../util/zip'
+import { ZipFile } from 'yazl'
 
 export class XUpdateService extends AbstractService implements IXUpdateService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
@@ -52,19 +53,19 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
 
     if (!useJson) {
       this.log(`Use zip to upload instance ${instancePath} to ${instance.fileApi}`)
-      const task = new ZipTask(tempZipFile)
+      const zipFile = new ZipFile()
 
       for (const file of manifest.files) {
         const realPath = join(instancePath, file.path)
         const canBeDownload = file.modrinth || file.curseforge || (file.downloads && file.downloads.length > 0)
         if (includeFileWithDownloads || !canBeDownload) {
-          task.addFile(realPath, file.path)
+          zipFile.addFile(realPath, file.path)
         }
       }
 
-      task.addBuffer(Buffer.from(JSON.stringify(manifest), 'utf-8'), 'manifest.json')
+      zipFile.addBuffer(Buffer.from(JSON.stringify(manifest), 'utf-8'), 'manifest.json')
 
-      await task.startAndWait()
+      await writeZipFile(zipFile, tempZipFile)
     } else {
       this.log(`Use json to upload instance ${instancePath} to ${instance.fileApi}`)
     }
