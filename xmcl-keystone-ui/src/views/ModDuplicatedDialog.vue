@@ -139,7 +139,7 @@ function view(modId: string) {
       <v-card-actions>
         <v-spacer />
         <v-btn
-        v-shared-tooltip="t('filter')"
+        v-shared-tooltip="t('shared.filter')"
           icon 
           @click="selectDefaults(conflicted)"
         >

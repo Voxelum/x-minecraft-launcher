@@ -54,7 +54,7 @@ const { t } = useI18n()
       <v-card-text class="overflow-auto pt-4">
         <v-text-field
           v-model="name"
-          :label="t('name')"
+          :label="t('shared.name')"
           autofocus
         />
         <template v-if="hasColor">
@@ -76,7 +76,7 @@ const { t } = useI18n()
           text
           @click="isShown = false"
         >
-          {{ t('cancel') }}
+          {{ t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn

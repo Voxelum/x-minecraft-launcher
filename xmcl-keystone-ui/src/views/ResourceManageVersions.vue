@@ -83,7 +83,7 @@
       :width="290"
       :confirm-icon="'delete'"
       :color="'error en-1'"
-      :confirm="t('yes')"
+      :confirm="t('shared.yes')"
       @cancel="deleteDialog.cancel"
       @confirm="deleteDialog.confirm"
     >
@@ -95,7 +95,7 @@
       :title="t('localVersion.reinstallTitle', { version: reinstallDialog.target.value })"
       :confirm-icon="'build'"
       :color="'orange en-1'"
-      :confirm="t('yes')"
+      :confirm="t('shared.yes')"
       @cancel="reinstallDialog.cancel"
       @confirm="reinstallDialog.confirm"
     >
@@ -120,7 +120,10 @@ const data = reactive({
 
 const reinstallDialog = useSimpleDialog<string>((v) => {
   if (!v) return
-  reinstall(v)
+  reinstall({
+    version: v,
+    side: 'client',
+  })
 })
 const reinstallDialogModel = reinstallDialog.model
 

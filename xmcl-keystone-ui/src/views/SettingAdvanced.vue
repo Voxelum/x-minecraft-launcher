@@ -56,10 +56,10 @@
         <v-card-actions>
           <v-spacer />
           <v-btn text @click="showResetDialog = false">
-            {{ t('cancel') }}
+            {{ t('shared.cancel') }}
           </v-btn>
           <v-btn color="error" @click="handleResetAllSettings" :loading="resetting">
-            {{ t('yes') }}
+            {{ t('shared.yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -110,7 +110,7 @@ async function handleResetAllSettings() {
     }, 1000)
   } catch (error) {
     console.error('Failed to reset settings:', error)
-    alert('Ошибка при сбросе настроек: ' + error)
+    alert(t('setting.resetSettingsError') + ' ' + error)
     resetting.value = false
     showResetDialog.value = false
   }
@@ -198,7 +198,7 @@ async function handleImportSettings() {
           }
         }
 
-        alert(t('setting.settingsImported') + '\n\nЛаунчер перезагрузится для применения всех настроек.')
+        alert(t('setting.settingsImported') + '\n\n' + t('setting.settingsReloadHint'))
 
         setTimeout(() => {
           window.location.reload()

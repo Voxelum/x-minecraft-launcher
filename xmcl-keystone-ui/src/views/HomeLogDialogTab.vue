@@ -54,7 +54,7 @@
               <v-icon left>
                 arrow_back
               </v-icon>
-              {{ t('back') }}
+              {{ t('shared.back') }}
             </v-btn>
           </v-card-title>
           <LogView

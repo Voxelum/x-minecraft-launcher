@@ -82,7 +82,7 @@
         </v-list-item-title>
       </v-list-item-content>
 
-      {{ t('modrinth.environments.server') }}
+      {{ t('shared.server') }}
       <v-divider
         vertical
         class="my-4 mx-2"
@@ -107,7 +107,7 @@
         </v-btn>
       </v-list-item-action>
       <span class="mx-4" />
-      {{ t('modrinth.environments.client') }}
+      {{ t('shared.client') }}
       <v-divider
         vertical
         class="my-4 mx-2"
@@ -171,7 +171,7 @@
             text
             @click="cancel"
           >
-            {{ t('cancel') }}
+            {{ t('shared.cancel') }}
           </v-btn>
           <div class="flex-grow" />
           <v-btn
@@ -182,7 +182,7 @@
             <v-icon left>
               link
             </v-icon>
-            {{ t('yes') }}
+            {{ t('shared.yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>

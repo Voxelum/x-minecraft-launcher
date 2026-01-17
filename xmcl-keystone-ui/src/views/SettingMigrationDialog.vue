@@ -52,7 +52,7 @@
           :disable="migrating"
           @click="cancelApply"
         >
-          {{ t("cancel") }}
+          {{ t("shared.cancel") }}
         </v-btn>
         <v-spacer />
         <v-btn

@@ -63,7 +63,7 @@
         >
           refresh
         </v-icon>
-        {{ t('refresh') }}
+        {{ t('shared.refresh') }}
       </v-btn>
     </v-card-actions>
   </div>

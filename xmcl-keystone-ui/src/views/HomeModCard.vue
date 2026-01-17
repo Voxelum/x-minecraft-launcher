@@ -10,10 +10,10 @@
     :refreshing="isValidating"
     :addition-button="noAction ? undefined : { 
       icon: 'file_download',
-      text: t('install'),
+      text: t('shared.install'),
      }"
     :button="noAction || mods.length === 0 ? undefined : {
-      text: t('mod.manage'),
+      text: t('shared.manage'),
       icon: 'settings'
      }"
     :error="error"

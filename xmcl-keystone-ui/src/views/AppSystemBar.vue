@@ -36,6 +36,7 @@
     <AppSystemBarBadge
       v-if="!noTask"
       icon="assignment"
+      :can-hide-text="count === 0"
       :text="count === 0 ? t('task.empty') : t('task.nTaskRunning', { count })"
       @click="showTaskDialog()"
     />

@@ -10,7 +10,7 @@
         :loading="loading"
         @click="emit('prev')"
       >
-        {{ t('previous') }}
+        {{ t('shared.previous') }}
       </v-btn>
       <div class="flex-grow" />
       <v-btn
@@ -21,7 +21,7 @@
         :loading="loading"
         @click="emit('next')"
       >
-        {{ finish ? t('confirm') : t('next') }}
+        {{ finish ? t('confirm') : t('shared.next') }}
       </v-btn>
     </div>
   </div>

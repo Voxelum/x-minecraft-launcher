@@ -109,7 +109,7 @@
           text
           @click="onCancel"
         >
-          {{ creatingNew ? t('back') : t('cancel') }}
+          {{ creatingNew ? t('shared.back') : t('shared.cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn

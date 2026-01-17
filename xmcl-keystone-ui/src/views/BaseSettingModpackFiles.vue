@@ -16,7 +16,7 @@
           <v-icon left>
             edit
           </v-icon>
-          {{ t("browse") }}
+          {{ t("shared.browse") }}
         </v-btn>
       </template>
     </SettingItem>
@@ -24,7 +24,7 @@
       <div class="mx-2">
         <v-text-field
           v-model="filterText"
-          :label="t('filter')"
+          :label="t('shared.filter')"
           dense
           outlined
           hide-details
@@ -228,7 +228,7 @@ function getEnvValue(item: InstanceFileNode<any>, side: 'client' | 'server' = 'c
 }
 
 const getEnvText = (item: InstanceFileNode<any>, side: 'client' | 'server' = 'client') => {
-  const prefix = side === 'client' ? t('modrinth.environments.client') : t('modrinth.environments.server')
+  const prefix = side === 'client' ? t('shared.client') : t('shared.server')
   const val = getEnvValue(item, side)
   if (val === 'required') {
     return prefix + ': ' + t('modrinth.environments.required')

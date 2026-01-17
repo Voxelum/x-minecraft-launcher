@@ -28,18 +28,14 @@
                 </div>
               </div>
             </div>
-            <div class="text-caption text-center mt-2 grey--text">Live Preview</div>
+            <div class="text-caption text-center mt-2 grey--text">{{ t('setting.livePreview') }}</div>
           </div>
         </div>
         <div class="md:col-span-7">
           <v-list class="transparent-list">
             <!-- Style -->
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarStyle') }}</v-list-item-title>
-                <v-list-item-subtitle>{{ t('setting.sidebarStyleHint') }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
+            <SettingItem :title="t('setting.sidebarStyle')" :description="t('setting.sidebarStyleHint')">
+              <template #action>
                 <v-btn-toggle v-model="sidebarStyleIndex" mandatory dense color="primary" rounded>
                   <v-btn small>
                     <v-icon left small>view_sidebar</v-icon>
@@ -50,17 +46,13 @@
                     {{ t('setting.sidebarNotch') }}
                   </v-btn>
                 </v-btn-toggle>
-              </v-list-item-action>
-            </v-list-item>
-
+              </template>
+            </SettingItem>
             <v-divider class="my-2" />
 
             <!-- Position -->
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarPosition') }}</v-list-item-title>
-              </v-list-item-content>
-              <v-list-item-action>
+            <SettingItem :title="t('setting.sidebarPosition')">
+              <template #action>
                 <v-btn-toggle v-model="sidebarPositionIndex" mandatory dense color="primary" rounded>
                   <v-btn small>
                     <v-icon small>arrow_back</v-icon>
@@ -75,97 +67,80 @@
                     <v-icon small>arrow_downward</v-icon>
                   </v-btn>
                 </v-btn-toggle>
-              </v-list-item-action>
-            </v-list-item>
+              </template>
+            </SettingItem>
 
             <!-- Notch Specific -->
             <template v-if="sidebarStyle === 'notch'">
               <v-divider class="my-2" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAlign') }}</v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action>
+              <SettingItem :title="t('setting.sidebarAlign')">
+                <template #action>
                   <v-btn-toggle v-model="sidebarAlignIndex" mandatory dense color="primary" rounded>
                     <v-btn small><v-icon small>format_align_left</v-icon></v-btn>
                     <v-btn small><v-icon small>format_align_center</v-icon></v-btn>
                     <v-btn small><v-icon small>format_align_right</v-icon></v-btn>
                   </v-btn-toggle>
-                </v-list-item-action>
-              </v-list-item>
+                </template>
+              </SettingItem>
 
               <v-divider class="my-2" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarAutoHide') }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ t('setting.sidebarAutoHideHint') }}</v-list-item-subtitle>
-                </v-list-item-content>
-                <v-list-item-action>
+              <SettingItem :title="t('setting.sidebarAutoHide')" :description="t('setting.sidebarAutoHideHint')">
+                <template #action>
                   <v-switch v-model="sidebarAutoHide" color="primary" hide-details dense />
-                </v-list-item-action>
-              </v-list-item>
+                </template>
+              </SettingItem>
 
               <v-divider class="my-2" />
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarScale') }} ({{ sidebarScale }}%)</v-list-item-title>
-                </v-list-item-content>
-                <v-list-item-action class="w-32">
-                  <v-slider v-model="sidebarScale" :min="50" :max="150" :step="5" hide-details thumb-label color="primary" dense></v-slider>
-                </v-list-item-action>
-              </v-list-item>
+              <SettingItem :title="`${t('setting.sidebarScale')} (${sidebarScale}%)`">
+                <template #action>
+                  <div class="w-32">
+                    <v-slider v-model="sidebarScale" :min="50" :max="150" :step="5" hide-details thumb-label color="primary" dense></v-slider>
+                  </div>
+                </template>
+              </SettingItem>
             </template>
 
             <v-divider class="my-2" />
             <!-- Show Only Pinned Instances -->
-            <v-list-item>
-              <v-list-item-content>
-                <v-list-item-title class="font-weight-medium">{{ t('setting.sidebarShowOnlyPinned') }}</v-list-item-title>
-                <v-list-item-subtitle>{{ t('setting.sidebarShowOnlyPinnedHint') }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
+            <SettingItem :title="t('setting.sidebarShowOnlyPinned')" :description="t('setting.sidebarShowOnlyPinnedHint')">
+              <template #action>
                 <v-switch v-model="sidebarShowOnlyPinned" color="primary" hide-details dense />
-              </v-list-item-action>
-            </v-list-item>
+              </template>
+            </SettingItem>
           </v-list>
         </div>
       </div>
     </SettingCard>
-    <SettingCard class="mb-4" :title="t('setting.darkTheme')" icon="style">
+    <SettingCard class="mb-4" :title="t('setting.themeSettings')" icon="style">
       <AppearanceItems :theme="currentTheme" @save="onSave" />
+      <SettingItemCheckbox
+        :value="linuxTitlebar"
+        :title="t('setting.linuxTitlebar')"
+        :description="t('setting.linuxTitlebarDescription')"
+        @input="v => linuxTitlebar = v"
+      />
     </SettingCard>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, Ref, ref } from 'vue'
-import { useI18n } from 'vue-i18n-bridge'
-import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
-import { useLocalStorageCacheStringValue } from '@/composables/cache'
 import AppearanceItems from '@/components/AppearanceItems.vue'
-import { kTheme } from '@/composables/theme'
-import { kUIDefaultLayout } from '@/composables/uiLayout'
+import SettingCard from '@/components/SettingCard.vue'
+import SettingItem from '@/components/SettingItem.vue'
+import SettingItemCheckbox from '@/components/SettingItemCheckbox.vue'
+import { useLocalStorageCacheStringValue } from '@/composables/cache'
 import { kEnvironment } from '@/composables/environment'
 import { kSettingsState } from '@/composables/setting'
+import { useInjectSidebarSettings } from '@/composables/sidebarSettings'
+import { kTheme } from '@/composables/theme'
 import { injection } from '@/util/inject'
-import SettingHeader from '@/components/SettingHeader.vue'
-import SettingCard from '@/components/SettingCard.vue'
+import { Ref, computed, watch } from 'vue'
+import { useI18n } from 'vue-i18n-bridge'
 
 const { t } = useI18n()
-const activeTab = ref(0)
 const env = injection(kEnvironment)
 const { currentTheme, update, setTheme, serialize } = injection(kTheme)
-const layout = injection(kUIDefaultLayout)
 const { state } = injection(kSettingsState)
-
-// --- Layout & Theme Logic ---
-const layouts = computed(() => [{
-  text: t('setting.layout.default'),
-  value: 'default',
-}, {
-  text: t('setting.layout.focus'),
-  value: 'focus',
-}])
 
 const linuxTitlebar = computed({
   get: () => state.value?.linuxTitlebar ?? false,
