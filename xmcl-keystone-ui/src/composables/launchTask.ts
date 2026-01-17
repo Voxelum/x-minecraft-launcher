@@ -5,42 +5,46 @@ import { Instance } from '@xmcl/instance'
 export const kLaunchTask: InjectionKey<ReturnType<typeof useLaunchTask>> = Symbol('LaunchTask')
 
 export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<string | undefined>) {
-  return useTask((i) => {
+  return useTask((task) => {
     if (!path.value) return false
-    const p = i.param as any
-    if (i.path === 'installJre') {
+
+    if (task.type === 'installJre') {
       return true
     }
-    if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
+    if (task.type === 'installVersion') {
+      return task.version === version.value.minecraft || task.version === localVersion.value
+    }
+    if (task.type === 'installLibraries') {
       return true
     }
-    if (i.path === 'installVersion.jar' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
-      return true
+    if (task.type === 'installAssets') {
+      return task.version === version.value.minecraft ||
+        task.version === localVersion.value ||
+        task.version === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.'))
     }
-    if (i.path === 'installLibraries' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
-      return true
+    if (task.type === 'installForge') {
+      return task.version === version.value.forge || task.mcversion === version.value.minecraft
     }
-    if (i.path === 'installAssets' && (p?.id === localVersion.value || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
-      return true
+    if (task.type === 'installNeoForge') {
+      return task.version === version.value.neoForged || task.minecraft === version.value.minecraft
     }
-    if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value || p?.id === version.value.neoForged)) {
-      return true
+    if (task.type === 'installLabyMod') {
+      return task.version === version.value.labyMod
     }
-    if (i.path === 'installLabyMod' && (p?.version === version.value.labyMod)) {
-      return true
+    if (task.type === 'installOptifine') {
+      return task.version === version.value.optifine
     }
-    if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
-      return true
+    if (task.type === 'installProfile') {
+      return task.version === localVersion.value
     }
-    if (i.path === 'installByProfile' && p?.id === localVersion.value) {
-      return true
+    if (task.type === 'installFabric') {
+      return task.minecraft === version.value.minecraft
     }
-    if (i.path === 'installFabric' && p?.id === version.value.minecraft) {
-      return true
+    if (task.type === 'installQuilt') {
+      return task.minecraft === version.value.minecraft
     }
-    if (i.path === 'installInstance' && p.instance === path.value) {
-      // installing this instance
-      return true
+    if (task.type === 'installInstance') {
+      return task.instancePath === path.value
     }
     return false
   })

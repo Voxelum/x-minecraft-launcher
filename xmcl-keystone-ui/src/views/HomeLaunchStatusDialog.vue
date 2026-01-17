@@ -74,7 +74,7 @@
           text
           @click="onCancel"
         >
-          {{ t('cancel') }}
+          {{ t('shared.cancel') }}
         </v-btn>
         <div class="flex-grow" />
         <v-btn
@@ -86,7 +86,7 @@
           <v-icon left>
             exit_to_app
           </v-icon>
-          {{ t('yes') }}
+          {{ t('shared.yes') }}
         </v-btn>
         <template v-if="javaIssue && !selected">
           <v-btn

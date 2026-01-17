@@ -26,7 +26,7 @@
             text
             @click="isShown = false"
           >
-            {{ t('cancel') }}
+            {{ t('shared.cancel') }}
           </v-btn>
           <v-spacer />
           <v-btn
